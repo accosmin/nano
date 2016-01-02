@@ -1,8 +1,4 @@
-#define BOOST_TEST_DYN_LINK
-#define BOOST_TEST_MODULE "test_tune"
-
-#include <boost/test/unit_test.hpp>
-#include "math/abs.hpp"
+#include "unit_test.hpp"
 #include "thread/pool.h"
 #include "thread/thread.h"
 #include "math/random.hpp"
@@ -34,16 +30,18 @@ namespace test
                 const tscalar epsilon = math::epsilon2<tscalar>();
 
                 // check optimum result
-                BOOST_CHECK_LE(math::abs(stfx - b), epsilon);
-                BOOST_CHECK_LE(math::abs(mtfx - b), epsilon);
+                NANOCV_CHECK_CLOSE(stfx, b, epsilon);
+                NANOCV_CHECK_CLOSE(mtfx, b, epsilon);
 
                 // check optimum parameters
-                BOOST_CHECK_LE(math::abs(stx - a), epsilon);
-                BOOST_CHECK_LE(math::abs(mtx - a), epsilon);
+                NANOCV_CHECK_CLOSE(stx, a, epsilon);
+                NANOCV_CHECK_CLOSE(mtx, a, epsilon);
         }
 }
 
-BOOST_AUTO_TEST_CASE(test_tune)
+NANOCV_BEGIN_MODULE(test_tune)
+
+NANOCV_CASE(evaluate)
 {
         typedef double scalar_t;
 
@@ -61,4 +59,6 @@ BOOST_AUTO_TEST_CASE(test_tune)
                 test::check(agen(), bgen(), minlog, maxlog, epslog, splits);
         }
 }
+
+NANOCV_END_MODULE()
 

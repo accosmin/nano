@@ -1,7 +1,4 @@
-#define BOOST_TEST_DYN_LINK
-#define BOOST_TEST_MODULE "test_sampler"
-
-#include <boost/test/unit_test.hpp>
+#include "unit_test.hpp"
 #include "cortex/sampler.h"
 #include "text/to_string.hpp"
 #include "cortex/tasks/task_charset.h"
@@ -17,7 +14,9 @@ namespace test
         }
 }
 
-BOOST_AUTO_TEST_CASE(test_sampler)
+NANOCV_BEGIN_MODULE(test_sampler)
+
+NANOCV_CASE(evaluate)
 {
         using namespace cortex;
 
@@ -25,7 +24,7 @@ BOOST_AUTO_TEST_CASE(test_sampler)
         const size_t n_rand_samples = n_samples / 4;
 
         charset_task_t task(charset::numeric, 16, 16, color_mode::luma, n_samples);
-        BOOST_CHECK_EQUAL(task.load(""), true);
+        NANOCV_CHECK_EQUAL(task.load(""), true);
 
         for (size_t f = 0; f < task.fsize(); ++ f)
         {
@@ -53,20 +52,22 @@ BOOST_AUTO_TEST_CASE(test_sampler)
                         sampler_t(task.samples()).push(test_fold).push(n_rand_samples).get();
 
                 // check training & testing split
-                BOOST_CHECK_EQUAL(train_batch_samples.size() + test_batch_samples.size(), n_samples);
+                NANOCV_CHECK_EQUAL(train_batch_samples.size() + test_batch_samples.size(), n_samples);
 
                 // check training samples
-                BOOST_CHECK(test::check_fold(train_batch_samples, train_fold));
-                BOOST_CHECK(test::check_fold(train_urand_samples, train_fold));
+                NANOCV_CHECK(test::check_fold(train_batch_samples, train_fold));
+                NANOCV_CHECK(test::check_fold(train_urand_samples, train_fold));
 
                 cortex::print(train_header + " batch", train_batch_samples);
                 cortex::print(train_header + " urand", train_urand_samples);
 
                 // check test samples
-                BOOST_CHECK(test::check_fold(test_batch_samples, test_fold));
-                BOOST_CHECK(test::check_fold(test_urand_samples, test_fold));
+                NANOCV_CHECK(test::check_fold(test_batch_samples, test_fold));
+                NANOCV_CHECK(test::check_fold(test_urand_samples, test_fold));
 
                 cortex::print(test_header + " batch", test_batch_samples);
                 cortex::print(test_header + " urand", test_urand_samples);
         }
 }
+
+NANOCV_END_MODULE()

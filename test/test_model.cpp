@@ -1,7 +1,4 @@
-#define BOOST_TEST_DYN_LINK
-#define BOOST_TEST_MODULE "test_model"
-
-#include <boost/test/unit_test.hpp>
+#include "unit_test.hpp"
 #include "math/abs.hpp"
 #include "cortex/cortex.h"
 #include "math/epsilon.hpp"
@@ -10,14 +7,16 @@
 #include "cortex/layers/make_layers.h"
 #include <cstdio>
 
-BOOST_AUTO_TEST_CASE(test_model)
+NANOCV_BEGIN_MODULE(test_model)
+
+NANOCV_CASE(evaluate)
 {
         cortex::init();
 
         using namespace cortex;
 
         const auto task = cortex::get_tasks().get("random", "dims=2,rows=16,cols=16,color=luma,size=128");
-        BOOST_CHECK_EQUAL(task->load(""), true);
+        NANOCV_CHECK_EQUAL(task->load(""), true);
 
         const string_t mlp0;
         const string_t mlp1 = mlp0 + make_affine_layer(10);
@@ -51,11 +50,11 @@ BOOST_AUTO_TEST_CASE(test_model)
         {
                 // create feed-forward network
                 const auto model = cortex::get_models().get("forward-network", cmd_network);
-                BOOST_CHECK_EQUAL(model->resize(*task, false), true);
-                BOOST_CHECK_EQUAL(model->irows(), task->irows());
-                BOOST_CHECK_EQUAL(model->icols(), task->icols());
-                BOOST_CHECK_EQUAL(model->osize(), task->osize());
-                BOOST_CHECK_EQUAL(model->color(), task->color());
+                NANOCV_CHECK_EQUAL(model->resize(*task, false), true);
+                NANOCV_CHECK_EQUAL(model->irows(), task->irows());
+                NANOCV_CHECK_EQUAL(model->icols(), task->icols());
+                NANOCV_CHECK_EQUAL(model->osize(), task->osize());
+                NANOCV_CHECK_EQUAL(model->color(), task->color());
 
                 // test random networks
                 for (size_t t = 0; t < 5; ++ t)
@@ -72,12 +71,12 @@ BOOST_AUTO_TEST_CASE(test_model)
                                                                       lvalue_before, lerror_before);
 
                         vector_t params(model->psize());
-                        BOOST_CHECK(model->save_params(params));
+                        NANOCV_CHECK(model->save_params(params));
 
                         //
-                        BOOST_CHECK_EQUAL(model->save(path), true);
+                        NANOCV_CHECK_EQUAL(model->save(path), true);
                         model->zero_params();
-                        BOOST_CHECK_EQUAL(model->load(path), true);
+                        NANOCV_CHECK_EQUAL(model->load(path), true);
                         //
 
                         // test error & parameters after loading
@@ -86,18 +85,20 @@ BOOST_AUTO_TEST_CASE(test_model)
                                                                      lvalue_after, lerror_after);
 
                         vector_t xparams(model->psize());
-                        BOOST_CHECK(model->save_params(xparams));
+                        NANOCV_CHECK(model->save_params(xparams));
 
                         // check
-                        BOOST_CHECK_EQUAL(lcount_before, lcount_after);
-                        BOOST_CHECK_LE(math::abs(lvalue_before - lvalue_after), math::epsilon0<scalar_t>());
-                        BOOST_CHECK_LE(math::abs(lerror_before - lerror_after), math::epsilon0<scalar_t>());
+                        NANOCV_CHECK_EQUAL(lcount_before, lcount_after);
+                        NANOCV_CHECK_CLOSE(lvalue_before, lvalue_after, math::epsilon0<scalar_t>());
+                        NANOCV_CHECK_CLOSE(lerror_before, lerror_after, math::epsilon0<scalar_t>());
 
-                        BOOST_CHECK_EQUAL(params.size(), xparams.size());
-                        BOOST_CHECK_LE((params - xparams).lpNorm<Eigen::Infinity>(), math::epsilon0<scalar_t>());
+                        NANOCV_REQUIRE_EQUAL(params.size(), xparams.size());
+                        NANOCV_CHECK_EIGEN_CLOSE(params, xparams, math::epsilon0<scalar_t>());
 
                         // cleanup
                         std::remove(path.c_str());
                 }
         }
 }
+
+NANOCV_END_MODULE()

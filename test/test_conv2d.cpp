@@ -1,7 +1,4 @@
-#define BOOST_TEST_DYN_LINK
-#define BOOST_TEST_MODULE "test_conv2d"
-
-#include <boost/test/unit_test.hpp>
+#include "unit_test.hpp"
 #include "math/abs.hpp"
 #include "math/epsilon.hpp"
 #include "tensor/matrix.hpp"
@@ -52,15 +49,17 @@ namespace test
 
                 const scalar_t epsilon = math::epsilon1<scalar_t>();
 
-                BOOST_CHECK_LE(math::abs(convcpu_eig - convcpu_eig), epsilon);
-                BOOST_CHECK_LE(math::abs(convcpu_cpp - convcpu_eig), epsilon);
-                BOOST_CHECK_LE(math::abs(convcpu_dot - convcpu_eig), epsilon);
-                BOOST_CHECK_LE(math::abs(convcpu_mad - convcpu_eig), epsilon);
-                BOOST_CHECK_LE(math::abs(convcpu_dyn - convcpu_eig), epsilon);
+                NANOCV_CHECK_CLOSE(convcpu_eig, convcpu_eig, epsilon);
+                NANOCV_CHECK_CLOSE(convcpu_cpp, convcpu_eig, epsilon);
+                NANOCV_CHECK_CLOSE(convcpu_dot, convcpu_eig, epsilon);
+                NANOCV_CHECK_CLOSE(convcpu_mad, convcpu_eig, epsilon);
+                NANOCV_CHECK_CLOSE(convcpu_dyn, convcpu_eig, epsilon);
         }
 }
 
-BOOST_AUTO_TEST_CASE(test_conv2d)
+NANOCV_BEGIN_MODULE(test_conv2d)
+
+NANOCV_CASE(evaluate)
 {
         const int min_isize = 3;
         const int max_isize = 19;
@@ -78,4 +77,6 @@ BOOST_AUTO_TEST_CASE(test_conv2d)
                 }
         }
 }
+
+NANOCV_END_MODULE()
 

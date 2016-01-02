@@ -1,11 +1,9 @@
-#define BOOST_TEST_DYN_LINK
-#define BOOST_TEST_MODULE "test_gauss"
-
-#include <boost/test/unit_test.hpp>
+#include "unit_test.hpp"
 #include "math/gauss.hpp"
-#include <iostream>
 
-BOOST_AUTO_TEST_CASE(test_gauss)
+NANOCV_BEGIN_MODULE(test_gauss)
+
+NANOCV_CASE(evaluate)
 {
         using std::size_t;
 
@@ -34,9 +32,10 @@ BOOST_AUTO_TEST_CASE(test_gauss)
 
                         // check kernel sum
                         const double sum = kernel.sum();
-                        BOOST_CHECK_LE(sum, 1.0 + 1e-8);
-                        BOOST_CHECK_GE(sum, 1.0 - 1e-8);
+                        NANOCV_CHECK_LESS(sum, 1.0 + 1e-8);
+                        NANOCV_CHECK_GREATER(sum, 1.0 - 1e-8);
                 }
         }
 }
 
+NANOCV_END_MODULE()

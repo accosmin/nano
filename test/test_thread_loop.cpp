@@ -1,8 +1,4 @@
-#define BOOST_TEST_DYN_LINK
-#define BOOST_TEST_MODULE "test_thread_loop"
-
-#include <boost/test/unit_test.hpp>
-#include "math/abs.hpp"
+#include "unit_test.hpp"
 #include "thread/thread.h"
 #include "thread/loopi.hpp"
 #include "math/epsilon.hpp"
@@ -62,7 +58,9 @@ namespace
         }
 }
 
-BOOST_AUTO_TEST_CASE(test_thread_loop)
+NANOCV_BEGIN_MODULE(test_thread_loop)
+
+NANOCV_CASE(evaluate)
 {
         const size_t min_size = 7;
         const size_t max_size = 3 * 3 * 7;
@@ -84,12 +82,14 @@ BOOST_AUTO_TEST_CASE(test_thread_loop)
 
                 // multi-threaded
                 const scalar_t mt = test_mt<scalar_t>(size, op);
-                BOOST_CHECK_LE(math::abs(st - mt), math::epsilon1<scalar_t>());
+                NANOCV_CHECK_CLOSE(st, mt, math::epsilon1<scalar_t>());
 
                 for (size_t nthreads = 1; nthreads <= thread::n_threads(); nthreads += 2)
                 {
                         const scalar_t mtx = test_mt<scalar_t>(size, nthreads, op);
-                        BOOST_CHECK_LE(math::abs(st - mtx), math::epsilon1<scalar_t>());
+                        NANOCV_CHECK_CLOSE(st, mtx, math::epsilon1<scalar_t>());
                 }
         }
 }
+
+NANOCV_END_MODULE()

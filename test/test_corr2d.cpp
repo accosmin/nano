@@ -1,7 +1,4 @@
-#define BOOST_TEST_DYN_LINK
-#define BOOST_TEST_MODULE "test_corr2d"
-
-#include <boost/test/unit_test.hpp>
+#include "unit_test.hpp"
 #include "math/abs.hpp"
 #include "math/epsilon.hpp"
 #include "tensor/matrix.hpp"
@@ -54,16 +51,18 @@ namespace test
 
                 const scalar_t epsilon = math::epsilon1<scalar_t>();
 
-                BOOST_CHECK_LE(math::abs(corrcpu_egb - corrcpu_egb), epsilon);
-                BOOST_CHECK_LE(math::abs(corrcpu_egr - corrcpu_egb), epsilon);
-                BOOST_CHECK_LE(math::abs(corrcpu_cpp - corrcpu_egb), epsilon);
-                BOOST_CHECK_LE(math::abs(corrcpu_mdk - corrcpu_egb), epsilon);
-                BOOST_CHECK_LE(math::abs(corrcpu_mdo - corrcpu_egb), epsilon);
-                BOOST_CHECK_LE(math::abs(corrcpu_dyn - corrcpu_egb), epsilon);
+                NANOCV_CHECK_CLOSE(corrcpu_egb, corrcpu_egb, epsilon);
+                NANOCV_CHECK_CLOSE(corrcpu_egr, corrcpu_egb, epsilon);
+                NANOCV_CHECK_CLOSE(corrcpu_cpp, corrcpu_egb, epsilon);
+                NANOCV_CHECK_CLOSE(corrcpu_mdk, corrcpu_egb, epsilon);
+                NANOCV_CHECK_CLOSE(corrcpu_mdo, corrcpu_egb, epsilon);
+                NANOCV_CHECK_CLOSE(corrcpu_dyn, corrcpu_egb, epsilon);
         }
 }
 
-BOOST_AUTO_TEST_CASE(test_corr2d)
+NANOCV_BEGIN_MODULE(test_corr2d)
+
+NANOCV_CASE(evaluate)
 {
         const int min_isize = 3;
         const int max_isize = 19;
@@ -81,4 +80,6 @@ BOOST_AUTO_TEST_CASE(test_corr2d)
                 }
         }
 }
+
+NANOCV_END_MODULE()
 

@@ -1,12 +1,11 @@
-#define BOOST_TEST_DYN_LINK
-#define BOOST_TEST_MODULE "test_color_rgba"
-
-#include <boost/test/unit_test.hpp>
+#include "unit_test.hpp"
 #include "math/random.hpp"
 #include "math/epsilon.hpp"
 #include "cortex/vision/color.h"
 
-BOOST_AUTO_TEST_CASE(test_color_rgba_transform)
+NANOCV_BEGIN_MODULE(test_color)
+
+NANOCV_CASE(rgba_transform)
 {
         using namespace cortex;
 
@@ -26,25 +25,25 @@ BOOST_AUTO_TEST_CASE(test_color_rgba_transform)
 
                 const rgba_t rgba = color::make_rgba(r, g, b, a);
 
-                BOOST_CHECK_EQUAL(color::make_luma(rgba), color::make_luma(r, g, b));
+                NANOCV_CHECK_EQUAL(color::make_luma(rgba), color::make_luma(r, g, b));
 
-                BOOST_CHECK_EQUAL(r, color::get_red(rgba));
-                BOOST_CHECK_EQUAL(g, color::get_green(rgba));
-                BOOST_CHECK_EQUAL(b, color::get_blue(rgba));
-                BOOST_CHECK_EQUAL(a, color::get_alpha(rgba));
+                NANOCV_CHECK_EQUAL(r, color::get_red(rgba));
+                NANOCV_CHECK_EQUAL(g, color::get_green(rgba));
+                NANOCV_CHECK_EQUAL(b, color::get_blue(rgba));
+                NANOCV_CHECK_EQUAL(a, color::get_alpha(rgba));
 
-                BOOST_CHECK_EQUAL(rgba, color::set_red(rgba, r));
-                BOOST_CHECK_EQUAL(rgba, color::set_green(rgba, g));
-                BOOST_CHECK_EQUAL(rgba, color::set_blue(rgba, b));
-                BOOST_CHECK_EQUAL(rgba, color::set_alpha(rgba, a));
+                NANOCV_CHECK_EQUAL(rgba, color::set_red(rgba, r));
+                NANOCV_CHECK_EQUAL(rgba, color::set_green(rgba, g));
+                NANOCV_CHECK_EQUAL(rgba, color::set_blue(rgba, b));
+                NANOCV_CHECK_EQUAL(rgba, color::set_alpha(rgba, a));
 
-                BOOST_CHECK_EQUAL(r, color::make_luma(color::make_rgba(r, r, r)));
-                BOOST_CHECK_EQUAL(g, color::make_luma(color::make_rgba(g, g, g)));
-                BOOST_CHECK_EQUAL(b, color::make_luma(color::make_rgba(b, b, b)));
+                NANOCV_CHECK_EQUAL(r, color::make_luma(color::make_rgba(r, r, r)));
+                NANOCV_CHECK_EQUAL(g, color::make_luma(color::make_rgba(g, g, g)));
+                NANOCV_CHECK_EQUAL(b, color::make_luma(color::make_rgba(b, b, b)));
         }
 }
 
-BOOST_AUTO_TEST_CASE(test_color_tensor)
+NANOCV_CASE(color_tensor)
 {
         using namespace cortex;
 
@@ -68,15 +67,15 @@ BOOST_AUTO_TEST_CASE(test_color_tensor)
                         data.matrix(3).setConstant(((test * rng()) % 256) / 255.0);
 
                         const auto rgba = color::from_rgba_tensor(data);
-                        BOOST_CHECK_EQUAL(rgba.rows(), data.rows());
-                        BOOST_CHECK_EQUAL(rgba.cols(), data.cols());
+                        NANOCV_CHECK_EQUAL(rgba.rows(), data.rows());
+                        NANOCV_CHECK_EQUAL(rgba.cols(), data.cols());
 
                         const auto idata = color::to_rgba_tensor(rgba);
 
-                        BOOST_REQUIRE_EQUAL(data.dims(), idata.dims());
-                        BOOST_REQUIRE_EQUAL(data.rows(), idata.rows());
-                        BOOST_REQUIRE_EQUAL(data.cols(), idata.cols());
-                        BOOST_CHECK_LE((data.vector() - idata.vector()).lpNorm<Eigen::Infinity>(), eps);
+                        NANOCV_REQUIRE_EQUAL(data.dims(), idata.dims());
+                        NANOCV_REQUIRE_EQUAL(data.rows(), idata.rows());
+                        NANOCV_REQUIRE_EQUAL(data.cols(), idata.cols());
+                        NANOCV_CHECK_EIGEN_CLOSE(data.vector(), idata.vector(), eps);
                 }
 
                 // load from RGB tensor
@@ -87,15 +86,15 @@ BOOST_AUTO_TEST_CASE(test_color_tensor)
                         data.matrix(2).setConstant(((test * rng()) % 256) / 255.0);
 
                         const auto rgba = color::from_rgb_tensor(data);
-                        BOOST_CHECK_EQUAL(rgba.rows(), data.rows());
-                        BOOST_CHECK_EQUAL(rgba.cols(), data.cols());
+                        NANOCV_CHECK_EQUAL(rgba.rows(), data.rows());
+                        NANOCV_CHECK_EQUAL(rgba.cols(), data.cols());
 
                         const auto idata = color::to_rgb_tensor(rgba);
 
-                        BOOST_REQUIRE_EQUAL(data.dims(), idata.dims());
-                        BOOST_REQUIRE_EQUAL(data.rows(), idata.rows());
-                        BOOST_REQUIRE_EQUAL(data.cols(), idata.cols());
-                        BOOST_CHECK_LE((data.vector() - idata.vector()).lpNorm<Eigen::Infinity>(), eps);
+                        NANOCV_REQUIRE_EQUAL(data.dims(), idata.dims());
+                        NANOCV_REQUIRE_EQUAL(data.rows(), idata.rows());
+                        NANOCV_REQUIRE_EQUAL(data.cols(), idata.cols());
+                        NANOCV_CHECK_EIGEN_CLOSE(data.vector(), idata.vector(), eps);
                 }
 
                 // load from LUMA tensor
@@ -104,15 +103,17 @@ BOOST_AUTO_TEST_CASE(test_color_tensor)
                         data.matrix(0).setConstant(((test * rng()) % 256) / 255.0);
 
                         const auto luma = color::from_luma_tensor(data);
-                        BOOST_CHECK_EQUAL(luma.rows(), data.rows());
-                        BOOST_CHECK_EQUAL(luma.cols(), data.cols());
+                        NANOCV_CHECK_EQUAL(luma.rows(), data.rows());
+                        NANOCV_CHECK_EQUAL(luma.cols(), data.cols());
 
                         const auto idata = color::to_luma_tensor(luma);
 
-                        BOOST_REQUIRE_EQUAL(data.dims(), idata.dims());
-                        BOOST_REQUIRE_EQUAL(data.rows(), idata.rows());
-                        BOOST_REQUIRE_EQUAL(data.cols(), idata.cols());
-                        BOOST_CHECK_LE((data.vector() - idata.vector()).lpNorm<Eigen::Infinity>(), eps);
+                        NANOCV_REQUIRE_EQUAL(data.dims(), idata.dims());
+                        NANOCV_REQUIRE_EQUAL(data.rows(), idata.rows());
+                        NANOCV_REQUIRE_EQUAL(data.cols(), idata.cols());
+                        NANOCV_CHECK_EIGEN_CLOSE(data.vector(), idata.vector(), eps);
                 }
         }
 }
+
+NANOCV_END_MODULE()

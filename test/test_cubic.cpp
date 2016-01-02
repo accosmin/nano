@@ -1,13 +1,12 @@
-#define BOOST_TEST_DYN_LINK
-#define BOOST_TEST_MODULE "test_cubic"
-
-#include <boost/test/unit_test.hpp>
+#include "unit_test.hpp"
 #include "math/abs.hpp"
 #include "math/cubic.hpp"
 #include "math/random.hpp"
 #include "math/epsilon.hpp"
 
-BOOST_AUTO_TEST_CASE(test_cubic)
+NANOCV_BEGIN_MODULE(test_cubic)
+
+NANOCV_CASE(evaluate)
 {
         const size_t tests = 127;
 
@@ -21,7 +20,7 @@ BOOST_AUTO_TEST_CASE(test_cubic)
                 const double c = rnd();
                 const double d = rnd();
                 const math::cubic_t<double> q(a, b, c, d);
-                BOOST_CHECK(q);
+                NANOCV_CHECK(q);
 
                 const double x0 = rnd();
                 const double f0 = q.value(x0);
@@ -38,16 +37,16 @@ BOOST_AUTO_TEST_CASE(test_cubic)
                         continue;
                 }
 
-                BOOST_CHECK_LE(math::abs(f0 - iq.value(x0)), math::epsilon1<double>());
-                BOOST_CHECK_LE(math::abs(g0 - iq.gradient(x0)), math::epsilon1<double>());
+                NANOCV_CHECK_CLOSE(f0, iq.value(x0), math::epsilon1<double>());
+                NANOCV_CHECK_CLOSE(g0, iq.gradient(x0), math::epsilon1<double>());
 
-                BOOST_CHECK_LE(math::abs(f1 - iq.value(x1)), math::epsilon1<double>());
-                BOOST_CHECK_LE(math::abs(g1 - iq.gradient(x1)), math::epsilon1<double>());
+                NANOCV_CHECK_CLOSE(f1, iq.value(x1), math::epsilon1<double>());
+                NANOCV_CHECK_CLOSE(g1, iq.gradient(x1), math::epsilon1<double>());
 
-//                BOOST_CHECK_LE(math::abs(q.a() - iq.a()), math::epsilon1<double>());
-//                BOOST_CHECK_LE(math::abs(q.b() - iq.b()), math::epsilon1<double>());
-//                BOOST_CHECK_LE(math::abs(q.c() - iq.c()), math::epsilon1<double>());
-//                BOOST_CHECK_LE(math::abs(q.d() - iq.d()), math::epsilon1<double>());
+//                NANOCV_CHECK_CLOSE(q.a(), iq.a(), math::epsilon1<double>());
+//                NANOCV_CHECK_CLOSE(q.b(), iq.b(), math::epsilon1<double>());
+//                NANOCV_CHECK_CLOSE(q.c(), iq.c(), math::epsilon1<double>());
+//                NANOCV_CHECK_CLOSE(q.d(), iq.d(), math::epsilon1<double>());
 
                 // check extremum
                 double extremum1, extremum2;
@@ -58,17 +57,16 @@ BOOST_AUTO_TEST_CASE(test_cubic)
                         continue;
                 }
 
-                BOOST_CHECK_LE(math::abs(iq.gradient(extremum1)), math::epsilon1<double>());
-                BOOST_CHECK_LE(math::abs(iq.gradient(extremum2)), math::epsilon1<double>());
+                NANOCV_CHECK_LESS(math::abs(iq.gradient(extremum1)), math::epsilon1<double>());
+                NANOCV_CHECK_LESS(math::abs(iq.gradient(extremum2)), math::epsilon1<double>());
 
                 const size_t etests = 143;
                 for (size_t e = 0; e < etests; ++ e)
                 {
-                        BOOST_CHECK_GE(math::abs(iq.gradient(rnd())),
-                                       math::abs(iq.gradient(extremum1)));
-
-                        BOOST_CHECK_GE(math::abs(iq.gradient(rnd())),
-                                       math::abs(iq.gradient(extremum2)));
+                        NANOCV_CHECK_GREATER(math::abs(iq.gradient(rnd())), math::abs(iq.gradient(extremum1)));
+                        NANOCV_CHECK_GREATER(math::abs(iq.gradient(rnd())), math::abs(iq.gradient(extremum2)));
                 }
         }
 }
+
+NANOCV_END_MODULE()

@@ -1,24 +1,23 @@
-#define BOOST_TEST_DYN_LINK
-#define BOOST_TEST_MODULE "test_thread_pool"
-
-#include <boost/test/unit_test.hpp>
+#include "unit_test.hpp"
 #include "thread/pool.h"
 #include "thread/thread.h"
 #include "math/random.hpp"
 
-BOOST_AUTO_TEST_CASE(test_thread_pool_empty)
+NANOCV_BEGIN_MODULE(test_thread_pool)
+
+NANOCV_CASE(empty)
 {
         thread::pool_t pool;
 
         const size_t n_threads = thread::n_threads();
         const size_t n_active_workers = n_threads;
 
-        BOOST_CHECK_EQUAL(pool.n_workers(), n_threads);
-        BOOST_CHECK_EQUAL(pool.n_active_workers(), n_active_workers);
-        BOOST_CHECK_EQUAL(pool.n_tasks(), 0);
+        NANOCV_CHECK_EQUAL(pool.n_workers(), n_threads);
+        NANOCV_CHECK_EQUAL(pool.n_active_workers(), n_active_workers);
+        NANOCV_CHECK_EQUAL(pool.n_tasks(), 0);
 }
 
-BOOST_AUTO_TEST_CASE(test_thread_pool_enqueue)
+NANOCV_CASE(enqueue)
 {
         thread::pool_t pool;
 
@@ -29,9 +28,9 @@ BOOST_AUTO_TEST_CASE(test_thread_pool_enqueue)
         {
                 pool.activate(n_active_workers);
 
-                BOOST_CHECK_EQUAL(pool.n_workers(), n_threads);
-                BOOST_CHECK_EQUAL(pool.n_active_workers(), n_active_workers);
-                BOOST_CHECK_EQUAL(pool.n_tasks(), 0);
+                NANOCV_CHECK_EQUAL(pool.n_workers(), n_threads);
+                NANOCV_CHECK_EQUAL(pool.n_active_workers(), n_active_workers);
+                NANOCV_CHECK_EQUAL(pool.n_tasks(), 0);
 
                 math::random_t<size_t> rnd(1, n_max_jobs);
                 const size_t n_tasks = rnd();
@@ -57,14 +56,16 @@ BOOST_AUTO_TEST_CASE(test_thread_pool_enqueue)
 
                 pool.wait();
 
-                BOOST_CHECK_EQUAL(pool.n_workers(), n_threads);
-                BOOST_CHECK_EQUAL(pool.n_active_workers(), n_active_workers);
-                BOOST_CHECK_EQUAL(pool.n_tasks(), 0);
+                NANOCV_CHECK_EQUAL(pool.n_workers(), n_threads);
+                NANOCV_CHECK_EQUAL(pool.n_active_workers(), n_active_workers);
+                NANOCV_CHECK_EQUAL(pool.n_tasks(), 0);
 
-                BOOST_CHECK_EQUAL(tasks_done.size(), n_tasks);
+                NANOCV_CHECK_EQUAL(tasks_done.size(), n_tasks);
                 for (size_t j = 0; j < n_tasks; ++ j)
                 {
-                        BOOST_CHECK(std::find(tasks_done.begin(), tasks_done.end(), j + 1) != tasks_done.end());
+                        NANOCV_CHECK(std::find(tasks_done.begin(), tasks_done.end(), j + 1) != tasks_done.end());
                 }
         }
 }
+
+NANOCV_END_MODULE()

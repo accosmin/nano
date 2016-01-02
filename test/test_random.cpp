@@ -1,10 +1,9 @@
-#define BOOST_TEST_DYN_LINK
-#define BOOST_TEST_MODULE "test_random"
-
-#include <boost/test/unit_test.hpp>
+#include "unit_test.hpp"
 #include "math/random.hpp"
 
-BOOST_AUTO_TEST_CASE(test_random)
+NANOCV_BEGIN_MODULE(test_random)
+
+NANOCV_CASE(rng)
 {
         const int32_t tests = 231;
         const int32_t test_size = 65;
@@ -19,14 +18,14 @@ BOOST_AUTO_TEST_CASE(test_random)
                 for (int32_t tt = 0; tt < test_size; ++ tt)
                 {
                         const int32_t v = rgen();
-                        BOOST_CHECK_GE(v, min);
-                        BOOST_CHECK_LE(v, max);
+                        NANOCV_CHECK_GREATER_EQUAL(v, min);
+                        NANOCV_CHECK_LESS_EQUAL(v, max);
                 }
         }
 }
 
 
-BOOST_AUTO_TEST_CASE(test_random_index)
+NANOCV_CASE(index)
 {
         const size_t tests = 54;
         const size_t test_size = 87;
@@ -45,8 +44,10 @@ BOOST_AUTO_TEST_CASE(test_random_index)
                 {
                         const auto index = rindex();
 
-                        BOOST_CHECK_GE(index, 0);
-                        BOOST_CHECK_LT(index, size);
+                        NANOCV_CHECK_GREATER_EQUAL(index, 0);
+                        NANOCV_CHECK_LESS(index, size);
                 }
         }
 }
+
+NANOCV_END_MODULE()

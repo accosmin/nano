@@ -31,4 +31,5 @@
 #endif
 
 // string a given variable
-#define NANOCV_STRINGIFY(x) #x
+#define NANOCV_STRINGIFY_(x) #x
+#define NANOCV_STRINGIFY(x) NANOCV_STRINGIFY_(x)

@@ -1,8 +1,4 @@
-#define BOOST_TEST_DYN_LINK
-#define BOOST_TEST_MODULE "test_stats"
-
-#include <boost/test/unit_test.hpp>
-#include "math/abs.hpp"
+#include "unit_test.hpp"
 #include "math/stats.hpp"
 #include "math/random.hpp"
 
@@ -23,29 +19,34 @@ namespace test
                 }
 
                 // check count
-                BOOST_CHECK_EQUAL(stats.count(), count);
+                NANOCV_CHECK_EQUAL(stats.count(), count);
 
                 // check range
-                BOOST_CHECK_GE(stats.min(), avg - var);
-                BOOST_CHECK_LE(stats.max(), avg + var);
+                NANOCV_CHECK_GREATER_EQUAL(stats.min(), avg - var);
+                NANOCV_CHECK_LESS_EQUAL(stats.max(), avg + var);
 
                 // check average
-                BOOST_CHECK_GE(stats.avg(), avg - var);
-                BOOST_CHECK_LE(stats.avg(), avg + var);
+                NANOCV_CHECK_GREATER_EQUAL(stats.avg(), avg - var);
+                NANOCV_CHECK_LESS_EQUAL(stats.avg(), avg + var);
 
                 // check variance
-                BOOST_CHECK_GE(stats.var(), 0.0);
-                BOOST_CHECK_LE(std::sqrt(stats.var()), var);
+                NANOCV_CHECK_GREATER_EQUAL(stats.var(), 0.0);
+                NANOCV_CHECK_LESS_EQUAL(std::sqrt(stats.var()), var);
 
                 // check sum
-                BOOST_CHECK_LE(math::abs(stats.sum() - std::accumulate(values.begin(), values.end(), 0.0)), 1e-8);
+                NANOCV_CHECK_CLOSE(stats.sum(), std::accumulate(values.begin(), values.end(), 0.0), 1e-8);
         }
 }
 
-BOOST_AUTO_TEST_CASE(test_stats)
+NANOCV_BEGIN_MODULE(test_stats)
+
+NANOCV_CASE(evaluate)
 {
         test::check_stats(0.03, 0.005, 32);
         test::check_stats(1.03, 13.005, 37);
         test::check_stats(-0.54, 0.105, 13);
         test::check_stats(-7.03, 10.005, 11);
 }
+
+NANOCV_END_MODULE()
+

@@ -1,8 +1,4 @@
-#define BOOST_TEST_DYN_LINK
-#define BOOST_TEST_MODULE "test_layers"
-
-#include <boost/test/unit_test.hpp>
-
+#include "unit_test.hpp"
 #include "cortex/class.h"
 #include "math/close.hpp"
 #include "cortex/cortex.h"
@@ -39,10 +35,10 @@ namespace
         {
                 const auto model = cortex::get_models().get("forward-network", description + ";" + cmd_layer_output);
                 model->resize(cmd_irows, cmd_icols, cmd_outputs, cmd_color, false);
-                BOOST_CHECK_EQUAL(model->irows(), cmd_irows);
-                BOOST_CHECK_EQUAL(model->icols(), cmd_icols);
-                BOOST_CHECK_EQUAL(model->osize(), cmd_outputs);
-                BOOST_CHECK_EQUAL(static_cast<int>(model->color()), static_cast<int>(cmd_color));
+                NANOCV_CHECK_EQUAL(model->irows(), cmd_irows);
+                NANOCV_CHECK_EQUAL(model->icols(), cmd_icols);
+                NANOCV_CHECK_EQUAL(model->osize(), cmd_outputs);
+                NANOCV_CHECK_EQUAL(static_cast<int>(model->color()), static_cast<int>(cmd_color));
                 return model;
         }
 
@@ -123,17 +119,19 @@ namespace
 
                         {
                                 const opt_problem_t problem(fn_params_size, fn_params_fval, fn_params_grad);
-                                BOOST_CHECK_LE(problem.grad_accuracy(params), epsilon);
+                                NANOCV_CHECK_LESS(problem.grad_accuracy(params), epsilon);
                         }
                         {
                                 const opt_problem_t problem(fn_inputs_size, fn_inputs_fval, fn_inputs_grad);
-                                BOOST_CHECK_LE(problem.grad_accuracy(inputs.vector()), epsilon);
+                                NANOCV_CHECK_LESS(problem.grad_accuracy(inputs.vector()), epsilon);
                         }
                 }
         }
 }
 
-BOOST_AUTO_TEST_CASE(test_activation)
+NANOCV_BEGIN_MODULE(test_layers)
+
+NANOCV_CASE(activation)
 {
         cortex::init();
 
@@ -143,14 +141,14 @@ BOOST_AUTO_TEST_CASE(test_activation)
         }
 }
 
-BOOST_AUTO_TEST_CASE(test_affine)
+NANOCV_CASE(affine)
 {
         cortex::init();
 
         test_model(make_affine_layer(7));
 }
 
-BOOST_AUTO_TEST_CASE(test_conv)
+NANOCV_CASE(conv)
 {
         cortex::init();
 
@@ -160,7 +158,7 @@ BOOST_AUTO_TEST_CASE(test_conv)
         test_model(make_conv_pool_layer(3, 3, 3, "", "pool-avg"));
 }
 
-BOOST_AUTO_TEST_CASE(test_multi_layer_models)
+NANOCV_CASE(multi_layer_models)
 {
         cortex::init();
 
@@ -182,3 +180,5 @@ BOOST_AUTO_TEST_CASE(test_multi_layer_models)
                 test_model(description);
         }
 }
+
+NANOCV_END_MODULE()

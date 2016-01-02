@@ -21,7 +21,7 @@ Most notably the **math** module implements the following:
 
 #### Cortex module
 
-The **cortex** module provides basic image I/O and processing and a machine learning interface. `Dependencies: Boost, DevIL.`
+The **cortex** module provides basic image I/O and processing and a machine learning interface. `Dependencies: DevIL.`
 
 This module is built around several key concepts mapped to C++ object interfaces. Each object type is registered with an **ID** and thus it can be selected from command line arguments. Also new objects can be easily registered and then they are automatically visible across the library and its associated programs.
 
@@ -36,7 +36,7 @@ A **trainer** optimizes the parameters of a given model to produce the correct o
 
 #### Compilation
 
-Use a C++14 compiler and install Boost, Eigen3, LibArchive and DevIL. 
+Use a C++14 compiler and install Eigen3, LibArchive and DevIL. 
 
 NanoCV is tested on ArchLinux ([gcc 4.9.3+ | gcc 5.2+ | clang 3.5+], CMake 3.1+, Ninja or Make) and OSX (clang, homebrew, CMake 3.1+, Ninja or Make). The code is written to be cross-platform, so it may work (with minor fixes) on other platforms as well (e.g. Windows/MSVC).
 

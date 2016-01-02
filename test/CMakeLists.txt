@@ -7,7 +7,6 @@ function(build_test_app test_app libs)
 
         add_executable(${test_name} ${test_app})
         target_link_libraries(${test_name}
-                ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY}
                 ${libs})
 
         add_test(${test_name} ${test_name})

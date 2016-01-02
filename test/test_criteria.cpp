@@ -1,7 +1,4 @@
-#define BOOST_TEST_DYN_LINK
-#define BOOST_TEST_MODULE "test_criteria"
-
-#include <boost/test/unit_test.hpp>
+#include "unit_test.hpp"
 #include "math/abs.hpp"
 #include "cortex/cortex.h"
 #include "math/epsilon.hpp"
@@ -10,14 +7,16 @@
 #include "cortex/accumulator.h"
 #include "cortex/layers/make_layers.h"
 
-BOOST_AUTO_TEST_CASE(test_criteria)
+NANOCV_BEGIN_MODULE(test_criteria)
+
+NANOCV_CASE(evaluate)
 {
         using namespace cortex;
 
         cortex::init();
 
         const auto task = cortex::get_tasks().get("random", "dims=2,rows=5,cols=5,color=luma,size=16");
-        BOOST_CHECK_EQUAL(task->load(""), true);
+        NANOCV_CHECK_EQUAL(task->load(""), true);
 
         const samples_t samples = task->samples();
         const string_t cmd_model = make_affine_layer(3) + make_output_layer(task->osize());
@@ -26,7 +25,7 @@ BOOST_AUTO_TEST_CASE(test_criteria)
 
         // create model
         const auto model = cortex::get_models().get("forward-network", cmd_model);
-        BOOST_CHECK_EQUAL(model->resize(*task, true), true);
+        NANOCV_CHECK_EQUAL(model->resize(*task, true), true);
 
         // vary criteria
         const strings_t ids = cortex::get_criteria().ids();
@@ -70,7 +69,9 @@ BOOST_AUTO_TEST_CASE(test_criteria)
                 model->random_params();
                 model->save_params(x);
 
-                BOOST_CHECK_GE(problem(x), 0.0);
-                BOOST_CHECK_LE(problem.grad_accuracy(x), math::epsilon1<scalar_t>());
+                NANOCV_CHECK_GREATER(problem(x), 0.0);
+                NANOCV_CHECK_LESS(problem.grad_accuracy(x), math::epsilon1<scalar_t>());
         }
 }
+
+NANOCV_END_MODULE()

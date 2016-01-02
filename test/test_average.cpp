@@ -1,11 +1,7 @@
-#define BOOST_TEST_DYN_LINK
-#define BOOST_TEST_MODULE "test_average"
-
-#include <boost/test/unit_test.hpp>
+#include "unit_test.hpp"
 #include "math/abs.hpp"
 #include "math/average.hpp"
 #include "math/epsilon.hpp"
-#include <eigen3/Eigen/Core>
 
 namespace test
 {
@@ -56,8 +52,8 @@ namespace test
                 const auto base1 = average1<tscalar>(range);
                 const auto base2 = average2<tscalar>(range);
 
-                BOOST_CHECK_LE(math::abs(avg1.value() - base1), epsilon);
-                BOOST_CHECK_LE(math::abs(avg2.value() - base2), epsilon);
+                NANOCV_CHECK_CLOSE(avg1.value(), base1, epsilon);
+                NANOCV_CHECK_CLOSE(avg2.value(), base2, epsilon);
         }
 
         template
@@ -79,12 +75,14 @@ namespace test
                 const auto base1 = tvector::Constant(dims, average1<tscalar>(range));
                 const auto base2 = tvector::Constant(dims, average2<tscalar>(range));
 
-                BOOST_CHECK_LE((avg1.value() - base1).template lpNorm<Eigen::Infinity>(), epsilon);
-                BOOST_CHECK_LE((avg2.value() - base2).template lpNorm<Eigen::Infinity>(), epsilon);
+                NANOCV_CHECK_EIGEN_CLOSE(avg1.value(), base1, epsilon);
+                NANOCV_CHECK_EIGEN_CLOSE(avg2.value(), base2, epsilon);
         }
 }
 
-BOOST_AUTO_TEST_CASE(test_average_scalar)
+NANOCV_BEGIN_MODULE(test_average)
+
+NANOCV_CASE(scalar)
 {
         test::check_average<double>(1);
         test::check_average<double>(5);
@@ -96,7 +94,7 @@ BOOST_AUTO_TEST_CASE(test_average_scalar)
         test::check_average<double>(123434);
 }
 
-BOOST_AUTO_TEST_CASE(test_average_vector)
+NANOCV_CASE(vector)
 {
         test::check_average<Eigen::VectorXd>(13, 1);
         test::check_average<Eigen::VectorXd>(17, 5);
@@ -107,4 +105,6 @@ BOOST_AUTO_TEST_CASE(test_average_vector)
         test::check_average<Eigen::VectorXd>(19, 14332);
         test::check_average<Eigen::VectorXd>(18, 123434);
 }
+
+NANOCV_END_MODULE()
 

@@ -1,7 +1,4 @@
-#define BOOST_TEST_DYN_LINK
-#define BOOST_TEST_MODULE "test_loss"
-
-#include <boost/test/unit_test.hpp>
+#include "unit_test.hpp"
 #include "cortex/class.h"
 #include "cortex/cortex.h"
 #include "math/random.hpp"
@@ -53,13 +50,15 @@ namespace test
                         vector_t x(n_dims);
                         rgen(x.data(), x.data() + n_dims);
 
-                        BOOST_CHECK_GE(problem(x), 0.0);
-                        BOOST_CHECK_LE(problem.grad_accuracy(x), math::epsilon1<scalar_t>());
+                        NANOCV_CHECK_GREATER(problem(x), 0.0);
+                        NANOCV_CHECK_LESS(problem.grad_accuracy(x), math::epsilon1<scalar_t>());
                 }
         }
 }
 
-BOOST_AUTO_TEST_CASE(test_loss)
+NANOCV_BEGIN_MODULE(test_loss)
+
+NANOCV_CASE(evaluate)
 {
         cortex::init();
 
@@ -80,3 +79,5 @@ BOOST_AUTO_TEST_CASE(test_loss)
                 }
         }
 }
+
+NANOCV_END_MODULE()

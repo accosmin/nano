@@ -1,7 +1,4 @@
-#define BOOST_TEST_DYN_LINK
-#define BOOST_TEST_MODULE "test_text"
-
-#include <boost/test/unit_test.hpp>
+#include "unit_test.hpp"
 #include "text/align.hpp"
 #include "text/algorithm.h"
 #include "text/from_params.hpp"
@@ -9,181 +6,185 @@
 #include <list>
 #include <set>
 
-BOOST_AUTO_TEST_CASE(test_text_contains)
+NANOCV_BEGIN_MODULE(test_text)
+
+NANOCV_CASE(contains)
 {
-        BOOST_CHECK_EQUAL(text::contains("", 't'), false);
-        BOOST_CHECK_EQUAL(text::contains("text", 't'), true);
-        BOOST_CHECK_EQUAL(text::contains("naNoCv", 't'), false);
-        BOOST_CHECK_EQUAL(text::contains("extension", 't'), true);
+        NANOCV_CHECK_EQUAL(text::contains("", 't'), false);
+        NANOCV_CHECK_EQUAL(text::contains("text", 't'), true);
+        NANOCV_CHECK_EQUAL(text::contains("naNoCv", 't'), false);
+        NANOCV_CHECK_EQUAL(text::contains("extension", 't'), true);
 }
 
-BOOST_AUTO_TEST_CASE(test_text_resize)
+NANOCV_CASE(resize)
 {
-        BOOST_CHECK_EQUAL(text::align("text", 10, text::alignment::left, '='),   "text======");
-        BOOST_CHECK_EQUAL(text::align("text", 10, text::alignment::right, '='),  "======text");
-        BOOST_CHECK_EQUAL(text::align("text", 10, text::alignment::center, '='), "===text===");
+        NANOCV_CHECK_EQUAL(text::align("text", 10, text::alignment::left, '='),   "text======");
+        NANOCV_CHECK_EQUAL(text::align("text", 10, text::alignment::right, '='),  "======text");
+        NANOCV_CHECK_EQUAL(text::align("text", 10, text::alignment::center, '='), "===text===");
 }
 
-BOOST_AUTO_TEST_CASE(test_text_split)
+NANOCV_CASE(split)
 {
         const auto tokens = text::split("= -token1 token2 something ", " =-");
 
-        BOOST_REQUIRE(tokens.size() == 3);
-        BOOST_CHECK_EQUAL(tokens[0], "token1");
-        BOOST_CHECK_EQUAL(tokens[1], "token2");
-        BOOST_CHECK_EQUAL(tokens[2], "something");
+        NANOCV_REQUIRE(tokens.size() == 3);
+        NANOCV_CHECK_EQUAL(tokens[0], "token1");
+        NANOCV_CHECK_EQUAL(tokens[1], "token2");
+        NANOCV_CHECK_EQUAL(tokens[2], "something");
 }
 
-BOOST_AUTO_TEST_CASE(test_text_lower)
+NANOCV_CASE(lower)
 {
-        BOOST_CHECK_EQUAL(text::lower("Token"), "token");
-        BOOST_CHECK_EQUAL(text::lower("ToKEN"), "token");
-        BOOST_CHECK_EQUAL(text::lower("token"), "token");
-        BOOST_CHECK_EQUAL(text::lower("TOKEN"), "token");
-        BOOST_CHECK_EQUAL(text::lower(""), "");
+        NANOCV_CHECK_EQUAL(text::lower("Token"), "token");
+        NANOCV_CHECK_EQUAL(text::lower("ToKEN"), "token");
+        NANOCV_CHECK_EQUAL(text::lower("token"), "token");
+        NANOCV_CHECK_EQUAL(text::lower("TOKEN"), "token");
+        NANOCV_CHECK_EQUAL(text::lower(""), "");
 }
 
-BOOST_AUTO_TEST_CASE(test_text_upper)
+NANOCV_CASE(upper)
 {
-        BOOST_CHECK_EQUAL(text::upper("Token"), "TOKEN");
-        BOOST_CHECK_EQUAL(text::upper("ToKEN"), "TOKEN");
-        BOOST_CHECK_EQUAL(text::upper("token"), "TOKEN");
-        BOOST_CHECK_EQUAL(text::upper("TOKEN"), "TOKEN");
-        BOOST_CHECK_EQUAL(text::upper(""), "");
+        NANOCV_CHECK_EQUAL(text::upper("Token"), "TOKEN");
+        NANOCV_CHECK_EQUAL(text::upper("ToKEN"), "TOKEN");
+        NANOCV_CHECK_EQUAL(text::upper("token"), "TOKEN");
+        NANOCV_CHECK_EQUAL(text::upper("TOKEN"), "TOKEN");
+        NANOCV_CHECK_EQUAL(text::upper(""), "");
 }
 
-BOOST_AUTO_TEST_CASE(test_text_ends_with)
+NANOCV_CASE(ends_with)
 {
-        BOOST_CHECK(text::ends_with("ToKeN", ""));
-        BOOST_CHECK(text::ends_with("ToKeN", "N"));
-        BOOST_CHECK(text::ends_with("ToKeN", "eN"));
-        BOOST_CHECK(text::ends_with("ToKeN", "KeN"));
-        BOOST_CHECK(text::ends_with("ToKeN", "oKeN"));
-        BOOST_CHECK(text::ends_with("ToKeN", "ToKeN"));
+        NANOCV_CHECK(text::ends_with("ToKeN", ""));
+        NANOCV_CHECK(text::ends_with("ToKeN", "N"));
+        NANOCV_CHECK(text::ends_with("ToKeN", "eN"));
+        NANOCV_CHECK(text::ends_with("ToKeN", "KeN"));
+        NANOCV_CHECK(text::ends_with("ToKeN", "oKeN"));
+        NANOCV_CHECK(text::ends_with("ToKeN", "ToKeN"));
 
-        BOOST_CHECK(!text::ends_with("ToKeN", "n"));
-        BOOST_CHECK(!text::ends_with("ToKeN", "en"));
-        BOOST_CHECK(!text::ends_with("ToKeN", "ken"));
-        BOOST_CHECK(!text::ends_with("ToKeN", "oken"));
-        BOOST_CHECK(!text::ends_with("ToKeN", "Token"));
+        NANOCV_CHECK(!text::ends_with("ToKeN", "n"));
+        NANOCV_CHECK(!text::ends_with("ToKeN", "en"));
+        NANOCV_CHECK(!text::ends_with("ToKeN", "ken"));
+        NANOCV_CHECK(!text::ends_with("ToKeN", "oken"));
+        NANOCV_CHECK(!text::ends_with("ToKeN", "Token"));
 }
 
-BOOST_AUTO_TEST_CASE(test_text_iends_with)
+NANOCV_CASE(iends_with)
 {
-        BOOST_CHECK(text::iends_with("ToKeN", ""));
-        BOOST_CHECK(text::iends_with("ToKeN", "N"));
-        BOOST_CHECK(text::iends_with("ToKeN", "eN"));
-        BOOST_CHECK(text::iends_with("ToKeN", "KeN"));
-        BOOST_CHECK(text::iends_with("ToKeN", "oKeN"));
-        BOOST_CHECK(text::iends_with("ToKeN", "ToKeN"));
+        NANOCV_CHECK(text::iends_with("ToKeN", ""));
+        NANOCV_CHECK(text::iends_with("ToKeN", "N"));
+        NANOCV_CHECK(text::iends_with("ToKeN", "eN"));
+        NANOCV_CHECK(text::iends_with("ToKeN", "KeN"));
+        NANOCV_CHECK(text::iends_with("ToKeN", "oKeN"));
+        NANOCV_CHECK(text::iends_with("ToKeN", "ToKeN"));
 
-        BOOST_CHECK(text::iends_with("ToKeN", "n"));
-        BOOST_CHECK(text::iends_with("ToKeN", "en"));
-        BOOST_CHECK(text::iends_with("ToKeN", "ken"));
-        BOOST_CHECK(text::iends_with("ToKeN", "oken"));
-        BOOST_CHECK(text::iends_with("ToKeN", "Token"));
+        NANOCV_CHECK(text::iends_with("ToKeN", "n"));
+        NANOCV_CHECK(text::iends_with("ToKeN", "en"));
+        NANOCV_CHECK(text::iends_with("ToKeN", "ken"));
+        NANOCV_CHECK(text::iends_with("ToKeN", "oken"));
+        NANOCV_CHECK(text::iends_with("ToKeN", "Token"));
 }
 
-BOOST_AUTO_TEST_CASE(test_text_starts_with)
+NANOCV_CASE(starts_with)
 {
-        BOOST_CHECK(text::starts_with("ToKeN", ""));
-        BOOST_CHECK(text::starts_with("ToKeN", "T"));
-        BOOST_CHECK(text::starts_with("ToKeN", "To"));
-        BOOST_CHECK(text::starts_with("ToKeN", "ToK"));
-        BOOST_CHECK(text::starts_with("ToKeN", "ToKe"));
-        BOOST_CHECK(text::starts_with("ToKeN", "ToKeN"));
+        NANOCV_CHECK(text::starts_with("ToKeN", ""));
+        NANOCV_CHECK(text::starts_with("ToKeN", "T"));
+        NANOCV_CHECK(text::starts_with("ToKeN", "To"));
+        NANOCV_CHECK(text::starts_with("ToKeN", "ToK"));
+        NANOCV_CHECK(text::starts_with("ToKeN", "ToKe"));
+        NANOCV_CHECK(text::starts_with("ToKeN", "ToKeN"));
 
-        BOOST_CHECK(!text::starts_with("ToKeN", "t"));
-        BOOST_CHECK(!text::starts_with("ToKeN", "to"));
-        BOOST_CHECK(!text::starts_with("ToKeN", "tok"));
-        BOOST_CHECK(!text::starts_with("ToKeN", "toke"));
-        BOOST_CHECK(!text::starts_with("ToKeN", "Token"));
+        NANOCV_CHECK(!text::starts_with("ToKeN", "t"));
+        NANOCV_CHECK(!text::starts_with("ToKeN", "to"));
+        NANOCV_CHECK(!text::starts_with("ToKeN", "tok"));
+        NANOCV_CHECK(!text::starts_with("ToKeN", "toke"));
+        NANOCV_CHECK(!text::starts_with("ToKeN", "Token"));
 }
 
-BOOST_AUTO_TEST_CASE(test_text_istarts_with)
+NANOCV_CASE(istarts_with)
 {
-        BOOST_CHECK(text::istarts_with("ToKeN", ""));
-        BOOST_CHECK(text::istarts_with("ToKeN", "t"));
-        BOOST_CHECK(text::istarts_with("ToKeN", "to"));
-        BOOST_CHECK(text::istarts_with("ToKeN", "Tok"));
-        BOOST_CHECK(text::istarts_with("ToKeN", "toKe"));
-        BOOST_CHECK(text::istarts_with("ToKeN", "ToKeN"));
+        NANOCV_CHECK(text::istarts_with("ToKeN", ""));
+        NANOCV_CHECK(text::istarts_with("ToKeN", "t"));
+        NANOCV_CHECK(text::istarts_with("ToKeN", "to"));
+        NANOCV_CHECK(text::istarts_with("ToKeN", "Tok"));
+        NANOCV_CHECK(text::istarts_with("ToKeN", "toKe"));
+        NANOCV_CHECK(text::istarts_with("ToKeN", "ToKeN"));
 
-        BOOST_CHECK(text::istarts_with("ToKeN", "t"));
-        BOOST_CHECK(text::istarts_with("ToKeN", "to"));
-        BOOST_CHECK(text::istarts_with("ToKeN", "tok"));
-        BOOST_CHECK(text::istarts_with("ToKeN", "toke"));
-        BOOST_CHECK(text::istarts_with("ToKeN", "Token"));
+        NANOCV_CHECK(text::istarts_with("ToKeN", "t"));
+        NANOCV_CHECK(text::istarts_with("ToKeN", "to"));
+        NANOCV_CHECK(text::istarts_with("ToKeN", "tok"));
+        NANOCV_CHECK(text::istarts_with("ToKeN", "toke"));
+        NANOCV_CHECK(text::istarts_with("ToKeN", "Token"));
 }
 
-BOOST_AUTO_TEST_CASE(test_text_equals)
+NANOCV_CASE(equals)
 {
-        BOOST_CHECK(!text::equals("ToKeN", ""));
-        BOOST_CHECK(!text::equals("ToKeN", "N"));
-        BOOST_CHECK(!text::equals("ToKeN", "eN"));
-        BOOST_CHECK(!text::equals("ToKeN", "KeN"));
-        BOOST_CHECK(!text::equals("ToKeN", "oKeN"));
-        BOOST_CHECK(text::equals("ToKeN", "ToKeN"));
+        NANOCV_CHECK(!text::equals("ToKeN", ""));
+        NANOCV_CHECK(!text::equals("ToKeN", "N"));
+        NANOCV_CHECK(!text::equals("ToKeN", "eN"));
+        NANOCV_CHECK(!text::equals("ToKeN", "KeN"));
+        NANOCV_CHECK(!text::equals("ToKeN", "oKeN"));
+        NANOCV_CHECK(text::equals("ToKeN", "ToKeN"));
 
-        BOOST_CHECK(!text::equals("ToKeN", "n"));
-        BOOST_CHECK(!text::equals("ToKeN", "en"));
-        BOOST_CHECK(!text::equals("ToKeN", "ken"));
-        BOOST_CHECK(!text::equals("ToKeN", "oken"));
-        BOOST_CHECK(!text::equals("ToKeN", "Token"));
+        NANOCV_CHECK(!text::equals("ToKeN", "n"));
+        NANOCV_CHECK(!text::equals("ToKeN", "en"));
+        NANOCV_CHECK(!text::equals("ToKeN", "ken"));
+        NANOCV_CHECK(!text::equals("ToKeN", "oken"));
+        NANOCV_CHECK(!text::equals("ToKeN", "Token"));
 }
 
-BOOST_AUTO_TEST_CASE(test_text_iequals)
+NANOCV_CASE(iequals)
 {
-        BOOST_CHECK(!text::iequals("ToKeN", ""));
-        BOOST_CHECK(!text::iequals("ToKeN", "N"));
-        BOOST_CHECK(!text::iequals("ToKeN", "eN"));
-        BOOST_CHECK(!text::iequals("ToKeN", "KeN"));
-        BOOST_CHECK(!text::iequals("ToKeN", "oKeN"));
-        BOOST_CHECK(text::iequals("ToKeN", "ToKeN"));
+        NANOCV_CHECK(!text::iequals("ToKeN", ""));
+        NANOCV_CHECK(!text::iequals("ToKeN", "N"));
+        NANOCV_CHECK(!text::iequals("ToKeN", "eN"));
+        NANOCV_CHECK(!text::iequals("ToKeN", "KeN"));
+        NANOCV_CHECK(!text::iequals("ToKeN", "oKeN"));
+        NANOCV_CHECK(text::iequals("ToKeN", "ToKeN"));
 
-        BOOST_CHECK(!text::iequals("ToKeN", "n"));
-        BOOST_CHECK(!text::iequals("ToKeN", "en"));
-        BOOST_CHECK(!text::iequals("ToKeN", "ken"));
-        BOOST_CHECK(!text::iequals("ToKeN", "oken"));
-        BOOST_CHECK(text::iequals("ToKeN", "Token"));
+        NANOCV_CHECK(!text::iequals("ToKeN", "n"));
+        NANOCV_CHECK(!text::iequals("ToKeN", "en"));
+        NANOCV_CHECK(!text::iequals("ToKeN", "ken"));
+        NANOCV_CHECK(!text::iequals("ToKeN", "oken"));
+        NANOCV_CHECK(text::iequals("ToKeN", "Token"));
 }
 
-BOOST_AUTO_TEST_CASE(test_text_to_string)
+NANOCV_CASE(to_string)
 {
-        BOOST_CHECK_EQUAL(text::to_string(1.7), "1.700000");
-        BOOST_CHECK_EQUAL(text::to_string(-4.3f), "-4.300000");
-        BOOST_CHECK_EQUAL(text::to_string(1), "1");
-        BOOST_CHECK_EQUAL(text::to_string(124545), "124545");
+        NANOCV_CHECK_EQUAL(text::to_string(1.7), "1.700000");
+        NANOCV_CHECK_EQUAL(text::to_string(-4.3f), "-4.300000");
+        NANOCV_CHECK_EQUAL(text::to_string(1), "1");
+        NANOCV_CHECK_EQUAL(text::to_string(124545), "124545");
 }
 
-BOOST_AUTO_TEST_CASE(test_text_from_string)
+NANOCV_CASE(from_string)
 {
-        BOOST_CHECK_EQUAL(text::from_string<double>("1.7"), 1.7);
-        BOOST_CHECK_EQUAL(text::from_string<float>("-4.3"), -4.3f);
-        BOOST_CHECK_EQUAL(text::from_string<short>("1"), 1);
-        BOOST_CHECK_EQUAL(text::from_string<long int>("124545"), 124545);
+        NANOCV_CHECK_EQUAL(text::from_string<double>("1.7"), 1.7);
+        NANOCV_CHECK_EQUAL(text::from_string<float>("-4.3"), -4.3f);
+        NANOCV_CHECK_EQUAL(text::from_string<short>("1"), 1);
+        NANOCV_CHECK_EQUAL(text::from_string<long int>("124545"), 124545);
 }
 
-BOOST_AUTO_TEST_CASE(test_text_replace)
+NANOCV_CASE(replace)
 {
-        BOOST_CHECK_EQUAL(text::replace("token-", '-', '_'), "token_");
-        BOOST_CHECK_EQUAL(text::replace("t-ken-", '-', '_'), "t_ken_");
-        BOOST_CHECK_EQUAL(text::replace("-token", '-', '_'), "_token");
-        BOOST_CHECK_EQUAL(text::replace("token_", '-', '_'), "token_");
+        NANOCV_CHECK_EQUAL(text::replace("token-", '-', '_'), "token_");
+        NANOCV_CHECK_EQUAL(text::replace("t-ken-", '-', '_'), "t_ken_");
+        NANOCV_CHECK_EQUAL(text::replace("-token", '-', '_'), "_token");
+        NANOCV_CHECK_EQUAL(text::replace("token_", '-', '_'), "token_");
 }
 
-BOOST_AUTO_TEST_CASE(test_text_concatenate)
+NANOCV_CASE(concatenate)
 {
-        BOOST_CHECK_EQUAL(text::concatenate(std::vector<int>({ 1, 2, 3 }), "-"),        "1-2-3");
-        BOOST_CHECK_EQUAL(text::concatenate(std::list<int>({ 1, 2, 3 }), "="),          "1=2=3");
-        BOOST_CHECK_EQUAL(text::concatenate(std::set<int>({ 1, 2, 3 }), ","),           "1,2,3");
+        NANOCV_CHECK_EQUAL(text::concatenate(std::vector<int>({ 1, 2, 3 }), "-"),        "1-2-3");
+        NANOCV_CHECK_EQUAL(text::concatenate(std::list<int>({ 1, 2, 3 }), "="),          "1=2=3");
+        NANOCV_CHECK_EQUAL(text::concatenate(std::set<int>({ 1, 2, 3 }), ","),           "1,2,3");
 }
 
-BOOST_AUTO_TEST_CASE(test_from_params)
+NANOCV_CASE(from_params)
 {
         const auto config = "param1=1.7,param2=3";
 
-        BOOST_CHECK_EQUAL(text::from_params(config, "param1", 2.0), 1.7);
-        BOOST_CHECK_EQUAL(text::from_params(config, "param2", 4343), 3);
-        BOOST_CHECK_EQUAL(text::from_params(config, "paramx", 2.0), 2.0);
+        NANOCV_CHECK_EQUAL(text::from_params(config, "param1", 2.0), 1.7);
+        NANOCV_CHECK_EQUAL(text::from_params(config, "param2", 4343), 3);
+        NANOCV_CHECK_EQUAL(text::from_params(config, "paramx", 2.0), 2.0);
 }
+
+NANOCV_END_MODULE()
