@@ -1,7 +1,7 @@
+#include "text/cmdline.h"
 #include "text/table.h"
 #include "cortex/cortex.h"
 #include <iostream>
-#include <boost/program_options.hpp>
 
 namespace
 {
@@ -33,50 +33,38 @@ int main(int argc, char* argv[])
         cortex::init();
 
         // parse the command line
-        boost::program_options::options_description po_desc("", 160);
-        po_desc.add_options()("help,h",         "display the registered objects");
-        po_desc.add_options()("loss",           "loss functions");
-        po_desc.add_options()("task",           "tasks");
-        po_desc.add_options()("layer",          "layer types to built models");
-        po_desc.add_options()("model",          "model types");
-        po_desc.add_options()("trainer",        "training methods");
-        po_desc.add_options()("criterion",      "training criteria");
+        text::cmdline_t cmdline("display the registered objects");
+        cmdline.add("", "loss",         "loss functions");
+        cmdline.add("", "task",         "tasks");
+        cmdline.add("", "layer",        "layer types to built models");
+        cmdline.add("", "model",        "model types");
+        cmdline.add("", "trainer",      "training methods");
+        cmdline.add("", "criterion",    "training criteria");
 
-        boost::program_options::variables_map po_vm;
-        boost::program_options::store(
-                boost::program_options::command_line_parser(argc, argv).options(po_desc).run(),
-                po_vm);
-        boost::program_options::notify(po_vm);
+        cmdline.process(argc, argv);
 
         // check arguments and options
-        if (	po_vm.empty() ||
-                po_vm.count("help"))
-        {
-                std::cout << po_desc;
-                return EXIT_FAILURE;
-        }
-
-        if (po_vm.count("loss"))
+        if (cmdline.has("loss"))
         {
                 print("loss", cortex::get_losses());
         }
-        if (po_vm.count("task"))
+        if (cmdline.has("task"))
         {
                 print("task", cortex::get_tasks());
         }
-        if (po_vm.count("layer"))
+        if (cmdline.has("layer"))
         {
                 print("layer", cortex::get_layers());
         }
-        if (po_vm.count("model"))
+        if (cmdline.has("model"))
         {
                 print("model", cortex::get_models());
         }
-        if (po_vm.count("trainer"))
+        if (cmdline.has("trainer"))
         {
                 print("trainer", cortex::get_trainers());
         }
-        if (po_vm.count("criterion"))
+        if (cmdline.has("criterion"))
         {
                 print("criterion", cortex::get_criteria());
         }

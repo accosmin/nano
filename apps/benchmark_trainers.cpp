@@ -1,4 +1,5 @@
 #include "text/table.h"
+#include "text/cmdline.h"
 #include "cortex/batch.h"
 #include "cortex/cortex.h"
 #include "thread/thread.h"
@@ -10,7 +11,6 @@
 #include "cortex/util/measure.hpp"
 #include "cortex/tasks/task_charset.h"
 #include "cortex/layers/make_layers.h"
-#include <boost/program_options.hpp>
 
 using namespace cortex;
 
@@ -164,45 +164,29 @@ int main(int argc, char* argv[])
         using namespace cortex;
 
         // parse the command line
-        boost::program_options::options_description po_desc("", 160);
-        po_desc.add_options()("help,h", "benchmark trainers");
-        po_desc.add_options()("l2n-reg", "also evaluate the l2-norm-based regularizer");
-        po_desc.add_options()("var-reg", "also evaluate the variance-based regularizer");
-        po_desc.add_options()("mlp0", "MLP with 0 hidden layers");
-        po_desc.add_options()("mlp1", "MLP with 1 hidden layers");
-        po_desc.add_options()("mlp2", "MLP with 2 hidden layers");
-        po_desc.add_options()("mlp3", "MLP with 3 hidden layers");
-        po_desc.add_options()("convnet", "fully-connected convolution network");
-        po_desc.add_options()("trials",
-                boost::program_options::value<size_t>()->default_value(10),
-                "number of models to train & evaluate");
-        po_desc.add_options()("iterations",
-                boost::program_options::value<size_t>()->default_value(64),
-                "number of iterations/epochs");
+        text::cmdline_t cmdline("benchmark trainers");
+        cmdline.add("", "l2n-reg",      "also evaluate the l2-norm-based regularizer");
+        cmdline.add("", "var-reg",      "also evaluate the variance-based regularizer");
+        cmdline.add("", "mlp0",         "MLP with 0 hidden layers");
+        cmdline.add("", "mlp1",         "MLP with 1 hidden layers");
+        cmdline.add("", "mlp2",         "MLP with 2 hidden layers");
+        cmdline.add("", "mlp3",         "MLP with 3 hidden layers");
+        cmdline.add("", "convnet",      "fully-connected convolution network");
+        cmdline.add("", "trials",       "number of models to train & evaluate", "10");
+        cmdline.add("", "iterations",   "number of iterations/epochs", "64");
 
-        boost::program_options::variables_map po_vm;
-        boost::program_options::store(
-                boost::program_options::command_line_parser(argc, argv).options(po_desc).run(),
-                po_vm);
-        boost::program_options::notify(po_vm);
+        cmdline.process(argc, argv);
 
         // check arguments and options
-        if (	po_vm.empty() ||
-                po_vm.count("help"))
-        {
-                std::cout << po_desc;
-                return EXIT_FAILURE;
-        }
-
-        const bool use_reg_l2n = po_vm.count("l2n-reg");
-        const bool use_reg_var = po_vm.count("var-reg");
-        const bool use_mlp0 = po_vm.count("mlp0");
-        const bool use_mlp1 = po_vm.count("mlp1");
-        const bool use_mlp2 = po_vm.count("mlp2");
-        const bool use_mlp3 = po_vm.count("mlp3");
-        const bool use_convnet = po_vm.count("convnet");
-        const auto trials = po_vm["trials"].as<size_t>();
-        const auto iterations = po_vm["iterations"].as<size_t>();
+        const bool use_reg_l2n = cmdline.has("l2n-reg");
+        const bool use_reg_var = cmdline.has("var-reg");
+        const bool use_mlp0 = cmdline.has("mlp0");
+        const bool use_mlp1 = cmdline.has("mlp1");
+        const bool use_mlp2 = cmdline.has("mlp2");
+        const bool use_mlp3 = cmdline.has("mlp3");
+        const bool use_convnet = cmdline.has("convnet");
+        const auto trials = cmdline.get<size_t>("trials");
+        const auto iterations = cmdline.get<size_t>("iterations");
 
         if (    !use_mlp0 &&
                 !use_mlp1 &&
@@ -210,8 +194,7 @@ int main(int argc, char* argv[])
                 !use_mlp3 &&
                 !use_convnet)
         {
-                std::cout << po_desc;
-                return EXIT_FAILURE;
+                cmdline.usage();
         }
 
         // create task

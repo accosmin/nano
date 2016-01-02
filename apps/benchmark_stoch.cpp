@@ -1,5 +1,6 @@
 #include "math/abs.hpp"
 #include "text/table.h"
+#include "text/cmdline.h"
 #include "math/clamp.hpp"
 #include "math/random.hpp"
 #include "math/numeric.hpp"
@@ -11,7 +12,6 @@
 #include "benchmark_optimizers.h"
 #include <map>
 #include <tuple>
-#include <boost/program_options.hpp>
 
 namespace
 {
@@ -87,47 +87,26 @@ int main(int argc, char* argv[])
         using namespace cortex;
 
         // parse the command line
-        boost::program_options::options_description po_desc("", 160);
-        po_desc.add_options()("help,h", "benchmark stochastic optimizers");
-        po_desc.add_options()("min-dims",
-                boost::program_options::value<tensor_size_t>()->default_value(1),
-                "minimum number of dimensions for each test function (if feasible)");
-        po_desc.add_options()("max-dims",
-                boost::program_options::value<tensor_size_t>()->default_value(8),
-                "maximum number of dimensions for each test function (if feasible)");
-        po_desc.add_options()("trials",
-                boost::program_options::value<size_t>()->default_value(1024),
-                "number of random trials for each test function");
-        po_desc.add_options()("epochs",
-                boost::program_options::value<size_t>()->default_value(128),
-                "number of epochs");
-        po_desc.add_options()("epoch-size",
-                boost::program_options::value<size_t>()->default_value(32),
-                "number of iterations per epoch");
+        text::cmdline_t cmdline("benchmark stochastic optimizers");
+        cmdline.add("", "min-dims",     "minimum number of dimensions for each test function (if feasible)", "1");
+        cmdline.add("", "max-dims",     "maximum number of dimensions for each test function (if feasible)", "8");
+        cmdline.add("" , "trials",      "number of random trials for each test function", "1024");
+        cmdline.add("", "epochs",       "optimization: number of epochs", "128");
+        cmdline.add("", "epoch-size",   "optimization: number of iterations per epoch", "32");
 
-        boost::program_options::variables_map po_vm;
-        boost::program_options::store(
-                boost::program_options::command_line_parser(argc, argv).options(po_desc).run(),
-                po_vm);
-        boost::program_options::notify(po_vm);
+        cmdline.process(argc, argv);
 
         // check arguments and options
-        if (	po_vm.empty() ||
-                po_vm.count("help"))
-        {
-                std::cout << po_desc;
-                return EXIT_FAILURE;
-        }
-
-        const auto min_dims = po_vm["min-dims"].as<tensor_size_t>();
-        const auto max_dims = po_vm["max-dims"].as<tensor_size_t>();
-        const auto trials = po_vm["trials"].as<size_t>();
-        const auto epochs = po_vm["epochs"].as<size_t>();
-        const auto epoch_size = po_vm["epoch-size"].as<size_t>();
+        const auto min_dims = cmdline.get<tensor_size_t>("min-dims");
+        const auto max_dims = cmdline.get<tensor_size_t>("max-dims");
+        const auto trials = cmdline.get<size_t>("trials");
+        const auto epochs = cmdline.get<size_t>("epochs");
+        const auto epoch_size = cmdline.get<size_t>("epoch-size");
 
         std::map<std::string, benchmark::optimizer_stat_t> gstats;
 
-        math::foreach_test_function<scalar_t, math::test_type::all>(min_dims, max_dims, [&] (const math::function_t<scalar_t>& function)
+        math::foreach_test_function<scalar_t, math::test_type::all>(min_dims, max_dims,
+                [&] (const math::function_t<scalar_t>& function)
         {
                 check_function(function, trials, epochs, epoch_size, gstats);
         });

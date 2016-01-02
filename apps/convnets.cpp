@@ -1,7 +1,7 @@
-#include <vector>
+#include <set>
 #include <iostream>
 #include "math/clamp.hpp"
-#include <boost/program_options.hpp>
+#include "text/cmdline.h"
 
 namespace
 {
@@ -80,40 +80,20 @@ namespace
 int main(int argc, char* argv[])
 {
         // parse the command line
-        boost::program_options::options_description po_desc("", 160);
-        po_desc.add_options()("help,h",
-                "compute all possible convolution networks having squared kernels for a given input size");
-        po_desc.add_options()("irows",
-                boost::program_options::value<int>(),
-                "number of input rows [16, 256]");
-        po_desc.add_options()("icols",
-                boost::program_options::value<int>(),
-                "number of input columns [16, 256]");
-        po_desc.add_options()("max-krows",
-                boost::program_options::value<int>(),
-                "maximum convolution size [3, 15]");
-        po_desc.add_options()("pooling",
-                "use pooling after each layer");
+        text::cmdline_t cmdline("compute all convolution networks with squared kernels for a given input size");
+        cmdline.add("", "irows",        "number of input rows [16, 256]");
+        cmdline.add("", "icols",        "number of input columns [16, 256]");
+        cmdline.add("", "max-krows",    "maximum convolution size [3, 15]");
+        cmdline.add("", "pooling",      "use pooling after each layer");
 
-        boost::program_options::variables_map po_vm;
-        boost::program_options::store(
-                boost::program_options::command_line_parser(argc, argv).options(po_desc).run(),
-                po_vm);
-        boost::program_options::notify(po_vm);
+        cmdline.process(argc, argv);
 
         // check arguments and options
-        if (	po_vm.empty() ||
-                po_vm.count("help"))
-        {
-                std::cout << po_desc;
-                return EXIT_FAILURE;
-        }
-
-        const int irows = math::clamp(po_vm["irows"].as<int>(), 16, 256);
-        const int icols = math::clamp(po_vm["icols"].as<int>(), 16, 256);
-        const int max_krows = math::clamp(po_vm["max-krows"].as<int>(), 3, 15);
-        const int min_krows = 3;
-        const bool use_pooling = po_vm.count("pooling");
+        const auto irows = math::clamp(cmdline.get<int>("irows"), 16, 256);
+        const auto icols = math::clamp(cmdline.get<int>("icols"), 16, 256);
+        const auto max_krows = math::clamp(cmdline.get<int>("max-krows"), 3, 15);
+        const auto min_krows = 3;
+        const auto use_pooling = cmdline.has("pooling");
 
         const convnets_t nets = make_convnets(irows, icols, min_krows, max_krows, use_pooling, {});
 

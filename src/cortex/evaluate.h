@@ -12,7 +12,7 @@ namespace cortex
         ///
         /// \brief evaluate a model (compute the average loss value & error)
         ///
-        NANOCV_PUBLIC size_t evaluate(const task_t& task, const fold_t& fold, const loss_t& loss, const criterion_t& criterion,
-                                      const model_t& model, scalar_t& lvalue, scalar_t& lerror);
+        NANOCV_PUBLIC size_t evaluate(const task_t&, const fold_t&, const loss_t&, const criterion_t&, const model_t&,
+                                      scalar_t& lvalue, scalar_t& lerror);
 }
 

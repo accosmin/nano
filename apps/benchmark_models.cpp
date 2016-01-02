@@ -1,4 +1,5 @@
 #include "text/table.h"
+#include "text/cmdline.h"
 #include "cortex/class.h"
 #include "cortex/cortex.h"
 #include "math/random.hpp"
@@ -10,7 +11,6 @@
 #include "cortex/layers/make_layers.h"
 #include "cortex/tasks/task_charset.h"
 #include "cortex/util/measure_and_log.hpp"
-#include <boost/program_options.hpp>
 
 int main(int argc, char *argv[])
 {
@@ -19,39 +19,17 @@ int main(int argc, char *argv[])
         using namespace cortex;
 
         // parse the command line
-        boost::program_options::options_description po_desc("", 160);
-        po_desc.add_options()("help,h", "benchmark models");
-        po_desc.add_options()("samples,s",
-                boost::program_options::value<size_t>()->default_value(10000),
-                "number of samples to use [100, 100000]");
-        po_desc.add_options()("forward",
-                "evaluate the \'forward\' pass (output)");
-        po_desc.add_options()("backward",
-                "evaluate the \'backward' pass (gradient)");
+        text::cmdline_t cmdline("benchmark models");
+        cmdline.add("s", "samples",     "number of samples to use [100, 100000]", "10000");
+        cmdline.add("", "forward",      "evaluate the \'forward\' pass (output)");
+        cmdline.add("", "backward",     "evaluate the \'backward' pass (gradient)");
 
-        boost::program_options::variables_map po_vm;
-        boost::program_options::store(
-                boost::program_options::command_line_parser(argc, argv).options(po_desc).run(),
-                po_vm);
-        boost::program_options::notify(po_vm);
+        cmdline.process(argc, argv);
 
         // check arguments and options
-        if (	po_vm.empty() ||
-                po_vm.count("help"))
-        {
-                std::cout << po_desc;
-                return EXIT_FAILURE;
-        }
-
-        const size_t cmd_samples = math::clamp(po_vm["samples"].as<size_t>(), 100, 100 * 1000);
-        const bool cmd_forward = po_vm.count("forward");
-        const bool cmd_backward = po_vm.count("backward");
-
-        if (!cmd_forward && !cmd_backward)
-        {
-                std::cout << po_desc;
-                return EXIT_FAILURE;
-        }
+        const auto cmd_samples = math::clamp(cmdline.get<size_t>("samples"), 100, 100 * 1000);
+        const auto cmd_forward = cmdline.has("forward");
+        const auto cmd_backward = cmdline.has("backward");
 
         const tensor_size_t cmd_rows = 28;
         const tensor_size_t cmd_cols = 28;

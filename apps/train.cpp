@@ -1,123 +1,54 @@
+#include "text/cmdline.h"
 #include "text/align.hpp"
 #include "cortex/cortex.h"
 #include "cortex/evaluate.h"
 #include "text/concatenate.hpp"
 #include "cortex/util/measure_and_log.hpp"
-#include <boost/program_options.hpp>
 #include <boost/filesystem.hpp>
-
-using namespace cortex;
-
-namespace
-{
-        string_t describe(const strings_t& ids)
-        {
-                return text::concatenate(ids, ", ");
-        }
-
-        string_t describe(const strings_t& ids, const strings_t& descriptions)
-        {
-                string_t po_desc;
-                for (size_t i = 0; i < ids.size(); ++ i)
-                {
-                        po_desc += "  " + text::align(ids[i], 16) +
-                                   text::align(descriptions[i], 32) + (i + 1 == ids.size() ? "" : "\n");
-                }
-
-                return po_desc;
-        }
-}
 
 int main(int argc, char *argv[])
 {
+        using namespace cortex;
+
         cortex::init();
 
         // prepare object string-based selection
         const strings_t task_ids = cortex::get_tasks().ids();
         const strings_t loss_ids = cortex::get_losses().ids();
-
         const strings_t model_ids = cortex::get_models().ids();
-        const strings_t model_descriptions = cortex::get_models().descriptions();
-
         const strings_t trainer_ids = cortex::get_trainers().ids();
-        const strings_t trainer_descriptions = cortex::get_trainers().descriptions();
-
         const strings_t criterion_ids = cortex::get_criteria().ids();
-        const strings_t criterion_descriptions = cortex::get_criteria().descriptions();
 
         // parse the command line
-        boost::program_options::options_description po_desc("", 160);
-        po_desc.add_options()("help,h", "help message");
-        po_desc.add_options()("task",
-                boost::program_options::value<string_t>(),
-                describe(task_ids).c_str());
-        po_desc.add_options()("task-dir",
-                boost::program_options::value<string_t>(),
-                "directory to load task data from");
-        po_desc.add_options()("task-params",
-                boost::program_options::value<string_t>()->default_value(""),
-                "task parameters (if any)");
-        po_desc.add_options()("loss",
-                boost::program_options::value<string_t>(),
-                describe(loss_ids).c_str());
-        po_desc.add_options()("model",
-                boost::program_options::value<string_t>(),
-                describe(model_ids, model_descriptions).c_str());
-        po_desc.add_options()("model-params",
-                boost::program_options::value<string_t>()->default_value(""),
-                "model parameters (if any) as specified in the chosen model's description");
-        po_desc.add_options()("trainer",
-                boost::program_options::value<string_t>(),
-                describe(trainer_ids, trainer_descriptions).c_str());
-        po_desc.add_options()("trainer-params",
-                boost::program_options::value<string_t>()->default_value(""),
-                "trainer parameters (if any) as specified in the chosen trainer's description");
-        po_desc.add_options()("criterion",
-                boost::program_options::value<string_t>(),
-                describe(criterion_ids, criterion_descriptions).c_str());
-        po_desc.add_options()("threads",
-                boost::program_options::value<size_t>()->default_value(0),
-                "number of threads to use (0 - all available)");
-        po_desc.add_options()("trials",
-                boost::program_options::value<size_t>(),
-                "number of models to train & evaluate");
-        po_desc.add_options()("output",
-                boost::program_options::value<string_t>()->default_value(""),
-                "filepath to save the best model to");
+        text::cmdline_t cmdline("train a model");
+        cmdline.add("", "task",                 text::concatenate(task_ids));
+        cmdline.add("", "task-dir",             "directory to load task data from");
+        cmdline.add("", "task-params",          "task parameters (if any)");
+        cmdline.add("", "loss",                 text::concatenate(loss_ids));
+        cmdline.add("", "model",                text::concatenate(model_ids));
+        cmdline.add("", "model-params",         "model parameters (if any)");
+        cmdline.add("", "trainer",              text::concatenate(trainer_ids));
+        cmdline.add("", "trainer-params",       "trainer parameters (if any)");
+        cmdline.add("", "criterion",            text::concatenate(criterion_ids));
+        cmdline.add("", "threads",              "number of threads to use (0 - all available)", "0");
+        cmdline.add("", "trials",               "number of models to train & evaluate");
+        cmdline.add("", "output",               "filepath to save the best model to");
 	
-        boost::program_options::variables_map po_vm;
-        boost::program_options::store(
-                boost::program_options::command_line_parser(argc, argv).options(po_desc).run(),
-                po_vm);
-        boost::program_options::notify(po_vm);
+        cmdline.process(argc, argv);
         		
         // check arguments and options
-        if (	po_vm.empty() ||
-                !po_vm.count("task") ||
-                !po_vm.count("task-dir") ||
-                !po_vm.count("loss") ||
-                !po_vm.count("model") ||
-                !po_vm.count("trainer") ||
-                !po_vm.count("criterion") ||
-                !po_vm.count("trials") ||
-                po_vm.count("help"))
-        {
-                std::cout << po_desc;
-                return EXIT_FAILURE;
-        }
-
-        const string_t cmd_task = po_vm["task"].as<string_t>();
-        const string_t cmd_task_dir = po_vm["task-dir"].as<string_t>();
-        const string_t cmd_task_params = po_vm["task-params"].as<string_t>();
-        const string_t cmd_loss = po_vm["loss"].as<string_t>();
-        const string_t cmd_model = po_vm["model"].as<string_t>();
-        const string_t cmd_model_params = po_vm["model-params"].as<string_t>();
-        const string_t cmd_trainer = po_vm["trainer"].as<string_t>();
-        const string_t cmd_trainer_params = po_vm["trainer-params"].as<string_t>();
-        const string_t cmd_criterion = po_vm["criterion"].as<string_t>();
-        const size_t cmd_threads = po_vm["threads"].as<size_t>();
-        const size_t cmd_trials = po_vm["trials"].as<size_t>();
-        const string_t cmd_output = po_vm["output"].as<string_t>();
+        const auto cmd_task = cmdline.get<string_t>("task");
+        const auto cmd_task_dir = cmdline.get<string_t>("task-dir");
+        const auto cmd_task_params = cmdline.get<string_t>("task-params");
+        const auto cmd_loss = cmdline.get<string_t>("loss");
+        const auto cmd_model = cmdline.get<string_t>("model");
+        const auto cmd_model_params = cmdline.get<string_t>("model-params");
+        const auto cmd_trainer = cmdline.get<string_t>("trainer");
+        const auto cmd_trainer_params = cmdline.get<string_t>("trainer-params");
+        const auto cmd_criterion = cmdline.get<string_t>("criterion");
+        const auto cmd_threads = cmdline.get<size_t>("threads");
+        const auto cmd_trials = cmdline.get<size_t>("trials");
+        const auto cmd_output = cmdline.get<string_t>("output");
 
         // create task
         const auto task = cortex::get_tasks().get(cmd_task, cmd_task_params);

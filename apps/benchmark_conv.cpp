@@ -1,4 +1,5 @@
 #include "text/table.h"
+#include "text/cmdline.h"
 #include "cortex/tensor.h"
 #include "math/random.hpp"
 #include "tensor/random.hpp"
@@ -12,7 +13,6 @@
 #include "text/table_row_mark.h"
 #include "cortex/util/measure.hpp"
 #include <iostream>
-#include <boost/program_options.hpp>
 
 namespace
 {
@@ -117,27 +117,15 @@ int main(int argc, char* argv[])
         const int max_ksize = 15;
 
         // parse the command line
-        boost::program_options::options_description po_desc("", 160);
-        po_desc.add_options()("help,h", "benchmark 2D convolutions & correlations");
-        po_desc.add_options()("conv", "benchmark convolutions");
-        po_desc.add_options()("corr", "benchmark correlations");
+        text::cmdline_t cmdline("benchmark 2D convolutions & correlations");
+        cmdline.add("", "conv", "benchmark convolutions");
+        cmdline.add("", "corr", "benchmark correlations");
 
-        boost::program_options::variables_map po_vm;
-        boost::program_options::store(
-                boost::program_options::command_line_parser(argc, argv).options(po_desc).run(),
-                po_vm);
-        boost::program_options::notify(po_vm);
+        cmdline.process(argc, argv);
 
         // check arguments and options
-        if (	po_vm.empty() ||
-                po_vm.count("help"))
-        {
-                std::cout << po_desc;
-                return EXIT_FAILURE;
-        }
-
-        const bool has_conv = po_vm.count("conv") > 0;
-        const bool has_corr = po_vm.count("corr") > 0;
+        const auto has_conv = cmdline.has("conv");
+        const auto has_corr = cmdline.has("corr");
 
         // convolutions
         if (has_conv)

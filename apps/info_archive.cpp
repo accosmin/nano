@@ -1,36 +1,21 @@
 #include "io/archive.h"
+#include "text/cmdline.h"
 #include "cortex/string.h"
 #include "cortex/util/timer.h"
 #include "cortex/util/logger.h"
-#include <boost/program_options.hpp>
 
 int main(int argc, char *argv[])
 {
         using namespace cortex;
         
         // parse the command line
-        boost::program_options::options_description po_desc("", 160);
-        po_desc.add_options()("help,h", "display the structure of the given archive");
-        po_desc.add_options()("input,i",
-                boost::program_options::value<cortex::string_t>(),
-                "input archive path (.tar, .gz, .bz2, .tar.gz, .tar.bz2)");
+        text::cmdline_t cmdline("display the structure of the given archive");
+        cmdline.add("i", "input",       "input archive path (.tar, .gz, .bz2, .tar.gz, .tar.bz2)");
 	
-        boost::program_options::variables_map po_vm;
-        boost::program_options::store(
-                boost::program_options::command_line_parser(argc, argv).options(po_desc).run(),
-                po_vm);
-        boost::program_options::notify(po_vm);
+        cmdline.process(argc, argv);
         		
         // check arguments and options
-        if (	po_vm.empty() ||
-                !po_vm.count("input") ||
-                po_vm.count("help"))
-        {
-                std::cout << po_desc;
-                return EXIT_FAILURE;
-        }
-
-        const string_t cmd_input = po_vm["input"].as<string_t>();
+        const string_t cmd_input = cmdline.get("input");
 
         // callback
         const auto callback = [] (const string_t& filename, const std::vector<char>& data)

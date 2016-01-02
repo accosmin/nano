@@ -6,13 +6,13 @@ set(nanocv_apps
         benchmark_sampling.cpp
         benchmark_stoch.cpp
         benchmark_trainers.cpp
-        evaluate.cpp
         embed.cpp
         info_archive.cpp
         info.cpp
         info_task.cpp
         max_threads.cpp
         train.cpp
+        evaluate.cpp
         warp.cpp
         convnets.cpp)
 
@@ -21,7 +21,6 @@ foreach(app ${nanocv_apps})
 
         add_executable(${app_name} ${app})
         target_link_libraries(${app_name}
-                ${Boost_PROGRAM_OPTIONS_LIBRARY}
                 ${Boost_FILESYSTEM_LIBRARY}
                 ${Boost_SYSTEM_LIBRARY}
                 cortex)

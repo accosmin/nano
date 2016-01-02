@@ -1,10 +1,9 @@
+#include "text/cmdline.h"
 #include "cortex/cortex.h"
 #include "cortex/sampler.h"
 #include "cortex/evaluate.h"
 #include "text/concatenate.hpp"
 #include "cortex/util/measure_and_log.hpp"
-#include <boost/program_options.hpp>
-#include <algorithm>
 
 int main(int argc, char *argv[])
 {
@@ -18,64 +17,29 @@ int main(int argc, char *argv[])
         const strings_t model_ids = cortex::get_models().ids();
 
         // parse the command line
-        boost::program_options::options_description po_desc("", 160);
-        po_desc.add_options()("help,h", "help message");
-        po_desc.add_options()("task",
-                boost::program_options::value<string_t>(),
-                text::concatenate(task_ids, ", ").c_str());
-        po_desc.add_options()("task-dir",
-                boost::program_options::value<string_t>(),
-                "directory to load task data from");
-        po_desc.add_options()("task-params",
-                boost::program_options::value<string_t>()->default_value(""),
-                "task parameters (if any)");
-        po_desc.add_options()("loss",
-                boost::program_options::value<string_t>(),
-                text::concatenate(loss_ids, ", ").c_str());
-        po_desc.add_options()("model",
-                boost::program_options::value<string_t>(),
-                text::concatenate(model_ids, ", ").c_str());
-        po_desc.add_options()("model-file",
-                boost::program_options::value<string_t>(),
-                "filepath to load the model from");
-        po_desc.add_options()("save-dir",
-                boost::program_options::value<string_t>(),
-                "directory to save classification results to");
-        po_desc.add_options()("save-group-rows",
-                boost::program_options::value<coord_t>()->default_value(32),
-                "number of samples to group in a row");
-        po_desc.add_options()("save-group-cols",
-                boost::program_options::value<coord_t>()->default_value(32),
-                "number of samples to group in a column");
+        text::cmdline_t cmdline("evaluate a model");
+        cmdline.add("", "task",                 text::concatenate(task_ids));
+        cmdline.add("", "task-dir",             "directory to load task data from");
+        cmdline.add("", "task-params",          "task parameters (if any)");
+        cmdline.add("", "loss",                 text::concatenate(loss_ids));
+        cmdline.add("", "model",                text::concatenate(model_ids));
+        cmdline.add("", "model-file",           "filepath to load the model from");
+        cmdline.add("", "save-dir",             "directory to save classification results to");
+        cmdline.add("", "save-group-rows",      "number of samples to group in a row", "32");
+        cmdline.add("", "save-group-cols",      "number of samples to group in a column", "32");
 
-        boost::program_options::variables_map po_vm;
-        boost::program_options::store(
-                boost::program_options::command_line_parser(argc, argv).options(po_desc).run(),
-                po_vm);
-        boost::program_options::notify(po_vm);
+        cmdline.process(argc, argv);
         		
         // check arguments and options
-        if (	po_vm.empty() ||
-                !po_vm.count("task") ||
-                !po_vm.count("task-dir") ||
-                !po_vm.count("loss") ||
-                !po_vm.count("model") ||
-                !po_vm.count("model-file") ||
-                po_vm.count("help"))
-        {
-                std::cout << po_desc;
-                return EXIT_FAILURE;
-        }
-
-        const string_t cmd_task = po_vm["task"].as<string_t>();
-        const string_t cmd_task_dir = po_vm["task-dir"].as<string_t>();
-        const string_t cmd_task_params = po_vm["task-params"].as<string_t>();
-        const string_t cmd_loss = po_vm["loss"].as<string_t>();
-        const string_t cmd_model = po_vm["model"].as<string_t>();
-        const string_t cmd_input = po_vm["model-file"].as<string_t>();
-        const string_t cmd_save_dir = po_vm.count("save-dir") ? po_vm["save-dir"].as<string_t>() : "";
-        const coord_t cmd_save_group_rows = math::clamp(po_vm["save-group-rows"].as<coord_t>(), 1, 128);
-        const coord_t cmd_save_group_cols = math::clamp(po_vm["save-group-cols"].as<coord_t>(), 1, 128);
+        const auto cmd_task = cmdline.get<string_t>("task");
+        const auto cmd_task_dir = cmdline.get<string_t>("task-dir");
+        const auto cmd_task_params = cmdline.get<string_t>("task-params");
+        const auto cmd_loss = cmdline.get<string_t>("loss");
+        const auto cmd_model = cmdline.get<string_t>("model");
+        const auto cmd_input = cmdline.get<string_t>("model-file");
+        const auto cmd_save_dir = cmdline.get<string_t>("save-dir");
+        const auto cmd_save_group_rows = math::clamp(cmdline.get<coord_t>("save-group-rows"), 1, 128);
+        const auto cmd_save_group_cols = math::clamp(cmdline.get<coord_t>("save-group-cols"), 1, 128);
 
         // create task
         const auto task = cortex::get_tasks().get(cmd_task, cmd_task_params);

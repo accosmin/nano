@@ -1,4 +1,5 @@
 #include "text/table.h"
+#include "text/cmdline.h"
 #include "cortex/cortex.h"
 #include "thread/thread.h"
 #include "thread/loopi.hpp"
@@ -6,7 +7,6 @@
 #include "cortex/util/measure.hpp"
 #include "cortex/tasks/task_charset.h"
 #include "cortex/util/measure_and_log.hpp"
-#include <boost/program_options.hpp>
 
 int main(int argc, char *argv[])
 {
@@ -15,27 +15,13 @@ int main(int argc, char *argv[])
         using namespace cortex;
 
         // parse the command line
-        boost::program_options::options_description po_desc("", 160);
-        po_desc.add_options()("help,h", "benchmark sampling");
-        po_desc.add_options()("samples,s",
-                boost::program_options::value<size_t>()->default_value(8000),
-                "number of samples to use [256, 100000]");
+        text::cmdline_t cmdline("benchmark sampling");
+        cmdline.add("s", "samples",     "number of samples to use [256, 100000]", "8000");
 
-        boost::program_options::variables_map po_vm;
-        boost::program_options::store(
-                boost::program_options::command_line_parser(argc, argv).options(po_desc).run(),
-                po_vm);
-        boost::program_options::notify(po_vm);
+        cmdline.process(argc, argv);
 
         // check arguments and options
-        if (	po_vm.empty() ||
-                po_vm.count("help"))
-        {
-                std::cout << po_desc;
-                return EXIT_FAILURE;
-        }
-
-        const size_t cmd_samples = math::clamp(po_vm["samples"].as<size_t>(), 256, 100 * 1000);
+        const auto cmd_samples = math::clamp(cmdline.get<size_t>("samples"), 256, 100 * 1000);
 
         const size_t cmd_rows = 28;
         const size_t cmd_cols = 28;

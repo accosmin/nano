@@ -1,68 +1,40 @@
+#include "text/cmdline.h"
 #include "cortex/string.h"
 #include "text/to_string.hpp"
 #include "cortex/vision/warp.h"
 #include "cortex/vision/image.h"
 #include "cortex/util/measure_and_log.hpp"
 #include <boost/filesystem.hpp>
-#include <boost/program_options.hpp>
 
 int main(int argc, char *argv[])
 {
         using namespace cortex;
 
         // parse the command line
-        boost::program_options::options_description po_desc("", 160);
-        po_desc.add_options()("help,h", "randomly warp the input image");
-        po_desc.add_options()("input,i",
-                boost::program_options::value<cortex::string_t>(),
-                "input image path");
-        po_desc.add_options()("count,c",
-                boost::program_options::value<size_t>()->default_value(32),
-                "number of random warpings to generate");
-        po_desc.add_options()("translation",
-                "use translation fields");
-        po_desc.add_options()("rotation",
-                "use rotation fields");
-        po_desc.add_options()("random",
-                "use random fields");
-        po_desc.add_options()("alpha",
-                boost::program_options::value<cortex::scalar_t>()->default_value(1.0),
-                "field mixing maximum coefficient");
-        po_desc.add_options()("beta",
-                boost::program_options::value<cortex::scalar_t>()->default_value(1.0),
-                "gradient magnitue mixing maximum coefficient");
-        po_desc.add_options()("save-fields",
-                "save fields as image");
-        po_desc.add_options()("output,o",
-                boost::program_options::value<cortex::string_t>(),
-                "output (warped) image path");
+        text::cmdline_t cmdline("randomly warp the input image");
+        cmdline.add("i", "input",       "input image path");
+        cmdline.add("c", "count",       "number of random warpings to generate", "32");
+        cmdline.add("", "translation",  "use translation fields");
+        cmdline.add("", "rotation",     "use rotation fields");
+        cmdline.add("", "random",       "use random fields");
+        cmdline.add("", "alpha",        "field mixing coefficient", "1.0");
+        cmdline.add("", "beta",         "gradient magnitue mixing coefficient", "1.0");
+        cmdline.add("", "save-fields",  "save fields as image");
+        cmdline.add("o", "output",      "output (warped) image path");
 	
-        boost::program_options::variables_map po_vm;
-        boost::program_options::store(
-                boost::program_options::command_line_parser(argc, argv).options(po_desc).run(),
-                po_vm);
-        boost::program_options::notify(po_vm);
+        cmdline.process(argc, argv);
 	
         // check arguments and options
-        if (	po_vm.empty() ||
-                !po_vm.count("input") ||
-                !po_vm.count("output") ||
-                po_vm.count("help"))
-        {
-                std::cout << po_desc;
-                return EXIT_FAILURE;
-        }
+        const auto cmd_input = cmdline.get<string_t>("input");
+        const auto cmd_output = cmdline.get<string_t>("output");
+        const auto cmd_save_fields = cmdline.has("save-fields");
 
-        const string_t cmd_input = po_vm["input"].as<string_t>();
-        const string_t cmd_output = po_vm["output"].as<string_t>();
-        const bool cmd_save_fields = po_vm.count("save-fields");
-
-        const auto cmd_count = po_vm["count"].as<size_t>();
-        const auto cmd_alpha = po_vm["alpha"].as<scalar_t>();
-        const auto cmd_beta = po_vm["beta"].as<scalar_t>();
-        const auto cmd_ftype_trs = po_vm.count("translation");
-        const auto cmd_ftype_rot = po_vm.count("rotation");
-        const auto cmd_ftype_rnd = po_vm.count("random");
+        const auto cmd_count = cmdline.get<size_t>("count");
+        const auto cmd_alpha = cmdline.get<scalar_t>("alpha");
+        const auto cmd_beta = cmdline.get<scalar_t>("beta");
+        const auto cmd_ftype_trs = cmdline.has("translation");
+        const auto cmd_ftype_rot = cmdline.has("rotation");
+        const auto cmd_ftype_rnd = cmdline.has("random");
 
         field_type ftype = field_type::random;
         if (cmd_ftype_trs)
