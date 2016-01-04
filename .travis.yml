@@ -2,6 +2,9 @@ branches:
   only:
     - master
 
+git:
+  depth: 3
+
 sudo: required
 
 language: cpp
