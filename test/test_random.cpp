@@ -44,7 +44,7 @@ NANOCV_CASE(index)
                 {
                         const auto index = rindex();
 
-                        NANOCV_CHECK_GREATER_EQUAL(index, 0);
+                        //NANOCV_CHECK_GREATER_EQUAL(index, 0);
                         NANOCV_CHECK_LESS(index, size);
                 }
         }

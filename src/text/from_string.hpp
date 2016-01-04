@@ -2,6 +2,7 @@
 
 #include <typeinfo>
 #include <stdexcept>
+#include <algorithm>
 #include "algorithm.h"
 #include "enum_string.hpp"
 

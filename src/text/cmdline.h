@@ -3,6 +3,7 @@
 #include "arch.h"
 #include "to_string.hpp"
 #include "from_string.hpp"
+#include <memory>
 
 namespace text
 {
