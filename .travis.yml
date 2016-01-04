@@ -24,7 +24,7 @@ install:
   - mkdir build
 
 before_script:
-  - cd build; cmake ../test/
+  - pwd
 
 script:
   - time bash build_release.sh
