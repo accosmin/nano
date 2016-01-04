@@ -27,13 +27,13 @@ NANOCV_CASE(rng)
 
 NANOCV_CASE(index)
 {
-        const size_t tests = 54;
-        const size_t test_size = 87;
+        const int32_t tests = 54;
+        const int32_t test_size = 87;
 
-        for (size_t t = 0; t < tests; ++ t)
+        for (int32_t t = 0; t < tests; ++ t)
         {
-                const size_t min = 17 + t;
-                const size_t max = min + t * 25 + 4;
+                const int32_t min = 17 + t;
+                const int32_t max = min + t * 25 + 4;
 
                 auto rgen = math::make_rng(min, max);
 
@@ -44,7 +44,7 @@ NANOCV_CASE(index)
                 {
                         const auto index = rindex();
 
-                        //NANOCV_CHECK_GREATER_EQUAL(index, 0);
+                        NANOCV_CHECK_GREATER_EQUAL(index, 0);
                         NANOCV_CHECK_LESS(index, size);
                 }
         }
