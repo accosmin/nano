@@ -1,16 +1,13 @@
 #include "unit_test.hpp"
-#include "cortex/string.h"
 #include "cortex/util/manager.hpp"
 
 namespace test
 {
-        using namespace cortex;
-
         class test_clonable_t : public cortex::clonable_t<test_clonable_t>
         {
         public:
 
-                explicit test_clonable_t(const string_t& configuration = string_t())
+                explicit test_clonable_t(const std::string& configuration = std::string())
                         :       cortex::clonable_t<test_clonable_t>(configuration)
                 {
                 }
@@ -26,7 +23,7 @@ namespace test
 
                 NANOCV_MAKE_CLONABLE(test_obj1_clonable_t, "test obj1")
 
-                explicit test_obj1_clonable_t(const string_t& configuration = string_t())
+                explicit test_obj1_clonable_t(const std::string& configuration = std::string())
                         :       test_clonable_t(configuration)
                 {
                 }
@@ -38,7 +35,7 @@ namespace test
 
                 NANOCV_MAKE_CLONABLE(test_obj2_clonable_t, "test obj2")
 
-                explicit test_obj2_clonable_t(const string_t& configuration = string_t())
+                explicit test_obj2_clonable_t(const std::string& configuration = std::string())
                         :       test_clonable_t(configuration)
                 {
                 }
@@ -50,7 +47,7 @@ namespace test
 
                 NANOCV_MAKE_CLONABLE(test_obj3_clonable_t, "test obj3")
 
-                explicit test_obj3_clonable_t(const string_t& configuration = string_t())
+                explicit test_obj3_clonable_t(const std::string& configuration = std::string())
                         :       test_clonable_t(configuration)
                 {
                 }
@@ -59,22 +56,22 @@ namespace test
 
 NANOCV_BEGIN_MODULE(test_manager)
 
-NANOCV_CASE(evaluate)
+NANOCV_CASE(empty)
 {
-        using namespace cortex;
+        cortex::manager_t<test::test_clonable_t> manager;
 
-        typedef cortex::manager_t<test::test_clonable_t> manager_t;
+        NANOCV_CHECK(manager.ids().empty());
+        NANOCV_CHECK(manager.descriptions().empty());
 
-        manager_t manager;
+        NANOCV_CHECK(!manager.has("ds"));
+        NANOCV_CHECK(!manager.has("ds1"));
+        NANOCV_CHECK(!manager.has("dd"));
+        NANOCV_CHECK(!manager.has(""));       
+}
 
-        // empty manager
-        NANOCV_CHECK_EQUAL(manager.ids().empty(), true);
-        NANOCV_CHECK_EQUAL(manager.descriptions().empty(), true);
-
-        NANOCV_CHECK_EQUAL(manager.has("ds"), false);
-        NANOCV_CHECK_EQUAL(manager.has("ds1"), false);
-        NANOCV_CHECK_EQUAL(manager.has("dd"), false);
-        NANOCV_CHECK_EQUAL(manager.has(""), false);
+NANOCV_CASE(retrieval)
+{
+        cortex::manager_t<test::test_clonable_t> manager;
 
         const test::test_obj1_clonable_t obj1;
         const test::test_obj2_clonable_t obj2;
@@ -85,31 +82,31 @@ NANOCV_CASE(evaluate)
         const std::string id3 = "obj3";
 
         // register objects
-        NANOCV_CHECK_EQUAL(manager.add(id1, obj1), true);
-        NANOCV_CHECK_EQUAL(manager.add(id2, obj2), true);
-        NANOCV_CHECK_EQUAL(manager.add(id3, obj3), true);
+        NANOCV_CHECK(manager.add(id1, obj1));
+        NANOCV_CHECK(manager.add(id2, obj2));
+        NANOCV_CHECK(manager.add(id3, obj3));
 
         // should not be able to register with the same id anymore
-        NANOCV_CHECK_EQUAL(manager.add(id1, obj1), false);
-        NANOCV_CHECK_EQUAL(manager.add(id1, obj2), false);
-        NANOCV_CHECK_EQUAL(manager.add(id1, obj3), false);
+        NANOCV_CHECK(!manager.add(id1, obj1));
+        NANOCV_CHECK(!manager.add(id1, obj2));
+        NANOCV_CHECK(!manager.add(id1, obj3));
 
-        NANOCV_CHECK_EQUAL(manager.add(id2, obj1), false);
-        NANOCV_CHECK_EQUAL(manager.add(id2, obj2), false);
-        NANOCV_CHECK_EQUAL(manager.add(id2, obj3), false);
+        NANOCV_CHECK(!manager.add(id2, obj1));
+        NANOCV_CHECK(!manager.add(id2, obj2));
+        NANOCV_CHECK(!manager.add(id2, obj3));
 
-        NANOCV_CHECK_EQUAL(manager.add(id3, obj1), false);
-        NANOCV_CHECK_EQUAL(manager.add(id3, obj2), false);
-        NANOCV_CHECK_EQUAL(manager.add(id3, obj3), false);
+        NANOCV_CHECK(!manager.add(id3, obj1));
+        NANOCV_CHECK(!manager.add(id3, obj2));
+        NANOCV_CHECK(!manager.add(id3, obj3));
 
         // check retrieval
         NANOCV_REQUIRE(manager.has(id1));
         NANOCV_REQUIRE(manager.has(id2));
         NANOCV_REQUIRE(manager.has(id3));
 
-        NANOCV_CHECK_EQUAL(manager.has(id1 + id2), false);
-        NANOCV_CHECK_EQUAL(manager.has(id2 + id3), false);
-        NANOCV_CHECK_EQUAL(manager.has(id3 + id1), false);
+        NANOCV_CHECK(!manager.has(id1 + id2));
+        NANOCV_CHECK(!manager.has(id2 + id3));
+        NANOCV_CHECK(!manager.has(id3 + id1));
 
         NANOCV_CHECK_EQUAL(manager.get(id1)->configuration(), obj1.configuration());
         NANOCV_CHECK_EQUAL(manager.get(id2)->configuration(), obj2.configuration());
@@ -119,9 +116,9 @@ NANOCV_CASE(evaluate)
         NANOCV_CHECK_EQUAL(manager.get(id2)->description(), obj2.description());
         NANOCV_CHECK_EQUAL(manager.get(id3)->description(), obj3.description());
 
-        NANOCV_CHECK_EQUAL(static_cast<bool>(manager.get(id1)), true);
-        NANOCV_CHECK_EQUAL(static_cast<bool>(manager.get(id2)), true);
-        NANOCV_CHECK_EQUAL(static_cast<bool>(manager.get(id3)), true);
+        NANOCV_CHECK(manager.get(id1));
+        NANOCV_CHECK(manager.get(id2));
+        NANOCV_CHECK(manager.get(id3));
 
         NANOCV_CHECK_THROW(manager.get(""), std::runtime_error);
         NANOCV_CHECK_THROW(manager.get(id1 + id2 + "ddd"), std::runtime_error);
@@ -129,3 +126,4 @@ NANOCV_CASE(evaluate)
 }
 
 NANOCV_END_MODULE()
+
