@@ -27,6 +27,7 @@ addons:
       - libdevil-dev
       - libarchive-dev
       - libeigen3-dev
+      - binutils-gold
 
 install:
   - if [ "$TRAVIS_OS_NAME" = "osx" ]; then brew update ; brew install devil; brew install libarchive; brew link libarchive --force; brew install eigen; brew install llvm ; brew outdated gcc || brew upgrade gcc ; brew outdated cmake || brew upgrade cmake ; fi
