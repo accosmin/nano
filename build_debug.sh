@@ -3,7 +3,6 @@
 compiler=$CXX
 generator=ninja
 
-build_dir="`pwd`/build-debug"
 build_type=Debug
 
 if [ -z "${compiler}" ]
@@ -43,21 +42,18 @@ done
 
 bash build.sh \
 	--compiler ${compiler} \
-	--build-dir ${build_dir} \
 	--build-type ${build_type} \
 	--generator ${generator} \
 	--asan OFF --tsan OFF
 
 bash build.sh \
 	--compiler ${compiler} \
-	--build-dir ${build_dir}-asan \
 	--build-type ${build_type} \
 	--generator ${generator} \
 	--asan ON --tsan OFF
 	
 bash build.sh \
 	--compiler ${compiler} \
-	--build-dir ${build_dir}-tsan \
 	--build-type ${build_type} \
 	--generator ${generator} \
 	--asan OFF --tsan ON

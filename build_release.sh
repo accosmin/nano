@@ -3,8 +3,6 @@
 compiler=$CXX
 generator=ninja
 
-build_dir="`pwd`/build-release"
-build_type=Release
 install_dir="`pwd`/install"
 
 if [ -z "${compiler}" ]
@@ -44,11 +42,17 @@ done
 
 bash build.sh \
 	--compiler ${compiler} \
-	--build-dir ${build_dir} \
-	--build-type ${build_type} \
+	--build-type Release \
 	--generator ${generator} \
 	--install-dir ${install_dir} \
 	--install OFF \
 	--asan OFF --tsan OFF
 
+bash build.sh \
+	--compiler ${compiler} \
+	--build-type ReleaseWithDebInfo \
+	--generator ${generator} \
+	--install-dir ${install_dir} \
+	--install OFF \
+	--asan OFF --tsan OFF
 

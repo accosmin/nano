@@ -1,7 +1,6 @@
 #!/bin/bash
 
 compiler=$CXX
-build_dir=""
 build_type="Release"
 generator="ninja"
 install_dir="/usr/local/"
@@ -18,7 +17,6 @@ try() { "$@" || die "cannot $*"; }
 function usage
 {
 	echo "Usage: "
-	echo -e "\t--build-dir		<build directory>               	required" 
 	echo -e "\t--build-type         <build type [Release/Debug/...]>        default=${build_type}"
 	echo -e "\t--generator          <build system [codelite-][ninja/make]>	default=${generator}"
 	echo -e "\t--install-dir        <installation directory>        	default=${install_dir}" 
@@ -33,9 +31,6 @@ function usage
 while [ "$1" != "" ]
 do
 	case $1 in
-        	--build-dir)	shift
-                                build_dir=$1
-                                ;;
         	--build-type)	shift
                                 build_type=$1
                                 ;;
@@ -73,11 +68,14 @@ export CXX=${compiler}
 current_dir=`pwd`
 
 # create build directory
-if [ -z "${build_dir}" ]
+build_dir=build-${build_type,,}
+if [ "${asan_flag}" == "ON" ]
 then
-	echo "Please provide a build directory!"
-	echo
-	exit 1
+        build_dir+=-asan
+fi
+if [ "${tsan_flag}" == "ON" ]
+then    
+        build_dir+=-tsan
 fi
 
 mkdir -p ${build_dir}
