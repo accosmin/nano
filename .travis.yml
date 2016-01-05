@@ -23,7 +23,7 @@ addons:
       - gcc-5
       - cmake
       - cmake-data
-      - ninja
+      - ninja-build
       - libdevil-dev
       - libarchive-dev
       - libeigen3-dev
