@@ -1,6 +1,6 @@
 [![Build Status](https://travis-ci.org/accosmin/nanocv.svg?branch=master)](https://travis-ci.org/accosmin/nanocv)
 
-### NanoCV
+### NanoCV  
 
 This small (nano) library is used for training and testing models, such as neural networks and convolution networks, on various image classification and object detection problems.
 
