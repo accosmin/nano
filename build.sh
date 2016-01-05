@@ -19,7 +19,7 @@ function usage
 {
 	echo "Usage: "
 	echo -e "\t--build-dir		<build directory>               	required" 
-	echo -e "\t--build-type         <build type [Release/Debug]>    	default=${build_type}"
+	echo -e "\t--build-type         <build type [Release/Debug/...]>        default=${build_type}"
 	echo -e "\t--generator          <build system [codelite-][ninja/make]>	default=${generator}"
 	echo -e "\t--install-dir        <installation directory>        	default=${install_dir}" 
 	echo -e "\t--install            <install [ON/OFF] Release only> 	default=${install}" 

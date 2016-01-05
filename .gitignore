@@ -3,8 +3,7 @@
 *.kdev4
 *.geany
 *.txt.user
-build*
-build-release
+build-release*
 build-debug*
 install
 docs/html
