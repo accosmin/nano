@@ -50,7 +50,7 @@ bash build.sh \
 
 bash build.sh \
 	--compiler ${compiler} \
-	--build-type ReleaseWithDebInfo \
+	--build-type RelWithDebInfo \
 	--generator ${generator} \
 	--install-dir ${install_dir} \
 	--install OFF \
