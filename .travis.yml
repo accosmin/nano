@@ -34,7 +34,7 @@ before_script:
   - pwd
 
 script:
-  - time bash build_release.sh
+  - time bash build_release.sh --generator make
   - cd build-release/test && time ctest -j 3
 
 compiler:
