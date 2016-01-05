@@ -10,7 +10,7 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_SOURCE_DIR}/cmake)
 # external dependencies
 ######################################################################
 
-option(NANOCV_WITH_ASAN         "build with address sanitizer suppport (debug, gcc)"    OFF)
+option(NANOCV_WITH_ASAN         "build with address sanitizers suppport (debug, gcc)"   OFF)
 option(NANOCV_WITH_TSAN         "build with thread sanitizer suppport (debug, gcc)"     OFF)
 
 # Zlib & BZip2
@@ -61,6 +61,9 @@ CHECK_CXX_SOURCE_COMPILES("${NANOCV_TEST_PROGRAM}" COMPILER_SUPPORTS_SANITIZE_UN
 set(CMAKE_REQUIRED_FLAGS "-fsanitize=leak")
 CHECK_CXX_SOURCE_COMPILES("${NANOCV_TEST_PROGRAM}" COMPILER_SUPPORTS_SANITIZE_LEAK)
 
+set(CMAKE_REQUIRED_FLAGS "-fsanitize=integer")
+CHECK_CXX_SOURCE_COMPILES("${NANOCV_TEST_PROGRAM}" COMPILER_SUPPORTS_SANITIZE_INTEGER)
+
 set(CMAKE_REQUIRED_FLAGS "-fsanitize=thread")
 CHECK_CXX_SOURCE_COMPILES("${NANOCV_TEST_PROGRAM}" COMPILER_SUPPORTS_SANITIZE_THREAD)
 
@@ -79,10 +82,10 @@ if(CMAKE_CXX_COMPILER_ID MATCHES GNU OR CMAKE_CXX_COMPILER_ID MATCHES Clang)
         endif()
 
         # set flags
-        set(CMAKE_CXX_FLAGS			"-std=c++14 -pedantic -march=native -mtune=native")
-	if(CMAKE_CXX_COMPILER_ID MATCHES GNU)
-		set(CMAKE_CXX_FLAGS		"${CMAKE_CXX_FLAGS} -pthread")
-	endif()
+        set(CMAKE_CXX_FLAGS                     "-std=c++14 -pedantic -march=native -mtune=native")
+        if(CMAKE_CXX_COMPILER_ID MATCHES GNU)
+                set(CMAKE_CXX_FLAGS		"${CMAKE_CXX_FLAGS} -pthread")
+    	endif()
         set(CMAKE_CXX_FLAGS			"${CMAKE_CXX_FLAGS} -Wall -Wextra -Wconversion")
         set(CMAKE_CXX_FLAGS                     "${CMAKE_CXX_FLAGS} -Woverloaded-virtual")
         set(CMAKE_CXX_FLAGS                     "${CMAKE_CXX_FLAGS} -Wreorder")
@@ -98,30 +101,24 @@ if(CMAKE_CXX_COMPILER_ID MATCHES GNU OR CMAKE_CXX_COMPILER_ID MATCHES Clang)
 
         # set address sanitizer
 	if(NANOCV_WITH_ASAN)
-                CHECK_CXX_COMPILER_FLAG(-fsanitize=address COMPILER_SUPPORTS_SANITIZE_ADDRESS)
-                CHECK_CXX_COMPILER_FLAG(-fsanitize=undefined COMPILER_SUPPORTS_SANITIZE_UNDEFINED)
-
-                if(COMPILER_SUPPORTS_SANITIZE_ADDRESS AND COMPILER_SUPPORTS_SANITIZE_UNDEFINED)
-                        set(CMAKE_CXX_FLAGS_DEBUG       "${CMAKE_CXX_FLAGS_DEBUG} -fsanitize=address")
-                        set(CMAKE_CXX_FLAGS_DEBUG       "${CMAKE_CXX_FLAGS_DEBUG} -fsanitize=undefined")
-                        set(CMAKE_CXX_FLAGS_DEBUG       "${CMAKE_CXX_FLAGS_DEBUG} -fno-sanitize=vptr")
-                else()
-                        message(WARNING "The compiler has no address sanitizer support. Ignoring...")
+                if(COMPILER_SUPPORTS_SANITIZE_ADDRESS)
+                        set(CMAKE_CXX_FLAGS     "${CMAKE_CXX_FLAGS} -fsanitize=address")
                 endif()
-
+                if(COMPILER_SUPPORTS_SANITIZE_UNDEFINED)
+                        set(CMAKE_CXX_FLAGS     "${CMAKE_CXX_FLAGS} -fsanitize=undefined")
+                        set(CMAKE_CXX_FLAGS     "${CMAKE_CXX_FLAGS} -fno-sanitize=vptr")
+                endif()
                 if(COMPILER_SUPPORTS_SANITIZE_LEAK)
-                        set(CMAKE_CXX_FLAGS_DEBUG       "${CMAKE_CXX_FLAGS_DEBUG} -fsanitize=leak")
-                else()
-                        message(WARNING "The compiler has no leak sanitizer support. Ignoring...")
+                        set(CMAKE_CXX_FLAGS     "${CMAKE_CXX_FLAGS} -fsanitize=leak")
+                endif()
+                if(COMPILER_SUPPORTS_SANITIZE_INTEGER)
+                        set(CMAKE_CXX_FLAGS     "${CMAKE_CXX_FLAGS} -fsanitize=integer")
                 endif()
 
         # set thread sanitizer
 	elseif(NANOCV_WITH_TSAN)
                 if(COMPILER_SUPPORTS_SANITIZE_THREAD)
                         set(CMAKE_CXX_FLAGS_DEBUG       "${CMAKE_CXX_FLAGS_DEBUG} -fsanitize=thread")
-                        set(CMAKE_EXE_LINKER_FLAGS      "${CMAKE_EXE_LINKER_FLAGS}")
-                else()
-                        message(WARNING "The compiler has no thread sanitizer support. Ignoring...")
                 endif()
 	endif()
 
