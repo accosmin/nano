@@ -68,7 +68,8 @@ export CXX=${compiler}
 current_dir=`pwd`
 
 # create build directory
-build_dir=build-${build_type,,}
+build_dir=build-$(echo ${build_type} | tr '[:upper:]' '[:lower:]')
+#build_dir=build-${build_type,,}
 if [ "${asan_flag}" == "ON" ]
 then
         build_dir+=-asan
