@@ -33,10 +33,6 @@ find_package(Eigen3)
 include_directories(${EIGEN3_INCLUDE_DIR})
 add_definitions(-DEIGEN_DONT_PARALLELIZE)
 
-#set(CMAKE_C_COMPILER                    "/usr/bin/clang")
-#set(CMAKE_CXX_COMPILER                  "/usr/bin/clang++")
-#set(CMAKE_CXX_COMPILER                  "g++-4.9")
-
 ######################################################################
 # compiler flags
 ######################################################################
@@ -94,9 +90,9 @@ if(CMAKE_CXX_COMPILER_ID MATCHES GNU OR CMAKE_CXX_COMPILER_ID MATCHES Clang)
         set(CMAKE_CXX_FLAGS                     "${CMAKE_CXX_FLAGS} -fno-common")
         set(CMAKE_CXX_FLAGS                     "${CMAKE_CXX_FLAGS} -fvisibility=hidden")
         set(CMAKE_CXX_FLAGS_DEBUG		"-g -fno-omit-frame-pointer")
-        set(CMAKE_CXX_FLAGS_RELEASE             "-O3 -DNDEBUG")         # -DEIGEN_NO_DEBUG")
-        set(CMAKE_CXX_FLAGS_RELWITHDEBINFO      "-O2 -g")               # -DEIGEN_NO_DEBUG")
-        set(CMAKE_CXX_FLAGS_MINSIZEREL          "-Os -DNDEBUG")         # -DEIGEN_NO_DEBUG")
+        set(CMAKE_CXX_FLAGS_RELEASE             "-O3 -DNDEBUG")         		# -DEIGEN_NO_DEBUG")
+        set(CMAKE_CXX_FLAGS_RELWITHDEBINFO      "-O2 -g -fno-omit-frame-pointer")       # -DEIGEN_NO_DEBUG")
+        set(CMAKE_CXX_FLAGS_MINSIZEREL          "-Os -DNDEBUG")         		# -DEIGEN_NO_DEBUG")
         set(CMAKE_EXE_LINKER_FLAGS              "-flto")
 
         # set address sanitizer
