@@ -8,6 +8,7 @@ install="OFF"
 
 asan_flag="OFF"
 tsan_flag="OFF"
+test_flag="ON"
 
 yell() { echo "$0: $*" >&2; }
 die() { yell "$*"; exit 111; }
@@ -120,7 +121,8 @@ try cmake \
 	-DCMAKE_BUILD_TYPE=${build_type} \
     	-DNANOCV_WITH_ASAN=${asan_flag} \
     	-DNANOCV_WITH_TSAN=${tsan_flag} \
-    	-G "${generator}" \
+    	-DNANOCV_WITH_UNIT_TESTS=${test_flag} \
+	-G "${generator}" \
     	-DCMAKE_INSTALL_PREFIX=${install_dir} \
     	${current_dir}/
 

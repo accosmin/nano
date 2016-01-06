@@ -10,8 +10,9 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_SOURCE_DIR}/cmake)
 # external dependencies
 ######################################################################
 
-option(NANOCV_WITH_ASAN         "build with address sanitizers suppport (debug, gcc)"   OFF)
-option(NANOCV_WITH_TSAN         "build with thread sanitizer suppport (debug, gcc)"     OFF)
+option(NANOCV_WITH_ASAN         "build with address sanitizers suppport (if available)" OFF)
+option(NANOCV_WITH_TSAN         "build with thread sanitizer suppport (if available)"   OFF)
+option(NANOCV_WITH_UNIT_TESTS	"build the unit tests"					ON)
 
 # Zlib & BZip2
 find_package(ZLIB REQUIRED)
@@ -160,5 +161,7 @@ add_subdirectory(src/thread)
 add_subdirectory(src/cortex)
 
 add_subdirectory(apps)
-add_subdirectory(test)
 
+if(NANOCV_WITH_UNIT_TESTS)
+	add_subdirectory(test)
+endif()
