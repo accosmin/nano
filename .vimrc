@@ -6,6 +6,8 @@ set smarttab        " Make "tab" insert indents instead of tabs at the beginning
 set exrc
 set secure
 
+map <F2> :retab <CR> :wq! <CR>
+
 " Source: http://www.alexeyshmalko.com/2014/using-vim-as-c-cpp-ide/
 set colorcolumn=120
 highlight ColorColumn ctermbg=darkgray
