@@ -121,7 +121,7 @@ try cmake \
 	-DCMAKE_BUILD_TYPE=${build_type} \
     	-DNANOCV_WITH_ASAN=${asan_flag} \
     	-DNANOCV_WITH_TSAN=${tsan_flag} \
-    	-DNANOCV_WITH_UNIT_TESTS=${test_flag} \
+    	-DNANOCV_WITH_TESTS=${test_flag} \
 	-G "${generator}" \
     	-DCMAKE_INSTALL_PREFIX=${install_dir} \
     	${current_dir}/
