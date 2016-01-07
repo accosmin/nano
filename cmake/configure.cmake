@@ -25,6 +25,9 @@ CHECK_CXX_SOURCE_COMPILES("${NANOCV_TEST_PROGRAM}" COMPILER_SUPPORTS_SANITIZE_IN
 set(CMAKE_REQUIRED_FLAGS "-fsanitize=thread")
 CHECK_CXX_SOURCE_COMPILES("${NANOCV_TEST_PROGRAM}" COMPILER_SUPPORTS_SANITIZE_THREAD)
 
+set(CMAKE_REQUIRED_FLAGS "-fsanitize=memory")
+CHECK_CXX_SOURCE_COMPILES("${NANOCV_TEST_PROGRAM}" COMPILER_SUPPORTS_SANITIZE_MEMORY)
+
 # setup compiler
 if(CMAKE_CXX_COMPILER_ID MATCHES GNU OR CMAKE_CXX_COMPILER_ID MATCHES Clang)
         message("Compiling with ${CMAKE_CXX_COMPILER_ID} ${CMAKE_CXX_COMPILER_VERSION} ...")
@@ -38,24 +41,22 @@ if(CMAKE_CXX_COMPILER_ID MATCHES GNU OR CMAKE_CXX_COMPILER_ID MATCHES Clang)
 
         # set flags
         set(CMAKE_CXX_FLAGS                     "-std=c++14 -pedantic -march=native -mtune=native")
-        if(CMAKE_CXX_COMPILER_ID MATCHES GNU)
-                set(CMAKE_CXX_FLAGS		"${CMAKE_CXX_FLAGS} -pthread")
-    	endif()
-        set(CMAKE_CXX_FLAGS			"${CMAKE_CXX_FLAGS} -Wall -Wextra -Wconversion")
+        set(CMAKE_CXX_FLAGS                     "${CMAKE_CXX_FLAGS} -pthread")
+        set(CMAKE_CXX_FLAGS                     "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wconversion")
         set(CMAKE_CXX_FLAGS                     "${CMAKE_CXX_FLAGS} -Woverloaded-virtual")
         set(CMAKE_CXX_FLAGS                     "${CMAKE_CXX_FLAGS} -Wreorder")
         set(CMAKE_CXX_FLAGS                     "${CMAKE_CXX_FLAGS} -Wsign-promo")
         set(CMAKE_CXX_FLAGS                     "${CMAKE_CXX_FLAGS} -Wsign-conversion")
         set(CMAKE_CXX_FLAGS                     "${CMAKE_CXX_FLAGS} -fno-common")
         set(CMAKE_CXX_FLAGS                     "${CMAKE_CXX_FLAGS} -fvisibility=hidden")
-        set(CMAKE_CXX_FLAGS_DEBUG		"-g -fno-omit-frame-pointer")
-        set(CMAKE_CXX_FLAGS_RELEASE             "-O3 -DNDEBUG")         		# -DEIGEN_NO_DEBUG")
+        set(CMAKE_CXX_FLAGS_DEBUG               "-g -fno-omit-frame-pointer")
+        set(CMAKE_CXX_FLAGS_RELEASE             "-O3 -DNDEBUG")                         # -DEIGEN_NO_DEBUG")
         set(CMAKE_CXX_FLAGS_RELWITHDEBINFO      "-O2 -g -fno-omit-frame-pointer")       # -DEIGEN_NO_DEBUG")
-        set(CMAKE_CXX_FLAGS_MINSIZEREL          "-Os -DNDEBUG")         		# -DEIGEN_NO_DEBUG")
+        set(CMAKE_CXX_FLAGS_MINSIZEREL          "-Os -DNDEBUG")                         # -DEIGEN_NO_DEBUG")
         set(CMAKE_EXE_LINKER_FLAGS              "-flto")
 
         # set address sanitizer
-	if(NANOCV_WITH_ASAN)
+        if(NANOCV_WITH_ASAN)
                 if(COMPILER_SUPPORTS_SANITIZE_ADDRESS)
                         set(CMAKE_CXX_FLAGS     "${CMAKE_CXX_FLAGS} -fsanitize=address")
                 endif()
@@ -69,16 +70,19 @@ if(CMAKE_CXX_COMPILER_ID MATCHES GNU OR CMAKE_CXX_COMPILER_ID MATCHES Clang)
                 if(COMPILER_SUPPORTS_SANITIZE_INTEGER)
                         set(CMAKE_CXX_FLAGS     "${CMAKE_CXX_FLAGS} -fsanitize=integer")
                 endif()
+                if(COMPILER_SUPPORTS_SANITIZE_MEMORY)
+                        set(CMAKE_CXX_FLAGS     "${CMAKE_CXX_FLAGS} -fsanitize=memory -fsanitize-memory-track-origins")
+                endif()
 
         # set thread sanitizer
-	elseif(NANOCV_WITH_TSAN)
+        elseif(NANOCV_WITH_TSAN)
                 if(COMPILER_SUPPORTS_SANITIZE_THREAD)
                         set(CMAKE_CXX_FLAGS_DEBUG       "${CMAKE_CXX_FLAGS_DEBUG} -fsanitize=thread")
                 endif()
-	endif()
+        endif()
 
 else()
-	message(WARNING "Compiling with an unsupported compiler ...")
+        message(WARNING "Compiling with an unsupported compiler ...")
 endif()
 
 # debug
