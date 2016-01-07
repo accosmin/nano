@@ -111,7 +111,7 @@ NANOCV_BEGIN_MODULE(test_batch_optimizers)
 
 NANOCV_CASE(evaluate)
 {
-        math::foreach_test_function<double, math::test_type::easy>(1, 4, [] (const math::function_t<double>& function)
+        math::foreach_test_function<double, math::test_type::easy>(1, 4, [] (const auto& function)
         {
                 test::check_function(function);
         });
