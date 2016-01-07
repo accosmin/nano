@@ -70,6 +70,9 @@ if(CMAKE_CXX_COMPILER_ID MATCHES GNU OR CMAKE_CXX_COMPILER_ID MATCHES Clang)
                 if(COMPILER_SUPPORTS_SANITIZE_INTEGER)
                         set(CMAKE_CXX_FLAGS     "${CMAKE_CXX_FLAGS} -fsanitize=integer")
                 endif()
+
+        # set memory sanitizer
+        elseif(NANOCV_WITH_MSAN)
                 if(COMPILER_SUPPORTS_SANITIZE_MEMORY)
                         set(CMAKE_CXX_FLAGS     "${CMAKE_CXX_FLAGS} -fsanitize=memory -fsanitize-memory-track-origins")
                 endif()
@@ -77,7 +80,7 @@ if(CMAKE_CXX_COMPILER_ID MATCHES GNU OR CMAKE_CXX_COMPILER_ID MATCHES Clang)
         # set thread sanitizer
         elseif(NANOCV_WITH_TSAN)
                 if(COMPILER_SUPPORTS_SANITIZE_THREAD)
-                        set(CMAKE_CXX_FLAGS_DEBUG       "${CMAKE_CXX_FLAGS_DEBUG} -fsanitize=thread")
+                        set(CMAKE_CXX_FLAGS     "${CMAKE_CXX_FLAGS} -fsanitize=thread")
                 endif()
         endif()
 

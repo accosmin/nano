@@ -25,6 +25,7 @@ message("-----------------------------------------------------------------------
 message("BUILD TYPE:                    " "${CMAKE_BUILD_TYPE}")
 message("------------------------------------------------------------------------------" "")
 message("ASAN                           " "${NANOCV_WITH_ASAN}")
+message("MSAN                           " "${NANOCV_WITH_MSAN}")
 message("TSAN                           " "${NANOCV_WITH_TSAN}")
 message("TESTS                          " "${NANOCV_WITH_TESTS}")
 message("------------------------------------------------------------------------------" "")
