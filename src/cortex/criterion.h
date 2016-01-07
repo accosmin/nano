@@ -61,9 +61,9 @@ namespace cortex
                 void update(const task_t& task, const sample_t& sample, const loss_t& loss);
 
                 ///
-                /// \brief cumulate statistics
+                /// \brief update statistics with cumulated samples
                 ///
-                criterion_t& operator+=(const criterion_t&);
+                criterion_t& update(const criterion_t&);
 
                 ///
                 /// \brief cumulated loss value

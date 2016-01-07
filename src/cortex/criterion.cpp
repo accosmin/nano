@@ -97,7 +97,7 @@ namespace cortex
                 }
         }
 
-        criterion_t& criterion_t::operator+=(const criterion_t& other)
+        criterion_t& criterion_t::update(const criterion_t& other)
         {
                 m_estats(other.m_estats);
 

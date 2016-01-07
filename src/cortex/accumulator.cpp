@@ -14,16 +14,13 @@ namespace cortex
                         m_cache->reset(lambda);
                         m_cache->reset(type);
 
-                        if (m_pool.n_workers() > 1)
+                        for (size_t i = 0; i < m_pool.n_workers(); ++ i)
                         {
-                                for (size_t i = 0; i < m_pool.n_workers(); ++ i)
-                                {
-                                        const rcriterion_t cache = criterion.clone();
-                                        cache->reset(model);
-                                        cache->reset(lambda);
-                                        cache->reset(type);
-                                        m_caches.push_back(cache);
-                                }
+                                const rcriterion_t cache = criterion.clone();
+                                cache->reset(model);
+                                cache->reset(lambda);
+                                cache->reset(type);
+                                m_caches.push_back(cache);
                         }
                 }
                 
@@ -94,7 +91,7 @@ namespace cortex
 
                         for (const auto& cache : m_impl->m_caches)
                         {
-                                (*m_impl->m_cache) += (*cache);
+                                m_impl->m_cache->update(*cache);
                         }
                 }
         }
@@ -139,4 +136,4 @@ namespace cortex
                 return m_impl->m_cache->can_regularize();
         }
 }
-	
+        
