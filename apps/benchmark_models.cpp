@@ -31,6 +31,11 @@ int main(int argc, char *argv[])
         const auto cmd_forward = cmdline.has("forward");
         const auto cmd_backward = cmdline.has("backward");
 
+        if (!cmd_forward && !cmd_backward)
+        {
+                cmdline.usage();
+        }
+
         const tensor_size_t cmd_rows = 28;
         const tensor_size_t cmd_cols = 28;
         const color_mode cmd_color = color_mode::luma;

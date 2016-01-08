@@ -127,6 +127,11 @@ int main(int argc, char* argv[])
         const auto has_conv = cmdline.has("conv");
         const auto has_corr = cmdline.has("corr");
 
+        if (!has_conv && !has_corr)
+        {
+                cmdline.usage();
+        }
+
         // convolutions
         if (has_conv)
         {
@@ -176,6 +181,6 @@ int main(int argc, char* argv[])
                 table.print(std::cout);
         }
 
-	return EXIT_SUCCESS;
+        return EXIT_SUCCESS;
 }
 

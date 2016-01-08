@@ -90,7 +90,7 @@ int main(int argc, char* argv[])
         text::cmdline_t cmdline("benchmark stochastic optimizers");
         cmdline.add("", "min-dims",     "minimum number of dimensions for each test function (if feasible)", "1");
         cmdline.add("", "max-dims",     "maximum number of dimensions for each test function (if feasible)", "8");
-        cmdline.add("" , "trials",      "number of random trials for each test function", "1024");
+        cmdline.add("", "trials",       "number of random trials for each test function", "1024");
         cmdline.add("", "epochs",       "optimization: number of epochs", "128");
         cmdline.add("", "epoch-size",   "optimization: number of iterations per epoch", "32");
 

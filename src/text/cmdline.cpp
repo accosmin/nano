@@ -167,8 +167,7 @@ namespace text
                         }
                 }
 
-                if (    argc == 1 ||
-                        has("help"))
+                if (has("help"))
                 {
                         usage();
                 }

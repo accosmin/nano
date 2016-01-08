@@ -8,7 +8,7 @@ set secure
 
 syntax on
 
-map <F2> :retab <CR> :wq! <CR>
+map <F2> :retab <CR> :w <CR>
 
 " Source: http://www.alexeyshmalko.com/2014/using-vim-as-c-cpp-ide/
 set colorcolumn=120
