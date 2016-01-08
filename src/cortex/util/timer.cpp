@@ -77,4 +77,9 @@ namespace cortex
         {
                 return std::chrono::duration_cast<microseconds_t>(now() - m_start);
         }
+
+        nanoseconds_t timer_t::nanoseconds() const
+        {
+                return std::chrono::duration_cast<nanoseconds_t>(now() - m_start);
+        }
 }

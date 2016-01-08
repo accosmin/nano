@@ -9,6 +9,7 @@ namespace cortex
         using seconds_t = std::chrono::seconds;
         using milliseconds_t = std::chrono::milliseconds;
         using microseconds_t = std::chrono::microseconds;
+        using nanoseconds_t = std::chrono::nanoseconds;
 
         using timepoint_t = std::chrono::high_resolution_clock::time_point;
 
@@ -45,6 +46,11 @@ namespace cortex
                 /// \brief retrieve the elapsed time in microseconds
                 ///
                 microseconds_t microseconds() const;
+
+                ///
+                /// \brief retrieve the elapsed time in nanoseconds
+                ///
+                nanoseconds_t nanoseconds() const;
 
         private:
 

@@ -62,7 +62,7 @@ namespace
         auto measure_op(const top& op,
                 const tmatrixi& idata, const tmatrixk& kdata, tmatrixo&& odata, const size_t trials = 16)
         {
-                return cortex::measure_robustly_usec([&] ()
+                return cortex::measure_robustly_nsec([&] ()
                 {
                         op(idata, kdata, odata);
                 }, trials);
@@ -135,7 +135,7 @@ int main(int argc, char* argv[])
         // convolutions
         if (has_conv)
         {
-                text::table_t table("size\\convolution [us]");
+                text::table_t table("size\\convolution [ns]");
                 table.header()
                         << "2D (eig)"
                         << "2D (cpp)"
@@ -159,7 +159,7 @@ int main(int argc, char* argv[])
         // correlations
         if (has_corr)
         {
-                text::table_t table("size\\correlation [us]");
+                text::table_t table("size\\correlation [ns]");
                 table.header()
                         << "2D (egb)"
                         << "2D (egr)"

@@ -24,13 +24,14 @@ namespace cortex
         }
 
         ///
-        /// \brief robustly measure a function call (in microseconds)
+        /// \brief robustly measure a function call (in the given period)
         ///
         template
         <
+                typename tperiod,
                 typename toperator
         >
-        microseconds_t measure_robustly_usec(const toperator& op, const std::size_t trials)
+        tperiod measure_robustly(const toperator& op, const std::size_t trials)
         {
                 const microseconds_t min_usec(10 * 1000);
 
@@ -50,8 +51,33 @@ namespace cortex
                         usec = std::min(usec, measure_usec(op, count));
                 }
 
-                return (usec + microseconds_t(count / 2)) / count;
+                return (usec + tperiod(count / 2)) / count;
         }
+
+        ///
+        /// \brief robustly measure a function call (in nanoseconds)
+        ///
+        template
+        <
+                typename toperator
+        >
+        nanoseconds_t measure_robustly_nsec(const toperator& op, const std::size_t trials)
+        {
+                return measure_robustly<nanoseconds_t>(op, trials);
+        }
+        
+        ///
+        /// \brief robustly measure a function call (in microseconds)
+        ///
+        template
+        <
+                typename toperator
+        >
+        microseconds_t measure_robustly_usec(const toperator& op, const std::size_t trials)
+        {
+                return measure_robustly<microseconds_t>(op, trials);
+        }
+        
 
         ///
         /// \brief robustly measure a function call (in miliseconds)
@@ -62,7 +88,6 @@ namespace cortex
         >
         milliseconds_t measure_robustly_msec(const toperator& op, const std::size_t trials)
         {
-                const auto usec = measure_robustly_usec(op, trials);
-                return milliseconds_t((usec.count() + 500) / 1000);
+                return milliseconds_t((measure_robustly_usec(op, trials).count() + 500) / 1000);
         }
 }
