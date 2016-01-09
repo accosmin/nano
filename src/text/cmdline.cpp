@@ -143,12 +143,24 @@ namespace text
                         {
                                 const std::string name = token.substr(2);
 
+                                if (name.empty())
+                                {
+                                        throw std::runtime_error(
+                                        "cmdline: invalid option name [" + name + "/" + token + "]");
+                                }
+
                                 m_impl->store(name);
                                 current_name_or_short_name = name;
                         }
                         else if (text::starts_with(token, "-"))
                         {
                                 const std::string short_name = token.substr(1);
+
+                                if (short_name.size() != 1)
+                                {
+                                        throw std::runtime_error(
+                                        "cmdline: invalid short option name [" + short_name + "/" + token + "]");
+                                }
 
                                 m_impl->store(short_name);
                                 current_name_or_short_name = short_name;
