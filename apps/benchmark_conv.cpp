@@ -145,7 +145,7 @@ int main(int argc, char* argv[])
 
                 for (int isize = min_isize; isize <= max_isize; isize += 4)
                 {
-                        for (int ksize = min_ksize; ksize <= std::min(isize, max_ksize); ksize += 2)
+                        for (int ksize = min_ksize; ksize <= std::min(isize, max_ksize); ++ ksize)
                         {
                                 const auto header = make_header(isize, ksize);
                                 test_config_conv<matrix_t>(isize, ksize, table.append(header));
@@ -170,7 +170,7 @@ int main(int argc, char* argv[])
 
                 for (int isize = min_isize; isize <= max_isize; isize += 4)
                 {
-                        for (int ksize = min_ksize; ksize <= std::min(isize, max_ksize); ksize += 2)
+                        for (int ksize = min_ksize; ksize <= std::min(isize, max_ksize); ++ ksize)
                         {
                                 const auto header = make_header(isize, ksize);
                                 test_config_corr<matrix_t>(isize, ksize, table.append(header));
