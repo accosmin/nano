@@ -33,25 +33,25 @@ namespace cortex
         >
         tperiod measure_robustly(const toperator& op, const std::size_t trials)
         {
-                const microseconds_t min_usec(10 * 1000);
+                const microseconds_t min_usecs(100 * 1000);
 
                 // calibrate the number of function calls to achieve the minimum time resolution
-                std::size_t count = 1;
-                microseconds_t time1(0);
-                while (time1 < min_usec)
+                std::size_t count = trials; 
+                microseconds_t usecs(0);
+                while (true)
                 {
-                        time1 = measure_usec(op, count);
-                        count *= 2;
+                        usecs = measure_usec(op, count);
+                        if (usecs < min_usecs)
+                        {
+                                count *= 2;
+                        }
+                        else
+                        {
+                                break;
+                        }
                 }
 
-                // stable measurements, so run the trials
-                microseconds_t usec = microseconds_t::max();
-                for (std::size_t t = 0; t < trials; ++ t)
-                {
-                        usec = std::min(usec, measure_usec(op, count));
-                }
-
-                return (usec + tperiod(count / 2)) / count;
+                return (usecs + tperiod(count / 2)) / count;
         }
 
         ///
