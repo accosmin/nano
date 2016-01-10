@@ -151,7 +151,7 @@ int main(int argc, char* argv[])
 
                 for (int isize = min_isize; isize <= max_isize; ++ isize)
                 {
-                        for (int ksize = min_ksize; ksize <= isize - min_ksize; ++ ksize)
+                        for (int ksize = min_ksize; ksize <= isize; ++ ksize)
                         {
                                 const auto header = make_header(isize, ksize);
                                 test_config_conv<matrix_t>(isize, ksize, table.append(header));
