@@ -2,19 +2,15 @@
 set(libtensor_sources
         ${CMAKE_CURRENT_SOURCE_DIR}/conv2d_cpp.hpp
         ${CMAKE_CURRENT_SOURCE_DIR}/conv2d_dot.hpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/conv2d_doti.hpp
         ${CMAKE_CURRENT_SOURCE_DIR}/conv2d_dyn.hpp
         ${CMAKE_CURRENT_SOURCE_DIR}/conv2d_eig.hpp
         ${CMAKE_CURRENT_SOURCE_DIR}/conv2d_mad.hpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/conv2d_madi.hpp
         ${CMAKE_CURRENT_SOURCE_DIR}/corr2d_cpp.hpp
         ${CMAKE_CURRENT_SOURCE_DIR}/corr2d_dyn.hpp
         ${CMAKE_CURRENT_SOURCE_DIR}/corr2d_egb.hpp
         ${CMAKE_CURRENT_SOURCE_DIR}/corr2d_egr.hpp
         ${CMAKE_CURRENT_SOURCE_DIR}/corr2d_mdk.hpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/corr2d_mdki.hpp
         ${CMAKE_CURRENT_SOURCE_DIR}/corr2d_mdo.hpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/corr2d_mdoi.hpp
         ${CMAKE_CURRENT_SOURCE_DIR}/for_each.hpp
         ${CMAKE_CURRENT_SOURCE_DIR}/matrix.hpp
         ${CMAKE_CURRENT_SOURCE_DIR}/random.hpp

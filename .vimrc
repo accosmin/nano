@@ -6,6 +6,8 @@ set smarttab        " Make "tab" insert indents instead of tabs at the beginning
 set exrc
 set secure
 
+set number
+
 syntax on
 
 map <F2> :retab <CR> :w <CR>

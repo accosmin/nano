@@ -46,7 +46,9 @@ namespace test
                 const scalar_t convcpu_dot = test_cpu(tensor::conv2d_dot_t(), idata, kdata, odata);
                 const scalar_t convcpu_mad = test_cpu(tensor::conv2d_mad_t(), idata, kdata, odata);
                 const scalar_t convcpu_dyn = test_cpu(tensor::conv2d_dyn_t(), idata, kdata, odata);
-
+                const scalar_t convcpu_dot_dyn = test_cpu(tensor::conv2d_dot_dyn_t(), idata, kdata, odata);
+                const scalar_t convcpu_mad_dyn = test_cpu(tensor::conv2d_mad_dyn_t(), idata, kdata, odata);
+                
                 const scalar_t epsilon = math::epsilon1<scalar_t>();
 
                 NANOCV_CHECK_CLOSE(convcpu_eig, convcpu_eig, epsilon);
@@ -54,6 +56,8 @@ namespace test
                 NANOCV_CHECK_CLOSE(convcpu_dot, convcpu_eig, epsilon);
                 NANOCV_CHECK_CLOSE(convcpu_mad, convcpu_eig, epsilon);
                 NANOCV_CHECK_CLOSE(convcpu_dyn, convcpu_eig, epsilon);
+                NANOCV_CHECK_CLOSE(convcpu_dot_dyn, convcpu_eig, epsilon);
+                NANOCV_CHECK_CLOSE(convcpu_mad_dyn, convcpu_eig, epsilon);
         }
 }
 
@@ -62,18 +66,14 @@ NANOCV_BEGIN_MODULE(test_conv2d)
 NANOCV_CASE(evaluate)
 {
         const int min_isize = 3;
-        const int max_isize = 19;
+        const int max_isize = 23;
         const int min_ksize = 1;
-        const int n_tests = 5;
 
         for (int isize = min_isize; isize <= max_isize; ++ isize)
         {
                 for (int ksize = min_ksize; ksize <= isize - min_ksize; ++ ksize)
                 {
-                        for (int t = 0; t < n_tests; ++ t)
-                        {
-                                test::test_conv2d(isize, ksize);
-                        }
+                        test::test_conv2d(isize, ksize);
                 }
         }
 }

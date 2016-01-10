@@ -82,7 +82,9 @@ namespace
                 row << measure_op(tensor::conv2d_eig_t(), idata, kdata, odata_ret, trials).count();
                 row << measure_op(tensor::conv2d_cpp_t(), idata, kdata, odata_ret, trials).count();
                 row << measure_op(tensor::conv2d_dot_t(), idata, kdata, odata_ret, trials).count();
+                row << measure_op(tensor::conv2d_dot_dyn_t(), idata, kdata, odata_ret, trials).count();
                 row << measure_op(tensor::conv2d_mad_t(), idata, kdata, odata_ret, trials).count();
+                row << measure_op(tensor::conv2d_mad_dyn_t(), idata, kdata, odata_ret, trials).count();
                 row << measure_op(tensor::conv2d_dyn_t(), idata, kdata, odata_ret, trials).count();
         }
 
@@ -101,7 +103,9 @@ namespace
                 row << measure_op(tensor::corr2d_egr_t(), odata, kdata, idata_ret, trials).count();
                 row << measure_op(tensor::corr2d_cpp_t(), odata, kdata, idata_ret, trials).count();
                 row << measure_op(tensor::corr2d_mdk_t(), odata, kdata, idata_ret, trials).count();
+                row << measure_op(tensor::corr2d_mdk_dyn_t(), odata, kdata, idata_ret, trials).count();
                 row << measure_op(tensor::corr2d_mdo_t(), odata, kdata, idata_ret, trials).count();
+                row << measure_op(tensor::corr2d_mdo_dyn_t(), odata, kdata, idata_ret, trials).count();
                 row << measure_op(tensor::corr2d_dyn_t(), odata, kdata, idata_ret, trials).count();
         }
 }
@@ -137,15 +141,17 @@ int main(int argc, char* argv[])
         {
                 text::table_t table("size\\convolution [ns]");
                 table.header()
-                        << "2D (eig)"
-                        << "2D (cpp)"
-                        << "2D (dot)"
-                        << "2D (mad)"
-                        << "2D (dyn)";
+                        << "eig"
+                        << "cpp"
+                        << "dot"
+                        << "dot-dyn"
+                        << "mad"
+                        << "mad-dyn"
+                        << "dyn";
 
-                for (int isize = min_isize; isize <= max_isize; isize += 4)
+                for (int isize = min_isize; isize <= max_isize; ++ isize)
                 {
-                        for (int ksize = min_ksize; ksize <= std::min(isize, max_ksize); ++ ksize)
+                        for (int ksize = min_ksize; ksize <= isize - min_ksize; ++ ksize)
                         {
                                 const auto header = make_header(isize, ksize);
                                 test_config_conv<matrix_t>(isize, ksize, table.append(header));
@@ -161,16 +167,18 @@ int main(int argc, char* argv[])
         {
                 text::table_t table("size\\correlation [ns]");
                 table.header()
-                        << "2D (egb)"
-                        << "2D (egr)"
-                        << "2D (cpp)"
-                        << "2D (mkd)"
-                        << "2D (mko)"
-                        << "2D (dyn)";
+                        << "egb"
+                        << "egr"
+                        << "cpp"
+                        << "mdk"
+                        << "mdk-dyn"
+                        << "mdo"
+                        << "mdo-dyn"
+                        << "dyn";
 
-                for (int isize = min_isize; isize <= max_isize; isize += 4)
+                for (int isize = min_isize; isize <= max_isize; ++ isize)
                 {
-                        for (int ksize = min_ksize; ksize <= std::min(isize, max_ksize); ++ ksize)
+                        for (int ksize = min_ksize; ksize <= std::min(isize, max_ksize); ksize += 2)
                         {
                                 const auto header = make_header(isize, ksize);
                                 test_config_corr<matrix_t>(isize, ksize, table.append(header));
