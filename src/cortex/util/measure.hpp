@@ -5,13 +5,13 @@
 namespace cortex
 {
         ///
-        /// \brief measure a function call (in microseconds)
+        /// \brief measure a function call (in nanoseconds)
         ///
         template
         <
                 typename toperator
         >
-        microseconds_t measure_usec(const toperator& op, const std::size_t trials)
+        nanoseconds_t measure_nsec(const toperator& op, const std::size_t trials)
         {
                 const timer_t timer;
 
@@ -20,7 +20,7 @@ namespace cortex
                         op();
                 }
 
-                return std::max(microseconds_t(1), timer.microseconds());
+                return timer.nanoseconds();
         }
 
         ///
@@ -28,30 +28,22 @@ namespace cortex
         ///
         template
         <
-                typename tperiod,
                 typename toperator
         >
-        tperiod measure_robustly(const toperator& op, const std::size_t trials)
+        nanoseconds_t measure_robustly(const toperator& op, const std::size_t trials)
         {
-                const microseconds_t min_usecs(100 * 1000);
+                const nanoseconds_t min_nsecs(10 * 1000 * 1000);
 
                 // calibrate the number of function calls to achieve the minimum time resolution
-                std::size_t count = trials; 
-                microseconds_t usecs(0);
-                while (true)
+                std::size_t count = std::max(std::size_t(1), trials / 2);
+                nanoseconds_t nsecs(0);
+                while (nsecs < min_nsecs)
                 {
-                        usecs = measure_usec(op, count);
-                        if (usecs < min_usecs)
-                        {
-                                count *= 2;
-                        }
-                        else
-                        {
-                                break;
-                        }
+                        count *= 2;                
+                        nsecs = measure_nsec(op, count);
                 }
-
-                return (usecs + tperiod(count / 2)) / count;
+                
+                return nsecs / count;
         }
 
         ///
@@ -63,7 +55,7 @@ namespace cortex
         >
         nanoseconds_t measure_robustly_nsec(const toperator& op, const std::size_t trials)
         {
-                return measure_robustly<nanoseconds_t>(op, trials);
+                return measure_robustly(op, trials);
         }
         
         ///
@@ -75,9 +67,8 @@ namespace cortex
         >
         microseconds_t measure_robustly_usec(const toperator& op, const std::size_t trials)
         {
-                return measure_robustly<microseconds_t>(op, trials);
-        }
-        
+                return std::chrono::duration_cast<microseconds_t>(measure_robustly(op, trials));
+        }        
 
         ///
         /// \brief robustly measure a function call (in miliseconds)
@@ -88,6 +79,6 @@ namespace cortex
         >
         milliseconds_t measure_robustly_msec(const toperator& op, const std::size_t trials)
         {
-                return milliseconds_t((measure_robustly_usec(op, trials).count() + 500) / 1000);
+                return std::chrono::duration_cast<milliseconds_t>(measure_robustly(op, trials));
         }
 }
