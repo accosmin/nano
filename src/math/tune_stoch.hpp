@@ -64,7 +64,7 @@ namespace math
                 {
                 case math::stoch_optimizer::SGM:
                 case math::stoch_optimizer::ADADELTA:
-                        return { tscalar(0.50), tscalar(0.80), tscalar(0.90), tscalar(0.95), tscalar(0.99) };
+                        return { tscalar(0.90), tscalar(0.95), tscalar(0.99) };
 
                 default:
                         return { tscalar(0.0) };
