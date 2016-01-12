@@ -12,6 +12,7 @@
 #include "tensor/corr2d_egr.hpp"
 #include "text/table_row_mark.h"
 #include "cortex/util/measure.hpp"
+#include <set>
 #include <iostream>
 
 namespace
@@ -151,7 +152,14 @@ int main(int argc, char* argv[])
 
                 for (int isize = min_isize; isize <= max_isize; ++ isize)
                 {
-                        for (int ksize = min_ksize; ksize <= isize; ++ ksize)
+                        std::set<int> ksizes;
+                        for (int ksize = min_ksize; ksize <= std::min(isize, max_ksize); ksize += 2)
+                        {
+                                ksizes.insert(ksize);   
+                                ksizes.insert(isize - ksize + 1);                       
+                        }
+
+                        for (auto ksize : ksizes)
                         {
                                 const auto header = make_header(isize, ksize);
                                 test_config_conv<matrix_t>(isize, ksize, table.append(header));
