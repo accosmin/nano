@@ -7,12 +7,16 @@ set exrc
 set secure
 
 set number
-
 syntax on
 
+" Replace tabs with spaces
 map <F2> :retab <CR> :w <CR>
 
-" Source: http://www.alexeyshmalko.com/2014/using-vim-as-c-cpp-ide/
+" Toggle whitespace visibility
+nmap <F3> :set list!<CR>
+set listchars=tab:▸\ ,eol:¬
+
+" http://www.alexeyshmalko.com/2014/using-vim-as-c-cpp-ide/
 set colorcolumn=120
 highlight ColorColumn ctermbg=darkgray
 set path+=./src
