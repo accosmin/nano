@@ -205,7 +205,7 @@ int main(int argc, char* argv[])
 
         charset_task_t task(charset::numeric, rows, cols, color, samples);
         task.load("");
-	task.describe();
+        task.describe();
 
         const auto outputs = task.osize();
 

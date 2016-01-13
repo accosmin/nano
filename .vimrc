@@ -14,7 +14,10 @@ map <F2> :retab <CR> :w <CR>
 
 " Toggle whitespace visibility
 nmap <F3> :set list!<CR>
-set listchars=tab:▸\ ,eol:¬
+set listchars=tab:>-,trail:-
+
+" Toggle between header and implementation
+map <F4> :e %:p:s,.h$,.X123X,:s,.cpp$,.h,:s,.X123X$,.cpp,<CR>¬
 
 " http://www.alexeyshmalko.com/2014/using-vim-as-c-cpp-ide/
 set colorcolumn=120
