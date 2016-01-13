@@ -23,11 +23,6 @@ namespace cortex
                 timer_t();
 
                 ///
-                /// \brief reset timer
-                ///
-                void start();
-
-                ///
                 /// \brief retrieve the elapsed time as a string
                 ///
                 std::string elapsed() const;

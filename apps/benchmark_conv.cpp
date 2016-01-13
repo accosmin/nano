@@ -66,7 +66,7 @@ namespace
                 return cortex::measure_robustly_nsec([&] ()
                 {
                         op(idata, kdata, odata);
-                }, trials);
+                }, trials).count();
         }
 
         template
@@ -80,13 +80,13 @@ namespace
 
                 tmatrix odata_ret = odata;
 
-                row << measure_op(tensor::conv2d_eig_t(), idata, kdata, odata_ret, trials).count();
-                row << measure_op(tensor::conv2d_cpp_t(), idata, kdata, odata_ret, trials).count();
-                row << measure_op(tensor::conv2d_dot_t(), idata, kdata, odata_ret, trials).count();
-                row << measure_op(tensor::conv2d_dot_dyn_t(), idata, kdata, odata_ret, trials).count();
-                row << measure_op(tensor::conv2d_mad_t(), idata, kdata, odata_ret, trials).count();
-                row << measure_op(tensor::conv2d_mad_dyn_t(), idata, kdata, odata_ret, trials).count();
-                row << measure_op(tensor::conv2d_dyn_t(), idata, kdata, odata_ret, trials).count();
+                row << measure_op(tensor::conv2d_eig_t(), idata, kdata, odata_ret, trials);
+                row << measure_op(tensor::conv2d_cpp_t(), idata, kdata, odata_ret, trials);
+                row << measure_op(tensor::conv2d_dot_t(), idata, kdata, odata_ret, trials);
+                row << measure_op(tensor::conv2d_dot_dyn_t(), idata, kdata, odata_ret, trials);
+                row << measure_op(tensor::conv2d_mad_t(), idata, kdata, odata_ret, trials);
+                row << measure_op(tensor::conv2d_mad_dyn_t(), idata, kdata, odata_ret, trials);
+                row << measure_op(tensor::conv2d_dyn_t(), idata, kdata, odata_ret, trials);
         }
 
         template
@@ -100,14 +100,14 @@ namespace
 
                 tmatrix idata_ret = idata;
 
-                row << measure_op(tensor::corr2d_egb_t(), odata, kdata, idata_ret, trials).count();
-                row << measure_op(tensor::corr2d_egr_t(), odata, kdata, idata_ret, trials).count();
-                row << measure_op(tensor::corr2d_cpp_t(), odata, kdata, idata_ret, trials).count();
-                row << measure_op(tensor::corr2d_mdk_t(), odata, kdata, idata_ret, trials).count();
-                row << measure_op(tensor::corr2d_mdk_dyn_t(), odata, kdata, idata_ret, trials).count();
-                row << measure_op(tensor::corr2d_mdo_t(), odata, kdata, idata_ret, trials).count();
-                row << measure_op(tensor::corr2d_mdo_dyn_t(), odata, kdata, idata_ret, trials).count();
-                row << measure_op(tensor::corr2d_dyn_t(), odata, kdata, idata_ret, trials).count();
+                row << measure_op(tensor::corr2d_egb_t(), odata, kdata, idata_ret, trials);
+                row << measure_op(tensor::corr2d_egr_t(), odata, kdata, idata_ret, trials);
+                row << measure_op(tensor::corr2d_cpp_t(), odata, kdata, idata_ret, trials);
+                row << measure_op(tensor::corr2d_mdk_t(), odata, kdata, idata_ret, trials);
+                row << measure_op(tensor::corr2d_mdk_dyn_t(), odata, kdata, idata_ret, trials);
+                row << measure_op(tensor::corr2d_mdo_t(), odata, kdata, idata_ret, trials);
+                row << measure_op(tensor::corr2d_mdo_dyn_t(), odata, kdata, idata_ret, trials);
+                row << measure_op(tensor::corr2d_dyn_t(), odata, kdata, idata_ret, trials);
         }
 }
 

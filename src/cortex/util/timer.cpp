@@ -48,14 +48,9 @@ namespace cortex
                 }
         }
 
-        timer_t::timer_t()
-                : m_start(now())
+        timer_t::timer_t() :
+                m_start(now())
         {
-        }
-
-        void timer_t::start()
-        {
-                m_start = now();
         }
 
         std::string timer_t::elapsed() const
