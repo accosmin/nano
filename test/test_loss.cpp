@@ -51,7 +51,7 @@ namespace test
                         rgen(x.data(), x.data() + n_dims);
 
                         NANOCV_CHECK_GREATER(problem(x), 0.0);
-                        NANOCV_CHECK_LESS(problem.grad_accuracy(x), math::epsilon1<scalar_t>());
+                        NANOCV_CHECK_LESS(problem.grad_accuracy(x), math::epsilon2<scalar_t>());
                 }
         }
 }
@@ -72,7 +72,7 @@ NANOCV_CASE(evaluate)
 
         // evaluate the analytical gradient vs. the finite difference approximation
         for (const string_t& loss_id : loss_ids)
-        {                
+        {
                 for (tensor_size_t cmd_dims = cmd_min_dims; cmd_dims <= cmd_max_dims; ++ cmd_dims)
                 {
                         test::check_grad(loss_id, cmd_dims, cmd_tests);

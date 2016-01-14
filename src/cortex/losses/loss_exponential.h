@@ -5,16 +5,16 @@
 namespace cortex
 {
         ///
-        /// \brief softmax multi-class logistic loss: softmax(log(1 + exp(-targets_k * scores_k)), k)
+        /// \brief softmax multi-class logistic loss: softmax(exp(-targets_k * scores_k), k)
         ///
-        class logistic_loss_t : public loss_t
+        class exponential_loss_t : public loss_t
         {
         public:
 
-                NANOCV_MAKE_CLONABLE(logistic_loss_t, "multi-class logistic loss")
+                NANOCV_MAKE_CLONABLE(exponential_loss_t, "multi-class exponential loss")
 
                 // constructor
-                explicit logistic_loss_t(const string_t& = string_t());
+                explicit exponential_loss_t(const string_t& = string_t());
 
                 // compute the error value
                 virtual scalar_t error(const vector_t& targets, const vector_t& scores) const override;

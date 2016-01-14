@@ -4,6 +4,7 @@
 #include "losses/loss_cauchy.h"
 #include "losses/loss_logistic.h"
 #include "losses/loss_classnll.h"
+#include "losses/loss_exponential.h"
 
 #include "tasks/task_mnist.h"
 #include "tasks/task_cifar10.h"
@@ -50,6 +51,7 @@ namespace cortex
                 cortex::get_losses().add("cauchy", cauchy_loss_t());
                 cortex::get_losses().add("logistic", logistic_loss_t());
                 cortex::get_losses().add("classnll", classnll_loss_t());
+                cortex::get_losses().add("exponential", exponential_loss_t());
 
                 // register tasks
                 cortex::get_tasks().add("mnist", mnist_task_t());
