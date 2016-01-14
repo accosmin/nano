@@ -8,27 +8,36 @@ namespace cortex
         {
                 // constructor
                 impl_t(const model_t& model, const criterion_t& criterion, criterion_t::type type, scalar_t lambda)
-                        :       m_cache(criterion.clone())
                 {
-                        m_cache->reset(model);
-                        m_cache->reset(lambda);
-                        m_cache->reset(type);
-
                         for (size_t i = 0; i < m_pool.n_workers(); ++ i)
                         {
-                                const rcriterion_t cache = criterion.clone();
+                                const auto cache = criterion.clone();
                                 cache->reset(model);
                                 cache->reset(lambda);
                                 cache->reset(type);
-                                m_caches.push_back(cache);
+                                m_criteria.push_back(cache);
                         }
                 }
-                
+
+                // cumulate criterion using the results for each thread
+                void cumulate() const
+                {
+                        for (std::size_t i = 1; i < m_criteria.size(); ++ i)
+                        {
+                                criterion().update(*m_criteria[i]);
+                        }
+                }
+
+                // cumulated criterion
+                criterion_t& criterion() const
+                {
+                        return **m_criteria.begin();
+                }
+
                 // attributes
                 thread::pool_t                  m_pool;         ///< thread pool
-                rcriterion_t                    m_cache;        ///< global (cumulated) criterion
-                std::vector<rcriterion_t>       m_caches;       ///< cached criterion / thread
-        };        
+                std::vector<rcriterion_t>       m_criteria;     ///< cached criterion / thread
+        };
 
         accumulator_t::accumulator_t(
                 const model_t& model, const criterion_t& criterion, criterion_t::type type, scalar_t lambda) :
@@ -40,8 +49,7 @@ namespace cortex
 
         void accumulator_t::reset()
         {
-                m_impl->m_cache->reset();
-                for (const auto& cache : m_impl->m_caches)
+                for (const auto& cache : m_impl->m_criteria)
                 {
                         cache->reset();
                 }
@@ -51,8 +59,7 @@ namespace cortex
         {
                 lambda = math::clamp(lambda, 0.0, 1.0);
 
-                m_impl->m_cache->reset(lambda);
-                for (const auto& cache : m_impl->m_caches)
+                for (const auto& cache : m_impl->m_criteria)
                 {
                         cache->reset(lambda);
                 }
@@ -60,8 +67,7 @@ namespace cortex
 
         void accumulator_t::set_params(const vector_t& params)
         {
-                m_impl->m_cache->reset(params);
-                for (const auto& cache : m_impl->m_caches)
+                for (const auto& cache : m_impl->m_criteria)
                 {
                         cache->reset(params);
                 }
@@ -74,66 +80,52 @@ namespace cortex
 
         void accumulator_t::update(const task_t& task, const samples_t& samples, const loss_t& loss)
         {
-                if (m_impl->m_pool.n_workers() == 1)
+                thread::loopit(samples.size(), m_impl->m_pool, [&] (size_t i, size_t th)
                 {
-                        for (size_t i = 0; i < samples.size(); ++ i)
-                        {
-                                m_impl->m_cache->update(task, samples[i], loss);
-                        }
-                }
+                        m_impl->m_criteria[th]->update(task, samples[i], loss);
+                });
 
-                else
-                {
-                        thread::loopit(samples.size(), m_impl->m_pool, [&] (size_t i, size_t th)
-                        {
-                                m_impl->m_caches[th]->update(task, samples[i], loss);
-                        });
-
-                        for (const auto& cache : m_impl->m_caches)
-                        {
-                                m_impl->m_cache->update(*cache);
-                        }
-                }
+                m_impl->cumulate();
         }
-        
+
         scalar_t accumulator_t::value() const
         {
-                return m_impl->m_cache->value();
+                return m_impl->criterion().value();
         }
 
         scalar_t accumulator_t::avg_error() const
         {
-                return m_impl->m_cache->avg_error();
+                return m_impl->criterion().avg_error();
         }
 
         scalar_t accumulator_t::var_error() const
         {
-                return m_impl->m_cache->var_error();
+                return m_impl->criterion().var_error();
         }
 
         vector_t accumulator_t::vgrad() const
         {
-                return m_impl->m_cache->vgrad();
+                return m_impl->criterion().vgrad();
         }
 
         tensor_size_t accumulator_t::psize() const
         {
-                return m_impl->m_cache->psize();
+                return m_impl->criterion().psize();
         }
 
         size_t accumulator_t::count() const
         {
-                return m_impl->m_cache->count();
+                return m_impl->criterion().count();
         }
 
         scalar_t accumulator_t::lambda() const
         {
-                return m_impl->m_cache->lambda();
+                return m_impl->criterion().lambda();
         }
 
         bool accumulator_t::can_regularize() const
         {
-                return m_impl->m_cache->can_regularize();
+                return m_impl->criterion().can_regularize();
         }
 }
-        
+
