@@ -5,13 +5,13 @@
 namespace cortex
 {
         ///
-        /// \brief multi-class negative log-likelihood loss (single-class classification)
+        /// \brief class negative log-likelihood loss (single-class classification)
         ///
         class classnll_loss_t : public loss_t
         {
         public:
 
-                NANOCV_MAKE_CLONABLE(classnll_loss_t, "multi-class negative log-likelihood loss")
+                NANOCV_MAKE_CLONABLE(classnll_loss_t, "class negative log-likelihood loss")
 
                 // constructor
                 explicit classnll_loss_t(const string_t& = string_t());

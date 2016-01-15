@@ -24,18 +24,16 @@ namespace cortex
         {
                 assert(targets.size() == scores.size());
 
-                const vector_t escores = scores.array().exp();
-
-                return std::log(escores.array().sum()) - 0.5 * (1.0 + targets.array()).matrix().dot(scores);
+                return  std::log(scores.array().exp().sum()) - 
+                        0.5 * ((1.0 + targets.array()) * scores.array()).sum();
         }
 
         vector_t classnll_loss_t::vgrad(const vector_t& targets, const vector_t& scores) const
         {
                 assert(targets.size() == scores.size());
 
-                const vector_t escores = scores.array().exp();
-
-                return escores.array() / escores.sum() - 0.5 * (1.0 + targets.array());
+                return  scores.array().exp() / (scores.array().exp().sum()) - 
+                        0.5 * (1.0 + targets.array());
         }
 
         indices_t classnll_loss_t::labels(const vector_t& scores) const
