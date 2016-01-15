@@ -91,7 +91,7 @@ namespace cortex
                 auto gbdata = tensor::map_vector(gradient + m_wdata.size(), m_bdata.rows());
 
                 gbdata = m_odata.vector();
-                gwdata = m_odata.vector() * m_idata.vector().transpose();
+                gwdata.noalias() = m_odata.vector() * m_idata.vector().transpose();
         }
 }
 

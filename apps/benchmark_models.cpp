@@ -119,13 +119,13 @@ int main(int argc, char *argv[])
         const auto criterion = cortex::get_criteria().get("l2n-reg");
 
         // construct tables to compare models
-        text::table_t ftable("model-forward");
-        text::table_t btable("model-backward");
+        text::table_t ftable("model-forward [ms]");
+        text::table_t btable("model-backward [ms]");
 
         for (size_t nthreads = cmd_min_nthreads; nthreads <= cmd_max_nthreads; ++ nthreads)
         {
-                ftable.header() << (text::to_string(nthreads) + "xCPU [ms]");
-                btable.header() << (text::to_string(nthreads) + "xCPU [ms]");
+                ftable.header() << (text::to_string(nthreads) + "xCPU");
+                btable.header() << (text::to_string(nthreads) + "xCPU");
         }
 
         // evaluate models
