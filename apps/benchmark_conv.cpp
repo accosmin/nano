@@ -166,7 +166,7 @@ int main(int argc, char* argv[])
                         }
                 }
 
-                table.mark(text::make_table_mark_minimum_col<size_t>());
+                table.mark(text::make_table_mark_minimum_percentage_cols<size_t>(5));
                 table.print(std::cout);
         }
 
@@ -193,7 +193,7 @@ int main(int argc, char* argv[])
                         }
                 }
 
-                table.mark(text::make_table_mark_minimum_col<size_t>());
+                table.mark(text::make_table_mark_minimum_percentage_cols<size_t>(5));
                 table.print(std::cout);
         }
 

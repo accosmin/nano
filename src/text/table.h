@@ -48,19 +48,22 @@ namespace text
                 }
 
                 ///
-                /// \brief mark row-wise the selected element with the given operator
+                /// \brief mark row-wise the selected columns with the given operator
                 ///
                 template
                 <
-                        typename trow_mark
+                        typename trow_marker
                 >
-                void mark(const trow_mark& mark, const char* marker_string = " (*)")
+                void mark(const trow_marker& marker, const char* marker_string = " (*)")
                 {
                         for (auto& row : m_rows)
                         {
-                                const auto col = mark(row);
-                                assert(col < cols());
-                                row[col] += marker_string;
+                                const auto sel_cols = marker(row);
+                                for (const auto& col : sel_cols)
+                                {
+                                        assert(col < cols());
+                                        row[col] += marker_string;
+                                }
                         }
                 }
 
