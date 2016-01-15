@@ -32,23 +32,5 @@ namespace cortex
                 /// \brief check if the criterion has a regularization term to tune
                 ///
                 virtual bool can_regularize() const override;
-
-        protected:
-
-                ///
-                /// \brief reset statistics
-                ///
-                virtual void clear() override;
-
-                ///
-                /// \brief update statistics with the loss value/error/gradient for a sample
-                ///
-                virtual void accumulate(scalar_t value) override;
-                virtual void accumulate(const vector_t& vgrad, scalar_t value) override;
-
-                ///
-                /// \brief update statistics with cumulated samples
-                ///
-                virtual void accumulate(const criterion_t& other) override;
         };
 }

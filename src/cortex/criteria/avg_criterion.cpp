@@ -1,8 +1,7 @@
 #include "avg_criterion.h"
-#include <cassert>
 
 namespace cortex
-{        
+{
         avg_criterion_t::avg_criterion_t(const string_t& configuration)
                 :       criterion_t(configuration),
                         m_value(0.0)
@@ -18,7 +17,7 @@ namespace cortex
 
         void avg_criterion_t::accumulate(scalar_t value)
         {
-                m_value += value;                
+                m_value += value;
         }
 
         void avg_criterion_t::accumulate(const vector_t& vgrad, scalar_t value)
@@ -29,13 +28,11 @@ namespace cortex
 
         void avg_criterion_t::accumulate(const criterion_t& other)
         {
-                const avg_criterion_t* vother = dynamic_cast<const avg_criterion_t*>(&other);
-                assert(vother != nullptr);
-
-                m_value += vother->m_value;
-                m_vgrad += vother->m_vgrad;
+                const avg_criterion_t& vother = dynamic_cast<const avg_criterion_t&>(other);
+                m_value += vother.m_value;
+                m_vgrad += vother.m_vgrad;
         }
-        
+
         scalar_t avg_criterion_t::value() const
         {
                 assert(count() > 0);
@@ -55,4 +52,4 @@ namespace cortex
                 return false;
         }
 }
-	
+

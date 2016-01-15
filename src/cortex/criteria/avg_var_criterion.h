@@ -3,7 +3,7 @@
 #include "avg_criterion.h"
 
 namespace cortex
-{        
+{
         ///
         /// \brief variational regularized loss
         /// (e.g. penalize high variance across training samples),
@@ -13,7 +13,7 @@ namespace cortex
         class avg_var_criterion_t : public avg_criterion_t
         {
         public:
-                
+
                 NANOCV_MAKE_CLONABLE(avg_var_criterion_t, "variational (VadaBoost-like) regularized loss")
 
                 ///

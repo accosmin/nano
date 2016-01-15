@@ -3,21 +3,21 @@
 #include "cortex/criterion.h"
 
 namespace cortex
-{        
+{
         ///
         /// \brief average loss
         ///
         class avg_criterion_t : public criterion_t
         {
         public:
-                
+
                 NANOCV_MAKE_CLONABLE(avg_criterion_t, "average loss")
 
                 ///
                 /// \brief constructor
                 ///
                 explicit avg_criterion_t(const string_t& configuration = string_t());
-                
+
                 ///
                 /// \brief destructor
                 ///
@@ -60,7 +60,7 @@ namespace cortex
 
                 // attributes
                 scalar_t                m_value;        ///< cumulated loss value
-                vector_t                m_vgrad;        ///< cumulated gradient                
+                vector_t                m_vgrad;        ///< cumulated gradient
         };
 }
 

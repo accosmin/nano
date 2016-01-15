@@ -4,7 +4,7 @@
 #include <cassert>
 
 namespace cortex
-{        
+{
         criterion_manager_t& get_criteria()
         {
                 return criterion_manager_t::instance();
@@ -54,7 +54,7 @@ namespace cortex
 
                 return reset();
         }
-        
+
         criterion_t& criterion_t::reset()
         {
                 m_estats.clear();
@@ -67,9 +67,9 @@ namespace cortex
         void criterion_t::update(const task_t& task, const sample_t& sample, const loss_t& loss)
         {
                 assert(sample.m_index < task.n_images());
-                
+
                 const image_t& image = task.image(sample.m_index);
-                const vector_t& target = sample.m_target;                
+                const vector_t& target = sample.m_target;
                 const vector_t& output = m_model->output(image, sample.m_region).vector();
 
                 assert(output.size() == m_model->osize());
@@ -140,4 +140,4 @@ namespace cortex
                 return m_lambda;
         }
 }
-	
+

@@ -7,26 +7,6 @@ namespace cortex
         {
         }
 
-        void avg_l2_criterion_t::clear()
-        {
-                avg_criterion_t::clear();
-        }
-
-        void avg_l2_criterion_t::accumulate(scalar_t value)
-        {
-                avg_criterion_t::accumulate(value);
-        }
-
-        void avg_l2_criterion_t::accumulate(const vector_t& vgrad, scalar_t value)
-        {
-                avg_criterion_t::accumulate(vgrad, value);
-        }
-
-        void avg_l2_criterion_t::accumulate(const criterion_t& other)
-        {
-                avg_criterion_t::accumulate(other);
-        }
-
         scalar_t avg_l2_criterion_t::value() const
         {
                 return  lweight() * (avg_criterion_t::value()) +
