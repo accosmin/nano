@@ -55,7 +55,7 @@ namespace cortex
                 virtual vector_t vgrad(const vector_t& targets, const vector_t& scores) const = 0;
 
                 ///
-                /// \brief predicted label indices (if classification problem)
+                /// \brief predicted label indices (if a classification problem)
                 ///
                 virtual indices_t labels(const vector_t& scores) const = 0;
         };

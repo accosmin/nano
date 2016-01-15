@@ -1,4 +1,5 @@
 #include "loss_logistic.h"
+#include "cortex/class.h"
 #include "softmax.hpp"
 #include <cassert>
 
@@ -36,15 +37,6 @@ namespace cortex
 
         indices_t logistic_loss_t::labels(const vector_t& scores) const
         {
-                indices_t ret;
-                for (auto i = 0; i < scores.size(); ++ i)
-                {
-                        if (scores(i) > 0.0)
-                        {
-                                ret.push_back(static_cast<size_t>(i));
-                        }
-                }
-
-                return ret;
+                return class_labels(scores);
         }
 }

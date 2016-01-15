@@ -27,5 +27,19 @@ namespace cortex
                 }
                 return target;
         }
+
+        indices_t class_labels(const vector_t& scores)
+        {
+                indices_t ret;
+                for (auto i = 0; i < scores.size(); ++ i)
+                {
+                        if (scores(i) > 0.0)
+                        {
+                                ret.push_back(static_cast<size_t>(i));
+                        }
+                }
+
+                return ret;
+        }
 }
-	
+

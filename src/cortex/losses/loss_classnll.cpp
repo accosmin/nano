@@ -43,7 +43,7 @@ namespace cortex
                 vector_t::Index idx;
                 scores.maxCoeff(&idx);
 
-                return indices_t(1, size_t(idx));
+                return { static_cast<size_t>(idx) };
         }
 }
 
