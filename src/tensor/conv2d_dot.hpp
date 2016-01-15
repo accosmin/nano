@@ -112,6 +112,21 @@ namespace tensor
                         case 13:        conv2d_doti_t<13>()(idata, kdata, odata); break;
                         case 14:        conv2d_doti_t<14>()(idata, kdata, odata); break;
                         case 15:        conv2d_doti_t<15>()(idata, kdata, odata); break;
+                        case 16:        conv2d_doti_t<16>()(idata, kdata, odata); break;
+                        case 17:        conv2d_doti_t<17>()(idata, kdata, odata); break;
+                        case 18:        conv2d_doti_t<18>()(idata, kdata, odata); break;
+                        case 19:        conv2d_doti_t<19>()(idata, kdata, odata); break;
+                        case 20:        conv2d_doti_t<20>()(idata, kdata, odata); break;
+                        case 21:        conv2d_doti_t<21>()(idata, kdata, odata); break;
+                        case 22:        conv2d_doti_t<22>()(idata, kdata, odata); break;
+                        case 23:        conv2d_doti_t<23>()(idata, kdata, odata); break;
+                        case 24:        conv2d_doti_t<24>()(idata, kdata, odata); break;
+                        case 25:        conv2d_doti_t<25>()(idata, kdata, odata); break;
+                        case 26:        conv2d_doti_t<26>()(idata, kdata, odata); break;
+                        case 27:        conv2d_doti_t<27>()(idata, kdata, odata); break;
+                        case 28:        conv2d_doti_t<28>()(idata, kdata, odata); break;
+                        case 29:        conv2d_doti_t<29>()(idata, kdata, odata); break;
+                        case 30:        conv2d_doti_t<30>()(idata, kdata, odata); break;
                         default:        conv2d_dot_t()(idata, kdata, odata); break;
                         }
                 }
