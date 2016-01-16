@@ -50,7 +50,7 @@ if(CMAKE_CXX_COMPILER_ID MATCHES GNU OR CMAKE_CXX_COMPILER_ID MATCHES Clang)
         set(CMAKE_CXX_FLAGS                     "${CMAKE_CXX_FLAGS} -fvisibility=hidden")
         set(CMAKE_CXX_FLAGS_DEBUG               "-g -fno-omit-frame-pointer")
         set(CMAKE_CXX_FLAGS_RELEASE             "-O3 -DNDEBUG")                         # -DEIGEN_NO_DEBUG")
-        set(CMAKE_CXX_FLAGS_RELWITHDEBINFO      "-O2 -g -fno-omit-frame-pointer")       # -DEIGEN_NO_DEBUG")
+        set(CMAKE_CXX_FLAGS_RELWITHDEBINFO      "-O3 -g")                               # -DEIGEN_NO_DEBUG")
         set(CMAKE_CXX_FLAGS_MINSIZEREL          "-Os -DNDEBUG")                         # -DEIGEN_NO_DEBUG")
         set(CMAKE_EXE_LINKER_FLAGS              "-flto")
 
