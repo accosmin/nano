@@ -21,6 +21,8 @@ int main(int argc, char *argv[])
         // parse the command line
         text::cmdline_t cmdline("benchmark models");
         cmdline.add("s", "samples",     "number of samples to use [100, 100000]", "10000");
+        cmdline.add("", "mlp",          "benchmark MLP models");
+        cmdline.add("", "convnet",      "benchmark convolution networks");
         cmdline.add("", "forward",      "evaluate the \'forward\' pass (output)");
         cmdline.add("", "backward",     "evaluate the \'backward' pass (gradient)");
 
@@ -30,8 +32,15 @@ int main(int argc, char *argv[])
         const auto cmd_samples = math::clamp(cmdline.get<size_t>("samples"), 100, 100 * 1000);
         const auto cmd_forward = cmdline.has("forward");
         const auto cmd_backward = cmdline.has("backward");
+        const auto cmd_mlp = cmdline.has("mlp");
+        const auto cmd_convnet = cmdline.has("convnet");
 
         if (!cmd_forward && !cmd_backward)
+        {
+                cmdline.usage();
+        }
+
+        if (!cmd_mlp && !cmd_convnet)
         {
                 cmdline.usage();
         }
@@ -94,26 +103,29 @@ int main(int argc, char *argv[])
 
         const string_t outlayer = make_output_layer(task.osize());
 
-        const std::vector<std::pair<string_t, string_t>> configs =
+        std::vector<std::pair<string_t, string_t>> configs;
+        #define DEFINE(config) configs.emplace_back(config + outlayer, NANOCV_STRINGIFY(config))
+
+        if (cmd_mlp)
         {
-        #define DEFINE(config) { config + outlayer, NANOCV_STRINGIFY(config) }
-
-                DEFINE(mlp0),
-                DEFINE(mlp1),
-                DEFINE(mlp2),
-                DEFINE(mlp3),
-                DEFINE(mlp4),
-                DEFINE(mlp5),
-
-                DEFINE(convnet_9x9p_5x5p_3x3),
-                DEFINE(convnet_7x7p_5x5p_3x3),
-                DEFINE(convnet_11x11_9x9_7x7_3x3),
-                DEFINE(convnet_11x11_9x9_5x5_5x5),
-                DEFINE(convnet_9x9_7x7_7x7_5x5_3x3),
-                DEFINE(convnet_7x7_7x7_5x5_5x5_5x5_3x3)
+                DEFINE(mlp0);
+                DEFINE(mlp1);
+                DEFINE(mlp2);
+                DEFINE(mlp3);
+                DEFINE(mlp4);
+                DEFINE(mlp5);
+        }
+        if (cmd_convnet)
+        {
+                DEFINE(convnet_9x9p_5x5p_3x3);
+                DEFINE(convnet_7x7p_5x5p_3x3);
+                DEFINE(convnet_11x11_9x9_7x7_3x3);
+                DEFINE(convnet_11x11_9x9_5x5_5x5);
+                DEFINE(convnet_9x9_7x7_7x7_5x5_3x3);
+                DEFINE(convnet_7x7_7x7_5x5_5x5_5x5_3x3);
+        }
 
         #undef DEFINE
-        };
 
         const auto loss = cortex::get_losses().get("logistic");
         const auto criterion = cortex::get_criteria().get("l2n-reg");
