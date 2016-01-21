@@ -17,14 +17,14 @@ nmap <F3> :set list!<CR>
 set listchars=tab:>-,trail:-
 
 " Toggle between header and implementation
-map <F4> :e %:p:s,.h$,.X123X,:s,.cpp$,.h,:s,.X123X$,.cpp,<CR>¬
+map <F4> :e %:p:s,.h$,.X123X,:s,.cpp$,.h,:s,.X123X$,.cpp,<CR>
 
 " http://www.alexeyshmalko.com/2014/using-vim-as-c-cpp-ide/
 set colorcolumn=120
 highlight ColorColumn ctermbg=darkgray
-set path+=./src
-set path+=./src/cortex
-set path+=./src/thread
-set path+=./src/text
-set path+=./src/math
-set path+=./src/io
+set path+=src
+set path+=src/cortex
+set path+=src/thread
+set path+=src/text
+set path+=src/math
+set path+=src/io
