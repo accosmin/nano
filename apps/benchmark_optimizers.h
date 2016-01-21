@@ -124,7 +124,8 @@ namespace benchmark
                         const auto state = op(problem, x0);
 
                         const auto g = state.convergence_criteria();
-                        const auto speed = std::pow(g / g0, 1.0 / (1.0 + static_cast<scalar_t>(state.m_iterations)));
+                        const auto cost = state.m_fcalls + 2 * state.m_gcalls;
+                        const auto speed = std::pow(g / g0, 1.0 / (1.0 + static_cast<scalar_t>(cost)));
 
                         // ignore out-of-domain solutions
                         if (func.is_valid(state.x))
