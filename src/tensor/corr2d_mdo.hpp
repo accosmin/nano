@@ -110,6 +110,21 @@ namespace tensor
                         case 13:        corr2d_mdoi_t<13>()(odata, kdata, idata); break;
                         case 14:        corr2d_mdoi_t<14>()(odata, kdata, idata); break;
                         case 15:        corr2d_mdoi_t<15>()(odata, kdata, idata); break;
+                        case 16:        corr2d_mdoi_t<16>()(odata, kdata, idata); break;
+                        case 17:        corr2d_mdoi_t<17>()(odata, kdata, idata); break;
+                        case 18:        corr2d_mdoi_t<18>()(odata, kdata, idata); break;
+                        case 19:        corr2d_mdoi_t<19>()(odata, kdata, idata); break;
+                        case 20:        corr2d_mdoi_t<20>()(odata, kdata, idata); break;
+                        case 21:        corr2d_mdoi_t<21>()(odata, kdata, idata); break;
+                        case 22:        corr2d_mdoi_t<22>()(odata, kdata, idata); break;
+                        case 23:        corr2d_mdoi_t<23>()(odata, kdata, idata); break;
+                        case 24:        corr2d_mdoi_t<24>()(odata, kdata, idata); break;
+                        case 25:        corr2d_mdoi_t<25>()(odata, kdata, idata); break;
+                        case 26:        corr2d_mdoi_t<26>()(odata, kdata, idata); break;
+                        case 27:        corr2d_mdoi_t<27>()(odata, kdata, idata); break;
+                        case 28:        corr2d_mdoi_t<28>()(odata, kdata, idata); break;
+                        case 29:        corr2d_mdoi_t<29>()(odata, kdata, idata); break;
+                        case 30:        corr2d_mdoi_t<30>()(odata, kdata, idata); break;
                         default:        corr2d_mdo_t()(odata, kdata, idata); break;
                         }
                 }
