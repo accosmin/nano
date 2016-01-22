@@ -19,20 +19,6 @@ namespace
 {
         using namespace cortex;
 
-        std::string make_header(const int isize, const int ksize)
-        {
-                const int osize = isize - ksize + 1;
-
-                return  "(" +
-                        text::to_string(isize) + "x" +
-                        text::to_string(isize) + " @ " +
-                        text::to_string(ksize) + "x" +
-                        text::to_string(ksize) + " -> " +
-                        text::to_string(osize) + "x" +
-                        text::to_string(osize) +
-                        ")";
-        }
-
         template
         <
                 typename tmatrix
@@ -78,15 +64,13 @@ namespace
                 tmatrix idata, kdata, odata;
                 make_matrices(isize, ksize, idata, kdata, odata);
 
-                tmatrix odata_ret = odata;
-
-                row << measure_op(tensor::conv2d_eig_t(), idata, kdata, odata_ret, trials);
-                row << measure_op(tensor::conv2d_cpp_t(), idata, kdata, odata_ret, trials);
-                row << measure_op(tensor::conv2d_dot_t(), idata, kdata, odata_ret, trials);
-                row << measure_op(tensor::conv2d_dot_dyn_t(), idata, kdata, odata_ret, trials);
-                row << measure_op(tensor::conv2d_mad_t(), idata, kdata, odata_ret, trials);
-                row << measure_op(tensor::conv2d_mad_dyn_t(), idata, kdata, odata_ret, trials);
-                row << measure_op(tensor::conv2d_dyn_t(), idata, kdata, odata_ret, trials);
+                row << measure_op(tensor::conv2d_eig_t(), idata, kdata, odata, trials);
+                row << measure_op(tensor::conv2d_cpp_t(), idata, kdata, odata, trials);
+                row << measure_op(tensor::conv2d_dot_t(), idata, kdata, odata, trials);
+                row << measure_op(tensor::conv2d_dot_dyn_t(), idata, kdata, odata, trials);
+                row << measure_op(tensor::conv2d_mad_t(), idata, kdata, odata, trials);
+                row << measure_op(tensor::conv2d_mad_dyn_t(), idata, kdata, odata, trials);
+                row << measure_op(tensor::conv2d_dyn_t(), idata, kdata, odata, trials);
         }
 
         template
@@ -98,16 +82,14 @@ namespace
                 tmatrix idata, kdata, odata;
                 make_matrices(isize, ksize, idata, kdata, odata);
 
-                tmatrix idata_ret = idata;
-
-                row << measure_op(tensor::corr2d_egb_t(), odata, kdata, idata_ret, trials);
-                row << measure_op(tensor::corr2d_egr_t(), odata, kdata, idata_ret, trials);
-                row << measure_op(tensor::corr2d_cpp_t(), odata, kdata, idata_ret, trials);
-                row << measure_op(tensor::corr2d_mdk_t(), odata, kdata, idata_ret, trials);
-                row << measure_op(tensor::corr2d_mdk_dyn_t(), odata, kdata, idata_ret, trials);
-                row << measure_op(tensor::corr2d_mdo_t(), odata, kdata, idata_ret, trials);
-                row << measure_op(tensor::corr2d_mdo_dyn_t(), odata, kdata, idata_ret, trials);
-                row << measure_op(tensor::corr2d_dyn_t(), odata, kdata, idata_ret, trials);
+                row << measure_op(tensor::corr2d_egb_t(), odata, kdata, idata, trials);
+                row << measure_op(tensor::corr2d_egr_t(), odata, kdata, idata, trials);
+                row << measure_op(tensor::corr2d_cpp_t(), odata, kdata, idata, trials);
+                row << measure_op(tensor::corr2d_mdk_t(), odata, kdata, idata, trials);
+                row << measure_op(tensor::corr2d_mdk_dyn_t(), odata, kdata, idata, trials);
+                row << measure_op(tensor::corr2d_mdo_t(), odata, kdata, idata, trials);
+                row << measure_op(tensor::corr2d_mdo_dyn_t(), odata, kdata, idata, trials);
+                row << measure_op(tensor::corr2d_dyn_t(), odata, kdata, idata, trials);
         }
 }
 
@@ -155,13 +137,18 @@ int main(int argc, char* argv[])
                         std::set<int> ksizes;
                         for (int ksize = min_ksize; ksize <= std::min(isize, max_ksize); ksize += 2)
                         {
-                                ksizes.insert(ksize);   
-                                ksizes.insert(isize - ksize + 1);                       
+                                ksizes.insert(ksize);
+                                ksizes.insert(isize - ksize + 1);
                         }
 
                         for (auto ksize : ksizes)
                         {
-                                const auto header = make_header(isize, ksize);
+                                const int osize = isize - ksize + 1;
+                                const auto header =
+                                        "(" + text::to_string(isize) + "x" + text::to_string(isize) + " @ " +
+                                              text::to_string(ksize) + "x" + text::to_string(ksize) + " -> " +
+                                              text::to_string(osize) + "x" + text::to_string(osize) + ")";
+
                                 test_config_conv<matrix_t>(isize, ksize, table.append(header));
                         }
                 }
@@ -188,7 +175,12 @@ int main(int argc, char* argv[])
                 {
                         for (int ksize = min_ksize; ksize <= std::min(isize, max_ksize); ksize += 2)
                         {
-                                const auto header = make_header(isize, ksize);
+                                const int osize = isize - ksize + 1;
+                                const auto header =
+                                        "(" + text::to_string(osize) + "x" + text::to_string(osize) + " @ " +
+                                              text::to_string(ksize) + "x" + text::to_string(ksize) + " -> " +
+                                              text::to_string(isize) + "x" + text::to_string(isize) + ")";
+
                                 test_config_corr<matrix_t>(isize, ksize, table.append(header));
                         }
                 }
