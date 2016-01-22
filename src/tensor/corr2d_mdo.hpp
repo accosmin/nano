@@ -1,6 +1,6 @@
 #pragma once
 
-#include <cassert>
+#include "conv2d_assert.hpp"
 
 namespace tensor
 {
@@ -17,8 +17,7 @@ namespace tensor
                 >
                 void operator()(const tmatrixo& odata, const tmatrixk& kdata, tmatrixi&& idata) const
                 {
-                        assert(idata.rows() + 1 == kdata.rows() + odata.rows());
-                        assert(idata.cols() + 1 == kdata.cols() + odata.cols());
+                        conv2d_assert(idata, kdata, odata);
 
                         const auto orows = odata.rows();
                         const auto ocols = odata.cols();
@@ -58,8 +57,7 @@ namespace tensor
                 >
                 void operator()(const tmatrixo& odata, const tmatrixk& kdata, tmatrixi&& idata) const
                 {
-                        assert(idata.rows() + 1 == kdata.rows() + odata.rows());
-                        assert(idata.cols() + 1 == kdata.cols() + odata.cols());
+                        conv2d_assert(idata, kdata, odata);
                         assert(odata.cols() == ocols);
 
                         const auto orows = odata.rows();
@@ -81,7 +79,7 @@ namespace tensor
                         }
                 }
         };
-        
+
         ///
         /// \brief 2D correlation: idata += odata @ kdata (using a mad product by odata runtime-decoded columns)
         ///

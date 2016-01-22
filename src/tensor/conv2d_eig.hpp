@@ -1,6 +1,6 @@
 #pragma once
 
-#include <cassert>
+#include "conv2d_assert.hpp"
 
 namespace tensor
 {
@@ -17,8 +17,7 @@ namespace tensor
                 >
                 void operator()(const tmatrixi& idata, const tmatrixk& kdata, tmatrixo&& odata) const
                 {
-                        assert(idata.rows() + 1 == kdata.rows() + odata.rows());
-                        assert(idata.cols() + 1 == kdata.cols() + odata.cols());
+                        conv2d_assert(idata, kdata, odata);
 
                         for (auto r = 0; r < odata.rows(); r ++)
                         {
