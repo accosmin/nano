@@ -24,11 +24,6 @@ set(libtensor_sources
 
 add_library(tensor INTERFACE)
 
-add_library(tensor_dummy STATIC
-        ${libtensor_sources}
-        ${CMAKE_CURRENT_SOURCE_DIR}/_dummy.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/_dummy.cpp)
-
 # install headers
 install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
         DESTINATION include

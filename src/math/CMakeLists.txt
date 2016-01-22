@@ -33,15 +33,8 @@ add_subdirectory(funcs)
 
 add_library(math INTERFACE)
 
-add_library(math_dummy STATIC
-        ${libmath_sources}
-        ${CMAKE_CURRENT_SOURCE_DIR}/_dummy.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/_dummy.cpp)
-
 # install library
 install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
         DESTINATION include
         FILES_MATCHING PATTERN "*.h" PATTERN "*.hpp")
 
-
-                
