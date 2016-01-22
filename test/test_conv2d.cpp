@@ -48,7 +48,7 @@ namespace test
                 const scalar_t convcpu_dyn = test_cpu(tensor::conv2d_dyn_t(), idata, kdata, odata);
                 const scalar_t convcpu_dot_dyn = test_cpu(tensor::conv2d_dot_dyn_t(), idata, kdata, odata);
                 const scalar_t convcpu_mad_dyn = test_cpu(tensor::conv2d_mad_dyn_t(), idata, kdata, odata);
-                
+
                 const scalar_t epsilon = math::epsilon1<scalar_t>();
 
                 NANOCV_CHECK_CLOSE(convcpu_eig, convcpu_eig, epsilon);
