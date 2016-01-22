@@ -52,18 +52,6 @@ namespace text
                         assert(it != row.end());
                         return it;
                 }
-
-                template
-                <
-                        typename tscalar
-                >
-                auto minmax_element(const table_row_t& row)
-                {
-                        const auto op = text::make_less_from_string<tscalar>();
-                        const auto it = std::minmax_element(row.begin(), row.end(), op);
-                        assert(it.first != row.end() && it.second != row.end());
-                        return it;
-                }
         }
 
         ///
@@ -150,10 +138,9 @@ namespace text
                         assert(percentage >= tscalar(1));
                         assert(percentage <= tscalar(99));
 
-                        const auto it = detail::minmax_element<tscalar>(row);
-                        const auto min = text::from_string<tscalar>(*it.first);
-                        const auto max = text::from_string<tscalar>(*it.second);
-                        const auto thres = max - percentage * (max - min) / tscalar(100);
+                        const auto it = detail::max_element<tscalar>(row);
+                        const auto max = text::from_string<tscalar>(*it);
+                        const auto thres = max - percentage * (max < 0 ? -max : +max) / tscalar(100);
 
                         return detail::select_cols<tscalar>(row, [thres] (const auto& val) { return val >= thres; });
                 };
@@ -173,10 +160,9 @@ namespace text
                         assert(percentage >= tscalar(1));
                         assert(percentage <= tscalar(99));
 
-                        const auto it = detail::minmax_element<tscalar>(row);
-                        const auto min = text::from_string<tscalar>(*it.first);
-                        const auto max = text::from_string<tscalar>(*it.second);
-                        const auto thres = min + percentage * (max - min) / tscalar(100);
+                        const auto it = detail::min_element<tscalar>(row);
+                        const auto min = text::from_string<tscalar>(*it);
+                        const auto thres = min + percentage * (min < 0 ? -min : +min) / tscalar(100);
 
                         return detail::select_cols<tscalar>(row, [thres] (const auto& val) { return val <= thres; });
                 };
