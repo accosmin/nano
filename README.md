@@ -17,7 +17,7 @@ The core modules are independent of each other and are designed to be as generic
 
 Most notably the **math** module implements the following: 
 * batch optimization methods: `gradient descent`, various `non-linear conjugate gradient descent`, `L-BFGS`.
-* stochastic optimization methods: `accelerated gradient`, `stochastic (averaging) gradient`, `ADADELTA`, `ADAGRAD`.
+* stochastic optimization methods: `Nesterov's accelerated gradient`, `stochastic (averaging) gradient`, `ADADELTA`, `ADAGRAD`.
 * line-search methods: `backtracking`, `More & Thuente`, `CG_DESCENT`.
 
 
@@ -38,7 +38,7 @@ A **trainer** optimizes the parameters of a given model to produce the correct o
 
 #### Compilation
 
-Use a C++14 compiler and install Eigen3, LibArchive and DevIL. 
+Use a C++14 compiler and install Eigen3, LibArchive and DevIL.
 
 NanoCV is tested on ArchLinux ([gcc 4.9.3+ | gcc 5.2+ | clang 3.5+], CMake 3.1+, Ninja or Make) and OSX (clang, homebrew, CMake 3.1+, Ninja or Make). The code is written to be cross-platform, so it may work (with minor fixes) on other platforms as well (e.g. Windows/MSVC).
 
@@ -53,7 +53,6 @@ The library provides various command line programs and utilities. Each program d
 * **info_task** - loads a task and prints its detailed description.
 * **trainer** - train a model on a given task.
 * **tester** - test a model on a given task.
-* **generator** - creates input image patches that maximally activate an output unit (e.g. associated to a class label).
 
 The `scripts` directory contains examples on how to train various models on different tasks.
 
