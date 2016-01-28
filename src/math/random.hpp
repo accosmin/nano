@@ -18,7 +18,7 @@ namespace math
         class random_t
         {
         public:
-                
+
                 ///
                 /// \brief constructor
                 ///
@@ -30,7 +30,7 @@ namespace math
                                       std::max(min, max))
                 {
                 }
-                
+
                 ///
                 /// \brief generate a random value
                 ///
@@ -38,7 +38,7 @@ namespace math
                 {
                         return m_die(m_gen);
                 }
-                
+
                 ///
                 /// \brief fill the [begin, end) range with random values
                 ///
@@ -66,7 +66,7 @@ namespace math
 
         private:
 
-                using gen_t = std::mt19937_64;
+                using gen_t = std::ranlux48_base;
 
                 using die_t = typename std::conditional
                 <
@@ -80,7 +80,7 @@ namespace math
                 gen_t           m_gen;
                 die_t           m_die;
         };
-        
+
         ///
         /// \brief create a random number generator in the given [min, max] range
         ///
@@ -95,7 +95,7 @@ namespace math
         {
                 return random_t<tscalar>(min, max);
         }
-        
+
         ///
         /// \brief create a random index generator in the given [0, size) range
         ///
