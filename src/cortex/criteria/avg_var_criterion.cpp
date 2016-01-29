@@ -37,7 +37,8 @@ namespace cortex
         {
                 avg_criterion_t::accumulate(other);
 
-                const avg_var_criterion_t& vother = dynamic_cast<const avg_var_criterion_t&>(other);
+                assert(dynamic_cast<const avg_var_criterion_t*>(&other));
+                const avg_var_criterion_t& vother = static_cast<const avg_var_criterion_t&>(other);
                 m_value2 += vother.m_value2;
                 m_vgrad2 += vother.m_vgrad2;
         }
