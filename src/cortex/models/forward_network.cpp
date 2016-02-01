@@ -11,7 +11,7 @@ namespace cortex
 {
         forward_network_t::forward_network_t(const string_t& parameters)
                 :       model_t(parameters)
-        {                
+        {
         }
 
         forward_network_t::forward_network_t(const forward_network_t& other)
@@ -35,7 +35,7 @@ namespace cortex
                 return *this;
         }
 
-        const tensor_t& forward_network_t::output(const tensor_t& _input) const
+        const tensor_t& forward_network_t::output(const tensor_t& _input)
         {
                 const tensor_t* input = &_input;
                 for (rlayers_t::const_iterator it = m_layers.begin(); it != m_layers.end(); ++ it)
@@ -45,10 +45,10 @@ namespace cortex
                         input = &layer->output(*input);
                 }
 
-		return *input;
+                return *input;
         }
 
-        tensor_t forward_network_t::ginput(const vector_t& _output) const
+        const tensor_t& forward_network_t::ginput(const vector_t& _output)
         {
                 assert(_output.size() == osize());
                 assert(!m_layers.empty());
@@ -68,7 +68,7 @@ namespace cortex
                 return *poutput;
         }
 
-        vector_t forward_network_t::gparam(const vector_t& _output) const
+        const vector_t& forward_network_t::gparam(const vector_t& _output)
         {
                 assert(_output.size() == osize());
                 assert(!m_layers.empty());
@@ -77,11 +77,11 @@ namespace cortex
                 const tensor_t output = tensor::map_tensor(_output.data(), osize(), tensor_size_t(1), tensor_size_t(1));
 
                 // parameter gradient
-                vector_t gradient(psize());
+                m_gparam.resize(psize());
 
                 // backward step
                 const tensor_t* poutput = &output;
-                scalar_t* gparamient = gradient.data() + gradient.size();
+                scalar_t* gparamient = m_gparam.data() + m_gparam.size();
 
                 for (rlayers_t::const_reverse_iterator it = m_layers.rbegin(); it != m_layers.rend(); ++ it)
                 {
@@ -98,7 +98,7 @@ namespace cortex
                         -- it;
                 }
 
-                return gradient;
+                return m_gparam;
         }
 
         bool forward_network_t::save_params(vector_t& x) const

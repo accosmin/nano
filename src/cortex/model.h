@@ -53,10 +53,10 @@ namespace cortex
                 ///
                 /// \brief compute the model's output
                 ///
-                const tensor_t& output(const image_t& image, coord_t x, coord_t y) const;
-                const tensor_t& output(const image_t& image, const rect_t& region) const;
-                const tensor_t& output(const vector_t& input) const;
-                virtual const tensor_t& output(const tensor_t& input) const = 0;
+                const tensor_t& output(const image_t& image, coord_t x, coord_t y);
+                const tensor_t& output(const image_t& image, const rect_t& region);
+                const tensor_t& output(const vector_t& input);
+                virtual const tensor_t& output(const tensor_t& input) = 0;
 
                 ///
                 /// \brief save its parameters to file
@@ -91,12 +91,12 @@ namespace cortex
                 ///
                 /// \brief compute the model's gradient wrt parameters
                 ///
-                virtual vector_t gparam(const vector_t& output) const = 0;
+                virtual const vector_t& gparam(const vector_t& output) = 0;
 
                 ///
                 /// \brief compute the model's gradient wrt inputs
                 ///
-                virtual tensor_t ginput(const vector_t& output) const = 0;
+                virtual const tensor_t& ginput(const vector_t& output) = 0;
 
                 // access functions
                 tensor_size_t irows() const { return m_rows; }
@@ -109,12 +109,6 @@ namespace cortex
 
         protected:
 
-                ///
-                /// \brief compose the input data
-                ///
-                tensor_t make_input(const image_t& image, coord_t x, coord_t y) const;
-                tensor_t make_input(const image_t& image, const rect_t& region) const;
-
                 // resize to new inputs/outputs, returns the number of parameters
                 virtual tensor_size_t resize(bool verbose) = 0;
 
@@ -124,6 +118,7 @@ namespace cortex
                 tensor_size_t   m_rows, m_cols;         ///< input patch size
                 tensor_size_t   m_outputs;              ///< output size
                 color_mode      m_color;                ///< input color mode
+                tensor_t        m_idata;                ///< buffer input tensor
         };
 }
 

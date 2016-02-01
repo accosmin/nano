@@ -68,35 +68,25 @@ namespace cortex
                 return load_params(params) && is;
         }
 
-        const tensor_t& model_t::output(const image_t& image, const rect_t& region) const
+        const tensor_t& model_t::output(const image_t& image, const rect_t& region)
         {
                 return output(image, region.left(), region.top());
         }
 
-        const tensor_t& model_t::output(const image_t& image, coord_t x, coord_t y) const
+        const tensor_t& model_t::output(const image_t& image, coord_t x, coord_t y)
         {
-                return output(make_input(image, x, y));
+                m_idata = image.to_tensor(rect_t{x, y, icols(), irows()});
+                return output(m_idata);
         }
 
-        const tensor_t& model_t::output(const vector_t& input) const
+        const tensor_t& model_t::output(const vector_t& input)
         {
                 assert(input.size() == isize());
 
-                tensor_t xinput(idims(), irows(), icols());
-                xinput.vector() = input;
+                m_idata.resize(idims(), irows(), icols());
+                m_idata.vector() = input;
 
-                return output(xinput);
-        }
-
-        tensor_t model_t::make_input(const image_t& image, coord_t x, coord_t y) const
-        {
-                const auto region = rect_t(x, y, icols(), irows());
-                return image.to_tensor(region);
-        }
-
-        tensor_t model_t::make_input(const image_t& image, const rect_t& region) const
-        {
-                return make_input(image, region.left(), region.top());
+                return output(m_idata);
         }
 
         tensor_size_t model_t::idims() const

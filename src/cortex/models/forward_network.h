@@ -16,7 +16,7 @@ namespace cortex
                 NANOCV_MAKE_CLONABLE(forward_network_t, "parameters: [layer_id[:layer_parameters][;]]*")
 
                 using model_t::resize;
-                
+
                 ///
                 /// \brief constructor
                 ///
@@ -35,17 +35,17 @@ namespace cortex
                 ///
                 /// \brief compute the model's output
                 ///
-                virtual const tensor_t& output(const tensor_t& input) const override;
+                virtual const tensor_t& output(const tensor_t& input) override;
 
                 ///
                 /// \brief compute the model's gradient wrt parameters
                 ///
-                virtual vector_t gparam(const vector_t& output) const override;
+                virtual const vector_t& gparam(const vector_t& output) override;
 
                 ///
                 /// \brief compute the model's gradient wrt inputs
                 ///
-                virtual tensor_t ginput(const vector_t& output) const override;
+                virtual const tensor_t& ginput(const vector_t& output) override;
 
                 ///
                 /// \brief save/load/initialize parameters
@@ -81,6 +81,7 @@ namespace cortex
 
                 // attributes
                 rlayers_t               m_layers;               ///< feed-forward layers
+                vector_t                m_gparam;               ///< buffer gradient wrt parameters
         };
 }
 
