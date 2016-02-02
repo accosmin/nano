@@ -55,7 +55,7 @@ namespace cortex
                         const auto delta = 1 + crt_state.m_milis.count() - prv_state.m_milis.count();
 
                         // convergence speed ~ loss decrease ratio / second
-                        return std::pow(ratio, scalar_t(1000) / static_cast<scalar_t>(delta));
+                        return scalar_t(1000) / static_cast<scalar_t>(delta) * std::log(ratio);
                 };
 
                 math::stats_t<scalar_t> speeds;
