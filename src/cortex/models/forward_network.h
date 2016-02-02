@@ -82,6 +82,7 @@ namespace cortex
                 // attributes
                 rlayers_t               m_layers;               ///< feed-forward layers
                 vector_t                m_gparam;               ///< buffer gradient wrt parameters
+                tensor_t                m_odata;                ///< bufer output
         };
 }
 

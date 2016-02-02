@@ -54,10 +54,10 @@ namespace cortex
                 assert(!m_layers.empty());
 
                 // output (gradient)
-                const tensor_t output = tensor::map_tensor(_output.data(), osize(), tensor_size_t(1), tensor_size_t(1));
+                m_odata = tensor::map_tensor(_output.data(), osize(), tensor_size_t(1), tensor_size_t(1));
 
                 // backward step
-                const tensor_t* poutput = &output;
+                const tensor_t* poutput = &m_odata;
                 for (rlayers_t::const_reverse_iterator it = m_layers.rbegin(); it != m_layers.rend(); ++ it)
                 {
                         const rlayer_t& layer = *it;
@@ -74,13 +74,13 @@ namespace cortex
                 assert(!m_layers.empty());
 
                 // output (gradient)
-                const tensor_t output = tensor::map_tensor(_output.data(), osize(), tensor_size_t(1), tensor_size_t(1));
+                m_odata = tensor::map_tensor(_output.data(), osize(), tensor_size_t(1), tensor_size_t(1));
 
                 // parameter gradient
                 m_gparam.resize(psize());
 
                 // backward step
-                const tensor_t* poutput = &output;
+                const tensor_t* poutput = &m_odata;
                 scalar_t* gparamient = m_gparam.data() + m_gparam.size();
 
                 for (rlayers_t::const_reverse_iterator it = m_layers.rbegin(); it != m_layers.rend(); ++ it)
