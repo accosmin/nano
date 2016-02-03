@@ -81,7 +81,7 @@ namespace cortex
         {
                 return m_opt_state;
         }
-        
+
         trainer_states_t trainer_result_t::optimum_states() const
         {
                 const string_t str_opt_config = text::concatenate(m_opt_config, "-");
@@ -93,7 +93,7 @@ namespace cortex
                                 return it.second;
                         }
                 }
-                
+
                 return trainer_states_t();
         }
 
@@ -123,4 +123,4 @@ namespace cortex
                         code == trainer_result_return_t::solved;
         }
 }
-	
+

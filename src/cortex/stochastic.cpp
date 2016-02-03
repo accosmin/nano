@@ -71,7 +71,7 @@ namespace cortex
 
                 // Optimize the model
                 math::minimize(opt_problem_t(fn_size, fn_fval, fn_grad), fn_ulog,
-                              data.m_x0, optimizer, epochs, epoch_size, alpha0, decay, momentum);
+                               data.m_x0, optimizer, epochs, epoch_size, alpha0, decay, momentum);
 
                 // revert to the original sampler
                 data.m_tsampler.pop();

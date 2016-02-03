@@ -19,9 +19,9 @@ int main(int argc, char *argv[])
         cmdline.add("", "save-dir",             "directory to save task samples to", "./");
         cmdline.add("", "save-group-rows",      "number of task samples to group in a row", "32");
         cmdline.add("", "save-group-cols",      "number of task samples to group in a column", "32");
-	
+
         cmdline.process(argc, argv);
-        		
+
         // check arguments and options
         const auto cmd_task = cmdline.get<string_t>("task");
         const auto cmd_task_dir = cmdline.get<string_t>("task-dir");
@@ -56,7 +56,7 @@ int main(int argc, char *argv[])
                         task->save_as_images(test_fold, test_path, cmd_save_group_rows, cmd_save_group_cols);
                 }
         }
-		
+
         // OK
         cortex::log_info() << cortex::done;
         return EXIT_SUCCESS;
