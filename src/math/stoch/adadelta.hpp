@@ -48,7 +48,7 @@ namespace math
                         // running-averaged-per-dimension-squared step updates
                         momentum_vector_t<tvector> davg(m_param.m_momentum, tvector::Zero(x0.size()));
 
-                        for (std::size_t e = 0, k = 1; e < m_param.m_epochs; ++ e)
+                        for (std::size_t e = 0, k = 1; e < m_param.m_epochs && m_param.ulog(cstate); ++ e)
                         {
                                 for (std::size_t i = 0; i < m_param.m_epoch_size; ++ i, ++ k) 
                                 {
@@ -65,7 +65,6 @@ namespace math
                                         cstate.update(problem, tscalar(1));
                                 }
 
-                                m_param.ulog(cstate);
                                 bstate.update(cstate);
                         }
 

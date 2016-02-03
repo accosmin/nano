@@ -29,6 +29,9 @@ namespace math
                         m_state.update(state);
                 }
 
+                ///
+                /// \brief access the best state
+                ///
                 const tstate& get() const
                 {
                         return m_state;

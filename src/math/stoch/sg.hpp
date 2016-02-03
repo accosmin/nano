@@ -42,7 +42,7 @@ namespace math
                         // best state
                         best_state_t<tstate> bstate(cstate);
 
-                        for (std::size_t e = 0, k = 1; e < m_param.m_epochs; ++ e)
+                        for (std::size_t e = 0, k = 1; e < m_param.m_epochs && m_param.ulog(cstate); ++ e)
                         {
                                 for (std::size_t i = 0; i < m_param.m_epoch_size; ++ i, ++ k)
                                 {
@@ -56,7 +56,6 @@ namespace math
                                         cstate.update(problem, alpha);
                                 }
 
-                                m_param.ulog(cstate);
                                 bstate.update(cstate);
                         }
 

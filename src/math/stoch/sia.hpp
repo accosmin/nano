@@ -64,7 +64,10 @@ namespace math
 
                                 const tvector cx = cstate.x;
                                 cstate.update(problem, xavg.value());   // NB: to correctly log the current parameters!
-                                m_param.ulog(cstate);
+                                if (!m_param.ulog(cstate))
+                                {
+                                        break;
+                                }
                                 bstate.update(cstate);
                                 cstate.update(problem, cx);             // revert it
                         }
