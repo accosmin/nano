@@ -1,7 +1,6 @@
 #pragma once
 
-#include "params.hpp"
-#include "best_state.hpp"
+#include "stoch_loop.hpp"
 #include "math/average.hpp"
 
 namespace math
@@ -38,42 +37,32 @@ namespace math
                         assert(problem.size() == x0.size());
 
                         // current state
-                        tstate cstate(problem, x0);
-
-                        // best state
-                        best_state_t<tstate> bstate(cstate);
+                        tvector cx = x0;
 
                         // running-averaged parameters
                         average_vector_t<tvector> xavg(x0.size());
 
-                        for (std::size_t e = 0, k = 1; e < m_param.m_epochs; ++ e)
+                        const auto op_iter = [&] (tstate& cstate, const std::size_t k)
                         {
-                                for (std::size_t i = 0; i < m_param.m_epoch_size; ++ i, ++ k)
-                                {
-                                        // learning rate
-                                        const tscalar alpha = m_param.alpha(k);
+                                // learning rate
+                                const tscalar alpha = m_param.alpha(k);
 
-                                        // descent direction
-                                        cstate.d = -cstate.g;
+                                // descent direction
+                                cx -= alpha * cstate.g;
 
-                                        // update solution
-                                        cstate.update(problem, alpha);
+                                // update solution
+                                cstate.update(problem, cx);
 
-                                        xavg.update(cstate.x);
-                                }
+                                xavg.update(cx);
+                        };
 
-                                const tvector cx = cstate.x;
-                                cstate.update(problem, xavg.value());   // NB: to correctly log the current parameters!
-                                if (!m_param.ulog(cstate))
-                                {
-                                        break;
-                                }
-                                bstate.update(cstate);
-                                cstate.update(problem, cx);             // revert it
-                        }
+                        const auto op_epoch = [&] (tstate& cstate)
+                        {
+                                cstate.update(problem, xavg.value());
+                        };
 
-                        // OK
-                        return bstate.get();
+                        // OK, assembly the optimizer
+                        return stoch_loop(m_param, tstate(problem, x0), op_iter, op_epoch);
                 }
 
                 // attributes

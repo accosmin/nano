@@ -1,7 +1,6 @@
 #pragma once
 
-#include "params.hpp"
-#include "best_state.hpp"
+#include "stoch_loop.hpp"
 #include "math/average.hpp"
 
 namespace math
@@ -39,37 +38,30 @@ namespace math
                 {
                         assert(problem.size() == x0.size());
 
-                        // current state
-                        tstate cstate(problem, x0);
-
-                        // best state
-                        best_state_t<tstate> bstate(cstate);
-
                         // running-averaged-per-dimension-squared gradient
                         average_vector_t<tvector> gavg(x0.size());
 
-                        for (std::size_t e = 0, k = 1; e < m_param.m_epochs && m_param.ulog(cstate); ++ e)
+                        const auto op_iter = [&] (tstate& cstate, const std::size_t)
                         {
-                                for (std::size_t i = 0; i < m_param.m_epoch_size; ++ i, ++ k)
-                                {
-                                        // learning rate
-                                        const tscalar alpha = m_param.alpha(0);
+                                // learning rate
+                                const tscalar alpha = m_param.alpha(0);
 
-                                        // descent direction
-                                        gavg.update(cstate.g.array().square());
+                                // descent direction
+                                gavg.update(cstate.g.array().square());
 
-                                        cstate.d = -cstate.g.array() /
-                                                   (m_param.m_epsilon + gavg.value().array()).sqrt();
+                                cstate.d = -cstate.g.array() /
+                                           (m_param.m_epsilon + gavg.value().array()).sqrt();
 
-                                        // update solution
-                                        cstate.update(problem, alpha);
-                                }
+                                // update solution
+                                cstate.update(problem, alpha);
+                        };
 
-                                bstate.update(cstate);
-                        }
+                        const auto op_epoch = [] (tstate&)
+                        {
+                        };
 
-                        // OK
-                        return bstate.get();
+                        // OK, assembly the optimizer
+                        return stoch_loop(m_param, tstate(problem, x0), op_iter, op_epoch);
                 }
 
                 // attributes

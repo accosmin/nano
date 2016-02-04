@@ -1,7 +1,6 @@
 #pragma once
 
-#include "params.hpp"
-#include "best_state.hpp"
+#include "stoch_loop.hpp"
 #include "math/momentum.hpp"
 
 namespace math
@@ -36,40 +35,33 @@ namespace math
                 {
                         assert(problem.size() == x0.size());
 
-                        // current state
-                        tstate cstate(problem, x0);
-
-                        // best state
-                        best_state_t<tstate> bstate(cstate);
-
                         // running-averaged-per-dimension-squared gradient
                         momentum_vector_t<tvector> gavg(m_param.m_momentum, tvector::Zero(x0.size()));
 
                         // running-averaged-per-dimension-squared step updates
                         momentum_vector_t<tvector> davg(m_param.m_momentum, tvector::Zero(x0.size()));
 
-                        for (std::size_t e = 0, k = 1; e < m_param.m_epochs && m_param.ulog(cstate); ++ e)
+                        const auto op_iter = [&] (tstate& cstate, const std::size_t)
                         {
-                                for (std::size_t i = 0; i < m_param.m_epoch_size; ++ i, ++ k) 
-                                {
-                                        // descent direction
-                                        gavg.update(cstate.g.array().square());
+                                // descent direction
+                                gavg.update(cstate.g.array().square());
 
-                                        cstate.d = -cstate.g.array() *
-                                                   (m_param.m_epsilon + davg.value().array()).sqrt() /
-                                                   (m_param.m_epsilon + gavg.value().array()).sqrt();
+                                cstate.d = -cstate.g.array() *
+                                           (m_param.m_epsilon + davg.value().array()).sqrt() /
+                                           (m_param.m_epsilon + gavg.value().array()).sqrt();
 
-                                        davg.update(cstate.d.array().square());
+                                davg.update(cstate.d.array().square());
 
-                                        // update solution
-                                        cstate.update(problem, tscalar(1));
-                                }
+                                // update solution
+                                cstate.update(problem, tscalar(1));
+                        };
 
-                                bstate.update(cstate);
-                        }
+                        const auto op_epoch = [] (tstate&)
+                        {
+                        };
 
-                        // OK
-                        return bstate.get();
+                        // OK, assembly the optimizer
+                        return stoch_loop(m_param, tstate(problem, x0), op_iter, op_epoch);
                 }
 
                 // attributes

@@ -1,7 +1,6 @@
 #pragma once
 
-#include "params.hpp"
-#include "best_state.hpp"
+#include "stoch_loop.hpp"
 #include "ag_restarts.hpp"
 
 namespace math
@@ -54,51 +53,47 @@ namespace math
                         // restart method
                         trestart restart;
 
-                        // current state
-                        tstate cstate(problem, x0);
-
-                        // best state
-                        best_state_t<tstate> bstate(cstate);
+                        // initial state
+                        tstate istate(problem, x0);
 
                         // current & previous iterations
-                        tvector cx = cstate.x;
-                        tvector x1 = cstate.x;
-                        tvector x2 = cstate.x;
+                        tvector cx = istate.x;
+                        tvector x1 = istate.x;
+                        tvector x2 = istate.x;
 
-                        tscalar fx = cstate.f;
-                        tscalar f1 = cstate.f;
+                        tscalar fx = istate.f;
+                        tscalar f1 = istate.f;
 
-                        for (std::size_t e = 0, k = 1; e < m_param.m_epochs && m_param.ulog(cstate); ++ e)
+                        const auto op_iter = [&] (tstate& cstate, std::size_t& k)
                         {
-                                for (std::size_t i = 0; i < m_param.m_epoch_size; ++ i, ++ k)
-                                {
-                                        // learning rate
-                                        const tscalar alpha = m_param.alpha(0);
+                                // learning rate
+                                const tscalar alpha = m_param.alpha(0);
 
-                                        // momentum
-                                        const tscalar m = tscalar(k - 1) / tscalar(k + 2);
+                                // momentum
+                                const tscalar m = tscalar(k - 1) / tscalar(k + 2);
 
-                                        // update solution
-                                        cx = x1 + m * (x1 - x2);
-                                        cstate.update(problem, cx);
-                                        fx = cstate.f;
-
-                                        k = restart(cstate.g, cx, fx, x1, f1, k);
-
-                                        cx -= alpha * cstate.g;
-
-                                        // next iteration
-                                        x2 = x1;
-                                        x1 = cx;
-                                        f1 = fx;
-                                }
-
+                                // update solution
+                                cx = x1 + m * (x1 - x2);
                                 cstate.update(problem, cx);
-                                bstate.update(cstate);
-                        }
+                                fx = cstate.f;
 
-                        // OK
-                        return bstate.get();
+                                k = restart(cstate.g, cx, fx, x1, f1, k);
+
+                                cx -= alpha * cstate.g;
+
+                                // next iteration
+                                x2 = x1;
+                                x1 = cx;
+                                f1 = fx;
+                        };
+
+                        const auto op_epoch = [&] (tstate& cstate)
+                        {
+                                cstate.update(problem, cx);
+                        };
+
+                        // OK, assembly the optimizer
+                        return stoch_loop(m_param, istate, op_iter, op_epoch);
                 }
 
                 // attributes
