@@ -1,10 +1,11 @@
 # build command line programs
 set(nanocv_apps
-        benchmark_batch.cpp
         benchmark_conv.cpp
+        benchmark_funcs.cpp
+        benchmark_batch.cpp
+        benchmark_stoch.cpp
         benchmark_models.cpp
         benchmark_sampling.cpp
-        benchmark_stoch.cpp
         benchmark_trainers.cpp
         embed.cpp
         info_archive.cpp
