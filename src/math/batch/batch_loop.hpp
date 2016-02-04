@@ -27,7 +27,7 @@ namespace math
                                 break;
                         }
 
-                        if (opi(cstate, i))
+                        if (!opi(cstate, i))
                         {
                                 break;
                         }

@@ -54,8 +54,8 @@ namespace math
                                 //      (see "Numerical optimization", Nocedal & Wright, 2nd edition, p.178)
                                 q = cstate.g;
 
-                                typename std::deque<tvector>::const_reverse_iterator itr_s = ss.rbegin();
-                                typename std::deque<tvector>::const_reverse_iterator itr_y = ys.rbegin();
+                                auto itr_s = ss.rbegin();
+                                auto itr_y = ys.rbegin();
                                 std::vector<tscalar> alphas;
                                 for (std::size_t j = 1; j <= m_param.m_hsize && i >= j; j ++)
                                 {
@@ -78,9 +78,9 @@ namespace math
                                         r = s.dot(y) / y.dot(y) * q;
                                 }
 
-                                typename std::deque<tvector>::const_iterator it_s = ss.begin();
-                                typename std::deque<tvector>::const_iterator it_y = ys.begin();
-                                typename std::vector<tscalar>::const_reverse_iterator itr_alpha = alphas.rbegin();
+                                auto it_s = ss.begin();
+                                auto it_y = ys.begin();
+                                auto itr_alpha = alphas.rbegin();
                                 for (std::size_t j = 1; j <= m_param.m_hsize && i >= j; j ++)
                                 {
                                         const tvector& s = (*it_s ++);
