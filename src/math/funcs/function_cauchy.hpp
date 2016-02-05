@@ -37,7 +37,7 @@ namespace math
 
                         const auto fn_fval = [=] (const tvector& x)
                         {
-                                return (1.0 + x.array().square()).log().sum();
+                                return std::log((1.0 + x.array().square()).prod());
                         };
 
                         const auto fn_grad = [=] (const tvector& x, tvector& gx)
