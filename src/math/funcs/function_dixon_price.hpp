@@ -19,8 +19,12 @@ namespace math
                 using tproblem = typename function_t<tscalar>::tproblem;
 
                 explicit function_dixon_price_t(const tsize dims)
-                        :       m_dims(dims)
+                        :       m_dims(dims), m_weights(dims)
                 {
+                        for (tsize i = 0; i < m_dims; ++ i)
+                        {
+                               m_weights(i) = tscalar(i + 1);
+                        }
                 }
 
                 virtual std::string name() const override
@@ -37,39 +41,26 @@ namespace math
 
                         const auto fn_fval = [=] (const tvector& x)
                         {
-                                tscalar fx = 0;
-                                for (tsize i = 0; i < m_dims; i ++)
-                                {
-                                        if (i == 0)
-                                        {
-                                                fx += math::square(x(0) - 1);
-                                        }
-                                        else
-                                        {
-                                                fx += tscalar(i + 1) * math::square(2 * math::square(x(i)) - x(i - 1));
-                                        }
-                                }
+                                const auto xsegm0 = x.segment(0, m_dims - 1);
+                                const auto xsegm1 = x.segment(1, m_dims - 1);
 
-                                return fx;
+                                return  math::square(x(0) - 1) +
+                                        (m_weights.segment(1, m_dims - 1).array() *
+                                        (2 * xsegm1.array().square() - xsegm0.array()).square()).sum();
                         };
 
                         const auto fn_grad = [=] (const tvector& x, tvector& gx)
                         {
-                                gx = tvector::Zero(m_dims);
-                                for (tsize i = 0; i < m_dims; i ++)
-                                {
-                                        if (i == 0)
-                                        {
-                                                gx(0) += 2 * (x(0) - 1);
-                                        }
-                                        else
-                                        {
-                                                const auto delta = tscalar(i + 1) * 2 * (2 * math::square(x(i)) - x(i - 1));
+                                const auto xsegm0 = x.segment(0, m_dims - 1);
+                                const auto xsegm1 = x.segment(1, m_dims - 1);
+                                const auto weight = m_weights.segment(1, m_dims - 1).array() *
+                                        2 * (2 * xsegm1.array().square() - xsegm0.array());
 
-                                                gx(i) += delta * 4 * x(i);
-                                                gx(i - 1) += - delta;
-                                        }
-                                }
+                                gx.resize(m_dims);
+                                gx.setZero();
+                                gx(0) = 2 * (x(0) - 1);
+                                gx.segment(1, m_dims - 1).array() += weight * 4 * xsegm1.array();
+                                gx.segment(0, m_dims - 1).array() -= weight;
 
                                 return fn_fval(x);
                         };
@@ -97,5 +88,6 @@ namespace math
                 }
 
                 tsize   m_dims;
+                tvector m_weights;
         };
 }

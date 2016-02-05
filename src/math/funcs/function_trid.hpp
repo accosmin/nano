@@ -37,23 +37,15 @@ namespace math
 
                         const auto fn_fval = [=] (const tvector& x)
                         {
-                                tscalar fx = (x.array() - 1).square().sum();
-                                for (tsize i = 1; i < m_dims; i ++)
-                                {
-                                        fx -= x(i) * x(i - 1);
-                                }
-
-                                return fx;
+                                return (x.array() - 1).square().sum() - 
+                                       (x.segment(0, m_dims - 1).array() * x.segment(1, m_dims - 1).array()).sum();
                         };
 
                         const auto fn_grad = [=] (const tvector& x, tvector& gx)
                         {
                                 gx = 2 * (x.array() - 1);
-                                for (tsize i = 1; i < m_dims; i ++)
-                                {
-                                        gx(i) -= x(i - 1);
-                                        gx(i - 1) -= x(i);
-                                }
+                                gx.segment(1, m_dims - 1) -= x.segment(0, m_dims - 1);
+                                gx.segment(0, m_dims - 1) -= x.segment(1, m_dims - 1);
 
                                 return fn_fval(x);
                         };

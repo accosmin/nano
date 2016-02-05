@@ -42,7 +42,7 @@ namespace math
 
                         const auto fn_grad = [=] (const tvector& x, tvector& gx)
                         {
-                                gx = (2.0 * x.array()) / (1.0 + x.array().square());
+                                gx = (2 * x.array()) / (1 + x.array().square());
 
                                 return fn_fval(x);
                         };
