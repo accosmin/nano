@@ -49,10 +49,13 @@ The easiest way to compile (and install) is to run the `build_release.sh` bash s
 
 The library provides various command line programs and utilities. Each program displays its possible arguments with short explanations by running it with `--help`.
 
+Most notably:
 * **info** - prints all registered objects with the associated ID and a short description.
 * **info_task** - loads a task and prints its detailed description.
-* **trainer** - train a model on a given task.
-* **tester** - test a model on a given task.
+* **train** - train a model on a given task.
+* **benchmark_batch** - benchmark all batch optimization methods with varying the line-search parameters on standard test functions.
+* **benchmark_stoch** - benchmark all stochastic optimization methods on standard test functions.
+* **benchmark_trainers** - benchmark all training methods on a synthetic task.
 
 The `scripts` directory contains examples on how to train various models on different tasks.
 
