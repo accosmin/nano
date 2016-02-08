@@ -31,8 +31,8 @@ template
 <
         typename ttrainer
 >
-static void test_optimizer(model_t& model, const string_t& name, text::table_t& table, const vectors_t& x0s,
-        const ttrainer& trainer)
+static void test_optimizer(model_t& model, const string_t& name, const string_t& basepath,
+        text::table_t& table, const vectors_t& x0s, const ttrainer& trainer)
 {
         math::stats_t<scalar_t> terrors;
         math::stats_t<scalar_t> verrors;
@@ -41,11 +41,11 @@ static void test_optimizer(model_t& model, const string_t& name, text::table_t& 
 
         log_info() << "<<< running " << name << " ...";
 
-        for (const vector_t& x0 : x0s)
+        for (size_t i = 0; i < x0s.size(); ++ i)
         {
                 const cortex::timer_t timer;
 
-                model.load_params(x0);
+                model.load_params(x0s[i]);
 
                 const auto result = trainer();
                 const auto opt_state = result.optimum_state();
@@ -63,6 +63,11 @@ static void test_optimizer(model_t& model, const string_t& name, text::table_t& 
                            << ", valid = " << opt_state.m_verror_avg
                            << ", speed = " << opt_speed << "/s"
                            << " done in " << timer.elapsed() << ".";
+
+                const auto path = basepath + "-trial" + text::to_string(i) + ".state";
+
+                const auto opt_states = result.optimum_states();
+                cortex::save(path, opt_states);
         }
 
         table.append(name)
@@ -75,7 +80,7 @@ static void test_optimizer(model_t& model, const string_t& name, text::table_t& 
 static void test_optimizers(
         const task_t& task, model_t& model, const sampler_t& tsampler, const sampler_t& vsampler,
         const loss_t& loss, const criterion_t& criterion,
-        const size_t trials, const size_t iterations, text::table_t& table)
+        const size_t trials, const size_t iterations, const string_t& basepath, text::table_t& table)
 {
         const size_t batch_iterations = iterations;
         const size_t minibatch_epochs = iterations;
@@ -123,12 +128,13 @@ static void test_optimizers(
                 math::stoch_optimizer::ADADELTA
         };
 
-        const string_t basename = "[" + text::to_string(criterion.description()) + "] ";
+        const string_t basename = "[" + criterion.description() + "] ";
 
         // run optimizers and collect results
         for (math::batch_optimizer optimizer : batch_optimizers)
         {
-                test_optimizer(model, basename + "batch-" + text::to_string(optimizer), table, x0s, [&] ()
+                const auto optname = "batch-" + text::to_string(optimizer);
+                test_optimizer(model, basename + optname, basepath + optname, table, x0s, [&] ()
                 {
                         return cortex::batch_train(
                                 model, task, tsampler, vsampler, n_threads,
@@ -138,7 +144,8 @@ static void test_optimizers(
 
         for (math::batch_optimizer optimizer : minibatch_optimizers)
         {
-                test_optimizer(model, basename + "minibatch-" + text::to_string(optimizer), table, x0s, [&] ()
+                const auto optname = "minibatch-" + text::to_string(optimizer);
+                test_optimizer(model, basename + optname, basepath + optname, table, x0s, [&] ()
                 {
                         return cortex::minibatch_train(
                                 model, task, tsampler, vsampler, n_threads,
@@ -148,7 +155,8 @@ static void test_optimizers(
 
         for (math::stoch_optimizer optimizer : stoch_optimizers)
         {
-                test_optimizer(model, basename + "stochastic-" + text::to_string(optimizer), table, x0s, [&] ()
+                const auto optname = "stochastic-" + text::to_string(optimizer);
+                test_optimizer(model, basename + optname, basepath + optname, table, x0s, [&] ()
                 {
                         return cortex::stochastic_train(
                                 model, task, tsampler, vsampler, n_threads,
@@ -228,12 +236,12 @@ int main(int argc, char* argv[])
 
         const string_t outlayer = make_output_layer(outputs);
 
-        strings_t networks;
-        if (use_mlp0) { networks.push_back(mlp0 + outlayer); }
-        if (use_mlp1) { networks.push_back(mlp1 + outlayer); }
-        if (use_mlp2) { networks.push_back(mlp2 + outlayer); }
-        if (use_mlp3) { networks.push_back(mlp3 + outlayer); }
-        if (use_convnet) { networks.push_back(convnet + outlayer); }
+        std::vector<std::pair<string_t, string_t>> networks;
+        if (use_mlp0) { networks.emplace_back(mlp0 + outlayer, "mlp0"); }
+        if (use_mlp1) { networks.emplace_back(mlp1 + outlayer, "mlp1"); }
+        if (use_mlp2) { networks.emplace_back(mlp2 + outlayer, "mlp2"); }
+        if (use_mlp3) { networks.emplace_back(mlp3 + outlayer, "mlp3"); }
+        if (use_convnet) { networks.emplace_back(convnet + outlayer, "convnet"); }
 
         const strings_t losses = { "classnll" }; //cortex::get_losses().ids();
 
@@ -243,8 +251,11 @@ int main(int argc, char* argv[])
         if (use_reg_var) { criteria.push_back("var-reg"); }
 
         // vary the model
-        for (const string_t& network : networks)
+        for (const auto& net : networks)
         {
+                const auto& network = net.first;
+                const auto& netname = net.second;
+
                 log_info() << "<<< running network [" << network << "] ...";
 
                 const auto model = cortex::get_models().get("forward-network", network);
@@ -268,8 +279,10 @@ int main(int argc, char* argv[])
                         {
                                 const auto criterion = cortex::get_criteria().get(icriterion);
 
+                                const auto basepath = netname + "-" + iloss + "-" + icriterion + "-";
+
                                 test_optimizers(task, *model, tsampler, vsampler, *loss, *criterion,
-                                                trials, iterations, table);
+                                                trials, iterations, basepath, table);
                         }
 
                         // show results

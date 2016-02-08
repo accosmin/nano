@@ -106,7 +106,7 @@ namespace cortex
                         << text::align(text::to_string(state.m_vvalue), colsize) << delim
                         << text::align(text::to_string(state.m_verror_avg), colsize) << delim
                         << text::align(text::to_string(state.m_verror_var), colsize) << delim
-                        << text::align(text::to_string(state.m_milis.count() / 1000), colsize) << delim
+                        << text::align(text::to_string((state.m_milis.count() + 500) / 1000), colsize) << delim
                         << std::endl;
                 }
 
