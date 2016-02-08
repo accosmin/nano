@@ -81,10 +81,10 @@ namespace cortex
                 {
                         return false;
                 }
-                
+
                 const string_t delim = "\t";
                 const size_t colsize = 24;
-                
+
                 // header
                 ofs 
                 << text::align("train-loss", colsize) << delim
@@ -93,6 +93,7 @@ namespace cortex
                 << text::align("valid-loss", colsize) << delim
                 << text::align("valid-error-average", colsize) << delim
                 << text::align("valid-error-variance", colsize) << delim
+                << text::align("time-seconds", colsize) << delim
                 << std::endl;
 
                 // optimization states
@@ -105,10 +106,11 @@ namespace cortex
                         << text::align(text::to_string(state.m_vvalue), colsize) << delim
                         << text::align(text::to_string(state.m_verror_avg), colsize) << delim
                         << text::align(text::to_string(state.m_verror_var), colsize) << delim
+                        << text::align(text::to_string(state.m_milis.count() / 1000), colsize) << delim
                         << std::endl;
                 }
 
                 return ofs.good();
         }
 }
-	
+
