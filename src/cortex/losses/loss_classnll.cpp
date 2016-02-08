@@ -24,7 +24,7 @@ namespace cortex
         {
                 assert(targets.size() == scores.size());
 
-                return  std::log(scores.array().exp().sum()) - 
+                return  std::log(scores.array().exp().sum()) -
                         0.5 * ((1.0 + targets.array()) * scores.array()).sum();
         }
 
@@ -32,7 +32,7 @@ namespace cortex
         {
                 assert(targets.size() == scores.size());
 
-                return  scores.array().exp() / (scores.array().exp().sum()) - 
+                return  scores.array().exp() / (scores.array().exp().sum()) -
                         0.5 * (1.0 + targets.array());
         }
 

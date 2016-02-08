@@ -10,8 +10,8 @@ namespace cortex
         /// NB: robust to noise
         ///
         class cauchy_loss_t : public loss_t
-	{
-	public:
+        {
+        public:
 
                 NANOCV_MAKE_CLONABLE(cauchy_loss_t, "Cauchy loss")
 
@@ -27,6 +27,6 @@ namespace cortex
 
                 // predict label indices
                 virtual indices_t labels(const vector_t& scores) const override;
-	};
+        };
 }
 

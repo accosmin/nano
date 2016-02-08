@@ -6,6 +6,7 @@ namespace cortex
 {
         ///
         /// \brief class negative log-likelihood loss (single-class classification)
+        /// NB: also called cross-entropy loss
         ///
         class classnll_loss_t : public loss_t
         {
