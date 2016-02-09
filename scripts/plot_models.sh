@@ -2,14 +2,15 @@
 
 source $(dirname $0)/common_plot.sh
 
+# check arguments
+if [[ ($# -lt 2) || ("$1" == "help") || ("$1" == "--help") || ("$1" == "-h") ]]
+then
+        printf "plot_models.sh <output path (.pdf)> <training state files (.state)>\n"
+        exit 1
+fi
+
 # input files: [output plot] [*.state (train loss, train error, train error variance, valid loss, valid error, valid error variance)]+
 ifiles=("$@")
-
-if [ ${#ifiles[@]} -lt 2 ]
-then
-        echo "plot_models.sh <output path> <training log file>+"
-        exit
-fi
 
 # output file
 ofile=${ifiles[0]}
@@ -50,7 +51,7 @@ do
                 label=`basename ${ifile} .state`
                 label=${label//_/-}
 
-                echo -e -n "\t'${ifile}' using ${index} title '${label}' with linespoints ps 0.3" >> ${pfile}
+                echo -e -n "\t'${ifile}' using ${index} title '${label}' with linespoints ps 0.2" >> ${pfile}
 
                 let ii=${i}+1
                 if [ $ii -eq ${#ifiles[*]} ]

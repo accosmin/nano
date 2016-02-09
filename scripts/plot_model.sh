@@ -2,6 +2,13 @@
 
 source $(dirname $0)/common_plot.sh
 
+# check arguments
+if [[ ($# -ne 1) || ("$1" == "help") || ("$1" == "--help") || ("$1" == "-h") ]]
+then
+        printf "plot_model.sh <training history file (.state)>\n"
+        exit 1
+fi
+
 # input file: *.state (train loss, train error, valid loss, valid error)
 ifile=$1
 
@@ -9,7 +16,7 @@ ifile=$1
 pfile=${ifile/.state/.gnuplot}
 
 # title
-bifile=`basename ${ifile} .state`
+bifile=$(basename ${ifile} .state)
 title=${bifile//_/-}
 
 # data attributes
@@ -21,7 +28,7 @@ veindex_avg=4
 veindex_var=5
 
 labels=(`echo "train-loss train-error train-error-var valid-loss valid-error valid-error-var"`)
-styles=(`echo "lt:1:pt:1:lw:1:ps:0.3 lt:1:pt:2:lw:2:ps:0.3 lt:1:pt:4:lw:2:ps:0.3 lt:3:pt:1:lw:1:ps:0.3 lt:3:pt:2:lw:2:ps:0.3 lt:3:pt:4:lw:2:ps:0.3"`)
+styles=(`echo "lt:1:pt:1:lw:1:ps:0.2 lt:1:pt:2:lw:2:ps:0.2 lt:1:pt:4:lw:2:ps:0.2 lt:3:pt:1:lw:1:ps:0.2 lt:3:pt:2:lw:2:ps:0.2 lt:3:pt:4:lw:2:ps:0.2"`)
 
 # output file
 ofile=${ifile/.state/.pdf}
