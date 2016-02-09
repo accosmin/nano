@@ -1,6 +1,6 @@
 #!/bin/bash
 
-source common_plot.sh
+source $(dirname $0)/common_plot.sh
 
 # input file: *.state (train loss, train error, valid loss, valid error)
 ifile=$1
