@@ -9,8 +9,17 @@ then
         exit 1
 fi
 
-# input files: [output plot] [*.state (train loss, train error, train error variance, valid loss, valid error, valid error variance)]+
+# input files: (train loss, train error, train error variance, valid loss, valid error, valid error variance, time)+
 ifiles=("$@")
+inames=("$@")
+isize=${#ifiles[*]}
+
+for ((i=1;i<${isize};i++))
+do
+        ifile=${ifiles[$i]}
+        label=$(basename ${ifile} .state)
+        inames[$i]=${label//_/-}
+done
 
 # output file
 ofile=${ifiles[0]}
@@ -23,13 +32,11 @@ pfile=${ofile/.${format}/.gnuplot}
 
 # data attributes
 indices=(1 2 3 4 5 6)
-titles=(`echo "train-loss train-error train-error-var valid-loss valid-error valid-error-var"`)
+titles=(`echo  "train-loss train-error train-error-var valid-loss valid-error valid-error-var"`)
 
 # set the plotting attributes
 rm -f ${pfile}
-prepare_terminal ${pfile}
-echo "set output \"${ofile}\"" >> ${pfile}
-echo "set size 1.0,1.0" >> ${pfile}
+prepare_terminal ${pfile} ${ofile}
 
 # create plots for each data type
 for ((k=0;k<${#indices[*]};k++))
@@ -37,31 +44,31 @@ do
         index=${indices[$k]}
         title=${titles[$k]}
 
-        prepare_plot ${pfile}
-        echo "set origin 0.0,0.0" >> ${pfile}
-        echo "set size 1.0,1.0" >> ${pfile}
-        echo "set title \"${title}\"" >> ${pfile}
-        echo "set xlabel \"epochs/iterations\"" >> ${pfile}
-        echo "set ylabel \"loss/error\"" >> ${pfile}
-
-        echo -n "plot " >> ${pfile}
-        for ((i=1;i<${#ifiles[*]};i++))
+        # plot against number of training epochs
+        prepare_plot ${pfile} ${title} "epochs/iterations" "loss/error"
+        printf "plot " >> ${pfile}
+        for ((i=1;i<${isize};i++))
         do
                 ifile=${ifiles[$i]}
-                label=`basename ${ifile} .state`
-                label=${label//_/-}
+                iname=${inames[$i]}
 
-                echo -e -n "\t'${ifile}' using ${index} title '${label}' with linespoints ps 0.2" >> ${pfile}
-
-                let ii=${i}+1
-                if [ $ii -eq ${#ifiles[*]} ]
-                then
-                        echo "" >> ${pfile}
-                else
-                        echo ",\\" >> ${pfile}
-                fi
+                printf "'%s' using %d title '%s' with lp ps 0.3" "${ifiles[$i]}" ${index} "${inames[$i]}" >> ${pfile}
+                [[ $(($i+1)) != ${isize} ]] && printf ", " >> ${pfile}
         done
-        echo "" >> ${pfile}
+        printf "\n" >> ${pfile}
+
+        # plot against training time
+        prepare_plot ${pfile} ${title} "seconds" "loss/error"
+        printf "plot " >> ${pfile}
+        for ((i=1;i<${isize};i++))
+        do
+                ifile=${ifiles[$i]}
+                iname=${inames[$i]}
+
+                printf "'%s' using 7:%d title '%s' with lp ps 0.3" "${ifiles[$i]}" ${index} "${inames[$i]}" >> ${pfile}
+                [[ $(($i+1)) != ${isize} ]] && printf ", " >> ${pfile}
+        done
+        printf "\n" >> ${pfile}
 done
 
 # export

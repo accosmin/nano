@@ -3,24 +3,33 @@
 function prepare_terminal
 {
         __pfile=$1
+        __ofile=$2
 
         # Should change here font name & size depending on the platform
         # NB: It is hard to find a font to generate good looking plots on both OSX & ArchLinux
-        echo "set terminal pdfcairo enhanced color font ',6'" >> ${__pfile}
+        printf "set terminal pdfcairo enhanced color dashed font ',6'\n" >> ${__pfile}
+        printf "set termoption dash\n" >> ${__pfile}
+        printf "set output '%s'\n" ${__ofile} >> ${__pfile}
 }
 
 function prepare_plot
 {
         __pfile=$1
+        __title=$2
+        __xlabel=$3
+        __ylabel=$4
 
-        echo "set autoscale" >> ${__pfile}
-        echo "unset log" >> ${__pfile}
-        echo "unset label" >> ${__pfile}
-        echo "set xrange [*:*]" >> ${__pfile}
-        echo "set yrange [*:*]" >> ${__pfile}
-        echo "set xtic auto" >> ${__pfile}
-        echo "set ytic auto" >> ${__pfile}
-        echo "set grid xtics ytics" >> ${__pfile}
-        echo "set key right top" >> ${__pfile}
+        printf "set autoscale\n" >> ${__pfile}
+        printf "unset log\n" >> ${__pfile}
+        printf "unset label\n" >> ${__pfile}
+        printf "set xrange [*:*]\n" >> ${__pfile}
+        printf "set yrange [*:*]\n" >> ${__pfile}
+        printf "set xtic auto\n" >> ${__pfile}
+        printf "set ytic auto\n" >> ${__pfile}
+        printf "set grid xtics ytics\n" >> ${__pfile}
+        printf "set key right top\n" >> ${__pfile}
+        printf "set title '${__title}'\n" >> ${__pfile}
+        printf "set xlabel '${__xlabel}'\n" >> ${__pfile}
+        printf "set ylabel '${__ylabel}'\n" >> ${__pfile}
 }
 
