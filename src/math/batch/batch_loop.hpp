@@ -19,7 +19,7 @@ namespace math
                 tstate cstate = istate;
 
                 // for each iteration ...
-                for (std::size_t i = 0; i < params.m_max_iterations && params.ulog(cstate); i ++)
+                for (std::size_t i = 0; i < params.m_max_iterations; i ++)
                 {
                         // check convergence
                         if (cstate.converged(params.m_epsilon))

@@ -57,7 +57,7 @@ namespace cortex
                 return math::minimize(opt_problem_t(fn_size, fn_fval, fn_grad), fn_ulog,
                                      data.m_x0, optimizer, iterations, epsilon);
         }
-        
+
         trainer_result_t batch_train(
                 const model_t& model, const task_t& task, const sampler_t& tsampler, const sampler_t& vsampler, size_t nthreads,
                 const loss_t& loss, const criterion_t& criterion,
@@ -96,4 +96,4 @@ namespace cortex
                 }
         }
 }
-	
+
