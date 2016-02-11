@@ -52,7 +52,7 @@ do
                 ifile=${ifiles[$i]}
                 iname=${inames[$i]}
 
-                printf "'%s' using %d title '%s' with lp ps 0.3" "${ifiles[$i]}" ${index} "${inames[$i]}" >> ${pfile}
+                printf "'%s' using %d title '%s' with line" "${ifiles[$i]}" ${index} "${inames[$i]}" >> ${pfile}
                 [[ $(($i+1)) != ${isize} ]] && printf ", " >> ${pfile}
         done
         printf "\n" >> ${pfile}
@@ -65,7 +65,7 @@ do
                 ifile=${ifiles[$i]}
                 iname=${inames[$i]}
 
-                printf "'%s' using 7:%d title '%s' with lp ps 0.3" "${ifiles[$i]}" ${index} "${inames[$i]}" >> ${pfile}
+                printf "'%s' using 7:%d title '%s' with line" "${ifiles[$i]}" ${index} "${inames[$i]}" >> ${pfile}
                 [[ $(($i+1)) != ${isize} ]] && printf ", " >> ${pfile}
         done
         printf "\n" >> ${pfile}

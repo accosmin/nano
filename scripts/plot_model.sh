@@ -20,14 +20,14 @@ bifile=$(basename ${ifile} .state)
 title=${bifile//_/-}
 
 # data attributes
-tloss_config="using 1 title 'train-loss' with lp ps 0.3 lt 1 lw 1 lc rgb 'red'"
-vloss_config="using 4 title 'valid-loss' with lp ps 0.3 lt 3 lw 1 lc rgb 'blue'"
+tloss_config="using 1 title 'train-loss' with line lt 1 lw 1 lc rgb 'red'"
+vloss_config="using 4 title 'valid-loss' with line lt 3 lw 1 lc rgb 'blue'"
 
-terror_config="using 2 title 'train-error' with lp ps 0.3 lt 1 lw 1 lc rgb 'magenta'"
-verror_config="using 5 title 'valid-error' with lp ps 0.3 lt 3 lw 1 lc rgb 'cyan'"
+terror_config="using 2 title 'train-error' with line lt 1 dt '-' lw 1 lc rgb 'red'"
+verror_config="using 5 title 'valid-error' with line lt 3 dt '-' lw 1 lc rgb 'blue'"
 
-terror_var_config="using 3 title 'train-error-var' with lp ps 0.3 lt 1 lw 1 lc rgb 'orange'"
-verror_var_config="using 6 title 'valid-error-var' with lp ps 0.3 lt 3 lw 1 lc rgb 'green'"
+terror_var_config="using 3 title 'train-error-var' with line lt 1 dt '.' lw 1 lc rgb 'red'"
+verror_var_config="using 6 title 'valid-error-var' with line lt 3 dt '.' lw 1 lc rgb 'blue'"
 
 # output file
 ofile=${ifile/.state/.pdf}
