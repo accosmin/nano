@@ -16,7 +16,7 @@ namespace math
                 typename tsize = std::size_t
         >
         class stats_t
-	{
+        {
         public:
 
                 ///
@@ -59,12 +59,12 @@ namespace math
                         class titerator
                 >
                 void operator()(titerator begin, titerator end)
-		{
-			for ( ; begin != end; ++ begin)
+                {
+                        for ( ; begin != end; ++ begin)
                         {
                                 operator()(*begin);
                         }
-		}
+                }
 
                 ///
                 /// \brief reset statistics
@@ -77,7 +77,7 @@ namespace math
                         m_min = +std::numeric_limits<tscalar>::max();
                         m_max = -std::numeric_limits<tscalar>::max();
                 }
-		
+
                 // access functions
                 operator bool() const { return count() > 1; }
 
@@ -102,8 +102,8 @@ namespace math
 
                 double var() const
                 {
-                        assert(count() > 1);
-                        return var2() / static_cast<double>(count() - 1);
+                        assert(count() > 0);
+                        return (count() == 1) ? 0.0 : (var2() / static_cast<double>(count() - 1));
                 }
 
                 double stdev() const
@@ -117,5 +117,5 @@ namespace math
                 tsize           m_count;
                 tscalar         m_sum, m_sumsq;
                 tscalar         m_min, m_max;
-	};
+        };
 }
