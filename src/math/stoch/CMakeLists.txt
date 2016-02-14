@@ -2,7 +2,6 @@ list(APPEND libmath_sources
         ${CMAKE_CURRENT_SOURCE_DIR}/adadelta.hpp
         ${CMAKE_CURRENT_SOURCE_DIR}/adagrad.hpp
         ${CMAKE_CURRENT_SOURCE_DIR}/ag.hpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/ag_restarts.hpp
         ${CMAKE_CURRENT_SOURCE_DIR}/stoch_loop.hpp
         ${CMAKE_CURRENT_SOURCE_DIR}/lrate.hpp
         ${CMAKE_CURRENT_SOURCE_DIR}/params.hpp

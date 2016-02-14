@@ -1,10 +1,21 @@
 #pragma once
 
 #include "stoch_loop.hpp"
-#include "ag_restarts.hpp"
 
 namespace math
 {
+        ///
+        /// \brief restart methods for Nesterov's accelerated gradient
+        ///     see "Adaptive Restart for Accelerated Gradient Schemes",
+        ///     by Brendan O’Donoghue & Emmanuel Candes, 2013
+        ///
+        enum class ag_restart
+        {
+                none,
+                function,
+                gradient
+        };
+
         ///
         /// \brief stochastic Nesterov's accelerated gradient (descent)
         ///     see "A method of solving a convex programming problem with convergence rate O(1/k^2)",
@@ -26,7 +37,7 @@ namespace math
         template
         <
                 typename tproblem,              ///< optimization problem
-                typename trestart               ///< restart method
+                ag_restart trestart             ///< restart method
         >
         struct stoch_ag_base_t
         {
@@ -50,19 +61,17 @@ namespace math
                 {
                         assert(problem.size() == x0.size());
 
-                        // restart method
-                        trestart restart;
-
                         // initial state
                         tstate istate(problem, x0);
 
                         // current & previous iterations
                         tvector cx = istate.x;
-                        tvector x1 = istate.x;
-                        tvector x2 = istate.x;
+                        tvector px = istate.x;
+                        tvector cy = istate.x;
+                        tvector py = istate.x;
 
-                        tscalar fx = istate.f;
-                        tscalar f1 = istate.f;
+                        tscalar cfx = istate.f;
+                        tscalar pfx = istate.f;
 
                         const auto op_iter = [&] (tstate& cstate, std::size_t& k)
                         {
@@ -73,18 +82,37 @@ namespace math
                                 const tscalar m = tscalar(k - 1) / tscalar(k + 2);
 
                                 // update solution
-                                cx = x1 + m * (x1 - x2);
-                                cstate.update(problem, cx);
-                                fx = cstate.f;
+                                cstate.update(problem, py);
+                                cx = py - alpha * cstate.g;
+                                cy = px + m * (cx - px);
 
-                                k = restart(cstate.g, cx, fx, x1, f1, k);
+                                switch (trestart)
+                                {
+                                case ag_restart::none:  
+                                        break;
 
-                                cx -= alpha * cstate.g;
+                                case ag_restart::function:
+                                        {
+                                                cfx = problem(cx);
+                                                if (cfx > pfx)
+                                                {
+                                                        k = 0;
+                                                }
+                                        }
+                                        break;
+
+                                case ag_restart::gradient:
+                                        if (cstate.g.dot(cx - px) > tscalar(0))
+                                        {
+                                                k = 0;
+                                        }
+                                        break;
+                                }
 
                                 // next iteration
-                                x2 = x1;
-                                x1 = cx;
-                                f1 = fx;
+                                px = cx;
+                                py = cy;
+                                pfx = cfx;
                         };
 
                         const auto op_epoch = [&] (tstate& cstate)
@@ -102,15 +130,12 @@ namespace math
 
         // create various AG implementations
         template <typename tproblem>
-        using stoch_ag_t =
-        stoch_ag_base_t<tproblem, ag_no_restart_t<typename tproblem::tvector, typename tproblem::tscalar, std::size_t>>;
+        using stoch_ag_t = stoch_ag_base_t<tproblem, ag_restart::none>;
 
         template <typename tproblem>
-        using stoch_agfr_t =
-        stoch_ag_base_t<tproblem, ag_func_restart_t<typename tproblem::tvector, typename tproblem::tscalar, std::size_t>>;
+        using stoch_agfr_t = stoch_ag_base_t<tproblem, ag_restart::function>;
 
         template <typename tproblem>
-        using stoch_aggr_t =
-        stoch_ag_base_t<tproblem, ag_grad_restart_t<typename tproblem::tvector, typename tproblem::tscalar, std::size_t>>;
+        using stoch_aggr_t = stoch_ag_base_t<tproblem, ag_restart::gradient>;
 }
 
