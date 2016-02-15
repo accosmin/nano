@@ -16,23 +16,15 @@ namespace math
         >
         struct batch_lbfgs_t
         {
-                using param_t = batch_params_t<tproblem>;
-                using tstate = typename param_t::tstate;
-                using tscalar = typename param_t::tscalar;
-                using tvector = typename param_t::tvector;
-                using topulog = typename param_t::topulog;
-
-                ///
-                /// \brief constructor
-                ///
-                explicit batch_lbfgs_t(const param_t& param) : m_param(param)
-                {
-                }
+                using tparam = batch_params_t<tproblem>;
+                using tstate = typename tparam::tstate;
+                using tscalar = typename tparam::tscalar;
+                using tvector = typename tparam::tvector;
 
                 ///
                 /// \brief minimize starting from the initial guess x0
                 ///
-                tstate operator()(const tproblem& problem, const tvector& x0) const
+                tstate operator()(const tparam& param, const tproblem& problem, const tvector& x0) const
                 {
                         assert(problem.size() == x0.size());
 
@@ -43,10 +35,10 @@ namespace math
                         tvector q, r;
 
                         // line-search initial step length
-                        ls_init_t<tstate> ls_init(m_param.m_ls_initializer);
+                        ls_init_t<tstate> ls_init(param.m_ls_initializer);
 
                         // line-search step
-                        ls_strategy_t<tproblem> ls_step(m_param.m_ls_strategy, 1e-4, 0.9);
+                        ls_strategy_t<tproblem> ls_step(param.m_ls_strategy, 1e-4, 0.9);
 
                         const auto op = [&] (tstate& cstate, const std::size_t i)
                         {
@@ -57,7 +49,7 @@ namespace math
                                 auto itr_s = ss.rbegin();
                                 auto itr_y = ys.rbegin();
                                 std::vector<tscalar> alphas;
-                                for (std::size_t j = 1; j <= m_param.m_hsize && i >= j; j ++)
+                                for (std::size_t j = 1; j <= param.m_hsize && i >= j; j ++)
                                 {
                                         const tvector& s = (*itr_s ++);
                                         const tvector& y = (*itr_y ++);
@@ -81,7 +73,7 @@ namespace math
                                 auto it_s = ss.begin();
                                 auto it_y = ys.begin();
                                 auto itr_alpha = alphas.rbegin();
-                                for (std::size_t j = 1; j <= m_param.m_hsize && i >= j; j ++)
+                                for (std::size_t j = 1; j <= param.m_hsize && i >= j; j ++)
                                 {
                                         const tvector& s = (*it_s ++);
                                         const tvector& y = (*it_y ++);
@@ -104,7 +96,7 @@ namespace math
 
                                 ss.push_back(cstate.x - pstate.x);
                                 ys.push_back(cstate.g - pstate.g);
-                                if (ss.size() > m_param.m_hsize)
+                                if (ss.size() > param.m_hsize)
                                 {
                                         ss.pop_front();
                                         ys.pop_front();
@@ -114,11 +106,8 @@ namespace math
                         };
 
                         // OK, assembly the optimizer
-                        return batch_loop(m_param, istate, op);
+                        return batch_loop(param, istate, op);
                 }
-
-                // attributes
-                param_t         m_param;
         };
 }
 

@@ -9,11 +9,11 @@ namespace math
         ///
         template
         <
-                typename tparams,       ///< optimization parameters
+                typename tparam,        ///< optimization parameters
                 typename tstate,        ///< initial state
                 typename top_iter       ///< operator to call for each optimization iteration
         >
-        tstate batch_loop(const tparams& params, const tstate& istate, const top_iter& opi)
+        tstate batch_loop(const tparam& params, const tstate& istate, const top_iter& opi)
         {
                 // current state
                 tstate cstate = istate;
