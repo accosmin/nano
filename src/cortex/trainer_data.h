@@ -53,11 +53,6 @@ namespace cortex
         };
 
         ///
-        /// \brief batch sizes to tune
-        ///
-        sizes_t tunable_batches();
-
-        ///
         /// \brief regularization factors to tune
         ///
         scalars_t tunable_lambdas();

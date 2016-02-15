@@ -3,27 +3,30 @@
 #include "util/timer.h"
 #include "util/logger.h"
 #include "accumulator.h"
+#include "thread/thread.h"
 #include "text/to_string.hpp"
 #include "math/tune_stoch.hpp"
 #include <tuple>
 
 namespace cortex
 {
-        static trainer_result_t train(
-                trainer_data_t& data, math::stoch_optimizer optimizer,
-                size_t epochs, size_t batch, scalar_t alpha0, scalar_t decay, scalar_t momentum,
-                bool verbose)
+        static trainer_result_t train(trainer_data_t& data,
+                const math::stoch_optimizer optimizer,
+                const size_t epochs, const scalar_t alpha0, const scalar_t decay, const scalar_t momentum,
+                const bool verbose)
         {
                 trainer_result_t result;
 
                 const cortex::timer_t timer;
 
+                const auto batch_size = 16 * thread::n_threads();
+
                 // set the sampling size
-                data.m_tsampler.push(batch);
+                data.m_tsampler.push(batch_size);
 
                 // construct the optimization problem
                 size_t epoch = 0;
-                const size_t epoch_size = data.epoch_size(batch);
+                const size_t epoch_size = data.epoch_size(batch_size);
 
                 auto fn_size = cortex::make_opsize(data);
                 auto fn_fval = cortex::make_opfval(data);
@@ -35,7 +38,7 @@ namespace cortex
                         data.m_lacc.set_params(state.x);
                         data.m_tsampler.pop();                  //
                         data.m_lacc.update(data.m_task, data.m_tsampler.get(), data.m_loss);
-                        data.m_tsampler.push(batch);            //
+                        data.m_tsampler.push(batch_size);       //
                         const scalar_t tvalue = data.m_lacc.value();
                         const scalar_t terror_avg = data.m_lacc.avg_error();
                         const scalar_t terror_var = data.m_lacc.var_error();
@@ -51,7 +54,7 @@ namespace cortex
                         const auto milis = timer.milliseconds();
                         const auto ret = result.update(state.x,
                                 {milis, ++ epoch, tvalue, terror_avg, terror_var, vvalue, verror_avg, verror_var},
-                                {static_cast<scalar_t>(batch), alpha0, decay, momentum, data.lambda()});
+                                {alpha0, decay, momentum, data.lambda()});
 
                         if (verbose)
                         log_info()
@@ -59,7 +62,7 @@ namespace cortex
                                 << ", valid = " << vvalue << "/" << verror_avg
                                 << " (" << text::to_string(ret) << ")"
                                 << ", epoch = " << epoch << "/" << epochs
-                                << ", batch = " << batch
+                                << ", batch = " << batch_size
                                 << ", alpha = " << alpha0
                                 << ", decay = " << decay
                                 << ", momentum = " << momentum
@@ -79,22 +82,21 @@ namespace cortex
                 return result;
         }
 
-        // <result, batch size, decay rate, learning rate, momentum>
-        static auto tune_batch_decay_lrate(trainer_data_t& data, math::stoch_optimizer optimizer, bool verbose)
+        // <result, decay rate, learning rate, momentum>
+        static auto tune(trainer_data_t& data, math::stoch_optimizer optimizer, bool verbose)
         {
-                const auto op = [&] (size_t batch, scalar_t decay, scalar_t alpha, scalar_t momentum)
+                const auto op = [&] (const scalar_t decay, const scalar_t alpha, const scalar_t momentum)
                 {
                         const cortex::timer_t timer;
 
                         const size_t epochs = 1;
-                        const auto result = train(data, optimizer, epochs, batch, alpha, decay, momentum, false);
+                        const auto result = train(data, optimizer, epochs, alpha, decay, momentum, false);
                         const auto state = result.optimum_state();
 
                         if (verbose)
                         log_info()
                                 << "[tuning: train = " << state.m_tvalue << "/" << state.m_terror_avg
                                 << ", valid = " << state.m_vvalue << "/" << state.m_verror_avg
-                                << ", batch = " << batch
                                 << ", alpha = " << alpha
                                 << ", decay = " << decay
                                 << ", momentum = " << momentum
@@ -104,12 +106,11 @@ namespace cortex
                         return result;
                 };
 
-                const auto batches = cortex::tunable_batches();
                 const auto decays = math::tunable_decays<scalar_t>(optimizer);
                 const auto alphas = math::tunable_alphas<scalar_t>(optimizer);
                 const auto moments = math::tunable_moments<scalar_t>(optimizer);
 
-                return math::tune_fixed(op, batches, decays, alphas, moments);
+                return math::tune_fixed(op, decays, alphas, moments);
         }
 
         trainer_result_t stochastic_train(
@@ -132,13 +133,12 @@ namespace cortex
                 {
                         data.set_lambda(lambda);
 
-                        const auto ret = tune_batch_decay_lrate(data, optimizer, verbose);
-                        const auto opt_batch = std::get<1>(ret);
-                        const auto opt_decay = std::get<2>(ret);
-                        const auto opt_alpha = std::get<3>(ret);
-                        const auto opt_momentum = std::get<4>(ret);
+                        const auto ret = tune(data, optimizer, verbose);
+                        const auto opt_decay = std::get<1>(ret);
+                        const auto opt_alpha = std::get<2>(ret);
+                        const auto opt_momentum = std::get<3>(ret);
 
-                        return train(data, optimizer, epochs, opt_batch, opt_alpha, opt_decay, opt_momentum, verbose);
+                        return train(data, optimizer, epochs, opt_alpha, opt_decay, opt_momentum, verbose);
                 };
 
                 if (data.m_lacc.can_regularize())
