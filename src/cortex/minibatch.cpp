@@ -15,7 +15,8 @@ namespace cortex
         <
                 typename toperator
         >
-        void train_epoch(trainer_data_t& data, const size_t epoch_size, const size_t batch_size, const toperator& op)
+        static void train_epoch(trainer_data_t& data,
+                const size_t epoch_size, const size_t batch_size, const toperator& op)
         {
                 auto& tsampler = data.m_tsampler;
 
@@ -31,7 +32,7 @@ namespace cortex
                 }
         }
 
-        trainer_result_t train(trainer_data_t& data,
+        static trainer_result_t train(trainer_data_t& data,
                 math::batch_optimizer optimizer, const size_t epochs, const scalar_t epsilon, const bool verbose)
         {
                 const cortex::timer_t timer;

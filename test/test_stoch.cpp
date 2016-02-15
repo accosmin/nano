@@ -1,8 +1,8 @@
 #include "unit_test.hpp"
+#include "math/stoch.hpp"
 #include "math/random.hpp"
 #include "math/numeric.hpp"
 #include "math/epsilon.hpp"
-#include "math/tune_stoch.hpp"
 #include "text/to_string.hpp"
 #include "cortex/optimizer.h"
 #include "math/funcs/foreach.hpp"
@@ -58,11 +58,7 @@ namespace test
                                 const auto f0 = problem(x0);
 
                                 // optimize
-                                tscalar alpha, decay, momentum;
-                                math::tune_stochastic(problem, x0, optimizer, epoch_size, alpha, decay, momentum);
-
-                                const auto state = math::minimize(
-                                        problem, nullptr, x0, optimizer, epochs, epoch_size, alpha, decay, momentum);
+                                const auto state = math::minimize(problem, nullptr, x0, optimizer, epochs, epoch_size);
 
                                 const auto x = state.x;
                                 const auto f = state.f;
@@ -83,9 +79,7 @@ namespace test
                                           << " [" << (t + 1) << "/" << trials << "]"
                                           << ": x = [" << x0.transpose() << "]/[" << x.transpose() << "]"
                                           << ", f = " << f0 << "/" << f
-                                          << ", g = " << g
-                                          << ", alpha = " << alpha
-                                          << ", decay = " << decay << ".\n";
+                                          << ", g = " << g << ".\n";
 
                                 // check function value decrease
                                 NANOCV_CHECK_LESS_EQUAL(f, f0);

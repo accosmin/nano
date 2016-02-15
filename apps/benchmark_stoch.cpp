@@ -1,10 +1,10 @@
 #include "math/abs.hpp"
 #include "text/table.h"
 #include "text/cmdline.h"
+#include "math/stoch.hpp"
 #include "math/clamp.hpp"
 #include "math/random.hpp"
 #include "math/numeric.hpp"
-#include "math/tune_stoch.hpp"
 #include "cortex/optimizer.h"
 #include "cortex/util/logger.h"
 #include "text/from_string.hpp"
@@ -63,12 +63,7 @@ namespace
                 {
                         const auto op = [&] (const tproblem& problem, const tvector& x0)
                         {
-                                tscalar alpha, decay, momentum;
-                                math::tune_stochastic(
-                                        problem, x0, optimizer, epoch_size, alpha, decay, momentum);
-
-                                return  math::minimize(
-                                        problem, nullptr, x0, optimizer, epochs, epoch_size, alpha, decay, momentum);
+                                return math::minimize(problem, nullptr, x0, optimizer, epochs, epoch_size);
                         };
 
                         const auto name =

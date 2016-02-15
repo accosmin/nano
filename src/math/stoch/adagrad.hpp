@@ -2,6 +2,7 @@
 
 #include "stoch_loop.hpp"
 #include "math/average.hpp"
+#include "math/tune_fixed.hpp"
 
 namespace math
 {
@@ -25,16 +26,30 @@ namespace math
                 using topulog = typename param_t::topulog;
 
                 ///
-                /// \brief constructor
+                /// \brief minimize starting from the initial guess x0
                 ///
-                explicit stoch_adagrad_t(const param_t& param) : m_param(param)
+                tstate operator()(const param_t& param, const tproblem& problem, const tvector& x0) const
                 {
+                        const auto alpha0s = { 1e-4, 1e-3, 1e-2, 1e-1, 1e+0 };
+                        const auto epsilons = { 1e-4, 1e-6, 1e-8 };
+
+                        const auto op = [&] (const auto alpha0, const auto epsilon)
+                        {
+                                return this->operator()(param.tunable(), problem, x0, alpha0, epsilon);
+                        };
+
+                        const auto config = math::tune_fixed(op, alpha0s, epsilons);
+                        const auto opt_alpha0 = std::get<1>(config);
+                        const auto opt_epsilon = std::get<2>(config);
+
+                        return operator()(param, problem, x0, opt_alpha0, opt_epsilon);
                 }
 
                 ///
                 /// \brief minimize starting from the initial guess x0
                 ///
-                tstate operator()(const tproblem& problem, const tvector& x0) const
+                tstate operator()(const param_t& param, const tproblem& problem, const tvector& x0,
+                        const tscalar alpha0, const tscalar epsilon) const
                 {
                         assert(problem.size() == x0.size());
 
@@ -44,13 +59,13 @@ namespace math
                         const auto op_iter = [&] (tstate& cstate, const std::size_t)
                         {
                                 // learning rate
-                                const tscalar alpha = m_param.alpha(0);
+                                const tscalar alpha = alpha0;
 
                                 // descent direction
                                 gavg.update(cstate.g.array().square());
 
                                 cstate.d = -cstate.g.array() /
-                                           (m_param.m_epsilon + gavg.value().array()).sqrt();
+                                           (epsilon + gavg.value().array()).sqrt();
 
                                 // update solution
                                 cstate.update(problem, alpha);
@@ -61,11 +76,8 @@ namespace math
                         };
 
                         // OK, assembly the optimizer
-                        return stoch_loop(m_param, tstate(problem, x0), op_iter, op_epoch);
+                        return stoch_loop(param, tstate(problem, x0), op_iter, op_epoch);
                 }
-
-                // attributes
-                param_t         m_param;
         };
 }
 

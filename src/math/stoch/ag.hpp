@@ -1,6 +1,7 @@
 #pragma once
 
 #include "stoch_loop.hpp"
+#include "math/tune_fixed.hpp"
 
 namespace math
 {
@@ -35,16 +36,30 @@ namespace math
                 using topulog = typename param_t::topulog;
 
                 ///
-                /// \brief constructor
+                /// \brief minimize starting from the initial guess x0
                 ///
-                explicit stoch_ag_base_t(const param_t& param) : m_param(param)
+                tstate operator()(const param_t& param, const tproblem& problem, const tvector& x0) const
                 {
+                        const auto alpha0s = { 1e-4, 1e-3, 1e-2, 1e-1, 1e+0 };
+                        const auto qs = { 1e-6, 1e-4, 1e-2, 1e-1, 1e+0 };
+
+                        const auto op = [&] (const auto alpha0, const auto q)
+                        {
+                                return this->operator()(param.tunable(), problem, x0, alpha0, q);
+                        };
+
+                        const auto config = math::tune_fixed(op, alpha0s, qs);
+                        const auto opt_alpha0 = std::get<1>(config);
+                        const auto opt_q = std::get<2>(config);
+
+                        return operator()(param, problem, x0, opt_alpha0, opt_q);
                 }
 
                 ///
                 /// \brief minimize starting from the initial guess x0
                 ///
-                tstate operator()(const tproblem& problem, const tvector& x0) const
+                tstate operator()(const param_t& param, const tproblem& problem, const tvector& x0,
+                        const tscalar alpha0, const tscalar q) const
                 {
                         assert(problem.size() == x0.size());
 
@@ -59,8 +74,6 @@ namespace math
 
                         tscalar cfx = istate.f;
                         tscalar pfx = istate.f;
-
-                        const tscalar q = 0;
 
                         tscalar ptheta = 1;
                         tscalar ctheta = 1;
@@ -82,7 +95,7 @@ namespace math
                         const auto op_iter = [&] (tstate& cstate, const std::size_t)
                         {
                                 // learning rate
-                                const tscalar alpha = m_param.alpha(0);
+                                const tscalar alpha = alpha0;
 
                                 // momentum
                                 ctheta = get_theta(ptheta, q);
@@ -126,11 +139,8 @@ namespace math
                         };
 
                         // OK, assembly the optimizer
-                        return stoch_loop(m_param, istate, op_iter, op_epoch);
+                        return stoch_loop(param, istate, op_iter, op_epoch);
                 }
-
-                // attributes
-                param_t         m_param;
         };
 
         // create various AG implementations

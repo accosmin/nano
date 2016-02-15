@@ -24,8 +24,7 @@ set(libmath_sources
         ${CMAKE_CURRENT_SOURCE_DIR}/stoch_types.h
         ${CMAKE_CURRENT_SOURCE_DIR}/tune_fixed.hpp
         ${CMAKE_CURRENT_SOURCE_DIR}/tune_log10.hpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/tune_log10_mt.hpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/tune_stoch.hpp)
+        ${CMAKE_CURRENT_SOURCE_DIR}/tune_log10_mt.hpp)
 
 add_subdirectory(batch)
 add_subdirectory(stoch)
