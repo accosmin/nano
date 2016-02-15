@@ -33,7 +33,7 @@ namespace math
                 ///
                 stoch_params_t tunable() const
                 {
-                        return { std::size_t(1), m_epoch_size, m_ulog };
+                        return { std::size_t(1), m_epoch_size, nullptr };
                 }
 
                 ///
