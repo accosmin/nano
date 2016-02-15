@@ -18,21 +18,8 @@ namespace math
 
         ///
         /// \brief stochastic Nesterov's accelerated gradient (descent)
-        ///     see "A method of solving a convex programming problem with convergence rate O(1/k^2)",
-        ///     by Yu. Nesterov, 1983
-        ///
-        ///     see "Gradient methods for minimizing composite objective function",
-        ///     by Yu. Nesterov, 2007
-        ///
         ///     see "Adaptive Restart for Accelerated Gradient Schemes",
         ///     by Brendan O’Donoghue & Emmanuel Candes, 2013
-        ///
-        ///     see "A Differential Equation for Modeling Nesterov’s Accelerated Gradient Method:
-        ///     Theory and Insights",
-        ///     by Weijie Su, Stephen Boyd & Emmanuel J. Candes, 2015
-        ///
-        ///     see http://calculus.subwiki.org/wiki/Nesterov%27s_accelerated_gradient_descent_with_constant_learning_rate_for_a_quadratic_function_of_one_variable
-        ///     see http://stronglyconvex.com/blog/accelerated-gradient-descent.html
         ///
         template
         <
@@ -73,18 +60,38 @@ namespace math
                         tscalar cfx = istate.f;
                         tscalar pfx = istate.f;
 
-                        const auto op_iter = [&] (tstate& cstate, std::size_t& k)
+                        const tscalar q = 0;
+
+                        tscalar ptheta = 1;
+                        tscalar ctheta = 1;
+
+                        const auto get_theta = [] (const auto ptheta, const auto q)
+                        {
+                                const auto a = tscalar(1);
+                                const auto b = ptheta * ptheta - q;
+                                const auto c = - ptheta * ptheta;
+
+                                return (-b + std::sqrt(b * b - 4 * a * c)) / (2 * a);
+                        };
+
+                        const auto get_beta = [] (const auto ptheta, const auto ctheta)
+                        {
+                                return ptheta * (1 - ptheta) / (ptheta * ptheta + ctheta);
+                        };
+
+                        const auto op_iter = [&] (tstate& cstate, const std::size_t)
                         {
                                 // learning rate
                                 const tscalar alpha = m_param.alpha(0);
 
                                 // momentum
-                                const tscalar m = tscalar(k - 1) / tscalar(k + 2);
+                                ctheta = get_theta(ptheta, q);
+                                const tscalar beta = get_beta(ptheta, ctheta);
 
                                 // update solution
                                 cstate.update(problem, py);
                                 cx = py - alpha * cstate.g;
-                                cy = px + m * (cx - px);
+                                cy = px + beta * (cx - px);
 
                                 switch (trestart)
                                 {
@@ -94,14 +101,14 @@ namespace math
                                 case ag_restart::function:
                                         if ((cfx = problem(cx)) > pfx)
                                         {
-                                                k = 0;
+                                                ptheta = 1;
                                         }
                                         break;
 
                                 case ag_restart::gradient:
                                         if (cstate.g.dot(cx - px) > tscalar(0))
                                         {
-                                                k = 0;
+                                                ptheta = 1;
                                         }
                                         break;
                                 }
@@ -110,6 +117,7 @@ namespace math
                                 px = cx;
                                 py = cy;
                                 pfx = cfx;
+                                ptheta = ctheta;
                         };
 
                         const auto op_epoch = [&] (tstate& cstate)
