@@ -88,16 +88,13 @@ namespace math
 
                                 switch (trestart)
                                 {
-                                case ag_restart::none:  
+                                case ag_restart::none:
                                         break;
 
                                 case ag_restart::function:
+                                        if ((cfx = problem(cx)) > pfx)
                                         {
-                                                cfx = problem(cx);
-                                                if (cfx > pfx)
-                                                {
-                                                        k = 0;
-                                                }
+                                                k = 0;
                                         }
                                         break;
 
