@@ -9,12 +9,12 @@ namespace math
         ///
         template
         <
-                typename tparams,       ///< optimization parameters
+                typename tparam,        ///< optimization parameters
                 typename tstate,        ///< initial state
                 typename top_iter,      ///< operator to call for each optimization iteration
                 typename top_epoch      ///< operator to call after each epoch
         >
-        tstate stoch_loop(const tparams& params, const tstate& istate, const top_iter& opi, const top_epoch& ope)
+        tstate stoch_loop(const tparam& params, const tstate& istate, const top_iter& opi, const top_epoch& ope)
         {
                 // current state
                 tstate cstate = istate;
