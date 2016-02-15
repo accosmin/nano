@@ -32,7 +32,8 @@ pfile=${ofile/.${format}/.gnuplot}
 
 # data attributes
 indices=(1 2 3 4 5 6)
-titles=(`echo  "train-loss train-error train-error-var valid-loss valid-error valid-error-var"`)
+titles=(`echo "train-loss train-error train-error-var valid-loss valid-error valid-error-var"`)
+ylabels=(`echo "loss error error loss error error"`)
 
 # set the plotting attributes
 rm -f ${pfile}
@@ -43,9 +44,10 @@ for ((k=0;k<${#indices[*]};k++))
 do
         index=${indices[$k]}
         title=${titles[$k]}
+        ylabel=${ylabels[$k]}
 
         # plot against number of training epochs
-        prepare_plot ${pfile} ${title} "epochs/iterations" "loss/error"
+        prepare_plot ${pfile} ${title} "epochs/iterations" ${ylabel}
         printf "plot " >> ${pfile}
         for ((i=1;i<${isize};i++))
         do
@@ -58,7 +60,7 @@ do
         printf "\n" >> ${pfile}
 
         # plot against training time
-        prepare_plot ${pfile} ${title} "seconds" "loss/error"
+        prepare_plot ${pfile} ${title} "seconds" ${ylabel}
         printf "plot " >> ${pfile}
         for ((i=1;i<${isize};i++))
         do
