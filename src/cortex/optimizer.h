@@ -35,7 +35,8 @@ namespace text
                         { math::stoch_optimizer::AGFR,         "agfr" },
                         { math::stoch_optimizer::AGGR,         "aggr" },
                         { math::stoch_optimizer::ADAGRAD,      "adagrad" },
-                        { math::stoch_optimizer::ADADELTA,     "adadelta" }
+                        { math::stoch_optimizer::ADADELTA,     "adadelta" },
+                        { math::stoch_optimizer::ADAM,         "adam" }
                 };
         }
 

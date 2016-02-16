@@ -52,7 +52,8 @@ namespace
                         math::stoch_optimizer::AGFR,
                         math::stoch_optimizer::AGGR,
                         math::stoch_optimizer::ADAGRAD,
-                        math::stoch_optimizer::ADADELTA
+                        math::stoch_optimizer::ADADELTA,
+                        math::stoch_optimizer::ADAM
                 };
 
                 // per-problem statistics
