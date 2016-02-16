@@ -1,23 +1,19 @@
 #pragma once
 
 #include "stoch_loop.hpp"
-#include "math/average.hpp"
 #include "math/tune_fixed.hpp"
 
 namespace math
 {
         ///
-        /// \brief stochastic AdaGrad
-        ///     see "Adaptive subgradient methods for online learning and stochastic optimization"
-        ///     by J. C. Duchi, E. Hazan, and Y. Singer
-        ///
-        ///     see http://xcorr.net/2014/01/23/adagrad-eliminating-learning-rates-in-stochastic-gradient-descent/
+        /// \brief stochastic Adam,
+        ///     see "Adam: A method for stochastic optimization", by Diederik P. Kingma & Jimmy Lei Ba
         ///
         template
         <
                 typename tproblem               ///< optimization problem
         >
-        struct stoch_adagrad_t
+        struct stoch_adam_t
         {
                 using param_t = stoch_params_t<tproblem>;
                 using tstate = typename param_t::tstate;
@@ -52,22 +48,36 @@ namespace math
                 {
                         assert(problem.size() == x0.size());
 
-                        // running-averaged-per-dimension-squared gradient
-                        average_vector_t<tvector> gavg(x0.size());
+                        const tscalar beta1 = 0.900;
+                        const tscalar beta2 = 0.999;
+
+                        tscalar beta1t = beta1;
+                        tscalar beta2t = beta2;
+
+                        // running-averaged-per-dimension first-order momentum
+                        momentum_vector_t<tvector> m(beta1, tvector::Zero(x0.size()));
+
+                        // running-averaged-per-dimension second-order momentum
+                        momentum_vector_t<tvector> v(beta2, tvector::Zero(x0.size()));
 
                         const auto op_iter = [&] (tstate& cstate, const std::size_t)
                         {
                                 // learning rate
-                                const tscalar alpha = alpha0;
+                                const auto alpha = alpha0;
 
                                 // descent direction
-                                gavg.update(cstate.g.array().square());
+                                m.update(cstate.g);
+                                v.update(cstate.g.array().square());
 
-                                cstate.d = -cstate.g.array() /
-                                           (epsilon + gavg.value().array()).sqrt();
+                                cstate.d = -m.value().array() / (1 - beta1t) *
+                                           (epsilon + (v.value().array() / (1 - beta2t)).sqrt());
 
                                 // update solution
                                 cstate.update(problem, alpha);
+
+                                // next iteration
+                                beta1t *= beta1;
+                                beta2t *= beta2;
                         };
 
                         const auto op_epoch = [] (tstate&)

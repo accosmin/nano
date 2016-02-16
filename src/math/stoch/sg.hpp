@@ -21,7 +21,6 @@ namespace math
                 using tstate = typename param_t::tstate;
                 using tscalar = typename param_t::tscalar;
                 using tvector = typename param_t::tvector;
-                using topulog = typename param_t::topulog;
 
                 ///
                 /// \brief minimize starting from the initial guess x0
@@ -30,7 +29,6 @@ namespace math
                 {
                         const auto alpha0s = { 1e-4, 1e-3, 1e-2, 1e-1, 1e+0 };
                         const auto decays = { 0.50, 0.75, 1.00 };
-
                         const auto op = [&] (const auto alpha0, const auto decay)
                         {
                                 return this->operator()(param.tunable(), problem, x0, alpha0, decay);

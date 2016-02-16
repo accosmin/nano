@@ -8,6 +8,7 @@
 #include "stoch/sgm.hpp"
 #include "stoch/sga.hpp"
 #include "stoch/sia.hpp"
+#include "stoch/adam.hpp"
 #include "stoch/adagrad.hpp"
 #include "stoch/adadelta.hpp"
 
@@ -56,6 +57,9 @@ namespace math
 
                 case stoch_optimizer::ADADELTA:
                         return stoch_adadelta_t<tproblem>()(param, problem, x0);
+
+                case stoch_optimizer::ADAM:
+                        return stoch_adam_t<tproblem>()(param, problem, x0);
 
                 case stoch_optimizer::SG:
                 default:

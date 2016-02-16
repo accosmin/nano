@@ -22,7 +22,6 @@ namespace math
                 using tstate = typename param_t::tstate;
                 using tscalar = typename param_t::tscalar;
                 using tvector = typename param_t::tvector;
-                using topulog = typename param_t::topulog;
 
                 ///
                 /// \brief minimize starting from the initial guess x0
