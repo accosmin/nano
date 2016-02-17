@@ -57,6 +57,9 @@ namespace math
 
                         const auto op_iter = [&] (tstate& cstate, const std::size_t)
                         {
+                                // learning rate
+                                const tscalar alpha = 1;
+
                                 // descent direction
                                 gavg.update(cstate.g.array().square());
 
@@ -67,7 +70,7 @@ namespace math
                                 davg.update(cstate.d.array().square());
 
                                 // update solution
-                                cstate.update(problem, tscalar(1));
+                                cstate.update(problem, alpha);
                         };
 
                         const auto op_epoch = [] (tstate&)
