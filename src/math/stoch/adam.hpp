@@ -69,7 +69,7 @@ namespace math
                                 m.update(cstate.g);
                                 v.update(cstate.g.array().square());
 
-                                cstate.d = -m.value().array() / (1 - beta1t) *
+                                cstate.d = -m.value().array() / (1 - beta1t) /
                                            (epsilon + (v.value().array() / (1 - beta2t)).sqrt());
 
                                 // update solution
