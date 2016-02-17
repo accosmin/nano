@@ -49,10 +49,10 @@ namespace math
                 {
                         assert(problem.size() == x0.size());
 
-                        // running-averaged-per-dimension-squared gradient
+                        // second-order momentum of the gradient
                         momentum_vector_t<tvector> gavg(momentum, tvector::Zero(x0.size()));
 
-                        // running-averaged-per-dimension-squared step updates
+                        // second-order momentum of the step updates
                         momentum_vector_t<tvector> davg(momentum, tvector::Zero(x0.size()));
 
                         const auto op_iter = [&] (tstate& cstate, const std::size_t)

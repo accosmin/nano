@@ -52,7 +52,7 @@ namespace math
                 {
                         assert(problem.size() == x0.size());
 
-                        // running-averaged-per-dimension-squared gradient
+                        // second-order gradient momentum
                         average_vector_t<tvector> gavg(x0.size());
 
                         const auto op_iter = [&] (tstate& cstate, const std::size_t)

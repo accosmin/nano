@@ -54,10 +54,10 @@ namespace math
                         tscalar beta1t = beta1;
                         tscalar beta2t = beta2;
 
-                        // running-averaged-per-dimension first-order momentum
+                        // first-order momentum of the gradient
                         momentum_vector_t<tvector> m(beta1, tvector::Zero(x0.size()));
 
-                        // running-averaged-per-dimension second-order momentum
+                        // second-order momentum of the gradient
                         momentum_vector_t<tvector> v(beta2, tvector::Zero(x0.size()));
 
                         const auto op_iter = [&] (tstate& cstate, const std::size_t)

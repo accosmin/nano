@@ -54,8 +54,8 @@ namespace math
                         // learning rate schedule
                         lrate_t<tscalar> lrate(alpha0, decay);
 
-                        // running-averaged-per-dimension step updates
-                        momentum_vector_t<tvector> davg(momentum, tvector::Zero(x0.size()));
+                        // first-order momentum of the gradient
+                        momentum_vector_t<tvector> gavg(momentum, tvector::Zero(x0.size()));
 
                         const auto op_iter = [&] (tstate& cstate, const std::size_t iter)
                         {
@@ -63,8 +63,8 @@ namespace math
                                 const tscalar alpha = lrate.get(iter);
 
                                 // descent direction
-                                davg.update(cstate.g.array());
-                                cstate.d = -davg.value();
+                                gavg.update(cstate.g.array());
+                                cstate.d = -gavg.value();
 
                                 // update solution
                                 cstate.update(problem, alpha);
