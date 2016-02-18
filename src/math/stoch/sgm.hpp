@@ -55,7 +55,7 @@ namespace math
                         lrate_t<tscalar> lrate(alpha0, decay);
 
                         // first-order momentum of the gradient
-                        momentum_vector_t<tvector> gavg(momentum, tvector::Zero(x0.size()));
+                        momentum_vector_t<tvector> gavg(momentum, x0.size());
 
                         const auto op_iter = [&] (tstate& cstate, const std::size_t iter)
                         {

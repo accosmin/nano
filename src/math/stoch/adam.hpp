@@ -51,14 +51,11 @@ namespace math
                         const tscalar beta1 = 0.900;
                         const tscalar beta2 = 0.999;
 
-                        tscalar beta1t = beta1;
-                        tscalar beta2t = beta2;
-
                         // first-order momentum of the gradient
-                        momentum_vector_t<tvector> m(beta1, tvector::Zero(x0.size()));
+                        momentum_vector_t<tvector> m(beta1, x0.size());
 
                         // second-order momentum of the gradient
-                        momentum_vector_t<tvector> v(beta2, tvector::Zero(x0.size()));
+                        momentum_vector_t<tvector> v(beta2, x0.size());
 
                         const auto op_iter = [&] (tstate& cstate, const std::size_t)
                         {
@@ -69,15 +66,10 @@ namespace math
                                 m.update(cstate.g);
                                 v.update(cstate.g.array().square());
 
-                                cstate.d = -m.value().array() / (1 - beta1t) /
-                                           (epsilon + (v.value().array() / (1 - beta2t)).sqrt());
+                                cstate.d = -m.value().array() / (epsilon + v.value().array().sqrt());
 
                                 // update solution
                                 cstate.update(problem, alpha);
-
-                                // next iteration
-                                beta1t *= beta1;
-                                beta2t *= beta2;
                         };
 
                         const auto op_epoch = [] (tstate&)

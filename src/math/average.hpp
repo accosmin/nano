@@ -4,26 +4,33 @@ namespace math
 {
         template
         <
-                typename tscalar
+                typename tscalar,
+                typename tvalue
         >
-        struct average_t
+        class average_t
         {
-                average_t() : m_count(0)
+        public:
+                explicit average_t(const tvalue& initial)
+                        :       m_count(0),
+                                m_value(initial)
                 {
                 }
 
-                template
-                <
-                        typename tvalue
-                >
-                auto update(const tvalue& avg_value, const tvalue& value)
+                void update(const tvalue& value)
                 {
-                        constexpr tscalar one = 1;
-                        m_count += one;
-                        return (avg_value * (m_count - one) + value) / m_count;
+                        m_count ++;
+                        m_value = (m_value * (m_count - 1) + value) / m_count;
                 }
+
+                auto value() const
+                {
+                        return m_value;
+                }
+
+        private:
 
                 tscalar         m_count;
+                tvalue          m_value;        ///< running average
         };
 
         ///
@@ -32,84 +39,39 @@ namespace math
         template
         <
                 typename tscalar,
-                typename tbase = average_t<tscalar>
+                typename tbase = average_t<tscalar, tscalar>
         >
-        class average_scalar_t : private tbase
+        class average_scalar_t : public tbase
         {
         public:
 
-                ///
-                /// \brief constructor
-                ///
-                average_scalar_t() : m_value(0)
+                average_scalar_t()
+                        :       tbase(0)
                 {
                 }
-
-                ///
-                /// \brief update the running average with a new value
-                ///
-                void update(const tscalar value)
-                {
-                        m_value = tbase::update(m_value, value);
-                }
-
-                ///
-                /// \brief retrieve the current average
-                ///
-                tscalar value() const
-                {
-                        return m_value;
-                }
-
-        private:
-
-                tscalar         m_value;
         };
 
-	///
+        ///
         /// \brief running average for Eigen vectors
         ///
         template
         <
                 typename tvector,
                 typename tscalar = typename tvector::Scalar,
-                typename tbase = average_t<tscalar>
+                typename tbase = average_t<tscalar, tvector>
         >
-        class average_vector_t : private tbase
+        class average_vector_t : public tbase
         {
         public:
 
-                ///
-                /// \brief constructor
-                ///
                 template
                 <
                         typename tsize
                 >
                 explicit average_vector_t(const tsize dimensions)
-                        :       m_value(tvector::Zero(dimensions))
+                        :       tbase(tvector::Zero(dimensions))
                 {
                 }
-
-                ///
-                /// \brief update the running average with a new value
-                ///
-                void update(const tvector& value)
-                {
-                        m_value.noalias() = tbase::update(m_value, value);
-                }
-
-                ///
-                /// \brief retrieve the current average
-                ///
-                const tvector& value() const
-                {
-                        return m_value;
-                }
-
-        private:
-
-                tvector         m_value;
         };
 }
 

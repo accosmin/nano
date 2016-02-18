@@ -5,47 +5,61 @@
 namespace math
 {
         ///
-        /// \brief running exponential average for scalars using a fixed momentum
+        /// \brief running exponential average (aka momentum) with zero-bias correction
+        ///     see "Adam: A method for stochastic optimization", by Diederik P. Kingma & Jimmy Lei Ba
         ///
         template
         <
-                typename tscalar
+                typename tscalar,
+                typename tvalue
         >
-        class momentum_scalar_t
+        class momentum_t
         {
         public:
-
-                ///
-                /// \brief constructor
-                ///
-                momentum_scalar_t(const tscalar momentum, const tscalar initial)
+                momentum_t(const tscalar momentum, const tvalue& initial)
                         :       m_momentum(momentum),
+                                m_correction(1),
                                 m_value(initial)
                 {
                         assert(momentum > 0);
                         assert(momentum < 1);
                 }
 
-                ///
-                /// \brief update the running geometric average with a new value
-                ///
-                void update(const tscalar value)
+                void update(const tvalue& value)
                 {
-                        m_value = m_value * m_momentum + value * (1 - m_momentum);
+                        m_value = m_momentum * m_value + (1 - m_momentum) * value;
+                        m_correction *= m_momentum;
                 }
 
-                ///
-                /// \brief retrieve the current average
-                ///
-                tscalar value() const
+                auto value() const
                 {
-                        return m_value;
+                        return m_value / (1 - m_correction);
                 }
 
         private:
 
-                tscalar         m_momentum;
-                tscalar         m_value;
+                tscalar         m_momentum;     ///<
+                tscalar         m_correction;   ///< zero-bias correction
+                tvalue          m_value;        ///< running average
+        };
+
+
+        ///
+        /// \brief running exponential average for scalars using a fixed momentum
+        ///
+        template
+        <
+                typename tscalar,
+                typename tbase = momentum_t<tscalar, tscalar>
+        >
+        class momentum_scalar_t : public tbase
+        {
+        public:
+
+                explicit momentum_scalar_t(const tscalar momentum)
+                        :       tbase(momentum, 0)
+                {
+                }
         };
 
         ///
@@ -54,43 +68,21 @@ namespace math
         template
         <
                 typename tvector,
-                typename tscalar = typename tvector::Scalar
+                typename tscalar = typename tvector::Scalar,
+                typename tbase = momentum_t<tscalar, tvector>
         >
-        class momentum_vector_t
+        class momentum_vector_t : public tbase
         {
         public:
 
-                ///
-                /// \brief constructor
-                ///
-                momentum_vector_t(const tscalar momentum, const tvector& initial)
-                        :       m_momentum(momentum),
-                                m_value(initial)
+                template
+                <
+                        typename tsize
+                >
+                momentum_vector_t(const tscalar momentum, const tsize dimensions)
+                        :       tbase(momentum, tvector::Zero(dimensions))
                 {
-                        assert(momentum > 0);
-                        assert(momentum < 1);
                 }
-
-                ///
-                /// \brief update the running average with a new value
-                ///
-                void update(const tvector& value)
-                {
-                        m_value.noalias() = m_value * m_momentum + value * (1 - m_momentum);
-                }
-
-                ///
-                /// \brief retrieve the current average
-                ///
-                const tvector& value() const
-                {
-                        return m_value;
-                }
-
-        private:
-
-                tscalar         m_momentum;
-                tvector         m_value;
         };
 }
 

@@ -11,10 +11,10 @@ namespace test
         >
         void check_momentum(const tscalar momentum, const tsize range)
         {
-                math::momentum_scalar_t<tscalar> mom00(momentum, tscalar(0));
-                math::momentum_scalar_t<tscalar> mom01(momentum, tscalar(1));
-                math::momentum_scalar_t<tscalar> mom10(momentum, tscalar(0));
-                math::momentum_scalar_t<tscalar> mom11(momentum, tscalar(1));
+                math::momentum_scalar_t<tscalar> mom00(momentum);
+                math::momentum_scalar_t<tscalar> mom01(momentum);
+                math::momentum_scalar_t<tscalar> mom10(momentum);
+                math::momentum_scalar_t<tscalar> mom11(momentum);
 
                 const auto epsilon = math::epsilon1<tscalar>();
                 auto powm = momentum;
@@ -45,10 +45,10 @@ namespace test
         >
         void check_momentum(const tsize dims, const tscalar momentum, const tsize range)
         {
-                math::momentum_vector_t<tvector> mom00(momentum, tvector::Constant(dims, tscalar(0)));
-                math::momentum_vector_t<tvector> mom01(momentum, tvector::Constant(dims, tscalar(1)));
-                math::momentum_vector_t<tvector> mom10(momentum, tvector::Constant(dims, tscalar(0)));
-                math::momentum_vector_t<tvector> mom11(momentum, tvector::Constant(dims, tscalar(1)));
+                math::momentum_vector_t<tvector> mom00(momentum, dims);
+                math::momentum_vector_t<tvector> mom01(momentum, dims);
+                math::momentum_vector_t<tvector> mom10(momentum, dims);
+                math::momentum_vector_t<tvector> mom11(momentum, dims);
 
                 const auto epsilon = math::epsilon1<tscalar>();
                 auto powm = momentum;

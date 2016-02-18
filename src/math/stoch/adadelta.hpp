@@ -50,10 +50,10 @@ namespace math
                         assert(problem.size() == x0.size());
 
                         // second-order momentum of the gradient
-                        momentum_vector_t<tvector> gavg(momentum, tvector::Zero(x0.size()));
+                        momentum_vector_t<tvector> gavg(momentum, x0.size());
 
                         // second-order momentum of the step updates
-                        momentum_vector_t<tvector> davg(momentum, tvector::Zero(x0.size()));
+                        momentum_vector_t<tvector> davg(momentum, x0.size());
 
                         const auto op_iter = [&] (tstate& cstate, const std::size_t)
                         {
