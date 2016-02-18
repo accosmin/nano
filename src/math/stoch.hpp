@@ -6,8 +6,6 @@
 #include "stoch/ag.hpp"
 #include "stoch/sg.hpp"
 #include "stoch/sgm.hpp"
-#include "stoch/sga.hpp"
-#include "stoch/sia.hpp"
 #include "stoch/adam.hpp"
 #include "stoch/adagrad.hpp"
 #include "stoch/adadelta.hpp"
@@ -36,12 +34,6 @@ namespace math
                 {
                 case stoch_optimizer::SGM:
                         return stoch_sgm_t<tproblem>()(param, problem, x0);
-
-                case stoch_optimizer::SGA:
-                        return stoch_sga_t<tproblem>()(param, problem, x0);
-
-                case stoch_optimizer::SIA:
-                        return stoch_sia_t<tproblem>()(param, problem, x0);
 
                 case stoch_optimizer::AG:
                         return stoch_ag_t<tproblem>()(param, problem, x0);

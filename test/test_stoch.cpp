@@ -37,8 +37,6 @@ namespace test
                 {
                         math::stoch_optimizer::SG,
                         math::stoch_optimizer::SGM,
-                        math::stoch_optimizer::SGA,
-                        math::stoch_optimizer::SIA,
                         math::stoch_optimizer::AG,
                         math::stoch_optimizer::AGFR,
                         math::stoch_optimizer::AGGR,

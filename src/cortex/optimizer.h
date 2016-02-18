@@ -28,9 +28,7 @@ namespace text
                 return
                 {
                         { math::stoch_optimizer::SG,           "sg" },
-                        { math::stoch_optimizer::SGA,          "sga" },
                         { math::stoch_optimizer::SGM,          "sgm" },
-                        { math::stoch_optimizer::SIA,          "sia" },
                         { math::stoch_optimizer::AG,           "ag" },
                         { math::stoch_optimizer::AGFR,         "agfr" },
                         { math::stoch_optimizer::AGGR,         "aggr" },

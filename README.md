@@ -17,7 +17,7 @@ The core modules are independent of each other and are designed to be as generic
 
 Most notably the **math** module implements the following: 
 * batch optimization methods: `gradient descent`, various `non-linear conjugate gradient descent`, `L-BFGS`.
-* stochastic optimization methods: `Nesterov's accelerated gradient`, `stochastic (averaging) gradient`, `ADADELTA`, `ADAGRAD`.
+* stochastic optimization methods: `Nesterov's accelerated gradient`, `stochastic gradient`, `ADADELTA`, `ADAGRAD`, `ADAM`.
 * line-search methods: `backtracking`, `More & Thuente`, `CG_DESCENT`.
 
 

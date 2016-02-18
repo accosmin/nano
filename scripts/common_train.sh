@@ -52,10 +52,10 @@ function fn_trainers
         stoch_agfr="--trainer stochastic --trainer-params opt=agfr,epoch=${epochs}"
         stoch_aggr="--trainer stochastic --trainer-params opt=aggr,epoch=${epochs}"
         stoch_sg="--trainer stochastic --trainer-params opt=sg,epoch=${epochs}"
-        stoch_sga="--trainer stochastic --trainer-params opt=sga,epoch=${epochs}"
-        stoch_sia="--trainer stochastic --trainer-params opt=sia,epoch=${epochs}"
+        stoch_sgm="--trainer stochastic --trainer-params opt=sgm,epoch=${epochs}"
         stoch_adagrad="--trainer stochastic --trainer-params opt=adagrad,epoch=${epochs}"
         stoch_adadelta="--trainer stochastic --trainer-params opt=adadelta,epoch=${epochs}"
+        stoch_adam="--trainer stochastic --trainer-params opt=adam,epoch=${epochs}"
 
         mbatch_lbfgs="--trainer minibatch --trainer-params opt=lbfgs,epoch=${epochs},eps=1e-4"
         mbatch_cgd="--trainer minibatch --trainer-params opt=cgd,epoch=${epochs},eps=1e-4"

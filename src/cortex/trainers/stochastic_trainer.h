@@ -8,18 +8,15 @@ namespace cortex
         /// stochastic trainer: each gradient update is computed for a random sub-set of samples.
         ///
         /// parameters:
-        ///     opt=sg[,...]            - optimization method: SG, SGA, SGM, SIA, AG, AGFR, AGGR, ADAGRAD, ADADELTA, ADAM
+        ///     opt=sg[,...]            - optimization method: SG, SGM, AG, AGFR, AGGR, ADAGRAD, ADADELTA, ADAM
         ///     epoch=16[1,1024]        - #epochs (~ #samples)
-        ///
-        /// NB: "Minimizing Finite Sums with the Stochastic Average Gradient"
-        ///     - Mark Schmidth, Nicolas Le Roux, Francis Bach
         ///
         class stochastic_trainer_t : public trainer_t
         {
         public:
 
                 NANOCV_MAKE_CLONABLE(stochastic_trainer_t,
-                                     "parameters: opt=sg[,sga,sgm,sia,ag,agfr,aggr,adagrad,adadelta,adam],epoch=16[1,1024]")
+                                     "parameters: opt=sg[,sgm,ag,agfr,aggr,adagrad,adadelta,adam],epoch=16[1,1024]")
 
                 // constructor
                 explicit stochastic_trainer_t(const string_t& parameters = string_t());

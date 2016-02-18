@@ -33,7 +33,7 @@ do
         trainers="stoch_agfr"
         #trainers=${trainers}" batch_gd batch_cgd batch_lbfgs"
         #trainers=${trainers}" mbatch_gd mbatch_cgd mbatch_lbfgs"
-        #trainers=${trainers}" stoch_ag stoch_aggr stoch_adagrad stoch_adadelta stoch_sg stoch_sga stoch_sia"
+        #trainers=${trainers}" stoch_ag stoch_aggr stoch_agfr stoch_adagrad stoch_adadelta stoch_adam stoch_sg stoch_sgm"
 
         for trainer in ${trainers}
         do

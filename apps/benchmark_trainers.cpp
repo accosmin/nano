@@ -118,8 +118,6 @@ static void test_optimizers(
         const auto stoch_optimizers =
         {
                 math::stoch_optimizer::SG,
-                math::stoch_optimizer::SGA,
-                math::stoch_optimizer::SIA,
                 math::stoch_optimizer::SGM,
                 math::stoch_optimizer::AG,
                 math::stoch_optimizer::AGFR,
