@@ -3,7 +3,7 @@
 #include "math/epsilon.hpp"
 
 namespace test
-{        
+{
         template
         <
                 typename tscalar,
@@ -13,22 +13,21 @@ namespace test
         {
                 math::momentum_scalar_t<tscalar> mom00(momentum);
                 math::momentum_scalar_t<tscalar> mom01(momentum);
-                math::momentum_scalar_t<tscalar> mom10(momentum);
-                math::momentum_scalar_t<tscalar> mom11(momentum);
+                math::momentum_scalar_t<tscalar> mom10(1 - momentum);
+                math::momentum_scalar_t<tscalar> mom11(1 - momentum);
 
                 const auto epsilon = math::epsilon1<tscalar>();
-                auto powm = momentum;
-                for (tsize i = 1; i <= range; ++ i, powm *= momentum)
+                for (tsize i = 1; i <= range; ++ i)
                 {
-                        mom00.update(tscalar(0));
-                        mom01.update(tscalar(0));
-                        mom10.update(tscalar(1));
-                        mom11.update(tscalar(1));
+                        const auto base00 = momentum;
+                        const auto base01 = 1 - momentum;
+                        const auto base10 = momentum;
+                        const auto base11 = 1 - momentum;
 
-                        const auto base00 = tscalar(0);
-                        const auto base01 = powm;
-                        const auto base10 = tscalar(1) - powm;
-                        const auto base11 = tscalar(1);
+                        mom00.update(base00);
+                        mom01.update(base01);
+                        mom10.update(base10);
+                        mom11.update(base11);
 
                         NANOCV_CHECK_CLOSE(mom00.value(), base00, epsilon);
                         NANOCV_CHECK_CLOSE(mom01.value(), base01, epsilon);
@@ -47,22 +46,21 @@ namespace test
         {
                 math::momentum_vector_t<tvector> mom00(momentum, dims);
                 math::momentum_vector_t<tvector> mom01(momentum, dims);
-                math::momentum_vector_t<tvector> mom10(momentum, dims);
-                math::momentum_vector_t<tvector> mom11(momentum, dims);
+                math::momentum_vector_t<tvector> mom10(1 - momentum, dims);
+                math::momentum_vector_t<tvector> mom11(1 - momentum, dims);
 
                 const auto epsilon = math::epsilon1<tscalar>();
-                auto powm = momentum;
-                for (tsize i = 1; i <= range; ++ i, powm *= momentum)
+                for (tsize i = 1; i <= range; ++ i)
                 {
-                        mom00.update(tvector::Constant(dims, tscalar(0)));
-                        mom01.update(tvector::Constant(dims, tscalar(0)));
-                        mom10.update(tvector::Constant(dims, tscalar(1)));
-                        mom11.update(tvector::Constant(dims, tscalar(1)));
+                        const auto base00 = tvector::Constant(dims, momentum);
+                        const auto base01 = tvector::Constant(dims, 1 - momentum);
+                        const auto base10 = tvector::Constant(dims, momentum);
+                        const auto base11 = tvector::Constant(dims, 1 - momentum);
 
-                        const auto base00 = tvector::Constant(dims, tscalar(0));
-                        const auto base01 = tvector::Constant(dims, powm);
-                        const auto base10 = tvector::Constant(dims, tscalar(1) - powm);
-                        const auto base11 = tvector::Constant(dims, tscalar(1));
+                        mom00.update(base00);
+                        mom01.update(base01);
+                        mom10.update(base10);
+                        mom11.update(base11);
 
                         NANOCV_CHECK_EIGEN_CLOSE(mom00.value(), base00, epsilon);
                         NANOCV_CHECK_EIGEN_CLOSE(mom01.value(), base01, epsilon);
