@@ -33,7 +33,9 @@ namespace math
 
                 auto value() const
                 {
-                        return m_value / (1 - m_correction);
+                        const auto correction = (m_correction == 1) ? tscalar(1) : (tscalar(1) - m_correction);
+                        assert(correction > 0);
+                        return m_value / correction;
                 }
 
         private:
