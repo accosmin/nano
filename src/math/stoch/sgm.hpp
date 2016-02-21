@@ -27,7 +27,7 @@ namespace math
                 tstate operator()(const param_t& param, const tproblem& problem, const tvector& x0) const
                 {
                         const auto alpha0s = { 1e-4, 1e-3, 1e-2, 1e-1, 1e+0 };
-                        const auto decays = { 0.50, 0.75, 1.00 };
+                        const auto decays = { 0.10, 0.20, 0.50, 0.75, 1.00 };
                         const auto momenta = { 0.90, 0.95, 0.99 };
 
                         const auto op = [&] (const auto alpha0, const auto decay, const auto momentum)
