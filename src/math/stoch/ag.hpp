@@ -40,7 +40,7 @@ namespace math
                 tstate operator()(const param_t& param, const tproblem& problem, const tvector& x0) const
                 {
                         const auto alpha0s = { 1e-4, 1e-3, 1e-2, 1e-1, 1e+0 };
-                        const auto qs = { 1e-6, 1e-4, 1e-2, 1e-1, 1e+0 };
+                        const auto qs = { 1e-6, 1e-5, 1e-4, 1e-3, 1e-2, 1e-1, 1e+0 };
 
                         const auto op = [&] (const auto alpha0, const auto q)
                         {
@@ -103,7 +103,7 @@ namespace math
                                 // update solution
                                 cstate.update(problem, py);
                                 cx = py - alpha * cstate.g;
-                                cy = px + beta * (cx - px);
+                                cy = cx + beta * (cx - px);
 
                                 switch (trestart)
                                 {
@@ -113,14 +113,14 @@ namespace math
                                 case ag_restart::function:
                                         if ((cfx = problem(cx)) > pfx)
                                         {
-                                                ptheta = 1;
+                                                ctheta = 1;
                                         }
                                         break;
 
                                 case ag_restart::gradient:
                                         if (cstate.g.dot(cx - px) > tscalar(0))
                                         {
-                                                ptheta = 1;
+                                                ctheta = 1;
                                         }
                                         break;
                                 }
