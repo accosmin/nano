@@ -3,6 +3,7 @@
 #include "thread/thread.h"
 #include "math/random.hpp"
 #include "math/epsilon.hpp"
+#include "math/tune_fixed.hpp"
 #include "math/tune_log10_mt.hpp"
 
 namespace test
@@ -41,9 +42,9 @@ namespace test
 
 NANOCV_BEGIN_MODULE(test_tune)
 
-NANOCV_CASE(evaluate)
+NANOCV_CASE(tune_log10)
 {
-        typedef double scalar_t;
+        using scalar_t = double;
 
         const size_t n_tests = 16;
         const scalar_t minlog = -6.0;
@@ -58,6 +59,54 @@ NANOCV_CASE(evaluate)
 
                 test::check(agen(), bgen(), minlog, maxlog, epslog, splits);
         }
+}
+
+NANOCV_CASE(tune_fixed)
+{
+        const auto op1 = [] (const auto param1)
+        {
+                return param1 * param1;
+        };
+        const auto op2 = [&] (const auto param1, const auto param2)
+        {
+                return op1(param1) + op1(param2);
+        };
+        const auto op3 = [&] (const auto param1, const auto param2, const auto param3)
+        {
+                return op2(param1, param2) + op1(param3);
+        };
+        const auto op4 = [&] (const auto param1, const auto param2, const auto param3, const auto param4)
+        {
+                return op3(param1, param2, param3) + op1(param4);
+        };
+
+        const auto params1 = { 0, 1 };
+        const auto params2 = { 1, 2, 3 };
+        const auto params3 = { 2, 3, 4, 5 };
+        const auto params4 = { 3, 4, 5, 6, 7 };
+
+        const auto ret1 = math::tune_fixed(op1, params1);
+        const auto ret2 = math::tune_fixed(op2, params1, params2);
+        const auto ret3 = math::tune_fixed(op3, params1, params2, params3);
+        const auto ret4 = math::tune_fixed(op4, params1, params2, params3, params4);
+
+        NANOCV_CHECK_EQUAL(std::get<0>(ret1), op1(0));
+        NANOCV_CHECK_EQUAL(std::get<1>(ret1), 0);
+
+        NANOCV_CHECK_EQUAL(std::get<0>(ret2), op2(0, 1));
+        NANOCV_CHECK_EQUAL(std::get<1>(ret2), 0);
+        NANOCV_CHECK_EQUAL(std::get<2>(ret2), 1);
+
+        NANOCV_CHECK_EQUAL(std::get<0>(ret3), op3(0, 1, 2));
+        NANOCV_CHECK_EQUAL(std::get<1>(ret3), 0);
+        NANOCV_CHECK_EQUAL(std::get<2>(ret3), 1);
+        NANOCV_CHECK_EQUAL(std::get<3>(ret3), 2);
+
+        NANOCV_CHECK_EQUAL(std::get<0>(ret4), op4(0, 1, 2, 3));
+        NANOCV_CHECK_EQUAL(std::get<1>(ret4), 0);
+        NANOCV_CHECK_EQUAL(std::get<2>(ret4), 1);
+        NANOCV_CHECK_EQUAL(std::get<3>(ret4), 2);
+        NANOCV_CHECK_EQUAL(std::get<4>(ret4), 3);
 }
 
 NANOCV_END_MODULE()
