@@ -81,9 +81,9 @@ NANOCV_CASE(tune_fixed)
         };
 
         const auto params1 = { 0, 1 };
-        const auto params2 = { 1, 2, 3 };
+        const auto params2 = { 3, 2, 1 };
         const auto params3 = { 2, 3, 4, 5 };
-        const auto params4 = { 3, 4, 5, 6, 7 };
+        const auto params4 = { 7, 6, 5, 4, 3 };
 
         const auto ret1 = math::tune_fixed(op1, params1);
         const auto ret2 = math::tune_fixed(op2, params1, params2);
