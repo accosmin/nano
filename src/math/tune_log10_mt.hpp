@@ -24,14 +24,13 @@ namespace math
                 using tresult = decltype(op(tscalar(0)));
                 using trecord = std::tuple<tresult, tscalar>;
 
-                std::set<trecord> history;
+                splits = std::max(tsize(4), splits);
 
                 // synchronization
                 std::mutex mutex;
 
-                splits = std::max(tsize(4), splits);
-
                 // greedy sort-of-branch-and-bound search
+                std::set<trecord> history;
                 while ((maxlog - minlog) > epslog && epslog > tscalar(0))
                 {
                         const tscalar varlog = (maxlog - minlog) / tscalar(splits - 1);
@@ -40,8 +39,7 @@ namespace math
                         {
                                 pool.enqueue([=,&history,&mutex]()
                                 {
-                                        const auto crtlog = minlog + static_cast<tscalar>(i) * varlog;
-                                        const trecord value = tune_log10_detail::evaluate(op, crtlog);
+                                        const trecord value = tune_log10_detail::evaluate(op, minlog, i, varlog);
 
                                         // synchronize per thread
                                         const std::lock_guard<std::mutex> lock(mutex);
@@ -55,6 +53,7 @@ namespace math
                         tune_log10_detail::update_range(*history.begin(), varlog, splits, minlog, maxlog);
                 }
 
-                return history.empty() ? trecord() : tune_log10_detail::make_result(*history.begin());
+                assert(!history.empty());
+                return tune_log10_detail::make_result(*history.begin());
         }
 }

@@ -2,6 +2,7 @@
 
 #include <set>
 #include <tuple>
+#include <cassert>
 #include <type_traits>
 
 namespace math
@@ -29,7 +30,8 @@ namespace math
                         history.emplace(op(param1), param1);
                 }
 
-                return history.empty() ? trecord() : *history.begin();
+                assert(!history.empty());
+                return *history.begin();
         }
 
         ///
@@ -52,15 +54,17 @@ namespace math
                 using trecord = std::tuple<tresult, tvalue1, tvalue2>;
 
                 std::set<trecord> history;
-                for (auto param1 : values1)
+                for (auto param2 : values2)
                 {
-                        for (auto param2 : values2)
+                        const auto opp = [&] (const auto param1)
                         {
-                                history.emplace(op(param1, param2), param1, param2);
-                        }
+                                return op(param1, param2);
+                        };
+                        history.insert(std::tuple_cat(tune_fixed(opp, values1), std::tie(param2)));
                 }
 
-                return history.empty() ? trecord() : *history.begin();
+                assert(!history.empty());
+                return *history.begin();
         }
 
         ///
@@ -85,18 +89,17 @@ namespace math
                 using trecord = std::tuple<tresult, tvalue1, tvalue2, tvalue3>;
 
                 std::set<trecord> history;
-                for (auto param1 : values1)
+                for (auto param3 : values3)
                 {
-                        for (auto param2 : values2)
+                        const auto opp = [&] (const auto param1, const auto param2)
                         {
-                                for (auto param3 : values3)
-                                {
-                                        history.emplace(op(param1, param2, param3), param1, param2, param3);
-                                }
-                        }
+                                return op(param1, param2, param3);
+                        };
+                        history.insert(std::tuple_cat(tune_fixed(opp, values1, values2), std::tie(param3)));
                 }
 
-                return history.empty() ? trecord() : *history.begin();
+                assert(!history.empty());
+                return *history.begin();
         }
 
         ///
@@ -123,22 +126,16 @@ namespace math
                 using trecord = std::tuple<tresult, tvalue1, tvalue2, tvalue3, tvalue4>;
 
                 std::set<trecord> history;
-                for (auto param1 : values1)
+                for (auto param4 : values4)
                 {
-                        for (auto param2 : values2)
+                        const auto opp = [&] (const auto param1, const auto param2, const auto param3)
                         {
-                                for (auto param3 : values3)
-                                {
-                                        for (auto param4 : values4)
-                                        {
-                                                history.emplace(
-                                                        op(param1, param2, param3, param4), 
-                                                        param1, param2, param3, param4);
-                                        }
-                                }
-                        }
+                                return op(param1, param2, param3, param4);
+                        };
+                        history.insert(std::tuple_cat(tune_fixed(opp, values1, values2, values3), std::tie(param4)));
                 }
 
-                return history.empty() ? trecord() : *history.begin();
+                assert(!history.empty());
+                return *history.begin();
         }
 }
