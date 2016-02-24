@@ -1,7 +1,7 @@
 #pragma once
 
-#include "math/lsearch_types.h"
 #include <cstddef>
+#include "math/lsearch_types.h"
 
 namespace math
 {
@@ -17,7 +17,9 @@ namespace math
                 using tstate = typename tproblem::tstate;
                 using tscalar = typename tproblem::tscalar;
                 using tvector = typename tproblem::tvector;
-                using topulog = typename tproblem::topulog;
+
+                /// logging operator: op(state), returns false if the optimization should stop
+                using topulog = std::function<bool(const tstate&)>;
 
                 ///
                 /// \brief constructor

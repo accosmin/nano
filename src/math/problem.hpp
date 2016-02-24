@@ -37,9 +37,6 @@ namespace math
                 /// function value & gradient operator: f = op(x, g)
                 using topgrad = std::function<tscalar(const tvector&, tvector&)>;
 
-                /// logging operator: op(state), returns false if the optimization should stop
-                using topulog = std::function<bool(const tstate&)>;
-
                 ///
                 /// \brief constructor (analytic gradient)
                 ///

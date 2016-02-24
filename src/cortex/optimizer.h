@@ -17,7 +17,6 @@ namespace cortex
         using opt_opsize_t = opt_problem_t::topsize;
         using opt_opfval_t = opt_problem_t::topfval;
         using opt_opgrad_t = opt_problem_t::topgrad;
-        using opt_opulog_t = opt_problem_t::topulog;
 }
 
 namespace text
