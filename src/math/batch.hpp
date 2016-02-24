@@ -15,11 +15,10 @@ namespace math
         ///
         template
         <
-                typename tscalar,
-                typename tproblem = problem_t<tscalar>,
-                typename tstate = typename tproblem::tstate,
+                typename tproblem,      ///< optimization problem
+                typename topulog,       ///< logging operator (update)
                 typename tvector = typename tproblem::tvector,
-                typename topulog = typename tproblem::topulog
+                typename tscalar = typename tproblem::tscalar
         >
         auto minimize(
                 const tproblem& problem,
@@ -78,11 +77,10 @@ namespace math
         ///
         template
         <
-                typename tscalar,
-                typename tproblem = problem_t<tscalar>,
-                typename tstate = typename tproblem::tstate,
+                typename tproblem,      ///< optimization problem
+                typename topulog,       ///< logging operator (update)
                 typename tvector = typename tproblem::tvector,
-                typename topulog = typename tproblem::topulog
+                typename tscalar = typename tproblem::tscalar
         >
         auto minimize(
                 const tproblem& problem,

@@ -17,18 +17,19 @@ namespace math
         ///
         template
         <
-                typename tproblem,
-                typename tsize = typename tproblem::tsize,
-                typename tvector = typename tproblem::tvector,
-                typename topulog = typename tproblem::topulog
+                typename tproblem,      ///< optimization problem
+                typename topulog,       ///< logging operator (update)
+                typename toptlog,       ///< logging operator (tunning)
+                typename tvector = typename tproblem::tvector
         >
         auto minimize(
                 const tproblem& problem,
                 const topulog& fn_ulog,
+                const toptlog& fn_tlog,
                 const tvector& x0,
                 const stoch_optimizer optimizer, const std::size_t epochs, const std::size_t epoch_size)
         {
-                const stoch_params_t<tproblem> param(epochs, epoch_size, fn_ulog);
+                const stoch_params_t<tproblem> param(epochs, epoch_size, fn_ulog, fn_tlog);
 
                 switch (optimizer)
                 {
