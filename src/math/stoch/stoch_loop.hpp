@@ -9,18 +9,20 @@ namespace math
         ///
         template
         <
-                typename tparam,        ///< optimization parameters
-                typename tstate,        ///< initial state
+                typename tproblem,      ///< optimization problem
                 typename top_iter,      ///< operator to call for each optimization iteration
                 typename top_epoch      ///< operator to call after each epoch
         >
-        tstate stoch_loop(const tparam& params, const tstate& istate, const top_iter& opi, const top_epoch& ope)
+        auto stoch_loop(
+                const stoch_params_t<tproblem>& params,
+                const typename tproblem::tstate& istate,
+                const top_iter& opi, const top_epoch& ope)
         {
                 // current state
-                tstate cstate = istate;
+                auto cstate = istate;
 
                 // best state
-                tstate bstate = istate;
+                auto bstate = istate;
 
                 // for each epoch ...
                 for (std::size_t e = 0, k = 1; e < params.m_epochs; ++ e)

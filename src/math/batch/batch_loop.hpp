@@ -9,14 +9,16 @@ namespace math
         ///
         template
         <
-                typename tparam,        ///< optimization parameters
-                typename tstate,        ///< initial state
+                typename tproblem,      ///< optimization problem
                 typename top_iter       ///< operator to call for each optimization iteration
         >
-        tstate batch_loop(const tparam& params, const tstate& istate, const top_iter& opi)
+        auto batch_loop(
+                const batch_params_t<tproblem>& params,
+                const typename tproblem::tstate& istate,
+                const top_iter& opi)
         {
                 // current state
-                tstate cstate = istate;
+                auto cstate = istate;
 
                 // for each iteration ...
                 for (std::size_t i = 0; i < params.m_max_iterations; i ++)
