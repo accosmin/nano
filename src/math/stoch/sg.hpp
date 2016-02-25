@@ -29,6 +29,7 @@ namespace math
                 {
                         const auto alpha0s = { 1e-4, 1e-3, 1e-2, 1e-1, 1e+0 };
                         const auto decays = { 0.10, 0.20, 0.50, 0.75, 1.00 };
+
                         const auto op = [&] (const auto alpha0, const auto decay)
                         {
                                 return this->operator()(param.tunable(), problem, x0, alpha0, decay);
@@ -69,7 +70,8 @@ namespace math
                         };
 
                         // OK, assembly the optimizer
-                        return stoch_loop(param, tstate(problem, x0), op_iter, op_epoch);
+                        return  stoch_loop(param, tstate(problem, x0), op_iter, op_epoch,
+                                {{"alpha0", alpha0}, {"decay", decay}});
                 }
         };
 }

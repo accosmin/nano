@@ -25,8 +25,8 @@ namespace math
                 /// logging operator: op(state), returns false if the optimization should stop
                 using topulog = std::function<bool(const tstate&, const tconfig&)>;
 
-                /// tunning operator: op(state, configuration)
-                using toptlog = std::function<void(const tstate&, const tconfig&)>;
+                /// tunning operator: op(state, configuration), returns the associated value for this configuration
+                using toptlog = std::function<tscalar(const tstate&, const tconfig&)>;
 
                 ///
                 /// \brief constructor
@@ -47,7 +47,7 @@ namespace math
                 ///
                 stoch_params_t tunable() const
                 {
-                        return { std::size_t(1), m_epoch_size, nullptr };
+                        return { std::size_t(1), m_epoch_size, nullptr, m_tlog };
                 }
 
                 ///
@@ -61,12 +61,9 @@ namespace math
                 ///
                 /// \brief log the optimization state associated with a hyper-parameters configuration
                 ///
-                void tlog(const tstate& state, const tconfig& config) const
+                tscalar tlog(const tstate& state, const tconfig& config) const
                 {
-                        if (m_tlog)
-                        {
-                                m_tlog(state, config);
-                        }
+                        return (m_tlog && !m_ulog) ? m_tlog(state, config) : state.f;
                 }
 
                 // attributes

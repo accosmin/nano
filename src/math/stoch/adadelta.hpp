@@ -78,7 +78,8 @@ namespace math
                         };
 
                         // OK, assembly the optimizer
-                        return stoch_loop(param, tstate(problem, x0), op_iter, op_epoch);
+                        return  stoch_loop(param, tstate(problem, x0), op_iter, op_epoch,
+                                {{"momentum", momentum}, {"epsilon", epsilon}});
                 }
         };
 }

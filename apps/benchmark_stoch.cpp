@@ -62,7 +62,7 @@ namespace
                 {
                         const auto op = [&] (const tproblem& problem, const tvector& x0)
                         {
-                                return math::minimize(problem, nullptr, x0, optimizer, epochs, epoch_size);
+                                return math::minimize(problem, nullptr, nullptr, x0, optimizer, epochs, epoch_size);
                         };
 
                         const auto name =

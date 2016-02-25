@@ -35,7 +35,7 @@ namespace cortex
         logger_t& logger_t::operator<<(logger_t& (*pf)(logger_t&))
         {
                 return (*pf)(*this);
-        }        
+        }
 
         logger_t& logger_t::newl()
         {

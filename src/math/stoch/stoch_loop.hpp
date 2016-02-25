@@ -15,8 +15,10 @@ namespace math
         >
         auto stoch_loop(
                 const stoch_params_t<tproblem>& params,
-                const typename tproblem::tstate& istate,
-                const top_iter& opi, const top_epoch& ope)
+                const typename stoch_params_t<tproblem>::tstate& istate,
+                const top_iter& opi,
+                const top_epoch& ope,
+                const typename stoch_params_t<tproblem>::tconfig& config)
         {
                 // current state
                 auto cstate = istate;
@@ -35,10 +37,11 @@ namespace math
 
                         // update the current & best states
                         ope(cstate);
+                        cstate.f = params.tlog(cstate, config);
                         bstate.update(cstate);
 
                         // log the current state & check the stopping criteria
-                        if (!params.ulog(cstate))
+                        if (!params.ulog(cstate, config))
                         {
                                 break;
                         }

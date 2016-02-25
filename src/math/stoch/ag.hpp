@@ -138,7 +138,8 @@ namespace math
                         };
 
                         // OK, assembly the optimizer
-                        return stoch_loop(param, istate, op_iter, op_epoch);
+                        return  stoch_loop(param, istate, op_iter, op_epoch,
+                                {{"alpha0", alpha0}, {"q", q}});
                 }
         };
 

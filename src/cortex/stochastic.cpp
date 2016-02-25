@@ -7,6 +7,8 @@
 #include "thread/thread.h"
 #include "text/to_string.hpp"
 #include <tuple>
+#include <sstream>
+#include <iostream>
 
 namespace cortex
 {
@@ -30,7 +32,30 @@ namespace cortex
                 auto fn_fval = cortex::make_opfval(data);
                 auto fn_grad = cortex::make_opgrad(data);
 
-                auto fn_ulog = [&] (const opt_state_t& state)
+                auto fn_config2string = [&] (const auto& config)
+                {
+                        std::stringstream stream;
+                        stream.precision(6);
+                        for (const auto& param : config)
+                        {
+                                stream << param.first << "=" << param.second << ",";
+                        }
+                        stream << "lambda=" << data.lambda();
+                        return stream.str();
+                };
+
+                auto fn_config2vector = [&] (const auto& config)
+                {
+                        scalars_t values;
+                        for (const auto& param : config)
+                        {
+                                values.push_back(param.second);
+                        }
+                        values.push_back(data.lambda());
+                        return values;
+                };
+
+                auto fn_ulog = [&] (const opt_state_t& state, const auto& config)
                 {
                         // evaluate training samples
                         data.m_lacc.set_params(state.x);
@@ -52,7 +77,7 @@ namespace cortex
                         const auto milis = timer.milliseconds();
                         const auto ret = result.update(state.x,
                                 {milis, ++ epoch, tvalue, terror_avg, terror_var, vvalue, verror_avg, verror_var},
-                                {data.lambda()});
+                                fn_config2vector(config));
 
                         if (verbose)
                         log_info()
@@ -61,14 +86,35 @@ namespace cortex
                                 << " (" << text::to_string(ret) << ")"
                                 << ", epoch = " << epoch << "/" << epochs
                                 << ", batch = " << batch_size
-                                << ", lambda = " << data.lambda()
+                                << ", " << fn_config2string(config)
                                 << "] done in " << timer.elapsed() << ".";
 
                         return !cortex::is_done(ret);
                 };
 
+                auto fn_tlog = [&] (const opt_state_t& state, const auto& config)
+                {
+                        // evaluate training samples
+                        data.m_lacc.set_params(state.x);
+                        data.m_tsampler.pop();                  //
+                        data.m_lacc.update(data.m_task, data.m_tsampler.get(), data.m_loss);
+                        data.m_tsampler.push(batch_size);       //
+                        const scalar_t tvalue = data.m_lacc.value();
+                        const scalar_t terror_avg = data.m_lacc.avg_error();
+
+                        // OK, return the tuning criterion
+                        if (verbose)
+                        log_info()
+                                << "tuning: [train = " << tvalue << "/" << terror_avg
+                                << ", batch = " << batch_size
+                                << ", " << fn_config2string(config)
+                                << "] done in " << timer.elapsed() << ".";
+
+                        return tvalue;
+                };
+
                 // Optimize the model
-                math::minimize(opt_problem_t(fn_size, fn_fval, fn_grad), fn_ulog,
+                math::minimize(opt_problem_t(fn_size, fn_fval, fn_grad), fn_ulog, fn_tlog,
                                data.m_x0, optimizer, epochs, epoch_size);
 
                 // revert to the original sampler

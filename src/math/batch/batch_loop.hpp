@@ -14,7 +14,7 @@ namespace math
         >
         auto batch_loop(
                 const batch_params_t<tproblem>& params,
-                const typename tproblem::tstate& istate,
+                const typename batch_params_t<tproblem>::tstate& istate,
                 const top_iter& opi)
         {
                 // current state
