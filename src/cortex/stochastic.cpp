@@ -6,12 +6,18 @@
 #include "math/stoch.hpp"
 #include "thread/thread.h"
 #include "text/to_string.hpp"
-#include <tuple>
-#include <sstream>
-#include <iostream>
 
 namespace cortex
 {
+        logger_t& operator<<(logger_t& logger, const math::stoch_params_t<opt_problem_t>::tconfig& config)
+        {
+                for (const auto& param : config)
+                {
+                        logger << param.first << "=" << param.second << ",";
+                }
+                return logger;
+        }
+
         static trainer_result_t train(trainer_data_t& data,
                 const math::stoch_optimizer optimizer, const size_t epochs, const bool verbose)
         {
@@ -31,18 +37,6 @@ namespace cortex
                 auto fn_size = cortex::make_opsize(data);
                 auto fn_fval = cortex::make_opfval(data);
                 auto fn_grad = cortex::make_opgrad(data);
-
-                auto fn_config2string = [&] (const auto& config)
-                {
-                        std::stringstream stream;
-                        stream.precision(6);
-                        for (const auto& param : config)
-                        {
-                                stream << param.first << "=" << param.second << ",";
-                        }
-                        stream << "lambda=" << data.lambda();
-                        return stream.str();
-                };
 
                 auto fn_config2vector = [&] (const auto& config)
                 {
@@ -86,7 +80,7 @@ namespace cortex
                                 << " (" << text::to_string(ret) << ")"
                                 << ", epoch = " << epoch << "/" << epochs
                                 << ", batch = " << batch_size
-                                << ", " << fn_config2string(config)
+                                << ", " << config << "lambda=" << data.lambda()
                                 << "] done in " << timer.elapsed() << ".";
 
                         return !cortex::is_done(ret);
@@ -107,7 +101,7 @@ namespace cortex
                         log_info()
                                 << "tuning: [train = " << tvalue << "/" << terror_avg
                                 << ", batch = " << batch_size
-                                << ", " << fn_config2string(config)
+                                << ", " << config << "lambda=" << data.lambda()
                                 << "] done in " << timer.elapsed() << ".";
 
                         return tvalue;

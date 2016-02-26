@@ -11,6 +11,7 @@ namespace cortex
                         m_flush(flush)
         {
                 log_time();
+                m_stream << std::fixed << std::setprecision(8);
                 m_stream << "[" << header << "] ";
         }
 

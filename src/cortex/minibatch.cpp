@@ -7,7 +7,6 @@
 #include "thread/thread.h"
 #include "text/to_string.hpp"
 #include "math/tune_fixed.hpp"
-#include <tuple>
 
 namespace cortex
 {
