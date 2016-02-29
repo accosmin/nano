@@ -36,14 +36,6 @@ namespace cortex
                 return (m_tsampler.size() + batchsize - 1) / batchsize;
         }
 
-        scalars_t tunable_lambdas()
-        {
-                return
-                {
-                        1e-6, 1e-5, 1e-4, 1e-3, 1e-2, 1e-1, 1e+0
-                };
-        }
-
         opt_opsize_t make_opsize(const trainer_data_t& data)
         {
                 return [&] ()

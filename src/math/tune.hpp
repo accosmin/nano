@@ -36,6 +36,9 @@ namespace math
                 return *history.begin();
         }
 
+        template <typename tfirst, typename... trest>
+        std::tuple<trest...> remove_first(const std::tuple<tfirst, trest...>& tuple);
+
         ///
         /// \brief search the parameters that minimizes a given operator, using a set of search spaces of values to try.
         ///
@@ -63,7 +66,7 @@ namespace math
                                         return op(param, paramX...);
                                 };
                                 const auto trial = tune(opp, spaceX...);
-                                history.emplace(std::get<0>(trial), param,  std::get<tune(opp, spaceX...), param);
+                                history.insert(std::tuple_cat(std::tie(std::get<0>(trial)), std::tie(param), remove_first(trial)));
                         }
                         assert(!history.empty());
                 }

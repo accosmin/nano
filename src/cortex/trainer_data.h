@@ -41,7 +41,7 @@ namespace cortex
                 size_t epoch_size(const size_t batchsize) const;
 
                 // attributes
-                const task_t&           m_task;                 ///< 
+                const task_t&           m_task;                 ///<
                 sampler_t               m_tsampler;             ///< training samples
                 sampler_t               m_vsampler;             ///< validation samples
 
@@ -51,11 +51,6 @@ namespace cortex
                 accumulator_t&          m_lacc;                 ///< cumulated loss value
                 accumulator_t&          m_gacc;                 ///< cumulated loss gradient
         };
-
-        ///
-        /// \brief regularization factors to tune
-        ///
-        scalars_t tunable_lambdas();
 
         ///
         /// \brief dimension operator
