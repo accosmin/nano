@@ -1,8 +1,8 @@
 #pragma once
 
+#include "math/tune.hpp"
 #include "stoch_loop.hpp"
 #include "math/momentum.hpp"
-#include "math/tune_fixed.hpp"
 
 namespace math
 {
@@ -26,15 +26,15 @@ namespace math
                 ///
                 tstate operator()(const param_t& param, const tproblem& problem, const tvector& x0) const
                 {
-                        const auto momenta = { 0.90, 0.95, 0.99 };
-                        const auto epsilons = { 1e-4, 1e-6, 1e-8 };
+                        const auto momenta = math::make_finite_space({ 0.90, 0.95, 0.99 });
+                        const auto epsilons = math::make_finite_space({ 1e-4, 1e-6, 1e-8 });
 
                         const auto op = [&] (const auto momentum, const auto epsilon)
                         {
                                 return this->operator()(param.tunable(), problem, x0, momentum, epsilon);
                         };
 
-                        const auto config = math::tune_fixed(op, momenta, epsilons);
+                        const auto config = math::tune(op, momenta, epsilons);
                         const auto opt_momentum = std::get<1>(config);
                         const auto opt_epsilon = std::get<2>(config);
 

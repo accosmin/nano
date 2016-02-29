@@ -1,42 +1,41 @@
 #include "unit_test.hpp"
-#include "thread/pool.h"
-#include "thread/thread.h"
+#include "math/tune.hpp"
 #include "math/random.hpp"
 #include "math/epsilon.hpp"
-#include "math/tune_fixed.hpp"
-#include "math/tune_log10_mt.hpp"
 
 namespace test
 {
         template
         <
-                typename tscalar
+                typename tscalar,
+                typename tsize
         >
-        void check(tscalar a, tscalar b, tscalar minlog, tscalar maxlog, tscalar epslog, size_t splits)
+        void check(const tscalar a, const tscalar b,
+                const tscalar minlog, const tscalar maxlog, const tscalar epslog, const tsize splits)
         {
                 auto op = [=] (tscalar x)
                 {
                         return (x - a) * (x - a) + b;
                 };
 
-                // single-threaded version
-                tscalar stfx, stx;
-                std::tie(stfx, stx) = math::tune_log10(op, minlog, maxlog, epslog, splits);
+                {
+                        tscalar fx, x;
+                        std::tie(fx, x) = math::tune(op, math::make_log10_grid_space(minlog, maxlog, epslog, splits));
 
-                // multi-threaded version
-                thread::pool_t pool(splits);
-                tscalar mtfx, mtx;
-                std::tie(mtfx, mtx) = math::tune_log10_mt(op, pool, minlog, maxlog, epslog, splits);
+                        NANOCV_CHECK_CLOSE(fx, b, math::epsilon2<tscalar>());
+                        NANOCV_CHECK_CLOSE(x, a, math::epsilon2<tscalar>());
+                }
+                {
+                        const auto min = std::pow(tscalar(10), minlog);
+                        const auto max = std::pow(tscalar(10), maxlog);
+                        const auto eps = epslog;
 
-                const tscalar epsilon = math::epsilon2<tscalar>();
+                        tscalar fx, x;
+                        std::tie(fx, x) = math::tune(op, math::make_linear_grid_space(min, max, eps, splits));
 
-                // check optimum result
-                NANOCV_CHECK_CLOSE(stfx, b, epsilon);
-                NANOCV_CHECK_CLOSE(mtfx, b, epsilon);
-
-                // check optimum parameters
-                NANOCV_CHECK_CLOSE(stx, a, epsilon);
-                NANOCV_CHECK_CLOSE(mtx, a, epsilon);
+                        NANOCV_CHECK_CLOSE(fx, b, math::epsilon2<tscalar>());
+                        NANOCV_CHECK_CLOSE(x, a, math::epsilon2<tscalar>());
+                }
         }
 }
 
@@ -49,8 +48,8 @@ NANOCV_CASE(tune_log10)
         const size_t n_tests = 16;
         const scalar_t minlog = -6.0;
         const scalar_t maxlog = +6.0;
-        const scalar_t epslog = math::epsilon2<scalar_t>();
-        const size_t splits = thread::n_threads();
+        const scalar_t epslog = math::epsilon0<scalar_t>();
+        const size_t splits = 6;
 
         for (size_t t = 0; t < n_tests; ++ t)
         {
@@ -61,7 +60,7 @@ NANOCV_CASE(tune_log10)
         }
 }
 
-NANOCV_CASE(tune_fixed)
+NANOCV_CASE(tune)
 {
         const auto op1 = [] (const auto param1)
         {
@@ -80,15 +79,15 @@ NANOCV_CASE(tune_fixed)
                 return op3(param1, param2, param3) + op1(param4);
         };
 
-        const auto params1 = { 0, 1 };
-        const auto params2 = { 3, 2, 1 };
-        const auto params3 = { 2, 3, 4, 5 };
-        const auto params4 = { 7, 6, 5, 4, 3 };
+        const auto params1 = math::make_finite_space({ 0, 1 });
+        const auto params2 = math::make_finite_space({ 3, 2, 1 });
+        const auto params3 = math::make_finite_space({ 2, 3, 4, 5 });
+        const auto params4 = math::make_finite_space({ 7, 6, 5, 4, 3 });
 
-        const auto ret1 = math::tune_fixed(op1, params1);
-        const auto ret2 = math::tune_fixed(op2, params1, params2);
-        const auto ret3 = math::tune_fixed(op3, params1, params2, params3);
-        const auto ret4 = math::tune_fixed(op4, params1, params2, params3, params4);
+        const auto ret1 = math::tune(op1, params1);
+        const auto ret2 = math::tune(op2, params1, params2);
+        const auto ret3 = math::tune(op3, params1, params2, params3);
+        const auto ret4 = math::tune(op4, params1, params2, params3, params4);
 
         NANOCV_CHECK_EQUAL(std::get<0>(ret1), op1(0));
         NANOCV_CHECK_EQUAL(std::get<1>(ret1), 0);

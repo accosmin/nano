@@ -3,6 +3,7 @@
 #include "util/timer.h"
 #include "util/logger.h"
 #include "accumulator.h"
+#include "math/tune.hpp"
 #include "math/stoch.hpp"
 #include "thread/thread.h"
 #include "text/to_string.hpp"

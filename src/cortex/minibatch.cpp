@@ -3,10 +3,10 @@
 #include "util/timer.h"
 #include "util/logger.h"
 #include "accumulator.h"
+#include "math/tune.hpp"
 #include "math/batch.hpp"
 #include "thread/thread.h"
 #include "text/to_string.hpp"
-#include "math/tune_fixed.hpp"
 
 namespace cortex
 {
