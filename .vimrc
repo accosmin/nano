@@ -28,3 +28,14 @@ set path+=src/thread
 set path+=src/text
 set path+=src/math
 set path+=src/io
+set path+=apps
+set path+=test
+
+" Trim trailing whitespaces when saving                                                                                                     
+function! StripTrailingWhitespaces()                                                                                                        
+        let l = line(".")                                                                                                                       
+        let c = col(".")                                                                                                                        
+        %s/\s\+$//e                                                                                                                             
+        call cursor(l, c)                                                                                                                       
+endfunction                                                                                                                                 
+autocmd BufWritePre     * :call StripTrailingWhitespaces()  
