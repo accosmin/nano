@@ -3,6 +3,7 @@
 #include <vector>
 #include <cassert>
 #include <type_traits>
+#include "math/clamp.hpp"
 
 namespace math
 {
@@ -74,7 +75,9 @@ namespace math
 
                 tune_grid_space_t(
                         const tscalar min, const tscalar max, const tscalar epsilon, const tmapping& mapping)
-                        :       m_min(min), m_max(max), m_epsilon(epsilon), m_splits(4), m_mapping(mapping)
+                        :       m_min(min), m_orig_min(min),
+                                m_max(max), m_orig_max(max),
+                                m_epsilon(epsilon), m_splits(4), m_mapping(mapping)
                 {
                         assert(min < max);
                         assert(epsilon > 0);
@@ -97,8 +100,11 @@ namespace math
                         optimum = m_mapping.from_param(optimum);
 
                         const auto var = delta();
-                        m_min = optimum - static_cast<tscalar>(m_splits - 1) * var / static_cast<tscalar>(m_splits);
-                        m_max = optimum + static_cast<tscalar>(m_splits - 1) * var / static_cast<tscalar>(m_splits);
+                        const auto min = optimum - static_cast<tscalar>(m_splits - 1) * var / static_cast<tscalar>(m_splits);
+                        const auto max = optimum + static_cast<tscalar>(m_splits - 1) * var / static_cast<tscalar>(m_splits);
+
+                        m_min = math::clamp(min, m_orig_min, m_orig_max);
+                        m_max = math::clamp(max, m_orig_min, m_orig_max);
 
                         return var >= tscalar(1.01) * m_epsilon;
                 }
@@ -111,8 +117,8 @@ namespace math
         private:
 
                 // attributes
-                tscalar         m_min;
-                tscalar         m_max;
+                tscalar         m_min, m_orig_min;
+                tscalar         m_max, m_orig_max;
                 tscalar         m_epsilon;
                 std::size_t     m_splits;
                 tmapping        m_mapping;      ///< map between the space values and the parameter values
