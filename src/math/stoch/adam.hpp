@@ -25,8 +25,8 @@ namespace math
                 ///
                 tstate operator()(const param_t& param, const tproblem& problem, const tvector& x0) const
                 {
-                        const auto alpha0s = math::make_finite_space({ 1e-4, 1e-3, 1e-2, 1e-1, 1e+0 });
-                        const auto epsilons = math::make_finite_space({ 1e-4, 1e-6, 1e-8 });
+                        const auto alpha0s = math::make_finite_space(1e-4, 1e-3, 1e-2, 1e-1, 1e+0);
+                        const auto epsilons = math::make_finite_space(1e-4, 1e-6, 1e-8);
 
                         const auto op = [&] (const auto alpha0, const auto epsilon)
                         {
@@ -34,8 +34,8 @@ namespace math
                         };
 
                         const auto config = math::tune(op, alpha0s, epsilons);
-                        const auto opt_alpha0 = std::get<1>(config);
-                        const auto opt_epsilon = std::get<2>(config);
+                        const auto opt_alpha0 = config.param0();
+                        const auto opt_epsilon = config.param1();
 
                         return operator()(param, problem, x0, opt_alpha0, opt_epsilon);
                 }

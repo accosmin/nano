@@ -4,20 +4,20 @@
 
 namespace math
 {
+        ///
+        /// \brief finite set of values to search through.
+        ///
         template
         <
                 typename tscalar_
         >
-        struct tune_finite_space_t
+        class tune_finite_space_t
         {
+        public:
                 using tscalar = tscalar_;
                 using tscalars = std::vector<tscalar>;
 
-                template
-                <
-                        typename tscalars_
-                >
-                tune_finite_space_t(const tscalars_& values) : m_values(values)
+                tune_finite_space_t(const tscalars& values) : m_values(values)
                 {
                 }
 
@@ -31,15 +31,18 @@ namespace math
                         return false;
                 }
 
+        private:
+
                 tscalars        m_values;
         };
 
         template
         <
-                typename tscalar
+                typename tscalar,
+                typename... tscalars
         >
-        auto make_finite_space(const std::initializer_list<tscalar>& scalars)
+        auto make_finite_space(const tscalar param, const tscalars... paramX)
         {
-                return tune_finite_space_t<tscalar>(scalars);
+                return tune_finite_space_t<tscalar>({param, paramX...});
         }
 }

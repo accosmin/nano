@@ -1,0 +1,79 @@
+#pragma once
+
+#include <tuple>
+
+namespace math
+{
+        ///
+        /// \brief stores the tuning result: optimum and its associated list of parameters.
+        ///
+        template
+        <
+                typename toptimum,
+                typename tparameters
+        >
+        class tune_result_t
+        {
+        public:
+
+                ///
+                /// \brief constructor
+                ///
+                tune_result_t() : m_initialized(false)
+                {
+                }
+
+                ///
+                /// \brief update the optimum (if possible)
+                ///
+                void update(const toptimum& value, const tparameters& params)
+                {
+                        if (!m_initialized || value < m_optimum)
+                        {
+                                m_optimum = value;
+                                m_parameters = params;
+                                m_initialized = true;
+                        }
+                }
+
+                ///
+                /// \brief returns the optimum configuration
+                ///
+                const auto& optimum() const
+                {
+                        assert(m_initialized);
+                        return m_optimum;
+                }
+
+                ///
+                /// \brief returns a particular optimum parameter
+                ///
+                template <unsigned int index>
+                auto param() const
+                {
+                        assert(m_initialized);
+                        return std::get<index>(m_parameters);
+                }
+
+                auto param0() const { return param<0>(); }
+                auto param1() const { return param<1>(); }
+                auto param2() const { return param<2>(); }
+                auto param3() const { return param<3>(); }
+
+                ///
+                /// \brief returns the list of optimum parameters
+                ///
+                const auto& params() const
+                {
+                        assert(m_initialized);
+                        return m_parameters;
+                }
+
+        private:
+
+                // attributes
+                bool            m_initialized;
+                toptimum        m_optimum;
+                tparameters     m_parameters;
+        };
+}

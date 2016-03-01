@@ -6,26 +6,77 @@
 
 namespace math
 {
-        enum class grid_space
+        ///
+        /// \brief map values from the search/tuning space to hyper-parameters.
+        ///
+        template
+        <
+                typename tto_param,
+                typename tfrom_param
+        >
+        struct mapping_t
         {
-                linear,
-                log10
+                mapping_t(const tto_param& to_param, const tfrom_param& from_param)
+                        :       m_to_param(to_param), m_from_param(from_param)
+                {
+                }
+
+                template <typename tscalar>
+                tscalar to_param(const tscalar x) const
+                {
+                        return m_to_param(x);
+                }
+
+                template <typename tscalar>
+                tscalar from_param(const tscalar x) const
+                {
+                        return m_from_param(x);
+                }
+
+                tto_param       m_to_param;
+                tfrom_param     m_from_param;
         };
 
+        template <typename tto_param, typename tfrom_param>
+        auto make_mapping(const tto_param& to_param, const tfrom_param& from_param)
+        {
+                return mapping_t<tto_param, tfrom_param>(to_param, from_param);
+        }
+
+        inline auto make_identity_mapping()
+        {
+                return  make_mapping(
+                        [] (const auto x) { return x; },
+                        [] (const auto x) { return x; });
+        }
+
+        inline auto make_log10_mapping()
+        {
+                return  make_mapping(
+                        [] (const auto x) { return std::pow(decltype(x)(10), x); },
+                        [] (const auto x) { return std::log10(x); });
+        }
+
+        ///
+        /// \brief grid space useful for coarse-to-fine searching.
+        ///
         template
         <
                 typename tscalar_,
                 typename tsize,
-                grid_space space,
+                typename tmapping,
                 typename tvalid_tscalar = typename std::enable_if<std::is_floating_point<tscalar_>::value>::type
         >
-        struct tune_grid_space_t
+        class tune_grid_space_t
         {
+        public:
                 using tscalar = tscalar_;
                 using tscalars = std::vector<tscalar>;
 
-                tune_grid_space_t(const tscalar min, const tscalar max, const tscalar epsilon, const tsize splits)
-                        :       m_min(min), m_max(max), m_epsilon(epsilon), m_splits(splits)
+                tune_grid_space_t(
+                        const tscalar min, const tscalar max, const tscalar epsilon, const tsize splits,
+                        const tmapping& mapping)
+                        :       m_min(min), m_max(max), m_epsilon(epsilon), m_splits(splits), m_mapping(mapping)
                 {
                         assert(min < max);
                         assert(splits > 3);
@@ -39,24 +90,14 @@ namespace math
                         for (tsize i = 0; i <= m_splits; ++ i)
                         {
                                 const auto value = m_min + static_cast<tscalar>(i) * delta();
-                                switch (space)
-                                {
-                                case grid_space::linear:        values.push_back(value); break;
-                                case grid_space::log10:         values.push_back(std::pow(tscalar(10), value)); break;
-                                default:                        assert(false); break;
-                                }
+                                values.push_back(m_mapping.to_param(value));
                         }
                         return values;
                 }
 
                 bool refine(tscalar optimum)
                 {
-                        switch (space)
-                        {
-                        case grid_space::linear:        break;
-                        case grid_space::log10:         assert(optimum > 0); optimum = std::log10(optimum); break;
-                        default:                        break;
-                        }
+                        optimum = m_mapping.from_param(optimum);
 
                         const auto var = delta();
                         m_min = optimum - static_cast<tscalar>(m_splits - 1) * var / static_cast<tscalar>(m_splits);
@@ -70,21 +111,27 @@ namespace math
                         return (m_max - m_min) / static_cast<tscalar>(m_splits);
                 }
 
+        private:
+
+                // attributes
                 tscalar         m_min;
                 tscalar         m_max;
                 tscalar         m_epsilon;
                 tsize           m_splits;
+                tmapping        m_mapping;      ///< map between the space values and the parameter values
         };
 
         template <typename tscalar, typename tsize>
-        auto make_linear_grid_space(const tscalar min, const tscalar max, const tscalar epsilon, const tsize splits)
+        auto make_linear_space(const tscalar min, const tscalar max, const tscalar epsilon, const tsize splits)
         {
-                return tune_grid_space_t<tscalar, tsize, grid_space::linear>(min, max, epsilon, splits);
+                const auto mapping = make_identity_mapping();
+                return tune_grid_space_t<tscalar, tsize, decltype(mapping)>(min, max, epsilon, splits, mapping);
         }
 
         template <typename tscalar, typename tsize>
-        auto make_log10_grid_space(const tscalar min, const tscalar max, const tscalar epsilon, const tsize splits)
+        auto make_log10_space(const tscalar min, const tscalar max, const tscalar epsilon, const tsize splits)
         {
-                return tune_grid_space_t<tscalar, tsize, grid_space::log10>(min, max, epsilon, splits);
+                const auto mapping = make_log10_mapping();
+                return tune_grid_space_t<tscalar, tsize, decltype(mapping)>(min, max, epsilon, splits, mapping);
         }
 }
