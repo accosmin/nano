@@ -63,7 +63,6 @@ namespace math
         template
         <
                 typename tscalar_,
-                typename tsize,
                 typename tmapping,
                 typename tvalid_tscalar = typename std::enable_if<std::is_floating_point<tscalar_>::value>::type
         >
@@ -74,20 +73,18 @@ namespace math
                 using tscalars = std::vector<tscalar>;
 
                 tune_grid_space_t(
-                        const tscalar min, const tscalar max, const tscalar epsilon, const tsize splits,
-                        const tmapping& mapping)
-                        :       m_min(min), m_max(max), m_epsilon(epsilon), m_splits(splits), m_mapping(mapping)
+                        const tscalar min, const tscalar max, const tscalar epsilon, const tmapping& mapping)
+                        :       m_min(min), m_max(max), m_epsilon(epsilon), m_splits(4), m_mapping(mapping)
                 {
                         assert(min < max);
-                        assert(splits > 3);
                         assert(epsilon > 0);
-                        assert(epsilon < (max - min) / splits);
+                        assert(epsilon < (max - min) / m_splits);
                 }
 
                 tscalars values() const
                 {
                         tscalars values;
-                        for (tsize i = 0; i <= m_splits; ++ i)
+                        for (std::size_t i = 0; i <= m_splits; ++ i)
                         {
                                 const auto value = m_min + static_cast<tscalar>(i) * delta();
                                 values.push_back(m_mapping.to_param(value));
@@ -117,21 +114,21 @@ namespace math
                 tscalar         m_min;
                 tscalar         m_max;
                 tscalar         m_epsilon;
-                tsize           m_splits;
+                std::size_t     m_splits;
                 tmapping        m_mapping;      ///< map between the space values and the parameter values
         };
 
-        template <typename tscalar, typename tsize>
-        auto make_linear_space(const tscalar min, const tscalar max, const tscalar epsilon, const tsize splits)
+        template <typename tscalar>
+        auto make_linear_space(const tscalar min, const tscalar max, const tscalar epsilon)
         {
                 const auto mapping = make_identity_mapping();
-                return tune_grid_space_t<tscalar, tsize, decltype(mapping)>(min, max, epsilon, splits, mapping);
+                return tune_grid_space_t<tscalar, decltype(mapping)>(min, max, epsilon, mapping);
         }
 
-        template <typename tscalar, typename tsize>
-        auto make_log10_space(const tscalar min, const tscalar max, const tscalar epsilon, const tsize splits)
+        template <typename tscalar>
+        auto make_log10_space(const tscalar min, const tscalar max, const tscalar epsilon)
         {
                 const auto mapping = make_log10_mapping();
-                return tune_grid_space_t<tscalar, tsize, decltype(mapping)>(min, max, epsilon, splits, mapping);
+                return tune_grid_space_t<tscalar, decltype(mapping)>(min, max, epsilon, mapping);
         }
 }

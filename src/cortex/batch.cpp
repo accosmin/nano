@@ -88,7 +88,7 @@ namespace cortex
 
                 if (data.m_lacc.can_regularize())
                 {
-                        const auto space = math::make_log10_space(-6.0, +6.0, 0.5, 4);
+                        const auto space = math::make_log10_space(-6.0, +6.0, 0.5);
                         return math::tune(op, space).optimum();
                 }
                 else

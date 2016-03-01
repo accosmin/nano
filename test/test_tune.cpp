@@ -5,17 +5,16 @@
 
 template
 <
-        typename tscalar,
-        typename tsize
+        typename tscalar
 >
 void check(const tscalar a, const tscalar b,
-        const tscalar minlog, const tscalar maxlog, const tscalar eps, const tsize splits)
+        const tscalar minlog, const tscalar maxlog, const tscalar eps)
 {
-        const auto log10_space = math::make_log10_space(minlog, maxlog, eps, splits);
+        const auto log10_space = math::make_log10_space(minlog, maxlog, eps);
 
         const auto min = std::pow(tscalar(10), minlog);
         const auto max = std::pow(tscalar(10), maxlog);
-        const auto linear_space = math::make_linear_space(min, max, eps, splits);
+        const auto linear_space = math::make_linear_space(min, max, eps);
 
         const auto epsilon = math::epsilon2<tscalar>();
 
@@ -80,14 +79,13 @@ NANOCV_CASE(tune_grid)
         const scalar_t minlog = -6.0;
         const scalar_t maxlog = +6.0;
         const scalar_t epslog = math::epsilon0<scalar_t>();
-        const size_t splits = 6;
 
         for (size_t t = 0; t < n_tests; ++ t)
         {
                 math::random_t<scalar_t> agen(+0.1, +1.0);
                 math::random_t<scalar_t> bgen(+0.2, +2.0);
 
-                check(agen(), bgen(), minlog, maxlog, epslog, splits);
+                check(agen(), bgen(), minlog, maxlog, epslog);
         }
 }
 
