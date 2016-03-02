@@ -1,5 +1,6 @@
 #pragma once
 
+#include "lrate.hpp"
 #include "math/tune.hpp"
 #include "stoch_loop.hpp"
 
@@ -44,18 +45,19 @@ namespace math
                                 return this->operator()(param.tunable(), problem, x0, params...);
                         };
 
-                        const auto alpha0s = math::make_finite_space(1e-4, 1e-3, 1e-2, 1e-1, 1e+0);
-                        const auto qs = math::make_finite_space(1e-6, 1e-5, 1e-4, 1e-3, 1e-2, 1e-1, 1e+0);
+                        const auto alpha0s = math::make_log10_space(-4.0, +0.0, 0.20);
+                        const auto decays = math::make_linear_space(0.10, 1.00, 0.05);
+                        const auto qs = math::make_finite_space(0.0);
 
-                        const auto config = math::tune(op, alpha0s, qs);
-                        return operator()(param, problem, x0, config.param0(), config.param1());
+                        const auto config = math::tune(op, alpha0s, decays, qs);
+                        return operator()(param, problem, x0, config.param0(), config.param1(), config.param2());
                 }
 
                 ///
                 /// \brief minimize starting from the initial guess x0
                 ///
                 tstate operator()(const param_t& param, const tproblem& problem, const tvector& x0,
-                        const tscalar alpha0, const tscalar q) const
+                        const tscalar alpha0, const tscalar decay, const tscalar q) const
                 {
                         assert(problem.size() == x0.size());
 
@@ -74,6 +76,9 @@ namespace math
                         tscalar ptheta = 1;
                         tscalar ctheta = 1;
 
+                        // learning rate schedule
+                        lrate_t<tscalar> lrate(alpha0, decay);
+
                         const auto get_theta = [] (const auto ptheta, const auto q)
                         {
                                 const auto a = tscalar(1);
@@ -88,10 +93,10 @@ namespace math
                                 return ptheta * (1 - ptheta) / (ptheta * ptheta + ctheta);
                         };
 
-                        const auto op_iter = [&] (tstate& cstate, const std::size_t)
+                        const auto op_iter = [&] (tstate& cstate, const std::size_t iter)
                         {
                                 // learning rate
-                                const tscalar alpha = alpha0;
+                                const tscalar alpha = lrate.get(iter);
 
                                 // momentum
                                 ctheta = get_theta(ptheta, q);
