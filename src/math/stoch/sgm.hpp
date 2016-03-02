@@ -31,9 +31,9 @@ namespace math
                                 return this->operator()(param.tunable(), problem, x0, params...);
                         };
 
-                        const auto alpha0s = math::make_finite_space(1e-4, 1e-3, 1e-2, 1e-1, 1e+0);
-                        const auto decays = math::make_finite_space(0.10, 0.20, 0.50, 0.75, 1.00);
-                        const auto momenta = math::make_finite_space(0.10, 0.20, 0.50, 0.90, 0.95, 0.99);
+                        const auto alpha0s = math::make_log10_space(-4.0, +0.0, 0.20);
+                        const auto decays = math::make_linear_space(0.10, 1.00, 0.05);
+                        const auto momenta = math::make_linear_space(0.1, 0.99, 0.05);
 
                         const auto config = math::tune(op, alpha0s, decays, momenta);
                         return operator()(param, problem, x0, config.param0(), config.param1(), config.param2());
