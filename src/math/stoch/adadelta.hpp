@@ -26,19 +26,16 @@ namespace math
                 ///
                 tstate operator()(const param_t& param, const tproblem& problem, const tvector& x0) const
                 {
+                        const auto op = [&] (const auto... params)
+                        {
+                                return this->operator()(param.tunable(), problem, x0, params...);
+                        };
+
                         const auto momenta = math::make_finite_space(0.90, 0.95, 0.99);
                         const auto epsilons = math::make_finite_space(1e-4, 1e-6, 1e-8);
 
-                        const auto op = [&] (const auto momentum, const auto epsilon)
-                        {
-                                return this->operator()(param.tunable(), problem, x0, momentum, epsilon);
-                        };
-
                         const auto config = math::tune(op, momenta, epsilons);
-                        const auto opt_momentum = config.param0();
-                        const auto opt_epsilon = config.param1();
-
-                        return operator()(param, problem, x0, opt_momentum, opt_epsilon);
+                        return operator()(param, problem, x0, config.param0(), config.param1());
                 }
 
                 ///

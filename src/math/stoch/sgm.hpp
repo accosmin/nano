@@ -26,21 +26,17 @@ namespace math
                 ///
                 tstate operator()(const param_t& param, const tproblem& problem, const tvector& x0) const
                 {
+                        const auto op = [&] (const auto... params)
+                        {
+                                return this->operator()(param.tunable(), problem, x0, params...);
+                        };
+
                         const auto alpha0s = math::make_finite_space(1e-4, 1e-3, 1e-2, 1e-1, 1e+0);
                         const auto decays = math::make_finite_space(0.10, 0.20, 0.50, 0.75, 1.00);
                         const auto momenta = math::make_finite_space(0.10, 0.20, 0.50, 0.90, 0.95, 0.99);
 
-                        const auto op = [&] (const auto alpha0, const auto decay, const auto momentum)
-                        {
-                                return this->operator()(param.tunable(), problem, x0, alpha0, decay, momentum);
-                        };
-
                         const auto config = math::tune(op, alpha0s, decays, momenta);
-                        const auto opt_alpha0 = config.param0();
-                        const auto opt_decay = config.param1();
-                        const auto opt_momentum = config.param2();
-
-                        return operator()(param, problem, x0, opt_alpha0, opt_decay, opt_momentum);
+                        return operator()(param, problem, x0, config.param0(), config.param1(), config.param2());
                 }
 
                 ///
