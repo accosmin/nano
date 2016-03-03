@@ -47,7 +47,7 @@ namespace cortex
 
         accumulator_t::~accumulator_t() = default;
 
-        void accumulator_t::reset()
+        void accumulator_t::reset() const
         {
                 for (const auto& cache : m_impl->m_criteria)
                 {
@@ -55,7 +55,7 @@ namespace cortex
                 }
         }
 
-        void accumulator_t::set_lambda(scalar_t lambda)
+        void accumulator_t::set_lambda(scalar_t lambda) const
         {
                 lambda = math::clamp(lambda, 0.0, 1.0);
 
@@ -65,7 +65,7 @@ namespace cortex
                 }
         }
 
-        void accumulator_t::set_params(const vector_t& params)
+        void accumulator_t::set_params(const vector_t& params) const
         {
                 for (const auto& cache : m_impl->m_criteria)
                 {
@@ -73,7 +73,7 @@ namespace cortex
                 }
         }
 
-        void accumulator_t::set_threads(size_t nthreads)
+        void accumulator_t::set_threads(size_t nthreads) const
         {
                 m_impl->m_pool.activate(nthreads);
         }

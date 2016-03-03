@@ -17,7 +17,7 @@ namespace math
                 using tscalar = tscalar_;
                 using tscalars = std::vector<tscalar>;
 
-                tune_finite_space_t(const tscalars& values) : m_values(values)
+                explicit tune_finite_space_t(const tscalars& values) : m_values(values)
                 {
                 }
 

@@ -31,22 +31,22 @@ namespace cortex
                 ///
                 /// \brief reset accumulator (keeps parameters)
                 ///
-                void reset();
+                void reset() const;
 
                 ///
                 /// \brief change the model's parameters (and resets statistics)
                 ///
-                void set_params(const vector_t& params);
+                void set_params(const vector_t& params) const;
 
                 ///
                 /// \brief change the regularization weight (keeps parameters)
                 ///
-                void set_lambda(scalar_t lambda);
+                void set_lambda(scalar_t lambda) const;
 
                 ///
                 /// \brief change the number of active threads
                 ///
-                void set_threads(size_t nthreads);
+                void set_threads(size_t nthreads) const;
 
                 ///
                 /// \brief cumulate statistics with a set of samples

@@ -20,7 +20,7 @@ namespace cortex
         {
         }
 
-        void trainer_data_t::set_lambda(scalar_t lambda)
+        void trainer_data_t::set_lambda(scalar_t lambda) const
         {
                 m_lacc.set_lambda(lambda);
                 m_gacc.set_lambda(lambda);

@@ -52,9 +52,10 @@ namespace math
                         const topgrad& opgrad)
                         :       m_opsize(opsize),
                                 m_opfval(opfval),
-                                m_opgrad(opgrad)
+                                m_opgrad(opgrad),
+                                m_fcalls(0),
+                                m_gcalls(0)
                 {
-                        clear();
                 }
 
                 ///

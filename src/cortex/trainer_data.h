@@ -28,7 +28,7 @@ namespace cortex
                 ///
                 /// \brief change the regularization weight
                 ///
-                void set_lambda(scalar_t lambda);
+                void set_lambda(scalar_t lambda) const;
 
                 ///
                 /// \brief get the regularization weight
