@@ -87,9 +87,9 @@ namespace math
                 tscalars values() const
                 {
                         tscalars values;
-                        for (std::size_t i = 0; i <= m_splits; ++ i)
+                        for (auto i = 0; i <= m_splits; ++ i)
                         {
-                                const auto value = m_min + static_cast<tscalar>(i) * delta();
+                                const auto value = m_min + i * delta();
                                 values.push_back(m_mapping.to_param(value));
                         }
                         return values;
@@ -100,8 +100,8 @@ namespace math
                         optimum = m_mapping.from_param(optimum);
 
                         const auto var = delta();
-                        const auto min = optimum - static_cast<tscalar>(m_splits - 1) * var / static_cast<tscalar>(m_splits);
-                        const auto max = optimum + static_cast<tscalar>(m_splits - 1) * var / static_cast<tscalar>(m_splits);
+                        const auto min = optimum - (m_splits - 1) * var / m_splits;
+                        const auto max = optimum + (m_splits - 1) * var / m_splits;
 
                         m_min = math::clamp(min, m_orig_min, m_orig_max);
                         m_max = math::clamp(max, m_orig_min, m_orig_max);
@@ -120,7 +120,7 @@ namespace math
                 tscalar         m_min, m_orig_min;
                 tscalar         m_max, m_orig_max;
                 tscalar         m_epsilon;
-                std::size_t     m_splits;
+                int             m_splits;
                 tmapping        m_mapping;      ///< map between the space values and the parameter values
         };
 
