@@ -11,18 +11,14 @@ msan_flag="OFF"
 tsan_flag="OFF"
 test_flag="ON"
 
-yell() { echo "$0: $*" >&2; }
-die() { yell "$*"; exit 111; }
-try() { "$@" || die "cannot $*"; }
-
 # usage
 function usage
 {
         echo "Usage: "
         echo -e "\t--build-type         <build type [Release/Debug/...]>        default=${build_type}"
         echo -e "\t--generator          <build system [codelite-][ninja/make]>  default=${generator}"
-        echo -e "\t--install-dir        <installation directory>                default=${install_dir}" 
-        echo -e "\t--install            <install [ON/OFF] Release only>         default=${install}" 
+        echo -e "\t--install-dir        <installation directory>                default=${install_dir}"
+        echo -e "\t--install            <install [ON/OFF] Release only>         default=${install}"
         echo -e "\t--asan               <address sanitizer [ON/OFF]>            default=${asan_flag}"
         echo -e "\t--msan               <memory sanitizer [ON/OFF]>             default=${msan_flag}"
         echo -e "\t--tsan               <thread sanitizer [ON/OFF]>             default=${tsan_flag}"
@@ -85,7 +81,7 @@ then
         build_dir+=-msan
 fi
 if [ "${tsan_flag}" == "ON" ]
-then    
+then
         build_dir+=-tsan
 fi
 
@@ -126,7 +122,7 @@ else
 fi
 
 # setup cmake
-try cmake \
+cmake \
         -DCMAKE_BUILD_TYPE=${build_type} \
         -DNANOCV_WITH_ASAN=${asan_flag} \
         -DNANOCV_WITH_MSAN=${msan_flag} \
@@ -137,7 +133,7 @@ try cmake \
         ${current_dir}/
 
 # build
-try ${maker}
+${maker}
 echo
 
 # install
