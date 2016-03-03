@@ -34,8 +34,8 @@ done
 printf "%-16s" "cppcheck..."
 
 log="cppcheck.log"
-cppcheck --enable=all --inconclusive --force --template '{file}:{line},{severity},{id},{message}' \
-        ${includes} ${sources} 2> ${log} 1> /dev/null
+#cppcheck --enable=all --inconclusive --force --template '{file}:{line},{severity},{id},{message}' \
+#        ${includes} ${sources} 2> ${log} 1> /dev/null
 
 printf "\t%-10s%4d\n\n" \
         "errors:" $(wc -l < cppcheck.log)

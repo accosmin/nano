@@ -14,9 +14,9 @@ template
 >
 static void check_function(const math::function_t<tscalar>& function)
 {
-        const auto epochs = size_t(32);
-        const auto epoch_size = size_t(32);
-        const auto trials = size_t(32);
+        const auto epochs = size_t(8);
+        const auto epoch_size = size_t(16);
+        const auto trials = size_t(10);
 
         const auto dims = function.problem().size();
 
