@@ -16,6 +16,9 @@ CHECK_CXX_SOURCE_COMPILES("${NANOCV_TEST_PROGRAM}" COMPILER_SUPPORTS_SANITIZE_AD
 set(CMAKE_REQUIRED_FLAGS "-fsanitize=undefined")
 CHECK_CXX_SOURCE_COMPILES("${NANOCV_TEST_PROGRAM}" COMPILER_SUPPORTS_SANITIZE_UNDEFINED)
 
+set(CMAKE_REQUIRED_FLAGS "-fsanitize=vptr")
+CHECK_CXX_SOURCE_COMPILES("${NANOCV_TEST_PROGRAM}" COMPILER_SUPPORTS_SANITIZE_VPTR)
+
 set(CMAKE_REQUIRED_FLAGS "-fsanitize=leak")
 CHECK_CXX_SOURCE_COMPILES("${NANOCV_TEST_PROGRAM}" COMPILER_SUPPORTS_SANITIZE_LEAK)
 
@@ -65,7 +68,9 @@ if(CMAKE_CXX_COMPILER_ID MATCHES GNU OR CMAKE_CXX_COMPILER_ID MATCHES Clang)
                 endif()
                 if(COMPILER_SUPPORTS_SANITIZE_UNDEFINED)
                         set(CMAKE_CXX_FLAGS     "${CMAKE_CXX_FLAGS} -fsanitize=undefined")
+                        if(COMPILER_SUPPORT_SANITIZE_VPTR)
                         set(CMAKE_CXX_FLAGS     "${CMAKE_CXX_FLAGS} -fno-sanitize=vptr")
+                        endif()
                 endif()
                 if(COMPILER_SUPPORTS_SANITIZE_LEAK)
                         set(CMAKE_CXX_FLAGS     "${CMAKE_CXX_FLAGS} -fsanitize=leak")
