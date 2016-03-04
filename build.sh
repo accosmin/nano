@@ -75,12 +75,10 @@ build_dir=build-$(echo ${build_type} | tr '[:upper:]' '[:lower:]')
 if [ "${asan_flag}" == "ON" ]
 then
         build_dir+=-asan
-fi
-if [ "${msan_flag}" == "ON" ]
+elif [ "${msan_flag}" == "ON" ]
 then
         build_dir+=-msan
-fi
-if [ "${tsan_flag}" == "ON" ]
+elif [ "${tsan_flag}" == "ON" ]
 then
         build_dir+=-tsan
 fi
@@ -89,7 +87,7 @@ mkdir -p ${build_dir}
 cd ${build_dir}
 rm -rf *
 
-# setup build systemr
+# setup build system
 if [ "${generator}" == "ninja" ]
 then
         generator="Ninja"

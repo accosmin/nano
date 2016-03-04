@@ -37,7 +37,7 @@ log="cppcheck.log"
 cppcheck --enable=all --inconclusive --force --template '{file}:{line},{severity},{id},{message}' \
         ${includes} ${sources} 2> ${log} 1> /dev/null
 
-printf "\terrors: %4d\n\n" \
+printf "\terrors: %3d\n\n" \
         $(wc -l < cppcheck.log)
 
 # check available compilers
@@ -51,7 +51,7 @@ do
                 log="${compiler}_${build}.log"
                 bash ${basedir}/build_${build}.sh --compiler ${compiler} > ${log} 2>&1
 
-                printf "\tfatals: %4d\terrors: %4d\twarnings: %4d\n" \
+                printf "\tfatals: %3d\terrors: %3d\twarnings: %3d\n" \
                         $(grep -i fatal: ${log} | wc -l) \
                         $(grep -i error: ${log} | wc -l) \
                         $(grep -i warning: ${log} | wc -l)
@@ -71,8 +71,9 @@ do
                         log="${crtdir}/${compiler}_${config}_${test}.log"
                         ./${test} > $log 2>&1
 
-                        printf "\terrors: %4d\n" \
-                                $(grep -E ".+\:.+\: \[.+/.+\]: check \{.+\} failed" ${log} | wc -l)
+                        printf "\tunit test errors: %3d\tsanitizer errors: %3d\n" \
+                                $(grep -E ".+\:.+\: \[.+/.+\]: check \{.+\} failed" ${log} | wc -l) \
+                                $(grep error: ${log} | wc -l)
                 done
                 cd ${crtdir}
         done
