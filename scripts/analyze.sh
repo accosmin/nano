@@ -31,14 +31,14 @@ do
         done
 done
 
-printf "%-16s" "cppcheck..."
+printf "%-24s" "cppcheck..."
 
 log="cppcheck.log"
-#cppcheck --enable=all --inconclusive --force --template '{file}:{line},{severity},{id},{message}' \
-#        ${includes} ${sources} 2> ${log} 1> /dev/null
+cppcheck --enable=all --inconclusive --force --template '{file}:{line},{severity},{id},{message}' \
+        ${includes} ${sources} 2> ${log} 1> /dev/null
 
-printf "\t%-10s%4d\n\n" \
-        "errors:" $(wc -l < cppcheck.log)
+printf "\terrors: %4d\n\n" \
+        $(wc -l < cppcheck.log)
 
 # check available compilers
 for compiler in ${compilers}
@@ -46,33 +46,33 @@ do
         # check compilation on release and debug
         for build in ${builds}
         do
-                printf "%-16s" "${compiler} (${build})..."
+                printf "%-24s" "${compiler} (${build})..."
 
                 log="${compiler}_${build}.log"
-                #bash ${basedir}/build_${build}.sh --compiler ${compiler} > ${log} 2>&1
+                bash ${basedir}/build_${build}.sh --compiler ${compiler} > ${log} 2>&1
 
-                printf "\t%-10s%4d\t%-10s%4d\t%-10s%4d\n" \
-                        "fatals:" $(grep -i fatal: ${log} | wc -l) \
-                        "errors:" $(grep -i error: ${log} | wc -l) \
-                        "warnings:" $(grep -i warning: ${log} | wc -l)
+                printf "\tfatals: %4d\terrors: %4d\twarnings: %4d\n" \
+                        $(grep -i fatal: ${log} | wc -l) \
+                        $(grep -i error: ${log} | wc -l) \
+                        $(grep -i warning: ${log} | wc -l)
         done
 
         # run unit tests with sanitizers
         for config in ${configs}
         do
-                printf "%-16s\n" "${compiler} (${config})"
+                printf "%-24s\n" "${compiler} (${config})"
 
                 crtdir=$(pwd)
                 cd ${basedir}/build-debug-${config}/test
                 for test in test_*
                 do
-                        printf "\t%-24s" "${test}..."
+                        printf "  -%-21s" "${test}..."
 
                         log="${crtdir}/${compiler}_${config}_${test}.log"
                         ./${test} > $log 2>&1
 
-                        printf "\t%-10s%4d\n" \
-                                "errors:" $(grep -E ".+\:.+\: \[.+/.+\]: check \{.+\} failed!" ${log} | wc -l)
+                        printf "\terrors: %4d\n" \
+                                $(grep -E ".+\:.+\: \[.+/.+\]: check \{.+\} failed" ${log} | wc -l)
                 done
                 cd ${crtdir}
         done
