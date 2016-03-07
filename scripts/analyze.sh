@@ -71,9 +71,17 @@ do
                         log="${crtdir}/${compiler}_${config}_${test}.log"
                         ./${test} > $log 2>&1
 
-                        printf "\tunit test errors: %3d\tsanitizer errors: %3d\n" \
+                        ret=$(grep -E "failed with|no errors detected" ${log} | wc -l)
+                        if [ "$ret" == "0" ]
+                        then
+                                crashed="yes"
+                        else
+                                crashed="no"
+                        fi
+                        printf "\tunit test errors: %3d\tsanitizer errors: %3d\tcrashed: %3s\n" \
                                 $(grep -E ".+\:.+\: \[.+/.+\]: check \{.+\} failed" ${log} | wc -l) \
-                                $(grep error: ${log} | wc -l)
+                                $(grep error: ${log} | wc -l) \
+                                ${crashed}
                 done
                 cd ${crtdir}
         done
