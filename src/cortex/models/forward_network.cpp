@@ -16,23 +16,14 @@ namespace cortex
 
         forward_network_t::forward_network_t(const forward_network_t& other)
                 :       model_t(other),
-                        m_layers(other.m_layers)
+                        m_layers(other.m_layers),
+                        m_gparam(other.m_gparam),
+                        m_odata(other.m_odata)
         {
                 for (size_t l = 0; l < n_layers(); ++ l)
                 {
                         m_layers[l] = other.m_layers[l]->clone();
                 }
-        }
-
-        forward_network_t& forward_network_t::operator=(forward_network_t other)
-        {
-                if (this != &other)
-                {
-                        model_t::operator=(other);
-                        std::swap(m_layers, other.m_layers);
-                }
-
-                return *this;
         }
 
         const tensor_t& forward_network_t::output(const tensor_t& _input)

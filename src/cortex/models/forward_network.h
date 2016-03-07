@@ -30,7 +30,7 @@ namespace cortex
                 ///
                 /// \brief assignment operator
                 ///
-                forward_network_t& operator=(forward_network_t other);
+                forward_network_t& operator=(const forward_network_t&) = delete;
 
                 ///
                 /// \brief compute the model's output

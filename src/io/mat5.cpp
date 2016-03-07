@@ -19,63 +19,72 @@ namespace io
                 >
                 mat5_buffer_type make_buffer_type(tint code)
                 {
-                        if (code == 1) return mat5_buffer_type::miINT8;
-                        else if (code == 2) return mat5_buffer_type::miUINT8;
-                        else if (code == 3) return mat5_buffer_type::miINT16;
-                        else if (code == 4) return mat5_buffer_type::miUINT16;
-                        else if (code == 5) return mat5_buffer_type::miINT32;
-                        else if (code == 6) return mat5_buffer_type::miUINT32;
-                        else if (code == 7) return mat5_buffer_type::miSINGLE;
-                        else if (code == 9) return mat5_buffer_type::miDOUBLE;
-                        else if (code == 12) return mat5_buffer_type::miINT64;
-                        else if (code == 13) return mat5_buffer_type::miUINT64;
-                        else if (code == 14) return mat5_buffer_type::miMATRIX;
-                        else if (code == 15) return mat5_buffer_type::miCOMPRESSED;
-                        else if (code == 16) return mat5_buffer_type::miUTF8;
-                        else if (code == 17) return mat5_buffer_type::miUTF16;
-                        else if (code == 18) return mat5_buffer_type::miUTF32;
-                        else return mat5_buffer_type::miUNKNOWN;
+                        switch (code)
+                        {
+                        case 1:         return mat5_buffer_type::miINT8;
+                        case 2:         return mat5_buffer_type::miUINT8;
+                        case 3:         return mat5_buffer_type::miINT16;
+                        case 4:         return mat5_buffer_type::miUINT16;
+                        case 5:         return mat5_buffer_type::miINT32;
+                        case 6:         return mat5_buffer_type::miUINT32;
+                        case 7:         return mat5_buffer_type::miSINGLE;
+                        case 9:         return mat5_buffer_type::miDOUBLE;
+                        case 12:        return mat5_buffer_type::miINT64;
+                        case 13:        return mat5_buffer_type::miUINT64;
+                        case 14:        return mat5_buffer_type::miMATRIX;
+                        case 15:        return mat5_buffer_type::miCOMPRESSED;
+                        case 16:        return mat5_buffer_type::miUTF8;
+                        case 17:        return mat5_buffer_type::miUTF16;
+                        case 18:        return mat5_buffer_type::miUTF32;
+                        default:        return mat5_buffer_type::miUNKNOWN;
+                        }
                 }
 
                 std::streamsize to_bytes(const mat5_buffer_type& type)
                 {
-                        if (type == mat5_buffer_type::miINT8) return 1;
-                        else if (type == mat5_buffer_type::miUINT8) return 1;
-                        else if (type == mat5_buffer_type::miINT16) return 2;
-                        else if (type == mat5_buffer_type::miUINT16) return 2;
-                        else if (type == mat5_buffer_type::miINT32) return 4;
-                        else if (type == mat5_buffer_type::miUINT32) return 4;
-                        else if (type == mat5_buffer_type::miSINGLE) return 4;
-                        else if (type == mat5_buffer_type::miDOUBLE) return 8;
-                        else if (type == mat5_buffer_type::miINT64) return 8;
-                        else if (type == mat5_buffer_type::miUINT64) return 8;
-                        else if (type == mat5_buffer_type::miMATRIX) return 0;
-                        else if (type == mat5_buffer_type::miCOMPRESSED) return 0;
-                        else if (type == mat5_buffer_type::miUTF8) return 0;
-                        else if (type == mat5_buffer_type::miUTF16) return 0;
-                        else if (type == mat5_buffer_type::miUTF32) return 0;
-                        else return 0;
+                        switch (type)
+                        {
+                        case mat5_buffer_type::miINT8:          return 1;
+                        case mat5_buffer_type::miUINT8:         return 1;
+                        case mat5_buffer_type::miINT16:         return 2;
+                        case mat5_buffer_type::miUINT16:        return 2;
+                        case mat5_buffer_type::miINT32:         return 4;
+                        case mat5_buffer_type::miUINT32:        return 4;
+                        case mat5_buffer_type::miSINGLE:        return 4;
+                        case mat5_buffer_type::miDOUBLE:        return 8;
+                        case mat5_buffer_type::miINT64:         return 8;
+                        case mat5_buffer_type::miUINT64:        return 8;
+                        case mat5_buffer_type::miMATRIX:        return 0;
+                        case mat5_buffer_type::miCOMPRESSED:    return 0;
+                        case mat5_buffer_type::miUTF8:          return 0;
+                        case mat5_buffer_type::miUTF16:         return 0;
+                        case mat5_buffer_type::miUTF32:         return 0;
+                        default:                                return 0;
+                        }
                 }
         }
 
         std::string to_string(const mat5_buffer_type& type)
         {
-                if (type == mat5_buffer_type::miINT8) return "miINT8";
-                else if (type == mat5_buffer_type::miUINT8) return "miUINT8";
-                else if (type == mat5_buffer_type::miINT16) return "miINT16";
-                else if (type == mat5_buffer_type::miUINT16) return "miUINT16";
-                else if (type == mat5_buffer_type::miINT32) return "miINT32";
-                else if (type == mat5_buffer_type::miUINT32) return "miUINT32";
-                else if (type == mat5_buffer_type::miSINGLE) return "miSINGLE";
-                else if (type == mat5_buffer_type::miDOUBLE) return "miDOUBLE";
-                else if (type == mat5_buffer_type::miINT64) return "miINT64";
-                else if (type == mat5_buffer_type::miUINT64) return "miUINT64";
-                else if (type == mat5_buffer_type::miMATRIX) return "miMATRIX";
-                else if (type == mat5_buffer_type::miCOMPRESSED) return "miCOMPRESSED";
-                else if (type == mat5_buffer_type::miUTF8) return "miUTF8";
-                else if (type == mat5_buffer_type::miUTF16) return "miUTF16";
-                else if (type == mat5_buffer_type::miUTF32) return "miUTF32";
-                else return "miUNKNOWN";
+                switch (type)
+                {
+                case mat5_buffer_type::miINT8:                  return "miINT8";
+                case mat5_buffer_type::miUINT8:                 return "miUINT8";
+                case mat5_buffer_type::miINT16:                 return "miINT16";
+                case mat5_buffer_type::miUINT16:                return "miUINT16";
+                case mat5_buffer_type::miINT32:                 return "miINT32";
+                case mat5_buffer_type::miUINT32:                return "miUINT32";
+                case mat5_buffer_type::miSINGLE:                return "miSINGLE";
+                case mat5_buffer_type::miDOUBLE:                return "miDOUBLE";
+                case mat5_buffer_type::miINT64:                 return "miINT64";
+                case mat5_buffer_type::miUINT64:                return "miUINT64";
+                case mat5_buffer_type::miMATRIX:                return "miMATRIX";
+                case mat5_buffer_type::miCOMPRESSED:            return "miCOMPRESSED";
+                case mat5_buffer_type::miUTF8:                  return "miUTF8";
+                case mat5_buffer_type::miUTF16:                 return "miUTF16";
+                case mat5_buffer_type::miUTF32:                 return "miUTF32";
+                default:                                        return "miUNKNOWN";
+                }
         }
 
         mat5_section_t::mat5_section_t(std::streamsize begin)
