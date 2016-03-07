@@ -87,7 +87,8 @@ if(CMAKE_CXX_COMPILER_ID MATCHES GNU OR CMAKE_CXX_COMPILER_ID MATCHES Clang)
         # set memory sanitizer
         elseif(NANOCV_WITH_MSAN)
                 if(COMPILER_SUPPORTS_SANITIZE_MEMORY)
-                        set(CMAKE_CXX_FLAGS     "${CMAKE_CXX_FLAGS} -fsanitize=memory -fsanitize-memory-track-origins")
+                        set(CMAKE_CXX_FLAGS     "${CMAKE_CXX_FLAGS} -fsanitize=memory -fsanitize-memory-track-origins -fPIE")
+                        set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -pie")
                 endif()
 
         # set thread sanitizer
