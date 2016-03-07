@@ -10,19 +10,21 @@ asan_flag="OFF"
 msan_flag="OFF"
 tsan_flag="OFF"
 test_flag="ON"
+libcpp_flag="OFF"
 
 # usage
 function usage
 {
         echo "Usage: "
-        echo -e "\t--build-type         <build type [Release/Debug/...]>        default=${build_type}"
-        echo -e "\t--generator          <build system [codelite-][ninja/make]>  default=${generator}"
-        echo -e "\t--install-dir        <installation directory>                default=${install_dir}"
-        echo -e "\t--install            <install [ON/OFF] Release only>         default=${install}"
-        echo -e "\t--asan               <address sanitizer [ON/OFF]>            default=${asan_flag}"
-        echo -e "\t--msan               <memory sanitizer [ON/OFF]>             default=${msan_flag}"
-        echo -e "\t--tsan               <thread sanitizer [ON/OFF]>             default=${tsan_flag}"
-        echo -e "\t--compiler           <c++ compiler (g++, clang++)>           optional"
+        echo -e "\t--build-type         <build type [Release/Debug/...]>                default=${build_type}"
+        echo -e "\t--generator          <build system [codelite-][ninja/make]>          default=${generator}"
+        echo -e "\t--install-dir        <installation directory>                        default=${install_dir}"
+        echo -e "\t--install            <install [ON/OFF] Release only>                 default=${install}"
+        echo -e "\t--asan               <address sanitizer [ON/OFF]>                    default=${asan_flag}"
+        echo -e "\t--msan               <memory sanitizer [ON/OFF]>                     default=${msan_flag}"
+        echo -e "\t--tsan               <thread sanitizer [ON/OFF]>                     default=${tsan_flag}"
+        echo -e "\t--compiler           <c++ compiler (g++, clang++)>                   optional"
+        echo -e "\t--libc++             <use libc++ instead of default libstdc++>       optional"
         echo
 }
 
@@ -53,6 +55,8 @@ do
                                 ;;
                 --compiler)     shift
                                 compiler=$1
+                                ;;
+                --libc++)       libcpp_flag="ON"
                                 ;;
                 -h | --help)    usage
                                 exit
@@ -126,6 +130,7 @@ cmake \
         -DNANOCV_WITH_MSAN=${msan_flag} \
         -DNANOCV_WITH_TSAN=${tsan_flag} \
         -DNANOCV_WITH_TESTS=${test_flag} \
+        -DNANOCV_WITH_LIBCPP=${libcpp_flag} \
         -G "${generator}" \
         -DCMAKE_INSTALL_PREFIX=${install_dir} \
         ${current_dir}/

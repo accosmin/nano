@@ -57,6 +57,11 @@ if(CMAKE_CXX_COMPILER_ID MATCHES GNU OR CMAKE_CXX_COMPILER_ID MATCHES Clang)
         set(CMAKE_CXX_FLAGS_MINSIZEREL          "-Os -DNDEBUG")                         # -DEIGEN_NO_DEBUG")
         set(CMAKE_EXE_LINKER_FLAGS              "-flto")
 
+        if(NANOCV_WITH_LIBCPP)
+                set(CMAKE_CXX_FLAGS             "-stdlib=libc++ ${CMAKE_CXX_FLAGS}")
+                set(CMAKE_EXE_LINKER_FLAGS      "-lc++abi ${CMAKE_EXE_LINKER_FLAGS}")
+        endif()
+
         if(NOT CMAKE_CXX_COMPILER_ID MATCHES AppleClang)
                 set(CMAKE_CXX_FLAGS             "${CMAKE_CXX_FLAGS} -pthread")
         endif()

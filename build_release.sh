@@ -2,6 +2,7 @@
 
 compiler=$CXX
 generator=ninja
+libcpp=""
 
 install_dir="`pwd`/install"
 
@@ -14,8 +15,9 @@ fi
 function usage
 {
         echo "Usage: "
-        echo -e "\t--generator          <build system [codelite-][ninja/make]>  default=${generator}"
-        echo -e "\t--compiler           <c++ compiler (g++, clang++)>           optional"
+        echo -e "\t--generator          <build system [codelite-][ninja/make]>          default=${generator}"
+        echo -e "\t--compiler           <c++ compiler (g++, clang++)>                   optional"
+        echo -e "\t--libc++             <use libc++ instead of default libstdc++>       optional"
         echo
 }
 
@@ -28,6 +30,8 @@ do
                                 ;;
                 --compiler)     shift
                                 compiler=$1
+                                ;;
+                --libc++)       libcpp="--libc++"
                                 ;;
                 -h | --help)    usage
                                 exit
@@ -46,7 +50,7 @@ bash build.sh \
         --generator ${generator} \
         --install-dir ${install_dir} \
         --install OFF \
-        --asan OFF --msan OFF --tsan OFF
+        --asan OFF --msan OFF --tsan OFF ${libcpp}
 
 bash build.sh \
         --compiler ${compiler} \
@@ -54,5 +58,5 @@ bash build.sh \
         --generator ${generator} \
         --install-dir ${install_dir} \
         --install OFF \
-        --asan OFF --msan OFF --tsan OFF
+        --asan OFF --msan OFF --tsan OFF ${libcpp}
 

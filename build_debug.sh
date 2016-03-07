@@ -2,6 +2,7 @@
 
 compiler=$CXX
 generator=ninja
+libcpp=""
 
 build_type=Debug
 
@@ -14,8 +15,9 @@ fi
 function usage
 {
         echo "Usage: "
-        echo -e "\t--generator          <build system [codelite-][ninja/make]>  default=${generator}"
-        echo -e "\t--compiler           <c++ compiler (g++, clang++)>           optional"
+        echo -e "\t--generator          <build system [codelite-][ninja/make]>          default=${generator}"
+        echo -e "\t--compiler           <c++ compiler (g++, clang++)>                   optional"
+        echo -e "\t--libc++             <use libc++ instead of default libstdc++>       optional"
         echo
 }
 
@@ -28,6 +30,8 @@ do
                                 ;;
                 --compiler)     shift
                                 compiler=$1
+                                ;;
+                --libc++)       libcpp="--libc++"
                                 ;;
                 -h | --help)    usage
                                 exit
@@ -44,22 +48,22 @@ bash build.sh \
         --compiler ${compiler} \
         --build-type ${build_type} \
         --generator ${generator} \
-        --asan OFF --msan OFF --tsan OFF
+        --asan OFF --msan OFF --tsan OFF ${libcpp}
 
 bash build.sh \
         --compiler ${compiler} \
         --build-type ${build_type} \
         --generator ${generator} \
-        --asan ON --msan OFF --tsan OFF
-        
+        --asan ON --msan OFF --tsan OFF ${libcpp}
+
 bash build.sh \
         --compiler ${compiler} \
         --build-type ${build_type} \
         --generator ${generator} \
-        --asan OFF --msan ON --tsan OFF
-        
+        --asan OFF --msan ON --tsan OFF ${libcpp}
+
 bash build.sh \
         --compiler ${compiler} \
         --build-type ${build_type} \
         --generator ${generator} \
-        --asan OFF --msan OFF --tsan ON
+        --asan OFF --msan OFF --tsan ON ${libcpp}
