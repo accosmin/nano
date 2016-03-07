@@ -66,7 +66,7 @@ namespace math
 
         private:
 
-                using gen_t = std::ranlux48_base;
+                using gen_t = std::minstd_rand;
 
                 using die_t = typename std::conditional
                 <
