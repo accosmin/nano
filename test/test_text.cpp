@@ -6,185 +6,185 @@
 #include <list>
 #include <set>
 
-NANOCV_BEGIN_MODULE(test_text)
+ZOB_BEGIN_MODULE(test_text)
 
-NANOCV_CASE(contains)
+ZOB_CASE(contains)
 {
-        NANOCV_CHECK_EQUAL(text::contains("", 't'), false);
-        NANOCV_CHECK_EQUAL(text::contains("text", 't'), true);
-        NANOCV_CHECK_EQUAL(text::contains("naNoCv", 't'), false);
-        NANOCV_CHECK_EQUAL(text::contains("extension", 't'), true);
+        ZOB_CHECK_EQUAL(text::contains("", 't'), false);
+        ZOB_CHECK_EQUAL(text::contains("text", 't'), true);
+        ZOB_CHECK_EQUAL(text::contains("naNoCv", 't'), false);
+        ZOB_CHECK_EQUAL(text::contains("extension", 't'), true);
 }
 
-NANOCV_CASE(resize)
+ZOB_CASE(resize)
 {
-        NANOCV_CHECK_EQUAL(text::align("text", 10, text::alignment::left, '='),   "text======");
-        NANOCV_CHECK_EQUAL(text::align("text", 10, text::alignment::right, '='),  "======text");
-        NANOCV_CHECK_EQUAL(text::align("text", 10, text::alignment::center, '='), "===text===");
+        ZOB_CHECK_EQUAL(text::align("text", 10, text::alignment::left, '='),   "text======");
+        ZOB_CHECK_EQUAL(text::align("text", 10, text::alignment::right, '='),  "======text");
+        ZOB_CHECK_EQUAL(text::align("text", 10, text::alignment::center, '='), "===text===");
 }
 
-NANOCV_CASE(split)
+ZOB_CASE(split)
 {
         const auto tokens = text::split("= -token1 token2 something ", " =-");
 
-        NANOCV_REQUIRE(tokens.size() == 3);
-        NANOCV_CHECK_EQUAL(tokens[0], "token1");
-        NANOCV_CHECK_EQUAL(tokens[1], "token2");
-        NANOCV_CHECK_EQUAL(tokens[2], "something");
+        ZOB_REQUIRE(tokens.size() == 3);
+        ZOB_CHECK_EQUAL(tokens[0], "token1");
+        ZOB_CHECK_EQUAL(tokens[1], "token2");
+        ZOB_CHECK_EQUAL(tokens[2], "something");
 }
 
-NANOCV_CASE(lower)
+ZOB_CASE(lower)
 {
-        NANOCV_CHECK_EQUAL(text::lower("Token"), "token");
-        NANOCV_CHECK_EQUAL(text::lower("ToKEN"), "token");
-        NANOCV_CHECK_EQUAL(text::lower("token"), "token");
-        NANOCV_CHECK_EQUAL(text::lower("TOKEN"), "token");
-        NANOCV_CHECK_EQUAL(text::lower(""), "");
+        ZOB_CHECK_EQUAL(text::lower("Token"), "token");
+        ZOB_CHECK_EQUAL(text::lower("ToKEN"), "token");
+        ZOB_CHECK_EQUAL(text::lower("token"), "token");
+        ZOB_CHECK_EQUAL(text::lower("TOKEN"), "token");
+        ZOB_CHECK_EQUAL(text::lower(""), "");
 }
 
-NANOCV_CASE(upper)
+ZOB_CASE(upper)
 {
-        NANOCV_CHECK_EQUAL(text::upper("Token"), "TOKEN");
-        NANOCV_CHECK_EQUAL(text::upper("ToKEN"), "TOKEN");
-        NANOCV_CHECK_EQUAL(text::upper("token"), "TOKEN");
-        NANOCV_CHECK_EQUAL(text::upper("TOKEN"), "TOKEN");
-        NANOCV_CHECK_EQUAL(text::upper(""), "");
+        ZOB_CHECK_EQUAL(text::upper("Token"), "TOKEN");
+        ZOB_CHECK_EQUAL(text::upper("ToKEN"), "TOKEN");
+        ZOB_CHECK_EQUAL(text::upper("token"), "TOKEN");
+        ZOB_CHECK_EQUAL(text::upper("TOKEN"), "TOKEN");
+        ZOB_CHECK_EQUAL(text::upper(""), "");
 }
 
-NANOCV_CASE(ends_with)
+ZOB_CASE(ends_with)
 {
-        NANOCV_CHECK(text::ends_with("ToKeN", ""));
-        NANOCV_CHECK(text::ends_with("ToKeN", "N"));
-        NANOCV_CHECK(text::ends_with("ToKeN", "eN"));
-        NANOCV_CHECK(text::ends_with("ToKeN", "KeN"));
-        NANOCV_CHECK(text::ends_with("ToKeN", "oKeN"));
-        NANOCV_CHECK(text::ends_with("ToKeN", "ToKeN"));
+        ZOB_CHECK(text::ends_with("ToKeN", ""));
+        ZOB_CHECK(text::ends_with("ToKeN", "N"));
+        ZOB_CHECK(text::ends_with("ToKeN", "eN"));
+        ZOB_CHECK(text::ends_with("ToKeN", "KeN"));
+        ZOB_CHECK(text::ends_with("ToKeN", "oKeN"));
+        ZOB_CHECK(text::ends_with("ToKeN", "ToKeN"));
 
-        NANOCV_CHECK(!text::ends_with("ToKeN", "n"));
-        NANOCV_CHECK(!text::ends_with("ToKeN", "en"));
-        NANOCV_CHECK(!text::ends_with("ToKeN", "ken"));
-        NANOCV_CHECK(!text::ends_with("ToKeN", "oken"));
-        NANOCV_CHECK(!text::ends_with("ToKeN", "Token"));
+        ZOB_CHECK(!text::ends_with("ToKeN", "n"));
+        ZOB_CHECK(!text::ends_with("ToKeN", "en"));
+        ZOB_CHECK(!text::ends_with("ToKeN", "ken"));
+        ZOB_CHECK(!text::ends_with("ToKeN", "oken"));
+        ZOB_CHECK(!text::ends_with("ToKeN", "Token"));
 }
 
-NANOCV_CASE(iends_with)
+ZOB_CASE(iends_with)
 {
-        NANOCV_CHECK(text::iends_with("ToKeN", ""));
-        NANOCV_CHECK(text::iends_with("ToKeN", "N"));
-        NANOCV_CHECK(text::iends_with("ToKeN", "eN"));
-        NANOCV_CHECK(text::iends_with("ToKeN", "KeN"));
-        NANOCV_CHECK(text::iends_with("ToKeN", "oKeN"));
-        NANOCV_CHECK(text::iends_with("ToKeN", "ToKeN"));
+        ZOB_CHECK(text::iends_with("ToKeN", ""));
+        ZOB_CHECK(text::iends_with("ToKeN", "N"));
+        ZOB_CHECK(text::iends_with("ToKeN", "eN"));
+        ZOB_CHECK(text::iends_with("ToKeN", "KeN"));
+        ZOB_CHECK(text::iends_with("ToKeN", "oKeN"));
+        ZOB_CHECK(text::iends_with("ToKeN", "ToKeN"));
 
-        NANOCV_CHECK(text::iends_with("ToKeN", "n"));
-        NANOCV_CHECK(text::iends_with("ToKeN", "en"));
-        NANOCV_CHECK(text::iends_with("ToKeN", "ken"));
-        NANOCV_CHECK(text::iends_with("ToKeN", "oken"));
-        NANOCV_CHECK(text::iends_with("ToKeN", "Token"));
+        ZOB_CHECK(text::iends_with("ToKeN", "n"));
+        ZOB_CHECK(text::iends_with("ToKeN", "en"));
+        ZOB_CHECK(text::iends_with("ToKeN", "ken"));
+        ZOB_CHECK(text::iends_with("ToKeN", "oken"));
+        ZOB_CHECK(text::iends_with("ToKeN", "Token"));
 }
 
-NANOCV_CASE(starts_with)
+ZOB_CASE(starts_with)
 {
-        NANOCV_CHECK(text::starts_with("ToKeN", ""));
-        NANOCV_CHECK(text::starts_with("ToKeN", "T"));
-        NANOCV_CHECK(text::starts_with("ToKeN", "To"));
-        NANOCV_CHECK(text::starts_with("ToKeN", "ToK"));
-        NANOCV_CHECK(text::starts_with("ToKeN", "ToKe"));
-        NANOCV_CHECK(text::starts_with("ToKeN", "ToKeN"));
+        ZOB_CHECK(text::starts_with("ToKeN", ""));
+        ZOB_CHECK(text::starts_with("ToKeN", "T"));
+        ZOB_CHECK(text::starts_with("ToKeN", "To"));
+        ZOB_CHECK(text::starts_with("ToKeN", "ToK"));
+        ZOB_CHECK(text::starts_with("ToKeN", "ToKe"));
+        ZOB_CHECK(text::starts_with("ToKeN", "ToKeN"));
 
-        NANOCV_CHECK(!text::starts_with("ToKeN", "t"));
-        NANOCV_CHECK(!text::starts_with("ToKeN", "to"));
-        NANOCV_CHECK(!text::starts_with("ToKeN", "tok"));
-        NANOCV_CHECK(!text::starts_with("ToKeN", "toke"));
-        NANOCV_CHECK(!text::starts_with("ToKeN", "Token"));
+        ZOB_CHECK(!text::starts_with("ToKeN", "t"));
+        ZOB_CHECK(!text::starts_with("ToKeN", "to"));
+        ZOB_CHECK(!text::starts_with("ToKeN", "tok"));
+        ZOB_CHECK(!text::starts_with("ToKeN", "toke"));
+        ZOB_CHECK(!text::starts_with("ToKeN", "Token"));
 }
 
-NANOCV_CASE(istarts_with)
+ZOB_CASE(istarts_with)
 {
-        NANOCV_CHECK(text::istarts_with("ToKeN", ""));
-        NANOCV_CHECK(text::istarts_with("ToKeN", "t"));
-        NANOCV_CHECK(text::istarts_with("ToKeN", "to"));
-        NANOCV_CHECK(text::istarts_with("ToKeN", "Tok"));
-        NANOCV_CHECK(text::istarts_with("ToKeN", "toKe"));
-        NANOCV_CHECK(text::istarts_with("ToKeN", "ToKeN"));
+        ZOB_CHECK(text::istarts_with("ToKeN", ""));
+        ZOB_CHECK(text::istarts_with("ToKeN", "t"));
+        ZOB_CHECK(text::istarts_with("ToKeN", "to"));
+        ZOB_CHECK(text::istarts_with("ToKeN", "Tok"));
+        ZOB_CHECK(text::istarts_with("ToKeN", "toKe"));
+        ZOB_CHECK(text::istarts_with("ToKeN", "ToKeN"));
 
-        NANOCV_CHECK(text::istarts_with("ToKeN", "t"));
-        NANOCV_CHECK(text::istarts_with("ToKeN", "to"));
-        NANOCV_CHECK(text::istarts_with("ToKeN", "tok"));
-        NANOCV_CHECK(text::istarts_with("ToKeN", "toke"));
-        NANOCV_CHECK(text::istarts_with("ToKeN", "Token"));
+        ZOB_CHECK(text::istarts_with("ToKeN", "t"));
+        ZOB_CHECK(text::istarts_with("ToKeN", "to"));
+        ZOB_CHECK(text::istarts_with("ToKeN", "tok"));
+        ZOB_CHECK(text::istarts_with("ToKeN", "toke"));
+        ZOB_CHECK(text::istarts_with("ToKeN", "Token"));
 }
 
-NANOCV_CASE(equals)
+ZOB_CASE(equals)
 {
-        NANOCV_CHECK(!text::equals("ToKeN", ""));
-        NANOCV_CHECK(!text::equals("ToKeN", "N"));
-        NANOCV_CHECK(!text::equals("ToKeN", "eN"));
-        NANOCV_CHECK(!text::equals("ToKeN", "KeN"));
-        NANOCV_CHECK(!text::equals("ToKeN", "oKeN"));
-        NANOCV_CHECK(text::equals("ToKeN", "ToKeN"));
+        ZOB_CHECK(!text::equals("ToKeN", ""));
+        ZOB_CHECK(!text::equals("ToKeN", "N"));
+        ZOB_CHECK(!text::equals("ToKeN", "eN"));
+        ZOB_CHECK(!text::equals("ToKeN", "KeN"));
+        ZOB_CHECK(!text::equals("ToKeN", "oKeN"));
+        ZOB_CHECK(text::equals("ToKeN", "ToKeN"));
 
-        NANOCV_CHECK(!text::equals("ToKeN", "n"));
-        NANOCV_CHECK(!text::equals("ToKeN", "en"));
-        NANOCV_CHECK(!text::equals("ToKeN", "ken"));
-        NANOCV_CHECK(!text::equals("ToKeN", "oken"));
-        NANOCV_CHECK(!text::equals("ToKeN", "Token"));
+        ZOB_CHECK(!text::equals("ToKeN", "n"));
+        ZOB_CHECK(!text::equals("ToKeN", "en"));
+        ZOB_CHECK(!text::equals("ToKeN", "ken"));
+        ZOB_CHECK(!text::equals("ToKeN", "oken"));
+        ZOB_CHECK(!text::equals("ToKeN", "Token"));
 }
 
-NANOCV_CASE(iequals)
+ZOB_CASE(iequals)
 {
-        NANOCV_CHECK(!text::iequals("ToKeN", ""));
-        NANOCV_CHECK(!text::iequals("ToKeN", "N"));
-        NANOCV_CHECK(!text::iequals("ToKeN", "eN"));
-        NANOCV_CHECK(!text::iequals("ToKeN", "KeN"));
-        NANOCV_CHECK(!text::iequals("ToKeN", "oKeN"));
-        NANOCV_CHECK(text::iequals("ToKeN", "ToKeN"));
+        ZOB_CHECK(!text::iequals("ToKeN", ""));
+        ZOB_CHECK(!text::iequals("ToKeN", "N"));
+        ZOB_CHECK(!text::iequals("ToKeN", "eN"));
+        ZOB_CHECK(!text::iequals("ToKeN", "KeN"));
+        ZOB_CHECK(!text::iequals("ToKeN", "oKeN"));
+        ZOB_CHECK(text::iequals("ToKeN", "ToKeN"));
 
-        NANOCV_CHECK(!text::iequals("ToKeN", "n"));
-        NANOCV_CHECK(!text::iequals("ToKeN", "en"));
-        NANOCV_CHECK(!text::iequals("ToKeN", "ken"));
-        NANOCV_CHECK(!text::iequals("ToKeN", "oken"));
-        NANOCV_CHECK(text::iequals("ToKeN", "Token"));
+        ZOB_CHECK(!text::iequals("ToKeN", "n"));
+        ZOB_CHECK(!text::iequals("ToKeN", "en"));
+        ZOB_CHECK(!text::iequals("ToKeN", "ken"));
+        ZOB_CHECK(!text::iequals("ToKeN", "oken"));
+        ZOB_CHECK(text::iequals("ToKeN", "Token"));
 }
 
-NANOCV_CASE(to_string)
+ZOB_CASE(to_string)
 {
-        NANOCV_CHECK_EQUAL(text::to_string(1.7), "1.700000");
-        NANOCV_CHECK_EQUAL(text::to_string(-4.3f), "-4.300000");
-        NANOCV_CHECK_EQUAL(text::to_string(1), "1");
-        NANOCV_CHECK_EQUAL(text::to_string(124545), "124545");
+        ZOB_CHECK_EQUAL(text::to_string(1.7), "1.700000");
+        ZOB_CHECK_EQUAL(text::to_string(-4.3f), "-4.300000");
+        ZOB_CHECK_EQUAL(text::to_string(1), "1");
+        ZOB_CHECK_EQUAL(text::to_string(124545), "124545");
 }
 
-NANOCV_CASE(from_string)
+ZOB_CASE(from_string)
 {
-        NANOCV_CHECK_EQUAL(text::from_string<double>("1.7"), 1.7);
-        NANOCV_CHECK_EQUAL(text::from_string<float>("-4.3"), -4.3f);
-        NANOCV_CHECK_EQUAL(text::from_string<short>("1"), 1);
-        NANOCV_CHECK_EQUAL(text::from_string<long int>("124545"), 124545);
+        ZOB_CHECK_EQUAL(text::from_string<double>("1.7"), 1.7);
+        ZOB_CHECK_EQUAL(text::from_string<float>("-4.3"), -4.3f);
+        ZOB_CHECK_EQUAL(text::from_string<short>("1"), 1);
+        ZOB_CHECK_EQUAL(text::from_string<long int>("124545"), 124545);
 }
 
-NANOCV_CASE(replace)
+ZOB_CASE(replace)
 {
-        NANOCV_CHECK_EQUAL(text::replace("token-", '-', '_'), "token_");
-        NANOCV_CHECK_EQUAL(text::replace("t-ken-", '-', '_'), "t_ken_");
-        NANOCV_CHECK_EQUAL(text::replace("-token", '-', '_'), "_token");
-        NANOCV_CHECK_EQUAL(text::replace("token_", '-', '_'), "token_");
+        ZOB_CHECK_EQUAL(text::replace("token-", '-', '_'), "token_");
+        ZOB_CHECK_EQUAL(text::replace("t-ken-", '-', '_'), "t_ken_");
+        ZOB_CHECK_EQUAL(text::replace("-token", '-', '_'), "_token");
+        ZOB_CHECK_EQUAL(text::replace("token_", '-', '_'), "token_");
 }
 
-NANOCV_CASE(concatenate)
+ZOB_CASE(concatenate)
 {
-        NANOCV_CHECK_EQUAL(text::concatenate(std::vector<int>({ 1, 2, 3 }), "-"),        "1-2-3");
-        NANOCV_CHECK_EQUAL(text::concatenate(std::list<int>({ 1, 2, 3 }), "="),          "1=2=3");
-        NANOCV_CHECK_EQUAL(text::concatenate(std::set<int>({ 1, 2, 3 }), ","),           "1,2,3");
+        ZOB_CHECK_EQUAL(text::concatenate(std::vector<int>({ 1, 2, 3 }), "-"),        "1-2-3");
+        ZOB_CHECK_EQUAL(text::concatenate(std::list<int>({ 1, 2, 3 }), "="),          "1=2=3");
+        ZOB_CHECK_EQUAL(text::concatenate(std::set<int>({ 1, 2, 3 }), ","),           "1,2,3");
 }
 
-NANOCV_CASE(from_params)
+ZOB_CASE(from_params)
 {
         const auto config = "param1=1.7,param2=3";
 
-        NANOCV_CHECK_EQUAL(text::from_params(config, "param1", 2.0), 1.7);
-        NANOCV_CHECK_EQUAL(text::from_params(config, "param2", 4343), 3);
-        NANOCV_CHECK_EQUAL(text::from_params(config, "paramx", 2.0), 2.0);
+        ZOB_CHECK_EQUAL(text::from_params(config, "param1", 2.0), 1.7);
+        ZOB_CHECK_EQUAL(text::from_params(config, "param2", 4343), 3);
+        ZOB_CHECK_EQUAL(text::from_params(config, "paramx", 2.0), 2.0);
 }
 
-NANOCV_END_MODULE()
+ZOB_END_MODULE()

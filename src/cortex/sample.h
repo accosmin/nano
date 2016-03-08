@@ -54,8 +54,8 @@ namespace cortex
         ///
         /// \brief collect the distinct labels of the given samples
         ///
-        NANOCV_PUBLIC strings_t labels(const samples_t& samples);
-        NANOCV_PUBLIC strings_t labels(samples_const_it_t begin, samples_const_it_t end);
+        ZOB_PUBLIC strings_t labels(const samples_t& samples);
+        ZOB_PUBLIC strings_t labels(samples_const_it_t begin, samples_const_it_t end);
 
         ///
         /// \brief compare two samples (to order them for fast caching)

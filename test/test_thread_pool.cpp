@@ -3,21 +3,21 @@
 #include "thread/thread.h"
 #include "math/random.hpp"
 
-NANOCV_BEGIN_MODULE(test_thread_pool)
+ZOB_BEGIN_MODULE(test_thread_pool)
 
-NANOCV_CASE(empty)
+ZOB_CASE(empty)
 {
         thread::pool_t pool;
 
         const size_t n_threads = thread::n_threads();
         const size_t n_active_workers = n_threads;
 
-        NANOCV_CHECK_EQUAL(pool.n_workers(), n_threads);
-        NANOCV_CHECK_EQUAL(pool.n_active_workers(), n_active_workers);
-        NANOCV_CHECK_EQUAL(pool.n_tasks(), 0);
+        ZOB_CHECK_EQUAL(pool.n_workers(), n_threads);
+        ZOB_CHECK_EQUAL(pool.n_active_workers(), n_active_workers);
+        ZOB_CHECK_EQUAL(pool.n_tasks(), 0);
 }
 
-NANOCV_CASE(enqueue)
+ZOB_CASE(enqueue)
 {
         thread::pool_t pool;
 
@@ -28,9 +28,9 @@ NANOCV_CASE(enqueue)
         {
                 pool.activate(n_active_workers);
 
-                NANOCV_CHECK_EQUAL(pool.n_workers(), n_threads);
-                NANOCV_CHECK_EQUAL(pool.n_active_workers(), n_active_workers);
-                NANOCV_CHECK_EQUAL(pool.n_tasks(), 0);
+                ZOB_CHECK_EQUAL(pool.n_workers(), n_threads);
+                ZOB_CHECK_EQUAL(pool.n_active_workers(), n_active_workers);
+                ZOB_CHECK_EQUAL(pool.n_tasks(), 0);
 
                 math::random_t<size_t> rnd(1, n_max_jobs);
                 const size_t n_tasks = rnd();
@@ -56,16 +56,16 @@ NANOCV_CASE(enqueue)
 
                 pool.wait();
 
-                NANOCV_CHECK_EQUAL(pool.n_workers(), n_threads);
-                NANOCV_CHECK_EQUAL(pool.n_active_workers(), n_active_workers);
-                NANOCV_CHECK_EQUAL(pool.n_tasks(), 0);
+                ZOB_CHECK_EQUAL(pool.n_workers(), n_threads);
+                ZOB_CHECK_EQUAL(pool.n_active_workers(), n_active_workers);
+                ZOB_CHECK_EQUAL(pool.n_tasks(), 0);
 
-                NANOCV_CHECK_EQUAL(tasks_done.size(), n_tasks);
+                ZOB_CHECK_EQUAL(tasks_done.size(), n_tasks);
                 for (size_t j = 0; j < n_tasks; ++ j)
                 {
-                        NANOCV_CHECK(std::find(tasks_done.begin(), tasks_done.end(), j + 1) != tasks_done.end());
+                        ZOB_CHECK(std::find(tasks_done.begin(), tasks_done.end(), j + 1) != tasks_done.end());
                 }
         }
 }
 
-NANOCV_END_MODULE()
+ZOB_END_MODULE()

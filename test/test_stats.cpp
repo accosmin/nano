@@ -19,28 +19,28 @@ namespace test
                 }
 
                 // check count
-                NANOCV_CHECK_EQUAL(stats.count(), count);
+                ZOB_CHECK_EQUAL(stats.count(), count);
 
                 // check range
-                NANOCV_CHECK_GREATER_EQUAL(stats.min(), avg - var);
-                NANOCV_CHECK_LESS_EQUAL(stats.max(), avg + var);
+                ZOB_CHECK_GREATER_EQUAL(stats.min(), avg - var);
+                ZOB_CHECK_LESS_EQUAL(stats.max(), avg + var);
 
                 // check average
-                NANOCV_CHECK_GREATER_EQUAL(stats.avg(), avg - var);
-                NANOCV_CHECK_LESS_EQUAL(stats.avg(), avg + var);
+                ZOB_CHECK_GREATER_EQUAL(stats.avg(), avg - var);
+                ZOB_CHECK_LESS_EQUAL(stats.avg(), avg + var);
 
                 // check variance
-                NANOCV_CHECK_GREATER_EQUAL(stats.var(), 0.0);
-                NANOCV_CHECK_LESS_EQUAL(std::sqrt(stats.var()), var);
+                ZOB_CHECK_GREATER_EQUAL(stats.var(), 0.0);
+                ZOB_CHECK_LESS_EQUAL(std::sqrt(stats.var()), var);
 
                 // check sum
-                NANOCV_CHECK_CLOSE(stats.sum(), std::accumulate(values.begin(), values.end(), 0.0), 1e-8);
+                ZOB_CHECK_CLOSE(stats.sum(), std::accumulate(values.begin(), values.end(), 0.0), 1e-8);
         }
 }
 
-NANOCV_BEGIN_MODULE(test_stats)
+ZOB_BEGIN_MODULE(test_stats)
 
-NANOCV_CASE(evaluate)
+ZOB_CASE(evaluate)
 {
         test::check_stats(0.03, 0.005, 32);
         test::check_stats(1.03, 13.005, 37);
@@ -48,5 +48,5 @@ NANOCV_CASE(evaluate)
         test::check_stats(-7.03, 10.005, 11);
 }
 
-NANOCV_END_MODULE()
+ZOB_END_MODULE()
 

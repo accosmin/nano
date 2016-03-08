@@ -14,9 +14,9 @@ namespace test
         }
 }
 
-NANOCV_BEGIN_MODULE(test_sampler)
+ZOB_BEGIN_MODULE(test_sampler)
 
-NANOCV_CASE(evaluate)
+ZOB_CASE(evaluate)
 {
         using namespace cortex;
 
@@ -24,7 +24,7 @@ NANOCV_CASE(evaluate)
         const size_t n_rand_samples = n_samples / 4;
 
         charset_task_t task(charset::numeric, 16, 16, color_mode::luma, n_samples);
-        NANOCV_CHECK_EQUAL(task.load(""), true);
+        ZOB_CHECK_EQUAL(task.load(""), true);
 
         for (size_t f = 0; f < task.fsize(); ++ f)
         {
@@ -52,22 +52,22 @@ NANOCV_CASE(evaluate)
                         sampler_t(task.samples()).push(test_fold).push(n_rand_samples).get();
 
                 // check training & testing split
-                NANOCV_CHECK_EQUAL(train_batch_samples.size() + test_batch_samples.size(), n_samples);
+                ZOB_CHECK_EQUAL(train_batch_samples.size() + test_batch_samples.size(), n_samples);
 
                 // check training samples
-                NANOCV_CHECK(test::check_fold(train_batch_samples, train_fold));
-                NANOCV_CHECK(test::check_fold(train_urand_samples, train_fold));
+                ZOB_CHECK(test::check_fold(train_batch_samples, train_fold));
+                ZOB_CHECK(test::check_fold(train_urand_samples, train_fold));
 
                 cortex::print(train_header + " batch", train_batch_samples);
                 cortex::print(train_header + " urand", train_urand_samples);
 
                 // check test samples
-                NANOCV_CHECK(test::check_fold(test_batch_samples, test_fold));
-                NANOCV_CHECK(test::check_fold(test_urand_samples, test_fold));
+                ZOB_CHECK(test::check_fold(test_batch_samples, test_fold));
+                ZOB_CHECK(test::check_fold(test_urand_samples, test_fold));
 
                 cortex::print(test_header + " batch", test_batch_samples);
                 cortex::print(test_header + " urand", test_urand_samples);
         }
 }
 
-NANOCV_END_MODULE()
+ZOB_END_MODULE()

@@ -17,7 +17,7 @@ namespace cortex
         {
         public:
 
-                NANOCV_MAKE_CLONABLE(svhn_task_t, "SVHN (object classification)")
+                ZOB_MAKE_CLONABLE(svhn_task_t, "SVHN (object classification)")
 
                 // constructor
                 explicit svhn_task_t(const string_t& configuration = string_t());

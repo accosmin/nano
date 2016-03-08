@@ -8,7 +8,7 @@ namespace cortex
         ///
         /// \brief logging object that can use any std::ostream (standard streaming & text files)
         ///
-        class NANOCV_PUBLIC logger_t
+        class ZOB_PUBLIC logger_t
         {
         public:
 

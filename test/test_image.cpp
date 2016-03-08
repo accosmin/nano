@@ -4,9 +4,9 @@
 #include "math/epsilon.hpp"
 #include <cstdio>
 
-NANOCV_BEGIN_MODULE(test_image)
+ZOB_BEGIN_MODULE(test_image)
 
-NANOCV_CASE(construct)
+ZOB_CASE(construct)
 {
         using namespace cortex;
 
@@ -20,30 +20,30 @@ NANOCV_CASE(construct)
 
                 image_t image(rows, cols, mode);
 
-                NANOCV_CHECK_EQUAL(image.is_luma(), mode == color_mode::luma);
-                NANOCV_CHECK_EQUAL(image.is_rgba(), mode == color_mode::rgba);
-                NANOCV_CHECK_EQUAL(image.rows(), rows);
-                NANOCV_CHECK_EQUAL(image.cols(), cols);
-                NANOCV_CHECK_EQUAL(image.size(), rows * cols);
-                NANOCV_CHECK_EQUAL(image.mode(), mode);
+                ZOB_CHECK_EQUAL(image.is_luma(), mode == color_mode::luma);
+                ZOB_CHECK_EQUAL(image.is_rgba(), mode == color_mode::rgba);
+                ZOB_CHECK_EQUAL(image.rows(), rows);
+                ZOB_CHECK_EQUAL(image.cols(), cols);
+                ZOB_CHECK_EQUAL(image.size(), rows * cols);
+                ZOB_CHECK_EQUAL(image.mode(), mode);
 
-                NANOCV_CHECK_EQUAL(image.luma().rows(), image.is_luma() ? rows : 0);
-                NANOCV_CHECK_EQUAL(image.luma().cols(), image.is_luma() ? cols : 0);
+                ZOB_CHECK_EQUAL(image.luma().rows(), image.is_luma() ? rows : 0);
+                ZOB_CHECK_EQUAL(image.luma().cols(), image.is_luma() ? cols : 0);
 
-                NANOCV_CHECK_EQUAL(image.rgba().rows(), image.is_rgba() ? rows : 0);
-                NANOCV_CHECK_EQUAL(image.rgba().cols(), image.is_rgba() ? cols : 0);
+                ZOB_CHECK_EQUAL(image.rgba().rows(), image.is_rgba() ? rows : 0);
+                ZOB_CHECK_EQUAL(image.rgba().cols(), image.is_rgba() ? cols : 0);
 
                 image.make_luma();
-                NANOCV_CHECK_EQUAL(image.is_luma(), true);
-                NANOCV_CHECK_EQUAL(image.mode(), color_mode::luma);
+                ZOB_CHECK_EQUAL(image.is_luma(), true);
+                ZOB_CHECK_EQUAL(image.mode(), color_mode::luma);
 
                 image.make_rgba();
-                NANOCV_CHECK_EQUAL(image.is_rgba(), true);
-                NANOCV_CHECK_EQUAL(image.mode(), color_mode::rgba);
+                ZOB_CHECK_EQUAL(image.is_rgba(), true);
+                ZOB_CHECK_EQUAL(image.mode(), color_mode::rgba);
         }
 }
 
-NANOCV_CASE(io_matrix)
+ZOB_CASE(io_matrix)
 {
         using namespace cortex;
 
@@ -60,19 +60,19 @@ NANOCV_CASE(io_matrix)
                         data.setConstant(color::make_random_rgba());
 
                         image_t image;
-                        NANOCV_CHECK_EQUAL(image.load_rgba(data), true);
-                        NANOCV_CHECK_EQUAL(image.is_luma(), false);
-                        NANOCV_CHECK_EQUAL(image.is_rgba(), true);
-                        NANOCV_CHECK_EQUAL(image.rows(), rows);
-                        NANOCV_CHECK_EQUAL(image.cols(), cols);
-                        NANOCV_CHECK_EQUAL(image.mode(), color_mode::rgba);
+                        ZOB_CHECK_EQUAL(image.load_rgba(data), true);
+                        ZOB_CHECK_EQUAL(image.is_luma(), false);
+                        ZOB_CHECK_EQUAL(image.is_rgba(), true);
+                        ZOB_CHECK_EQUAL(image.rows(), rows);
+                        ZOB_CHECK_EQUAL(image.cols(), cols);
+                        ZOB_CHECK_EQUAL(image.mode(), color_mode::rgba);
 
                         const auto& rgba = image.rgba();
-                        NANOCV_REQUIRE_EQUAL(rgba.size(), data.size());
+                        ZOB_REQUIRE_EQUAL(rgba.size(), data.size());
 
                         for (int i = 0; i < rgba.size(); ++ i)
                         {
-                                NANOCV_CHECK_EQUAL(rgba(i), data(i));
+                                ZOB_CHECK_EQUAL(rgba(i), data(i));
                         }
                 }
 
@@ -82,19 +82,19 @@ NANOCV_CASE(io_matrix)
                         data.setConstant(color::make_random_rgba());
 
                         image_t image;
-                        NANOCV_CHECK_EQUAL(image.load_luma(data), true);
-                        NANOCV_CHECK_EQUAL(image.is_luma(), true);
-                        NANOCV_CHECK_EQUAL(image.is_rgba(), false);
-                        NANOCV_CHECK_EQUAL(image.rows(), rows);
-                        NANOCV_CHECK_EQUAL(image.cols(), cols);
-                        NANOCV_CHECK_EQUAL(image.mode(), color_mode::luma);
+                        ZOB_CHECK_EQUAL(image.load_luma(data), true);
+                        ZOB_CHECK_EQUAL(image.is_luma(), true);
+                        ZOB_CHECK_EQUAL(image.is_rgba(), false);
+                        ZOB_CHECK_EQUAL(image.rows(), rows);
+                        ZOB_CHECK_EQUAL(image.cols(), cols);
+                        ZOB_CHECK_EQUAL(image.mode(), color_mode::luma);
 
                         const auto& luma = image.luma();
-                        NANOCV_REQUIRE_EQUAL(luma.size(), data.size());
+                        ZOB_REQUIRE_EQUAL(luma.size(), data.size());
 
                         for (int i = 0; i < luma.size(); ++ i)
                         {
-                                NANOCV_CHECK_EQUAL(luma(i), color::make_luma(data(i)));
+                                ZOB_CHECK_EQUAL(luma(i), color::make_luma(data(i)));
                         }
                 }
 
@@ -104,25 +104,25 @@ NANOCV_CASE(io_matrix)
                         data.setConstant(color::make_luma(color::make_random_rgba()));
 
                         image_t image;
-                        NANOCV_CHECK_EQUAL(image.load_luma(data), true);
-                        NANOCV_CHECK_EQUAL(image.is_luma(), true);
-                        NANOCV_CHECK_EQUAL(image.is_rgba(), false);
-                        NANOCV_CHECK_EQUAL(image.rows(), rows);
-                        NANOCV_CHECK_EQUAL(image.cols(), cols);
-                        NANOCV_CHECK_EQUAL(image.mode(), color_mode::luma);
+                        ZOB_CHECK_EQUAL(image.load_luma(data), true);
+                        ZOB_CHECK_EQUAL(image.is_luma(), true);
+                        ZOB_CHECK_EQUAL(image.is_rgba(), false);
+                        ZOB_CHECK_EQUAL(image.rows(), rows);
+                        ZOB_CHECK_EQUAL(image.cols(), cols);
+                        ZOB_CHECK_EQUAL(image.mode(), color_mode::luma);
 
                         const auto& luma = image.luma();
-                        NANOCV_REQUIRE_EQUAL(luma.size(), data.size());
+                        ZOB_REQUIRE_EQUAL(luma.size(), data.size());
 
                         for (int i = 0; i < luma.size(); ++ i)
                         {
-                                NANOCV_CHECK_EQUAL(luma(i), data(i));
+                                ZOB_CHECK_EQUAL(luma(i), data(i));
                         }
                 }
         }
 }
 
-NANOCV_CASE(io_file)
+ZOB_CASE(io_file)
 {
         using namespace cortex;
 
@@ -137,45 +137,45 @@ NANOCV_CASE(io_file)
                 data.setConstant(color::make_random_rgba());
 
                 image_t image;
-                NANOCV_CHECK_EQUAL(image.load_rgba(data), true);
+                ZOB_CHECK_EQUAL(image.load_rgba(data), true);
 
                 const auto path = "test-image.png";
 
-                NANOCV_CHECK_EQUAL(image.save(path), true);
+                ZOB_CHECK_EQUAL(image.save(path), true);
 
                 // load RGBA as LUMA
                 {
-                        NANOCV_CHECK_EQUAL(image.load_luma(path), true);
-                        NANOCV_CHECK_EQUAL(image.is_luma(), true);
-                        NANOCV_CHECK_EQUAL(image.is_rgba(), false);
-                        NANOCV_CHECK_EQUAL(image.rows(), rows);
-                        NANOCV_CHECK_EQUAL(image.cols(), cols);
-                        NANOCV_CHECK_EQUAL(image.mode(), color_mode::luma);
+                        ZOB_CHECK_EQUAL(image.load_luma(path), true);
+                        ZOB_CHECK_EQUAL(image.is_luma(), true);
+                        ZOB_CHECK_EQUAL(image.is_rgba(), false);
+                        ZOB_CHECK_EQUAL(image.rows(), rows);
+                        ZOB_CHECK_EQUAL(image.cols(), cols);
+                        ZOB_CHECK_EQUAL(image.mode(), color_mode::luma);
 
                         const auto& luma = image.luma();
-                        NANOCV_REQUIRE_EQUAL(luma.size(), data.size());
+                        ZOB_REQUIRE_EQUAL(luma.size(), data.size());
 
                         for (int i = 0; i < luma.size(); ++ i)
                         {
-                                NANOCV_CHECK_EQUAL(luma(i), color::make_luma(data(i)));
+                                ZOB_CHECK_EQUAL(luma(i), color::make_luma(data(i)));
                         }
                 }
 
                 // load RGBA as RGBA
                 {
-                        NANOCV_CHECK_EQUAL(image.load_rgba(path), true);
-                        NANOCV_CHECK_EQUAL(image.is_luma(), false);
-                        NANOCV_CHECK_EQUAL(image.is_rgba(), true);
-                        NANOCV_CHECK_EQUAL(image.rows(), rows);
-                        NANOCV_CHECK_EQUAL(image.cols(), cols);
-                        NANOCV_CHECK_EQUAL(image.mode(), color_mode::rgba);
+                        ZOB_CHECK_EQUAL(image.load_rgba(path), true);
+                        ZOB_CHECK_EQUAL(image.is_luma(), false);
+                        ZOB_CHECK_EQUAL(image.is_rgba(), true);
+                        ZOB_CHECK_EQUAL(image.rows(), rows);
+                        ZOB_CHECK_EQUAL(image.cols(), cols);
+                        ZOB_CHECK_EQUAL(image.mode(), color_mode::rgba);
 
                         const auto& rgba = image.rgba();
-                        NANOCV_REQUIRE_EQUAL(rgba.size(), data.size());
+                        ZOB_REQUIRE_EQUAL(rgba.size(), data.size());
 
                         for (int i = 0; i < rgba.size(); ++ i)
                         {
-                                NANOCV_CHECK_EQUAL(rgba(i), data(i));
+                                ZOB_CHECK_EQUAL(rgba(i), data(i));
                         }
                 }
 
@@ -184,4 +184,4 @@ NANOCV_CASE(io_file)
         }
 }
 
-NANOCV_END_MODULE()
+ZOB_END_MODULE()

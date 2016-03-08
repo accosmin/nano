@@ -19,7 +19,7 @@ namespace cortex
         {
         public:
 
-                NANOCV_MAKE_CLONABLE(pool_layer_t, "pooling layer: alpha=[-100.0,+100.0]")
+                ZOB_MAKE_CLONABLE(pool_layer_t, "pooling layer: alpha=[-100.0,+100.0]")
 
                 // constructor
                 explicit pool_layer_t(const string_t& parameters = string_t());
@@ -29,7 +29,7 @@ namespace cortex
 
                 // reset parameters
                 virtual void zero_params() override {}
-                virtual void random_params(scalar_t min, scalar_t max) override { NANOCV_UNUSED2(min, max); }
+                virtual void random_params(scalar_t min, scalar_t max) override { ZOB_UNUSED2(min, max); }
 
                 // serialize parameters (to memory)
                 virtual scalar_t* save_params(scalar_t* params) const override { return params; }
@@ -64,7 +64,7 @@ namespace cortex
         {
         public:
 
-                NANOCV_MAKE_CLONABLE(pool_max_layer_t, "soft-max pooling layer")
+                ZOB_MAKE_CLONABLE(pool_max_layer_t, "soft-max pooling layer")
 
                 // constructor
                 explicit pool_max_layer_t(const string_t& = string_t())
@@ -77,7 +77,7 @@ namespace cortex
         {
         public:
 
-                NANOCV_MAKE_CLONABLE(pool_min_layer_t, "soft-min pooling layer")
+                ZOB_MAKE_CLONABLE(pool_min_layer_t, "soft-min pooling layer")
 
                 // constructor
                 explicit pool_min_layer_t(const string_t& = string_t())
@@ -90,7 +90,7 @@ namespace cortex
         {
         public:
 
-                NANOCV_MAKE_CLONABLE(pool_avg_layer_t, "average pooling layer")
+                ZOB_MAKE_CLONABLE(pool_avg_layer_t, "average pooling layer")
 
                 // constructor
                 explicit pool_avg_layer_t(const string_t& = string_t())

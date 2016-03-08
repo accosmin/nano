@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.1)
 
 enable_language(CXX)
 
-project(nanocv)
+project(zob)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_SOURCE_DIR}/cmake)
 
@@ -24,13 +24,13 @@ message("CMAKE_EXE_LINKER_FLAGS:        " "${CMAKE_EXE_LINKER_FLAGS}")
 message("------------------------------------------------------------------------------" "")
 message("BUILD TYPE:                    " "${CMAKE_BUILD_TYPE}")
 message("------------------------------------------------------------------------------" "")
-message("ASAN                           " "${NANOCV_WITH_ASAN}")
-message("MSAN                           " "${NANOCV_WITH_MSAN}")
-message("TSAN                           " "${NANOCV_WITH_TSAN}")
-message("TESTS                          " "${NANOCV_WITH_TESTS}")
+message("ASAN                           " "${ZOB_WITH_ASAN}")
+message("MSAN                           " "${ZOB_WITH_MSAN}")
+message("TSAN                           " "${ZOB_WITH_TSAN}")
+message("TESTS                          " "${ZOB_WITH_TESTS}")
 message("------------------------------------------------------------------------------" "")
 
-include_directories(${nanocv_SOURCE_DIR}/src)
+include_directories(${zob_SOURCE_DIR}/src)
 
 add_subdirectory(src/io)
 add_subdirectory(src/math)
@@ -42,6 +42,6 @@ add_subdirectory(src/cortex)
 
 add_subdirectory(apps)
 
-if(NANOCV_WITH_TESTS)
+if(ZOB_WITH_TESTS)
         add_subdirectory(test)
 endif()

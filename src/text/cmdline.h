@@ -19,7 +19,7 @@ namespace text
         ///     - each option must have a long name, while the short name (single character) is optional
         ///     - options need not have an associated value (they can be interpreted as boolean flags)
         ///
-        class NANOCV_PUBLIC cmdline_t
+        class ZOB_PUBLIC cmdline_t
         {
         public:
 

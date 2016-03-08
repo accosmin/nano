@@ -11,7 +11,7 @@ namespace cortex
         {
         public:
 
-                NANOCV_MAKE_CLONABLE(logistic_loss_t, "multi-class logistic loss")
+                ZOB_MAKE_CLONABLE(logistic_loss_t, "multi-class logistic loss")
 
                 // constructor
                 explicit logistic_loss_t(const string_t& = string_t());

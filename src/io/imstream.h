@@ -10,7 +10,7 @@ namespace io
         ///
         /// \brief map the std::istream's interface over a fixed-size in-memory buffer
         ///
-        class NANOCV_PUBLIC imstream_t
+        class ZOB_PUBLIC imstream_t
         {
         public:
 

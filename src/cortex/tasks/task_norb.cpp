@@ -154,7 +154,7 @@ namespace cortex
                 // load ground truth
                 const auto gop = [&] (const string_t& filename, const io::buffer_t& data)
                 {
-                        NANOCV_UNUSED1(filename);
+                        ZOB_UNUSED1(filename);
 
                         io::imstream_t stream(data.data(), data.size());
                         

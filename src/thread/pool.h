@@ -12,7 +12,7 @@ namespace thread
         ///
         /// NB: this is heavily copied/inspired by http://progsch.net/wordpress/?p=81
         ///
-        class NANOCV_PUBLIC pool_t
+        class ZOB_PUBLIC pool_t
         {
         public:
 

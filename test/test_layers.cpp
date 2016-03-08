@@ -35,10 +35,10 @@ namespace
         {
                 const auto model = cortex::get_models().get("forward-network", description + ";" + cmd_layer_output);
                 model->resize(cmd_irows, cmd_icols, cmd_outputs, cmd_color, false);
-                NANOCV_CHECK_EQUAL(model->irows(), cmd_irows);
-                NANOCV_CHECK_EQUAL(model->icols(), cmd_icols);
-                NANOCV_CHECK_EQUAL(model->osize(), cmd_outputs);
-                NANOCV_CHECK_EQUAL(static_cast<int>(model->color()), static_cast<int>(cmd_color));
+                ZOB_CHECK_EQUAL(model->irows(), cmd_irows);
+                ZOB_CHECK_EQUAL(model->icols(), cmd_icols);
+                ZOB_CHECK_EQUAL(model->osize(), cmd_outputs);
+                ZOB_CHECK_EQUAL(static_cast<int>(model->color()), static_cast<int>(cmd_color));
                 return model;
         }
 
@@ -119,19 +119,19 @@ namespace
 
                         {
                                 const opt_problem_t problem(fn_params_size, fn_params_fval, fn_params_grad);
-                                NANOCV_CHECK_LESS(problem.grad_accuracy(params), epsilon);
+                                ZOB_CHECK_LESS(problem.grad_accuracy(params), epsilon);
                         }
                         {
                                 const opt_problem_t problem(fn_inputs_size, fn_inputs_fval, fn_inputs_grad);
-                                NANOCV_CHECK_LESS(problem.grad_accuracy(inputs.vector()), epsilon);
+                                ZOB_CHECK_LESS(problem.grad_accuracy(inputs.vector()), epsilon);
                         }
                 }
         }
 }
 
-NANOCV_BEGIN_MODULE(test_layers)
+ZOB_BEGIN_MODULE(test_layers)
 
-NANOCV_CASE(activation)
+ZOB_CASE(activation)
 {
         cortex::init();
 
@@ -141,14 +141,14 @@ NANOCV_CASE(activation)
         }
 }
 
-NANOCV_CASE(affine)
+ZOB_CASE(affine)
 {
         cortex::init();
 
         test_model(make_affine_layer(7));
 }
 
-NANOCV_CASE(conv)
+ZOB_CASE(conv)
 {
         cortex::init();
 
@@ -158,7 +158,7 @@ NANOCV_CASE(conv)
         test_model(make_conv_pool_layer(3, 3, 3, "", "pool-avg"));
 }
 
-NANOCV_CASE(multi_layer_models)
+ZOB_CASE(multi_layer_models)
 {
         cortex::init();
 
@@ -181,4 +181,4 @@ NANOCV_CASE(multi_layer_models)
         }
 }
 
-NANOCV_END_MODULE()
+ZOB_END_MODULE()

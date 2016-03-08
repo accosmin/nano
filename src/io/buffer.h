@@ -27,22 +27,22 @@ namespace io
         ///
         /// \brief maximum file/stream size in bytes (useful for indicating a read-until-EOF condition)
         ///
-        NANOCV_PUBLIC std::streamsize max_streamsize();
+        ZOB_PUBLIC std::streamsize max_streamsize();
 
         ///
         /// \brief load a stream of bytes
         ///
-        NANOCV_PUBLIC bool load_buffer_from_stream(std::istream& istream, std::streamsize num_bytes, buffer_t&);
-        NANOCV_PUBLIC bool load_buffer_from_stream(std::istream& istream, buffer_t&);
-        NANOCV_PUBLIC bool load_buffer_from_stream(imstream_t& istream, buffer_t&);
+        ZOB_PUBLIC bool load_buffer_from_stream(std::istream& istream, std::streamsize num_bytes, buffer_t&);
+        ZOB_PUBLIC bool load_buffer_from_stream(std::istream& istream, buffer_t&);
+        ZOB_PUBLIC bool load_buffer_from_stream(imstream_t& istream, buffer_t&);
 
         ///
         /// \brief save buffer to file
         ///
-        NANOCV_PUBLIC bool save_buffer(const std::string& path, const buffer_t& buffer);
+        ZOB_PUBLIC bool save_buffer(const std::string& path, const buffer_t& buffer);
 
         ///
         /// \brief load buffer from file
         ///
-        NANOCV_PUBLIC bool load_buffer(const std::string& path, buffer_t& buffer);
+        ZOB_PUBLIC bool load_buffer(const std::string& path, buffer_t& buffer);
 }

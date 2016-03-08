@@ -15,7 +15,7 @@ namespace cortex
         using loss_manager_t = manager_t<loss_t>;
         using rloss_t = loss_manager_t::trobject;
 
-        NANOCV_PUBLIC loss_manager_t& get_losses();
+        ZOB_PUBLIC loss_manager_t& get_losses();
 
         ///
         /// \brief generic multivariate loss function of two parameters:
@@ -25,7 +25,7 @@ namespace cortex
         /// the loss function upper-bounds/approximates
         /// the true (usually non-smooth) error function to minimize.
         ///
-        class NANOCV_PUBLIC loss_t : public clonable_t<loss_t>
+        class ZOB_PUBLIC loss_t : public clonable_t<loss_t>
         {
         public:
 

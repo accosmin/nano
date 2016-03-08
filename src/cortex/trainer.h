@@ -18,12 +18,12 @@ namespace cortex
         using trainer_manager_t = manager_t<trainer_t>;
         using rtrainer_t = trainer_manager_t::trobject;
 
-        NANOCV_PUBLIC trainer_manager_t& get_trainers();
+        ZOB_PUBLIC trainer_manager_t& get_trainers();
 
         ///
         /// \brief generic trainer: optimizes a model on a given task
         ///
-        class NANOCV_PUBLIC trainer_t : public clonable_t<trainer_t>
+        class ZOB_PUBLIC trainer_t : public clonable_t<trainer_t>
         {
         public:
 

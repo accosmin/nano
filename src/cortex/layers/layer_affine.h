@@ -14,7 +14,7 @@ namespace cortex
         {
         public:
 
-                NANOCV_MAKE_CLONABLE(affine_layer_t, "fully-connected 1D affine layer: dims=10[1,4096]")
+                ZOB_MAKE_CLONABLE(affine_layer_t, "fully-connected 1D affine layer: dims=10[1,4096]")
 
                 // constructor
                 explicit affine_layer_t(const string_t& parameters = string_t());

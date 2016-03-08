@@ -12,7 +12,7 @@ namespace io
         ///
         /// \brief wrapper over binary std::ostream
         ///
-        class NANOCV_PUBLIC obstream_t
+        class ZOB_PUBLIC obstream_t
         {
         public:
 

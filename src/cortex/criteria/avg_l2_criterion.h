@@ -11,7 +11,7 @@ namespace cortex
         {
         public:
                 
-                NANOCV_MAKE_CLONABLE(avg_l2_criterion_t, "L2-norm regularized loss")
+                ZOB_MAKE_CLONABLE(avg_l2_criterion_t, "L2-norm regularized loss")
 
                 ///
                 /// \brief constructor

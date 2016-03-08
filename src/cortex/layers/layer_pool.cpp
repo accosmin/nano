@@ -75,8 +75,8 @@ namespace cortex
 
         void pool_layer_t::gparam(const tensor_t& output, scalar_t* gradient)
         {
-                NANOCV_UNUSED1(gradient);
-                NANOCV_UNUSED1_RELEASE(output);
+                ZOB_UNUSED1(gradient);
+                ZOB_UNUSED1_RELEASE(output);
 
                 assert(odims() == output.dims());
                 assert(orows() == output.rows());

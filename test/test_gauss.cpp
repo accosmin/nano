@@ -1,9 +1,9 @@
 #include "unit_test.hpp"
 #include "math/gauss.hpp"
 
-NANOCV_BEGIN_MODULE(test_gauss)
+ZOB_BEGIN_MODULE(test_gauss)
 
-NANOCV_CASE(evaluate)
+ZOB_CASE(evaluate)
 {
         using std::size_t;
 
@@ -32,10 +32,10 @@ NANOCV_CASE(evaluate)
 
                         // check kernel sum
                         const double sum = kernel.sum();
-                        NANOCV_CHECK_LESS(sum, 1.0 + 1e-8);
-                        NANOCV_CHECK_GREATER(sum, 1.0 - 1e-8);
+                        ZOB_CHECK_LESS(sum, 1.0 + 1e-8);
+                        ZOB_CHECK_GREATER(sum, 1.0 - 1e-8);
                 }
         }
 }
 
-NANOCV_END_MODULE()
+ZOB_END_MODULE()

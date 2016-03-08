@@ -7,16 +7,16 @@
 #include "cortex/layers/make_layers.h"
 #include <cstdio>
 
-NANOCV_BEGIN_MODULE(test_model)
+ZOB_BEGIN_MODULE(test_model)
 
-NANOCV_CASE(evaluate)
+ZOB_CASE(evaluate)
 {
         cortex::init();
 
         using namespace cortex;
 
         const auto task = cortex::get_tasks().get("random", "dims=2,rows=16,cols=16,color=luma,size=128");
-        NANOCV_CHECK_EQUAL(task->load(""), true);
+        ZOB_CHECK_EQUAL(task->load(""), true);
 
         const string_t mlp0;
         const string_t mlp1 = mlp0 + make_affine_layer(10);
@@ -50,11 +50,11 @@ NANOCV_CASE(evaluate)
         {
                 // create feed-forward network
                 const auto model = cortex::get_models().get("forward-network", cmd_network);
-                NANOCV_CHECK_EQUAL(model->resize(*task, false), true);
-                NANOCV_CHECK_EQUAL(model->irows(), task->irows());
-                NANOCV_CHECK_EQUAL(model->icols(), task->icols());
-                NANOCV_CHECK_EQUAL(model->osize(), task->osize());
-                NANOCV_CHECK_EQUAL(model->color(), task->color());
+                ZOB_CHECK_EQUAL(model->resize(*task, false), true);
+                ZOB_CHECK_EQUAL(model->irows(), task->irows());
+                ZOB_CHECK_EQUAL(model->icols(), task->icols());
+                ZOB_CHECK_EQUAL(model->osize(), task->osize());
+                ZOB_CHECK_EQUAL(model->color(), task->color());
 
                 // test random networks
                 for (size_t t = 0; t < 5; ++ t)
@@ -71,12 +71,12 @@ NANOCV_CASE(evaluate)
                                                                       lvalue_before, lerror_before);
 
                         vector_t params(model->psize());
-                        NANOCV_CHECK(model->save_params(params));
+                        ZOB_CHECK(model->save_params(params));
 
                         //
-                        NANOCV_CHECK_EQUAL(model->save(path), true);
+                        ZOB_CHECK_EQUAL(model->save(path), true);
                         model->zero_params();
-                        NANOCV_CHECK_EQUAL(model->load(path), true);
+                        ZOB_CHECK_EQUAL(model->load(path), true);
                         //
 
                         // test error & parameters after loading
@@ -85,15 +85,15 @@ NANOCV_CASE(evaluate)
                                                                      lvalue_after, lerror_after);
 
                         vector_t xparams(model->psize());
-                        NANOCV_CHECK(model->save_params(xparams));
+                        ZOB_CHECK(model->save_params(xparams));
 
                         // check
-                        NANOCV_CHECK_EQUAL(lcount_before, lcount_after);
-                        NANOCV_CHECK_CLOSE(lvalue_before, lvalue_after, math::epsilon0<scalar_t>());
-                        NANOCV_CHECK_CLOSE(lerror_before, lerror_after, math::epsilon0<scalar_t>());
+                        ZOB_CHECK_EQUAL(lcount_before, lcount_after);
+                        ZOB_CHECK_CLOSE(lvalue_before, lvalue_after, math::epsilon0<scalar_t>());
+                        ZOB_CHECK_CLOSE(lerror_before, lerror_after, math::epsilon0<scalar_t>());
 
-                        NANOCV_REQUIRE_EQUAL(params.size(), xparams.size());
-                        NANOCV_CHECK_EIGEN_CLOSE(params, xparams, math::epsilon0<scalar_t>());
+                        ZOB_REQUIRE_EQUAL(params.size(), xparams.size());
+                        ZOB_CHECK_EIGEN_CLOSE(params, xparams, math::epsilon0<scalar_t>());
 
                         // cleanup
                         std::remove(path.c_str());
@@ -101,4 +101,4 @@ NANOCV_CASE(evaluate)
         }
 }
 
-NANOCV_END_MODULE()
+ZOB_END_MODULE()

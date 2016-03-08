@@ -15,7 +15,7 @@ namespace cortex
         {
         public:
 
-                NANOCV_MAKE_CLONABLE(stochastic_trainer_t,
+                ZOB_MAKE_CLONABLE(stochastic_trainer_t,
                                      "parameters: opt=sg[,sgm,ag,agfr,aggr,adagrad,adadelta,adam],epoch=16[1,1024]")
 
                 // constructor

@@ -8,7 +8,7 @@ namespace cortex
         ///
         /// \brief 2D rectangle
         ///
-        class NANOCV_PUBLIC rect_t
+        class ZOB_PUBLIC rect_t
         {
         public:
 
@@ -52,27 +52,27 @@ namespace cortex
         ///
         /// \brief intersect two rectangles
         ///
-        NANOCV_PUBLIC rect_t operator&(const rect_t& rect1, const rect_t& rect2);
+        ZOB_PUBLIC rect_t operator&(const rect_t& rect1, const rect_t& rect2);
 
         ///
         /// \brief union with another rectangle
         ///
-        NANOCV_PUBLIC rect_t operator|(const rect_t& rect1, const rect_t& rect2);
+        ZOB_PUBLIC rect_t operator|(const rect_t& rect1, const rect_t& rect2);
 
         ///
         /// \brief [0, 1] overlap between two rectangle (aka Jaccard distance)
         ///
-        NANOCV_PUBLIC scalar_t overlap(const rect_t& rect1, const rect_t& rect2);
+        ZOB_PUBLIC scalar_t overlap(const rect_t& rect1, const rect_t& rect2);
 
         ///
         /// \brief compare two rectangles
         ///
-        NANOCV_PUBLIC bool operator==(const rect_t& rect1, const rect_t& rect2);
+        ZOB_PUBLIC bool operator==(const rect_t& rect1, const rect_t& rect2);
 
         ///
         /// \brief stream a rectangle
         ///
-        NANOCV_PUBLIC std::ostream& operator<<(std::ostream& s, const rect_t& rect);
+        ZOB_PUBLIC std::ostream& operator<<(std::ostream& s, const rect_t& rect);
 }
 
 

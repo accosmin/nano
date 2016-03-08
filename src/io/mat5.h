@@ -38,12 +38,12 @@ namespace io
         ///
         /// \brief map a data type to string (logging purposes)
         ///
-        NANOCV_PUBLIC std::string to_string(const mat5_buffer_type& type);
+        ZOB_PUBLIC std::string to_string(const mat5_buffer_type& type);
 
         ///
         /// \brief section
         ///
-        struct NANOCV_PUBLIC mat5_section_t
+        struct ZOB_PUBLIC mat5_section_t
         {
                 ///
                 /// \brief constructor
@@ -88,12 +88,12 @@ namespace io
                 mat5_buffer_type        m_dtype;
         };
 
-        NANOCV_PUBLIC std::ostream& operator<<(std::ostream&, const mat5_section_t&);
+        ZOB_PUBLIC std::ostream& operator<<(std::ostream&, const mat5_section_t&);
 
         ///
         /// \brief multi-dimensional array consisting of multiple sections
         ///
-        struct NANOCV_PUBLIC mat5_array_t
+        struct ZOB_PUBLIC mat5_array_t
         {
                 ///
                 /// \brief load header section from the input stream
@@ -111,5 +111,5 @@ namespace io
                 std::vector<mat5_section_t>     m_sections;     ///< sections (dimensions, name, type, data)
         };
 
-        NANOCV_PUBLIC std::ostream& operator<<(std::ostream&, const mat5_array_t&);
+        ZOB_PUBLIC std::ostream& operator<<(std::ostream&, const mat5_array_t&);
 }

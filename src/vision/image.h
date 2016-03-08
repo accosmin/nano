@@ -13,7 +13,7 @@ namespace cortex
         ///     - loading and saving from and to files
         ///     - scaling to [0, 1] tensors
         ///
-        class NANOCV_PUBLIC image_t
+        class ZOB_PUBLIC image_t
         {
         public:
 

@@ -7,14 +7,14 @@ namespace test
         {
                 const cortex::point_t point(x, y);
 
-                NANOCV_CHECK_EQUAL(point.x(), x);
-                NANOCV_CHECK_EQUAL(point.y(), y);
+                ZOB_CHECK_EQUAL(point.x(), x);
+                ZOB_CHECK_EQUAL(point.y(), y);
         }
 }
 
-NANOCV_BEGIN_MODULE(test_point)
+ZOB_BEGIN_MODULE(test_point)
 
-NANOCV_CASE(construction)
+ZOB_CASE(construction)
 {
         test::build_point(3, 7);
         test::build_point(7, 3);
@@ -22,4 +22,4 @@ NANOCV_CASE(construction)
         test::build_point(-9, +1);
 }
 
-NANOCV_END_MODULE()
+ZOB_END_MODULE()

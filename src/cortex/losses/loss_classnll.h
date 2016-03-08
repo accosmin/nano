@@ -12,7 +12,7 @@ namespace cortex
         {
         public:
 
-                NANOCV_MAKE_CLONABLE(classnll_loss_t, "class negative log-likelihood loss")
+                ZOB_MAKE_CLONABLE(classnll_loss_t, "class negative log-likelihood loss")
 
                 // constructor
                 explicit classnll_loss_t(const string_t& = string_t());

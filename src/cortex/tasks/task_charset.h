@@ -23,11 +23,11 @@ namespace cortex
         ///     color           - color mode
         ///     size            - number of samples (training + validation)
         ///
-        class NANOCV_PUBLIC charset_task_t : public task_t
+        class ZOB_PUBLIC charset_task_t : public task_t
         {
         public:
 
-                NANOCV_MAKE_CLONABLE(charset_task_t,
+                ZOB_MAKE_CLONABLE(charset_task_t,
                                      "synthetic character classification: type=digit[lalpha,ualpha,alpha,alphanum],"\
                                      "rows=32[16,128],cols=32[16,128],"\
                                      "color=rgba[,luma],size=1024[16,1024*1024]")

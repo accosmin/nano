@@ -11,7 +11,7 @@ namespace cortex
         {
         public:
 
-                NANOCV_MAKE_CLONABLE(exponential_loss_t, "multi-class exponential loss")
+                ZOB_MAKE_CLONABLE(exponential_loss_t, "multi-class exponential loss")
 
                 // constructor
                 explicit exponential_loss_t(const string_t& = string_t());

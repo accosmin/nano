@@ -7,7 +7,7 @@ namespace cortex
         ///
         /// \brief cumulate sample evaluations (loss value, error and gradient)
         ///
-        class NANOCV_PUBLIC accumulator_t
+        class ZOB_PUBLIC accumulator_t
         {
         public:
 

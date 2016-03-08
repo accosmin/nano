@@ -13,7 +13,7 @@ namespace cortex
 
         using timepoint_t = std::chrono::high_resolution_clock::time_point;
 
-        class NANOCV_PUBLIC timer_t
+        class ZOB_PUBLIC timer_t
         {
         public:
 

@@ -35,7 +35,7 @@ namespace cortex
         {
         public:
 
-                NANOCV_MAKE_CLONABLE(tanh_activation_layer_t, "hyperbolic tangent activation layer")
+                ZOB_MAKE_CLONABLE(tanh_activation_layer_t, "hyperbolic tangent activation layer")
 
                 // constructor
                 explicit tanh_activation_layer_t(const string_t& parameters = string_t())

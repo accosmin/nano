@@ -10,7 +10,7 @@ namespace cortex
         ///
         /// \brief training state
         ///
-        struct NANOCV_PUBLIC trainer_state_t
+        struct ZOB_PUBLIC trainer_state_t
         {
                 ///
                 /// \brief constructor
@@ -40,16 +40,16 @@ namespace cortex
         ///
         /// \brief compute the average convergence speed of the training loss for a given set of states
         ///
-        NANOCV_PUBLIC scalar_t convergence_speed(const trainer_states_t& states);
+        ZOB_PUBLIC scalar_t convergence_speed(const trainer_states_t& states);
 
         ///
         /// \brief compare two training states
         ///
-        NANOCV_PUBLIC bool operator<(const trainer_state_t& one, const trainer_state_t& two);
+        ZOB_PUBLIC bool operator<(const trainer_state_t& one, const trainer_state_t& two);
 
         ///
         /// \brief save optimization states to text file
         ///
-        NANOCV_PUBLIC bool save(const string_t& path, const trainer_states_t& states);
+        ZOB_PUBLIC bool save(const string_t& path, const trainer_states_t& states);
 }
 

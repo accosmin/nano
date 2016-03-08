@@ -11,7 +11,7 @@ namespace io
         ///
         /// \brief wrapper over binary std::istream
         ///
-        class NANOCV_PUBLIC ibstream_t
+        class ZOB_PUBLIC ibstream_t
         {
         public:
 

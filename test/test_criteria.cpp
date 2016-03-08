@@ -7,16 +7,16 @@
 #include "cortex/accumulator.h"
 #include "cortex/layers/make_layers.h"
 
-NANOCV_BEGIN_MODULE(test_criteria)
+ZOB_BEGIN_MODULE(test_criteria)
 
-NANOCV_CASE(evaluate)
+ZOB_CASE(evaluate)
 {
         using namespace cortex;
 
         cortex::init();
 
         const auto task = cortex::get_tasks().get("random", "dims=2,rows=5,cols=5,color=luma,size=16");
-        NANOCV_CHECK_EQUAL(task->load(""), true);
+        ZOB_CHECK_EQUAL(task->load(""), true);
 
         const samples_t samples = task->samples();
         const string_t cmd_model = make_affine_layer(3) + make_output_layer(task->osize());
@@ -25,7 +25,7 @@ NANOCV_CASE(evaluate)
 
         // create model
         const auto model = cortex::get_models().get("forward-network", cmd_model);
-        NANOCV_CHECK_EQUAL(model->resize(*task, true), true);
+        ZOB_CHECK_EQUAL(model->resize(*task, true), true);
 
         // vary criteria
         const strings_t ids = cortex::get_criteria().ids();
@@ -69,9 +69,9 @@ NANOCV_CASE(evaluate)
                 model->random_params();
                 model->save_params(x);
 
-                NANOCV_CHECK_GREATER(problem(x), 0.0);
-                NANOCV_CHECK_LESS(problem.grad_accuracy(x), math::epsilon1<scalar_t>());
+                ZOB_CHECK_GREATER(problem(x), 0.0);
+                ZOB_CHECK_LESS(problem.grad_accuracy(x), math::epsilon1<scalar_t>());
         }
 }
 
-NANOCV_END_MODULE()
+ZOB_END_MODULE()

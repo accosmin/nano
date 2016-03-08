@@ -16,7 +16,7 @@ namespace cortex
         {
         public:
 
-                NANOCV_MAKE_CLONABLE(stl10_task_t, "STL-10 (object classification)")
+                ZOB_MAKE_CLONABLE(stl10_task_t, "STL-10 (object classification)")
 
                 // constructor
                 explicit stl10_task_t(const string_t& configuration = string_t());

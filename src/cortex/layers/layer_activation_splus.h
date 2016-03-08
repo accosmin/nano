@@ -34,7 +34,7 @@ namespace cortex
         {
         public:
 
-                NANOCV_MAKE_CLONABLE(softplus_activation_layer_t, "soft-plus activation layer")
+                ZOB_MAKE_CLONABLE(softplus_activation_layer_t, "soft-plus activation layer")
 
                 // constructor
                 explicit softplus_activation_layer_t(const string_t& parameters = string_t())

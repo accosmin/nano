@@ -16,13 +16,13 @@ namespace cortex
         using criterion_manager_t = manager_t<criterion_t>;
         using rcriterion_t = criterion_manager_t::trobject;
 
-        NANOCV_PUBLIC criterion_manager_t& get_criteria();
+        ZOB_PUBLIC criterion_manager_t& get_criteria();
 
         ///
         /// \brief accumulate sample evaluations (loss value, error and gradient),
         ///     this is the base case without regularization
         ///
-        class NANOCV_PUBLIC criterion_t : public clonable_t<criterion_t>
+        class ZOB_PUBLIC criterion_t : public clonable_t<criterion_t>
         {
         public:
 

@@ -9,7 +9,7 @@ namespace cortex
         ///
         /// \brief 2D point
         ///
-        class NANOCV_PUBLIC point_t
+        class ZOB_PUBLIC point_t
         {
         public:
 
@@ -37,12 +37,12 @@ namespace cortex
         ///
         /// \brief compare two points
         ///
-        NANOCV_PUBLIC bool operator==(const point_t& point1, const point_t& point2);
+        ZOB_PUBLIC bool operator==(const point_t& point1, const point_t& point2);
 
         ///
         /// \brief stream a point
         ///
-        NANOCV_PUBLIC std::ostream& operator<<(std::ostream& s, const point_t& point);
+        ZOB_PUBLIC std::ostream& operator<<(std::ostream& s, const point_t& point);
 }
 
 

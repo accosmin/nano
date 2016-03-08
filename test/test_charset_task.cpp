@@ -4,9 +4,9 @@
 #include "unit_test.hpp"
 #include "cortex/tasks/task_charset.h"
 
-NANOCV_BEGIN_MODULE(test_charset_task)
+ZOB_BEGIN_MODULE(test_charset_task)
 
-NANOCV_CASE(evaluate)
+ZOB_CASE(evaluate)
 {
         using namespace cortex;
 
@@ -30,24 +30,24 @@ NANOCV_CASE(evaluate)
 
                 charset_task_t task(type, irows, icols, mode, count);
 
-                NANOCV_CHECK_EQUAL(task.load(""), true);
-                NANOCV_CHECK_EQUAL(task.irows(), irows);
-                NANOCV_CHECK_EQUAL(task.icols(), icols);
-                NANOCV_CHECK_EQUAL(task.osize(), osize);
-                NANOCV_CHECK_EQUAL(task.fsize(), fsize);
-                NANOCV_CHECK_EQUAL(task.color(), mode);
-                NANOCV_CHECK_EQUAL(task.n_images(), count);
-                NANOCV_CHECK_EQUAL(task.samples().size(), count);
-                NANOCV_CHECK_EQUAL(task.sample_size(), rect_t(0, 0, icols, irows));
-                NANOCV_CHECK_EQUAL(task.labels().size(), static_cast<size_t>(osize));
+                ZOB_CHECK_EQUAL(task.load(""), true);
+                ZOB_CHECK_EQUAL(task.irows(), irows);
+                ZOB_CHECK_EQUAL(task.icols(), icols);
+                ZOB_CHECK_EQUAL(task.osize(), osize);
+                ZOB_CHECK_EQUAL(task.fsize(), fsize);
+                ZOB_CHECK_EQUAL(task.color(), mode);
+                ZOB_CHECK_EQUAL(task.n_images(), count);
+                ZOB_CHECK_EQUAL(task.samples().size(), count);
+                ZOB_CHECK_EQUAL(task.sample_size(), rect_t(0, 0, icols, irows));
+                ZOB_CHECK_EQUAL(task.labels().size(), static_cast<size_t>(osize));
 
                 for (size_t i = 0; i < task.n_images(); ++ i)
                 {
-                        NANOCV_CHECK_EQUAL(task.image(i).mode(), mode);
-                        NANOCV_CHECK_EQUAL(task.image(i).rows(), irows);
-                        NANOCV_CHECK_EQUAL(task.image(i).cols(), icols);
+                        ZOB_CHECK_EQUAL(task.image(i).mode(), mode);
+                        ZOB_CHECK_EQUAL(task.image(i).rows(), irows);
+                        ZOB_CHECK_EQUAL(task.image(i).cols(), icols);
                 }
         }
 }
 
-NANOCV_END_MODULE()
+ZOB_END_MODULE()

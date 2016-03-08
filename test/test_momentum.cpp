@@ -29,10 +29,10 @@ namespace test
                         mom10.update(base10);
                         mom11.update(base11);
 
-                        NANOCV_CHECK_CLOSE(mom00.value(), base00, epsilon);
-                        NANOCV_CHECK_CLOSE(mom01.value(), base01, epsilon);
-                        NANOCV_CHECK_CLOSE(mom10.value(), base10, epsilon);
-                        NANOCV_CHECK_CLOSE(mom11.value(), base11, epsilon);
+                        ZOB_CHECK_CLOSE(mom00.value(), base00, epsilon);
+                        ZOB_CHECK_CLOSE(mom01.value(), base01, epsilon);
+                        ZOB_CHECK_CLOSE(mom10.value(), base10, epsilon);
+                        ZOB_CHECK_CLOSE(mom11.value(), base11, epsilon);
                 }
         }
 
@@ -62,28 +62,28 @@ namespace test
                         mom10.update(base10);
                         mom11.update(base11);
 
-                        NANOCV_CHECK_EIGEN_CLOSE(mom00.value(), base00, epsilon);
-                        NANOCV_CHECK_EIGEN_CLOSE(mom01.value(), base01, epsilon);
-                        NANOCV_CHECK_EIGEN_CLOSE(mom10.value(), base10, epsilon);
-                        NANOCV_CHECK_EIGEN_CLOSE(mom11.value(), base11, epsilon);
+                        ZOB_CHECK_EIGEN_CLOSE(mom00.value(), base00, epsilon);
+                        ZOB_CHECK_EIGEN_CLOSE(mom01.value(), base01, epsilon);
+                        ZOB_CHECK_EIGEN_CLOSE(mom10.value(), base10, epsilon);
+                        ZOB_CHECK_EIGEN_CLOSE(mom11.value(), base11, epsilon);
                 }
         }
 }
 
-NANOCV_BEGIN_MODULE(test_momentum)
+ZOB_BEGIN_MODULE(test_momentum)
 
-NANOCV_CASE(scalar)
+ZOB_CASE(scalar)
 {
         test::check_momentum<double>(0.1, 123);
         test::check_momentum<double>(0.5, 127);
         test::check_momentum<double>(0.9, 253);
 }
 
-NANOCV_CASE(vector)
+ZOB_CASE(vector)
 {
         test::check_momentum<Eigen::VectorXd>(13, 0.1, 98);
         test::check_momentum<Eigen::VectorXd>(17, 0.5, 75);
         test::check_momentum<Eigen::VectorXd>(11, 0.9, 54);
 }
 
-NANOCV_END_MODULE()
+ZOB_END_MODULE()

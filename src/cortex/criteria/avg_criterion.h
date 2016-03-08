@@ -11,7 +11,7 @@ namespace cortex
         {
         public:
 
-                NANOCV_MAKE_CLONABLE(avg_criterion_t, "average loss")
+                ZOB_MAKE_CLONABLE(avg_criterion_t, "average loss")
 
                 ///
                 /// \brief constructor

@@ -1,5 +1,5 @@
 # build command line programs
-set(nanocv_apps
+set(apps
         benchmark_conv.cpp
         benchmark_funcs.cpp
         benchmark_batch.cpp
@@ -17,15 +17,14 @@ set(nanocv_apps
         warp.cpp
         convnets.cpp)
 
-foreach(app ${nanocv_apps})
+foreach(app ${apps})
         get_filename_component(app_name ${app} NAME_WE)
-
         add_executable(${app_name} ${app})
         target_link_libraries(${app_name} cortex)
 endforeach()
 
 # install (some) programs
-set(nanocv_programs
+set(programs
         max_threads
         info
         info_task
@@ -33,12 +32,10 @@ set(nanocv_programs
         evaluate
         convnets)
 
-install(TARGETS
-        ${nanocv_programs}
-        DESTINATION bin)
+install(TARGETS ${programs} DESTINATION bin)
 
 #set_target_properties(
-#        ${nanocv_programs}
+#        ${programs}
 #        PROPERTIES INSTALL_RPATH "../lib:./:./lib")
 
 ## http://www.cmake.org/Wiki/CMake_RPATH_handling

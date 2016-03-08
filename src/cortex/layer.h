@@ -16,12 +16,12 @@ namespace cortex
         using rlayer_t = layer_manager_t::trobject;
         using rlayers_t = std::vector<rlayer_t>;
 
-        NANOCV_PUBLIC layer_manager_t& get_layers();
+        ZOB_PUBLIC layer_manager_t& get_layers();
 
         ///
         /// \brief process a set of inputs of size (irows, icols) and produces a set of outputs of size (orows, ocols)
         ///
-        class NANOCV_PUBLIC layer_t : public clonable_t<layer_t>
+        class ZOB_PUBLIC layer_t : public clonable_t<layer_t>
         {
         public:
 

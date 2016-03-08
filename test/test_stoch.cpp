@@ -79,14 +79,14 @@ static void check_function(const math::function_t<tscalar>& function)
                                   << ", g = " << g << ".\n";
 
                         // check function value decrease
-                        NANOCV_CHECK_LESS_EQUAL(f, f0);
-                        NANOCV_CHECK_LESS_EQUAL(f, f0 - f_thres * math::abs(f0));
+                        ZOB_CHECK_LESS_EQUAL(f, f0);
+                        ZOB_CHECK_LESS_EQUAL(f, f0 - f_thres * math::abs(f0));
 
                         // check convergence
-//                                NANOCV_CHECK_LESS_EQUAL(g, g_thres);
+//                                ZOB_CHECK_LESS_EQUAL(g, g_thres);
 
                         // check local minimas (if any known)
-//                                NANOCV_CHECK(function.is_minima(x, x_thres));
+//                                ZOB_CHECK(function.is_minima(x, x_thres));
                 }
 
                 std::cout << function.name() << ", " << text::to_string(optimizer)
@@ -94,9 +94,9 @@ static void check_function(const math::function_t<tscalar>& function)
         }
 }
 
-NANOCV_BEGIN_MODULE(test_stoch_optimizers)
+ZOB_BEGIN_MODULE(test_stoch_optimizers)
 
-NANOCV_CASE(evaluate)
+ZOB_CASE(evaluate)
 {
         math::foreach_test_function<double, math::test_type::easy>(1, 4, [] (const auto& function)
         {
@@ -104,5 +104,5 @@ NANOCV_CASE(evaluate)
         });
 }
 
-NANOCV_END_MODULE()
+ZOB_END_MODULE()
 

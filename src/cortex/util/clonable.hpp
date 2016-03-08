@@ -62,7 +62,7 @@ namespace cortex
                 tstring         m_configuration;
         };
 
-        #define NANOCV_MAKE_CLONABLE(base_class, description_text) \
+        #define ZOB_MAKE_CLONABLE(base_class, description_text) \
                 virtual trobject clone(const tstring& configuration) const override \
                 { \
                         return std::make_shared<base_class>(configuration); \

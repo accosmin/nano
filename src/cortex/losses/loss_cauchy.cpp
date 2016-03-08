@@ -31,7 +31,7 @@ namespace cortex
 
         indices_t cauchy_loss_t::labels(const vector_t& scores) const
         {
-                NANOCV_UNUSED1(scores);
+                ZOB_UNUSED1(scores);
 
                 return indices_t();
 	}

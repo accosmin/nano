@@ -7,9 +7,9 @@
 #include <cstdio>
 #include <fstream>
 
-NANOCV_BEGIN_MODULE(test_io)
+ZOB_BEGIN_MODULE(test_io)
 
-NANOCV_CASE(mstream)
+ZOB_CASE(mstream)
 {
         using namespace io;
 
@@ -18,15 +18,15 @@ NANOCV_CASE(mstream)
 
         const auto op_check_buffers = [] (const buffer_t& ref_buffer, const buffer_t& buffer)
         {
-                NANOCV_REQUIRE_EQUAL(buffer.size(), ref_buffer.size());
-                NANOCV_CHECK(std::equal(buffer.begin(), buffer.end(), ref_buffer.begin()));
+                ZOB_REQUIRE_EQUAL(buffer.size(), ref_buffer.size());
+                ZOB_CHECK(std::equal(buffer.begin(), buffer.end(), ref_buffer.begin()));
         };
 
         for (size_t size = min_size; size <= max_size; size *= 2)
         {
                 // generate reference buffer
                 buffer_t ref_buffer = io::make_buffer(size);
-                NANOCV_CHECK_EQUAL(ref_buffer.size(), size);
+                ZOB_CHECK_EQUAL(ref_buffer.size(), size);
 
                 math::random_t<char> rng;
                 for (auto& value : ref_buffer)
@@ -37,12 +37,12 @@ NANOCV_CASE(mstream)
                 // check buffer saving to file
                 const std::string path = "mstream.test";
 
-                NANOCV_CHECK(io::save_buffer(path, ref_buffer));
+                ZOB_CHECK(io::save_buffer(path, ref_buffer));
 
                 // check buffer loading from file
                 {
                         buffer_t buffer;
-                        NANOCV_CHECK(io::load_buffer(path, buffer));
+                        ZOB_CHECK(io::load_buffer(path, buffer));
 
                         op_check_buffers(ref_buffer, buffer);
                 }
@@ -51,11 +51,11 @@ NANOCV_CASE(mstream)
                 {
                         imstream_t stream(ref_buffer.data(), size);
 
-                        NANOCV_CHECK_EQUAL(stream.tellg(), std::streamsize(0));
-                        NANOCV_CHECK_EQUAL(stream.size(), static_cast<std::streamsize>(size));
+                        ZOB_CHECK_EQUAL(stream.tellg(), std::streamsize(0));
+                        ZOB_CHECK_EQUAL(stream.size(), static_cast<std::streamsize>(size));
 
                         buffer_t buffer;
-                        NANOCV_CHECK(io::load_buffer_from_stream(stream, buffer));
+                        ZOB_CHECK(io::load_buffer_from_stream(stream, buffer));
 
                         op_check_buffers(ref_buffer, buffer);
                 }
@@ -64,8 +64,8 @@ NANOCV_CASE(mstream)
                 {
                         imstream_t stream(ref_buffer.data(), size);
 
-                        NANOCV_CHECK_EQUAL(stream.tellg(), std::streamsize(0));
-                        NANOCV_CHECK_EQUAL(stream.size(), static_cast<std::streamsize>(size));
+                        ZOB_CHECK_EQUAL(stream.tellg(), std::streamsize(0));
+                        ZOB_CHECK_EQUAL(stream.size(), static_cast<std::streamsize>(size));
 
                         buffer_t buffer;
                         char ch;
@@ -82,7 +82,7 @@ NANOCV_CASE(mstream)
         }
 }
 
-NANOCV_CASE(bstream)
+ZOB_CASE(bstream)
 {
         struct pod_t
         {
@@ -115,7 +115,7 @@ NANOCV_CASE(bstream)
                 ob.write(var_pod);
                 ob.write(var_shorts);
 
-                NANOCV_REQUIRE(os.good());
+                ZOB_REQUIRE(os.good());
         }
 
         // check reading
@@ -140,22 +140,22 @@ NANOCV_CASE(bstream)
                 ib.read(var_pod_ex);
                 ib.read(var_shorts_ex);
 
-                NANOCV_CHECK_EQUAL(var_double, var_double_ex);
-                NANOCV_CHECK_EQUAL(var_string, var_string_ex);
-                NANOCV_CHECK_EQUAL(var_float, var_float_ex);
-                NANOCV_CHECK_EQUAL(var_int, var_int_ex);
-                NANOCV_CHECK_EQUAL(var_size_t, var_size_t_ex);
-                NANOCV_CHECK_EQUAL(var_pod.d, var_pod_ex.d);
-                NANOCV_CHECK_EQUAL(var_pod.f, var_pod_ex.f);
-                NANOCV_CHECK_EQUAL(var_pod.i, var_pod_ex.i);
-                NANOCV_REQUIRE_EQUAL(var_shorts.size(), var_shorts_ex.size());
-                NANOCV_CHECK(std::equal(var_shorts.begin(), var_shorts.end(), var_shorts_ex.begin()));
+                ZOB_CHECK_EQUAL(var_double, var_double_ex);
+                ZOB_CHECK_EQUAL(var_string, var_string_ex);
+                ZOB_CHECK_EQUAL(var_float, var_float_ex);
+                ZOB_CHECK_EQUAL(var_int, var_int_ex);
+                ZOB_CHECK_EQUAL(var_size_t, var_size_t_ex);
+                ZOB_CHECK_EQUAL(var_pod.d, var_pod_ex.d);
+                ZOB_CHECK_EQUAL(var_pod.f, var_pod_ex.f);
+                ZOB_CHECK_EQUAL(var_pod.i, var_pod_ex.i);
+                ZOB_REQUIRE_EQUAL(var_shorts.size(), var_shorts_ex.size());
+                ZOB_CHECK(std::equal(var_shorts.begin(), var_shorts.end(), var_shorts_ex.begin()));
 
-                NANOCV_CHECK(is);
+                ZOB_CHECK(is);
         }
 
         // cleanup
         std::remove(path.c_str());
 }
 
-NANOCV_END_MODULE()
+ZOB_END_MODULE()

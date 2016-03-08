@@ -16,7 +16,7 @@ namespace cortex
         {
         public:
 
-                NANOCV_MAKE_CLONABLE(batch_trainer_t,
+                ZOB_MAKE_CLONABLE(batch_trainer_t,
                                      "parameters: opt=lbfgs[,cgd,gd],iters=1024[4,4096],eps=1e-4[1e-8,1e-3]")
 
                 // constructor

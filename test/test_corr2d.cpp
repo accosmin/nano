@@ -53,20 +53,20 @@ namespace test
 
                 const scalar_t epsilon = math::epsilon1<scalar_t>();
 
-                NANOCV_CHECK_CLOSE(corrcpu_egb, corrcpu_egb, epsilon);
-                NANOCV_CHECK_CLOSE(corrcpu_egr, corrcpu_egb, epsilon);
-                NANOCV_CHECK_CLOSE(corrcpu_cpp, corrcpu_egb, epsilon);
-                NANOCV_CHECK_CLOSE(corrcpu_mdk, corrcpu_egb, epsilon);
-                NANOCV_CHECK_CLOSE(corrcpu_mdo, corrcpu_egb, epsilon);
-                NANOCV_CHECK_CLOSE(corrcpu_dyn, corrcpu_egb, epsilon);
-                NANOCV_CHECK_CLOSE(corrcpu_mdk_dyn, corrcpu_egb, epsilon);
-                NANOCV_CHECK_CLOSE(corrcpu_mdo_dyn, corrcpu_egb, epsilon);
+                ZOB_CHECK_CLOSE(corrcpu_egb, corrcpu_egb, epsilon);
+                ZOB_CHECK_CLOSE(corrcpu_egr, corrcpu_egb, epsilon);
+                ZOB_CHECK_CLOSE(corrcpu_cpp, corrcpu_egb, epsilon);
+                ZOB_CHECK_CLOSE(corrcpu_mdk, corrcpu_egb, epsilon);
+                ZOB_CHECK_CLOSE(corrcpu_mdo, corrcpu_egb, epsilon);
+                ZOB_CHECK_CLOSE(corrcpu_dyn, corrcpu_egb, epsilon);
+                ZOB_CHECK_CLOSE(corrcpu_mdk_dyn, corrcpu_egb, epsilon);
+                ZOB_CHECK_CLOSE(corrcpu_mdo_dyn, corrcpu_egb, epsilon);
         }
 }
 
-NANOCV_BEGIN_MODULE(test_corr2d)
+ZOB_BEGIN_MODULE(test_corr2d)
 
-NANOCV_CASE(evaluate)
+ZOB_CASE(evaluate)
 {
         const int min_isize = 3;
         const int max_isize = 23;
@@ -81,5 +81,5 @@ NANOCV_CASE(evaluate)
         }
 }
 
-NANOCV_END_MODULE()
+ZOB_END_MODULE()
 

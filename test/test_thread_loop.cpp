@@ -58,9 +58,9 @@ namespace
         }
 }
 
-NANOCV_BEGIN_MODULE(test_thread_loop)
+ZOB_BEGIN_MODULE(test_thread_loop)
 
-NANOCV_CASE(evaluate)
+ZOB_CASE(evaluate)
 {
         const size_t min_size = 7;
         const size_t max_size = 3 * 3 * 7;
@@ -82,14 +82,14 @@ NANOCV_CASE(evaluate)
 
                 // multi-threaded
                 const scalar_t mt = test_mt<scalar_t>(size, op);
-                NANOCV_CHECK_CLOSE(st, mt, math::epsilon1<scalar_t>());
+                ZOB_CHECK_CLOSE(st, mt, math::epsilon1<scalar_t>());
 
                 for (size_t nthreads = 1; nthreads <= thread::n_threads(); nthreads += 2)
                 {
                         const scalar_t mtx = test_mt<scalar_t>(size, nthreads, op);
-                        NANOCV_CHECK_CLOSE(st, mtx, math::epsilon1<scalar_t>());
+                        ZOB_CHECK_CLOSE(st, mtx, math::epsilon1<scalar_t>());
                 }
         }
 }
 
-NANOCV_END_MODULE()
+ZOB_END_MODULE()

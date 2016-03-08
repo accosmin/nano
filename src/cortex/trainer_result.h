@@ -34,12 +34,12 @@ namespace cortex
         ///
         /// \brief check if the training should be stopped based on the return code
         ///
-        NANOCV_PUBLIC bool is_done(const trainer_result_return_t);
+        ZOB_PUBLIC bool is_done(const trainer_result_return_t);
 
         ///
         /// \brief track the current/optimum model state
         ///
-        class NANOCV_PUBLIC trainer_result_t
+        class ZOB_PUBLIC trainer_result_t
         {
         public:
 
@@ -103,7 +103,7 @@ namespace cortex
         ///
         /// \brief compare two trainer results
         ///
-        NANOCV_PUBLIC bool operator<(const trainer_result_t& one, const trainer_result_t& other);
+        ZOB_PUBLIC bool operator<(const trainer_result_t& one, const trainer_result_t& other);
 }
 
 namespace text

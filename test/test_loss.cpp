@@ -50,15 +50,15 @@ namespace test
                         vector_t x(n_dims);
                         rgen(x.data(), x.data() + n_dims);
 
-                        NANOCV_CHECK_GREATER(problem(x), 0.0);
-                        NANOCV_CHECK_LESS(problem.grad_accuracy(x), math::epsilon2<scalar_t>());
+                        ZOB_CHECK_GREATER(problem(x), 0.0);
+                        ZOB_CHECK_LESS(problem.grad_accuracy(x), math::epsilon2<scalar_t>());
                 }
         }
 }
 
-NANOCV_BEGIN_MODULE(test_loss)
+ZOB_BEGIN_MODULE(test_loss)
 
-NANOCV_CASE(evaluate)
+ZOB_CASE(evaluate)
 {
         cortex::init();
 
@@ -80,4 +80,4 @@ NANOCV_CASE(evaluate)
         }
 }
 
-NANOCV_END_MODULE()
+ZOB_END_MODULE()

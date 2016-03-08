@@ -11,7 +11,7 @@ namespace text
         ///
         /// \brief collects & formats for ASCII display tabular data
         ///
-        class NANOCV_PUBLIC table_t
+        class ZOB_PUBLIC table_t
         {
         public:
 

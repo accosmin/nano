@@ -51,19 +51,19 @@ namespace test
 
                 const scalar_t epsilon = math::epsilon1<scalar_t>();
 
-                NANOCV_CHECK_CLOSE(convcpu_eig, convcpu_eig, epsilon);
-                NANOCV_CHECK_CLOSE(convcpu_cpp, convcpu_eig, epsilon);
-                NANOCV_CHECK_CLOSE(convcpu_dot, convcpu_eig, epsilon);
-                NANOCV_CHECK_CLOSE(convcpu_mad, convcpu_eig, epsilon);
-                NANOCV_CHECK_CLOSE(convcpu_dyn, convcpu_eig, epsilon);
-                NANOCV_CHECK_CLOSE(convcpu_dot_dyn, convcpu_eig, epsilon);
-                NANOCV_CHECK_CLOSE(convcpu_mad_dyn, convcpu_eig, epsilon);
+                ZOB_CHECK_CLOSE(convcpu_eig, convcpu_eig, epsilon);
+                ZOB_CHECK_CLOSE(convcpu_cpp, convcpu_eig, epsilon);
+                ZOB_CHECK_CLOSE(convcpu_dot, convcpu_eig, epsilon);
+                ZOB_CHECK_CLOSE(convcpu_mad, convcpu_eig, epsilon);
+                ZOB_CHECK_CLOSE(convcpu_dyn, convcpu_eig, epsilon);
+                ZOB_CHECK_CLOSE(convcpu_dot_dyn, convcpu_eig, epsilon);
+                ZOB_CHECK_CLOSE(convcpu_mad_dyn, convcpu_eig, epsilon);
         }
 }
 
-NANOCV_BEGIN_MODULE(test_conv2d)
+ZOB_BEGIN_MODULE(test_conv2d)
 
-NANOCV_CASE(evaluate)
+ZOB_CASE(evaluate)
 {
         const int min_isize = 3;
         const int max_isize = 23;
@@ -78,5 +78,5 @@ NANOCV_CASE(evaluate)
         }
 }
 
-NANOCV_END_MODULE()
+ZOB_END_MODULE()
 

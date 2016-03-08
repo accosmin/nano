@@ -17,7 +17,7 @@ namespace cortex
         //      "Training Invariant Support Vector Machines using Selective Sampling", by
         //      Gaelle Loosli, Stephane Canu & Leon Bottou
         ///
-        struct NANOCV_PUBLIC warp_params
+        struct ZOB_PUBLIC warp_params
         {
                 explicit warp_params(
                         field_type ftype = field_type::random,
@@ -36,5 +36,5 @@ namespace cortex
         ///
         /// \brief randomly warp the input RGBA tensor
         ///
-        NANOCV_PUBLIC tensor_t warp(const tensor_t& image, const warp_params& params, tensor_t* field_image = nullptr);
+        ZOB_PUBLIC tensor_t warp(const tensor_t& image, const warp_params& params, tensor_t* field_image = nullptr);
 }

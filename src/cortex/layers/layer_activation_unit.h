@@ -18,7 +18,7 @@ namespace cortex
                 {
                         scalar_t operator()(scalar_t g, scalar_t o) const
                         {
-                                NANOCV_UNUSED1(o);
+                                ZOB_UNUSED1(o);
 
                                 return g;
                         }
@@ -36,7 +36,7 @@ namespace cortex
         {
         public:
 
-                NANOCV_MAKE_CLONABLE(unit_activation_layer_t, "identity activation layer")
+                ZOB_MAKE_CLONABLE(unit_activation_layer_t, "identity activation layer")
 
                 // constructor
                 explicit unit_activation_layer_t(const string_t& parameters = string_t())

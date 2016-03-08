@@ -126,11 +126,11 @@ fi
 # setup cmake
 cmake \
         -DCMAKE_BUILD_TYPE=${build_type} \
-        -DNANOCV_WITH_ASAN=${asan_flag} \
-        -DNANOCV_WITH_MSAN=${msan_flag} \
-        -DNANOCV_WITH_TSAN=${tsan_flag} \
-        -DNANOCV_WITH_TESTS=${test_flag} \
-        -DNANOCV_WITH_LIBCPP=${libcpp_flag} \
+        -DZOB_WITH_ASAN=${asan_flag} \
+        -DZOB_WITH_MSAN=${msan_flag} \
+        -DZOB_WITH_TSAN=${tsan_flag} \
+        -DZOB_WITH_TESTS=${test_flag} \
+        -DZOB_WITH_LIBCPP=${libcpp_flag} \
         -G "${generator}" \
         -DCMAKE_INSTALL_PREFIX=${install_dir} \
         ${current_dir}/

@@ -11,5 +11,5 @@ namespace cortex
         ///
         /// \brief initialize library (setup flags, register default objects ...)
         ///
-        NANOCV_PUBLIC void init();
+        ZOB_PUBLIC void init();
 }

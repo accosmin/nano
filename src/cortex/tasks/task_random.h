@@ -14,11 +14,11 @@ namespace cortex
         ///     color           - color mode
         ///     size            - number of samples (training + validation)
         ///
-        class NANOCV_PUBLIC random_task_t : public task_t
+        class ZOB_PUBLIC random_task_t : public task_t
         {
         public:
 
-                NANOCV_MAKE_CLONABLE(random_task_t,
+                ZOB_MAKE_CLONABLE(random_task_t,
                                      "random task: dims=2[2,10],rows=32[8,128],cols=32[8,128],"\
                                      "color=rgba[,luma],size=1024[16,1024*1024]")
 

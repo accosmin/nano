@@ -25,14 +25,14 @@ void check(const tscalar a, const tscalar b,
         {
                 const auto ret = math::tune(op1, log10_space);
 
-                NANOCV_CHECK_CLOSE(ret.optimum(), b, epsilon);
-                NANOCV_CHECK_CLOSE(ret.param0(), a, epsilon);
+                ZOB_CHECK_CLOSE(ret.optimum(), b, epsilon);
+                ZOB_CHECK_CLOSE(ret.param0(), a, epsilon);
         }
         {
                 const auto ret = math::tune(op1, linear_space);
 
-                NANOCV_CHECK_CLOSE(ret.optimum(), b, epsilon);
-                NANOCV_CHECK_CLOSE(ret.param0(), a, epsilon);
+                ZOB_CHECK_CLOSE(ret.optimum(), b, epsilon);
+                ZOB_CHECK_CLOSE(ret.param0(), a, epsilon);
         }
 
         const auto op2 = [a=a, b=b] (const tscalar x, const tscalar y)
@@ -42,36 +42,36 @@ void check(const tscalar a, const tscalar b,
         {
                 const auto ret = math::tune(op2, log10_space, log10_space);
 
-                NANOCV_CHECK_CLOSE(ret.optimum(), b, epsilon);
-                NANOCV_CHECK_CLOSE(ret.param0(), b, epsilon);
-                NANOCV_CHECK_CLOSE(ret.param1(), a, epsilon);
+                ZOB_CHECK_CLOSE(ret.optimum(), b, epsilon);
+                ZOB_CHECK_CLOSE(ret.param0(), b, epsilon);
+                ZOB_CHECK_CLOSE(ret.param1(), a, epsilon);
         }
         {
                 const auto ret = math::tune(op2, linear_space, log10_space);
 
-                NANOCV_CHECK_CLOSE(ret.optimum(), b, epsilon);
-                NANOCV_CHECK_CLOSE(ret.param0(), b, epsilon);
-                NANOCV_CHECK_CLOSE(ret.param1(), a, epsilon);
+                ZOB_CHECK_CLOSE(ret.optimum(), b, epsilon);
+                ZOB_CHECK_CLOSE(ret.param0(), b, epsilon);
+                ZOB_CHECK_CLOSE(ret.param1(), a, epsilon);
         }
         {
                 const auto ret = math::tune(op2, log10_space, linear_space);
 
-                NANOCV_CHECK_CLOSE(ret.optimum(), b, epsilon);
-                NANOCV_CHECK_CLOSE(ret.param0(), b, epsilon);
-                NANOCV_CHECK_CLOSE(ret.param1(), a, epsilon);
+                ZOB_CHECK_CLOSE(ret.optimum(), b, epsilon);
+                ZOB_CHECK_CLOSE(ret.param0(), b, epsilon);
+                ZOB_CHECK_CLOSE(ret.param1(), a, epsilon);
         }
         {
                 const auto ret = math::tune(op2, linear_space, linear_space);
 
-                NANOCV_CHECK_CLOSE(ret.optimum(), b, epsilon);
-                NANOCV_CHECK_CLOSE(ret.param0(), b, epsilon);
-                NANOCV_CHECK_CLOSE(ret.param1(), a, epsilon);
+                ZOB_CHECK_CLOSE(ret.optimum(), b, epsilon);
+                ZOB_CHECK_CLOSE(ret.param0(), b, epsilon);
+                ZOB_CHECK_CLOSE(ret.param1(), a, epsilon);
         }
 }
 
-NANOCV_BEGIN_MODULE(test_tune)
+ZOB_BEGIN_MODULE(test_tune)
 
-NANOCV_CASE(tune_grid)
+ZOB_CASE(tune_grid)
 {
         using scalar_t = double;
 
@@ -89,7 +89,7 @@ NANOCV_CASE(tune_grid)
         }
 }
 
-NANOCV_CASE(tune_finite)
+ZOB_CASE(tune_finite)
 {
         const auto op1 = [] (const auto param1)
         {
@@ -118,24 +118,24 @@ NANOCV_CASE(tune_finite)
         const auto ret3 = math::tune(op3, params1, params2, params3);
         const auto ret4 = math::tune(op4, params1, params2, params3, params4);
 
-        NANOCV_CHECK_EQUAL(ret1.optimum(), op1(0));
-        NANOCV_CHECK_EQUAL(ret1.param0(), 0);
+        ZOB_CHECK_EQUAL(ret1.optimum(), op1(0));
+        ZOB_CHECK_EQUAL(ret1.param0(), 0);
 
-        NANOCV_CHECK_EQUAL(ret2.optimum(), op2(0, 1));
-        NANOCV_CHECK_EQUAL(ret2.param0(), 0);
-        NANOCV_CHECK_EQUAL(ret2.param1(), 1);
+        ZOB_CHECK_EQUAL(ret2.optimum(), op2(0, 1));
+        ZOB_CHECK_EQUAL(ret2.param0(), 0);
+        ZOB_CHECK_EQUAL(ret2.param1(), 1);
 
-        NANOCV_CHECK_EQUAL(ret3.optimum(), op3(0, 1, 2));
-        NANOCV_CHECK_EQUAL(ret3.param0(), 0);
-        NANOCV_CHECK_EQUAL(ret3.param1(), 1);
-        NANOCV_CHECK_EQUAL(ret3.param2(), 2);
+        ZOB_CHECK_EQUAL(ret3.optimum(), op3(0, 1, 2));
+        ZOB_CHECK_EQUAL(ret3.param0(), 0);
+        ZOB_CHECK_EQUAL(ret3.param1(), 1);
+        ZOB_CHECK_EQUAL(ret3.param2(), 2);
 
-        NANOCV_CHECK_EQUAL(ret4.optimum(), op4(0, 1, 2, 3));
-        NANOCV_CHECK_EQUAL(ret4.param0(), 0);
-        NANOCV_CHECK_EQUAL(ret4.param1(), 1);
-        NANOCV_CHECK_EQUAL(ret4.param2(), 2);
-        NANOCV_CHECK_EQUAL(ret4.param3(), 3);
+        ZOB_CHECK_EQUAL(ret4.optimum(), op4(0, 1, 2, 3));
+        ZOB_CHECK_EQUAL(ret4.param0(), 0);
+        ZOB_CHECK_EQUAL(ret4.param1(), 1);
+        ZOB_CHECK_EQUAL(ret4.param2(), 2);
+        ZOB_CHECK_EQUAL(ret4.param3(), 3);
 }
 
-NANOCV_END_MODULE()
+ZOB_END_MODULE()
 

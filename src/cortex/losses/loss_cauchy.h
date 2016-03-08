@@ -13,7 +13,7 @@ namespace cortex
         {
         public:
 
-                NANOCV_MAKE_CLONABLE(cauchy_loss_t, "Cauchy loss")
+                ZOB_MAKE_CLONABLE(cauchy_loss_t, "Cauchy loss")
 
                 // constructor
                 explicit cauchy_loss_t(const string_t& = string_t());

@@ -17,7 +17,7 @@ namespace test
                 const auto epsilon = math::epsilon2<tscalar>();
 
                 const auto dims = function.problem().size();
-                NANOCV_CHECK_GREATER(dims, 0);
+                ZOB_CHECK_GREATER(dims, 0);
 
                 for (size_t t = 0; t < trials; ++ t)
                 {
@@ -27,15 +27,15 @@ namespace test
                         rgen(x0.data(), x0.data() + x0.size());
 
                         const auto problem = function.problem();
-                        NANOCV_CHECK_EQUAL(problem.size(), dims);
-                        NANOCV_CHECK_LESS(problem.grad_accuracy(x0), epsilon);
+                        ZOB_CHECK_EQUAL(problem.size(), dims);
+                        ZOB_CHECK_LESS(problem.grad_accuracy(x0), epsilon);
                 }
         }              
 }
 
-NANOCV_BEGIN_MODULE(test_functions)
+ZOB_BEGIN_MODULE(test_functions)
 
-NANOCV_CASE(evaluate)
+ZOB_CASE(evaluate)
 {
         math::foreach_test_function<double, math::test_type::all>(1, 8, [] (const auto& function)
         {
@@ -43,4 +43,4 @@ NANOCV_CASE(evaluate)
         });
 }
 
-NANOCV_END_MODULE()
+ZOB_END_MODULE()

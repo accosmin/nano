@@ -15,14 +15,14 @@ namespace cortex
         using model_manager_t = manager_t<model_t>;
         using rmodel_t = model_manager_t::trobject;
 
-        NANOCV_PUBLIC model_manager_t& get_models();
+        ZOB_PUBLIC model_manager_t& get_models();
 
         ///
         /// \brief generic model used for computing:
         ///     - the output for an image patch
         //      - its parameters gradient
         ///
-        class NANOCV_PUBLIC model_t : public clonable_t<model_t>
+        class ZOB_PUBLIC model_t : public clonable_t<model_t>
         {
         public:
 

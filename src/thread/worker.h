@@ -9,7 +9,7 @@ namespace thread
         ///
         /// \brief worker to process tasks en-queued in a thread pool
         ///
-        class NANOCV_PUBLIC worker_t
+        class ZOB_PUBLIC worker_t
         {
         public:
 

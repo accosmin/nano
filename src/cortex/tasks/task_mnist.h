@@ -16,7 +16,7 @@ namespace cortex
         {
         public:
 
-                NANOCV_MAKE_CLONABLE(mnist_task_t, "MNIST (digit classification)")
+                ZOB_MAKE_CLONABLE(mnist_task_t, "MNIST (digit classification)")
 
                 // constructor
                 explicit mnist_task_t(const string_t& configuration = string_t());

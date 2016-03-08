@@ -7,7 +7,7 @@ namespace cortex
         ///
         /// \brief sampling from a potentially large collection of samples.
         ///
-        class NANOCV_PUBLIC sampler_t
+        class ZOB_PUBLIC sampler_t
         {
         public:
 

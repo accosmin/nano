@@ -1,9 +1,9 @@
 #include "unit_test.hpp"
 #include "math/random.hpp"
 
-NANOCV_BEGIN_MODULE(test_random)
+ZOB_BEGIN_MODULE(test_random)
 
-NANOCV_CASE(rng)
+ZOB_CASE(rng)
 {
         const int32_t tests = 231;
         const int32_t test_size = 65;
@@ -18,14 +18,14 @@ NANOCV_CASE(rng)
                 for (int32_t tt = 0; tt < test_size; ++ tt)
                 {
                         const int32_t v = rgen();
-                        NANOCV_CHECK_GREATER_EQUAL(v, min);
-                        NANOCV_CHECK_LESS_EQUAL(v, max);
+                        ZOB_CHECK_GREATER_EQUAL(v, min);
+                        ZOB_CHECK_LESS_EQUAL(v, max);
                 }
         }
 }
 
 
-NANOCV_CASE(index)
+ZOB_CASE(index)
 {
         const int32_t tests = 54;
         const int32_t test_size = 87;
@@ -44,10 +44,10 @@ NANOCV_CASE(index)
                 {
                         const auto index = rindex();
 
-                        NANOCV_CHECK_GREATER_EQUAL(index, 0);
-                        NANOCV_CHECK_LESS(index, size);
+                        ZOB_CHECK_GREATER_EQUAL(index, 0);
+                        ZOB_CHECK_LESS(index, size);
                 }
         }
 }
 
-NANOCV_END_MODULE()
+ZOB_END_MODULE()

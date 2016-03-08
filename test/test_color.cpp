@@ -3,9 +3,9 @@
 #include "math/random.hpp"
 #include "math/epsilon.hpp"
 
-NANOCV_BEGIN_MODULE(test_color)
+ZOB_BEGIN_MODULE(test_color)
 
-NANOCV_CASE(rgba_transform)
+ZOB_CASE(rgba_transform)
 {
         using namespace cortex;
 
@@ -25,25 +25,25 @@ NANOCV_CASE(rgba_transform)
 
                 const rgba_t rgba = color::make_rgba(r, g, b, a);
 
-                NANOCV_CHECK_EQUAL(color::make_luma(rgba), color::make_luma(r, g, b));
+                ZOB_CHECK_EQUAL(color::make_luma(rgba), color::make_luma(r, g, b));
 
-                NANOCV_CHECK_EQUAL(r, color::get_red(rgba));
-                NANOCV_CHECK_EQUAL(g, color::get_green(rgba));
-                NANOCV_CHECK_EQUAL(b, color::get_blue(rgba));
-                NANOCV_CHECK_EQUAL(a, color::get_alpha(rgba));
+                ZOB_CHECK_EQUAL(r, color::get_red(rgba));
+                ZOB_CHECK_EQUAL(g, color::get_green(rgba));
+                ZOB_CHECK_EQUAL(b, color::get_blue(rgba));
+                ZOB_CHECK_EQUAL(a, color::get_alpha(rgba));
 
-                NANOCV_CHECK_EQUAL(rgba, color::set_red(rgba, r));
-                NANOCV_CHECK_EQUAL(rgba, color::set_green(rgba, g));
-                NANOCV_CHECK_EQUAL(rgba, color::set_blue(rgba, b));
-                NANOCV_CHECK_EQUAL(rgba, color::set_alpha(rgba, a));
+                ZOB_CHECK_EQUAL(rgba, color::set_red(rgba, r));
+                ZOB_CHECK_EQUAL(rgba, color::set_green(rgba, g));
+                ZOB_CHECK_EQUAL(rgba, color::set_blue(rgba, b));
+                ZOB_CHECK_EQUAL(rgba, color::set_alpha(rgba, a));
 
-                NANOCV_CHECK_EQUAL(r, color::make_luma(color::make_rgba(r, r, r)));
-                NANOCV_CHECK_EQUAL(g, color::make_luma(color::make_rgba(g, g, g)));
-                NANOCV_CHECK_EQUAL(b, color::make_luma(color::make_rgba(b, b, b)));
+                ZOB_CHECK_EQUAL(r, color::make_luma(color::make_rgba(r, r, r)));
+                ZOB_CHECK_EQUAL(g, color::make_luma(color::make_rgba(g, g, g)));
+                ZOB_CHECK_EQUAL(b, color::make_luma(color::make_rgba(b, b, b)));
         }
 }
 
-NANOCV_CASE(color_tensor)
+ZOB_CASE(color_tensor)
 {
         using namespace cortex;
 
@@ -67,15 +67,15 @@ NANOCV_CASE(color_tensor)
                         data.matrix(3).setConstant(((test * rng()) % 256) / 255.0);
 
                         const auto rgba = color::from_rgba_tensor(data);
-                        NANOCV_CHECK_EQUAL(rgba.rows(), data.rows());
-                        NANOCV_CHECK_EQUAL(rgba.cols(), data.cols());
+                        ZOB_CHECK_EQUAL(rgba.rows(), data.rows());
+                        ZOB_CHECK_EQUAL(rgba.cols(), data.cols());
 
                         const auto idata = color::to_rgba_tensor(rgba);
 
-                        NANOCV_REQUIRE_EQUAL(data.dims(), idata.dims());
-                        NANOCV_REQUIRE_EQUAL(data.rows(), idata.rows());
-                        NANOCV_REQUIRE_EQUAL(data.cols(), idata.cols());
-                        NANOCV_CHECK_EIGEN_CLOSE(data.vector(), idata.vector(), eps);
+                        ZOB_REQUIRE_EQUAL(data.dims(), idata.dims());
+                        ZOB_REQUIRE_EQUAL(data.rows(), idata.rows());
+                        ZOB_REQUIRE_EQUAL(data.cols(), idata.cols());
+                        ZOB_CHECK_EIGEN_CLOSE(data.vector(), idata.vector(), eps);
                 }
 
                 // load from RGB tensor
@@ -86,15 +86,15 @@ NANOCV_CASE(color_tensor)
                         data.matrix(2).setConstant(((test * rng()) % 256) / 255.0);
 
                         const auto rgba = color::from_rgb_tensor(data);
-                        NANOCV_CHECK_EQUAL(rgba.rows(), data.rows());
-                        NANOCV_CHECK_EQUAL(rgba.cols(), data.cols());
+                        ZOB_CHECK_EQUAL(rgba.rows(), data.rows());
+                        ZOB_CHECK_EQUAL(rgba.cols(), data.cols());
 
                         const auto idata = color::to_rgb_tensor(rgba);
 
-                        NANOCV_REQUIRE_EQUAL(data.dims(), idata.dims());
-                        NANOCV_REQUIRE_EQUAL(data.rows(), idata.rows());
-                        NANOCV_REQUIRE_EQUAL(data.cols(), idata.cols());
-                        NANOCV_CHECK_EIGEN_CLOSE(data.vector(), idata.vector(), eps);
+                        ZOB_REQUIRE_EQUAL(data.dims(), idata.dims());
+                        ZOB_REQUIRE_EQUAL(data.rows(), idata.rows());
+                        ZOB_REQUIRE_EQUAL(data.cols(), idata.cols());
+                        ZOB_CHECK_EIGEN_CLOSE(data.vector(), idata.vector(), eps);
                 }
 
                 // load from LUMA tensor
@@ -103,17 +103,17 @@ NANOCV_CASE(color_tensor)
                         data.matrix(0).setConstant(((test * rng()) % 256) / 255.0);
 
                         const auto luma = color::from_luma_tensor(data);
-                        NANOCV_CHECK_EQUAL(luma.rows(), data.rows());
-                        NANOCV_CHECK_EQUAL(luma.cols(), data.cols());
+                        ZOB_CHECK_EQUAL(luma.rows(), data.rows());
+                        ZOB_CHECK_EQUAL(luma.cols(), data.cols());
 
                         const auto idata = color::to_luma_tensor(luma);
 
-                        NANOCV_REQUIRE_EQUAL(data.dims(), idata.dims());
-                        NANOCV_REQUIRE_EQUAL(data.rows(), idata.rows());
-                        NANOCV_REQUIRE_EQUAL(data.cols(), idata.cols());
-                        NANOCV_CHECK_EIGEN_CLOSE(data.vector(), idata.vector(), eps);
+                        ZOB_REQUIRE_EQUAL(data.dims(), idata.dims());
+                        ZOB_REQUIRE_EQUAL(data.rows(), idata.rows());
+                        ZOB_REQUIRE_EQUAL(data.cols(), idata.cols());
+                        ZOB_CHECK_EIGEN_CLOSE(data.vector(), idata.vector(), eps);
                 }
         }
 }
 
-NANOCV_END_MODULE()
+ZOB_END_MODULE()

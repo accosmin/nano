@@ -104,7 +104,7 @@ int main(int argc, char *argv[])
         const string_t outlayer = make_output_layer(task.osize());
 
         std::vector<std::pair<string_t, string_t>> configs;
-        #define DEFINE(config) configs.emplace_back(config + outlayer, NANOCV_STRINGIFY(config))
+        #define DEFINE(config) configs.emplace_back(config + outlayer, ZOB_STRINGIFY(config))
 
         if (cmd_mlp)
         {

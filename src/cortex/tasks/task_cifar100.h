@@ -16,7 +16,7 @@ namespace cortex
         {
         public:
 
-                NANOCV_MAKE_CLONABLE(cifar100_task_t, "CIFAR-100 (object classification)")
+                ZOB_MAKE_CLONABLE(cifar100_task_t, "CIFAR-100 (object classification)")
 
                 // constructor
                 explicit cifar100_task_t(const string_t& configuration = string_t());

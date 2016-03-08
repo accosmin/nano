@@ -12,5 +12,5 @@ namespace cortex
         ///
         /// \brief current version
         ///
-        NANOCV_PUBLIC std::string version();
+        ZOB_PUBLIC std::string version();
 }

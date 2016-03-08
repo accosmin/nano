@@ -16,7 +16,7 @@ namespace cortex
         {
         public:
                 
-                NANOCV_MAKE_CLONABLE(norb_task_t, "NORB (3D object recognition)")
+                ZOB_MAKE_CLONABLE(norb_task_t, "NORB (3D object recognition)")
 
                 // constructor
                 explicit norb_task_t(const string_t& configuration = string_t());
