@@ -4,7 +4,8 @@ namespace cortex
 {
         trainer_manager_t& get_trainers()
         {
-                return trainer_manager_t::instance();
+                static trainer_manager_t manager;
+                return manager;
         }
 }
 

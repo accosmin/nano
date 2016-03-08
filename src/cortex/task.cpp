@@ -8,7 +8,8 @@ namespace cortex
 {
         task_manager_t& get_tasks()
         {
-                return task_manager_t::instance();
+                static task_manager_t manager;
+                return manager;
         }
 
         void print(const string_t& header, const samples_t& samples)

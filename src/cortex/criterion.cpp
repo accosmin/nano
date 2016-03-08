@@ -7,7 +7,8 @@ namespace cortex
 {
         criterion_manager_t& get_criteria()
         {
-                return criterion_manager_t::instance();
+                static criterion_manager_t manager;
+                return manager;
         }
 
         criterion_t::criterion_t(const string_t& configuration)

@@ -4,7 +4,8 @@ namespace cortex
 {
         layer_manager_t& get_layers()
         {
-                return layer_manager_t::instance();
+                static layer_manager_t manager;
+                return manager;
         }
 }
 

@@ -4,7 +4,8 @@ namespace cortex
 {
         loss_manager_t& get_losses()
         {
-                return loss_manager_t::instance();
+                static loss_manager_t manager;
+                return manager;
         }
 }
-	
+

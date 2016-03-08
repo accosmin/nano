@@ -11,7 +11,8 @@ namespace cortex
 {
         model_manager_t& get_models()
         {
-                return model_manager_t::instance();
+                static model_manager_t manager;
+                return manager;
         }
 
         model_t::model_t(const string_t& parameters)

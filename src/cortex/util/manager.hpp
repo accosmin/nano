@@ -4,7 +4,6 @@
 #include <vector>
 #include <stdexcept>
 #include "clonable.hpp"
-#include "singleton.hpp"
 
 namespace cortex
 {
@@ -15,7 +14,7 @@ namespace cortex
         <
                 class tobject
         >
-        class manager_t : public singleton_t<manager_t<tobject>>
+        class manager_t
 	{
         public:
 
