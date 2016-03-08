@@ -36,11 +36,6 @@ namespace cortex
                 }
 
                 ///
-                /// \brief destructor
-                ///
-                virtual ~trainer_t() {}
-
-                ///
                 /// \brief train the given model
                 ///
                 virtual trainer_result_t train(

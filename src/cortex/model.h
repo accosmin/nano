@@ -26,17 +26,10 @@ namespace cortex
         {
         public:
 
-                explicit model_t(const string_t& parameters);
-
                 ///
                 /// \brief constructor
                 ///
-                model_t();
-
-                ///
-                /// \brief destructor
-                ///
-                virtual ~model_t() {}
+                explicit model_t(const string_t& parameters);
 
                 ///
                 /// \brief resize to process new inputs

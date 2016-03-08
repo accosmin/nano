@@ -34,11 +34,6 @@ namespace cortex
                 }
 
                 ///
-                /// \brief destructor
-                ///
-                virtual ~layer_t() {}
-
-                ///
                 /// \brief resize to process new tensors of the given type
                 ///
                 virtual tensor_size_t resize(const tensor_t& tensor) = 0;

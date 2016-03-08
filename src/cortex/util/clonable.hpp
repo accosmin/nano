@@ -20,13 +20,13 @@ namespace cortex
         {
         public:
 
-                using trobject = std::shared_ptr<tobject>;
                 using tstring = std::string;
+                using trobject = std::shared_ptr<tobject>;
 
                 ///
                 /// \brief constructor
                 ///
-                explicit clonable_t(const tstring& configuration)
+                explicit clonable_t(const tstring& configuration = tstring())
                         :       m_configuration(configuration)
                 {
                 }

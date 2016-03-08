@@ -35,11 +35,6 @@ namespace cortex
                 }
 
                 ///
-                /// \brief destructor
-                ///
-                virtual ~loss_t() {}
-
-                ///
                 /// \brief compute the error value
                 ///
                 virtual scalar_t error(const vector_t& targets, const vector_t& scores) const = 0;

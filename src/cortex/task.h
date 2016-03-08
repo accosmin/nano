@@ -54,7 +54,7 @@ namespace cortex
                 ///
                 /// \brief sample region (in pixels) at a particular offset
                 ///
-                rect_t sample_region(coord_t x, coord_t y) const;               
+                rect_t sample_region(coord_t x, coord_t y) const;
 
                 ///
                 /// \brief save the task images to file (by grouping sample patchs into (grows, gcols) grids)

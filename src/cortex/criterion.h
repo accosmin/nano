@@ -41,11 +41,6 @@ namespace cortex
                 explicit criterion_t(const string_t& configuration);
 
                 ///
-                /// \brief destructor
-                ///
-                virtual ~criterion_t() {}
-
-                ///
                 /// \brief reset statistics and settings
                 ///
                 criterion_t& reset(const rmodel_t& rmodel);
