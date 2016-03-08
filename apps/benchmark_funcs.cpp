@@ -1,7 +1,7 @@
+#include "tensor.h"
 #include "math/stats.hpp"
 #include "text/table.h"
 #include "text/cmdline.h"
-#include "cortex/tensor.h"
 #include "cortex/util/timer.h"
 #include "cortex/util/logger.h"
 #include "math/funcs/foreach.hpp"

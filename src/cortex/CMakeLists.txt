@@ -26,13 +26,10 @@ set(libcortex_sources
         sample.h
         sampler.cpp
         sampler.h
-        scalar.h
         stochastic.cpp
         stochastic.h
-        string.h
         task.cpp
         task.h
-        tensor.h
         trainer.cpp
         trainer_data.cpp
         trainer_data.h
@@ -51,15 +48,9 @@ add_subdirectory(models)
 add_subdirectory(tasks)
 add_subdirectory(trainers)
 add_subdirectory(util)
-add_subdirectory(vision)
 
 add_library(cortex SHARED ${libcortex_sources})
-target_link_libraries(cortex
-        ${IL_LIBRARIES}
-        math
-        tensor
-        io
-        thread)
+target_link_libraries(cortex vision io thread)
 
 # install library
 install(TARGETS cortex
@@ -70,4 +61,4 @@ install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
         FILES_MATCHING PATTERN "*.h" PATTERN "*.hpp")
 
 
-                
+

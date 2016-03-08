@@ -1,8 +1,8 @@
 #pragma once
 
 #include "arch.h"
-#include "string.h"
 #include "tensor.h"
+#include "stringi.h"
 #include "util/manager.hpp"
 
 namespace cortex

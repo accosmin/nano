@@ -1,7 +1,7 @@
 #include "unit_test.hpp"
+#include "vision/image.h"
 #include "math/random.hpp"
 #include "math/epsilon.hpp"
-#include "cortex/vision/image.h"
 #include <cstdio>
 
 NANOCV_BEGIN_MODULE(test_image)

@@ -1,4 +1,5 @@
-list(APPEND libcortex_sources
+# build library
+set(libvision_sources
         ${CMAKE_CURRENT_SOURCE_DIR}/bilinear.hpp
         ${CMAKE_CURRENT_SOURCE_DIR}/color.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/color.h
@@ -18,6 +19,16 @@ list(APPEND libcortex_sources
         ${CMAKE_CURRENT_SOURCE_DIR}/warp.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/warp.h)
 
-set(libcortex_sources "${libcortex_sources}" PARENT_SCOPE)
+add_library(vision SHARED ${libvision_sources})
+target_link_libraries(vision ${IL_LIBRARIES} math text tensor)
 
-                
+# install library
+install(TARGETS vision
+        DESTINATION lib)
+
+install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+        DESTINATION include
+        FILES_MATCHING PATTERN "*.h" PATTERN "*.hpp")
+
+
+

@@ -1,7 +1,7 @@
 #include "unit_test.hpp"
+#include "vision/color.h"
 #include "math/random.hpp"
 #include "math/epsilon.hpp"
-#include "cortex/vision/color.h"
 
 NANOCV_BEGIN_MODULE(test_color)
 

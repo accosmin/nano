@@ -1,7 +1,7 @@
 #pragma once
 
 #include "arch.h"
-#include "cortex/tensor.h"
+#include "tensor.h"
 
 namespace cortex
 {

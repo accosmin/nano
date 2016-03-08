@@ -2,7 +2,7 @@
 
 #include "arch.h"
 #include "scalar.h"
-#include "string.h"
+#include "stringi.h"
 #include <chrono>
 
 namespace cortex

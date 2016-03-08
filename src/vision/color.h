@@ -1,9 +1,9 @@
 #pragma once
 
 #include "arch.h"
+#include "tensor.h"
 #include "math/cast.hpp"
 #include "math/clamp.hpp"
-#include "cortex/tensor.h"
 #include "text/enum_string.hpp"
 #include <iosfwd>
 #include <cstdint>
@@ -69,7 +69,7 @@ namespace cortex
                 inline rgba_t make_rgba(rgba_t r, rgba_t g, rgba_t b, rgba_t a = 255)
                 {
                         return (r << 24) | (g << 16) | (b << 8) | a;
-                }                
+                }
                 inline rgba_t make_rgba(luma_t l, rgba_t a = 255)
                 {
                         return make_rgba(l, l, l, a);

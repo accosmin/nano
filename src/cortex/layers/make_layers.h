@@ -1,6 +1,6 @@
 #pragma once
 
-#include "cortex/string.h"
+#include "stringi.h"
 #include "text/to_string.hpp"
 
 namespace cortex

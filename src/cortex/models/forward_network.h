@@ -2,7 +2,6 @@
 
 #include "cortex/model.h"
 #include "cortex/layer.h"
-#include "cortex/string.h"
 
 namespace cortex
 {

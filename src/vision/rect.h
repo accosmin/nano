@@ -1,7 +1,7 @@
 #pragma once
 
 #include "point.h"
-#include "cortex/scalar.h"
+#include "scalar.h"
 
 namespace cortex
 {

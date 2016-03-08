@@ -1,5 +1,5 @@
 #include "unit_test.hpp"
-#include "cortex/vision/point.h"
+#include "vision/point.h"
 
 namespace test
 {

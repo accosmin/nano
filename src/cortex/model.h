@@ -1,6 +1,6 @@
 #pragma once
 
-#include "string.h"
+#include "stringi.h"
 #include "vision/image.h"
 #include "util/manager.hpp"
 

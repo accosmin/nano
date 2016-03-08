@@ -6,8 +6,7 @@ function(build_test_app test_app libs)
         get_filename_component(test_name ${test_app} NAME_WE)
 
         add_executable(${test_name} ${test_app})
-        target_link_libraries(${test_name}
-                ${libs})
+        target_link_libraries(${test_name} ${libs})
 
         add_test(${test_name} ${test_name})
 endfunction()

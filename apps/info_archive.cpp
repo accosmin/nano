@@ -1,6 +1,6 @@
+#include "stringi.h"
 #include "io/archive.h"
 #include "text/cmdline.h"
-#include "cortex/string.h"
 #include "cortex/util/timer.h"
 #include "cortex/util/logger.h"
 

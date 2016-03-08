@@ -3,9 +3,9 @@
 #include "task_svhn.h"
 #include "io/imstream.h"
 #include "cortex/class.h"
+#include "vision/color.h"
 #include "text/to_string.hpp"
 #include "cortex/util/logger.h"
-#include "cortex/vision/color.h"
 #include <fstream>
 
 namespace cortex

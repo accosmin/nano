@@ -1,7 +1,7 @@
 #pragma once
 
-#include "string.h"
 #include "tensor.h"
+#include "stringi.h"
 #include "protocol.h"
 #include "vision/rect.h"
 

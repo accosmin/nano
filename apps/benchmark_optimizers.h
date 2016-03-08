@@ -1,9 +1,9 @@
+#include "tensor.h"
 #include "math/abs.hpp"
 #include "text/table.h"
 #include "text/align.hpp"
 #include "math/clamp.hpp"
 #include "math/stats.hpp"
-#include "cortex/tensor.h"
 #include "thread/loopi.hpp"
 #include "text/table_row_comp.h"
 
@@ -86,11 +86,11 @@ namespace benchmark
                 table.print(std::cout);
         }
 
-        template 
+        template
         <
                 typename tscalar,
                 typename tvector = typename math::function_t<tscalar>::tvector,
-                typename toptimizer, 
+                typename toptimizer,
                 typename tostats
         >
         void benchmark_function(

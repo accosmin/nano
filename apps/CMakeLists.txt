@@ -21,10 +21,7 @@ foreach(app ${nanocv_apps})
         get_filename_component(app_name ${app} NAME_WE)
 
         add_executable(${app_name} ${app})
-        target_link_libraries(${app_name}
-                ${Boost_FILESYSTEM_LIBRARY}
-                ${Boost_SYSTEM_LIBRARY}
-                cortex)
+        target_link_libraries(${app_name} cortex)
 endforeach()
 
 # install (some) programs

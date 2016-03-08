@@ -1,6 +1,6 @@
+#include "tensor.h"
 #include "text/table.h"
 #include "text/cmdline.h"
-#include "cortex/tensor.h"
 #include "math/random.hpp"
 #include "tensor/random.hpp"
 #include "tensor/conv2d_cpp.hpp"

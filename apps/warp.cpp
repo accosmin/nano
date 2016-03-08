@@ -1,9 +1,9 @@
+#include "stringi.h"
 #include "text/cmdline.h"
-#include "cortex/string.h"
+#include "vision/warp.h"
+#include "vision/image.h"
 #include "text/filesystem.h"
 #include "text/to_string.hpp"
-#include "cortex/vision/warp.h"
-#include "cortex/vision/image.h"
 #include "cortex/util/measure_and_log.hpp"
 
 int main(int argc, char *argv[])
@@ -21,9 +21,9 @@ int main(int argc, char *argv[])
         cmdline.add("", "beta",         "gradient magnitue mixing coefficient", "1.0");
         cmdline.add("", "save-fields",  "save fields as image");
         cmdline.add("o", "output",      "output (warped) image path");
-	
+
         cmdline.process(argc, argv);
-	
+
         // check arguments and options
         const auto cmd_input = cmdline.get<string_t>("input");
         const auto cmd_output = cmdline.get<string_t>("output");
@@ -98,7 +98,7 @@ int main(int argc, char *argv[])
                                 "save field image to <" + fpath + ">");
                 }
         }
-		
+
         // OK
         log_info() << cortex::done;
         return EXIT_SUCCESS;
