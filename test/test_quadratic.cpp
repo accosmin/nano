@@ -13,10 +13,16 @@ NANOCV_CASE(evaluate)
         {
                 auto rnd = math::make_rng<double>(-1.0, +1.0);
 
-                // build random quadratic
-                const double a = rnd();
-                const double b = rnd();
-                const double c = rnd();
+                // build random valid quadratic
+                double a, b, c;
+                do
+                {
+                        a = rnd();
+                        b = rnd();
+                        c = rnd();
+                }
+                while (!math::quadratic_t<double>(a, b, c));
+
                 const math::quadratic_t<double> q(a, b, c);
                 NANOCV_CHECK(q);
 

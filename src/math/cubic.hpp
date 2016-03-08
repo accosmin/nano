@@ -1,9 +1,11 @@
 #pragma once
 
 #include <cmath>
+#include <limits>
+#include <cassert>
 
 namespace math
-{       
+{
         ///
         /// \brief cubic: a x^3 + b x^2 + c x + d
         ///
@@ -32,11 +34,21 @@ namespace math
                 ///
                 cubic_t(const tscalar x0, const tscalar f0, const tscalar g0,
                         const tscalar x1, const tscalar f1, const tscalar g1)
+                        :       cubic_t(
+                                std::numeric_limits<tscalar>::infinity(),
+                                std::numeric_limits<tscalar>::infinity(),
+                                std::numeric_limits<tscalar>::infinity(),
+                                std::numeric_limits<tscalar>::infinity())
+
                 {
-                        m_a = ((g0 + g1) - 2 * (f0 - f1) / (x0 - x1)) / (x0 * x0 - 2 * x0 * x1 + x1 * x1);
-                        m_b = ((g0 - g1) / (x0 - x1) - 3 * m_a * (x0 + x1)) / 2;
-                        m_c = g0 - 2 * m_b * x0 - 3 * m_a * x0 * x0;
-                        m_d = f0 - m_c * x0 - m_b * x0 * x0 - m_a * x0 * x0 * x0;
+                        if (    (x0 - x1) != tscalar(0) &&
+                                (x0 * x0 - 2 * x0 * x1 + x1 * x1) != tscalar(0))
+                        {
+                                m_a = ((g0 + g1) - 2 * (f0 - f1) / (x0 - x1)) / (x0 * x0 - 2 * x0 * x1 + x1 * x1);
+                                m_b = ((g0 - g1) / (x0 - x1) - 3 * m_a * (x0 + x1)) / 2;
+                                m_c = g0 - 2 * m_b * x0 - 3 * m_a * x0 * x0;
+                                m_d = f0 - m_c * x0 - m_b * x0 * x0 - m_a * x0 * x0 * x0;
+                         }
                 }
 
                 ///
@@ -44,6 +56,8 @@ namespace math
                 ///
                 void extremum(tscalar& min1, tscalar& min2) const
                 {
+                        assert(operator bool());
+
                         const tscalar d1 = -m_b;
                         const tscalar d2 = std::sqrt(m_b * m_b - 3 * m_a * m_c);
 
@@ -75,7 +89,9 @@ namespace math
                         return  std::isfinite(m_a) &&
                                 std::isfinite(m_b) &&
                                 std::isfinite(m_c) &&
-                                std::isfinite(m_d);
+                                std::isfinite(m_d) &&
+                                m_a != tscalar(0) &&
+                                (m_b * m_b - 3 * m_a * m_c) >= tscalar(0);
                 }
 
                 ///

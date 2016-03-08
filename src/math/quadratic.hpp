@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cmath>
+#include <cassert>
 
 namespace math
 {
@@ -19,8 +20,8 @@ namespace math
                 ///
                 quadratic_t(const tscalar a, const tscalar b, const tscalar c)
                         :       m_a(a),
-                          m_b(b),
-                          m_c(c)
+                                m_b(b),
+                                m_c(c)
                 {
                 }
 
@@ -31,10 +32,17 @@ namespace math
                 ///
                 quadratic_t(const tscalar x0, const tscalar f0, const tscalar g0,
                             const tscalar x1, const tscalar f1)
+                        :       quadratic_t(
+                                std::numeric_limits<tscalar>::infinity(),
+                                std::numeric_limits<tscalar>::infinity(),
+                                std::numeric_limits<tscalar>::infinity())
                 {
-                        m_a = (g0 - (f0 - f1) / (x0 - x1)) / (x0 - x1);
-                        m_b = g0 - 2 * m_a * x0;
-                        m_c = f0 - m_b * x0 - m_a * x0 * x0;
+                        if ((x0 - x1) != tscalar(0))
+                        {
+                                m_a = (g0 - (f0 - f1) / (x0 - x1)) / (x0 - x1);
+                                m_b = g0 - 2 * m_a * x0;
+                                m_c = f0 - m_b * x0 - m_a * x0 * x0;
+                        }
                 }
 
                 ///
@@ -42,6 +50,8 @@ namespace math
                 ///
                 void extremum(tscalar& min) const
                 {
+                        assert(operator bool());
+
                         min = -m_b / (2 * m_a);
                 }
 
@@ -68,7 +78,8 @@ namespace math
                 {
                         return  std::isfinite(m_a) &&
                                 std::isfinite(m_b) &&
-                                std::isfinite(m_c);
+                                std::isfinite(m_c) &&
+                                m_a != tscalar(0);
                 }
 
                 ///

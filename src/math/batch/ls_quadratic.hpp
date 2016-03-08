@@ -23,8 +23,12 @@ namespace math
 
                 const quadratic_t<tscalar> q(x0, f0, g0, x1, f1);
 
-                tscalar min;
-                q.extremum(min);
+                tscalar min = std::numeric_limits<tscalar>::infinity();
+
+                if (q)
+                {
+                        q.extremum(min);
+                }
 
                 return min;
         }

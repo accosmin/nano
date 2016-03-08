@@ -14,11 +14,17 @@ NANOCV_CASE(evaluate)
         {
                 auto rnd = math::make_rng<double>(-1.0, +1.0);
 
-                // build random cubic
-                const double a = rnd();
-                const double b = rnd();
-                const double c = rnd();
-                const double d = rnd();
+                // build random valid cubic
+                double a, b, c, d;
+                do
+                {
+                        a = rnd();
+                        b = rnd();
+                        c = rnd();
+                        d = rnd();
+                }
+                while (!math::cubic_t<double>(a, b, c, d));
+
                 const math::cubic_t<double> q(a, b, c, d);
                 NANOCV_CHECK(q);
 

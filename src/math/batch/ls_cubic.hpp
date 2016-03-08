@@ -21,8 +21,13 @@ namespace math
 
                 const cubic_t<tscalar> c(x0, f0, g0, x1, f1, g1);
 
-                tscalar min1, min2;
-                c.extremum(min1, min2);
+                tscalar min1 = std::numeric_limits<tscalar>::infinity();
+                tscalar min2 = std::numeric_limits<tscalar>::infinity();
+
+                if (c)
+                {
+                        c.extremum(min1, min2);
+                }
 
                 return std::make_pair(min1, min2);
         }
