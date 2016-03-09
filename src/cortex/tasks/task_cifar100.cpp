@@ -7,7 +7,7 @@
 #include "text/algorithm.h"
 #include "cortex/util/logger.h"
 
-namespace cortex
+namespace zob
 {
         static const string_t tlabels[] =
         {
@@ -130,13 +130,13 @@ namespace cortex
 
                 clear_memory(n_train_samples + n_test_samples);
 
-                const auto op = [&] (const string_t& filename, const io::buffer_t& data)
+                const auto op = [&] (const string_t& filename, const zob::buffer_t& data)
                 {
-                        if (text::ends_with(filename, train_bfile))
+                        if (zob::ends_with(filename, train_bfile))
                         {
                                 return load(filename, data.data(), data.size(), protocol::train, n_train_samples);
                         }
-                        else if (text::ends_with(filename, test_bfile))
+                        else if (zob::ends_with(filename, test_bfile))
                         {
                                 return load(filename, data.data(), data.size(), protocol::test, n_test_samples);
                         }                        
@@ -152,7 +152,7 @@ namespace cortex
 
                 log_info() << "CIFAR-100: loading file <" << bfile << "> ...";
 
-                return io::unarchive(bfile, op, error_op);
+                return zob::unarchive(bfile, op, error_op);
         }
         
         bool cifar100_task_t::load(const string_t& filename, const char* bdata, size_t bdata_size, protocol p, size_t count)
@@ -160,10 +160,10 @@ namespace cortex
                 log_info() << "CIFAR-100: loading file <" << filename << "> ...";                
                 
                 const auto buffer_size = irows() * icols() * 3;
-                std::vector<char> buffer = io::make_buffer(buffer_size);
+                std::vector<char> buffer = zob::make_buffer(buffer_size);
                 char label[2];
 
-                io::imstream_t stream(bdata, bdata_size);
+                zob::imstream_t stream(bdata, bdata_size);
 
                 size_t icount = 0;
                 while ( stream.read(label, 2) &&       // coarse & fine labels!
@@ -181,7 +181,7 @@ namespace cortex
 
                         sample_t sample(n_images() - 1, sample_region(0, 0));
                         sample.m_label = tlabels[ilabel];
-                        sample.m_target = cortex::class_target(ilabel, osize());
+                        sample.m_target = zob::class_target(ilabel, osize());
                         sample.m_fold = { 0, p };
                         add_sample(sample);
 

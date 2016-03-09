@@ -1,6 +1,6 @@
 #pragma once
 
-namespace cortex
+namespace zob
 {
         ///
         /// \brief soft-max approximation over the given vector's dimensions.

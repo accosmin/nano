@@ -2,7 +2,7 @@
 
 #include "avg_criterion.h"
 
-namespace cortex
+namespace zob
 {        
         ///
         /// \brief L2-norm regularized loss

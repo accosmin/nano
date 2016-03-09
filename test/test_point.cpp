@@ -3,9 +3,9 @@
 
 namespace test
 {
-        void build_point(cortex::coord_t x, cortex::coord_t y)
+        void build_point(zob::coord_t x, zob::coord_t y)
         {
-                const cortex::point_t point(x, y);
+                const zob::point_t point(x, y);
 
                 ZOB_CHECK_EQUAL(point.x(), x);
                 ZOB_CHECK_EQUAL(point.y(), y);

@@ -2,7 +2,7 @@
 
 #include "cortex/loss.h"
 
-namespace cortex
+namespace zob
 {
         ///
         /// \brief square loss (single & multivariate regression)

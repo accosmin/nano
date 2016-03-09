@@ -2,7 +2,7 @@
 
 #include <string>
 
-namespace text
+namespace zob
 {
         ///
         /// \brief text alignment options

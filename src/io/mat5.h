@@ -7,7 +7,7 @@
 #include <cstdint>
 #include <functional>
 
-namespace io
+namespace zob
 {
         class imstream_t;
 

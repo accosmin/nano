@@ -1,6 +1,6 @@
 #include "trainer.h"
 
-namespace cortex
+namespace zob
 {
         trainer_manager_t& get_trainers()
         {

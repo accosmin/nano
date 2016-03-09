@@ -7,7 +7,7 @@
 #include "tensor/random.hpp"
 #include "tensor/transform.hpp"
 
-namespace cortex
+namespace zob
 {
         namespace
         {
@@ -23,7 +23,7 @@ namespace cortex
 
                         tensor::transform(fieldx, fieldy, image.matrix(0), [=] (const scalar_t fx, const scalar_t fy)
                         {
-                                return math::clamp(std::sqrt(0.5 * (fx * fx + fy * fy)), 0.0, 1.0);
+                                return zob::clamp(std::sqrt(0.5 * (fx * fx + fy * fy)), 0.0, 1.0);
                         });
                         tensor::transform(fieldx, fieldy, image.matrix(1), [=] (const scalar_t, const scalar_t)
                         {
@@ -31,7 +31,7 @@ namespace cortex
                         });
                         tensor::transform(fieldx, fieldy, image.matrix(2), [=] (const scalar_t fx, const scalar_t fy)
                         {
-                                return 0.5 * math::clamp(0.5 * (ipi * atan2(fy, fx) + 1.0), 0.0, 1.0);
+                                return 0.5 * zob::clamp(0.5 * (ipi * atan2(fy, fx) + 1.0), 0.0, 1.0);
                         });
                         tensor::transform(fieldx, fieldy, image.matrix(3), [] (const scalar_t, const scalar_t)
                         {
@@ -43,8 +43,8 @@ namespace cortex
 
                 void smooth_field(matrix_t& field, const scalar_t sigma)
                 {
-                        const math::gauss_kernel_t<scalar_t> gauss(sigma);
-                        cortex::convolve(gauss, field);
+                        const zob::gauss_kernel_t<scalar_t> gauss(sigma);
+                        zob::convolve(gauss, field);
                 }
 
                 std::tuple<matrix_t, matrix_t> make_random_fields(
@@ -53,8 +53,8 @@ namespace cortex
                 {
                         matrix_t fieldx(rows, cols), fieldy(rows, cols);
 
-                        tensor::set_random(fieldx, math::make_rng<scalar_t>(-noise, +noise));
-                        tensor::set_random(fieldy, math::make_rng<scalar_t>(-noise, +noise));
+                        tensor::set_random(fieldx, zob::make_rng<scalar_t>(-noise, +noise));
+                        tensor::set_random(fieldy, zob::make_rng<scalar_t>(-noise, +noise));
 
                         smooth_field(fieldx, sigma);
                         smooth_field(fieldy, sigma);
@@ -68,8 +68,8 @@ namespace cortex
                 {
                         matrix_t fieldx(rows, cols), fieldy(rows, cols);
 
-                        tensor::set_random(fieldx, math::make_rng<scalar_t>(delta - noise, delta + noise));
-                        tensor::set_random(fieldy, math::make_rng<scalar_t>(delta - noise, delta + noise));
+                        tensor::set_random(fieldx, zob::make_rng<scalar_t>(delta - noise, delta + noise));
+                        tensor::set_random(fieldy, zob::make_rng<scalar_t>(delta - noise, delta + noise));
 
                         smooth_field(fieldx, sigma);
                         smooth_field(fieldy, sigma);
@@ -85,15 +85,15 @@ namespace cortex
 
                         const scalar_t cx = 0.5 * static_cast<scalar_t>(cols);
                         const scalar_t cy = 0.5 * static_cast<scalar_t>(rows);
-                        const scalar_t id = 1.0 / (math::square(cx) + math::square(cy));
+                        const scalar_t id = 1.0 / (zob::square(cx) + zob::square(cy));
 
-                        auto rng = math::make_rng<scalar_t>(-noise, +noise);
+                        auto rng = zob::make_rng<scalar_t>(-noise, +noise);
 
                         for (tensor_size_t r = 0; r < rows; ++ r)
                         {
                                 for (tensor_size_t c = 0; c < cols; ++ c)
                                 {
-                                        const auto dist = math::square(scalar_t(r) - cy) + math::square(scalar_t(c) - cx);
+                                        const auto dist = zob::square(scalar_t(r) - cy) + zob::square(scalar_t(c) - cx);
 
                                         fieldx(r, c) = id * dist * std::cos(theta) + rng();
                                         fieldy(r, c) = id * dist * std::sin(theta) + rng();
@@ -146,21 +146,21 @@ namespace cortex
                 tensor_t gradx(patch.dims(), patch.rows(), patch.cols());
                 for (auto d = 0; d < patch.dims(); ++ d)
                 {
-                        cortex::gradientx(patch.matrix(d), gradx.matrix(d));
+                        zob::gradientx(patch.matrix(d), gradx.matrix(d));
                 }
 
                 // y gradient (directional gradient)
                 tensor_t grady(patch.dims(), patch.rows(), patch.cols());
                 for (auto d = 0; d < patch.dims(); ++ d)
                 {
-                        cortex::gradienty(patch.matrix(d), grady.matrix(d));
+                        zob::gradienty(patch.matrix(d), grady.matrix(d));
                 }
 
                 // generate random fields
                 const scalar_t pi = 4 * std::atan(1.0);
 
-                auto random_theta = math::make_rng<scalar_t>(-pi / 8.0, +pi / 8.0);
-                auto rng_delta = math::make_rng<scalar_t>(-1.0, +1.0);
+                auto random_theta = zob::make_rng<scalar_t>(-pi / 8.0, +pi / 8.0);
+                auto rng_delta = zob::make_rng<scalar_t>(-1.0, +1.0);
 
                 matrix_t fieldx, fieldy;
                 switch (params.m_ftype)
@@ -189,9 +189,9 @@ namespace cortex
                 }
 
                 // warp
-                math::random_t<scalar_t> rng_alphax(-params.m_alpha, +params.m_alpha);
-                math::random_t<scalar_t> rng_alphay(-params.m_alpha, +params.m_alpha);
-                math::random_t<scalar_t> rng_beta  (-params.m_beta, +params.m_beta);
+                zob::random_t<scalar_t> rng_alphax(-params.m_alpha, +params.m_alpha);
+                zob::random_t<scalar_t> rng_alphay(-params.m_alpha, +params.m_alpha);
+                zob::random_t<scalar_t> rng_beta  (-params.m_beta, +params.m_beta);
 
                 const scalar_t alphax = rng_alphax();
                 const scalar_t alphay = rng_alphay();

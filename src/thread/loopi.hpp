@@ -2,7 +2,7 @@
 
 #include "pool.h"
 
-namespace thread
+namespace zob
 {
         ///
         /// \brief split a loop computation of the given size using a thread pool

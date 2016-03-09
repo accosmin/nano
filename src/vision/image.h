@@ -4,7 +4,7 @@
 #include "color.h"
 #include "stringi.h"
 
-namespace cortex
+namespace zob
 {
         ///
         /// \brief stores an image either as grayscale (luma) or RGBA buffer.

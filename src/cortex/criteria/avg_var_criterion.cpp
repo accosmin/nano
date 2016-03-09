@@ -1,6 +1,6 @@
 #include "avg_var_criterion.h"
 
-namespace cortex
+namespace zob
 {
         avg_var_criterion_t::avg_var_criterion_t(const string_t& configuration)
                 :       avg_criterion_t(configuration),

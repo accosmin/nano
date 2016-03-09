@@ -8,10 +8,10 @@
 
 int main(int argc, char *argv[])
 {
-        using namespace cortex;
+        using namespace zob;
 
         // parse the command line
-        text::cmdline_t cmdline("embed binary file into the library");
+        zob::cmdline_t cmdline("embed binary file into the library");
         cmdline.add("i", "input",       "input path");
         cmdline.add("o", "output",      "output base file name (to generate .h & .cpp)");
 
@@ -22,8 +22,8 @@ int main(int argc, char *argv[])
         const auto cmd_output = cmdline.get<string_t>("output");
 
         // load input file
-        io::buffer_t data;
-        if (!io::load_buffer(cmd_input, data))
+        zob::buffer_t data;
+        if (!zob::load_buffer(cmd_input, data))
         {
                 log_error() << "failed to load input file from <" << cmd_input << ">!";
                 return EXIT_FAILURE;
@@ -31,12 +31,12 @@ int main(int argc, char *argv[])
 
         log_info () << "input: " << data.size() << " bytes.";
 
-        const string_t name = text::lower(text::replace(text::stem(cmd_input), '-', '_'));
+        const string_t name = zob::lower(zob::replace(zob::stem(cmd_input), '-', '_'));
         const string_t tab(8, ' ');
         const size_t rowsize = 128;
 
-        const string_t path_header = text::lower(text::replace(cmd_output, '-', '_')) + ".h";
-        const string_t path_source = text::lower(text::replace(cmd_output, '-', '_')) + ".cpp";
+        const string_t path_header = zob::lower(zob::replace(cmd_output, '-', '_')) + ".h";
+        const string_t path_source = zob::lower(zob::replace(cmd_output, '-', '_')) + ".cpp";
 
         // generate header
         std::ofstream os_header(path_header.c_str(), std::ios::out);
@@ -50,7 +50,7 @@ int main(int argc, char *argv[])
         os_header << "\n";
         os_header << "#include <cstddef>\n";
         os_header << "\n";
-        os_header << "namespace cortex\n";
+        os_header << "namespace zob\n";
         os_header << "{\n";
         os_header << tab << "const char* get_" << name << "_data();\n";
         os_header << tab << "std::size_t get_" << name << "_size();\n";
@@ -73,7 +73,7 @@ int main(int argc, char *argv[])
                 return EXIT_FAILURE;
         }
 
-        os_source << "#include " << text::filename(path_header) << "\n";
+        os_source << "#include " << zob::filename(path_header) << "\n";
         os_source << "\n";
         os_source << "namespace\n";
         os_source << "{\n";
@@ -95,17 +95,17 @@ int main(int argc, char *argv[])
         os_source << "\n" << tab << "};\n";
         os_source << "}\n\n";
 
-        os_source << "const char* cortex::get_" << name << "_data()\n";
+        os_source << "const char* zob::get_" << name << "_data()\n";
         os_source << "{\n";
         os_source << tab << "return (const char*)data;\n";
         os_source << "}\n\n";
 
-        os_source << "std::size_t cortex::get_" << name << "_size()\n";
+        os_source << "std::size_t zob::get_" << name << "_size()\n";
         os_source << "{\n";
         os_source << tab << "return sizeof(data) / sizeof(unsigned char);\n";
         os_source << "}\n\n";
 
-        os_source << "const char* cortex::get_" << name << "_name()\n";
+        os_source << "const char* zob::get_" << name << "_name()\n";
         os_source << "{\n";
         os_source << tab << "return name;\n";
         os_source << "}\n\n";
@@ -118,6 +118,6 @@ int main(int argc, char *argv[])
         os_source.close();
 		
         // OK
-        log_info() << cortex::done;
+        log_info() << zob::done;
         return EXIT_SUCCESS;
 }

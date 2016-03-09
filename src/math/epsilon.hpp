@@ -3,7 +3,7 @@
 #include <cmath>
 #include <limits>
 
-namespace math
+namespace zob
 {
         ///
         /// \brief precision level [0=very precise, 1=quite precise, 2=precise, 3=loose] for different scalars

@@ -1,11 +1,14 @@
 #pragma once
 
-#include "arch.h"
+#include <thread>
 
-namespace thread
+namespace zob
 {
         ///
         /// \brief the number of threads available on the system (usually #CPU cores x 2 (HT))
         ///
-        ZOB_PUBLIC unsigned int n_threads();
+        inline unsigned int n_threads()
+        {
+                return std::thread::hardware_concurrency();
+        }
 }

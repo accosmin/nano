@@ -2,7 +2,7 @@
 
 #include "to_string.hpp"
 
-namespace text
+namespace zob
 {
         ///
         /// \brief compact a list of values into a string using the given "glue" string

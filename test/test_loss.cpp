@@ -7,13 +7,13 @@
 
 namespace test
 {
-        using namespace cortex;
+        using namespace zob;
 
         void check_grad(const string_t& loss_id, tensor_size_t n_dims, size_t n_tests)
         {
-                const auto loss = cortex::get_losses().get(loss_id);
+                const auto loss = zob::get_losses().get(loss_id);
 
-                const vector_t target = cortex::class_target(n_dims / 2, n_dims);
+                const vector_t target = zob::class_target(n_dims / 2, n_dims);
 
                 // optimization problem: size
                 auto opt_fn_size = [&] ()
@@ -45,13 +45,13 @@ namespace test
                 // check the gradient using random parameters
                 for (size_t t = 0; t < n_tests; ++ t)
                 {
-                        math::random_t<scalar_t> rgen(-1.0, +1.0);
+                        zob::random_t<scalar_t> rgen(-1.0, +1.0);
 
                         vector_t x(n_dims);
                         rgen(x.data(), x.data() + n_dims);
 
                         ZOB_CHECK_GREATER(problem(x), 0.0);
-                        ZOB_CHECK_LESS(problem.grad_accuracy(x), math::epsilon2<scalar_t>());
+                        ZOB_CHECK_LESS(problem.grad_accuracy(x), zob::epsilon2<scalar_t>());
                 }
         }
 }
@@ -60,11 +60,11 @@ ZOB_BEGIN_MODULE(test_loss)
 
 ZOB_CASE(evaluate)
 {
-        cortex::init();
+        zob::init();
 
-        using namespace cortex;
+        using namespace zob;
 
-        const strings_t loss_ids = cortex::get_losses().ids();
+        const strings_t loss_ids = zob::get_losses().ids();
 
         const tensor_size_t cmd_min_dims = 2;
         const tensor_size_t cmd_max_dims = 10;

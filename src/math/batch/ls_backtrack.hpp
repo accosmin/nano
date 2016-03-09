@@ -2,7 +2,7 @@
 
 #include "math/lsearch_types.h"
 
-namespace math
+namespace zob
 {
         ///
         /// \brief backtracking line-search,

@@ -4,7 +4,7 @@
 #include "function.hpp"
 #include <cmath>
 
-namespace math
+namespace zob
 {
         ///
         /// \brief create McCormick test functions

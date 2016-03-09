@@ -2,7 +2,7 @@
 
 #include "image.h"
 
-namespace cortex
+namespace zob
 {
         ///
         /// \brief create an RGBA image composed from fixed-size RGBA patches disposed in a grid

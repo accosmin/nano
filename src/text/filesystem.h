@@ -3,7 +3,7 @@
 #include "arch.h"
 #include <string>
 
-namespace text
+namespace zob
 {
         ///
         /// \brief extracts file name from path (e.g. /usr/include/file.ext -> file.ext).

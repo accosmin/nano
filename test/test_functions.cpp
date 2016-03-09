@@ -8,20 +8,20 @@ namespace test
         template
         <
                 typename tscalar,
-                typename tvector = typename math::function_t<tscalar>::tvector
+                typename tvector = typename zob::function_t<tscalar>::tvector
         >
-        void test_function(const math::function_t<tscalar>& function)
+        void test_function(const zob::function_t<tscalar>& function)
         {
                 const size_t trials = 135;
 
-                const auto epsilon = math::epsilon2<tscalar>();
+                const auto epsilon = zob::epsilon2<tscalar>();
 
                 const auto dims = function.problem().size();
                 ZOB_CHECK_GREATER(dims, 0);
 
                 for (size_t t = 0; t < trials; ++ t)
                 {
-                        math::random_t<tscalar> rgen(tscalar(-0.1), tscalar(+0.1));
+                        zob::random_t<tscalar> rgen(tscalar(-0.1), tscalar(+0.1));
 
                         tvector x0(dims);
                         rgen(x0.data(), x0.data() + x0.size());
@@ -37,7 +37,7 @@ ZOB_BEGIN_MODULE(test_functions)
 
 ZOB_CASE(evaluate)
 {
-        math::foreach_test_function<double, math::test_type::all>(1, 8, [] (const auto& function)
+        zob::foreach_test_function<double, zob::test_type::all>(1, 8, [] (const auto& function)
         {
                 test::test_function(function);
         });

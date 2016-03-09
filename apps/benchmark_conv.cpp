@@ -17,7 +17,7 @@
 
 namespace
 {
-        using namespace cortex;
+        using namespace zob;
 
         template
         <
@@ -28,7 +28,7 @@ namespace
         {
                 const int osize = isize - ksize + 1;
 
-                math::random_t<typename tmatrix::Scalar> rng(-1.0 / isize, 1.0 / isize);
+                zob::random_t<typename tmatrix::Scalar> rng(-1.0 / isize, 1.0 / isize);
 
                 idata.resize(isize, isize);
                 kdata.resize(ksize, ksize);
@@ -49,7 +49,7 @@ namespace
         auto measure_op(const top& op,
                 const tmatrixi& idata, const tmatrixk& kdata, tmatrixo&& odata, const size_t trials = 16)
         {
-                return cortex::measure_robustly_nsec([&] ()
+                return zob::measure_robustly_nsec([&] ()
                 {
                         op(idata, kdata, odata);
                 }, trials).count();
@@ -59,7 +59,7 @@ namespace
         <
                 typename tmatrix
         >
-        void test_config_conv(const int isize, const int ksize, text::table_row_t& row, const size_t trials = 16)
+        void test_config_conv(const int isize, const int ksize, zob::table_row_t& row, const size_t trials = 16)
         {
                 tmatrix idata, kdata, odata;
                 make_matrices(isize, ksize, idata, kdata, odata);
@@ -77,7 +77,7 @@ namespace
         <
                 typename tmatrix
         >
-        void test_config_corr(const int isize, const int ksize, text::table_row_t& row, const size_t trials = 16)
+        void test_config_corr(const int isize, const int ksize, zob::table_row_t& row, const size_t trials = 16)
         {
                 tmatrix idata, kdata, odata;
                 make_matrices(isize, ksize, idata, kdata, odata);
@@ -95,7 +95,7 @@ namespace
 
 int main(int argc, char* argv[])
 {
-        using namespace cortex;
+        using namespace zob;
 
         const int min_isize = 4;
         const int max_isize = 48;
@@ -104,7 +104,7 @@ int main(int argc, char* argv[])
         const int max_ksize = 15;
 
         // parse the command line
-        text::cmdline_t cmdline("benchmark 2D convolutions & correlations");
+        zob::cmdline_t cmdline("benchmark 2D convolutions & correlations");
         cmdline.add("", "conv", "benchmark convolutions");
         cmdline.add("", "corr", "benchmark correlations");
 
@@ -122,7 +122,7 @@ int main(int argc, char* argv[])
         // convolutions
         if (has_conv)
         {
-                text::table_t table("size\\convolution [ns]");
+                zob::table_t table("size\\convolution [ns]");
                 table.header()
                         << "eig"
                         << "cpp"
@@ -145,22 +145,22 @@ int main(int argc, char* argv[])
                         {
                                 const int osize = isize - ksize + 1;
                                 const auto header =
-                                        "(" + text::to_string(isize) + "x" + text::to_string(isize) + " @ " +
-                                              text::to_string(ksize) + "x" + text::to_string(ksize) + " -> " +
-                                              text::to_string(osize) + "x" + text::to_string(osize) + ")";
+                                        "(" + zob::to_string(isize) + "x" + zob::to_string(isize) + " @ " +
+                                              zob::to_string(ksize) + "x" + zob::to_string(ksize) + " -> " +
+                                              zob::to_string(osize) + "x" + zob::to_string(osize) + ")";
 
                                 test_config_conv<matrix_t>(isize, ksize, table.append(header));
                         }
                 }
 
-                table.mark(text::make_table_mark_minimum_percentage_cols<size_t>(10));
+                table.mark(zob::make_table_mark_minimum_percentage_cols<size_t>(10));
                 table.print(std::cout);
         }
 
         // correlations
         if (has_corr)
         {
-                text::table_t table("size\\correlation [ns]");
+                zob::table_t table("size\\correlation [ns]");
                 table.header()
                         << "egb"
                         << "egr"
@@ -177,15 +177,15 @@ int main(int argc, char* argv[])
                         {
                                 const int osize = isize - ksize + 1;
                                 const auto header =
-                                        "(" + text::to_string(osize) + "x" + text::to_string(osize) + " @ " +
-                                              text::to_string(ksize) + "x" + text::to_string(ksize) + " -> " +
-                                              text::to_string(isize) + "x" + text::to_string(isize) + ")";
+                                        "(" + zob::to_string(osize) + "x" + zob::to_string(osize) + " @ " +
+                                              zob::to_string(ksize) + "x" + zob::to_string(ksize) + " -> " +
+                                              zob::to_string(isize) + "x" + zob::to_string(isize) + ")";
 
                                 test_config_corr<matrix_t>(isize, ksize, table.append(header));
                         }
                 }
 
-                table.mark(text::make_table_mark_minimum_percentage_cols<size_t>(10));
+                table.mark(zob::make_table_mark_minimum_percentage_cols<size_t>(10));
                 table.print(std::cout);
         }
 

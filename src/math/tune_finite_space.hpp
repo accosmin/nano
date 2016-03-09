@@ -2,7 +2,7 @@
 
 #include <vector>
 
-namespace math
+namespace zob
 {
         ///
         /// \brief finite set of values to search through.

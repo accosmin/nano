@@ -5,7 +5,7 @@
 #include <vector>
 #include <utility>
 
-namespace math
+namespace zob
 {
         ///
         /// \brief CG_DESCENT:

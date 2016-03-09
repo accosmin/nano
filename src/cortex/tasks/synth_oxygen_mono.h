@@ -2,7 +2,7 @@
 
 #include <cstddef>
 
-namespace cortex
+namespace zob
 {
         const char* get_synth_oxygen_mono_data();
         std::size_t get_synth_oxygen_mono_size();

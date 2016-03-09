@@ -4,7 +4,7 @@
 #include "math/tune.hpp"
 #include "stoch_loop.hpp"
 
-namespace math
+namespace zob
 {
         ///
         /// \brief stochastic gradient (descent)
@@ -32,10 +32,10 @@ namespace math
                                 return this->operator()(param.tunable(), problem, x0, params...);
                         };
 
-                        const auto alpha0s = math::make_log10_space(-4.0, +0.0, 0.20);
-                        const auto decays = math::make_linear_space(0.10, 1.00, 0.05);
+                        const auto alpha0s = zob::make_log10_space(-4.0, +0.0, 0.20);
+                        const auto decays = zob::make_linear_space(0.10, 1.00, 0.05);
 
-                        const auto config = math::tune(op, alpha0s, decays);
+                        const auto config = zob::tune(op, alpha0s, decays);
                         return operator()(param, problem, x0, config.param0(), config.param1());
                 }
 

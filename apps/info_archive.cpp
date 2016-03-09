@@ -6,10 +6,10 @@
 
 int main(int argc, char *argv[])
 {
-        using namespace cortex;
+        using namespace zob;
         
         // parse the command line
-        text::cmdline_t cmdline("display the structure of the given archive");
+        zob::cmdline_t cmdline("display the structure of the given archive");
         cmdline.add("i", "input",       "input archive path (.tar, .gz, .bz2, .tar.gz, .tar.bz2)");
 	
         cmdline.process(argc, argv);
@@ -29,8 +29,8 @@ int main(int argc, char *argv[])
         };
 
         // decode archive
-        cortex::timer_t timer;
-        if (!io::unarchive(cmd_input, callback, error_callback))
+        zob::timer_t timer;
+        if (!zob::unarchive(cmd_input, callback, error_callback))
         {
                 return EXIT_FAILURE;
         }
@@ -39,7 +39,7 @@ int main(int argc, char *argv[])
                 log_info() << "<" << cmd_input << "> loaded in " << timer.elapsed() << ".";
 
                 // OK
-                log_info() << cortex::done;
+                log_info() << zob::done;
                 return EXIT_SUCCESS;
         }
 }

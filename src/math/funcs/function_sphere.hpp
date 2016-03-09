@@ -3,7 +3,7 @@
 #include "util.hpp"
 #include "function.hpp"
 
-namespace math
+namespace zob
 {
         ///
         /// \brief create sphere test functions

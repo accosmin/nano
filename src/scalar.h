@@ -2,7 +2,7 @@
 
 #include <vector>
 
-namespace cortex
+namespace zob
 {
         // sizes and indices
         using size_t = std::size_t;

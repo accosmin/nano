@@ -3,7 +3,7 @@
 #include "task.h"
 #include "trainer_result.h"
 
-namespace cortex
+namespace zob
 {
         class loss_t;
         class model_t;

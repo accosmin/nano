@@ -1,6 +1,6 @@
 #include "filesystem.h"
 
-namespace text
+namespace zob
 {
         std::string filename(const std::string& path)
         {

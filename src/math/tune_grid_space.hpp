@@ -5,7 +5,7 @@
 #include <type_traits>
 #include "math/clamp.hpp"
 
-namespace math
+namespace zob
 {
         ///
         /// \brief map values from the search/tuning space to hyper-parameters.
@@ -103,8 +103,8 @@ namespace math
                         const auto min = optimum - (m_splits - 1) * var / m_splits;
                         const auto max = optimum + (m_splits - 1) * var / m_splits;
 
-                        m_min = math::clamp(min, m_orig_min, m_orig_max);
-                        m_max = math::clamp(max, m_orig_min, m_orig_max);
+                        m_min = zob::clamp(min, m_orig_min, m_orig_max);
+                        m_max = zob::clamp(max, m_orig_min, m_orig_max);
 
                         return var >= tscalar(1.01) * m_epsilon;
                 }

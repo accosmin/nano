@@ -5,7 +5,7 @@
 #include "tensor/random.hpp"
 #include "tensor/transform.hpp"
 
-namespace cortex
+namespace zob
 {
         image_t::image_t(coord_t rows, coord_t cols, color_mode mode)
                 :       m_rows(rows),
@@ -411,11 +411,11 @@ namespace cortex
                 switch (m_mode)
                 {
                 case color_mode::luma:
-                        tensor::set_random(m_luma, math::random_t<luma_t>());
+                        tensor::set_random(m_luma, zob::random_t<luma_t>());
                         return true;
 
                 case color_mode::rgba:
-                        tensor::set_random(m_rgba, math::random_t<rgba_t>());
+                        tensor::set_random(m_rgba, zob::random_t<rgba_t>());
                         tensor::transform(m_rgba, m_rgba, [] (rgba_t c) { return color::set_alpha(c, 255); });
                         return true;
 

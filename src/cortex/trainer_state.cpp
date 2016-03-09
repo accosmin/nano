@@ -7,7 +7,7 @@
 #include <limits>
 #include <cmath>
 
-namespace cortex
+namespace zob
 {
         trainer_state_t::trainer_state_t()
                 :       trainer_state_t(
@@ -50,7 +50,7 @@ namespace cortex
                         assert(prv_state.m_tvalue >= scalar_t(0));
                         assert(crt_state.m_milis >= prv_state.m_milis);
 
-                        const scalar_t epsilon = math::epsilon0<scalar_t>();
+                        const scalar_t epsilon = zob::epsilon0<scalar_t>();
                         const auto ratio = (epsilon + crt_state.m_tvalue) / (epsilon + prv_state.m_tvalue);
                         const auto delta = 1 + crt_state.m_milis.count() - prv_state.m_milis.count();
 
@@ -58,7 +58,7 @@ namespace cortex
                         return scalar_t(1000) / static_cast<scalar_t>(delta) * std::log(ratio);
                 };
 
-                math::stats_t<scalar_t> speeds;
+                zob::stats_t<scalar_t> speeds;
                 for (size_t i = 0; i + 1 < states.size(); ++ i)
                 {
                         speeds(op(states[i], states[i + 1]));
@@ -87,26 +87,26 @@ namespace cortex
 
                 // header
                 ofs 
-                << text::align("train-loss", colsize) << delim
-                << text::align("train-error-average", colsize) << delim
-                << text::align("train-error-variance", colsize) << delim
-                << text::align("valid-loss", colsize) << delim
-                << text::align("valid-error-average", colsize) << delim
-                << text::align("valid-error-variance", colsize) << delim
-                << text::align("time-seconds", colsize) << delim
+                << zob::align("train-loss", colsize) << delim
+                << zob::align("train-error-average", colsize) << delim
+                << zob::align("train-error-variance", colsize) << delim
+                << zob::align("valid-loss", colsize) << delim
+                << zob::align("valid-error-average", colsize) << delim
+                << zob::align("valid-error-variance", colsize) << delim
+                << zob::align("time-seconds", colsize) << delim
                 << std::endl;
 
                 // optimization states
                 for (const trainer_state_t& state : states)
                 {
                         ofs 
-                        << text::align(text::to_string(state.m_tvalue), colsize) << delim
-                        << text::align(text::to_string(state.m_terror_avg), colsize) << delim
-                        << text::align(text::to_string(state.m_terror_var), colsize) << delim
-                        << text::align(text::to_string(state.m_vvalue), colsize) << delim
-                        << text::align(text::to_string(state.m_verror_avg), colsize) << delim
-                        << text::align(text::to_string(state.m_verror_var), colsize) << delim
-                        << text::align(text::to_string((state.m_milis.count() + 500) / 1000), colsize) << delim
+                        << zob::align(zob::to_string(state.m_tvalue), colsize) << delim
+                        << zob::align(zob::to_string(state.m_terror_avg), colsize) << delim
+                        << zob::align(zob::to_string(state.m_terror_var), colsize) << delim
+                        << zob::align(zob::to_string(state.m_vvalue), colsize) << delim
+                        << zob::align(zob::to_string(state.m_verror_avg), colsize) << delim
+                        << zob::align(zob::to_string(state.m_verror_var), colsize) << delim
+                        << zob::align(zob::to_string((state.m_milis.count() + 500) / 1000), colsize) << delim
                         << std::endl;
                 }
 

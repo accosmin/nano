@@ -1,7 +1,7 @@
 #include "loss_square.h"
 #include <cassert>
 
-namespace cortex
+namespace zob
 {
         square_loss_t::square_loss_t(const string_t& configuration)
                 :       loss_t(configuration)

@@ -2,7 +2,7 @@
 
 #include <cmath>
 
-namespace math
+namespace zob
 {
         ///
         /// \brief absolute value

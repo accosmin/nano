@@ -3,7 +3,7 @@
 #include "cortex/model.h"
 #include "cortex/layer.h"
 
-namespace cortex
+namespace zob
 {
         ///
         /// multi-layer feed-forward network model

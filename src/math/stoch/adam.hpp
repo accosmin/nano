@@ -3,7 +3,7 @@
 #include "math/tune.hpp"
 #include "stoch_loop.hpp"
 
-namespace math
+namespace zob
 {
         ///
         /// \brief stochastic Adam,
@@ -30,10 +30,10 @@ namespace math
                                 return this->operator()(param.tunable(), problem, x0, params...);
                         };
 
-                        const auto alpha0s = math::make_finite_space(1e-4, 1e-3, 1e-2, 1e-1, 1e+0);
-                        const auto epsilons = math::make_finite_space(1e-4, 1e-6, 1e-8);
+                        const auto alpha0s = zob::make_finite_space(1e-4, 1e-3, 1e-2, 1e-1, 1e+0);
+                        const auto epsilons = zob::make_finite_space(1e-4, 1e-6, 1e-8);
 
-                        const auto config = math::tune(op, alpha0s, epsilons);
+                        const auto config = zob::tune(op, alpha0s, epsilons);
                         return operator()(param, problem, x0, config.param0(), config.param1());
                 }
 

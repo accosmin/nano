@@ -2,7 +2,7 @@
 
 #include "abs.hpp"
 
-namespace math
+namespace zob
 {
         ///
         /// \brief check if two scalars are almost equal
@@ -13,7 +13,7 @@ namespace math
         >
         bool close(tscalar x, tscalar y, tscalar epsilon)
         {
-                return math::abs(x - y) <= (tscalar(1) + std::max(x, y)) * epsilon;
+                return zob::abs(x - y) <= (tscalar(1) + std::max(x, y)) * epsilon;
         }
 }
 

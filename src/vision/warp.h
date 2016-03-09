@@ -3,7 +3,7 @@
 #include "arch.h"
 #include "tensor.h"
 
-namespace cortex
+namespace zob
 {
         enum class field_type
         {

@@ -1,7 +1,7 @@
 #include "point.h"
 #include <ostream>
 
-namespace cortex
+namespace zob
 {
         bool operator==(const point_t& point1, const point_t& point2)
         {

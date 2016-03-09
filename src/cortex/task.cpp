@@ -4,7 +4,7 @@
 #include "text/to_string.hpp"
 #include "vision/image_grid.h"
 
-namespace cortex
+namespace zob
 {
         task_manager_t& get_tasks()
         {
@@ -14,7 +14,7 @@ namespace cortex
 
         void print(const string_t& header, const samples_t& samples)
         {
-                const strings_t labels = cortex::labels(samples);
+                const strings_t labels = zob::labels(samples);
 
                 for (const string_t& label : labels)
                 {
@@ -40,7 +40,7 @@ namespace cortex
 
         strings_t task_t::labels() const
         {
-                return cortex::labels(m_samples);
+                return zob::labels(m_samples);
         }
 
         void task_t::save_as_images(
@@ -82,7 +82,7 @@ namespace cortex
                         }
 
                         // ... and save it
-                        const string_t path = basepath + "_group" + text::to_string(g) + ".png";
+                        const string_t path = basepath + "_group" + zob::to_string(g) + ".png";
                         log_info() << "saving images to <" << path << "> ...";
                         grid_image.image().save(path);
                 }
@@ -127,8 +127,8 @@ namespace cortex
                                 sampler_t sampler(this->samples());
                                 sampler.push({f, p});
 
-                                cortex::print("fold [" + text::to_string(f + 1) + "/" + text::to_string(fsize()) + "] " +
-                                           "protocol [" + text::to_string(p) + "]",
+                                zob::print("fold [" + zob::to_string(f + 1) + "/" + zob::to_string(fsize()) + "] " +
+                                           "protocol [" + zob::to_string(p) + "]",
                                            sampler.get());
                         }
                 }

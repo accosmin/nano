@@ -41,14 +41,14 @@ namespace test
         >
         void check_average(const tsize range)
         {
-                math::average_scalar_t<tscalar> avg1, avg2;
+                zob::average_scalar_t<tscalar> avg1, avg2;
                 for (tsize i = 1; i <= range; ++ i)
                 {
                         avg1.update(tscalar(i));
                         avg2.update(tscalar(sign(i + 1) * i) * tscalar(i));
                 }
 
-                const auto epsilon = math::epsilon1<tscalar>();
+                const auto epsilon = zob::epsilon1<tscalar>();
                 const auto base1 = average1<tscalar>(range);
                 const auto base2 = average2<tscalar>(range);
 
@@ -64,14 +64,14 @@ namespace test
         >
         void check_average(const tsize dims, const tsize range)
         {
-                math::average_vector_t<tvector> avg1(dims), avg2(dims);
+                zob::average_vector_t<tvector> avg1(dims), avg2(dims);
                 for (tsize i = 1; i <= range; ++ i)
                 {
                         avg1.update(tvector::Constant(dims, tscalar(i)));
                         avg2.update(tvector::Constant(dims, tscalar(sign(i + 1) * i) * tscalar(i)));
                 }
 
-                const auto epsilon = math::epsilon1<tscalar>();
+                const auto epsilon = zob::epsilon1<tscalar>();
                 const auto base1 = tvector::Constant(dims, average1<tscalar>(range));
                 const auto base2 = tvector::Constant(dims, average2<tscalar>(range));
 

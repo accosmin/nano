@@ -2,7 +2,7 @@
 
 #include "params.hpp"
 
-namespace math
+namespace zob
 {
         ///
         /// \brief batch optimization loop

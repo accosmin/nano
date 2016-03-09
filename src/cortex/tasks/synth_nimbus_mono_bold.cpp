@@ -210,17 +210,17 @@ namespace
         };
 }
 
-const char* cortex::get_synth_nimbus_mono_bold_data()
+const char* zob::get_synth_nimbus_mono_bold_data()
 {
         return (const char*)data;
 }
 
-std::size_t cortex::get_synth_nimbus_mono_bold_size()
+std::size_t zob::get_synth_nimbus_mono_bold_size()
 {
         return sizeof(data) / sizeof(unsigned char);
 }
 
-const char* cortex::get_synth_nimbus_mono_bold_name()
+const char* zob::get_synth_nimbus_mono_bold_name()
 {
         return name;
 }

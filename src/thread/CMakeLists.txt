@@ -4,9 +4,7 @@ set(libthread_sources
         ${CMAKE_CURRENT_SOURCE_DIR}/loopit.hpp
         ${CMAKE_CURRENT_SOURCE_DIR}/pool.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/pool.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/tasks.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/tasks.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/thread.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/queue.h
         ${CMAKE_CURRENT_SOURCE_DIR}/thread.h
         ${CMAKE_CURRENT_SOURCE_DIR}/worker.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/worker.h)
@@ -22,4 +20,4 @@ install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
         FILES_MATCHING PATTERN "*.h" PATTERN "*.hpp")
 
 
-                
+

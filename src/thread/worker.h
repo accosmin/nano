@@ -2,12 +2,12 @@
 
 #include "arch.h"
 
-namespace thread
+namespace zob
 {
-        struct tasks_t;
+        struct queue_t;
 
         ///
-        /// \brief worker to process tasks en-queued in a thread pool
+        /// \brief worker to process jobs enqueued in a thread pool
         ///
         class ZOB_PUBLIC worker_t
         {
@@ -16,10 +16,10 @@ namespace thread
                 ///
                 /// \brief constructor
                 ///
-                explicit worker_t(tasks_t& queue, const bool active = true);
+                explicit worker_t(queue_t& queue, const bool active = true);
 
                 ///
-                /// \brief execute tasks when available
+                /// \brief execute jobs when available
                 ///
                 void operator()() const;
 
@@ -31,14 +31,14 @@ namespace thread
                 bool deactivate();
 
                 ///
-                /// \brief check if the worker is active (aka for processing tasks)
+                /// \brief check if the worker is active (aka for processing jobs)
                 ///
                 bool active() const;
 
         private:
 
                 // attributes
-                tasks_t&        m_queue;        ///< task queue to process
-                bool            m_active;       ///< is worker active for processing tasks?
+                queue_t&        m_queue;        ///< job queue to process
+                bool            m_active;       ///< is worker active for processing jobs?
         };
 }

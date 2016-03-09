@@ -2,7 +2,7 @@
 
 #include "criterion.h"
 
-namespace cortex
+namespace zob
 {
         ///
         /// \brief cumulate sample evaluations (loss value, error and gradient)

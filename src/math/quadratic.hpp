@@ -3,7 +3,7 @@
 #include <cmath>
 #include <cassert>
 
-namespace math
+namespace zob
 {
         ///
         /// \brief quadratic: a x^2 + b x + c

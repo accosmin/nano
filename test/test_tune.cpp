@@ -10,26 +10,26 @@ template
 void check(const tscalar a, const tscalar b,
         const tscalar minlog, const tscalar maxlog, const tscalar eps)
 {
-        const auto log10_space = math::make_log10_space(minlog, maxlog, eps);
+        const auto log10_space = zob::make_log10_space(minlog, maxlog, eps);
 
         const auto min = std::pow(tscalar(10), minlog);
         const auto max = std::pow(tscalar(10), maxlog);
-        const auto linear_space = math::make_linear_space(min, max, eps);
+        const auto linear_space = zob::make_linear_space(min, max, eps);
 
-        const auto epsilon = math::epsilon2<tscalar>();
+        const auto epsilon = zob::epsilon2<tscalar>();
 
         const auto op1 = [a=a, b=b] (const tscalar x)
         {
                 return (x - a) * (x - a) + b;
         };
         {
-                const auto ret = math::tune(op1, log10_space);
+                const auto ret = zob::tune(op1, log10_space);
 
                 ZOB_CHECK_CLOSE(ret.optimum(), b, epsilon);
                 ZOB_CHECK_CLOSE(ret.param0(), a, epsilon);
         }
         {
-                const auto ret = math::tune(op1, linear_space);
+                const auto ret = zob::tune(op1, linear_space);
 
                 ZOB_CHECK_CLOSE(ret.optimum(), b, epsilon);
                 ZOB_CHECK_CLOSE(ret.param0(), a, epsilon);
@@ -40,28 +40,28 @@ void check(const tscalar a, const tscalar b,
                 return (x - b) * (x - b) + (y - a) * (y - a) + b;
         };
         {
-                const auto ret = math::tune(op2, log10_space, log10_space);
+                const auto ret = zob::tune(op2, log10_space, log10_space);
 
                 ZOB_CHECK_CLOSE(ret.optimum(), b, epsilon);
                 ZOB_CHECK_CLOSE(ret.param0(), b, epsilon);
                 ZOB_CHECK_CLOSE(ret.param1(), a, epsilon);
         }
         {
-                const auto ret = math::tune(op2, linear_space, log10_space);
+                const auto ret = zob::tune(op2, linear_space, log10_space);
 
                 ZOB_CHECK_CLOSE(ret.optimum(), b, epsilon);
                 ZOB_CHECK_CLOSE(ret.param0(), b, epsilon);
                 ZOB_CHECK_CLOSE(ret.param1(), a, epsilon);
         }
         {
-                const auto ret = math::tune(op2, log10_space, linear_space);
+                const auto ret = zob::tune(op2, log10_space, linear_space);
 
                 ZOB_CHECK_CLOSE(ret.optimum(), b, epsilon);
                 ZOB_CHECK_CLOSE(ret.param0(), b, epsilon);
                 ZOB_CHECK_CLOSE(ret.param1(), a, epsilon);
         }
         {
-                const auto ret = math::tune(op2, linear_space, linear_space);
+                const auto ret = zob::tune(op2, linear_space, linear_space);
 
                 ZOB_CHECK_CLOSE(ret.optimum(), b, epsilon);
                 ZOB_CHECK_CLOSE(ret.param0(), b, epsilon);
@@ -78,12 +78,12 @@ ZOB_CASE(tune_grid)
         const size_t n_tests = 16;
         const scalar_t minlog = -6.0;
         const scalar_t maxlog = +6.0;
-        const scalar_t epslog = math::epsilon0<scalar_t>();
+        const scalar_t epslog = zob::epsilon0<scalar_t>();
 
         for (size_t t = 0; t < n_tests; ++ t)
         {
-                math::random_t<scalar_t> agen(+0.1, +1.0);
-                math::random_t<scalar_t> bgen(+0.2, +2.0);
+                zob::random_t<scalar_t> agen(+0.1, +1.0);
+                zob::random_t<scalar_t> bgen(+0.2, +2.0);
 
                 check(agen(), bgen(), minlog, maxlog, epslog);
         }
@@ -108,15 +108,15 @@ ZOB_CASE(tune_finite)
                 return op3(param1, param2, param3) + op1(param4);
         };
 
-        const auto params1 = math::make_finite_space(0, 1);
-        const auto params2 = math::make_finite_space(3, 2, 1);
-        const auto params3 = math::make_finite_space(2, 3, 4, 5);
-        const auto params4 = math::make_finite_space(7, 6, 5, 4, 3);
+        const auto params1 = zob::make_finite_space(0, 1);
+        const auto params2 = zob::make_finite_space(3, 2, 1);
+        const auto params3 = zob::make_finite_space(2, 3, 4, 5);
+        const auto params4 = zob::make_finite_space(7, 6, 5, 4, 3);
 
-        const auto ret1 = math::tune(op1, params1);
-        const auto ret2 = math::tune(op2, params1, params2);
-        const auto ret3 = math::tune(op3, params1, params2, params3);
-        const auto ret4 = math::tune(op4, params1, params2, params3, params4);
+        const auto ret1 = zob::tune(op1, params1);
+        const auto ret2 = zob::tune(op2, params1, params2);
+        const auto ret3 = zob::tune(op3, params1, params2, params3);
+        const auto ret4 = zob::tune(op4, params1, params2, params3, params4);
 
         ZOB_CHECK_EQUAL(ret1.optimum(), op1(0));
         ZOB_CHECK_EQUAL(ret1.param0(), 0);

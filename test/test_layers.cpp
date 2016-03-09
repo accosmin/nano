@@ -9,7 +9,7 @@
 #include "text/to_string.hpp"
 #include "cortex/layers/make_layers.h"
 
-using namespace cortex;
+using namespace zob;
 
 namespace 
 {
@@ -23,17 +23,17 @@ namespace
 
         rloss_t get_loss() 
         {
-                const strings_t loss_ids = cortex::get_losses().ids();
+                const strings_t loss_ids = zob::get_losses().ids();
 
-                const auto iloss = math::random_t<size_t>()();
+                const auto iloss = zob::random_t<size_t>()();
                 const auto loss_id = loss_ids[iloss % loss_ids.size()];
 
-                return cortex::get_losses().get(loss_id);
+                return zob::get_losses().get(loss_id);
         }
 
         rmodel_t get_model(const string_t& description)
         {
-                const auto model = cortex::get_models().get("forward-network", description + ";" + cmd_layer_output);
+                const auto model = zob::get_models().get("forward-network", description + ";" + cmd_layer_output);
                 model->resize(cmd_irows, cmd_icols, cmd_outputs, cmd_color, false);
                 ZOB_CHECK_EQUAL(model->irows(), cmd_irows);
                 ZOB_CHECK_EQUAL(model->icols(), cmd_icols);
@@ -44,16 +44,16 @@ namespace
 
         void make_random_config(tensor_t& inputs, vector_t& params, vector_t& target)
         {
-                math::random_t<scalar_t> irgen(-0.1, +0.1);
-                math::random_t<scalar_t> prgen(-0.1, +0.1);
-                math::random_t<tensor_size_t> trgen(0, target.size() - 1);
+                zob::random_t<scalar_t> irgen(-0.1, +0.1);
+                zob::random_t<scalar_t> prgen(-0.1, +0.1);
+                zob::random_t<tensor_size_t> trgen(0, target.size() - 1);
 
                 tensor::set_random(inputs, irgen);
                 tensor::set_random(params, prgen);
-                target = cortex::class_target(trgen(), target.size());
+                target = zob::class_target(trgen(), target.size());
         }
 
-        void test_model(const string_t& model_description, const scalar_t epsilon = math::epsilon2<scalar_t>())
+        void test_model(const string_t& model_description, const scalar_t epsilon = zob::epsilon2<scalar_t>())
         {
                 const auto model = get_model(model_description);
                 const auto loss = get_loss();
@@ -133,7 +133,7 @@ ZOB_BEGIN_MODULE(test_layers)
 
 ZOB_CASE(activation)
 {
-        cortex::init();
+        zob::init();
 
         for (const auto& activation_id : { "act-unit", "act-tanh", "act-snorm", "act-splus" })
         {
@@ -143,14 +143,14 @@ ZOB_CASE(activation)
 
 ZOB_CASE(affine)
 {
-        cortex::init();
+        zob::init();
 
         test_model(make_affine_layer(7));
 }
 
 ZOB_CASE(conv)
 {
-        cortex::init();
+        zob::init();
 
         test_model(make_conv_pool_layer(3, 3, 3, "", ""));
         test_model(make_conv_pool_layer(3, 3, 3, "", "pool-max"));
@@ -160,7 +160,7 @@ ZOB_CASE(conv)
 
 ZOB_CASE(multi_layer_models)
 {
-        cortex::init();
+        zob::init();
 
         const strings_t descriptions =
         {

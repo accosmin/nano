@@ -6,7 +6,7 @@
 #include "trainer.h"
 #include "criterion.h"
 
-namespace cortex
+namespace zob
 {
         ///
         /// \brief initialize library (setup flags, register default objects ...)

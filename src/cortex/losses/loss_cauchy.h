@@ -2,7 +2,7 @@
 
 #include "cortex/loss.h"
 
-namespace cortex
+namespace zob
 {
         ///
         /// \brief Cauchy loss (single & multivariate regression)

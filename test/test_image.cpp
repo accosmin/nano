@@ -8,11 +8,11 @@ ZOB_BEGIN_MODULE(test_image)
 
 ZOB_CASE(construct)
 {
-        using namespace cortex;
+        using namespace zob;
 
         for (size_t test = 0; test < 16; ++ test)
         {
-                math::random_t<coord_t> rng(16, 64);
+                zob::random_t<coord_t> rng(16, 64);
 
                 const auto rows = rng();
                 const auto cols = rng();
@@ -45,11 +45,11 @@ ZOB_CASE(construct)
 
 ZOB_CASE(io_matrix)
 {
-        using namespace cortex;
+        using namespace zob;
 
         for (size_t test = 0; test < 16; ++ test)
         {
-                math::random_t<coord_t> rng(16, 64);
+                zob::random_t<coord_t> rng(16, 64);
 
                 const auto rows = rng();
                 const auto cols = rng();
@@ -124,11 +124,11 @@ ZOB_CASE(io_matrix)
 
 ZOB_CASE(io_file)
 {
-        using namespace cortex;
+        using namespace zob;
 
         for (size_t test = 0; test < 16; ++ test)
         {
-                math::random_t<coord_t> rng(16, 64);
+                zob::random_t<coord_t> rng(16, 64);
 
                 const auto rows = rng();
                 const auto cols = rng();

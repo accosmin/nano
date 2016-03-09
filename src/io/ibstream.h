@@ -6,7 +6,7 @@
 #include <type_traits>
 #include <eigen3/Eigen/Core>
 
-namespace io
+namespace zob
 {
         ///
         /// \brief wrapper over binary std::istream

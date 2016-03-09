@@ -3,7 +3,7 @@
 #include <vector>
 #include <string>
 
-namespace cortex
+namespace zob
 {
         // strings
         using string_t = std::string;

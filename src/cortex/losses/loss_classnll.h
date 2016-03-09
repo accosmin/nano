@@ -2,7 +2,7 @@
 
 #include "cortex/loss.h"
 
-namespace cortex
+namespace zob
 {
         ///
         /// \brief class negative log-likelihood loss (single-class classification)

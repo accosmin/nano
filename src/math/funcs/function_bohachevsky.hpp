@@ -3,7 +3,7 @@
 #include "function.hpp"
 #include <cmath>
 
-namespace math
+namespace zob
 {
         ///
         /// \brief create Bohachevsky test functions

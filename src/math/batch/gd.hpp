@@ -4,7 +4,7 @@
 #include "batch_loop.hpp"
 #include "ls_strategy.hpp"
 
-namespace math
+namespace zob
 {
         ///
         /// \brief gradient descent

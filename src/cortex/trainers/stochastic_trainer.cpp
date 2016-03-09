@@ -7,7 +7,7 @@
 #include "text/from_params.hpp"
 #include "text/concatenate.hpp"
 
-namespace cortex
+namespace zob
 {
         stochastic_trainer_t::stochastic_trainer_t(const string_t& parameters)
                 :       trainer_t(parameters)
@@ -42,13 +42,13 @@ namespace cortex
                 }
 
                 // parameters
-                const size_t epochs = math::clamp(text::from_params<size_t>(configuration(), "epoch", 16), 1, 1024);
+                const size_t epochs = zob::clamp(zob::from_params<size_t>(configuration(), "epoch", 16), 1, 1024);
 
-                const math::stoch_optimizer optimizer = text::from_string<math::stoch_optimizer>
-                        (text::from_params<string_t>(configuration(), "opt", "sg"));
+                const zob::stoch_optimizer optimizer = zob::from_string<zob::stoch_optimizer>
+                        (zob::from_params<string_t>(configuration(), "opt", "sg"));
 
                 // train the model
-                const trainer_result_t result = cortex::stochastic_train(
+                const trainer_result_t result = zob::stochastic_train(
                         model, task, tsampler, vsampler, nthreads,
                         loss, criterion, optimizer, epochs);
 
@@ -57,7 +57,7 @@ namespace cortex
                 log_info() << "optimum [train = " << state.m_tvalue << "/" << state.m_terror_avg
                            << ", valid = " << state.m_vvalue << "/" << state.m_verror_avg
                            << ", epoch = " << result.optimum_epoch()
-                           << ", config = " << text::concatenate(result.optimum_config(), "/")
+                           << ", config = " << zob::concatenate(result.optimum_config(), "/")
                            << "].";
 
                 // OK

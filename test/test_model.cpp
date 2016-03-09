@@ -11,11 +11,11 @@ ZOB_BEGIN_MODULE(test_model)
 
 ZOB_CASE(evaluate)
 {
-        cortex::init();
+        zob::init();
 
-        using namespace cortex;
+        using namespace zob;
 
-        const auto task = cortex::get_tasks().get("random", "dims=2,rows=16,cols=16,color=luma,size=128");
+        const auto task = zob::get_tasks().get("random", "dims=2,rows=16,cols=16,color=luma,size=128");
         ZOB_CHECK_EQUAL(task->load(""), true);
 
         const string_t mlp0;
@@ -43,13 +43,13 @@ ZOB_CASE(evaluate)
                 convnet + outlayer
         };
 
-        const auto loss = cortex::get_losses().get("logistic");
-        const auto criterion = cortex::get_criteria().get("avg");
+        const auto loss = zob::get_losses().get("logistic");
+        const auto criterion = zob::get_criteria().get("avg");
 
         for (const string_t& cmd_network : cmd_networks)
         {
                 // create feed-forward network
-                const auto model = cortex::get_models().get("forward-network", cmd_network);
+                const auto model = zob::get_models().get("forward-network", cmd_network);
                 ZOB_CHECK_EQUAL(model->resize(*task, false), true);
                 ZOB_CHECK_EQUAL(model->irows(), task->irows());
                 ZOB_CHECK_EQUAL(model->icols(), task->icols());
@@ -67,7 +67,7 @@ ZOB_CASE(evaluate)
 
                         // test error & parameters before saving
                         scalar_t lvalue_before, lerror_before;
-                        const size_t lcount_before = cortex::evaluate(*task, fold, *loss, *criterion, *model,
+                        const size_t lcount_before = zob::evaluate(*task, fold, *loss, *criterion, *model,
                                                                       lvalue_before, lerror_before);
 
                         vector_t params(model->psize());
@@ -81,7 +81,7 @@ ZOB_CASE(evaluate)
 
                         // test error & parameters after loading
                         scalar_t lvalue_after, lerror_after;
-                        const size_t lcount_after = cortex::evaluate(*task, fold, *loss, *criterion, *model,
+                        const size_t lcount_after = zob::evaluate(*task, fold, *loss, *criterion, *model,
                                                                      lvalue_after, lerror_after);
 
                         vector_t xparams(model->psize());
@@ -89,11 +89,11 @@ ZOB_CASE(evaluate)
 
                         // check
                         ZOB_CHECK_EQUAL(lcount_before, lcount_after);
-                        ZOB_CHECK_CLOSE(lvalue_before, lvalue_after, math::epsilon0<scalar_t>());
-                        ZOB_CHECK_CLOSE(lerror_before, lerror_after, math::epsilon0<scalar_t>());
+                        ZOB_CHECK_CLOSE(lvalue_before, lvalue_after, zob::epsilon0<scalar_t>());
+                        ZOB_CHECK_CLOSE(lerror_before, lerror_after, zob::epsilon0<scalar_t>());
 
                         ZOB_REQUIRE_EQUAL(params.size(), xparams.size());
-                        ZOB_CHECK_EIGEN_CLOSE(params, xparams, math::epsilon0<scalar_t>());
+                        ZOB_CHECK_EIGEN_CLOSE(params, xparams, zob::epsilon0<scalar_t>());
 
                         // cleanup
                         std::remove(path.c_str());

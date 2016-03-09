@@ -51,7 +51,7 @@ namespace test
                 const scalar_t corrcpu_mdk_dyn = test_cpu(tensor::corr2d_mdk_dyn_t(), odata, kdata, idata);
                 const scalar_t corrcpu_mdo_dyn = test_cpu(tensor::corr2d_mdo_dyn_t(), odata, kdata, idata);
 
-                const scalar_t epsilon = math::epsilon1<scalar_t>();
+                const scalar_t epsilon = zob::epsilon1<scalar_t>();
 
                 ZOB_CHECK_CLOSE(corrcpu_egb, corrcpu_egb, epsilon);
                 ZOB_CHECK_CLOSE(corrcpu_egr, corrcpu_egb, epsilon);

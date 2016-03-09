@@ -122,7 +122,7 @@ int main(int, char* []) \
         ZOB_EVALUATE_GREATER_EQUAL(left, right, true)
 
 #define ZOB_EVALUATE_CLOSE(left, right, epsilon, critical) \
-        ZOB_EVALUATE_LESS(math::abs(left - right), epsilon, critical)
+        ZOB_EVALUATE_LESS(zob::abs(left - right), epsilon, critical)
 #define ZOB_CHECK_CLOSE(left, right, epsilon) \
         ZOB_EVALUATE_CLOSE(left, right, epsilon, false)
 #define ZOB_REQUIRE_CLOSE(left, right, epsilon) \

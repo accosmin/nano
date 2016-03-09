@@ -6,7 +6,7 @@
 #include <algorithm>
 #include <type_traits>
 
-namespace math
+namespace zob
 {
         namespace gauss
         {
@@ -85,14 +85,14 @@ namespace math
 
                         // estimate radius that produces weights higher than minimum weight <kmin>
                         const double xradius = std::sqrt(-std::log(cutoff / gnorm) / xnorm);
-                        const int radius = std::max(1, math::cast<int>(xradius));
+                        const int radius = std::max(1, zob::cast<int>(xradius));
 
                         // setup kernel
                         m_kernel.resize(static_cast<std::size_t>(2 * radius + 1));
                         for (int x = -radius; x <= radius; x ++)
                         {
                                 m_kernel[static_cast<size_t>(x + radius)] =
-                                math::cast<tscalar>(gnorm * std::exp(-x * x * xnorm));
+                                zob::cast<tscalar>(gnorm * std::exp(-x * x * xnorm));
                         }
 
                         // normalize kernel

@@ -24,43 +24,43 @@
 #include "synth_nimbus_mono.h"
 #include "synth_oxygen_mono.h"
 
-namespace text
+namespace zob
 {
         template <>
-        inline std::map<cortex::charset, std::string> enum_string<cortex::charset>()
+        inline std::map<zob::charset, std::string> enum_string<zob::charset>()
         {
                 return
                 {
-                        { cortex::charset::numeric, "digit" },
-                        { cortex::charset::lalphabet, "lalpha" },
-                        { cortex::charset::ualphabet, "ualpha" },
-                        { cortex::charset::alphabet, "alpha" },
-                        { cortex::charset::alphanumeric, "alphanum" }
+                        { zob::charset::numeric, "digit" },
+                        { zob::charset::lalphabet, "lalpha" },
+                        { zob::charset::ualphabet, "ualpha" },
+                        { zob::charset::alphabet, "alpha" },
+                        { zob::charset::alphanumeric, "alphanum" }
                 };
         }
 }
 
-namespace cortex
+namespace zob
 {
         charset_task_t::charset_task_t(const string_t& configuration)
                 :       task_t(configuration),
-                        m_charset(text::from_params<charset>(configuration, "type", charset::numeric)),
-                        m_rows(math::clamp(text::from_params<tensor_size_t>(configuration, "rows", 32), 16, 128)),
-                        m_cols(math::clamp(text::from_params<tensor_size_t>(configuration, "cols", 32), 16, 128)),
+                        m_charset(zob::from_params<charset>(configuration, "type", charset::numeric)),
+                        m_rows(zob::clamp(zob::from_params<tensor_size_t>(configuration, "rows", 32), 16, 128)),
+                        m_cols(zob::clamp(zob::from_params<tensor_size_t>(configuration, "cols", 32), 16, 128)),
                         m_folds(1),
-                        m_color(text::from_params<color_mode>(configuration, "color", color_mode::rgba)),
-                        m_size(math::clamp(text::from_params<size_t>(configuration, "size", 1024), 16, 1024 * 1024))
+                        m_color(zob::from_params<color_mode>(configuration, "color", color_mode::rgba)),
+                        m_size(zob::clamp(zob::from_params<size_t>(configuration, "size", 1024), 16, 1024 * 1024))
         {
         }
 
         charset_task_t::charset_task_t(
                 charset cs, tensor_size_t rows, tensor_size_t cols, color_mode color, size_t size)
                 :       charset_task_t(
-                        "type=" + text::to_string(cs) + "," +
-                        "rows=" + text::to_string(rows) + "," +
-                        "cols=" + text::to_string(cols) + "," +
-                        "color=" + text::to_string(color) + "," +
-                        "size=" + text::to_string(size))
+                        "type=" + zob::to_string(cs) + "," +
+                        "rows=" + zob::to_string(rows) + "," +
+                        "cols=" + zob::to_string(cols) + "," +
+                        "color=" + zob::to_string(color) + "," +
+                        "size=" + zob::to_string(size))
         {
         }
 
@@ -75,7 +75,7 @@ namespace cortex
                 tmatrix get_object_patch(const tmatrix& image,
                         const tindex object_index, const tsize objects, const scalar_t max_offset)
                 {
-                        math::random_t<scalar_t> rng(-max_offset, max_offset);
+                        zob::random_t<scalar_t> rng(-max_offset, max_offset);
 
                         const auto icols = static_cast<int>(image.cols());
                         const auto irows = static_cast<int>(image.rows());
@@ -84,11 +84,11 @@ namespace cortex
 
                         const auto x = dx * static_cast<scalar_t>(object_index) + rng();
 
-                        const auto ppx = math::clamp(math::cast<int>(x), 0, icols - 1);
-                        const auto ppw = math::clamp(math::cast<int>(dx + rng()), 0, icols - ppx);
+                        const auto ppx = zob::clamp(zob::cast<int>(x), 0, icols - 1);
+                        const auto ppw = zob::clamp(zob::cast<int>(dx + rng()), 0, icols - ppx);
 
-                        const auto ppy = math::clamp(math::cast<int>(rng()), 0, irows - 1);
-                        const auto pph = math::clamp(math::cast<int>(irows + rng()), 0, irows - ppy);
+                        const auto ppy = zob::clamp(zob::cast<int>(rng()), 0, irows - 1);
+                        const auto pph = zob::clamp(zob::cast<int>(irows + rng()), 0, irows - ppy);
 
                         return image.block(ppy, ppx, pph, ppw);
                 }
@@ -97,24 +97,24 @@ namespace cortex
                         const rgba_t back_color,
                         const scalar_t max_noise, const scalar_t sigma)
                 {
-                        const scalar_t ir = cortex::color::get_red(back_color) / 255.0;
-                        const scalar_t ig = cortex::color::get_green(back_color) / 255.0;
-                        const scalar_t ib = cortex::color::get_blue(back_color) / 255.0;
+                        const scalar_t ir = zob::color::get_red(back_color) / 255.0;
+                        const scalar_t ig = zob::color::get_green(back_color) / 255.0;
+                        const scalar_t ib = zob::color::get_blue(back_color) / 255.0;
 
                         tensor_t image(4, rows, cols);
 
                         // noisy background
-                        math::random_t<scalar_t> back_noise(-max_noise, +max_noise);
+                        zob::random_t<scalar_t> back_noise(-max_noise, +max_noise);
                         tensor::for_each(image.matrix(0), [&] (scalar_t& value) { value = ir + back_noise(); });
                         tensor::for_each(image.matrix(1), [&] (scalar_t& value) { value = ig + back_noise(); });
                         tensor::for_each(image.matrix(2), [&] (scalar_t& value) { value = ib + back_noise(); });
                         image.matrix(3).setConstant(1.0);
 
                         // smooth background
-                        const math::gauss_kernel_t<scalar_t> back_gauss(sigma);
-                        cortex::convolve(back_gauss, image.matrix(0));
-                        cortex::convolve(back_gauss, image.matrix(1));
-                        cortex::convolve(back_gauss, image.matrix(2));
+                        const zob::gauss_kernel_t<scalar_t> back_gauss(sigma);
+                        zob::convolve(back_gauss, image.matrix(0));
+                        zob::convolve(back_gauss, image.matrix(1));
+                        zob::convolve(back_gauss, image.matrix(2));
 
                         return image;
                 }
@@ -148,7 +148,7 @@ namespace cortex
                 std::vector<rgba_matrix_t> char_patches;
                 rgba_matrix_t char_patch;
 #define INSERT_IMAGE(name) \
-                if (!cortex::load_rgba_image(get_ ##name ##_name(), get_ ##name ##_data(), get_ ##name ##_size(), char_patch)) \
+                if (!zob::load_rgba_image(get_ ##name ##_name(), get_ ##name ##_data(), get_ ##name ##_size(), char_patch)) \
                 { \
                         return false; \
                 } \
@@ -167,10 +167,10 @@ namespace cortex
 
                 const size_t n_fonts = char_patches.size();
 
-                math::random_t<size_t> rng_protocol(1, 10);
-                math::random_t<tensor_size_t> rng_output(obegin(), oend() - 1);
-                math::random_t<size_t> rng_font(1, n_fonts);
-                math::random_t<scalar_t> rng_gauss(0.0, 2.0);
+                zob::random_t<size_t> rng_protocol(1, 10);
+                zob::random_t<tensor_size_t> rng_output(obegin(), oend() - 1);
+                zob::random_t<size_t> rng_font(1, n_fonts);
+                zob::random_t<scalar_t> rng_gauss(0.0, 2.0);
 
                 clear_memory(0);
 
@@ -185,22 +185,22 @@ namespace cortex
                                 const tensor_index_t o = rng_output();
 
                                 // image: original object patch
-                                const tensor_t opatch = cortex::color::to_rgba_tensor(
+                                const tensor_t opatch = zob::color::to_rgba_tensor(
                                         get_object_patch(char_patches[rng_font() - 1], o, n_chars, 0.0));
 
                                 // image: resize to the input size
                                 tensor_t mpatch(4, irows(), icols());
-                                cortex::bilinear(opatch.matrix(0), mpatch.matrix(0));
-                                cortex::bilinear(opatch.matrix(1), mpatch.matrix(1));
-                                cortex::bilinear(opatch.matrix(2), mpatch.matrix(2));
-                                cortex::bilinear(opatch.matrix(3), mpatch.matrix(3));
+                                zob::bilinear(opatch.matrix(0), mpatch.matrix(0));
+                                zob::bilinear(opatch.matrix(1), mpatch.matrix(1));
+                                zob::bilinear(opatch.matrix(2), mpatch.matrix(2));
+                                zob::bilinear(opatch.matrix(3), mpatch.matrix(3));
 
                                 // image: random warping
-                                mpatch = cortex::warp(mpatch, warp_params(field_type::random, 0.1, 4.0, 16.0, 2.0));
+                                mpatch = zob::warp(mpatch, warp_params(field_type::random, 0.1, 4.0, 16.0, 2.0));
 
                                 // image: background & foreground layer
-                                const auto bcolor = cortex::color::make_random_rgba();
-                                const auto fcolor = cortex::color::make_opposite_random_rgba(bcolor);
+                                const auto bcolor = zob::color::make_random_rgba();
+                                const auto fcolor = zob::color::make_opposite_random_rgba(bcolor);
 
                                 const auto bnoise = 0.1;
                                 const auto fnoise = 0.1;
@@ -227,7 +227,7 @@ namespace cortex
                                 // generate sample
                                 sample_t sample(n_images() - 1, sample_region(0, 0));
                                 sample.m_label = string_t("char") + characters[static_cast<size_t>(o)];
-                                sample.m_target = cortex::class_target(o - obegin(), osize());
+                                sample.m_target = zob::class_target(o - obegin(), osize());
                                 sample.m_fold = {f, p};
                                 add_sample(sample);
                         }

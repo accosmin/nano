@@ -3,7 +3,7 @@
 #include "buffer.h"
 #include <functional>
 
-namespace io
+namespace zob
 {
         ///
         /// \brief callback to execute when a file was decompressed from an archive

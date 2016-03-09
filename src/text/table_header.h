@@ -3,7 +3,7 @@
 #include "to_string.hpp"
 #include <vector>
 
-namespace text
+namespace zob
 {
         ///
         /// \brief a header in the table
@@ -21,7 +21,7 @@ namespace text
                 >
                 table_header_t& operator<<(tvalue value)
                 {
-                        m_values.emplace_back(text::to_string(value));
+                        m_values.emplace_back(zob::to_string(value));
                         return *this;
                 }
 

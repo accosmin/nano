@@ -5,7 +5,7 @@
 #include <cassert>
 #include <algorithm>
 
-namespace math
+namespace zob
 {
         ///
         /// \brief computes statistics: average, standard deviation etc.

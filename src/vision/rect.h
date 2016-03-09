@@ -3,7 +3,7 @@
 #include "point.h"
 #include "scalar.h"
 
-namespace cortex
+namespace zob
 {
         ///
         /// \brief 2D rectangle

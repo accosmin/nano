@@ -2,7 +2,7 @@
 
 #include <tuple>
 
-namespace math
+namespace zob
 {
         ///
         /// \brief stores the tuning result: optimum and its associated list of parameters.

@@ -2,7 +2,7 @@
 
 #include "buffer.h"
 
-namespace io
+namespace zob
 {
         class imstream_t;
 

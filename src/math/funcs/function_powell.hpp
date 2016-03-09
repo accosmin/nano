@@ -3,7 +3,7 @@
 #include "util.hpp"
 #include "function.hpp"
 
-namespace math
+namespace zob
 {
         ///
         /// \brief create Powell test functions
@@ -40,10 +40,10 @@ namespace math
                                 tscalar fx = 0;
                                 for (tsize i = 0, i4 = 0; i < m_dims / 4; i ++, i4 += 4)
                                 {
-                                        fx += math::square(x(i4 + 0) + x(i4 + 1) * 10);
-                                        fx += math::square(x(i4 + 2) - x(i4 + 3)) * 5;
-                                        fx += math::quartic(x(i4 + 1) - x(i4 + 2) * 2);
-                                        fx += math::quartic(x(i4 + 0) - x(i4 + 3)) * 10;
+                                        fx += zob::square(x(i4 + 0) + x(i4 + 1) * 10);
+                                        fx += zob::square(x(i4 + 2) - x(i4 + 3)) * 5;
+                                        fx += zob::quartic(x(i4 + 1) - x(i4 + 2) * 2);
+                                        fx += zob::quartic(x(i4 + 0) - x(i4 + 3)) * 10;
                                 }
 
                                 return fx;
@@ -56,8 +56,8 @@ namespace math
                                 {
                                         const auto gfx1 = (x(i4 + 0) + x(i4 + 1) * 10) * 2;
                                         const auto gfx2 = (x(i4 + 2) - x(i4 + 3)) * 5 * 2;
-                                        const auto gfx3 = math::cube(x(i4 + 1) - x(i4 + 2) * 2) * 4;
-                                        const auto gfx4 = math::cube(x(i4 + 0) - x(i4 + 3)) * 10 * 4;
+                                        const auto gfx3 = zob::cube(x(i4 + 1) - x(i4 + 2) * 2) * 4;
+                                        const auto gfx4 = zob::cube(x(i4 + 0) - x(i4 + 3)) * 10 * 4;
 
                                         gx(i4 + 0) = gfx1 + gfx4;
                                         gx(i4 + 1) = gfx1 * 10 + gfx3;

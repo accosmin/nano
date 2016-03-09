@@ -1,7 +1,7 @@
 #include "trainer_result.h"
 #include "text/concatenate.hpp"
 
-namespace cortex
+namespace zob
 {
         trainer_result_t::trainer_result_t()
         {
@@ -84,10 +84,10 @@ namespace cortex
 
         trainer_states_t trainer_result_t::optimum_states() const
         {
-                const string_t str_opt_config = text::concatenate(m_opt_config, "-");
+                const string_t str_opt_config = zob::concatenate(m_opt_config, "-");
                 for (const auto& it : m_history)
                 {
-                        const string_t str_config = text::concatenate(it.first, "-");
+                        const string_t str_config = zob::concatenate(it.first, "-");
                         if (str_config == str_opt_config)
                         {
                                 return it.second;

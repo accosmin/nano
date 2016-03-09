@@ -15,23 +15,23 @@
 
 namespace
 {
-        using namespace cortex;
+        using namespace zob;
 
         template
         <
                 typename tscalar,
                 typename tostats,
-                typename tsize = typename math::function_t<tscalar>::tsize,
-                typename tvector = typename math::function_t<tscalar>::tvector,
-                typename tproblem = typename math::function_t<tscalar>::tproblem
+                typename tsize = typename zob::function_t<tscalar>::tsize,
+                typename tvector = typename zob::function_t<tscalar>::tvector,
+                typename tproblem = typename zob::function_t<tscalar>::tproblem
         >
-        void check_function(const math::function_t<tscalar>& function,
+        void check_function(const zob::function_t<tscalar>& function,
                 const size_t trials, const size_t epochs, const size_t epoch_size,
                 tostats& gstats)
         {
                 const auto dims = function.problem().size();
 
-                math::random_t<tscalar> rgen(tscalar(-1), tscalar(+1));
+                zob::random_t<tscalar> rgen(tscalar(-1), tscalar(+1));
 
                 // generate fixed random trials
                 std::vector<tvector> x0s(trials);
@@ -44,14 +44,14 @@ namespace
                 // optimizers to try
                 const auto optimizers =
                 {
-                        math::stoch_optimizer::SG,
-                        math::stoch_optimizer::SGM,
-                        math::stoch_optimizer::AG,
-                        math::stoch_optimizer::AGFR,
-                        math::stoch_optimizer::AGGR,
-                        math::stoch_optimizer::ADAGRAD,
-                        math::stoch_optimizer::ADADELTA,
-                        math::stoch_optimizer::ADAM
+                        zob::stoch_optimizer::SG,
+                        zob::stoch_optimizer::SGM,
+                        zob::stoch_optimizer::AG,
+                        zob::stoch_optimizer::AGFR,
+                        zob::stoch_optimizer::AGGR,
+                        zob::stoch_optimizer::ADAGRAD,
+                        zob::stoch_optimizer::ADADELTA,
+                        zob::stoch_optimizer::ADAM
                 };
 
                 // per-problem statistics
@@ -62,11 +62,11 @@ namespace
                 {
                         const auto op = [&] (const tproblem& problem, const tvector& x0)
                         {
-                                return math::minimize(problem, nullptr, nullptr, x0, optimizer, epochs, epoch_size);
+                                return zob::minimize(problem, nullptr, nullptr, x0, optimizer, epochs, epoch_size);
                         };
 
                         const auto name =
-                                text::to_string(optimizer);
+                                zob::to_string(optimizer);
 
                         benchmark::benchmark_function(function, x0s, op, name, { 1e-5, 1e-4, 1e-3, 1e-2 }, stats, gstats);
                 }
@@ -78,10 +78,10 @@ namespace
 
 int main(int argc, char* argv[])
 {
-        using namespace cortex;
+        using namespace zob;
 
         // parse the command line
-        text::cmdline_t cmdline("benchmark stochastic optimizers");
+        zob::cmdline_t cmdline("benchmark stochastic optimizers");
         cmdline.add("", "min-dims",     "minimum number of dimensions for each test function (if feasible)", "1");
         cmdline.add("", "max-dims",     "maximum number of dimensions for each test function (if feasible)", "8");
         cmdline.add("", "trials",       "number of random trials for each test function", "1024");
@@ -99,8 +99,8 @@ int main(int argc, char* argv[])
 
         std::map<std::string, benchmark::optimizer_stat_t> gstats;
 
-        math::foreach_test_function<scalar_t, math::test_type::all>(min_dims, max_dims,
-                [&] (const math::function_t<scalar_t>& function)
+        zob::foreach_test_function<scalar_t, zob::test_type::all>(min_dims, max_dims,
+                [&] (const zob::function_t<scalar_t>& function)
         {
                 check_function(function, trials, epochs, epoch_size, gstats);
         });

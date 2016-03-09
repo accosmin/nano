@@ -5,7 +5,7 @@
 #include <iostream>
 #include <stdexcept>
 
-namespace text
+namespace zob
 {
         struct option_t
         {
@@ -104,8 +104,8 @@ namespace text
                 const std::string& default_value) const
         {
                 if (    name.empty() ||
-                        text::starts_with(name, "-") ||
-                        text::starts_with(name, "--"))
+                        zob::starts_with(name, "-") ||
+                        zob::starts_with(name, "--"))
                 {
                         throw std::runtime_error("cmdline: invalid option name [" + name + "]");
                 }
@@ -139,7 +139,7 @@ namespace text
                         const std::string token = argv[i];
                         assert(!token.empty());
 
-                        if (text::starts_with(token, "--"))
+                        if (zob::starts_with(token, "--"))
                         {
                                 const std::string name = token.substr(2);
 
@@ -152,7 +152,7 @@ namespace text
                                 m_impl->store(name);
                                 current_name_or_short_name = name;
                         }
-                        else if (text::starts_with(token, "-"))
+                        else if (zob::starts_with(token, "-"))
                         {
                                 const std::string short_name = token.substr(1);
 
@@ -222,7 +222,7 @@ namespace text
                 max_option_size += 4;
                 for (const auto& option : m_impl->m_options)
                 {
-                        std::cout << "  " << text::align(option.concatenate(), max_option_size)
+                        std::cout << "  " << zob::align(option.concatenate(), max_option_size)
                                   << option.m_description << std::endl;
                 }
 

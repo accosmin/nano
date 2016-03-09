@@ -2,7 +2,7 @@
 
 #include <cassert>
 
-namespace math
+namespace zob
 {
         ///
         /// \brief running exponential average (aka momentum) with zero-bias correction

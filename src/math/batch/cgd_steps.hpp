@@ -2,7 +2,7 @@
 
 #include <algorithm>
 
-namespace math
+namespace zob
 {
         // these variations have been implemented following:
         //      (1) "A survey of nonlinear conjugate gradient methods"

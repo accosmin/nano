@@ -5,7 +5,7 @@
 #include "stringi.h"
 #include <chrono>
 
-namespace cortex
+namespace zob
 {
         ///
         /// \brief training state

@@ -2,7 +2,7 @@
 #include "thread/loopit.hpp"
 #include <cassert>
 
-namespace cortex
+namespace zob
 {
         struct accumulator_t::impl_t
         {
@@ -35,7 +35,7 @@ namespace cortex
                 }
 
                 // attributes
-                thread::pool_t                  m_pool;         ///< thread pool
+                zob::pool_t                  m_pool;         ///< thread pool
                 std::vector<rcriterion_t>       m_criteria;     ///< cached criterion / thread
         };
 
@@ -57,7 +57,7 @@ namespace cortex
 
         void accumulator_t::set_lambda(scalar_t lambda) const
         {
-                lambda = math::clamp(lambda, 0.0, 1.0);
+                lambda = zob::clamp(lambda, 0.0, 1.0);
 
                 for (const auto& cache : m_impl->m_criteria)
                 {
@@ -80,7 +80,7 @@ namespace cortex
 
         void accumulator_t::update(const task_t& task, const samples_t& samples, const loss_t& loss)
         {
-                thread::loopit(samples.size(), m_impl->m_pool, [&] (size_t i, size_t th)
+                zob::loopit(samples.size(), m_impl->m_pool, [&] (size_t i, size_t th)
                 {
                         m_impl->m_criteria[th]->update(task, samples[i], loss);
                 });

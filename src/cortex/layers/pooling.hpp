@@ -2,7 +2,7 @@
 
 #include "tensor/matrix.hpp"
 
-namespace cortex
+namespace zob
 {
         namespace pooling
         {

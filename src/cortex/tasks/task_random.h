@@ -2,7 +2,7 @@
 
 #include "cortex/task.h"
 
-namespace cortex
+namespace zob
 {
         ///
         /// \brief synthetic task to classify characters

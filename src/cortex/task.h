@@ -4,7 +4,7 @@
 #include "vision/image.h"
 #include "util/manager.hpp"
 
-namespace cortex
+namespace zob
 {
         class task_t;
 

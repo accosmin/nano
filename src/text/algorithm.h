@@ -4,7 +4,7 @@
 #include <string>
 #include <vector>
 
-namespace text
+namespace zob
 {
         ///
         /// \brief returns the lower case string

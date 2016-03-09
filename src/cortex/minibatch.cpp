@@ -8,7 +8,7 @@
 #include "thread/thread.h"
 #include "text/to_string.hpp"
 
-namespace cortex
+namespace zob
 {
         template
         <
@@ -32,21 +32,21 @@ namespace cortex
         }
 
         static trainer_result_t train(trainer_data_t& data,
-                math::batch_optimizer optimizer, const size_t epochs, const scalar_t epsilon, const bool verbose)
+                zob::batch_optimizer optimizer, const size_t epochs, const scalar_t epsilon, const bool verbose)
         {
-                const cortex::timer_t timer;
+                const zob::timer_t timer;
 
                 trainer_result_t result;
 
-                const auto batch_size = 32 * thread::n_threads();
+                const auto batch_size = 32 * zob::n_threads();
                 const auto epoch_size = data.epoch_size(batch_size);
                 const auto epoch_iterations = size_t(4);
                 const auto history_size = epoch_iterations;
 
                 // construct the optimization problem
-                const auto fn_size = cortex::make_opsize(data);
-                const auto fn_fval = cortex::make_opfval(data);
-                const auto fn_grad = cortex::make_opgrad(data);
+                const auto fn_size = zob::make_opsize(data);
+                const auto fn_fval = zob::make_opfval(data);
+                const auto fn_grad = zob::make_opgrad(data);
 
                 const auto fn_ulog = nullptr;
 
@@ -57,7 +57,7 @@ namespace cortex
                 {
                         train_epoch(data, epoch_size, batch_size, [&] ()
                         {
-                                const opt_state_t state = math::minimize(
+                                const opt_state_t state = zob::minimize(
                                         opt_problem_t(fn_size, fn_fval, fn_grad), fn_ulog,
                                         x, optimizer, epoch_iterations, epsilon, history_size);
 
@@ -88,13 +88,13 @@ namespace cortex
                         log_info()
                                 << "[train = " << tvalue << "/" << terror_avg
                                 << ", valid = " << vvalue << "/" << verror_avg
-                                << " (" << text::to_string(ret) << ")"
+                                << " (" << zob::to_string(ret) << ")"
                                 << ", epoch = " << epoch << "/" << epochs
                                 << ", batch = " << batch_size
                                 << ", lambda = " << data.lambda()
                                 << "] done in " << timer.elapsed() << ".";
 
-                        if (cortex::is_done(ret))
+                        if (zob::is_done(ret))
                         {
                                 break;
                         }
@@ -107,7 +107,7 @@ namespace cortex
                 const model_t& model,
                 const task_t& task, const sampler_t& tsampler, const sampler_t& vsampler, size_t nthreads,
                 const loss_t& loss, const criterion_t& criterion,
-                math::batch_optimizer optimizer, size_t epochs, scalar_t epsilon, bool verbose)
+                zob::batch_optimizer optimizer, size_t epochs, scalar_t epsilon, bool verbose)
         {
                 vector_t x0;
                 model.save_params(x0);
@@ -127,8 +127,8 @@ namespace cortex
 
                 if (data.m_lacc.can_regularize())
                 {
-                        const auto space = math::make_log10_space(-6.0, +6.0, 0.5);
-                        return math::tune(op, space).optimum();
+                        const auto space = zob::make_log10_space(-6.0, +6.0, 0.5);
+                        return zob::tune(op, space).optimum();
                 }
                 else
                 {

@@ -3,7 +3,7 @@
 #include "loss.h"
 #include <cassert>
 
-namespace cortex
+namespace zob
 {
         criterion_manager_t& get_criteria()
         {

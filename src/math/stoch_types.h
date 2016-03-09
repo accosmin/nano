@@ -1,6 +1,6 @@
 #pragma once
 
-namespace math
+namespace zob
 {
         ///
         /// \brief stochastic optimization methods

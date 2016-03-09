@@ -13,7 +13,7 @@ ZOB_CASE(rng)
                 const int32_t min = 17 + t;
                 const int32_t max = min + t * 25 + 4;
 
-                auto rgen = math::make_rng(min, max);
+                auto rgen = zob::make_rng(min, max);
 
                 for (int32_t tt = 0; tt < test_size; ++ tt)
                 {
@@ -35,10 +35,10 @@ ZOB_CASE(index)
                 const int32_t min = 17 + t;
                 const int32_t max = min + t * 25 + 4;
 
-                auto rgen = math::make_rng(min, max);
+                auto rgen = zob::make_rng(min, max);
 
                 const auto size = rgen();
-                auto rindex = math::make_index_rng(size);
+                auto rindex = zob::make_index_rng(size);
 
                 for (size_t tt = 0; tt < test_size; ++ tt)
                 {

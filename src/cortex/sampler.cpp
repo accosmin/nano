@@ -2,7 +2,7 @@
 #include "math/usampling.hpp"
 #include <algorithm>
 
-namespace cortex
+namespace zob
 {
         template
         <
@@ -100,7 +100,7 @@ namespace cortex
         sampler_t& sampler_t::split(size_t percentage, sampler_t& other)
         {
                 samples_t tsamples, vsamples;
-                math::usplit(current().m_samples, percentage, tsamples, vsamples);
+                zob::usplit(current().m_samples, percentage, tsamples, vsamples);
 
                 this->push(tsamples);
                 other.push(vsamples);
@@ -123,7 +123,7 @@ namespace cortex
                 // use a random subset of samples
                 else
                 {
-                        samples = math::usample(crt.m_samples, crt.m_batchsize);
+                        samples = zob::usample(crt.m_samples, crt.m_batchsize);
                         std::sort(samples.begin(), samples.end());
                 }
 

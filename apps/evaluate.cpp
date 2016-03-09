@@ -7,22 +7,22 @@
 
 int main(int argc, char *argv[])
 {
-        cortex::init();
+        zob::init();
 
-        using namespace cortex;
+        using namespace zob;
 
         // prepare object string-based selection
-        const strings_t task_ids = cortex::get_tasks().ids();
-        const strings_t loss_ids = cortex::get_losses().ids();
-        const strings_t model_ids = cortex::get_models().ids();
+        const strings_t task_ids = zob::get_tasks().ids();
+        const strings_t loss_ids = zob::get_losses().ids();
+        const strings_t model_ids = zob::get_models().ids();
 
         // parse the command line
-        text::cmdline_t cmdline("evaluate a model");
-        cmdline.add("", "task",                 text::concatenate(task_ids));
+        zob::cmdline_t cmdline("evaluate a model");
+        cmdline.add("", "task",                 zob::concatenate(task_ids));
         cmdline.add("", "task-dir",             "directory to load task data from");
         cmdline.add("", "task-params",          "task parameters (if any)");
-        cmdline.add("", "loss",                 text::concatenate(loss_ids));
-        cmdline.add("", "model",                text::concatenate(model_ids));
+        cmdline.add("", "loss",                 zob::concatenate(loss_ids));
+        cmdline.add("", "model",                zob::concatenate(model_ids));
         cmdline.add("", "model-file",           "filepath to load the model from");
         cmdline.add("", "save-dir",             "directory to save classification results to");
         cmdline.add("", "save-group-rows",      "number of samples to group in a row", "32");
@@ -38,14 +38,14 @@ int main(int argc, char *argv[])
         const auto cmd_model = cmdline.get<string_t>("model");
         const auto cmd_input = cmdline.get<string_t>("model-file");
         const auto cmd_save_dir = cmdline.get<string_t>("save-dir");
-        const auto cmd_save_group_rows = math::clamp(cmdline.get<coord_t>("save-group-rows"), 1, 128);
-        const auto cmd_save_group_cols = math::clamp(cmdline.get<coord_t>("save-group-cols"), 1, 128);
+        const auto cmd_save_group_rows = zob::clamp(cmdline.get<coord_t>("save-group-rows"), 1, 128);
+        const auto cmd_save_group_cols = zob::clamp(cmdline.get<coord_t>("save-group-cols"), 1, 128);
 
         // create task
-        const auto task = cortex::get_tasks().get(cmd_task, cmd_task_params);
+        const auto task = zob::get_tasks().get(cmd_task, cmd_task_params);
 
         // load task data
-        cortex::measure_critical_and_log(
+        zob::measure_critical_and_log(
                 [&] () { return task->load(cmd_task_dir); },
                 "load task <" + cmd_task + "> from <" + cmd_task_dir + ">");
 
@@ -53,29 +53,29 @@ int main(int argc, char *argv[])
         task->describe();
 
         // create loss
-        const auto loss = cortex::get_losses().get(cmd_loss);
+        const auto loss = zob::get_losses().get(cmd_loss);
 
         // create criterion
-        const auto criterion = cortex::get_criteria().get("avg");
+        const auto criterion = zob::get_criteria().get("avg");
 
         // create model
-        const auto model = cortex::get_models().get(cmd_model);
+        const auto model = zob::get_models().get(cmd_model);
 
         // load model
-        cortex::measure_critical_and_log(
+        zob::measure_critical_and_log(
                 [&] () { return model->load(cmd_input); },
                 "load model from <" + cmd_input + ">");
 
         // test model
-        math::stats_t<scalar_t> lstats, estats;
+        zob::stats_t<scalar_t> lstats, estats;
         for (size_t f = 0; f < task->fsize(); ++ f)
         {
                 const fold_t test_fold = std::make_pair(f, protocol::test);
 
 		// error rate
-                const cortex::timer_t timer;
+                const zob::timer_t timer;
                 scalar_t lvalue, lerror;
-                cortex::evaluate(*task, test_fold, *loss, *criterion, *model, lvalue, lerror);
+                zob::evaluate(*task, test_fold, *loss, *criterion, *model, lvalue, lerror);
                 log_info() << "<<< test error: [" << lvalue << "/" << lerror << "] in " << timer.elapsed() << ".";
 
                 lstats(lvalue);
@@ -116,7 +116,7 @@ int main(int argc, char *argv[])
                 // save classification results
                 if (!cmd_save_dir.empty())
                 {
-                        const string_t basepath = cmd_save_dir + "/" + cmd_task + "_test_fold" + text::to_string(f + 1);
+                        const string_t basepath = cmd_save_dir + "/" + cmd_task + "_test_fold" + zob::to_string(f + 1);
 
                         const coord_t grows = cmd_save_group_rows;
                         const coord_t gcols = cmd_save_group_cols;

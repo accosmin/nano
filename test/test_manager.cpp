@@ -3,12 +3,12 @@
 
 namespace test
 {
-        class test_clonable_t : public cortex::clonable_t<test_clonable_t>
+        class test_clonable_t : public zob::clonable_t<test_clonable_t>
         {
         public:
 
                 explicit test_clonable_t(const std::string& configuration = std::string())
-                        :       cortex::clonable_t<test_clonable_t>(configuration)
+                        :       zob::clonable_t<test_clonable_t>(configuration)
                 {
                 }
 
@@ -58,7 +58,7 @@ ZOB_BEGIN_MODULE(test_manager)
 
 ZOB_CASE(empty)
 {
-        cortex::manager_t<test::test_clonable_t> manager;
+        zob::manager_t<test::test_clonable_t> manager;
 
         ZOB_CHECK(manager.ids().empty());
         ZOB_CHECK(manager.descriptions().empty());
@@ -71,7 +71,7 @@ ZOB_CASE(empty)
 
 ZOB_CASE(retrieval)
 {
-        cortex::manager_t<test::test_clonable_t> manager;
+        zob::manager_t<test::test_clonable_t> manager;
 
         const test::test_obj1_clonable_t obj1;
         const test::test_obj2_clonable_t obj2;

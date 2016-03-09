@@ -3,7 +3,7 @@
 #include <limits>
 #include <fstream>
 
-namespace io
+namespace zob
 {
         template
         <

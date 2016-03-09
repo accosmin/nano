@@ -6,7 +6,7 @@
 #include <string>
 #include <vector>
 
-namespace io
+namespace zob
 {
         using buffer_t = std::vector<char>;
 

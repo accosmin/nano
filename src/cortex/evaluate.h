@@ -2,7 +2,7 @@
 
 #include "sample.h"
 
-namespace cortex
+namespace zob
 {
         class task_t;
         class loss_t;

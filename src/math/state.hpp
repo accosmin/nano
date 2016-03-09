@@ -3,7 +3,7 @@
 #include <limits>
 #include <eigen3/Eigen/Core>
 
-namespace math
+namespace zob
 {
         ///
         /// \brief optimization state described as:

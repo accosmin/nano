@@ -5,7 +5,7 @@
 #include "cortex/class.h"
 #include "cortex/util/logger.h"
 
-namespace cortex
+namespace zob
 {
         static const strings_t tlabels =
         {
@@ -44,7 +44,7 @@ namespace cortex
                         load(dir + "/norb-5x01235x9x18x6x2x108x108-testing-02", protocol::test, n_test_samples);
         }
 
-        static bool read_header(io::imstream_t& stream, int32_t& magic, std::vector<int32_t>& dims)
+        static bool read_header(zob::imstream_t& stream, int32_t& magic, std::vector<int32_t>& dims)
         {
                 // read data type & #dimensions
                 int32_t ndims;
@@ -99,9 +99,9 @@ namespace cortex
                 };
                 
                 // load images
-                const auto iop = [&] (const string_t&, const io::buffer_t& data)
+                const auto iop = [&] (const string_t&, const zob::buffer_t& data)
                 {
-                        io::imstream_t stream(data.data(), data.size());
+                        zob::imstream_t stream(data.data(), data.size());
                         
                         // read header
                         int32_t magic;
@@ -128,7 +128,7 @@ namespace cortex
                         const auto buffer_size = irows() * icols();
                         const auto cnt = dims[0];
                         
-                        io::buffer_t buffer = io::make_buffer(buffer_size);
+                        zob::buffer_t buffer = zob::make_buffer(buffer_size);
                         for (auto i = 0; i < cnt; ++ i)
                         {
                                 for (size_t cam = 0; cam < n_cameras && stream.read(buffer.data(), buffer_size); ++ cam)
@@ -145,18 +145,18 @@ namespace cortex
                 };
                                 
                 log_info() << "NORB: loading file <" << ifile << "> ...";
-                if (!io::unarchive(ifile, iop, error_op))
+                if (!zob::unarchive(ifile, iop, error_op))
                 {
                         log_error() << "NORB: failed to load file <" << ifile << ">!";
                         return false;
                 }
 
                 // load ground truth
-                const auto gop = [&] (const string_t& filename, const io::buffer_t& data)
+                const auto gop = [&] (const string_t& filename, const zob::buffer_t& data)
                 {
                         ZOB_UNUSED1(filename);
 
-                        io::imstream_t stream(data.data(), data.size());
+                        zob::imstream_t stream(data.data(), data.size());
                         
                         // read header
                         int32_t magic;
@@ -190,7 +190,7 @@ namespace cortex
                                         if (ilabel < osize())
                                         {
                                                 sample.m_label = tlabels[static_cast<size_t>(ilabel)];
-                                                sample.m_target = cortex::class_target(ilabel, osize());
+                                                sample.m_target = zob::class_target(ilabel, osize());
                                         }
                                         sample.m_fold = { 0, p };
                                         add_sample(sample);
@@ -205,7 +205,7 @@ namespace cortex
                 };
                 
                 log_info() << "NORB: loading file <" << gfile << "> ...";
-                if (!io::unarchive(gfile, gop, error_op))
+                if (!zob::unarchive(gfile, gop, error_op))
                 {
                         log_error() << "NORB: failed to load file <" << gfile << ">!";
                         return false;

@@ -5,7 +5,7 @@
 
 namespace test
 {
-        using namespace cortex;
+        using namespace zob;
 
         bool check_fold(const samples_t& samples, fold_t fold)
         {
@@ -18,7 +18,7 @@ ZOB_BEGIN_MODULE(test_sampler)
 
 ZOB_CASE(evaluate)
 {
-        using namespace cortex;
+        using namespace zob;
 
         const size_t n_samples = 100;
         const size_t n_rand_samples = n_samples / 4;
@@ -31,9 +31,9 @@ ZOB_CASE(evaluate)
                 const fold_t train_fold = {f, protocol::train};
                 const fold_t test_fold = {f, protocol::test};
 
-                const string_t header = "fold [" + text::to_string(f + 1) + "/" + text::to_string(task.fsize()) + "]";
-                const string_t train_header = header + " protocol [" + text::to_string(protocol::train) + "]";
-                const string_t test_header = header + " protocol [" + text::to_string(protocol::test) + "]";
+                const string_t header = "fold [" + zob::to_string(f + 1) + "/" + zob::to_string(task.fsize()) + "]";
+                const string_t train_header = header + " protocol [" + zob::to_string(protocol::train) + "]";
+                const string_t test_header = header + " protocol [" + zob::to_string(protocol::test) + "]";
 
                 // batch training samples
                 const auto train_batch_samples =
@@ -58,15 +58,15 @@ ZOB_CASE(evaluate)
                 ZOB_CHECK(test::check_fold(train_batch_samples, train_fold));
                 ZOB_CHECK(test::check_fold(train_urand_samples, train_fold));
 
-                cortex::print(train_header + " batch", train_batch_samples);
-                cortex::print(train_header + " urand", train_urand_samples);
+                zob::print(train_header + " batch", train_batch_samples);
+                zob::print(train_header + " urand", train_urand_samples);
 
                 // check test samples
                 ZOB_CHECK(test::check_fold(test_batch_samples, test_fold));
                 ZOB_CHECK(test::check_fold(test_urand_samples, test_fold));
 
-                cortex::print(test_header + " batch", test_batch_samples);
-                cortex::print(test_header + " urand", test_urand_samples);
+                zob::print(test_header + " batch", test_batch_samples);
+                zob::print(test_header + " urand", test_urand_samples);
         }
 }
 

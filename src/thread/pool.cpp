@@ -3,7 +3,7 @@
 #include <cassert>
 #include <algorithm>
 
-namespace thread
+namespace zob
 {
         static std::size_t n_active_workers(const std::vector<worker_t>& workers)
         {
@@ -12,36 +12,36 @@ namespace thread
         }
 }
 
-thread::pool_t::pool_t() :
-        pool_t(thread::n_threads())
+zob::pool_t::pool_t() :
+        pool_t(zob::n_threads())
 {
 }
 
-thread::pool_t::pool_t(std::size_t active_threads)
+zob::pool_t::pool_t(std::size_t active_threads)
 {
-        const auto n_workers = static_cast<std::size_t>(thread::n_threads());
+        const auto n_workers = static_cast<std::size_t>(zob::n_threads());
         active_threads = std::max(std::size_t(1), active_threads);
 
         for (size_t i = 0; i < n_workers; ++ i)
         {
-                m_workers.emplace_back(m_tasks, i < active_threads);
+                m_workers.emplace_back(m_queue, i < active_threads);
         }
         for (size_t i = 0; i < n_workers; ++ i)
         {
                 m_threads.emplace_back(std::ref(m_workers[i]));
         }
 
-        assert(active_threads == thread::n_active_workers(m_workers));
+        assert(active_threads == zob::n_active_workers(m_workers));
 }
 
-thread::pool_t::~pool_t()
+zob::pool_t::~pool_t()
 {
         // stop & join
         {
-                const std::lock_guard<std::mutex> lock(m_tasks.m_mutex);
+                const std::lock_guard<std::mutex> lock(m_queue.m_mutex);
 
-                m_tasks.m_stop = true;
-                m_tasks.m_condition.notify_all();
+                m_queue.m_stop = true;
+                m_queue.m_condition.notify_all();
         }
 
         for (auto& thread : m_threads)
@@ -50,26 +50,26 @@ thread::pool_t::~pool_t()
         }
 }
 
-void thread::pool_t::wait()
+void zob::pool_t::wait()
 {
-        // wait for all tasks to be taken and the workers to finish
-        std::unique_lock<std::mutex> lock(m_tasks.m_mutex);
+        // wait for all jobs to be taken and the workers to finish
+        std::unique_lock<std::mutex> lock(m_queue.m_mutex);
 
-        assert(thread::n_active_workers(m_workers) > 0);
+        assert(zob::n_active_workers(m_workers) > 0);
 
-        m_tasks.m_condition.wait(lock, [&] () 
-        { 
-                return m_tasks.m_tasks.empty() && m_tasks.m_running == 0;
+        m_queue.m_condition.wait(lock, [&] ()
+        {
+                return m_queue.m_jobs.empty() && m_queue.m_running == 0;
         });
 }
 
-void thread::pool_t::activate(std::size_t count)
+void zob::pool_t::activate(std::size_t count)
 {
-        const std::lock_guard<std::mutex> lock(m_tasks.m_mutex);
+        const std::lock_guard<std::mutex> lock(m_queue.m_mutex);
 
         count = std::max(std::size_t(1), std::min(count, n_workers()));
 
-        std::size_t crt_count = thread::n_active_workers(m_workers);
+        std::size_t crt_count = zob::n_active_workers(m_workers);
         assert(crt_count > 0);
         for (auto& worker :  m_workers)
         {
@@ -95,26 +95,26 @@ void thread::pool_t::activate(std::size_t count)
                 }
         }
 
-        assert(count == thread::n_active_workers(m_workers));
+        assert(count == zob::n_active_workers(m_workers));
 
-        m_tasks.m_condition.notify_all();
+        m_queue.m_condition.notify_all();
 }
 
-std::size_t thread::pool_t::n_workers() const
+std::size_t zob::pool_t::n_workers() const
 {
         return m_workers.size();
 }
 
-std::size_t thread::pool_t::n_active_workers() const
+std::size_t zob::pool_t::n_active_workers() const
 {
-        const std::lock_guard<std::mutex> lock(m_tasks.m_mutex);
+        const std::lock_guard<std::mutex> lock(m_queue.m_mutex);
 
-        return thread::n_active_workers(m_workers);
+        return zob::n_active_workers(m_workers);
 }
 
-std::size_t thread::pool_t::n_tasks() const
+std::size_t zob::pool_t::n_jobs() const
 {
-        const std::lock_guard<std::mutex> lock(m_tasks.m_mutex);
+        const std::lock_guard<std::mutex> lock(m_queue.m_mutex);
 
-        return m_tasks.m_tasks.size();
+        return m_queue.m_jobs.size();
 }

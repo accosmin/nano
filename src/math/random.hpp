@@ -5,7 +5,7 @@
 #include <cassert>
 #include <type_traits>
 
-namespace math
+namespace zob
 {
         ///
         /// \brief uniform random number generator in the [min, max] range.

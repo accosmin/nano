@@ -9,7 +9,7 @@
 
 namespace benchmark
 {
-        using namespace cortex;
+        using namespace zob;
 
         struct optimizer_stat_t
         {
@@ -20,22 +20,22 @@ namespace benchmark
                 }
 
                 scalars_t               m_gthres;       ///< thresholds for the convergence criterias
-                math::stats_t<scalar_t> m_crits;        ///< convergence criteria
-                math::stats_t<scalar_t> m_fail0s;       ///< #convergence failures
-                math::stats_t<scalar_t> m_fail1s;       ///< #convergence failures
-                math::stats_t<scalar_t> m_fail2s;       ///< #convergence failures
-                math::stats_t<scalar_t> m_fail3s;       ///< #convergence failures
-                math::stats_t<scalar_t> m_iters;        ///< #iterations
-                math::stats_t<scalar_t> m_fcalls;       ///< #function value calls
-                math::stats_t<scalar_t> m_gcalls;       ///< #gradient calls
-                math::stats_t<scalar_t> m_speeds;       ///< convergence speed (actually the average decrease ratio of the convergence criteria)
+                zob::stats_t<scalar_t> m_crits;        ///< convergence criteria
+                zob::stats_t<scalar_t> m_fail0s;       ///< #convergence failures
+                zob::stats_t<scalar_t> m_fail1s;       ///< #convergence failures
+                zob::stats_t<scalar_t> m_fail2s;       ///< #convergence failures
+                zob::stats_t<scalar_t> m_fail3s;       ///< #convergence failures
+                zob::stats_t<scalar_t> m_iters;        ///< #iterations
+                zob::stats_t<scalar_t> m_fcalls;       ///< #function value calls
+                zob::stats_t<scalar_t> m_gcalls;       ///< #gradient calls
+                zob::stats_t<scalar_t> m_speeds;       ///< convergence speed (actually the average decrease ratio of the convergence criteria)
         };
 
-        math::stats_t<scalar_t> make_stats(const scalars_t& values, const scalars_t& flags)
+        zob::stats_t<scalar_t> make_stats(const scalars_t& values, const scalars_t& flags)
         {
                 assert(values.size() == flags.size());
 
-                math::stats_t<scalar_t> stats;
+                zob::stats_t<scalar_t> stats;
                 for (size_t i = 0; i < values.size(); i ++)
                 {
                         if (flags[i] >= 0.0)
@@ -53,13 +53,13 @@ namespace benchmark
                 const auto gthres = ostats.begin()->second.m_gthres;
 
                 // show global statistics
-                text::table_t table(text::align(table_name.empty() ? "optimizer" : table_name, 16));
+                zob::table_t table(zob::align(table_name.empty() ? "optimizer" : table_name, 16));
                 table.header() << "cost"
                                << "|grad|/|fval|"
-                               << ("#>1e-" + text::to_string(static_cast<size_t>(-std::log10(gthres[3]))))
-                               << ("#>1e-" + text::to_string(static_cast<size_t>(-std::log10(gthres[2]))))
-                               << ("#>1e-" + text::to_string(static_cast<size_t>(-std::log10(gthres[1]))))
-                               << ("#>1e-" + text::to_string(static_cast<size_t>(-std::log10(gthres[0]))))
+                               << ("#>1e-" + zob::to_string(static_cast<size_t>(-std::log10(gthres[3]))))
+                               << ("#>1e-" + zob::to_string(static_cast<size_t>(-std::log10(gthres[2]))))
+                               << ("#>1e-" + zob::to_string(static_cast<size_t>(-std::log10(gthres[1]))))
+                               << ("#>1e-" + zob::to_string(static_cast<size_t>(-std::log10(gthres[0]))))
                                << "#iters"
                                << "#fcalls"
                                << "#gcalls"
@@ -82,19 +82,19 @@ namespace benchmark
                                            << stat.m_speeds.avg();
                 }
 
-                table.sort(text::make_table_row_ascending_comp<scalar_t>(indices_t({2, 3, 4, 5, 0})));
+                table.sort(zob::make_table_row_ascending_comp<scalar_t>(indices_t({2, 3, 4, 5, 0})));
                 table.print(std::cout);
         }
 
         template
         <
                 typename tscalar,
-                typename tvector = typename math::function_t<tscalar>::tvector,
+                typename tvector = typename zob::function_t<tscalar>::tvector,
                 typename toptimizer,
                 typename tostats
         >
         void benchmark_function(
-                const math::function_t<tscalar>& func, const std::vector<tvector>& x0s,
+                const zob::function_t<tscalar>& func, const std::vector<tvector>& x0s,
                 const toptimizer& op, const std::string& name,
                 const scalars_t& gthres,
                 tostats& stats, tostats& gstats)
@@ -111,13 +111,13 @@ namespace benchmark
                 scalars_t gcalls(trials);
                 scalars_t speeds(trials);
 
-                thread::pool_t pool;
-                thread::loopi(trials, pool, [&] (size_t t)
+                zob::pool_t pool;
+                zob::loopi(trials, pool, [&] (size_t t)
                 {
                         const auto& x0 = x0s[t];
 
                         const auto problem = func.problem();
-                        const auto state0 = typename math::function_t<tscalar>::tproblem::tstate(problem, x0);
+                        const auto state0 = typename zob::function_t<tscalar>::tproblem::tstate(problem, x0);
                         const auto g0 = state0.convergence_criteria();
 
                         // optimize

@@ -4,7 +4,7 @@
 #include "trainer_state.h"
 #include "text/enum_string.hpp"
 
-namespace cortex
+namespace zob
 {
         ///
         /// \brief training configuration (e.g. learning rate, regularization weight)
@@ -106,17 +106,17 @@ namespace cortex
         ZOB_PUBLIC bool operator<(const trainer_result_t& one, const trainer_result_t& other);
 }
 
-namespace text
+namespace zob
 {
         template <>
-        inline std::map<cortex::trainer_result_return_t, std::string> enum_string<cortex::trainer_result_return_t>()
+        inline std::map<zob::trainer_result_return_t, std::string> enum_string<zob::trainer_result_return_t>()
         {
                 return
                 {
-                        { cortex::trainer_result_return_t::better,      "better" },
-                        { cortex::trainer_result_return_t::worse,       "worse" },
-                        { cortex::trainer_result_return_t::overfitting, "overfitting" },
-                        { cortex::trainer_result_return_t::solved,      "solved" }
+                        { zob::trainer_result_return_t::better,      "better" },
+                        { zob::trainer_result_return_t::worse,       "worse" },
+                        { zob::trainer_result_return_t::overfitting, "overfitting" },
+                        { zob::trainer_result_return_t::solved,      "solved" }
                 };
         }
 }

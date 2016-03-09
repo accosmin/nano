@@ -6,8 +6,8 @@ namespace test
 {
         void check_stats(double avg, double var, size_t count)
         {
-                math::stats_t<double> stats;
-                auto rgen = math::make_rng<double>(-var, +var);
+                zob::stats_t<double> stats;
+                auto rgen = zob::make_rng<double>(-var, +var);
 
                 // generate random values
                 std::vector<double> values;

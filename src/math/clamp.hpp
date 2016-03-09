@@ -1,6 +1,6 @@
 #pragma once
 
-namespace math
+namespace zob
 {
         ///
         /// \brief clamp value in the [min_value, max_value] range

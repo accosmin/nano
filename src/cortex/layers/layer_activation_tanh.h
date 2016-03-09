@@ -2,7 +2,7 @@
 
 #include "layer_activation.h"
 
-namespace cortex
+namespace zob
 {        
         namespace detail
         {

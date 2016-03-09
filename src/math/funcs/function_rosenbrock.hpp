@@ -3,7 +3,7 @@
 #include "util.hpp"
 #include "function.hpp"
 
-namespace math
+namespace zob
 {
         ///
         /// \brief create Rosenbrock test functions
@@ -42,7 +42,7 @@ namespace math
                                 tscalar fx = 0;
                                 for (tsize i = 0; i + 1 < m_dims; i ++)
                                 {
-                                        fx += 100 * math::square(x(i + 1) - x(i) * x(i)) + math::square(x(i) - 1);
+                                        fx += 100 * zob::square(x(i + 1) - x(i) * x(i)) + zob::square(x(i) - 1);
                                 }
 
                                 return fx;

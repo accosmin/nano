@@ -3,7 +3,7 @@
 #include "scalar.h"
 #include "tensor/tensor.hpp"
 
-namespace cortex
+namespace zob
 {
         using vector_t = tensor::vector_t<scalar_t>;
         using vectors_t = std::vector<vector_t>;

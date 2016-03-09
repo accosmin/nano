@@ -11,7 +11,7 @@ ZOB_CASE(evaluate)
 
         for (size_t t = 0; t < tests; ++ t)
         {
-                auto rnd = math::make_rng<double>(-1.0, +1.0);
+                auto rnd = zob::make_rng<double>(-1.0, +1.0);
 
                 // build random valid quadratic
                 double a, b, c;
@@ -21,9 +21,9 @@ ZOB_CASE(evaluate)
                         b = rnd();
                         c = rnd();
                 }
-                while (!math::quadratic_t<double>(a, b, c));
+                while (!zob::quadratic_t<double>(a, b, c));
 
-                const math::quadratic_t<double> q(a, b, c);
+                const zob::quadratic_t<double> q(a, b, c);
                 ZOB_CHECK(q);
 
                 const double x0 = rnd();
@@ -34,20 +34,20 @@ ZOB_CASE(evaluate)
                 const double f1 = q.value(x1);
 
                 // check interpolation
-                const math::quadratic_t<double> iq(x0, f0, g0, x1, f1);
+                const zob::quadratic_t<double> iq(x0, f0, g0, x1, f1);
                 if (!iq)
                 {
                         continue;
                 }
 
-                ZOB_CHECK_CLOSE(f0, iq.value(x0), math::epsilon0<double>());
-                ZOB_CHECK_CLOSE(g0, iq.gradient(x0), math::epsilon0<double>());
+                ZOB_CHECK_CLOSE(f0, iq.value(x0), zob::epsilon0<double>());
+                ZOB_CHECK_CLOSE(g0, iq.gradient(x0), zob::epsilon0<double>());
 
-                ZOB_CHECK_CLOSE(f1, iq.value(x1), math::epsilon0<double>());
+                ZOB_CHECK_CLOSE(f1, iq.value(x1), zob::epsilon0<double>());
 
-//                ZOB_CHECK_CLOSE(q.a(), iq.a(), math::epsilon1<double>());
-//                ZOB_CHECK_CLOSE(q.b(), iq.b(), math::epsilon1<double>());
-//                ZOB_CHECK_CLOSE(q.c(), iq.c(), math::epsilon1<double>());
+//                ZOB_CHECK_CLOSE(q.a(), iq.a(), zob::epsilon1<double>());
+//                ZOB_CHECK_CLOSE(q.b(), iq.b(), zob::epsilon1<double>());
+//                ZOB_CHECK_CLOSE(q.c(), iq.c(), zob::epsilon1<double>());
 
                 // check extremum
                 double extremum;
@@ -58,12 +58,12 @@ ZOB_CASE(evaluate)
                         continue;
                 }
 
-                ZOB_CHECK_LESS(math::abs(iq.gradient(extremum)), math::epsilon0<double>());
+                ZOB_CHECK_LESS(zob::abs(iq.gradient(extremum)), zob::epsilon0<double>());
 
                 const size_t etests = 143;
                 for (size_t e = 0; e < etests; ++ e)
                 {
-                        ZOB_CHECK_GREATER(math::abs(iq.gradient(rnd())), math::abs(iq.gradient(extremum)));
+                        ZOB_CHECK_GREATER(zob::abs(iq.gradient(rnd())), zob::abs(iq.gradient(extremum)));
                 }
         }
 }

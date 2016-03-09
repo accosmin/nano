@@ -5,7 +5,7 @@
 #include <string>
 #include <cstddef>
 
-namespace io
+namespace zob
 {
         ///
         /// \brief map the std::istream's interface over a fixed-size in-memory buffer

@@ -3,7 +3,7 @@
 #include "io/buffer.h"
 #include "cortex/task.h"
 
-namespace cortex
+namespace zob
 {
         ///
         /// SVHN task:
@@ -38,7 +38,7 @@ namespace cortex
                 size_t load(const string_t& bfile, protocol p);
 
                 // decode the uncompressed bytes (images + labels)
-                size_t decode(const io::buffer_t& image_data, const io::buffer_t& label_data, const protocol p);
+                size_t decode(const zob::buffer_t& image_data, const zob::buffer_t& label_data, const protocol p);
         };
 }
 

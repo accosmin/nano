@@ -2,7 +2,7 @@
 
 #include "text/enum_string.hpp"
 
-namespace cortex
+namespace zob
 {
         ///
         /// \brief machine learning protocols
@@ -15,15 +15,15 @@ namespace cortex
 }
 
 // string cast for enumerations
-namespace text
+namespace zob
 {
         template <>
-        inline std::map<cortex::protocol, std::string> enum_string<cortex::protocol>()
+        inline std::map<zob::protocol, std::string> enum_string<zob::protocol>()
         {
                 return
                 {
-                        { cortex::protocol::train,      "train" },
-                        { cortex::protocol::test,       "test" }
+                        { zob::protocol::train,      "train" },
+                        { zob::protocol::test,       "test" }
                 };
         }
 }

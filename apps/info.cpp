@@ -9,14 +9,14 @@ namespace
         <
                 typename tobject
         >
-        void print(const cortex::string_t& name, const cortex::manager_t<tobject>& manager)
+        void print(const zob::string_t& name, const zob::manager_t<tobject>& manager)
         {
-                using namespace cortex;
+                using namespace zob;
 
                 const strings_t ids = manager.ids();
                 const strings_t descriptions = manager.descriptions();
 
-                text::table_t table(name);
+                zob::table_t table(name);
                 table.header() << "description";
 
                 for (size_t i = 0; i < ids.size(); ++ i)
@@ -30,10 +30,10 @@ namespace
 
 int main(int argc, char* argv[])
 {
-        cortex::init();
+        zob::init();
 
         // parse the command line
-        text::cmdline_t cmdline("display the registered objects");
+        zob::cmdline_t cmdline("display the registered objects");
         cmdline.add("", "loss",         "loss functions");
         cmdline.add("", "task",         "tasks");
         cmdline.add("", "layer",        "layer types to built models");
@@ -46,27 +46,27 @@ int main(int argc, char* argv[])
         // check arguments and options
         if (cmdline.has("loss"))
         {
-                print("loss", cortex::get_losses());
+                print("loss", zob::get_losses());
         }
         if (cmdline.has("task"))
         {
-                print("task", cortex::get_tasks());
+                print("task", zob::get_tasks());
         }
         if (cmdline.has("layer"))
         {
-                print("layer", cortex::get_layers());
+                print("layer", zob::get_layers());
         }
         if (cmdline.has("model"))
         {
-                print("model", cortex::get_models());
+                print("model", zob::get_models());
         }
         if (cmdline.has("trainer"))
         {
-                print("trainer", cortex::get_trainers());
+                print("trainer", zob::get_trainers());
         }
         if (cmdline.has("criterion"))
         {
-                print("criterion", cortex::get_criteria());
+                print("criterion", zob::get_criteria());
         }
 
         // OK

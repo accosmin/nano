@@ -6,7 +6,7 @@
 #include "math/clamp.hpp"
 #include "tensor/vector.hpp"
 
-namespace cortex
+namespace zob
 {
         ///
         /// \brief in-place separable 2D filter
@@ -36,7 +36,7 @@ namespace cortex
                 {
                         for (int c = 0; c < cols; ++ c)
                         {
-                                buff(c) = math::cast<tscalar>(src(r, c));
+                                buff(c) = zob::cast<tscalar>(src(r, c));
                         }
 
                         for (int c = 0; c < cols; ++ c)
@@ -44,11 +44,11 @@ namespace cortex
                                 tscalar v = 0;
                                 for (int k = -krad; k <= krad; ++ k)
                                 {
-                                        const int cc = math::clamp(k + c, 0, cols - 1);
+                                        const int cc = zob::clamp(k + c, 0, cols - 1);
                                         v += kernel[k + krad] * buff(cc);
                                 }
 
-                                src(r, c) = math::cast<tvalue>(v);
+                                src(r, c) = zob::cast<tvalue>(v);
                         }
                 }
 
@@ -57,7 +57,7 @@ namespace cortex
                 {
                         for (int r = 0; r < rows; ++ r)
                         {
-                                buff(r) = math::cast<tscalar>(src(r, c));
+                                buff(r) = zob::cast<tscalar>(src(r, c));
                         }
 
                         for (int r = 0; r < rows; ++ r)
@@ -65,11 +65,11 @@ namespace cortex
                                 tscalar v = 0;
                                 for (int k = -krad; k <= krad; ++ k)
                                 {
-                                        const int rr = math::clamp(k + r, 0, rows - 1);
+                                        const int rr = zob::clamp(k + r, 0, rows - 1);
                                         v += kernel[k + krad] * buff(rr);
                                 }
 
-                                src(r, c) = math::cast<tvalue>(v);
+                                src(r, c) = zob::cast<tvalue>(v);
                         }
                 }
         }

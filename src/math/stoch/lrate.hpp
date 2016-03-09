@@ -3,7 +3,7 @@
 #include <cmath>
 #include <cassert>
 
-namespace math
+namespace zob
 {
         ///
         /// \brief compute the current learning rate as a function of:

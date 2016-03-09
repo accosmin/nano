@@ -4,7 +4,7 @@
 #include <algorithm>
 #include "random.hpp"
 
-namespace math
+namespace zob
 {
         ///
         /// \brief create a random subset of [size] indices in the range [0, capacity - 1]
@@ -41,7 +41,7 @@ namespace math
 
                 if (!samples.empty())
                 {
-                        const std::vector<std::size_t> indices = math::uindices(samples.size(), size);
+                        const std::vector<std::size_t> indices = zob::uindices(samples.size(), size);
 
                         for (std::size_t i = 0; i < indices.size(); i ++)
                         {
@@ -85,7 +85,7 @@ namespace math
         void usplit(const std::vector<tsample>& samples, std::size_t percentage1,
                 std::vector<tsample>& usamples1, std::vector<tsample>& usamples2)
         {
-                auto rng = math::make_rng<std::size_t>(0, 99);
+                auto rng = zob::make_rng<std::size_t>(0, 99);
 
                 usamples1.clear();
                 usamples2.clear();

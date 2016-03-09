@@ -1,6 +1,6 @@
 #include "loss.h"
 
-namespace cortex
+namespace zob
 {
         loss_manager_t& get_losses()
         {

@@ -3,7 +3,7 @@
 #include "color.h"
 #include "stringi.h"
 
-namespace cortex
+namespace zob
 {
         ///
         /// \brief load RGBA image from disk

@@ -3,7 +3,7 @@
 #include "arch.h"
 #include <iostream>
 
-namespace cortex
+namespace zob
 {
         ///
         /// \brief logging object that can use any std::ostream (standard streaming & text files)

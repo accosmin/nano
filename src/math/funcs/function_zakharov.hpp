@@ -3,7 +3,7 @@
 #include "util.hpp"
 #include "function.hpp"
 
-namespace math
+namespace zob
 {
         ///
         /// \brief create Zakharov test functions
@@ -45,7 +45,7 @@ namespace math
                                 const tscalar u = x.array().square().sum();
                                 const tscalar v = (m_weights.array() * x.array()).sum();
 
-                                return u + math::square(v) + math::quartic(v);
+                                return u + zob::square(v) + zob::quartic(v);
                         };
 
                         const auto fn_grad = [=] (const tvector& x, tvector& gx)
@@ -53,9 +53,9 @@ namespace math
                                 const tscalar u = x.array().square().sum();
                                 const tscalar v = (m_weights.array() * x.array()).sum();
 
-                                gx = 2 * x + (2 * v + 4 * math::cube(v)) * m_weights;
+                                gx = 2 * x + (2 * v + 4 * zob::cube(v)) * m_weights;
 
-                                return u + math::square(v) + math::quartic(v);
+                                return u + zob::square(v) + zob::quartic(v);
                         };
 
                         return tproblem(fn_size, fn_fval, fn_grad);

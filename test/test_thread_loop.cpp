@@ -32,7 +32,7 @@ namespace
         tscalar test_mt(const size_t size, toperator op)
         {
                 std::vector<tscalar> results(size);
-                thread::loopi(size, [results = std::ref(results), op = op] (size_t i)
+                zob::loopi(size, [results = std::ref(results), op = op] (size_t i)
                 {
                         results.get()[i] = op(i);
                 });
@@ -49,7 +49,7 @@ namespace
         tscalar test_mt(const size_t size, const size_t nthreads, toperator op)
         {
                 std::vector<tscalar> results(size);
-                thread::loopi(size, nthreads, [results = std::ref(results), op = op] (size_t i)
+                zob::loopi(size, nthreads, [results = std::ref(results), op = op] (size_t i)
                 {
                         results.get()[i] = op(i);
                 });
@@ -82,12 +82,12 @@ ZOB_CASE(evaluate)
 
                 // multi-threaded
                 const scalar_t mt = test_mt<scalar_t>(size, op);
-                ZOB_CHECK_CLOSE(st, mt, math::epsilon1<scalar_t>());
+                ZOB_CHECK_CLOSE(st, mt, zob::epsilon1<scalar_t>());
 
-                for (size_t nthreads = 1; nthreads <= thread::n_threads(); nthreads += 2)
+                for (size_t nthreads = 1; nthreads <= zob::n_threads(); nthreads += 2)
                 {
                         const scalar_t mtx = test_mt<scalar_t>(size, nthreads, op);
-                        ZOB_CHECK_CLOSE(st, mtx, math::epsilon1<scalar_t>());
+                        ZOB_CHECK_CLOSE(st, mtx, zob::epsilon1<scalar_t>());
                 }
         }
 }

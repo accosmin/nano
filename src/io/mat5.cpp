@@ -2,7 +2,7 @@
 #include "imstream.h"
 #include <fstream>
 
-namespace io
+namespace zob
 {
         using std::uint32_t;
 

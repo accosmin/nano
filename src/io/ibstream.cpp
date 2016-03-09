@@ -2,7 +2,7 @@
 #include <vector>
 #include <istream>
 
-namespace io
+namespace zob
 {
         ibstream_t::ibstream_t(std::istream& stream)
                 :       m_stream(stream)

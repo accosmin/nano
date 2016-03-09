@@ -2,7 +2,7 @@
 
 #include "sample.h"
 
-namespace cortex
+namespace zob
 {
         ///
         /// \brief sampling from a potentially large collection of samples.

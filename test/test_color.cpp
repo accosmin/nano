@@ -7,14 +7,14 @@ ZOB_BEGIN_MODULE(test_color)
 
 ZOB_CASE(rgba_transform)
 {
-        using namespace cortex;
+        using namespace zob;
 
         const size_t tests = 1023;
 
-        math::random_t<rgba_t> rgen(0, 255);
-        math::random_t<rgba_t> ggen(0, 255);
-        math::random_t<rgba_t> bgen(0, 255);
-        math::random_t<rgba_t> agen(0, 255);
+        zob::random_t<rgba_t> rgen(0, 255);
+        zob::random_t<rgba_t> ggen(0, 255);
+        zob::random_t<rgba_t> bgen(0, 255);
+        zob::random_t<rgba_t> agen(0, 255);
 
         for (size_t t = 0; t < tests; ++ t)
         {
@@ -45,18 +45,18 @@ ZOB_CASE(rgba_transform)
 
 ZOB_CASE(color_tensor)
 {
-        using namespace cortex;
+        using namespace zob;
 
         const int tests = 17;
 
         for (int test = 0; test < tests; ++ test)
         {
-                math::random_t<int> rng(16, 64);
+                zob::random_t<int> rng(16, 64);
 
                 const auto rows = rng();
                 const auto cols = rng();
 
-                const auto eps = math::epsilon0<scalar_t>();
+                const auto eps = zob::epsilon0<scalar_t>();
 
                 // load from RGBA tensor
                 {

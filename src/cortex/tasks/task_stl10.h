@@ -2,7 +2,7 @@
 
 #include "cortex/task.h"
 
-namespace cortex
+namespace zob
 {
         ///
         /// STL10 task:

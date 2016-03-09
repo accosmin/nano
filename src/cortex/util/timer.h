@@ -4,7 +4,7 @@
 #include <chrono>
 #include <string>
 
-namespace cortex
+namespace zob
 {
         using seconds_t = std::chrono::seconds;
         using milliseconds_t = std::chrono::milliseconds;

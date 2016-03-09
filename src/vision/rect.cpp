@@ -2,7 +2,7 @@
 #include <ostream>
 #include <algorithm>
 
-namespace cortex
+namespace zob
 {
         rect_t operator&(const rect_t& rect1, const rect_t& rect2)
         {

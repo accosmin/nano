@@ -3,7 +3,7 @@
 #include "softmax.hpp"
 #include <cassert>
 
-namespace cortex
+namespace zob
 {
         exponential_loss_t::exponential_loss_t(const string_t& configuration)
                 :       loss_t(configuration)

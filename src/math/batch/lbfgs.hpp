@@ -5,7 +5,7 @@
 #include "ls_strategy.hpp"
 #include <deque>
 
-namespace math
+namespace zob
 {
         ///
         /// \brief limited memory bfgs (l-bfgs)

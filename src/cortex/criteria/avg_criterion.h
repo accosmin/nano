@@ -2,7 +2,7 @@
 
 #include "cortex/criterion.h"
 
-namespace cortex
+namespace zob
 {
         ///
         /// \brief average loss

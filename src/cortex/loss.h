@@ -5,7 +5,7 @@
 #include "stringi.h"
 #include "util/manager.hpp"
 
-namespace cortex
+namespace zob
 {
         class loss_t;
 

@@ -2,7 +2,7 @@
 #include <cctype>
 #include <algorithm>
 
-namespace text
+namespace zob
 {
         std::string lower(const std::string& str)
         {

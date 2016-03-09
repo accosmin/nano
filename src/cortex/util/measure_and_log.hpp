@@ -4,7 +4,7 @@
 #include "logger.h"
 #include <cstdlib>
 
-namespace cortex
+namespace zob
 {
         ///
         /// \brief measure function call

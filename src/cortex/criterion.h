@@ -4,7 +4,7 @@
 #include "sample.h"
 #include "math/stats.hpp"
 
-namespace cortex
+namespace zob
 {
         class criterion_t;
         class loss_t;
@@ -149,7 +149,7 @@ namespace cortex
                 scalar_t                m_lambda;       ///< regularization weight (if any)
                 type                    m_type;         ///<
 
-                math::stats_t<scalar_t> m_estats;       ///< loss error statistics
+                zob::stats_t<scalar_t> m_estats;       ///< loss error statistics
         };
 }
 

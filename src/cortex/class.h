@@ -3,7 +3,7 @@
 #include "arch.h"
 #include "tensor.h"
 
-namespace cortex
+namespace zob
 {
         ///
         /// \brief target value of the positive class

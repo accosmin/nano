@@ -3,7 +3,7 @@
 #include <cstddef>
 #include "math/lsearch_types.h"
 
-namespace math
+namespace zob
 {
         ///
         /// \brief common parameters for batch optimization

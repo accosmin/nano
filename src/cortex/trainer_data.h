@@ -3,7 +3,7 @@
 #include "cortex/sampler.h"
 #include "cortex/optimizer.h"
 
-namespace cortex
+namespace zob
 {
         class task_t;
         class loss_t;

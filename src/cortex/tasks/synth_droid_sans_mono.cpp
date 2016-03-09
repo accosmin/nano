@@ -208,17 +208,17 @@ namespace
         };
 }
 
-const char* cortex::get_synth_droid_sans_mono_data()
+const char* zob::get_synth_droid_sans_mono_data()
 {
         return (const char*)data;
 }
 
-std::size_t cortex::get_synth_droid_sans_mono_size()
+std::size_t zob::get_synth_droid_sans_mono_size()
 {
         return sizeof(data) / sizeof(unsigned char);
 }
 
-const char* cortex::get_synth_droid_sans_mono_name()
+const char* zob::get_synth_droid_sans_mono_name()
 {
         return name;
 }

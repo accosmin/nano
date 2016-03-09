@@ -5,7 +5,7 @@
 #include <stdexcept>
 #include "clonable.hpp"
 
-namespace cortex
+namespace zob
 {
         ///
         /// \brief manage objects of similar type.

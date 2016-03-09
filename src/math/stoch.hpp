@@ -10,7 +10,7 @@
 #include "stoch/adagrad.hpp"
 #include "stoch/adadelta.hpp"
 
-namespace math
+namespace zob
 {
         ///
         /// \brief stochastic optimization

@@ -3,7 +3,7 @@
 #include "cortex/layer.h"
 #include "tensor/transform.hpp"
 
-namespace cortex
+namespace zob
 {
         ///
         /// \brief activation layer: applies a non-linear scalar function to the each input

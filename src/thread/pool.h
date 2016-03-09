@@ -1,11 +1,11 @@
 #pragma once
 
-#include "tasks.h"
+#include "queue.h"
 #include "worker.h"
 #include <vector>
 #include <thread>
 
-namespace thread
+namespace zob
 {
         ///
         /// \brief thread pool
@@ -53,16 +53,16 @@ namespace thread
                 void activate(std::size_t count);
 
                 ///
-                /// \brief enqueue a new task to execute
+                /// \brief enqueue a new job to execute
                 ///
                 template<class F>
                 void enqueue(F f)
                 {
-                        m_tasks.enqueue(f);
+                        m_queue.enqueue(f);
                 }
 
                 ///
-                /// \brief wait for all workers to finish running the tasks
+                /// \brief wait for all workers to finish running the jobs
                 ///
                 void wait();
 
@@ -77,15 +77,15 @@ namespace thread
                 std::size_t n_active_workers() const;
 
                 ///
-                /// \brief number of tasks to run
+                /// \brief number of jobs to run
                 ///
-                std::size_t n_tasks() const;
+                std::size_t n_jobs() const;
 
         private:
 
                 // attributes
                 std::vector<std::thread>        m_threads;      ///<
                 std::vector<worker_t>           m_workers;      ///<
-                tasks_t                         m_tasks;        ///< tasks to execute + synchronization
+                queue_t                         m_queue;        ///< jobs to execute + synchronization
         };
 }

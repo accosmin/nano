@@ -4,7 +4,7 @@
 #include <cstddef>
 #include <utility>
 
-namespace math
+namespace zob
 {
         ///
         /// \brief common parameters for stochastic optimization

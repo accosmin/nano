@@ -8,7 +8,7 @@
 #include <iosfwd>
 #include <cstdint>
 
-namespace cortex
+namespace zob
 {
         /// RGBA
         using rgba_t = uint32_t;
@@ -58,7 +58,7 @@ namespace cortex
 
                 inline luma_t make_luma(rgba_t r, rgba_t g, rgba_t b)
                 {
-                        return math::cast<luma_t>((r * 11 + g * 16 + b * 5) / 32);
+                        return zob::cast<luma_t>((r * 11 + g * 16 + b * 5) / 32);
                 }
                 inline luma_t make_luma(rgba_t rgba)
                 {
@@ -127,29 +127,29 @@ namespace cortex
         }
 }
 
-namespace text
+namespace zob
 {
         template <>
-        inline std::map<cortex::color_mode, std::string> enum_string<cortex::color_mode>()
+        inline std::map<zob::color_mode, std::string> enum_string<zob::color_mode>()
         {
                 return
                 {
-                        { cortex::color_mode::luma, "luma" },
-                        { cortex::color_mode::rgba, "rgba" }
+                        { zob::color_mode::luma, "luma" },
+                        { zob::color_mode::rgba, "rgba" }
                 };
         }
 
         template <>
-        inline std::map<cortex::color_channel, std::string> enum_string<cortex::color_channel>()
+        inline std::map<zob::color_channel, std::string> enum_string<zob::color_channel>()
         {
                 return
                 {
-                        { cortex::color_channel::red,           "red" },
-                        { cortex::color_channel::green,         "green" },
-                        { cortex::color_channel::blue,          "blue" },
-                        { cortex::color_channel::luma,          "luma" },
-                        { cortex::color_channel::rgba,          "rgba" },
-                        { cortex::color_channel::alpha,         "alpha" }
+                        { zob::color_channel::red,           "red" },
+                        { zob::color_channel::green,         "green" },
+                        { zob::color_channel::blue,          "blue" },
+                        { zob::color_channel::luma,          "luma" },
+                        { zob::color_channel::rgba,          "rgba" },
+                        { zob::color_channel::alpha,         "alpha" }
                 };
         }
 }

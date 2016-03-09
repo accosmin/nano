@@ -1,7 +1,7 @@
 #include "loss_cauchy.h"
 #include <cassert>
 
-namespace cortex
+namespace zob
 {
         cauchy_loss_t::cauchy_loss_t(const string_t& configuration)
                 :       loss_t(configuration)

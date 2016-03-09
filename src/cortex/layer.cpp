@@ -1,6 +1,6 @@
 #include "layer.h"
 
-namespace cortex
+namespace zob
 {
         layer_manager_t& get_layers()
         {

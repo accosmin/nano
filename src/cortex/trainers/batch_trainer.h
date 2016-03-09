@@ -2,7 +2,7 @@
 
 #include "cortex/trainer.h"
 
-namespace cortex
+namespace zob
 {
         ///
         /// batch trainer: each gradient update is computed for all samples.

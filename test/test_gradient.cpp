@@ -17,7 +17,7 @@
 
 namespace
 {
-        using namespace cortex;
+        using namespace zob;
 
         const strings_t conv_layer_ids { "", "conv" };
         const strings_t pool_layer_ids { "", "pool-max", "pool-min", "pool-avg" };
@@ -32,10 +32,10 @@ namespace
         const size_t cmd_tests = 4;
         const size_t cmd_threads = 1;
 
-        math::random_t<size_t> urgen;                           // unbounded rng
-        math::random_t<scalar_t> prgen(-1.0, +1.0);             // rng for parameters
-        math::random_t<scalar_t> irgen(-0.1, +0.1);             // rng for inputs
-        math::random_t<tensor_size_t> trgen(0, cmd_outputs - 1);// rng for targets
+        zob::random_t<size_t> urgen;                           // unbounded rng
+        zob::random_t<scalar_t> prgen(-1.0, +1.0);             // rng for parameters
+        zob::random_t<scalar_t> irgen(-0.1, +0.1);             // rng for inputs
+        zob::random_t<tensor_size_t> trgen(0, cmd_outputs - 1);// rng for targets
 
         string_t make_model_description(
                 size_t n_layers,
@@ -49,10 +49,10 @@ namespace
                 // convolution part
                 for (size_t l = 0; l < n_layers && !conv_layer_id.empty(); ++ l)
                 {
-                        math::random_t<size_t> rgen(2, 3);
+                        zob::random_t<size_t> rgen(2, 3);
 
                         string_t params;
-                        params += "dims=" + text::to_string(rgen());
+                        params += "dims=" + zob::to_string(rgen());
                         params += (rgen() % 2 == 0) ? ",rows=2,cols=2" : ",rows=3,cols=3";
 
                         desc += conv_layer_id + ":" + params + ";";
@@ -66,16 +66,16 @@ namespace
                 // fully-connected part
                 for (size_t l = 0; l < n_layers && !full_layer_id.empty(); ++ l)
                 {
-                        math::random_t<size_t> rgen(2, 3);
+                        zob::random_t<size_t> rgen(2, 3);
 
                         string_t params;
-                        params += "dims=" + text::to_string(rgen());
+                        params += "dims=" + zob::to_string(rgen());
 
                         desc += full_layer_id + ":" + params + ";";
                         desc += actv_layer_id + ";";
                 }
 
-                desc += "linear:dims=" + text::to_string(cmd_outputs) + ";";
+                desc += "linear:dims=" + zob::to_string(cmd_outputs) + ";";
 
                 return desc;
         }
@@ -114,10 +114,10 @@ namespace
                 }
 
                 // create the <model description, loss id> configuration
-                std::vector<std::pair<cortex::string_t, cortex::string_t> > result;
+                std::vector<std::pair<zob::string_t, zob::string_t> > result;
                 for (const auto& desc : descs)
                 {
-                        const strings_t loss_ids = cortex::get_losses().ids();
+                        const strings_t loss_ids = zob::get_losses().ids();
                         const string_t loss_id = loss_ids[urgen() % loss_ids.size()];
 
                         result.emplace_back(desc, loss_id);
@@ -131,26 +131,26 @@ namespace
                 size_t& n_checks, size_t& n_fails1, size_t& n_fails2, size_t& n_fails3)
         {
                 n_checks ++;
-                if (!math::close(delta, scalar_t(0), math::epsilon1<scalar_t>()))
+                if (!zob::close(delta, scalar_t(0), zob::epsilon1<scalar_t>()))
                 {
                         n_fails1 ++;
                 }
-                if (!math::close(delta, scalar_t(0), math::epsilon2<scalar_t>()))
+                if (!zob::close(delta, scalar_t(0), zob::epsilon2<scalar_t>()))
                 {
                         n_fails2 ++;
                 }
-                if (!math::close(delta, scalar_t(0), math::epsilon3<scalar_t>()))
+                if (!zob::close(delta, scalar_t(0), zob::epsilon3<scalar_t>()))
                 {
                         n_fails3 ++;
-                        BOOST_CHECK_LE(delta, math::epsilon3<scalar_t>());
-                        log_error() << header << ": error = " << delta << "/" << math::epsilon3<scalar_t>() << "!";
+                        BOOST_CHECK_LE(delta, zob::epsilon3<scalar_t>());
+                        log_error() << header << ": error = " << delta << "/" << zob::epsilon3<scalar_t>() << "!";
                 }
         }
 }
 
 namespace test
 {
-        using namespace cortex;
+        using namespace zob;
 
         std::mutex mutex;
 
@@ -162,7 +162,7 @@ namespace test
         void test_grad_params(const string_t& header, const string_t& loss_id, const model_t& model,
                 accumulator_t& acc_params)
         {
-                const rloss_t rloss = cortex::get_losses().get(loss_id);
+                const rloss_t rloss = zob::get_losses().get(loss_id);
                 const loss_t& loss = *rloss;
 
                 const tensor_size_t psize = model.psize();
@@ -204,7 +204,7 @@ namespace test
                 {
                         tensor::set_random(params, prgen);
                         tensor::set_random(input, irgen);
-                        target = cortex::class_target(trgen(), osize);
+                        target = zob::class_target(trgen(), osize);
 
                         const scalar_t delta = problem.grad_accuracy(params);
 
@@ -217,7 +217,7 @@ namespace test
 
         void test_grad_params(const string_t& header, const string_t& loss_id, const model_t& model)
         {
-                const strings_t criteria = cortex::get_criteria().ids();
+                const strings_t criteria = zob::get_criteria().ids();
                 const string_t criterion = criteria[urgen() % criteria.size()];
 
                 accumulator_t acc_params(model, cmd_threads, criterion, criterion_t::type::vgrad, 0.1);
@@ -228,7 +228,7 @@ namespace test
         {
                 const rmodel_t rmodel_inputs = model.clone();
 
-                const rloss_t rloss = cortex::get_losses().get(loss_id);
+                const rloss_t rloss = zob::get_losses().get(loss_id);
                 const loss_t& loss = *rloss;
 
                 const tensor_size_t psize = model.psize();
@@ -274,7 +274,7 @@ namespace test
                 {
                         tensor::set_random(params, prgen);
                         tensor::set_random(input, irgen);
-                        target = cortex::class_target(trgen(), osize);
+                        target = zob::class_target(trgen(), osize);
 
                         vector_t analytic_inputs_grad, aproxdif_inputs_grad;
 
@@ -293,14 +293,14 @@ namespace test
 
 BOOST_AUTO_TEST_CASE(test_gradient)
 {
-        using namespace cortex;
+        using namespace zob;
 
-        cortex::init();
+        zob::init();
 
         const auto configs = ::make_grad_configs();
 
         // test each configuration
-        thread::pool_t pool;
+        zob::pool_t pool;
         for (const auto& config : configs)
         {
                 pool.enqueue([=] ()
@@ -314,7 +314,7 @@ BOOST_AUTO_TEST_CASE(test_gradient)
                         }
 
                         // create model
-                        const rmodel_t model = cortex::get_models().get("forward-network", desc);
+                        const rmodel_t model = zob::get_models().get("forward-network", desc);
                         BOOST_CHECK_EQUAL(model.operator bool(), true);
                         {
                                 const std::lock_guard<std::mutex> lock(test::mutex);
@@ -335,9 +335,9 @@ BOOST_AUTO_TEST_CASE(test_gradient)
         pool.wait();
 
         // check global results
-        const scalar_t eps1 = math::epsilon1<scalar_t>();
-        const scalar_t eps2 = math::epsilon2<scalar_t>();
-        const scalar_t eps3 = math::epsilon3<scalar_t>();
+        const scalar_t eps1 = zob::epsilon1<scalar_t>();
+        const scalar_t eps2 = zob::epsilon2<scalar_t>();
+        const scalar_t eps3 = zob::epsilon3<scalar_t>();
 
         log_info() << "failures: level1 = " << test::n_fails1 << "/" << test::n_checks << ", epsilon = " << eps1;
         log_info() << "failures: level2 = " << test::n_fails2 << "/" << test::n_checks << ", epsilon = " << eps2;

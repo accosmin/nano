@@ -11,12 +11,12 @@ namespace test
         >
         void check_momentum(const tscalar momentum, const tsize range)
         {
-                math::momentum_scalar_t<tscalar> mom00(momentum);
-                math::momentum_scalar_t<tscalar> mom01(momentum);
-                math::momentum_scalar_t<tscalar> mom10(1 - momentum);
-                math::momentum_scalar_t<tscalar> mom11(1 - momentum);
+                zob::momentum_scalar_t<tscalar> mom00(momentum);
+                zob::momentum_scalar_t<tscalar> mom01(momentum);
+                zob::momentum_scalar_t<tscalar> mom10(1 - momentum);
+                zob::momentum_scalar_t<tscalar> mom11(1 - momentum);
 
-                const auto epsilon = math::epsilon1<tscalar>();
+                const auto epsilon = zob::epsilon1<tscalar>();
                 for (tsize i = 1; i <= range; ++ i)
                 {
                         const auto base00 = momentum;
@@ -44,12 +44,12 @@ namespace test
         >
         void check_momentum(const tsize dims, const tscalar momentum, const tsize range)
         {
-                math::momentum_vector_t<tvector> mom00(momentum, dims);
-                math::momentum_vector_t<tvector> mom01(momentum, dims);
-                math::momentum_vector_t<tvector> mom10(1 - momentum, dims);
-                math::momentum_vector_t<tvector> mom11(1 - momentum, dims);
+                zob::momentum_vector_t<tvector> mom00(momentum, dims);
+                zob::momentum_vector_t<tvector> mom01(momentum, dims);
+                zob::momentum_vector_t<tvector> mom10(1 - momentum, dims);
+                zob::momentum_vector_t<tvector> mom11(1 - momentum, dims);
 
-                const auto epsilon = math::epsilon1<tscalar>();
+                const auto epsilon = zob::epsilon1<tscalar>();
                 for (tsize i = 1; i <= range; ++ i)
                 {
                         const auto base00 = tvector::Constant(dims, momentum);

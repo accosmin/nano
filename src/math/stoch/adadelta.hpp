@@ -4,7 +4,7 @@
 #include "stoch_loop.hpp"
 #include "math/momentum.hpp"
 
-namespace math
+namespace zob
 {
         ///
         /// \brief stochastic AdaDelta,
@@ -31,10 +31,10 @@ namespace math
                                 return this->operator()(param.tunable(), problem, x0, params...);
                         };
 
-                        const auto momenta = math::make_finite_space(0.90, 0.95, 0.99);
-                        const auto epsilons = math::make_finite_space(1e-4, 1e-6, 1e-8);
+                        const auto momenta = zob::make_finite_space(0.90, 0.95, 0.99);
+                        const auto epsilons = zob::make_finite_space(1e-4, 1e-6, 1e-8);
 
-                        const auto config = math::tune(op, momenta, epsilons);
+                        const auto config = zob::tune(op, momenta, epsilons);
                         return operator()(param, problem, x0, config.param0(), config.param1());
                 }
 

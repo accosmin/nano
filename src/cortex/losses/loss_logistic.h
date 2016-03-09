@@ -2,7 +2,7 @@
 
 #include "cortex/loss.h"
 
-namespace cortex
+namespace zob
 {
         ///
         /// \brief softmax multi-class logistic loss: softmax(log(1 + exp(-targets_k * scores_k)), k)

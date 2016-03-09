@@ -3,7 +3,7 @@
 #include "util.hpp"
 #include "function.hpp"
 
-namespace math
+namespace zob
 {
         ///
         /// \brief create Colville test functions
@@ -41,12 +41,12 @@ namespace math
                                 const auto x3 = x(2);
                                 const auto x4 = x(3);
 
-                                return  100 * math::square(x1 * x1 - x2) +
-                                        math::square(x1 - 1) +
-                                        math::square(x3 - 1) +
-                                        90 * math::square(x3 * x3 - x4) +
-                                        tscalar(10.1) * math::square(x2 - 1) +
-                                        tscalar(10.1) * math::square(x4 - 1) +
+                                return  100 * zob::square(x1 * x1 - x2) +
+                                        zob::square(x1 - 1) +
+                                        zob::square(x3 - 1) +
+                                        90 * zob::square(x3 * x3 - x4) +
+                                        tscalar(10.1) * zob::square(x2 - 1) +
+                                        tscalar(10.1) * zob::square(x4 - 1) +
                                         tscalar(19.8) * (x2 - 1) * (x4 - 1);
                         };
 

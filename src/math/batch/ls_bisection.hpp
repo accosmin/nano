@@ -1,6 +1,6 @@
 #pragma once
 
-namespace math
+namespace zob
 {
         ///
         /// \brief bisection interpolation in the [step0, step1] line-search interval

@@ -2,7 +2,7 @@
 
 #include "cortex/layer.h"
 
-namespace cortex
+namespace zob
 {
         ///
         /// \brief pooling layer:

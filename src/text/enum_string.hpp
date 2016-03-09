@@ -3,12 +3,12 @@
 #include <map>
 #include <string>
 
-namespace text
+namespace zob
 {
         ///
         /// \brief maps all possible values of an enum to string
         ///
-        /// NB: to specialize it, such that text::to_string & text::from_string work on a particular enum
+        /// NB: to specialize it, such that zob::to_string & zob::from_string work on a particular enum
         ///
         template
         <

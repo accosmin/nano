@@ -8,7 +8,7 @@
 #include "cortex/util/logger.h"
 #include "text/from_string.hpp"
 
-namespace cortex
+namespace zob
 {
         static const string_t tlabels[] =
         {
@@ -47,29 +47,29 @@ namespace cortex
 
                 clear_memory(n_test + n_train + n_unlabeled);
                 
-                const auto op = [&] (const string_t& filename, const io::buffer_t& data)
+                const auto op = [&] (const string_t& filename, const zob::buffer_t& data)
                 {
-                        if (text::iends_with(filename, train_ifile))
+                        if (zob::iends_with(filename, train_ifile))
                         {
                                 return load_ifile(filename, data.data(), data.size(), false, n_train);
                         }
-                        else if (text::iends_with(filename, train_gfile))
+                        else if (zob::iends_with(filename, train_gfile))
                         {
                                 return load_gfile(filename, data.data(), data.size(), n_train);
                         }
-                        else if (text::iends_with(filename, test_ifile))
+                        else if (zob::iends_with(filename, test_ifile))
                         {
                                 return load_ifile(filename, data.data(), data.size(), false, n_test);
                         }
-                        else if (text::iends_with(filename, test_gfile))
+                        else if (zob::iends_with(filename, test_gfile))
                         {
                                 return load_gfile(filename, data.data(), data.size(), n_test);
                         }
-                        else if (text::iends_with(filename, train_uifile))
+                        else if (zob::iends_with(filename, train_uifile))
                         {
                                 return load_ifile(filename, data.data(), data.size(), true, n_unlabeled);
                         }
-                        else if (text::iends_with(filename, fold_file))
+                        else if (zob::iends_with(filename, fold_file))
                         {
                                 return load_folds(filename, data.data(), data.size(), n_test, n_train, n_unlabeled);
                         }
@@ -85,17 +85,17 @@ namespace cortex
                 
                 log_info() << "STL-10: loading file <" << bfile << "> ...";
 
-                return io::unarchive(bfile, op, error_op);
+                return zob::unarchive(bfile, op, error_op);
         }
         
         bool stl10_task_t::load_ifile(const string_t& ifile, const char* bdata, size_t bdata_size, bool unlabeled, size_t count)
         {
                 log_info() << "STL-10: loading file <" << ifile << "> ...";
 
-                io::imstream_t stream(bdata, bdata_size);
+                zob::imstream_t stream(bdata, bdata_size);
 
                 const auto buffer_size = irows() * icols() * 3;
-                std::vector<char> buffer = io::make_buffer(buffer_size);
+                std::vector<char> buffer = zob::make_buffer(buffer_size);
 
                 size_t icount = 0;
                 
@@ -126,7 +126,7 @@ namespace cortex
         {
                 log_info() << "STL-10: loading file <" << gfile << "> ...";
 
-                io::imstream_t stream(bdata, bdata_size);
+                zob::imstream_t stream(bdata, bdata_size);
 
                 char label;
 
@@ -136,13 +136,13 @@ namespace cortex
                 // load annotations
                 while (stream.read(&label, 1))
                 {
-                        const tensor_index_t ilabel = math::cast<tensor_index_t>(label) - 1;
+                        const tensor_index_t ilabel = zob::cast<tensor_index_t>(label) - 1;
 
                         sample_t sample(iindex, sample_region(0, 0));
                         if (ilabel < osize())
                         {
                                 sample.m_label = tlabels[ilabel];
-                                sample.m_target = cortex::class_target(ilabel, osize());
+                                sample.m_target = zob::class_target(ilabel, osize());
                         }
                         add_sample(sample);
 
@@ -162,7 +162,7 @@ namespace cortex
 
                 // NB: samples arranged line [n_test][n_train][n_unlabeled]
 
-                io::imstream_t stream(bdata, bdata_size);
+                zob::imstream_t stream(bdata, bdata_size);
                 
                 const samples_t orig_samples = this->samples();
                 clear_samples(0);
@@ -179,7 +179,7 @@ namespace cortex
                                 return false;
                         }
 
-                        const strings_t tokens = text::split(line, " \t\n\r");
+                        const strings_t tokens = zob::split(line, " \t\n\r");
 
                         size_t fcount = 0;
                         for (size_t t = 0; t < tokens.size(); ++ t)
@@ -191,7 +191,7 @@ namespace cortex
 
                                 try
                                 {
-                                        const size_t i = text::from_string<size_t>(tokens[t]);
+                                        const size_t i = zob::from_string<size_t>(tokens[t]);
                                         if (i < n_train)
                                         {
                                                 sample_t sample = orig_samples[n_test + i];

@@ -3,7 +3,7 @@
 #include "algorithm.h"
 #include "from_string.hpp"
 
-namespace text
+namespace zob
 {
         ///
         /// \brief decode parameter by name: [name1=value1[,name2=value2[...]]
@@ -15,10 +15,10 @@ namespace text
         >
         tvalue from_params(const std::string& params, const std::string& param_name, tvalue default_value)
         {
-                const auto tokens = text::split(params, ",");
+                const auto tokens = zob::split(params, ",");
                 for (std::size_t i = 0; i < tokens.size(); i ++)
                 {
-                        const auto dual = text::split(tokens[i], "=");
+                        const auto dual = zob::split(tokens[i], "=");
                         if (dual.size() == 2 && dual[0] == param_name)
                         {
                                 std::string value = dual[1];

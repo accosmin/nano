@@ -2,7 +2,7 @@
 
 #include "cortex/layer.h"
 
-namespace cortex
+namespace zob
 {
         ///
         /// \brief fully-connected affine layer that works with 1D tensors (as in MLP models).

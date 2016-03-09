@@ -3,7 +3,7 @@
 #include <cmath>
 #include <type_traits>
 
-namespace math
+namespace zob
 {
         // implementation detail
         namespace detail

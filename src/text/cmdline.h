@@ -5,7 +5,7 @@
 #include "from_string.hpp"
 #include <memory>
 
-namespace text
+namespace zob
 {
         ///
         /// \brief command line processing of the form:
@@ -81,7 +81,7 @@ namespace text
                 >
                 tvalue get(const std::string& name_or_short_name) const
                 {
-                        return text::from_string<tvalue>(get(name_or_short_name));
+                        return zob::from_string<tvalue>(get(name_or_short_name));
                 }
 
                 ///

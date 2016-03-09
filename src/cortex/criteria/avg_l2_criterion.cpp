@@ -1,6 +1,6 @@
 #include "avg_l2_criterion.h"
 
-namespace cortex
+namespace zob
 {
         avg_l2_criterion_t::avg_l2_criterion_t(const string_t& configuration)
                 :       avg_criterion_t(configuration)

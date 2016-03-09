@@ -3,7 +3,7 @@
 #include <limits>
 #include <functional>
 
-namespace math
+namespace zob
 {
         ///
         /// \brief line-search (scalar) step

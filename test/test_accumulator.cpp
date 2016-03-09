@@ -11,28 +11,28 @@ ZOB_BEGIN_MODULE(test_accumulator)
 
 ZOB_CASE(evaluate)
 {
-        using namespace cortex;
+        using namespace zob;
 
-        cortex::init();
+        zob::init();
 
-        const auto task = cortex::get_tasks().get("random", "dims=2,rows=8,cols=8,color=luma,size=64");
+        const auto task = zob::get_tasks().get("random", "dims=2,rows=8,cols=8,color=luma,size=64");
         ZOB_CHECK_EQUAL(task->load(""), true);
 
         const samples_t samples = task->samples();
         const string_t cmd_model = make_affine_layer(4) + make_output_layer(task->osize());
 
-        const auto loss = cortex::get_losses().get("logistic");
+        const auto loss = zob::get_losses().get("logistic");
 
         const scalar_t lambda = 0.1;
 
         // create model
-        const auto model = cortex::get_models().get("forward-network", cmd_model);
+        const auto model = zob::get_models().get("forward-network", cmd_model);
         ZOB_CHECK_EQUAL(model->resize(*task, true), true);
 
         model->random_params();
 
         // accumulators using 1 thread
-        const auto criterion = cortex::get_criteria().get("avg");
+        const auto criterion = zob::get_criteria().get("avg");
 
         accumulator_t lacc(*model, *criterion, criterion_t::type::value, lambda); lacc.set_threads(1);
         accumulator_t gacc(*model, *criterion, criterion_t::type::vgrad, lambda); gacc.set_threads(1);
@@ -57,10 +57,10 @@ ZOB_CASE(evaluate)
 
         ZOB_CHECK_EQUAL(gacc.count(), samples.size());
         ZOB_CHECK(std::isfinite(vgrad1));
-        ZOB_CHECK_CLOSE(vgrad1, value1, math::epsilon1<scalar_t>());
+        ZOB_CHECK_CLOSE(vgrad1, value1, zob::epsilon1<scalar_t>());
 
         // check results with multiple threads
-        for (size_t nthreads = 2; nthreads <= thread::n_threads(); ++ nthreads)
+        for (size_t nthreads = 2; nthreads <= zob::n_threads(); ++ nthreads)
         {
                 accumulator_t laccx(*model, *criterion, criterion_t::type::value, lambda); laccx.set_threads(nthreads);
                 accumulator_t gaccx(*model, *criterion, criterion_t::type::vgrad, lambda); gaccx.set_threads(nthreads);
@@ -77,13 +77,13 @@ ZOB_CASE(evaluate)
                 laccx.update(*task, samples, *loss);
 
                 ZOB_CHECK_EQUAL(laccx.count(), samples.size());
-                ZOB_CHECK_CLOSE(laccx.value(), value1, math::epsilon1<scalar_t>());
+                ZOB_CHECK_CLOSE(laccx.value(), value1, zob::epsilon1<scalar_t>());
 
                 gaccx.update(*task, samples, *loss);
 
                 ZOB_CHECK_EQUAL(gaccx.count(), samples.size());
-                ZOB_CHECK_CLOSE(gaccx.value(), vgrad1, math::epsilon1<scalar_t>());
-                ZOB_CHECK_EIGEN_CLOSE(gaccx.vgrad(), pgrad1, math::epsilon1<scalar_t>());
+                ZOB_CHECK_CLOSE(gaccx.value(), vgrad1, zob::epsilon1<scalar_t>());
+                ZOB_CHECK_EIGEN_CLOSE(gaccx.vgrad(), pgrad1, zob::epsilon1<scalar_t>());
         }
 }
 

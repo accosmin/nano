@@ -3,9 +3,9 @@
 
 namespace test
 {
-        void build_rect(cortex::coord_t x, cortex::coord_t y, cortex::coord_t w, cortex::coord_t h)
+        void build_rect(zob::coord_t x, zob::coord_t y, zob::coord_t w, zob::coord_t h)
         {
-                const cortex::rect_t rect(x, y, w, h);
+                const zob::rect_t rect(x, y, w, h);
 
                 ZOB_CHECK_EQUAL(rect.left(),          x);
                 ZOB_CHECK_EQUAL(rect.top(),           y);
@@ -33,22 +33,22 @@ ZOB_CASE(construction)
 
 ZOB_CASE(operations)
 {
-        using namespace cortex;
+        using namespace zob;
 
         // intersecting rectangles
-        ZOB_CHECK_EQUAL(cortex::rect_t(1, 1, 3, 3) | cortex::rect_t(2, 2, 5, 4),
-                           cortex::rect_t(1, 1, 6, 5));
+        ZOB_CHECK_EQUAL(zob::rect_t(1, 1, 3, 3) | zob::rect_t(2, 2, 5, 4),
+                           zob::rect_t(1, 1, 6, 5));
 
-        ZOB_CHECK_EQUAL(cortex::rect_t(1, 1, 3, 3) & cortex::rect_t(2, 2, 5, 4),
-                           cortex::rect_t(2, 2, 2, 2));
+        ZOB_CHECK_EQUAL(zob::rect_t(1, 1, 3, 3) & zob::rect_t(2, 2, 5, 4),
+                           zob::rect_t(2, 2, 2, 2));
 
         // disjoint rectangles
-        ZOB_CHECK_EQUAL(cortex::rect_t(1, 1, 3, 3) & cortex::rect_t(7, 4, 5, 4),
-                           cortex::rect_t(0, 0, 0, 0));
+        ZOB_CHECK_EQUAL(zob::rect_t(1, 1, 3, 3) & zob::rect_t(7, 4, 5, 4),
+                           zob::rect_t(0, 0, 0, 0));
 
         // test center
-        ZOB_CHECK_EQUAL(cortex::rect_t(1, 1, 3, 3).center(),
-                           cortex::point_t(2, 2));
+        ZOB_CHECK_EQUAL(zob::rect_t(1, 1, 3, 3).center(),
+                           zob::point_t(2, 2));
 }
 
 ZOB_END_MODULE()

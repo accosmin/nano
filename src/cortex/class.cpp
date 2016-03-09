@@ -1,6 +1,6 @@
 #include "class.h"
 
-namespace cortex
+namespace zob
 {
         scalar_t pos_target()
         {

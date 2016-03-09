@@ -3,7 +3,7 @@
 #include <string>
 #include <memory>
 
-namespace cortex
+namespace zob
 {
         ///
         /// \brief the clonable interface to be used with a manager:

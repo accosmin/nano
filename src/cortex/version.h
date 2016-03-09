@@ -7,7 +7,7 @@
 #define CORTEX_MINOR_VERSION            3
 #define CORTEX_REVISION_VERSION         0
 
-namespace cortex
+namespace zob
 {
         ///
         /// \brief current version

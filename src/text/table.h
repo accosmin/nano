@@ -6,7 +6,7 @@
 #include <cassert>
 #include <algorithm>
 
-namespace text
+namespace zob
 {
         ///
         /// \brief collects & formats for ASCII display tabular data

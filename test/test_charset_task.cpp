@@ -8,7 +8,7 @@ ZOB_BEGIN_MODULE(test_charset_task)
 
 ZOB_CASE(evaluate)
 {
-        using namespace cortex;
+        using namespace zob;
 
         // <charset, color mode, number of outputs/classes/characters>
         std::vector<std::tuple<charset, color_mode, tensor_size_t>> configs;

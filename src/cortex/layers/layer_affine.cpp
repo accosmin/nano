@@ -5,7 +5,7 @@
 #include "text/from_params.hpp"
 #include "tensor/serialize.hpp"
 
-namespace cortex
+namespace zob
 {
         affine_layer_t::affine_layer_t(const string_t& parameters)
                 :       layer_t(parameters)
@@ -15,7 +15,7 @@ namespace cortex
         tensor_size_t affine_layer_t::resize(const tensor_t& tensor)
         {
                 const auto idims = tensor.size();
-                const auto odims = math::clamp(text::from_params<tensor_size_t>(configuration(), "dims", 10), 1, 4096);
+                const auto odims = zob::clamp(zob::from_params<tensor_size_t>(configuration(), "dims", 10), 1, 4096);
 
                 // resize buffers
                 m_idata.resize(tensor.dims(), tensor.rows(), tensor.cols());
@@ -35,8 +35,8 @@ namespace cortex
 
         void affine_layer_t::random_params(scalar_t min, scalar_t max)
         {
-                tensor::set_random(m_wdata, math::random_t<scalar_t>(min, max));
-                tensor::set_random(m_bdata, math::random_t<scalar_t>(min, max));
+                tensor::set_random(m_wdata, zob::random_t<scalar_t>(min, max));
+                tensor::set_random(m_bdata, zob::random_t<scalar_t>(min, max));
         }
 
         scalar_t* affine_layer_t::save_params(scalar_t* params) const

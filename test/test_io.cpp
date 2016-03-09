@@ -11,7 +11,7 @@ ZOB_BEGIN_MODULE(test_io)
 
 ZOB_CASE(mstream)
 {
-        using namespace io;
+        using namespace zob;
 
         const size_t min_size = 3;
         const size_t max_size = 679 * 1024;
@@ -25,10 +25,10 @@ ZOB_CASE(mstream)
         for (size_t size = min_size; size <= max_size; size *= 2)
         {
                 // generate reference buffer
-                buffer_t ref_buffer = io::make_buffer(size);
+                buffer_t ref_buffer = zob::make_buffer(size);
                 ZOB_CHECK_EQUAL(ref_buffer.size(), size);
 
-                math::random_t<char> rng;
+                zob::random_t<char> rng;
                 for (auto& value : ref_buffer)
                 {
                         value = rng();
@@ -37,12 +37,12 @@ ZOB_CASE(mstream)
                 // check buffer saving to file
                 const std::string path = "mstream.test";
 
-                ZOB_CHECK(io::save_buffer(path, ref_buffer));
+                ZOB_CHECK(zob::save_buffer(path, ref_buffer));
 
                 // check buffer loading from file
                 {
                         buffer_t buffer;
-                        ZOB_CHECK(io::load_buffer(path, buffer));
+                        ZOB_CHECK(zob::load_buffer(path, buffer));
 
                         op_check_buffers(ref_buffer, buffer);
                 }
@@ -55,7 +55,7 @@ ZOB_CASE(mstream)
                         ZOB_CHECK_EQUAL(stream.size(), static_cast<std::streamsize>(size));
 
                         buffer_t buffer;
-                        ZOB_CHECK(io::load_buffer_from_stream(stream, buffer));
+                        ZOB_CHECK(zob::load_buffer_from_stream(stream, buffer));
 
                         op_check_buffers(ref_buffer, buffer);
                 }
@@ -105,7 +105,7 @@ ZOB_CASE(bstream)
         {
                 std::ofstream os(path.c_str(), std::ios::binary | std::ios::trunc);
 
-                io::obstream_t ob(os);
+                zob::obstream_t ob(os);
 
                 ob.write(var_double);
                 ob.write(var_string);
@@ -122,7 +122,7 @@ ZOB_CASE(bstream)
         {
                 std::ifstream is(path.c_str(), std::ios::binary);
 
-                io::ibstream_t ib(is);
+                zob::ibstream_t ib(is);
 
                 double var_double_ex;
                 std::string var_string_ex;

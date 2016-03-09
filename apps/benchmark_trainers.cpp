@@ -12,18 +12,18 @@
 #include "cortex/tasks/task_charset.h"
 #include "cortex/layers/make_layers.h"
 
-using namespace cortex;
+using namespace zob;
 
 template
 <
         typename tvalue
 >
-static string_t stats_to_string(const math::stats_t<tvalue>& stats)
+static string_t stats_to_string(const zob::stats_t<tvalue>& stats)
 {
-        return  text::to_string(static_cast<tvalue>(stats.avg()))
-                + "+/-" + text::to_string(static_cast<tvalue>(stats.stdev()))
-                + " [" + text::to_string(stats.min())
-                + ", " + text::to_string(stats.max())
+        return  zob::to_string(static_cast<tvalue>(stats.avg()))
+                + "+/-" + zob::to_string(static_cast<tvalue>(stats.stdev()))
+                + " [" + zob::to_string(stats.min())
+                + ", " + zob::to_string(stats.max())
                 + "]";
 }
 
@@ -32,24 +32,24 @@ template
         typename ttrainer
 >
 static void test_optimizer(model_t& model, const string_t& name, const string_t& basepath,
-        text::table_t& table, const vectors_t& x0s, const ttrainer& trainer)
+        zob::table_t& table, const vectors_t& x0s, const ttrainer& trainer)
 {
-        math::stats_t<scalar_t> terrors;
-        math::stats_t<scalar_t> verrors;
-        math::stats_t<scalar_t> speeds;
-        math::stats_t<scalar_t> timings;
+        zob::stats_t<scalar_t> terrors;
+        zob::stats_t<scalar_t> verrors;
+        zob::stats_t<scalar_t> speeds;
+        zob::stats_t<scalar_t> timings;
 
         log_info() << "<<< running " << name << " ...";
 
         for (size_t i = 0; i < x0s.size(); ++ i)
         {
-                const cortex::timer_t timer;
+                const zob::timer_t timer;
 
                 model.load_params(x0s[i]);
 
                 const auto result = trainer();
                 const auto opt_state = result.optimum_state();
-                const auto opt_speed = cortex::convergence_speed(result.optimum_states());
+                const auto opt_speed = zob::convergence_speed(result.optimum_states());
 
                 terrors(opt_state.m_terror_avg);
                 verrors(opt_state.m_verror_avg);
@@ -57,17 +57,17 @@ static void test_optimizer(model_t& model, const string_t& name, const string_t&
                 timings(static_cast<scalar_t>(timer.seconds().count()));
 
                 log_info() << "<<< " << name
-                           << ", optimum = {" << text::concatenate(result.optimum_config())
+                           << ", optimum = {" << zob::concatenate(result.optimum_config())
                            << "}/" << result.optimum_epoch()
                            << ", train = " << opt_state.m_terror_avg
                            << ", valid = " << opt_state.m_verror_avg
                            << ", speed = " << opt_speed << "/s"
                            << " done in " << timer.elapsed() << ".";
 
-                const auto path = basepath + "-trial" + text::to_string(i) + ".state";
+                const auto path = basepath + "-trial" + zob::to_string(i) + ".state";
 
                 const auto opt_states = result.optimum_states();
-                cortex::save(path, opt_states);
+                zob::save(path, opt_states);
         }
 
         table.append(name)
@@ -80,14 +80,14 @@ static void test_optimizer(model_t& model, const string_t& name, const string_t&
 static void test_optimizers(
         const task_t& task, model_t& model, const sampler_t& tsampler, const sampler_t& vsampler,
         const loss_t& loss, const criterion_t& criterion,
-        const size_t trials, const size_t iterations, const string_t& basepath, text::table_t& table)
+        const size_t trials, const size_t iterations, const string_t& basepath, zob::table_t& table)
 {
         const size_t batch_iterations = iterations;
         const size_t minibatch_epochs = iterations;
         const size_t stochastic_epochs = iterations;
         const scalar_t epsilon = 1e-4;
 
-        const size_t n_threads = thread::n_threads();
+        const size_t n_threads = zob::n_threads();
         const bool verbose = true;
 
         // generate fixed random starting points
@@ -101,63 +101,63 @@ static void test_optimizers(
         // batch optimizers
         const auto batch_optimizers =
         {
-                math::batch_optimizer::GD,
-                math::batch_optimizer::CGD,
-                math::batch_optimizer::LBFGS
+                zob::batch_optimizer::GD,
+                zob::batch_optimizer::CGD,
+                zob::batch_optimizer::LBFGS
         };
 
         // minibatch optimizers
         const auto minibatch_optimizers =
         {
-                math::batch_optimizer::GD,
-                math::batch_optimizer::CGD,
-                math::batch_optimizer::LBFGS
+                zob::batch_optimizer::GD,
+                zob::batch_optimizer::CGD,
+                zob::batch_optimizer::LBFGS
         };
 
         // stochastic optimizers
         const auto stoch_optimizers =
         {
-                math::stoch_optimizer::SG,
-                math::stoch_optimizer::SGM,
-                math::stoch_optimizer::AG,
-                math::stoch_optimizer::AGFR,
-                math::stoch_optimizer::AGGR,
-                math::stoch_optimizer::ADAGRAD,
-                math::stoch_optimizer::ADADELTA,
-                math::stoch_optimizer::ADAM
+                zob::stoch_optimizer::SG,
+                zob::stoch_optimizer::SGM,
+                zob::stoch_optimizer::AG,
+                zob::stoch_optimizer::AGFR,
+                zob::stoch_optimizer::AGGR,
+                zob::stoch_optimizer::ADAGRAD,
+                zob::stoch_optimizer::ADADELTA,
+                zob::stoch_optimizer::ADAM
         };
 
         const string_t basename = "[" + criterion.description() + "] ";
 
         // run optimizers and collect results
-        for (math::batch_optimizer optimizer : batch_optimizers)
+        for (zob::batch_optimizer optimizer : batch_optimizers)
         {
-                const auto optname = "batch-" + text::to_string(optimizer);
+                const auto optname = "batch-" + zob::to_string(optimizer);
                 test_optimizer(model, basename + optname, basepath + optname, table, x0s, [&] ()
                 {
-                        return cortex::batch_train(
+                        return zob::batch_train(
                                 model, task, tsampler, vsampler, n_threads,
                                 loss, criterion, optimizer, batch_iterations, epsilon, verbose);
                 });
         }
 
-        for (math::batch_optimizer optimizer : minibatch_optimizers)
+        for (zob::batch_optimizer optimizer : minibatch_optimizers)
         {
-                const auto optname = "minibatch-" + text::to_string(optimizer);
+                const auto optname = "minibatch-" + zob::to_string(optimizer);
                 test_optimizer(model, basename + optname, basepath + optname, table, x0s, [&] ()
                 {
-                        return cortex::minibatch_train(
+                        return zob::minibatch_train(
                                 model, task, tsampler, vsampler, n_threads,
                                 loss, criterion, optimizer, minibatch_epochs, epsilon, verbose);
                 });
         }
 
-        for (math::stoch_optimizer optimizer : stoch_optimizers)
+        for (zob::stoch_optimizer optimizer : stoch_optimizers)
         {
-                const auto optname = "stochastic-" + text::to_string(optimizer);
+                const auto optname = "stochastic-" + zob::to_string(optimizer);
                 test_optimizer(model, basename + optname, basepath + optname, table, x0s, [&] ()
                 {
-                        return cortex::stochastic_train(
+                        return zob::stochastic_train(
                                 model, task, tsampler, vsampler, n_threads,
                                 loss, criterion, optimizer, stochastic_epochs, verbose);
                 });
@@ -166,12 +166,12 @@ static void test_optimizers(
 
 int main(int argc, char* argv[])
 {
-        cortex::init();
+        zob::init();
 
-        using namespace cortex;
+        using namespace zob;
 
         // parse the command line
-        text::cmdline_t cmdline("benchmark trainers");
+        zob::cmdline_t cmdline("benchmark trainers");
         cmdline.add("", "l2n-reg",      "also evaluate the l2-norm-based regularizer");
         cmdline.add("", "var-reg",      "also evaluate the variance-based regularizer");
         cmdline.add("", "mlp0",         "MLP with 0 hidden layers");
@@ -207,7 +207,7 @@ int main(int argc, char* argv[])
         // create task
         const size_t rows = 16;
         const size_t cols = 16;
-        const size_t samples = thread::n_threads() * 256 * 10;
+        const size_t samples = zob::n_threads() * 256 * 10;
         const color_mode color = color_mode::rgba;
 
         charset_task_t task(charset::numeric, rows, cols, color, samples);
@@ -218,7 +218,7 @@ int main(int argc, char* argv[])
 
         // create training & validation samples
         sampler_t tsampler(task.samples());
-        tsampler.push(cortex::annotation::annotated);
+        tsampler.push(zob::annotation::annotated);
 
         sampler_t vsampler(task.samples());
         tsampler.split(80, vsampler);
@@ -242,10 +242,10 @@ int main(int argc, char* argv[])
         if (use_mlp3) { networks.emplace_back(mlp3 + outlayer, "mlp3"); }
         if (use_convnet) { networks.emplace_back(convnet + outlayer, "convnet"); }
 
-        const strings_t losses = { "classnll" }; //cortex::get_losses().ids();
+        const strings_t losses = { "classnll" }; //zob::get_losses().ids();
 
         strings_t criteria;
-        criteria.push_back("avg"); //cortex::get_criteria().ids();
+        criteria.push_back("avg"); //zob::get_criteria().ids();
         if (use_reg_l2n) { criteria.push_back("l2n-reg"); }
         if (use_reg_var) { criteria.push_back("var-reg"); }
 
@@ -257,7 +257,7 @@ int main(int argc, char* argv[])
 
                 log_info() << "<<< running network [" << network << "] ...";
 
-                const auto model = cortex::get_models().get("forward-network", network);
+                const auto model = zob::get_models().get("forward-network", network);
                 model->resize(task, true);
 
                 // vary the loss
@@ -265,9 +265,9 @@ int main(int argc, char* argv[])
                 {
                         log_info() << "<<< running loss [" << iloss << "] ...";
 
-                        const auto loss = cortex::get_losses().get(iloss);
+                        const auto loss = zob::get_losses().get(iloss);
 
-                        text::table_t table("optimizer");
+                        zob::table_t table("optimizer");
                         table.header() << "train error"
                                        << "valid error"
                                        << "convergence speed"
@@ -276,7 +276,7 @@ int main(int argc, char* argv[])
                         // vary the criteria
                         for (const string_t& icriterion : criteria)
                         {
-                                const auto criterion = cortex::get_criteria().get(icriterion);
+                                const auto criterion = zob::get_criteria().get(icriterion);
 
                                 const auto basepath = netname + "-" + iloss + "-" + icriterion + "-";
 
