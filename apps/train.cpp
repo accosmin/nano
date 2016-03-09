@@ -68,7 +68,7 @@ int main(int argc, char *argv[])
         const auto criterion = zob::get_criteria().get(cmd_criterion);
 
         // create model
-        const auto rmodel = zob::get_models().get(cmd_model, cmd_model_params);
+        const auto model = zob::get_models().get(cmd_model, cmd_model_params);
 
         // create trainer
         const auto trainer = zob::get_trainers().get(cmd_trainer, cmd_trainer_params);
@@ -88,7 +88,7 @@ int main(int argc, char *argv[])
                         trainer_result_t result;
                         zob::measure_critical_and_log([&] ()
                         {
-                                result = trainer->train(*task, train_fold, *loss, cmd_threads, *criterion, *rmodel);
+                                result = trainer->train(*task, train_fold, *loss, cmd_threads, *criterion, *model);
                                 return result.valid();
                         },
                         "train model");
@@ -96,7 +96,7 @@ int main(int argc, char *argv[])
                         // test
                         scalar_t lvalue, lerror;
                         zob::measure_and_log(
-                                [&] () { zob::evaluate(*task, test_fold, *loss, *criterion, *rmodel, lvalue, lerror); },
+                                [&] () { zob::evaluate(*task, test_fold, *loss, *criterion, *model, lvalue, lerror); },
                                 "test model");
                         log_info() << "<<< test error: [" << lvalue << "/" << lerror << "].";
 
@@ -104,7 +104,7 @@ int main(int argc, char *argv[])
                         estats(lerror);
 
                         // update the best model
-                        models[lerror] = std::make_tuple(rmodel->clone(), result.optimum_states());
+                        models[lerror] = std::make_tuple(model->clone(), result.optimum_states());
                 }
         }
 

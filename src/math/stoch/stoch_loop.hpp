@@ -1,11 +1,35 @@
 #pragma once
 
 #include "params.hpp"
+#include "math/tune.hpp"
 
 namespace zob
 {
         ///
-        /// \brief stochastic optimization loop
+        /// \brief hyper-parameter tuning for stochastic optimizers.
+        ///
+        inline auto make_alpha0s()
+        {
+                return zob::make_finite_space(1e-4, 1e-3, 1e-2, 1e-1, 1e+0);
+        }
+
+        inline auto make_decays()
+        {
+                return zob::make_finite_space(0.10, 0.25, 0.50, 0.75, 1.00);
+        }
+
+        inline auto make_momenta()
+        {
+                return zob::make_finite_space(0.10, 0.20, 0.30, 0.40, 0.50, 0.60, 0.70, 0.80, 0.90);
+        }
+
+        inline auto make_epsilons()
+        {
+                return zob::make_finite_space(1e-4, 1e-6, 1e-8);
+        }
+
+        ///
+        /// \brief stochastic optimization loop.
         ///
         template
         <

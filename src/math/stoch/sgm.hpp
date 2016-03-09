@@ -1,7 +1,6 @@
 #pragma once
 
 #include "lrate.hpp"
-#include "math/tune.hpp"
 #include "stoch_loop.hpp"
 #include "math/momentum.hpp"
 
@@ -31,11 +30,7 @@ namespace zob
                                 return this->operator()(param.tunable(), problem, x0, params...);
                         };
 
-                        const auto alpha0s = zob::make_log10_space(-4.0, +0.0, 0.20);
-                        const auto decays = zob::make_linear_space(0.10, 1.00, 0.05);
-                        const auto momenta = zob::make_linear_space(0.1, 0.99, 0.05);
-
-                        const auto config = zob::tune(op, alpha0s, decays, momenta);
+                        const auto config = zob::tune(op, make_alpha0s(), make_decays(), make_momenta());
                         return operator()(param, problem, x0, config.param0(), config.param1(), config.param2());
                 }
 

@@ -74,13 +74,15 @@ namespace zob
                 using tscalars = std::vector<tscalar>;
 
                 tune_grid_space_t(
-                        const tscalar min, const tscalar max, const tscalar epsilon, const tmapping& mapping)
+                        const tscalar min, const tscalar max, const tscalar epsilon, const tmapping& mapping,
+                        const int splits = 4)
                         :       m_min(min), m_orig_min(min),
                                 m_max(max), m_orig_max(max),
-                                m_epsilon(epsilon), m_splits(4), m_mapping(mapping)
+                                m_epsilon(epsilon), m_splits(splits), m_mapping(mapping)
                 {
                         assert(min < max);
                         assert(epsilon > 0);
+                        assert(splits > 3);
                         assert(epsilon < (max - min) / m_splits);
                 }
 
@@ -125,16 +127,16 @@ namespace zob
         };
 
         template <typename tscalar>
-        auto make_linear_space(const tscalar min, const tscalar max, const tscalar epsilon)
+        auto make_linear_space(const tscalar min, const tscalar max, const tscalar epsilon, const int splits = 4)
         {
                 const auto mapping = make_identity_mapping();
-                return tune_grid_space_t<tscalar, decltype(mapping)>(min, max, epsilon, mapping);
+                return tune_grid_space_t<tscalar, decltype(mapping)>(min, max, epsilon, mapping, splits);
         }
 
         template <typename tscalar>
-        auto make_log10_space(const tscalar min, const tscalar max, const tscalar epsilon)
+        auto make_log10_space(const tscalar min, const tscalar max, const tscalar epsilon, const int splits = 4)
         {
                 const auto mapping = make_log10_mapping();
-                return tune_grid_space_t<tscalar, decltype(mapping)>(min, max, epsilon, mapping);
+                return tune_grid_space_t<tscalar, decltype(mapping)>(min, max, epsilon, mapping, splits);
         }
 }

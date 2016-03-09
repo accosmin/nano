@@ -1,6 +1,5 @@
 #pragma once
 
-#include "math/tune.hpp"
 #include "stoch_loop.hpp"
 #include "math/momentum.hpp"
 
@@ -31,10 +30,7 @@ namespace zob
                                 return this->operator()(param.tunable(), problem, x0, params...);
                         };
 
-                        const auto momenta = zob::make_linear_space(0.1, 0.99, 0.05);
-                        const auto epsilons = zob::make_finite_space(1e-4, 1e-6, 1e-8);
-
-                        const auto config = zob::tune(op, momenta, epsilons);
+                        const auto config = zob::tune(op, make_momenta(), make_epsilons());
                         return operator()(param, problem, x0, config.param0(), config.param1());
                 }
 
