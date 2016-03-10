@@ -7,9 +7,14 @@
 namespace zob
 {
         ///
-        /// \brief training configuration (e.g. learning rate, regularization weight)
+        /// \brief training configuration (e.g. {name, value:learning rate, regularization weight}+)
         ///
-        using trainer_config_t = scalars_t;
+        using trainer_config_t = std::vector<std::pair<const char*, scalar_t>>;
+
+        ZOB_PUBLIC trainer_config_t append(const trainer_config_t& config, const char* const name, const scalar_t value);
+
+        class logger_t;
+        ZOB_PUBLIC logger_t& operator<<(logger_t& logger, const trainer_config_t& config);
 
         ///
         /// \brief training history (configuration, optimization states)
@@ -51,7 +56,7 @@ namespace zob
                 ///
                 /// \brief update the current/optimum state with a possible better state
                 ///
-                trainer_result_return_t update(const vector_t& params, const trainer_state_t&, const scalars_t& config);
+                trainer_result_return_t update(const vector_t& params, const trainer_state_t&, const trainer_config_t&);
 
                 ///
                 /// \brief update the current/optimum state with a possible better state

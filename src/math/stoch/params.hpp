@@ -20,7 +20,7 @@ namespace zob
                 using tvector = typename tproblem::tvector;
 
                 /// configuration: { hyper-parameter name, hyper-parameter value }+
-                using tconfig = std::vector<std::pair<const char* const, tscalar>>;
+                using tconfig = std::vector<std::pair<const char*, tscalar>>;
 
                 /// logging operator: op(state, configuration), returns true if the optimization should stop
                 using topulog = std::function<bool(tstate&, const tconfig&)>;

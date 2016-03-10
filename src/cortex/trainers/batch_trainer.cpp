@@ -5,7 +5,6 @@
 #include "math/numeric.hpp"
 #include "cortex/util/logger.h"
 #include "text/from_params.hpp"
-#include "text/concatenate.hpp"
 
 namespace zob
 {
@@ -58,7 +57,7 @@ namespace zob
                 log_info() << "optimum [train = " << state.m_tvalue << "/" << state.m_terror_avg
                            << ", valid = " << state.m_vvalue << "/" << state.m_verror_avg
                            << ", epoch = " << result.optimum_epoch()
-                           << ", config = " << zob::concatenate(result.optimum_config(), "/")
+                           << ", config = " << result.optimum_config()
                            << "].";
 
                 // OK

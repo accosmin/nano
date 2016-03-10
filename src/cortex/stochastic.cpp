@@ -10,15 +10,6 @@
 
 namespace zob
 {
-        logger_t& operator<<(logger_t& logger, const zob::stoch_params_t<opt_problem_t>::tconfig& config)
-        {
-                for (const auto& param : config)
-                {
-                        logger << param.first << "=" << param.second << ",";
-                }
-                return logger;
-        }
-
         static trainer_result_t train(trainer_data_t& data,
                 const zob::stoch_optimizer optimizer, const size_t epochs, const bool verbose)
         {
@@ -38,17 +29,6 @@ namespace zob
                 auto fn_size = zob::make_opsize(data);
                 auto fn_fval = zob::make_opfval(data);
                 auto fn_grad = zob::make_opgrad(data);
-
-                auto fn_config2vector = [&] (const auto& config)
-                {
-                        scalars_t values;
-                        for (const auto& param : config)
-                        {
-                                values.push_back(param.second);
-                        }
-                        values.push_back(data.lambda());
-                        return values;
-                };
 
                 auto fn_ulog = [&] (opt_state_t& state, const auto& config)
                 {
@@ -72,7 +52,7 @@ namespace zob
                         const auto milis = timer.milliseconds();
                         const auto ret = result.update(state.x,
                                 {milis, ++ epoch, tvalue, terror_avg, terror_var, vvalue, verror_avg, verror_var},
-                                fn_config2vector(config));
+                                zob::append(config, "lambda", data.lambda()));
 
                         if (verbose)
                         log_info()
@@ -81,7 +61,7 @@ namespace zob
                                 << " (" << zob::to_string(ret) << ")"
                                 << ", epoch = " << epoch << "/" << epochs
                                 << ", batch = " << batch_size
-                                << ", " << config << "lambda=" << data.lambda()
+                                << ", " << append(config, "lambda", data.lambda())
                                 << "] done in " << timer.elapsed() << ".";
 
                         state.f = tvalue;

@@ -5,7 +5,6 @@
 #include "cortex/minibatch.h"
 #include "cortex/util/logger.h"
 #include "text/from_params.hpp"
-#include "text/concatenate.hpp"
 
 namespace zob
 {
@@ -17,7 +16,7 @@ namespace zob
         trainer_result_t minibatch_trainer_t::train(
                 const task_t& task, const fold_t& fold, const loss_t& loss, size_t nthreads, const criterion_t& criterion,
                 model_t& model) const
-        {                
+        {
                 if (fold.second != protocol::train)
                 {
                         log_error() << "minibatch trainer: can only train models with training samples!";
@@ -58,7 +57,7 @@ namespace zob
                 log_info() << "optimum [train = " << state.m_tvalue << "/" << state.m_terror_avg
                            << ", valid = " << state.m_vvalue << "/" << state.m_verror_avg
                            << ", epoch = " << result.optimum_epoch()
-                           << ", config = " << zob::concatenate(result.optimum_config(), "/")
+                           << ", config = " << result.optimum_config()
                            << "].";
 
                 // OK

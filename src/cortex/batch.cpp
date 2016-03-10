@@ -38,7 +38,7 @@ namespace zob
                         const auto milis = timer.milliseconds();
                         const auto ret = result.update(state.x,
                                 {milis, ++ iteration, tvalue, terror_avg, terror_var, vvalue, verror_avg, verror_var},
-                                {data.lambda()});
+                                {{"lambda", data.lambda()}});
 
                         if (verbose)
                         log_info()

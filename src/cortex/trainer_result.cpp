@@ -1,14 +1,30 @@
 #include "trainer_result.h"
-#include "text/concatenate.hpp"
+#include "cortex/util/logger.h"
 
 namespace zob
 {
+        trainer_config_t append(const trainer_config_t& config, const char* const name, const scalar_t value)
+        {
+                auto ret = config;
+                ret.emplace_back(name, value);
+                return ret;
+        }
+
+        logger_t& operator<<(logger_t& logger, const trainer_config_t& config)
+        {
+                for (const auto& param : config)
+                {
+                        logger << param.first << "=" << param.second << ",";
+                }
+                return logger;
+        }
+
         trainer_result_t::trainer_result_t()
         {
         }
 
         trainer_result_return_t trainer_result_t::update(const vector_t& params,
-                const trainer_state_t& state, const scalars_t& config)
+                const trainer_state_t& state, const trainer_config_t& config)
         {
                 m_history[config].push_back(state);
 
@@ -84,17 +100,8 @@ namespace zob
 
         trainer_states_t trainer_result_t::optimum_states() const
         {
-                const string_t str_opt_config = zob::concatenate(m_opt_config, "-");
-                for (const auto& it : m_history)
-                {
-                        const string_t str_config = zob::concatenate(it.first, "-");
-                        if (str_config == str_opt_config)
-                        {
-                                return it.second;
-                        }
-                }
-
-                return trainer_states_t();
+                const auto it = m_history.find(m_opt_config);
+                return (it == m_history.end()) ? trainer_states_t() : it->second;
         }
 
         vector_t trainer_result_t::optimum_params() const
