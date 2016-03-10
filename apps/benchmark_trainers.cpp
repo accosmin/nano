@@ -77,16 +77,11 @@ static void test_optimizer(model_t& model, const string_t& name, const string_t&
                 << stats_to_string(timings);
 }
 
-static void test_optimizers(
-        const task_t& task, model_t& model, const sampler_t& tsampler, const sampler_t& vsampler,
-        const loss_t& loss, const criterion_t& criterion,
+static void evaluate(
+        model_t& model, const task_t& task, const fold_t& fold, const loss_t& loss, const criterion_t& criterion,
         const size_t trials, const size_t iterations, const string_t& basepath, zob::table_t& table)
 {
-        const size_t batch_iterations = iterations;
-        const size_t minibatch_epochs = iterations;
-        const size_t stochastic_epochs = iterations;
         const scalar_t epsilon = 1e-4;
-
         const size_t n_threads = zob::n_threads();
         const bool verbose = true;
 
@@ -135,9 +130,8 @@ static void test_optimizers(
                 const auto optname = "batch-" + zob::to_string(optimizer);
                 test_optimizer(model, basename + optname, basepath + optname, table, x0s, [&] ()
                 {
-                        return zob::batch_train(
-                                model, task, tsampler, vsampler, n_threads,
-                                loss, criterion, optimizer, batch_iterations, epsilon, verbose);
+                        return  zob::batch_train(
+                                model, task, fold, n_threads, loss, criterion, optimizer, iterations, epsilon, verbose);
                 });
         }
 
@@ -146,9 +140,8 @@ static void test_optimizers(
                 const auto optname = "minibatch-" + zob::to_string(optimizer);
                 test_optimizer(model, basename + optname, basepath + optname, table, x0s, [&] ()
                 {
-                        return zob::minibatch_train(
-                                model, task, tsampler, vsampler, n_threads,
-                                loss, criterion, optimizer, minibatch_epochs, epsilon, verbose);
+                        return  zob::minibatch_train(
+                                model, task, fold, n_threads, loss, criterion, optimizer, iterations, epsilon, verbose);
                 });
         }
 
@@ -157,9 +150,8 @@ static void test_optimizers(
                 const auto optname = "stochastic-" + zob::to_string(optimizer);
                 test_optimizer(model, basename + optname, basepath + optname, table, x0s, [&] ()
                 {
-                        return zob::stochastic_train(
-                                model, task, tsampler, vsampler, n_threads,
-                                loss, criterion, optimizer, stochastic_epochs, verbose);
+                        return  zob::stochastic_train(
+                                model, task, fold, n_threads, loss, criterion, optimizer, iterations, verbose);
                 });
         }
 }
@@ -214,14 +206,9 @@ int main(int argc, char* argv[])
         task.load("");
         task.describe();
 
+        const auto fold = std::make_pair(0, protocol::train);
+
         const auto outputs = task.osize();
-
-        // create training & validation samples
-        sampler_t tsampler(task.samples());
-        tsampler.push(zob::annotation::annotated);
-
-        sampler_t vsampler(task.samples());
-        tsampler.split(80, vsampler);
 
         // construct models
         const string_t mlp0;
@@ -280,8 +267,7 @@ int main(int argc, char* argv[])
 
                                 const auto basepath = netname + "-" + iloss + "-" + icriterion + "-";
 
-                                test_optimizers(task, *model, tsampler, vsampler, *loss, *criterion,
-                                                trials, iterations, basepath, table);
+                                evaluate(*model, task, fold, *loss, *criterion, trials, iterations, basepath, table);
                         }
 
                         // show results

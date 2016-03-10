@@ -1,7 +1,6 @@
 #include "batch_trainer.h"
 #include "cortex/batch.h"
 #include "cortex/model.h"
-#include "cortex/sampler.h"
 #include "math/numeric.hpp"
 #include "cortex/util/logger.h"
 #include "text/from_params.hpp"
@@ -27,19 +26,6 @@ namespace zob
                 model.resize(task, true);
                 model.random_params();
 
-                // prune training & validation data
-                sampler_t tsampler(task.samples());
-                tsampler.push(fold).push(annotation::annotated);
-
-                sampler_t vsampler(task.samples());
-                tsampler.split(80, vsampler);
-
-                if (tsampler.empty() || vsampler.empty())
-                {
-                        log_error() << "batch trainer: no annotated training samples!";
-                        return trainer_result_t();
-                }
-
                 // parameters
                 const size_t iterations = zob::clamp(zob::from_params<size_t>(configuration(), "iters", 1024), 4, 4096);
                 const scalar_t epsilon = zob::clamp(zob::from_params<scalar_t>(configuration(), "eps", 1e-4), 1e-8, 1e-3);
@@ -49,8 +35,7 @@ namespace zob
 
                 // train the model
                 const trainer_result_t result = zob::batch_train(
-                        model, task, tsampler, vsampler, nthreads,
-                        loss, criterion, optimizer, iterations, epsilon);
+                        model, task, fold, nthreads, loss, criterion, optimizer, iterations, epsilon);
 
                 const trainer_state_t state = result.optimum_state();
 

@@ -1,5 +1,4 @@
 #include "cortex/model.h"
-#include "cortex/sampler.h"
 #include "math/numeric.hpp"
 #include "cortex/stochastic.h"
 #include "cortex/util/logger.h"
@@ -27,19 +26,6 @@ namespace zob
                 model.resize(task, true);
                 model.random_params();
 
-                // prune training & validation data
-                sampler_t tsampler(task.samples());
-                tsampler.push(fold).push(annotation::annotated);
-
-                sampler_t vsampler(task.samples());
-                tsampler.split(80, vsampler);
-
-                if (tsampler.empty() || vsampler.empty())
-                {
-                        log_error() << "stochastic trainer: no annotated training samples!";
-                        return trainer_result_t();
-                }
-
                 // parameters
                 const size_t epochs = zob::clamp(zob::from_params<size_t>(configuration(), "epoch", 16), 1, 1024);
 
@@ -48,8 +34,7 @@ namespace zob
 
                 // train the model
                 const trainer_result_t result = zob::stochastic_train(
-                        model, task, tsampler, vsampler, nthreads,
-                        loss, criterion, optimizer, epochs);
+                        model, task, fold, nthreads, loss, criterion, optimizer, epochs);
 
                 const trainer_state_t state = result.optimum_state();
 

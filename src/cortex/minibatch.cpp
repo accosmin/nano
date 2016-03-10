@@ -104,8 +104,7 @@ namespace zob
         }
 
         trainer_result_t minibatch_train(
-                const model_t& model,
-                const task_t& task, const sampler_t& tsampler, const sampler_t& vsampler, size_t nthreads,
+                const model_t& model, const task_t& task, const fold_t& fold, const size_t nthreads,
                 const loss_t& loss, const criterion_t& criterion,
                 zob::batch_optimizer optimizer, size_t epochs, scalar_t epsilon, bool verbose)
         {
@@ -116,7 +115,7 @@ namespace zob
                 accumulator_t lacc(model, criterion, criterion_t::type::value); lacc.set_threads(nthreads);
                 accumulator_t gacc(model, criterion, criterion_t::type::vgrad); gacc.set_threads(nthreads);
 
-                trainer_data_t data(task, tsampler, vsampler, loss, x0, lacc, gacc);
+                trainer_data_t data(task, fold, loss, x0, lacc, gacc);
 
                 // tune the regularization factor (if needed)
                 const auto op = [&] (scalar_t lambda)

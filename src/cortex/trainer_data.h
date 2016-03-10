@@ -18,8 +18,7 @@ namespace zob
                 /// \brief constructor
                 ///
                 trainer_data_t(const task_t& task,
-                               const sampler_t& tsampler,
-                               const sampler_t& vsampler,
+                               const fold_t& fold,
                                const loss_t& loss,
                                const vector_t& x0,
                                accumulator_t& lacc,
