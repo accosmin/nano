@@ -14,9 +14,9 @@ template
 >
 static void check_function(const zob::function_t<tscalar>& function)
 {
-        const auto epochs = size_t(8);
-        const auto epoch_size = size_t(16);
-        const auto trials = size_t(10);
+        const auto epochs = size_t(128);
+        const auto epoch_size = size_t(32);
+        const auto trials = size_t(32);
 
         const auto dims = function.problem().size();
 
@@ -40,7 +40,7 @@ static void check_function(const zob::function_t<tscalar>& function)
                 zob::stoch_optimizer::AGGR,
                 zob::stoch_optimizer::ADAGRAD,
                 zob::stoch_optimizer::ADADELTA,
-                zob::stoch_optimizer::ADADELTA
+                zob::stoch_optimizer::ADAM
         };
 
         for (const auto optimizer : optimizers)
@@ -62,8 +62,8 @@ static void check_function(const zob::function_t<tscalar>& function)
                         const auto g = state.convergence_criteria();
 
                         const auto f_thres = zob::epsilon3<tscalar>();
-//                                const auto g_thres = zob::epsilon3<tscalar>() * 1e+3;
-//                                const auto x_thres = zob::epsilon3<tscalar>() * 1e+4;
+                        const auto g_thres = zob::epsilon3<tscalar>() * 1e+4;
+                        const auto x_thres = zob::epsilon3<tscalar>() * 1e+4;
 
                         // ignore out-of-domain solutions
                         if (!function.is_valid(x))
@@ -83,10 +83,10 @@ static void check_function(const zob::function_t<tscalar>& function)
                         ZOB_CHECK_LESS_EQUAL(f, f0 - f_thres * zob::abs(f0));
 
                         // check convergence
-//                                ZOB_CHECK_LESS_EQUAL(g, g_thres);
+                        ZOB_CHECK_LESS_EQUAL(g, g_thres);
 
                         // check local minimas (if any known)
-//                                ZOB_CHECK(function.is_minima(x, x_thres));
+                        ZOB_CHECK(function.is_minima(x, x_thres));
                 }
 
                 std::cout << function.name() << ", " << zob::to_string(optimizer)

@@ -67,8 +67,7 @@ namespace zob
                         }
 
                         // log the current state & check the stopping criteria
-                        astate.x = xavg.value();
-                        astate.f = problem(astate.x);
+                        astate.update(problem, xavg.value());
                         if (!params.ulog(astate, config))
                         {
                                 break;
