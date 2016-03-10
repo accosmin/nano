@@ -54,10 +54,8 @@ namespace zob
                 typename tscalar,
                 typename tbase = momentum_t<tscalar, tscalar>
         >
-        class momentum_scalar_t : public tbase
+        struct momentum_scalar_t : public tbase
         {
-        public:
-
                 explicit momentum_scalar_t(const tscalar momentum)
                         :       tbase(momentum, 0)
                 {
@@ -73,10 +71,8 @@ namespace zob
                 typename tscalar = typename tvector::Scalar,
                 typename tbase = momentum_t<tscalar, tvector>
         >
-        class momentum_vector_t : public tbase
+        struct momentum_vector_t : public tbase
         {
-        public:
-
                 template
                 <
                         typename tsize
