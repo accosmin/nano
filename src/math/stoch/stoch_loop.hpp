@@ -2,6 +2,7 @@
 
 #include "params.hpp"
 #include "math/tune.hpp"
+#include "math/momentum.hpp"
 
 namespace zob
 {
@@ -20,7 +21,7 @@ namespace zob
 
         inline auto make_momenta()
         {
-                return zob::make_finite_space(0.10, 0.20, 0.30, 0.40, 0.50, 0.60, 0.70, 0.80, 0.90);
+                return zob::make_finite_space(0.10, 0.25, 0.50, 0.90, 0.95);
         }
 
         inline auto make_epsilons()
@@ -34,18 +35,23 @@ namespace zob
         template
         <
                 typename tproblem,      ///< optimization problem
-                typename top_iter,      ///< operator to call for each optimization iteration
-                typename top_epoch      ///< operator to call after each epoch
+                typename toperator      ///< operator to call for each optimization iteration
         >
         auto stoch_loop(
+                const tproblem& problem,
                 const stoch_params_t<tproblem>& params,
                 const typename stoch_params_t<tproblem>::tstate& istate,
-                const top_iter& opi,
-                const top_epoch& ope,
+                const toperator& op,
                 const typename stoch_params_t<tproblem>::tconfig& config)
         {
                 // current state
                 auto cstate = istate;
+
+                // average state
+                auto astate = istate;
+
+                const typename tproblem::tscalar momentum = 0.90;
+                momentum_vector_t<typename tproblem::tvector> xavg(momentum, istate.x.size());
 
                 // best state
                 auto bstate = istate;
@@ -56,19 +62,20 @@ namespace zob
                         // for each iteration ...
                         for (std::size_t i = 0; i < params.m_epoch_size; ++ i, ++ k)
                         {
-                                opi(cstate, k);
+                                op(cstate, k);
+                                xavg.update(cstate.x);
                         }
 
-                        // update the current & best states
-                        ope(cstate);
-                        cstate.f = params.tlog(cstate, config);
-                        bstate.update(cstate);
-
                         // log the current state & check the stopping criteria
-                        if (!params.ulog(cstate, config))
+                        astate.x = xavg.value();
+                        astate.f = problem(astate.x);
+                        if (!params.ulog(astate, config))
                         {
                                 break;
                         }
+
+                        // update the best state
+                        bstate.update(astate);
                 }
 
                 // OK

@@ -103,6 +103,7 @@ namespace zob
                                 cstate.update(problem, py);
                                 cx = py - alpha * cstate.g;
                                 cy = cx + beta * (cx - px);
+                                cstate.x = cx; // NB: to propagate the current parameters!
 
                                 switch (trestart)
                                 {
@@ -131,13 +132,8 @@ namespace zob
                                 ptheta = ctheta;
                         };
 
-                        const auto op_epoch = [&] (tstate& cstate)
-                        {
-                                cstate.update(problem, cx);
-                        };
-
                         // OK, assembly the optimizer
-                        return  stoch_loop(param, istate, op_iter, op_epoch,
+                        return  stoch_loop(problem, param, istate, op_iter,
                                 {{"alpha0", alpha0}, {"q", q}});
                 }
         };

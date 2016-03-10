@@ -58,12 +58,8 @@ namespace zob
                                 cstate.update(problem, alpha);
                         };
 
-                        const auto op_epoch = [&] (tstate&)
-                        {
-                        };
-
                         // OK, assembly the optimizer
-                        return  stoch_loop(param, tstate(problem, x0), op_iter, op_epoch,
+                        return  stoch_loop(problem, param, tstate(problem, x0), op_iter,
                                 {{"alpha0", alpha0}, {"decay", decay}});
                 }
         };

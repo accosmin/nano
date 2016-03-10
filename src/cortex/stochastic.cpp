@@ -50,13 +50,13 @@ namespace zob
                         return values;
                 };
 
-                auto fn_ulog = [&] (const opt_state_t& state, const auto& config)
+                auto fn_ulog = [&] (opt_state_t& state, const auto& config)
                 {
                         // evaluate training samples
                         data.m_lacc.set_params(state.x);
-                        data.m_tsampler.pop();                  //
+                        data.m_tsampler.pop();                  // revert to the original sampler
                         data.m_lacc.update(data.m_task, data.m_tsampler.get(), data.m_loss);
-                        data.m_tsampler.push(batch_size);       //
+                        data.m_tsampler.push(batch_size);       // use the current minibatch sampler
                         const scalar_t tvalue = data.m_lacc.value();
                         const scalar_t terror_avg = data.m_lacc.avg_error();
                         const scalar_t terror_var = data.m_lacc.var_error();
@@ -84,33 +84,13 @@ namespace zob
                                 << ", " << config << "lambda=" << data.lambda()
                                 << "] done in " << timer.elapsed() << ".";
 
+                        state.f = tvalue;
                         return !zob::is_done(ret);
                 };
 
-                auto fn_tlog = [&] (const opt_state_t& state, const auto& config)
-                {
-                        // evaluate training samples
-                        data.m_lacc.set_params(state.x);
-                        data.m_tsampler.pop();                  //
-                        data.m_lacc.update(data.m_task, data.m_tsampler.get(), data.m_loss);
-                        data.m_tsampler.push(batch_size);       //
-                        const scalar_t tvalue = data.m_lacc.value();
-                        const scalar_t terror_avg = data.m_lacc.avg_error();
-
-                        // OK, return the tuning criterion
-                        if (verbose)
-                        log_info()
-                                << "tuning: [train = " << tvalue << "/" << terror_avg
-                                << ", batch = " << batch_size
-                                << ", " << config << "lambda=" << data.lambda()
-                                << "] done in " << timer.elapsed() << ".";
-
-                        return tvalue;
-                };
-
                 // Optimize the model
-                zob::minimize(opt_problem_t(fn_size, fn_fval, fn_grad), fn_ulog, fn_tlog,
-                               data.m_x0, optimizer, epochs, epoch_size);
+                zob::minimize(opt_problem_t(fn_size, fn_fval, fn_grad), fn_ulog,
+                              data.m_x0, optimizer, epochs, epoch_size);
 
                 // revert to the original sampler
                 data.m_tsampler.pop();
