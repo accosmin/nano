@@ -2,6 +2,7 @@
 
 #include "vector.hpp"
 #include "matrix.hpp"
+#include "tensor_index.hpp"
 
 namespace tensor
 {
@@ -10,47 +11,40 @@ namespace tensor
         ///
         template
         <
-                typename tvector
+                typename tstorage        ///< data storage type (e.g. Eigen::Vector or mapped C-array)
         >
-        class tensor_base_t
+        class tensor_storage_t
         {
         public:
 
-                using tsize = typename tvector::Index;
-                using tindex = typename tvector::Index;
-                using tscalar = typename tvector::Scalar;
+                using tsize = typename tstorage::Index;
+                using tindex = typename tstorage::Index;
+                using tscalar = typename tstorage::Scalar;
 
                 // Eigen compatible
                 using Index = tindex;
-                using Scalar = tscalar;                
+                using Scalar = tscalar;
 
                 ///
                 /// \brief constructor
                 ///
-                tensor_base_t(tsize dims, tsize rows, tsize cols)
-                        :       m_dims(dims),
-                                m_rows(rows),
-                                m_cols(cols)
+                tensor_storage_t(const tsize dims, const tsize rows, const tsize cols) :
+                        m_dims(dims),
+                        m_rows(rows),
+                        m_cols(cols)
                 {
                 }
 
                 ///
                 /// \brief constructor
                 ///
-                tensor_base_t(tsize dims, tsize rows, tsize cols, const tvector& data)
-                        :       m_dims(dims),
-                                m_rows(rows),
-                                m_cols(cols),
-                                m_data(data)
+                tensor_storage_t(const tsize dims, const tsize rows, const tsize cols, const tstorage& data) :
+                        m_dims(dims),
+                        m_rows(rows),
+                        m_cols(cols),
+                        m_data(data)
                 {
                         assert(m_data.size() == dims * rows * cols);
-                }
-
-                ///
-                /// \brief destructor
-                ///
-                virtual ~tensor_base_t()
-                {
                 }
 
                 ///
@@ -64,7 +58,7 @@ namespace tensor
                 ///
                 /// \brief set all elements to constant
                 ///
-                void setConstant(tscalar val)
+                void setConstant(const tscalar val)
                 {
                         m_data.setConstant(val);
                 }
@@ -81,7 +75,7 @@ namespace tensor
                 ///
                 /// \brief access the whole tensor as a vector (size() x 1)
                 ///
-                const tvector& vector() const { return m_data; }
+                const tstorage& vector() const { return m_data; }
                 auto vector() { return tensor::map_vector(data(), size()); }
 
                 ///
@@ -93,26 +87,54 @@ namespace tensor
                 ///
                 /// \brief access the 2D plane (i) as vector
                 ///
-                auto vector(tindex i) const { return tensor::map_vector(planeData(i), planeSize()); }
-                auto vector(tindex i) { return tensor::map_vector(planeData(i), planeSize()); }
+                auto vector(const tindex i) const
+                {
+                        return tensor::map_vector(planeData(i), planeSize());
+                }
+                auto vector(const tindex i)
+                {
+                        return tensor::map_vector(planeData(i), planeSize());
+                }
 
                 ///
                 /// \brief access the 2D plane (i) as matrix
                 ///
-                auto matrix(tindex i) const { return tensor::map_matrix(planeData(i), rows(), cols()); }
-                auto matrix(tindex i) { return tensor::map_matrix(planeData(i), rows(), cols()); }
+                auto matrix(const tindex i) const
+                {
+                        return tensor::map_matrix(planeData(i), rows(), cols());
+                }
+                auto matrix(const tindex i)
+                {
+                        return tensor::map_matrix(planeData(i), rows(), cols());
+                }
 
                 ///
                 /// \brief access the 2D plane (i) as an array
                 ///
-                const tscalar* planeData(tindex i) const { return data() + i * planeSize(); }
-                tscalar* planeData(tindex i) { return data() + i * planeSize(); }
+                const tscalar* planeData(const tindex i) const
+                {
+                        assert(i >= 0 && i < dims());
+                        return data() + i * planeSize();
+                }
+                tscalar* planeData(const tindex i)
+                {
+                        assert(i >= 0 && i < dims());
+                        return data() + i * planeSize();
+                }
 
                 ///
                 /// \brief access an element of the tensor in the range [0, size())
                 ///
-                tscalar operator()(tindex i) const { return m_data(i); }
-                tscalar& operator()(tindex i) { return m_data(i); }
+                tscalar operator()(const tindex i) const
+                {
+                        assert(i >= 0 && i < size());
+                        return m_data(i);
+                }
+                tscalar& operator()(const tindex i)
+                {
+                        assert(i >= 0 && i < size());
+                        return m_data(i);
+                }
 
         protected:
 
@@ -120,6 +142,6 @@ namespace tensor
                 tsize           m_dims;         ///< #dimensions
                 tsize           m_rows;         ///< #rows (for each dimension)
                 tsize           m_cols;         ///< #cols (for each dimension)
-                tvector         m_data;         ///< storage (1D vector)
+                tstorage        m_data;         ///< storage (1D vector)
         };
 }

@@ -1,9 +1,37 @@
 #pragma once
 
-#include "tensor_map.hpp"
+#include "tensor_storage.hpp"
 
 namespace tensor
 {
+        ///
+        /// \brief 3D tensor mapping an array as ::dims() 2D planes of size ::rows() x ::cols()
+        ///
+        template
+        <
+                typename tmap
+        >
+        class tensor_map_t : public tensor_storage_t<tmap>
+        {
+        public:
+
+                using tbase = tensor_storage_t<tmap>;
+                using tsize = typename tbase::tsize;
+                using tscalar = typename tbase::tscalar;
+
+                // Eigen compatible
+                using Index = typename tbase::Index;
+                using Scalar = typename tbase::Scalar;
+
+                ///
+                /// \brief constructor
+                ///
+                tensor_map_t(const tmap& map, const tsize dims, const tsize rows, const tsize cols)
+                        :       tbase(dims, rows, cols, map)
+                {
+                }
+        };
+
         ///
         /// \brief 3D tensor stored as ::dims() 2D planes of size ::rows() x ::cols()
         ///
@@ -12,11 +40,11 @@ namespace tensor
                 typename tscalar,
                 typename tvector = vector_t<tscalar>
         >
-        class tensor_t : public tensor_base_t<tvector>
+        class tensor_t : public tensor_storage_t<tvector>
         {
         public:
 
-                using tbase = tensor_base_t<tvector>;
+                using tbase = tensor_storage_t<tvector>;
                 using tsize = typename tbase::tsize;
 
                 // Eigen compatible
@@ -26,7 +54,7 @@ namespace tensor
                 ///
                 /// \brief constructor
                 ///
-                explicit tensor_t(tsize dims = 0, tsize rows = 0, tsize cols = 0)
+                explicit tensor_t(const tsize dims = 0, const tsize rows = 0, const tsize cols = 0)
                         :       tbase(dims, rows, cols)
                 {
                         resize(dims, rows, cols);
@@ -48,7 +76,7 @@ namespace tensor
                 ///
                 /// \brief resize to new dimensions
                 ///
-                tsize resize(tsize dims, tsize rows, tsize cols)
+                tsize resize(const tsize dims, const tsize rows, const tsize cols)
                 {
                         this->m_dims = dims;
                         this->m_rows = rows;
@@ -57,19 +85,36 @@ namespace tensor
 
                         return this->size();
                 }
-
-                ///
-                /// \brief cast to another tensor type
-                ///
-                template
-                <
-                        typename tscalar_
-                >
-                tensor_t<tscalar_> cast() const
-                {
-                        tensor_t<tscalar_> copy(this->dims(), this->rows(), this->cols());
-                        copy.vector() = this->vector().template cast<tscalar_>();
-                        return copy;
-                }
         };
+
+        ///
+        /// \brief map non-constant data to tensors
+        ///
+        template
+        <
+                typename tvalue_,
+                typename tsize,
+                typename tvalue = typename std::remove_const<tvalue_>::type,
+                typename tresult = tensor_map_t<Eigen::Map<vector_t<tvalue>>>
+        >
+        tresult map_tensor(tvalue_* data, tsize dims, tsize rows, tsize cols)
+        {
+                return tresult(tensor::map_vector(data, dims * rows * cols), dims, rows, cols);
+        }
+
+        ///
+        /// \brief map constant data to tensors
+        ///
+        template
+        <
+                typename tvalue_,
+                typename tsize,
+                typename tvalue = typename std::remove_const<tvalue_>::type,
+                typename tresult = tensor_map_t<Eigen::Map<const vector_t<tvalue>>>
+        >
+        tresult map_tensor(const tvalue_* data, tsize dims, tsize rows, tsize cols)
+        {
+                return tresult(tensor::map_vector(data, dims * rows * cols), dims, rows, cols);
+        }
+
 }

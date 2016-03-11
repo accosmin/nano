@@ -34,6 +34,37 @@ namespace
 
 NANO_BEGIN_MODULE(test_tensor)
 
+NANO_CASE(index1d)
+{
+        tensor::tensor_index_t<int, 1> index(7);
+
+        NANO_CHECK_EQUAL(index.size(), 7);
+        NANO_CHECK_EQUAL(index.size(0), 7);
+
+        NANO_CHECK_EQUAL(index(0), 0);
+        NANO_CHECK_EQUAL(index(1), 1);
+        NANO_CHECK_EQUAL(index(6), 6);
+}
+
+NANO_CASE(index2d)
+{
+        tensor::tensor_index_t<int, 2> index(7, 5);
+
+        NANO_CHECK_EQUAL(index.size(), 35);
+        NANO_CHECK_EQUAL(index.size(0), 7);
+        NANO_CHECK_EQUAL(index.size(1), 5);
+
+        NANO_CHECK_EQUAL(index(0), 0);
+        NANO_CHECK_EQUAL(index(13), 13);
+        NANO_CHECK_EQUAL(index(34), 34);
+
+        NANO_CHECK_EQUAL(index(0, 1), 1);
+        NANO_CHECK_EQUAL(index(0, 4), 4);
+        NANO_CHECK_EQUAL(index(1, 0), 5);
+        NANO_CHECK_EQUAL(index(3, 2), 17);
+        NANO_CHECK_EQUAL(index(6, 4), 34);
+}
+
 NANO_CASE(construction)
 {
         const int dims = 4;

@@ -16,9 +16,9 @@ set(libtensor_sources
         ${CMAKE_CURRENT_SOURCE_DIR}/matrix.hpp
         ${CMAKE_CURRENT_SOURCE_DIR}/random.hpp
         ${CMAKE_CURRENT_SOURCE_DIR}/serialize.hpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/tensor_base.hpp
         ${CMAKE_CURRENT_SOURCE_DIR}/tensor.hpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/tensor_map.hpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/tensor_index.hpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/tensor_storage.hpp
         ${CMAKE_CURRENT_SOURCE_DIR}/transform.hpp
         ${CMAKE_CURRENT_SOURCE_DIR}/vector.hpp)
 
