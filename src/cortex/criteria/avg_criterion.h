@@ -2,7 +2,7 @@
 
 #include "cortex/criterion.h"
 
-namespace zob
+namespace nano
 {
         ///
         /// \brief average loss
@@ -11,7 +11,7 @@ namespace zob
         {
         public:
 
-                ZOB_MAKE_CLONABLE(avg_criterion_t, "average loss")
+                NANO_MAKE_CLONABLE(avg_criterion_t, "average loss")
 
                 ///
                 /// \brief constructor

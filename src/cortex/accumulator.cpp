@@ -2,7 +2,7 @@
 #include "thread/loopit.hpp"
 #include <cassert>
 
-namespace zob
+namespace nano
 {
         struct accumulator_t::impl_t
         {
@@ -35,7 +35,7 @@ namespace zob
                 }
 
                 // attributes
-                zob::pool_t                  m_pool;         ///< thread pool
+                nano::pool_t                  m_pool;         ///< thread pool
                 std::vector<rcriterion_t>       m_criteria;     ///< cached criterion / thread
         };
 
@@ -57,7 +57,7 @@ namespace zob
 
         void accumulator_t::set_lambda(scalar_t lambda) const
         {
-                lambda = zob::clamp(lambda, 0.0, 1.0);
+                lambda = nano::clamp(lambda, 0.0, 1.0);
 
                 for (const auto& cache : m_impl->m_criteria)
                 {
@@ -80,7 +80,7 @@ namespace zob
 
         void accumulator_t::update(const task_t& task, const samples_t& samples, const loss_t& loss)
         {
-                zob::loopit(samples.size(), m_impl->m_pool, [&] (size_t i, size_t th)
+                nano::loopit(samples.size(), m_impl->m_pool, [&] (size_t i, size_t th)
                 {
                         m_impl->m_criteria[th]->update(task, samples[i], loss);
                 });

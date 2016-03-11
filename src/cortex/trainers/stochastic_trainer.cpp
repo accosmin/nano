@@ -5,7 +5,7 @@
 #include "stochastic_trainer.h"
 #include "text/from_params.hpp"
 
-namespace zob
+namespace nano
 {
         stochastic_trainer_t::stochastic_trainer_t(const string_t& parameters)
                 :       trainer_t(parameters)
@@ -27,13 +27,13 @@ namespace zob
                 model.random_params();
 
                 // parameters
-                const size_t epochs = zob::clamp(zob::from_params<size_t>(configuration(), "epoch", 16), 1, 1024);
+                const size_t epochs = nano::clamp(nano::from_params<size_t>(configuration(), "epoch", 16), 1, 1024);
 
-                const zob::stoch_optimizer optimizer = zob::from_string<zob::stoch_optimizer>
-                        (zob::from_params<string_t>(configuration(), "opt", "sg"));
+                const nano::stoch_optimizer optimizer = nano::from_string<nano::stoch_optimizer>
+                        (nano::from_params<string_t>(configuration(), "opt", "sg"));
 
                 // train the model
-                const trainer_result_t result = zob::stochastic_train(
+                const trainer_result_t result = nano::stochastic_train(
                         model, task, fold, nthreads, loss, criterion, optimizer, epochs);
 
                 const trainer_state_t state = result.optimum_state();

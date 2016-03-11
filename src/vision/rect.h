@@ -3,12 +3,12 @@
 #include "point.h"
 #include "scalar.h"
 
-namespace zob
+namespace nano
 {
         ///
         /// \brief 2D rectangle
         ///
-        class ZOB_PUBLIC rect_t
+        class NANO_PUBLIC rect_t
         {
         public:
 
@@ -52,27 +52,27 @@ namespace zob
         ///
         /// \brief intersect two rectangles
         ///
-        ZOB_PUBLIC rect_t operator&(const rect_t& rect1, const rect_t& rect2);
+        NANO_PUBLIC rect_t operator&(const rect_t& rect1, const rect_t& rect2);
 
         ///
         /// \brief union with another rectangle
         ///
-        ZOB_PUBLIC rect_t operator|(const rect_t& rect1, const rect_t& rect2);
+        NANO_PUBLIC rect_t operator|(const rect_t& rect1, const rect_t& rect2);
 
         ///
         /// \brief [0, 1] overlap between two rectangle (aka Jaccard distance)
         ///
-        ZOB_PUBLIC scalar_t overlap(const rect_t& rect1, const rect_t& rect2);
+        NANO_PUBLIC scalar_t overlap(const rect_t& rect1, const rect_t& rect2);
 
         ///
         /// \brief compare two rectangles
         ///
-        ZOB_PUBLIC bool operator==(const rect_t& rect1, const rect_t& rect2);
+        NANO_PUBLIC bool operator==(const rect_t& rect1, const rect_t& rect2);
 
         ///
         /// \brief stream a rectangle
         ///
-        ZOB_PUBLIC std::ostream& operator<<(std::ostream& s, const rect_t& rect);
+        NANO_PUBLIC std::ostream& operator<<(std::ostream& s, const rect_t& rect);
 }
 
 

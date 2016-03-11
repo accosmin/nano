@@ -5,7 +5,7 @@
 #include <cassert>
 #include <type_traits>
 
-namespace zob
+namespace nano
 {
         ///
         /// \brief uniform random number generator in the [min, max] range.

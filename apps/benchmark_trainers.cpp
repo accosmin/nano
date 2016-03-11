@@ -12,18 +12,18 @@
 #include "cortex/tasks/task_charset.h"
 #include "cortex/layers/make_layers.h"
 
-using namespace zob;
+using namespace nano;
 
 template
 <
         typename tvalue
 >
-static string_t stats_to_string(const zob::stats_t<tvalue>& stats)
+static string_t stats_to_string(const nano::stats_t<tvalue>& stats)
 {
-        return  zob::to_string(static_cast<tvalue>(stats.avg()))
-                + "+/-" + zob::to_string(static_cast<tvalue>(stats.stdev()))
-                + " [" + zob::to_string(stats.min())
-                + ", " + zob::to_string(stats.max())
+        return  nano::to_string(static_cast<tvalue>(stats.avg()))
+                + "+/-" + nano::to_string(static_cast<tvalue>(stats.stdev()))
+                + " [" + nano::to_string(stats.min())
+                + ", " + nano::to_string(stats.max())
                 + "]";
 }
 
@@ -32,24 +32,24 @@ template
         typename ttrainer
 >
 static void test_optimizer(model_t& model, const string_t& name, const string_t& basepath,
-        zob::table_t& table, const vectors_t& x0s, const ttrainer& trainer)
+        nano::table_t& table, const vectors_t& x0s, const ttrainer& trainer)
 {
-        zob::stats_t<scalar_t> terrors;
-        zob::stats_t<scalar_t> verrors;
-        zob::stats_t<scalar_t> speeds;
-        zob::stats_t<scalar_t> timings;
+        nano::stats_t<scalar_t> terrors;
+        nano::stats_t<scalar_t> verrors;
+        nano::stats_t<scalar_t> speeds;
+        nano::stats_t<scalar_t> timings;
 
         log_info() << "<<< running " << name << " ...";
 
         for (size_t i = 0; i < x0s.size(); ++ i)
         {
-                const zob::timer_t timer;
+                const nano::timer_t timer;
 
                 model.load_params(x0s[i]);
 
                 const auto result = trainer();
                 const auto opt_state = result.optimum_state();
-                const auto opt_speed = zob::convergence_speed(result.optimum_states());
+                const auto opt_speed = nano::convergence_speed(result.optimum_states());
 
                 terrors(opt_state.m_terror_avg);
                 verrors(opt_state.m_verror_avg);
@@ -64,10 +64,10 @@ static void test_optimizer(model_t& model, const string_t& name, const string_t&
                            << ", speed = " << opt_speed << "/s"
                            << " done in " << timer.elapsed() << ".";
 
-                const auto path = basepath + "-trial" + zob::to_string(i) + ".state";
+                const auto path = basepath + "-trial" + nano::to_string(i) + ".state";
 
                 const auto opt_states = result.optimum_states();
-                zob::save(path, opt_states);
+                nano::save(path, opt_states);
         }
 
         table.append(name)
@@ -79,10 +79,10 @@ static void test_optimizer(model_t& model, const string_t& name, const string_t&
 
 static void evaluate(
         model_t& model, const task_t& task, const fold_t& fold, const loss_t& loss, const criterion_t& criterion,
-        const size_t trials, const size_t iterations, const string_t& basepath, zob::table_t& table)
+        const size_t trials, const size_t iterations, const string_t& basepath, nano::table_t& table)
 {
         const scalar_t epsilon = 1e-4;
-        const size_t n_threads = zob::n_threads();
+        const size_t n_threads = nano::n_threads();
         const bool verbose = true;
 
         // generate fixed random starting points
@@ -96,61 +96,61 @@ static void evaluate(
         // batch optimizers
         const auto batch_optimizers =
         {
-                zob::batch_optimizer::GD,
-                zob::batch_optimizer::CGD,
-                zob::batch_optimizer::LBFGS
+                nano::batch_optimizer::GD,
+                nano::batch_optimizer::CGD,
+                nano::batch_optimizer::LBFGS
         };
 
         // minibatch optimizers
         const auto minibatch_optimizers =
         {
-                zob::batch_optimizer::GD,
-                zob::batch_optimizer::CGD,
-                zob::batch_optimizer::LBFGS
+                nano::batch_optimizer::GD,
+                nano::batch_optimizer::CGD,
+                nano::batch_optimizer::LBFGS
         };
 
         // stochastic optimizers
         const auto stoch_optimizers =
         {
-                zob::stoch_optimizer::SG,
-                zob::stoch_optimizer::SGM,
-                zob::stoch_optimizer::AG,
-                zob::stoch_optimizer::AGFR,
-                zob::stoch_optimizer::AGGR,
-                zob::stoch_optimizer::ADAGRAD,
-                zob::stoch_optimizer::ADADELTA,
-                zob::stoch_optimizer::ADAM
+                nano::stoch_optimizer::SG,
+                nano::stoch_optimizer::SGM,
+                nano::stoch_optimizer::AG,
+                nano::stoch_optimizer::AGFR,
+                nano::stoch_optimizer::AGGR,
+                nano::stoch_optimizer::ADAGRAD,
+                nano::stoch_optimizer::ADADELTA,
+                nano::stoch_optimizer::ADAM
         };
 
         const string_t basename = "[" + criterion.description() + "] ";
 
         // run optimizers and collect results
-        for (zob::batch_optimizer optimizer : batch_optimizers)
+        for (nano::batch_optimizer optimizer : batch_optimizers)
         {
-                const auto optname = "batch-" + zob::to_string(optimizer);
+                const auto optname = "batch-" + nano::to_string(optimizer);
                 test_optimizer(model, basename + optname, basepath + optname, table, x0s, [&] ()
                 {
-                        return  zob::batch_train(
+                        return  nano::batch_train(
                                 model, task, fold, n_threads, loss, criterion, optimizer, iterations, epsilon, verbose);
                 });
         }
 
-        for (zob::batch_optimizer optimizer : minibatch_optimizers)
+        for (nano::batch_optimizer optimizer : minibatch_optimizers)
         {
-                const auto optname = "minibatch-" + zob::to_string(optimizer);
+                const auto optname = "minibatch-" + nano::to_string(optimizer);
                 test_optimizer(model, basename + optname, basepath + optname, table, x0s, [&] ()
                 {
-                        return  zob::minibatch_train(
+                        return  nano::minibatch_train(
                                 model, task, fold, n_threads, loss, criterion, optimizer, iterations, epsilon, verbose);
                 });
         }
 
-        for (zob::stoch_optimizer optimizer : stoch_optimizers)
+        for (nano::stoch_optimizer optimizer : stoch_optimizers)
         {
-                const auto optname = "stochastic-" + zob::to_string(optimizer);
+                const auto optname = "stochastic-" + nano::to_string(optimizer);
                 test_optimizer(model, basename + optname, basepath + optname, table, x0s, [&] ()
                 {
-                        return  zob::stochastic_train(
+                        return  nano::stochastic_train(
                                 model, task, fold, n_threads, loss, criterion, optimizer, iterations, verbose);
                 });
         }
@@ -158,12 +158,12 @@ static void evaluate(
 
 int main(int argc, char* argv[])
 {
-        zob::init();
+        nano::init();
 
-        using namespace zob;
+        using namespace nano;
 
         // parse the command line
-        zob::cmdline_t cmdline("benchmark trainers");
+        nano::cmdline_t cmdline("benchmark trainers");
         cmdline.add("", "l2n-reg",      "also evaluate the l2-norm-based regularizer");
         cmdline.add("", "var-reg",      "also evaluate the variance-based regularizer");
         cmdline.add("", "mlp0",         "MLP with 0 hidden layers");
@@ -199,7 +199,7 @@ int main(int argc, char* argv[])
         // create task
         const size_t rows = 16;
         const size_t cols = 16;
-        const size_t samples = zob::n_threads() * 256 * 10;
+        const size_t samples = nano::n_threads() * 256 * 10;
         const color_mode color = color_mode::rgba;
 
         charset_task_t task(charset::numeric, rows, cols, color, samples);
@@ -229,10 +229,10 @@ int main(int argc, char* argv[])
         if (use_mlp3) { networks.emplace_back(mlp3 + outlayer, "mlp3"); }
         if (use_convnet) { networks.emplace_back(convnet + outlayer, "convnet"); }
 
-        const strings_t losses = { "classnll" }; //zob::get_losses().ids();
+        const strings_t losses = { "classnll" }; //nano::get_losses().ids();
 
         strings_t criteria;
-        criteria.push_back("avg"); //zob::get_criteria().ids();
+        criteria.push_back("avg"); //nano::get_criteria().ids();
         if (use_reg_l2n) { criteria.push_back("l2n-reg"); }
         if (use_reg_var) { criteria.push_back("var-reg"); }
 
@@ -244,7 +244,7 @@ int main(int argc, char* argv[])
 
                 log_info() << "<<< running network [" << network << "] ...";
 
-                const auto model = zob::get_models().get("forward-network", network);
+                const auto model = nano::get_models().get("forward-network", network);
                 model->resize(task, true);
 
                 // vary the loss
@@ -252,9 +252,9 @@ int main(int argc, char* argv[])
                 {
                         log_info() << "<<< running loss [" << iloss << "] ...";
 
-                        const auto loss = zob::get_losses().get(iloss);
+                        const auto loss = nano::get_losses().get(iloss);
 
-                        zob::table_t table("optimizer");
+                        nano::table_t table("optimizer");
                         table.header() << "train error"
                                        << "valid error"
                                        << "convergence speed"
@@ -263,7 +263,7 @@ int main(int argc, char* argv[])
                         // vary the criteria
                         for (const string_t& icriterion : criteria)
                         {
-                                const auto criterion = zob::get_criteria().get(icriterion);
+                                const auto criterion = nano::get_criteria().get(icriterion);
 
                                 const auto basepath = netname + "-" + iloss + "-" + icriterion + "-";
 

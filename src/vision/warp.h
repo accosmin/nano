@@ -3,7 +3,7 @@
 #include "arch.h"
 #include "tensor.h"
 
-namespace zob
+namespace nano
 {
         enum class field_type
         {
@@ -17,7 +17,7 @@ namespace zob
         //      "Training Invariant Support Vector Machines using Selective Sampling", by
         //      Gaelle Loosli, Stephane Canu & Leon Bottou
         ///
-        struct ZOB_PUBLIC warp_params
+        struct NANO_PUBLIC warp_params
         {
                 explicit warp_params(
                         field_type ftype = field_type::random,
@@ -36,5 +36,5 @@ namespace zob
         ///
         /// \brief randomly warp the input RGBA tensor
         ///
-        ZOB_PUBLIC tensor_t warp(const tensor_t& image, const warp_params& params, tensor_t* field_image = nullptr);
+        NANO_PUBLIC tensor_t warp(const tensor_t& image, const warp_params& params, tensor_t* field_image = nullptr);
 }

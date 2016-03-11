@@ -3,7 +3,7 @@
 #include "softmax.hpp"
 #include <cassert>
 
-namespace zob
+namespace nano
 {
         logistic_loss_t::logistic_loss_t(const string_t& configuration)
                 :       loss_t(configuration)

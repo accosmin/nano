@@ -2,7 +2,7 @@
 
 #include "cortex/task.h"
 
-namespace zob
+namespace nano
 {
         ///
         /// STL10 task:
@@ -16,7 +16,7 @@ namespace zob
         {
         public:
 
-                ZOB_MAKE_CLONABLE(stl10_task_t, "STL-10 (object classification)")
+                NANO_MAKE_CLONABLE(stl10_task_t, "STL-10 (object classification)")
 
                 // constructor
                 explicit stl10_task_t(const string_t& configuration = string_t());

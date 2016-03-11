@@ -8,39 +8,39 @@ namespace test
         template
         <
                 typename tscalar,
-                typename tvector = typename zob::function_t<tscalar>::tvector
+                typename tvector = typename nano::function_t<tscalar>::tvector
         >
-        void test_function(const zob::function_t<tscalar>& function)
+        void test_function(const nano::function_t<tscalar>& function)
         {
                 const size_t trials = 135;
 
-                const auto epsilon = zob::epsilon2<tscalar>();
+                const auto epsilon = nano::epsilon2<tscalar>();
 
                 const auto dims = function.problem().size();
-                ZOB_CHECK_GREATER(dims, 0);
+                NANO_CHECK_GREATER(dims, 0);
 
                 for (size_t t = 0; t < trials; ++ t)
                 {
-                        zob::random_t<tscalar> rgen(tscalar(-0.1), tscalar(+0.1));
+                        nano::random_t<tscalar> rgen(tscalar(-0.1), tscalar(+0.1));
 
                         tvector x0(dims);
                         rgen(x0.data(), x0.data() + x0.size());
 
                         const auto problem = function.problem();
-                        ZOB_CHECK_EQUAL(problem.size(), dims);
-                        ZOB_CHECK_LESS(problem.grad_accuracy(x0), epsilon);
+                        NANO_CHECK_EQUAL(problem.size(), dims);
+                        NANO_CHECK_LESS(problem.grad_accuracy(x0), epsilon);
                 }
         }              
 }
 
-ZOB_BEGIN_MODULE(test_functions)
+NANO_BEGIN_MODULE(test_functions)
 
-ZOB_CASE(evaluate)
+NANO_CASE(evaluate)
 {
-        zob::foreach_test_function<double, zob::test_type::all>(1, 8, [] (const auto& function)
+        nano::foreach_test_function<double, nano::test_type::all>(1, 8, [] (const auto& function)
         {
                 test::test_function(function);
         });
 }
 
-ZOB_END_MODULE()
+NANO_END_MODULE()

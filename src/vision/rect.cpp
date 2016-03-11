@@ -2,7 +2,7 @@
 #include <ostream>
 #include <algorithm>
 
-namespace zob
+namespace nano
 {
         rect_t operator&(const rect_t& rect1, const rect_t& rect2)
         {

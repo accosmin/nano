@@ -6,10 +6,10 @@
 #include "trainer.h"
 #include "criterion.h"
 
-namespace zob
+namespace nano
 {
         ///
         /// \brief initialize library (setup flags, register default objects ...)
         ///
-        ZOB_PUBLIC void init();
+        NANO_PUBLIC void init();
 }

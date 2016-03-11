@@ -3,7 +3,7 @@
 #include <limits>
 #include <eigen3/Eigen/Core>
 
-namespace zob
+namespace nano
 {
         ///
         /// \brief optimization state described as:

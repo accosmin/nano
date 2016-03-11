@@ -2,7 +2,7 @@
 
 #include "cortex/trainer.h"
 
-namespace zob
+namespace nano
 {
         ///
         /// stochastic trainer: each gradient update is computed for a random sub-set of samples.
@@ -15,7 +15,7 @@ namespace zob
         {
         public:
 
-                ZOB_MAKE_CLONABLE(stochastic_trainer_t,
+                NANO_MAKE_CLONABLE(stochastic_trainer_t,
                                      "parameters: opt=sg[,sgm,ag,agfr,aggr,adagrad,adadelta,adam],epoch=16[1,1024]")
 
                 // constructor

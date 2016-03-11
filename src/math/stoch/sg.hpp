@@ -3,7 +3,7 @@
 #include "lrate.hpp"
 #include "stoch_loop.hpp"
 
-namespace zob
+namespace nano
 {
         ///
         /// \brief stochastic gradient (descent)
@@ -31,7 +31,7 @@ namespace zob
                                 return this->operator()(param.tunable(), problem, x0, params...);
                         };
 
-                        const auto config = zob::tune(op, make_alpha0s(), make_decays());
+                        const auto config = nano::tune(op, make_alpha0s(), make_decays());
                         return operator()(param, problem, x0, config.param0(), config.param1());
                 }
 

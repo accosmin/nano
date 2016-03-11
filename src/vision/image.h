@@ -4,7 +4,7 @@
 #include "color.h"
 #include "stringi.h"
 
-namespace zob
+namespace nano
 {
         ///
         /// \brief stores an image either as grayscale (luma) or RGBA buffer.
@@ -13,7 +13,7 @@ namespace zob
         ///     - loading and saving from and to files
         ///     - scaling to [0, 1] tensors
         ///
-        class ZOB_PUBLIC image_t
+        class NANO_PUBLIC image_t
         {
         public:
 

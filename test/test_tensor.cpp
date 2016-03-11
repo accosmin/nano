@@ -13,28 +13,28 @@ namespace
 
                 tensor.resize(dims, rows, cols);
 
-                ZOB_CHECK_EQUAL(tensor.dims(), dims);
-                ZOB_CHECK_EQUAL(tensor.rows(), rows);
-                ZOB_CHECK_EQUAL(tensor.cols(), cols);
-                ZOB_CHECK_EQUAL(tensor.size(), dims * rows * cols);
-                ZOB_CHECK_EQUAL(tensor.planeSize(), rows * cols);
+                NANO_CHECK_EQUAL(tensor.dims(), dims);
+                NANO_CHECK_EQUAL(tensor.rows(), rows);
+                NANO_CHECK_EQUAL(tensor.cols(), cols);
+                NANO_CHECK_EQUAL(tensor.size(), dims * rows * cols);
+                NANO_CHECK_EQUAL(tensor.planeSize(), rows * cols);
 
-                ZOB_CHECK_EQUAL(tensor.vector().size(), tensor.size());
-                ZOB_CHECK_EQUAL(tensor.vector(dims / 2).size(), tensor.planeSize());
+                NANO_CHECK_EQUAL(tensor.vector().size(), tensor.size());
+                NANO_CHECK_EQUAL(tensor.vector(dims / 2).size(), tensor.planeSize());
 
-                ZOB_CHECK_EQUAL(tensor.matrix(dims - 1).rows(), tensor.rows());
-                ZOB_CHECK_EQUAL(tensor.matrix(dims - 1).cols(), tensor.cols());
+                NANO_CHECK_EQUAL(tensor.matrix(dims - 1).rows(), tensor.rows());
+                NANO_CHECK_EQUAL(tensor.matrix(dims - 1).cols(), tensor.cols());
 
                 tensor.setConstant(constant);
 
-                ZOB_CHECK_EQUAL(tensor.vector().minCoeff(), constant);
-                ZOB_CHECK_EQUAL(tensor.vector().maxCoeff(), constant);
+                NANO_CHECK_EQUAL(tensor.vector().minCoeff(), constant);
+                NANO_CHECK_EQUAL(tensor.vector().maxCoeff(), constant);
         }
 }
 
-ZOB_BEGIN_MODULE(test_tensor)
+NANO_BEGIN_MODULE(test_tensor)
 
-ZOB_CASE(construction)
+NANO_CASE(construction)
 {
         const int dims = 4;
         const int rows = 7;
@@ -47,5 +47,5 @@ ZOB_CASE(construction)
         check_tensor(dims, 3 * rows, 7 * cols, -2.3);
 }
 
-ZOB_END_MODULE()
+NANO_END_MODULE()
 

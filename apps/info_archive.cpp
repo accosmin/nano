@@ -6,10 +6,10 @@
 
 int main(int argc, char *argv[])
 {
-        using namespace zob;
+        using namespace nano;
         
         // parse the command line
-        zob::cmdline_t cmdline("display the structure of the given archive");
+        nano::cmdline_t cmdline("display the structure of the given archive");
         cmdline.add("i", "input",       "input archive path (.tar, .gz, .bz2, .tar.gz, .tar.bz2)");
 	
         cmdline.process(argc, argv);
@@ -29,8 +29,8 @@ int main(int argc, char *argv[])
         };
 
         // decode archive
-        zob::timer_t timer;
-        if (!zob::unarchive(cmd_input, callback, error_callback))
+        nano::timer_t timer;
+        if (!nano::unarchive(cmd_input, callback, error_callback))
         {
                 return EXIT_FAILURE;
         }
@@ -39,7 +39,7 @@ int main(int argc, char *argv[])
                 log_info() << "<" << cmd_input << "> loaded in " << timer.elapsed() << ".";
 
                 // OK
-                log_info() << zob::done;
+                log_info() << nano::done;
                 return EXIT_SUCCESS;
         }
 }

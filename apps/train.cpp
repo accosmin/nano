@@ -8,28 +8,28 @@
 
 int main(int argc, char *argv[])
 {
-        using namespace zob;
+        using namespace nano;
 
-        zob::init();
+        nano::init();
 
         // prepare object string-based selection
-        const strings_t task_ids = zob::get_tasks().ids();
-        const strings_t loss_ids = zob::get_losses().ids();
-        const strings_t model_ids = zob::get_models().ids();
-        const strings_t trainer_ids = zob::get_trainers().ids();
-        const strings_t criterion_ids = zob::get_criteria().ids();
+        const strings_t task_ids = nano::get_tasks().ids();
+        const strings_t loss_ids = nano::get_losses().ids();
+        const strings_t model_ids = nano::get_models().ids();
+        const strings_t trainer_ids = nano::get_trainers().ids();
+        const strings_t criterion_ids = nano::get_criteria().ids();
 
         // parse the command line
-        zob::cmdline_t cmdline("train a model");
-        cmdline.add("", "task",                 zob::concatenate(task_ids));
+        nano::cmdline_t cmdline("train a model");
+        cmdline.add("", "task",                 nano::concatenate(task_ids));
         cmdline.add("", "task-dir",             "directory to load task data from");
         cmdline.add("", "task-params",          "task parameters (if any)", "<>");
-        cmdline.add("", "loss",                 zob::concatenate(loss_ids));
-        cmdline.add("", "model",                zob::concatenate(model_ids));
+        cmdline.add("", "loss",                 nano::concatenate(loss_ids));
+        cmdline.add("", "model",                nano::concatenate(model_ids));
         cmdline.add("", "model-params",         "model parameters (if any)");
-        cmdline.add("", "trainer",              zob::concatenate(trainer_ids));
+        cmdline.add("", "trainer",              nano::concatenate(trainer_ids));
         cmdline.add("", "trainer-params",       "trainer parameters (if any)");
-        cmdline.add("", "criterion",            zob::concatenate(criterion_ids));
+        cmdline.add("", "criterion",            nano::concatenate(criterion_ids));
         cmdline.add("", "threads",              "number of threads to use (0 - all available)", "0");
         cmdline.add("", "trials",               "number of models to train & evaluate");
         cmdline.add("", "output",               "filepath to save the best model to");
@@ -51,10 +51,10 @@ int main(int argc, char *argv[])
         const auto cmd_output = cmdline.get<string_t>("output");
 
         // create task
-        const auto task = zob::get_tasks().get(cmd_task, cmd_task_params);
+        const auto task = nano::get_tasks().get(cmd_task, cmd_task_params);
 
         // load task data
-        zob::measure_critical_and_log(
+        nano::measure_critical_and_log(
                 [&] () { return task->load(cmd_task_dir); },
                 "load task <" + cmd_task + "> from <" + cmd_task_dir + ">");
 
@@ -62,21 +62,21 @@ int main(int argc, char *argv[])
         task->describe();
 
         // create loss
-        const auto loss = zob::get_losses().get(cmd_loss);
+        const auto loss = nano::get_losses().get(cmd_loss);
 
         // create criterion
-        const auto criterion = zob::get_criteria().get(cmd_criterion);
+        const auto criterion = nano::get_criteria().get(cmd_criterion);
 
         // create model
-        const auto model = zob::get_models().get(cmd_model, cmd_model_params);
+        const auto model = nano::get_models().get(cmd_model, cmd_model_params);
 
         // create trainer
-        const auto trainer = zob::get_trainers().get(cmd_trainer, cmd_trainer_params);
+        const auto trainer = nano::get_trainers().get(cmd_trainer, cmd_trainer_params);
 
         // train & test models
         std::map<scalar_t, std::tuple<rmodel_t, trainer_states_t>> models;
 
-        zob::stats_t<scalar_t> lstats, estats;
+        nano::stats_t<scalar_t> lstats, estats;
         for (size_t t = 0; t < cmd_trials; ++ t)
         {
                 for (size_t f = 0; f < task->fsize(); ++ f)
@@ -86,7 +86,7 @@ int main(int argc, char *argv[])
 
                         // train
                         trainer_result_t result;
-                        zob::measure_critical_and_log([&] ()
+                        nano::measure_critical_and_log([&] ()
                         {
                                 result = trainer->train(*task, train_fold, *loss, cmd_threads, *criterion, *model);
                                 return result.valid();
@@ -95,8 +95,8 @@ int main(int argc, char *argv[])
 
                         // test
                         scalar_t lvalue, lerror;
-                        zob::measure_and_log(
-                                [&] () { zob::evaluate(*task, test_fold, *loss, *criterion, *model, lvalue, lerror); },
+                        nano::measure_and_log(
+                                [&] () { nano::evaluate(*task, test_fold, *loss, *criterion, *model, lvalue, lerror); },
                                 "test model");
                         log_info() << "<<< test error: [" << lvalue << "/" << lerror << "].";
 
@@ -120,14 +120,14 @@ int main(int argc, char *argv[])
                 const auto& opt_model = std::get<0>(models.begin()->second);
                 const trainer_states_t& opt_states = std::get<1>(models.begin()->second);
 
-                zob::measure_critical_and_log(
+                nano::measure_critical_and_log(
                         [&] () { return opt_model->save(cmd_output); },
                         "save model to <" + cmd_output + ">");
 
-                const string_t path = zob::dirname(cmd_output) + zob::stem(cmd_output) + ".state";
+                const string_t path = nano::dirname(cmd_output) + nano::stem(cmd_output) + ".state";
 
-                zob::measure_critical_and_log(
-                        [&] () { return zob::save(path, opt_states); },
+                nano::measure_critical_and_log(
+                        [&] () { return nano::save(path, opt_states); },
                         "save state to <" + path + ">");
         }
 

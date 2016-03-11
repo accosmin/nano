@@ -4,7 +4,7 @@
 #include <functional>
 #include <type_traits>
 
-namespace zob
+namespace nano
 {
         ///
         /// \brief describes a multivariate optimization problem

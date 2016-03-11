@@ -2,7 +2,7 @@
 
 #include "layer_activation.h"
 
-namespace zob
+namespace nano
 {
         namespace detail
         {
@@ -18,7 +18,7 @@ namespace zob
                 {
                         scalar_t operator()(scalar_t g, scalar_t o) const
                         {
-                                ZOB_UNUSED1(o);
+                                NANO_UNUSED1(o);
 
                                 return g;
                         }
@@ -36,7 +36,7 @@ namespace zob
         {
         public:
 
-                ZOB_MAKE_CLONABLE(unit_activation_layer_t, "identity activation layer")
+                NANO_MAKE_CLONABLE(unit_activation_layer_t, "identity activation layer")
 
                 // constructor
                 explicit unit_activation_layer_t(const string_t& parameters = string_t())

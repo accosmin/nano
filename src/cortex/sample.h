@@ -5,7 +5,7 @@
 #include "protocol.h"
 #include "vision/rect.h"
 
-namespace zob
+namespace nano
 {
         ///
         /// \brief fold: <fold index, protocol: train|test>
@@ -54,8 +54,8 @@ namespace zob
         ///
         /// \brief collect the distinct labels of the given samples
         ///
-        ZOB_PUBLIC strings_t labels(const samples_t& samples);
-        ZOB_PUBLIC strings_t labels(samples_const_it_t begin, samples_const_it_t end);
+        NANO_PUBLIC strings_t labels(const samples_t& samples);
+        NANO_PUBLIC strings_t labels(samples_const_it_t begin, samples_const_it_t end);
 
         ///
         /// \brief compare two samples (to order them for fast caching)

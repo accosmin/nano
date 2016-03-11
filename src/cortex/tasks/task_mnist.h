@@ -2,7 +2,7 @@
 
 #include "cortex/task.h"
 
-namespace zob
+namespace nano
 {
         ///
         /// MNIST task:
@@ -16,7 +16,7 @@ namespace zob
         {
         public:
 
-                ZOB_MAKE_CLONABLE(mnist_task_t, "MNIST (digit classification)")
+                NANO_MAKE_CLONABLE(mnist_task_t, "MNIST (digit classification)")
 
                 // constructor
                 explicit mnist_task_t(const string_t& configuration = string_t());

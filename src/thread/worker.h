@@ -2,14 +2,14 @@
 
 #include "arch.h"
 
-namespace zob
+namespace nano
 {
         struct queue_t;
 
         ///
         /// \brief worker to process jobs enqueued in a thread pool
         ///
-        class ZOB_PUBLIC worker_t
+        class NANO_PUBLIC worker_t
         {
         public:
 

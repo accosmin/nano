@@ -6,7 +6,7 @@
 #include "math/clamp.hpp"
 #include "tensor/vector.hpp"
 
-namespace zob
+namespace nano
 {
         ///
         /// \brief in-place separable 2D filter
@@ -36,7 +36,7 @@ namespace zob
                 {
                         for (int c = 0; c < cols; ++ c)
                         {
-                                buff(c) = zob::cast<tscalar>(src(r, c));
+                                buff(c) = nano::cast<tscalar>(src(r, c));
                         }
 
                         for (int c = 0; c < cols; ++ c)
@@ -44,11 +44,11 @@ namespace zob
                                 tscalar v = 0;
                                 for (int k = -krad; k <= krad; ++ k)
                                 {
-                                        const int cc = zob::clamp(k + c, 0, cols - 1);
+                                        const int cc = nano::clamp(k + c, 0, cols - 1);
                                         v += kernel[k + krad] * buff(cc);
                                 }
 
-                                src(r, c) = zob::cast<tvalue>(v);
+                                src(r, c) = nano::cast<tvalue>(v);
                         }
                 }
 
@@ -57,7 +57,7 @@ namespace zob
                 {
                         for (int r = 0; r < rows; ++ r)
                         {
-                                buff(r) = zob::cast<tscalar>(src(r, c));
+                                buff(r) = nano::cast<tscalar>(src(r, c));
                         }
 
                         for (int r = 0; r < rows; ++ r)
@@ -65,11 +65,11 @@ namespace zob
                                 tscalar v = 0;
                                 for (int k = -krad; k <= krad; ++ k)
                                 {
-                                        const int rr = zob::clamp(k + r, 0, rows - 1);
+                                        const int rr = nano::clamp(k + r, 0, rows - 1);
                                         v += kernel[k + krad] * buff(rr);
                                 }
 
-                                src(r, c) = zob::cast<tvalue>(v);
+                                src(r, c) = nano::cast<tvalue>(v);
                         }
                 }
         }

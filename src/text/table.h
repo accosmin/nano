@@ -6,12 +6,12 @@
 #include <cassert>
 #include <algorithm>
 
-namespace zob
+namespace nano
 {
         ///
         /// \brief collects & formats for ASCII display tabular data
         ///
-        class ZOB_PUBLIC table_t
+        class NANO_PUBLIC table_t
         {
         public:
 

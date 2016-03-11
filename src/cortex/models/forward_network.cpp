@@ -7,7 +7,7 @@
 #include "tensor/serialize.hpp"
 #include <iomanip>
 
-namespace zob
+namespace nano
 {
         forward_network_t::forward_network_t(const string_t& parameters)
                 :       model_t(parameters)
@@ -169,7 +169,7 @@ namespace zob
                 // create layers
                 const string_t config = this->configuration();
 
-                const strings_t net_params = zob::split(config, ";");
+                const strings_t net_params = nano::split(config, ";");
                 for (size_t l = 0; l < net_params.size(); ++ l)
                 {
                         if (net_params[l].empty())
@@ -177,7 +177,7 @@ namespace zob
                                 continue;
                         }
 
-                        const strings_t layer_tokens = zob::split(net_params[l], ":");
+                        const strings_t layer_tokens = nano::split(net_params[l], ":");
                         if (layer_tokens.size() != 2 && layer_tokens.size() != 1)
                         {
                                 log_error() << "forward network: invalid layer description <"
@@ -188,7 +188,7 @@ namespace zob
                         const string_t layer_id = layer_tokens[0];
                         const string_t layer_params = layer_tokens.size() == 2 ? layer_tokens[1] : string_t();
 
-                        const rlayer_t layer = zob::get_layers().get(layer_id, layer_params);
+                        const rlayer_t layer = nano::get_layers().get(layer_id, layer_params);
 
                         n_params += layer->resize(input);
                         m_layers.push_back(layer);

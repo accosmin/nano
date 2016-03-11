@@ -5,7 +5,7 @@
 #include <algorithm>
 #include <cassert>
 
-namespace zob
+namespace nano
 {
         using indices_t = std::vector<std::size_t>;
 
@@ -21,7 +21,7 @@ namespace zob
                         indices_t indices;
                         for (std::size_t i = 0; i < row.size(); ++ i)
                         {
-                                if (op(zob::from_string<tscalar>(row[i])))
+                                if (op(nano::from_string<tscalar>(row[i])))
                                 {
                                         indices.push_back(i);
                                 }
@@ -35,7 +35,7 @@ namespace zob
                 >
                 auto min_element(const table_row_t& row)
                 {
-                        const auto op = zob::make_less_from_string<tscalar>();
+                        const auto op = nano::make_less_from_string<tscalar>();
                         const auto it = std::min_element(row.begin(), row.end(), op);
                         assert(it != row.end());
                         return it;
@@ -47,7 +47,7 @@ namespace zob
                 >
                 auto max_element(const table_row_t& row)
                 {
-                        const auto op = zob::make_less_from_string<tscalar>();
+                        const auto op = nano::make_less_from_string<tscalar>();
                         const auto it = std::max_element(row.begin(), row.end(), op);
                         assert(it != row.end());
                         return it;
@@ -98,7 +98,7 @@ namespace zob
                 return [=] (const table_row_t& row)
                 {
                         const auto it = detail::max_element<tscalar>(row);
-                        const auto max = zob::from_string<tscalar>(*it);
+                        const auto max = nano::from_string<tscalar>(*it);
                         const auto thres = max - epsilon;
 
                         return detail::select_cols<tscalar>(row, [thres] (const auto& val) { return val >= thres; });
@@ -117,7 +117,7 @@ namespace zob
                 return [=] (const table_row_t& row)
                 {
                         const auto it = detail::min_element<tscalar>(row);
-                        const auto min = zob::from_string<tscalar>(*it);
+                        const auto min = nano::from_string<tscalar>(*it);
                         const auto thres = min + epsilon;
 
                         return detail::select_cols<tscalar>(row, [thres] (const auto& val) { return val <= thres; });
@@ -139,7 +139,7 @@ namespace zob
                         assert(percentage <= tscalar(99));
 
                         const auto it = detail::max_element<tscalar>(row);
-                        const auto max = zob::from_string<tscalar>(*it);
+                        const auto max = nano::from_string<tscalar>(*it);
                         const auto thres = max - percentage * (max < 0 ? -max : +max) / tscalar(100);
 
                         return detail::select_cols<tscalar>(row, [thres] (const auto& val) { return val >= thres; });
@@ -161,7 +161,7 @@ namespace zob
                         assert(percentage <= tscalar(99));
 
                         const auto it = detail::min_element<tscalar>(row);
-                        const auto min = zob::from_string<tscalar>(*it);
+                        const auto min = nano::from_string<tscalar>(*it);
                         const auto thres = min + percentage * (min < 0 ? -min : +min) / tscalar(100);
 
                         return detail::select_cols<tscalar>(row, [thres] (const auto& val) { return val <= thres; });

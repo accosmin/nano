@@ -2,12 +2,12 @@
 
 #include "sample.h"
 
-namespace zob
+namespace nano
 {
         ///
         /// \brief sampling from a potentially large collection of samples.
         ///
-        class ZOB_PUBLIC sampler_t
+        class NANO_PUBLIC sampler_t
         {
         public:
 

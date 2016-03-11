@@ -1,42 +1,42 @@
 #include "unit_test.hpp"
 #include "text/filesystem.h"
 
-ZOB_BEGIN_MODULE(test_filesystem)
+NANO_BEGIN_MODULE(test_filesystem)
 
-ZOB_CASE(filename)
+NANO_CASE(filename)
 {
-        ZOB_CHECK_EQUAL(zob::filename("source"), "source");
-        ZOB_CHECK_EQUAL(zob::filename("source.out"), "source.out");
-        ZOB_CHECK_EQUAL(zob::filename("a.out.ext"), "a.out.ext");
-        ZOB_CHECK_EQUAL(zob::filename("/usr/include/awesome"), "awesome");
-        ZOB_CHECK_EQUAL(zob::filename("/usr/include/awesome.txt"), "awesome.txt");
+        NANO_CHECK_EQUAL(nano::filename("source"), "source");
+        NANO_CHECK_EQUAL(nano::filename("source.out"), "source.out");
+        NANO_CHECK_EQUAL(nano::filename("a.out.ext"), "a.out.ext");
+        NANO_CHECK_EQUAL(nano::filename("/usr/include/awesome"), "awesome");
+        NANO_CHECK_EQUAL(nano::filename("/usr/include/awesome.txt"), "awesome.txt");
 }
 
-ZOB_CASE(extension)
+NANO_CASE(extension)
 {
-        ZOB_CHECK_EQUAL(zob::extension("source"), "");
-        ZOB_CHECK_EQUAL(zob::extension("source.out"), "out");
-        ZOB_CHECK_EQUAL(zob::extension("a.out.ext"), "ext");
-        ZOB_CHECK_EQUAL(zob::extension("/usr/include/awesome"), "");
-        ZOB_CHECK_EQUAL(zob::extension("/usr/include/awesome.txt"), "txt");
+        NANO_CHECK_EQUAL(nano::extension("source"), "");
+        NANO_CHECK_EQUAL(nano::extension("source.out"), "out");
+        NANO_CHECK_EQUAL(nano::extension("a.out.ext"), "ext");
+        NANO_CHECK_EQUAL(nano::extension("/usr/include/awesome"), "");
+        NANO_CHECK_EQUAL(nano::extension("/usr/include/awesome.txt"), "txt");
 }
 
-ZOB_CASE(stem)
+NANO_CASE(stem)
 {
-        ZOB_CHECK_EQUAL(zob::stem("source"), "source");
-        ZOB_CHECK_EQUAL(zob::stem("source.out"), "source");
-        ZOB_CHECK_EQUAL(zob::stem("a.out.ext"), "a.out");
-        ZOB_CHECK_EQUAL(zob::stem("/usr/include/awesome"), "awesome");
-        ZOB_CHECK_EQUAL(zob::stem("/usr/include/awesome.txt"), "awesome");
+        NANO_CHECK_EQUAL(nano::stem("source"), "source");
+        NANO_CHECK_EQUAL(nano::stem("source.out"), "source");
+        NANO_CHECK_EQUAL(nano::stem("a.out.ext"), "a.out");
+        NANO_CHECK_EQUAL(nano::stem("/usr/include/awesome"), "awesome");
+        NANO_CHECK_EQUAL(nano::stem("/usr/include/awesome.txt"), "awesome");
 }
 
-ZOB_CASE(dirname)
+NANO_CASE(dirname)
 {
-        ZOB_CHECK_EQUAL(zob::dirname("source"), "./");
-        ZOB_CHECK_EQUAL(zob::dirname("source.out"), "./");
-        ZOB_CHECK_EQUAL(zob::dirname("a.out.ext"), "./");
-        ZOB_CHECK_EQUAL(zob::dirname("/usr/include/awesome"), "/usr/include/");
-        ZOB_CHECK_EQUAL(zob::dirname("/usr/include/awesome.txt"), "/usr/include/");
+        NANO_CHECK_EQUAL(nano::dirname("source"), "./");
+        NANO_CHECK_EQUAL(nano::dirname("source.out"), "./");
+        NANO_CHECK_EQUAL(nano::dirname("a.out.ext"), "./");
+        NANO_CHECK_EQUAL(nano::dirname("/usr/include/awesome"), "/usr/include/");
+        NANO_CHECK_EQUAL(nano::dirname("/usr/include/awesome.txt"), "/usr/include/");
 }
 
-ZOB_END_MODULE()
+NANO_END_MODULE()

@@ -2,7 +2,7 @@
 #include <vector>
 #include <istream>
 
-namespace zob
+namespace nano
 {
         ibstream_t::ibstream_t(std::istream& stream)
                 :       m_stream(stream)

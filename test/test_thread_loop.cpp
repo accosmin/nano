@@ -32,7 +32,7 @@ namespace
         tscalar test_mt(const size_t size, toperator op)
         {
                 std::vector<tscalar> results(size);
-                zob::loopi(size, [results = std::ref(results), op = op] (size_t i)
+                nano::loopi(size, [results = std::ref(results), op = op] (size_t i)
                 {
                         results.get()[i] = op(i);
                 });
@@ -49,7 +49,7 @@ namespace
         tscalar test_mt(const size_t size, const size_t nthreads, toperator op)
         {
                 std::vector<tscalar> results(size);
-                zob::loopi(size, nthreads, [results = std::ref(results), op = op] (size_t i)
+                nano::loopi(size, nthreads, [results = std::ref(results), op = op] (size_t i)
                 {
                         results.get()[i] = op(i);
                 });
@@ -58,9 +58,9 @@ namespace
         }
 }
 
-ZOB_BEGIN_MODULE(test_thread_loop)
+NANO_BEGIN_MODULE(test_thread_loop)
 
-ZOB_CASE(evaluate)
+NANO_CASE(evaluate)
 {
         const size_t min_size = 7;
         const size_t max_size = 3 * 3 * 7;
@@ -82,14 +82,14 @@ ZOB_CASE(evaluate)
 
                 // multi-threaded
                 const scalar_t mt = test_mt<scalar_t>(size, op);
-                ZOB_CHECK_CLOSE(st, mt, zob::epsilon1<scalar_t>());
+                NANO_CHECK_CLOSE(st, mt, nano::epsilon1<scalar_t>());
 
-                for (size_t nthreads = 1; nthreads <= zob::n_threads(); nthreads += 2)
+                for (size_t nthreads = 1; nthreads <= nano::n_threads(); nthreads += 2)
                 {
                         const scalar_t mtx = test_mt<scalar_t>(size, nthreads, op);
-                        ZOB_CHECK_CLOSE(st, mtx, zob::epsilon1<scalar_t>());
+                        NANO_CHECK_CLOSE(st, mtx, nano::epsilon1<scalar_t>());
                 }
         }
 }
 
-ZOB_END_MODULE()
+NANO_END_MODULE()

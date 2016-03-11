@@ -7,9 +7,9 @@
 #include "math/lsearch_types.h"
 #include "text/enum_string.hpp"
 
-namespace zob
+namespace nano
 {
-        using opt_problem_t = zob::problem_t<scalar_t>;
+        using opt_problem_t = nano::problem_t<scalar_t>;
 
         using opt_size_t = opt_problem_t::tsize;
         using opt_state_t = opt_problem_t::tstate;
@@ -19,65 +19,65 @@ namespace zob
         using opt_opgrad_t = opt_problem_t::topgrad;
 }
 
-namespace zob
+namespace nano
 {
         template <>
-        inline std::map<zob::stoch_optimizer, std::string> enum_string<zob::stoch_optimizer>()
+        inline std::map<nano::stoch_optimizer, std::string> enum_string<nano::stoch_optimizer>()
         {
                 return
                 {
-                        { zob::stoch_optimizer::SG,           "sg" },
-                        { zob::stoch_optimizer::SGM,          "sgm" },
-                        { zob::stoch_optimizer::AG,           "ag" },
-                        { zob::stoch_optimizer::AGFR,         "agfr" },
-                        { zob::stoch_optimizer::AGGR,         "aggr" },
-                        { zob::stoch_optimizer::ADAGRAD,      "adagrad" },
-                        { zob::stoch_optimizer::ADADELTA,     "adadelta" },
-                        { zob::stoch_optimizer::ADAM,         "adam" }
+                        { nano::stoch_optimizer::SG,           "sg" },
+                        { nano::stoch_optimizer::SGM,          "sgm" },
+                        { nano::stoch_optimizer::AG,           "ag" },
+                        { nano::stoch_optimizer::AGFR,         "agfr" },
+                        { nano::stoch_optimizer::AGGR,         "aggr" },
+                        { nano::stoch_optimizer::ADAGRAD,      "adagrad" },
+                        { nano::stoch_optimizer::ADADELTA,     "adadelta" },
+                        { nano::stoch_optimizer::ADAM,         "adam" }
                 };
         }
 
         template <>
-        inline std::map<zob::batch_optimizer, std::string> enum_string<zob::batch_optimizer>()
+        inline std::map<nano::batch_optimizer, std::string> enum_string<nano::batch_optimizer>()
         {
                 return
                 {
-                        { zob::batch_optimizer::GD,           "gd" },
-                        { zob::batch_optimizer::CGD,          "cgd" },
-                        { zob::batch_optimizer::LBFGS,        "lbfgs" },
-                        { zob::batch_optimizer::CGD_HS,       "cgd-hs" },
-                        { zob::batch_optimizer::CGD_FR,       "cgd-fr" },
-                        { zob::batch_optimizer::CGD_PRP,      "cgd-prp" },
-                        { zob::batch_optimizer::CGD_CD,       "cgd-cd" },
-                        { zob::batch_optimizer::CGD_LS,       "cgd-ls" },
-                        { zob::batch_optimizer::CGD_DY,       "cgd-dy" },
-                        { zob::batch_optimizer::CGD_N,        "cgd-n" },
-                        { zob::batch_optimizer::CGD_DYCD,     "cgd-dycd" },
-                        { zob::batch_optimizer::CGD_DYHS,     "cgd-dyhs" }
+                        { nano::batch_optimizer::GD,           "gd" },
+                        { nano::batch_optimizer::CGD,          "cgd" },
+                        { nano::batch_optimizer::LBFGS,        "lbfgs" },
+                        { nano::batch_optimizer::CGD_HS,       "cgd-hs" },
+                        { nano::batch_optimizer::CGD_FR,       "cgd-fr" },
+                        { nano::batch_optimizer::CGD_PRP,      "cgd-prp" },
+                        { nano::batch_optimizer::CGD_CD,       "cgd-cd" },
+                        { nano::batch_optimizer::CGD_LS,       "cgd-ls" },
+                        { nano::batch_optimizer::CGD_DY,       "cgd-dy" },
+                        { nano::batch_optimizer::CGD_N,        "cgd-n" },
+                        { nano::batch_optimizer::CGD_DYCD,     "cgd-dycd" },
+                        { nano::batch_optimizer::CGD_DYHS,     "cgd-dyhs" }
                 };
         }
 
         template <>
-        inline std::map<zob::ls_initializer, std::string> enum_string<zob::ls_initializer>()
+        inline std::map<nano::ls_initializer, std::string> enum_string<nano::ls_initializer>()
         {
                 return
                 {
-                        { zob::ls_initializer::unit,          "init-unit" },
-                        { zob::ls_initializer::quadratic,     "init-quadratic" },
-                        { zob::ls_initializer::consistent,    "init-consistent" }
+                        { nano::ls_initializer::unit,          "init-unit" },
+                        { nano::ls_initializer::quadratic,     "init-quadratic" },
+                        { nano::ls_initializer::consistent,    "init-consistent" }
                 };
         }
 
         template <>
-        inline std::map<zob::ls_strategy, std::string> enum_string<zob::ls_strategy>()
+        inline std::map<nano::ls_strategy, std::string> enum_string<nano::ls_strategy>()
         {
                 return
                 {
-                        { zob::ls_strategy::backtrack_armijo,         "backtrack-Armijo" },
-                        { zob::ls_strategy::backtrack_wolfe,          "backtrack-Wolfe" },
-                        { zob::ls_strategy::backtrack_strong_wolfe,   "backtrack-strong-Wolfe" },
-                        { zob::ls_strategy::interpolation,            "interp" },
-                        { zob::ls_strategy::cg_descent,               "cgdescent" }
+                        { nano::ls_strategy::backtrack_armijo,         "backtrack-Armijo" },
+                        { nano::ls_strategy::backtrack_wolfe,          "backtrack-Wolfe" },
+                        { nano::ls_strategy::backtrack_strong_wolfe,   "backtrack-strong-Wolfe" },
+                        { nano::ls_strategy::interpolation,            "interp" },
+                        { nano::ls_strategy::cg_descent,               "cgdescent" }
                 };
         }
 }

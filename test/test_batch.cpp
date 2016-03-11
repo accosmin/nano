@@ -12,16 +12,16 @@
 template
 <
         typename tscalar,
-        typename tvector = typename zob::function_t<tscalar>::tvector
+        typename tvector = typename nano::function_t<tscalar>::tvector
 >
-static void check_function(const zob::function_t<tscalar>& function)
+static void check_function(const nano::function_t<tscalar>& function)
 {
         const auto iterations = size_t(1024);
         const auto trials = size_t(32);
 
         const auto dims = function.problem().size();
 
-        zob::random_t<tscalar> rgen(tscalar(-1), tscalar(+1));
+        nano::random_t<tscalar> rgen(tscalar(-1), tscalar(+1));
 
         // generate fixed random trials
         std::vector<tvector> x0s(trials);
@@ -34,20 +34,20 @@ static void check_function(const zob::function_t<tscalar>& function)
         // optimizers to try
         const auto optimizers =
         {
-                zob::batch_optimizer::GD,
+                nano::batch_optimizer::GD,
 
-                zob::batch_optimizer::CGD,
-                zob::batch_optimizer::CGD_CD,
-                zob::batch_optimizer::CGD_DY,
-                zob::batch_optimizer::CGD_FR,
-                //zob::batch_optimizer::CGD_HS,
-                zob::batch_optimizer::CGD_LS,
-                zob::batch_optimizer::CGD_N,
-                zob::batch_optimizer::CGD_PRP,
-                zob::batch_optimizer::CGD_DYCD,
-                zob::batch_optimizer::CGD_DYHS,
+                nano::batch_optimizer::CGD,
+                nano::batch_optimizer::CGD_CD,
+                nano::batch_optimizer::CGD_DY,
+                nano::batch_optimizer::CGD_FR,
+                //nano::batch_optimizer::CGD_HS,
+                nano::batch_optimizer::CGD_LS,
+                nano::batch_optimizer::CGD_N,
+                nano::batch_optimizer::CGD_PRP,
+                nano::batch_optimizer::CGD_DYCD,
+                nano::batch_optimizer::CGD_DYHS,
 
-                zob::batch_optimizer::LBFGS,
+                nano::batch_optimizer::LBFGS,
         };
 
         for (const auto& optimizer : optimizers)
@@ -62,16 +62,16 @@ static void check_function(const zob::function_t<tscalar>& function)
                         const auto f0 = problem(x0);
 
                         // optimize
-                        const auto state = zob::minimize(
-                                problem, nullptr, x0, optimizer, iterations, zob::epsilon0<tscalar>());
+                        const auto state = nano::minimize(
+                                problem, nullptr, x0, optimizer, iterations, nano::epsilon0<tscalar>());
 
                         const auto x = state.x;
                         const auto f = state.f;
                         const auto g = state.convergence_criteria();
 
-                        const auto f_thres = zob::epsilon0<tscalar>();
-                        const auto g_thres = zob::epsilon3<tscalar>();
-                        const auto x_thres = zob::epsilon3<tscalar>() * 1e+3;
+                        const auto f_thres = nano::epsilon0<tscalar>();
+                        const auto g_thres = nano::epsilon3<tscalar>();
+                        const auto x_thres = nano::epsilon3<tscalar>() * 1e+3;
 
                         // ignore out-of-domain solutions
                         if (!function.is_valid(x))
@@ -80,7 +80,7 @@ static void check_function(const zob::function_t<tscalar>& function)
                                 continue;
                         }
 
-                        std::cout << function.name() << ", " << zob::to_string(optimizer)
+                        std::cout << function.name() << ", " << nano::to_string(optimizer)
                                   << " [" << (t + 1) << "/" << trials << "]"
                                   << std::setprecision(12)
                                   << ": x = [" << x0.transpose() << "]/[" << x.transpose() << "]"
@@ -89,30 +89,30 @@ static void check_function(const zob::function_t<tscalar>& function)
                                   << ", i = " << state.m_iterations << ".\n";
 
                         // check function value decrease
-                        ZOB_CHECK_LESS(f, f0);
-                        ZOB_CHECK_LESS(f, f0 - f_thres * zob::abs(f0));
+                        NANO_CHECK_LESS(f, f0);
+                        NANO_CHECK_LESS(f, f0 - f_thres * nano::abs(f0));
 
                         // check convergence
-                        ZOB_CHECK_LESS(g, g_thres);
+                        NANO_CHECK_LESS(g, g_thres);
 
                         // check local minimas (if any known)
-                        ZOB_CHECK(function.is_minima(x, x_thres));
+                        NANO_CHECK(function.is_minima(x, x_thres));
                 }
 
-                std::cout << function.name() << ", " << zob::to_string(optimizer)
+                std::cout << function.name() << ", " << nano::to_string(optimizer)
                           << ": out of domain " << out_of_domain << "/" << trials << ".\n";
         }
 }
 
-ZOB_BEGIN_MODULE(test_batch_optimizers)
+NANO_BEGIN_MODULE(test_batch_optimizers)
 
-ZOB_CASE(evaluate)
+NANO_CASE(evaluate)
 {
-        zob::foreach_test_function<double, zob::test_type::easy>(1, 4, [] (const auto& function)
+        nano::foreach_test_function<double, nano::test_type::easy>(1, 4, [] (const auto& function)
         {
                 check_function(function);
         });
 }
 
-ZOB_END_MODULE()
+NANO_END_MODULE()
 

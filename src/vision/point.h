@@ -4,12 +4,12 @@
 #include "geom.h"
 #include <iosfwd>
 
-namespace zob
+namespace nano
 {
         ///
         /// \brief 2D point
         ///
-        class ZOB_PUBLIC point_t
+        class NANO_PUBLIC point_t
         {
         public:
 
@@ -37,12 +37,12 @@ namespace zob
         ///
         /// \brief compare two points
         ///
-        ZOB_PUBLIC bool operator==(const point_t& point1, const point_t& point2);
+        NANO_PUBLIC bool operator==(const point_t& point1, const point_t& point2);
 
         ///
         /// \brief stream a point
         ///
-        ZOB_PUBLIC std::ostream& operator<<(std::ostream& s, const point_t& point);
+        NANO_PUBLIC std::ostream& operator<<(std::ostream& s, const point_t& point);
 }
 
 

@@ -5,12 +5,12 @@
 #include "stringi.h"
 #include <chrono>
 
-namespace zob
+namespace nano
 {
         ///
         /// \brief training state
         ///
-        struct ZOB_PUBLIC trainer_state_t
+        struct NANO_PUBLIC trainer_state_t
         {
                 ///
                 /// \brief constructor
@@ -40,16 +40,16 @@ namespace zob
         ///
         /// \brief compute the average convergence speed of the training loss for a given set of states
         ///
-        ZOB_PUBLIC scalar_t convergence_speed(const trainer_states_t& states);
+        NANO_PUBLIC scalar_t convergence_speed(const trainer_states_t& states);
 
         ///
         /// \brief compare two training states
         ///
-        ZOB_PUBLIC bool operator<(const trainer_state_t& one, const trainer_state_t& two);
+        NANO_PUBLIC bool operator<(const trainer_state_t& one, const trainer_state_t& two);
 
         ///
         /// \brief save optimization states to text file
         ///
-        ZOB_PUBLIC bool save(const string_t& path, const trainer_states_t& states);
+        NANO_PUBLIC bool save(const string_t& path, const trainer_states_t& states);
 }
 

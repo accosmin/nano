@@ -5,7 +5,7 @@
 #include <cassert>
 #include <algorithm>
 
-namespace zob
+namespace nano
 {
         ///
         /// \brief computes statistics: average, standard deviation etc.

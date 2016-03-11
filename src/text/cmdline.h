@@ -5,7 +5,7 @@
 #include "from_string.hpp"
 #include <memory>
 
-namespace zob
+namespace nano
 {
         ///
         /// \brief command line processing of the form:
@@ -19,7 +19,7 @@ namespace zob
         ///     - each option must have a long name, while the short name (single character) is optional
         ///     - options need not have an associated value (they can be interpreted as boolean flags)
         ///
-        class ZOB_PUBLIC cmdline_t
+        class NANO_PUBLIC cmdline_t
         {
         public:
 
@@ -81,7 +81,7 @@ namespace zob
                 >
                 tvalue get(const std::string& name_or_short_name) const
                 {
-                        return zob::from_string<tvalue>(get(name_or_short_name));
+                        return nano::from_string<tvalue>(get(name_or_short_name));
                 }
 
                 ///

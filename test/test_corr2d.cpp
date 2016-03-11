@@ -51,22 +51,22 @@ namespace test
                 const scalar_t corrcpu_mdk_dyn = test_cpu(tensor::corr2d_mdk_dyn_t(), odata, kdata, idata);
                 const scalar_t corrcpu_mdo_dyn = test_cpu(tensor::corr2d_mdo_dyn_t(), odata, kdata, idata);
 
-                const scalar_t epsilon = zob::epsilon1<scalar_t>();
+                const scalar_t epsilon = nano::epsilon1<scalar_t>();
 
-                ZOB_CHECK_CLOSE(corrcpu_egb, corrcpu_egb, epsilon);
-                ZOB_CHECK_CLOSE(corrcpu_egr, corrcpu_egb, epsilon);
-                ZOB_CHECK_CLOSE(corrcpu_cpp, corrcpu_egb, epsilon);
-                ZOB_CHECK_CLOSE(corrcpu_mdk, corrcpu_egb, epsilon);
-                ZOB_CHECK_CLOSE(corrcpu_mdo, corrcpu_egb, epsilon);
-                ZOB_CHECK_CLOSE(corrcpu_dyn, corrcpu_egb, epsilon);
-                ZOB_CHECK_CLOSE(corrcpu_mdk_dyn, corrcpu_egb, epsilon);
-                ZOB_CHECK_CLOSE(corrcpu_mdo_dyn, corrcpu_egb, epsilon);
+                NANO_CHECK_CLOSE(corrcpu_egb, corrcpu_egb, epsilon);
+                NANO_CHECK_CLOSE(corrcpu_egr, corrcpu_egb, epsilon);
+                NANO_CHECK_CLOSE(corrcpu_cpp, corrcpu_egb, epsilon);
+                NANO_CHECK_CLOSE(corrcpu_mdk, corrcpu_egb, epsilon);
+                NANO_CHECK_CLOSE(corrcpu_mdo, corrcpu_egb, epsilon);
+                NANO_CHECK_CLOSE(corrcpu_dyn, corrcpu_egb, epsilon);
+                NANO_CHECK_CLOSE(corrcpu_mdk_dyn, corrcpu_egb, epsilon);
+                NANO_CHECK_CLOSE(corrcpu_mdo_dyn, corrcpu_egb, epsilon);
         }
 }
 
-ZOB_BEGIN_MODULE(test_corr2d)
+NANO_BEGIN_MODULE(test_corr2d)
 
-ZOB_CASE(evaluate)
+NANO_CASE(evaluate)
 {
         const int min_isize = 3;
         const int max_isize = 23;
@@ -81,5 +81,5 @@ ZOB_CASE(evaluate)
         }
 }
 
-ZOB_END_MODULE()
+NANO_END_MODULE()
 

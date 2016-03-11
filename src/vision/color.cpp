@@ -4,11 +4,11 @@
 #include "text/to_string.hpp"
 #include "tensor/transform.hpp"
 
-namespace zob
+namespace nano
 {
         rgba_t color::make_random_rgba()
         {
-                zob::random_t<rgba_t> rng;
+                nano::random_t<rgba_t> rng;
 
                 return make_rgba(rng() & 0xFF, rng() & 0xFF, rng() & 0xFF, 255);
         }
@@ -19,11 +19,11 @@ namespace zob
                 const auto cg = static_cast<int>(0xFF - get_green(source));
                 const auto cb = static_cast<int>(0xFF - get_blue(source));
 
-                zob::random_t<int> rng(-55, +55);
+                nano::random_t<int> rng(-55, +55);
 
-                return make_rgba(static_cast<rgba_t>(zob::clamp(cr + rng(), 0, 255)),
-                                 static_cast<rgba_t>(zob::clamp(cg + rng(), 0, 255)),
-                                 static_cast<rgba_t>(zob::clamp(cb + rng(), 0, 255)),
+                return make_rgba(static_cast<rgba_t>(nano::clamp(cr + rng(), 0, 255)),
+                                 static_cast<rgba_t>(nano::clamp(cg + rng(), 0, 255)),
+                                 static_cast<rgba_t>(nano::clamp(cb + rng(), 0, 255)),
                                  255);
         }
 
@@ -70,7 +70,7 @@ namespace zob
                 >
                 luma_t to_byte(const tinput value)
                 {
-                        return zob::cast<luma_t>(zob::clamp(value, tinput(0), tinput(255)));
+                        return nano::cast<luma_t>(nano::clamp(value, tinput(0), tinput(255)));
                 }
         }
 
@@ -195,7 +195,7 @@ namespace zob
 
         std::ostream& operator<<(std::ostream& os, color_mode mode)
         {
-                return os << zob::to_string(mode);
+                return os << nano::to_string(mode);
         }
 
 }

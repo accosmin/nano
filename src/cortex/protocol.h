@@ -2,7 +2,7 @@
 
 #include "text/enum_string.hpp"
 
-namespace zob
+namespace nano
 {
         ///
         /// \brief machine learning protocols
@@ -15,15 +15,15 @@ namespace zob
 }
 
 // string cast for enumerations
-namespace zob
+namespace nano
 {
         template <>
-        inline std::map<zob::protocol, std::string> enum_string<zob::protocol>()
+        inline std::map<nano::protocol, std::string> enum_string<nano::protocol>()
         {
                 return
                 {
-                        { zob::protocol::train,      "train" },
-                        { zob::protocol::test,       "test" }
+                        { nano::protocol::train,      "train" },
+                        { nano::protocol::test,       "test" }
                 };
         }
 }

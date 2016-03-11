@@ -4,17 +4,17 @@
 #include "trainer_state.h"
 #include "text/enum_string.hpp"
 
-namespace zob
+namespace nano
 {
         ///
         /// \brief training configuration (e.g. {name, value:learning rate, regularization weight}+)
         ///
         using trainer_config_t = std::vector<std::pair<const char*, scalar_t>>;
 
-        ZOB_PUBLIC trainer_config_t append(const trainer_config_t& config, const char* const name, const scalar_t value);
+        NANO_PUBLIC trainer_config_t append(const trainer_config_t& config, const char* const name, const scalar_t value);
 
         class logger_t;
-        ZOB_PUBLIC logger_t& operator<<(logger_t& logger, const trainer_config_t& config);
+        NANO_PUBLIC logger_t& operator<<(logger_t& logger, const trainer_config_t& config);
 
         ///
         /// \brief training history (configuration, optimization states)
@@ -39,12 +39,12 @@ namespace zob
         ///
         /// \brief check if the training should be stopped based on the return code
         ///
-        ZOB_PUBLIC bool is_done(const trainer_result_return_t);
+        NANO_PUBLIC bool is_done(const trainer_result_return_t);
 
         ///
         /// \brief track the current/optimum model state
         ///
-        class ZOB_PUBLIC trainer_result_t
+        class NANO_PUBLIC trainer_result_t
         {
         public:
 
@@ -108,20 +108,20 @@ namespace zob
         ///
         /// \brief compare two trainer results
         ///
-        ZOB_PUBLIC bool operator<(const trainer_result_t& one, const trainer_result_t& other);
+        NANO_PUBLIC bool operator<(const trainer_result_t& one, const trainer_result_t& other);
 }
 
-namespace zob
+namespace nano
 {
         template <>
-        inline std::map<zob::trainer_result_return_t, std::string> enum_string<zob::trainer_result_return_t>()
+        inline std::map<nano::trainer_result_return_t, std::string> enum_string<nano::trainer_result_return_t>()
         {
                 return
                 {
-                        { zob::trainer_result_return_t::better,      "better" },
-                        { zob::trainer_result_return_t::worse,       "worse" },
-                        { zob::trainer_result_return_t::overfitting, "overfitting" },
-                        { zob::trainer_result_return_t::solved,      "solved" }
+                        { nano::trainer_result_return_t::better,      "better" },
+                        { nano::trainer_result_return_t::worse,       "worse" },
+                        { nano::trainer_result_return_t::overfitting, "overfitting" },
+                        { nano::trainer_result_return_t::solved,      "solved" }
                 };
         }
 }

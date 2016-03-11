@@ -1,6 +1,6 @@
 #include "layer.h"
 
-namespace zob
+namespace nano
 {
         layer_manager_t& get_layers()
         {

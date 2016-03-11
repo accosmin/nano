@@ -5,7 +5,7 @@
 #include "batch_loop.hpp"
 #include "ls_strategy.hpp"
 
-namespace zob
+namespace nano
 {
         ///
         /// \brief conjugate gradient descent

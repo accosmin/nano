@@ -6,185 +6,185 @@
 #include <list>
 #include <set>
 
-ZOB_BEGIN_MODULE(test_text)
+NANO_BEGIN_MODULE(test_text)
 
-ZOB_CASE(contains)
+NANO_CASE(contains)
 {
-        ZOB_CHECK_EQUAL(zob::contains("", 't'), false);
-        ZOB_CHECK_EQUAL(zob::contains("text", 't'), true);
-        ZOB_CHECK_EQUAL(zob::contains("naNoCv", 't'), false);
-        ZOB_CHECK_EQUAL(zob::contains("extension", 't'), true);
+        NANO_CHECK_EQUAL(nano::contains("", 't'), false);
+        NANO_CHECK_EQUAL(nano::contains("text", 't'), true);
+        NANO_CHECK_EQUAL(nano::contains("naNoCv", 't'), false);
+        NANO_CHECK_EQUAL(nano::contains("extension", 't'), true);
 }
 
-ZOB_CASE(resize)
+NANO_CASE(resize)
 {
-        ZOB_CHECK_EQUAL(zob::align("text", 10, zob::alignment::left, '='),   "text======");
-        ZOB_CHECK_EQUAL(zob::align("text", 10, zob::alignment::right, '='),  "======text");
-        ZOB_CHECK_EQUAL(zob::align("text", 10, zob::alignment::center, '='), "===text===");
+        NANO_CHECK_EQUAL(nano::align("text", 10, nano::alignment::left, '='),   "text======");
+        NANO_CHECK_EQUAL(nano::align("text", 10, nano::alignment::right, '='),  "======text");
+        NANO_CHECK_EQUAL(nano::align("text", 10, nano::alignment::center, '='), "===text===");
 }
 
-ZOB_CASE(split)
+NANO_CASE(split)
 {
-        const auto tokens = zob::split("= -token1 token2 something ", " =-");
+        const auto tokens = nano::split("= -token1 token2 something ", " =-");
 
-        ZOB_REQUIRE(tokens.size() == 3);
-        ZOB_CHECK_EQUAL(tokens[0], "token1");
-        ZOB_CHECK_EQUAL(tokens[1], "token2");
-        ZOB_CHECK_EQUAL(tokens[2], "something");
+        NANO_REQUIRE(tokens.size() == 3);
+        NANO_CHECK_EQUAL(tokens[0], "token1");
+        NANO_CHECK_EQUAL(tokens[1], "token2");
+        NANO_CHECK_EQUAL(tokens[2], "something");
 }
 
-ZOB_CASE(lower)
+NANO_CASE(lower)
 {
-        ZOB_CHECK_EQUAL(zob::lower("Token"), "token");
-        ZOB_CHECK_EQUAL(zob::lower("ToKEN"), "token");
-        ZOB_CHECK_EQUAL(zob::lower("token"), "token");
-        ZOB_CHECK_EQUAL(zob::lower("TOKEN"), "token");
-        ZOB_CHECK_EQUAL(zob::lower(""), "");
+        NANO_CHECK_EQUAL(nano::lower("Token"), "token");
+        NANO_CHECK_EQUAL(nano::lower("ToKEN"), "token");
+        NANO_CHECK_EQUAL(nano::lower("token"), "token");
+        NANO_CHECK_EQUAL(nano::lower("TOKEN"), "token");
+        NANO_CHECK_EQUAL(nano::lower(""), "");
 }
 
-ZOB_CASE(upper)
+NANO_CASE(upper)
 {
-        ZOB_CHECK_EQUAL(zob::upper("Token"), "TOKEN");
-        ZOB_CHECK_EQUAL(zob::upper("ToKEN"), "TOKEN");
-        ZOB_CHECK_EQUAL(zob::upper("token"), "TOKEN");
-        ZOB_CHECK_EQUAL(zob::upper("TOKEN"), "TOKEN");
-        ZOB_CHECK_EQUAL(zob::upper(""), "");
+        NANO_CHECK_EQUAL(nano::upper("Token"), "TOKEN");
+        NANO_CHECK_EQUAL(nano::upper("ToKEN"), "TOKEN");
+        NANO_CHECK_EQUAL(nano::upper("token"), "TOKEN");
+        NANO_CHECK_EQUAL(nano::upper("TOKEN"), "TOKEN");
+        NANO_CHECK_EQUAL(nano::upper(""), "");
 }
 
-ZOB_CASE(ends_with)
+NANO_CASE(ends_with)
 {
-        ZOB_CHECK(zob::ends_with("ToKeN", ""));
-        ZOB_CHECK(zob::ends_with("ToKeN", "N"));
-        ZOB_CHECK(zob::ends_with("ToKeN", "eN"));
-        ZOB_CHECK(zob::ends_with("ToKeN", "KeN"));
-        ZOB_CHECK(zob::ends_with("ToKeN", "oKeN"));
-        ZOB_CHECK(zob::ends_with("ToKeN", "ToKeN"));
+        NANO_CHECK(nano::ends_with("ToKeN", ""));
+        NANO_CHECK(nano::ends_with("ToKeN", "N"));
+        NANO_CHECK(nano::ends_with("ToKeN", "eN"));
+        NANO_CHECK(nano::ends_with("ToKeN", "KeN"));
+        NANO_CHECK(nano::ends_with("ToKeN", "oKeN"));
+        NANO_CHECK(nano::ends_with("ToKeN", "ToKeN"));
 
-        ZOB_CHECK(!zob::ends_with("ToKeN", "n"));
-        ZOB_CHECK(!zob::ends_with("ToKeN", "en"));
-        ZOB_CHECK(!zob::ends_with("ToKeN", "ken"));
-        ZOB_CHECK(!zob::ends_with("ToKeN", "oken"));
-        ZOB_CHECK(!zob::ends_with("ToKeN", "Token"));
+        NANO_CHECK(!nano::ends_with("ToKeN", "n"));
+        NANO_CHECK(!nano::ends_with("ToKeN", "en"));
+        NANO_CHECK(!nano::ends_with("ToKeN", "ken"));
+        NANO_CHECK(!nano::ends_with("ToKeN", "oken"));
+        NANO_CHECK(!nano::ends_with("ToKeN", "Token"));
 }
 
-ZOB_CASE(iends_with)
+NANO_CASE(iends_with)
 {
-        ZOB_CHECK(zob::iends_with("ToKeN", ""));
-        ZOB_CHECK(zob::iends_with("ToKeN", "N"));
-        ZOB_CHECK(zob::iends_with("ToKeN", "eN"));
-        ZOB_CHECK(zob::iends_with("ToKeN", "KeN"));
-        ZOB_CHECK(zob::iends_with("ToKeN", "oKeN"));
-        ZOB_CHECK(zob::iends_with("ToKeN", "ToKeN"));
+        NANO_CHECK(nano::iends_with("ToKeN", ""));
+        NANO_CHECK(nano::iends_with("ToKeN", "N"));
+        NANO_CHECK(nano::iends_with("ToKeN", "eN"));
+        NANO_CHECK(nano::iends_with("ToKeN", "KeN"));
+        NANO_CHECK(nano::iends_with("ToKeN", "oKeN"));
+        NANO_CHECK(nano::iends_with("ToKeN", "ToKeN"));
 
-        ZOB_CHECK(zob::iends_with("ToKeN", "n"));
-        ZOB_CHECK(zob::iends_with("ToKeN", "en"));
-        ZOB_CHECK(zob::iends_with("ToKeN", "ken"));
-        ZOB_CHECK(zob::iends_with("ToKeN", "oken"));
-        ZOB_CHECK(zob::iends_with("ToKeN", "Token"));
+        NANO_CHECK(nano::iends_with("ToKeN", "n"));
+        NANO_CHECK(nano::iends_with("ToKeN", "en"));
+        NANO_CHECK(nano::iends_with("ToKeN", "ken"));
+        NANO_CHECK(nano::iends_with("ToKeN", "oken"));
+        NANO_CHECK(nano::iends_with("ToKeN", "Token"));
 }
 
-ZOB_CASE(starts_with)
+NANO_CASE(starts_with)
 {
-        ZOB_CHECK(zob::starts_with("ToKeN", ""));
-        ZOB_CHECK(zob::starts_with("ToKeN", "T"));
-        ZOB_CHECK(zob::starts_with("ToKeN", "To"));
-        ZOB_CHECK(zob::starts_with("ToKeN", "ToK"));
-        ZOB_CHECK(zob::starts_with("ToKeN", "ToKe"));
-        ZOB_CHECK(zob::starts_with("ToKeN", "ToKeN"));
+        NANO_CHECK(nano::starts_with("ToKeN", ""));
+        NANO_CHECK(nano::starts_with("ToKeN", "T"));
+        NANO_CHECK(nano::starts_with("ToKeN", "To"));
+        NANO_CHECK(nano::starts_with("ToKeN", "ToK"));
+        NANO_CHECK(nano::starts_with("ToKeN", "ToKe"));
+        NANO_CHECK(nano::starts_with("ToKeN", "ToKeN"));
 
-        ZOB_CHECK(!zob::starts_with("ToKeN", "t"));
-        ZOB_CHECK(!zob::starts_with("ToKeN", "to"));
-        ZOB_CHECK(!zob::starts_with("ToKeN", "tok"));
-        ZOB_CHECK(!zob::starts_with("ToKeN", "toke"));
-        ZOB_CHECK(!zob::starts_with("ToKeN", "Token"));
+        NANO_CHECK(!nano::starts_with("ToKeN", "t"));
+        NANO_CHECK(!nano::starts_with("ToKeN", "to"));
+        NANO_CHECK(!nano::starts_with("ToKeN", "tok"));
+        NANO_CHECK(!nano::starts_with("ToKeN", "toke"));
+        NANO_CHECK(!nano::starts_with("ToKeN", "Token"));
 }
 
-ZOB_CASE(istarts_with)
+NANO_CASE(istarts_with)
 {
-        ZOB_CHECK(zob::istarts_with("ToKeN", ""));
-        ZOB_CHECK(zob::istarts_with("ToKeN", "t"));
-        ZOB_CHECK(zob::istarts_with("ToKeN", "to"));
-        ZOB_CHECK(zob::istarts_with("ToKeN", "Tok"));
-        ZOB_CHECK(zob::istarts_with("ToKeN", "toKe"));
-        ZOB_CHECK(zob::istarts_with("ToKeN", "ToKeN"));
+        NANO_CHECK(nano::istarts_with("ToKeN", ""));
+        NANO_CHECK(nano::istarts_with("ToKeN", "t"));
+        NANO_CHECK(nano::istarts_with("ToKeN", "to"));
+        NANO_CHECK(nano::istarts_with("ToKeN", "Tok"));
+        NANO_CHECK(nano::istarts_with("ToKeN", "toKe"));
+        NANO_CHECK(nano::istarts_with("ToKeN", "ToKeN"));
 
-        ZOB_CHECK(zob::istarts_with("ToKeN", "t"));
-        ZOB_CHECK(zob::istarts_with("ToKeN", "to"));
-        ZOB_CHECK(zob::istarts_with("ToKeN", "tok"));
-        ZOB_CHECK(zob::istarts_with("ToKeN", "toke"));
-        ZOB_CHECK(zob::istarts_with("ToKeN", "Token"));
+        NANO_CHECK(nano::istarts_with("ToKeN", "t"));
+        NANO_CHECK(nano::istarts_with("ToKeN", "to"));
+        NANO_CHECK(nano::istarts_with("ToKeN", "tok"));
+        NANO_CHECK(nano::istarts_with("ToKeN", "toke"));
+        NANO_CHECK(nano::istarts_with("ToKeN", "Token"));
 }
 
-ZOB_CASE(equals)
+NANO_CASE(equals)
 {
-        ZOB_CHECK(!zob::equals("ToKeN", ""));
-        ZOB_CHECK(!zob::equals("ToKeN", "N"));
-        ZOB_CHECK(!zob::equals("ToKeN", "eN"));
-        ZOB_CHECK(!zob::equals("ToKeN", "KeN"));
-        ZOB_CHECK(!zob::equals("ToKeN", "oKeN"));
-        ZOB_CHECK(zob::equals("ToKeN", "ToKeN"));
+        NANO_CHECK(!nano::equals("ToKeN", ""));
+        NANO_CHECK(!nano::equals("ToKeN", "N"));
+        NANO_CHECK(!nano::equals("ToKeN", "eN"));
+        NANO_CHECK(!nano::equals("ToKeN", "KeN"));
+        NANO_CHECK(!nano::equals("ToKeN", "oKeN"));
+        NANO_CHECK(nano::equals("ToKeN", "ToKeN"));
 
-        ZOB_CHECK(!zob::equals("ToKeN", "n"));
-        ZOB_CHECK(!zob::equals("ToKeN", "en"));
-        ZOB_CHECK(!zob::equals("ToKeN", "ken"));
-        ZOB_CHECK(!zob::equals("ToKeN", "oken"));
-        ZOB_CHECK(!zob::equals("ToKeN", "Token"));
+        NANO_CHECK(!nano::equals("ToKeN", "n"));
+        NANO_CHECK(!nano::equals("ToKeN", "en"));
+        NANO_CHECK(!nano::equals("ToKeN", "ken"));
+        NANO_CHECK(!nano::equals("ToKeN", "oken"));
+        NANO_CHECK(!nano::equals("ToKeN", "Token"));
 }
 
-ZOB_CASE(iequals)
+NANO_CASE(iequals)
 {
-        ZOB_CHECK(!zob::iequals("ToKeN", ""));
-        ZOB_CHECK(!zob::iequals("ToKeN", "N"));
-        ZOB_CHECK(!zob::iequals("ToKeN", "eN"));
-        ZOB_CHECK(!zob::iequals("ToKeN", "KeN"));
-        ZOB_CHECK(!zob::iequals("ToKeN", "oKeN"));
-        ZOB_CHECK(zob::iequals("ToKeN", "ToKeN"));
+        NANO_CHECK(!nano::iequals("ToKeN", ""));
+        NANO_CHECK(!nano::iequals("ToKeN", "N"));
+        NANO_CHECK(!nano::iequals("ToKeN", "eN"));
+        NANO_CHECK(!nano::iequals("ToKeN", "KeN"));
+        NANO_CHECK(!nano::iequals("ToKeN", "oKeN"));
+        NANO_CHECK(nano::iequals("ToKeN", "ToKeN"));
 
-        ZOB_CHECK(!zob::iequals("ToKeN", "n"));
-        ZOB_CHECK(!zob::iequals("ToKeN", "en"));
-        ZOB_CHECK(!zob::iequals("ToKeN", "ken"));
-        ZOB_CHECK(!zob::iequals("ToKeN", "oken"));
-        ZOB_CHECK(zob::iequals("ToKeN", "Token"));
+        NANO_CHECK(!nano::iequals("ToKeN", "n"));
+        NANO_CHECK(!nano::iequals("ToKeN", "en"));
+        NANO_CHECK(!nano::iequals("ToKeN", "ken"));
+        NANO_CHECK(!nano::iequals("ToKeN", "oken"));
+        NANO_CHECK(nano::iequals("ToKeN", "Token"));
 }
 
-ZOB_CASE(to_string)
+NANO_CASE(to_string)
 {
-        ZOB_CHECK_EQUAL(zob::to_string(1.7), "1.700000");
-        ZOB_CHECK_EQUAL(zob::to_string(-4.3f), "-4.300000");
-        ZOB_CHECK_EQUAL(zob::to_string(1), "1");
-        ZOB_CHECK_EQUAL(zob::to_string(124545), "124545");
+        NANO_CHECK_EQUAL(nano::to_string(1.7), "1.700000");
+        NANO_CHECK_EQUAL(nano::to_string(-4.3f), "-4.300000");
+        NANO_CHECK_EQUAL(nano::to_string(1), "1");
+        NANO_CHECK_EQUAL(nano::to_string(124545), "124545");
 }
 
-ZOB_CASE(from_string)
+NANO_CASE(from_string)
 {
-        ZOB_CHECK_EQUAL(zob::from_string<double>("1.7"), 1.7);
-        ZOB_CHECK_EQUAL(zob::from_string<float>("-4.3"), -4.3f);
-        ZOB_CHECK_EQUAL(zob::from_string<short>("1"), 1);
-        ZOB_CHECK_EQUAL(zob::from_string<long int>("124545"), 124545);
+        NANO_CHECK_EQUAL(nano::from_string<double>("1.7"), 1.7);
+        NANO_CHECK_EQUAL(nano::from_string<float>("-4.3"), -4.3f);
+        NANO_CHECK_EQUAL(nano::from_string<short>("1"), 1);
+        NANO_CHECK_EQUAL(nano::from_string<long int>("124545"), 124545);
 }
 
-ZOB_CASE(replace)
+NANO_CASE(replace)
 {
-        ZOB_CHECK_EQUAL(zob::replace("token-", '-', '_'), "token_");
-        ZOB_CHECK_EQUAL(zob::replace("t-ken-", '-', '_'), "t_ken_");
-        ZOB_CHECK_EQUAL(zob::replace("-token", '-', '_'), "_token");
-        ZOB_CHECK_EQUAL(zob::replace("token_", '-', '_'), "token_");
+        NANO_CHECK_EQUAL(nano::replace("token-", '-', '_'), "token_");
+        NANO_CHECK_EQUAL(nano::replace("t-ken-", '-', '_'), "t_ken_");
+        NANO_CHECK_EQUAL(nano::replace("-token", '-', '_'), "_token");
+        NANO_CHECK_EQUAL(nano::replace("token_", '-', '_'), "token_");
 }
 
-ZOB_CASE(concatenate)
+NANO_CASE(concatenate)
 {
-        ZOB_CHECK_EQUAL(zob::concatenate(std::vector<int>({ 1, 2, 3 }), "-"),        "1-2-3");
-        ZOB_CHECK_EQUAL(zob::concatenate(std::list<int>({ 1, 2, 3 }), "="),          "1=2=3");
-        ZOB_CHECK_EQUAL(zob::concatenate(std::set<int>({ 1, 2, 3 }), ","),           "1,2,3");
+        NANO_CHECK_EQUAL(nano::concatenate(std::vector<int>({ 1, 2, 3 }), "-"),        "1-2-3");
+        NANO_CHECK_EQUAL(nano::concatenate(std::list<int>({ 1, 2, 3 }), "="),          "1=2=3");
+        NANO_CHECK_EQUAL(nano::concatenate(std::set<int>({ 1, 2, 3 }), ","),           "1,2,3");
 }
 
-ZOB_CASE(from_params)
+NANO_CASE(from_params)
 {
         const auto config = "param1=1.7,param2=3";
 
-        ZOB_CHECK_EQUAL(zob::from_params(config, "param1", 2.0), 1.7);
-        ZOB_CHECK_EQUAL(zob::from_params(config, "param2", 4343), 3);
-        ZOB_CHECK_EQUAL(zob::from_params(config, "paramx", 2.0), 2.0);
+        NANO_CHECK_EQUAL(nano::from_params(config, "param1", 2.0), 1.7);
+        NANO_CHECK_EQUAL(nano::from_params(config, "param2", 4343), 3);
+        NANO_CHECK_EQUAL(nano::from_params(config, "paramx", 2.0), 2.0);
 }
 
-ZOB_END_MODULE()
+NANO_END_MODULE()

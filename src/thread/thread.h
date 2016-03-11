@@ -2,7 +2,7 @@
 
 #include <thread>
 
-namespace zob
+namespace nano
 {
         ///
         /// \brief the number of threads available on the system (usually #CPU cores x 2 (HT))

@@ -2,7 +2,7 @@
 
 #include "cortex/trainer.h"
 
-namespace zob
+namespace nano
 {
         ///
         /// mini-batch trainer: each gradient update is computed for a random sub-set of samples.
@@ -16,7 +16,7 @@ namespace zob
         {
         public:
 
-                ZOB_MAKE_CLONABLE(minibatch_trainer_t,
+                NANO_MAKE_CLONABLE(minibatch_trainer_t,
                                      "parameters: opt=gd[,lbfgs,cgd],epoch=16[1,1024],eps=1e-4[1e-8,1e-3]")
 
                 // constructor

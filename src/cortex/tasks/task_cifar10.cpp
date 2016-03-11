@@ -7,7 +7,7 @@
 #include "text/algorithm.h"
 #include "cortex/util/logger.h"
 
-namespace zob
+namespace nano
 {
         static const string_t tlabels[] =
         {
@@ -44,17 +44,17 @@ namespace zob
 
                 clear_memory(n_train_samples + n_test_samples);
 
-                const auto op = [&] (const string_t& filename, const zob::buffer_t& data)
+                const auto op = [&] (const string_t& filename, const nano::buffer_t& data)
                 {
-                        if (    zob::iends_with(filename, train_bfile1) ||
-                                zob::iends_with(filename, train_bfile2) ||
-                                zob::iends_with(filename, train_bfile3) ||
-                                zob::iends_with(filename, train_bfile4) ||
-                                zob::iends_with(filename, train_bfile5))
+                        if (    nano::iends_with(filename, train_bfile1) ||
+                                nano::iends_with(filename, train_bfile2) ||
+                                nano::iends_with(filename, train_bfile3) ||
+                                nano::iends_with(filename, train_bfile4) ||
+                                nano::iends_with(filename, train_bfile5))
                         {
                                 return load(filename, data.data(), data.size(), protocol::train, n_train_samples);
                         }
-                        else if (zob::iends_with(filename, test_bfile))
+                        else if (nano::iends_with(filename, test_bfile))
                         {                                
                                 return load(filename, data.data(), data.size(), protocol::test, n_test_samples);
                         }                        
@@ -70,7 +70,7 @@ namespace zob
 
                 log_info() << "CIFAR-10: loading file <" << bfile << "> ...";
 
-                return zob::unarchive(bfile, op, error_op);
+                return nano::unarchive(bfile, op, error_op);
         }
 
         bool cifar10_task_t::load(const string_t& filename, const char* bdata, size_t bdata_size, protocol p, size_t count)
@@ -78,10 +78,10 @@ namespace zob
                 log_info() << "CIFAR-10: loading file <" << filename << "> ...";
                 
                 const auto buffer_size = irows() * icols() * 3;
-                std::vector<char> buffer = zob::make_buffer(buffer_size);
+                std::vector<char> buffer = nano::make_buffer(buffer_size);
                 char label[1];
 
-                zob::imstream_t stream(bdata, bdata_size);
+                nano::imstream_t stream(bdata, bdata_size);
 
                 size_t icount = 0;
                 while ( stream.read(label, 1) &&
@@ -99,7 +99,7 @@ namespace zob
 
                         sample_t sample(n_images() - 1, sample_region(0, 0));
                         sample.m_label = tlabels[ilabel];
-                        sample.m_target = zob::class_target(ilabel, osize());
+                        sample.m_target = nano::class_target(ilabel, osize());
                         sample.m_fold = { 0, p };
                         add_sample(sample);
 

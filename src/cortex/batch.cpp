@@ -7,19 +7,19 @@
 #include "math/batch.hpp"
 #include "text/to_string.hpp"
 
-namespace zob
+namespace nano
 {
         static opt_state_t train_batch(
                 trainer_data_t& data,
-                zob::batch_optimizer optimizer, size_t iterations, scalar_t epsilon,
+                nano::batch_optimizer optimizer, size_t iterations, scalar_t epsilon,
                 timer_t& timer, trainer_result_t& result, bool verbose)
         {
                 size_t iteration = 0;
 
                 // construct the optimization problem
-                auto fn_size = zob::make_opsize(data);
-                auto fn_fval = zob::make_opfval(data);
-                auto fn_grad = zob::make_opgrad(data);
+                auto fn_size = nano::make_opsize(data);
+                auto fn_fval = nano::make_opfval(data);
+                auto fn_grad = nano::make_opgrad(data);
 
                 auto fn_ulog = [&] (const opt_state_t& state)
                 {
@@ -44,24 +44,24 @@ namespace zob
                         log_info()
                                 << "[train = " << tvalue << "/" << terror_avg
                                 << ", valid = " << vvalue << "/" << verror_avg
-                                << " (" << zob::to_string(ret) << ")"
+                                << " (" << nano::to_string(ret) << ")"
                                 << ", epoch = " << iteration << "/" << iterations
                                 << ", lambda = " << data.lambda()
                                 << ", calls = " << state.m_fcalls << "/" << state.m_gcalls
                                 << "] done in " << timer.elapsed() << ".";
 
-                        return !zob::is_done(ret);
+                        return !nano::is_done(ret);
                 };
 
                 // assembly optimization problem & optimize the model
-                return zob::minimize(opt_problem_t(fn_size, fn_fval, fn_grad), fn_ulog,
+                return nano::minimize(opt_problem_t(fn_size, fn_fval, fn_grad), fn_ulog,
                                      data.m_x0, optimizer, iterations, epsilon);
         }
 
         trainer_result_t batch_train(
                 const model_t& model, const task_t& task, const fold_t& fold, const size_t nthreads,
                 const loss_t& loss, const criterion_t& criterion,
-                zob::batch_optimizer optimizer, size_t iterations, scalar_t epsilon,
+                nano::batch_optimizer optimizer, size_t iterations, scalar_t epsilon,
                 bool verbose)
         {
                 vector_t x0;
@@ -88,8 +88,8 @@ namespace zob
 
                 if (data.m_lacc.can_regularize())
                 {
-                        const auto space = zob::make_log10_space(-6.0, +6.0, 0.5);
-                        return zob::tune(op, space).optimum();
+                        const auto space = nano::make_log10_space(-6.0, +6.0, 0.5);
+                        return nano::tune(op, space).optimum();
                 }
                 else
                 {

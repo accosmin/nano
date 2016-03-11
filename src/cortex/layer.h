@@ -5,7 +5,7 @@
 #include "stringi.h"
 #include "util/manager.hpp"
 
-namespace zob
+namespace nano
 {
         class layer_t;
 
@@ -16,12 +16,12 @@ namespace zob
         using rlayer_t = layer_manager_t::trobject;
         using rlayers_t = std::vector<rlayer_t>;
 
-        ZOB_PUBLIC layer_manager_t& get_layers();
+        NANO_PUBLIC layer_manager_t& get_layers();
 
         ///
         /// \brief process a set of inputs of size (irows, icols) and produces a set of outputs of size (orows, ocols)
         ///
-        class ZOB_PUBLIC layer_t : public clonable_t<layer_t>
+        class NANO_PUBLIC layer_t : public clonable_t<layer_t>
         {
         public:
 

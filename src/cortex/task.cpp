@@ -4,7 +4,7 @@
 #include "text/to_string.hpp"
 #include "vision/image_grid.h"
 
-namespace zob
+namespace nano
 {
         task_manager_t& get_tasks()
         {
@@ -14,7 +14,7 @@ namespace zob
 
         void print(const string_t& header, const samples_t& samples)
         {
-                const strings_t labels = zob::labels(samples);
+                const strings_t labels = nano::labels(samples);
 
                 for (const string_t& label : labels)
                 {
@@ -40,7 +40,7 @@ namespace zob
 
         strings_t task_t::labels() const
         {
-                return zob::labels(m_samples);
+                return nano::labels(m_samples);
         }
 
         void task_t::save_as_images(
@@ -82,7 +82,7 @@ namespace zob
                         }
 
                         // ... and save it
-                        const string_t path = basepath + "_group" + zob::to_string(g) + ".png";
+                        const string_t path = basepath + "_group" + nano::to_string(g) + ".png";
                         log_info() << "saving images to <" << path << "> ...";
                         grid_image.image().save(path);
                 }
@@ -127,8 +127,8 @@ namespace zob
                                 sampler_t sampler(this->samples());
                                 sampler.push({f, p});
 
-                                zob::print("fold [" + zob::to_string(f + 1) + "/" + zob::to_string(fsize()) + "] " +
-                                           "protocol [" + zob::to_string(p) + "]",
+                                nano::print("fold [" + nano::to_string(f + 1) + "/" + nano::to_string(fsize()) + "] " +
+                                           "protocol [" + nano::to_string(p) + "]",
                                            sampler.get());
                         }
                 }

@@ -7,13 +7,13 @@
 
 namespace test
 {
-        using namespace zob;
+        using namespace nano;
 
         void check_grad(const string_t& loss_id, tensor_size_t n_dims, size_t n_tests)
         {
-                const auto loss = zob::get_losses().get(loss_id);
+                const auto loss = nano::get_losses().get(loss_id);
 
-                const vector_t target = zob::class_target(n_dims / 2, n_dims);
+                const vector_t target = nano::class_target(n_dims / 2, n_dims);
 
                 // optimization problem: size
                 auto opt_fn_size = [&] ()
@@ -45,26 +45,26 @@ namespace test
                 // check the gradient using random parameters
                 for (size_t t = 0; t < n_tests; ++ t)
                 {
-                        zob::random_t<scalar_t> rgen(-1.0, +1.0);
+                        nano::random_t<scalar_t> rgen(-1.0, +1.0);
 
                         vector_t x(n_dims);
                         rgen(x.data(), x.data() + n_dims);
 
-                        ZOB_CHECK_GREATER(problem(x), 0.0);
-                        ZOB_CHECK_LESS(problem.grad_accuracy(x), zob::epsilon2<scalar_t>());
+                        NANO_CHECK_GREATER(problem(x), 0.0);
+                        NANO_CHECK_LESS(problem.grad_accuracy(x), nano::epsilon2<scalar_t>());
                 }
         }
 }
 
-ZOB_BEGIN_MODULE(test_loss)
+NANO_BEGIN_MODULE(test_loss)
 
-ZOB_CASE(evaluate)
+NANO_CASE(evaluate)
 {
-        zob::init();
+        nano::init();
 
-        using namespace zob;
+        using namespace nano;
 
-        const strings_t loss_ids = zob::get_losses().ids();
+        const strings_t loss_ids = nano::get_losses().ids();
 
         const tensor_size_t cmd_min_dims = 2;
         const tensor_size_t cmd_max_dims = 10;
@@ -80,4 +80,4 @@ ZOB_CASE(evaluate)
         }
 }
 
-ZOB_END_MODULE()
+NANO_END_MODULE()

@@ -2,7 +2,7 @@
 #include "imstream.h"
 #include <fstream>
 
-namespace zob
+namespace nano
 {
         using std::uint32_t;
 

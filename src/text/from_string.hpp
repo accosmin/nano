@@ -6,7 +6,7 @@
 #include "algorithm.h"
 #include "enum_string.hpp"
 
-namespace zob
+namespace nano
 {
         namespace detail
         {
@@ -120,7 +120,7 @@ namespace zob
                                 const auto vm = enum_string<tvalue>();
                                 const auto it = std::find_if(vm.begin(), vm.end(), [&str] (const auto& v)
                                 {
-                                        return zob::iequals(str, v.second);
+                                        return nano::iequals(str, v.second);
                                 });
 
                                 if (it == vm.end())

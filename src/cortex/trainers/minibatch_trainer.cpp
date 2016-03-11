@@ -5,7 +5,7 @@
 #include "cortex/util/logger.h"
 #include "text/from_params.hpp"
 
-namespace zob
+namespace nano
 {
         minibatch_trainer_t::minibatch_trainer_t(const string_t& parameters)
                 :       trainer_t(parameters)
@@ -27,14 +27,14 @@ namespace zob
                 model.random_params();
 
                 // parameters
-                const size_t epochs = zob::clamp(zob::from_params<size_t>(configuration(), "epoch", 16), 1, 1024);
-                const scalar_t epsilon = zob::clamp(zob::from_params<scalar_t>(configuration(), "eps", 1e-4), 1e-8, 1e-3);
+                const size_t epochs = nano::clamp(nano::from_params<size_t>(configuration(), "epoch", 16), 1, 1024);
+                const scalar_t epsilon = nano::clamp(nano::from_params<scalar_t>(configuration(), "eps", 1e-4), 1e-8, 1e-3);
 
-                const zob::batch_optimizer optimizer = zob::from_string<zob::batch_optimizer>
-                        (zob::from_params<string_t>(configuration(), "opt", "gd"));
+                const nano::batch_optimizer optimizer = nano::from_string<nano::batch_optimizer>
+                        (nano::from_params<string_t>(configuration(), "opt", "gd"));
 
                 // train the model
-                const trainer_result_t result = zob::minibatch_train(
+                const trainer_result_t result = nano::minibatch_train(
                         model, task, fold, nthreads, loss, criterion, optimizer, epochs, epsilon);
 
                 const trainer_state_t state = result.optimum_state();

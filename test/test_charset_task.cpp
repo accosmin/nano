@@ -4,11 +4,11 @@
 #include "unit_test.hpp"
 #include "cortex/tasks/task_charset.h"
 
-ZOB_BEGIN_MODULE(test_charset_task)
+NANO_BEGIN_MODULE(test_charset_task)
 
-ZOB_CASE(evaluate)
+NANO_CASE(evaluate)
 {
-        using namespace zob;
+        using namespace nano;
 
         // <charset, color mode, number of outputs/classes/characters>
         std::vector<std::tuple<charset, color_mode, tensor_size_t>> configs;
@@ -30,24 +30,24 @@ ZOB_CASE(evaluate)
 
                 charset_task_t task(type, irows, icols, mode, count);
 
-                ZOB_CHECK_EQUAL(task.load(""), true);
-                ZOB_CHECK_EQUAL(task.irows(), irows);
-                ZOB_CHECK_EQUAL(task.icols(), icols);
-                ZOB_CHECK_EQUAL(task.osize(), osize);
-                ZOB_CHECK_EQUAL(task.fsize(), fsize);
-                ZOB_CHECK_EQUAL(task.color(), mode);
-                ZOB_CHECK_EQUAL(task.n_images(), count);
-                ZOB_CHECK_EQUAL(task.samples().size(), count);
-                ZOB_CHECK_EQUAL(task.sample_size(), rect_t(0, 0, icols, irows));
-                ZOB_CHECK_EQUAL(task.labels().size(), static_cast<size_t>(osize));
+                NANO_CHECK_EQUAL(task.load(""), true);
+                NANO_CHECK_EQUAL(task.irows(), irows);
+                NANO_CHECK_EQUAL(task.icols(), icols);
+                NANO_CHECK_EQUAL(task.osize(), osize);
+                NANO_CHECK_EQUAL(task.fsize(), fsize);
+                NANO_CHECK_EQUAL(task.color(), mode);
+                NANO_CHECK_EQUAL(task.n_images(), count);
+                NANO_CHECK_EQUAL(task.samples().size(), count);
+                NANO_CHECK_EQUAL(task.sample_size(), rect_t(0, 0, icols, irows));
+                NANO_CHECK_EQUAL(task.labels().size(), static_cast<size_t>(osize));
 
                 for (size_t i = 0; i < task.n_images(); ++ i)
                 {
-                        ZOB_CHECK_EQUAL(task.image(i).mode(), mode);
-                        ZOB_CHECK_EQUAL(task.image(i).rows(), irows);
-                        ZOB_CHECK_EQUAL(task.image(i).cols(), icols);
+                        NANO_CHECK_EQUAL(task.image(i).mode(), mode);
+                        NANO_CHECK_EQUAL(task.image(i).rows(), irows);
+                        NANO_CHECK_EQUAL(task.image(i).cols(), icols);
                 }
         }
 }
 
-ZOB_END_MODULE()
+NANO_END_MODULE()

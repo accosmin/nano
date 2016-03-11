@@ -4,7 +4,7 @@
 #include "vision/image.h"
 #include "util/manager.hpp"
 
-namespace zob
+namespace nano
 {
         class task_t;
 
@@ -14,19 +14,19 @@ namespace zob
         using task_manager_t = manager_t<task_t>;
         using rtask_t = task_manager_t::trobject;
 
-        ZOB_PUBLIC task_manager_t& get_tasks();
+        NANO_PUBLIC task_manager_t& get_tasks();
 
         ///
         /// \brief describe the given samples
         ///
-        ZOB_PUBLIC void print(const string_t& header, const samples_t& samples);
+        NANO_PUBLIC void print(const string_t& header, const samples_t& samples);
 
         ///
         /// \brief generic computer vision task consisting of a set of (annotated) images
         /// and a protocol (training + testing).
         /// samples for training & testing models can be drawn from these image.
         ///
-        class ZOB_PUBLIC task_t : public clonable_t<task_t>
+        class NANO_PUBLIC task_t : public clonable_t<task_t>
 	{
         public:
 

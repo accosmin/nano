@@ -3,7 +3,7 @@
 #include "math/numeric.hpp"
 #include <cassert>
 
-namespace zob
+namespace nano
 {
         classnll_loss_t::classnll_loss_t(const string_t& configuration)
                 :       loss_t(configuration)

@@ -3,11 +3,11 @@
 #include "text/from_params.hpp"
 #include "math/clamp.hpp"
 
-namespace zob
+namespace nano
 {
         pool_layer_t::pool_layer_t(const string_t& parameters)
                 :       layer_t(parameters),
-                        m_alpha(zob::clamp(zob::from_params<scalar_t>(parameters, "dims", 0.1), -100.0, +100.0))
+                        m_alpha(nano::clamp(nano::from_params<scalar_t>(parameters, "dims", 0.1), -100.0, +100.0))
         {
         }
 
@@ -75,8 +75,8 @@ namespace zob
 
         void pool_layer_t::gparam(const tensor_t& output, scalar_t* gradient)
         {
-                ZOB_UNUSED1(gradient);
-                ZOB_UNUSED1_RELEASE(output);
+                NANO_UNUSED1(gradient);
+                NANO_UNUSED1_RELEASE(output);
 
                 assert(odims() == output.dims());
                 assert(orows() == output.rows());

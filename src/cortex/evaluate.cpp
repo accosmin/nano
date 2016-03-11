@@ -3,7 +3,7 @@
 #include "evaluate.h"
 #include "accumulator.h"
 
-namespace zob
+namespace nano
 {
         size_t evaluate(
                 const task_t& task, const fold_t& fold, const loss_t& loss, const criterion_t& criterion,

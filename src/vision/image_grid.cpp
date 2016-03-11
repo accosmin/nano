@@ -1,6 +1,6 @@
 #include "image_grid.h"
 
-namespace zob
+namespace nano
 {
         image_grid_t::image_grid_t(
                 coord_t patch_rows, coord_t patch_cols,

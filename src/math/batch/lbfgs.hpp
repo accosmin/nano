@@ -5,7 +5,7 @@
 #include "ls_strategy.hpp"
 #include <deque>
 
-namespace zob
+namespace nano
 {
         ///
         /// \brief limited memory bfgs (l-bfgs)

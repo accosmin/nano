@@ -5,7 +5,7 @@
 #include <stdexcept>
 #include "clonable.hpp"
 
-namespace zob
+namespace nano
 {
         ///
         /// \brief manage objects of similar type.

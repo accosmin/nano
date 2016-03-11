@@ -2,7 +2,7 @@
 
 #include "cortex/task.h"
 
-namespace zob
+namespace nano
 {
         ///
         /// \brief synthetic task to classify characters
@@ -14,11 +14,11 @@ namespace zob
         ///     color           - color mode
         ///     size            - number of samples (training + validation)
         ///
-        class ZOB_PUBLIC random_task_t : public task_t
+        class NANO_PUBLIC random_task_t : public task_t
         {
         public:
 
-                ZOB_MAKE_CLONABLE(random_task_t,
+                NANO_MAKE_CLONABLE(random_task_t,
                                      "random task: dims=2[2,10],rows=32[8,128],cols=32[8,128],"\
                                      "color=rgba[,luma],size=1024[16,1024*1024]")
 

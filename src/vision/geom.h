@@ -2,7 +2,7 @@
 
 #include <cstdint>
 
-namespace zob
+namespace nano
 {
         ///
         /// \brief image coordinate (in pixels) - 64bit to be compatible with Eigen::Index

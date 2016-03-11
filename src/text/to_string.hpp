@@ -3,7 +3,7 @@
 #include <typeinfo>
 #include "enum_string.hpp"
 
-namespace zob
+namespace nano
 {
         namespace detail
         {

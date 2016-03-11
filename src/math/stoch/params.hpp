@@ -4,7 +4,7 @@
 #include <cstddef>
 #include <utility>
 
-namespace zob
+namespace nano
 {
         ///
         /// \brief common parameters for stochastic optimization

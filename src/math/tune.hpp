@@ -5,7 +5,7 @@
 #include "tune_grid_space.hpp"
 #include "tune_finite_space.hpp"
 
-namespace zob
+namespace nano
 {
         ///
         /// \brief search the parameter that minimizes a given operator,

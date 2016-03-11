@@ -17,24 +17,24 @@
 
 namespace
 {
-        using namespace zob;
+        using namespace nano;
 
         template
         <
                 typename tscalar,
                 typename tostats,
-                typename tsize = typename zob::function_t<tscalar>::tsize,
-                typename tvector = typename zob::function_t<tscalar>::tvector,
-                typename tproblem = typename zob::function_t<tscalar>::tproblem
+                typename tsize = typename nano::function_t<tscalar>::tsize,
+                typename tvector = typename nano::function_t<tscalar>::tvector,
+                typename tproblem = typename nano::function_t<tscalar>::tproblem
         >
-        void check_function(const zob::function_t<tscalar>& function,
+        void check_function(const nano::function_t<tscalar>& function,
                 const size_t trials, const size_t iterations,
                 tostats& gstats)
         {
-                const auto epsilon = zob::epsilon0<tscalar>();
+                const auto epsilon = nano::epsilon0<tscalar>();
                 const auto dims = function.problem().size();
 
-                zob::random_t<tscalar> rgen(tscalar(-1), tscalar(+1));
+                nano::random_t<tscalar> rgen(tscalar(-1), tscalar(+1));
 
                 // generate fixed random trials
                 std::vector<tvector> x0s(trials);
@@ -47,55 +47,55 @@ namespace
                 // optimizers to try
                 const auto optimizers =
                 {
-                        zob::batch_optimizer::GD,
-                        zob::batch_optimizer::CGD_CD,
-                        zob::batch_optimizer::CGD_DY,
-                        zob::batch_optimizer::CGD_FR,
-                        zob::batch_optimizer::CGD_HS,
-                        zob::batch_optimizer::CGD_LS,
-                        zob::batch_optimizer::CGD_DYCD,
-                        zob::batch_optimizer::CGD_DYHS,
-                        zob::batch_optimizer::CGD_PRP,
-                        zob::batch_optimizer::CGD_N,
-                        zob::batch_optimizer::LBFGS
+                        nano::batch_optimizer::GD,
+                        nano::batch_optimizer::CGD_CD,
+                        nano::batch_optimizer::CGD_DY,
+                        nano::batch_optimizer::CGD_FR,
+                        nano::batch_optimizer::CGD_HS,
+                        nano::batch_optimizer::CGD_LS,
+                        nano::batch_optimizer::CGD_DYCD,
+                        nano::batch_optimizer::CGD_DYHS,
+                        nano::batch_optimizer::CGD_PRP,
+                        nano::batch_optimizer::CGD_N,
+                        nano::batch_optimizer::LBFGS
                 };
 
                 // line search initialization methods to try
                 const auto ls_initializers =
                 {
-                        zob::ls_initializer::unit,
-                        zob::ls_initializer::quadratic,
-                        zob::ls_initializer::consistent
+                        nano::ls_initializer::unit,
+                        nano::ls_initializer::quadratic,
+                        nano::ls_initializer::consistent
                 };
 
                 // line search strategies to try
                 const auto ls_strategies =
                 {
-                        zob::ls_strategy::backtrack_armijo,
-                        zob::ls_strategy::backtrack_wolfe,
-                        zob::ls_strategy::backtrack_strong_wolfe,
-                        zob::ls_strategy::interpolation,
-                        zob::ls_strategy::cg_descent
+                        nano::ls_strategy::backtrack_armijo,
+                        nano::ls_strategy::backtrack_wolfe,
+                        nano::ls_strategy::backtrack_strong_wolfe,
+                        nano::ls_strategy::interpolation,
+                        nano::ls_strategy::cg_descent
                 };
 
                 // per-problem statistics
                 tostats stats;
 
                 // evaluate all possible combinations
-                for (zob::batch_optimizer optimizer : optimizers)
-                        for (zob::ls_initializer ls_init : ls_initializers)
-                                for (zob::ls_strategy ls_strat : ls_strategies)
+                for (nano::batch_optimizer optimizer : optimizers)
+                        for (nano::ls_initializer ls_init : ls_initializers)
+                                for (nano::ls_strategy ls_strat : ls_strategies)
                 {
                         const auto op = [&] (const tproblem& problem, const tvector& x0)
                         {
-                                return  zob::minimize(
+                                return  nano::minimize(
                                         problem, nullptr, x0, optimizer, iterations, epsilon, ls_init, ls_strat);
                         };
 
                         const auto name =
-                                zob::to_string(optimizer) + "[" +
-                                zob::to_string(ls_init) + "][" +
-                                zob::to_string(ls_strat) + "]";
+                                nano::to_string(optimizer) + "[" +
+                                nano::to_string(ls_init) + "][" +
+                                nano::to_string(ls_strat) + "]";
 
                         benchmark::benchmark_function(function, x0s, op, name, { 1e-12, 1e-10, 1e-8, 1e-6 }, stats, gstats);
                 }
@@ -107,10 +107,10 @@ namespace
 
 int main(int argc, char* argv[])
 {
-        using namespace zob;
+        using namespace nano;
 
         // parse the command line
-        zob::cmdline_t cmdline("benchmark batch optimizers");
+        nano::cmdline_t cmdline("benchmark batch optimizers");
         cmdline.add("", "min-dims",     "minimum number of dimensions for each test function (if feasible)", "1");
         cmdline.add("", "max-dims",     "maximum number of dimensions for each test function (if feasible)", "8");
         cmdline.add("", "trials",       "number of random trials for each test function", "1024");
@@ -126,8 +126,8 @@ int main(int argc, char* argv[])
 
         std::map<std::string, benchmark::optimizer_stat_t> gstats;
 
-        zob::foreach_test_function<scalar_t, zob::test_type::all>(min_dims, max_dims,
-                [&] (const zob::function_t<scalar_t>& function)
+        nano::foreach_test_function<scalar_t, nano::test_type::all>(min_dims, max_dims,
+                [&] (const nano::function_t<scalar_t>& function)
         {
                 check_function(function, trials, iterations, gstats);
         });
@@ -138,27 +138,27 @@ int main(int argc, char* argv[])
         // show per-optimizer statistics
         const auto optimizers =
         {
-                zob::batch_optimizer::GD,
-                zob::batch_optimizer::CGD_CD,
-                zob::batch_optimizer::CGD_DY,
-                zob::batch_optimizer::CGD_FR,
-                zob::batch_optimizer::CGD_HS,
-                zob::batch_optimizer::CGD_LS,
-                zob::batch_optimizer::CGD_DYCD,
-                zob::batch_optimizer::CGD_DYHS,
-                zob::batch_optimizer::CGD_PRP,
-                zob::batch_optimizer::CGD_N,
-                zob::batch_optimizer::LBFGS
+                nano::batch_optimizer::GD,
+                nano::batch_optimizer::CGD_CD,
+                nano::batch_optimizer::CGD_DY,
+                nano::batch_optimizer::CGD_FR,
+                nano::batch_optimizer::CGD_HS,
+                nano::batch_optimizer::CGD_LS,
+                nano::batch_optimizer::CGD_DYCD,
+                nano::batch_optimizer::CGD_DYHS,
+                nano::batch_optimizer::CGD_PRP,
+                nano::batch_optimizer::CGD_N,
+                nano::batch_optimizer::LBFGS
         };
 
-        for (zob::batch_optimizer optimizer : optimizers)
+        for (nano::batch_optimizer optimizer : optimizers)
         {
-                const auto name = zob::to_string(optimizer) + "[";
+                const auto name = nano::to_string(optimizer) + "[";
 
                 std::map<std::string, benchmark::optimizer_stat_t> stats;
                 for (const auto& gstat : gstats)
                 {
-                        if (zob::starts_with(gstat.first, name))
+                        if (nano::starts_with(gstat.first, name))
                         {
                                 stats[gstat.first] = gstat.second;
                         }

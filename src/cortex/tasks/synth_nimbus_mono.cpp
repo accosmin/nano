@@ -197,17 +197,17 @@ namespace
         };
 }
 
-const char* zob::get_synth_nimbus_mono_data()
+const char* nano::get_synth_nimbus_mono_data()
 {
         return (const char*)data;
 }
 
-std::size_t zob::get_synth_nimbus_mono_size()
+std::size_t nano::get_synth_nimbus_mono_size()
 {
         return sizeof(data) / sizeof(unsigned char);
 }
 
-const char* zob::get_synth_nimbus_mono_name()
+const char* nano::get_synth_nimbus_mono_name()
 {
         return name;
 }

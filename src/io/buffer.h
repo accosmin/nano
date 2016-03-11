@@ -6,7 +6,7 @@
 #include <string>
 #include <vector>
 
-namespace zob
+namespace nano
 {
         using buffer_t = std::vector<char>;
 
@@ -27,22 +27,22 @@ namespace zob
         ///
         /// \brief maximum file/stream size in bytes (useful for indicating a read-until-EOF condition)
         ///
-        ZOB_PUBLIC std::streamsize max_streamsize();
+        NANO_PUBLIC std::streamsize max_streamsize();
 
         ///
         /// \brief load a stream of bytes
         ///
-        ZOB_PUBLIC bool load_buffer_from_stream(std::istream& istream, std::streamsize num_bytes, buffer_t&);
-        ZOB_PUBLIC bool load_buffer_from_stream(std::istream& istream, buffer_t&);
-        ZOB_PUBLIC bool load_buffer_from_stream(imstream_t& istream, buffer_t&);
+        NANO_PUBLIC bool load_buffer_from_stream(std::istream& istream, std::streamsize num_bytes, buffer_t&);
+        NANO_PUBLIC bool load_buffer_from_stream(std::istream& istream, buffer_t&);
+        NANO_PUBLIC bool load_buffer_from_stream(imstream_t& istream, buffer_t&);
 
         ///
         /// \brief save buffer to file
         ///
-        ZOB_PUBLIC bool save_buffer(const std::string& path, const buffer_t& buffer);
+        NANO_PUBLIC bool save_buffer(const std::string& path, const buffer_t& buffer);
 
         ///
         /// \brief load buffer from file
         ///
-        ZOB_PUBLIC bool load_buffer(const std::string& path, buffer_t& buffer);
+        NANO_PUBLIC bool load_buffer(const std::string& path, buffer_t& buffer);
 }

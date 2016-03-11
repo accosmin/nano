@@ -4,7 +4,7 @@
 #include <limits>
 #include <cassert>
 
-namespace zob
+namespace nano
 {
         ///
         /// \brief cubic: a x^3 + b x^2 + c x + d

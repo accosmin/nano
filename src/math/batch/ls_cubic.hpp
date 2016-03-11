@@ -3,7 +3,7 @@
 #include "math/cubic.hpp"
 #include <utility>
 
-namespace zob
+namespace nano
 {
         ///
         /// \brief cubic interpolation in the [step0, step1] line-search interval

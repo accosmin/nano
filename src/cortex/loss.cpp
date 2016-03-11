@@ -1,6 +1,6 @@
 #include "loss.h"
 
-namespace zob
+namespace nano
 {
         loss_manager_t& get_losses()
         {

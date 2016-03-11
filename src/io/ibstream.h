@@ -6,12 +6,12 @@
 #include <type_traits>
 #include <eigen3/Eigen/Core>
 
-namespace zob
+namespace nano
 {
         ///
         /// \brief wrapper over binary std::istream
         ///
-        class ZOB_PUBLIC ibstream_t
+        class NANO_PUBLIC ibstream_t
         {
         public:
 

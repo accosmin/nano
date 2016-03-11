@@ -7,7 +7,7 @@
 #include <cstdint>
 #include <functional>
 
-namespace zob
+namespace nano
 {
         class imstream_t;
 
@@ -38,12 +38,12 @@ namespace zob
         ///
         /// \brief map a data type to string (logging purposes)
         ///
-        ZOB_PUBLIC std::string to_string(const mat5_buffer_type& type);
+        NANO_PUBLIC std::string to_string(const mat5_buffer_type& type);
 
         ///
         /// \brief section
         ///
-        struct ZOB_PUBLIC mat5_section_t
+        struct NANO_PUBLIC mat5_section_t
         {
                 ///
                 /// \brief constructor
@@ -88,12 +88,12 @@ namespace zob
                 mat5_buffer_type        m_dtype;
         };
 
-        ZOB_PUBLIC std::ostream& operator<<(std::ostream&, const mat5_section_t&);
+        NANO_PUBLIC std::ostream& operator<<(std::ostream&, const mat5_section_t&);
 
         ///
         /// \brief multi-dimensional array consisting of multiple sections
         ///
-        struct ZOB_PUBLIC mat5_array_t
+        struct NANO_PUBLIC mat5_array_t
         {
                 ///
                 /// \brief load header section from the input stream
@@ -111,5 +111,5 @@ namespace zob
                 std::vector<mat5_section_t>     m_sections;     ///< sections (dimensions, name, type, data)
         };
 
-        ZOB_PUBLIC std::ostream& operator<<(std::ostream&, const mat5_array_t&);
+        NANO_PUBLIC std::ostream& operator<<(std::ostream&, const mat5_array_t&);
 }

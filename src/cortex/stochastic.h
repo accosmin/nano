@@ -3,7 +3,7 @@
 #include "trainer_data.h"
 #include "trainer_result.h"
 
-namespace zob
+namespace nano
 {
         class model_t;
         class criterion_t;
@@ -11,9 +11,9 @@ namespace zob
         ///
         /// \brief stochastically train the given model
         ///
-        ZOB_PUBLIC trainer_result_t stochastic_train(
+        NANO_PUBLIC trainer_result_t stochastic_train(
                 const model_t&, const task_t&, const fold_t&, const size_t nthreads,
                 const loss_t&, const criterion_t&,
-                zob::stoch_optimizer optimizer, size_t epochs,
+                nano::stoch_optimizer optimizer, size_t epochs,
                 bool verbose = true);
 }

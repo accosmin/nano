@@ -2,7 +2,7 @@
 #include <cctype>
 #include <algorithm>
 
-namespace zob
+namespace nano
 {
         std::string lower(const std::string& str)
         {

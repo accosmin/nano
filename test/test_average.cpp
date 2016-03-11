@@ -41,19 +41,19 @@ namespace test
         >
         void check_average(const tsize range)
         {
-                zob::average_scalar_t<tscalar> avg1, avg2;
+                nano::average_scalar_t<tscalar> avg1, avg2;
                 for (tsize i = 1; i <= range; ++ i)
                 {
                         avg1.update(tscalar(i));
                         avg2.update(tscalar(sign(i + 1) * i) * tscalar(i));
                 }
 
-                const auto epsilon = zob::epsilon1<tscalar>();
+                const auto epsilon = nano::epsilon1<tscalar>();
                 const auto base1 = average1<tscalar>(range);
                 const auto base2 = average2<tscalar>(range);
 
-                ZOB_CHECK_CLOSE(avg1.value(), base1, epsilon);
-                ZOB_CHECK_CLOSE(avg2.value(), base2, epsilon);
+                NANO_CHECK_CLOSE(avg1.value(), base1, epsilon);
+                NANO_CHECK_CLOSE(avg2.value(), base2, epsilon);
         }
 
         template
@@ -64,25 +64,25 @@ namespace test
         >
         void check_average(const tsize dims, const tsize range)
         {
-                zob::average_vector_t<tvector> avg1(dims), avg2(dims);
+                nano::average_vector_t<tvector> avg1(dims), avg2(dims);
                 for (tsize i = 1; i <= range; ++ i)
                 {
                         avg1.update(tvector::Constant(dims, tscalar(i)));
                         avg2.update(tvector::Constant(dims, tscalar(sign(i + 1) * i) * tscalar(i)));
                 }
 
-                const auto epsilon = zob::epsilon1<tscalar>();
+                const auto epsilon = nano::epsilon1<tscalar>();
                 const auto base1 = tvector::Constant(dims, average1<tscalar>(range));
                 const auto base2 = tvector::Constant(dims, average2<tscalar>(range));
 
-                ZOB_CHECK_EIGEN_CLOSE(avg1.value(), base1, epsilon);
-                ZOB_CHECK_EIGEN_CLOSE(avg2.value(), base2, epsilon);
+                NANO_CHECK_EIGEN_CLOSE(avg1.value(), base1, epsilon);
+                NANO_CHECK_EIGEN_CLOSE(avg2.value(), base2, epsilon);
         }
 }
 
-ZOB_BEGIN_MODULE(test_average)
+NANO_BEGIN_MODULE(test_average)
 
-ZOB_CASE(scalar)
+NANO_CASE(scalar)
 {
         test::check_average<double>(1);
         test::check_average<double>(5);
@@ -94,7 +94,7 @@ ZOB_CASE(scalar)
         test::check_average<double>(123434);
 }
 
-ZOB_CASE(vector)
+NANO_CASE(vector)
 {
         test::check_average<Eigen::VectorXd>(13, 1);
         test::check_average<Eigen::VectorXd>(17, 5);
@@ -106,5 +106,5 @@ ZOB_CASE(vector)
         test::check_average<Eigen::VectorXd>(18, 123434);
 }
 
-ZOB_END_MODULE()
+NANO_END_MODULE()
 

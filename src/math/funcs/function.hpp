@@ -3,7 +3,7 @@
 #include "math/problem.hpp"
 #include <string>
 
-namespace zob
+namespace nano
 {            
         ///
         /// \brief test optimization problem
@@ -14,7 +14,7 @@ namespace zob
         >
         struct function_t
         {
-                using tproblem = zob::problem_t<tscalar_>;
+                using tproblem = nano::problem_t<tscalar_>;
                 using tsize = typename tproblem::tsize;
                 using tscalar = typename tproblem::tscalar;
                 using tvector = typename tproblem::tvector;

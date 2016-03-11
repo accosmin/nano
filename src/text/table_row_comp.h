@@ -4,7 +4,7 @@
 #include "from_string.hpp"
 #include <cassert>
 
-namespace zob
+namespace nano
 {
         ///
         /// \brief operator to compare two rows
@@ -69,7 +69,7 @@ namespace zob
         >
         auto make_table_row_ascending_comp(const tindices& cols)
         {
-                const auto comp = zob::make_less_from_string<tscalar>();
+                const auto comp = nano::make_less_from_string<tscalar>();
 
                 return table_row_comp_t<tindices, decltype(comp)>(cols, comp);
         }
@@ -84,7 +84,7 @@ namespace zob
         >
         auto make_table_row_descending_comp(const tindices& cols)
         {
-                const auto comp = zob::make_greater_from_string<tscalar>();
+                const auto comp = nano::make_greater_from_string<tscalar>();
 
                 return table_row_comp_t<tindices, decltype(comp)>(cols, comp);
         }

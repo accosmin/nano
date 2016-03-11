@@ -15,23 +15,23 @@
 
 namespace
 {
-        using namespace zob;
+        using namespace nano;
 
         template
         <
                 typename tscalar,
                 typename tostats,
-                typename tsize = typename zob::function_t<tscalar>::tsize,
-                typename tvector = typename zob::function_t<tscalar>::tvector,
-                typename tproblem = typename zob::function_t<tscalar>::tproblem
+                typename tsize = typename nano::function_t<tscalar>::tsize,
+                typename tvector = typename nano::function_t<tscalar>::tvector,
+                typename tproblem = typename nano::function_t<tscalar>::tproblem
         >
-        void check_function(const zob::function_t<tscalar>& function,
+        void check_function(const nano::function_t<tscalar>& function,
                 const size_t trials, const size_t epochs, const size_t epoch_size,
                 tostats& gstats)
         {
                 const auto dims = function.problem().size();
 
-                zob::random_t<tscalar> rgen(tscalar(-1), tscalar(+1));
+                nano::random_t<tscalar> rgen(tscalar(-1), tscalar(+1));
 
                 // generate fixed random trials
                 std::vector<tvector> x0s(trials);
@@ -44,14 +44,14 @@ namespace
                 // optimizers to try
                 const auto optimizers =
                 {
-                        zob::stoch_optimizer::SG,
-                        zob::stoch_optimizer::SGM,
-                        zob::stoch_optimizer::AG,
-                        zob::stoch_optimizer::AGFR,
-                        zob::stoch_optimizer::AGGR,
-                        zob::stoch_optimizer::ADAGRAD,
-                        zob::stoch_optimizer::ADADELTA,
-                        zob::stoch_optimizer::ADAM
+                        nano::stoch_optimizer::SG,
+                        nano::stoch_optimizer::SGM,
+                        nano::stoch_optimizer::AG,
+                        nano::stoch_optimizer::AGFR,
+                        nano::stoch_optimizer::AGGR,
+                        nano::stoch_optimizer::ADAGRAD,
+                        nano::stoch_optimizer::ADADELTA,
+                        nano::stoch_optimizer::ADAM
                 };
 
                 // per-problem statistics
@@ -62,11 +62,11 @@ namespace
                 {
                         const auto op = [&] (const tproblem& problem, const tvector& x0)
                         {
-                                return zob::minimize(problem, nullptr, x0, optimizer, epochs, epoch_size);
+                                return nano::minimize(problem, nullptr, x0, optimizer, epochs, epoch_size);
                         };
 
                         const auto name =
-                                zob::to_string(optimizer);
+                                nano::to_string(optimizer);
 
                         benchmark::benchmark_function(function, x0s, op, name, { 1e-5, 1e-4, 1e-3, 1e-2 }, stats, gstats);
                 }
@@ -78,10 +78,10 @@ namespace
 
 int main(int argc, char* argv[])
 {
-        using namespace zob;
+        using namespace nano;
 
         // parse the command line
-        zob::cmdline_t cmdline("benchmark stochastic optimizers");
+        nano::cmdline_t cmdline("benchmark stochastic optimizers");
         cmdline.add("", "min-dims",     "minimum number of dimensions for each test function (if feasible)", "1");
         cmdline.add("", "max-dims",     "maximum number of dimensions for each test function (if feasible)", "8");
         cmdline.add("", "trials",       "number of random trials for each test function", "1024");
@@ -99,8 +99,8 @@ int main(int argc, char* argv[])
 
         std::map<std::string, benchmark::optimizer_stat_t> gstats;
 
-        zob::foreach_test_function<scalar_t, zob::test_type::all>(min_dims, max_dims,
-                [&] (const zob::function_t<scalar_t>& function)
+        nano::foreach_test_function<scalar_t, nano::test_type::all>(min_dims, max_dims,
+                [&] (const nano::function_t<scalar_t>& function)
         {
                 check_function(function, trials, epochs, epoch_size, gstats);
         });

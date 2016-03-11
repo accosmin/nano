@@ -1,6 +1,6 @@
 #pragma once
 
-namespace zob
+namespace nano
 {
         ///
         /// \brief bisection interpolation in the [step0, step1] line-search interval

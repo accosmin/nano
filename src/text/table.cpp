@@ -4,7 +4,7 @@
 #include <numeric>
 #include <ostream>
 
-namespace zob
+namespace nano
 {
         table_t::table_t(const std::string& title)
                 :       m_title(title)
@@ -99,10 +99,10 @@ namespace zob
                 // display header
                 print_row_delim(os);
 
-                os << zob::align("| " + m_title, namesize + 3);
+                os << nano::align("| " + m_title, namesize + 3);
                 for (size_t c = 0; c < cols(); ++ c)
                 {
-                        os << zob::align("| " + m_header[c], colsizes[c] + 3);
+                        os << nano::align("| " + m_header[c], colsizes[c] + 3);
                 }
                 os << "|" << std::endl;
 
@@ -118,10 +118,10 @@ namespace zob
                                 os << std::string(rowsize, '-') << std::endl;
                         }
 
-                        os << zob::align("| " + row.name(), namesize + 3);
+                        os << nano::align("| " + row.name(), namesize + 3);
                         for (size_t c = 0; c < cols(); ++ c)
                         {
-                                os << zob::align("| " + row[c], colsizes[c] + 3);
+                                os << nano::align("| " + row[c], colsizes[c] + 3);
                         }
                         os << "|" << std::endl;
                 }

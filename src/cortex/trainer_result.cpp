@@ -1,7 +1,7 @@
 #include "trainer_result.h"
 #include "cortex/util/logger.h"
 
-namespace zob
+namespace nano
 {
         trainer_config_t append(const trainer_config_t& config, const char* const name, const scalar_t value)
         {

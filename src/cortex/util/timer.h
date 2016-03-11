@@ -4,7 +4,7 @@
 #include <chrono>
 #include <string>
 
-namespace zob
+namespace nano
 {
         using seconds_t = std::chrono::seconds;
         using milliseconds_t = std::chrono::milliseconds;
@@ -13,7 +13,7 @@ namespace zob
 
         using timepoint_t = std::chrono::high_resolution_clock::time_point;
 
-        class ZOB_PUBLIC timer_t
+        class NANO_PUBLIC timer_t
         {
         public:
 

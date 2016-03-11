@@ -7,16 +7,16 @@
 #include "cortex/layers/make_layers.h"
 #include <cstdio>
 
-ZOB_BEGIN_MODULE(test_model)
+NANO_BEGIN_MODULE(test_model)
 
-ZOB_CASE(evaluate)
+NANO_CASE(evaluate)
 {
-        zob::init();
+        nano::init();
 
-        using namespace zob;
+        using namespace nano;
 
-        const auto task = zob::get_tasks().get("random", "dims=2,rows=16,cols=16,color=luma,size=128");
-        ZOB_CHECK_EQUAL(task->load(""), true);
+        const auto task = nano::get_tasks().get("random", "dims=2,rows=16,cols=16,color=luma,size=128");
+        NANO_CHECK_EQUAL(task->load(""), true);
 
         const string_t mlp0;
         const string_t mlp1 = mlp0 + make_affine_layer(10);
@@ -43,18 +43,18 @@ ZOB_CASE(evaluate)
                 convnet + outlayer
         };
 
-        const auto loss = zob::get_losses().get("logistic");
-        const auto criterion = zob::get_criteria().get("avg");
+        const auto loss = nano::get_losses().get("logistic");
+        const auto criterion = nano::get_criteria().get("avg");
 
         for (const string_t& cmd_network : cmd_networks)
         {
                 // create feed-forward network
-                const auto model = zob::get_models().get("forward-network", cmd_network);
-                ZOB_CHECK_EQUAL(model->resize(*task, false), true);
-                ZOB_CHECK_EQUAL(model->irows(), task->irows());
-                ZOB_CHECK_EQUAL(model->icols(), task->icols());
-                ZOB_CHECK_EQUAL(model->osize(), task->osize());
-                ZOB_CHECK_EQUAL(model->color(), task->color());
+                const auto model = nano::get_models().get("forward-network", cmd_network);
+                NANO_CHECK_EQUAL(model->resize(*task, false), true);
+                NANO_CHECK_EQUAL(model->irows(), task->irows());
+                NANO_CHECK_EQUAL(model->icols(), task->icols());
+                NANO_CHECK_EQUAL(model->osize(), task->osize());
+                NANO_CHECK_EQUAL(model->color(), task->color());
 
                 // test random networks
                 for (size_t t = 0; t < 5; ++ t)
@@ -67,33 +67,33 @@ ZOB_CASE(evaluate)
 
                         // test error & parameters before saving
                         scalar_t lvalue_before, lerror_before;
-                        const size_t lcount_before = zob::evaluate(*task, fold, *loss, *criterion, *model,
+                        const size_t lcount_before = nano::evaluate(*task, fold, *loss, *criterion, *model,
                                                                       lvalue_before, lerror_before);
 
                         vector_t params(model->psize());
-                        ZOB_CHECK(model->save_params(params));
+                        NANO_CHECK(model->save_params(params));
 
                         //
-                        ZOB_CHECK_EQUAL(model->save(path), true);
+                        NANO_CHECK_EQUAL(model->save(path), true);
                         model->zero_params();
-                        ZOB_CHECK_EQUAL(model->load(path), true);
+                        NANO_CHECK_EQUAL(model->load(path), true);
                         //
 
                         // test error & parameters after loading
                         scalar_t lvalue_after, lerror_after;
-                        const size_t lcount_after = zob::evaluate(*task, fold, *loss, *criterion, *model,
+                        const size_t lcount_after = nano::evaluate(*task, fold, *loss, *criterion, *model,
                                                                      lvalue_after, lerror_after);
 
                         vector_t xparams(model->psize());
-                        ZOB_CHECK(model->save_params(xparams));
+                        NANO_CHECK(model->save_params(xparams));
 
                         // check
-                        ZOB_CHECK_EQUAL(lcount_before, lcount_after);
-                        ZOB_CHECK_CLOSE(lvalue_before, lvalue_after, zob::epsilon0<scalar_t>());
-                        ZOB_CHECK_CLOSE(lerror_before, lerror_after, zob::epsilon0<scalar_t>());
+                        NANO_CHECK_EQUAL(lcount_before, lcount_after);
+                        NANO_CHECK_CLOSE(lvalue_before, lvalue_after, nano::epsilon0<scalar_t>());
+                        NANO_CHECK_CLOSE(lerror_before, lerror_after, nano::epsilon0<scalar_t>());
 
-                        ZOB_REQUIRE_EQUAL(params.size(), xparams.size());
-                        ZOB_CHECK_EIGEN_CLOSE(params, xparams, zob::epsilon0<scalar_t>());
+                        NANO_REQUIRE_EQUAL(params.size(), xparams.size());
+                        NANO_CHECK_EIGEN_CLOSE(params, xparams, nano::epsilon0<scalar_t>());
 
                         // cleanup
                         std::remove(path.c_str());
@@ -101,4 +101,4 @@ ZOB_CASE(evaluate)
         }
 }
 
-ZOB_END_MODULE()
+NANO_END_MODULE()

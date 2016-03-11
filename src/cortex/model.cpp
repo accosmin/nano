@@ -7,7 +7,7 @@
 #include "text/from_string.hpp"
 #include <fstream>
 
-namespace zob
+namespace nano
 {
         model_manager_t& get_models()
         {
@@ -28,13 +28,13 @@ namespace zob
         {
                 std::ofstream os(path, std::ios::binary | std::ios::out | std::ios::trunc);
 
-                zob::obstream_t ob(os);
+                nano::obstream_t ob(os);
 
                 // save configuration
                 ob.write(m_rows);
                 ob.write(m_cols);
                 ob.write(m_outputs);
-                ob.write(zob::to_string(m_color));
+                ob.write(nano::to_string(m_color));
                 ob.write(m_configuration);
 
                 // save parameters
@@ -49,13 +49,13 @@ namespace zob
         {
                 std::ifstream is(path, std::ios::binary | std::ios::in);
 
-                zob::ibstream_t ib(is);
+                nano::ibstream_t ib(is);
 
                 // read configuration
                 ib.read(m_rows);
                 ib.read(m_cols);
                 ib.read(m_outputs);
-                { string_t str; ib.read(str); m_color = zob::from_string<color_mode>(str); }
+                { string_t str; ib.read(str); m_color = nano::from_string<color_mode>(str); }
                 ib.read(m_configuration);
 
                 // apply configuration

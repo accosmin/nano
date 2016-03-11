@@ -2,7 +2,7 @@
 
 #include <cmath>
 
-namespace zob
+namespace nano
 {
         ///
         /// \brief absolute value

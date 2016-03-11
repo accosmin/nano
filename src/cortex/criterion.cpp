@@ -3,7 +3,7 @@
 #include "loss.h"
 #include <cassert>
 
-namespace zob
+namespace nano
 {
         criterion_manager_t& get_criteria()
         {

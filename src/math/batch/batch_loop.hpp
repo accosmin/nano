@@ -2,7 +2,7 @@
 
 #include "params.hpp"
 
-namespace zob
+namespace nano
 {
         ///
         /// \brief batch optimization loop

@@ -3,7 +3,7 @@
 #include <string>
 #include <memory>
 
-namespace zob
+namespace nano
 {
         ///
         /// \brief the clonable interface to be used with a manager:
@@ -62,7 +62,7 @@ namespace zob
                 tstring         m_configuration;
         };
 
-        #define ZOB_MAKE_CLONABLE(base_class, description_text) \
+        #define NANO_MAKE_CLONABLE(base_class, description_text) \
                 virtual trobject clone(const tstring& configuration) const override \
                 { \
                         return std::make_shared<base_class>(configuration); \

@@ -7,28 +7,28 @@
 #include <cstdio>
 #include <fstream>
 
-ZOB_BEGIN_MODULE(test_io)
+NANO_BEGIN_MODULE(test_io)
 
-ZOB_CASE(mstream)
+NANO_CASE(mstream)
 {
-        using namespace zob;
+        using namespace nano;
 
         const size_t min_size = 3;
         const size_t max_size = 679 * 1024;
 
         const auto op_check_buffers = [] (const buffer_t& ref_buffer, const buffer_t& buffer)
         {
-                ZOB_REQUIRE_EQUAL(buffer.size(), ref_buffer.size());
-                ZOB_CHECK(std::equal(buffer.begin(), buffer.end(), ref_buffer.begin()));
+                NANO_REQUIRE_EQUAL(buffer.size(), ref_buffer.size());
+                NANO_CHECK(std::equal(buffer.begin(), buffer.end(), ref_buffer.begin()));
         };
 
         for (size_t size = min_size; size <= max_size; size *= 2)
         {
                 // generate reference buffer
-                buffer_t ref_buffer = zob::make_buffer(size);
-                ZOB_CHECK_EQUAL(ref_buffer.size(), size);
+                buffer_t ref_buffer = nano::make_buffer(size);
+                NANO_CHECK_EQUAL(ref_buffer.size(), size);
 
-                zob::random_t<char> rng;
+                nano::random_t<char> rng;
                 for (auto& value : ref_buffer)
                 {
                         value = rng();
@@ -37,12 +37,12 @@ ZOB_CASE(mstream)
                 // check buffer saving to file
                 const std::string path = "mstream.test";
 
-                ZOB_CHECK(zob::save_buffer(path, ref_buffer));
+                NANO_CHECK(nano::save_buffer(path, ref_buffer));
 
                 // check buffer loading from file
                 {
                         buffer_t buffer;
-                        ZOB_CHECK(zob::load_buffer(path, buffer));
+                        NANO_CHECK(nano::load_buffer(path, buffer));
 
                         op_check_buffers(ref_buffer, buffer);
                 }
@@ -51,11 +51,11 @@ ZOB_CASE(mstream)
                 {
                         imstream_t stream(ref_buffer.data(), size);
 
-                        ZOB_CHECK_EQUAL(stream.tellg(), std::streamsize(0));
-                        ZOB_CHECK_EQUAL(stream.size(), static_cast<std::streamsize>(size));
+                        NANO_CHECK_EQUAL(stream.tellg(), std::streamsize(0));
+                        NANO_CHECK_EQUAL(stream.size(), static_cast<std::streamsize>(size));
 
                         buffer_t buffer;
-                        ZOB_CHECK(zob::load_buffer_from_stream(stream, buffer));
+                        NANO_CHECK(nano::load_buffer_from_stream(stream, buffer));
 
                         op_check_buffers(ref_buffer, buffer);
                 }
@@ -64,8 +64,8 @@ ZOB_CASE(mstream)
                 {
                         imstream_t stream(ref_buffer.data(), size);
 
-                        ZOB_CHECK_EQUAL(stream.tellg(), std::streamsize(0));
-                        ZOB_CHECK_EQUAL(stream.size(), static_cast<std::streamsize>(size));
+                        NANO_CHECK_EQUAL(stream.tellg(), std::streamsize(0));
+                        NANO_CHECK_EQUAL(stream.size(), static_cast<std::streamsize>(size));
 
                         buffer_t buffer;
                         char ch;
@@ -82,7 +82,7 @@ ZOB_CASE(mstream)
         }
 }
 
-ZOB_CASE(bstream)
+NANO_CASE(bstream)
 {
         struct pod_t
         {
@@ -105,7 +105,7 @@ ZOB_CASE(bstream)
         {
                 std::ofstream os(path.c_str(), std::ios::binary | std::ios::trunc);
 
-                zob::obstream_t ob(os);
+                nano::obstream_t ob(os);
 
                 ob.write(var_double);
                 ob.write(var_string);
@@ -115,14 +115,14 @@ ZOB_CASE(bstream)
                 ob.write(var_pod);
                 ob.write(var_shorts);
 
-                ZOB_REQUIRE(os.good());
+                NANO_REQUIRE(os.good());
         }
 
         // check reading
         {
                 std::ifstream is(path.c_str(), std::ios::binary);
 
-                zob::ibstream_t ib(is);
+                nano::ibstream_t ib(is);
 
                 double var_double_ex;
                 std::string var_string_ex;
@@ -140,22 +140,22 @@ ZOB_CASE(bstream)
                 ib.read(var_pod_ex);
                 ib.read(var_shorts_ex);
 
-                ZOB_CHECK_EQUAL(var_double, var_double_ex);
-                ZOB_CHECK_EQUAL(var_string, var_string_ex);
-                ZOB_CHECK_EQUAL(var_float, var_float_ex);
-                ZOB_CHECK_EQUAL(var_int, var_int_ex);
-                ZOB_CHECK_EQUAL(var_size_t, var_size_t_ex);
-                ZOB_CHECK_EQUAL(var_pod.d, var_pod_ex.d);
-                ZOB_CHECK_EQUAL(var_pod.f, var_pod_ex.f);
-                ZOB_CHECK_EQUAL(var_pod.i, var_pod_ex.i);
-                ZOB_REQUIRE_EQUAL(var_shorts.size(), var_shorts_ex.size());
-                ZOB_CHECK(std::equal(var_shorts.begin(), var_shorts.end(), var_shorts_ex.begin()));
+                NANO_CHECK_EQUAL(var_double, var_double_ex);
+                NANO_CHECK_EQUAL(var_string, var_string_ex);
+                NANO_CHECK_EQUAL(var_float, var_float_ex);
+                NANO_CHECK_EQUAL(var_int, var_int_ex);
+                NANO_CHECK_EQUAL(var_size_t, var_size_t_ex);
+                NANO_CHECK_EQUAL(var_pod.d, var_pod_ex.d);
+                NANO_CHECK_EQUAL(var_pod.f, var_pod_ex.f);
+                NANO_CHECK_EQUAL(var_pod.i, var_pod_ex.i);
+                NANO_REQUIRE_EQUAL(var_shorts.size(), var_shorts_ex.size());
+                NANO_CHECK(std::equal(var_shorts.begin(), var_shorts.end(), var_shorts_ex.begin()));
 
-                ZOB_CHECK(is);
+                NANO_CHECK(is);
         }
 
         // cleanup
         std::remove(path.c_str());
 }
 
-ZOB_END_MODULE()
+NANO_END_MODULE()

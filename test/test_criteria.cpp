@@ -7,31 +7,31 @@
 #include "cortex/accumulator.h"
 #include "cortex/layers/make_layers.h"
 
-ZOB_BEGIN_MODULE(test_criteria)
+NANO_BEGIN_MODULE(test_criteria)
 
-ZOB_CASE(evaluate)
+NANO_CASE(evaluate)
 {
-        using namespace zob;
+        using namespace nano;
 
-        zob::init();
+        nano::init();
 
-        const auto task = zob::get_tasks().get("random", "dims=2,rows=5,cols=5,color=luma,size=16");
-        ZOB_CHECK_EQUAL(task->load(""), true);
+        const auto task = nano::get_tasks().get("random", "dims=2,rows=5,cols=5,color=luma,size=16");
+        NANO_CHECK_EQUAL(task->load(""), true);
 
         const samples_t samples = task->samples();
         const string_t cmd_model = make_affine_layer(3) + make_output_layer(task->osize());
 
-        const auto loss = zob::get_losses().get("logistic");
+        const auto loss = nano::get_losses().get("logistic");
 
         // create model
-        const auto model = zob::get_models().get("forward-network", cmd_model);
-        ZOB_CHECK_EQUAL(model->resize(*task, true), true);
+        const auto model = nano::get_models().get("forward-network", cmd_model);
+        NANO_CHECK_EQUAL(model->resize(*task, true), true);
 
         // vary criteria
-        const strings_t ids = zob::get_criteria().ids();
+        const strings_t ids = nano::get_criteria().ids();
         for (const string_t& id : ids)
         {
-                const auto criterion = zob::get_criteria().get(id);
+                const auto criterion = nano::get_criteria().get(id);
 
                 const scalar_t lambda = 0.1;
 
@@ -69,9 +69,9 @@ ZOB_CASE(evaluate)
                 model->random_params();
                 model->save_params(x);
 
-                ZOB_CHECK_GREATER(problem(x), 0.0);
-                ZOB_CHECK_LESS(problem.grad_accuracy(x), zob::epsilon1<scalar_t>());
+                NANO_CHECK_GREATER(problem(x), 0.0);
+                NANO_CHECK_LESS(problem.grad_accuracy(x), nano::epsilon1<scalar_t>());
         }
 }
 
-ZOB_END_MODULE()
+NANO_END_MODULE()

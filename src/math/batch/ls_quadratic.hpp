@@ -2,7 +2,7 @@
 
 #include "math/quadratic.hpp"
 
-namespace zob
+namespace nano
 {
         ///
         /// \brief quadratic interpolation in the [step0, step1] line-search interval

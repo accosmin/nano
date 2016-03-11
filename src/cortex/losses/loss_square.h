@@ -2,7 +2,7 @@
 
 #include "cortex/loss.h"
 
-namespace zob
+namespace nano
 {
         ///
         /// \brief square loss (single & multivariate regression)
@@ -13,7 +13,7 @@ namespace zob
 	{
 	public:
 
-                ZOB_MAKE_CLONABLE(square_loss_t, "square loss")
+                NANO_MAKE_CLONABLE(square_loss_t, "square loss")
 
                 // constructor
                 explicit square_loss_t(const string_t& = string_t());

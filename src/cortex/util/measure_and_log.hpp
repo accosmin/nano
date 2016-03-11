@@ -4,7 +4,7 @@
 #include "logger.h"
 #include <cstdlib>
 
-namespace zob
+namespace nano
 {
         ///
         /// \brief measure function call

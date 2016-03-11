@@ -9,23 +9,23 @@
 #include "text/from_params.hpp"
 #include "tensor/transform.hpp"
 
-namespace zob
+namespace nano
 {
         random_task_t::random_task_t(const string_t& configuration)
                 :       task_t(configuration),
-                        m_rows(zob::clamp(zob::from_params<tensor_size_t>(configuration, "rows", 32), 8, 128)),
-                        m_cols(zob::clamp(zob::from_params<tensor_size_t>(configuration, "cols", 32), 8, 128)),
-                        m_dims(zob::clamp(zob::from_params<tensor_size_t>(configuration, "dims", 2), 2, 10)),
+                        m_rows(nano::clamp(nano::from_params<tensor_size_t>(configuration, "rows", 32), 8, 128)),
+                        m_cols(nano::clamp(nano::from_params<tensor_size_t>(configuration, "cols", 32), 8, 128)),
+                        m_dims(nano::clamp(nano::from_params<tensor_size_t>(configuration, "dims", 2), 2, 10)),
                         m_folds(1),
-                        m_color(zob::from_params<color_mode>(configuration, "color", color_mode::rgba)),
-                        m_size(zob::clamp(zob::from_params<size_t>(configuration, "size", 1024), 16, 1024 * 1024))
+                        m_color(nano::from_params<color_mode>(configuration, "color", color_mode::rgba)),
+                        m_size(nano::clamp(nano::from_params<size_t>(configuration, "size", 1024), 16, 1024 * 1024))
         {
         }
 
         bool random_task_t::load(const string_t &)
         {
-                zob::random_t<size_t> rng_protocol(1, 10);
-                zob::random_t<tensor_size_t> rng_output(0, osize() - 1);
+                nano::random_t<size_t> rng_protocol(1, 10);
+                nano::random_t<tensor_size_t> rng_output(0, osize() - 1);
 
                 clear_memory(0);
 
@@ -48,8 +48,8 @@ namespace zob
 
                                 // generate sample
                                 sample_t sample(n_images() - 1, sample_region(0, 0));
-                                sample.m_label = string_t("class") + zob::to_string(o);
-                                sample.m_target = zob::class_target(o, osize());
+                                sample.m_label = string_t("class") + nano::to_string(o);
+                                sample.m_target = nano::class_target(o, osize());
                                 sample.m_fold = {f, p};
                                 add_sample(sample);
                         }

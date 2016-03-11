@@ -3,12 +3,12 @@
 #include "arch.h"
 #include <iostream>
 
-namespace zob
+namespace nano
 {
         ///
         /// \brief logging object that can use any std::ostream (standard streaming & text files)
         ///
-        class ZOB_PUBLIC logger_t
+        class NANO_PUBLIC logger_t
         {
         public:
 

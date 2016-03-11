@@ -3,7 +3,7 @@
 #include "io/buffer.h"
 #include "cortex/task.h"
 
-namespace zob
+namespace nano
 {
         ///
         /// SVHN task:
@@ -17,7 +17,7 @@ namespace zob
         {
         public:
 
-                ZOB_MAKE_CLONABLE(svhn_task_t, "SVHN (object classification)")
+                NANO_MAKE_CLONABLE(svhn_task_t, "SVHN (object classification)")
 
                 // constructor
                 explicit svhn_task_t(const string_t& configuration = string_t());
@@ -38,7 +38,7 @@ namespace zob
                 size_t load(const string_t& bfile, protocol p);
 
                 // decode the uncompressed bytes (images + labels)
-                size_t decode(const zob::buffer_t& image_data, const zob::buffer_t& label_data, const protocol p);
+                size_t decode(const nano::buffer_t& image_data, const nano::buffer_t& label_data, const protocol p);
         };
 }
 

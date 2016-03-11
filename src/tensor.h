@@ -3,7 +3,7 @@
 #include "scalar.h"
 #include "tensor/tensor.hpp"
 
-namespace zob
+namespace nano
 {
         using vector_t = tensor::vector_t<scalar_t>;
         using vectors_t = std::vector<vector_t>;

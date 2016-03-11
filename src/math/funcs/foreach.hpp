@@ -20,7 +20,7 @@
 #include "function_styblinski_tang.hpp"
 #include "function_rotated_ellipsoid.hpp"
 
-namespace zob
+namespace nano
 {
         enum class test_type
         {
@@ -64,7 +64,7 @@ namespace zob
                         break;
                 }
 
-                for (typename zob::problem_t<tscalar>::tsize dims = min_dims; dims <= max_dims; dims *= 2)
+                for (typename nano::problem_t<tscalar>::tsize dims = min_dims; dims <= max_dims; dims *= 2)
                 {
                         switch (type)
                         {

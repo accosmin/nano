@@ -1,6 +1,6 @@
 #pragma once
 
-namespace zob
+namespace nano
 {
         ///
         /// \brief batch optimization methods

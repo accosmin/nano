@@ -8,7 +8,7 @@
 #include "batch/cgd.hpp"
 #include "batch/lbfgs.hpp"
 
-namespace zob
+namespace nano
 {
         ///
         /// \brief batch optimization (can detail the line-search parameters)

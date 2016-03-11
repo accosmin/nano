@@ -7,7 +7,7 @@
 #include "text/to_string.hpp"
 #include "cortex/util/logger.h"
 
-namespace zob
+namespace nano
 {
         mnist_task_t::mnist_task_t(const string_t& configuration)
                 :       task_t(configuration)
@@ -37,7 +37,7 @@ namespace zob
                 size_t gcount = 0;
 
                 const auto buffer_size = irows() * icols();
-                std::vector<char> buffer = zob::make_buffer(buffer_size);
+                std::vector<char> buffer = nano::make_buffer(buffer_size);
                 char label[2];
 
                 const auto error_op = [&] (const string_t& message)
@@ -46,9 +46,9 @@ namespace zob
                 };
 
                 // load images
-                const auto iop = [&] (const string_t&, const zob::buffer_t& data)
+                const auto iop = [&] (const string_t&, const nano::buffer_t& data)
                 {
-                        zob::imstream_t stream(data.data(), data.size());
+                        nano::imstream_t stream(data.data(), data.size());
 
                         stream.read(buffer.data(), 16);
                         while (stream.read(buffer.data(), buffer_size))
@@ -64,29 +64,29 @@ namespace zob
                 };
 
                 log_info() << "MNIST: loading file <" << ifile << "> ...";
-                if (!zob::unarchive(ifile, iop, error_op))
+                if (!nano::unarchive(ifile, iop, error_op))
                 {
                         log_error() << "MNIST: failed to load file <" << ifile << ">!";
                         return false;
                 }
 
                 // load ground truth
-                const auto gop = [&] (const string_t&, const zob::buffer_t& data)
+                const auto gop = [&] (const string_t&, const nano::buffer_t& data)
                 {
-                        zob::imstream_t stream(data.data(), data.size());
+                        nano::imstream_t stream(data.data(), data.size());
 
                         stream.read(buffer.data(), 8);
                         while (stream.read(label, 1) && stream.gcount() == 1)
                         {
-                                const tensor_index_t ilabel = zob::cast<tensor_index_t>(label[0]);
+                                const tensor_index_t ilabel = nano::cast<tensor_index_t>(label[0]);
                                 if (ilabel >= osize())
                                 {
                                         continue;
                                 }
 
                                 sample_t sample(iindex, sample_region(0, 0));
-                                sample.m_label = "digit" + zob::to_string(ilabel);
-                                sample.m_target = zob::class_target(ilabel, osize());
+                                sample.m_label = "digit" + nano::to_string(ilabel);
+                                sample.m_target = nano::class_target(ilabel, osize());
                                 sample.m_fold = { 0, p };
                                 add_sample(sample);
 
@@ -98,7 +98,7 @@ namespace zob
                 };
 
                 log_info() << "MNIST: loading file <" << gfile << "> ...";
-                if (!zob::unarchive(gfile, gop, error_op))
+                if (!nano::unarchive(gfile, gop, error_op))
                 {
                         log_error() << "MNIST: failed to load file <" << gfile << ">!";
                         return false;

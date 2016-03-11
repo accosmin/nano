@@ -8,10 +8,10 @@
 
 int main(int argc, char *argv[])
 {
-        using namespace zob;
+        using namespace nano;
 
         // parse the command line
-        zob::cmdline_t cmdline("randomly warp the input image");
+        nano::cmdline_t cmdline("randomly warp the input image");
         cmdline.add("i", "input",       "input image path");
         cmdline.add("c", "count",       "number of random warpings to generate", "32");
         cmdline.add("", "translation",  "use translation fields");
@@ -54,7 +54,7 @@ int main(int argc, char *argv[])
 
         // load input image
         image_t iimage;
-        zob::measure_critical_and_log(
+        nano::measure_critical_and_log(
                [&] () { return iimage.load_rgba(cmd_input); },
                "load image from <" + cmd_input + ">");
 
@@ -66,23 +66,23 @@ int main(int argc, char *argv[])
         {
                 // warp
                 tensor_t otensor, ftensor;
-                zob::measure_and_log(
+                nano::measure_and_log(
                         [&] () { otensor = warp(color::to_rgba_tensor(iimage.rgba()), params, &ftensor); },
                         "warped image");
 
                 // prepare output paths
-                const string_t basename = zob::dirname(cmd_output) + zob::stem(cmd_output);
-                const string_t extension = zob::extension(cmd_output);
+                const string_t basename = nano::dirname(cmd_output) + nano::stem(cmd_output);
+                const string_t extension = nano::extension(cmd_output);
 
-                const string_t opath = basename + zob::to_string(c + 1) + extension;
-                const string_t fpath = basename + zob::to_string(c + 1) + "_field" + extension;
+                const string_t opath = basename + nano::to_string(c + 1) + extension;
+                const string_t fpath = basename + nano::to_string(c + 1) + "_field" + extension;
 
                 // save warped image
                 {
                         image_t image;
                         image.load_rgba(color::from_rgba_tensor(otensor));
 
-                        zob::measure_critical_and_log(
+                        nano::measure_critical_and_log(
                                 [&] () { return image.save(opath); },
                                 "save warped image to <" + opath + ">");
                 }
@@ -93,13 +93,13 @@ int main(int argc, char *argv[])
                         image_t image;
                         image.load_rgba(color::from_rgba_tensor(ftensor));
 
-                        zob::measure_critical_and_log(
+                        nano::measure_critical_and_log(
                                 [&] () { return image.save(fpath); },
                                 "save field image to <" + fpath + ">");
                 }
         }
 
         // OK
-        log_info() << zob::done;
+        log_info() << nano::done;
         return EXIT_SUCCESS;
 }

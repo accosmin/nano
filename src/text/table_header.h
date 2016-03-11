@@ -3,7 +3,7 @@
 #include "to_string.hpp"
 #include <vector>
 
-namespace zob
+namespace nano
 {
         ///
         /// \brief a header in the table
@@ -21,7 +21,7 @@ namespace zob
                 >
                 table_header_t& operator<<(tvalue value)
                 {
-                        m_values.emplace_back(zob::to_string(value));
+                        m_values.emplace_back(nano::to_string(value));
                         return *this;
                 }
 

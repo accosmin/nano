@@ -2,7 +2,7 @@
 
 #include "cortex/loss.h"
 
-namespace zob
+namespace nano
 {
         ///
         /// \brief Cauchy loss (single & multivariate regression)
@@ -13,7 +13,7 @@ namespace zob
         {
         public:
 
-                ZOB_MAKE_CLONABLE(cauchy_loss_t, "Cauchy loss")
+                NANO_MAKE_CLONABLE(cauchy_loss_t, "Cauchy loss")
 
                 // constructor
                 explicit cauchy_loss_t(const string_t& = string_t());

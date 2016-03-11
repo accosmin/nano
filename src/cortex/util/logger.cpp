@@ -3,7 +3,7 @@
 #include <string>
 #include <iomanip>
 
-namespace zob
+namespace nano
 {
         logger_t::logger_t(std::ostream& stream, const char* header, bool flush)
                 :       m_stream(stream),

@@ -5,14 +5,14 @@
 #include <vector>
 #include <thread>
 
-namespace zob
+namespace nano
 {
         ///
         /// \brief thread pool
         ///
         /// NB: this is heavily copied/inspired by http://progsch.net/wordpress/?p=81
         ///
-        class ZOB_PUBLIC pool_t
+        class NANO_PUBLIC pool_t
         {
         public:
 

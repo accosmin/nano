@@ -80,7 +80,7 @@ namespace
 int main(int argc, char* argv[])
 {
         // parse the command line
-        zob::cmdline_t cmdline("compute all convolution networks with squared kernels for a given input size");
+        nano::cmdline_t cmdline("compute all convolution networks with squared kernels for a given input size");
         cmdline.add("", "irows",        "number of input rows [16, 256]");
         cmdline.add("", "icols",        "number of input columns [16, 256]");
         cmdline.add("", "max-krows",    "maximum convolution size [3, 15]");
@@ -89,9 +89,9 @@ int main(int argc, char* argv[])
         cmdline.process(argc, argv);
 
         // check arguments and options
-        const auto irows = zob::clamp(cmdline.get<int>("irows"), 16, 256);
-        const auto icols = zob::clamp(cmdline.get<int>("icols"), 16, 256);
-        const auto max_krows = zob::clamp(cmdline.get<int>("max-krows"), 3, 15);
+        const auto irows = nano::clamp(cmdline.get<int>("irows"), 16, 256);
+        const auto icols = nano::clamp(cmdline.get<int>("icols"), 16, 256);
+        const auto max_krows = nano::clamp(cmdline.get<int>("max-krows"), 3, 15);
         const auto min_krows = 3;
         const auto use_pooling = cmdline.has("pooling");
 

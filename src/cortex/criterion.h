@@ -4,7 +4,7 @@
 #include "sample.h"
 #include "math/stats.hpp"
 
-namespace zob
+namespace nano
 {
         class criterion_t;
         class loss_t;
@@ -16,13 +16,13 @@ namespace zob
         using criterion_manager_t = manager_t<criterion_t>;
         using rcriterion_t = criterion_manager_t::trobject;
 
-        ZOB_PUBLIC criterion_manager_t& get_criteria();
+        NANO_PUBLIC criterion_manager_t& get_criteria();
 
         ///
         /// \brief accumulate sample evaluations (loss value, error and gradient),
         ///     this is the base case without regularization
         ///
-        class ZOB_PUBLIC criterion_t : public clonable_t<criterion_t>
+        class NANO_PUBLIC criterion_t : public clonable_t<criterion_t>
         {
         public:
 
@@ -149,7 +149,7 @@ namespace zob
                 scalar_t                m_lambda;       ///< regularization weight (if any)
                 type                    m_type;         ///<
 
-                zob::stats_t<scalar_t> m_estats;       ///< loss error statistics
+                nano::stats_t<scalar_t> m_estats;       ///< loss error statistics
         };
 }
 

@@ -3,7 +3,7 @@
 #include <cassert>
 #include "math/clamp.hpp"
 
-namespace zob
+namespace nano
 {
         ///
         /// \brief compute the x gradient of the input matrix
@@ -25,8 +25,8 @@ namespace zob
                 {
                         for (int c = 0; c < cols; ++ c)
                         {
-                                const int cn = zob::clamp(c - 1, 0, cols - 1);
-                                const int cp = zob::clamp(c + 1, 0, cols - 1);
+                                const int cn = nano::clamp(c - 1, 0, cols - 1);
+                                const int cp = nano::clamp(c + 1, 0, cols - 1);
 
                                 xplane(r, c) = srcplane(r, cp) - srcplane(r, cn);
                         }
@@ -51,8 +51,8 @@ namespace zob
 
                 for (int r = 0; r < rows; ++ r)
                 {
-                        const int rn = zob::clamp(r - 1, 0, rows - 1);
-                        const int rp = zob::clamp(r + 1, 0, rows - 1);
+                        const int rn = nano::clamp(r - 1, 0, rows - 1);
+                        const int rp = nano::clamp(r + 1, 0, rows - 1);
 
                         for (int c = 0; c < cols; ++ c)
                         {

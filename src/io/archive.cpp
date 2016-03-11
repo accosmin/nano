@@ -4,7 +4,7 @@
 #include <archive.h>
 #include <archive_entry.h>
 
-namespace zob
+namespace nano
 {
         enum class archive_type : int
         {
@@ -18,26 +18,26 @@ namespace zob
 
         static archive_type decode_archive_type(const std::string& path)
         {
-                if (    zob::iends_with(path, ".tar.gz") ||
-                        zob::iends_with(path, ".tgz"))
+                if (    nano::iends_with(path, ".tar.gz") ||
+                        nano::iends_with(path, ".tgz"))
                 {
                         return archive_type::tar_gz;
                 }
 
-                else if (zob::iends_with(path, ".tar.bz2") ||
-                         zob::iends_with(path, ".tbz") ||
-                         zob::iends_with(path, ".tbz2") ||
-                         zob::iends_with(path, ".tb2"))
+                else if (nano::iends_with(path, ".tar.bz2") ||
+                         nano::iends_with(path, ".tbz") ||
+                         nano::iends_with(path, ".tbz2") ||
+                         nano::iends_with(path, ".tb2"))
                 {
                         return archive_type::tar_bz2;
                 }
 
-                else if (zob::iends_with(path, ".tar"))
+                else if (nano::iends_with(path, ".tar"))
                 {
                         return archive_type::tar;
                 }
 
-                else if (zob::iends_with(path, ".gz"))
+                else if (nano::iends_with(path, ".gz"))
                 {
                         return archive_type::gz;
                 }

@@ -2,7 +2,7 @@
 
 #include "sample.h"
 
-namespace zob
+namespace nano
 {
         class task_t;
         class loss_t;
@@ -12,7 +12,7 @@ namespace zob
         ///
         /// \brief evaluate a model (compute the average loss value & error)
         ///
-        ZOB_PUBLIC size_t evaluate(const task_t&, const fold_t&, const loss_t&, const criterion_t&, const model_t&,
+        NANO_PUBLIC size_t evaluate(const task_t&, const fold_t&, const loss_t&, const criterion_t&, const model_t&,
                                       scalar_t& lvalue, scalar_t& lerror);
 }
 

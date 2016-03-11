@@ -2,7 +2,7 @@
 
 #include "cortex/task.h"
 
-namespace zob
+namespace nano
 {
         enum class charset
         {
@@ -23,11 +23,11 @@ namespace zob
         ///     color           - color mode
         ///     size            - number of samples (training + validation)
         ///
-        class ZOB_PUBLIC charset_task_t : public task_t
+        class NANO_PUBLIC charset_task_t : public task_t
         {
         public:
 
-                ZOB_MAKE_CLONABLE(charset_task_t,
+                NANO_MAKE_CLONABLE(charset_task_t,
                                      "synthetic character classification: type=digit[lalpha,ualpha,alpha,alphanum],"\
                                      "rows=32[16,128],cols=32[16,128],"\
                                      "color=rgba[,luma],size=1024[16,1024*1024]")

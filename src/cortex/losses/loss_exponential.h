@@ -2,7 +2,7 @@
 
 #include "cortex/loss.h"
 
-namespace zob
+namespace nano
 {
         ///
         /// \brief softmax multi-class logistic loss: softmax(exp(-targets_k * scores_k), k)
@@ -11,7 +11,7 @@ namespace zob
         {
         public:
 
-                ZOB_MAKE_CLONABLE(exponential_loss_t, "multi-class exponential loss")
+                NANO_MAKE_CLONABLE(exponential_loss_t, "multi-class exponential loss")
 
                 // constructor
                 explicit exponential_loss_t(const string_t& = string_t());

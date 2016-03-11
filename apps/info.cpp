@@ -9,14 +9,14 @@ namespace
         <
                 typename tobject
         >
-        void print(const zob::string_t& name, const zob::manager_t<tobject>& manager)
+        void print(const nano::string_t& name, const nano::manager_t<tobject>& manager)
         {
-                using namespace zob;
+                using namespace nano;
 
                 const strings_t ids = manager.ids();
                 const strings_t descriptions = manager.descriptions();
 
-                zob::table_t table(name);
+                nano::table_t table(name);
                 table.header() << "description";
 
                 for (size_t i = 0; i < ids.size(); ++ i)
@@ -30,10 +30,10 @@ namespace
 
 int main(int argc, char* argv[])
 {
-        zob::init();
+        nano::init();
 
         // parse the command line
-        zob::cmdline_t cmdline("display the registered objects");
+        nano::cmdline_t cmdline("display the registered objects");
         cmdline.add("", "loss",         "loss functions");
         cmdline.add("", "task",         "tasks");
         cmdline.add("", "layer",        "layer types to built models");
@@ -46,27 +46,27 @@ int main(int argc, char* argv[])
         // check arguments and options
         if (cmdline.has("loss"))
         {
-                print("loss", zob::get_losses());
+                print("loss", nano::get_losses());
         }
         if (cmdline.has("task"))
         {
-                print("task", zob::get_tasks());
+                print("task", nano::get_tasks());
         }
         if (cmdline.has("layer"))
         {
-                print("layer", zob::get_layers());
+                print("layer", nano::get_layers());
         }
         if (cmdline.has("model"))
         {
-                print("model", zob::get_models());
+                print("model", nano::get_models());
         }
         if (cmdline.has("trainer"))
         {
-                print("trainer", zob::get_trainers());
+                print("trainer", nano::get_trainers());
         }
         if (cmdline.has("criterion"))
         {
-                print("criterion", zob::get_criteria());
+                print("criterion", nano::get_criteria());
         }
 
         // OK

@@ -3,7 +3,7 @@
 #include "lrate.hpp"
 #include "stoch_loop.hpp"
 
-namespace zob
+namespace nano
 {
         ///
         /// \brief restart methods for Nesterov's accelerated gradient
@@ -44,9 +44,9 @@ namespace zob
                                 return this->operator()(param.tunable(), problem, x0, params...);
                         };
 
-                        const auto qs = zob::make_finite_space(0.0);
+                        const auto qs = nano::make_finite_space(0.0);
 
-                        const auto config = zob::tune(op, make_alpha0s(), make_decays(), qs);
+                        const auto config = nano::tune(op, make_alpha0s(), make_decays(), qs);
                         return operator()(param, problem, x0, config.param0(), config.param1(), config.param2());
                 }
 

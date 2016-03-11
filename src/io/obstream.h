@@ -7,12 +7,12 @@
 #include <type_traits>
 #include <eigen3/Eigen/Core>
 
-namespace zob
+namespace nano
 {
         ///
         /// \brief wrapper over binary std::ostream
         ///
-        class ZOB_PUBLIC obstream_t
+        class NANO_PUBLIC obstream_t
         {
         public:
 

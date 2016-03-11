@@ -2,7 +2,7 @@
 
 #include "layer_activation.h"
 
-namespace zob
+namespace nano
 {        
         namespace detail
         {
@@ -35,7 +35,7 @@ namespace zob
         {
         public:
 
-                ZOB_MAKE_CLONABLE(tanh_activation_layer_t, "hyperbolic tangent activation layer")
+                NANO_MAKE_CLONABLE(tanh_activation_layer_t, "hyperbolic tangent activation layer")
 
                 // constructor
                 explicit tanh_activation_layer_t(const string_t& parameters = string_t())

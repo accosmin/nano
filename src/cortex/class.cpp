@@ -1,6 +1,6 @@
 #include "class.h"
 
-namespace zob
+namespace nano
 {
         scalar_t pos_target()
         {

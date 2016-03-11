@@ -3,7 +3,7 @@
 #include <map>
 #include <IL/il.h>
 
-namespace zob
+namespace nano
 {
         static bool load_image(color_mode mode, rgba_matrix_t& rgba, luma_matrix_t& luma)
         {
@@ -88,7 +88,7 @@ namespace zob
                 ILenum type = IL_TYPE_UNKNOWN;
                 for (const auto& extension : extensions)
                 {
-                        if (zob::iends_with(name, extension.first))
+                        if (nano::iends_with(name, extension.first))
                         {
                                 type = extension.second;
                         }

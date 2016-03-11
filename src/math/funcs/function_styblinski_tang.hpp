@@ -3,7 +3,7 @@
 #include "util.hpp"
 #include "function.hpp"
 
-namespace zob
+namespace nano
 {
         ///
         /// \brief create Styblinski-Tang test functions

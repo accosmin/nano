@@ -2,12 +2,12 @@
 
 #include "criterion.h"
 
-namespace zob
+namespace nano
 {
         ///
         /// \brief cumulate sample evaluations (loss value, error and gradient)
         ///
-        class ZOB_PUBLIC accumulator_t
+        class NANO_PUBLIC accumulator_t
         {
         public:
 

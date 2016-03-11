@@ -8,7 +8,7 @@
 #include "cortex/util/logger.h"
 #include <fstream>
 
-namespace zob
+namespace nano
 {
         svhn_task_t::svhn_task_t(const string_t& configuration)
                 :       task_t(configuration)
@@ -60,22 +60,22 @@ namespace zob
                 }
 
                 // data sections (image rgb + labels)
-                zob::buffer_t image_data;
-                zob::buffer_t label_data;
+                nano::buffer_t image_data;
+                nano::buffer_t label_data;
                 for (int isection = 0; isection < 2; ++ isection)
                 {
                         // section header
-                        zob::mat5_section_t section;
+                        nano::mat5_section_t section;
                         if (!section.load(istream))
                         {
                                 log_error() << "SVHN: failed to read section!";
                                 return 0;
                         }
 
-                        if (section.m_dtype != zob::mat5_buffer_type::miCOMPRESSED)
+                        if (section.m_dtype != nano::mat5_buffer_type::miCOMPRESSED)
                         {
                                 log_error() << "SVHN: invalid data type <" << to_string(section.m_dtype)
-                                            << ">! expecting " << to_string(zob::mat5_buffer_type::miCOMPRESSED) << "!";
+                                            << ">! expecting " << to_string(nano::mat5_buffer_type::miCOMPRESSED) << "!";
                                 return 0;
                         }
 
@@ -83,7 +83,7 @@ namespace zob
                         log_info() << "SVHN: uncompressing " << section.dsize() << " bytes ...";
 
                         auto& data = (isection == 0) ? image_data : label_data;
-                        if (!zob::uncompress_gzip(istream, section.dsize(), data))
+                        if (!nano::uncompress_gzip(istream, section.dsize(), data))
                         {
                                 log_error() << "SVHN: invalid gzip archive!";
                                 return 0;
@@ -96,13 +96,13 @@ namespace zob
                 return decode(image_data, label_data, p);
         }
 
-        size_t svhn_task_t::decode(const zob::buffer_t& idata, const zob::buffer_t& ldata, const protocol p)
+        size_t svhn_task_t::decode(const nano::buffer_t& idata, const nano::buffer_t& ldata, const protocol p)
         {
-                zob::imstream_t istream(idata.data(), idata.size());
-                zob::imstream_t lstream(ldata.data(), ldata.size());
+                nano::imstream_t istream(idata.data(), idata.size());
+                nano::imstream_t lstream(ldata.data(), ldata.size());
 
                 // decode image & label arrays
-                zob::mat5_array_t iarray, larray;
+                nano::mat5_array_t iarray, larray;
                 if (    !iarray.load_header(istream) ||
                         !iarray.load_body(istream))
                 {
@@ -141,8 +141,8 @@ namespace zob
                 }
 
                 // check data type
-                if (    isection.m_dtype != zob::mat5_buffer_type::miUINT8 ||
-                        lsection.m_dtype != zob::mat5_buffer_type::miUINT8)
+                if (    isection.m_dtype != nano::mat5_buffer_type::miUINT8 ||
+                        lsection.m_dtype != nano::mat5_buffer_type::miUINT8)
                 {
                         log_error() << "SVHN: expecting UINT8 image & label arrays!";
                         return 0;
@@ -193,8 +193,8 @@ namespace zob
 
                         // sample
                         sample_t sample(n_images() - 1, sample_region(0, 0));
-                        sample.m_label = "digit" + zob::to_string(ilabel);
-                        sample.m_target = zob::class_target(ilabel, osize());
+                        sample.m_label = "digit" + nano::to_string(ilabel);
+                        sample.m_target = nano::class_target(ilabel, osize());
                         sample.m_fold = { 0, p };
                         add_sample(sample);
 

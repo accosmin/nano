@@ -6,8 +6,8 @@ namespace test
 {
         void check_stats(double avg, double var, size_t count)
         {
-                zob::stats_t<double> stats;
-                auto rgen = zob::make_rng<double>(-var, +var);
+                nano::stats_t<double> stats;
+                auto rgen = nano::make_rng<double>(-var, +var);
 
                 // generate random values
                 std::vector<double> values;
@@ -19,28 +19,28 @@ namespace test
                 }
 
                 // check count
-                ZOB_CHECK_EQUAL(stats.count(), count);
+                NANO_CHECK_EQUAL(stats.count(), count);
 
                 // check range
-                ZOB_CHECK_GREATER_EQUAL(stats.min(), avg - var);
-                ZOB_CHECK_LESS_EQUAL(stats.max(), avg + var);
+                NANO_CHECK_GREATER_EQUAL(stats.min(), avg - var);
+                NANO_CHECK_LESS_EQUAL(stats.max(), avg + var);
 
                 // check average
-                ZOB_CHECK_GREATER_EQUAL(stats.avg(), avg - var);
-                ZOB_CHECK_LESS_EQUAL(stats.avg(), avg + var);
+                NANO_CHECK_GREATER_EQUAL(stats.avg(), avg - var);
+                NANO_CHECK_LESS_EQUAL(stats.avg(), avg + var);
 
                 // check variance
-                ZOB_CHECK_GREATER_EQUAL(stats.var(), 0.0);
-                ZOB_CHECK_LESS_EQUAL(std::sqrt(stats.var()), var);
+                NANO_CHECK_GREATER_EQUAL(stats.var(), 0.0);
+                NANO_CHECK_LESS_EQUAL(std::sqrt(stats.var()), var);
 
                 // check sum
-                ZOB_CHECK_CLOSE(stats.sum(), std::accumulate(values.begin(), values.end(), 0.0), 1e-8);
+                NANO_CHECK_CLOSE(stats.sum(), std::accumulate(values.begin(), values.end(), 0.0), 1e-8);
         }
 }
 
-ZOB_BEGIN_MODULE(test_stats)
+NANO_BEGIN_MODULE(test_stats)
 
-ZOB_CASE(evaluate)
+NANO_CASE(evaluate)
 {
         test::check_stats(0.03, 0.005, 32);
         test::check_stats(1.03, 13.005, 37);
@@ -48,5 +48,5 @@ ZOB_CASE(evaluate)
         test::check_stats(-7.03, 10.005, 11);
 }
 
-ZOB_END_MODULE()
+NANO_END_MODULE()
 

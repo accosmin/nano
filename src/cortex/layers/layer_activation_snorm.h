@@ -2,7 +2,7 @@
 
 #include "layer_activation.h"
 
-namespace zob
+namespace nano
 {
         namespace detail
         {
@@ -35,7 +35,7 @@ namespace zob
         {
         public:
 
-                ZOB_MAKE_CLONABLE(snorm_activation_layer_t, "x/sqrt(1+x^2) activation layer")
+                NANO_MAKE_CLONABLE(snorm_activation_layer_t, "x/sqrt(1+x^2) activation layer")
 
                 // constructor
                 explicit snorm_activation_layer_t(const string_t& parameters = string_t())

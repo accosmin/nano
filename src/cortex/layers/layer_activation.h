@@ -3,7 +3,7 @@
 #include "cortex/layer.h"
 #include "tensor/transform.hpp"
 
-namespace zob
+namespace nano
 {
         ///
         /// \brief activation layer: applies a non-linear scalar function to the each input
@@ -38,7 +38,7 @@ namespace zob
 
                 // reset parameters
                 virtual void zero_params() override {}
-                virtual void random_params(scalar_t min, scalar_t max) override { ZOB_UNUSED2(min, max); }
+                virtual void random_params(scalar_t min, scalar_t max) override { NANO_UNUSED2(min, max); }
 
                 // serialize parameters
                 virtual scalar_t* save_params(scalar_t* params) const override { return params; }
@@ -97,7 +97,7 @@ namespace zob
                 // gradient
                 void _gparam(const tensor_t& output)
                 {
-                        ZOB_UNUSED1_RELEASE(output);
+                        NANO_UNUSED1_RELEASE(output);
 
                         assert(m_data.dims() == output.dims());
                         assert(m_data.rows() == output.rows());

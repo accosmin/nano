@@ -3,7 +3,7 @@
 #include <vector>
 #include <string>
 
-namespace zob
+namespace nano
 {
         // strings
         using string_t = std::string;

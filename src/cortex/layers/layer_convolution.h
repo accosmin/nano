@@ -2,7 +2,7 @@
 
 #include "cortex/layer.h"
 
-namespace zob
+namespace nano
 {
         ///
         /// \brief fully-connected convolution layer as in convolution networks.
@@ -16,7 +16,7 @@ namespace zob
         {
         public:
 
-                ZOB_MAKE_CLONABLE(conv_layer_t, "convolution layer: dims=16[1,256],rows=8[1,32],cols=8[1,32]")
+                NANO_MAKE_CLONABLE(conv_layer_t, "convolution layer: dims=16[1,256],rows=8[1,32],cols=8[1,32]")
 
                 // constructor
                 explicit conv_layer_t(const string_t& parameters = string_t());

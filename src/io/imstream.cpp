@@ -1,7 +1,7 @@
 #include "imstream.h"
 #include <algorithm>
 
-namespace zob
+namespace nano
 {
         static bool isendl(char c)
         {

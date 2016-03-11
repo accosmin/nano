@@ -1,7 +1,7 @@
 #include "loss_square.h"
 #include <cassert>
 
-namespace zob
+namespace nano
 {
         square_loss_t::square_loss_t(const string_t& configuration)
                 :       loss_t(configuration)
@@ -31,7 +31,7 @@ namespace zob
 
         indices_t square_loss_t::labels(const vector_t& scores) const
         {
-                ZOB_UNUSED1(scores);
+                NANO_UNUSED1(scores);
 
                 return indices_t();
 	}

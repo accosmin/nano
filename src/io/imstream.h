@@ -5,12 +5,12 @@
 #include <string>
 #include <cstddef>
 
-namespace zob
+namespace nano
 {
         ///
         /// \brief map the std::istream's interface over a fixed-size in-memory buffer
         ///
-        class ZOB_PUBLIC imstream_t
+        class NANO_PUBLIC imstream_t
         {
         public:
 

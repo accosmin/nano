@@ -3,7 +3,7 @@
 #include "cortex/sampler.h"
 #include "cortex/optimizer.h"
 
-namespace zob
+namespace nano
 {
         class task_t;
         class loss_t;

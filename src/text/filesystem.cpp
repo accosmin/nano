@@ -1,6 +1,6 @@
 #include "filesystem.h"
 
-namespace zob
+namespace nano
 {
         std::string filename(const std::string& path)
         {

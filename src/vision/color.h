@@ -8,7 +8,7 @@
 #include <iosfwd>
 #include <cstdint>
 
-namespace zob
+namespace nano
 {
         /// RGBA
         using rgba_t = uint32_t;
@@ -40,7 +40,7 @@ namespace zob
                 rgba                    ///< process red, green & blue color channels
         };
 
-        ZOB_PUBLIC std::ostream& operator<<(std::ostream&, color_mode);
+        NANO_PUBLIC std::ostream& operator<<(std::ostream&, color_mode);
 
         // manipulate colors
         namespace color
@@ -58,7 +58,7 @@ namespace zob
 
                 inline luma_t make_luma(rgba_t r, rgba_t g, rgba_t b)
                 {
-                        return zob::cast<luma_t>((r * 11 + g * 16 + b * 5) / 32);
+                        return nano::cast<luma_t>((r * 11 + g * 16 + b * 5) / 32);
                 }
                 inline luma_t make_luma(rgba_t rgba)
                 {
@@ -78,78 +78,78 @@ namespace zob
                 ///
                 /// \brief minimum color range
                 ///
-                ZOB_PUBLIC scalar_t min(color_channel ch);
+                NANO_PUBLIC scalar_t min(color_channel ch);
 
                 ///
                 /// \brief maximum color range
                 ///
-                ZOB_PUBLIC scalar_t max(color_channel ch);
+                NANO_PUBLIC scalar_t max(color_channel ch);
 
                 ///
                 /// \brief create random RGBA color
                 ///
-                ZOB_PUBLIC rgba_t make_random_rgba();
+                NANO_PUBLIC rgba_t make_random_rgba();
 
                 ///
                 /// \brief create random RGBA color as opposite as possible from the source color
                 ///
-                ZOB_PUBLIC rgba_t make_opposite_random_rgba(const rgba_t source);
+                NANO_PUBLIC rgba_t make_opposite_random_rgba(const rgba_t source);
 
                 ///
                 /// \brief transform patch to scaled [0, 1] tensor with 1 plane (luma)
                 ///
-                ZOB_PUBLIC tensor_t to_luma_tensor(const luma_matrix_t& patch);
+                NANO_PUBLIC tensor_t to_luma_tensor(const luma_matrix_t& patch);
 
                 ///
                 /// \brief transform patch to scaled [0, 1] tensor with 3 planes (rgb)
                 ///
-                ZOB_PUBLIC tensor_t to_rgb_tensor(const rgba_matrix_t& patch);
+                NANO_PUBLIC tensor_t to_rgb_tensor(const rgba_matrix_t& patch);
 
                 ///
                 /// \brief transform patch to scaled [0, 1] tensor with 4 planes (rgba)
                 ///
-                ZOB_PUBLIC tensor_t to_rgba_tensor(const rgba_matrix_t& patch);
+                NANO_PUBLIC tensor_t to_rgba_tensor(const rgba_matrix_t& patch);
 
                 ///
                 /// \brief transform 1 plane scaled [0, 1] patch to luma matrix
                 ///
-                ZOB_PUBLIC luma_matrix_t from_luma_tensor(const tensor_t& patch);
+                NANO_PUBLIC luma_matrix_t from_luma_tensor(const tensor_t& patch);
 
                 ///
                 /// \brief transform 3 planes scaled [0, 1] patch to rgb matrix
                 ///
-                ZOB_PUBLIC rgba_matrix_t from_rgb_tensor(const tensor_t& patch);
+                NANO_PUBLIC rgba_matrix_t from_rgb_tensor(const tensor_t& patch);
 
                 ///
                 /// \brief transform 4 planes scaled [0, 1] patch to rgba matrix
                 ///
-                ZOB_PUBLIC rgba_matrix_t from_rgba_tensor(const tensor_t& patch);
+                NANO_PUBLIC rgba_matrix_t from_rgba_tensor(const tensor_t& patch);
         }
 }
 
-namespace zob
+namespace nano
 {
         template <>
-        inline std::map<zob::color_mode, std::string> enum_string<zob::color_mode>()
+        inline std::map<nano::color_mode, std::string> enum_string<nano::color_mode>()
         {
                 return
                 {
-                        { zob::color_mode::luma, "luma" },
-                        { zob::color_mode::rgba, "rgba" }
+                        { nano::color_mode::luma, "luma" },
+                        { nano::color_mode::rgba, "rgba" }
                 };
         }
 
         template <>
-        inline std::map<zob::color_channel, std::string> enum_string<zob::color_channel>()
+        inline std::map<nano::color_channel, std::string> enum_string<nano::color_channel>()
         {
                 return
                 {
-                        { zob::color_channel::red,           "red" },
-                        { zob::color_channel::green,         "green" },
-                        { zob::color_channel::blue,          "blue" },
-                        { zob::color_channel::luma,          "luma" },
-                        { zob::color_channel::rgba,          "rgba" },
-                        { zob::color_channel::alpha,         "alpha" }
+                        { nano::color_channel::red,           "red" },
+                        { nano::color_channel::green,         "green" },
+                        { nano::color_channel::blue,          "blue" },
+                        { nano::color_channel::luma,          "luma" },
+                        { nano::color_channel::rgba,          "rgba" },
+                        { nano::color_channel::alpha,         "alpha" }
                 };
         }
 }

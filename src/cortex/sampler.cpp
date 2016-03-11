@@ -2,7 +2,7 @@
 #include "math/usampling.hpp"
 #include <algorithm>
 
-namespace zob
+namespace nano
 {
         template
         <
@@ -100,7 +100,7 @@ namespace zob
         sampler_t& sampler_t::split(size_t percentage, sampler_t& other)
         {
                 samples_t tsamples, vsamples;
-                zob::usplit(current().m_samples, percentage, tsamples, vsamples);
+                nano::usplit(current().m_samples, percentage, tsamples, vsamples);
 
                 this->push(tsamples);
                 other.push(vsamples);
@@ -123,7 +123,7 @@ namespace zob
                 // use a random subset of samples
                 else
                 {
-                        samples = zob::usample(crt.m_samples, crt.m_batchsize);
+                        samples = nano::usample(crt.m_samples, crt.m_batchsize);
                         std::sort(samples.begin(), samples.end());
                 }
 

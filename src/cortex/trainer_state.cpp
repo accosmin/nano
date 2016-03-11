@@ -7,7 +7,7 @@
 #include <limits>
 #include <cmath>
 
-namespace zob
+namespace nano
 {
         trainer_state_t::trainer_state_t()
                 :       trainer_state_t(
@@ -50,7 +50,7 @@ namespace zob
                         assert(prv_state.m_tvalue >= scalar_t(0));
                         assert(crt_state.m_milis >= prv_state.m_milis);
 
-                        const scalar_t epsilon = zob::epsilon0<scalar_t>();
+                        const scalar_t epsilon = nano::epsilon0<scalar_t>();
                         const auto ratio = (epsilon + crt_state.m_tvalue) / (epsilon + prv_state.m_tvalue);
                         const auto delta = 1 + crt_state.m_milis.count() - prv_state.m_milis.count();
 
@@ -58,7 +58,7 @@ namespace zob
                         return scalar_t(1000) / static_cast<scalar_t>(delta) * std::log(ratio);
                 };
 
-                zob::stats_t<scalar_t> speeds;
+                nano::stats_t<scalar_t> speeds;
                 for (size_t i = 0; i + 1 < states.size(); ++ i)
                 {
                         speeds(op(states[i], states[i + 1]));
@@ -87,26 +87,26 @@ namespace zob
 
                 // header
                 ofs 
-                << zob::align("train-loss", colsize) << delim
-                << zob::align("train-error-average", colsize) << delim
-                << zob::align("train-error-variance", colsize) << delim
-                << zob::align("valid-loss", colsize) << delim
-                << zob::align("valid-error-average", colsize) << delim
-                << zob::align("valid-error-variance", colsize) << delim
-                << zob::align("time-seconds", colsize) << delim
+                << nano::align("train-loss", colsize) << delim
+                << nano::align("train-error-average", colsize) << delim
+                << nano::align("train-error-variance", colsize) << delim
+                << nano::align("valid-loss", colsize) << delim
+                << nano::align("valid-error-average", colsize) << delim
+                << nano::align("valid-error-variance", colsize) << delim
+                << nano::align("time-seconds", colsize) << delim
                 << std::endl;
 
                 // optimization states
                 for (const trainer_state_t& state : states)
                 {
                         ofs 
-                        << zob::align(zob::to_string(state.m_tvalue), colsize) << delim
-                        << zob::align(zob::to_string(state.m_terror_avg), colsize) << delim
-                        << zob::align(zob::to_string(state.m_terror_var), colsize) << delim
-                        << zob::align(zob::to_string(state.m_vvalue), colsize) << delim
-                        << zob::align(zob::to_string(state.m_verror_avg), colsize) << delim
-                        << zob::align(zob::to_string(state.m_verror_var), colsize) << delim
-                        << zob::align(zob::to_string((state.m_milis.count() + 500) / 1000), colsize) << delim
+                        << nano::align(nano::to_string(state.m_tvalue), colsize) << delim
+                        << nano::align(nano::to_string(state.m_terror_avg), colsize) << delim
+                        << nano::align(nano::to_string(state.m_terror_var), colsize) << delim
+                        << nano::align(nano::to_string(state.m_vvalue), colsize) << delim
+                        << nano::align(nano::to_string(state.m_verror_avg), colsize) << delim
+                        << nano::align(nano::to_string(state.m_verror_var), colsize) << delim
+                        << nano::align(nano::to_string((state.m_milis.count() + 500) / 1000), colsize) << delim
                         << std::endl;
                 }
 

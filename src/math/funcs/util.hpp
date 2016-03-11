@@ -3,7 +3,7 @@
 #include "math/numeric.hpp"
 #include "math/problem.hpp"
 
-namespace zob
+namespace nano
 {
         namespace util
         {
@@ -42,7 +42,7 @@ namespace zob
                 >
                 auto map_vector(const tscalar* data, const tsize size)
                 {
-                        return Eigen::Map<const typename zob::problem_t<tscalar>::tvector>(data, size);
+                        return Eigen::Map<const typename nano::problem_t<tscalar>::tvector>(data, size);
                 }
 
                 template

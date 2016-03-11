@@ -2,7 +2,7 @@
 
 #include "cortex/task.h"
 
-namespace zob
+namespace nano
 {
         ///
         /// CIFAR10 task:
@@ -16,7 +16,7 @@ namespace zob
         {
         public:
 
-                ZOB_MAKE_CLONABLE(cifar10_task_t, "CIFAR-10 (object classification)")
+                NANO_MAKE_CLONABLE(cifar10_task_t, "CIFAR-10 (object classification)")
 
                 // constructor
                 explicit cifar10_task_t(const string_t& configuration = string_t());

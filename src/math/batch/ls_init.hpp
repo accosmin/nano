@@ -3,7 +3,7 @@
 #include "math/lsearch_types.h"
 #include <algorithm>
 
-namespace zob
+namespace nano
 {
         ///
         /// \brief heuristics to initialize the step length,

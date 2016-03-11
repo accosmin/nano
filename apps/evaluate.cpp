@@ -7,22 +7,22 @@
 
 int main(int argc, char *argv[])
 {
-        zob::init();
+        nano::init();
 
-        using namespace zob;
+        using namespace nano;
 
         // prepare object string-based selection
-        const strings_t task_ids = zob::get_tasks().ids();
-        const strings_t loss_ids = zob::get_losses().ids();
-        const strings_t model_ids = zob::get_models().ids();
+        const strings_t task_ids = nano::get_tasks().ids();
+        const strings_t loss_ids = nano::get_losses().ids();
+        const strings_t model_ids = nano::get_models().ids();
 
         // parse the command line
-        zob::cmdline_t cmdline("evaluate a model");
-        cmdline.add("", "task",                 zob::concatenate(task_ids));
+        nano::cmdline_t cmdline("evaluate a model");
+        cmdline.add("", "task",                 nano::concatenate(task_ids));
         cmdline.add("", "task-dir",             "directory to load task data from");
         cmdline.add("", "task-params",          "task parameters (if any)");
-        cmdline.add("", "loss",                 zob::concatenate(loss_ids));
-        cmdline.add("", "model",                zob::concatenate(model_ids));
+        cmdline.add("", "loss",                 nano::concatenate(loss_ids));
+        cmdline.add("", "model",                nano::concatenate(model_ids));
         cmdline.add("", "model-file",           "filepath to load the model from");
         cmdline.add("", "save-dir",             "directory to save classification results to");
         cmdline.add("", "save-group-rows",      "number of samples to group in a row", "32");
@@ -38,14 +38,14 @@ int main(int argc, char *argv[])
         const auto cmd_model = cmdline.get<string_t>("model");
         const auto cmd_input = cmdline.get<string_t>("model-file");
         const auto cmd_save_dir = cmdline.get<string_t>("save-dir");
-        const auto cmd_save_group_rows = zob::clamp(cmdline.get<coord_t>("save-group-rows"), 1, 128);
-        const auto cmd_save_group_cols = zob::clamp(cmdline.get<coord_t>("save-group-cols"), 1, 128);
+        const auto cmd_save_group_rows = nano::clamp(cmdline.get<coord_t>("save-group-rows"), 1, 128);
+        const auto cmd_save_group_cols = nano::clamp(cmdline.get<coord_t>("save-group-cols"), 1, 128);
 
         // create task
-        const auto task = zob::get_tasks().get(cmd_task, cmd_task_params);
+        const auto task = nano::get_tasks().get(cmd_task, cmd_task_params);
 
         // load task data
-        zob::measure_critical_and_log(
+        nano::measure_critical_and_log(
                 [&] () { return task->load(cmd_task_dir); },
                 "load task <" + cmd_task + "> from <" + cmd_task_dir + ">");
 
@@ -53,29 +53,29 @@ int main(int argc, char *argv[])
         task->describe();
 
         // create loss
-        const auto loss = zob::get_losses().get(cmd_loss);
+        const auto loss = nano::get_losses().get(cmd_loss);
 
         // create criterion
-        const auto criterion = zob::get_criteria().get("avg");
+        const auto criterion = nano::get_criteria().get("avg");
 
         // create model
-        const auto model = zob::get_models().get(cmd_model);
+        const auto model = nano::get_models().get(cmd_model);
 
         // load model
-        zob::measure_critical_and_log(
+        nano::measure_critical_and_log(
                 [&] () { return model->load(cmd_input); },
                 "load model from <" + cmd_input + ">");
 
         // test model
-        zob::stats_t<scalar_t> lstats, estats;
+        nano::stats_t<scalar_t> lstats, estats;
         for (size_t f = 0; f < task->fsize(); ++ f)
         {
                 const fold_t test_fold = std::make_pair(f, protocol::test);
 
 		// error rate
-                const zob::timer_t timer;
+                const nano::timer_t timer;
                 scalar_t lvalue, lerror;
-                zob::evaluate(*task, test_fold, *loss, *criterion, *model, lvalue, lerror);
+                nano::evaluate(*task, test_fold, *loss, *criterion, *model, lvalue, lerror);
                 log_info() << "<<< test error: [" << lvalue << "/" << lerror << "] in " << timer.elapsed() << ".";
 
                 lstats(lvalue);
@@ -116,7 +116,7 @@ int main(int argc, char *argv[])
                 // save classification results
                 if (!cmd_save_dir.empty())
                 {
-                        const string_t basepath = cmd_save_dir + "/" + cmd_task + "_test_fold" + zob::to_string(f + 1);
+                        const string_t basepath = cmd_save_dir + "/" + cmd_task + "_test_fold" + nano::to_string(f + 1);
 
                         const coord_t grows = cmd_save_group_rows;
                         const coord_t gcols = cmd_save_group_cols;

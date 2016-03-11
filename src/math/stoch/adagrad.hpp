@@ -3,7 +3,7 @@
 #include "stoch_loop.hpp"
 #include "math/average.hpp"
 
-namespace zob
+namespace nano
 {
         ///
         /// \brief stochastic AdaGrad
@@ -33,7 +33,7 @@ namespace zob
                                 return this->operator()(param.tunable(), problem, x0, params...);
                         };
 
-                        const auto config = zob::tune(op, make_alpha0s(), make_epsilons());
+                        const auto config = nano::tune(op, make_alpha0s(), make_epsilons());
                         return operator()(param, problem, x0, config.param0(), config.param1());
                 }
 

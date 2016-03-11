@@ -1,6 +1,6 @@
 #pragma once
 
-namespace zob
+namespace nano
 {
         ///
         /// \brief soft-max approximation over the given vector's dimensions.

@@ -2,7 +2,7 @@
 
 #include "cortex/loss.h"
 
-namespace zob
+namespace nano
 {
         ///
         /// \brief class negative log-likelihood loss (single-class classification)
@@ -12,7 +12,7 @@ namespace zob
         {
         public:
 
-                ZOB_MAKE_CLONABLE(classnll_loss_t, "class negative log-likelihood loss")
+                NANO_MAKE_CLONABLE(classnll_loss_t, "class negative log-likelihood loss")
 
                 // constructor
                 explicit classnll_loss_t(const string_t& = string_t());

@@ -3,7 +3,7 @@
 #include "trainer_data.h"
 #include "cortex/util/logger.h"
 
-namespace zob
+namespace nano
 {
         trainer_data_t::trainer_data_t(const task_t& task, const fold_t& fold, const loss_t& loss, const vector_t& x0,
                         accumulator_t& lacc,
@@ -18,7 +18,7 @@ namespace zob
         {
                 // create training & validation samples
                 m_tsampler.push(fold);
-                m_tsampler.push(zob::annotation::annotated);
+                m_tsampler.push(nano::annotation::annotated);
 
                 m_tsampler.split(80, m_vsampler);
 

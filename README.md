@@ -1,4 +1,4 @@
-### NANO
+### Nano
 
 This library provides numerical optimization and machine learning utilities. It can be used to train models such as neural networks and convolution networks.
 
@@ -13,7 +13,7 @@ The core modules are independent of each other and are designed to be as generic
 * **io** - I/O utilities, wrappers over LibArchive and std::streams. `Dependencies: LibArchive, Zlib and BZip2.`
 * **thread** - thread pool, loop processing in parallel. `No dependencies.`
 
-Most notably the **math** module implements the following: 
+Most notably the **math** module implements the following:
 * batch optimization methods: `gradient descent`, various `non-linear conjugate gradient descent`, `L-BFGS`.
 * stochastic optimization methods: `Nesterov's accelerated gradient`, `stochastic gradient`, `ADADELTA`, `ADAGRAD`, `ADAM`.
 * line-search methods: `backtracking`, `More & Thuente`, `CG_DESCENT`.
@@ -41,7 +41,7 @@ A **trainer** optimizes the parameters of a given model to produce the correct o
 
 Use a C++14 compiler and install Eigen3, LibArchive and DevIL.
 
-ZoB is tested on ArchLinux ([gcc 4.9.3+ | gcc 5.3+ | clang 3.5+], CMake 3.1+, Ninja or Make) and OSX (clang, homebrew, CMake 3.1+, Ninja or Make). The code is written to be cross-platform, so it may work (with minor fixes) on other platforms as well (e.g. Windows/MSVC).
+Nano is tested on ArchLinux ([gcc 4.9.3+ | gcc 5.3+ | clang 3.5+], CMake 3.1+, Ninja or Make) and OSX (clang, homebrew, CMake 3.1+, Ninja or Make). The code is written to be cross-platform, so it may work (with minor fixes) on other platforms as well (e.g. Windows/MSVC).
 
 The easiest way to compile (and install) is to run the `build_release.sh` bash script. The test programs and utilities will be found in the `build-release` directory. The `build_debug.sh` bash script will build the debugging version with and without address, leak and thread sanitizers (if available).
 
@@ -63,4 +63,4 @@ The `scripts` directory contains examples on how to train various models on diff
 
 
 
- 
+

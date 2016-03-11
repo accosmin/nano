@@ -24,43 +24,43 @@
 #include "synth_nimbus_mono.h"
 #include "synth_oxygen_mono.h"
 
-namespace zob
+namespace nano
 {
         template <>
-        inline std::map<zob::charset, std::string> enum_string<zob::charset>()
+        inline std::map<nano::charset, std::string> enum_string<nano::charset>()
         {
                 return
                 {
-                        { zob::charset::numeric, "digit" },
-                        { zob::charset::lalphabet, "lalpha" },
-                        { zob::charset::ualphabet, "ualpha" },
-                        { zob::charset::alphabet, "alpha" },
-                        { zob::charset::alphanumeric, "alphanum" }
+                        { nano::charset::numeric, "digit" },
+                        { nano::charset::lalphabet, "lalpha" },
+                        { nano::charset::ualphabet, "ualpha" },
+                        { nano::charset::alphabet, "alpha" },
+                        { nano::charset::alphanumeric, "alphanum" }
                 };
         }
 }
 
-namespace zob
+namespace nano
 {
         charset_task_t::charset_task_t(const string_t& configuration)
                 :       task_t(configuration),
-                        m_charset(zob::from_params<charset>(configuration, "type", charset::numeric)),
-                        m_rows(zob::clamp(zob::from_params<tensor_size_t>(configuration, "rows", 32), 16, 128)),
-                        m_cols(zob::clamp(zob::from_params<tensor_size_t>(configuration, "cols", 32), 16, 128)),
+                        m_charset(nano::from_params<charset>(configuration, "type", charset::numeric)),
+                        m_rows(nano::clamp(nano::from_params<tensor_size_t>(configuration, "rows", 32), 16, 128)),
+                        m_cols(nano::clamp(nano::from_params<tensor_size_t>(configuration, "cols", 32), 16, 128)),
                         m_folds(1),
-                        m_color(zob::from_params<color_mode>(configuration, "color", color_mode::rgba)),
-                        m_size(zob::clamp(zob::from_params<size_t>(configuration, "size", 1024), 16, 1024 * 1024))
+                        m_color(nano::from_params<color_mode>(configuration, "color", color_mode::rgba)),
+                        m_size(nano::clamp(nano::from_params<size_t>(configuration, "size", 1024), 16, 1024 * 1024))
         {
         }
 
         charset_task_t::charset_task_t(
                 charset cs, tensor_size_t rows, tensor_size_t cols, color_mode color, size_t size)
                 :       charset_task_t(
-                        "type=" + zob::to_string(cs) + "," +
-                        "rows=" + zob::to_string(rows) + "," +
-                        "cols=" + zob::to_string(cols) + "," +
-                        "color=" + zob::to_string(color) + "," +
-                        "size=" + zob::to_string(size))
+                        "type=" + nano::to_string(cs) + "," +
+                        "rows=" + nano::to_string(rows) + "," +
+                        "cols=" + nano::to_string(cols) + "," +
+                        "color=" + nano::to_string(color) + "," +
+                        "size=" + nano::to_string(size))
         {
         }
 
@@ -75,7 +75,7 @@ namespace zob
                 tmatrix get_object_patch(const tmatrix& image,
                         const tindex object_index, const tsize objects, const scalar_t max_offset)
                 {
-                        zob::random_t<scalar_t> rng(-max_offset, max_offset);
+                        nano::random_t<scalar_t> rng(-max_offset, max_offset);
 
                         const auto icols = static_cast<int>(image.cols());
                         const auto irows = static_cast<int>(image.rows());
@@ -84,11 +84,11 @@ namespace zob
 
                         const auto x = dx * static_cast<scalar_t>(object_index) + rng();
 
-                        const auto ppx = zob::clamp(zob::cast<int>(x), 0, icols - 1);
-                        const auto ppw = zob::clamp(zob::cast<int>(dx + rng()), 0, icols - ppx);
+                        const auto ppx = nano::clamp(nano::cast<int>(x), 0, icols - 1);
+                        const auto ppw = nano::clamp(nano::cast<int>(dx + rng()), 0, icols - ppx);
 
-                        const auto ppy = zob::clamp(zob::cast<int>(rng()), 0, irows - 1);
-                        const auto pph = zob::clamp(zob::cast<int>(irows + rng()), 0, irows - ppy);
+                        const auto ppy = nano::clamp(nano::cast<int>(rng()), 0, irows - 1);
+                        const auto pph = nano::clamp(nano::cast<int>(irows + rng()), 0, irows - ppy);
 
                         return image.block(ppy, ppx, pph, ppw);
                 }
@@ -97,24 +97,24 @@ namespace zob
                         const rgba_t back_color,
                         const scalar_t max_noise, const scalar_t sigma)
                 {
-                        const scalar_t ir = zob::color::get_red(back_color) / 255.0;
-                        const scalar_t ig = zob::color::get_green(back_color) / 255.0;
-                        const scalar_t ib = zob::color::get_blue(back_color) / 255.0;
+                        const scalar_t ir = nano::color::get_red(back_color) / 255.0;
+                        const scalar_t ig = nano::color::get_green(back_color) / 255.0;
+                        const scalar_t ib = nano::color::get_blue(back_color) / 255.0;
 
                         tensor_t image(4, rows, cols);
 
                         // noisy background
-                        zob::random_t<scalar_t> back_noise(-max_noise, +max_noise);
+                        nano::random_t<scalar_t> back_noise(-max_noise, +max_noise);
                         tensor::for_each(image.matrix(0), [&] (scalar_t& value) { value = ir + back_noise(); });
                         tensor::for_each(image.matrix(1), [&] (scalar_t& value) { value = ig + back_noise(); });
                         tensor::for_each(image.matrix(2), [&] (scalar_t& value) { value = ib + back_noise(); });
                         image.matrix(3).setConstant(1.0);
 
                         // smooth background
-                        const zob::gauss_kernel_t<scalar_t> back_gauss(sigma);
-                        zob::convolve(back_gauss, image.matrix(0));
-                        zob::convolve(back_gauss, image.matrix(1));
-                        zob::convolve(back_gauss, image.matrix(2));
+                        const nano::gauss_kernel_t<scalar_t> back_gauss(sigma);
+                        nano::convolve(back_gauss, image.matrix(0));
+                        nano::convolve(back_gauss, image.matrix(1));
+                        nano::convolve(back_gauss, image.matrix(2));
 
                         return image;
                 }
@@ -148,7 +148,7 @@ namespace zob
                 std::vector<rgba_matrix_t> char_patches;
                 rgba_matrix_t char_patch;
 #define INSERT_IMAGE(name) \
-                if (!zob::load_rgba_image(get_ ##name ##_name(), get_ ##name ##_data(), get_ ##name ##_size(), char_patch)) \
+                if (!nano::load_rgba_image(get_ ##name ##_name(), get_ ##name ##_data(), get_ ##name ##_size(), char_patch)) \
                 { \
                         return false; \
                 } \
@@ -167,10 +167,10 @@ namespace zob
 
                 const size_t n_fonts = char_patches.size();
 
-                zob::random_t<size_t> rng_protocol(1, 10);
-                zob::random_t<tensor_size_t> rng_output(obegin(), oend() - 1);
-                zob::random_t<size_t> rng_font(1, n_fonts);
-                zob::random_t<scalar_t> rng_gauss(0.0, 2.0);
+                nano::random_t<size_t> rng_protocol(1, 10);
+                nano::random_t<tensor_size_t> rng_output(obegin(), oend() - 1);
+                nano::random_t<size_t> rng_font(1, n_fonts);
+                nano::random_t<scalar_t> rng_gauss(0.0, 2.0);
 
                 clear_memory(0);
 
@@ -185,22 +185,22 @@ namespace zob
                                 const tensor_index_t o = rng_output();
 
                                 // image: original object patch
-                                const tensor_t opatch = zob::color::to_rgba_tensor(
+                                const tensor_t opatch = nano::color::to_rgba_tensor(
                                         get_object_patch(char_patches[rng_font() - 1], o, n_chars, 0.0));
 
                                 // image: resize to the input size
                                 tensor_t mpatch(4, irows(), icols());
-                                zob::bilinear(opatch.matrix(0), mpatch.matrix(0));
-                                zob::bilinear(opatch.matrix(1), mpatch.matrix(1));
-                                zob::bilinear(opatch.matrix(2), mpatch.matrix(2));
-                                zob::bilinear(opatch.matrix(3), mpatch.matrix(3));
+                                nano::bilinear(opatch.matrix(0), mpatch.matrix(0));
+                                nano::bilinear(opatch.matrix(1), mpatch.matrix(1));
+                                nano::bilinear(opatch.matrix(2), mpatch.matrix(2));
+                                nano::bilinear(opatch.matrix(3), mpatch.matrix(3));
 
                                 // image: random warping
-                                mpatch = zob::warp(mpatch, warp_params(field_type::random, 0.1, 4.0, 16.0, 2.0));
+                                mpatch = nano::warp(mpatch, warp_params(field_type::random, 0.1, 4.0, 16.0, 2.0));
 
                                 // image: background & foreground layer
-                                const auto bcolor = zob::color::make_random_rgba();
-                                const auto fcolor = zob::color::make_opposite_random_rgba(bcolor);
+                                const auto bcolor = nano::color::make_random_rgba();
+                                const auto fcolor = nano::color::make_opposite_random_rgba(bcolor);
 
                                 const auto bnoise = 0.1;
                                 const auto fnoise = 0.1;
@@ -227,7 +227,7 @@ namespace zob
                                 // generate sample
                                 sample_t sample(n_images() - 1, sample_region(0, 0));
                                 sample.m_label = string_t("char") + characters[static_cast<size_t>(o)];
-                                sample.m_target = zob::class_target(o - obegin(), osize());
+                                sample.m_target = nano::class_target(o - obegin(), osize());
                                 sample.m_fold = {f, p};
                                 add_sample(sample);
                         }

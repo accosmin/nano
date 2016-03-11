@@ -12,13 +12,13 @@ namespace
         }
 }
 
-zob::worker_t::worker_t(queue_t& queue, const bool active) :
+nano::worker_t::worker_t(queue_t& queue, const bool active) :
         m_queue(queue),
         m_active(active)
 {
 }
 
-void zob::worker_t::operator()() const
+void nano::worker_t::operator()() const
 {
         while (true)
         {
@@ -60,17 +60,17 @@ void zob::worker_t::operator()() const
         }
 }
 
-bool zob::worker_t::activate()
+bool nano::worker_t::activate()
 {
         return toggle(m_active, true);
 }
 
-bool zob::worker_t::deactivate()
+bool nano::worker_t::deactivate()
 {
         return toggle(m_active, false);
 }
 
-bool zob::worker_t::active() const
+bool nano::worker_t::active() const
 {
         return m_active;
 }

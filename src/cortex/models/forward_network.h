@@ -3,7 +3,7 @@
 #include "cortex/model.h"
 #include "cortex/layer.h"
 
-namespace zob
+namespace nano
 {
         ///
         /// multi-layer feed-forward network model
@@ -12,7 +12,7 @@ namespace zob
         {
         public:
 
-                ZOB_MAKE_CLONABLE(forward_network_t, "parameters: [layer_id[:layer_parameters][;]]*")
+                NANO_MAKE_CLONABLE(forward_network_t, "parameters: [layer_id[:layer_parameters][;]]*")
 
                 using model_t::resize;
 

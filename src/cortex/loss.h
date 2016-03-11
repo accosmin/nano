@@ -5,7 +5,7 @@
 #include "stringi.h"
 #include "util/manager.hpp"
 
-namespace zob
+namespace nano
 {
         class loss_t;
 
@@ -15,7 +15,7 @@ namespace zob
         using loss_manager_t = manager_t<loss_t>;
         using rloss_t = loss_manager_t::trobject;
 
-        ZOB_PUBLIC loss_manager_t& get_losses();
+        NANO_PUBLIC loss_manager_t& get_losses();
 
         ///
         /// \brief generic multivariate loss function of two parameters:
@@ -25,7 +25,7 @@ namespace zob
         /// the loss function upper-bounds/approximates
         /// the true (usually non-smooth) error function to minimize.
         ///
-        class ZOB_PUBLIC loss_t : public clonable_t<loss_t>
+        class NANO_PUBLIC loss_t : public clonable_t<loss_t>
         {
         public:
 

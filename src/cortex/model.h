@@ -4,7 +4,7 @@
 #include "vision/image.h"
 #include "util/manager.hpp"
 
-namespace zob
+namespace nano
 {
         class task_t;
         class model_t;
@@ -15,14 +15,14 @@ namespace zob
         using model_manager_t = manager_t<model_t>;
         using rmodel_t = model_manager_t::trobject;
 
-        ZOB_PUBLIC model_manager_t& get_models();
+        NANO_PUBLIC model_manager_t& get_models();
 
         ///
         /// \brief generic model used for computing:
         ///     - the output for an image patch
         //      - its parameters gradient
         ///
-        class ZOB_PUBLIC model_t : public clonable_t<model_t>
+        class NANO_PUBLIC model_t : public clonable_t<model_t>
         {
         public:
 

@@ -1,11 +1,11 @@
 #include "version.h"
 #include "text/to_string.hpp"
 
-std::string zob::version()
+std::string nano::version()
 {
-        return  zob::to_string(CORTEX_MAJOR_VERSION) + "." +
-                zob::to_string(CORTEX_MINOR_VERSION) + "." +
-                zob::to_string(CORTEX_REVISION_VERSION);
+        return  nano::to_string(CORTEX_MAJOR_VERSION) + "." +
+                nano::to_string(CORTEX_MINOR_VERSION) + "." +
+                nano::to_string(CORTEX_REVISION_VERSION);
 }
 
 

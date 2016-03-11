@@ -3,7 +3,7 @@
 #include <fstream>
 #include "imstream.h"
 
-namespace zob
+namespace nano
 {
         template
         <

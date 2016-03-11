@@ -2,7 +2,7 @@
 
 #include <vector>
 
-namespace zob
+namespace nano
 {
         ///
         /// \brief finite set of values to search through.

@@ -9,7 +9,7 @@
 #include "text/to_string.hpp"
 #include "cortex/layers/make_layers.h"
 
-using namespace zob;
+using namespace nano;
 
 namespace 
 {
@@ -23,37 +23,37 @@ namespace
 
         rloss_t get_loss() 
         {
-                const strings_t loss_ids = zob::get_losses().ids();
+                const strings_t loss_ids = nano::get_losses().ids();
 
-                const auto iloss = zob::random_t<size_t>()();
+                const auto iloss = nano::random_t<size_t>()();
                 const auto loss_id = loss_ids[iloss % loss_ids.size()];
 
-                return zob::get_losses().get(loss_id);
+                return nano::get_losses().get(loss_id);
         }
 
         rmodel_t get_model(const string_t& description)
         {
-                const auto model = zob::get_models().get("forward-network", description + ";" + cmd_layer_output);
+                const auto model = nano::get_models().get("forward-network", description + ";" + cmd_layer_output);
                 model->resize(cmd_irows, cmd_icols, cmd_outputs, cmd_color, false);
-                ZOB_CHECK_EQUAL(model->irows(), cmd_irows);
-                ZOB_CHECK_EQUAL(model->icols(), cmd_icols);
-                ZOB_CHECK_EQUAL(model->osize(), cmd_outputs);
-                ZOB_CHECK_EQUAL(static_cast<int>(model->color()), static_cast<int>(cmd_color));
+                NANO_CHECK_EQUAL(model->irows(), cmd_irows);
+                NANO_CHECK_EQUAL(model->icols(), cmd_icols);
+                NANO_CHECK_EQUAL(model->osize(), cmd_outputs);
+                NANO_CHECK_EQUAL(static_cast<int>(model->color()), static_cast<int>(cmd_color));
                 return model;
         }
 
         void make_random_config(tensor_t& inputs, vector_t& params, vector_t& target)
         {
-                zob::random_t<scalar_t> irgen(-0.1, +0.1);
-                zob::random_t<scalar_t> prgen(-0.1, +0.1);
-                zob::random_t<tensor_size_t> trgen(0, target.size() - 1);
+                nano::random_t<scalar_t> irgen(-0.1, +0.1);
+                nano::random_t<scalar_t> prgen(-0.1, +0.1);
+                nano::random_t<tensor_size_t> trgen(0, target.size() - 1);
 
                 tensor::set_random(inputs, irgen);
                 tensor::set_random(params, prgen);
-                target = zob::class_target(trgen(), target.size());
+                target = nano::class_target(trgen(), target.size());
         }
 
-        void test_model(const string_t& model_description, const scalar_t epsilon = zob::epsilon2<scalar_t>())
+        void test_model(const string_t& model_description, const scalar_t epsilon = nano::epsilon2<scalar_t>())
         {
                 const auto model = get_model(model_description);
                 const auto loss = get_loss();
@@ -119,21 +119,21 @@ namespace
 
                         {
                                 const opt_problem_t problem(fn_params_size, fn_params_fval, fn_params_grad);
-                                ZOB_CHECK_LESS(problem.grad_accuracy(params), epsilon);
+                                NANO_CHECK_LESS(problem.grad_accuracy(params), epsilon);
                         }
                         {
                                 const opt_problem_t problem(fn_inputs_size, fn_inputs_fval, fn_inputs_grad);
-                                ZOB_CHECK_LESS(problem.grad_accuracy(inputs.vector()), epsilon);
+                                NANO_CHECK_LESS(problem.grad_accuracy(inputs.vector()), epsilon);
                         }
                 }
         }
 }
 
-ZOB_BEGIN_MODULE(test_layers)
+NANO_BEGIN_MODULE(test_layers)
 
-ZOB_CASE(activation)
+NANO_CASE(activation)
 {
-        zob::init();
+        nano::init();
 
         for (const auto& activation_id : { "act-unit", "act-tanh", "act-snorm", "act-splus" })
         {
@@ -141,16 +141,16 @@ ZOB_CASE(activation)
         }
 }
 
-ZOB_CASE(affine)
+NANO_CASE(affine)
 {
-        zob::init();
+        nano::init();
 
         test_model(make_affine_layer(7));
 }
 
-ZOB_CASE(conv)
+NANO_CASE(conv)
 {
-        zob::init();
+        nano::init();
 
         test_model(make_conv_pool_layer(3, 3, 3, "", ""));
         test_model(make_conv_pool_layer(3, 3, 3, "", "pool-max"));
@@ -158,9 +158,9 @@ ZOB_CASE(conv)
         test_model(make_conv_pool_layer(3, 3, 3, "", "pool-avg"));
 }
 
-ZOB_CASE(multi_layer_models)
+NANO_CASE(multi_layer_models)
 {
-        zob::init();
+        nano::init();
 
         const strings_t descriptions =
         {
@@ -181,4 +181,4 @@ ZOB_CASE(multi_layer_models)
         }
 }
 
-ZOB_END_MODULE()
+NANO_END_MODULE()

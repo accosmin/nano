@@ -2,7 +2,7 @@
 
 #include "timer.h"
 
-namespace zob
+namespace nano
 {
         ///
         /// \brief robustly measure a function call (in nanoseconds)

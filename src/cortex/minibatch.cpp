@@ -8,7 +8,7 @@
 #include "thread/thread.h"
 #include "text/to_string.hpp"
 
-namespace zob
+namespace nano
 {
         template
         <
@@ -32,21 +32,21 @@ namespace zob
         }
 
         static trainer_result_t train(trainer_data_t& data,
-                zob::batch_optimizer optimizer, const size_t epochs, const scalar_t epsilon, const bool verbose)
+                nano::batch_optimizer optimizer, const size_t epochs, const scalar_t epsilon, const bool verbose)
         {
-                const zob::timer_t timer;
+                const nano::timer_t timer;
 
                 trainer_result_t result;
 
-                const auto batch_size = 32 * zob::n_threads();
+                const auto batch_size = 32 * nano::n_threads();
                 const auto epoch_size = data.epoch_size(batch_size);
                 const auto epoch_iterations = size_t(4);
                 const auto history_size = epoch_iterations;
 
                 // construct the optimization problem
-                const auto fn_size = zob::make_opsize(data);
-                const auto fn_fval = zob::make_opfval(data);
-                const auto fn_grad = zob::make_opgrad(data);
+                const auto fn_size = nano::make_opsize(data);
+                const auto fn_fval = nano::make_opfval(data);
+                const auto fn_grad = nano::make_opgrad(data);
 
                 const auto fn_ulog = nullptr;
 
@@ -57,7 +57,7 @@ namespace zob
                 {
                         train_epoch(data, epoch_size, batch_size, [&] ()
                         {
-                                const opt_state_t state = zob::minimize(
+                                const opt_state_t state = nano::minimize(
                                         opt_problem_t(fn_size, fn_fval, fn_grad), fn_ulog,
                                         x, optimizer, epoch_iterations, epsilon, history_size);
 
@@ -88,13 +88,13 @@ namespace zob
                         log_info()
                                 << "[train = " << tvalue << "/" << terror_avg
                                 << ", valid = " << vvalue << "/" << verror_avg
-                                << " (" << zob::to_string(ret) << ")"
+                                << " (" << nano::to_string(ret) << ")"
                                 << ", epoch = " << epoch << "/" << epochs
                                 << ", batch = " << batch_size
                                 << ", lambda = " << data.lambda()
                                 << "] done in " << timer.elapsed() << ".";
 
-                        if (zob::is_done(ret))
+                        if (nano::is_done(ret))
                         {
                                 break;
                         }
@@ -106,7 +106,7 @@ namespace zob
         trainer_result_t minibatch_train(
                 const model_t& model, const task_t& task, const fold_t& fold, const size_t nthreads,
                 const loss_t& loss, const criterion_t& criterion,
-                zob::batch_optimizer optimizer, size_t epochs, scalar_t epsilon, bool verbose)
+                nano::batch_optimizer optimizer, size_t epochs, scalar_t epsilon, bool verbose)
         {
                 vector_t x0;
                 model.save_params(x0);
@@ -126,8 +126,8 @@ namespace zob
 
                 if (data.m_lacc.can_regularize())
                 {
-                        const auto space = zob::make_log10_space(-6.0, +6.0, 0.5);
-                        return zob::tune(op, space).optimum();
+                        const auto space = nano::make_log10_space(-6.0, +6.0, 0.5);
+                        return nano::tune(op, space).optimum();
                 }
                 else
                 {

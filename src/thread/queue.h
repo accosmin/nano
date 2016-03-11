@@ -6,7 +6,7 @@
 #include <functional>
 #include <condition_variable>
 
-namespace zob
+namespace nano
 {
         using job_t = std::function<void()>;
 

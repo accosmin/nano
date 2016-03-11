@@ -7,7 +7,7 @@
 #include "ls_cgdescent.hpp"
 #include "ls_interpolate.hpp"
 
-namespace zob
+namespace nano
 {
         template
         <

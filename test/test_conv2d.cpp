@@ -49,21 +49,21 @@ namespace test
                 const scalar_t convcpu_dot_dyn = test_cpu(tensor::conv2d_dot_dyn_t(), idata, kdata, odata);
                 const scalar_t convcpu_mad_dyn = test_cpu(tensor::conv2d_mad_dyn_t(), idata, kdata, odata);
 
-                const scalar_t epsilon = zob::epsilon1<scalar_t>();
+                const scalar_t epsilon = nano::epsilon1<scalar_t>();
 
-                ZOB_CHECK_CLOSE(convcpu_eig, convcpu_eig, epsilon);
-                ZOB_CHECK_CLOSE(convcpu_cpp, convcpu_eig, epsilon);
-                ZOB_CHECK_CLOSE(convcpu_dot, convcpu_eig, epsilon);
-                ZOB_CHECK_CLOSE(convcpu_mad, convcpu_eig, epsilon);
-                ZOB_CHECK_CLOSE(convcpu_dyn, convcpu_eig, epsilon);
-                ZOB_CHECK_CLOSE(convcpu_dot_dyn, convcpu_eig, epsilon);
-                ZOB_CHECK_CLOSE(convcpu_mad_dyn, convcpu_eig, epsilon);
+                NANO_CHECK_CLOSE(convcpu_eig, convcpu_eig, epsilon);
+                NANO_CHECK_CLOSE(convcpu_cpp, convcpu_eig, epsilon);
+                NANO_CHECK_CLOSE(convcpu_dot, convcpu_eig, epsilon);
+                NANO_CHECK_CLOSE(convcpu_mad, convcpu_eig, epsilon);
+                NANO_CHECK_CLOSE(convcpu_dyn, convcpu_eig, epsilon);
+                NANO_CHECK_CLOSE(convcpu_dot_dyn, convcpu_eig, epsilon);
+                NANO_CHECK_CLOSE(convcpu_mad_dyn, convcpu_eig, epsilon);
         }
 }
 
-ZOB_BEGIN_MODULE(test_conv2d)
+NANO_BEGIN_MODULE(test_conv2d)
 
-ZOB_CASE(evaluate)
+NANO_CASE(evaluate)
 {
         const int min_isize = 3;
         const int max_isize = 23;
@@ -78,5 +78,5 @@ ZOB_CASE(evaluate)
         }
 }
 
-ZOB_END_MODULE()
+NANO_END_MODULE()
 

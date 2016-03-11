@@ -2,7 +2,7 @@
 
 #include "avg_criterion.h"
 
-namespace zob
+namespace nano
 {
         ///
         /// \brief variational regularized loss
@@ -14,7 +14,7 @@ namespace zob
         {
         public:
 
-                ZOB_MAKE_CLONABLE(avg_var_criterion_t, "variational (VadaBoost-like) regularized loss")
+                NANO_MAKE_CLONABLE(avg_var_criterion_t, "variational (VadaBoost-like) regularized loss")
 
                 ///
                 /// \brief constructor

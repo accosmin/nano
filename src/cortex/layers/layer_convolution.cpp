@@ -9,7 +9,7 @@
 #include "tensor/conv2d_dyn.hpp"
 #include "tensor/corr2d_dyn.hpp"
 
-namespace zob
+namespace nano
 {
         conv_layer_t::conv_layer_t(const string_t& parameters)
                 :       layer_t(parameters)
@@ -26,9 +26,9 @@ namespace zob
                 const auto irows = tensor.rows();
                 const auto icols = tensor.cols();
 
-                const auto odims = zob::clamp(zob::from_params<tensor_size_t>(configuration(), "dims", 16), 1, 256);
-                const auto krows = zob::clamp(zob::from_params<tensor_size_t>(configuration(), "rows", 8), 1, 32);
-                const auto kcols = zob::clamp(zob::from_params<tensor_size_t>(configuration(), "cols", 8), 1, 32);
+                const auto odims = nano::clamp(nano::from_params<tensor_size_t>(configuration(), "dims", 16), 1, 256);
+                const auto krows = nano::clamp(nano::from_params<tensor_size_t>(configuration(), "rows", 8), 1, 32);
+                const auto kcols = nano::clamp(nano::from_params<tensor_size_t>(configuration(), "cols", 8), 1, 32);
 
                 const auto kdims = idims * odims;
                 const auto orows = irows - krows + 1;
@@ -59,8 +59,8 @@ namespace zob
 
         void conv_layer_t::random_params(scalar_t min, scalar_t max)
         {
-                tensor::set_random(m_kdata, zob::random_t<scalar_t>(min, max));
-                tensor::set_random(m_bdata, zob::random_t<scalar_t>(min, max));
+                tensor::set_random(m_kdata, nano::random_t<scalar_t>(min, max));
+                tensor::set_random(m_bdata, nano::random_t<scalar_t>(min, max));
         }
 
         scalar_t* conv_layer_t::save_params(scalar_t* params) const

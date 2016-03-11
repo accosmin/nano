@@ -3,7 +3,7 @@
 #include <limits>
 #include <functional>
 
-namespace zob
+namespace nano
 {
         ///
         /// \brief line-search (scalar) step

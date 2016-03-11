@@ -2,7 +2,7 @@
 
 #include <string>
 
-namespace zob
+namespace nano
 {
         ///
         /// \brief text alignment options

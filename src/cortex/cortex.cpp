@@ -35,7 +35,7 @@
 
 #include <cfenv>
 
-namespace zob
+namespace nano
 {
         void init()
         {
@@ -47,45 +47,45 @@ namespace zob
                 Eigen::setNbThreads(0);
 
                 // register losses
-                zob::get_losses().add("square", square_loss_t());
-                zob::get_losses().add("cauchy", cauchy_loss_t());
-                zob::get_losses().add("logistic", logistic_loss_t());
-                zob::get_losses().add("classnll", classnll_loss_t());
-                zob::get_losses().add("exponential", exponential_loss_t());
+                nano::get_losses().add("square", square_loss_t());
+                nano::get_losses().add("cauchy", cauchy_loss_t());
+                nano::get_losses().add("logistic", logistic_loss_t());
+                nano::get_losses().add("classnll", classnll_loss_t());
+                nano::get_losses().add("exponential", exponential_loss_t());
 
                 // register tasks
-                zob::get_tasks().add("mnist", mnist_task_t());
-                zob::get_tasks().add("cifar10", cifar10_task_t());
-                zob::get_tasks().add("cifar100", cifar100_task_t());
-                zob::get_tasks().add("stl10", stl10_task_t());
-                zob::get_tasks().add("svhn", svhn_task_t());
-                zob::get_tasks().add("norb", norb_task_t());
-                zob::get_tasks().add("charset", charset_task_t());
-                zob::get_tasks().add("random", random_task_t());
+                nano::get_tasks().add("mnist", mnist_task_t());
+                nano::get_tasks().add("cifar10", cifar10_task_t());
+                nano::get_tasks().add("cifar100", cifar100_task_t());
+                nano::get_tasks().add("stl10", stl10_task_t());
+                nano::get_tasks().add("svhn", svhn_task_t());
+                nano::get_tasks().add("norb", norb_task_t());
+                nano::get_tasks().add("charset", charset_task_t());
+                nano::get_tasks().add("random", random_task_t());
 
                 // register layers
-                zob::get_layers().add("act-unit", unit_activation_layer_t());
-                zob::get_layers().add("act-tanh", tanh_activation_layer_t());
-                zob::get_layers().add("act-snorm", snorm_activation_layer_t());
-                zob::get_layers().add("act-splus", softplus_activation_layer_t());
-                zob::get_layers().add("affine", affine_layer_t());
-                zob::get_layers().add("conv", conv_layer_t());
-                zob::get_layers().add("pool-max", pool_max_layer_t());
-                zob::get_layers().add("pool-min", pool_min_layer_t());
-                zob::get_layers().add("pool-avg", pool_avg_layer_t());
+                nano::get_layers().add("act-unit", unit_activation_layer_t());
+                nano::get_layers().add("act-tanh", tanh_activation_layer_t());
+                nano::get_layers().add("act-snorm", snorm_activation_layer_t());
+                nano::get_layers().add("act-splus", softplus_activation_layer_t());
+                nano::get_layers().add("affine", affine_layer_t());
+                nano::get_layers().add("conv", conv_layer_t());
+                nano::get_layers().add("pool-max", pool_max_layer_t());
+                nano::get_layers().add("pool-min", pool_min_layer_t());
+                nano::get_layers().add("pool-avg", pool_avg_layer_t());
 
                 // register models
-                zob::get_models().add("forward-network", forward_network_t());
+                nano::get_models().add("forward-network", forward_network_t());
 
                 // register trainers
-                zob::get_trainers().add("batch", batch_trainer_t());
-                zob::get_trainers().add("minibatch", minibatch_trainer_t());
-                zob::get_trainers().add("stochastic", stochastic_trainer_t());
+                nano::get_trainers().add("batch", batch_trainer_t());
+                nano::get_trainers().add("minibatch", minibatch_trainer_t());
+                nano::get_trainers().add("stochastic", stochastic_trainer_t());
                 
                 // register criteria
-                zob::get_criteria().add("avg", avg_criterion_t());
-                zob::get_criteria().add("l2n-reg", avg_l2_criterion_t());
-                zob::get_criteria().add("var-reg", avg_var_criterion_t());
+                nano::get_criteria().add("avg", avg_criterion_t());
+                nano::get_criteria().add("l2n-reg", avg_l2_criterion_t());
+                nano::get_criteria().add("var-reg", avg_var_criterion_t());
         }
 }
 	

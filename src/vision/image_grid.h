@@ -2,12 +2,12 @@
 
 #include "image.h"
 
-namespace zob
+namespace nano
 {
         ///
         /// \brief create an RGBA image composed from fixed-size RGBA patches disposed in a grid
         ///
-        class ZOB_PUBLIC image_grid_t
+        class NANO_PUBLIC image_grid_t
         {
         public:
 

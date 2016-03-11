@@ -6,7 +6,7 @@
 #include "math/lsearch_types.h"
 #include <vector>
 
-namespace zob
+namespace nano
 {
         ///
         /// \brief interpolation-based line-search (More & Thuente -like?!),

@@ -3,18 +3,18 @@
 #include "math/random.hpp"
 #include "math/epsilon.hpp"
 
-ZOB_BEGIN_MODULE(test_color)
+NANO_BEGIN_MODULE(test_color)
 
-ZOB_CASE(rgba_transform)
+NANO_CASE(rgba_transform)
 {
-        using namespace zob;
+        using namespace nano;
 
         const size_t tests = 1023;
 
-        zob::random_t<rgba_t> rgen(0, 255);
-        zob::random_t<rgba_t> ggen(0, 255);
-        zob::random_t<rgba_t> bgen(0, 255);
-        zob::random_t<rgba_t> agen(0, 255);
+        nano::random_t<rgba_t> rgen(0, 255);
+        nano::random_t<rgba_t> ggen(0, 255);
+        nano::random_t<rgba_t> bgen(0, 255);
+        nano::random_t<rgba_t> agen(0, 255);
 
         for (size_t t = 0; t < tests; ++ t)
         {
@@ -25,38 +25,38 @@ ZOB_CASE(rgba_transform)
 
                 const rgba_t rgba = color::make_rgba(r, g, b, a);
 
-                ZOB_CHECK_EQUAL(color::make_luma(rgba), color::make_luma(r, g, b));
+                NANO_CHECK_EQUAL(color::make_luma(rgba), color::make_luma(r, g, b));
 
-                ZOB_CHECK_EQUAL(r, color::get_red(rgba));
-                ZOB_CHECK_EQUAL(g, color::get_green(rgba));
-                ZOB_CHECK_EQUAL(b, color::get_blue(rgba));
-                ZOB_CHECK_EQUAL(a, color::get_alpha(rgba));
+                NANO_CHECK_EQUAL(r, color::get_red(rgba));
+                NANO_CHECK_EQUAL(g, color::get_green(rgba));
+                NANO_CHECK_EQUAL(b, color::get_blue(rgba));
+                NANO_CHECK_EQUAL(a, color::get_alpha(rgba));
 
-                ZOB_CHECK_EQUAL(rgba, color::set_red(rgba, r));
-                ZOB_CHECK_EQUAL(rgba, color::set_green(rgba, g));
-                ZOB_CHECK_EQUAL(rgba, color::set_blue(rgba, b));
-                ZOB_CHECK_EQUAL(rgba, color::set_alpha(rgba, a));
+                NANO_CHECK_EQUAL(rgba, color::set_red(rgba, r));
+                NANO_CHECK_EQUAL(rgba, color::set_green(rgba, g));
+                NANO_CHECK_EQUAL(rgba, color::set_blue(rgba, b));
+                NANO_CHECK_EQUAL(rgba, color::set_alpha(rgba, a));
 
-                ZOB_CHECK_EQUAL(r, color::make_luma(color::make_rgba(r, r, r)));
-                ZOB_CHECK_EQUAL(g, color::make_luma(color::make_rgba(g, g, g)));
-                ZOB_CHECK_EQUAL(b, color::make_luma(color::make_rgba(b, b, b)));
+                NANO_CHECK_EQUAL(r, color::make_luma(color::make_rgba(r, r, r)));
+                NANO_CHECK_EQUAL(g, color::make_luma(color::make_rgba(g, g, g)));
+                NANO_CHECK_EQUAL(b, color::make_luma(color::make_rgba(b, b, b)));
         }
 }
 
-ZOB_CASE(color_tensor)
+NANO_CASE(color_tensor)
 {
-        using namespace zob;
+        using namespace nano;
 
         const int tests = 17;
 
         for (int test = 0; test < tests; ++ test)
         {
-                zob::random_t<int> rng(16, 64);
+                nano::random_t<int> rng(16, 64);
 
                 const auto rows = rng();
                 const auto cols = rng();
 
-                const auto eps = zob::epsilon0<scalar_t>();
+                const auto eps = nano::epsilon0<scalar_t>();
 
                 // load from RGBA tensor
                 {
@@ -67,15 +67,15 @@ ZOB_CASE(color_tensor)
                         data.matrix(3).setConstant(((test * rng()) % 256) / 255.0);
 
                         const auto rgba = color::from_rgba_tensor(data);
-                        ZOB_CHECK_EQUAL(rgba.rows(), data.rows());
-                        ZOB_CHECK_EQUAL(rgba.cols(), data.cols());
+                        NANO_CHECK_EQUAL(rgba.rows(), data.rows());
+                        NANO_CHECK_EQUAL(rgba.cols(), data.cols());
 
                         const auto idata = color::to_rgba_tensor(rgba);
 
-                        ZOB_REQUIRE_EQUAL(data.dims(), idata.dims());
-                        ZOB_REQUIRE_EQUAL(data.rows(), idata.rows());
-                        ZOB_REQUIRE_EQUAL(data.cols(), idata.cols());
-                        ZOB_CHECK_EIGEN_CLOSE(data.vector(), idata.vector(), eps);
+                        NANO_REQUIRE_EQUAL(data.dims(), idata.dims());
+                        NANO_REQUIRE_EQUAL(data.rows(), idata.rows());
+                        NANO_REQUIRE_EQUAL(data.cols(), idata.cols());
+                        NANO_CHECK_EIGEN_CLOSE(data.vector(), idata.vector(), eps);
                 }
 
                 // load from RGB tensor
@@ -86,15 +86,15 @@ ZOB_CASE(color_tensor)
                         data.matrix(2).setConstant(((test * rng()) % 256) / 255.0);
 
                         const auto rgba = color::from_rgb_tensor(data);
-                        ZOB_CHECK_EQUAL(rgba.rows(), data.rows());
-                        ZOB_CHECK_EQUAL(rgba.cols(), data.cols());
+                        NANO_CHECK_EQUAL(rgba.rows(), data.rows());
+                        NANO_CHECK_EQUAL(rgba.cols(), data.cols());
 
                         const auto idata = color::to_rgb_tensor(rgba);
 
-                        ZOB_REQUIRE_EQUAL(data.dims(), idata.dims());
-                        ZOB_REQUIRE_EQUAL(data.rows(), idata.rows());
-                        ZOB_REQUIRE_EQUAL(data.cols(), idata.cols());
-                        ZOB_CHECK_EIGEN_CLOSE(data.vector(), idata.vector(), eps);
+                        NANO_REQUIRE_EQUAL(data.dims(), idata.dims());
+                        NANO_REQUIRE_EQUAL(data.rows(), idata.rows());
+                        NANO_REQUIRE_EQUAL(data.cols(), idata.cols());
+                        NANO_CHECK_EIGEN_CLOSE(data.vector(), idata.vector(), eps);
                 }
 
                 // load from LUMA tensor
@@ -103,17 +103,17 @@ ZOB_CASE(color_tensor)
                         data.matrix(0).setConstant(((test * rng()) % 256) / 255.0);
 
                         const auto luma = color::from_luma_tensor(data);
-                        ZOB_CHECK_EQUAL(luma.rows(), data.rows());
-                        ZOB_CHECK_EQUAL(luma.cols(), data.cols());
+                        NANO_CHECK_EQUAL(luma.rows(), data.rows());
+                        NANO_CHECK_EQUAL(luma.cols(), data.cols());
 
                         const auto idata = color::to_luma_tensor(luma);
 
-                        ZOB_REQUIRE_EQUAL(data.dims(), idata.dims());
-                        ZOB_REQUIRE_EQUAL(data.rows(), idata.rows());
-                        ZOB_REQUIRE_EQUAL(data.cols(), idata.cols());
-                        ZOB_CHECK_EIGEN_CLOSE(data.vector(), idata.vector(), eps);
+                        NANO_REQUIRE_EQUAL(data.dims(), idata.dims());
+                        NANO_REQUIRE_EQUAL(data.rows(), idata.rows());
+                        NANO_REQUIRE_EQUAL(data.cols(), idata.cols());
+                        NANO_CHECK_EIGEN_CLOSE(data.vector(), idata.vector(), eps);
                 }
         }
 }
 
-ZOB_END_MODULE()
+NANO_END_MODULE()

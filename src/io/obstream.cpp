@@ -1,7 +1,7 @@
 #include "obstream.h"
 #include <ostream>
 
-namespace zob
+namespace nano
 {
         obstream_t::obstream_t(std::ostream& stream)
                 :       m_stream(stream)

@@ -3,7 +3,7 @@
 #include "util.hpp"
 #include "function.hpp"
 
-namespace zob
+namespace nano
 {
         ///
         /// \brief create Dixon-Price test functions
@@ -44,7 +44,7 @@ namespace zob
                                 const auto xsegm0 = x.segment(0, m_dims - 1);
                                 const auto xsegm1 = x.segment(1, m_dims - 1);
 
-                                return  zob::square(x(0) - 1) +
+                                return  nano::square(x(0) - 1) +
                                         (m_weights.segment(1, m_dims - 1).array() *
                                         (2 * xsegm1.array().square() - xsegm0.array()).square()).sum();
                         };

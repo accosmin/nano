@@ -3,7 +3,7 @@
 #include "task.h"
 #include "trainer_result.h"
 
-namespace zob
+namespace nano
 {
         class loss_t;
         class model_t;
@@ -18,12 +18,12 @@ namespace zob
         using trainer_manager_t = manager_t<trainer_t>;
         using rtrainer_t = trainer_manager_t::trobject;
 
-        ZOB_PUBLIC trainer_manager_t& get_trainers();
+        NANO_PUBLIC trainer_manager_t& get_trainers();
 
         ///
         /// \brief generic trainer: optimizes a model on a given task
         ///
-        class ZOB_PUBLIC trainer_t : public clonable_t<trainer_t>
+        class NANO_PUBLIC trainer_t : public clonable_t<trainer_t>
         {
         public:
 

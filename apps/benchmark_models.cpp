@@ -14,12 +14,12 @@
 
 int main(int argc, char *argv[])
 {
-        zob::init();
+        nano::init();
 
-        using namespace zob;
+        using namespace nano;
 
         // parse the command line
-        zob::cmdline_t cmdline("benchmark models");
+        nano::cmdline_t cmdline("benchmark models");
         cmdline.add("s", "samples",     "number of samples to use [100, 100000]", "10000");
         cmdline.add("", "mlp",          "benchmark MLP models");
         cmdline.add("", "convnet",      "benchmark convolution networks");
@@ -29,7 +29,7 @@ int main(int argc, char *argv[])
         cmdline.process(argc, argv);
 
         // check arguments and options
-        const auto cmd_samples = zob::clamp(cmdline.get<size_t>("samples"), 100, 100 * 1000);
+        const auto cmd_samples = nano::clamp(cmdline.get<size_t>("samples"), 100, 100 * 1000);
         const auto cmd_forward = cmdline.has("forward");
         const auto cmd_backward = cmdline.has("backward");
         const auto cmd_mlp = cmdline.has("mlp");
@@ -50,7 +50,7 @@ int main(int argc, char *argv[])
         const color_mode cmd_color = color_mode::luma;
 
         const size_t cmd_min_nthreads = 1;
-        const size_t cmd_max_nthreads = zob::n_threads();
+        const size_t cmd_max_nthreads = nano::n_threads();
 
         // generate synthetic task
         charset_task_t task(charset::numeric, cmd_rows, cmd_cols, cmd_color, cmd_samples);
@@ -104,7 +104,7 @@ int main(int argc, char *argv[])
         const string_t outlayer = make_output_layer(task.osize());
 
         std::vector<std::pair<string_t, string_t>> configs;
-        #define DEFINE(config) configs.emplace_back(config + outlayer, ZOB_STRINGIFY(config))
+        #define DEFINE(config) configs.emplace_back(config + outlayer, NANO_STRINGIFY(config))
 
         if (cmd_mlp)
         {
@@ -127,17 +127,17 @@ int main(int argc, char *argv[])
 
         #undef DEFINE
 
-        const auto loss = zob::get_losses().get("logistic");
-        const auto criterion = zob::get_criteria().get("l2n-reg");
+        const auto loss = nano::get_losses().get("logistic");
+        const auto criterion = nano::get_criteria().get("l2n-reg");
 
         // construct tables to compare models
-        zob::table_t ftable("model-forward [ms]");
-        zob::table_t btable("model-backward [ms]");
+        nano::table_t ftable("model-forward [ms]");
+        nano::table_t btable("model-backward [ms]");
 
         for (size_t nthreads = cmd_min_nthreads; nthreads <= cmd_max_nthreads; ++ nthreads)
         {
-                ftable.header() << (zob::to_string(nthreads) + "xCPU");
-                btable.header() << (zob::to_string(nthreads) + "xCPU");
+                ftable.header() << (nano::to_string(nthreads) + "xCPU");
+                btable.header() << (nano::to_string(nthreads) + "xCPU");
         }
 
         // evaluate models
@@ -149,12 +149,12 @@ int main(int argc, char *argv[])
                 log_info() << "<<< running network [" << cmd_network << "] ...";
 
                 // create feed-forward network
-                const auto model = zob::get_models().get("forward-network", cmd_network);
+                const auto model = nano::get_models().get("forward-network", cmd_network);
                 model->resize(cmd_rows, cmd_cols, task.osize(), cmd_color, true);
                 model->random_params();
 
-                zob::table_row_t& frow = ftable.append(cmd_name + " (" + zob::to_string(model->psize()) + ")");
-                zob::table_row_t& brow = btable.append(cmd_name + " (" + zob::to_string(model->psize()) + ")");
+                nano::table_row_t& frow = ftable.append(cmd_name + " (" + nano::to_string(model->psize()) + ")");
+                nano::table_row_t& brow = btable.append(cmd_name + " (" + nano::to_string(model->psize()) + ")");
 
                 // select random samples
                 sampler_t sampler(task.samples());
@@ -171,7 +171,7 @@ int main(int argc, char *argv[])
                                 accumulator_t lacc(*model, *criterion, criterion_t::type::value, 0.1);
                                 lacc.set_threads(nthreads);
 
-                                const auto milis = zob::measure_robustly_msec([&] ()
+                                const auto milis = nano::measure_robustly_msec([&] ()
                                 {
                                         lacc.reset();
                                         lacc.update(task, samples, *loss);
@@ -188,7 +188,7 @@ int main(int argc, char *argv[])
                                 accumulator_t gacc(*model, *criterion, criterion_t::type::vgrad, 0.1);
                                 gacc.set_threads(nthreads);
 
-                                const auto milis = zob::measure_robustly_msec([&] ()
+                                const auto milis = nano::measure_robustly_msec([&] ()
                                 {
                                         gacc.reset();
                                         gacc.update(task, samples, *loss);

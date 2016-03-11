@@ -7,10 +7,10 @@
 #define CORTEX_MINOR_VERSION            3
 #define CORTEX_REVISION_VERSION         0
 
-namespace zob
+namespace nano
 {
         ///
         /// \brief current version
         ///
-        ZOB_PUBLIC std::string version();
+        NANO_PUBLIC std::string version();
 }

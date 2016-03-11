@@ -2,7 +2,7 @@
 
 #include "cortex/layer.h"
 
-namespace zob
+namespace nano
 {
         ///
         /// \brief fully-connected affine layer that works with 1D tensors (as in MLP models).
@@ -14,7 +14,7 @@ namespace zob
         {
         public:
 
-                ZOB_MAKE_CLONABLE(affine_layer_t, "fully-connected 1D affine layer: dims=10[1,4096]")
+                NANO_MAKE_CLONABLE(affine_layer_t, "fully-connected 1D affine layer: dims=10[1,4096]")
 
                 // constructor
                 explicit affine_layer_t(const string_t& parameters = string_t());
