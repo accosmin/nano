@@ -1,4 +1,4 @@
-### ZoB  
+### NANO
 
 This library provides numerical optimization and machine learning utilities. It can be used to train models such as neural networks and convolution networks.
 
