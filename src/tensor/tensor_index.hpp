@@ -19,13 +19,15 @@ namespace tensor
 
                 static_assert(tdimensions > 0, "tensors cannot have negative number of dimensions");
 
+                using tindices = std::array<tindex, tdimensions>;
+
                 ///
                 /// \brief constructor
                 ///
                 template <typename... tindices>
                 tensor_index_t(const tindices... sizes) :
-                        m_dims({{sizes...}}),
-                        m_size(std::accumulate(m_dims.begin(), m_dims.end(), tindex(1), std::multiplies<tindex>()))
+                        m_sizes({{sizes...}}),
+                        m_size(std::accumulate(m_sizes.begin(), m_sizes.end(), tindex(1), std::multiplies<tindex>()))
                 {
                         static_assert(sizeof...(sizes) == tdimensions, "wrong number of tensor dimensions");
                         tindex stride = 1;
@@ -60,7 +62,7 @@ namespace tensor
                 tindex size(const int idim) const
                 {
                         assert(idim >= 0 && idim < tdimensions);
-                        return m_dims[static_cast<std::size_t>(idim)];
+                        return m_sizes[static_cast<std::size_t>(idim)];
                 }
 
                 ///
@@ -104,8 +106,8 @@ namespace tensor
         private:
 
                 // attributes
-                std::array<tindex, tdimensions> m_dims;
-                std::array<tindex, tdimensions> m_strides;
-                tindex                          m_size;
+                tindices        m_sizes;        ///< size for each dimension
+                tindices        m_strides;      ///< stride for each dimension
+                tindex          m_size;         ///< total tensor size
         };
 }
