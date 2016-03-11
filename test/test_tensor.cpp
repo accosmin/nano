@@ -36,7 +36,7 @@ NANO_BEGIN_MODULE(test_tensor)
 
 NANO_CASE(index1d)
 {
-        tensor::tensor_index_t<int, 1> index(7);
+        tensor::tensor_index_t<std::int64_t, 1> index(7);
 
         NANO_CHECK_EQUAL(index.size(), 7);
         NANO_CHECK_EQUAL(index.size(0), 7);
@@ -48,7 +48,7 @@ NANO_CASE(index1d)
 
 NANO_CASE(index2d)
 {
-        tensor::tensor_index_t<int, 2> index(7, 5);
+        tensor::tensor_index_t<std::int64_t, 2> index(7, 5);
 
         NANO_CHECK_EQUAL(index.size(), 35);
         NANO_CHECK_EQUAL(index.size(0), 7);
@@ -63,6 +63,29 @@ NANO_CASE(index2d)
         NANO_CHECK_EQUAL(index(1, 0), 5);
         NANO_CHECK_EQUAL(index(3, 2), 17);
         NANO_CHECK_EQUAL(index(6, 4), 34);
+}
+
+NANO_CASE(index3d)
+{
+        tensor::tensor_index_t<std::int64_t, 3> index(3, 7, 5);
+
+        NANO_CHECK_EQUAL(index.size(), 105);
+        NANO_CHECK_EQUAL(index.size(0), 3);
+        NANO_CHECK_EQUAL(index.size(1), 7);
+        NANO_CHECK_EQUAL(index.size(2), 5);
+
+        NANO_CHECK_EQUAL(index(0), 0);
+        NANO_CHECK_EQUAL(index(13), 13);
+        NANO_CHECK_EQUAL(index(34), 34);
+
+        NANO_CHECK_EQUAL(index(0, 0, 1), 1);
+        NANO_CHECK_EQUAL(index(0, 0, 4), 4);
+        NANO_CHECK_EQUAL(index(0, 1, 0), 5);
+        NANO_CHECK_EQUAL(index(0, 2, 1), 11);
+        NANO_CHECK_EQUAL(index(1, 2, 1), 46);
+        NANO_CHECK_EQUAL(index(1, 0, 3), 38);
+        NANO_CHECK_EQUAL(index(2, 4, 1), 91);
+        NANO_CHECK_EQUAL(index(2, 6, 4), 104);
 }
 
 NANO_CASE(construction)

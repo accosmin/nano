@@ -28,6 +28,11 @@ namespace tensor
                         m_size(std::accumulate(m_dims.begin(), m_dims.end(), tindex(1), std::multiplies<tindex>()))
                 {
                         static_assert(sizeof...(sizes) == tdimensions, "wrong number of tensor dimensions");
+                        tindex stride = 1;
+                        for (int idim = tdimensions - 1; idim >= 0; stride *= size(idim), idim --)
+                        {
+                                m_strides[static_cast<std::size_t>(idim)] = stride;
+                        }
                 }
 
                 ///
@@ -43,10 +48,10 @@ namespace tensor
                 /// \brief retrieve the linearized index [0, size) from the given dimensional indices
                 ///
                 template <typename... tindices>
-                tindex operator()(const tindices... indices) const
+                tindex operator()(const tindex index, const tindices... indices) const
                 {
-                        static_assert(sizeof...(indices) == tdimensions, "missing dimensions when indexing tensor");
-                        return get_index(indices..., tdimensions - 1);
+                        static_assert(sizeof...(indices) + 1 == tdimensions, "missing dimensions when indexing tensor");
+                        return get_index<0>(index, indices...);
                 }
 
                 ///
@@ -76,24 +81,31 @@ namespace tensor
 
         private:
 
-                tindex get_index(const tindex index, const int idim) const
+                template <int idim>
+                tindex get_index() const
                 {
-                        assert(idim == 0);
-                        assert(index >= 0 && index < size(idim));
-                        return index;
+                        return tindex(0);
                 }
 
-                template <typename... tindices>
-                tindex get_index(const tindices... indices, const tindex index, const int idim) const
+                template <int idim, typename... tindices>
+                tindex get_index(const tindex index, const tindices... indices) const
                 {
                         assert(index >= 0 && index < size(idim));
-                        return index + size(idim) * get_index(indices..., idim - 1);
+                        if (idim + 1 == tdimensions)
+                        {
+                                return index;
+                        }
+                        else
+                        {
+                                return index * m_strides[idim] + get_index<idim + 1>(indices...);
+                        }
                 }
 
         private:
 
                 // attributes
                 std::array<tindex, tdimensions> m_dims;
+                std::array<tindex, tdimensions> m_strides;
                 tindex                          m_size;
         };
 }
