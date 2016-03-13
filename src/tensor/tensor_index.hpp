@@ -1,7 +1,6 @@
 #pragma once
 
 #include <array>
-#include <numeric>
 
 namespace tensor
 {
@@ -34,15 +33,14 @@ namespace tensor
 
                 static_assert(tdimensions > 0, "tensors cannot have negative number of dimensions");
 
-                using tindices = std::array<tindex, timensions>;
+                using tindices = std::array<tindex, tdimensions>;
 
                 ///
                 /// \brief constructor
                 ///
-                tensor_index_t() :
-                        m_size(0)
+                tensor_index_t()
                 {
-                        m_dims.fill(0);
+                        m_sizes.fill(0);
                         m_strides.fill(0);
                 }
 
@@ -51,8 +49,7 @@ namespace tensor
                 ///
                 template <typename... tindices>
                 tensor_index_t(const tindices... sizes) :
-                        m_dims({{sizes...}}),
-                        m_size<tindex>(detail::dsize(sizes...))
+                        m_sizes({{sizes...}})
                 {
                         static_assert(sizeof...(sizes) == tdimensions, "wrong number of tensor dimensions");
                         tindex stride = 1;
@@ -85,10 +82,10 @@ namespace tensor
                 /// \brief retrieve the size of a given dimension
                 ///
                 template <int idim>
-                tindex size() const
+                tindex dims() const
                 {
                         static_assert(idim >= 0 && idim < tdimensions, "wrong tensor dimension");
-                        return m_dims[static_cast<std::size_t>(idim)];
+                        return m_sizes[static_cast<std::size_t>(idim)];
                 }
 
                 ///
@@ -96,7 +93,7 @@ namespace tensor
                 ///
                 tindex size() const
                 {
-                        return m_size;
+                        return detail::dsize<tindex>(m_sizes);
                 }
 
                 ///
@@ -118,7 +115,7 @@ namespace tensor
                 template <int idim, typename... tindices>
                 tindex get_index(const tindex index, const tindices... indices) const
                 {
-                        assert(index >= 0 && index < size<idim>());
+                        assert(index >= 0 && index < dims<idim>());
                         if (idim + 1 == tdimensions)
                         {
                                 return index;
@@ -134,6 +131,5 @@ namespace tensor
                 // attributes
                 tindices        m_sizes;        ///< size for each dimension
                 tindices        m_strides;      ///< stride for each dimension
-                tindex          m_size;         ///< total tensor size
         };
 }

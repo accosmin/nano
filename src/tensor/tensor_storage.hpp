@@ -12,7 +12,7 @@ namespace tensor
         template
         <
                 typename tstorage,      ///< data storage type (e.g. Eigen::Vector or mapped C-array)
-                typename tdimensions
+                int tdimensions
         >
         class tensor_storage_t
         {
@@ -24,8 +24,7 @@ namespace tensor
                 using tsize = typename tstorage::Index;
                 using tindex = typename tstorage::Index;
                 using tscalar = typename tstorage::Scalar;
-
-                using tdims = typename tensor_index_t<tindex, tdimensions>;
+                using tdims = tensor_index_t<tindex, tdimensions - 2>;
 
                 // Eigen compatible
                 using Index = tindex;
@@ -34,14 +33,9 @@ namespace tensor
                 ///
                 /// \brief constructor
                 ///
-                tensor_storate_t() = default;
-
-                ///
-                /// \brief constructor
-                ///
-                template <typename... tsizes>
-                tensor_storage_t(const tsizes... dims) :
-                        m_dims(dims)
+                tensor_storage_t() :
+                        m_rows(0),
+                        m_cols(0)
                 {
                 }
 
@@ -49,11 +43,24 @@ namespace tensor
                 /// \brief constructor
                 ///
                 template <typename... tsizes>
-                tensor_storage_t(const tsizes... dims, const tstorage& data) :
-                        m_dims(dims),
+                tensor_storage_t(const tsizes... dims, const tsize rows, const tsize cols) :
+                        m_dims(dims...),
+                        m_rows(rows),
+                        m_cols(cols)
+                {
+                }
+
+                ///
+                /// \brief constructor
+                ///
+                template <typename... tsizes>
+                tensor_storage_t(const tsizes... dims, const tsize rows, const tsize cols, const tstorage& data) :
+                        m_dims(dims...),
+                        m_rows(rows),
+                        m_cols(cols),
                         m_data(data)
                 {
-                        assert(m_data.size() == m_dims.size());
+                        assert(m_data.size() == m_dims.size() * planeSize());
                 }
 
                 ///
@@ -76,10 +83,10 @@ namespace tensor
                 /// \brief dimensions
                 ///
                 tsize size() const { return m_data.size(); }
-                template <int tdim>
-                tsize dims() const { return m_dims.size<tdim>(); }
-                tsize rows() const { return dims<tdimensions - 2>(); }
-                tsize cols() const { return dims<tdimensions - 1>(); }
+                template <int idim>
+                tsize dims() const { return m_dims.template dims<idim>(); }
+                tsize rows() const { return m_rows; }
+                tsize cols() const { return m_cols; }
                 tsize planeSize() const { return rows() * cols(); }
 
                 ///
@@ -107,41 +114,49 @@ namespace tensor
                 }
 
                 ///
-                /// \brief access the 2D plane (i) as vector
+                /// \brief access the 2D plane (indices...) as vector
                 ///
-                auto vector(const tindex i) const
+                template <typename... tindices>
+                auto vector(const tindices... indices) const
                 {
-                        return tensor::map_vector(planeData(i), planeSize());
+                        return tensor::map_vector(planeData(indices...), planeSize());
                 }
-                auto vector(const tindex i)
+                template <typename... tindices>
+                auto vector(const tindices... indices)
                 {
-                        return tensor::map_vector(planeData(i), planeSize());
-                }
-
-                ///
-                /// \brief access the 2D plane (i) as matrix
-                ///
-                auto matrix(const tindex i) const
-                {
-                        return tensor::map_matrix(planeData(i), rows(), cols());
-                }
-                auto matrix(const tindex i)
-                {
-                        return tensor::map_matrix(planeData(i), rows(), cols());
+                        return tensor::map_vector(planeData(indices...), planeSize());
                 }
 
                 ///
-                /// \brief access the 2D plane (i) as an array
+                /// \brief access the 2D plane (indices...) as matrix
                 ///
-                const tscalar* planeData(const tindex i) const
+                template <typename... tindices>
+                auto matrix(const tindices... indices) const
                 {
-                        assert(i >= 0 && i < dims());
-                        return data() + i * planeSize();
+                        return tensor::map_matrix(planeData(indices...), rows(), cols());
                 }
-                tscalar* planeData(const tindex i)
+                template <typename... tindices>
+                auto matrix(const tindices... indices)
                 {
-                        assert(i >= 0 && i < dims());
-                        return data() + i * planeSize();
+                        return tensor::map_matrix(planeData(indices...), rows(), cols());
+                }
+
+                ///
+                /// \brief access the 2D plane (indices...) as an array
+                ///
+                template <typename... tindices>
+                const tscalar* planeData(const tindices... indices) const
+                {
+                        static_assert(sizeof...(indices) == tdimensions - 2,
+                                "wrong number of tensor dimensions to access a 2D plane");
+                        return data() + m_dims(indices...) * planeSize();
+                }
+                template <typename... tindices>
+                tscalar* planeData(const tindices... indices)
+                {
+                        static_assert(sizeof...(indices) == tdimensions - 2,
+                                "wrong number of tensor dimensions to access a 2D plane");
+                        return data() + m_dims(indices...) * planeSize();
                 }
 
                 ///
@@ -161,7 +176,9 @@ namespace tensor
         protected:
 
                 // attributes
-                tdims           m_dims;         ///< #dimensions
+                tdims           m_dims;         ///< number of 2+ extra dimensions
+                tsize           m_rows;         ///< plane size: rows
+                tsize           m_cols;         ///< plane size: columns
                 tstorage        m_data;         ///< storage (1D vector)
         };
 }
