@@ -5,17 +5,18 @@
 namespace tensor
 {
         ///
-        /// \brief 3D tensor mapping an array as ::dims() 2D planes of size ::rows() x ::cols()
+        /// \brief 3+D tensor mapping an array as ::dims() 2D planes of size ::rows() x ::cols()
         ///
         template
         <
-                typename tmap
+                typename tmap,
+                int tdimensions
         >
-        class tensor_map_t : public tensor_storage_t<tmap>
+        class tensor_map_t : public tensor_storage_t<tmap, tdimensions>
         {
         public:
 
-                using tbase = tensor_storage_t<tmap>;
+                using tbase = tensor_storage_t<tmap, tdimensions>;
                 using tsize = typename tbase::tsize;
                 using tscalar = typename tbase::tscalar;
 
@@ -26,8 +27,9 @@ namespace tensor
                 ///
                 /// \brief constructor
                 ///
-                tensor_map_t(const tmap& map, const tsize dims, const tsize rows, const tsize cols)
-                        :       tbase(dims, rows, cols, map)
+                template <typename... tsizes>
+                tensor_map_t(const tmap& map, const tsizes... dims)
+                        :       tbase(dims, map)
                 {
                 }
         };
@@ -38,13 +40,14 @@ namespace tensor
         template
         <
                 typename tscalar,
+                int tdimensions,
                 typename tvector = vector_t<tscalar>
         >
-        class tensor_t : public tensor_storage_t<tvector>
+        class tensor_t : public tensor_storage_t<tvector, tdimensions>
         {
         public:
 
-                using tbase = tensor_storage_t<tvector>;
+                using tbase = tensor_storage_t<tvector, tdimensions>;
                 using tsize = typename tbase::tsize;
 
                 // Eigen compatible
@@ -54,10 +57,11 @@ namespace tensor
                 ///
                 /// \brief constructor
                 ///
-                explicit tensor_t(const tsize dims = 0, const tsize rows = 0, const tsize cols = 0)
-                        :       tbase(dims, rows, cols)
+                template <typename... tsizes>
+                explicit tensor_t(const tsizes... dims)
+                        :       tbase(dims)
                 {
-                        resize(dims, rows, cols);
+                        resize(dims);
                 }
 
                 ///
@@ -67,7 +71,7 @@ namespace tensor
                 <
                         typename tmap
                 >
-                tensor_t(const tensor_map_t<tmap>& other)
+                tensor_t(const tensor_map_t<tmap, tdimensions>& other)
                         :       tensor_t(other.dims(), other.rows(), other.cols())
                 {
                         this->vector() = other.vector().template cast<tscalar>();
@@ -76,13 +80,11 @@ namespace tensor
                 ///
                 /// \brief resize to new dimensions
                 ///
-                tsize resize(const tsize dims, const tsize rows, const tsize cols)
+                template <typename... tsizes)
+                tsize resize(const tsizes... dims)
                 {
-                        this->m_dims = dims;
-                        this->m_rows = rows;
-                        this->m_cols = cols;
-                        this->m_data.resize(dims * rows * cols);
-
+                        this->m_dims.resize(dims);
+                        this->m_data.resize(this->m_dims.size());
                         return this->size();
                 }
         };
@@ -93,13 +95,14 @@ namespace tensor
         template
         <
                 typename tvalue_,
-                typename tsize,
-                typename tvalue = typename std::remove_const<tvalue_>::type,
-                typename tresult = tensor_map_t<Eigen::Map<vector_t<tvalue>>>
+                typename... tsizes
         >
-        tresult map_tensor(tvalue_* data, tsize dims, tsize rows, tsize cols)
+        auto map_tensor(tvalue_* data, const tsizes... dims)
         {
-                return tresult(tensor::map_vector(data, dims * rows * cols), dims, rows, cols);
+                using tvalue = typename std::remove_const<tvalue_>::type;
+                using tstorage = Eigne::Map<vector_t<tvalue>>;
+                return  tensor_map_t<tstorage, sizeof...(dims)>(
+                        tensor::map_vector(data, detail::dsize<typename tstorage::Index>(dims...)), dims...);
         }
 
         ///
@@ -108,13 +111,13 @@ namespace tensor
         template
         <
                 typename tvalue_,
-                typename tsize,
-                typename tvalue = typename std::remove_const<tvalue_>::type,
-                typename tresult = tensor_map_t<Eigen::Map<const vector_t<tvalue>>>
+                typename... tsizes
         >
-        tresult map_tensor(const tvalue_* data, tsize dims, tsize rows, tsize cols)
+        auto map_tensor(const tvalue_* data, const tsizes... dims)
         {
-                return tresult(tensor::map_vector(data, dims * rows * cols), dims, rows, cols);
+                using tvalue = typename std::remove_const<tvalue_>::type;
+                using tstorage = Eigne::Map<const vector_t<tvalue>>;
+                return  tensor_map_t<tstorage, sizeof...(dims)>(
+                        tensor::map_vector(data, detail::dsize<typename tstorage::Index>(dims...)), dims...);
         }
-
 }
