@@ -61,14 +61,17 @@ NANO_CASE(tensor3d)
 {
         using tensor3d_t = tensor::tensor_t<float, 3>;
 
-        const int dims = 7;
-        const int rows = 3;
-        const int cols = 4;
+        const auto dims = 7;
+        const auto rows = 3;
+        const auto cols = 4;
+        const auto constant = -3.6f;
 
         tensor3d_t tensor;
         tensor.resize(dims, rows, cols);
 
-        NANO_CHECK_EQUAL(tensor.dims(), dims);
+        NANO_CHECK_EQUAL(tensor.size<0>(), dims);
+        NANO_CHECK_EQUAL(tensor.size<1>(), rows);
+        NANO_CHECK_EQUAL(tensor.size<2>(), cols);
         NANO_CHECK_EQUAL(tensor.rows(), rows);
         NANO_CHECK_EQUAL(tensor.cols(), cols);
         NANO_CHECK_EQUAL(tensor.size(), dims * rows * cols);
@@ -85,6 +88,8 @@ NANO_CASE(tensor3d)
         NANO_CHECK_EQUAL(tensor.vector().minCoeff(), constant);
         NANO_CHECK_EQUAL(tensor.vector().maxCoeff(), constant);
 }
+
+// todo: check also 3D & 4D tensor maps
 
 NANO_END_MODULE()
 

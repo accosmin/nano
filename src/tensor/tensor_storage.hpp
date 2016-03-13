@@ -76,7 +76,7 @@ namespace tensor
                 ///
                 tsize size() const { return m_data.size(); }
                 template <int idim>
-                tsize size() const { return m_dims.template dims<idim>(); }
+                tsize size() const { return m_dims.template size<idim>(); }
                 tsize rows() const { return size<tdimensions - 2>(); }
                 tsize cols() const { return size<tdimensions - 1>(); }
                 tsize planeSize() const { return rows() * cols(); }

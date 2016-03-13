@@ -1,6 +1,7 @@
 #pragma once
 
 #include <array>
+#include <numeric>
 
 namespace tensor
 {
@@ -53,9 +54,11 @@ namespace tensor
                 {
                         static_assert(sizeof...(sizes) == tdimensions, "wrong number of tensor dimensions");
                         tindex stride = 1;
-                        for (int idim = tdimensions - 1; idim >= 0; stride *= size(idim), idim --)
+                        for (auto itstride = m_strides.rbegin(), itsize = m_sizes.rbegin();
+                                itstride != m_strides.rend(); ++ itstride, ++ itsize)
                         {
-                                m_strides[static_cast<std::size_t>(idim)] = stride;
+                                *itstride = stride;
+                                stride *= *itsize;
                         }
                 }
 
@@ -93,7 +96,7 @@ namespace tensor
                 ///
                 tindex size() const
                 {
-                        return detail::dsize<tindex>(m_sizes);
+                        return std::accumulate(m_sizes.begin(), m_sizes.end(), 1, std::multiplies<tindex>());
                 }
 
                 ///
