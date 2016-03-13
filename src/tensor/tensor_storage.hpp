@@ -24,7 +24,7 @@ namespace tensor
                 using tsize = typename tstorage::Index;
                 using tindex = typename tstorage::Index;
                 using tscalar = typename tstorage::Scalar;
-                using tdims = tensor_index_t<tindex, tdimensions - 2>;
+                using tdims = tensor_index_t<tindex, tdimensions>;
 
                 // Eigen compatible
                 using Index = tindex;
@@ -33,9 +33,14 @@ namespace tensor
                 ///
                 /// \brief constructor
                 ///
-                tensor_storage_t() :
-                        m_rows(0),
-                        m_cols(0)
+                tensor_storage_t() = default;
+
+                ///
+                /// \brief constructor
+                ///
+                template <typename... tsizes>
+                tensor_storage_t(const tsizes... dims) :
+                        m_dims(dims...)
                 {
                 }
 
@@ -43,24 +48,11 @@ namespace tensor
                 /// \brief constructor
                 ///
                 template <typename... tsizes>
-                tensor_storage_t(const tsizes... dims, const tsize rows, const tsize cols) :
+                tensor_storage_t(const tsizes... dims, const tstorage& data) :
                         m_dims(dims...),
-                        m_rows(rows),
-                        m_cols(cols)
-                {
-                }
-
-                ///
-                /// \brief constructor
-                ///
-                template <typename... tsizes>
-                tensor_storage_t(const tsizes... dims, const tsize rows, const tsize cols, const tstorage& data) :
-                        m_dims(dims...),
-                        m_rows(rows),
-                        m_cols(cols),
                         m_data(data)
                 {
-                        assert(m_data.size() == m_dims.size() * planeSize());
+                        assert(m_data.size() == m_dims.size());
                 }
 
                 ///
@@ -84,9 +76,9 @@ namespace tensor
                 ///
                 tsize size() const { return m_data.size(); }
                 template <int idim>
-                tsize dims() const { return m_dims.template dims<idim>(); }
-                tsize rows() const { return m_rows; }
-                tsize cols() const { return m_cols; }
+                tsize size() const { return m_dims.template dims<idim>(); }
+                tsize rows() const { return size<tdimensions - 2>(); }
+                tsize cols() const { return size<tdimensions - 1>(); }
                 tsize planeSize() const { return rows() * cols(); }
 
                 ///
@@ -149,36 +141,34 @@ namespace tensor
                 {
                         static_assert(sizeof...(indices) == tdimensions - 2,
                                 "wrong number of tensor dimensions to access a 2D plane");
-                        return data() + m_dims(indices...) * planeSize();
+                        return data() + m_dims(indices..., 0, 0);
                 }
                 template <typename... tindices>
                 tscalar* planeData(const tindices... indices)
                 {
                         static_assert(sizeof...(indices) == tdimensions - 2,
                                 "wrong number of tensor dimensions to access a 2D plane");
-                        return data() + m_dims(indices...) * planeSize();
+                        return data() + m_dims(indices..., 0, 0);
                 }
 
                 ///
-                /// \brief access an element of the tensor in the range [0, size())
+                /// \brief access an element of the tensor
                 ///
-                tscalar operator()(const tindex i) const
+                template <typename... tindices>
+                tscalar operator()(const tindices... indices) const
                 {
-                        assert(i >= 0 && i < size());
-                        return m_data(i);
+                        return m_data(m_dims(indices...));
                 }
-                tscalar& operator()(const tindex i)
+                template <typename... tindices>
+                tscalar& operator()(const tindices... indices)
                 {
-                        assert(i >= 0 && i < size());
-                        return m_data(i);
+                        return m_data(m_dims(indices...));
                 }
 
         protected:
 
                 // attributes
-                tdims           m_dims;         ///< number of 2+ extra dimensions
-                tsize           m_rows;         ///< plane size: rows
-                tsize           m_cols;         ///< plane size: columns
+                tdims           m_dims;         ///< dimensions
                 tstorage        m_data;         ///< storage (1D vector)
         };
 }

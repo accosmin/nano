@@ -82,7 +82,7 @@ namespace tensor
                 /// \brief retrieve the size of a given dimension
                 ///
                 template <int idim>
-                tindex dims() const
+                tindex size() const
                 {
                         static_assert(idim >= 0 && idim < tdimensions, "wrong tensor dimension");
                         return m_sizes[static_cast<std::size_t>(idim)];
@@ -115,7 +115,7 @@ namespace tensor
                 template <int idim, typename... tindices>
                 tindex get_index(const tindex index, const tindices... indices) const
                 {
-                        assert(index >= 0 && index < dims<idim>());
+                        assert(index >= 0 && index < size<idim>());
                         if (idim + 1 == tdimensions)
                         {
                                 return index;

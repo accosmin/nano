@@ -88,12 +88,10 @@ namespace tensor
                 /// \brief resize to new dimensions
                 ///
                 template <typename... tsizes>
-                tsize resize(const tsizes... dims, const tsize rows, const tsize cols)
+                tsize resize(const tsizes... dims)
                 {
                         this->m_dims = tdims(dims...);
-                        this->m_rows = rows;
-                        this->m_cols = cols;
-                        this->m_data.resize(this->m_dims.size() * rows * cols);
+                        this->m_data.resize(this->m_dims.size());
                         return this->size();
                 }
         };
