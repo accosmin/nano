@@ -29,7 +29,7 @@ namespace tensor
                 /// \brief constructor
                 ///
                 template <typename... tsizes>
-                tensor_map_t(const tmap& map, const tsizes... dims)
+                tensor_map_t(const tsizes... dims, const tmap& map)
                         :       tbase(dims..., map)
                 {
                 }
@@ -74,7 +74,7 @@ namespace tensor
                 ///
                 /// \brief constructor
                 ///
-                template
+                /*template
                 <
                         typename tmap
                 >
@@ -82,7 +82,7 @@ namespace tensor
                         :       tensor_t(other.dims(), other.rows(), other.cols())
                 {
                         this->vector() = other.vector().template cast<tscalar>();
-                }
+                }*/
 
                 ///
                 /// \brief resize to new dimensions
@@ -108,8 +108,8 @@ namespace tensor
         {
                 using tvalue = typename std::remove_const<tvalue_>::type;
                 using tstorage = Eigen::Map<vector_t<tvalue>>;
-                return  tensor_map_t<tstorage, sizeof...(dims)>(
-                        tensor::map_vector(data, detail::dsize<typename tstorage::Index>(dims...)), dims...);
+                return  tensor_map_t<tstorage, sizeof...(dims)>(dims...,
+                        tensor::map_vector(data, detail::dsize<typename tstorage::Index>(dims...)));
         }
 
         ///
@@ -124,7 +124,7 @@ namespace tensor
         {
                 using tvalue = typename std::remove_const<tvalue_>::type;
                 using tstorage = Eigen::Map<const vector_t<tvalue>>;
-                return  tensor_map_t<tstorage, sizeof...(dims)>(
-                        tensor::map_vector(data, detail::dsize<typename tstorage::Index>(dims...)), dims...);
+                return  tensor_map_t<tstorage, sizeof...(dims)>(dims...,
+                        tensor::map_vector(data, detail::dsize<typename tstorage::Index>(dims...)));
         }
 }

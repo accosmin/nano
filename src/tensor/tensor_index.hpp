@@ -16,7 +16,7 @@ namespace tensor
                 template <typename tsize, typename... tsizes>
                 tsize dsize(const tsize dim, const tsizes... dims)
                 {
-                        return dim * dsize(dims...);
+                        return dim * dsize<tsize>(dims...);
                 }
         }
 
