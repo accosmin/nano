@@ -7,21 +7,21 @@ namespace tensor
         namespace detail
         {
                 template<typename tvalue, std::size_t tsize>
-                constexpr tvalue product_array(const std::array<tvalue, tsize>& a, const int i = 0)
+                constexpr tvalue product_array(const std::array<tvalue, tsize>& a, const std::size_t i = 0)
                 {
-                        return (i < tsize)? a[i] * sum_array(a, i + 1) : tvalue(1);
+                        return (i < tsize)? a[i] * product_array(a, i + 1) : tvalue(1);
                 }
 
                 template <typename tsize>
-                tsize dsize()
+                tsize product_variadic()
                 {
                         return tsize(1);
                 }
 
                 template <typename tsize, typename... tsizes>
-                tsize dsize(const tsize dim, const tsizes... dims)
+                tsize product_variadic(const tsize dim, const tsizes... dims)
                 {
-                        return dim * dsize<tsize>(dims...);
+                        return dim * product_variadic<tsize>(dims...);
                 }
         }
 
@@ -31,7 +31,7 @@ namespace tensor
         template
         <
                 typename tindex,
-                int tdimensions
+                std::size_t tdimensions
         >
         class tensor_index_t
         {
@@ -89,11 +89,11 @@ namespace tensor
                 ///
                 /// \brief retrieve the size of a given dimension
                 ///
-                template <int idim>
+                template <std::size_t idim>
                 tindex size() const
                 {
-                        static_assert(idim >= 0 && idim < tdimensions, "wrong tensor dimension");
-                        return m_sizes[static_cast<std::size_t>(idim)];
+                        static_assert(idim < tdimensions, "wrong tensor dimension");
+                        return m_sizes[idim];
                 }
 
                 ///
@@ -107,20 +107,20 @@ namespace tensor
                 ///
                 /// \brief retrieve the number of dimensions
                 ///
-                constexpr int dimensionality() const
+                constexpr std::size_t dimensionality() const
                 {
                         return tdimensions;
                 }
 
         private:
 
-                template <int idim>
+                template <std::size_t idim>
                 tindex get_index() const
                 {
                         return tindex(0);
                 }
 
-                template <int idim, typename... tindices>
+                template <std::size_t idim, typename... tindices>
                 tindex get_index(const tindex index, const tindices... indices) const
                 {
                         assert(index >= 0 && index < size<idim>());

@@ -5,7 +5,7 @@
 namespace tensor
 {
         ///
-        /// \brief 3+D tensor mapping an array as ::dims() 2D planes of size ::rows() x ::cols()
+        /// \brief 3+D tensor mapping an array of 2D planes
         ///
         template
         <
@@ -29,14 +29,14 @@ namespace tensor
                 /// \brief constructor
                 ///
                 template <typename... tsizes>
-                tensor_map_t(const tsizes... dims, const tmap& map)
-                        :       tbase(dims..., map)
+                tensor_map_t(const tmap& map, const tsizes... dims) :
+                        tbase(map, dims...)
                 {
                 }
         };
 
         ///
-        /// \brief 3D tensor stored as ::dims() 2D planes of size ::rows() x ::cols()
+        /// \brief 3+D tensor stored as 2D planes
         ///
         template
         <
@@ -65,24 +65,25 @@ namespace tensor
                 /// \brief constructor
                 ///
                 template <typename... tsizes>
-                explicit tensor_t(const tsizes... dims)
-                        :       tbase(dims...)
+                explicit tensor_t(const tsizes... dims) :
+                        tbase(dims...)
                 {
-                        this->m_data.resize(this->size());
+                        this->m_data.resize(this->m_dims.size());
                 }
 
                 ///
                 /// \brief constructor
                 ///
-                /*template
+                template
                 <
                         typename tmap
                 >
-                tensor_t(const tensor_map_t<tmap, tdimensions>& other)
-                        :       tensor_t(other.dims(), other.rows(), other.cols())
+                tensor_t(const tensor_map_t<tmap, tdimensions>& other) :
+                        tensor_t(other.dims())
                 {
+                        this->m_data.resize(this->m_dims.size());
                         this->vector() = other.vector().template cast<tscalar>();
-                }*/
+                }
 
                 ///
                 /// \brief resize to new dimensions
@@ -108,8 +109,9 @@ namespace tensor
         {
                 using tvalue = typename std::remove_const<tvalue_>::type;
                 using tstorage = Eigen::Map<vector_t<tvalue>>;
-                return  tensor_map_t<tstorage, sizeof...(dims)>(dims...,
-                        tensor::map_vector(data, detail::dsize<typename tstorage::Index>(dims...)));
+                return  tensor_map_t<tstorage, sizeof...(dims)>(
+                        tensor::map_vector(data, detail::product_variadic<typename tstorage::Index>(dims...)),
+                        dims...);
         }
 
         ///
@@ -124,7 +126,8 @@ namespace tensor
         {
                 using tvalue = typename std::remove_const<tvalue_>::type;
                 using tstorage = Eigen::Map<const vector_t<tvalue>>;
-                return  tensor_map_t<tstorage, sizeof...(dims)>(dims...,
-                        tensor::map_vector(data, detail::dsize<typename tstorage::Index>(dims...)));
+                return  tensor_map_t<tstorage, sizeof...(dims)>(
+                        tensor::map_vector(data, detail::product_variadic<typename tstorage::Index>(dims...)),
+                        dims...);
         }
 }

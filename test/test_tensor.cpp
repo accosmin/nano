@@ -113,7 +113,7 @@ NANO_CASE(tensor3d_map)
         tensor.resize(dims + 1, rows - 3, cols + 2);
 
         std::vector<int> v;
-        for (int i = 0; i < tensor.size(); ++ i)
+        for (int i = 0; i < dims * rows * cols; ++ i)
         {
                 v.push_back(-35 + i);
         }
@@ -122,13 +122,16 @@ NANO_CASE(tensor3d_map)
         NANO_CHECK_EQUAL(tmap.size<0>(), dims);
         NANO_CHECK_EQUAL(tmap.size<1>(), rows);
         NANO_CHECK_EQUAL(tmap.size<2>(), cols);
+        NANO_CHECK_EQUAL(tmap.size(), dims * rows * cols);
+        NANO_CHECK_EQUAL(tmap.rows(), rows);
+        NANO_CHECK_EQUAL(tmap.cols(), cols);
 
         for (int i = 0; i < tmap.size(); ++ i)
         {
-                NANO_CHECK_EQUAL(tensor(i), -35 + i);
+                NANO_CHECK_EQUAL(tmap(i), -35 + i);
         }
 
-        /*tensor = tmap;
+        tensor = tmap;
         NANO_CHECK_EQUAL(tensor.size<0>(), dims);
         NANO_CHECK_EQUAL(tensor.size<1>(), rows);
         NANO_CHECK_EQUAL(tensor.size<2>(), cols);
@@ -136,7 +139,96 @@ NANO_CASE(tensor3d_map)
         for (int i = 0; i < tensor.size(); ++ i)
         {
                 NANO_CHECK_EQUAL(tensor(i), -35 + i);
-        }*/
+        }
+}
+
+NANO_CASE(tensor4d)
+{
+        using tensor4d_t = tensor::tensor_t<int, 4>;
+
+        const auto dim1 = 2;
+        const auto dim2 = 7;
+        const auto rows = 3;
+        const auto cols = 4;
+
+        tensor4d_t tensor;
+        tensor.resize(dim1, dim2, rows, cols);
+
+        tensor.setZero();
+        NANO_CHECK_EQUAL(tensor.vector().minCoeff(), 0);
+        NANO_CHECK_EQUAL(tensor.vector().maxCoeff(), 0);
+
+        NANO_CHECK_EQUAL(tensor.size<0>(), dim1);
+        NANO_CHECK_EQUAL(tensor.size<1>(), dim2);
+        NANO_CHECK_EQUAL(tensor.size<2>(), rows);
+        NANO_CHECK_EQUAL(tensor.size<3>(), cols);
+        NANO_CHECK_EQUAL(tensor.rows(), rows);
+        NANO_CHECK_EQUAL(tensor.cols(), cols);
+        NANO_CHECK_EQUAL(tensor.size(), dim1 * dim2 * rows * cols);
+        NANO_CHECK_EQUAL(tensor.planeSize(), rows * cols);
+
+        NANO_CHECK_EQUAL(tensor.vector().size(), tensor.size());
+        NANO_CHECK_EQUAL(tensor.vector(dim1 / 2, dim2 / 2).size(), tensor.planeSize());
+
+        NANO_CHECK_EQUAL(tensor.matrix(dim1 - 1, dim2 - 1).rows(), tensor.rows());
+        NANO_CHECK_EQUAL(tensor.matrix(dim1 - 1, dim2 - 1).cols(), tensor.cols());
+
+        tensor(0, 4, 0, 1) = -3;
+        tensor(1, 2, 2, 0) = -7;
+        NANO_CHECK_EQUAL(tensor(0, 4, 0, 1), -3);
+        NANO_CHECK_EQUAL(tensor(1, 2, 2, 0), -7);
+
+        tensor.setConstant(42);
+        NANO_CHECK_EQUAL(tensor.vector().minCoeff(), 42);
+        NANO_CHECK_EQUAL(tensor.vector().maxCoeff(), 42);
+
+        tensor.matrix(0, 3).setConstant(13);
+        NANO_CHECK_EQUAL(tensor.vector(0, 3).minCoeff(), 13);
+        NANO_CHECK_EQUAL(tensor.vector(0, 3).maxCoeff(), 13);
+}
+
+NANO_CASE(tensor4d_map)
+{
+        using tensor4d_t = tensor::tensor_t<int, 4>;
+
+        const auto dim1 = 3;
+        const auto dim2 = 7;
+        const auto rows = 3;
+        const auto cols = 4;
+
+        tensor4d_t tensor;
+        tensor.resize(dim1 + 2, dim2 + 1, rows - 3, cols + 2);
+
+        std::vector<int> v;
+        for (int i = 0; i < dim1 * dim2 * rows * cols; ++ i)
+        {
+                v.push_back(-35 + i);
+        }
+
+        const auto tmap = ::tensor::map_tensor(v.data(), dim1, dim2, rows, cols);
+        NANO_CHECK_EQUAL(tmap.size<0>(), dim1);
+        NANO_CHECK_EQUAL(tmap.size<1>(), dim2);
+        NANO_CHECK_EQUAL(tmap.size<2>(), rows);
+        NANO_CHECK_EQUAL(tmap.size<3>(), cols);
+        NANO_CHECK_EQUAL(tmap.size(), dim1 * dim2 * rows * cols);
+        NANO_CHECK_EQUAL(tmap.rows(), rows);
+        NANO_CHECK_EQUAL(tmap.cols(), cols);
+
+        for (int i = 0; i < tmap.size(); ++ i)
+        {
+                NANO_CHECK_EQUAL(tmap(i), -35 + i);
+        }
+
+        tensor = tmap;
+        NANO_CHECK_EQUAL(tensor.size<0>(), dim1);
+        NANO_CHECK_EQUAL(tensor.size<1>(), dim2);
+        NANO_CHECK_EQUAL(tensor.size<2>(), rows);
+        NANO_CHECK_EQUAL(tensor.size<3>(), cols);
+
+        for (int i = 0; i < tensor.size(); ++ i)
+        {
+                NANO_CHECK_EQUAL(tensor(i), -35 + i);
+        }
 }
 
 NANO_END_MODULE()

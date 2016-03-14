@@ -38,6 +38,14 @@ namespace tensor
                 ///
                 /// \brief constructor
                 ///
+                tensor_storage_t(const tdims& dims) :
+                        m_dims(dims)
+                {
+                }
+
+                ///
+                /// \brief constructor
+                ///
                 template <typename... tsizes>
                 tensor_storage_t(const tsizes... dims) :
                         m_dims(dims...)
@@ -48,7 +56,7 @@ namespace tensor
                 /// \brief constructor
                 ///
                 template <typename... tsizes>
-                tensor_storage_t(const tsizes... dims, const tstorage& data) :
+                tensor_storage_t(const tstorage& data, const tsizes... dims) :
                         m_dims(dims...),
                         m_data(data)
                 {
@@ -80,6 +88,7 @@ namespace tensor
                 tsize rows() const { return size<tdimensions - 2>(); }
                 tsize cols() const { return size<tdimensions - 1>(); }
                 tsize planeSize() const { return rows() * cols(); }
+                const tdims& dims() const { return m_dims; }
 
                 ///
                 /// \brief access the whole tensor as a vector (size() x 1)
