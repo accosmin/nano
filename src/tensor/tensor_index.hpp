@@ -1,12 +1,17 @@
 #pragma once
 
 #include <array>
-#include <numeric>
 
 namespace tensor
 {
         namespace detail
         {
+                template<typename tvalue, std::size_t tsize>
+                constexpr tvalue product_array(const std::array<tvalue, tsize>& a, const int i = 0)
+                {
+                        return (i < tsize)? a[i] * sum_array(a, i + 1) : tvalue(1);
+                }
+
                 template <typename tsize>
                 tsize dsize()
                 {
@@ -96,7 +101,7 @@ namespace tensor
                 ///
                 tindex size() const
                 {
-                        return std::accumulate(m_sizes.begin(), m_sizes.end(), 1, std::multiplies<tindex>());
+                        return detail::product_array(m_sizes);
                 }
 
                 ///
