@@ -17,9 +17,9 @@ namespace nano
         //      "Training Invariant Support Vector Machines using Selective Sampling", by
         //      Gaelle Loosli, Stephane Canu & Leon Bottou
         ///
-        struct NANO_PUBLIC warp_params
+        struct NANO_PUBLIC warp_params_t
         {
-                explicit warp_params(
+                explicit warp_params_t(
                         field_type ftype = field_type::random,
                         scalar_t noise = 0.1,
                         scalar_t sigma = 4.0,
@@ -36,5 +36,5 @@ namespace nano
         ///
         /// \brief randomly warp the input RGBA tensor
         ///
-        NANO_PUBLIC tensor_t warp(const tensor_t& image, const warp_params& params, tensor_t* field_image = nullptr);
+        NANO_PUBLIC tensor3d_t warp(const tensor3d_t& image, const warp_params_t&, tensor3d_t* field_image = nullptr);
 }

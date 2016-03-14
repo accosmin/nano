@@ -60,7 +60,7 @@ NANO_CASE(color_tensor)
 
                 // load from RGBA tensor
                 {
-                        tensor_t data(4, rows, cols);
+                        tensor3d_t data(4, rows, cols);
                         data.matrix(0).setConstant(((test * rng()) % 256) / 255.0);
                         data.matrix(1).setConstant(((test * rng()) % 256) / 255.0);
                         data.matrix(2).setConstant(((test * rng()) % 256) / 255.0);
@@ -72,7 +72,7 @@ NANO_CASE(color_tensor)
 
                         const auto idata = color::to_rgba_tensor(rgba);
 
-                        NANO_REQUIRE_EQUAL(data.dims(), idata.dims());
+                        NANO_REQUIRE_EQUAL(data.size<0>(), idata.size<0>());
                         NANO_REQUIRE_EQUAL(data.rows(), idata.rows());
                         NANO_REQUIRE_EQUAL(data.cols(), idata.cols());
                         NANO_CHECK_EIGEN_CLOSE(data.vector(), idata.vector(), eps);
@@ -80,7 +80,7 @@ NANO_CASE(color_tensor)
 
                 // load from RGB tensor
                 {
-                        tensor_t data(3, rows, cols);
+                        tensor3d_t data(3, rows, cols);
                         data.matrix(0).setConstant(((test * rng()) % 256) / 255.0);
                         data.matrix(1).setConstant(((test * rng()) % 256) / 255.0);
                         data.matrix(2).setConstant(((test * rng()) % 256) / 255.0);
@@ -91,7 +91,7 @@ NANO_CASE(color_tensor)
 
                         const auto idata = color::to_rgb_tensor(rgba);
 
-                        NANO_REQUIRE_EQUAL(data.dims(), idata.dims());
+                        NANO_REQUIRE_EQUAL(data.size<0>(), idata.size<0>());
                         NANO_REQUIRE_EQUAL(data.rows(), idata.rows());
                         NANO_REQUIRE_EQUAL(data.cols(), idata.cols());
                         NANO_CHECK_EIGEN_CLOSE(data.vector(), idata.vector(), eps);
@@ -99,7 +99,7 @@ NANO_CASE(color_tensor)
 
                 // load from LUMA tensor
                 {
-                        tensor_t data(1, rows, cols);
+                        tensor3d_t data(1, rows, cols);
                         data.matrix(0).setConstant(((test * rng()) % 256) / 255.0);
 
                         const auto luma = color::from_luma_tensor(data);
@@ -108,7 +108,7 @@ NANO_CASE(color_tensor)
 
                         const auto idata = color::to_luma_tensor(luma);
 
-                        NANO_REQUIRE_EQUAL(data.dims(), idata.dims());
+                        NANO_REQUIRE_EQUAL(data.size<0>(), idata.size<0>());
                         NANO_REQUIRE_EQUAL(data.rows(), idata.rows());
                         NANO_REQUIRE_EQUAL(data.cols(), idata.cols());
                         NANO_CHECK_EIGEN_CLOSE(data.vector(), idata.vector(), eps);

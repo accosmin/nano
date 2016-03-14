@@ -27,21 +27,21 @@ namespace nano
                                  255);
         }
 
-        tensor_t color::to_luma_tensor(const luma_matrix_t& luma)
+        tensor3d_t color::to_luma_tensor(const luma_matrix_t& luma)
         {
                 const scalar_t scale = 1.0 / 255.0;
 
-                tensor_t data(1, luma.rows(), luma.cols());
+                tensor3d_t data(1, luma.rows(), luma.cols());
                 tensor::transform(luma, data.matrix(0), [=] (luma_t l) { return scale * l; });
 
                 return data;
         }
 
-        tensor_t color::to_rgb_tensor(const rgba_matrix_t& rgba)
+        tensor3d_t color::to_rgb_tensor(const rgba_matrix_t& rgba)
         {
                 const scalar_t scale = 1.0 / 255.0;
 
-                tensor_t data(3, rgba.rows(), rgba.cols());
+                tensor3d_t data(3, rgba.rows(), rgba.cols());
                 tensor::transform(rgba, data.matrix(0), [=] (rgba_t c) { return scale * color::get_red(c); });
                 tensor::transform(rgba, data.matrix(1), [=] (rgba_t c) { return scale * color::get_green(c); });
                 tensor::transform(rgba, data.matrix(2), [=] (rgba_t c) { return scale * color::get_blue(c); });
@@ -49,11 +49,11 @@ namespace nano
                 return data;
         }
 
-        tensor_t color::to_rgba_tensor(const rgba_matrix_t& rgba)
+        tensor3d_t color::to_rgba_tensor(const rgba_matrix_t& rgba)
         {
                 const scalar_t scale = 1.0 / 255.0;
 
-                tensor_t data(4, rgba.rows(), rgba.cols());
+                tensor3d_t data(4, rgba.rows(), rgba.cols());
                 tensor::transform(rgba, data.matrix(0), [=] (rgba_t c) { return scale * color::get_red(c); });
                 tensor::transform(rgba, data.matrix(1), [=] (rgba_t c) { return scale * color::get_green(c); });
                 tensor::transform(rgba, data.matrix(2), [=] (rgba_t c) { return scale * color::get_blue(c); });
@@ -74,11 +74,11 @@ namespace nano
                 }
         }
 
-        luma_matrix_t color::from_luma_tensor(const tensor_t& data)
+        luma_matrix_t color::from_luma_tensor(const tensor3d_t& data)
         {
                 luma_matrix_t luma(data.rows(), data.cols());
 
-                switch (data.dims())
+                switch (data.size<0>())
                 {
                 case 1:
                         tensor::transform(data.matrix(0), luma,
@@ -104,11 +104,11 @@ namespace nano
                 return luma;
         }
 
-        rgba_matrix_t color::from_rgb_tensor(const tensor_t& data)
+        rgba_matrix_t color::from_rgb_tensor(const tensor3d_t& data)
         {
                 rgba_matrix_t rgba(data.rows(), data.cols());
 
-                switch (data.dims())
+                switch (data.size<0>())
                 {
                 case 1:
                         tensor::transform(data.matrix(0), rgba, [=] (scalar_t l)
@@ -133,11 +133,11 @@ namespace nano
                 return rgba;
         }
 
-        rgba_matrix_t color::from_rgba_tensor(const tensor_t& data)
+        rgba_matrix_t color::from_rgba_tensor(const tensor3d_t& data)
         {
                 rgba_matrix_t rgba(data.rows(), data.cols());
 
-                switch (data.dims())
+                switch (data.size<0>())
                 {
                 case 1:
                         tensor::transform(data.matrix(0), rgba, [=] (scalar_t l)

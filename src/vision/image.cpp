@@ -143,12 +143,12 @@ namespace nano
                 }
         }
 
-        tensor_t image_t::to_tensor() const
+        tensor3d_t image_t::to_tensor() const
         {
                 return to_tensor(rect_t(0, 0, cols(), rows()));
         }
 
-        tensor_t image_t::to_tensor(const rect_t& region) const
+        tensor3d_t image_t::to_tensor(const rect_t& region) const
         {
                 const coord_t top = region.top();
                 const coord_t left = region.left();
@@ -164,7 +164,7 @@ namespace nano
                         return color::to_rgb_tensor(rgba_matrix_t(m_rgba.block(top, left, rows, cols)));
 
                 default:
-                        return tensor_t();
+                        return tensor3d_t();
                 }
         }
 

@@ -98,32 +98,32 @@ namespace nano
                 ///
                 /// \brief transform patch to scaled [0, 1] tensor with 1 plane (luma)
                 ///
-                NANO_PUBLIC tensor_t to_luma_tensor(const luma_matrix_t& patch);
+                NANO_PUBLIC tensor3d_t to_luma_tensor(const luma_matrix_t& patch);
 
                 ///
                 /// \brief transform patch to scaled [0, 1] tensor with 3 planes (rgb)
                 ///
-                NANO_PUBLIC tensor_t to_rgb_tensor(const rgba_matrix_t& patch);
+                NANO_PUBLIC tensor3d_t to_rgb_tensor(const rgba_matrix_t& patch);
 
                 ///
                 /// \brief transform patch to scaled [0, 1] tensor with 4 planes (rgba)
                 ///
-                NANO_PUBLIC tensor_t to_rgba_tensor(const rgba_matrix_t& patch);
+                NANO_PUBLIC tensor3d_t to_rgba_tensor(const rgba_matrix_t& patch);
 
                 ///
                 /// \brief transform 1 plane scaled [0, 1] patch to luma matrix
                 ///
-                NANO_PUBLIC luma_matrix_t from_luma_tensor(const tensor_t& patch);
+                NANO_PUBLIC luma_matrix_t from_luma_tensor(const tensor3d_t& patch);
 
                 ///
                 /// \brief transform 3 planes scaled [0, 1] patch to rgb matrix
                 ///
-                NANO_PUBLIC rgba_matrix_t from_rgb_tensor(const tensor_t& patch);
+                NANO_PUBLIC rgba_matrix_t from_rgb_tensor(const tensor3d_t& patch);
 
                 ///
                 /// \brief transform 4 planes scaled [0, 1] patch to rgba matrix
                 ///
-                NANO_PUBLIC rgba_matrix_t from_rgba_tensor(const tensor_t& patch);
+                NANO_PUBLIC rgba_matrix_t from_rgba_tensor(const tensor3d_t& patch);
         }
 }
 

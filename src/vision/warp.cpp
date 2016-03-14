@@ -11,7 +11,7 @@ namespace nano
 {
         namespace
         {
-                tensor_t image_field(const matrix_t& fieldx, const matrix_t& fieldy)
+                tensor3d_t image_field(const matrix_t& fieldx, const matrix_t& fieldy)
                 {
                         assert(fieldx.rows() == fieldy.rows());
                         assert(fieldx.cols() == fieldy.cols());
@@ -19,7 +19,7 @@ namespace nano
                         const scalar_t pi = 4.0 * std::atan(1.0);
                         const scalar_t ipi = 1.0 / pi;
 
-                        tensor_t image(4, fieldx.rows(), fieldx.cols());
+                        tensor3d_t image(4, fieldx.rows(), fieldx.cols());
 
                         tensor::transform(fieldx, fieldy, image.matrix(0), [=] (const scalar_t fx, const scalar_t fy)
                         {
@@ -124,7 +124,7 @@ namespace nano
                 }
         }
 
-        warp_params::warp_params(
+        warp_params_t::warp_params_t(
                 field_type ftype,
                 scalar_t noise,
                 scalar_t sigma,
@@ -138,20 +138,20 @@ namespace nano
         {
         }
 
-        tensor_t warp(const tensor_t& image, const warp_params& params, tensor_t* fimage)
+        tensor3d_t warp(const tensor3d_t& image, const warp_params_t& params, tensor3d_t* fimage)
         {
-                tensor_t patch = image;
+                tensor3d_t patch = image;
 
                 // x gradient (directional gradient)
-                tensor_t gradx(patch.dims(), patch.rows(), patch.cols());
-                for (auto d = 0; d < patch.dims(); ++ d)
+                tensor3d_t gradx(patch.size<0>(), patch.rows(), patch.cols());
+                for (auto d = 0; d < patch.size<0>(); ++ d)
                 {
                         nano::gradientx(patch.matrix(d), gradx.matrix(d));
                 }
 
                 // y gradient (directional gradient)
-                tensor_t grady(patch.dims(), patch.rows(), patch.cols());
-                for (auto d = 0; d < patch.dims(); ++ d)
+                tensor3d_t grady(patch.size<0>(), patch.rows(), patch.cols());
+                for (auto d = 0; d < patch.size<0>(); ++ d)
                 {
                         nano::gradienty(patch.matrix(d), grady.matrix(d));
                 }
@@ -197,7 +197,7 @@ namespace nano
                 const scalar_t alphay = rng_alphay();
                 const scalar_t beta = rng_beta();
 
-                for (auto d = 0; d < patch.dims(); ++ d)
+                for (auto d = 0; d < patch.size<0>(); ++ d)
                 {
                         warp_by_field(patch.matrix(d),
                                       alphax, fieldx, gradx.matrix(d),

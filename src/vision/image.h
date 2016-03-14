@@ -58,8 +58,8 @@ namespace nano
                 /// \brief save image to scaled [0, 1] tensor
                 ///     with 1 (luma) or 3 (rgb) planes
                 ///
-                tensor_t to_tensor() const;
-                tensor_t to_tensor(const rect_t& region) const;
+                tensor3d_t to_tensor() const;
+                tensor3d_t to_tensor(const rect_t& region) const;
 
                 ///
                 /// \brief transform between color mode
