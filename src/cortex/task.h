@@ -8,6 +8,29 @@ namespace nano
 {
         class task_t;
 
+/*
+        load()
+        load(string_t dir)
+
+        describe(string_t dir)
+
+        tensor_size_t idims()
+        tensor_size_t irows()
+        tensor_size_t icols()
+        tensor_size_t osize()
+
+        size_t n_folds()
+        size_t n_samples()
+        size_t n_samples(fold_t)
+
+        void shuffle()
+        void shuffle(fold_t)
+
+        tensor3d_t sample(fold_t, size_t isample)
+
+        !!!should store the samples as std::map<fold_t, tensors/images>
+*/
+
         ///
         /// \brief manage tasks (register new ones, query and clone them)
         ///

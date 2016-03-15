@@ -15,9 +15,6 @@ namespace nano
 
         model_t::model_t(const string_t& parameters)
                 :       clonable_t<model_t>(parameters),
-                        m_idims(0),
-                        m_irows(0),
-                        m_icols(0),
                         m_osize(0)
         {
         }
@@ -29,10 +26,10 @@ namespace nano
                 nano::obstream_t ob(os);
 
                 // save configuration
-                ob.write(m_idims);
-                ob.write(m_irows);
-                ob.write(m_icols);
-                ob.write(m_osize);
+                ob.write(idims());
+                ob.write(irows());
+                ob.write(icols());
+                ob.write(osize());
                 ob.write(m_configuration);
 
                 // save parameters
@@ -50,9 +47,11 @@ namespace nano
                 nano::ibstream_t ib(is);
 
                 // read configuration
-                ib.read(m_idims);
-                ib.read(m_irows);
-                ib.read(m_icols);
+                tensor_size_t idims, irows, icols;
+                ib.read(idims);
+                ib.read(irows);
+                ib.read(icols);
+                m_idata.resize(idims, irows, icols);
                 ib.read(m_osize);
                 ib.read(m_configuration);
 
@@ -71,7 +70,6 @@ namespace nano
         {
                 assert(input.size() == isize());
 
-                m_idata.resize(idims(), irows(), icols());
                 m_idata.vector() = input;
 
                 return output(m_idata);
@@ -85,9 +83,7 @@ namespace nano
         bool model_t::resize(const tensor_size_t idims, const tensor_size_t irows, const tensor_size_t icols,
                 const tensor_size_t osize, const bool verbose)
         {
-                m_idims = idims;
-                m_irows = irows;
-                m_icols = icols;
+                m_idata.resize(idims, irows, icols);
                 m_osize = osize;
                 resize(verbose);
 
