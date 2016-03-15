@@ -29,7 +29,7 @@ int main(int argc, char *argv[])
         cmdline.add("", "save-group-cols",      "number of samples to group in a column", "32");
 
         cmdline.process(argc, argv);
-        		
+
         // check arguments and options
         const auto cmd_task = cmdline.get<string_t>("task");
         const auto cmd_task_dir = cmdline.get<string_t>("task-dir");
@@ -98,7 +98,7 @@ int main(int argc, char *argv[])
                         const image_t& image = task->image(sample.m_index);
 
                         const vector_t target = sample.m_target;
-                        const vector_t output = model->output(image, sample.m_region).vector();
+                        const vector_t output = model->output(image.to_tensor(sample.m_region)).vector();
 
                         const indices_t tclasses = loss->labels(target);
                         const indices_t oclasses = loss->labels(output);
@@ -144,7 +144,7 @@ int main(int argc, char *argv[])
                                 task->save_as_images(label_nk_samples, lbasepath + "_nk", grows, gcols, 8, nk_bkcolor);
                         }
                 }
-        }            
+        }
 
         // performance statistics
         log_info() << ">>> performance: loss value = " << lstats.avg() << " +/- " << lstats.stdev()

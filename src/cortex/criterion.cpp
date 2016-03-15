@@ -71,7 +71,7 @@ namespace nano
 
                 const image_t& image = task.image(sample.m_index);
                 const vector_t& target = sample.m_target;
-                const vector_t& output = m_model->output(image, sample.m_region).vector();
+                const vector_t& output = m_model->output(image.to_tensor(sample.m_region)).vector();
 
                 assert(output.size() == m_model->osize());
                 assert(target.size() == m_model->osize());

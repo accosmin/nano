@@ -149,7 +149,7 @@ namespace nano
                 scalar_t                m_lambda;       ///< regularization weight (if any)
                 type                    m_type;         ///<
 
-                nano::stats_t<scalar_t> m_estats;       ///< loss error statistics
+                stats_t<scalar_t>       m_estats;       ///< loss error statistics
         };
 }
 

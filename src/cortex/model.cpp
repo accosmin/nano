@@ -3,8 +3,6 @@
 #include "util/logger.h"
 #include "io/ibstream.h"
 #include "io/obstream.h"
-#include "text/to_string.hpp"
-#include "text/from_string.hpp"
 #include <fstream>
 
 namespace nano
@@ -17,10 +15,10 @@ namespace nano
 
         model_t::model_t(const string_t& parameters)
                 :       clonable_t<model_t>(parameters),
-                        m_rows(0),
-                        m_cols(0),
-                        m_outputs(0),
-                        m_color(color_mode::luma)
+                        m_idims(0),
+                        m_irows(0),
+                        m_icols(0),
+                        m_osize(0)
         {
         }
 
@@ -31,10 +29,10 @@ namespace nano
                 nano::obstream_t ob(os);
 
                 // save configuration
-                ob.write(m_rows);
-                ob.write(m_cols);
-                ob.write(m_outputs);
-                ob.write(nano::to_string(m_color));
+                ob.write(m_idims);
+                ob.write(m_irows);
+                ob.write(m_icols);
+                ob.write(m_osize);
                 ob.write(m_configuration);
 
                 // save parameters
@@ -52,10 +50,10 @@ namespace nano
                 nano::ibstream_t ib(is);
 
                 // read configuration
-                ib.read(m_rows);
-                ib.read(m_cols);
-                ib.read(m_outputs);
-                { string_t str; ib.read(str); m_color = nano::from_string<color_mode>(str); }
+                ib.read(m_idims);
+                ib.read(m_irows);
+                ib.read(m_icols);
+                ib.read(m_osize);
                 ib.read(m_configuration);
 
                 // apply configuration
@@ -69,17 +67,6 @@ namespace nano
                 return load_params(params) && is;
         }
 
-        const tensor3d_t& model_t::output(const image_t& image, const rect_t& region)
-        {
-                return output(image, region.left(), region.top());
-        }
-
-        const tensor3d_t& model_t::output(const image_t& image, coord_t x, coord_t y)
-        {
-                m_idata = image.to_tensor(rect_t{x, y, icols(), irows()});
-                return output(m_idata);
-        }
-
         const tensor3d_t& model_t::output(const vector_t& input)
         {
                 assert(input.size() == isize());
@@ -90,31 +77,18 @@ namespace nano
                 return output(m_idata);
         }
 
-        tensor_size_t model_t::idims() const
-        {
-                switch (m_color)
-                {
-                case color_mode::rgba:
-                        return 3;
-
-                case color_mode::luma:
-                default:
-                        return 1;
-                }
-        }
-
         bool model_t::resize(const task_t& task, bool verbose)
         {
-                return resize(task.irows(), task.icols(), task.osize(), task.color(), verbose);
+                return resize(task.color() == color_mode::rgba ? 3 : 1, task.irows(), task.icols(), task.osize(), verbose);
         }
 
-        bool model_t::resize(const tensor_size_t rows, const tensor_size_t cols, const tensor_size_t outputs,
-                const color_mode color, const bool verbose)
+        bool model_t::resize(const tensor_size_t idims, const tensor_size_t irows, const tensor_size_t icols,
+                const tensor_size_t osize, const bool verbose)
         {
-                m_rows = rows;
-                m_cols = cols;
-                m_outputs = outputs;
-                m_color = color;
+                m_idims = idims;
+                m_irows = irows;
+                m_icols = icols;
+                m_osize = osize;
                 resize(verbose);
 
                 if (verbose)

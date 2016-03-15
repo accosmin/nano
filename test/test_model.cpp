@@ -24,7 +24,7 @@ NANO_CASE(evaluate)
         const string_t mlp3 = mlp2 + make_affine_layer(10);
         const string_t mlp4 = mlp3 + make_affine_layer(10);
         const string_t mlp5 = mlp4 + make_affine_layer(10);
-        
+
         const string_t convnet =
                 make_conv_pool_layer(8, 7, 7) +
                 make_conv_layer(8, 5, 5);
@@ -51,10 +51,10 @@ NANO_CASE(evaluate)
                 // create feed-forward network
                 const auto model = nano::get_models().get("forward-network", cmd_network);
                 NANO_CHECK_EQUAL(model->resize(*task, false), true);
+                NANO_CHECK_EQUAL(model->idims(), 1);
                 NANO_CHECK_EQUAL(model->irows(), task->irows());
                 NANO_CHECK_EQUAL(model->icols(), task->icols());
                 NANO_CHECK_EQUAL(model->osize(), task->osize());
-                NANO_CHECK_EQUAL(model->color(), task->color());
 
                 // test random networks
                 for (size_t t = 0; t < 5; ++ t)

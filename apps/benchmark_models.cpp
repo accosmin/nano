@@ -150,7 +150,7 @@ int main(int argc, char *argv[])
 
                 // create feed-forward network
                 const auto model = nano::get_models().get("forward-network", cmd_network);
-                model->resize(cmd_rows, cmd_cols, task.osize(), cmd_color, true);
+                model->resize(task, true);
                 model->random_params();
 
                 nano::table_row_t& frow = ftable.append(cmd_name + " (" + nano::to_string(model->psize()) + ")");

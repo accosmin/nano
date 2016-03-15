@@ -13,13 +13,13 @@ using namespace nano;
 
 namespace
 {
-        const color_mode cmd_color = color_mode::rgba;
+        const size_t cmd_idims = 3;
         const size_t cmd_irows = 8;
         const size_t cmd_icols = 8;
-        const size_t cmd_outputs = 3;
+        const size_t cmd_osize = 3;
         const size_t cmd_tests = 7;
 
-        const string_t cmd_layer_output = make_output_layer(cmd_outputs);
+        const string_t cmd_layer_output = make_output_layer(cmd_osize);
 
         rloss_t get_loss()
         {
@@ -34,11 +34,11 @@ namespace
         rmodel_t get_model(const string_t& description)
         {
                 const auto model = nano::get_models().get("forward-network", description + ";" + cmd_layer_output);
-                model->resize(cmd_irows, cmd_icols, cmd_outputs, cmd_color, false);
+                model->resize(cmd_idims, cmd_irows, cmd_icols, cmd_osize, false);
+                NANO_CHECK_EQUAL(model->idims(), cmd_idims);
                 NANO_CHECK_EQUAL(model->irows(), cmd_irows);
                 NANO_CHECK_EQUAL(model->icols(), cmd_icols);
-                NANO_CHECK_EQUAL(model->osize(), cmd_outputs);
-                NANO_CHECK_EQUAL(static_cast<int>(model->color()), static_cast<int>(cmd_color));
+                NANO_CHECK_EQUAL(model->osize(), cmd_osize);
                 return model;
         }
 

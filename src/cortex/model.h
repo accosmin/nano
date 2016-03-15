@@ -1,7 +1,8 @@
 #pragma once
 
+#include "arch.h"
+#include "tensor.h"
 #include "stringi.h"
-#include "vision/image.h"
 #include "util/manager.hpp"
 
 namespace nano
@@ -34,8 +35,8 @@ namespace nano
                 ///
                 /// \brief resize to process new inputs
                 ///
-                bool resize(const tensor_size_t rows, const tensor_size_t cols, const tensor_size_t outputs,
-                            const color_mode color,
+                bool resize(const tensor_size_t idims, const tensor_size_t irows, const tensor_size_t icols,
+                            const tensor_size_t osize,
                             const bool verbose);
 
                 ///
@@ -46,8 +47,6 @@ namespace nano
                 ///
                 /// \brief compute the model's output
                 ///
-                const tensor3d_t& output(const image_t& image, coord_t x, coord_t y);
-                const tensor3d_t& output(const image_t& image, const rect_t& region);
                 const tensor3d_t& output(const vector_t& input);
                 virtual const tensor3d_t& output(const tensor3d_t& input) = 0;
 
@@ -92,13 +91,12 @@ namespace nano
                 virtual const tensor3d_t& ginput(const vector_t& output) = 0;
 
                 // access functions
-                tensor_size_t irows() const { return m_rows; }
-                tensor_size_t icols() const { return m_cols; }
-                tensor_size_t idims() const;
+                tensor_size_t idims() const { return m_idims; }
+                tensor_size_t irows() const { return m_irows; }
+                tensor_size_t icols() const { return m_icols; }
                 tensor_size_t isize() const { return idims() * irows() * icols(); }
-                tensor_size_t osize() const { return m_outputs; }
+                tensor_size_t osize() const { return m_osize; }
                 virtual tensor_size_t psize() const = 0;
-                color_mode color() const { return m_color; }
 
         protected:
 
@@ -108,10 +106,9 @@ namespace nano
         private:
 
                 // attributes
-                tensor_size_t   m_rows, m_cols;         ///< input patch size
-                tensor_size_t   m_outputs;              ///< output size
-                color_mode      m_color;                ///< input color mode
-                tensor3d_t      m_idata;                ///< buffer input tensor
+                tensor_size_t   m_idims, m_irows, m_icols;      ///< input size
+                tensor_size_t   m_osize;                        ///< output size
+                tensor3d_t      m_idata;                        ///< buffer input tensor
         };
 }
 

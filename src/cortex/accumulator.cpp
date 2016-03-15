@@ -1,4 +1,5 @@
 #include "accumulator.h"
+#include "math/clamp.hpp"
 #include "thread/loopit.hpp"
 #include <cassert>
 
