@@ -3,7 +3,7 @@
 #include "layer_activation.h"
 
 namespace nano
-{        
+{
         namespace detail
         {
                 struct tanh_activation_layer_eval_t
@@ -38,8 +38,8 @@ namespace nano
                 NANO_MAKE_CLONABLE(tanh_activation_layer_t, "hyperbolic tangent activation layer")
 
                 // constructor
-                explicit tanh_activation_layer_t(const string_t& parameters = string_t())
-                        :       activation_layer_t(parameters)
+                explicit tanh_activation_layer_t(const string_t& parameters = string_t()) :
+                        activation_layer_t(parameters)
                 {
                 }
         };

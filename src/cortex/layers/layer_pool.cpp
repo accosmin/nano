@@ -11,11 +11,11 @@ namespace nano
         {
         }
 
-        tensor_size_t pool_layer_t::resize(const tensor_t& tensor)
+        tensor_size_t pool_layer_t::resize(const tensor3d_t& tensor)
         {
-                const auto idims = tensor.dims();
-                const auto irows = tensor.rows();
-                const auto icols = tensor.cols();
+                const auto idims = tensor.size<0>();
+                const auto irows = tensor.size<1>();
+                const auto icols = tensor.size<2>();
 
                 const auto odims = idims;
                 const auto orows = (irows + 1) / 2;
@@ -31,11 +31,11 @@ namespace nano
                 return 0;
         }
 
-        const tensor_t& pool_layer_t::output(const tensor_t& input)
+        const tensor3d_t& pool_layer_t::output(const tensor3d_t& input)
         {
-                assert(idims() == input.dims());
-                assert(irows() <= input.rows());
-                assert(icols() <= input.cols());
+                assert(idims() == input.size<0>());
+                assert(irows() <= input.size<1>());
+                assert(icols() <= input.size<2>());
 
                 m_idata = input;
 
@@ -52,11 +52,11 @@ namespace nano
                 return m_odata;
         }
 
-        const tensor_t& pool_layer_t::ginput(const tensor_t& output)
+        const tensor3d_t& pool_layer_t::ginput(const tensor3d_t& output)
         {
-                assert(odims() == output.dims());
-                assert(orows() == output.rows());
-                assert(ocols() == output.cols());
+                assert(odims() == output.size<0>());
+                assert(orows() == output.size<1>());
+                assert(ocols() == output.size<2>());
 
                 m_odata = output;
 
@@ -73,14 +73,14 @@ namespace nano
                 return m_idata;
         }
 
-        void pool_layer_t::gparam(const tensor_t& output, scalar_t* gradient)
+        void pool_layer_t::gparam(const tensor3d_t& output, scalar_t* gradient)
         {
                 NANO_UNUSED1(gradient);
                 NANO_UNUSED1_RELEASE(output);
 
-                assert(odims() == output.dims());
-                assert(orows() == output.rows());
-                assert(ocols() == output.cols());
+                assert(odims() == output.size<0>());
+                assert(orows() == output.size<1>());
+                assert(ocols() == output.size<2>());
         }
 }
 

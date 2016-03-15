@@ -11,7 +11,7 @@
 
 using namespace nano;
 
-namespace 
+namespace
 {
         const color_mode cmd_color = color_mode::rgba;
         const size_t cmd_irows = 8;
@@ -21,7 +21,7 @@ namespace
 
         const string_t cmd_layer_output = make_output_layer(cmd_outputs);
 
-        rloss_t get_loss() 
+        rloss_t get_loss()
         {
                 const strings_t loss_ids = nano::get_losses().ids();
 
@@ -42,7 +42,7 @@ namespace
                 return model;
         }
 
-        void make_random_config(tensor_t& inputs, vector_t& params, vector_t& target)
+        void make_random_config(tensor3d_t& inputs, vector_t& params, vector_t& target)
         {
                 nano::random_t<scalar_t> irgen(-0.1, +0.1);
                 nano::random_t<scalar_t> prgen(-0.1, +0.1);
@@ -60,7 +60,7 @@ namespace
 
                 vector_t params(model->psize());
                 vector_t target(model->osize());
-                tensor_t inputs(model->idims(), model->irows(), model->icols());
+                tensor3d_t inputs(model->idims(), model->irows(), model->icols());
 
                 // optimization problem (wrt parameters & inputs): size
                 auto fn_params_size = [&] ()

@@ -36,7 +36,7 @@ namespace nano
                 ///
                 /// \brief resize to process new tensors of the given type
                 ///
-                virtual tensor_size_t resize(const tensor_t& tensor) = 0;
+                virtual tensor_size_t resize(const tensor3d_t& tensor) = 0;
 
                 ///
                 /// \brief reset parameters to zero
@@ -57,17 +57,17 @@ namespace nano
                 ///
                 /// \brief compute the output
                 ///
-                virtual const tensor_t& output(const tensor_t& input) = 0;
+                virtual const tensor3d_t& output(const tensor3d_t& input) = 0;
 
                 ///
                 /// \brief compute the gradient wrt the inputs
                 ///
-                virtual const tensor_t& ginput(const tensor_t& output) = 0;
+                virtual const tensor3d_t& ginput(const tensor3d_t& output) = 0;
 
                 ///
                 /// \brief compute the gradient wrt the parameters
                 ///
-                virtual void gparam(const tensor_t& output, scalar_t* gradient) = 0;
+                virtual void gparam(const tensor3d_t& output, scalar_t* gradient) = 0;
 
                 ///
                 /// \brief returns the input/output dimensions

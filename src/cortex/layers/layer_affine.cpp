@@ -12,13 +12,13 @@ namespace nano
         {
         }
 
-        tensor_size_t affine_layer_t::resize(const tensor_t& tensor)
+        tensor_size_t affine_layer_t::resize(const tensor3d_t& tensor)
         {
                 const auto idims = tensor.size();
                 const auto odims = nano::clamp(nano::from_params<tensor_size_t>(configuration(), "dims", 10), 1, 4096);
 
                 // resize buffers
-                m_idata.resize(tensor.dims(), tensor.rows(), tensor.cols());
+                m_idata.resize(tensor.dims());
                 m_odata.resize(odims, 1, 1);
 
                 m_wdata.resize(odims, idims);
@@ -53,11 +53,11 @@ namespace nano
                 return params;
         }
 
-        const tensor_t& affine_layer_t::output(const tensor_t& input)
+        const tensor3d_t& affine_layer_t::output(const tensor3d_t& input)
         {
-                assert(idims() == input.dims());
-                assert(irows() == input.rows());
-                assert(icols() == input.cols());
+                assert(idims() == input.size<0>());
+                assert(irows() == input.size<1>());
+                assert(icols() == input.size<2>());
 
                 m_idata = input;
 
@@ -66,11 +66,11 @@ namespace nano
                 return m_odata;
         }
 
-        const tensor_t& affine_layer_t::ginput(const tensor_t& output)
+        const tensor3d_t& affine_layer_t::ginput(const tensor3d_t& output)
         {
-                assert(output.dims() == odims());
-                assert(output.rows() == orows());
-                assert(output.cols() == ocols());
+                assert(output.size<0>() == odims());
+                assert(output.size<1>() == orows());
+                assert(output.size<2>() == ocols());
 
                 m_odata = output;
 
@@ -79,11 +79,11 @@ namespace nano
                 return m_idata;
         }
 
-        void affine_layer_t::gparam(const tensor_t& output, scalar_t* gradient)
+        void affine_layer_t::gparam(const tensor3d_t& output, scalar_t* gradient)
         {
-                assert(output.dims() == odims());
-                assert(output.rows() == orows());
-                assert(output.cols() == ocols());
+                assert(output.size<0>() == odims());
+                assert(output.size<1>() == orows());
+                assert(output.size<2>() == ocols());
 
                 m_odata = output;
 

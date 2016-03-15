@@ -31,7 +31,7 @@ namespace nano
                 virtual ~activation_layer_t() {}
 
                 // resize to process new tensors of the given type
-                virtual tensor_size_t resize(const tensor_t& tensor) override
+                virtual tensor_size_t resize(const tensor3d_t& tensor) override
                 {
                         return _resize(tensor);
                 }
@@ -45,35 +45,35 @@ namespace nano
                 virtual const scalar_t* load_params(const scalar_t* params) override { return params; }
 
                 // process inputs (compute outputs & gradients)
-                virtual const tensor_t& output(const tensor_t& input) override { return _output(input); }
-                virtual const tensor_t& ginput(const tensor_t& output) override { return _ginput(output); }
-                virtual void gparam(const tensor_t& output, scalar_t*) override { return _gparam(output); }
+                virtual const tensor3d_t& output(const tensor3d_t& input) override { return _output(input); }
+                virtual const tensor3d_t& ginput(const tensor3d_t& output) override { return _ginput(output); }
+                virtual void gparam(const tensor3d_t& output, scalar_t*) override { return _gparam(output); }
 
                 // access functions
-                virtual tensor_size_t idims() const override { return m_data.dims(); }
-                virtual tensor_size_t irows() const override { return m_data.rows(); }
-                virtual tensor_size_t icols() const override { return m_data.cols(); }
-                virtual tensor_size_t odims() const override { return m_data.dims(); }
-                virtual tensor_size_t orows() const override { return m_data.rows(); }
-                virtual tensor_size_t ocols() const override { return m_data.cols(); }
+                virtual tensor_size_t idims() const override { return m_data.size<0>(); }
+                virtual tensor_size_t irows() const override { return m_data.size<1>(); }
+                virtual tensor_size_t icols() const override { return m_data.size<2>(); }
+                virtual tensor_size_t odims() const override { return m_data.size<0>(); }
+                virtual tensor_size_t orows() const override { return m_data.size<1>(); }
+                virtual tensor_size_t ocols() const override { return m_data.size<2>(); }
                 virtual tensor_size_t psize() const override { return 0; }
 
         private:
 
                 // resize to process new inputs, returns the number of parameters
-                tensor_size_t _resize(const tensor_t& tensor)
+                tensor_size_t _resize(const tensor3d_t& tensor)
                 {
-                        m_data.resize(tensor.dims(), tensor.rows(), tensor.cols());
+                        m_data.resize(tensor.dims());
 
                         return 0;
                 }
 
                 // output
-                const tensor_t& _output(const tensor_t& input)
+                const tensor3d_t& _output(const tensor3d_t& input)
                 {
-                        assert(m_data.dims() == input.dims());
-                        assert(m_data.rows() == input.rows());
-                        assert(m_data.cols() == input.cols());
+                        assert(m_data.size<0>() == input.size<0>());
+                        assert(m_data.size<1>() == input.size<1>());
+                        assert(m_data.size<2>() == input.size<2>());
 
                         tensor::transform(input, m_data,
                                           [op = teval_op()] (auto x) { return op(x); });
@@ -82,11 +82,11 @@ namespace nano
                 }
 
                 // gradient
-                const tensor_t& _ginput(const tensor_t& output)
+                const tensor3d_t& _ginput(const tensor3d_t& output)
                 {
-                        assert(m_data.dims() == output.dims());
-                        assert(m_data.rows() == output.rows());
-                        assert(m_data.cols() == output.cols());
+                        assert(m_data.size<0>() == output.size<0>());
+                        assert(m_data.size<1>() == output.size<1>());
+                        assert(m_data.size<2>() == output.size<2>());
 
                         tensor::transform(output, m_data, m_data,
                                           [op = tgrad_op()] (auto g, auto o) { return op(g, o); });
@@ -95,19 +95,19 @@ namespace nano
                 }
 
                 // gradient
-                void _gparam(const tensor_t& output)
+                void _gparam(const tensor3d_t& output)
                 {
                         NANO_UNUSED1_RELEASE(output);
 
-                        assert(m_data.dims() == output.dims());
-                        assert(m_data.rows() == output.rows());
-                        assert(m_data.cols() == output.cols());
+                        assert(m_data.size<0>() == output.size<0>());
+                        assert(m_data.size<1>() == output.size<1>());
+                        assert(m_data.size<2>() == output.size<2>());
                 }
 
         private:
 
                 // attributes
-                tensor_t        m_data;         ///< input-output buffer
+                tensor3d_t      m_data;         ///< input-output buffer
         };
 }
 

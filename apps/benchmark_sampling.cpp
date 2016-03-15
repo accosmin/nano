@@ -37,7 +37,7 @@ int main(int argc, char *argv[])
         charset_task_t task(charset::numeric, cmd_rows, cmd_cols, cmd_color, cmd_samples);
         task.load("");
 
-        tensors_t inputs(cmd_max_samples);
+        tensor3ds_t inputs(cmd_max_samples);
         vectors_t targets(cmd_max_samples);
 
         // construct tables to compare sampling

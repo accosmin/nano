@@ -69,18 +69,18 @@ namespace nano
                 return load_params(params) && is;
         }
 
-        const tensor_t& model_t::output(const image_t& image, const rect_t& region)
+        const tensor3d_t& model_t::output(const image_t& image, const rect_t& region)
         {
                 return output(image, region.left(), region.top());
         }
 
-        const tensor_t& model_t::output(const image_t& image, coord_t x, coord_t y)
+        const tensor3d_t& model_t::output(const image_t& image, coord_t x, coord_t y)
         {
                 m_idata = image.to_tensor(rect_t{x, y, icols(), irows()});
                 return output(m_idata);
         }
 
-        const tensor_t& model_t::output(const vector_t& input)
+        const tensor3d_t& model_t::output(const vector_t& input)
         {
                 assert(input.size() == isize());
 

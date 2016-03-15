@@ -46,10 +46,10 @@ namespace nano
                 ///
                 /// \brief compute the model's output
                 ///
-                const tensor_t& output(const image_t& image, coord_t x, coord_t y);
-                const tensor_t& output(const image_t& image, const rect_t& region);
-                const tensor_t& output(const vector_t& input);
-                virtual const tensor_t& output(const tensor_t& input) = 0;
+                const tensor3d_t& output(const image_t& image, coord_t x, coord_t y);
+                const tensor3d_t& output(const image_t& image, const rect_t& region);
+                const tensor3d_t& output(const vector_t& input);
+                virtual const tensor3d_t& output(const tensor3d_t& input) = 0;
 
                 ///
                 /// \brief save its parameters to file
@@ -89,7 +89,7 @@ namespace nano
                 ///
                 /// \brief compute the model's gradient wrt inputs
                 ///
-                virtual const tensor_t& ginput(const vector_t& output) = 0;
+                virtual const tensor3d_t& ginput(const vector_t& output) = 0;
 
                 // access functions
                 tensor_size_t irows() const { return m_rows; }
@@ -111,7 +111,7 @@ namespace nano
                 tensor_size_t   m_rows, m_cols;         ///< input patch size
                 tensor_size_t   m_outputs;              ///< output size
                 color_mode      m_color;                ///< input color mode
-                tensor_t        m_idata;                ///< buffer input tensor
+                tensor3d_t      m_idata;                ///< buffer input tensor
         };
 }
 

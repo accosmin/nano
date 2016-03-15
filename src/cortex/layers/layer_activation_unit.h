@@ -39,8 +39,8 @@ namespace nano
                 NANO_MAKE_CLONABLE(unit_activation_layer_t, "identity activation layer")
 
                 // constructor
-                explicit unit_activation_layer_t(const string_t& parameters = string_t())
-                        :       activation_layer_t(parameters)
+                explicit unit_activation_layer_t(const string_t& parameters = string_t()) :
+                        activation_layer_t(parameters)
                 {
                 }
         };

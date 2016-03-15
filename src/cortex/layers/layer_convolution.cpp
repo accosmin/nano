@@ -20,17 +20,16 @@ namespace nano
         {
         }
 
-        tensor_size_t conv_layer_t::resize(const tensor_t& tensor)
+        tensor_size_t conv_layer_t::resize(const tensor3d_t& tensor)
         {
-                const auto idims = tensor.dims();
-                const auto irows = tensor.rows();
-                const auto icols = tensor.cols();
+                const auto idims = tensor.size<0>();
+                const auto irows = tensor.size<1>();
+                const auto icols = tensor.size<2>();
 
                 const auto odims = nano::clamp(nano::from_params<tensor_size_t>(configuration(), "dims", 16), 1, 256);
                 const auto krows = nano::clamp(nano::from_params<tensor_size_t>(configuration(), "rows", 8), 1, 32);
                 const auto kcols = nano::clamp(nano::from_params<tensor_size_t>(configuration(), "cols", 8), 1, 32);
 
-                const auto kdims = idims * odims;
                 const auto orows = irows - krows + 1;
                 const auto ocols = icols - kcols + 1;
 
@@ -45,7 +44,7 @@ namespace nano
                 // resize buffers
                 m_idata.resize(idims, irows, icols);
                 m_odata.resize(odims, orows, ocols);
-                m_kdata.resize(kdims, krows, kcols);
+                m_kdata.resize(idims, odims, krows, kcols);
                 m_bdata.resize(odims, 1, 1);
 
                 return psize();
@@ -77,11 +76,11 @@ namespace nano
                 return params;
         }
 
-        const tensor_t& conv_layer_t::output(const tensor_t& input)
+        const tensor3d_t& conv_layer_t::output(const tensor3d_t& input)
         {
-                assert(idims() == input.dims());
-                assert(irows() == input.rows());
-                assert(icols() == input.cols());
+                assert(idims() == input.size<0>());
+                assert(irows() == input.size<1>());
+                assert(icols() == input.size<2>());
 
                 m_idata = input;
 
@@ -89,11 +88,11 @@ namespace nano
                 m_odata.setZero();
 
                 tensor::conv2d_dyn_t op;
-                for (tensor_size_t i = 0, k = 0; i < idims(); ++ i)
+                for (tensor_size_t i = 0; i < idims(); ++ i)
                 {
-                        for (tensor_size_t o = 0; o < odims(); ++ o, ++ k)
+                        for (tensor_size_t o = 0; o < odims(); ++ o)
                         {
-                                op(m_idata.matrix(i), m_kdata.matrix(k), m_odata.matrix(o));
+                                op(m_idata.matrix(i), m_kdata.matrix(i, o), m_odata.matrix(o));
                         }
                 }
 
@@ -104,48 +103,48 @@ namespace nano
                 }
 
                 return m_odata;
-        }        
+        }
 
-        const tensor_t& conv_layer_t::ginput(const tensor_t& output)
+        const tensor3d_t& conv_layer_t::ginput(const tensor3d_t& output)
         {
-                assert(odims() == output.dims());
-                assert(orows() == output.rows());
-                assert(ocols() == output.cols());
+                assert(odims() == output.size<0>());
+                assert(orows() == output.size<1>());
+                assert(ocols() == output.size<2>());
 
                 m_odata = output;
 
                 m_idata.setZero();
 
                 tensor::corr2d_dyn_t op;
-                for (tensor_size_t i = 0, k = 0; i < idims(); ++ i)
+                for (tensor_size_t i = 0; i < idims(); ++ i)
                 {
-                        for (tensor_size_t o = 0; o < odims(); ++ o, ++ k)
+                        for (tensor_size_t o = 0; o < odims(); ++ o)
                         {
-                                op(m_odata.matrix(o), m_kdata.matrix(k), m_idata.matrix(i));
+                                op(m_odata.matrix(o), m_kdata.matrix(i, o), m_idata.matrix(i));
                         }
                 }
 
                 return m_idata;
         }
 
-        void conv_layer_t::gparam(const tensor_t& output, scalar_t* gradient)
+        void conv_layer_t::gparam(const tensor3d_t& output, scalar_t* gradient)
         {
-                assert(odims() == output.dims());
-                assert(orows() == output.rows());
-                assert(ocols() == output.cols());
+                assert(odims() == output.size<0>());
+                assert(orows() == output.size<1>());
+                assert(ocols() == output.size<2>());
 
                 m_odata = output;
-                
+
                 // wrt convolution
-                auto gkdata = tensor::map_tensor(gradient, kdims(), krows(), kcols());
+                auto gkdata = tensor::map_tensor(gradient, idims(), odims(), krows(), kcols());
                 gkdata.setZero();
 
                 tensor::conv2d_dyn_t op;
-                for (tensor_size_t i = 0, k = 0; i < idims(); ++ i)
+                for (tensor_size_t i = 0; i < idims(); ++ i)
                 {
-                        for (tensor_size_t o = 0; o < odims(); ++ o, ++ k)
+                        for (tensor_size_t o = 0; o < odims(); ++ o)
                         {
-                                op(m_idata.matrix(i), m_odata.matrix(o), gkdata.matrix(k));
+                                op(m_idata.matrix(i), m_odata.matrix(o), gkdata.matrix(i, o));
                         }
                 }
 

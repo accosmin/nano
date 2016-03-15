@@ -37,8 +37,8 @@ namespace nano
                 NANO_MAKE_CLONABLE(softplus_activation_layer_t, "soft-plus activation layer")
 
                 // constructor
-                explicit softplus_activation_layer_t(const string_t& parameters = string_t())
-                        :       activation_layer_t(parameters)
+                explicit softplus_activation_layer_t(const string_t& parameters = string_t()) :
+                        activation_layer_t(parameters)
                 {
                 }
         };

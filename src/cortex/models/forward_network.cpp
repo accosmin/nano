@@ -26,9 +26,9 @@ namespace nano
                 }
         }
 
-        const tensor_t& forward_network_t::output(const tensor_t& _input)
+        const tensor3d_t& forward_network_t::output(const tensor3d_t& _input)
         {
-                const tensor_t* input = &_input;
+                const tensor3d_t* input = &_input;
                 for (rlayers_t::const_iterator it = m_layers.begin(); it != m_layers.end(); ++ it)
                 {
                         const rlayer_t& layer = *it;
@@ -39,7 +39,7 @@ namespace nano
                 return *input;
         }
 
-        const tensor_t& forward_network_t::ginput(const vector_t& _output)
+        const tensor3d_t& forward_network_t::ginput(const vector_t& _output)
         {
                 assert(_output.size() == osize());
                 assert(!m_layers.empty());
@@ -48,7 +48,7 @@ namespace nano
                 m_odata = tensor::map_tensor(_output.data(), osize(), tensor_size_t(1), tensor_size_t(1));
 
                 // backward step
-                const tensor_t* poutput = &m_odata;
+                const tensor3d_t* poutput = &m_odata;
                 for (rlayers_t::const_reverse_iterator it = m_layers.rbegin(); it != m_layers.rend(); ++ it)
                 {
                         const rlayer_t& layer = *it;
@@ -71,7 +71,7 @@ namespace nano
                 m_gparam.resize(psize());
 
                 // backward step
-                const tensor_t* poutput = &m_odata;
+                const tensor3d_t* poutput = &m_odata;
                 scalar_t* gparamient = m_gparam.data() + m_gparam.size();
 
                 for (rlayers_t::const_reverse_iterator it = m_layers.rbegin(); it != m_layers.rend(); ++ it)
@@ -159,7 +159,7 @@ namespace nano
 
         tensor_size_t forward_network_t::resize(bool verbose)
         {
-                tensor_t input(idims(), irows(), icols());
+                tensor3d_t input(idims(), irows(), icols());
                 tensor_size_t n_params = 0;
 
                 m_layers.clear();
@@ -198,9 +198,9 @@ namespace nano
                 }
 
                 // check output size to match the target
-                if (    input.dims() != osize() ||
-                        input.rows() != 1 ||
-                        input.cols() != 1)
+                if (    input.size<0>() != osize() ||
+                        input.size<1>() != 1 ||
+                        input.size<2>() != 1)
                 {
                         log_error() << "forward network: miss-matching output size! expecting " << osize() << "!";
                         throw std::invalid_argument("invalid output layer description");

@@ -95,6 +95,17 @@ namespace tensor
                         this->m_data.resize(this->m_dims.size());
                         return this->size();
                 }
+
+                ///
+                /// \brief resize to new dimensions
+                ///
+                tsize resize(const tdims& dims)
+                {
+                        this->m_dims = dims;
+                        this->m_data.resize(this->m_dims.size());
+                        return this->size();
+                }
+
         };
 
         ///

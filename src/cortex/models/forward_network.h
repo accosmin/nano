@@ -34,7 +34,7 @@ namespace nano
                 ///
                 /// \brief compute the model's output
                 ///
-                virtual const tensor_t& output(const tensor_t& input) override;
+                virtual const tensor3d_t& output(const tensor3d_t& input) override;
 
                 ///
                 /// \brief compute the model's gradient wrt parameters
@@ -44,7 +44,7 @@ namespace nano
                 ///
                 /// \brief compute the model's gradient wrt inputs
                 ///
-                virtual const tensor_t& ginput(const vector_t& output) override;
+                virtual const tensor3d_t& ginput(const vector_t& output) override;
 
                 ///
                 /// \brief save/load/initialize parameters
@@ -81,7 +81,7 @@ namespace nano
                 // attributes
                 rlayers_t               m_layers;               ///< feed-forward layers
                 vector_t                m_gparam;               ///< buffer gradient wrt parameters
-                tensor_t                m_odata;                ///< bufer output
+                tensor3d_t              m_odata;                ///< bufer output
         };
 }
 

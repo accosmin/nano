@@ -93,7 +93,7 @@ namespace nano
                         return image.block(ppy, ppx, pph, ppw);
                 }
 
-                tensor_t make_random_rgba_image(const tensor_size_t rows, const tensor_size_t cols,
+                tensor3d_t make_random_rgba_image(const tensor_size_t rows, const tensor_size_t cols,
                         const rgba_t back_color,
                         const scalar_t max_noise, const scalar_t sigma)
                 {
@@ -101,7 +101,7 @@ namespace nano
                         const scalar_t ig = nano::color::get_green(back_color) / 255.0;
                         const scalar_t ib = nano::color::get_blue(back_color) / 255.0;
 
-                        tensor_t image(4, rows, cols);
+                        tensor3d_t image(4, rows, cols);
 
                         // noisy background
                         nano::random_t<scalar_t> back_noise(-max_noise, +max_noise);
@@ -119,14 +119,14 @@ namespace nano
                         return image;
                 }
 
-                tensor_t alpha_blend(const tensor_t& mask, const tensor_t& img1, const tensor_t& img2)
+                tensor3d_t alpha_blend(const tensor3d_t& mask, const tensor3d_t& img1, const tensor3d_t& img2)
                 {
                         const auto op = [] (const auto a, const auto v1, const auto v2)
                         {
                                 return (1.0 - a) * v1 + a * v2;
                         };
 
-                        tensor_t imgb(4, mask.rows(), mask.cols());
+                        tensor3d_t imgb(4, mask.rows(), mask.cols());
                         tensor::transform(mask.matrix(3), img1.matrix(0), img2.matrix(0), imgb.matrix(0), op);
                         tensor::transform(mask.matrix(3), img1.matrix(1), img2.matrix(1), imgb.matrix(1), op);
                         tensor::transform(mask.matrix(3), img1.matrix(2), img2.matrix(2), imgb.matrix(2), op);
@@ -185,18 +185,18 @@ namespace nano
                                 const tensor_index_t o = rng_output();
 
                                 // image: original object patch
-                                const tensor_t opatch = nano::color::to_rgba_tensor(
+                                const tensor3d_t opatch = nano::color::to_rgba_tensor(
                                         get_object_patch(char_patches[rng_font() - 1], o, n_chars, 0.0));
 
                                 // image: resize to the input size
-                                tensor_t mpatch(4, irows(), icols());
+                                tensor3d_t mpatch(4, irows(), icols());
                                 nano::bilinear(opatch.matrix(0), mpatch.matrix(0));
                                 nano::bilinear(opatch.matrix(1), mpatch.matrix(1));
                                 nano::bilinear(opatch.matrix(2), mpatch.matrix(2));
                                 nano::bilinear(opatch.matrix(3), mpatch.matrix(3));
 
                                 // image: random warping
-                                mpatch = nano::warp(mpatch, warp_params(field_type::random, 0.1, 4.0, 16.0, 2.0));
+                                mpatch = nano::warp(mpatch, warp_params_t(field_type::random, 0.1, 4.0, 16.0, 2.0));
 
                                 // image: background & foreground layer
                                 const auto bcolor = nano::color::make_random_rgba();
@@ -212,7 +212,7 @@ namespace nano
                                 const auto fpatch = make_random_rgba_image(irows(), icols(), fcolor, fnoise, fsigma);
 
                                 // image: alpha-blend the background & foreground layer
-                                const tensor_t patch = alpha_blend(mpatch, bpatch, fpatch);
+                                const tensor3d_t patch = alpha_blend(mpatch, bpatch, fpatch);
 
                                 image_t image;
                                 switch (color())
