@@ -13,10 +13,10 @@ using namespace nano;
 
 namespace
 {
-        const size_t cmd_idims = 3;
-        const size_t cmd_irows = 8;
-        const size_t cmd_icols = 8;
-        const size_t cmd_osize = 3;
+        const tensor_size_t cmd_idims = 3;
+        const tensor_size_t cmd_irows = 8;
+        const tensor_size_t cmd_icols = 8;
+        const tensor_size_t cmd_osize = 3;
         const size_t cmd_tests = 7;
 
         const string_t cmd_layer_output = make_output_layer(cmd_osize);
@@ -97,7 +97,7 @@ namespace
                 auto fn_inputs_fval = [&] (const vector_t& x)
                 {
                         model->load_params(params);
-                        const vector_t output = model->output(x).vector();
+                        const auto output = model->output(tensor::map_tensor(x.data(), cmd_idims, cmd_irows, cmd_icols)).vector();
 
                         return loss->value(target, output);
                 };
@@ -106,7 +106,7 @@ namespace
                 auto fn_inputs_grad = [&] (const vector_t& x, vector_t& gx)
                 {
                         model->load_params(params);
-                        const vector_t output = model->output(x).vector();
+                        const auto output = model->output(tensor::map_tensor(x.data(), cmd_idims, cmd_irows, cmd_icols)).vector();
 
                         gx = model->ginput(loss->vgrad(target, output)).vector();
                         return loss->value(target, output);

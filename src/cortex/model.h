@@ -45,7 +45,6 @@ namespace nano
                 ///
                 /// \brief compute the model's output
                 ///
-                const tensor3d_t& output(const vector_t& input);
                 virtual const tensor3d_t& output(const tensor3d_t& input) = 0;
 
                 ///
@@ -89,10 +88,10 @@ namespace nano
                 virtual const tensor3d_t& ginput(const vector_t& output) = 0;
 
                 // access functions
-                tensor_size_t idims() const { return m_idata.size<0>(); }
-                tensor_size_t irows() const { return m_idata.size<1>(); }
-                tensor_size_t icols() const { return m_idata.size<2>(); }
-                tensor_size_t isize() const { return m_idata.size(); }
+                tensor_size_t idims() const { return m_idims; }
+                tensor_size_t irows() const { return m_irows; }
+                tensor_size_t icols() const { return m_icols; }
+                tensor_size_t isize() const { return idims() * irows() * icols(); }
                 tensor_size_t osize() const { return m_osize; }
                 virtual tensor_size_t psize() const = 0;
 
@@ -104,8 +103,10 @@ namespace nano
         private:
 
                 // attributes
-                tensor3d_t      m_idata;                        ///< buffer input tensor
-                tensor_size_t   m_osize;                        ///< output size
+                tensor_size_t   m_idims;        ///< input size
+                tensor_size_t   m_irows;        ///< input size
+                tensor_size_t   m_icols;        ///< input size
+                tensor_size_t   m_osize;        ///< output size
         };
 }
 
