@@ -1,6 +1,6 @@
 #pragma once
 
-#include "mem_task.h"
+#include "mem_task.hpp"
 #include "vision/image.h"
 
 namespace nano

@@ -12,7 +12,7 @@ namespace nano
         <
                 typename tsample
         >
-        class NANO_PUBLIC mem_task_t : public task_t
+        class mem_task_t : public task_t
         {
         public:
 
@@ -114,7 +114,7 @@ namespace nano
         };
 
         template <typename tsample>
-        size_t mem_tensor_task_t<tsample>::n_folds() const
+        size_t mem_task_t<tsample>::n_folds() const
         {
                 size_t max_fold = 0;
                 for (const auto& data : m_data)
@@ -126,7 +126,7 @@ namespace nano
         }
 
         template <typename tsample>
-        size_t mem_tensor_task_t::n_samples() const
+        size_t mem_task_t<tsample>::n_samples() const
         {
                 size_t count = 0;
                 for (const auto& data : m_data)
@@ -138,7 +138,7 @@ namespace nano
         }
 
         template <typename tsample>
-        size_t mem_tensor_task_t::n_samples(const fold_t& fold) const
+        size_t mem_task_t<tsample>::n_samples(const fold_t& fold) const
         {
                 const auto it = m_data.find(fold);
                 assert(it != m_data.end());
@@ -146,7 +146,7 @@ namespace nano
         }
 
         template <typename tsample>
-        void mem_tensor_task_t::shuffle(const fold_t& fold)
+        void mem_task_t<tsample>::shuffle(const fold_t& fold)
         {
                 const auto it = m_data.find(fold);
                 assert(it != m_data.end());
@@ -156,7 +156,7 @@ namespace nano
         }
 
         template <typename tsample>
-        tensor3d_t mem_tensor_task_t::input(const fold_t& fold, const size_t index) const
+        tensor3d_t mem_task_t<tsample>::input(const fold_t& fold, const size_t index) const
         {
                 const auto it = m_data.find(fold);
                 assert(it != m_data.end());
@@ -169,7 +169,8 @@ namespace nano
                 return ret;
         }
 
-        target_t mem_tensor_task_t::target(const fold_t& fold, const size_t index) const
+        template <typename tsample>
+        target_t mem_task_t<tsample>::target(const fold_t& fold, const size_t index) const
         {
                 const auto it = m_data.find(fold);
                 assert(it != m_data.end());
