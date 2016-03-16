@@ -69,7 +69,7 @@ namespace nano
 
         bool model_t::resize(const task_t& task, bool verbose)
         {
-                return resize(task.color() == color_mode::rgba ? 3 : 1, task.irows(), task.icols(), task.osize(), verbose);
+                return resize(task.idims(), task.irows(), task.icols(), task.osize(), verbose);
         }
 
         bool model_t::resize(const tensor_size_t idims, const tensor_size_t irows, const tensor_size_t icols,

@@ -1,5 +1,6 @@
 #pragma once
 
+#include "target.h"
 #include "criterion.h"
 
 namespace nano
@@ -51,7 +52,8 @@ namespace nano
                 ///
                 /// \brief cumulate statistics with a set of samples
                 ///
-                void update(const task_t& task, const samples_t& samples, const loss_t& loss);
+                void update(const task_t&, const fold_t&, const loss_t&);
+                void update(const task_t&, const fold_t&, const size_t begin, const size_t end, const loss_t&);
 
                 ///
                 /// \brief cumulated loss value

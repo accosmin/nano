@@ -22,10 +22,7 @@ set(libcortex_sources
         model.h
         optimizer.h
         protocol.h
-        sample.cpp
-        sample.h
-        sampler.cpp
-        sampler.h
+        target.h
         stochastic.cpp
         stochastic.h
         task.cpp

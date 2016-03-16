@@ -1,7 +1,6 @@
 #pragma once
 
 #include "model.h"
-#include "sample.h"
 #include "math/stats.hpp"
 
 namespace nano
@@ -53,7 +52,7 @@ namespace nano
                 ///
                 /// \brief update statistics with a new sample
                 ///
-                void update(const task_t& task, const sample_t& sample, const loss_t& loss);
+                void update(const tensor3d_t& input, const vector_t& target, const loss_t& loss);
 
                 ///
                 /// \brief update statistics with cumulated samples

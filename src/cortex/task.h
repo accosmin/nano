@@ -1,35 +1,12 @@
 #pragma once
 
-#include "sample.h"
-#include "vision/image.h"
+#include "arch.h"
+#include "target.h"
 #include "util/manager.hpp"
 
 namespace nano
 {
         class task_t;
-
-/*
-        load()
-        load(string_t dir)
-
-        describe(string_t dir)
-
-        tensor_size_t idims()
-        tensor_size_t irows()
-        tensor_size_t icols()
-        tensor_size_t osize()
-
-        size_t n_folds()
-        size_t n_samples()
-        size_t n_samples(fold_t)
-
-        void shuffle()
-        void shuffle(fold_t)
-
-        tensor3d_t sample(fold_t, size_t isample)
-
-        !!!should store the samples as std::map<fold_t, tensors/images>
-*/
 
         ///
         /// \brief manage tasks (register new ones, query and clone them)
@@ -40,124 +17,79 @@ namespace nano
         NANO_PUBLIC task_manager_t& get_tasks();
 
         ///
-        /// \brief describe the given samples
-        ///
-        NANO_PUBLIC void print(const string_t& header, const samples_t& samples);
-
-        ///
-        /// \brief generic computer vision task consisting of a set of (annotated) images
-        /// and a protocol (training + testing).
-        /// samples for training & testing models can be drawn from these image.
+        /// \brief machine learning task consisting of a collection of fixed-size 3D input tensors
+        ///     split into training, validation and testing datasets.
+        /// NB: the samples may be organized in folds depending on the established protocol.
         ///
         class NANO_PUBLIC task_t : public clonable_t<task_t>
-	{
+        {
         public:
 
                 ///
                 /// \brief constructor
                 ///
-                explicit task_t(const string_t& configuration)
-                        : clonable_t<task_t>(configuration)
+                explicit task_t(const string_t& configuration) :
+                        clonable_t<task_t>(configuration)
                 {
                 }
 
-                // destructor
-                virtual ~task_t() {}
+                ///
+                /// \brief destructor
+                ///
+                virtual ~task_t()
+                {
+                }
 
                 ///
-                /// \brief load images from the given directory
+                /// \brief short name of this task
                 ///
-                virtual bool load(const string_t& dir) = 0;
+                virtual string_t name() const = 0;
 
                 ///
-                /// \brief sample size (in pixels)
+                /// \brief load the task from the given directory (if possible)
                 ///
-                rect_t sample_size() const;
+                virtual bool load(const string_t& dir = string_t()) = 0;
 
                 ///
-                /// \brief sample region (in pixels) at a particular offset
+                /// \brief input size
                 ///
-                rect_t sample_region(coord_t x, coord_t y) const;
-
-                ///
-                /// \brief save the task images to file (by grouping sample patchs into (grows, gcols) grids)
-                ///
-                void save_as_images(
-                        const fold_t&, const string_t& basepath, coord_t grows, coord_t gcols,
-                        coord_t border = 8, rgba_t bkcolor = color::make_rgba(225, 225, 0)) const;
-
-                ///
-                /// \brief save the task images to file (by grouping sample patchs into (grows, gcols) grids)
-                ///
-                void save_as_images(
-                        const samples_t&, const string_t& basepath, coord_t grows, coord_t gcols,
-                        coord_t border = 8, rgba_t bkcolor = color::make_rgba(225, 225, 0)) const;
-
-                ///
-                /// \brief describe the task
-                ///
-                void describe() const;
-
-                ///
-                /// \brief distinct labels
-                ///
-                strings_t labels() const;
-
-                // access functions
+                virtual tensor_size_t idims() const = 0;
                 virtual tensor_size_t irows() const = 0;
                 virtual tensor_size_t icols() const = 0;
+
+                ///
+                /// \brief output size
+                ///
                 virtual tensor_size_t osize() const = 0;
-                virtual size_t fsize() const = 0;
-                virtual color_mode color() const = 0;
-
-                size_t n_images() const { return m_images.size(); }
-                const image_t& image(size_t i) const { return m_images[i]; }
-
-                const samples_t& samples() const { return m_samples; }
-
-        protected:
 
                 ///
-                /// \brief clear & reserve memory for images
+                /// \brief number of folds (not considering the protocol!)
                 ///
-                void clear_images(size_t capacity)
-                {
-                        m_images.clear();
-                        m_images.reserve(capacity);
-                }
+                virtual size_t n_folds() const = 0;
 
                 ///
-                /// \brief clear & reserve memory for samples
+                /// \brief total number of samples
                 ///
-                void clear_samples(size_t capacity)
-                {
-                        m_samples.clear();
-                        m_samples.reserve(capacity);
-                }
+                virtual size_t n_samples() const = 0;
 
                 ///
-                /// \brief clear & reserve memory
+                /// \brief number of samples for the given fold
                 ///
-                void clear_memory(size_t capacity)
-                {
-                        clear_images(capacity);
-                        clear_samples(capacity);
-                }
+                virtual size_t n_samples(const fold_t&) const = 0;
 
                 ///
-                /// \brief add a new image
+                /// \brief randomly shuffle the samples associated for the given fold
                 ///
-                void add_image(const image_t& image);
+                virtual void shuffle(const fold_t&) const = 0;
 
                 ///
-                /// \brief add a new sample
+                /// \brief retrieve the 3D input tensor for a given sample
                 ///
-                void add_sample(const sample_t& sample);
+                virtual tensor3d_t input(const fold_t&, const size_t index) const = 0;
 
-        private:
-
-                // attributes
-                images_t                m_images;       ///< input images (can be bigger than the samples)
-                samples_t               m_samples;      ///< patch samples in images
+                ///
+                /// \brief retrieve the target for a given sample
+                ///
+                virtual target_t target(const fold_t&, const size_t index) const = 0;
         };
 }

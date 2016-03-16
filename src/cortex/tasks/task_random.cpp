@@ -1,13 +1,10 @@
 #include "task_random.h"
 #include "cortex/class.h"
-#include "math/gauss.hpp"
 #include "math/clamp.hpp"
 #include "math/random.hpp"
 #include "tensor/random.hpp"
 #include "text/to_string.hpp"
-#include "tensor/for_each.hpp"
 #include "text/from_params.hpp"
-#include "tensor/transform.hpp"
 
 namespace nano
 {

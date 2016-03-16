@@ -65,13 +65,13 @@ namespace nano
                 return *this;
         }
 
-        void criterion_t::update(const task_t& task, const sample_t& sample, const loss_t& loss)
+        void criterion_t::update(const tensor3d_t& input, const vector_t& target, const loss_t& loss)
         {
-                assert(sample.m_index < task.n_images());
+                assert(input.size<0>() == m_model->idims());
+                assert(input.size<1>() == m_model->irows());
+                assert(input.size<2>() == m_model->icols());
 
-                const image_t& image = task.image(sample.m_index);
-                const vector_t& target = sample.m_target;
-                const vector_t& output = m_model->output(image.to_tensor(sample.m_region)).vector();
+                const vector_t& output = m_model->output(input).vector();
 
                 assert(output.size() == m_model->osize());
                 assert(target.size() == m_model->osize());

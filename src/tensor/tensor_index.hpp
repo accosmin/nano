@@ -112,6 +112,14 @@ namespace tensor
                         return tdimensions;
                 }
 
+                ///
+                /// \brief retrieve the dimensions
+                ///
+                const auto& dims() const
+                {
+                        return m_sizes;
+                }
+
         private:
 
                 template <std::size_t idim>
@@ -140,4 +148,17 @@ namespace tensor
                 tindices        m_sizes;        ///< size for each dimension
                 tindices        m_strides;      ///< stride for each dimension
         };
+
+        ///
+        /// \brief compare two tensor dimensions.
+        ///
+        template
+        <
+                typename tindex,
+                int tdimensions
+        >
+        bool operator==(const tensor_index_t<tindex, tdimensions>& ti1, const tensor_index_t<tindex, tdimensions>& ti2)
+        {
+                return std::operator==(ti1.dims(), ti2.dims());
+        }
 }

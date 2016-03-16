@@ -5,11 +5,12 @@
 namespace nano
 {
         ///
-        /// \brief machine learning protocols
+        /// \brief dataset splitting protocol
         ///
         enum class protocol
         {
                 train = 0,              ///< training
+                valid,                  ///< validation (for tuning hyper-parameters)
                 test                    ///< testing
         };
 }
@@ -22,8 +23,9 @@ namespace nano
         {
                 return
                 {
-                        { nano::protocol::train,      "train" },
-                        { nano::protocol::test,       "test" }
+                        { nano::protocol::train,        "train" },
+                        { nano::protocol::valid,        "valid" },
+                        { nano::protocol::test,         "test" }
                 };
         }
 }

@@ -40,7 +40,7 @@ add_subdirectory(src/thread)
 add_subdirectory(src/vision)
 add_subdirectory(src/cortex)
 
-add_subdirectory(apps)
+#add_subdirectory(apps)
 
 if(NANO_WITH_TESTS)
         add_subdirectory(test)
