@@ -17,8 +17,8 @@ namespace nano
                 "blank"
         };
 
-        norb_task_t::norb_task_t(const string_t& configuration)
-                :       task_t(configuration)
+        norb_task_t::norb_task_t(const string_t&) :
+                mem_vision_task_t(1, 108, 108, 5)
         {
         }
 
@@ -88,7 +88,7 @@ namespace nano
                 static const int magic_i32 = 0x1E3D4C54;
                 static const int magic_i08 = 0x1E3D4C55;
 //                 static const int magic_i16 = 0x1E3D4C56;
-                
+
                 size_t iindex = n_images();
                 size_t icount = 0;
                 size_t gcount = 0;
@@ -97,12 +97,12 @@ namespace nano
                 {
                         log_error() << "NORB: " << message;
                 };
-                
+
                 // load images
                 const auto iop = [&] (const string_t&, const nano::buffer_t& data)
                 {
                         nano::imstream_t stream(data.data(), data.size());
-                        
+
                         // read header
                         int32_t magic;
                         std::vector<int32_t> dims;
@@ -111,10 +111,10 @@ namespace nano
                                 log_error() << "NORB: failed to read header!";
                                 return false;
                         }
-                        
+
                         if (    magic != magic_i08 ||
-                                
-                                dims.size() != 4 ||                                
+
+                                dims.size() != 4 ||
                                 dims[1] != 2 ||
                                 dims[2] != static_cast<int>(irows()) ||
                                 dims[3] != static_cast<int>(icols()))
@@ -122,12 +122,12 @@ namespace nano
                                 log_error() << "NORB: invalid header!";
                                 return false;
                         }
-                        
+
                         // load images
                         const size_t n_cameras = 2;
                         const auto buffer_size = irows() * icols();
                         const auto cnt = dims[0];
-                        
+
                         nano::buffer_t buffer = nano::make_buffer(buffer_size);
                         for (auto i = 0; i < cnt; ++ i)
                         {
@@ -137,13 +137,13 @@ namespace nano
                                         image.load_luma(buffer.data(), irows(), icols());
                                         add_image(image);
                                 }
-                                
+
                                 ++ icount;
                         }
-                        
+
                         return stream.tellg() == stream.size();
                 };
-                                
+
                 log_info() << "NORB: loading file <" << ifile << "> ...";
                 if (!nano::unarchive(ifile, iop, error_op))
                 {
@@ -157,7 +157,7 @@ namespace nano
                         NANO_UNUSED1(filename);
 
                         nano::imstream_t stream(data.data(), data.size());
-                        
+
                         // read header
                         int32_t magic;
                         std::vector<int32_t> dims;
@@ -194,23 +194,23 @@ namespace nano
                                         }
                                         sample.m_fold = { 0, p };
                                         add_sample(sample);
-                                        
+
                                         ++ iindex;
                                 }
-                                
+
                                 ++ gcount;
                         }
-                        
+
                         return stream.tellg() == stream.size();
                 };
-                
+
                 log_info() << "NORB: loading file <" << gfile << "> ...";
                 if (!nano::unarchive(gfile, gop, error_op))
                 {
                         log_error() << "NORB: failed to load file <" << gfile << ">!";
                         return false;
                 }
-                
+
                 // OK
                 log_info() << "NORB: loaded " << icount << "/" << gcount << " samples.";
                 return (count == gcount) && (count == icount);

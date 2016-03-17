@@ -113,8 +113,8 @@ namespace nano
                 "worm"
         };
 
-        cifar100_task_t::cifar100_task_t(const string_t& configuration)
-                :       task_t(configuration)
+        cifar100_task_t::cifar100_task_t(const string_t&) :
+                mem_vision_task_t(3, 32, 32, 100)
         {
         }
 
@@ -139,7 +139,7 @@ namespace nano
                         else if (nano::ends_with(filename, test_bfile))
                         {
                                 return load(filename, data.data(), data.size(), protocol::test, n_test_samples);
-                        }                        
+                        }
                         else
                         {
                                 return true;
@@ -154,11 +154,11 @@ namespace nano
 
                 return nano::unarchive(bfile, op, error_op);
         }
-        
+
         bool cifar100_task_t::load(const string_t& filename, const char* bdata, size_t bdata_size, protocol p, size_t count)
         {
-                log_info() << "CIFAR-100: loading file <" << filename << "> ...";                
-                
+                log_info() << "CIFAR-100: loading file <" << filename << "> ...";
+
                 const auto buffer_size = irows() * icols() * 3;
                 std::vector<char> buffer = nano::make_buffer(buffer_size);
                 char label[2];

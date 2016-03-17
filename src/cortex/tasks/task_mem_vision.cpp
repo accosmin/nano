@@ -1,17 +1,11 @@
 #include "task.h"
-#include "sampler.h"
 #include "util/logger.h"
 #include "text/to_string.hpp"
 #include "vision/image_grid.h"
 
 namespace nano
 {
-        task_manager_t& get_tasks()
-        {
-                static task_manager_t manager;
-                return manager;
-        }
-
+        /*
         void print(const string_t& header, const samples_t& samples)
         {
                 const strings_t labels = nano::labels(samples);
@@ -133,4 +127,5 @@ namespace nano
                         }
                 }
         }
+        */
 }

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "arch.h"
-#include "target.h"
+#include "protocol.h"
 #include "util/manager.hpp"
 
 namespace nano

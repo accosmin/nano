@@ -1,7 +1,7 @@
 #pragma once
 
-#include "cortex/sampler.h"
-#include "cortex/optimizer.h"
+#include "protocol.h"
+#include "optimizer.h"
 
 namespace nano
 {
@@ -17,12 +17,11 @@ namespace nano
                 ///
                 /// \brief constructor
                 ///
-                trainer_data_t(const task_t& task,
-                               const fold_t& fold,
-                               const loss_t& loss,
-                               const vector_t& x0,
-                               accumulator_t& lacc,
-                               accumulator_t& gacc);
+                trainer_data_t(
+                        const task_t& task, const fold_t& train_fold, const fold_t& valid_fold,
+                        const loss_t& loss, const vector_t& x0,
+                        accumulator_t& lacc,
+                        accumulator_t& gacc);
 
                 ///
                 /// \brief change the regularization weight
@@ -41,8 +40,8 @@ namespace nano
 
                 // attributes
                 const task_t&           m_task;                 ///<
-                sampler_t               m_tsampler;             ///< training samples
-                sampler_t               m_vsampler;             ///< validation samples
+                fold_t                  m_tfold;                ///< training samples
+                fold_t                  m_vfold;                ///< validation samples
 
                 const loss_t&           m_loss;                 ///< base loss function
                 const vector_t&         m_x0;                   ///< initial parameters

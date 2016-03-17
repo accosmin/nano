@@ -1,6 +1,6 @@
 #pragma once
 
-#include "cortex/task.h"
+#include "task_mem_vision.h"
 
 namespace nano
 {
@@ -12,24 +12,26 @@ namespace nano
         ///
         /// http://www.stanford.edu/~acoates/stl10/
         ///
-        class stl10_task_t : public task_t
+        class stl10_task_t : public mem_vision_task_t
         {
         public:
 
                 NANO_MAKE_CLONABLE(stl10_task_t, "STL-10 (object classification)")
 
-                // constructor
+                ///
+                /// \brief constructor
+                ///
                 explicit stl10_task_t(const string_t& configuration = string_t());
 
-                // load images from the given directory
-                virtual bool load(const string_t& dir) override;
+                ///
+                /// \brief short name of this task
+                ///
+                virtual string_t name() const override { return "stl-10"; }
 
-                // access functions
-                virtual tensor_size_t irows() const override { return 96; }
-                virtual tensor_size_t icols() const override { return 96; }
-                virtual tensor_size_t osize() const override { return 10; }
-                virtual size_t fsize() const override { return 10; }
-                virtual color_mode color() const override { return color_mode::rgba; }
+                ///
+                /// \brief load the task from the given directory (if possible)
+                ///
+                virtual bool load(const string_t& dir = string_t()) override;
 
         private:
 
@@ -38,7 +40,7 @@ namespace nano
                 bool load_gfile(const string_t& filename, const char* bdata, size_t bdata_size, size_t count);
 
                 // build folds
-                bool load_folds(const string_t& filename, const char* bdata, size_t bdata_size, 
+                bool load_folds(const string_t& filename, const char* bdata, size_t bdata_size,
                                 size_t n_test, size_t n_train, size_t n_unlabeled);
         };
 }

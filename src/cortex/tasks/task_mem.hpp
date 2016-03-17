@@ -76,12 +76,6 @@ namespace nano
                 void clear()
                 {
                         m_data.clear();
-                        m_data.shrink_to_fit();
-                }
-
-                void clear(const fold_t& fold)
-                {
-                        m_data.erase(fold);
                 }
 
                 void reserve(const fold_t& fold, const size_t count)
@@ -98,6 +92,12 @@ namespace nano
                         data.emplace_back(sample...);
                 }
 
+                void shrink_to_fit(const fold_t& fold)
+                {
+                        auto& data = m_data[fold];
+                        data.shrink_to_fit();
+                }
+
         private:
 
                 using tsamples = std::vector<tsample>;
@@ -107,8 +107,8 @@ namespace nano
 
                 // attributes
                 tensor_size_t           m_idims;        ///< input size
-                tensor_size_t           m_icols;
                 tensor_size_t           m_irows;
+                tensor_size_t           m_icols;
                 tensor_size_t           m_osize;        ///< output size
                 mutable tstorage        m_data;         ///< stored samples (training, validation, test)
         };
@@ -146,7 +146,7 @@ namespace nano
         }
 
         template <typename tsample>
-        void mem_task_t<tsample>::shuffle(const fold_t& fold)
+        void mem_task_t<tsample>::shuffle(const fold_t& fold) const
         {
                 const auto it = m_data.find(fold);
                 assert(it != m_data.end());
@@ -163,9 +163,9 @@ namespace nano
                 assert(index < it->second.size());
 
                 const auto ret = it->second[index].input();
-                assert(ret.size<0>() == idims();
-                assert(ret.size<1>() == irows();
-                assert(ret.size<2>() == icols();
+                assert(ret.template size<0>() == idims());
+                assert(ret.template size<1>() == irows());
+                assert(ret.template size<2>() == icols());
                 return ret;
         }
 

@@ -20,9 +20,7 @@ list(APPEND libcortex_sources
         ${CMAKE_CURRENT_SOURCE_DIR}/synth_oxygen_mono.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/synth_oxygen_mono.h
         ${CMAKE_CURRENT_SOURCE_DIR}/task_mem.hpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/task_mem_vision.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/task_mem_vision.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/task_mem_tensor.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/task_mem_tensor.h
         ${CMAKE_CURRENT_SOURCE_DIR}/task_charset.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/task_charset.h

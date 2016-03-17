@@ -10,8 +10,6 @@ set(libcortex_sources
         cortex.h
         criterion.cpp
         criterion.h
-        evaluate.cpp
-        evaluate.h
         layer.cpp
         layer.h
         loss.cpp
@@ -22,7 +20,6 @@ set(libcortex_sources
         model.h
         optimizer.h
         protocol.h
-        target.h
         stochastic.cpp
         stochastic.h
         task.cpp

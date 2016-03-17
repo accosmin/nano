@@ -1,7 +1,7 @@
 #pragma once
 
 #include "io/buffer.h"
-#include "cortex/task.h"
+#include "task_mem_vision.h"
 
 namespace nano
 {
@@ -13,24 +13,26 @@ namespace nano
         ///
         /// http://ufldl.stanford.edu/housenumbers/
         ///
-        class svhn_task_t : public task_t
+        class svhn_task_t : public mem_vision_task_t
         {
         public:
 
                 NANO_MAKE_CLONABLE(svhn_task_t, "SVHN (object classification)")
 
-                // constructor
+                ///
+                /// \brief constructor
+                ///
                 explicit svhn_task_t(const string_t& configuration = string_t());
 
-                // load images from the given directory
-                virtual bool load(const string_t& dir) override;
+                ///
+                /// \brief short name of this task
+                ///
+                virtual string_t name() const override { return "svhn"; }
 
-                // access functions
-                virtual tensor_size_t irows() const override { return 32; }
-                virtual tensor_size_t icols() const override { return 32; }
-                virtual tensor_size_t osize() const override { return 10; }
-                virtual size_t fsize() const override { return 1; }
-                virtual color_mode color() const override { return color_mode::rgba; }
+                ///
+                /// \brief load the task from the given directory (if possible)
+                ///
+                virtual bool load(const string_t& dir = string_t()) override;
 
         private:
 

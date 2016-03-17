@@ -9,8 +9,8 @@
 
 namespace nano
 {
-        mnist_task_t::mnist_task_t(const string_t& configuration)
-                :       task_t(configuration)
+        mnist_task_t::mnist_task_t(const string_t& configuration) :
+                mem_vision_task_t(1, 28, 28, 10)
         {
         }
 
@@ -58,8 +58,8 @@ namespace nano
                                 add_image(image);
 
                                 ++ icount;
-                        }                        
-                        
+                        }
+
                         return true;
                 };
 
@@ -93,7 +93,7 @@ namespace nano
                                 ++ gcount;
                                 ++ iindex;
                         }
-                        
+
                         return true;
                 };
 

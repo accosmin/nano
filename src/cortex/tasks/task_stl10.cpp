@@ -24,15 +24,15 @@ namespace nano
                 "truck"
         };
 
-        stl10_task_t::stl10_task_t(const string_t& configuration)
-                :       task_t(configuration)
+        stl10_task_t::stl10_task_t(const string_t& configuration) :
+                mem_vision_task_t(3, 96, 96, 10)
         {
         }
 
         bool stl10_task_t::load(const string_t& dir)
         {
                 const string_t bfile = dir + "/stl10_binary.tar.gz";
-                
+
                 const string_t train_ifile = "train_X.bin";
                 const string_t train_gfile = "train_y.bin";
                 const string_t train_uifile = "unlabeled_X.bin";
@@ -46,7 +46,7 @@ namespace nano
                 const string_t fold_file = "fold_indices.txt";
 
                 clear_memory(n_test + n_train + n_unlabeled);
-                
+
                 const auto op = [&] (const string_t& filename, const nano::buffer_t& data)
                 {
                         if (nano::iends_with(filename, train_ifile))
@@ -74,7 +74,7 @@ namespace nano
                                 return load_folds(filename, data.data(), data.size(), n_test, n_train, n_unlabeled);
                         }
                         else
-                        {                        
+                        {
                                 return true;
                         }
                 };
@@ -82,12 +82,12 @@ namespace nano
                 {
                         log_error() << "STL-10: " << message;
                 };
-                
+
                 log_info() << "STL-10: loading file <" << bfile << "> ...";
 
                 return nano::unarchive(bfile, op, error_op);
         }
-        
+
         bool stl10_task_t::load_ifile(const string_t& ifile, const char* bdata, size_t bdata_size, bool unlabeled, size_t count)
         {
                 log_info() << "STL-10: loading file <" << ifile << "> ...";
@@ -98,7 +98,7 @@ namespace nano
                 std::vector<char> buffer = nano::make_buffer(buffer_size);
 
                 size_t icount = 0;
-                
+
                 // load images
                 while (stream.read(buffer.data(), buffer_size))
                 {
@@ -154,8 +154,8 @@ namespace nano
 
                 return count == gcount;
         }
-        
-        bool stl10_task_t::load_folds(const string_t& ifile, const char* bdata, size_t bdata_size, 
+
+        bool stl10_task_t::load_folds(const string_t& ifile, const char* bdata, size_t bdata_size,
                 size_t n_test, size_t n_train, size_t n_unlabeled)
         {
                 log_info() << "STL-10: loading file <" << ifile << "> ...";
@@ -163,7 +163,7 @@ namespace nano
                 // NB: samples arranged line [n_test][n_train][n_unlabeled]
 
                 nano::imstream_t stream(bdata, bdata_size);
-                
+
                 const samples_t orig_samples = this->samples();
                 clear_samples(0);
 

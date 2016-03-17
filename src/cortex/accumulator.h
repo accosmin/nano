@@ -1,6 +1,6 @@
 #pragma once
 
-#include "target.h"
+#include "protocol.h"
 #include "criterion.h"
 
 namespace nano
@@ -15,8 +15,7 @@ namespace nano
                 ///
                 /// \brief constructor
                 ///
-                accumulator_t(const model_t&, const criterion_t&, criterion_t::type,
-                              scalar_t lambda = 0.0);
+                accumulator_t(const model_t&, const criterion_t&, criterion_t::type, scalar_t lambda = 0.0);
 
                 ///
                 /// \brief disable copying

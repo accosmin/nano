@@ -1,6 +1,6 @@
 #pragma once
 
-#include "cortex/task.h"
+#include "task_mem_vision.h"
 
 namespace nano
 {
@@ -23,30 +23,29 @@ namespace nano
         ///     color           - color mode
         ///     size            - number of samples (training + validation)
         ///
-        class NANO_PUBLIC charset_task_t : public task_t
+        class NANO_PUBLIC charset_task_t : public mem_vision_task_t
         {
         public:
 
                 NANO_MAKE_CLONABLE(charset_task_t,
-                                     "synthetic character classification: type=digit[lalpha,ualpha,alpha,alphanum],"\
-                                     "rows=32[16,128],cols=32[16,128],"\
-                                     "color=rgba[,luma],size=1024[16,1024*1024]")
+                        "synthetic character classification: type=digit[lalpha,ualpha,alpha,alphanum],"\
+                        "rows=32[16,128],cols=32[16,128],"\
+                        "color=rgba[,luma],size=1024[16,1024*1024]")
 
-                // constructor
+                ///
+                /// \brief constructor
+                ///
                 explicit charset_task_t(const string_t& configuration = string_t());
 
-                // constructor
-                charset_task_t(charset, tensor_size_t rows, tensor_size_t cols, color_mode, size_t size);
+                ///
+                /// \brief short name of this task
+                ///
+                virtual string_t name() const override { return "charset"; }
 
-                // load images from the given directory
-                virtual bool load(const string_t&) override;
-
-                // access functions
-                virtual tensor_size_t irows() const override { return m_rows; }
-                virtual tensor_size_t icols() const override { return m_cols; }
-                virtual tensor_size_t osize() const override;
-                virtual size_t fsize() const override { return m_folds; }
-                virtual color_mode color() const override { return m_color; }
+                ///
+                /// \brief load the task from the given directory (if possible)
+                ///
+                virtual bool load(const string_t& dir = string_t()) override;
 
         private:
 

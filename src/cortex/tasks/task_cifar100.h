@@ -1,6 +1,6 @@
 #pragma once
 
-#include "cortex/task.h"
+#include "task_mem_vision.h"
 
 namespace nano
 {
@@ -12,24 +12,26 @@ namespace nano
         ///
         /// http://www.cs.toronto.edu/~kriz/cifar.html
         ///
-        class cifar100_task_t : public task_t
+        class cifar100_task_t : public mem_vision_task_t
         {
         public:
 
                 NANO_MAKE_CLONABLE(cifar100_task_t, "CIFAR-100 (object classification)")
 
-                // constructor
+                ///
+                /// \brief constructor
+                ///
                 explicit cifar100_task_t(const string_t& configuration = string_t());
 
-                // load images from the given directory
-                virtual bool load(const string_t& dir) override;
+                ///
+                /// \brief short name of this task
+                ///
+                virtual string_t name() const override { return "cifar-100"; }
 
-                // access functions
-                virtual tensor_size_t irows() const override { return 32; }
-                virtual tensor_size_t icols() const override { return 32; }
-                virtual tensor_size_t osize() const override { return 100; }
-                virtual size_t fsize() const override { return 1; }
-                virtual color_mode color() const override { return color_mode::rgba; }
+                ///
+                /// \brief load the task from the given directory (if possible)
+                ///
+                virtual bool load(const string_t& dir = string_t()) override;
 
         private:
 

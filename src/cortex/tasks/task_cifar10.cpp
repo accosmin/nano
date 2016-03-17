@@ -23,8 +23,8 @@ namespace nano
                 "truck"
         };
 
-        cifar10_task_t::cifar10_task_t(const string_t& configuration)
-                :       task_t(configuration)
+        cifar10_task_t::cifar10_task_t(const string_t&) :
+                mem_vision_task_t(3, 32, 32, 10)
         {
         }
 
@@ -55,9 +55,9 @@ namespace nano
                                 return load(filename, data.data(), data.size(), protocol::train, n_train_samples);
                         }
                         else if (nano::iends_with(filename, test_bfile))
-                        {                                
+                        {
                                 return load(filename, data.data(), data.size(), protocol::test, n_test_samples);
-                        }                        
+                        }
                         else
                         {
                                 return true;
@@ -76,7 +76,7 @@ namespace nano
         bool cifar10_task_t::load(const string_t& filename, const char* bdata, size_t bdata_size, protocol p, size_t count)
         {
                 log_info() << "CIFAR-10: loading file <" << filename << "> ...";
-                
+
                 const auto buffer_size = irows() * icols() * 3;
                 std::vector<char> buffer = nano::make_buffer(buffer_size);
                 char label[1];

@@ -10,8 +10,8 @@
 
 namespace nano
 {
-        svhn_task_t::svhn_task_t(const string_t& configuration)
-                :       task_t(configuration)
+        svhn_task_t::svhn_task_t(const string_t&) :
+                mem_vision_task_t(3, 32, 32, 10)
         {
         }
 

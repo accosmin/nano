@@ -42,8 +42,8 @@ namespace nano
 
 namespace nano
 {
-        charset_task_t::charset_task_t(const string_t& configuration)
-                :       task_t(configuration),
+        charset_task_t::charset_task_t(const string_t& configuration) :
+                mem_vision_task_t(                :       task_t(configuration),
                         m_charset(nano::from_params<charset>(configuration, "type", charset::numeric)),
                         m_rows(nano::clamp(nano::from_params<tensor_size_t>(configuration, "rows", 32), 16, 128)),
                         m_cols(nano::clamp(nano::from_params<tensor_size_t>(configuration, "cols", 32), 16, 128)),
