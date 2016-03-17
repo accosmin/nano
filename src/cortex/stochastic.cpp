@@ -1,4 +1,4 @@
-#include "sampler.h"
+#include "task.h"
 #include "stochastic.h"
 #include "util/timer.h"
 #include "util/logger.h"
@@ -10,43 +10,63 @@
 
 namespace nano
 {
-        static trainer_result_t train(trainer_data_t& data,
-                const nano::stoch_optimizer optimizer, const size_t epochs, const bool verbose)
+        static trainer_result_t train(
+                const task_t& task, const fold_t& tfold, const fold_t& vfold,
+                accumulator_t& lacc, accumulator_t& gacc,
+                const vector_t& x0, const stoch_optimizer optimizer, const size_t epochs, const bool verbose)
         {
-                trainer_result_t result;
-
                 const nano::timer_t timer;
 
-                const auto batch_size = 16 * nano::n_threads();
+                trainer_result_t result;
 
-                // set the sampling size
-                data.m_tsampler.push(batch_size);
+                const auto batch_size = 16 * nano::n_threads();
+                const auto epoch_size = (task.n_samples(tfold) + batch_size - 1) / batch_size;
+
+                size_t epoch = 0;
+                size_t batch_begin = 0;
+                size_t batch_end = batch_size;
 
                 // construct the optimization problem
-                size_t epoch = 0;
-                const size_t epoch_size = data.epoch_size(batch_size);
+                const auto fn_size = [&] ()
+                {
+                        return lacc.psize();
+                };
 
-                auto fn_size = nano::make_opsize(data);
-                auto fn_fval = nano::make_opfval(data);
-                auto fn_grad = nano::make_opgrad(data);
+                const auto fn_fval = [&] (const vector_t& x)
+                {
+                        lacc.set_params(x);
+                        lacc.update(task, tfold, batch_begin, batch_end);
+                        return lacc.value();
+                };
+
+                const auto fn_grad = [&] (const vector_t& x, vector_t& gx)
+                {
+                        gacc.set_params(x);
+                        gacc.update(task, tfold, batch_begin, batch_end);
+                        gx = gacc.vgrad();
+                        // next minibatch
+                        batch_begin = batch_end;
+                        batch_end = std::min(batch_begin + batch_size, task.n_samples(tfold);
+                        return gacc.value();
+                };
 
                 auto fn_ulog = [&] (opt_state_t& state, const auto& config)
                 {
+                        task.shuffle(tfold);
+
                         // evaluate training samples
-                        data.m_lacc.set_params(state.x);
-                        data.m_tsampler.pop();                  // revert to the original sampler
-                        data.m_lacc.update(data.m_task, data.m_tsampler.get(), data.m_loss);
-                        data.m_tsampler.push(batch_size);       // use the current minibatch sampler
-                        const scalar_t tvalue = data.m_lacc.value();
-                        const scalar_t terror_avg = data.m_lacc.avg_error();
-                        const scalar_t terror_var = data.m_lacc.var_error();
+                        lacc.set_params(state.x);
+                        lacc.update(task, tfold);
+                        const auto tvalue = lacc.value();
+                        const auto terror_avg = lacc.avg_error();
+                        const auto terror_var = lacc.var_error();
 
                         // evaluate validation samples
-                        data.m_lacc.set_params(state.x);
-                        data.m_lacc.update(data.m_task, data.m_vsampler.get(), data.m_loss);
-                        const scalar_t vvalue = data.m_lacc.value();
-                        const scalar_t verror_avg = data.m_lacc.avg_error();
-                        const scalar_t verror_var = data.m_lacc.var_error();
+                        lacc.set_params(state.x);
+                        lacc.update(task, vfold);
+                        const auto vvalue = lacc.value();
+                        const auto verror_avg = lacc.avg_error();
+                        const auto verror_var = lacc.var_error();
 
                         // OK, update the optimum solution
                         const auto milis = timer.milliseconds();
@@ -68,12 +88,10 @@ namespace nano
                         return !nano::is_done(ret);
                 };
 
-                // Optimize the model
-                nano::minimize(opt_problem_t(fn_size, fn_fval, fn_grad), fn_ulog,
-                              data.m_x0, optimizer, epochs, epoch_size);
-
-                // revert to the original sampler
-                data.m_tsampler.pop();
+                // optimize the model
+                nano::minimize(
+                        opt_problem_t(fn_size, fn_fval, fn_grad), fn_ulog,
+                        x0, optimizer, epochs, epoch_size);
 
                 return result;
         }
@@ -81,22 +99,21 @@ namespace nano
         trainer_result_t stochastic_train(
                 const model_t& model, const task_t& task, const fold_t& fold, const size_t nthreads,
                 const loss_t& loss, const criterion_t& criterion,
-                nano::stoch_optimizer optimizer, size_t epochs, bool verbose)
+                const stoch_optimizer optimizer, const size_t epochs, const bool verbose)
         {
                 vector_t x0;
                 model.save_params(x0);
 
                 // setup accumulators
-                accumulator_t lacc(model, criterion, criterion_t::type::value); lacc.set_threads(nthreads);
-                accumulator_t gacc(model, criterion, criterion_t::type::vgrad); gacc.set_threads(nthreads);
-
-                trainer_data_t data(task, fold, loss, x0, lacc, gacc);
+                accumulator_t lacc(model, loss, criterion, criterion_t::type::value); lacc.set_threads(nthreads);
+                accumulator_t gacc(model, loss, criterion, criterion_t::type::vgrad); gacc.set_threads(nthreads);
 
                 // tune the regularization factor (if needed)
-                const auto op = [&] (scalar_t lambda)
+                const auto op = [&] (const scalar_t lambda)
                 {
-                        data.set_lambda(lambda);
-                        return train(data, optimizer, epochs, verbose);
+                        lacc.set_lambda(lambda);
+                        gacc.set_lambda(lambda);
+                        return train(task, tfold, vfold, lacc, gacc, x0, optimizer, epochs, verbose);
                 };
 
                 if (data.m_lacc.can_regularize())

@@ -15,7 +15,8 @@ namespace nano
                 ///
                 /// \brief constructor
                 ///
-                accumulator_t(const model_t&, const criterion_t&, criterion_t::type, scalar_t lambda = 0.0);
+                accumulator_t(const model_t&, const loss_t& loss,
+                        const criterion_t&, const criterion_t::type, const scalar_t lambda = 0.0);
 
                 ///
                 /// \brief disable copying
@@ -51,8 +52,8 @@ namespace nano
                 ///
                 /// \brief cumulate statistics with a set of samples
                 ///
-                void update(const task_t&, const fold_t&, const loss_t&);
-                void update(const task_t&, const fold_t&, const size_t begin, const size_t end, const loss_t&);
+                void update(const task_t&, const fold_t&);
+                void update(const task_t&, const fold_t&, const size_t begin, const size_t end);
 
                 ///
                 /// \brief cumulated loss value

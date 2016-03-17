@@ -1,5 +1,5 @@
+#include "task.h"
 #include "batch.h"
-#include "sampler.h"
 #include "util/timer.h"
 #include "util/logger.h"
 #include "accumulator.h"
@@ -9,36 +9,58 @@
 
 namespace nano
 {
-        static opt_state_t train_batch(
-                trainer_data_t& data,
-                nano::batch_optimizer optimizer, size_t iterations, scalar_t epsilon,
-                timer_t& timer, trainer_result_t& result, bool verbose)
+        static trainer_result_t train(
+                const task_t& task, const fold_t& tfold, const fold_t& vfold,
+                const accumulator_t& lacc, const accumulator_t& gacc,
+                const batch_optimizer optimizer, const size_t iterations, const scalar_t epsilon,
+                const bool verbose)
         {
+                const timer_t timer;
+
+                trainer_result_t result;
+
                 size_t iteration = 0;
 
                 // construct the optimization problem
-                auto fn_size = nano::make_opsize(data);
-                auto fn_fval = nano::make_opfval(data);
-                auto fn_grad = nano::make_opgrad(data);
+                const auto fn_size = [&] ()
+                {
+                        return lacc.psize();
+                };
+
+                const auto fn_fval = [&] (const vector_t& x)
+                {
+                        lacc.set_params(x);
+                        lacc.update(task, tfold);
+                        return lacc.value();
+                };
+
+                const auto fn_grad = [&] (const vector_t& x, vector_t& gx)
+                {
+                        gacc.set_params(x);
+                        gacc.update(task, tfold);
+                        gx = gacc.vgrad();
+                        return gacc.value();
+                };
 
                 auto fn_ulog = [&] (const opt_state_t& state)
                 {
-                        const scalar_t tvalue = data.m_gacc.value();
-                        const scalar_t terror_avg = data.m_gacc.avg_error();
-                        const scalar_t terror_var = data.m_gacc.var_error();
+                        // evaluate training samples
+                        const auto tvalue = gacc.value();
+                        const auto terror_avg = gacc.avg_error();
+                        const auto terror_var = gacc.var_error();
 
-                        // validation samples: loss value
-                        data.m_lacc.set_params(state.x);
-                        data.m_lacc.update(data.m_task, data.m_vsampler.get(), data.m_loss);
-                        const scalar_t vvalue = data.m_lacc.value();
-                        const scalar_t verror_avg = data.m_lacc.avg_error();
-                        const scalar_t verror_var = data.m_lacc.var_error();
+                        // evaluate validation samples
+                        lacc.set_params(state.x);
+                        lacc.update(task, vfold);
+                        const scalar_t vvalue = lacc.value();
+                        const scalar_t verror_avg = lacc.avg_error();
+                        const scalar_t verror_var = lacc.var_error();
 
-                        // update the optimum state
+                        // OK, update the optimum state
                         const auto milis = timer.milliseconds();
                         const auto ret = result.update(state.x,
                                 {milis, ++ iteration, tvalue, terror_avg, terror_var, vvalue, verror_avg, verror_var},
-                                {{"lambda", data.lambda()}});
+                                {{"lambda", lacc.lambda()}});
 
                         if (verbose)
                         log_info()
@@ -46,7 +68,7 @@ namespace nano
                                 << ", valid = " << vvalue << "/" << verror_avg
                                 << " (" << nano::to_string(ret) << ")"
                                 << ", epoch = " << iteration << "/" << iterations
-                                << ", lambda = " << data.lambda()
+                                << ", lambda = " << lacc.lambda()
                                 << ", calls = " << state.m_fcalls << "/" << state.m_gcalls
                                 << "] done in " << timer.elapsed() << ".";
 
@@ -54,8 +76,11 @@ namespace nano
                 };
 
                 // assembly optimization problem & optimize the model
-                return nano::minimize(opt_problem_t(fn_size, fn_fval, fn_grad), fn_ulog,
-                                     data.m_x0, optimizer, iterations, epsilon);
+                nano::minimize(
+                        opt_problem_t(fn_size, fn_fval, fn_grad), fn_ulog,
+                        x0, optimizer, iterations, epsilon);
+
+                return result;
         }
 
         trainer_result_t batch_train(
@@ -68,22 +93,15 @@ namespace nano
                 model.save_params(x0);
 
                 // setup acumulators
-                accumulator_t lacc(model, criterion, criterion_t::type::value); lacc.set_threads(nthreads);
-                accumulator_t gacc(model, criterion, criterion_t::type::vgrad); gacc.set_threads(nthreads);
-
-                trainer_data_t data(task, fold, loss, x0, lacc, gacc);
+                accumulator_t lacc(model, loss, criterion, criterion_t::type::value); lacc.set_threads(nthreads);
+                accumulator_t gacc(model, loss, criterion, criterion_t::type::vgrad); gacc.set_threads(nthreads);
 
                 // tune the regularization factor (if needed)
                 const auto op = [&] (scalar_t lambda)
                 {
-                        data.set_lambda(lambda);
-
-                        trainer_result_t result;
-                        timer_t timer;
-
-                        train_batch(data, optimizer, iterations, epsilon, timer, result, verbose);
-
-                        return result;
+                        lacc.set_lambda(lambda);
+                        gacc.set_lambda(lambda);
+                        return train(task, tfold, vfold, lacc, gacc, x0, optimizer, iterations, epsilon, verbose);
                 };
 
                 if (data.m_lacc.can_regularize())

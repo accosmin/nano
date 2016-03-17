@@ -9,7 +9,9 @@ namespace nano
         struct accumulator_t::impl_t
         {
                 // constructor
-                impl_t(const model_t& model, const criterion_t& criterion, criterion_t::type type, scalar_t lambda)
+                impl_t( const model_t& model, const loss_t& loss,
+                        const criterion_t& criterion, const criterion_t::type type, const scalar_t lambda) :
+                        m_loss(loss)
                 {
                         for (size_t i = 0; i < m_pool.n_workers(); ++ i)
                         {
@@ -37,13 +39,15 @@ namespace nano
                 }
 
                 // attributes
-                nano::pool_t                  m_pool;         ///< thread pool
+                const loss_t&                   m_loss;
+                nano::pool_t                    m_pool;         ///< thread pool
                 std::vector<rcriterion_t>       m_criteria;     ///< cached criterion / thread
         };
 
         accumulator_t::accumulator_t(
-                const model_t& model, const criterion_t& criterion, criterion_t::type type, scalar_t lambda) :
-                m_impl(std::make_unique<impl_t>(model, criterion, type, lambda))
+                const model_t& model, const loss_t& loss,
+                const criterion_t& criterion, const criterion_t::type type, const scalar_t lambda) :
+                m_impl(std::make_unique<impl_t>(model, loss, criterion, type, lambda))
         {
         }
 
@@ -80,14 +84,14 @@ namespace nano
                 m_impl->m_pool.activate(nthreads);
         }
 
-        void accumulator_t::update(const task_t& task, const fold_t& fold, const loss_t& loss)
+        void accumulator_t::update(const task_t& task, const fold_t& fold)
         {
-                return update(task, fold, 0, task.n_samples(fold), loss);
+                return update(task, fold, 0, task.n_samples(fold));
         }
 
-        void accumulator_t::update(const task_t& task,
-                const fold_t& fold, const size_t begin, const size_t end, const loss_t& loss)
+        void accumulator_t::update(const task_t& task, const fold_t& fold, const size_t begin, const size_t end)
         {
+                const loss_t& loss = m_impl->m_loss;
                 nano::loopit(end - begin, m_impl->m_pool, [&] (const size_t offset, const size_t th)
                 {
                         const auto index = begin + offset;
