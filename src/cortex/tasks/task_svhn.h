@@ -29,10 +29,10 @@ namespace nano
                 virtual bool populate(const string_t& dir) override;
 
                 // load binary file
-                size_t load(const string_t& bfile, protocol p);
+                size_t load_binary(const string_t& bfile, const protocol p);
 
                 // decode the uncompressed bytes (images + labels)
-                size_t decode(const nano::buffer_t& image_data, const nano::buffer_t& label_data, const protocol p);
+                size_t decode(const buffer_t& image_data, const buffer_t& label_data, const protocol p);
         };
 }
 

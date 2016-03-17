@@ -34,8 +34,9 @@ namespace nano
                 mem_tensor_task_t(
                         const string_t& name,
                         const tensor_size_t idims, const tensor_size_t irows, const tensor_size_t icols,
-                        const tensor_size_t osize) :
-                        mem_task_t<detail::mem_tensor_sample_t>(name, idims, irows, icols, osize) {}
+                        const tensor_size_t osize,
+                        const size_t fsize) :
+                        mem_task_t<detail::mem_tensor_sample_t>(name, idims, irows, icols, osize, fsize) {}
 
                 ///
                 /// \brief destructor

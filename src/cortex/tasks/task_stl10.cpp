@@ -24,8 +24,8 @@ namespace nano
                 "truck"
         };
 
-        stl10_task_t::stl10_task_t(const string_t& configuration) :
-                mem_vision_task_t("stl-10", 3, 96, 96, 10)
+        stl10_task_t::stl10_task_t(const string_t&) :
+                mem_vision_task_t("stl-10", 3, 96, 96, 10, 10)
         {
         }
 
@@ -88,7 +88,8 @@ namespace nano
                 return nano::unarchive(bfile, op, error_op);
         }
 
-        bool stl10_task_t::load_ifile(const string_t& ifile, const char* bdata, size_t bdata_size, bool unlabeled, size_t count)
+        bool stl10_task_t::load_ifile(const string_t& ifile,
+                const char* bdata, const size_t bdata_size, const bool unlabeled, const size_t count)
         {
                 log_info() << "STL-10: loading file <" << ifile << "> ...";
 
@@ -122,7 +123,8 @@ namespace nano
                 return count == icount;
         }
 
-        bool stl10_task_t::load_gfile(const string_t& gfile, const char* bdata, size_t bdata_size, size_t count)
+        bool stl10_task_t::load_gfile(const string_t& gfile,
+                const char* bdata, const size_t bdata_size, const size_t count)
         {
                 log_info() << "STL-10: loading file <" << gfile << "> ...";
 
@@ -155,8 +157,8 @@ namespace nano
                 return count == gcount;
         }
 
-        bool stl10_task_t::load_folds(const string_t& ifile, const char* bdata, size_t bdata_size,
-                size_t n_test, size_t n_train, size_t n_unlabeled)
+        bool stl10_task_t::load_folds(const string_t& ifile, const char* bdata, const size_t bdata_size,
+                const size_t n_test, const size_t n_train, const size_t n_unlabeled)
         {
                 log_info() << "STL-10: loading file <" << ifile << "> ...";
 
@@ -167,7 +169,6 @@ namespace nano
                 const samples_t orig_samples = this->samples();
                 clear_samples(0);
 
-                const size_t n_folds = 10;
                 const size_t fold_size = 1000;
 
                 // training samples [0, n_train) ...

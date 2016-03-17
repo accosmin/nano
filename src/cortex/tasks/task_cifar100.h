@@ -28,7 +28,7 @@ namespace nano
                 virtual bool populate(const string_t& dir) override;
 
                 // load binary file
-                bool load(const string_t& filename, const char* bdata, size_t bdata_size, protocol p, size_t count);
+                bool load_binary(const string_t& filename, const char*, const size_t, const protocol, const size_t);
         };
 }
 

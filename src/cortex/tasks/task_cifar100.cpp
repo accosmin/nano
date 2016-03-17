@@ -114,7 +114,7 @@ namespace nano
         };
 
         cifar100_task_t::cifar100_task_t(const string_t&) :
-                mem_vision_task_t("cifar-100", 3, 32, 32, 100)
+                mem_vision_task_t("cifar-100", 3, 32, 32, 100, 1)
         {
         }
 
@@ -134,11 +134,11 @@ namespace nano
                 {
                         if (nano::ends_with(filename, train_bfile))
                         {
-                                return load(filename, data.data(), data.size(), protocol::train, n_train_samples);
+                                return load_binary(filename, data.data(), data.size(), protocol::train, n_train_samples);
                         }
                         else if (nano::ends_with(filename, test_bfile))
                         {
-                                return load(filename, data.data(), data.size(), protocol::test, n_test_samples);
+                                return load_binary(filename, data.data(), data.size(), protocol::test, n_test_samples);
                         }
                         else
                         {
@@ -155,7 +155,8 @@ namespace nano
                 return nano::unarchive(bfile, op, error_op);
         }
 
-        bool cifar100_task_t::load(const string_t& filename, const char* bdata, size_t bdata_size, protocol p, size_t count)
+        bool cifar100_task_t::load_binary(const string_t& filename,
+                const char* bdata, const size_t bdata_size, const protocol p, const size_t count)
         {
                 log_info() << "CIFAR-100: loading file <" << filename << "> ...";
 

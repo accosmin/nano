@@ -1,5 +1,5 @@
 #include "cortex/model.h"
-#include "math/numeric.hpp"
+#include "math/clamp.hpp"
 #include "cortex/stochastic.h"
 #include "cortex/util/logger.h"
 #include "stochastic_trainer.h"
@@ -13,15 +13,10 @@ namespace nano
         }
 
         trainer_result_t stochastic_trainer_t::train(
-                const task_t& task, const fold_t& fold, const loss_t& loss, size_t nthreads, const criterion_t& criterion,
+                const task_t& task, const fold_t& tfold, const fold_t& vfold, const size_t nthreads,
+                const loss_t& loss, const criterion_t& criterion,
                 model_t& model) const
         {
-                if (fold.second != protocol::train)
-                {
-                        log_error() << "stochastic trainer: can only train models with training samples!";
-                        return trainer_result_t();
-                }
-
                 // initialize the model
                 model.resize(task, true);
                 model.random_params();
@@ -34,7 +29,7 @@ namespace nano
 
                 // train the model
                 const trainer_result_t result = nano::stochastic_train(
-                        model, task, fold, nthreads, loss, criterion, optimizer, epochs);
+                        model, task, tfold, vfold, nthreads, loss, criterion, optimizer, epochs);
 
                 const trainer_state_t state = result.optimum_state();
 

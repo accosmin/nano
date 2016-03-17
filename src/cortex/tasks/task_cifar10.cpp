@@ -4,6 +4,7 @@
 #include "math/cast.hpp"
 #include "task_cifar10.h"
 #include "cortex/class.h"
+#include "math/random.hpp"
 #include "text/algorithm.h"
 #include "cortex/util/logger.h"
 
@@ -24,7 +25,7 @@ namespace nano
         };
 
         cifar10_task_t::cifar10_task_t(const string_t&) :
-                mem_vision_task_t("cifar-10", 3, 32, 32, 10)
+                mem_vision_task_t("cifar-10", 3, 32, 32, 10, 1)
         {
         }
 
@@ -50,11 +51,11 @@ namespace nano
                                 nano::iends_with(filename, train_bfile4) ||
                                 nano::iends_with(filename, train_bfile5))
                         {
-                                return load(filename, data.data(), data.size(), protocol::train, n_train_samples);
+                                return load_binary(filename, data.data(), data.size(), protocol::train, n_train_samples);
                         }
                         else if (nano::iends_with(filename, test_bfile))
                         {
-                                return load(filename, data.data(), data.size(), protocol::test, n_test_samples);
+                                return load_binary(filename, data.data(), data.size(), protocol::test, n_test_samples);
                         }
                         else
                         {
@@ -71,7 +72,8 @@ namespace nano
                 return nano::unarchive(bfile, op, error_op);
         }
 
-        bool cifar10_task_t::load(const string_t& filename, const char* bdata, size_t bdata_size, protocol p, size_t count)
+        bool cifar10_task_t::load_binary(const string_t& filename,
+                const char* bdata, const size_t bdata_size, const protocol p, const size_t count)
         {
                 log_info() << "CIFAR-10: loading file <" << filename << "> ...";
 
@@ -80,6 +82,8 @@ namespace nano
                 char label[1];
 
                 nano::imstream_t stream(bdata, bdata_size);
+
+                random_t<size_t> rng_protocol(1, 10);
 
                 size_t icount = 0;
                 while ( stream.read(label, 1) &&
@@ -93,13 +97,11 @@ namespace nano
 
                         image_t image;
                         image.load_rgba(buffer.data(), irows(), icols(), irows() * icols());
-                        add_image(image);
 
-                        sample_t sample(n_images() - 1, sample_region(0, 0));
-                        sample.m_label = tlabels[ilabel];
-                        sample.m_target = nano::class_target(ilabel, osize());
-                        sample.m_fold = { 0, p };
-                        add_sample(sample);
+                        const auto fold = make_random_fold(0, p, rng_protocol());
+                        const auto target = target_t{tlabels[ilabel], nano::class_target(ilabel, osize())};
+
+                        push_back(fold, image, target);
 
                         ++ icount;
                 }

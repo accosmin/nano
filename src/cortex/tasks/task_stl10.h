@@ -28,12 +28,11 @@ namespace nano
                 virtual bool populate(const string_t& dir) override;
 
                 // load binary files
-                bool load_ifile(const string_t& filename, const char* bdata, size_t bdata_size, bool unlabed, size_t count);
-                bool load_gfile(const string_t& filename, const char* bdata, size_t bdata_size, size_t count);
+                bool load_ifile(const string_t&, const char*, const size_t, const bool unlabed, const size_t count);
+                bool load_gfile(const string_t&, const char*, const size_t, const size_t count);
 
                 // build folds
-                bool load_folds(const string_t& filename, const char* bdata, size_t bdata_size,
-                                size_t n_test, size_t n_train, size_t n_unlabeled);
+                bool load_folds(const string_t&, const char*, const size_t, const size_t, const size_t, const size_t);
         };
 }
 

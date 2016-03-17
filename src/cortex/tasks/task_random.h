@@ -13,7 +13,7 @@ namespace nano
 
                 NANO_MAKE_CLONABLE(random_task_t,
                         "random tasks: idims=10[1,100],irows=32[1,100],icols=32[1,100],osize=10[1,100],"\
-                        "count=1000[10,1000000],folds=1[1,10]")
+                        "count=1024[256,1M],folds=1[1,10]")
 
                 ///
                 /// \brief constructor
@@ -27,7 +27,6 @@ namespace nano
         private:
 
                 // attributes
-                size_t          m_folds;
                 size_t          m_count;
         };
 }

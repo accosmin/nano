@@ -39,7 +39,8 @@ namespace nano
                 /// \brief train the given model
                 ///
                 virtual trainer_result_t train(
-                        const task_t&, const fold_t&, const loss_t&, size_t nthreads, const criterion_t& criterion,
+                        const task_t&, const fold_t& tfold, const fold_t& vfold, const size_t nthreads,
+                        const loss_t&, const criterion_t& criterion,
                         model_t&) const = 0;
         };
 }

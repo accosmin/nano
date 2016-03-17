@@ -4,6 +4,7 @@
 #include "io/imstream.h"
 #include "cortex/class.h"
 #include "vision/color.h"
+#include "math/random.hpp"
 #include "text/to_string.hpp"
 #include "cortex/util/logger.h"
 #include <fstream>
@@ -11,7 +12,7 @@
 namespace nano
 {
         svhn_task_t::svhn_task_t(const string_t&) :
-                mem_vision_task_t("svhn", 3, 32, 32, 10)
+                mem_vision_task_t("svhn", 3, 32, 32, 10, 1)
         {
         }
 
@@ -24,14 +25,12 @@ namespace nano
                 const string_t test_file = dir + "/test_32x32.mat";
                 const size_t n_test_samples = 26032;
 
-                clear_memory(n_train_samples + n_test_samples);
-
-                return  load(train_file, protocol::train) +
-                        load(extra_file, protocol::train) == n_train_samples &&
-                        load(test_file, protocol::test) == n_test_samples;
+                return  load_binary(train_file, protocol::train) +
+                        load_binary(extra_file, protocol::train) == n_train_samples &&
+                        load_binary(test_file, protocol::test) == n_test_samples;
         }
 
-        size_t svhn_task_t::load(const string_t& bfile, protocol p)
+        size_t svhn_task_t::load_binary(const string_t& bfile, const protocol p)
         {
                 log_info() << "SVHN: processing file <" << bfile << "> ...";
 
@@ -148,6 +147,8 @@ namespace nano
                         return 0;
                 }
 
+                random_t<size_t> rng_protocol(1, 10);
+
                 // load images & labels
                 const size_t n_samples = idims[3];
 
@@ -168,7 +169,7 @@ namespace nano
                         }
 
                         // image ...
-                        image_t image(irows(), icols(), color());
+                        image_t image(irows(), icols(), color_mode::rgba);
 
                         const auto px = irows() * icols();
                         const auto ix = irows() * icols() * 3;
@@ -189,14 +190,11 @@ namespace nano
                                 }
                         }
 
-                        add_image(image);
+                        // target ...
+                        const auto fold = make_random_fold(0, p, rng_protocol());
+                        const auto target = target_t{"digit" + to_string(ilabel), class_target(ilabel, osize())};
 
-                        // sample
-                        sample_t sample(n_images() - 1, sample_region(0, 0));
-                        sample.m_label = "digit" + nano::to_string(ilabel);
-                        sample.m_target = nano::class_target(ilabel, osize());
-                        sample.m_fold = { 0, p };
-                        add_sample(sample);
+                        push_back(fold, image, target);
 
                         ++ cnt;
                 }

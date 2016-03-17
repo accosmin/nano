@@ -1,7 +1,7 @@
 #pragma once
 
+#include <random>
 #include "cortex/task.h"
-#include "math/random.hpp"
 
 namespace nano
 {
@@ -22,9 +22,10 @@ namespace nano
                 mem_task_t(
                         const string_t& name,
                         const tensor_size_t idims, const tensor_size_t irows, const tensor_size_t icols,
-                        const tensor_size_t osize) :
+                        const tensor_size_t osize,
+                        const size_t fsize) :
                         m_name(name),
-                        m_idims(idims), m_irows(irows), m_icols(icols), m_osize(osize) {}
+                        m_idims(idims), m_irows(irows), m_icols(icols), m_osize(osize), m_fsize(fsize) {}
 
                 ///
                 /// \brief destructor
@@ -56,7 +57,7 @@ namespace nano
                 ///
                 /// \brief number of folds (not considering the protocol!)
                 ///
-                virtual size_t n_folds() const override final;
+                virtual size_t n_folds() const override final { return m_fsize; }
 
                 ///
                 /// \brief total number of samples
@@ -92,6 +93,20 @@ namespace nano
                         data.emplace_back(sample...);
                 }
 
+                template <typename tsize>
+                static fold_t make_random_fold(const size_t fold, const tsize p)
+                {
+                        // 60% training, 20% validation, 20% testing
+                        return {fold, p < 7 ? protocol::train : (p < 9 ? protocol::valid : protocol::test)};
+                }
+
+                template <typename tsize>
+                static fold_t make_random_fold(const size_t fold, const protocol proto, const tsize p)
+                {
+                        // split training into {80% training, 20% validation}, leave the testing as it is
+                        return {fold, proto == protocol::train ? (p < 9 ? protocol::train : protocol::valid) : proto};
+                }
+
                 virtual bool populate(const string_t& dir = string_t()) = 0;
 
         private:
@@ -107,6 +122,7 @@ namespace nano
                 tensor_size_t           m_irows;
                 tensor_size_t           m_icols;
                 tensor_size_t           m_osize;        ///< output size
+                size_t                  m_fsize;        ///< number of folds
                 mutable tstorage        m_data;         ///< stored samples (training, validation, test)
         };
 
@@ -128,18 +144,6 @@ namespace nano
                         }
                         return true;
                 }
-        }
-
-        template <typename tsample>
-        size_t mem_task_t<tsample>::n_folds() const
-        {
-                size_t max_fold = 0;
-                for (const auto& data : m_data)
-                {
-                        max_fold = std::max(max_fold, data.first.m_index);
-                }
-
-                return max_fold + 1;
         }
 
         template <typename tsample>
@@ -168,8 +172,9 @@ namespace nano
                 const auto it = m_data.find(fold);
                 assert(it != m_data.end());
 
-                random_t<size_t> rng(0, it->second.size());
-                std::shuffle(it->second.begin(), it->second.end(), rng);
+                std::random_device rd;
+                std::minstd_rand g(rd());
+                std::shuffle(it->second.begin(), it->second.end(), g);
         }
 
         template <typename tsample>

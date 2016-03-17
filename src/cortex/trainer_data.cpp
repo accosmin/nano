@@ -1,7 +1,6 @@
 #include "task.h"
 #include "accumulator.h"
 #include "trainer_data.h"
-#include "cortex/util/logger.h"
 
 namespace nano
 {
@@ -30,7 +29,7 @@ namespace nano
 
         size_t trainer_data_t::epoch_size(const size_t batchsize) const
         {
-                return (m_tsampler.size() + batchsize - 1) / batchsize;
+                return (m_task.n_samples(m_tfold) + batchsize - 1) / batchsize;
         }
 
         opt_opsize_t make_opsize(const trainer_data_t& data)

@@ -10,7 +10,7 @@
 namespace nano
 {
         mnist_task_t::mnist_task_t(const string_t& configuration) :
-                mem_vision_task_t("mnist", 1, 28, 28, 10)
+                mem_vision_task_t("mnist", 1, 28, 28, 10, 1)
         {
         }
 
@@ -26,11 +26,12 @@ namespace nano
 
                 clear_memory(n_train_samples + n_test_samples);
 
-                return  load(train_ifile, train_gfile, protocol::train, n_train_samples) &&
-                        load(test_ifile, test_gfile, protocol::test, n_test_samples);
+                return  load_binary(train_ifile, train_gfile, protocol::train, n_train_samples) &&
+                        load_binary(test_ifile, test_gfile, protocol::test, n_test_samples);
         }
 
-        bool mnist_task_t::load(const string_t& ifile, const string_t& gfile, protocol p, size_t count)
+        bool mnist_task_t::load_binary(const string_t& ifile, const string_t& gfile,
+                const protocol p, const size_t count)
         {
                 size_t iindex = n_images();
                 size_t icount = 0;

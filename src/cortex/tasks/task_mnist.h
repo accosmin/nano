@@ -28,6 +28,6 @@ namespace nano
                 virtual bool populate(const string_t& dir) override;
 
                 // load binary file
-                bool load(const string_t& ifile, const string_t& gfile, protocol p, size_t count);
+                bool load_binary(const string_t& ifile, const string_t& gfile, const protocol, const size_t count);
         };
 }

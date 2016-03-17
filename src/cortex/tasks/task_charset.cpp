@@ -38,29 +38,48 @@ namespace nano
                         { nano::charset::alphanumeric, "alphanum" }
                 };
         }
-}
 
-namespace nano
-{
-        charset_task_t::charset_task_t(const string_t& configuration) :
-                mem_vision_task_t(                :       task_t(configuration),
-                        m_charset(nano::from_params<charset>(configuration, "type", charset::numeric)),
-                        m_rows(nano::clamp(nano::from_params<tensor_size_t>(configuration, "rows", 32), 16, 128)),
-                        m_cols(nano::clamp(nano::from_params<tensor_size_t>(configuration, "cols", 32), 16, 128)),
-                        m_folds(1),
-                        m_color(nano::from_params<color_mode>(configuration, "color", color_mode::rgba)),
-                        m_size(nano::clamp(nano::from_params<size_t>(configuration, "size", 1024), 16, 1024 * 1024))
+        static tensor_size_t obegin(const charset cs)
         {
+                switch (cs)
+                {
+                case charset::numeric:          return 0;
+                case charset::lalphabet:        return 0 + 10;
+                case charset::ualphabet:        return 0 + 10 + 26;
+                case charset::alphabet:         return 10;
+                case charset::alphanumeric:     return 0;
+                default:                        assert(false); return 0;
+                }
         }
 
-        charset_task_t::charset_task_t(
-                charset cs, tensor_size_t rows, tensor_size_t cols, color_mode color, size_t size)
-                :       charset_task_t(
-                        "type=" + nano::to_string(cs) + "," +
-                        "rows=" + nano::to_string(rows) + "," +
-                        "cols=" + nano::to_string(cols) + "," +
-                        "color=" + nano::to_string(color) + "," +
-                        "size=" + nano::to_string(size))
+        static tensor_size_t oend(const charset cs)
+        {
+                switch (cs)
+                {
+                case charset::numeric:          return 10;
+                case charset::lalphabet:        return 10 + 26;
+                case charset::ualphabet:        return 10 + 26 + 26;
+                case charset::alphabet:         return 10 + 26 + 26;
+                case charset::alphanumeric:     return 10 + 26 + 26;
+                default:                        assert(false); return 0;
+                }
+        }
+
+        static tensor_size_t osize(const charset cs)
+        {
+                return oend(cs) - obegin(cs);
+        }
+
+        charset_task_t::charset_task_t(const string_t& configuration) : mem_vision_task_t(
+                "charset",
+                nano::from_params<color_mode>(configuration, "color", color_mode::rgba) == color_mode::rgba ? 3 : 1,
+                nano::clamp(nano::from_params<tensor_size_t>(configuration, "irows", 32), 16, 128),
+                nano::clamp(nano::from_params<tensor_size_t>(configuration, "icols", 32), 16, 128),
+                nano::osize(nano::from_params<charset>(configuration, "type", charset::numeric)),
+                1),
+                m_charset(nano::from_params<charset>(configuration, "type", charset::numeric)),
+                m_color(nano::from_params<color_mode>(configuration, "color", color_mode::rgba)),
+                m_count(nano::clamp(nano::from_params<size_t>(configuration, "count", 1024), 16, 1024 * 1024))
         {
         }
 
@@ -168,102 +187,67 @@ namespace nano
                 const size_t n_fonts = char_patches.size();
 
                 nano::random_t<size_t> rng_protocol(1, 10);
-                nano::random_t<tensor_size_t> rng_output(obegin(), oend() - 1);
+                nano::random_t<tensor_size_t> rng_output(obegin(m_charset), oend(m_charset) - 1);
                 nano::random_t<size_t> rng_font(1, n_fonts);
                 nano::random_t<scalar_t> rng_gauss(0.0, 2.0);
 
-                clear_memory(0);
-
-                for (size_t f = 0; f < fsize(); ++ f)
+                // generate samples
+                for (size_t i = 0; i < m_count; ++ i)
                 {
-                        for (size_t i = 0; i < m_size; ++ i)
+                        // random fold
+                        const auto fold = make_random_fold(0, rng_protocol());
+
+                        // random target: character
+                        const tensor_index_t o = rng_output();
+
+                        // image: original object patch
+                        const tensor3d_t opatch = nano::color::to_rgba_tensor(
+                                get_object_patch(char_patches[rng_font() - 1], o, n_chars, 0.0));
+
+                        // image: resize to the input size
+                        tensor3d_t mpatch(4, irows(), icols());
+                        nano::bilinear(opatch.matrix(0), mpatch.matrix(0));
+                        nano::bilinear(opatch.matrix(1), mpatch.matrix(1));
+                        nano::bilinear(opatch.matrix(2), mpatch.matrix(2));
+                        nano::bilinear(opatch.matrix(3), mpatch.matrix(3));
+
+                        // image: random warping
+                        mpatch = nano::warp(mpatch, warp_params_t(field_type::random, 0.1, 4.0, 16.0, 2.0));
+
+                        // image: background & foreground layer
+                        const auto bcolor = nano::color::make_random_rgba();
+                        const auto fcolor = nano::color::make_opposite_random_rgba(bcolor);
+
+                        const auto bnoise = 0.1;
+                        const auto fnoise = 0.1;
+
+                        const auto bsigma = rng_gauss();
+                        const auto fsigma = rng_gauss();
+
+                        const auto bpatch = make_random_rgba_image(irows(), icols(), bcolor, bnoise, bsigma);
+                        const auto fpatch = make_random_rgba_image(irows(), icols(), fcolor, fnoise, fsigma);
+
+                        // image: alpha-blend the background & foreground layer
+                        const tensor3d_t patch = alpha_blend(mpatch, bpatch, fpatch);
+
+                        image_t image;
+                        switch (color())
                         {
-                                // random protocol: train vs. test (90% training, 10% testing)
-                                const protocol p = (rng_protocol() < 9) ? protocol::train : protocol::test;
-
-                                // random output class: character
-                                const tensor_index_t o = rng_output();
-
-                                // image: original object patch
-                                const tensor3d_t opatch = nano::color::to_rgba_tensor(
-                                        get_object_patch(char_patches[rng_font() - 1], o, n_chars, 0.0));
-
-                                // image: resize to the input size
-                                tensor3d_t mpatch(4, irows(), icols());
-                                nano::bilinear(opatch.matrix(0), mpatch.matrix(0));
-                                nano::bilinear(opatch.matrix(1), mpatch.matrix(1));
-                                nano::bilinear(opatch.matrix(2), mpatch.matrix(2));
-                                nano::bilinear(opatch.matrix(3), mpatch.matrix(3));
-
-                                // image: random warping
-                                mpatch = nano::warp(mpatch, warp_params_t(field_type::random, 0.1, 4.0, 16.0, 2.0));
-
-                                // image: background & foreground layer
-                                const auto bcolor = nano::color::make_random_rgba();
-                                const auto fcolor = nano::color::make_opposite_random_rgba(bcolor);
-
-                                const auto bnoise = 0.1;
-                                const auto fnoise = 0.1;
-
-                                const auto bsigma = rng_gauss();
-                                const auto fsigma = rng_gauss();
-
-                                const auto bpatch = make_random_rgba_image(irows(), icols(), bcolor, bnoise, bsigma);
-                                const auto fpatch = make_random_rgba_image(irows(), icols(), fcolor, fnoise, fsigma);
-
-                                // image: alpha-blend the background & foreground layer
-                                const tensor3d_t patch = alpha_blend(mpatch, bpatch, fpatch);
-
-                                image_t image;
-                                switch (color())
-                                {
-                                case color_mode::luma:  image.load_luma(color::from_luma_tensor(patch)); break;
-                                case color_mode::rgba:  image.load_rgba(color::from_rgba_tensor(patch)); break;
-                                }
-
-                                // generate image
-                                add_image(image);
-
-                                // generate sample
-                                sample_t sample(n_images() - 1, sample_region(0, 0));
-                                sample.m_label = string_t("char") + characters[static_cast<size_t>(o)];
-                                sample.m_target = nano::class_target(o - obegin(), osize());
-                                sample.m_fold = {f, p};
-                                add_sample(sample);
+                        case color_mode::luma:  image.load_luma(color::from_luma_tensor(patch)); break;
+                        case color_mode::rgba:  image.load_rgba(color::from_rgba_tensor(patch)); break;
                         }
+
+                        // generate image
+                        add_image(image);
+
+                        // generate sample
+                        sample_t sample(n_images() - 1, sample_region(0, 0));
+                        sample.m_label = string_t("char") + characters[static_cast<size_t>(o)];
+                        sample.m_target = nano::class_target(o - obegin(), osize());
+                        sample.m_fold = {f, p};
+                        add_sample(sample);
                 }
 
                 return true;
-        }
-
-        tensor_size_t charset_task_t::osize() const
-        {
-                return oend() - obegin();
-        }
-
-        tensor_size_t charset_task_t::obegin() const
-        {
-                switch (m_charset)
-                {
-                case charset::numeric:          return 0;
-                case charset::lalphabet:        return 0 + 10;
-                case charset::ualphabet:        return 0 + 10 + 26;
-                case charset::alphabet:         return 10;
-                case charset::alphanumeric:     return 0;
-                default:                        assert(false); return 0;
-                }
-        }
-
-        tensor_size_t charset_task_t::oend() const
-        {
-                switch (m_charset)
-                {
-                case charset::numeric:          return 10;
-                case charset::lalphabet:        return 10 + 26;
-                case charset::ualphabet:        return 10 + 26 + 26;
-                case charset::alphabet:         return 10 + 26 + 26;
-                case charset::alphanumeric:     return 10 + 26 + 26;
-                default:                        assert(false); return 0;
-                }
         }
 }
