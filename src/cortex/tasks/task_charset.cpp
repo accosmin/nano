@@ -136,7 +136,7 @@ namespace nano
                 }
         }
 
-        bool charset_task_t::load(const string_t &)
+        bool charset_task_t::populate(const string_t &)
         {
                 const string_t characters =
                         "0123456789" \

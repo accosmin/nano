@@ -10,11 +10,11 @@
 namespace nano
 {
         mnist_task_t::mnist_task_t(const string_t& configuration) :
-                mem_vision_task_t(1, 28, 28, 10)
+                mem_vision_task_t("mnist", 1, 28, 28, 10)
         {
         }
 
-        bool mnist_task_t::load(const string_t& dir)
+        bool mnist_task_t::populate(const string_t& dir)
         {
                 const string_t test_ifile = dir + "/t10k-images-idx3-ubyte.gz";
                 const string_t test_gfile = dir + "/t10k-labels-idx1-ubyte.gz";

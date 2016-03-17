@@ -20,14 +20,26 @@ namespace nano
                 /// \brief constructor
                 ///
                 mem_task_t(
+                        const string_t& name,
                         const tensor_size_t idims, const tensor_size_t irows, const tensor_size_t icols,
                         const tensor_size_t osize) :
+                        m_name(name),
                         m_idims(idims), m_irows(irows), m_icols(icols), m_osize(osize) {}
 
                 ///
                 /// \brief destructor
                 ///
                 virtual ~mem_task_t() {}
+
+                ///
+                /// \brief short name of this task
+                ///
+                virtual string_t name() const override final { return m_name; }
+
+                ///
+                /// \brief load the task from the given directory (if possible)
+                ///
+                virtual bool load(const string_t& dir = string_t()) override final;
 
                 ///
                 /// \brief input size
@@ -73,18 +85,6 @@ namespace nano
 
         protected:
 
-                void clear()
-                {
-                        m_data.clear();
-                }
-
-                void reserve(const fold_t& fold, const size_t count)
-                {
-                        auto& data = m_data[fold];
-                        data.clear();
-                        data.reserve(count);
-                }
-
                 template <typename... tsample_params>
                 void push_back(const fold_t& fold, tsample_params&&... sample)
                 {
@@ -92,11 +92,7 @@ namespace nano
                         data.emplace_back(sample...);
                 }
 
-                void shrink_to_fit(const fold_t& fold)
-                {
-                        auto& data = m_data[fold];
-                        data.shrink_to_fit();
-                }
+                virtual bool populate(const string_t& dir = string_t()) = 0;
 
         private:
 
@@ -106,12 +102,33 @@ namespace nano
         private:
 
                 // attributes
+                string_t                m_name;
                 tensor_size_t           m_idims;        ///< input size
                 tensor_size_t           m_irows;
                 tensor_size_t           m_icols;
                 tensor_size_t           m_osize;        ///< output size
                 mutable tstorage        m_data;         ///< stored samples (training, validation, test)
         };
+
+        template <typename tsample>
+        bool mem_task_t<tsample>::load(const string_t& dir)
+        {
+                m_data.clear();
+                if (!populate(dir))
+                {
+                        m_data.clear();
+                        return false;
+                }
+                else
+                {
+                        // tidy-up memory
+                        for (auto& data : m_data)
+                        {
+                                data.second.shrink_to_fit();
+                        }
+                        return true;
+                }
+        }
 
         template <typename tsample>
         size_t mem_task_t<tsample>::n_folds() const

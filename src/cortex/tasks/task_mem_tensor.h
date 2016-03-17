@@ -8,6 +8,11 @@ namespace nano
         {
                 struct mem_tensor_sample_t
                 {
+                        explicit mem_tensor_sample_t(
+                                const tensor3d_t& input = tensor3d_t(),
+                                const target_t& target = target_t()) :
+                                m_input(input), m_target(target) {}
+
                         const tensor3d_t& input() const { return m_input; }
                         const target_t& target() const { return m_target; }
 
@@ -27,9 +32,10 @@ namespace nano
                 /// \brief constructor
                 ///
                 mem_tensor_task_t(
+                        const string_t& name,
                         const tensor_size_t idims, const tensor_size_t irows, const tensor_size_t icols,
                         const tensor_size_t osize) :
-                        mem_task_t<detail::mem_tensor_sample_t>(idims, irows, icols, osize) {}
+                        mem_task_t<detail::mem_tensor_sample_t>(name, idims, irows, icols, osize) {}
 
                 ///
                 /// \brief destructor

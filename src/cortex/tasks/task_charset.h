@@ -37,17 +37,9 @@ namespace nano
                 ///
                 explicit charset_task_t(const string_t& configuration = string_t());
 
-                ///
-                /// \brief short name of this task
-                ///
-                virtual string_t name() const override { return "charset"; }
-
-                ///
-                /// \brief load the task from the given directory (if possible)
-                ///
-                virtual bool load(const string_t& dir = string_t()) override;
-
         private:
+
+                virtual bool populate(const string_t& dir) override;
 
                 tensor_size_t obegin() const;
                 tensor_size_t oend() const;

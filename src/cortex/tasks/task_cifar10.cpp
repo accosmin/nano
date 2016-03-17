@@ -24,11 +24,11 @@ namespace nano
         };
 
         cifar10_task_t::cifar10_task_t(const string_t&) :
-                mem_vision_task_t(3, 32, 32, 10)
+                mem_vision_task_t("cifar-10", 3, 32, 32, 10)
         {
         }
 
-        bool cifar10_task_t::load(const string_t& dir)
+        bool cifar10_task_t::populate(const string_t& dir)
         {
                 const string_t bfile = dir + "/cifar-10-binary.tar.gz";
 
@@ -41,8 +41,6 @@ namespace nano
 
                 const string_t test_bfile = "test_batch.bin";
                 const size_t n_test_samples = 10000;
-
-                clear_memory(n_train_samples + n_test_samples);
 
                 const auto op = [&] (const string_t& filename, const nano::buffer_t& data)
                 {

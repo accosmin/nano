@@ -25,11 +25,11 @@ namespace nano
         };
 
         stl10_task_t::stl10_task_t(const string_t& configuration) :
-                mem_vision_task_t(3, 96, 96, 10)
+                mem_vision_task_t("stl-10", 3, 96, 96, 10)
         {
         }
 
-        bool stl10_task_t::load(const string_t& dir)
+        bool stl10_task_t::populate(const string_t& dir)
         {
                 const string_t bfile = dir + "/stl10_binary.tar.gz";
 

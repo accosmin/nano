@@ -114,11 +114,11 @@ namespace nano
         };
 
         cifar100_task_t::cifar100_task_t(const string_t&) :
-                mem_vision_task_t(3, 32, 32, 100)
+                mem_vision_task_t("cifar-100", 3, 32, 32, 100)
         {
         }
 
-        bool cifar100_task_t::load(const string_t& dir)
+        bool cifar100_task_t::populate(const string_t& dir)
         {
                 const string_t bfile = dir + "/cifar-100-binary.tar.gz";
 

@@ -8,6 +8,7 @@
 namespace nano
 {
         random_task_t::random_task_t(const string_t& configuration) : mem_tensor_task_t(
+                "random",
                 nano::clamp(nano::from_params<tensor_size_t>(configuration, "idims", 10), 1, 100),
                 nano::clamp(nano::from_params<tensor_size_t>(configuration, "irows", 32), 1, 100),
                 nano::clamp(nano::from_params<tensor_size_t>(configuration, "icols", 32), 1, 100),
@@ -17,7 +18,7 @@ namespace nano
         {
         }
 
-        bool random_task_t::load(const string_t &)
+        bool random_task_t::populate(const string_t&)
         {
                 nano::random_t<size_t> rng_protocol(1, 10);
                 nano::random_t<size_t> rng_fold(0, m_folds - 1);
@@ -28,13 +29,12 @@ namespace nano
                 {
                         return p < 6 ? protocol::train : (p < 8 ? protocol::valid : protocol::test);
                 };
-                const auto make_label = [] (const size_t o)
+                const auto make_label = [] (const tensor_size_t o)
                 {
                         return string_t("class") + nano::to_string(o);
                 };
 
                 // generate samples
-                clear();
                 for (size_t i = 0; i < m_count; ++ i)
                 {
                         // random fold
@@ -49,14 +49,6 @@ namespace nano
                         const auto target = target_t{make_label(o), nano::class_target(o, osize())};
 
                         push_back(fold, input, target);
-                }
-
-                // tidy-up memory
-                for (size_t f = 0; f < m_folds; ++ f)
-                {
-                        shrink_to_fit({f, protocol::train});
-                        shrink_to_fit({f, protocol::valid});
-                        shrink_to_fit({f, protocol::test});
                 }
 
                 return true;

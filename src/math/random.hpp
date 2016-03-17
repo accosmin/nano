@@ -19,6 +19,8 @@ namespace nano
         {
         public:
 
+                using result_type = tscalar;
+
                 ///
                 /// \brief constructor
                 ///

@@ -23,17 +23,9 @@ namespace nano
                 ///
                 explicit norb_task_t(const string_t& configuration = string_t());
 
-                ///
-                /// \brief short name of this task
-                ///
-                virtual string_t name() const override { return "norb"; }
-
-                ///
-                /// \brief load the task from the given directory (if possible)
-                ///
-                virtual bool load(const string_t& dir = string_t()) override;
-
         private:
+
+                virtual bool populate(const string_t& dir) override;
 
                 // load binary file
                 bool load(const string_t& bfile, protocol p, size_t count);

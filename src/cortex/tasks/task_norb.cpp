@@ -18,11 +18,11 @@ namespace nano
         };
 
         norb_task_t::norb_task_t(const string_t&) :
-                mem_vision_task_t(1, 108, 108, 5)
+                mem_vision_task_t("norb", 1, 108, 108, 5)
         {
         }
 
-        bool norb_task_t::load(const string_t& dir)
+        bool norb_task_t::populate(const string_t& dir)
         {
                 const size_t n_train_samples = 29160;// * 10;
                 const size_t n_test_samples = 29160;// * 2;

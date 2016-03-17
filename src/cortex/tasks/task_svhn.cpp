@@ -11,11 +11,11 @@
 namespace nano
 {
         svhn_task_t::svhn_task_t(const string_t&) :
-                mem_vision_task_t(3, 32, 32, 10)
+                mem_vision_task_t("svhn", 3, 32, 32, 10)
         {
         }
 
-        bool svhn_task_t::load(const string_t& dir)
+        bool svhn_task_t::populate(const string_t& dir)
         {
                 const string_t train_file = dir + "/train_32x32.mat";
                 const string_t extra_file = dir + "/extra_32x32.mat";

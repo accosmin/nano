@@ -24,17 +24,9 @@ namespace nano
                 ///
                 explicit svhn_task_t(const string_t& configuration = string_t());
 
-                ///
-                /// \brief short name of this task
-                ///
-                virtual string_t name() const override { return "svhn"; }
-
-                ///
-                /// \brief load the task from the given directory (if possible)
-                ///
-                virtual bool load(const string_t& dir = string_t()) override;
-
         private:
+
+                virtual bool populate(const string_t& dir) override;
 
                 // load binary file
                 size_t load(const string_t& bfile, protocol p);

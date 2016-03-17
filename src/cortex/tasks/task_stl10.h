@@ -23,17 +23,9 @@ namespace nano
                 ///
                 explicit stl10_task_t(const string_t& configuration = string_t());
 
-                ///
-                /// \brief short name of this task
-                ///
-                virtual string_t name() const override { return "stl-10"; }
-
-                ///
-                /// \brief load the task from the given directory (if possible)
-                ///
-                virtual bool load(const string_t& dir = string_t()) override;
-
         private:
+
+                virtual bool populate(const string_t& dir) override;
 
                 // load binary files
                 bool load_ifile(const string_t& filename, const char* bdata, size_t bdata_size, bool unlabed, size_t count);

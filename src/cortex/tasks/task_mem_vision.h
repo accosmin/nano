@@ -9,6 +9,12 @@ namespace nano
         {
                 struct mem_vision_sample_t
                 {
+                        explicit mem_vision_sample_t(
+                                const image_t& image = image_t(),
+                                const rect_t& region = rect_t(),
+                                const target_t& target = target_t()) :
+                                m_image(image), m_region(region), m_target(target) {}
+
                         tensor3d_t input() const { return m_image.to_tensor(m_region); }
                         const target_t& target() const { return m_target; }
 
@@ -30,9 +36,10 @@ namespace nano
                 /// \brief constructor
                 ///
                 mem_vision_task_t(
+                        const string_t& name,
                         const tensor_size_t idims, const tensor_size_t irows, const tensor_size_t icols,
                         const tensor_size_t osize) :
-                        mem_task_t<detail::mem_vision_sample_t>(idims, irows, icols, osize) {}
+                        mem_task_t<detail::mem_vision_sample_t>(name, idims, irows, icols, osize) {}
 
                 ///
                 /// \brief destructor

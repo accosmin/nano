@@ -28,7 +28,7 @@ namespace nano
                 ///
                 /// \brief constructor
                 ///
-                explicit task_t(const string_t& configuration) :
+                explicit task_t(const string_t& configuration = string_t()) :
                         clonable_t<task_t>(configuration)
                 {
                 }
