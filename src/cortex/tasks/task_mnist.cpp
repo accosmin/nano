@@ -4,8 +4,8 @@
 #include "io/imstream.h"
 #include "math/cast.hpp"
 #include "cortex/class.h"
+#include "cortex/logger.h"
 #include "text/to_string.hpp"
-#include "cortex/util/logger.h"
 
 namespace nano
 {

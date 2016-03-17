@@ -1,5 +1,5 @@
+#include "logger.h"
 #include "trainer_result.h"
-#include "cortex/util/logger.h"
 
 namespace nano
 {

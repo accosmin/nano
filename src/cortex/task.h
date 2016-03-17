@@ -2,7 +2,7 @@
 
 #include "arch.h"
 #include "protocol.h"
-#include "util/manager.hpp"
+#include "manager.hpp"
 
 namespace nano
 {

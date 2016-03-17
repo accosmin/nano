@@ -3,7 +3,7 @@
 #include "arch.h"
 #include "tensor.h"
 #include "stringi.h"
-#include "util/manager.hpp"
+#include "manager.hpp"
 
 namespace nano
 {
