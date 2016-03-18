@@ -52,8 +52,8 @@ namespace nano
                 ///
                 /// \brief cumulate statistics with a set of samples
                 ///
-                void update(const task_t&, const fold_t&);
-                void update(const task_t&, const fold_t&, const size_t begin, const size_t end);
+                void update(const task_t&, const fold_t&) const;
+                void update(const task_t&, const fold_t&, const size_t begin, const size_t end) const;
 
                 ///
                 /// \brief cumulated loss value

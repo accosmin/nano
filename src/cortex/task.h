@@ -90,6 +90,11 @@ namespace nano
                 ///
                 /// \brief retrieve the target for a given sample
                 ///
-                virtual target_t target(const fold_t&, const size_t index) const = 0;
+                virtual vector_t target(const fold_t&, const size_t index) const = 0;
+
+                ///
+                /// \brief retrieve the associated label (if any) for a given sample
+                ///
+                virtual string_t label(const fold_t&, const size_t index) const = 0;
         };
 }

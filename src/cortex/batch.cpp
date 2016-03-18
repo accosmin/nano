@@ -12,7 +12,7 @@ namespace nano
         static trainer_result_t train(
                 const task_t& task, const fold_t& tfold, const fold_t& vfold,
                 const accumulator_t& lacc, const accumulator_t& gacc,
-                const batch_optimizer optimizer, const size_t iterations, const scalar_t epsilon,
+                const vector_t& x0, const batch_optimizer optimizer, const size_t iterations, const scalar_t epsilon,
                 const bool verbose)
         {
                 const timer_t timer;
@@ -84,10 +84,10 @@ namespace nano
         }
 
         trainer_result_t batch_train(
-                const model_t& model, const task_t& task, const fold_t& fold, const size_t nthreads,
+                const model_t& model, const task_t& task, const fold_t& tfold, const fold_t& vfold, const size_t nthreads,
                 const loss_t& loss, const criterion_t& criterion,
-                nano::batch_optimizer optimizer, size_t iterations, scalar_t epsilon,
-                bool verbose)
+                const batch_optimizer optimizer, const size_t iterations, const scalar_t epsilon,
+                const bool verbose)
         {
                 vector_t x0;
                 model.save_params(x0);

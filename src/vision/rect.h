@@ -35,7 +35,7 @@ namespace nano
                 coord_t cols() const { return width(); }
 
                 area_t area() const { return area_t(width()) * area_t(height()); }
-                bool empty() const { return area() == 0; }
+                bool empty() const { return m_w == 0 || m_h == 0; }
                 bool valid() const { return m_w >= 0 && m_h >= 0; }
 
                 point_t center() const { return point_t((left() + right()) / 2, (top() + bottom()) / 2); }

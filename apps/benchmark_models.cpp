@@ -6,11 +6,11 @@
 #include "thread/thread.h"
 #include "cortex/sampler.h"
 #include "tensor/random.hpp"
+#include "cortex/measure.hpp"
 #include "cortex/accumulator.h"
-#include "cortex/util/measure.hpp"
+#include "cortex/measure_and_log.hpp"
 #include "cortex/layers/make_layers.h"
 #include "cortex/tasks/task_charset.h"
-#include "cortex/util/measure_and_log.hpp"
 
 int main(int argc, char *argv[])
 {

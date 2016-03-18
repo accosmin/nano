@@ -1,9 +1,9 @@
 #include "stringi.h"
 #include "io/buffer.h"
 #include "text/cmdline.h"
+#include "cortex/logger.h"
 #include "text/algorithm.h"
 #include "text/filesystem.h"
-#include "cortex/util/logger.h"
 #include <fstream>
 
 int main(int argc, char *argv[])

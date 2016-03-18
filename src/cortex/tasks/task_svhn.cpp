@@ -147,8 +147,6 @@ namespace nano
                         return 0;
                 }
 
-                random_t<size_t> rng_protocol(1, 10);
-
                 // load images & labels
                 const size_t n_samples = idims[3];
 
@@ -190,11 +188,11 @@ namespace nano
                                 }
                         }
 
-                        // target ...
-                        const auto fold = make_random_fold(0, p, rng_protocol());
-                        const auto target = target_t{"digit" + to_string(ilabel), class_target(ilabel, osize())};
+                        add_chunk(image);
 
-                        push_back(fold, image, target);
+                        // target ...
+                        const auto fold = make_random_fold(0, p);
+                        add_sample(fold, n_chunks() - 1, class_target(ilabel, osize()), "digit" + to_string(ilabel));
 
                         ++ cnt;
                 }

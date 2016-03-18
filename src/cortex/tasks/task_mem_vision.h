@@ -5,35 +5,37 @@
 
 namespace nano
 {
-        namespace detail
+        struct mem_vision_sample_t
         {
-                struct mem_vision_sample_t
-                {
-                        explicit mem_vision_sample_t(
-                                const image_t& image = image_t(),
-                                const rect_t& region = rect_t(),
-                                const target_t& target = target_t()) :
-                                m_image(image), m_region(region), m_target(target) {}
+                explicit mem_vision_sample_t(
+                        const size_t index = 0,
+                        const rect_t& region = rect_t(),
+                        const vector_t& target = vector_t(),
+                        const string_t& label = string_t()) :
+                        m_index(index), m_region(region), m_target(target), m_label(label) {}
 
-                        explicit mem_vision_sample_t(
-                                const image_t& image,
-                                const target_t& target) :
-                                mem_vision_sample_t(image, rect_t(), target) {}
+                explicit mem_vision_sample_t(
+                        const size_t index = 0,
+                        const vector_t& target = vector_t(),
+                        const string_t& label = string_t()) :
+                        mem_vision_sample_t(index, rect_t(), target, label) {}
 
-                        tensor3d_t input() const { return m_image.to_tensor(m_region); }
-                        const target_t& target() const { return m_target; }
+                auto index() const { return m_index; }
+                auto input(const image_t& image) const { return m_region.empty() ? image.to_tensor() : image.to_tensor(m_region); }
+                auto target() const { return m_target; }
+                auto label() const { return m_label; }
 
-                        image_t         m_image;
-                        rect_t          m_region;
-                        target_t        m_target;
-                };
-        }
+                size_t          m_index;
+                rect_t          m_region;
+                vector_t        m_target;
+                string_t        m_label;
+        };
 
         ///
         /// \brief in-memory generic computer vision task consisting of images and
         ///     fixed-size rectangular samples from these images.
         ///
-        class NANO_PUBLIC mem_vision_task_t : public mem_task_t<detail::mem_vision_sample_t>
+        class NANO_PUBLIC mem_vision_task_t : public mem_task_t<image_t, mem_vision_sample_t>
         {
         public:
 
@@ -45,7 +47,7 @@ namespace nano
                         const tensor_size_t idims, const tensor_size_t irows, const tensor_size_t icols,
                         const tensor_size_t osize,
                         const size_t fsize) :
-                        mem_task_t<detail::mem_vision_sample_t>(name, idims, irows, icols, osize, fsize) {}
+                        mem_task_t<image_t, mem_vision_sample_t>(name, idims, irows, icols, osize, fsize) {}
 
                 ///
                 /// \brief destructor

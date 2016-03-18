@@ -1,11 +1,11 @@
 #include "tensor.h"
-#include "math/stats.hpp"
 #include "text/table.h"
 #include "text/cmdline.h"
-#include "cortex/util/timer.h"
-#include "cortex/util/logger.h"
+#include "math/stats.hpp"
+#include "cortex/timer.h"
+#include "cortex/logger.h"
+#include "cortex/measure.hpp"
 #include "math/funcs/foreach.hpp"
-#include "cortex/util/measure.hpp"
 #include <iostream>
 
 namespace

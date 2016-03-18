@@ -13,7 +13,8 @@ namespace nano
         static trainer_result_t train(
                 const task_t& task, const fold_t& tfold, const fold_t& vfold,
                 const accumulator_t& lacc, const accumulator_t& gacc,
-                const vector_t& x0, const stoch_optimizer optimizer, const size_t epochs, const bool verbose)
+                const vector_t& x0, const stoch_optimizer optimizer, const size_t epochs,
+                const bool verbose)
         {
                 const nano::timer_t timer;
 
@@ -82,7 +83,7 @@ namespace nano
                                 << " (" << nano::to_string(ret) << ")"
                                 << ", epoch = " << epoch << "/" << epochs
                                 << ", batch = " << batch_size
-                                << ", " << append(config, "lambda", lacc.ambda())
+                                << ", " << append(config, "lambda", lacc.lambda())
                                 << "] done in " << timer.elapsed() << ".";
 
                         state.f = tvalue;
@@ -98,7 +99,7 @@ namespace nano
         }
 
         trainer_result_t stochastic_train(
-                const model_t& model, const task_t& task, const fold_t& fold, const size_t nthreads,
+                const model_t& model, const task_t& task, const fold_t& tfold, const fold_t& vfold, const size_t nthreads,
                 const loss_t& loss, const criterion_t& criterion,
                 const stoch_optimizer optimizer, const size_t epochs, const bool verbose)
         {

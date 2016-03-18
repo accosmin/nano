@@ -128,8 +128,6 @@ namespace nano
                 const string_t test_bfile = "test.bin";
                 const size_t n_test_samples = 10000;
 
-                clear_memory(n_train_samples + n_test_samples);
-
                 const auto op = [&] (const string_t& filename, const nano::buffer_t& data)
                 {
                         if (nano::ends_with(filename, train_bfile))
@@ -178,13 +176,10 @@ namespace nano
 
                         image_t image;
                         image.load_rgba(buffer.data(), irows(), icols(), irows() * icols());
-                        add_image(image);
+                        add_chunk(image);
 
-                        sample_t sample(n_images() - 1, sample_region(0, 0));
-                        sample.m_label = tlabels[ilabel];
-                        sample.m_target = nano::class_target(ilabel, osize());
-                        sample.m_fold = { 0, p };
-                        add_sample(sample);
+                        const auto fold = make_random_fold(0, p);
+                        add_sample(fold, n_chunks() - 1, class_target(ilabel, osize()), tlabels[ilabel]);
 
                         icount ++;
                 }

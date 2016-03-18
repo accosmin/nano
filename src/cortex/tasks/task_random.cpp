@@ -21,31 +21,27 @@ namespace nano
 
         bool random_task_t::populate(const string_t&)
         {
-                nano::random_t<size_t> rng_protocol(1, 10);
                 nano::random_t<size_t> rng_fold(0, n_folds() - 1);
                 nano::random_t<tensor_size_t> rng_osize(0, osize() - 1);
                 nano::random_t<scalar_t> rng_input(-1.0, +1.0);
 
-                const auto make_label = [] (const tensor_size_t o)
-                {
-                        return string_t("class") + nano::to_string(o);
-                };
-
                 // generate samples
                 for (size_t i = 0; i < m_count; ++ i)
                 {
-                        // random fold
-                        const auto fold = make_random_fold(rng_fold(), rng_protocol());
-
                         // random input
                         tensor3d_t input(idims(), irows(), icols());
                         tensor::set_random(input, rng_input);
 
-                        // random target
-                        const auto o = rng_osize();
-                        const auto target = target_t{make_label(o), nano::class_target(o, osize())};
+                        add_chunk(input);
 
-                        push_back(fold, input, target);
+                        // random target
+                        const auto fold = make_random_fold(rng_fold());
+
+                        const auto o = rng_osize();
+                        const auto target = class_target(o, osize());
+                        const auto label = string_t("class") + to_string(o);
+
+                        add_sample(fold, i, target, label);
                 }
 
                 return true;

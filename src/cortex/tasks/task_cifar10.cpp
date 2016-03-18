@@ -5,7 +5,6 @@
 #include "task_cifar10.h"
 #include "cortex/class.h"
 #include "cortex/logger.h"
-#include "math/random.hpp"
 #include "text/algorithm.h"
 
 namespace nano
@@ -83,8 +82,6 @@ namespace nano
 
                 nano::imstream_t stream(bdata, bdata_size);
 
-                random_t<size_t> rng_protocol(1, 10);
-
                 size_t icount = 0;
                 while ( stream.read(label, 1) &&
                         stream.read(buffer.data(), buffer_size))
@@ -97,11 +94,10 @@ namespace nano
 
                         image_t image;
                         image.load_rgba(buffer.data(), irows(), icols(), irows() * icols());
+                        add_chunk(image);
 
-                        const auto fold = make_random_fold(0, p, rng_protocol());
-                        const auto target = target_t{tlabels[ilabel], nano::class_target(ilabel, osize())};
-
-                        push_back(fold, image, target);
+                        const auto fold = make_random_fold(0, p);
+                        add_sample(fold, n_chunks() - 1, class_target(ilabel, osize()), tlabels[ilabel]);
 
                         ++ icount;
                 }

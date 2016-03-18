@@ -1,8 +1,8 @@
 #include "stringi.h"
 #include "io/archive.h"
 #include "text/cmdline.h"
-#include "cortex/util/timer.h"
-#include "cortex/util/logger.h"
+#include "cortex/timer.h"
+#include "cortex/logger.h"
 
 int main(int argc, char *argv[])
 {

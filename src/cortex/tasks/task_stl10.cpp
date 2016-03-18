@@ -45,8 +45,6 @@ namespace nano
 
                 const string_t fold_file = "fold_indices.txt";
 
-                clear_memory(n_test + n_train + n_unlabeled);
-
                 const auto op = [&] (const string_t& filename, const nano::buffer_t& data)
                 {
                         if (nano::iends_with(filename, train_ifile))

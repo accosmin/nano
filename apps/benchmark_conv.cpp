@@ -3,6 +3,7 @@
 #include "text/cmdline.h"
 #include "math/random.hpp"
 #include "tensor/random.hpp"
+#include "cortex/measure.hpp"
 #include "tensor/conv2d_cpp.hpp"
 #include "tensor/conv2d_dyn.hpp"
 #include "tensor/conv2d_eig.hpp"
@@ -11,7 +12,6 @@
 #include "tensor/corr2d_egb.hpp"
 #include "tensor/corr2d_egr.hpp"
 #include "text/table_row_mark.h"
-#include "cortex/util/measure.hpp"
 #include <set>
 #include <iostream>
 

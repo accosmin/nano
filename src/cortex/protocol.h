@@ -35,21 +35,6 @@ namespace nano
         {
                 return f1.m_index < f2.m_index || (f1.m_index == f2.m_index && f1.m_protocol < f2.m_protocol);
         }
-
-        ///
-        /// \brief
-        ///
-        struct target_t
-        {
-                ///
-                /// \brief check if this sample is annotated
-                ///
-                bool annotated() const { return m_target.size() > 0; }
-
-                // attributes
-                string_t        m_label;        ///< label (e.g. if classification)
-                vector_t        m_target;       ///< target vector to predict (if annotated)
-        };
 }
 
 // string cast for enumerations

@@ -1,5 +1,5 @@
 #include "unit_test.hpp"
-#include "cortex/util/manager.hpp"
+#include "cortex/manager.hpp"
 
 namespace test
 {

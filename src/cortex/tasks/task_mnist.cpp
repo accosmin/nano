@@ -9,7 +9,7 @@
 
 namespace nano
 {
-        mnist_task_t::mnist_task_t(const string_t& configuration) :
+        mnist_task_t::mnist_task_t(const string_t&) :
                 mem_vision_task_t("mnist", 1, 28, 28, 10, 1)
         {
         }
@@ -23,8 +23,6 @@ namespace nano
                 const string_t train_ifile = dir + "/train-images-idx3-ubyte.gz";
                 const string_t train_gfile = dir + "/train-labels-idx1-ubyte.gz";
                 const size_t n_train_samples = 60000;
-
-                clear_memory(n_train_samples + n_test_samples);
 
                 return  load_binary(train_ifile, train_gfile, protocol::train, n_train_samples) &&
                         load_binary(test_ifile, test_gfile, protocol::test, n_test_samples);
@@ -56,7 +54,7 @@ namespace nano
                         {
                                 image_t image;
                                 image.load_luma(buffer.data(), irows(), icols());
-                                add_image(image);
+                                add_chunk(image);
 
                                 ++ icount;
                         }
@@ -85,11 +83,8 @@ namespace nano
                                         continue;
                                 }
 
-                                sample_t sample(iindex, sample_region(0, 0));
-                                sample.m_label = "digit" + nano::to_string(ilabel);
-                                sample.m_target = nano::class_target(ilabel, osize());
-                                sample.m_fold = { 0, p };
-                                add_sample(sample);
+                                const auto fold = make_random_fold(0, p);
+                                add_sample(fold, iindex, class_target(ilabel, osize()), "digit" + to_string(ilabel));
 
                                 ++ gcount;
                                 ++ iindex;

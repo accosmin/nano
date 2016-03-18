@@ -84,22 +84,18 @@ namespace nano
                 m_impl->m_pool.activate(nthreads);
         }
 
-        void accumulator_t::update(const task_t& task, const fold_t& fold)
+        void accumulator_t::update(const task_t& task, const fold_t& fold) const
         {
                 return update(task, fold, 0, task.n_samples(fold));
         }
 
-        void accumulator_t::update(const task_t& task, const fold_t& fold, const size_t begin, const size_t end)
+        void accumulator_t::update(const task_t& task, const fold_t& fold, const size_t begin, const size_t end) const
         {
                 const loss_t& loss = m_impl->m_loss;
                 nano::loopit(end - begin, m_impl->m_pool, [&] (const size_t offset, const size_t th)
                 {
                         const auto index = begin + offset;
-                        const auto target = task.target(fold, index);
-                        if (target.annotated())
-                        {
-                                m_impl->m_criteria[th]->update(task.input(fold, index), target.m_target, loss);
-                        }
+                        m_impl->m_criteria[th]->update(task.input(fold, index), task.target(fold, index), loss);
                 });
 
                 m_impl->cumulate();

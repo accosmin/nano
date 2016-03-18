@@ -3,7 +3,7 @@
 #include "cortex/sampler.h"
 #include "cortex/evaluate.h"
 #include "text/concatenate.hpp"
-#include "cortex/util/measure_and_log.hpp"
+#include "cortex/measure_and_log.hpp"
 
 int main(int argc, char *argv[])
 {

@@ -5,6 +5,7 @@
 #include "accumulator.h"
 #include "math/tune.hpp"
 #include "math/batch.hpp"
+#include "thread/thread.h"
 #include "text/to_string.hpp"
 
 namespace nano
