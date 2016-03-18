@@ -31,7 +31,7 @@ namespace nano
         bool mnist_task_t::load_binary(const string_t& ifile, const string_t& gfile,
                 const protocol p, const size_t count)
         {
-                size_t iindex = n_images();
+                size_t iindex = n_chunks();
                 size_t icount = 0;
                 size_t gcount = 0;
 

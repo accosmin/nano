@@ -18,7 +18,7 @@ namespace nano
         };
 
         norb_task_t::norb_task_t(const string_t&) :
-                mem_vision_task_t("norb", 1, 108, 108, 5)
+                mem_vision_task_t("norb", 1, 108, 108, 5, 1)
         {
         }
 
@@ -26,8 +26,6 @@ namespace nano
         {
                 const size_t train_size = 29160;// * 10;
                 const size_t test_size = 29160;// * 2;
-
-                clear_memory(train_size + test_size);
 
                 return  load_binary(dir + "/norb-5x46789x9x18x6x2x108x108-training-01", protocol::train, train_size) &&
                         load_binary(dir + "/norb-5x46789x9x18x6x2x108x108-training-02", protocol::train, train_size) &&
@@ -76,12 +74,13 @@ namespace nano
                 return true;
         }
 
-        bool norb_task_t::load_binary(const string_t& bfile, protocol p, size_t count)
+        bool norb_task_t::load_binary(const string_t& bfile, const protocol p, const size_t count)
         {
                 return load_binary(bfile + "-dat.mat.gz", bfile + "-cat.mat.gz", p, count);
         }
 
-        bool norb_task_t::load_binary(const string_t& ifile, const string_t& gfile, protocol p, size_t count)
+        bool norb_task_t::load_binary(const string_t& ifile, const string_t& gfile,
+                const protocol p, const size_t count)
         {
 //                 static const int magic_f32 = 0x1E3D4C51;
 //                 static const int magic_f64 = 0x1E3D4C53;
@@ -89,7 +88,7 @@ namespace nano
                 static const int magic_i08 = 0x1E3D4C55;
 //                 static const int magic_i16 = 0x1E3D4C56;
 
-                size_t iindex = n_images();
+                size_t iindex = n_chunks();
                 size_t icount = 0;
                 size_t gcount = 0;
 
@@ -135,7 +134,7 @@ namespace nano
                                 {
                                         image_t image;
                                         image.load_luma(buffer.data(), irows(), icols());
-                                        add_image(image);
+                                        add_chunk(image);
                                 }
 
                                 ++ icount;
@@ -186,14 +185,13 @@ namespace nano
                                 const tensor_index_t ilabel = label;
                                 for (size_t cam = 0; cam < n_cameras; ++ cam)
                                 {
-                                        sample_t sample(iindex, sample_region(0, 0));
+                                        const auto fold = make_random_fold(0, p);
                                         if (ilabel < osize())
                                         {
-                                                sample.m_label = tlabels[static_cast<size_t>(ilabel)];
-                                                sample.m_target = nano::class_target(ilabel, osize());
+                                                add_sample(fold, iindex,
+                                                        class_target(ilabel, osize()),
+                                                        tlabels[static_cast<size_t>(ilabel)]);
                                         }
-                                        sample.m_fold = { 0, p };
-                                        add_sample(sample);
 
                                         ++ iindex;
                                 }

@@ -18,7 +18,7 @@ namespace nano
                 ///
                 /// \brief constructor
                 ///
-                explicit random_task_t(const string_t& configuration);
+                explicit random_task_t(const string_t& configuration = string_t());
 
         private:
 

@@ -29,7 +29,7 @@ namespace nano
 
                 // load binary file
                 bool load_binary(const string_t& bfile, const protocol p, const size_t count);
-                bool load_binary(const string_t& ifile, const string_t& gfile, protocol p, const size_t count);
+                bool load_binary(const string_t& ifile, const string_t& gfile, const protocol p, const size_t count);
         };
 }
 

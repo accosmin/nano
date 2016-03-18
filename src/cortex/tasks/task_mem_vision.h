@@ -9,16 +9,10 @@ namespace nano
         {
                 explicit mem_vision_sample_t(
                         const size_t index = 0,
-                        const rect_t& region = rect_t(),
                         const vector_t& target = vector_t(),
-                        const string_t& label = string_t()) :
+                        const string_t& label = string_t(),
+                        const rect_t& region = rect_t()) :
                         m_index(index), m_region(region), m_target(target), m_label(label) {}
-
-                explicit mem_vision_sample_t(
-                        const size_t index = 0,
-                        const vector_t& target = vector_t(),
-                        const string_t& label = string_t()) :
-                        mem_vision_sample_t(index, rect_t(), target, label) {}
 
                 auto index() const { return m_index; }
                 auto input(const image_t& image) const { return m_region.empty() ? image.to_tensor() : image.to_tensor(m_region); }

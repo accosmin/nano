@@ -75,7 +75,7 @@ namespace nano
                         lacc.update(task, tfold);
                         const auto tvalue = lacc.value();
                         const auto terror_avg = lacc.avg_error();
-                        const auto terror_var = dlacc.var_error();
+                        const auto terror_var = lacc.var_error();
 
                         // evaluate validation samples
                         lacc.set_params(x);

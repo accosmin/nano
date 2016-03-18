@@ -1,5 +1,6 @@
 #pragma once
 
+#include "io/buffer.h"
 #include "task_mem_vision.h"
 
 namespace nano
@@ -28,11 +29,25 @@ namespace nano
                 virtual bool populate(const string_t& dir) override;
 
                 // load binary files
-                bool load_ifile(const string_t&, const char*, const size_t, const bool unlabed, const size_t count);
-                bool load_gfile(const string_t&, const char*, const size_t, const size_t count);
+                bool load_ifile(const string_t&, const buffer_t&, const bool unlabed, const size_t count);
+                bool load_gfile(const string_t&, const buffer_t&, const size_t count);
 
                 // build folds
-                bool load_folds(const string_t&, const char*, const size_t, const size_t, const size_t, const size_t);
+                bool load_folds(const string_t&, const buffer_t&, const size_t, const size_t, const size_t);
+
+        private:
+
+                struct sample_t
+                {
+                        explicit sample_t(const size_t image = 0, const tensor_index_t label = 0) :
+                                m_image(image), m_label(label) {}
+
+                        size_t          m_image;        ///< image index
+                        tensor_index_t  m_label;        ///< label index
+                };
+
+                // attributes
+                std::vector<sample_t>   m_samples;
         };
 }
 

@@ -155,7 +155,7 @@ namespace nano
                 }
         }
 
-        bool charset_task_t::populate(const string_t &)
+        bool charset_task_t::populate(const string_t&)
         {
                 const string_t characters =
                         "0123456789" \
@@ -186,7 +186,6 @@ namespace nano
 
                 const size_t n_fonts = char_patches.size();
 
-                nano::random_t<size_t> rng_protocol(1, 10);
                 nano::random_t<tensor_size_t> rng_output(obegin(m_charset), oend(m_charset) - 1);
                 nano::random_t<size_t> rng_font(1, n_fonts);
                 nano::random_t<scalar_t> rng_gauss(0.0, 2.0);
@@ -194,9 +193,6 @@ namespace nano
                 // generate samples
                 for (size_t i = 0; i < m_count; ++ i)
                 {
-                        // random fold
-                        const auto fold = make_random_fold(0, rng_protocol());
-
                         // random target: character
                         const tensor_index_t o = rng_output();
 
@@ -231,21 +227,20 @@ namespace nano
                         const tensor3d_t patch = alpha_blend(mpatch, bpatch, fpatch);
 
                         image_t image;
-                        switch (color())
+                        switch (m_color)
                         {
                         case color_mode::luma:  image.load_luma(color::from_luma_tensor(patch)); break;
                         case color_mode::rgba:  image.load_rgba(color::from_rgba_tensor(patch)); break;
                         }
 
                         // generate image
-                        add_image(image);
+                        add_chunk(image);
 
                         // generate sample
-                        sample_t sample(n_images() - 1, sample_region(0, 0));
-                        sample.m_label = string_t("char") + characters[static_cast<size_t>(o)];
-                        sample.m_target = nano::class_target(o - obegin(), osize());
-                        sample.m_fold = {f, p};
-                        add_sample(sample);
+                        const auto fold = make_random_fold(0);
+                        const auto target = class_target(o - nano::obegin(m_charset), nano::osize(m_charset));
+                        const auto label = string_t("char") + characters[static_cast<size_t>(o)];
+                        add_sample(fold, n_chunks() - 1, target, label);
                 }
 
                 return true;

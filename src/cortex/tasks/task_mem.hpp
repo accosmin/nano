@@ -136,7 +136,7 @@ namespace nano
         private:
 
                 using tchunks = std::vector<tchunk>;
-                using tsamples = std::map<fold_t, std::vector<tchunk, tsample>>;
+                using tsamples = std::map<fold_t, std::vector<tsample>>;
 
                 const tsample& get_sample(const fold_t& fold, const size_t sample_index) const
                 {
