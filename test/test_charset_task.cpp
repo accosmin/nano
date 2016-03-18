@@ -48,4 +48,40 @@ NANO_CASE(construction)
         }
 }
 
+NANO_CASE(from_params)
+{
+        using namespace nano;
+
+        charset_task_t task("type=alpha,color=luma,irows=23,icols=29,count=102");
+        NANO_CHECK(task.load());
+
+        NANO_CHECK_EQUAL(task.irows(), 23);
+        NANO_CHECK_EQUAL(task.icols(), 29);
+        NANO_CHECK_EQUAL(task.idims(), 1);
+        NANO_CHECK_EQUAL(task.osize(), 52);
+        NANO_CHECK_EQUAL(task.n_folds(), size_t(1));
+        NANO_CHECK_EQUAL(task.n_samples(), size_t(102));
+
+        NANO_CHECK_EQUAL(
+                task.n_samples({0, protocol::train}) +
+                task.n_samples({0, protocol::valid}) +
+                task.n_samples({0, protocol::test}),
+                size_t(102));
+
+        for (const auto p : {protocol::train, protocol::valid, protocol::test})
+        {
+                const auto size = task.n_samples({0, p});
+                for (size_t i = 0; i < size; ++ i)
+                {
+                        const auto input = task.input({0, p}, i);
+                        const auto target = task.target({0, p}, i);
+
+                        NANO_CHECK_EQUAL(input.size<0>(), 1);
+                        NANO_CHECK_EQUAL(input.size<1>(), 23);
+                        NANO_CHECK_EQUAL(input.size<2>(), 29);
+                        NANO_CHECK_EQUAL(target.size(), 52);
+                }
+        }
+}
+
 NANO_END_MODULE()

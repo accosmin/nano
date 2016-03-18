@@ -87,7 +87,7 @@ namespace nano
                 const tensor_size_t irows, const tensor_size_t icols, const size_t count) :
                 charset_task_t(
                 "color=" + to_string(mode) + ",irows=" + to_string(irows) + ",icols=" + to_string(icols) +
-                "type=" + to_string(type) + ",count=" + to_string(count))
+                ",type=" + to_string(type) + ",count=" + to_string(count))
         {
         }
 
