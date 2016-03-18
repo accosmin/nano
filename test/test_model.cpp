@@ -15,7 +15,7 @@ NANO_CASE(evaluate)
 
         using namespace nano;
 
-        const auto task = nano::get_tasks().get("random", "dims=2,rows=16,cols=16,color=luma,size=128");
+        const auto task = nano::get_tasks().get("random", "idims=1,irows=16,icols=16,osize=2,count=128");
         NANO_CHECK_EQUAL(task->load(""), true);
 
         const string_t mlp0;
