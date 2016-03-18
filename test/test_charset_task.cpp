@@ -6,7 +6,7 @@
 
 NANO_BEGIN_MODULE(test_charset_task)
 
-NANO_CASE(evaluate)
+NANO_CASE(construction)
 {
         using namespace nano;
 
@@ -28,18 +28,16 @@ NANO_CASE(evaluate)
                 const auto count = size_t(10 * osize);
                 const auto fsize = size_t(1);   // folds
 
-                charset_task_t task(type, irows, icols, mode, count);
+                charset_task_t task(type, mode, irows, icols, count);
 
                 NANO_CHECK_EQUAL(task.load(""), true);
                 NANO_CHECK_EQUAL(task.irows(), irows);
                 NANO_CHECK_EQUAL(task.icols(), icols);
                 NANO_CHECK_EQUAL(task.osize(), osize);
-                NANO_CHECK_EQUAL(task.fsize(), fsize);
+                NANO_CHECK_EQUAL(task.n_folds(), fsize);
                 NANO_CHECK_EQUAL(task.color(), mode);
                 NANO_CHECK_EQUAL(task.n_images(), count);
-                NANO_CHECK_EQUAL(task.samples().size(), count);
-                NANO_CHECK_EQUAL(task.sample_size(), rect_t(0, 0, icols, irows));
-                NANO_CHECK_EQUAL(task.labels().size(), static_cast<size_t>(osize));
+                NANO_CHECK_EQUAL(task.n_samples(), count);
 
                 for (size_t i = 0; i < task.n_images(); ++ i)
                 {

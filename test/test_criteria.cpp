@@ -18,10 +18,10 @@ NANO_CASE(evaluate)
         const auto task = nano::get_tasks().get("random", "dims=2,rows=5,cols=5,color=luma,size=16");
         NANO_CHECK_EQUAL(task->load(""), true);
 
-        const samples_t samples = task->samples();
-        const string_t cmd_model = make_affine_layer(3) + make_output_layer(task->osize());
-
+        const auto cmd_model = make_affine_layer(3) + make_output_layer(task->osize());
         const auto loss = nano::get_losses().get("logistic");
+        const auto fold = fold_t{0, protocol::train};
+        const auto lambda = 0.1;
 
         // create model
         const auto model = nano::get_models().get("forward-network", cmd_model);
@@ -33,10 +33,8 @@ NANO_CASE(evaluate)
         {
                 const auto criterion = nano::get_criteria().get(id);
 
-                const scalar_t lambda = 0.1;
-
-                accumulator_t lacc(*model, *criterion, criterion_t::type::value, lambda);
-                accumulator_t gacc(*model, *criterion, criterion_t::type::vgrad, lambda);
+                accumulator_t lacc(*model, *loss, *criterion, criterion_t::type::value, lambda);
+                accumulator_t gacc(*model, *loss, *criterion, criterion_t::type::vgrad, lambda);
 
                 // optimization problem: size
                 auto opt_fn_size = [&] ()
@@ -48,7 +46,7 @@ NANO_CASE(evaluate)
                 auto opt_fn_fval = [&] (const vector_t& x)
                 {
                         lacc.set_params(x);
-                        lacc.update(*task, samples, *loss);
+                        lacc.update(*task, fold);
                         return lacc.value();
                 };
 
@@ -56,7 +54,7 @@ NANO_CASE(evaluate)
                 auto opt_fn_grad = [&] (const vector_t& x, vector_t& gx)
                 {
                         gacc.set_params(x);
-                        gacc.update(*task, samples, *loss);
+                        gacc.update(*task, fold);
                         gx = gacc.vgrad();
                         return gacc.value();
                 };

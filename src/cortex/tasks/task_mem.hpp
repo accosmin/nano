@@ -35,7 +35,9 @@ namespace nano
                         const size_t fsize) :
                         m_name(name),
                         m_idims(idims), m_irows(irows), m_icols(icols), m_osize(osize),
-                        m_fsize(fsize), m_frand(1, 10) {}
+                        m_fsize(fsize), m_frand(1, 10)
+                {
+                }
 
                 ///
                 /// \brief destructor
@@ -132,6 +134,11 @@ namespace nano
                 virtual bool populate(const string_t& dir = string_t()) = 0;
 
                 size_t n_chunks() const { return m_chunks.size(); }
+                const tchunk& chunk(const size_t index) const
+                {
+                        assert(index < n_chunks());
+                        return m_chunks[index];
+                }
 
         private:
 

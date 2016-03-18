@@ -36,6 +36,17 @@ namespace nano
                 ///
                 explicit charset_task_t(const string_t& configuration = string_t());
 
+                ///
+                /// \brief constructor
+                ///
+                charset_task_t(const charset, const color_mode,
+                        const tensor_size_t irows, const tensor_size_t icols, const size_t count);
+
+                ///
+                /// \brief retrieve the color mdoe
+                ///
+                color_mode color() const { return m_color; }
+
         private:
 
                 virtual bool populate(const string_t& dir) override;

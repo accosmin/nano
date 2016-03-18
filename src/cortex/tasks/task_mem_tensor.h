@@ -10,7 +10,9 @@ namespace nano
                         const size_t index = 0,
                         const vector_t& target = vector_t(),
                         const string_t& label = string_t()) :
-                        m_index(index), m_target(target), m_label(label) {}
+                        m_index(index), m_target(target), m_label(label)
+                {
+                }
 
                 auto index() const { return m_index; }
                 auto input(const tensor3d_t& tensor) const { return tensor; }

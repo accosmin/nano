@@ -2,8 +2,8 @@
 #include "math/abs.hpp"
 #include "cortex/cortex.h"
 #include "math/epsilon.hpp"
-#include "cortex/evaluate.h"
 #include "text/to_string.hpp"
+#include "cortex/accumulator.h"
 #include "cortex/layers/make_layers.h"
 #include <cstdio>
 
@@ -66,9 +66,11 @@ NANO_CASE(evaluate)
                         const string_t path = "./test_model.test";
 
                         // test error & parameters before saving
-                        scalar_t lvalue_before, lerror_before;
-                        const size_t lcount_before = nano::evaluate(*task, fold, *loss, *criterion, *model,
-                                                                      lvalue_before, lerror_before);
+                        accumulator_t bacc(*model, *loss, *criterion, criterion_t::type::value);
+                        bacc.update(*task, fold);
+                        const auto lvalue_before = bacc.value();
+                        const auto lerror_before = bacc.avg_error();
+                        const auto lcount_before = bacc.count();
 
                         vector_t params(model->psize());
                         NANO_CHECK(model->save_params(params));
@@ -80,9 +82,11 @@ NANO_CASE(evaluate)
                         //
 
                         // test error & parameters after loading
-                        scalar_t lvalue_after, lerror_after;
-                        const size_t lcount_after = nano::evaluate(*task, fold, *loss, *criterion, *model,
-                                                                     lvalue_after, lerror_after);
+                        accumulator_t aacc(*model, *loss, *criterion, criterion_t::type::value);
+                        aacc.update(*task, fold);
+                        const auto lvalue_after = aacc.value();
+                        const auto lerror_after = aacc.avg_error();
+                        const auto lcount_after = aacc.count();
 
                         vector_t xparams(model->psize());
                         NANO_CHECK(model->save_params(xparams));
