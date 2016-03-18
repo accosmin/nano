@@ -191,7 +191,7 @@ namespace nano
                         add_chunk(image);
 
                         // target ...
-                        const auto fold = make_random_fold(0, p);
+                        const auto fold = make_fold(0, p);
                         add_sample(fold, n_chunks() - 1, class_target(ilabel, osize()), "digit" + to_string(ilabel));
 
                         ++ cnt;

@@ -96,7 +96,7 @@ namespace nano
                         image.load_rgba(buffer.data(), irows(), icols(), irows() * icols());
                         add_chunk(image);
 
-                        const auto fold = make_random_fold(0, p);
+                        const auto fold = make_fold(0, p);
                         add_sample(fold, n_chunks() - 1, class_target(ilabel, osize()), tlabels[ilabel]);
 
                         ++ icount;

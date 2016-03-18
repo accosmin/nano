@@ -115,7 +115,7 @@ namespace nano
                         m_samples[fold].emplace_back(ts...);
                 }
 
-                fold_t make_random_fold(const size_t fold) const
+                fold_t make_fold(const size_t fold) const
                 {
                         assert(fold < n_folds());
                         const size_t p = m_frand();
@@ -123,7 +123,7 @@ namespace nano
                         return {fold, p < 7 ? protocol::train : (p < 9 ? protocol::valid : protocol::test)};
                 }
 
-                fold_t make_random_fold(const size_t fold, const protocol proto) const
+                fold_t make_fold(const size_t fold, const protocol proto) const
                 {
                         assert(fold < n_folds());
                         const size_t p = m_frand();

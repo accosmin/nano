@@ -185,7 +185,7 @@ namespace nano
                                 const tensor_index_t ilabel = label;
                                 for (size_t cam = 0; cam < n_cameras; ++ cam)
                                 {
-                                        const auto fold = make_random_fold(0, p);
+                                        const auto fold = make_fold(0, p);
                                         if (ilabel < osize())
                                         {
                                                 add_sample(fold, iindex,

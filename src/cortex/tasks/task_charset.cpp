@@ -245,7 +245,7 @@ namespace nano
                         add_chunk(image);
 
                         // generate sample
-                        const auto fold = make_random_fold(0);
+                        const auto fold = make_fold(0);
                         const auto target = class_target(o - nano::obegin(m_charset), nano::osize(m_charset));
                         const auto label = string_t("char") + characters[static_cast<size_t>(o)];
                         add_sample(fold, n_chunks() - 1, target, label);

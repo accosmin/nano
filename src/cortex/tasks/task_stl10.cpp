@@ -206,7 +206,7 @@ namespace nano
                                         const size_t i = nano::from_string<size_t>(tokens[t]);
                                         if (i < n_train)
                                         {
-                                                op_sample(make_random_fold(f, protocol::train), m_samples[n_test + i]);
+                                                op_sample(make_fold(f, protocol::train), m_samples[n_test + i]);
 
                                                 ++ fcount;
                                         }
@@ -234,7 +234,7 @@ namespace nano
                 {
                         for (size_t i = 0; i < n_unlabeled; ++ i)
                         {
-                                op_sample(make_random_fold(f, protocol::train), m_samples[n_test + n_train + i]);
+                                op_sample(make_fold(f, protocol::train), m_samples[n_test + n_train + i]);
                         }
                 }
 
@@ -243,7 +243,7 @@ namespace nano
                 {
                         for (size_t i = 0; i < n_test; ++ i)
                         {
-                                op_sample(make_random_fold(f, protocol::test), m_samples[i]);
+                                op_sample(make_fold(f, protocol::test), m_samples[i]);
                         }
                 }
 

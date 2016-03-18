@@ -83,7 +83,7 @@ namespace nano
                                         continue;
                                 }
 
-                                const auto fold = make_random_fold(0, p);
+                                const auto fold = make_fold(0, p);
                                 add_sample(fold, iindex, class_target(ilabel, osize()), "digit" + to_string(ilabel));
 
                                 ++ gcount;

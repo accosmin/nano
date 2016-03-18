@@ -35,7 +35,7 @@ namespace nano
                         add_chunk(input);
 
                         // random target
-                        const auto fold = make_random_fold(rng_fold());
+                        const auto fold = make_fold(rng_fold());
 
                         const auto o = rng_osize();
                         const auto target = class_target(o, osize());
