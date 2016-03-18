@@ -3,7 +3,7 @@
 #include "io/archive.h"
 #include "io/imstream.h"
 #include "cortex/class.h"
-#include "cortex/util/logger.h"
+#include "cortex/logger.h"
 
 namespace nano
 {
@@ -24,24 +24,24 @@ namespace nano
 
         bool norb_task_t::populate(const string_t& dir)
         {
-                const size_t n_train_samples = 29160;// * 10;
-                const size_t n_test_samples = 29160;// * 2;
+                const size_t train_size = 29160;// * 10;
+                const size_t test_size = 29160;// * 2;
 
-                clear_memory(n_train_samples + n_test_samples);
+                clear_memory(train_size + test_size);
 
-                return  load(dir + "/norb-5x46789x9x18x6x2x108x108-training-01", protocol::train, n_train_samples) &&
-                        load(dir + "/norb-5x46789x9x18x6x2x108x108-training-02", protocol::train, n_train_samples) &&
-                        load(dir + "/norb-5x46789x9x18x6x2x108x108-training-03", protocol::train, n_train_samples) &&
-                        load(dir + "/norb-5x46789x9x18x6x2x108x108-training-04", protocol::train, n_train_samples) &&
-                        load(dir + "/norb-5x46789x9x18x6x2x108x108-training-05", protocol::train, n_train_samples) &&
-                        load(dir + "/norb-5x46789x9x18x6x2x108x108-training-06", protocol::train, n_train_samples) &&
-                        load(dir + "/norb-5x46789x9x18x6x2x108x108-training-07", protocol::train, n_train_samples) &&
-                        load(dir + "/norb-5x46789x9x18x6x2x108x108-training-08", protocol::train, n_train_samples) &&
-                        load(dir + "/norb-5x46789x9x18x6x2x108x108-training-09", protocol::train, n_train_samples) &&
-                        load(dir + "/norb-5x46789x9x18x6x2x108x108-training-10", protocol::train, n_train_samples) &&
+                return  load_binary(dir + "/norb-5x46789x9x18x6x2x108x108-training-01", protocol::train, train_size) &&
+                        load_binary(dir + "/norb-5x46789x9x18x6x2x108x108-training-02", protocol::train, train_size) &&
+                        load_binary(dir + "/norb-5x46789x9x18x6x2x108x108-training-03", protocol::train, train_size) &&
+                        load_binary(dir + "/norb-5x46789x9x18x6x2x108x108-training-04", protocol::train, train_size) &&
+                        load_binary(dir + "/norb-5x46789x9x18x6x2x108x108-training-05", protocol::train, train_size) &&
+                        load_binary(dir + "/norb-5x46789x9x18x6x2x108x108-training-06", protocol::train, train_size) &&
+                        load_binary(dir + "/norb-5x46789x9x18x6x2x108x108-training-07", protocol::train, train_size) &&
+                        load_binary(dir + "/norb-5x46789x9x18x6x2x108x108-training-08", protocol::train, train_size) &&
+                        load_binary(dir + "/norb-5x46789x9x18x6x2x108x108-training-09", protocol::train, train_size) &&
+                        load_binary(dir + "/norb-5x46789x9x18x6x2x108x108-training-10", protocol::train, train_size) &&
 
-                        load(dir + "/norb-5x01235x9x18x6x2x108x108-testing-01", protocol::test, n_test_samples) &&
-                        load(dir + "/norb-5x01235x9x18x6x2x108x108-testing-02", protocol::test, n_test_samples);
+                        load_binary(dir + "/norb-5x01235x9x18x6x2x108x108-testing-01", protocol::test, test_size) &&
+                        load_binary(dir + "/norb-5x01235x9x18x6x2x108x108-testing-02", protocol::test, test_size);
         }
 
         static bool read_header(nano::imstream_t& stream, int32_t& magic, std::vector<int32_t>& dims)
@@ -76,12 +76,12 @@ namespace nano
                 return true;
         }
 
-        bool norb_task_t::load(const string_t& bfile, protocol p, size_t count)
+        bool norb_task_t::load_binary(const string_t& bfile, protocol p, size_t count)
         {
-                return load(bfile + "-dat.mat.gz", bfile + "-cat.mat.gz", p, count);
+                return load_binary(bfile + "-dat.mat.gz", bfile + "-cat.mat.gz", p, count);
         }
 
-        bool norb_task_t::load(const string_t& ifile, const string_t& gfile, protocol p, size_t count)
+        bool norb_task_t::load_binary(const string_t& ifile, const string_t& gfile, protocol p, size_t count)
         {
 //                 static const int magic_f32 = 0x1E3D4C51;
 //                 static const int magic_f64 = 0x1E3D4C53;

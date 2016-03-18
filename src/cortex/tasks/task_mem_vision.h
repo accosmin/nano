@@ -54,18 +54,6 @@ namespace nano
         };
 
         /*
-                // attributes
-                tensor_size_t           m_idims;        ///< input size
-                tensor_size_t           m_icols;
-                tensor_size_t           m_irows;
-                tensor_size_t           m_osize;        ///< output size
-                mutable storage_t       m_data;         ///< stored samples (training, validation, test)
-
-                ///
-                /// \brief load images from the given directory
-                ///
-                virtual bool load(const string_t& dir) = 0;
-
                 ///
                 /// \brief sample size (in pixels)
                 ///

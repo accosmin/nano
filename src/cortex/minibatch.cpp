@@ -19,8 +19,9 @@ namespace nano
 
                 trainer_result_t result;
 
+                const auto train_size = task.n_samples(tfold);
                 const auto batch_size = 32 * nano::n_threads();
-                const auto epoch_size = (task.n_samples(tfold) + batch_size - 1) / batch_size;
+                const auto epoch_size = (train_size + batch_size - 1) / batch_size;
                 const auto epoch_iterations = size_t(4);
                 const auto history_size = epoch_iterations;
 
@@ -65,7 +66,7 @@ namespace nano
                                 x = state.x;
                                 // next minibatch
                                 batch_begin = batch_end;
-                                batch_end = std::min(batch_begin + batch_size, task.n_samples(tfold));
+                                batch_end = std::min(batch_begin + batch_size, train_size);
                         }
 
                         // evaluate training samples
@@ -127,7 +128,7 @@ namespace nano
                         return train(task, tfold, vfold, lacc, gacc, x0, optimizer, epochs, epsilon, verbose);
                 };
 
-                if (data.m_lacc.can_regularize())
+                if (lacc.can_regularize())
                 {
                         const auto space = nano::make_log10_space(-6.0, +6.0, 0.5);
                         return nano::tune(op, space).optimum();

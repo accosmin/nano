@@ -1,5 +1,5 @@
-#include "task_mnist.h"
 #include "archive.h"
+#include "task_mnist.h"
 #include "io/archive.h"
 #include "io/imstream.h"
 #include "math/cast.hpp"

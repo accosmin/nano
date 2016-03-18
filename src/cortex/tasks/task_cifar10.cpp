@@ -4,9 +4,9 @@
 #include "math/cast.hpp"
 #include "task_cifar10.h"
 #include "cortex/class.h"
+#include "cortex/logger.h"
 #include "math/random.hpp"
 #include "text/algorithm.h"
-#include "cortex/util/logger.h"
 
 namespace nano
 {

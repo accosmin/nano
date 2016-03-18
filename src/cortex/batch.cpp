@@ -104,7 +104,7 @@ namespace nano
                         return train(task, tfold, vfold, lacc, gacc, x0, optimizer, iterations, epsilon, verbose);
                 };
 
-                if (data.m_lacc.can_regularize())
+                if (lacc.can_regularize())
                 {
                         const auto space = nano::make_log10_space(-6.0, +6.0, 0.5);
                         return nano::tune(op, space).optimum();

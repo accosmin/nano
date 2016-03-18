@@ -1,8 +1,8 @@
-#include "batch_trainer.h"
 #include "cortex/batch.h"
 #include "cortex/model.h"
 #include "math/clamp.hpp"
-#include "cortex/util/logger.h"
+#include "batch_trainer.h"
+#include "cortex/logger.h"
 #include "text/from_params.hpp"
 
 namespace nano

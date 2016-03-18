@@ -12,15 +12,16 @@ namespace nano
 {
         static trainer_result_t train(
                 const task_t& task, const fold_t& tfold, const fold_t& vfold,
-                accumulator_t& lacc, accumulator_t& gacc,
+                const accumulator_t& lacc, const accumulator_t& gacc,
                 const vector_t& x0, const stoch_optimizer optimizer, const size_t epochs, const bool verbose)
         {
                 const nano::timer_t timer;
 
                 trainer_result_t result;
 
+                const auto train_size = task.n_samples(tfold);
                 const auto batch_size = 16 * nano::n_threads();
-                const auto epoch_size = (task.n_samples(tfold) + batch_size - 1) / batch_size;
+                const auto epoch_size = (train_size + batch_size - 1) / batch_size;
 
                 size_t epoch = 0;
                 size_t batch_begin = 0;
@@ -46,7 +47,7 @@ namespace nano
                         gx = gacc.vgrad();
                         // next minibatch
                         batch_begin = batch_end;
-                        batch_end = std::min(batch_begin + batch_size, task.n_samples(tfold);
+                        batch_end = std::min(batch_begin + batch_size, train_size);
                         return gacc.value();
                 };
 
@@ -72,7 +73,7 @@ namespace nano
                         const auto milis = timer.milliseconds();
                         const auto ret = result.update(state.x,
                                 {milis, ++ epoch, tvalue, terror_avg, terror_var, vvalue, verror_avg, verror_var},
-                                nano::append(config, "lambda", data.lambda()));
+                                nano::append(config, "lambda", lacc.lambda()));
 
                         if (verbose)
                         log_info()
@@ -81,7 +82,7 @@ namespace nano
                                 << " (" << nano::to_string(ret) << ")"
                                 << ", epoch = " << epoch << "/" << epochs
                                 << ", batch = " << batch_size
-                                << ", " << append(config, "lambda", data.lambda())
+                                << ", " << append(config, "lambda", lacc.ambda())
                                 << "] done in " << timer.elapsed() << ".";
 
                         state.f = tvalue;
@@ -116,7 +117,7 @@ namespace nano
                         return train(task, tfold, vfold, lacc, gacc, x0, optimizer, epochs, verbose);
                 };
 
-                if (data.m_lacc.can_regularize())
+                if (lacc.can_regularize())
                 {
                         const auto space = nano::make_log10_space(-6.0, +6.0, 0.5);
                         return nano::tune(op, space).optimum();

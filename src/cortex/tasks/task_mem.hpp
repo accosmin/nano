@@ -89,20 +89,23 @@ namespace nano
                 template <typename... tsample_params>
                 void push_back(const fold_t& fold, tsample_params&&... sample)
                 {
+                        assert(fold.m_index < n_folds());
                         auto& data = m_data[fold];
                         data.emplace_back(sample...);
                 }
 
                 template <typename tsize>
-                static fold_t make_random_fold(const size_t fold, const tsize p)
+                fold_t make_random_fold(const size_t fold, const tsize p) const
                 {
+                        assert(fold < n_folds());
                         // 60% training, 20% validation, 20% testing
                         return {fold, p < 7 ? protocol::train : (p < 9 ? protocol::valid : protocol::test)};
                 }
 
                 template <typename tsize>
-                static fold_t make_random_fold(const size_t fold, const protocol proto, const tsize p)
+                fold_t make_random_fold(const size_t fold, const protocol proto, const tsize p) const
                 {
+                        assert(fold < n_folds());
                         // split training into {80% training, 20% validation}, leave the testing as it is
                         return {fold, proto == protocol::train ? (p < 9 ? protocol::train : protocol::valid) : proto};
                 }

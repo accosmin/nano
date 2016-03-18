@@ -2,11 +2,11 @@
 #include "io/gzip.h"
 #include "task_svhn.h"
 #include "io/imstream.h"
-#include "cortex/class.h"
 #include "vision/color.h"
+#include "cortex/class.h"
+#include "cortex/logger.h"
 #include "math/random.hpp"
 #include "text/to_string.hpp"
-#include "cortex/util/logger.h"
 #include <fstream>
 
 namespace nano

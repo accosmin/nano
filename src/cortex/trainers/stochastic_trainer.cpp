@@ -1,7 +1,7 @@
 #include "cortex/model.h"
 #include "math/clamp.hpp"
+#include "cortex/logger.h"
 #include "cortex/stochastic.h"
-#include "cortex/util/logger.h"
 #include "stochastic_trainer.h"
 #include "text/from_params.hpp"
 

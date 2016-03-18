@@ -1,11 +1,11 @@
-#include "task_cifar100.h"
 #include "archive.h"
 #include "io/archive.h"
 #include "io/imstream.h"
 #include "math/cast.hpp"
 #include "cortex/class.h"
+#include "cortex/logger.h"
+#include "task_cifar100.h"
 #include "text/algorithm.h"
-#include "cortex/util/logger.h"
 
 namespace nano
 {
