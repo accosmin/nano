@@ -35,4 +35,16 @@ wget -N http://www.cs.toronto.edu/~kriz/cifar-100-binary.tar.gz -P ${dir_db_cifa
 # NORB dataset
 mkdir -p ${dir_db_norb}
 
-# todo
+wget -N http://www.cs.nyu.edu/~ylclab/data/norb-v1.0/readme -P ${dir_db_norm}
+for ext in $(echo "cat dat info")
+do	
+	for num in $(echo "01 02")
+	do
+		wget -N http://www.cs.nyu.edu/~ylclab/data/norb-v1.0/norb-5x01235x9x18x6x2x108x108-testing-${num}-${ext}.mat.gz -P ${dir_db_norb}
+	done
+
+	for num in $(echo "01 02 03 04 05 06 07 08 09 10")
+	do
+		wget -N http://www.cs.nyu.edu/~ylclab/data/norb-v1.0/norb-5x46789x9x18x6x2x108x108-training-${num}-${ext}.mat.gz -P ${dir_db_norb}
+	done
+done
