@@ -15,7 +15,7 @@ NANO_CASE(evaluate)
 
         nano::init();
 
-        const auto task = nano::get_tasks().get("random", "dims=2,rows=5,cols=5,color=luma,size=16");
+        const auto task = nano::get_tasks().get("random", "idims=2,irows=5,icols=5,osize=2,count=20");
         NANO_CHECK_EQUAL(task->load(""), true);
 
         const auto cmd_model = make_affine_layer(3) + make_output_layer(task->osize());
@@ -33,8 +33,8 @@ NANO_CASE(evaluate)
         {
                 const auto criterion = nano::get_criteria().get(id);
 
-                accumulator_t lacc(*model, *loss, *criterion, criterion_t::type::value, lambda);
-                accumulator_t gacc(*model, *loss, *criterion, criterion_t::type::vgrad, lambda);
+                accumulator_t lacc(*model, *loss, *criterion, criterion_t::type::value, lambda); lacc.set_threads(1);
+                accumulator_t gacc(*model, *loss, *criterion, criterion_t::type::vgrad, lambda); gacc.set_threads(1);
 
                 // optimization problem: size
                 auto opt_fn_size = [&] ()
