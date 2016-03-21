@@ -13,10 +13,11 @@ namespace nano
         {
                 // zlib decompression buffers
                 static const std::streamsize chunk_size = 64 * 1024;
+                static const auto out_chunk_size = 3 * chunk_size;
 
                 z_stream strm;
                 unsigned char in[chunk_size];
-                unsigned char out[chunk_size];
+                unsigned char out[2 * chunk_size];
 
                 strm.zalloc = Z_NULL;
                 strm.zfree = Z_NULL;
@@ -46,7 +47,7 @@ namespace nano
 
                         do
                         {
-                                strm.avail_out = static_cast<uInt>(chunk_size);
+                                strm.avail_out = static_cast<uInt>(out_chunk_size);
                                 strm.next_out = out;
 
                                 const int ret = inflate(&strm, Z_NO_FLUSH);
@@ -56,7 +57,7 @@ namespace nano
                                         return false;
                                 }
 
-                                const std::streamsize have = chunk_size - strm.avail_out;
+                                const std::streamsize have = out_chunk_size - strm.avail_out;
                                 buffer.insert(buffer.end(), out, out + have);
                         }
                         while (strm.avail_out == 0);
