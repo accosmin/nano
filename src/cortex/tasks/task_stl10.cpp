@@ -196,32 +196,20 @@ namespace nano
                         size_t fcount = 0;
                         for (size_t t = 0; t < tokens.size(); ++ t)
                         {
-                                if (tokens[t].empty())
+                                const size_t i = nano::from_string<size_t>(tokens[t]);
+                                if (i < n_train)
                                 {
-                                        continue;
-                                }
+                                        op_sample(make_fold(f, protocol::train), m_samples[n_test + i]);
 
-                                try
-                                {
-                                        const size_t i = nano::from_string<size_t>(tokens[t]);
-                                        if (i < n_train)
-                                        {
-                                                op_sample(make_fold(f, protocol::train), m_samples[n_test + i]);
-
-                                                ++ fcount;
-                                        }
-                                        else
-                                        {
-                                                return false;
-                                        }
+                                        ++ fcount;
                                 }
-                                catch (std::exception&)
+                                else
                                 {
                                         return false;
                                 }
                         }
 
-                        log_info() << "STL-10: loaded " << fcount
+                        log_info() << "STL-10: loaded " << fcount << "/" << tokens.size()
                                    << " samples for fold [" << (f + 1) << "/" << n_folds() << "].";
                         if (fcount != fold_size)
                         {

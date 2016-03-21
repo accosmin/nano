@@ -1,10 +1,10 @@
 #define BOOST_TEST_DYN_LINK
-#define BOOST_TEST_MODULE "test_charset_task"
+#define BOOST_TEST_MODULE "test_charset"
 
 #include "unit_test.hpp"
 #include "cortex/tasks/task_charset.h"
 
-NANO_BEGIN_MODULE(test_charset_task)
+NANO_BEGIN_MODULE(test_charset)
 
 NANO_CASE(construction)
 {
