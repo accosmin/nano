@@ -103,6 +103,11 @@ namespace nano
 
         protected:
 
+                void reserve_chunks(const size_t count)
+                {
+                        m_chunks.reserve(count);
+                }
+
                 void add_chunk(const tchunk& chunk)
                 {
                         m_chunks.push_back(chunk);

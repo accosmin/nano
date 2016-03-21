@@ -25,6 +25,8 @@ namespace nano
                 const string_t test_file = dir + "/test_32x32.mat";
                 const size_t n_test_samples = 26032;
 
+                reserve_chunks(n_train_samples + n_test_samples);
+
                 return  load_binary(train_file, protocol::train) +
                         load_binary(extra_file, protocol::train) == n_train_samples &&
                         load_binary(test_file, protocol::test) == n_test_samples;
@@ -167,26 +169,23 @@ namespace nano
                         }
 
                         // image ...
-                        image_t image(irows(), icols(), color_mode::rgba);
+                        const auto px = static_cast<size_t>(irows() * icols());
+                        const auto ix = static_cast<size_t>(irows() * icols() * 3);
+                        const auto* pr = &idata[static_cast<size_t>(isection.dbegin()) + px * 0 + i * ix];
+                        const auto* pg = &idata[static_cast<size_t>(isection.dbegin()) + px * 1 + i * ix];
+                        const auto* pb = &idata[static_cast<size_t>(isection.dbegin()) + px * 2 + i * ix];
 
-                        const auto px = irows() * icols();
-                        const auto ix = irows() * icols() * 3;
-                        const auto ibeg = static_cast<size_t>(isection.dbegin()) + i * static_cast<size_t>(ix);
-
-                        for (tensor_size_t r = 0, q = 0; r < irows(); ++ r)
+                        rgba_matrix_t rgba(irows(), icols());
+                        for (tensor_size_t px = 0, size = rgba.size(); px < size; ++ px)
                         {
-                                for (tensor_size_t c = 0; c < icols(); ++ c, ++ q)
-                                {
-                                        const size_t ir = ibeg + static_cast<size_t>(px * 0 + q);
-                                        const size_t ig = ibeg + static_cast<size_t>(px * 1 + q);
-                                        const size_t ib = ibeg + static_cast<size_t>(px * 2 + q);
-
-                                        image.set(c, r, color::make_rgba(
-                                                static_cast<unsigned char>(idata[ir]),
-                                                static_cast<unsigned char>(idata[ig]),
-                                                static_cast<unsigned char>(idata[ib])));
-                                }
+                                rgba(px) = color::make_rgba(
+                                        static_cast<unsigned char>(*(pr ++)),
+                                        static_cast<unsigned char>(*(pg ++)),
+                                        static_cast<unsigned char>(*(pb ++)));
                         }
+
+                        image_t image;
+                        image.load_rgba(rgba);
 
                         add_chunk(image);
 
