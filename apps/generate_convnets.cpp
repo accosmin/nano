@@ -77,7 +77,7 @@ namespace
         }
 }
 
-int main(int argc, char* argv[])
+int main(int argc, const char* argv[])
 {
         // parse the command line
         nano::cmdline_t cmdline("compute all convolution networks with squared kernels for a given input size");

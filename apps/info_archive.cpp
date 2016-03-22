@@ -4,16 +4,16 @@
 #include "cortex/timer.h"
 #include "cortex/logger.h"
 
-int main(int argc, char *argv[])
+int main(int argc, const char *argv[])
 {
         using namespace nano;
-        
+
         // parse the command line
         nano::cmdline_t cmdline("display the structure of the given archive");
         cmdline.add("i", "input",       "input archive path (.tar, .gz, .bz2, .tar.gz, .tar.bz2)");
-	
+
         cmdline.process(argc, argv);
-        		
+
         // check arguments and options
         const string_t cmd_input = cmdline.get("input");
 

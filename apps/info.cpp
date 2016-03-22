@@ -28,7 +28,7 @@ namespace
         }
 }
 
-int main(int argc, char* argv[])
+int main(int argc, const char* argv[])
 {
         nano::init();
 
@@ -43,28 +43,46 @@ int main(int argc, char* argv[])
 
         cmdline.process(argc, argv);
 
+        const bool has_loss = cmdline.has("loss");
+        const bool has_task = cmdline.has("task");
+        const bool has_layer = cmdline.has("layer");
+        const bool has_model = cmdline.has("model");
+        const bool has_trainer = cmdline.has("trainer");
+        const bool has_criterion = cmdline.has("criterion");
+
+        if (    !has_loss &&
+                !has_task &&
+                !has_layer &&
+                !has_model &&
+                !has_trainer &&
+                !has_criterion)
+        {
+                cmdline.usage();
+                return EXIT_FAILURE;
+        }
+
         // check arguments and options
-        if (cmdline.has("loss"))
+        if (has_loss)
         {
                 print("loss", nano::get_losses());
         }
-        if (cmdline.has("task"))
+        if (has_task)
         {
                 print("task", nano::get_tasks());
         }
-        if (cmdline.has("layer"))
+        if (has_layer)
         {
                 print("layer", nano::get_layers());
         }
-        if (cmdline.has("model"))
+        if (has_model)
         {
                 print("model", nano::get_models());
         }
-        if (cmdline.has("trainer"))
+        if (has_trainer)
         {
                 print("trainer", nano::get_trainers());
         }
-        if (cmdline.has("criterion"))
+        if (has_criterion)
         {
                 print("criterion", nano::get_criteria());
         }

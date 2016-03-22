@@ -6,7 +6,7 @@
 #include "text/to_string.hpp"
 #include "cortex/measure_and_log.hpp"
 
-int main(int argc, char *argv[])
+int main(int argc, const char *argv[])
 {
         using namespace nano;
 

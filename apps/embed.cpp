@@ -6,7 +6,7 @@
 #include "text/filesystem.h"
 #include <fstream>
 
-int main(int argc, char *argv[])
+int main(int argc, const char *argv[])
 {
         using namespace nano;
 
@@ -116,7 +116,7 @@ int main(int argc, char *argv[])
                 return EXIT_FAILURE;
         }
         os_source.close();
-		
+
         // OK
         log_info() << nano::done;
         return EXIT_SUCCESS;

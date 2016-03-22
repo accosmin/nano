@@ -4,18 +4,18 @@ set(apps
         benchmark_funcs.cpp
         benchmark_batch.cpp
         benchmark_stoch.cpp
-        benchmark_models.cpp
-        benchmark_sampling.cpp
-        benchmark_trainers.cpp
+        #benchmark_models.cpp
+        #benchmark_sampling.cpp
+        #benchmark_trainers.cpp
         embed.cpp
         info_archive.cpp
         info.cpp
-        info_task.cpp
+        #info_task.cpp
         max_threads.cpp
-        train.cpp
-        evaluate.cpp
+        #train.cpp
+        #evaluate.cpp
         warp.cpp
-        convnets.cpp)
+        generate_convnets.cpp)
 
 foreach(app ${apps})
         get_filename_component(app_name ${app} NAME_WE)
@@ -27,10 +27,10 @@ endforeach()
 set(programs
         max_threads
         info
-        info_task
-        train
-        evaluate
-        convnets)
+        #info_task
+        #train
+        #evaluate
+        generate_convnets)
 
 install(TARGETS ${programs} DESTINATION bin)
 

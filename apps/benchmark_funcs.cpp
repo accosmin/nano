@@ -50,14 +50,14 @@ namespace
         }
 }
 
-int main(int argc, char* argv[])
+int main(int argc, const char* argv[])
 {
         using namespace nano;
 
         // parse the command line
-        nano::cmdline_t cmdline("benchmark test functions");
-        cmdline.add("", "min-dims",     "minimum number of dimensions for each test function (if feasible)", "128");
-        cmdline.add("", "max-dims",     "maximum number of dimensions for each test function (if feasible)", "1024");
+        nano::cmdline_t cmdline("benchmark optimization test functions");
+        cmdline.add("", "min-dims", "minimum number of dimensions for each test function (if feasible)", "128");
+        cmdline.add("", "max-dims", "maximum number of dimensions for each test function (if feasible)", "1024");
 
         cmdline.process(argc, argv);
 
