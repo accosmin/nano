@@ -1,6 +1,3 @@
-#define BOOST_TEST_DYN_LINK
-#define BOOST_TEST_MODULE "test_cifar10"
-
 #include <set>
 #include "unit_test.hpp"
 #include "cortex/cortex.h"
