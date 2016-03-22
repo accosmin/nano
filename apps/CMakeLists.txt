@@ -22,6 +22,8 @@ foreach(app ${apps})
         target_link_libraries(${app_name} cortex)
 endforeach()
 
+add_subdirectory(ui)
+
 # install (some) programs
 set(programs
         max_threads
