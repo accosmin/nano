@@ -3,12 +3,12 @@
 #include <deque>
 #include <mutex>
 #include <cstddef>
-#include <functional>
+#include <future>
 #include <condition_variable>
 
 namespace nano
 {
-        using job_t = std::function<void()>;
+        using job_t = std::packaged_task<void()>;
 
         ///
         /// \brief queue jobs to be run in a thread pool
@@ -26,13 +26,17 @@ namespace nano
                 ///
                 /// \brief enqueue a new job to execute
                 ///
-                template<class F>
-                void enqueue(F f)
+                template <typename tfunc>
+                std::future<void> enqueue(tfunc f)
                 {
-                        const std::lock_guard<std::mutex> lock(m_mutex);
+                        auto job = job_t(f);
+                        auto fut = job.get_future();
 
-                        m_jobs.emplace_back(f);
-                        m_condition.notify_all();
+                        const std::lock_guard<std::mutex> lock(m_mutex);
+                        m_jobs.push_back(std::move(job));
+                        m_condition.notify_one();
+
+                        return fut;
                 }
 
                 // attributes

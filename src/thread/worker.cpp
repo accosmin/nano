@@ -41,7 +41,7 @@ void nano::worker_t::operator()() const
                                 break;
                         }
 
-                        job = m_queue.m_jobs.front();
+                        job = std::move(m_queue.m_jobs.front());
                         m_queue.m_jobs.pop_front();
                         m_queue.m_running ++;
                 }
