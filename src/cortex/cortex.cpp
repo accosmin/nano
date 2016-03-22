@@ -12,7 +12,7 @@
 #include "tasks/task_stl10.h"
 #include "tasks/task_svhn.h"
 #include "tasks/task_charset.h"
-#include "tasks/task_random.h"
+#include "tasks/task_affine.h"
 
 #include "layers/layer_activation_unit.h"
 #include "layers/layer_activation_tanh.h"
@@ -59,7 +59,7 @@ namespace nano
                 nano::get_tasks().add("stl10", stl10_task_t());
                 nano::get_tasks().add("svhn", svhn_task_t());
                 nano::get_tasks().add("charset", charset_task_t());
-                nano::get_tasks().add("random", random_task_t());
+                nano::get_tasks().add("affine", affine_task_t());
 
                 // register layers
                 nano::get_layers().add("act-unit", unit_activation_layer_t());
