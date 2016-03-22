@@ -34,7 +34,7 @@ namespace nano
 
                         const std::lock_guard<std::mutex> lock(m_mutex);
                         m_jobs.push_back(std::move(job));
-                        m_condition.notify_one();
+                        m_condition.notify_all();
 
                         return fut;
                 }
