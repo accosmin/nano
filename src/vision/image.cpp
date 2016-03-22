@@ -145,7 +145,17 @@ namespace nano
 
         tensor3d_t image_t::to_tensor() const
         {
-                return to_tensor(rect_t(0, 0, cols(), rows()));
+                switch (m_mode)
+                {
+                case color_mode::luma:
+                        return color::to_luma_tensor(m_luma);
+
+                case color_mode::rgba:
+                        return color::to_rgb_tensor(m_rgba);
+
+                default:
+                        return tensor3d_t();
+                }
         }
 
         tensor3d_t image_t::to_tensor(const rect_t& region) const
