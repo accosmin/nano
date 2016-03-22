@@ -1,9 +1,10 @@
+#include "math/clamp.hpp"
 #include "text/cmdline.h"
 #include "cortex/cortex.h"
 #include "text/concatenate.hpp"
 #include "cortex/measure_and_log.hpp"
 
-int main(int argc, char *argv[])
+int main(int argc, const char *argv[])
 {
         using namespace nano;
 

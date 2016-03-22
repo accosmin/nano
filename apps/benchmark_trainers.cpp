@@ -78,7 +78,8 @@ static void test_optimizer(model_t& model, const string_t& name, const string_t&
 }
 
 static void evaluate(
-        model_t& model, const task_t& task, const fold_t& fold, const loss_t& loss, const criterion_t& criterion,
+        model_t& model, const task_t& task, const fold_t& tfold, const fold_t& vfold,
+        const loss_t& loss, const criterion_t& criterion,
         const size_t trials, const size_t iterations, const string_t& basepath, nano::table_t& table)
 {
         const scalar_t epsilon = 1e-4;
@@ -130,8 +131,8 @@ static void evaluate(
                 const auto optname = "batch-" + nano::to_string(optimizer);
                 test_optimizer(model, basename + optname, basepath + optname, table, x0s, [&] ()
                 {
-                        return  nano::batch_train(
-                                model, task, fold, n_threads, loss, criterion, optimizer, iterations, epsilon, verbose);
+                        return  nano::batch_train(model, task, tfold, vfold,
+                                n_threads, loss, criterion, optimizer, iterations, epsilon, verbose);
                 });
         }
 
@@ -140,8 +141,8 @@ static void evaluate(
                 const auto optname = "minibatch-" + nano::to_string(optimizer);
                 test_optimizer(model, basename + optname, basepath + optname, table, x0s, [&] ()
                 {
-                        return  nano::minibatch_train(
-                                model, task, fold, n_threads, loss, criterion, optimizer, iterations, epsilon, verbose);
+                        return  nano::minibatch_train(model, task, tfold, vfold,
+                                n_threads, loss, criterion, optimizer, iterations, epsilon, verbose);
                 });
         }
 
@@ -150,13 +151,13 @@ static void evaluate(
                 const auto optname = "stochastic-" + nano::to_string(optimizer);
                 test_optimizer(model, basename + optname, basepath + optname, table, x0s, [&] ()
                 {
-                        return  nano::stochastic_train(
-                                model, task, fold, n_threads, loss, criterion, optimizer, iterations, verbose);
+                        return  nano::stochastic_train(model, task, tfold, vfold,
+                                n_threads, loss, criterion, optimizer, iterations, verbose);
                 });
         }
 }
 
-int main(int argc, char* argv[])
+int main(int argc, const char* argv[])
 {
         nano::init();
 
@@ -202,11 +203,11 @@ int main(int argc, char* argv[])
         const size_t samples = nano::n_threads() * 256 * 10;
         const color_mode color = color_mode::rgba;
 
-        charset_task_t task(charset::numeric, rows, cols, color, samples);
+        charset_task_t task(charset::numeric, color, rows, cols, samples);
         task.load("");
-        task.describe();
 
-        const auto fold = std::make_pair(0, protocol::train);
+        const auto tfold = fold_t{0, protocol::train};
+        const auto vfold = fold_t{0, protocol::valid};
 
         const auto outputs = task.osize();
 
@@ -267,7 +268,8 @@ int main(int argc, char* argv[])
 
                                 const auto basepath = netname + "-" + iloss + "-" + icriterion + "-";
 
-                                evaluate(*model, task, fold, *loss, *criterion, trials, iterations, basepath, table);
+                                evaluate(*model, task, tfold, vfold,
+                                         *loss, *criterion, trials, iterations, basepath, table);
                         }
 
                         // show results

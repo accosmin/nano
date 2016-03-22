@@ -4,7 +4,6 @@
 #include "cortex/cortex.h"
 #include "math/random.hpp"
 #include "thread/thread.h"
-#include "cortex/sampler.h"
 #include "tensor/random.hpp"
 #include "cortex/measure.hpp"
 #include "cortex/accumulator.h"
@@ -12,7 +11,7 @@
 #include "cortex/layers/make_layers.h"
 #include "cortex/tasks/task_charset.h"
 
-int main(int argc, char *argv[])
+int main(int argc, const char *argv[])
 {
         nano::init();
 
@@ -53,7 +52,7 @@ int main(int argc, char *argv[])
         const size_t cmd_max_nthreads = nano::n_threads();
 
         // generate synthetic task
-        charset_task_t task(charset::numeric, cmd_rows, cmd_cols, cmd_color, cmd_samples);
+        charset_task_t task(charset::numeric, cmd_color, cmd_rows, cmd_cols, cmd_samples);
         task.load("");
 
         // construct models
@@ -156,25 +155,20 @@ int main(int argc, char *argv[])
                 nano::table_row_t& frow = ftable.append(cmd_name + " (" + nano::to_string(model->psize()) + ")");
                 nano::table_row_t& brow = btable.append(cmd_name + " (" + nano::to_string(model->psize()) + ")");
 
-                // select random samples
-                sampler_t sampler(task.samples());
-                sampler.push(annotation::annotated);
-                sampler.push(cmd_samples);
-
-                const samples_t samples = sampler.get();
+                const auto fold = fold_t{0, protocol::train};
 
                 // process the samples
                 for (size_t nthreads = cmd_min_nthreads; nthreads <= cmd_max_nthreads; ++ nthreads)
                 {
                         if (cmd_forward)
                         {
-                                accumulator_t lacc(*model, *criterion, criterion_t::type::value, 0.1);
+                                accumulator_t lacc(*model, *loss, *criterion, criterion_t::type::value, 0.1);
                                 lacc.set_threads(nthreads);
 
                                 const auto milis = nano::measure_robustly_msec([&] ()
                                 {
                                         lacc.reset();
-                                        lacc.update(task, samples, *loss);
+                                        lacc.update(task, fold);
                                 }, 1);
 
                                 log_info() << "<<< processed [" << lacc.count()
@@ -185,13 +179,13 @@ int main(int argc, char *argv[])
 
                         if (cmd_backward)
                         {
-                                accumulator_t gacc(*model, *criterion, criterion_t::type::vgrad, 0.1);
+                                accumulator_t gacc(*model, *loss, *criterion, criterion_t::type::vgrad, 0.1);
                                 gacc.set_threads(nthreads);
 
                                 const auto milis = nano::measure_robustly_msec([&] ()
                                 {
                                         gacc.reset();
-                                        gacc.update(task, samples, *loss);
+                                        gacc.update(task, fold);
                                 }, 1);
 
                                 log_info() << "<<< processed [" << gacc.count()

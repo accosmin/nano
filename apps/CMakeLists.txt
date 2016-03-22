@@ -4,9 +4,8 @@ set(apps
         benchmark_funcs.cpp
         benchmark_batch.cpp
         benchmark_stoch.cpp
-        #benchmark_models.cpp
-        #benchmark_sampling.cpp
-        #benchmark_trainers.cpp
+        benchmark_models.cpp
+        benchmark_trainers.cpp
         embed.cpp
         info_archive.cpp
         info.cpp
