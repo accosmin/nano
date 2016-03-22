@@ -25,14 +25,16 @@ build_test_app(test_random.cpp "")
 build_test_app(test_stats.cpp "")
 build_test_app(test_stoch.cpp "")
 build_test_app(test_tensor.cpp "")
+build_test_app(test_tune.cpp "")
+
 build_test_app(test_text.cpp text)
+build_test_app(test_cmdline.cpp text)
 build_test_app(test_filesystem.cpp text)
 
 build_test_app(test_io.cpp io)
 
 build_test_app(test_thread_loop.cpp thread)
 build_test_app(test_thread_pool.cpp thread)
-build_test_app(test_tune.cpp thread)
 
 build_test_app(test_geom.cpp vision)
 build_test_app(test_color.cpp vision)

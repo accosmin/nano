@@ -2,6 +2,7 @@
 #include "align.hpp"
 #include "algorithm.h"
 #include <cassert>
+#include <fstream>
 #include <iostream>
 #include <stdexcept>
 
@@ -130,7 +131,7 @@ namespace nano
                 m_impl->m_options.emplace_back(short_name, name, description, default_value);
         }
 
-        void cmdline_t::process(const int argc, char* argv[]) const
+        void cmdline_t::process(const int argc, const char* argv[]) const
         {
                 std::string current_name_or_short_name;
 
@@ -183,6 +184,28 @@ namespace nano
                 {
                         usage();
                 }
+        }
+
+        void cmdline_t::process(const std::string& config) const
+        {
+                const auto tokens = nano::split(config, " \t\n\r");
+
+                std::vector<const char*> ptokens(1 + tokens.size());
+                ptokens[0] = nullptr;
+                for (size_t i = 0; i < tokens.size(); ++ i)
+                {
+                        ptokens[i + 1] = tokens[i].data();
+                }
+
+                process(static_cast<int>(tokens.size() + 1), ptokens.data());
+        }
+
+        void cmdline_t::process_config_file(const std::string& path) const
+        {
+                std::ifstream in(path.c_str());
+                const std::string config((std::istreambuf_iterator<char>(in)), std::istreambuf_iterator<char>());
+
+                process(config);
         }
 
         bool cmdline_t::has(const std::string& name_or_short_name) const

@@ -60,7 +60,17 @@ namespace nano
                 ///
                 /// \brief process the command line arguments
                 ///
-                void process(const int argc, char* argv[]) const;
+                void process(const int argc, const char* argv[]) const;
+
+                ///
+                /// \brief process the command line arguments
+                ///
+                void process(const std::string& config) const;
+
+                ///
+                /// \brief process the command line arguments from configuration file
+                ///
+                void process_config_file(const std::string& path) const;
 
                 ///
                 /// \brief check if an option was set
