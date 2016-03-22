@@ -11,7 +11,6 @@
 #include "tasks/task_cifar100.h"
 #include "tasks/task_stl10.h"
 #include "tasks/task_svhn.h"
-#include "tasks/task_norb.h"
 #include "tasks/task_charset.h"
 #include "tasks/task_random.h"
 
@@ -59,7 +58,6 @@ namespace nano
                 nano::get_tasks().add("cifar100", cifar100_task_t());
                 nano::get_tasks().add("stl10", stl10_task_t());
                 nano::get_tasks().add("svhn", svhn_task_t());
-                nano::get_tasks().add("norb", norb_task_t());
                 nano::get_tasks().add("charset", charset_task_t());
                 nano::get_tasks().add("random", random_task_t());
 
@@ -81,11 +79,11 @@ namespace nano
                 nano::get_trainers().add("batch", batch_trainer_t());
                 nano::get_trainers().add("minibatch", minibatch_trainer_t());
                 nano::get_trainers().add("stochastic", stochastic_trainer_t());
-                
+
                 // register criteria
                 nano::get_criteria().add("avg", avg_criterion_t());
                 nano::get_criteria().add("l2n-reg", avg_l2_criterion_t());
                 nano::get_criteria().add("var-reg", avg_var_criterion_t());
         }
 }
-	
+

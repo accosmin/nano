@@ -30,8 +30,6 @@ list(APPEND libcortex_sources
         ${CMAKE_CURRENT_SOURCE_DIR}/task_cifar10.h
         ${CMAKE_CURRENT_SOURCE_DIR}/task_mnist.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/task_mnist.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/task_norb.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/task_norb.h
         ${CMAKE_CURRENT_SOURCE_DIR}/task_random.h
         ${CMAKE_CURRENT_SOURCE_DIR}/task_random.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/task_stl10.cpp
