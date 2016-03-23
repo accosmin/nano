@@ -9,7 +9,7 @@ set(apps
         embed.cpp
         info_archive.cpp
         info.cpp
-        #info_task.cpp
+        info_task.cpp
         max_threads.cpp
         #train.cpp
         #evaluate.cpp
@@ -26,7 +26,7 @@ endforeach()
 set(programs
         max_threads
         info
-        #info_task
+        info_task
         #train
         #evaluate
         generate_convnets)

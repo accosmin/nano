@@ -21,12 +21,12 @@ namespace nano
                 m_image.fill(m_bcolor);
         }
 
-        bool image_grid_t::set(coord_t grow, coord_t gcol, const image_t& image)
+        bool image_grid_t::set(const coord_t grow, const coord_t gcol, const image_t& image)
         {
                 return set(grow, gcol, image, rect_t(0, 0, image.cols(), image.rows()));
         }
 
-        bool image_grid_t::set(coord_t grow, coord_t gcol, const image_t& image, const rect_t& region)
+        bool image_grid_t::set(const coord_t grow, const coord_t gcol, const image_t& image, const rect_t& region)
         {
                 if (    grow < m_grows &&
                         gcol < m_gcols &&

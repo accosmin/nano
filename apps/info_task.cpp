@@ -17,19 +17,25 @@ int main(int argc, const char *argv[])
         cmdline.add("", "task",                 ("tasks to choose from: " + nano::concatenate(task_ids, ", ")).c_str());
         cmdline.add("", "task-dir",             "directory to load task data from");
         cmdline.add("", "task-params",          "task parameters (if any)", "<>");
-        cmdline.add("", "save-dir",             "directory to save task samples to", "./");
+        cmdline.add("", "save-dir",             "directory to save task samples to");
         cmdline.add("", "save-group-rows",      "number of task samples to group in a row", "32");
         cmdline.add("", "save-group-cols",      "number of task samples to group in a column", "32");
 
         cmdline.process(argc, argv);
 
+        if (    !cmdline.has("task") ||
+                !cmdline.has("task-dir"))
+        {
+                cmdline.usage();
+                exit(EXIT_FAILURE);
+        }
+
         // check arguments and options
         const auto cmd_task = cmdline.get<string_t>("task");
         const auto cmd_task_dir = cmdline.get<string_t>("task-dir");
         const auto cmd_task_params = cmdline.get<string_t>("task-params");
-        const auto cmd_save_dir = cmdline.get<string_t>("save-dir");
-        const auto cmd_save_group_rows = nano::clamp(cmdline.get<coord_t>("save-group-rows"), 1, 128);
-        const auto cmd_save_group_cols = nano::clamp(cmdline.get<coord_t>("save-group-cols"), 1, 128);
+        const auto cmd_save_grows = nano::clamp(cmdline.get<tensor_size_t>("save-group-rows"), 1, 128);
+        const auto cmd_save_gcols = nano::clamp(cmdline.get<tensor_size_t>("save-group-cols"), 1, 128);
 
         // create task
         const auto task = nano::get_tasks().get(cmd_task, cmd_task_params);
@@ -43,18 +49,19 @@ int main(int argc, const char *argv[])
         task->describe();
 
         // save samples as images
-        if (!cmd_save_dir.empty())
+        if (cmdline.has("save-dir"))
         {
-                for (size_t f = 0; f < task->fsize(); ++ f)
+                const auto cmd_save_dir = cmdline.get<string_t>("save-dir");
+                for (size_t f = 0; f < task->n_folds(); ++ f)
                 {
-                        const fold_t train_fold = std::make_pair(f, protocol::train);
-                        const fold_t test_fold = std::make_pair(f, protocol::test);
-
-                        const string_t train_path = cmd_save_dir + "/" + cmd_task + "_train_fold" + nano::to_string(f + 1);
-                        const string_t test_path = cmd_save_dir + "/" + cmd_task + "_test_fold" + nano::to_string(f + 1);
-
-                        task->save_as_images(train_fold, train_path, cmd_save_group_rows, cmd_save_group_cols);
-                        task->save_as_images(test_fold, test_path, cmd_save_group_rows, cmd_save_group_cols);
+                        for (auto p : {protocol::train, protocol::valid, protocol::test})
+                        {
+                                const auto fold = fold_t{f, p};
+                                const auto path = cmd_save_dir + "/" + cmd_task + "_" + to_string(p) + to_string(f + 1);
+                                nano::measure_and_log(
+                                        [&] () { task->save_as_images(fold, path, cmd_save_grows, cmd_save_gcols); },
+                                        "save samples as images to <" + path + "*.png>");
+                        }
                 }
         }
 

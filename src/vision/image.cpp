@@ -292,7 +292,7 @@ namespace nano
                 }
         }
 
-        bool image_t::copy(coord_t top, coord_t left, const rgba_matrix_t& patch)
+        bool image_t::copy(const coord_t top, const coord_t left, const rgba_matrix_t& patch)
         {
                 if (!valid(rect_t(left, top, patch.cols(), patch.rows())))
                 {
@@ -318,7 +318,7 @@ namespace nano
                 }
         }
 
-        bool image_t::copy(coord_t top, coord_t left, const luma_matrix_t& patch)
+        bool image_t::copy(const coord_t top, const coord_t left, const luma_matrix_t& patch)
         {
                 if (!valid(rect_t(left, top, patch.cols(), patch.rows())))
                 {
@@ -344,7 +344,7 @@ namespace nano
                 }
         }
 
-        bool image_t::copy(coord_t top, coord_t left, const image_t& image)
+        bool image_t::copy(const coord_t top, const coord_t left, const image_t& image)
         {
                 switch (image.m_mode)
                 {
@@ -359,7 +359,7 @@ namespace nano
                 }
         }
 
-        bool image_t::copy(coord_t top, coord_t left, const image_t& image, const rect_t& region)
+        bool image_t::copy(const coord_t top, const coord_t left, const image_t& image, const rect_t& region)
         {
                 switch (image.m_mode)
                 {
@@ -376,7 +376,7 @@ namespace nano
                 }
         }
 
-        bool image_t::set(coord_t row, coord_t col, rgba_t rgba)
+        bool image_t::set(const coord_t row, const coord_t col, const rgba_t rgba)
         {
                 switch (m_mode)
                 {
@@ -393,7 +393,7 @@ namespace nano
                 }
         }
 
-        bool image_t::set(coord_t row, coord_t col, luma_t luma)
+        bool image_t::set(const coord_t row, const coord_t col, const luma_t luma)
         {
                 switch (m_mode)
                 {
