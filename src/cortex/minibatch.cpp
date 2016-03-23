@@ -27,7 +27,7 @@ namespace nano
                 const auto history_size = epoch_iterations;
 
                 size_t batch_begin = 0;
-                size_t batch_end = batch_size;
+                size_t batch_end = std::min(batch_begin + batch_size, train_size);
 
                 // construct the optimization problem
                 const auto fn_size = [&] ()
@@ -59,6 +59,9 @@ namespace nano
                 {
                         // optimize mini-batches in sequence
                         task.shuffle(tfold);
+                        batch_begin = 0;
+                        batch_end = std::min(batch_begin + batch_size, train_size);
+
                         for (size_t i = 0; i < epoch_size; ++ i)
                         {
                                 const auto state = nano::minimize(
