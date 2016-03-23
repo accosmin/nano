@@ -12,9 +12,9 @@ namespace tensor
                 typename ttensor,
                 typename trandom
         >
-        void set_random(ttensor&& tensor, trandom rgen)
+        void set_random(ttensor&& tensor, trandom&& rgen)
         {
-                rgen(tensor.data(), tensor.data() + tensor.size());
+                std::for_each(tensor.data(), tensor.data() + tensor.size(), [&] (auto& v) { v = rgen(); });
         }
 
         ///
@@ -25,7 +25,7 @@ namespace tensor
                 typename ttensor,
                 typename trandom
         >
-        void add_random(ttensor&& tensor, trandom rgen)
+        void add_random(ttensor&& tensor, trandom&& rgen)
         {
                 std::for_each(tensor.data(), tensor.data() + tensor.size(), [&] (auto& v) { v += rgen(); });
         }
