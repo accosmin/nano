@@ -11,7 +11,7 @@ namespace nano
         ///
         using trainer_config_t = std::vector<std::pair<const char*, scalar_t>>;
 
-        NANO_PUBLIC trainer_config_t append(const trainer_config_t& config, const char* const name, const scalar_t value);
+        NANO_PUBLIC trainer_config_t append(const trainer_config_t&, const char* const name, const scalar_t value);
 
         class logger_t;
         NANO_PUBLIC logger_t& operator<<(logger_t& logger, const trainer_config_t& config);

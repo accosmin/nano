@@ -12,9 +12,10 @@ namespace nano
 
         logger_t& operator<<(logger_t& logger, const trainer_config_t& config)
         {
-                for (const auto& param : config)
+                for (size_t i = 0; i < config.size(); ++ i)
                 {
-                        logger << param.first << "=" << param.second << ",";
+                        const auto& param = config[i];
+                        logger << param.first << "=" << param.second << ((i + 1 == config.size()) ? "" : ",");
                 }
                 return logger;
         }
