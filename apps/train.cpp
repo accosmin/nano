@@ -30,7 +30,7 @@ int main(int argc, const char *argv[])
         cmdline.add("", "criterion",            nano::concatenate(criterion_ids));
         cmdline.add("", "threads",              "number of threads to use (0 - all available)", "0");
         cmdline.add("", "fold",                 "fold index to use for training");
-        cmdline.add("", "output",               "filepath to save the best model to");
+        cmdline.add("", "model-file",           "filepath to save the model to");
 
         cmdline.process(argc, argv);
 
@@ -82,10 +82,10 @@ int main(int argc, const char *argv[])
         },
                 "train model");
 
-        // save the best model & optimization history (if any trained)
-        if (cmdline.has("output"))
+        // save the model & its optimization history
+        if (cmdline.has("model-file"))
         {
-                const auto cmd_output = cmdline.get<string_t>("output");
+                const auto cmd_output = cmdline.get<string_t>("model-file");
 
                 nano::measure_critical_and_log(
                         [&] () { return model->save(cmd_output); },

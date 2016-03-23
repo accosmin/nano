@@ -1,7 +1,6 @@
 #include "text/cmdline.h"
 #include "cortex/cortex.h"
-#include "cortex/sampler.h"
-#include "cortex/evaluate.h"
+#include "cortex/accumulate.h"
 #include "text/concatenate.hpp"
 #include "cortex/measure_and_log.hpp"
 
