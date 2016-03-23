@@ -29,10 +29,8 @@ namespace nano
 
         tensor3d_t color::to_luma_tensor(const luma_matrix_t& luma)
         {
-                const scalar_t scale = 1.0 / 255.0;
-
                 tensor3d_t data(1, luma.rows(), luma.cols());
-                tensor::transform(luma, data.matrix(0), [=] (luma_t l) { return scale * l; });
+                data.matrix(0) = luma.array().cast<scalar_t>() / 255.0;
 
                 return data;
         }
@@ -81,11 +79,7 @@ namespace nano
                 switch (data.size<0>())
                 {
                 case 1:
-                        tensor::transform(data.matrix(0), luma,
-                                          [=] (scalar_t l)
-                        {
-                                return to_byte(255.0 * l);
-                        });
+                        luma = (data.matrix(0) * 255).cast<luma_t>();
                         break;
 
                 case 3:
