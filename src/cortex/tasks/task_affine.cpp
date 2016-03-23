@@ -30,7 +30,7 @@ namespace nano
                 matrix_t A(osize(), isize);
                 vector_t b(osize());
 
-                tensor::set_random(A, rng_input); A /= isize;
+                tensor::set_random(A, rng_input); A /= static_cast<scalar_t>(isize);
                 tensor::set_random(b, rng_input);
 
                 // generate samples
