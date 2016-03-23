@@ -4,7 +4,6 @@
 #include <cassert>
 #include <fstream>
 #include <iostream>
-#include <stdexcept>
 
 namespace nano
 {
@@ -73,13 +72,41 @@ namespace nano
                         auto it = find(name_or_short_name);
                         if (it == m_options.end())
                         {
-                                throw std::runtime_error("cmdline: unrecognized option [" + name_or_short_name + "]");
+                                log_critical("cmdline: unrecognized option [" + name_or_short_name + "]");
                         }
                         else
                         {
                                 it->m_given = true;
                                 it->m_value = value;
                         }
+                }
+
+                void log_critical(const std::string& message) const
+                {
+                        std::cout << message << std::endl << std::endl;
+                        usage();
+                }
+
+                void usage() const
+                {
+                        std::cout << m_title << std::endl;
+
+                        size_t max_option_size = 0;
+                        for (const auto& option : m_options)
+                        {
+                                max_option_size = std::max(max_option_size, option.concatenate().size());
+                        }
+
+                        max_option_size += 4;
+                        for (const auto& option : m_options)
+                        {
+                                std::cout << "  " << nano::align(option.concatenate(), max_option_size)
+                                          << option.m_description << std::endl;
+                       }
+
+                        std::cout << std::endl;
+
+                        exit(EXIT_FAILURE);
                 }
 
                 std::string     m_title;
@@ -108,24 +135,24 @@ namespace nano
                         nano::starts_with(name, "-") ||
                         nano::starts_with(name, "--"))
                 {
-                        throw std::runtime_error("cmdline: invalid option name [" + name + "]");
+                        log_critical("cmdline: invalid option name [" + name + "]");
                 }
 
                 if (    !short_name.empty() &&
                         (short_name.size() != 1 || short_name[0] == '-'))
                 {
-                        throw std::runtime_error("cmdline: invalid short option name [" + short_name + "]");
+                        log_critical("cmdline: invalid short option name [" + short_name + "]");
                 }
 
                 if (    m_impl->find(name) != m_impl->m_options.end())
                 {
-                        throw std::runtime_error("cmdline: duplicated option [" + name + "]");
+                        log_critical("cmdline: duplicated option [" + name + "]");
                 }
 
                 if (    !short_name.empty() &&
                         m_impl->find(short_name) != m_impl->m_options.end())
                 {
-                        throw std::runtime_error("cmdline: duplicated option [" + short_name + "]");
+                        log_critical("cmdline: duplicated option [" + short_name + "]");
                 }
 
                 m_impl->m_options.emplace_back(short_name, name, description, default_value);
@@ -146,7 +173,7 @@ namespace nano
 
                                 if (name.empty())
                                 {
-                                        throw std::runtime_error(
+                                        log_critical(
                                         "cmdline: invalid option name [" + name + "/" + token + "]");
                                 }
 
@@ -159,7 +186,7 @@ namespace nano
 
                                 if (short_name.size() != 1)
                                 {
-                                        throw std::runtime_error(
+                                        log_critical(
                                         "cmdline: invalid short option name [" + short_name + "/" + token + "]");
                                 }
 
@@ -172,7 +199,7 @@ namespace nano
 
                                 if (current_name_or_short_name.empty())
                                 {
-                                        throw std::runtime_error("cmdline: missing option before value [" + value + "]");
+                                        log_critical("cmdline: missing option before value [" + value + "]");
                                 }
 
                                 m_impl->store(current_name_or_short_name, value);
@@ -213,7 +240,7 @@ namespace nano
                 const auto it = m_impl->find(name_or_short_name);
                 if (it == m_impl->m_options.end())
                 {
-                        throw std::runtime_error("cmdline: unrecognized option [" + name_or_short_name + "]");
+                        log_critical("cmdline: unrecognized option [" + name_or_short_name + "]");
                 }
                 return it->m_given;
         }
@@ -223,34 +250,22 @@ namespace nano
                 const auto it = m_impl->find(name_or_short_name);
                 if (it == m_impl->m_options.end())
                 {
-                        throw std::runtime_error("cmdline: unrecognized option [" + name_or_short_name + "]");
+                        log_critical("cmdline: unrecognized option [" + name_or_short_name + "]");
                 }
                 else if (!it->m_given && it->m_default_value.empty())
                 {
-                        throw std::runtime_error("cmdline: no value provided for option [" + name_or_short_name + "]");
+                        log_critical("cmdline: no value provided for option [" + name_or_short_name + "]");
                 }
                 return it->get();
         }
 
+        void cmdline_t::log_critical(const std::string& message) const
+        {
+                m_impl->log_critical(message);
+        }
+
         void cmdline_t::usage() const
         {
-                std::cout << m_impl->m_title << std::endl;
-
-                size_t max_option_size = 0;
-                for (const auto& option : m_impl->m_options)
-                {
-                        max_option_size = std::max(max_option_size, option.concatenate().size());
-                }
-
-                max_option_size += 4;
-                for (const auto& option : m_impl->m_options)
-                {
-                        std::cout << "  " << nano::align(option.concatenate(), max_option_size)
-                                  << option.m_description << std::endl;
-                }
-
-                std::cout << std::endl;
-
-                exit(EXIT_FAILURE);
+                m_impl->usage();
         }
 }

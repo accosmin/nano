@@ -101,6 +101,8 @@ namespace nano
 
         private:
 
+                void log_critical(const std::string& message) const;
+
                 ///
                 /// \brief add a new option
                 ///
