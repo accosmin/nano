@@ -26,7 +26,16 @@ namespace nano
 
                 size_t epoch = 0;
                 size_t batch_begin = 0;
-                size_t batch_end = batch_size;
+                size_t batch_end = 0;
+
+                const auto update_batch = [&] ()
+                {
+                        if (batch_begin == batch_end || batch_begin >= train_size)
+                        {
+                                batch_begin = 0;
+                        }
+                        batch_end = std::min(batch_begin + batch_size, train_size);
+                };
 
                 // construct the optimization problem
                 const auto fn_size = [&] ()
@@ -36,6 +45,7 @@ namespace nano
 
                 const auto fn_fval = [&] (const vector_t& x)
                 {
+                        update_batch();
                         lacc.set_params(x);
                         lacc.update(task, tfold, batch_begin, batch_end);
                         return lacc.value();
@@ -43,12 +53,10 @@ namespace nano
 
                 const auto fn_grad = [&] (const vector_t& x, vector_t& gx)
                 {
+                        update_batch();
                         gacc.set_params(x);
                         gacc.update(task, tfold, batch_begin, batch_end);
                         gx = gacc.vgrad();
-                        // next minibatch
-                        batch_begin = batch_end;
-                        batch_end = std::min(batch_begin + batch_size, train_size);
                         return gacc.value();
                 };
 
@@ -86,7 +94,7 @@ namespace nano
                                 << ", " << append(config, "lambda", lacc.lambda())
                                 << "] done in " << timer.elapsed() << ".";
 
-                        state.f = tvalue;
+                        state.f = vvalue;
                         return !nano::is_done(ret);
                 };
 
