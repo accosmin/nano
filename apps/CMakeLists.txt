@@ -11,7 +11,7 @@ set(apps
         info.cpp
         info_task.cpp
         max_threads.cpp
-        #train.cpp
+        train.cpp
         #evaluate.cpp
         warp.cpp
         generate_convnets.cpp)
@@ -27,7 +27,7 @@ set(programs
         max_threads
         info
         info_task
-        #train
+        train
         #evaluate
         generate_convnets)
 

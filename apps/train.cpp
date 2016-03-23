@@ -1,12 +1,10 @@
 #include "text/cmdline.h"
-#include "text/align.hpp"
 #include "cortex/cortex.h"
-#include "cortex/evaluate.h"
 #include "text/filesystem.h"
 #include "text/concatenate.hpp"
 #include "cortex/measure_and_log.hpp"
 
-int main(int argc, char *argv[])
+int main(int argc, const char *argv[])
 {
         using namespace nano;
 
@@ -31,7 +29,7 @@ int main(int argc, char *argv[])
         cmdline.add("", "trainer-params",       "trainer parameters (if any)");
         cmdline.add("", "criterion",            nano::concatenate(criterion_ids));
         cmdline.add("", "threads",              "number of threads to use (0 - all available)", "0");
-        cmdline.add("", "trials",               "number of models to train & evaluate");
+        cmdline.add("", "fold",                 "fold index to use for training");
         cmdline.add("", "output",               "filepath to save the best model to");
 
         cmdline.process(argc, argv);
@@ -47,8 +45,7 @@ int main(int argc, char *argv[])
         const auto cmd_trainer_params = cmdline.get<string_t>("trainer-params");
         const auto cmd_criterion = cmdline.get<string_t>("criterion");
         const auto cmd_threads = cmdline.get<size_t>("threads");
-        const auto cmd_trials = cmdline.get<size_t>("trials");
-        const auto cmd_output = cmdline.get<string_t>("output");
+        const auto cmd_fold = cmdline.get<size_t>("fold");
 
         // create task
         const auto task = nano::get_tasks().get(cmd_task, cmd_task_params);
@@ -73,61 +70,31 @@ int main(int argc, char *argv[])
         // create trainer
         const auto trainer = nano::get_trainers().get(cmd_trainer, cmd_trainer_params);
 
-        // train & test models
-        std::map<scalar_t, std::tuple<rmodel_t, trainer_states_t>> models;
+        // train model
+        const auto tfold = fold_t{cmd_fold, protocol::train};
+        const auto vfold = fold_t{cmd_fold, protocol::valid};
 
-        nano::stats_t<scalar_t> lstats, estats;
-        for (size_t t = 0; t < cmd_trials; ++ t)
+        trainer_result_t result;
+        nano::measure_critical_and_log([&] ()
         {
-                for (size_t f = 0; f < task->fsize(); ++ f)
-                {
-                        const fold_t train_fold = std::make_pair(f, protocol::train);
-                        const fold_t test_fold = std::make_pair(f, protocol::test);
-
-                        // train
-                        trainer_result_t result;
-                        nano::measure_critical_and_log([&] ()
-                        {
-                                result = trainer->train(*task, train_fold, *loss, cmd_threads, *criterion, *model);
-                                return result.valid();
-                        },
-                        "train model");
-
-                        // test
-                        scalar_t lvalue, lerror;
-                        nano::measure_and_log(
-                                [&] () { nano::evaluate(*task, test_fold, *loss, *criterion, *model, lvalue, lerror); },
-                                "test model");
-                        log_info() << "<<< test error: [" << lvalue << "/" << lerror << "].";
-
-                        lstats(lvalue);
-                        estats(lerror);
-
-                        // update the best model
-                        models[lerror] = std::make_tuple(model->clone(), result.optimum_states());
-                }
-        }
-
-        // performance statistics
-        log_info() << ">>> performance: loss value = " << lstats.avg() << " +/- " << lstats.stdev()
-                   << " in [" << lstats.min() << ", " << lstats.max() << "].";
-        log_info() << ">>> performance: loss error = " << estats.avg() << " +/- " << estats.stdev()
-                   << " in [" << estats.min() << ", " << estats.max() << "].";
+                result = trainer->train(*task, tfold, vfold, cmd_threads, *loss, *criterion, *model);
+                return result.valid();
+        },
+                "train model");
 
         // save the best model & optimization history (if any trained)
-        if (!models.empty() && !cmd_output.empty())
+        if (cmdline.has("output"))
         {
-                const auto& opt_model = std::get<0>(models.begin()->second);
-                const trainer_states_t& opt_states = std::get<1>(models.begin()->second);
+                const auto cmd_output = cmdline.get<string_t>("output");
 
                 nano::measure_critical_and_log(
-                        [&] () { return opt_model->save(cmd_output); },
+                        [&] () { return model->save(cmd_output); },
                         "save model to <" + cmd_output + ">");
 
                 const string_t path = nano::dirname(cmd_output) + nano::stem(cmd_output) + ".state";
 
                 nano::measure_critical_and_log(
-                        [&] () { return nano::save(path, opt_states); },
+                        [&] () { return nano::save(path, result.optimum_states()); },
                         "save state to <" + path + ">");
         }
 
