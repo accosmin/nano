@@ -1,4 +1,5 @@
 #include "color.h"
+#include "math/clamp.hpp"
 #include "math/random.hpp"
 #include "math/numeric.hpp"
 #include "text/to_string.hpp"
@@ -161,30 +162,6 @@ namespace nano
                 }
 
                 return rgba;
-        }
-
-        scalar_t color::min(color_channel ch)
-        {
-                switch (ch)
-                {
-                case color_channel::red:        return 0.0;
-                case color_channel::green:      return 0.0;
-                case color_channel::blue:       return 0.0;
-                case color_channel::luma:       return 0.0;
-                default:                        return 0.0;
-                }
-        }
-
-        scalar_t color::max(color_channel ch)
-        {
-                switch (ch)
-                {
-                case color_channel::red:        return 255.0;
-                case color_channel::green:      return 255.0;
-                case color_channel::blue:       return 255.0;
-                case color_channel::luma:       return 255.0;
-                default:                        return 255.0;
-                }
         }
 
         std::ostream& operator<<(std::ostream& os, color_mode mode)

@@ -2,6 +2,7 @@
 #include "text/cmdline.h"
 #include "cortex/class.h"
 #include "cortex/cortex.h"
+#include "math/clamp.hpp"
 #include "math/random.hpp"
 #include "thread/thread.h"
 #include "tensor/random.hpp"

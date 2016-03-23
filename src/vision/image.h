@@ -20,12 +20,12 @@ namespace nano
                 ///
                 /// \brief constructor
                 ///
-                explicit image_t(coord_t rows = 0, coord_t cols = 0, color_mode mode = color_mode::rgba);
+                explicit image_t(const coord_t rows = 0, const coord_t cols = 0, color_mode mode = color_mode::rgba);
 
                 ///
                 /// \brief resize to new dimensions
                 ///
-                void resize(coord_t rows, coord_t cols, color_mode mode);
+                void resize(const coord_t rows, const coord_t cols, color_mode mode);
 
                 ///
                 /// \brief load image from disk
@@ -42,9 +42,9 @@ namespace nano
                 ///
                 /// \brief load image from decoded buffer
                 ///
-                bool load_luma(const char* buffer, coord_t rows, coord_t cols);
-                bool load_rgba(const char* buffer, coord_t rows, coord_t cols);
-                bool load_rgba(const char* buffer, coord_t rows, coord_t cols, coord_t stride);
+                bool load_luma(const char* buffer, const coord_t rows, const coord_t cols);
+                bool load_rgba(const char* buffer, const coord_t rows, const coord_t cols);
+                bool load_rgba(const char* buffer, const coord_t rows, const coord_t cols, const coord_t stride);
                 bool load_rgba(const rgba_matrix_t& data);
                 bool load_luma(const rgba_matrix_t& data);
                 bool load_luma(const luma_matrix_t& data);
@@ -78,17 +78,17 @@ namespace nano
                 ///
                 /// \brief copy the given (region of the given) patch at the (top, left) location
                 ///
-                bool copy(coord_t top, coord_t left, const rgba_matrix_t& patch);
-                bool copy(coord_t top, coord_t left, const luma_matrix_t& patch);
+                bool copy(const coord_t top, const coord_t left, const rgba_matrix_t& patch);
+                bool copy(const coord_t top, const coord_t left, const luma_matrix_t& patch);
 
-                bool copy(coord_t top, coord_t left, const image_t& patch);
-                bool copy(coord_t top, coord_t left, const image_t& patch, const rect_t& region);
+                bool copy(const coord_t top, const coord_t left, const image_t& patch);
+                bool copy(const coord_t top, const coord_t left, const image_t& patch, const rect_t& region);
 
                 ///
                 /// \brief change a pixel
                 ///
-                bool set(coord_t row, coord_t col, rgba_t rgba);
-                bool set(coord_t row, coord_t col, luma_t luma);
+                bool set(const coord_t row, const coord_t col, rgba_t rgba);
+                bool set(const coord_t row, const coord_t col, luma_t luma);
 
                 ///
                 /// \brief transpose in place the pixel matrix

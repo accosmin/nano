@@ -3,7 +3,6 @@
 #include "arch.h"
 #include "tensor.h"
 #include "math/cast.hpp"
-#include "math/clamp.hpp"
 #include "text/enum_string.hpp"
 #include <iosfwd>
 #include <cstdint>
@@ -17,19 +16,6 @@ namespace nano
         /// grayscale
         using luma_t = uint8_t;
         using luma_matrix_t = tensor::matrix_t<luma_t>;
-
-        ///
-        /// \brief color channels
-        ///
-        enum class color_channel
-        {
-                red = 0,                // R
-                green,                  // G
-                blue,                   // B
-                luma,                   // Y/L
-                rgba,                   // RGBA
-                alpha,                  // transparency
-        };
 
         ///
         /// \brief color processing mode methods
@@ -74,16 +60,6 @@ namespace nano
                 {
                         return make_rgba(l, l, l, a);
                 }
-
-                ///
-                /// \brief minimum color range
-                ///
-                NANO_PUBLIC scalar_t min(color_channel ch);
-
-                ///
-                /// \brief maximum color range
-                ///
-                NANO_PUBLIC scalar_t max(color_channel ch);
 
                 ///
                 /// \brief create random RGBA color
@@ -136,20 +112,6 @@ namespace nano
                 {
                         { nano::color_mode::luma, "luma" },
                         { nano::color_mode::rgba, "rgba" }
-                };
-        }
-
-        template <>
-        inline std::map<nano::color_channel, std::string> enum_string<nano::color_channel>()
-        {
-                return
-                {
-                        { nano::color_channel::red,           "red" },
-                        { nano::color_channel::green,         "green" },
-                        { nano::color_channel::blue,          "blue" },
-                        { nano::color_channel::luma,          "luma" },
-                        { nano::color_channel::rgba,          "rgba" },
-                        { nano::color_channel::alpha,         "alpha" }
                 };
         }
 }
