@@ -8,7 +8,7 @@ common="${task_mnist} ${loss_classnll} --threads ${max_threads}"
 # models
 conv="--model forward-network --model-params "
 conv=${conv}"conv:dims=32,rows=9,cols=9;act-snorm;pool-max;"
-conv=${conv}"conv:dims=32,rows=5,cols=5;act-snorm;pool-max"
+conv=${conv}"conv:dims=32,rows=5,cols=5;act-snorm;pool-max;"
 conv=${conv}"conv:dims=32,rows=3,cols=3;act-snorm;"
 
 mlp0="--model forward-network --model-params "
