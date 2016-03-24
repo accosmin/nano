@@ -79,7 +79,7 @@ namespace nano
                 1),
                 m_charset(nano::from_params<charset>(configuration, "type", charset::numeric)),
                 m_color(nano::from_params<color_mode>(configuration, "color", color_mode::rgba)),
-                m_count(nano::clamp(nano::from_params<size_t>(configuration, "count", 1024), 16, 1024 * 1024))
+                m_count(nano::clamp(nano::from_params<size_t>(configuration, "count", 1000), 100, 1024 * 1024))
         {
         }
 
