@@ -12,7 +12,7 @@ set(apps
         info_task.cpp
         max_threads.cpp
         train.cpp
-        #evaluate.cpp
+        evaluate.cpp
         warp.cpp
         generate_convnets.cpp)
 
@@ -28,7 +28,7 @@ set(programs
         info
         info_task
         train
-        #evaluate
+        evaluate
         generate_convnets)
 
 install(TARGETS ${programs} DESTINATION bin)

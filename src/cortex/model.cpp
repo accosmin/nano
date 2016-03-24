@@ -25,6 +25,10 @@ namespace nano
         bool model_t::save(const string_t& path) const
         {
                 std::ofstream os(path, std::ios::binary | std::ios::out | std::ios::trunc);
+                if (!os.is_open())
+                {
+                        return false;
+                }
 
                 nano::obstream_t ob(os);
 
@@ -46,6 +50,10 @@ namespace nano
         bool model_t::load(const string_t& path)
         {
                 std::ifstream is(path, std::ios::binary | std::ios::in);
+                if (!is.is_open())
+                {
+                        return false;
+                }
 
                 nano::ibstream_t ib(is);
 

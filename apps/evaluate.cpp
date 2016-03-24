@@ -1,10 +1,10 @@
 #include "text/cmdline.h"
 #include "cortex/cortex.h"
-#include "cortex/accumulate.h"
+#include "cortex/accumulator.h"
 #include "text/concatenate.hpp"
 #include "cortex/measure_and_log.hpp"
 
-int main(int argc, char *argv[])
+int main(int argc, const char *argv[])
 {
         nano::init();
 
@@ -20,12 +20,11 @@ int main(int argc, char *argv[])
         cmdline.add("", "task",                 nano::concatenate(task_ids));
         cmdline.add("", "task-dir",             "directory to load task data from");
         cmdline.add("", "task-params",          "task parameters (if any)");
+        cmdline.add("", "task-fold",            "fold index to use for testing", "0");
         cmdline.add("", "loss",                 nano::concatenate(loss_ids));
         cmdline.add("", "model",                nano::concatenate(model_ids));
         cmdline.add("", "model-file",           "filepath to load the model from");
-        cmdline.add("", "save-dir",             "directory to save classification results to");
-        cmdline.add("", "save-group-rows",      "number of samples to group in a row", "32");
-        cmdline.add("", "save-group-cols",      "number of samples to group in a column", "32");
+        cmdline.add("", "threads",              "number of threads to use (0 - all available)", "0");
 
         cmdline.process(argc, argv);
 
@@ -33,12 +32,11 @@ int main(int argc, char *argv[])
         const auto cmd_task = cmdline.get<string_t>("task");
         const auto cmd_task_dir = cmdline.get<string_t>("task-dir");
         const auto cmd_task_params = cmdline.get<string_t>("task-params");
+        const auto cmd_task_fold = cmdline.get<size_t>("task-fold");
         const auto cmd_loss = cmdline.get<string_t>("loss");
         const auto cmd_model = cmdline.get<string_t>("model");
-        const auto cmd_input = cmdline.get<string_t>("model-file");
-        const auto cmd_save_dir = cmdline.get<string_t>("save-dir");
-        const auto cmd_save_group_rows = nano::clamp(cmdline.get<coord_t>("save-group-rows"), 1, 128);
-        const auto cmd_save_group_cols = nano::clamp(cmdline.get<coord_t>("save-group-cols"), 1, 128);
+        const auto cmd_model_file = cmdline.get<string_t>("model-file");
+        const auto cmd_threads = cmdline.get<size_t>("threads");
 
         // create task
         const auto task = nano::get_tasks().get(cmd_task, cmd_task_params);
@@ -62,94 +60,23 @@ int main(int argc, char *argv[])
 
         // load model
         nano::measure_critical_and_log(
-                [&] () { return model->load(cmd_input); },
-                "load model from <" + cmd_input + ">");
+                [&] () { return model->load(cmd_model_file); },
+                "load model from <" + cmd_model_file + ">");
 
         // test model
-        nano::stats_t<scalar_t> lstats, estats;
-        for (size_t f = 0; f < task->fsize(); ++ f)
-        {
-                const fold_t test_fold = std::make_pair(f, protocol::test);
+        const auto tfold = fold_t{cmd_task_fold, protocol::test};
 
-		// error rate
-                const nano::timer_t timer;
-                scalar_t lvalue, lerror;
-                nano::evaluate(*task, test_fold, *loss, *criterion, *model, lvalue, lerror);
-                log_info() << "<<< test error: [" << lvalue << "/" << lerror << "] in " << timer.elapsed() << ".";
+        accumulator_t lacc(*model, *loss, *criterion, criterion_t::type::value);
+        lacc.set_threads(cmd_threads);
 
-                lstats(lvalue);
-                estats(lerror);
+        nano::measure_and_log(
+                [&] () { lacc.reset(); lacc.update(*task, tfold); },
+                "evaluate model");
 
-		// per-label error rates
-                sampler_t sampler(task->samples());
-                sampler.push(test_fold);
-                sampler.push(annotation::annotated);
+        const auto lvalue = lacc.value();
+        const auto lerror = lacc.avg_error();
 
-                const samples_t samples = sampler.get();
-
-                // split test samples into correctly classified & miss-classified
-                samples_t ok_samples;
-                samples_t nk_samples;
-
-                for (size_t s = 0; s < samples.size(); ++ s)
-                {
-                        const sample_t& sample = samples[s];
-                        const image_t& image = task->image(sample.m_index);
-
-                        const vector_t target = sample.m_target;
-                        const vector_t output = model->output(image.to_tensor(sample.m_region)).vector();
-
-                        const indices_t tclasses = loss->labels(target);
-                        const indices_t oclasses = loss->labels(output);
-
-                        const bool ok = tclasses.size() == oclasses.size() &&
-                                        std::mismatch(tclasses.begin(), tclasses.end(),
-                                                      oclasses.begin()).first == tclasses.end();
-
-                        (ok ? ok_samples : nk_samples).push_back(sample);
-                }
-
-                log_info() << "miss-classified " << nk_samples.size() << "/" << (samples.size()) << " = "
-                           << (static_cast<scalar_t>(nk_samples.size()) / static_cast<scalar_t>(samples.size())) << ".";
-
-                // save classification results
-                if (!cmd_save_dir.empty())
-                {
-                        const string_t basepath = cmd_save_dir + "/" + cmd_task + "_test_fold" + nano::to_string(f + 1);
-
-                        const coord_t grows = cmd_save_group_rows;
-                        const coord_t gcols = cmd_save_group_cols;
-
-                        const rgba_t ok_bkcolor = color::make_rgba(0, 225, 0);
-                        const rgba_t nk_bkcolor = color::make_rgba(225, 0, 0);
-
-                        // further split them by label
-                        const strings_t labels = task->labels();
-                        for (const string_t& label : labels)
-                        {
-                                const string_t lbasepath = basepath + "_" + label;
-
-                                const samples_t label_ok_samples = sampler_t(ok_samples).push(label).get();
-                                const samples_t label_nk_samples = sampler_t(nk_samples).push(label).get();
-                                const samples_t label_ll_samples = sampler_t(samples).push(label).get();
-
-                                log_info() << "miss-classified " << label_nk_samples.size()
-                                           << "/" << label_ll_samples.size() << " = "
-                                           << (static_cast<scalar_t>(label_nk_samples.size()) /
-                                               static_cast<scalar_t>(label_ll_samples.size()))
-                                           << " [" << label << "] samples.";
-
-                                task->save_as_images(label_ok_samples, lbasepath + "_ok", grows, gcols, 8, ok_bkcolor);
-                                task->save_as_images(label_nk_samples, lbasepath + "_nk", grows, gcols, 8, nk_bkcolor);
-                        }
-                }
-        }
-
-        // performance statistics
-        log_info() << ">>> performance: loss value = " << lstats.avg() << " +/- " << lstats.stdev()
-                   << " in [" << lstats.min() << ", " << lstats.max() << "].";
-        log_info() << ">>> performance: loss error = " << estats.avg() << " +/- " << estats.stdev()
-                   << " in [" << estats.min() << ", " << estats.max() << "].";
+        log_info() << "test = " << lvalue << "/" << lerror << ".";
 
         // OK
         log_info() << done;
