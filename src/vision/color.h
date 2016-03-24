@@ -17,6 +17,9 @@ namespace nano
         using luma_t = uint8_t;
         using luma_matrix_t = tensor::matrix_t<luma_t>;
 
+        /// 3D buffer to store vision data (number of dimensions is equal to color channels)
+        using image_tensor_t = tensor::tensor_t<luma_t, 3>;
+
         ///
         /// \brief color processing mode methods
         ///
@@ -26,11 +29,18 @@ namespace nano
                 rgba                    ///< process red, green & blue color channels
         };
 
-        NANO_PUBLIC std::ostream& operator<<(std::ostream&, color_mode);
+        NANO_PUBLIC std::ostream& operator<<(std::ostream&, const color_mode);
 
         // manipulate colors
         namespace color
         {
+                image_tensor_t to_rgb(const image_tensor_t&);
+                image_tensor_t to_rgba(const image_tensor_t&);
+                image_tensor_t to_luma(const image_tensor_t&);
+
+                tensor3d_t to_tensor(const image_tensor_t&);
+                image_tensor_t from_tensor(const image_tensor_t&);
+
                 // RGBA decoding (R, G, B, A, L(uma))
                 inline rgba_t get_red(rgba_t rgba)                      { return (rgba >> 24) & 0xFF; }
                 inline rgba_t get_green(rgba_t rgba)                    { return (rgba >> 16) & 0xFF; }

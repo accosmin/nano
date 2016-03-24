@@ -20,12 +20,12 @@ namespace nano
                 ///
                 /// \brief constructor
                 ///
-                explicit image_t(const coord_t rows = 0, const coord_t cols = 0, color_mode mode = color_mode::rgba);
+                explicit image_t(const coord_t rows = 0, const coord_t cols = 0, const color_mode = color_mode::rgba);
 
                 ///
                 /// \brief resize to new dimensions
                 ///
-                void resize(const coord_t rows, const coord_t cols, color_mode mode);
+                void resize(const coord_t rows, const coord_t cols, const color_mode mode);
 
                 ///
                 /// \brief load image from disk
@@ -36,8 +36,8 @@ namespace nano
                 ///
                 /// \brief load image from encoded buffer, using the filename's extension as a hint to the image type
                 ///
-                bool load_rgba(const string_t& name, const char* buffer, size_t buffer_size);
-                bool load_luma(const string_t& name, const char* buffer, size_t buffer_size);
+                bool load_rgba(const string_t& name, const char* buffer, const size_t buffer_size);
+                bool load_luma(const string_t& name, const char* buffer, const size_t buffer_size);
 
                 ///
                 /// \brief load image from decoded buffer
@@ -45,9 +45,8 @@ namespace nano
                 bool load_luma(const char* buffer, const coord_t rows, const coord_t cols);
                 bool load_rgba(const char* buffer, const coord_t rows, const coord_t cols);
                 bool load_rgba(const char* buffer, const coord_t rows, const coord_t cols, const coord_t stride);
-                bool load_rgba(const rgba_matrix_t& data);
-                bool load_luma(const rgba_matrix_t& data);
-                bool load_luma(const luma_matrix_t& data);
+                bool load_rgba(const image_matrix_t& data);
+                bool load_luma(const image_matrix_t& data);
 
                 ///
                 /// \brief save image to disk
@@ -70,10 +69,10 @@ namespace nano
                 ///
                 /// \brief fill with constant color
                 ///
-                bool fill(rgba_t rgba);
-                bool fill(luma_t luma);
-                bool fill(const rect_t& rect, rgba_t rgba);
-                bool fill(const rect_t& rect, luma_t luma);
+                bool fill(const rgba_t rgba);
+                bool fill(const luma_t luma);
+                bool fill(const rect_t& rect, const rgba_t rgba);
+                bool fill(const rect_t& rect, const luma_t luma);
 
                 ///
                 /// \brief copy the given (region of the given) patch at the (top, left) location
@@ -104,34 +103,22 @@ namespace nano
                 }
 
                 // access functions
-                coord_t rows() const { return m_rows; }
-                coord_t cols() const { return m_cols; }
+                coord_t dims() const { return static_cast<coord_t>(m_data.size<0>()); }
+                coord_t rows() const { return static_cast<coord_t>(m_data.size<1>()); }
+                coord_t cols() const { return static_cast<coord_t>(m_data.size<2>()); }
                 coord_t size() const { return rows() * cols(); }
-                color_mode mode() const { return m_mode; }
 
                 bool is_rgba() const { return mode() == color_mode::rgba; }
                 bool is_luma() const { return mode() == color_mode::luma; }
+                color_mode mode() const { return m_mode; }
 
-                const rgba_matrix_t& rgba() const { return m_rgba; }
-                const luma_matrix_t& luma() const { return m_luma; }
-
-        private:
-
-                ///
-                /// \brief setup internal variables after a successfull loading
-                ///
-                bool setup_rgba();
-                bool setup_luma();
+                const auto& data() const { return m_data; }
 
         private:
 
                 // attributes
-                coord_t                 m_rows;
-                coord_t                 m_cols;
                 color_mode              m_mode;
-
-                rgba_matrix_t           m_rgba;
-                luma_matrix_t           m_luma;
+                vision_tensor_t         m_data;
         };
 
         using images_t = std::vector<image_t>;

@@ -8,54 +8,20 @@
 namespace nano
 {
         image_t::image_t(const coord_t rows, const coord_t cols, const color_mode mode) :
-                m_rows(rows),
-                m_cols(cols),
-                m_mode(mode)
+                m_mode(mode),
+                m_data(mode == color_mode::luma ? 1 : 4, rows, cols)
         {
-                resize(rows, cols, mode);
         }
 
         void image_t::resize(const coord_t rows, const coord_t cols, const color_mode mode)
         {
                 m_mode = mode;
-                m_rows = rows;
-                m_cols = cols;
-
-                switch (m_mode)
-                {
-                case color_mode::luma:
-                        m_luma.resize(rows, cols);
-                        m_rgba.resize(0, 0);
-                        break;
-
-                case color_mode::rgba:
-                        m_luma.resize(0, 0);
-                        m_rgba.resize(rows, cols);
-                        break;
-                }
-        }
-
-        bool image_t::setup_rgba()
-        {
-                m_luma.resize(0, 0);
-                m_mode = color_mode::rgba;
-                m_rows = static_cast<coord_t>(m_rgba.rows());
-                m_cols = static_cast<coord_t>(m_rgba.cols());
-                return true;
-        }
-
-        bool image_t::setup_luma()
-        {
-                m_rgba.resize(0, 0);
-                m_mode = color_mode::luma;
-                m_rows = static_cast<coord_t>(m_luma.rows());
-                m_cols = static_cast<coord_t>(m_luma.cols());
-                return true;
+                m_data.resize(mode == color_mode::luma ? 1 : 4, rows, cols);
         }
 
         bool image_t::load_rgba(const string_t& path)
         {
-                return  load_rgba_image(path, m_rgba) &&
+                return oad_rgba_igtmage(path, m_rgba) &&
                         setup_rgba();
         }
 
