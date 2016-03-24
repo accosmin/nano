@@ -1,17 +1,15 @@
 #!/bin/bash
 
-source common_train.sh
+source $(dirname $0)/common_train.sh
 
 # common parameters
-params=""
-params=${params}${task_mnist}
-params=${params}" --loss classnll --trials 10 --threads ${max_threads}"
+common="${task_mnist} ${loss_classnll} --threads ${max_threads}"
 
 # models
 conv="--model forward-network --model-params "
-conv=${conv}"conv:dims=16,rows=9,cols=9;act-snorm;pool-max;"
+conv=${conv}"conv:dims=32,rows=9,cols=9;act-snorm;pool-max;"
 conv=${conv}"conv:dims=32,rows=5,cols=5;act-snorm;pool-max"
-conv=${conv}"conv:dims=64,rows=3,cols=3;act-snorm;"
+conv=${conv}"conv:dims=32,rows=3,cols=3;act-snorm;"
 
 mlp0="--model forward-network --model-params "
 mlp1=${mlp0}"affine:dims=128;act-snorm;"
@@ -20,26 +18,45 @@ mlp3=${mlp2}"affine:dims=32;act-snorm;"
 
 outlayer="affine:dims=10;"
 
-# trainers
-epochs=1024
-fn_trainers ${epochs}
-
-# models
 models="mlp0 mlp1 mlp2 mlp3 conv"
 
-# train models
-for model in ${models}
-do
-        trainers="stoch_agfr"
-        #trainers=${trainers}" batch_gd batch_cgd batch_lbfgs"
-        #trainers=${trainers}" mbatch_gd mbatch_cgd mbatch_lbfgs"
-        #trainers=${trainers}" stoch_ag stoch_aggr stoch_agfr stoch_adagrad stoch_adadelta stoch_adam stoch_sg stoch_sgm"
+# trainers
+epochs=100 #1000
+fn_make_trainers ${epochs}
 
-        for trainer in ${trainers}
+trainers="stoch_agfr"
+#trainers=${trainers}" batch_gd batch_cgd batch_lbfgs"
+#trainers=${trainers}" mbatch_gd mbatch_cgd mbatch_lbfgs"
+#trainers=${trainers}" stoch_ag stoch_aggr stoch_agfr stoch_adagrad stoch_adadelta stoch_adam stoch_sg stoch_sgm"
+
+# criteria
+criteria="crit_avg" #crit_l2n crit_var"
+
+# train models
+for ((trial=0;trial<10;trial++))
+do
+        for model in ${models}
         do
-                fn_train ${dir_exp_mnist} ${trainer}_${model} ${params} ${!trainer} ${avg_crit} ${!model}${outlayer}
-                fn_train ${dir_exp_mnist} ${trainer}_${model}_l2n ${params} ${!trainer} ${l2n_crit} ${!model}${outlayer}
-                fn_train ${dir_exp_mnist} ${trainer}_${model}_var ${params} ${!trainer} ${var_crit} ${!model}${outlayer}
+                for trainer in ${trainers}
+                do
+                        for criterion in ${criteria}
+                        do
+                                mfile=${dir_exp_mnist}/trial${trial}_${trainer}_${model}_${criterion}.model
+                                sfile=${dir_exp_mnist}/trial${trial}_${trainer}_${model}_${criterion}.state
+                                lfile=${dir_exp_mnist}/trial${trial}_${trainer}_${model}_${criterion}.log
+
+                                params="${common} ${!model}${outlayer} ${!trainer} ${!criterion} --model-file ${mfile}"
+
+                                printf "running <%s> ...\n" "${params}"
+                                printf "running <%s> ...\n" "${params}" > ${lfile}
+                                time ${exe_trainer} ${params} >> ${lfile}
+                                printf "\tlog saved to <%s>\n" "${lfile}"
+                                printf "\n"
+                                printf "\tplotting training evolution ...\n"
+                                bash $(dirname $0)/plot_model.sh ${sfile}
+                                printf "\n"
+                        done
+                done
         done
 done
 
