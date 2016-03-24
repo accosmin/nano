@@ -1,6 +1,7 @@
 #include "text/cmdline.h"
 #include "cortex/cortex.h"
 #include "text/filesystem.h"
+#include "cortex/accumulator.h"
 #include "text/concatenate.hpp"
 #include "cortex/measure_and_log.hpp"
 
@@ -73,16 +74,29 @@ int main(int argc, const char *argv[])
         const auto trainer = nano::get_trainers().get(cmd_trainer, cmd_trainer_params);
 
         // train model
-        const auto tfold = fold_t{cmd_task_fold, protocol::train};
-        const auto vfold = fold_t{cmd_task_fold, protocol::valid};
+        const auto train_fold = fold_t{cmd_task_fold, protocol::train};
+        const auto valid_fold = fold_t{cmd_task_fold, protocol::valid};
 
         trainer_result_t result;
         nano::measure_critical_and_log([&] ()
                 {
-                        result = trainer->train(*task, tfold, vfold, cmd_threads, *loss, *criterion, *model);
+                        result = trainer->train(*task, train_fold, valid_fold, cmd_threads, *loss, *criterion, *model);
                         return result.valid();
                 },
                 "train model");
+
+        // test model
+        const auto test_fold = fold_t{cmd_task_fold, protocol::test};
+
+        accumulator_t lacc(*model, *loss, *criterion, criterion_t::type::value);
+        lacc.set_threads(cmd_threads);
+
+        nano::measure_and_log(
+                [&] () { lacc.update(*task, test_fold); },
+                "test model");
+
+        log_info() << "optimum [test = " << lacc.value() << "/" << lacc.avg_error()
+                   << ", variance = " << lacc.var_error() << "].";
 
         // save the model & its optimization history
         nano::measure_critical_and_log(
