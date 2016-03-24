@@ -37,7 +37,7 @@ namespace tensor
                 typename tvalue = typename std::remove_const<tvalue_>::type,
                 typename tresult = Eigen::Map<vector_t<tvalue>, alignment>
         >
-        tresult map_vector(tvalue_* data, tsize rows)
+        tresult map_vector(tvalue_* data, const tsize rows)
         {
                 return tresult(data, rows);
         }
@@ -53,7 +53,7 @@ namespace tensor
                 typename tvalue = typename std::remove_const<tvalue_>::type,
                 typename tresult = Eigen::Map<const vector_t<tvalue>, alignment>
         >
-        tresult map_vector(const tvalue_* data, tsize rows)
+        tresult map_vector(const tvalue_* data, const tsize rows)
         {
                 return tresult(data, rows);
         }
