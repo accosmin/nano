@@ -55,7 +55,7 @@ static void check_function(const nano::function_t<tscalar>& function)
                         const auto f0 = problem(x0);
 
                         // optimize
-                        const auto state = nano::minimize(problem, nullptr, x0, optimizer, epochs, epoch_size);
+                        const auto state = nano::minimize(problem, nullptr, nullptr, x0, optimizer, epochs, epoch_size);
 
                         const auto x = state.x;
                         const auto f = state.f;

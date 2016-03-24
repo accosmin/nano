@@ -68,7 +68,11 @@ namespace nano
 
                         // log the current state & check the stopping criteria
                         astate.update(problem, xavg.value());
-                        if (!params.ulog(astate, config))
+                        if (params.tuning())
+                        {
+                                astate.f = params.tlog(astate, config);
+                        }
+                        else if (!params.ulog(astate, config))
                         {
                                 break;
                         }

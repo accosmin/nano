@@ -60,7 +60,27 @@ namespace nano
                         return gacc.value();
                 };
 
-                auto fn_ulog = [&] (opt_state_t& state, const auto& config)
+                auto fn_tlog = [&] (const opt_state_t& state, const auto& config)
+                {
+                        task.shuffle(tfold);
+
+                        // evaluate training samples
+                        lacc.set_params(state.x);
+                        lacc.update(task, tfold);
+                        const auto tvalue = lacc.value();
+                        const auto terror_avg = lacc.avg_error();
+
+                        if (verbose)
+                        log_info()
+                                << "[tune = " << tvalue << "/" << terror_avg
+                                << ", batch = " << batch_size
+                                << ", " << append(config, "lambda", lacc.lambda())
+                                << "] done in " << timer.elapsed() << ".";
+
+                        return tvalue;
+                };
+
+                auto fn_ulog = [&] (const opt_state_t& state, const auto& config)
                 {
                         task.shuffle(tfold);
 
@@ -94,13 +114,12 @@ namespace nano
                                 << ", " << append(config, "lambda", lacc.lambda())
                                 << "] done in " << timer.elapsed() << ".";
 
-                        state.f = vvalue;
                         return !nano::is_done(ret);
                 };
 
                 // optimize the model
                 nano::minimize(
-                        opt_problem_t(fn_size, fn_fval, fn_grad), fn_ulog,
+                        opt_problem_t(fn_size, fn_fval, fn_grad), fn_ulog, fn_tlog,
                         x0, optimizer, epochs, epoch_size);
 
                 return result;
