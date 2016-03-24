@@ -24,7 +24,7 @@ NANO_CASE(parse)
         NANO_CHECK_EQUAL(cmdline.get<std::string>("v"), "0.3");
         NANO_CHECK_EQUAL(cmdline.get<int>("iterations"), 7);
 }
-
+/*
 NANO_CASE(error_invalid_arg)
 {
         nano::cmdline_t cmdline("unit testing");
@@ -48,7 +48,7 @@ NANO_CASE(error_unknown_arg)
 
         NANO_CHECK_THROW(cmdline.process(argc, argv), std::runtime_error);
 }
-
+*/
 NANO_CASE(parse_config_file)
 {
         nano::cmdline_t cmdline("unit testing");
