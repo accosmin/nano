@@ -62,7 +62,7 @@ namespace nano
                 tensor3d_t to_tensor(const rect_t& region) const;
 
                 ///
-                /// \brief transform between color mode
+                /// \brief transform between color modes
                 ///
                 bool make_rgba();
                 bool make_luma();
@@ -82,13 +82,7 @@ namespace nano
                 bool copy(const coord_t top, const coord_t left, const luma_matrix_t& patch);
 
                 bool copy(const coord_t top, const coord_t left, const image_t& patch);
-                bool copy(const coord_t top, const coord_t left, const image_t& patch, const rect_t& region);
-
-                ///
-                /// \brief change a pixel
-                ///
-                bool set(const coord_t row, const coord_t col, rgba_t rgba);
-                bool set(const coord_t row, const coord_t col, luma_t luma);
+                bool copy(const coord_t top, const coord_t left, const image_t& patch, const rect_t& patch_region);
 
                 ///
                 /// \brief transpose in place the pixel matrix
