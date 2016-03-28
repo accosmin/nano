@@ -5,7 +5,7 @@
 
 namespace nano
 {
-        static bool load_image(color_mode mode, rgba_matrix_t& rgba, luma_matrix_t& luma)
+        static bool load_image(const color_mode mode, image_tensor_t& image)
         {
                 bool ret = false;
 
@@ -13,31 +13,37 @@ namespace nano
                 {
                         const ILint cols = ilGetInteger(IL_IMAGE_WIDTH);
                         const ILint rows = ilGetInteger(IL_IMAGE_HEIGHT);
+                        const ILint size = rows * cols;
                         const ILubyte* data = ilGetData();
 
                         switch (mode)
                         {
                         case color_mode::luma:
-                                luma.resize(rows, cols);
-                                for (int r = 0; r < rows; ++ r)
+                                image.resize(1, rows, cols);
+                                for (int i = 0; i < size; ++ i, data += 4)
                                 {
-                                        for (int c = 0; c < cols; ++ c)
-                                        {
-                                                const ILubyte* pix = data + 4 * (r * cols + c);
-                                                luma(r, c) = color::make_luma(pix[0], pix[1], pix[2]);
-                                        }
+                                        image.vector(0)(i) = color::make_luma(data[0], data[1], data[2]);
                                 }
                                 break;
 
                         case color_mode::rgba:
-                                rgba.resize(rows, cols);
-                                for (int r = 0; r < rows; ++ r)
+                                image.resize(4, rows, cols);
+                                for (int i = 0; i < size; ++ i, data += 4)
                                 {
-                                        for (int c = 0; c < cols; ++ c)
-                                        {
-                                                const ILubyte* pix = data + 4 * (r * cols + c);
-                                                rgba(r, c) = color::make_rgba(pix[0], pix[1], pix[2], pix[3]);
-                                        }
+                                        image.vector(0)(i) = data[0];
+                                        image.vector(1)(i) = data[1];
+                                        image.vector(2)(i) = data[2];
+                                        image.vector(3)(i) = data[3];
+                                }
+                                break;
+
+                        case color_mode::rgb:
+                                image.resize(3, rows, cols);
+                                for (int i = 0; i < size; ++ i, data += 4)
+                                {
+                                        image.vector(0)(i) = data[0];
+                                        image.vector(1)(i) = data[1];
+                                        image.vector(2)(i) = data[2];
                                 }
                                 break;
                         }
@@ -48,32 +54,31 @@ namespace nano
                 return ret;
         }
 
-        static bool load_image(const string_t& path, 
-                color_mode mode, rgba_matrix_t& rgba, luma_matrix_t& luma)
+        static bool load_image(const string_t& path, const color_mode mode, image_tensor_& image)
         {
                 ilInit();
 
                 const ILuint id = ilGenImage();
                 ilBindImage(id);
 
-                const bool ret = 
+                const bool ret =
                         ilLoadImage((const ILstring)path.c_str()) &&
-                        load_image(mode, rgba, luma);
+                        load_image(mode, image);
 
                 ilDeleteImage(id);
 
                 return ret;
         }
 
-        static bool load_image(const string_t& name, const char* buffer, size_t buffer_size,
-                color_mode mode, rgba_matrix_t& rgba, luma_matrix_t& luma)
+        static bool load_image(const string_t& name, const char* buffer, const size_t buffer_size,
+                const color_mode mode, image_tensor_t& image)
         {
                 ilInit();
 
                 const ILuint id = ilGenImage();
                 ilBindImage(id);
 
-                const std::map<string_t, ILenum> extensions = 
+                const std::map<string_t, ILenum> extensions =
                 {
                         { ".pgm",       IL_PNM },
                         { ".ppm",       IL_PNM },
@@ -94,17 +99,16 @@ namespace nano
                         }
                 }
 
-                const bool ret = 
+                const bool ret =
                         ilLoadL(type, buffer, static_cast<unsigned int>(buffer_size)) &&
-                        load_image(mode, rgba, luma);
+                        load_image(mode, image);
 
                 ilDeleteImage(id);
 
                 return ret;
         }
 
-        static bool save_image(const string_t& path,
-                color_mode mode, const rgba_matrix_t& rgba, const luma_matrix_t& luma)
+        bool save_image(const string_t& path, const image_tensor_t& image)
         {
                 const auto rows = mode == color_mode::rgba ? rgba.rows() : luma.rows();
                 const auto cols = mode == color_mode::rgba ? rgba.cols() : luma.cols();
@@ -188,17 +192,5 @@ namespace nano
         {
                 rgba_matrix_t rgba;
                 return load_image(name, buffer, buffer_size, color_mode::luma, rgba, luma);
-        }
-
-        bool save_rgba_image(const string_t& path, const rgba_matrix_t& rgba)
-        {
-                luma_matrix_t luma;
-                return save_image(path, color_mode::rgba, rgba, luma);
-        }
-
-        bool save_luma_image(const string_t& path, const luma_matrix_t& luma)
-        {
-                rgba_matrix_t rgba;
-                return save_image(path, color_mode::luma, rgba, luma);
         }
 }

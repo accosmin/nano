@@ -7,11 +7,11 @@
 namespace nano
 {
         ///
-        /// \brief stores an image either as grayscale (luma) or RGBA buffer.
+        /// \brief stores an image as grayscale (luma), RGB or RGBA.
         ///
         /// operations:
         ///     - loading and saving from and to files
-        ///     - scaling to [0, 1] tensors
+        ///     - scaling to/from [0, 1] 3D tensors
         ///
         class NANO_PUBLIC image_t
         {
@@ -30,14 +30,16 @@ namespace nano
                 ///
                 /// \brief load image from disk
                 ///
-                bool load_rgba(const string_t& path);
                 bool load_luma(const string_t& path);
+                bool load_rgba(const string_t& path);
+                bool load_rgb(const string_t& path);
 
                 ///
                 /// \brief load image from encoded buffer, using the filename's extension as a hint to the image type
                 ///
                 bool load_rgba(const string_t& name, const char* buffer, const size_t buffer_size);
                 bool load_luma(const string_t& name, const char* buffer, const size_t buffer_size);
+                bool load_rgb(const string_t& name, const char* buffer, const size_t buffer_size);
 
                 ///
                 /// \brief load image from decoded buffer
@@ -45,8 +47,7 @@ namespace nano
                 bool load_luma(const char* buffer, const coord_t rows, const coord_t cols);
                 bool load_rgba(const char* buffer, const coord_t rows, const coord_t cols);
                 bool load_rgba(const char* buffer, const coord_t rows, const coord_t cols, const coord_t stride);
-                bool load_rgba(const image_matrix_t& data);
-                bool load_luma(const image_matrix_t& data);
+                bool load(const image_tensor_t& data);
 
                 ///
                 /// \brief save image to disk
@@ -63,25 +64,20 @@ namespace nano
                 ///
                 /// \brief transform between color modes
                 ///
-                bool make_rgba();
                 bool make_luma();
+                bool make_rgba();
+                bool make_rgb();
 
                 ///
                 /// \brief fill with constant color
                 ///
-                bool fill(const rgba_t rgba);
-                bool fill(const luma_t luma);
-                bool fill(const rect_t& rect, const rgba_t rgba);
-                bool fill(const rect_t& rect, const luma_t luma);
+                bool fill(const luma_t);
+                bool fill(const rgba_t);
 
                 ///
                 /// \brief copy the given (region of the given) patch at the (top, left) location
                 ///
-                bool copy(const coord_t top, const coord_t left, const rgba_matrix_t& patch);
-                bool copy(const coord_t top, const coord_t left, const luma_matrix_t& patch);
-
-                bool copy(const coord_t top, const coord_t left, const image_t& patch);
-                bool copy(const coord_t top, const coord_t left, const image_t& patch, const rect_t& patch_region);
+                bool copy(const coord_t top, const coord_t left, const image_tensor_t& patch);
 
                 ///
                 /// \brief transpose in place the pixel matrix
@@ -118,7 +114,7 @@ namespace nano
 
                 // attributes
                 color_mode              m_mode;
-                vision_tensor_t         m_data;
+                image_tensor_t          m_data;
         };
 
         using images_t = std::vector<image_t>;
