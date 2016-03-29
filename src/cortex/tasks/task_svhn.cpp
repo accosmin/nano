@@ -152,6 +152,7 @@ namespace nano
                 // load images & labels
                 const size_t n_samples = idims[3];
 
+                const auto px = irows() * icols();
                 const auto ix = static_cast<size_t>(irows() * icols() * 3);
                 auto iptr = idata.data();
 
@@ -172,9 +173,10 @@ namespace nano
                         }
 
                         // image ...
-                        image_t image;
-                        image.load_rgb(iptr, irows(), icols(), irows() * icols());
-                        image.transpose_in_place();
+                        image_t image(irows(), icols(), color_mode::rgb);
+                        image.plane(0) = tensor::map_matrix(iptr + 0 * px, icols(), irows()).cast<luma_t>().transpose();
+                        image.plane(1) = tensor::map_matrix(iptr + 1 * px, icols(), irows()).cast<luma_t>().transpose();
+                        image.plane(2) = tensor::map_matrix(iptr + 2 * px, icols(), irows()).cast<luma_t>().transpose();
                         add_chunk(image);
 
                         // target ...

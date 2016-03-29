@@ -88,11 +88,6 @@ namespace nano
                 bool copy(const coord_t top, const coord_t left, const image_t& patch);
 
                 ///
-                /// \brief transpose in place the pixel matrix
-                ///
-                void transpose_in_place();
-
-                ///
                 /// \brief set pixels to random values
                 ///
                 void random();

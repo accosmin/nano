@@ -95,17 +95,21 @@ namespace nano
 
                 nano::imstream_t stream(data.data(), data.size());
 
-                const auto buffer_size = irows() * icols() * 3;
-                std::vector<char> buffer = nano::make_buffer(buffer_size);
+                const auto px = irows() * icols();
+                const auto ix = 3 * px;
+
+                std::vector<char> buffer = nano::make_buffer(ix);
+                auto iptr = buffer.data();
 
                 size_t icount = 0;
 
                 // load images
-                while (stream.read(buffer.data(), buffer_size))
+                while (stream.read(buffer.data(), ix))
                 {
-                        image_t image;
-                        image.load_rgb(buffer.data(), irows(), icols(), irows() * icols());
-                        image.transpose_in_place();
+                        image_t image(irows(), icols(), color_mode::rgb);
+                        image.plane(0) = tensor::map_matrix(iptr + 0 * px, icols(), irows()).cast<luma_t>().transpose();
+                        image.plane(1) = tensor::map_matrix(iptr + 1 * px, icols(), irows()).cast<luma_t>().transpose();
+                        image.plane(2) = tensor::map_matrix(iptr + 2 * px, icols(), irows()).cast<luma_t>().transpose();
                         add_chunk(image);
 
                         if (unlabeled)

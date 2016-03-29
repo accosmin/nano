@@ -255,14 +255,6 @@ namespace nano
                 }
         }
 
-        void image_t::transpose_in_place()
-        {
-                for (auto i = 0; i < dims(); ++ i)
-                {
-                        plane(i).transposeInPlace();
-                }
-        }
-
         void image_t::random()
         {
                 tensor::set_random(m_data, nano::random_t<luma_t>(0, 255));
