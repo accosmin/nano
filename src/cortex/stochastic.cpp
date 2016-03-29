@@ -25,17 +25,8 @@ namespace nano
                 const auto epoch_size = (train_size + batch_size - 1) / batch_size;
 
                 size_t epoch = 0;
-                size_t batch_begin = 0;
-                size_t batch_end = 0;
 
-                const auto update_batch = [&] ()
-                {
-                        if (batch_begin == batch_end || batch_begin >= train_size)
-                        {
-                                batch_begin = 0;
-                        }
-                        batch_end = std::min(batch_begin + batch_size, train_size);
-                };
+                batch_iterator_t iter(task, tfold, batch_size);
 
                 // construct the optimization problem
                 const auto fn_size = [&] ()
@@ -45,24 +36,24 @@ namespace nano
 
                 const auto fn_fval = [&] (const vector_t& x)
                 {
-                        update_batch();
+                        iter.next();
                         lacc.set_params(x);
-                        lacc.update(task, tfold, batch_begin, batch_end);
+                        lacc.update(task, tfold, iter.begin(), iter.end());
                         return lacc.value();
                 };
 
                 const auto fn_grad = [&] (const vector_t& x, vector_t& gx)
                 {
-                        update_batch();
+                        iter.next();
                         gacc.set_params(x);
-                        gacc.update(task, tfold, batch_begin, batch_end);
+                        gacc.update(task, tfold, iter.begin(), iter.end());
                         gx = gacc.vgrad();
                         return gacc.value();
                 };
 
                 auto fn_tlog = [&] (const opt_state_t& state, const auto& config)
                 {
-                        task.shuffle(tfold);
+                        iter.shuffle();
 
                         // evaluate training samples
                         lacc.set_params(state.x);
@@ -82,7 +73,7 @@ namespace nano
 
                 auto fn_ulog = [&] (const opt_state_t& state, const auto& config)
                 {
-                        task.shuffle(tfold);
+                        iter.shuffle();
 
                         // evaluate training samples
                         lacc.set_params(state.x);

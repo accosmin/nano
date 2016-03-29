@@ -108,4 +108,42 @@ namespace nano
                 ///
                 virtual string_t label(const fold_t&, const size_t index) const = 0;
         };
+
+        ///
+        /// \brief fixed-minibatch iterator over a task.
+        ///
+        class batch_iterator_t
+        {
+        public:
+
+                batch_iterator_t(const task_t& task, const fold_t& fold, const size_t batch) :
+                        m_task(task), m_fold(fold), m_batch(batch), m_begin(0), m_end(0)
+                {
+                        next();
+                }
+
+                void next()
+                {
+                        m_begin = m_end;
+                        m_end = std::min(m_begin + m_batch, m_task.n_samples(m_fold));
+                }
+
+                void shuffle()
+                {
+                        m_task.shuffle(m_fold);
+                        m_begin = m_end = 0;
+                        next();
+                }
+
+                size_t begin() const { return m_begin; }
+                size_t end() const { return m_end; }
+
+        private:
+
+                // attributes
+                const task_t&   m_task;                 ///<
+                fold_t          m_fold;
+                const size_t    m_batch;
+                size_t          m_begin, m_end;         ///< sample range [begin, end)
+        };
 }

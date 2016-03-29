@@ -26,8 +26,7 @@ namespace nano
                 const auto epoch_iterations = size_t(4);
                 const auto history_size = epoch_iterations;
 
-                size_t batch_begin = 0;
-                size_t batch_end = std::min(batch_begin + batch_size, train_size);
+                batch_iterator_t iter(task, tfold, batch_size);
 
                 // construct the optimization problem
                 const auto fn_size = [&] ()
@@ -38,14 +37,14 @@ namespace nano
                 const auto fn_fval = [&] (const vector_t& x)
                 {
                         lacc.set_params(x);
-                        lacc.update(task, tfold, batch_begin, batch_end);
+                        lacc.update(task, tfold, iter.begin(), iter.end());
                         return lacc.value();
                 };
 
                 const auto fn_grad = [&] (const vector_t& x, vector_t& gx)
                 {
                         gacc.set_params(x);
-                        gacc.update(task, tfold, batch_begin, batch_end);
+                        gacc.update(task, tfold, iter.begin(), iter.end());
                         gx = gacc.vgrad();
                         return gacc.value();
                 };
@@ -58,19 +57,14 @@ namespace nano
                 for (size_t epoch = 1; epoch <= epochs; ++ epoch)
                 {
                         // optimize mini-batches in sequence
-                        task.shuffle(tfold);
-                        batch_begin = 0;
-                        batch_end = std::min(batch_begin + batch_size, train_size);
-
+                        iter.shuffle();
                         for (size_t i = 0; i < epoch_size; ++ i)
                         {
                                 const auto state = nano::minimize(
                                         opt_problem_t(fn_size, fn_fval, fn_grad), fn_ulog,
                                         x, optimizer, epoch_iterations, epsilon, history_size);
                                 x = state.x;
-                                // next minibatch
-                                batch_begin = batch_end;
-                                batch_end = std::min(batch_begin + batch_size, train_size);
+                                iter.next();
                         }
 
                         // evaluate training samples
