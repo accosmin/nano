@@ -174,6 +174,7 @@ namespace nano
                         // image ...
                         image_t image;
                         image.load_rgb(iptr, irows(), icols(), irows() * icols());
+                        image.transpose_in_place();
                         add_chunk(image);
 
                         // target ...
