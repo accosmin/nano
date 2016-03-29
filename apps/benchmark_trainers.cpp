@@ -58,7 +58,7 @@ static void test_optimizer(model_t& model, const string_t& name, const string_t&
 
                 log_info() << "<<< " << name
                            << ", optimum = " << result.optimum_config()
-                           << "epoch=" << result.optimum_epoch()
+                           << ", epoch=" << result.optimum_epoch()
                            << ", train = " << opt_state.m_terror_avg
                            << ", valid = " << opt_state.m_verror_avg
                            << ", speed = " << opt_speed << "/s"
