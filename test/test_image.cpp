@@ -114,7 +114,7 @@ NANO_CASE(io_tensor)
         }
 }
 
-NANO_CASE(io_rgba)
+NANO_CASE(io_luma)
 {
         using namespace nano;
 

@@ -8,17 +8,20 @@
 
 std::string module_name;
 std::string case_name;
+std::size_t n_cases = 0;
+std::size_t n_checks = 0;
 std::size_t n_failures = 0;
 
 #define NANO_BEGIN_MODULE(name) \
 int main(int, char* []) \
 { \
         module_name = #name; \
-        n_failures = 0; \
-        std::cout << "running test module [" << module_name << "] ..." << std::endl;
+        n_failures = 0;
 
 #define NANO_CASE(name) \
-        case_name = #name;
+        ++ n_cases; \
+        case_name = #name; \
+        std::cout << "running test case [" << module_name << "/" << case_name << "] ..." << std::endl;
 
 #define NANO_END_MODULE() \
         if (n_failures > 0) \
@@ -28,7 +31,8 @@ int main(int, char* []) \
         } \
         else \
         { \
-                std::cout << "  no errors detected." << std::endl; \
+                std::cout << "  no errors detected in " << n_checks \
+                          << " check" << (n_checks > 0 ? "s" : "") << "." << std::endl; \
                 exit(EXIT_SUCCESS); \
         } \
 }
@@ -43,6 +47,7 @@ int main(int, char* []) \
         std::cout << __FILE__ << ":" << __LINE__ << ": [" << module_name << "/" << case_name
 
 #define NANO_EVALUATE(check, critical) \
+        ++ n_checks; \
         if (!(check)) \
         { \
                 NANO_HANDLE_FAILURE() \
@@ -55,6 +60,7 @@ int main(int, char* []) \
         NANO_EVALUATE(check, true)
 
 #define NANO_THROW(call, exception, critical) \
+        ++ n_checks; \
         try \
         { \
                 call; \
@@ -78,6 +84,7 @@ int main(int, char* []) \
         NANO_THROW(call, exception, true)
 
 #define NANO_EVALUATE_BINARY_OP(left, right, op, critical) \
+        ++ n_checks; \
         if (!((left) op (right))) \
         { \
                 NANO_HANDLE_FAILURE() \
