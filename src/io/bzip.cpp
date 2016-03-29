@@ -17,7 +17,7 @@ namespace nano
 
                 bz_stream strm;
                 char in[chunk_size];
-                char out[chunk_size];
+                char out[out_chunk_size];
 
                 strm.bzalloc = NULL;
                 strm.bzfree = NULL;

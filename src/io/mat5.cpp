@@ -114,7 +114,7 @@ namespace nano
                         m_begin = offset;
                         m_end = offset + ((make_buffer_type(dtype) == mat5_buffer_type::miCOMPRESSED) ?
                                 (8 + bytes) :
-                                (8 + bytes + ((8 - bytes) % 8)));
+                                (8 + bytes + static_cast<uint32_t>((7 * static_cast<uint64_t>(bytes)) % 8)));
 
                         m_dbegin = offset + 8;
                         m_dend = offset + 8 + bytes;

@@ -17,7 +17,7 @@ namespace nano
 
                 z_stream strm;
                 unsigned char in[chunk_size];
-                unsigned char out[2 * chunk_size];
+                unsigned char out[out_chunk_size];
 
                 strm.zalloc = Z_NULL;
                 strm.zfree = Z_NULL;
