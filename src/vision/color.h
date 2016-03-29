@@ -2,8 +2,9 @@
 
 #include "arch.h"
 #include "tensor.h"
+#include "text/to_string.hpp"
 #include "text/enum_string.hpp"
-#include <iosfwd>
+#include <ostream>
 #include <cstdint>
 
 namespace nano
@@ -25,7 +26,10 @@ namespace nano
                 rgb             ///< RGB (3 bands)
         };
 
-        NANO_PUBLIC std::ostream& operator<<(std::ostream&, const color_mode);
+        inline std::ostream& operator<<(std::ostream& os, const color_mode mode)
+        {
+                return os << to_string(mode);
+        }
 
         ///
         /// \brief transform RGB to luma

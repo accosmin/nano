@@ -1,7 +1,6 @@
 # build library
 set(libvision_sources
         ${CMAKE_CURRENT_SOURCE_DIR}/bilinear.hpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/color.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/color.h
         ${CMAKE_CURRENT_SOURCE_DIR}/convolve.hpp
         ${CMAKE_CURRENT_SOURCE_DIR}/geom.h
