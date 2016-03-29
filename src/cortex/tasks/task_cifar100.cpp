@@ -175,7 +175,7 @@ namespace nano
                         }
 
                         image_t image;
-                        image.load_rgba(buffer.data(), irows(), icols(), irows() * icols());
+                        image.load_rgb(buffer.data(), irows(), icols(), irows() * icols());
                         add_chunk(image);
 
                         const auto fold = make_fold(0, p);

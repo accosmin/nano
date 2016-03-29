@@ -152,8 +152,11 @@ namespace nano
                 // load images & labels
                 const size_t n_samples = idims[3];
 
+                const auto ix = static_cast<size_t>(irows() * icols() * 3);
+                auto iptr = idata.data();
+
                 size_t cnt = 0;
-                for (size_t i = 0; i < n_samples; ++ i)
+                for (size_t i = 0; i < n_samples; ++ i, iptr += ix)
                 {
                         const auto lbeg = static_cast<size_t>(lsection.dbegin()) + i;
 
@@ -169,14 +172,8 @@ namespace nano
                         }
 
                         // image ...
-                        const auto px = static_cast<size_t>(irows() * icols());
-                        const auto ix = static_cast<size_t>(irows() * icols() * 3);
-                        const auto ptr = reinterpret_cast<luma_t*>(isection.dbegin());
-
-                        image_t image(irows(), icols(), color_mode::rgb);
-                        image.plane(0) = tensor::map_matrix(ptr + px * 0 + i * ix, irows(), icols());
-                        image.plane(1) = tensor::map_matrix(ptr + px * 1 + i * ix, irows(), icols());
-                        image.plane(2) = tensor::map_matrix(ptr + px * 2 + i * ix, irows(), icols());
+                        image_t image;
+                        image.load_rgb(iptr, irows(), icols(), irows() * icols());
                         add_chunk(image);
 
                         // target ...

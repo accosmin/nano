@@ -104,7 +104,7 @@ namespace nano
                 while (stream.read(buffer.data(), buffer_size))
                 {
                         image_t image;
-                        image.load_rgba(buffer.data(), irows(), icols(), irows() * icols());
+                        image.load_rgb(buffer.data(), irows(), icols(), irows() * icols());
                         image.transpose_in_place();
                         add_chunk(image);
 
