@@ -114,6 +114,65 @@ NANO_CASE(io_tensor)
         }
 }
 
+NANO_CASE(io_rgba)
+{
+        using namespace nano;
+
+        nano::random_t<coord_t> rng(16, 64);
+
+        const auto rows = rng();
+        const auto cols = rng();
+
+        const auto dcols = cols / 2;
+        const auto drows = rows / 4;
+
+        const auto r00 = rect_t{0, 0, dcols, drows};
+        const auto r01 = rect_t{dcols, 0, cols - dcols, drows};
+        const auto r10 = rect_t{0, drows, dcols, rows - drows};
+        const auto r11 = rect_t{dcols, drows, cols - dcols, rows - drows};
+
+        const auto c00 = luma_t(100);
+        const auto c01 = luma_t(101);
+        const auto c10 = luma_t(110);
+        const auto c11 = luma_t(111);
+
+        const auto path = "test-image.png";
+
+        {
+                image_t image(rows, cols, color_mode::luma);
+                image.plane(0, r00).setConstant(c00);
+                image.plane(0, r01).setConstant(c01);
+                image.plane(0, r10).setConstant(c10);
+                image.plane(0, r11).setConstant(c11);
+
+                NANO_CHECK_EQUAL(image.save(path), true);
+        }
+
+        {
+                image_t image;
+                NANO_CHECK_EQUAL(image.load_luma(path), true);
+                NANO_CHECK_EQUAL(image.rows(), rows);
+                NANO_CHECK_EQUAL(image.cols(), cols);
+                NANO_REQUIRE_EQUAL(image.mode(), color_mode::luma);
+
+                NANO_REQUIRE_EQUAL(image.dims(), 1);
+                NANO_CHECK_EQUAL(image.plane(0, r00).minCoeff(), c00);
+                NANO_CHECK_EQUAL(image.plane(0, r00).maxCoeff(), c00);
+
+                NANO_CHECK_EQUAL(image.plane(0, r01).minCoeff(), c01);
+                NANO_CHECK_EQUAL(image.plane(0, r01).maxCoeff(), c01);
+
+                NANO_CHECK_EQUAL(image.plane(0, r10).minCoeff(), c10);
+                NANO_CHECK_EQUAL(image.plane(0, r10).maxCoeff(), c10);
+
+                NANO_CHECK_EQUAL(image.plane(0, r11).minCoeff(), c11);
+                NANO_CHECK_EQUAL(image.plane(0, r11).maxCoeff(), c11);
+        }
+
+        // cleanup
+        std::remove(path);
+}
+
 NANO_CASE(io_file)
 {
         using namespace nano;
