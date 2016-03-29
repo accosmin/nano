@@ -201,7 +201,7 @@ int main(int argc, const char* argv[])
         const size_t rows = 16;
         const size_t cols = 16;
         const size_t samples = nano::n_threads() * 256 * 10;
-        const color_mode color = color_mode::rgba;
+        const color_mode color = color_mode::rgb;
 
         charset_task_t task(charset::numeric, color, rows, cols, samples);
         task.load("");
