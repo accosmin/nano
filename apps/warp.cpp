@@ -67,7 +67,7 @@ int main(int argc, const char *argv[])
                 // warp
                 tensor3d_t otensor, ftensor;
                 nano::measure_and_log(
-                        [&] () { otensor = warp(color::to_rgba_tensor(iimage.rgba()), params, &ftensor); },
+                        [&] () { otensor = warp(iimage.to_tensor(), params, &ftensor); },
                         "warped image");
 
                 // prepare output paths
@@ -80,7 +80,8 @@ int main(int argc, const char *argv[])
                 // save warped image
                 {
                         image_t image;
-                        image.load_rgba(color::from_rgba_tensor(otensor));
+                        image.from_tensor(otensor);
+                        image.make_rgba();
 
                         nano::measure_critical_and_log(
                                 [&] () { return image.save(opath); },
@@ -91,7 +92,8 @@ int main(int argc, const char *argv[])
                 if (cmd_save_fields)
                 {
                         image_t image;
-                        image.load_rgba(color::from_rgba_tensor(ftensor));
+                        image.from_tensor(ftensor);
+                        image.make_rgba();
 
                         nano::measure_critical_and_log(
                                 [&] () { return image.save(fpath); },

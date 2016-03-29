@@ -9,7 +9,8 @@
 namespace nano
 {
         using luma_t = uint8_t;
-        using rgba_t = Eigen::Matrix<uint8_t, 4, 1>;
+        using rgb_t  = tensor::vector_t<uint8_t, 3>;
+        using rgba_t = tensor::vector_t<uint8_t, 4>;
 
         /// 3D buffer to store image patches (number of dimensions is equal to color channels)
         using image_tensor_t = tensor::tensor_t<luma_t, 3>;
@@ -31,13 +32,20 @@ namespace nano
         ///
         template
         <
-                typename tred,
-                typename tgreen,
-                typename tblue
+                typename tmatrix
         >
-        auto make_luma(const tred& r, const tgreen& g, const tblue& b)
+        auto make_luma(const tmatrix& r, const tmatrix& g, const tmatrix& b)
         {
-                return (r * 11 + g * 16 + b * 5) / 32;
+                return (r.template cast<uint32_t>() * 11 +
+                        g.template cast<uint32_t>() * 16 +
+                        b.template cast<uint32_t>() * 5) / 32;
+        }
+        template <>
+        inline auto make_luma<luma_t>(const luma_t& r, const luma_t& g, const luma_t& b)
+        {
+                return (static_cast<uint32_t>(r) * 11 +
+                        static_cast<uint32_t>(g) * 16 +
+                        static_cast<uint32_t>(b) * 5) / 32;
         }
 }
 

@@ -11,20 +11,10 @@ namespace tensor
         template
         <
                 typename tvalue_,
+                int trows = Eigen::Dynamic,
                 typename tvalue = typename std::remove_const<tvalue_>::type
         >
-        using vector_t = Eigen::Matrix<tvalue, Eigen::Dynamic, 1, Eigen::ColMajor>;
-
-        ///
-        /// \brief fixed size vector types
-        ///
-        template
-        <
-                typename tvalue_,
-                int trows,
-                typename tvalue = typename std::remove_const<tvalue_>::type
-        >
-        using fixed_size_vector_t = Eigen::Matrix<tvalue, trows, 1, Eigen::ColMajor>;
+        using vector_t = Eigen::Matrix<tvalue, trows, 1, Eigen::ColMajor>;
 
         ///
         /// \brief map non-constant data to vectors

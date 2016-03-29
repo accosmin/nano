@@ -30,7 +30,7 @@ namespace nano
                         const coord_t iy = m_prows * grow + m_border * (grow + 1);
                         const coord_t ix = m_pcols * gcol + m_border * (gcol + 1);
 
-                        return m_image.copy(iy, ix, image.data());
+                        return m_image.copy(iy, ix, image);
                 }
                 else
                 {

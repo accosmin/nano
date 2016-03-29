@@ -47,10 +47,10 @@ namespace nano
         void task_t::save_as_images(const fold_t& fold, const string_t& basepath,
                 const tensor_size_t tgrows, const tensor_size_t tgcols) const
         {
-                const coord_t grows = static_cast<coord_t>(tgrows);
-                const coord_t gcols = static_cast<coord_t>(tgcols);
-                const coord_t border = 8;
-                const rgba_t bkcolor = color::make_rgba(225, 225, 0);
+                const auto grows = static_cast<coord_t>(tgrows);
+                const auto gcols = static_cast<coord_t>(tgcols);
+                const auto border = coord_t{8};
+                const auto bkcolor = rgba_t{225, 225, 0, 255};
 
                 const auto size = n_samples(fold);
 
@@ -76,8 +76,9 @@ namespace nano
 
                                                 if (i < size)
                                                 {
-                                                        image_t image(irows(), icols(), color_mode::rgba);
-                                                        image.load_rgba(color::from_rgb_tensor(input(fold, i)));
+                                                        image_t image;
+                                                        image.from_tensor(input(fold, i));
+                                                        image.make_rgba();
                                                         grid_image.set(r, c, image);
                                                         ++ i;
                                                 }

@@ -171,22 +171,12 @@ namespace nano
                         // image ...
                         const auto px = static_cast<size_t>(irows() * icols());
                         const auto ix = static_cast<size_t>(irows() * icols() * 3);
-                        const auto* pr = &idata[static_cast<size_t>(isection.dbegin()) + px * 0 + i * ix];
-                        const auto* pg = &idata[static_cast<size_t>(isection.dbegin()) + px * 1 + i * ix];
-                        const auto* pb = &idata[static_cast<size_t>(isection.dbegin()) + px * 2 + i * ix];
+                        const auto ptr = reinterpret_cast<luma_t*>(isection.dbegin());
 
-                        rgba_matrix_t rgba(irows(), icols());
-                        for (tensor_size_t px = 0, size = rgba.size(); px < size; ++ px)
-                        {
-                                rgba(px) = color::make_rgba(
-                                        static_cast<unsigned char>(*(pr ++)),
-                                        static_cast<unsigned char>(*(pg ++)),
-                                        static_cast<unsigned char>(*(pb ++)));
-                        }
-
-                        image_t image;
-                        image.load_rgba(rgba);
-
+                        image_t image(irows(), icols(), color_mode::rgb);
+                        image.plane(0) = tensor::map_matrix(ptr + px * 0 + i * ix, irows(), icols());
+                        image.plane(1) = tensor::map_matrix(ptr + px * 1 + i * ix, irows(), icols());
+                        image.plane(2) = tensor::map_matrix(ptr + px * 2 + i * ix, irows(), icols());
                         add_chunk(image);
 
                         // target ...

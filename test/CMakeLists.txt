@@ -37,7 +37,6 @@ build_test_app(test_thread_loop.cpp thread)
 build_test_app(test_thread_pool.cpp thread)
 
 build_test_app(test_geom.cpp vision)
-build_test_app(test_color.cpp vision)
 build_test_app(test_image.cpp vision)
 
 build_test_app(test_accumulator.cpp cortex)

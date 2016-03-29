@@ -45,8 +45,12 @@ namespace nano
                 /// \brief load image from decoded buffer
                 ///
                 bool load_luma(const char* buffer, const coord_t rows, const coord_t cols);
-                bool load_rgba(const char* buffer, const coord_t rows, const coord_t cols);
                 bool load_rgba(const char* buffer, const coord_t rows, const coord_t cols, const coord_t stride);
+                bool load_rgb(const char* buffer, const coord_t rows, const coord_t cols, const coord_t stride);
+
+                ///
+                /// \brief load from image tensor (keeps the color channels)
+                ///
                 bool load(const image_tensor_t& data);
 
                 ///
@@ -56,28 +60,32 @@ namespace nano
 
                 ///
                 /// \brief save image to scaled [0, 1] tensor
-                ///     with 1 (luma) or 3 (rgb) planes
                 ///
                 tensor3d_t to_tensor() const;
                 tensor3d_t to_tensor(const rect_t& region) const;
 
                 ///
-                /// \brief transform between color modes
+                /// \brief load image from scaled [0, 1] tensor
                 ///
-                bool make_luma();
-                bool make_rgba();
-                bool make_rgb();
+                bool from_tensor(const tensor3d_t& data);
+
+                ///
+                /// \brief transform to another color mode (if not already)
+                ///
+                void make_luma();
+                void make_rgba();
+                void make_rgb();
 
                 ///
                 /// \brief fill with constant color
                 ///
-                bool fill(const luma_t);
-                bool fill(const rgba_t);
+                void fill(const luma_t);
+                void fill(const rgba_t);
 
                 ///
-                /// \brief copy the given (region of the given) patch at the (top, left) location
+                /// \brief copy the given patch at the (top, left) location
                 ///
-                bool copy(const coord_t top, const coord_t left, const image_tensor_t& patch);
+                bool copy(const coord_t top, const coord_t left, const image_t& patch);
 
                 ///
                 /// \brief transpose in place the pixel matrix
@@ -87,7 +95,7 @@ namespace nano
                 ///
                 /// \brief set pixels to random values
                 ///
-                bool random();
+                void random();
 
                 ///
                 /// \brief check if the given rectangle is within image bounds
@@ -104,16 +112,26 @@ namespace nano
                 coord_t cols() const { return static_cast<coord_t>(m_data.size<2>()); }
                 coord_t size() const { return rows() * cols(); }
 
+                bool is_rgb() const { return mode() == color_mode::rgb; }
                 bool is_rgba() const { return mode() == color_mode::rgba; }
                 bool is_luma() const { return mode() == color_mode::luma; }
-                color_mode mode() const { return m_mode; }
+                color_mode mode() const;
 
-                const auto& data() const { return m_data; }
+                auto plane(const coord_t band) const { return m_data.matrix(band); }
+                auto plane(const coord_t band) { return m_data.matrix(band); }
+
+                auto plane(const coord_t band, const rect_t& rect) const
+                {
+                        return plane(band).block(rect.top(), rect.left(), rect.height(), rect.width());
+                }
+                auto plane(const coord_t band, const rect_t& rect)
+                {
+                        return plane(band).block(rect.top(), rect.left(), rect.height(), rect.width());
+                }
 
         private:
 
                 // attributes
-                color_mode              m_mode;
                 image_tensor_t          m_data;
         };
 

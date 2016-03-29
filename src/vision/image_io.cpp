@@ -20,30 +20,44 @@ namespace nano
                         {
                         case color_mode::luma:
                                 image.resize(1, rows, cols);
-                                for (int i = 0; i < size; ++ i, data += 4)
                                 {
-                                        image.vector(0)(i) = color::make_luma(data[0], data[1], data[2]);
+                                        auto band0 = image.vector(0);
+                                        for (int i = 0; i < size; ++ i, data += 4)
+                                        {
+                                                band0(i) = static_cast<luma_t>(make_luma(data[0], data[1], data[2]));
+                                        }
                                 }
                                 break;
 
                         case color_mode::rgba:
                                 image.resize(4, rows, cols);
-                                for (int i = 0; i < size; ++ i, data += 4)
                                 {
-                                        image.vector(0)(i) = data[0];
-                                        image.vector(1)(i) = data[1];
-                                        image.vector(2)(i) = data[2];
-                                        image.vector(3)(i) = data[3];
+                                        auto band0 = image.vector(0);
+                                        auto band1 = image.vector(1);
+                                        auto band2 = image.vector(2);
+                                        auto band3 = image.vector(3);
+                                        for (int i = 0; i < size; ++ i, data += 4)
+                                        {
+                                                band0(i) = data[0];
+                                                band1(i) = data[1];
+                                                band2(i) = data[2];
+                                                band3(i) = data[3];
+                                        }
                                 }
                                 break;
 
                         case color_mode::rgb:
                                 image.resize(3, rows, cols);
-                                for (int i = 0; i < size; ++ i, data += 4)
                                 {
-                                        image.vector(0)(i) = data[0];
-                                        image.vector(1)(i) = data[1];
-                                        image.vector(2)(i) = data[2];
+                                        auto band0 = image.vector(0);
+                                        auto band1 = image.vector(1);
+                                        auto band2 = image.vector(2);
+                                        for (int i = 0; i < size; ++ i, data += 4)
+                                        {
+                                                band0(i) = data[0];
+                                                band1(i) = data[1];
+                                                band2(i) = data[2];
+                                        }
                                 }
                                 break;
                         }
@@ -54,7 +68,7 @@ namespace nano
                 return ret;
         }
 
-        static bool load_image(const string_t& path, const color_mode mode, image_tensor_& image)
+        static bool load_image(const string_t& path, const color_mode mode, image_tensor_t& image)
         {
                 ilInit();
 
@@ -110,8 +124,8 @@ namespace nano
 
         bool save_image(const string_t& path, const image_tensor_t& image)
         {
-                const auto rows = mode == color_mode::rgba ? rgba.rows() : luma.rows();
-                const auto cols = mode == color_mode::rgba ? rgba.cols() : luma.cols();
+                const auto rows = image.rows();
+                const auto cols = image.cols();
 
                 ilInit();
 
@@ -120,18 +134,18 @@ namespace nano
 
                 bool ret = true;
 
-                switch (mode)
+                switch (image.size<0>())
                 {
-                case color_mode::luma:
+                case 1:
                         {
-                                luma_matrix_t temp(rows, cols);
-                                for (auto r = 0; r < rows; ++ r)
-                                {
-                                        for (auto c = 0; c < cols; ++ c)
-                                        {
-                                                const luma_t val = luma(rows - 1 - r, c);
+                                const auto band0 = image.matrix(0);
 
-                                                temp(r, c) = val;
+                                tensor::vector_t<luma_t> temp(rows * cols);
+                                for (auto r = 0, i = 0; r < rows; ++ r)
+                                {
+                                        for (auto c = 0; c < cols; ++ c, ++ i)
+                                        {
+                                                temp(i) = band0(rows - 1 - r, c);
                                         }
                                 }
                                 ret = ilTexImage(static_cast<ILuint>(cols), static_cast<ILuint>(rows),
@@ -139,26 +153,50 @@ namespace nano
                         }
                         break;
 
-                case color_mode::rgba:
+                case 3:
                         {
-                                rgba_matrix_t temp(rows, cols);
-                                for (auto r = 0; r < rows; ++ r)
-                                {
-                                        for (auto c = 0; c < cols; ++ c)
-                                        {
-                                                const rgba_t val = rgba(rows - 1 - r, c);
-                                                const rgba_t cr = color::get_red(val);
-                                                const rgba_t cg = color::get_green(val);
-                                                const rgba_t cb = color::get_blue(val);
-                                                const rgba_t ca = color::get_alpha(val);
+                                const auto band0 = image.matrix(0);
+                                const auto band1 = image.matrix(1);
+                                const auto band2 = image.matrix(2);
 
-                                                temp(r, c) = color::make_rgba(ca, cb, cg, cr);
+                                tensor::vector_t<luma_t> temp(rows * cols * 3);
+                                for (auto r = 0, i = 0; r < rows; ++ r)
+                                {
+                                        for (auto c = 0; c < cols; ++ c, i += 3)
+                                        {
+                                                temp(i + 0) = band0(rows - 1 - r, c);
+                                                temp(i + 1) = band1(rows - 1 - r, c);
+                                                temp(i + 2) = band2(rows - 1 - r, c);
+                                        }
+                                }
+                                ret = ilTexImage(static_cast<ILuint>(cols), static_cast<ILuint>(rows),
+                                                 1, 3, IL_RGB, IL_UNSIGNED_BYTE, (void*)temp.data());
+                        }
+                        break;
+
+                case 4:
+                        {
+                                const auto band0 = image.matrix(0);
+                                const auto band1 = image.matrix(1);
+                                const auto band2 = image.matrix(2);
+                                const auto band3 = image.matrix(3);
+
+                                tensor::vector_t<luma_t> temp(rows * cols * 4);
+                                for (auto r = 0, i = 0; r < rows; ++ r)
+                                {
+                                        for (auto c = 0; c < cols; ++ c, i += 4)
+                                        {
+                                                temp(i + 0) = band0(rows - 1 - r, c);
+                                                temp(i + 1) = band1(rows - 1 - r, c);
+                                                temp(i + 2) = band2(rows - 1 - r, c);
+                                                temp(i + 3) = band3(rows - 1 - r, c);
                                         }
                                 }
                                 ret = ilTexImage(static_cast<ILuint>(cols), static_cast<ILuint>(rows),
                                                  1, 4, IL_RGBA, IL_UNSIGNED_BYTE, (void*)temp.data());
                         }
                         break;
+
                 }
 
                 ret =   ret &&
@@ -170,27 +208,33 @@ namespace nano
                 return ret;
         }
 
-        bool load_rgba_image(const string_t& path, rgba_matrix_t& rgba)
+        bool load_rgba_image(const string_t& path, image_tensor_t& image)
         {
-                luma_matrix_t luma;
-                return load_image(path, color_mode::rgba, rgba, luma);
+                return load_image(path, color_mode::rgba, image);
         }
 
-        bool load_rgba_image(const string_t& name, const char* buffer, size_t buffer_size, rgba_matrix_t& rgba)
+        bool load_luma_image(const string_t& path, image_tensor_t& image)
         {
-                luma_matrix_t luma;
-                return load_image(name, buffer, buffer_size, color_mode::rgba, rgba, luma);
+                return load_image(path, color_mode::luma, image);
         }
 
-        bool load_luma_image(const string_t& path, luma_matrix_t& luma)
+        bool load_rgb_image(const string_t& path, image_tensor_t& image)
         {
-                rgba_matrix_t rgba;
-                return load_image(path, color_mode::luma, rgba, luma);
+                return load_image(path, color_mode::rgb, image);
         }
 
-        bool load_luma_image(const string_t& name, const char* buffer, size_t buffer_size, luma_matrix_t& luma)
+        bool load_rgba_image(const string_t& name, const char* buffer, const size_t buffer_size, image_tensor_t& image)
         {
-                rgba_matrix_t rgba;
-                return load_image(name, buffer, buffer_size, color_mode::luma, rgba, luma);
+                return load_image(name, buffer, buffer_size, color_mode::rgba, image);
+        }
+
+        bool load_luma_image(const string_t& name, const char* buffer, const size_t buffer_size, image_tensor_t& image)
+        {
+                return load_image(name, buffer, buffer_size, color_mode::luma, image);
+        }
+
+        bool load_rgb_image(const string_t& name, const char* buffer, const size_t buffer_size, image_tensor_t& image)
+        {
+                return load_image(name, buffer, buffer_size, color_mode::rgb, image);
         }
 }
