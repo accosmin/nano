@@ -124,15 +124,15 @@ namespace nano
 
                 void next()
                 {
+                        const auto size = m_task.n_samples(m_fold);
+                        if (m_end >= size)
+                        {
+                                m_task.shuffle(m_fold);
+                                m_end = 0;
+                        }
                         m_begin = m_end;
-                        m_end = std::min(m_begin + m_batch, m_task.n_samples(m_fold));
-                }
+                        m_end = std::min(m_begin + m_batch, size);
 
-                void shuffle()
-                {
-                        m_task.shuffle(m_fold);
-                        m_begin = m_end = 0;
-                        next();
                 }
 
                 size_t begin() const { return m_begin; }

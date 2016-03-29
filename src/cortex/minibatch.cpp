@@ -57,7 +57,6 @@ namespace nano
                 for (size_t epoch = 1; epoch <= epochs; ++ epoch)
                 {
                         // optimize mini-batches in sequence
-                        iter.shuffle();
                         for (size_t i = 0; i < epoch_size; ++ i)
                         {
                                 const auto state = nano::minimize(

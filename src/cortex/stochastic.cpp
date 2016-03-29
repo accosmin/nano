@@ -53,8 +53,6 @@ namespace nano
 
                 auto fn_tlog = [&] (const opt_state_t& state, const auto& config)
                 {
-                        iter.shuffle();
-
                         // evaluate training samples
                         lacc.set_params(state.x);
                         lacc.update(task, tfold);
@@ -73,8 +71,6 @@ namespace nano
 
                 auto fn_ulog = [&] (const opt_state_t& state, const auto& config)
                 {
-                        iter.shuffle();
-
                         // evaluate training samples
                         lacc.set_params(state.x);
                         lacc.update(task, tfold);
