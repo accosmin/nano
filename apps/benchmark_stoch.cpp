@@ -68,7 +68,7 @@ namespace
                         const auto name =
                                 nano::to_string(optimizer);
 
-                        benchmark::benchmark_function(function, x0s, op, name, { 1e-5, 1e-4, 1e-3, 1e-2 }, stats, gstats);
+                        benchmark::benchmark_function(function, x0s, op, name, {1e-6, 1e-5, 1e-4, 1e-3}, stats, gstats);
                 }
 
                 // show per-problem statistics
@@ -82,11 +82,11 @@ int main(int argc, const char* argv[])
 
         // parse the command line
         nano::cmdline_t cmdline("benchmark stochastic optimizers");
-        cmdline.add("", "min-dims",     "minimum number of dimensions for each test function (if feasible)", "1");
-        cmdline.add("", "max-dims",     "maximum number of dimensions for each test function (if feasible)", "8");
-        cmdline.add("", "trials",       "number of random trials for each test function", "1024");
-        cmdline.add("", "epochs",       "optimization: number of epochs", "256");
-        cmdline.add("", "epoch-size",   "optimization: number of iterations per epoch", "128");
+        cmdline.add("", "min-dims",     "minimum number of dimensions for each test function (if feasible)", "100");
+        cmdline.add("", "max-dims",     "maximum number of dimensions for each test function (if feasible)", "1000");
+        cmdline.add("", "trials",       "number of random trials for each test function", "100");
+        cmdline.add("", "epochs",       "optimization: number of epochs", "400");
+        cmdline.add("", "epoch-size",   "optimization: number of iterations per epoch", "200");
 
         cmdline.process(argc, argv);
 

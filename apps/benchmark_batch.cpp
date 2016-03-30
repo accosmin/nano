@@ -97,7 +97,7 @@ namespace
                                 nano::to_string(ls_init) + "][" +
                                 nano::to_string(ls_strat) + "]";
 
-                        benchmark::benchmark_function(function, x0s, op, name, { 1e-12, 1e-10, 1e-8, 1e-6 }, stats, gstats);
+                        benchmark::benchmark_function(function, x0s, op, name, {1e-12, 1e-10, 1e-8, 1e-6}, stats, gstats);
                 }
 
                 // show per-problem statistics
@@ -111,9 +111,9 @@ int main(int argc, const char* argv[])
 
         // parse the command line
         nano::cmdline_t cmdline("benchmark batch optimizers");
-        cmdline.add("", "min-dims",     "minimum number of dimensions for each test function (if feasible)", "1");
-        cmdline.add("", "max-dims",     "maximum number of dimensions for each test function (if feasible)", "8");
-        cmdline.add("", "trials",       "number of random trials for each test function", "1024");
+        cmdline.add("", "min-dims",     "minimum number of dimensions for each test function (if feasible)", "100");
+        cmdline.add("", "max-dims",     "maximum number of dimensions for each test function (if feasible)", "1000");
+        cmdline.add("", "trials",       "number of random trials for each test function", "100");
         cmdline.add("", "iterations",   "maximum number of iterations", "8000");
 
         cmdline.process(argc, argv);
