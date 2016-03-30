@@ -1,7 +1,5 @@
 #include "image.h"
 #include "image_io.h"
-#include "math/random.hpp"
-#include "tensor/random.hpp"
 
 namespace nano
 {
@@ -233,9 +231,14 @@ namespace nano
                 }
         }
 
+        void image_t::fill(const rgb_t rgb)
+        {
+                return fill(rgba_t{rgb(0), rgb(1), rgb(2), 255});
+        }
+
         void image_t::fill(const luma_t luma)
         {
-                return fill({luma, luma, luma, 255});
+                return fill(rgba_t{luma, luma, luma, 255});
         }
 
         bool image_t::copy(const coord_t top, const coord_t left, const image_t& patch)
@@ -253,11 +256,6 @@ namespace nano
                         }
                         return true;
                 }
-        }
-
-        void image_t::random()
-        {
-                tensor::set_random(m_data, nano::random_t<luma_t>(0, 255));
         }
 
         color_mode image_t::mode() const

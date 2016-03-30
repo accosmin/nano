@@ -81,16 +81,12 @@ namespace nano
                 ///
                 void fill(const luma_t);
                 void fill(const rgba_t);
+                void fill(const rgb_t);
 
                 ///
                 /// \brief copy the given patch at the (top, left) location
                 ///
                 bool copy(const coord_t top, const coord_t left, const image_t& patch);
-
-                ///
-                /// \brief set pixels to random values
-                ///
-                void random();
 
                 ///
                 /// \brief check if the given rectangle is within image bounds
