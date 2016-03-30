@@ -38,7 +38,7 @@ namespace tensor
                 ///
                 /// \brief constructor
                 ///
-                tensor_storage_t(const tdims& dims) :
+                explicit tensor_storage_t(const tdims& dims) :
                         m_dims(dims)
                 {
                 }
@@ -47,7 +47,7 @@ namespace tensor
                 /// \brief constructor
                 ///
                 template <typename... tsizes>
-                tensor_storage_t(const tsizes... dims) :
+                explicit tensor_storage_t(const tsizes... dims) :
                         m_dims(dims...)
                 {
                 }

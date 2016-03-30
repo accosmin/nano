@@ -54,7 +54,7 @@ namespace tensor
                 /// \brief constructor
                 ///
                 template <typename... tindices>
-                tensor_index_t(const tindices... sizes) :
+                explicit tensor_index_t(const tindices... sizes) :
                         m_sizes({{sizes...}})
                 {
                         static_assert(sizeof...(sizes) == tdimensions, "wrong number of tensor dimensions");
@@ -107,7 +107,7 @@ namespace tensor
                 ///
                 /// \brief retrieve the number of dimensions
                 ///
-                constexpr std::size_t dimensionality() const
+                static constexpr std::size_t dimensionality()
                 {
                         return tdimensions;
                 }
