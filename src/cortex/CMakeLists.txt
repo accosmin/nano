@@ -10,6 +10,7 @@ set(libcortex_sources
         cortex.h
         criterion.cpp
         criterion.h
+        iterator.h
         layer.cpp
         layer.h
         loss.cpp

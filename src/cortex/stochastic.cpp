@@ -1,6 +1,6 @@
-#include "task.h"
 #include "timer.h"
 #include "logger.h"
+#include "iterator.h"
 #include "stochastic.h"
 #include "accumulator.h"
 #include "math/tune.hpp"
@@ -26,7 +26,7 @@ namespace nano
 
                 size_t epoch = 0;
 
-                batch_iterator_t iter(task, tfold, batch_size);
+                minibatch_iterator_t<shuffle::on> iter(task, tfold, batch_size);
 
                 // construct the optimization problem
                 const auto fn_size = [&] ()
