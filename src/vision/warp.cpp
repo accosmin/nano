@@ -159,7 +159,7 @@ namespace nano
                 // generate random fields
                 const scalar_t pi = 4 * std::atan(1.0);
 
-                auto random_theta = nano::make_rng<scalar_t>(-pi / 8.0, +pi / 8.0);
+                auto rng_theta = nano::make_rng<scalar_t>(-pi / 8.0, +pi / 8.0);
                 auto rng_delta = nano::make_rng<scalar_t>(-1.0, +1.0);
 
                 matrix_t fieldx, fieldy;
@@ -172,7 +172,7 @@ namespace nano
 
                 case field_type::rotation:
                         std::tie(fieldx, fieldy) =
-                        make_rotation_fields(patch.rows(), patch.cols(), random_theta(), params.m_noise, params.m_sigma);
+                        make_rotation_fields(patch.rows(), patch.cols(), rng_theta(), params.m_noise, params.m_sigma);
                         break;
 
                 case field_type::random:
