@@ -42,26 +42,29 @@ namespace nano
                 const typename problem_t<tscalar>::tsize& max_dims,
                 const toperator& op)
         {
-                switch (type)
+                if (min_dims == 1)
                 {
-                case test_type::all:
-                        op(function_beale_t<tscalar>());
-                        op(function_booth_t<tscalar>());
-                        op(function_matyas_t<tscalar>());
-                        op(function_colville_t<tscalar>());
-                        op(function_mccormick_t<tscalar>());
-                        op(function_rosenbrock_t<tscalar>(2));
-                        op(function_rosenbrock_t<tscalar>(3));
-                        op(function_3hump_camel_t<tscalar>());
-                        op(function_goldstein_price_t<tscalar>());
-                        op(function_himmelblau_t<tscalar>());
-                        op(function_bohachevsky_t<tscalar>(btype::one));
-                        op(function_bohachevsky_t<tscalar>(btype::two));
-                        op(function_bohachevsky_t<tscalar>(btype::three));
-                        break;
+                        switch (type)
+                        {
+                        case test_type::all:
+                                op(function_beale_t<tscalar>());
+                                op(function_booth_t<tscalar>());
+                                op(function_matyas_t<tscalar>());
+                                op(function_colville_t<tscalar>());
+                                op(function_mccormick_t<tscalar>());
+                                op(function_rosenbrock_t<tscalar>(2));
+                                op(function_rosenbrock_t<tscalar>(3));
+                                op(function_3hump_camel_t<tscalar>());
+                                op(function_goldstein_price_t<tscalar>());
+                                op(function_himmelblau_t<tscalar>());
+                                op(function_bohachevsky_t<tscalar>(btype::one));
+                                op(function_bohachevsky_t<tscalar>(btype::two));
+                                op(function_bohachevsky_t<tscalar>(btype::three));
+                                break;
 
-                default:
-                        break;
+                        default:
+                                break;
+                        }
                 }
 
                 for (typename nano::problem_t<tscalar>::tsize dims = min_dims; dims <= max_dims; dims *= 2)
