@@ -84,11 +84,6 @@ namespace nano
                 void fill(const rgb_t);
 
                 ///
-                /// \brief copy the given patch at the (top, left) location
-                ///
-                bool copy(const coord_t top, const coord_t left, const image_t& patch);
-
-                ///
                 /// \brief check if the given rectangle is within image bounds
                 ///
                 bool valid(const rect_t& rect) const
@@ -111,13 +106,22 @@ namespace nano
                 auto plane(const coord_t band) const { return m_data.matrix(band); }
                 auto plane(const coord_t band) { return m_data.matrix(band); }
 
+                auto plane(const coord_t band, const coord_t t, const coord_t l, const coord_t h, const coord_t w) const
+                {
+                        return plane(band).block(t, l, h, w);
+                }
+                auto plane(const coord_t band, const coord_t t, const coord_t l, const coord_t h, const coord_t w)
+                {
+                        return plane(band).block(t, l, h, w);
+                }
+
                 auto plane(const coord_t band, const rect_t& rect) const
                 {
-                        return plane(band).block(rect.top(), rect.left(), rect.height(), rect.width());
+                        return plane(band, rect.top(), rect.left(), rect.height(), rect.width());
                 }
                 auto plane(const coord_t band, const rect_t& rect)
                 {
-                        return plane(band).block(rect.top(), rect.left(), rect.height(), rect.width());
+                        return plane(band, rect.top(), rect.left(), rect.height(), rect.width());
                 }
 
         private:

@@ -24,13 +24,19 @@ namespace nano
         {
                 if (    grow < m_grows &&
                         gcol < m_gcols &&
+                        image.dims() == m_image.dims() &&
                         image.rows() == m_prows &&
                         image.cols() == m_pcols)
                 {
                         const coord_t iy = m_prows * grow + m_border * (grow + 1);
                         const coord_t ix = m_pcols * gcol + m_border * (gcol + 1);
 
-                        return m_image.copy(iy, ix, image);
+                        for (auto i = 0; i < image.dims(); ++ i)
+                        {
+                                m_image.plane(i, iy, ix, m_prows, m_pcols) = image.plane(i);
+                        }
+
+                        return true;
                 }
                 else
                 {

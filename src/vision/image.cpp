@@ -241,23 +241,6 @@ namespace nano
                 return fill(rgba_t{luma, luma, luma, 255});
         }
 
-        bool image_t::copy(const coord_t top, const coord_t left, const image_t& patch)
-        {
-                if (    !valid(rect_t(left, top, patch.cols(), patch.rows())) ||
-                        dims() != patch.dims())
-                {
-                        return false;
-                }
-                else
-                {
-                        for (auto i = 0; i < dims(); ++ i)
-                        {
-                                plane(i).block(top, left, patch.rows(), patch.cols()) = patch.plane(i);
-                        }
-                        return true;
-                }
-        }
-
         color_mode image_t::mode() const
         {
                 switch (dims())
