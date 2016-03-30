@@ -74,8 +74,8 @@ int main(int argc, const char *argv[])
                 const string_t basename = nano::dirname(cmd_output) + nano::stem(cmd_output);
                 const string_t extension = nano::extension(cmd_output);
 
-                const string_t opath = basename + nano::to_string(c + 1) + extension;
-                const string_t fpath = basename + nano::to_string(c + 1) + "_field" + extension;
+                const string_t opath = basename + nano::to_string(c + 1) + "." + extension;
+                const string_t fpath = basename + nano::to_string(c + 1) + "_field." + extension;
 
                 // save warped image
                 {
