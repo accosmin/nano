@@ -22,10 +22,6 @@ namespace nano
         >
         struct cgd_step_HS
         {
-                cgd_step_HS()
-                {
-                }
-
                 tscalar operator()(const tstate& prev, const tstate& curr) const
                 {
                         return  curr.g.dot(curr.g - prev.g) /
@@ -43,10 +39,6 @@ namespace nano
         >
         struct cgd_step_FR
         {
-                cgd_step_FR()
-                {
-                }
-
                 tscalar operator()(const tstate& prev, const tstate& curr) const
                 {
                         return  curr.g.squaredNorm() /
@@ -64,10 +56,6 @@ namespace nano
         >
         struct cgd_step_PRP
         {
-                cgd_step_PRP()
-                {
-                }
-
                 tscalar operator()(const tstate& prev, const tstate& curr) const
                 {
                         return  std::max(tscalar(0),                    // PRP(+)
@@ -86,10 +74,6 @@ namespace nano
         >
         struct cgd_step_CD
         {
-                cgd_step_CD()
-                {
-                }
-
                 tscalar operator()(const tstate& prev, const tstate& curr) const
                 {
                         return -curr.g.squaredNorm() /
@@ -107,10 +91,6 @@ namespace nano
         >
         struct cgd_step_LS
         {
-                cgd_step_LS()
-                {
-                }
-
                 tscalar operator()(const tstate& prev, const tstate& curr) const
                 {
                         return -curr.g.dot(curr.g - prev.g) /
@@ -128,10 +108,6 @@ namespace nano
         >
         struct cgd_step_DY
         {
-                cgd_step_DY()
-                {
-                }
-
                 tscalar operator()(const tstate& prev, const tstate& curr) const
                 {
                         return  curr.g.squaredNorm() /
@@ -149,10 +125,6 @@ namespace nano
         >
         struct cgd_step_N
         {
-                cgd_step_N()
-                {
-                }
-
                 tscalar operator()(const tstate& prev, const tstate& curr) const
                 {
                         const auto y = curr.g - prev.g;
@@ -179,10 +151,6 @@ namespace nano
         >
         struct cgd_step_DYHS
         {
-                cgd_step_DYHS()
-                {
-                }
-
                 tscalar operator()(const tstate& prev, const tstate& curr) const
                 {
                         const tscalar dy = cgd_step_DY<tstate>()(prev, curr);
@@ -202,10 +170,6 @@ namespace nano
         >
         struct cgd_step_DYCD
         {
-                cgd_step_DYCD()
-                {
-                }
-
                 tscalar operator()(const tstate& prev, const tstate& curr) const
                 {
                         return  curr.g.squaredNorm() /

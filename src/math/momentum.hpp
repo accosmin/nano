@@ -35,7 +35,7 @@ namespace nano
                 {
                         const auto correction = (m_correction == 1) ? tscalar(1) : (tscalar(1) - m_correction);
                         assert(correction > 0);
-                        return m_value / correction;
+                        return m_value * (1 / correction);
                 }
 
         private:

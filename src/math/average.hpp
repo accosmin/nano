@@ -19,7 +19,7 @@ namespace nano
                 void update(const tvalue& value)
                 {
                         m_count ++;
-                        m_value = (m_value * (m_count - 1) + value) / m_count;
+                        m_value = (m_value * (m_count - 1) + value) * (1 / m_count);
                 }
 
                 auto value() const

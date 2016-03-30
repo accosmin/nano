@@ -39,7 +39,7 @@ namespace nano
                         ls_strategy_t<tproblem> ls_step(param.m_ls_strategy, 1e-4, 0.1);
 
                         // CGD direction strategy
-                        const tcgd_update op_update;
+                        const tcgd_update op_update{};
 
                         const auto op = [&] (tstate& cstate, const std::size_t i)
                         {
