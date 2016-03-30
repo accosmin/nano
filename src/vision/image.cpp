@@ -94,10 +94,7 @@ namespace nano
         tensor3d_t image_t::to_tensor() const
         {
                 tensor3d_t ret(dims(), rows(), cols());
-                for (auto i = 0; i < dims(); ++ i)
-                {
-                        ret.matrix(i) = plane(i).cast<scalar_t>() / 255.0;
-                }
+                ret.vector() = m_data.vector().cast<scalar_t>() * (1.0 / 255.0);
                 return ret;
         }
 
@@ -106,7 +103,7 @@ namespace nano
                 tensor3d_t ret(dims(), rect.height(), rect.width());
                 for (auto i = 0; i < dims(); ++ i)
                 {
-                        ret.matrix(i) = plane(i, rect).cast<scalar_t>() / 255.0;
+                        ret.matrix(i) = plane(i, rect).cast<scalar_t>() * (1.0 / 255.0);
                 }
                 return ret;
         }
@@ -119,10 +116,7 @@ namespace nano
                 case 3:
                 case 4:
                         m_data.resize(data.size<0>(), data.rows(), data.cols());
-                        for (auto i = 0; i < dims(); ++ i)
-                        {
-                                plane(i) = (data.matrix(i) * 255.0).array().max(0).min(255).cast<luma_t>();
-                        }
+                        m_data.vector() = (data.vector() * 255.0).array().max(0).min(255).cast<luma_t>();
                         return true;
 
                 default:
