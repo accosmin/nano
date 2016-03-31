@@ -93,7 +93,7 @@ namespace nano
                 {
                 case batch_optimizer::LBFGS:
                         return minimize(problem, fn_ulog, x0, optimizer, iterations, epsilon,
-                                        ls_initializer::unit, ls_strategy::interpolation,
+                                        ls_initializer::quadratic, ls_strategy::interpolation,
                                         history_size);
 
                 case batch_optimizer::CGD: // fall through!
@@ -104,7 +104,7 @@ namespace nano
 
                 case batch_optimizer::CGD_CD:
                         return minimize(problem, fn_ulog, x0, optimizer, iterations, epsilon,
-                                        ls_initializer::unit, ls_strategy::interpolation,
+                                        ls_initializer::quadratic, ls_strategy::interpolation,
                                         history_size);
 
                 case batch_optimizer::CGD_DY:
@@ -114,12 +114,12 @@ namespace nano
 
                 case batch_optimizer::CGD_FR:
                         return minimize(problem, fn_ulog, x0, optimizer, iterations, epsilon,
-                                        ls_initializer::quadratic, ls_strategy::backtrack_armijo,
+                                        ls_initializer::quadratic, ls_strategy::interpolation,
                                         history_size);
 
                 case batch_optimizer::CGD_HS:
                         return minimize(problem, fn_ulog, x0, optimizer, iterations, epsilon,
-                                        ls_initializer::quadratic, ls_strategy::backtrack_wolfe,
+                                        ls_initializer::quadratic, ls_strategy::interpolation,
                                         history_size);
 
                 case batch_optimizer::CGD_LS:
@@ -134,12 +134,12 @@ namespace nano
 
                 case batch_optimizer::CGD_DYCD:
                         return minimize(problem, fn_ulog, x0, optimizer, iterations, epsilon,
-                                        ls_initializer::unit, ls_strategy::interpolation,
+                                        ls_initializer::quadratic, ls_strategy::backtrack_wolfe,
                                         history_size);
 
                 case batch_optimizer::CGD_DYHS:
                         return minimize(problem, fn_ulog, x0, optimizer, iterations, epsilon,
-                                        ls_initializer::quadratic, ls_strategy::interpolation,
+                                        ls_initializer::quadratic, ls_strategy::backtrack_wolfe,
                                         history_size);
 
                 case batch_optimizer::GD:
