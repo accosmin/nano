@@ -50,7 +50,7 @@ namespace nano
                 ///
                 /// \brief set the given number of active workers [1, n_workers]
                 ///
-                void activate(std::size_t count);
+                void activate(const std::size_t count);
 
                 ///
                 /// \brief enqueue a new job to execute

@@ -5,7 +5,7 @@
 namespace nano
 {
         ///
-        /// \brief split a loop computation of the given size using a thread pool
+        /// \brief split a loop computation of the given size using a thread pool.
         /// NB: the operator receives the index of the sample to process: op(i)
         ///
         template
@@ -13,16 +13,20 @@ namespace nano
                 typename tsize,
                 class toperator
         >
-        void loopi(tsize N, pool_t& pool, toperator op)
+        void loopi(const tsize size, pool_t& pool, const toperator op, const tsize split = 1)
         {
-                const tsize n_tasks = static_cast<tsize>(pool.n_workers());
-                const tsize task_size = (N + n_tasks - 1) / n_tasks;
+                assert(split > 0);
+                const auto n_workers = static_cast<tsize>(pool.n_workers());
+                const auto task_size = (size + n_workers * split - 1) / (n_workers * split);
 
-                for (tsize t = 0; t < n_tasks; ++ t)
+                for (tsize begin = 0, end = 0; end < size; )
                 {
+                        begin = end;
+                        end = std::min(begin + task_size, size);
+
                         pool.enqueue([=,&op]()
                         {
-                                for (tsize i = t * task_size, iend = std::min(i + task_size, N); i < iend; ++ i)
+                                for (tsize i = begin; i < end; ++ i)
                                 {
                                         op(i);
                                 }
@@ -33,29 +37,29 @@ namespace nano
         }
 
         ///
-        /// \brief split a loop computation of the given size using multiple threads
+        /// \brief split a loop computation of the given size using the given number of threads.
         ///
         template
         <
                 typename tsize,
                 class toperator
         >
-        void loopi(tsize N, tsize nthreads, toperator op)
+        void loopi(const tsize size, const tsize nthreads, const toperator op, const tsize split = 1)
         {
                 pool_t pool(nthreads);
-                loopi(N, pool, op);
+                loopi(size, pool, op, split);
         }
 
         ///
-        /// \brief split a loop computation of the given size using all available threads
+        /// \brief split a loop computation of the given size using all available threads.
         ///
         template
         <
                 typename tsize,
                 class toperator
         >
-        void loopi(tsize N, toperator op)
+        void loopi(const tsize size, const toperator op, const tsize split = 1)
         {
-                loopi(N, tsize(0), op);
+                loopi(size, tsize(0), op, split);
         }
 }

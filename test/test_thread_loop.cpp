@@ -12,7 +12,7 @@ namespace
                 typename tscalar,
                 typename toperator
         >
-        tscalar test_st(const size_t size, toperator op)
+        tscalar test_st(const size_t size, const toperator op)
         {
                 std::vector<tscalar> results(size);
                 for (size_t i = 0; i < results.size(); ++ i)
@@ -29,13 +29,13 @@ namespace
                 typename tscalar,
                 typename toperator
         >
-        tscalar test_mt(const size_t size, toperator op)
+        tscalar test_mt(const size_t size, const toperator op, const size_t splits)
         {
                 std::vector<tscalar> results(size);
                 nano::loopi(size, [results = std::ref(results), op = op] (size_t i)
                 {
                         results.get()[i] = op(i);
-                });
+                }, splits);
 
                 return std::accumulate(results.begin(), results.end(), tscalar(0));
         }
@@ -46,13 +46,13 @@ namespace
                 typename tscalar,
                 typename toperator
         >
-        tscalar test_mt(const size_t size, const size_t nthreads, toperator op)
+        tscalar test_mt(const size_t size, const size_t nthreads, const toperator op, const size_t splits)
         {
                 std::vector<tscalar> results(size);
                 nano::loopi(size, nthreads, [results = std::ref(results), op = op] (size_t i)
                 {
                         results.get()[i] = op(i);
-                });
+                }, splits);
 
                 return std::accumulate(results.begin(), results.end(), tscalar(0));
         }
@@ -65,7 +65,7 @@ NANO_CASE(evaluate)
         const size_t min_size = 7;
         const size_t max_size = 3 * 3 * 7;
 
-        typedef double scalar_t;
+        using scalar_t = double;
 
         // operator to test
         const auto op = [](size_t i)
@@ -81,13 +81,16 @@ NANO_CASE(evaluate)
                 const scalar_t st = test_st<scalar_t>(size, op);
 
                 // multi-threaded
-                const scalar_t mt = test_mt<scalar_t>(size, op);
+                const scalar_t mt = test_mt<scalar_t>(size, op, 1);
                 NANO_CHECK_CLOSE(st, mt, nano::epsilon1<scalar_t>());
 
                 for (size_t nthreads = 1; nthreads <= nano::n_threads(); nthreads += 2)
                 {
-                        const scalar_t mtx = test_mt<scalar_t>(size, nthreads, op);
-                        NANO_CHECK_CLOSE(st, mtx, nano::epsilon1<scalar_t>());
+                        for (size_t splits = 1; splits <= 8; ++ splits)
+                        {
+                                const scalar_t mtx = test_mt<scalar_t>(size, nthreads, op, splits);
+                                NANO_CHECK_CLOSE(st, mtx, nano::epsilon1<scalar_t>());
+                        }
                 }
         }
 }

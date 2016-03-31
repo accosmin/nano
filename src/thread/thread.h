@@ -1,6 +1,7 @@
 #pragma once
 
 #include <thread>
+#include <algorithm>
 
 namespace nano
 {
@@ -9,6 +10,6 @@ namespace nano
         ///
         inline unsigned int n_threads()
         {
-                return std::thread::hardware_concurrency();
+                return std::max((unsigned int)(1), std::thread::hardware_concurrency());
         }
 }
