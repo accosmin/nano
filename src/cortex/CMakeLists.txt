@@ -27,6 +27,7 @@ set(libcortex_sources
         task.h
         trainer.cpp
         trainer.h
+        trainer_loop.hpp
         trainer_result.cpp
         trainer_result.h
         trainer_state.cpp

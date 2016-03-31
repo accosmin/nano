@@ -2,10 +2,9 @@
 #include "logger.h"
 #include "iterator.h"
 #include "minibatch.h"
-#include "accumulator.h"
-#include "math/tune.hpp"
 #include "math/batch.hpp"
 #include "thread/thread.h"
+#include "trainer_loop.hpp"
 #include "text/to_string.hpp"
 
 namespace nano
@@ -110,33 +109,13 @@ namespace nano
                 const loss_t& loss, const criterion_t& criterion,
                 const batch_optimizer optimizer, const size_t epochs, const scalar_t epsilon, const bool verbose)
         {
-                vector_t x0;
-                model.save_params(x0);
-
-                const auto tfold = fold_t{fold, protocol::train};
-                const auto vfold = fold_t{fold, protocol::valid};
-
-                // setup acumulators
-                accumulator_t lacc(model, loss, criterion, criterion_t::type::value); lacc.set_threads(nthreads);
-                accumulator_t gacc(model, loss, criterion, criterion_t::type::vgrad); gacc.set_threads(nthreads);
-
-                // tune the regularization factor (if needed)
-                const auto op = [&] (const scalar_t lambda)
+                const auto op = [&] (
+                        const auto& tfold, const auto& vfold, const auto& lacc, const auto& gacc, const auto& x0)
                 {
-                        lacc.set_lambda(lambda);
-                        gacc.set_lambda(lambda);
                         return train(task, tfold, vfold, lacc, gacc, x0, optimizer, epochs, epsilon, verbose);
                 };
 
-                if (lacc.can_regularize())
-                {
-                        const auto space = nano::make_log10_space(-6.0, +6.0, 0.5);
-                        return nano::tune(op, space).optimum();
-                }
-                else
-                {
-                        return op(0.0);
-                }
+                return trainer_loop(model, task, fold, nthreads, loss, criterion, op);
         }
 }
 
