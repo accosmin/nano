@@ -15,7 +15,7 @@ namespace nano
         /// \brief stochastically train the given model
         ///
         NANO_PUBLIC trainer_result_t stochastic_train(
-                const model_t&, const task_t&, const fold_t& tfold, const fold_t& vfold, const size_t nthreads,
+                const model_t&, const task_t&, const size_t fold, const size_t nthreads,
                 const loss_t&, const criterion_t&,
                 const stoch_optimizer optimizer, const size_t epochs,
                 bool verbose = true);

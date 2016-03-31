@@ -78,7 +78,7 @@ static void test_optimizer(model_t& model, const string_t& name, const string_t&
 }
 
 static void evaluate(
-        model_t& model, const task_t& task, const fold_t& tfold, const fold_t& vfold,
+        model_t& model, const task_t& task, const size_t fold,
         const loss_t& loss, const criterion_t& criterion,
         const size_t trials, const size_t iterations, const string_t& basepath, nano::table_t& table)
 {
@@ -131,7 +131,7 @@ static void evaluate(
                 const auto optname = "batch-" + nano::to_string(optimizer);
                 test_optimizer(model, basename + optname, basepath + optname, table, x0s, [&] ()
                 {
-                        return  nano::batch_train(model, task, tfold, vfold,
+                        return  nano::batch_train(model, task, fold,
                                 n_threads, loss, criterion, optimizer, iterations, epsilon, verbose);
                 });
         }
@@ -141,7 +141,7 @@ static void evaluate(
                 const auto optname = "minibatch-" + nano::to_string(optimizer);
                 test_optimizer(model, basename + optname, basepath + optname, table, x0s, [&] ()
                 {
-                        return  nano::minibatch_train(model, task, tfold, vfold,
+                        return  nano::minibatch_train(model, task, fold,
                                 n_threads, loss, criterion, optimizer, iterations, epsilon, verbose);
                 });
         }
@@ -151,7 +151,7 @@ static void evaluate(
                 const auto optname = "stochastic-" + nano::to_string(optimizer);
                 test_optimizer(model, basename + optname, basepath + optname, table, x0s, [&] ()
                 {
-                        return  nano::stochastic_train(model, task, tfold, vfold,
+                        return  nano::stochastic_train(model, task, fold,
                                 n_threads, loss, criterion, optimizer, iterations, verbose);
                 });
         }
@@ -206,9 +206,7 @@ int main(int argc, const char* argv[])
         charset_task_t task(charset::digit, color, rows, cols, count);
         task.load("");
 
-        const auto tfold = fold_t{0, protocol::train};
-        const auto vfold = fold_t{0, protocol::valid};
-
+        const size_t fold = 0;
         const auto outputs = task.osize();
 
         // construct models
@@ -268,8 +266,7 @@ int main(int argc, const char* argv[])
 
                                 const auto basepath = netname + "-" + iloss + "-" + icriterion + "-";
 
-                                evaluate(*model, task, tfold, vfold,
-                                         *loss, *criterion, trials, iterations, basepath, table);
+                                evaluate(*model, task, fold, *loss, *criterion, trials, iterations, basepath, table);
                         }
 
                         // show results

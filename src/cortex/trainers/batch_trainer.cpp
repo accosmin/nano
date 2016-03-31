@@ -7,13 +7,13 @@
 
 namespace nano
 {
-        batch_trainer_t::batch_trainer_t(const string_t& parameters)
-                :       trainer_t(parameters)
+        batch_trainer_t::batch_trainer_t(const string_t& parameters) :
+                trainer_t(parameters)
         {
         }
 
         trainer_result_t batch_trainer_t::train(
-                const task_t& task, const fold_t& tfold, const fold_t& vfold, const size_t nthreads,
+                const task_t& task, const size_t fold, const size_t nthreads,
                 const loss_t& loss, const criterion_t& criterion,
                 model_t& model) const
         {
@@ -30,7 +30,7 @@ namespace nano
 
                 // train the model
                 const trainer_result_t result = nano::batch_train(
-                        model, task, tfold, vfold, nthreads, loss, criterion, optimizer, iterations, epsilon);
+                        model, task, fold, nthreads, loss, criterion, optimizer, iterations, epsilon);
 
                 const trainer_state_t state = result.optimum_state();
 

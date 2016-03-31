@@ -15,7 +15,7 @@ namespace nano
         /// \brief batch train the given model
         ///
         NANO_PUBLIC trainer_result_t batch_train(
-                const model_t&, const task_t&, const fold_t& tfold, const fold_t& vfold, const size_t nthreads,
+                const model_t&, const task_t&, const size_t fold, const size_t nthreads,
                 const loss_t&, const criterion_t& criterion,
                 const batch_optimizer optimizer, const size_t iterations, const scalar_t epsilon,
                 bool verbose = true);

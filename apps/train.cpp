@@ -74,13 +74,10 @@ int main(int argc, const char *argv[])
         const auto trainer = nano::get_trainers().get(cmd_trainer, cmd_trainer_params);
 
         // train model
-        const auto train_fold = fold_t{cmd_task_fold, protocol::train};
-        const auto valid_fold = fold_t{cmd_task_fold, protocol::valid};
-
         trainer_result_t result;
         nano::measure_critical_and_log([&] ()
                 {
-                        result = trainer->train(*task, train_fold, valid_fold, cmd_threads, *loss, *criterion, *model);
+                        result = trainer->train(*task, cmd_task_fold, cmd_threads, *loss, *criterion, *model);
                         return result.valid();
                 },
                 "train model");
