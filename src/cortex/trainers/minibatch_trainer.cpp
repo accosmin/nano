@@ -22,17 +22,15 @@ namespace nano
                 model.random_params();
 
                 // parameters
-                const size_t epochs = nano::clamp(nano::from_params<size_t>(configuration(), "epoch", 16), 1, 1024);
-                const scalar_t epsilon = nano::clamp(nano::from_params<scalar_t>(configuration(), "eps", 1e-4), 1e-8, 1e-3);
+                const auto epochs = nano::clamp(nano::from_params<size_t>(configuration(), "epoch", 16), 1, 1024);
+                const auto epsilon = nano::clamp(nano::from_params<scalar_t>(configuration(), "eps", 1e-4), 1e-8, 1e-3);
 
-                const nano::batch_optimizer optimizer = nano::from_string<nano::batch_optimizer>
+                const auto optimizer = nano::from_string<nano::batch_optimizer>
                         (nano::from_params<string_t>(configuration(), "opt", "gd"));
 
                 // train the model
-                const trainer_result_t result = nano::minibatch_train(
-                        model, task, fold, nthreads, loss, criterion, optimizer, epochs, epsilon);
-
-                const trainer_state_t state = result.optimum_state();
+                const auto result = minibatch_train(model, task, fold, nthreads, loss, criterion, optimizer, epochs, epsilon);
+                const auto state = result.optimum_state();
 
                 log_info() << "optimum [train = " << state.m_tvalue << "/" << state.m_terror_avg
                            << ", valid = " << state.m_vvalue << "/" << state.m_verror_avg
