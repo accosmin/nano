@@ -49,11 +49,11 @@ namespace nano
         {
                 return
                 {
-                        { nano::charset::numeric, "digit" },
-                        { nano::charset::lalphabet, "lalpha" },
-                        { nano::charset::ualphabet, "ualpha" },
-                        { nano::charset::alphabet, "alpha" },
-                        { nano::charset::alphanumeric, "alphanum" }
+                        { nano::charset::digit,         "digit" },
+                        { nano::charset::lalpha,        "lalpha" },
+                        { nano::charset::ualpha,        "ualpha" },
+                        { nano::charset::alpha,         "alpha" },
+                        { nano::charset::alphanum,      "alphanum" }
                 };
         }
 
@@ -61,11 +61,11 @@ namespace nano
         {
                 switch (cs)
                 {
-                case charset::numeric:          return 0;
-                case charset::lalphabet:        return 0 + 10;
-                case charset::ualphabet:        return 0 + 10 + 26;
-                case charset::alphabet:         return 10;
-                case charset::alphanumeric:     return 0;
+                case charset::digit:            return 0;
+                case charset::lalpha:           return 0 + 10;
+                case charset::ualpha:           return 0 + 10 + 26;
+                case charset::alpha:            return 10;
+                case charset::alphanum:         return 0;
                 default:                        assert(false); return 0;
                 }
         }
@@ -74,11 +74,11 @@ namespace nano
         {
                 switch (cs)
                 {
-                case charset::numeric:          return 10;
-                case charset::lalphabet:        return 10 + 26;
-                case charset::ualphabet:        return 10 + 26 + 26;
-                case charset::alphabet:         return 10 + 26 + 26;
-                case charset::alphanumeric:     return 10 + 26 + 26;
+                case charset::digit:            return 10;
+                case charset::lalpha:           return 10 + 26;
+                case charset::ualpha:           return 10 + 26 + 26;
+                case charset::alpha:            return 10 + 26 + 26;
+                case charset::alphanum:         return 10 + 26 + 26;
                 default:                        assert(false); return 0;
                 }
         }
@@ -90,12 +90,12 @@ namespace nano
 
         charset_task_t::charset_task_t(const string_t& configuration) : mem_vision_task_t(
                 "charset",
-                nano::from_params<color_mode>(configuration, "color", color_mode::rgba) == color_mode::rgba ? 3 : 1,
+                nano::from_params<color_mode>(configuration, "color", color_mode::rgb),
                 nano::clamp(nano::from_params<tensor_size_t>(configuration, "irows", 32), 16, 128),
                 nano::clamp(nano::from_params<tensor_size_t>(configuration, "icols", 32), 16, 128),
-                nano::osize(nano::from_params<charset>(configuration, "type", charset::numeric)),
+                nano::osize(nano::from_params<charset>(configuration, "type", charset::digit)),
                 1),
-                m_charset(nano::from_params<charset>(configuration, "type", charset::numeric)),
+                m_charset(nano::from_params<charset>(configuration, "type", charset::digit)),
                 m_color(nano::from_params<color_mode>(configuration, "color", color_mode::rgb)),
                 m_count(nano::clamp(nano::from_params<size_t>(configuration, "count", 1000), 100, 1024 * 1024))
         {

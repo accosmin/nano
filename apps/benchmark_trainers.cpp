@@ -200,10 +200,10 @@ int main(int argc, const char* argv[])
         // create task
         const size_t rows = 16;
         const size_t cols = 16;
-        const size_t samples = nano::n_threads() * 256 * 10;
+        const size_t count = nano::n_threads() * 500;
         const color_mode color = color_mode::rgb;
 
-        charset_task_t task(charset::numeric, color, rows, cols, samples);
+        charset_task_t task(charset::digit, color, rows, cols, count);
         task.load("");
 
         const auto tfold = fold_t{0, protocol::train};

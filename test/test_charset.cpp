@@ -9,11 +9,11 @@ NANO_CASE(construction)
 
         // <charset, color mode, number of outputs/classes/characters>
         std::vector<std::tuple<charset, color_mode, tensor_size_t>> configs;
-        configs.emplace_back(charset::numeric,             color_mode::luma,       tensor_size_t(10));
-        configs.emplace_back(charset::lalphabet,           color_mode::rgba,       tensor_size_t(26));
-        configs.emplace_back(charset::ualphabet,           color_mode::luma,       tensor_size_t(26));
-        configs.emplace_back(charset::alphabet,            color_mode::luma,       tensor_size_t(52));
-        configs.emplace_back(charset::alphanumeric,        color_mode::rgba,       tensor_size_t(62));
+        configs.emplace_back(charset::digit,            color_mode::luma,       tensor_size_t(10));
+        configs.emplace_back(charset::lalpha,           color_mode::rgba,       tensor_size_t(26));
+        configs.emplace_back(charset::ualpha,           color_mode::luma,       tensor_size_t(26));
+        configs.emplace_back(charset::alpha,            color_mode::luma,       tensor_size_t(52));
+        configs.emplace_back(charset::alphanum,         color_mode::rgba,       tensor_size_t(62));
 
         for (const auto& config : configs)
         {
@@ -49,12 +49,12 @@ NANO_CASE(from_params)
 {
         using namespace nano;
 
-        charset_task_t task("type=alpha,color=luma,irows=23,icols=29,count=102");
+        charset_task_t task("type=alpha,color=rgb,irows=23,icols=29,count=102");
         NANO_CHECK(task.load());
 
         NANO_CHECK_EQUAL(task.irows(), 23);
         NANO_CHECK_EQUAL(task.icols(), 29);
-        NANO_CHECK_EQUAL(task.idims(), 1);
+        NANO_CHECK_EQUAL(task.idims(), 3);
         NANO_CHECK_EQUAL(task.osize(), 52);
         NANO_CHECK_EQUAL(task.n_folds(), size_t(1));
         NANO_CHECK_EQUAL(task.n_samples(), size_t(102));
@@ -73,7 +73,7 @@ NANO_CASE(from_params)
                         const auto input = task.input({0, p}, i);
                         const auto target = task.target({0, p}, i);
 
-                        NANO_CHECK_EQUAL(input.size<0>(), 1);
+                        NANO_CHECK_EQUAL(input.size<0>(), 3);
                         NANO_CHECK_EQUAL(input.size<1>(), 23);
                         NANO_CHECK_EQUAL(input.size<2>(), 29);
                         NANO_CHECK_EQUAL(target.size(), 52);

@@ -6,11 +6,11 @@ namespace nano
 {
         enum class charset
         {
-                numeric,        ///< 0-9
-                lalphabet,      ///< a-z
-                ualphabet,      ///< A-Z
-                alphabet,       ///< a-zA-Z
-                alphanumeric,   ///< A-Za-z0-9
+                digit,          ///< 0-9
+                lalpha,         ///< a-z
+                ualpha,         ///< A-Z
+                alpha,          ///< a-zA-Z
+                alphanum,       ///< A-Za-z0-9
         };
 
         ///
