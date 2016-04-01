@@ -90,7 +90,7 @@ namespace nano
                         // OK, update the optimum solution
                         const auto milis = timer.milliseconds();
                         const auto config = nano::append(sconfig, "lambda", lacc.lambda());
-                        const auto ret = result.update(state.x, {milis, epoch, train, valid, test}, config);
+                        const auto ret = result.update(state.x, {milis, ++epoch, train, valid, test}, config);
 
                         if (verbose)
                         {
