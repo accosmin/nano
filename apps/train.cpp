@@ -1,7 +1,6 @@
 #include "text/cmdline.h"
 #include "cortex/cortex.h"
 #include "text/filesystem.h"
-#include "cortex/accumulator.h"
 #include "text/concatenate.hpp"
 #include "cortex/measure_and_log.hpp"
 
@@ -81,19 +80,6 @@ int main(int argc, const char *argv[])
                         return result.valid();
                 },
                 "train model");
-
-        // test model
-        const auto test_fold = fold_t{cmd_task_fold, protocol::test};
-
-        accumulator_t lacc(*model, *loss, *criterion, criterion_t::type::value);
-        lacc.set_threads(cmd_threads);
-
-        nano::measure_and_log(
-                [&] () { lacc.update(*task, test_fold); },
-                "test model");
-
-        log_info() << "optimum [test = " << lacc.value() << "/" << lacc.avg_error()
-                   << ", variance = " << lacc.var_error() << "].";
 
         // save the model & its optimization history
         nano::measure_critical_and_log(

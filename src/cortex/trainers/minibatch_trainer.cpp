@@ -32,10 +32,11 @@ namespace nano
                 const auto result = minibatch_train(model, task, fold, nthreads, loss, criterion, optimizer, epochs, epsilon);
                 const auto state = result.optimum_state();
 
-                log_info() << "optimum [train = " << state.m_tvalue << "/" << state.m_terror_avg
-                           << ", valid = " << state.m_vvalue << "/" << state.m_verror_avg
+                log_info() << "optimum [train = " << state.m_train
+                           << ", valid = " << state.m_valid
+                           << ", test = " << state.m_test
                            << ", epoch = " << result.optimum_epoch()
-                           << ", config = " << result.optimum_config()
+                           << ", " << result.optimum_config()
                            << "].";
 
                 // OK

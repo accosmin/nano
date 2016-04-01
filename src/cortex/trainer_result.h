@@ -49,11 +49,6 @@ namespace nano
         public:
 
                 ///
-                /// \brief constructor
-                ///
-                trainer_result_t();
-
-                ///
                 /// \brief update the current/optimum state with a possible better state
                 ///
                 trainer_result_return_t update(const vector_t& params, const trainer_state_t&, const trainer_config_t&);

@@ -9,16 +9,19 @@
 namespace nano
 {
         static trainer_result_t train(
-                const task_t& task, const fold_t& tfold, const fold_t& vfold,
+                const task_t& task, const size_t fold,
                 const accumulator_t& lacc, const accumulator_t& gacc,
                 const vector_t& x0, const batch_optimizer optimizer, const size_t iterations, const scalar_t epsilon,
                 const bool verbose)
         {
                 const timer_t timer;
 
-                trainer_result_t result;
+                const auto train_fold = fold_t{fold, protocol::train};
+                const auto valid_fold = fold_t{fold, protocol::valid};
+                const auto test_fold = fold_t{fold, protocol::test};
 
                 size_t iteration = 0;
+                trainer_result_t result;
 
                 // construct the optimization problem
                 const auto fn_size = [&] ()
@@ -29,47 +32,47 @@ namespace nano
                 const auto fn_fval = [&] (const vector_t& x)
                 {
                         lacc.set_params(x);
-                        lacc.update(task, tfold);
+                        lacc.update(task, train_fold);
                         return lacc.value();
                 };
 
                 const auto fn_grad = [&] (const vector_t& x, vector_t& gx)
                 {
                         gacc.set_params(x);
-                        gacc.update(task, tfold);
+                        gacc.update(task, train_fold);
                         gx = gacc.vgrad();
                         return gacc.value();
                 };
 
                 auto fn_ulog = [&] (const opt_state_t& state)
                 {
-                        // evaluate training samples
-                        const auto tvalue = gacc.value();
-                        const auto terror_avg = gacc.avg_error();
-                        const auto terror_var = gacc.var_error();
-
-                        // evaluate validation samples
+                        // evaluate the current state
                         lacc.set_params(state.x);
-                        lacc.update(task, vfold);
-                        const scalar_t vvalue = lacc.value();
-                        const scalar_t verror_avg = lacc.avg_error();
-                        const scalar_t verror_var = lacc.var_error();
 
-                        // OK, update the optimum state
+                        lacc.update(task, train_fold);
+                        const auto train = trainer_measurement_t{lacc.value(), lacc.avg_error(), lacc.var_error()};
+
+                        lacc.update(task, valid_fold);
+                        const auto valid = trainer_measurement_t{lacc.value(), lacc.avg_error(), lacc.var_error()};
+
+                        lacc.update(task, test_fold);
+                        const auto test = trainer_measurement_t{lacc.value(), lacc.avg_error(), lacc.var_error()};
+
+                        // OK, update the optimum solution
                         const auto milis = timer.milliseconds();
-                        const auto ret = result.update(state.x,
-                                {milis, ++ iteration, tvalue, terror_avg, terror_var, vvalue, verror_avg, verror_var},
-                                {{"lambda", lacc.lambda()}});
+                        const auto config = trainer_config_t{{"lambda", lacc.lambda()}};
+                        const auto ret = result.update(state.x, {milis, ++iteration, train, valid, test}, config);
 
                         if (verbose)
-                        log_info()
-                                << "[train = " << tvalue << "/" << terror_avg
-                                << ", valid = " << vvalue << "/" << verror_avg
-                                << " (" << nano::to_string(ret) << ")"
-                                << ", epoch = " << iteration << "/" << iterations
-                                << ", lambda = " << lacc.lambda()
-                                << ", calls = " << state.m_fcalls << "/" << state.m_gcalls
-                                << "] done in " << timer.elapsed() << ".";
+                        {
+                                log_info()
+                                        << "[" << iteration << "/" << iterations << ": train = " << train
+                                        << ", valid = " << valid << " (" << nano::to_string(ret) << ")"
+                                        << ", test = " << test
+                                        << ", " << config
+                                        << ", calls = " << state.m_fcalls << "/" << state.m_gcalls
+                                        << "] done in " << timer.elapsed() << ".";
+                        }
 
                         return !nano::is_done(ret);
                 };
@@ -88,13 +91,12 @@ namespace nano
                 const batch_optimizer optimizer, const size_t iterations, const scalar_t epsilon,
                 const bool verbose)
         {
-                const auto op = [&] (
-                        const auto& tfold, const auto& vfold, const auto& lacc, const auto& gacc, const auto& x0)
+                const auto op = [&] (const auto& lacc, const auto& gacc, const auto& x0)
                 {
-                        return train(task, tfold, vfold, lacc, gacc, x0, optimizer, iterations, epsilon, verbose);
+                        return train(task, fold, lacc, gacc, x0, optimizer, iterations, epsilon, verbose);
                 };
 
-                return trainer_loop(model, task, fold, nthreads, loss, criterion, op);
+                return trainer_loop(model, nthreads, loss, criterion, op);
         }
 }
 

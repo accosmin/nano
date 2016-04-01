@@ -34,8 +34,7 @@ template
 static void test_optimizer(model_t& model, const string_t& name, const string_t& basepath,
         nano::table_t& table, const vectors_t& x0s, const ttrainer& trainer)
 {
-        nano::stats_t<scalar_t> terrors;
-        nano::stats_t<scalar_t> verrors;
+        nano::stats_t<scalar_t> errors;
         nano::stats_t<scalar_t> speeds;
         nano::stats_t<scalar_t> timings;
 
@@ -51,16 +50,16 @@ static void test_optimizer(model_t& model, const string_t& name, const string_t&
                 const auto opt_state = result.optimum_state();
                 const auto opt_speed = nano::convergence_speed(result.optimum_states());
 
-                terrors(opt_state.m_terror_avg);
-                verrors(opt_state.m_verror_avg);
+                errors(opt_state.m_test.m_error_avg);
                 speeds(opt_speed);
                 timings(static_cast<scalar_t>(timer.seconds().count()));
 
                 log_info() << "<<< " << name
                            << ", optimum = " << result.optimum_config()
                            << ", epoch=" << result.optimum_epoch()
-                           << ", train = " << opt_state.m_terror_avg
-                           << ", valid = " << opt_state.m_verror_avg
+                           << ", train = " << opt_state.m_train
+                           << ", valid = " << opt_state.m_valid
+                           << ", test = " << opt_state.m_test
                            << ", speed = " << opt_speed << "/s"
                            << " done in " << timer.elapsed() << ".";
 
@@ -71,8 +70,7 @@ static void test_optimizer(model_t& model, const string_t& name, const string_t&
         }
 
         table.append(name)
-                << stats_to_string(terrors)
-                << stats_to_string(verrors)
+                << stats_to_string(errors)
                 << stats_to_string(speeds)
                 << stats_to_string(timings);
 }
@@ -80,19 +78,11 @@ static void test_optimizer(model_t& model, const string_t& name, const string_t&
 static void evaluate(
         model_t& model, const task_t& task, const size_t fold,
         const loss_t& loss, const criterion_t& criterion,
-        const size_t trials, const size_t iterations, const string_t& basepath, nano::table_t& table)
+        const vectors_t& x0s, const size_t iterations, const string_t& basepath, nano::table_t& table)
 {
         const scalar_t epsilon = 1e-4;
         const size_t n_threads = nano::n_threads();
         const bool verbose = true;
-
-        // generate fixed random starting points
-        vectors_t x0s(trials);
-        for (vector_t& x0 : x0s)
-        {
-                model.random_params();
-                model.save_params(x0);
-        }
 
         // batch optimizers
         const auto batch_optimizers =
@@ -246,6 +236,14 @@ int main(int argc, const char* argv[])
                 const auto model = nano::get_models().get("forward-network", network);
                 model->resize(task, true);
 
+                // generate fixed random starting points
+                vectors_t x0s(trials);
+                for (vector_t& x0 : x0s)
+                {
+                        model->random_params();
+                        model->save_params(x0);
+                }
+
                 // vary the loss
                 for (const string_t& iloss : losses)
                 {
@@ -254,8 +252,7 @@ int main(int argc, const char* argv[])
                         const auto loss = nano::get_losses().get(iloss);
 
                         nano::table_t table("optimizer");
-                        table.header() << "train error"
-                                       << "valid error"
+                        table.header() << "test error"
                                        << "convergence speed"
                                        << "time [sec]";
 
@@ -266,7 +263,7 @@ int main(int argc, const char* argv[])
 
                                 const auto basepath = netname + "-" + iloss + "-" + icriterion + "-";
 
-                                evaluate(*model, task, fold, *loss, *criterion, trials, iterations, basepath, table);
+                                evaluate(*model, task, fold, *loss, *criterion, x0s, iterations, basepath, table);
                         }
 
                         // show results

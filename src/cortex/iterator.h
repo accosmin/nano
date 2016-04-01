@@ -56,6 +56,8 @@ namespace nano
                 size_t begin() const { return m_begin; }
                 size_t end() const { return m_end; }
 
+                const fold_t& fold() const { return m_fold; }
+
         private:
 
                 // attributes

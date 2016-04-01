@@ -20,17 +20,13 @@ namespace nano
                 return logger;
         }
 
-        trainer_result_t::trainer_result_t()
-        {
-        }
-
         trainer_result_return_t trainer_result_t::update(const vector_t& params,
                 const trainer_state_t& state, const trainer_config_t& config)
         {
                 m_history[config].push_back(state);
 
-                const scalar_t beste = m_opt_state.m_verror_avg;
-                const scalar_t curre = state.m_verror_avg;
+                const scalar_t beste = m_opt_state.m_valid.m_error_avg;
+                const scalar_t curre = state.m_valid.m_error_avg;
 
                 const size_t max_epochs_without_improvement = 32;
 
