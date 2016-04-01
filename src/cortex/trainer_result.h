@@ -113,10 +113,10 @@ namespace nano
         {
                 return
                 {
-                        { nano::trainer_result_return_t::better,      "better" },
-                        { nano::trainer_result_return_t::worse,       "worse" },
-                        { nano::trainer_result_return_t::overfitting, "overfitting" },
-                        { nano::trainer_result_return_t::solved,      "solved" }
+                        { nano::trainer_result_return_t::better,      "+better" },
+                        { nano::trainer_result_return_t::worse,       "--worse" },
+                        { nano::trainer_result_return_t::overfitting, "overfit" },
+                        { nano::trainer_result_return_t::solved,      "!solved" }
                 };
         }
 }

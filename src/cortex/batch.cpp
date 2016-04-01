@@ -66,8 +66,9 @@ namespace nano
                         if (verbose)
                         {
                                 log_info()
-                                        << "[" << iteration << "/" << iterations << ": train = " << train
-                                        << ", valid = " << valid << " (" << nano::to_string(ret) << ")"
+                                        << "[" << iteration << "/" << iterations
+                                        << ": train = " << train
+                                        << ", valid = " << valid << "|" << nano::to_string(ret)
                                         << ", test = " << test
                                         << ", " << config
                                         << ", calls = " << state.m_fcalls << "/" << state.m_gcalls

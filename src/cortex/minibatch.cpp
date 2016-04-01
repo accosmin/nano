@@ -89,8 +89,9 @@ namespace nano
                         if (verbose)
                         {
                                 log_info()
-                                        << "[" << epoch << "/" << epochs << ": train = " << train
-                                        << ", valid = " << valid << " (" << nano::to_string(ret) << ")"
+                                        << "[" << epoch << "/" << epochs
+                                        << ": train = " << train
+                                        << ", valid = " << valid << "|" << nano::to_string(ret)
                                         << ", test = " << test
                                         << ", batch = " << batch_size
                                         << ", " << config

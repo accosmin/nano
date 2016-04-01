@@ -97,7 +97,7 @@ namespace nano
                                 log_info()
                                         << "[" << epoch << "/" << epochs
                                         << ": train = " << train
-                                        << ", valid = " << valid << " (" << nano::to_string(ret) << ")"
+                                        << ", valid = " << valid << "|" << nano::to_string(ret)
                                         << ", test = " << test
                                         << ", batch = " << batch_size
                                         << ", " << config
