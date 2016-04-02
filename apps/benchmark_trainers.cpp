@@ -146,6 +146,13 @@ int main(int argc, const char* argv[])
 
         // parse the command line
         nano::cmdline_t cmdline("benchmark trainers");
+        cmdline.add("", "mlp0",         "MLP with 0 hidden layers");
+        cmdline.add("", "mlp1",         "MLP with 1 hidden layers");
+        cmdline.add("", "mlp2",         "MLP with 2 hidden layers");
+        cmdline.add("", "mlp3",         "MLP with 3 hidden layers");
+        cmdline.add("", "convnet1",     "convolution network (conv-pool-conv)");
+        cmdline.add("", "convnet2",     "convolution network (conv-conv)");
+        cmdline.add("", "convnet3",     "convolution network (conv-conv-conv)");
         cmdline.add("", "l2n-reg",      "also evaluate the l2-norm-based regularizer");
         cmdline.add("", "var-reg",      "also evaluate the variance-based regularizer");
         cmdline.add("", "trials",       "number of models to train & evaluate", "10");
@@ -154,10 +161,28 @@ int main(int argc, const char* argv[])
         cmdline.process(argc, argv);
 
         // check arguments and options
+        const bool use_mlp0 = cmdline.has("mlp0");
+        const bool use_mlp1 = cmdline.has("mlp1");
+        const bool use_mlp2 = cmdline.has("mlp2");
+        const bool use_mlp3 = cmdline.has("mlp3");
+        const bool use_convnet1 = cmdline.has("convnet1");
+        const bool use_convnet2 = cmdline.has("convnet2");
+        const bool use_convnet3 = cmdline.has("convnet3");
         const bool use_reg_l2n = cmdline.has("l2n-reg");
         const bool use_reg_var = cmdline.has("var-reg");
         const auto trials = cmdline.get<size_t>("trials");
         const auto iterations = cmdline.get<size_t>("iterations");
+
+        if (    !use_mlp0 &&
+                !use_mlp1 &&
+                !use_mlp2 &&
+                !use_mlp3 &&
+                !use_convnet1 &&
+                !use_convnet2 &&
+                !use_convnet3)
+        {
+                cmdline.usage();
+        }
 
         // create task
         const size_t rows = 16;
@@ -192,13 +217,13 @@ int main(int argc, const char* argv[])
         const string_t outlayer = make_output_layer(outputs);
 
         std::vector<std::pair<string_t, string_t>> networks;
-        networks.emplace_back(mlp0 + outlayer, "mlp0");
-        networks.emplace_back(mlp1 + outlayer, "mlp1");
-        networks.emplace_back(mlp2 + outlayer, "mlp2");
-        networks.emplace_back(mlp3 + outlayer, "mlp3");
-        networks.emplace_back(convnet1 + outlayer, "convnet1");
-        networks.emplace_back(convnet2 + outlayer, "convnet2");
-        networks.emplace_back(convnet3 + outlayer, "convnet3");
+        if (use_mlp0) { networks.emplace_back(mlp0 + outlayer, "mlp0"); }
+        if (use_mlp1) { networks.emplace_back(mlp1 + outlayer, "mlp1"); }
+        if (use_mlp2) { networks.emplace_back(mlp2 + outlayer, "mlp2"); }
+        if (use_mlp3) { networks.emplace_back(mlp3 + outlayer, "mlp3"); }
+        if (use_convnet1) { networks.emplace_back(convnet1 + outlayer, "convnet1"); }
+        if (use_convnet2) { networks.emplace_back(convnet2 + outlayer, "convnet2"); }
+        if (use_convnet3) { networks.emplace_back(convnet3 + outlayer, "convnet3"); }
 
         const strings_t losses = { "classnll" }; //nano::get_losses().ids();
 
