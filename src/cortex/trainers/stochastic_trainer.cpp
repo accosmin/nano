@@ -29,14 +29,8 @@ namespace nano
 
                 // train the model
                 const auto result = stochastic_train(model, task, fold, nthreads, loss, criterion, optimizer, epochs);
-                const auto state = result.optimum_state();
 
-                log_info() << "optimum [train = " << state.m_train
-                           << ", valid = " << state.m_valid
-                           << ", test = " << state.m_test
-                           << ", epoch = " << result.optimum_epoch()
-                           << ", " << result.optimum_config()
-                           << "].";
+                log_info() << "<<< " << result << ".";
 
                 // OK
                 if (result.valid())

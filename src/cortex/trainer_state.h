@@ -28,6 +28,9 @@ namespace nano
                 scalar_t        m_error_var;    ///< error (variance)
         };
 
+        ///
+        /// \brief streaming training measurement
+        ///
         inline std::ostream& operator<<(std::ostream& os, const trainer_measurement_t& measure)
         {
                 return os << measure.m_value << "|" << measure.m_error_avg << "+/-" << measure.m_error_var;

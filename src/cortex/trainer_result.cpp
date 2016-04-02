@@ -1,4 +1,3 @@
-#include "logger.h"
 #include "trainer_result.h"
 
 namespace nano
@@ -10,14 +9,14 @@ namespace nano
                 return ret;
         }
 
-        logger_t& operator<<(logger_t& logger, const trainer_config_t& config)
+        std::ostream& operator<<(std::ostream& os, const trainer_config_t& config)
         {
                 for (size_t i = 0; i < config.size(); ++ i)
                 {
                         const auto& param = config[i];
-                        logger << param.first << "=" << param.second << ((i + 1 == config.size()) ? "" : ",");
+                        os << param.first << "=" << param.second << ((i + 1 == config.size()) ? "" : ",");
                 }
-                return logger;
+                return os;
         }
 
         trainer_result_return_t trainer_result_t::update(const vector_t& params,
@@ -125,6 +124,16 @@ namespace nano
         {
                 return  code == trainer_result_return_t::overfitting ||
                         code == trainer_result_return_t::solved;
+        }
+
+        std::ostream& operator<<(std::ostream& os, const trainer_result_t& result)
+        {
+                const auto state = result.optimum_state();
+
+                return os << "train=" << state.m_train
+                          << ", valid=" << state.m_valid
+                          << ", test=" << state.m_test
+                          << ", " << result.optimum_config() << ",epoch=" << result.optimum_epoch();
         }
 }
 

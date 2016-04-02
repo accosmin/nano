@@ -71,14 +71,14 @@ namespace nano
         ///
         inline logger_t log_info(std::ostream& os = std::cout, bool flush_at_destruction = true)
         {
-                return logger_t(os, "info", flush_at_destruction);
+                return logger_t(os, "i", flush_at_destruction);
         }
         inline logger_t log_warning(std::ostream& os = std::cout, bool flush_at_destruction = true)
         {
-                return logger_t(os, "warning", flush_at_destruction);
+                return logger_t(os, "w", flush_at_destruction);
         }
         inline logger_t log_error(std::ostream& os = std::cerr, bool flush_at_destruction = true)
         {
-                return logger_t(os, "error", flush_at_destruction);
+                return logger_t(os, "e", flush_at_destruction);
         }
 }

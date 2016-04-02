@@ -11,10 +11,15 @@ namespace nano
         ///
         using trainer_config_t = std::vector<std::pair<const char*, scalar_t>>;
 
+        ///
+        /// \brief append hyper-parameter to configuration
+        ///
         NANO_PUBLIC trainer_config_t append(const trainer_config_t&, const char* const name, const scalar_t value);
 
-        class logger_t;
-        NANO_PUBLIC logger_t& operator<<(logger_t& logger, const trainer_config_t& config);
+        ///
+        /// \brief streaming training configurations
+        ///
+        NANO_PUBLIC std::ostream& operator<<(std::ostream&, const trainer_config_t&);
 
         ///
         /// \brief training history (configuration, optimization states)
@@ -104,6 +109,11 @@ namespace nano
         /// \brief compare two trainer results
         ///
         NANO_PUBLIC bool operator<(const trainer_result_t& one, const trainer_result_t& other);
+
+        ///
+        /// \brief streaming training results
+        ///
+        NANO_PUBLIC std::ostream& operator<<(std::ostream&, const trainer_result_t&);
 }
 
 namespace nano

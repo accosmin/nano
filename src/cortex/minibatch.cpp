@@ -1,11 +1,11 @@
 #include "timer.h"
-#include "logger.h"
 #include "iterator.h"
 #include "minibatch.h"
 #include "math/batch.hpp"
 #include "thread/thread.h"
 #include "trainer_loop.hpp"
 #include "text/to_string.hpp"
+#include "logger.h"
 
 namespace nano
 {
@@ -90,12 +90,11 @@ namespace nano
                         {
                                 log_info()
                                         << "[" << epoch << "/" << epochs
-                                        << ": train = " << train
-                                        << ", valid = " << valid << "|" << nano::to_string(ret)
-                                        << ", test = " << test
-                                        << ", batch = " << batch_size
-                                        << ", " << config
-                                        << "] done in " << timer.elapsed() << ".";
+                                        << ": train=" << train
+                                        << ", valid=" << valid << "|" << nano::to_string(ret)
+                                        << ", test=" << test
+                                        << ", " << config << ",batch=" << batch_size
+                                        << "] " << timer.elapsed() << ".";
                         }
 
                         if (nano::is_done(ret))
