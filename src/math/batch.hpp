@@ -93,7 +93,7 @@ namespace nano
                 {
                 case batch_optimizer::LBFGS:
                         return minimize(problem, fn_ulog, x0, optimizer, iterations, epsilon,
-                                        ls_initializer::quadratic, ls_strategy::interpolation,
+                                        ls_initializer::unit, ls_strategy::interpolation,
                                         history_size);
 
                 case batch_optimizer::CGD: // fall through!
