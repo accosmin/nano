@@ -6,18 +6,20 @@
 #include "cortex/class.h"
 #include "cortex/logger.h"
 #include "math/random.hpp"
-#include "text/to_string.hpp"
+#include "text/from_params.hpp"
 #include <fstream>
 
 namespace nano
 {
-        svhn_task_t::svhn_task_t(const string_t&) :
-                mem_vision_task_t("svhn", 3, 32, 32, 10, 1)
+        svhn_task_t::svhn_task_t(const string_t& config) :
+                mem_vision_task_t("svhn", 3, 32, 32, 10, 1, config)
         {
         }
 
-        bool svhn_task_t::populate(const string_t& dir)
+        bool svhn_task_t::populate()
         {
+                const string_t dir = nano::from_params<string_t>(configuration(), "dir", ".");
+
                 const string_t train_file = dir + "/train_32x32.mat";
                 const string_t extra_file = dir + "/extra_32x32.mat";
                 const size_t n_train_samples = 73257 + 531131;

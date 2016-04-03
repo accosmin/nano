@@ -5,7 +5,7 @@
 #include "task_cifar10.h"
 #include "cortex/class.h"
 #include "cortex/logger.h"
-#include "text/algorithm.h"
+#include "text/from_params.hpp"
 
 namespace nano
 {
@@ -23,13 +23,15 @@ namespace nano
                 "truck"
         };
 
-        cifar10_task_t::cifar10_task_t(const string_t&) :
-                mem_vision_task_t("cifar-10", 3, 32, 32, 10, 1)
+        cifar10_task_t::cifar10_task_t(const string_t& config) :
+                mem_vision_task_t("cifar-10", 3, 32, 32, 10, 1, config)
         {
         }
 
-        bool cifar10_task_t::populate(const string_t& dir)
+        bool cifar10_task_t::populate()
         {
+                const string_t dir = nano::from_params<string_t>(configuration(), "dir", ".");
+
                 const string_t bfile = dir + "/cifar-10-binary.tar.gz";
 
                 const string_t train_bfile1 = "data_batch_1.bin";

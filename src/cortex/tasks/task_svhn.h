@@ -26,7 +26,7 @@ namespace nano
 
         private:
 
-                virtual bool populate(const string_t& dir) override;
+                virtual bool populate() override;
 
                 // load binary file
                 size_t load_binary(const string_t& bfile, const protocol p);

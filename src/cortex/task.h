@@ -46,9 +46,9 @@ namespace nano
                 virtual string_t name() const = 0;
 
                 ///
-                /// \brief load the task from the given directory (if possible)
+                /// \brief populate task with samples
                 ///
-                virtual bool load(const string_t& dir = string_t()) = 0;
+                virtual bool load() = 0;
 
                 ///
                 /// \brief print a short description

@@ -42,8 +42,9 @@ namespace nano
                         const string_t& name,
                         const tensor_size_t idims, const tensor_size_t irows, const tensor_size_t icols,
                         const tensor_size_t osize,
-                        const size_t fsize) :
-                        mem_task_t<image_t, mem_vision_sample_t>(name, idims, irows, icols, osize, fsize) {}
+                        const size_t fsize,
+                        const string_t& config = string_t()) :
+                        mem_task_t<image_t, mem_vision_sample_t>(name, idims, irows, icols, osize, fsize, config) {}
 
                 ///
                 /// \brief constructor
@@ -52,10 +53,11 @@ namespace nano
                         const string_t& name,
                         const color_mode color, const tensor_size_t irows, const tensor_size_t icols,
                         const tensor_size_t osize,
-                        const size_t fsize) :
+                        const size_t fsize,
+                        const string_t& config = string_t()) :
                         mem_vision_task_t(name,
                         (color == color_mode::rgba ? 4 : (color == color_mode::rgb ? 3 : 1)),
-                        irows, icols, osize, fsize) {}
+                        irows, icols, osize, fsize, config) {}
 
                 ///
                 /// \brief destructor

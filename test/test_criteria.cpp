@@ -16,7 +16,7 @@ NANO_CASE(evaluate)
         nano::init();
 
         const auto task = nano::get_tasks().get("affine", "idims=2,irows=5,icols=5,osize=2,count=20");
-        NANO_CHECK_EQUAL(task->load(""), true);
+        NANO_CHECK_EQUAL(task->load(), true);
 
         const auto cmd_model = make_affine_layer(3) + make_output_layer(task->osize());
         const auto loss = nano::get_losses().get("logistic");

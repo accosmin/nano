@@ -18,8 +18,7 @@ int main(int argc, const char *argv[])
         // parse the command line
         nano::cmdline_t cmdline("evaluate a model");
         cmdline.add("", "task",                 nano::concatenate(task_ids));
-        cmdline.add("", "task-dir",             "directory to load task data from");
-        cmdline.add("", "task-params",          "task parameters (if any)");
+        cmdline.add("", "task-params",          "task parameters (if any)", "dir=.");
         cmdline.add("", "task-fold",            "fold index to use for testing", "0");
         cmdline.add("", "loss",                 nano::concatenate(loss_ids));
         cmdline.add("", "model",                nano::concatenate(model_ids));
@@ -30,7 +29,6 @@ int main(int argc, const char *argv[])
 
         // check arguments and options
         const auto cmd_task = cmdline.get<string_t>("task");
-        const auto cmd_task_dir = cmdline.get<string_t>("task-dir");
         const auto cmd_task_params = cmdline.get<string_t>("task-params");
         const auto cmd_task_fold = cmdline.get<size_t>("task-fold");
         const auto cmd_loss = cmdline.get<string_t>("loss");
@@ -43,8 +41,8 @@ int main(int argc, const char *argv[])
 
         // load task data
         nano::measure_critical_and_log(
-                [&] () { return task->load(cmd_task_dir); },
-                "load task <" + cmd_task + "> from <" + cmd_task_dir + ">");
+                [&] () { return task->load(); },
+                "load task <" + cmd_task + ">");
 
         // describe task
         task->describe();

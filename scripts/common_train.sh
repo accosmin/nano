@@ -16,11 +16,11 @@ dir_db_stl10=${dir_db}/stl10/
 dir_db_cifar10=${dir_db}/cifar10/
 dir_db_cifar100=${dir_db}/cifar100/
 
-task_svhn="--task svhn --task-dir ${dir_db_svhn}"
-task_mnist="--task mnist --task-dir ${dir_db_mnist}"
-task_stl10="--task stl10 --task-dir ${dir_db_stl10}"
-task_cifar10="--task cifar10 --task-dir ${dir_db_cifar10}"
-task_cifar100="--task cifar100 --task-dir ${dir_db_cifar100}"
+task_svhn="--task svhn --task-params dir=${dir_db_svhn}"
+task_mnist="--task mnist --task-params dir=${dir_db_mnist}"
+task_stl10="--task stl10 --task-params dir=${dir_db_stl10}"
+task_cifar10="--task cifar10 --task-params dir=${dir_db_cifar10}"
+task_cifar100="--task cifar100 --task-params dir=${dir_db_cifar100}"
 
 # results
 dir_exp_svhn=${dir_exp}/svhn/

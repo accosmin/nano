@@ -39,8 +39,9 @@ namespace nano
                         const string_t& name,
                         const tensor_size_t idims, const tensor_size_t irows, const tensor_size_t icols,
                         const tensor_size_t osize,
-                        const size_t fsize) :
-                        mem_task_t<tensor3d_t, mem_tensor_sample_t>(name, idims, irows, icols, osize, fsize) {}
+                        const size_t fsize,
+                        const string_t& config = string_t()) :
+                        mem_task_t<tensor3d_t, mem_tensor_sample_t>(name, idims, irows, icols, osize, fsize, config) {}
 
                 ///
                 /// \brief destructor

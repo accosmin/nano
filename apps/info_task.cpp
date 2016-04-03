@@ -15,24 +15,20 @@ int main(int argc, const char *argv[])
         // parse the command line
         nano::cmdline_t cmdline("describe a task");
         cmdline.add("", "task",                 ("tasks to choose from: " + nano::concatenate(task_ids, ", ")).c_str());
-        cmdline.add("", "task-dir",             "directory to load task data from");
-        cmdline.add("", "task-params",          "task parameters (if any)", "<>");
+        cmdline.add("", "task-params",          "task parameters (if any)", "dir=.");
         cmdline.add("", "save-dir",             "directory to save task samples to");
         cmdline.add("", "save-group-rows",      "number of task samples to group in a row", "32");
         cmdline.add("", "save-group-cols",      "number of task samples to group in a column", "32");
 
         cmdline.process(argc, argv);
 
-        if (    !cmdline.has("task") ||
-                !cmdline.has("task-dir"))
+        if (!cmdline.has("task"))
         {
                 cmdline.usage();
-                exit(EXIT_FAILURE);
         }
 
         // check arguments and options
         const auto cmd_task = cmdline.get<string_t>("task");
-        const auto cmd_task_dir = cmdline.get<string_t>("task-dir");
         const auto cmd_task_params = cmdline.get<string_t>("task-params");
         const auto cmd_save_grows = nano::clamp(cmdline.get<tensor_size_t>("save-group-rows"), 1, 128);
         const auto cmd_save_gcols = nano::clamp(cmdline.get<tensor_size_t>("save-group-cols"), 1, 128);
@@ -42,8 +38,8 @@ int main(int argc, const char *argv[])
 
         // load task data
         nano::measure_critical_and_log(
-                [&] () { return task->load(cmd_task_dir); },
-                "load task <" + cmd_task + "> from <" + cmd_task_dir + ">");
+                [&] () { return task->load(); },
+                "load task <" + cmd_task + ">");
 
         // describe task
         task->describe();

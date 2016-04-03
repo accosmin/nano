@@ -25,9 +25,9 @@ NANO_CASE(construction)
         const auto valid_fold = fold_t{0, protocol::valid};
         const auto test_fold = fold_t{0, protocol::test};
 
-        const auto task = nano::get_tasks().get("mnist");
+        const auto task = nano::get_tasks().get("mnist", "dir=" + path);
         NANO_REQUIRE(task);
-        NANO_REQUIRE(task->load(path));
+        NANO_REQUIRE(task->load());
 
         // check dimensions
         NANO_CHECK_EQUAL(task->idims(), idims);

@@ -19,7 +19,7 @@ namespace nano
         {
         }
 
-        bool affine_task_t::populate(const string_t&)
+        bool affine_task_t::populate()
         {
                 nano::random_t<scalar_t> rng_input(-1.0, +1.0);
                 nano::random_t<scalar_t> rng_noise(-m_noise, +m_noise);

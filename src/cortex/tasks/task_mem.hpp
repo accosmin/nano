@@ -32,7 +32,9 @@ namespace nano
                         const string_t& name,
                         const tensor_size_t idims, const tensor_size_t irows, const tensor_size_t icols,
                         const tensor_size_t osize,
-                        const size_t fsize) :
+                        const size_t fsize,
+                        const string_t& configuration = string_t()) :
+                        task_t(configuration),
                         m_name(name),
                         m_idims(idims), m_irows(irows), m_icols(icols), m_osize(osize),
                         m_fsize(fsize), m_frand(1, 10)
@@ -50,9 +52,9 @@ namespace nano
                 virtual string_t name() const override final { return m_name; }
 
                 ///
-                /// \brief load the task from the given directory (if possible)
+                /// \brief populate the task with samples
                 ///
-                virtual bool load(const string_t& dir = string_t()) override final;
+                virtual bool load() override final;
 
                 ///
                 /// \brief input size
@@ -136,7 +138,7 @@ namespace nano
                         return {fold, proto == protocol::train ? (p < 9 ? protocol::train : protocol::valid) : proto};
                 }
 
-                virtual bool populate(const string_t& dir = string_t()) = 0;
+                virtual bool populate() = 0;
 
                 size_t n_chunks() const { return m_chunks.size(); }
                 const tchunk& chunk(const size_t index) const
@@ -180,12 +182,12 @@ namespace nano
         };
 
         template <typename tchunk, typename tsample>
-        bool mem_task_t<tchunk, tsample>::load(const string_t& dir)
+        bool mem_task_t<tchunk, tsample>::load()
         {
                 m_chunks.clear();
                 m_samples.clear();
 
-                if (!populate(dir))
+                if (!populate())
                 {
                         m_chunks.clear();
                         m_samples.clear();

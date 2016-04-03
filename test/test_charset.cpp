@@ -27,7 +27,7 @@ NANO_CASE(construction)
 
                 charset_task_t task(type, mode, irows, icols, count);
 
-                NANO_CHECK_EQUAL(task.load(""), true);
+                NANO_CHECK_EQUAL(task.load(), true);
                 NANO_CHECK_EQUAL(task.irows(), irows);
                 NANO_CHECK_EQUAL(task.icols(), icols);
                 NANO_CHECK_EQUAL(task.osize(), osize);

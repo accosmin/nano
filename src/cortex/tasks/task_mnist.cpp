@@ -5,17 +5,19 @@
 #include "math/cast.hpp"
 #include "cortex/class.h"
 #include "cortex/logger.h"
-#include "text/to_string.hpp"
+#include "text/from_params.hpp"
 
 namespace nano
 {
-        mnist_task_t::mnist_task_t(const string_t&) :
-                mem_vision_task_t("mnist", 1, 28, 28, 10, 1)
+        mnist_task_t::mnist_task_t(const string_t& config) :
+                mem_vision_task_t("mnist", 1, 28, 28, 10, 1, config)
         {
         }
 
-        bool mnist_task_t::populate(const string_t& dir)
+        bool mnist_task_t::populate()
         {
+                const string_t dir = nano::from_params<string_t>(configuration(), "dir", ".");
+
                 const string_t test_ifile = dir + "/t10k-images-idx3-ubyte.gz";
                 const string_t test_gfile = dir + "/t10k-labels-idx1-ubyte.gz";
                 const size_t n_test_samples = 10000;

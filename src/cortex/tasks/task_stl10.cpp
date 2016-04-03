@@ -5,8 +5,7 @@
 #include "io/imstream.h"
 #include "cortex/class.h"
 #include "cortex/logger.h"
-#include "text/algorithm.h"
-#include "text/from_string.hpp"
+#include "text/from_params.hpp"
 
 namespace nano
 {
@@ -24,14 +23,16 @@ namespace nano
                 "truck"
         };
 
-        stl10_task_t::stl10_task_t(const string_t&) :
-                mem_vision_task_t("stl-10", 3, 96, 96, 10, 10)
+        stl10_task_t::stl10_task_t(const string_t& config) :
+                mem_vision_task_t("stl-10", 3, 96, 96, 10, 10, config)
         {
         }
 
-        bool stl10_task_t::populate(const string_t& dir)
+        bool stl10_task_t::populate()
         {
                 m_samples.clear();
+
+                const string_t dir = nano::from_params<string_t>(configuration(), "dir", ".");
 
                 const string_t bfile = dir + "/stl10_binary.tar.gz";
 

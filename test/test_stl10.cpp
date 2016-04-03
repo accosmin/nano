@@ -22,9 +22,9 @@ NANO_CASE(construction)
         const auto train_samples = size_t(100000 + 1000);
         const auto test_samples = size_t(8000);
 
-        const auto task = nano::get_tasks().get("stl10");
+        const auto task = nano::get_tasks().get("stl10", "dir=" + path);
         NANO_REQUIRE(task);
-        NANO_REQUIRE(task->load(path));
+        NANO_REQUIRE(task->load());
 
         // check dimensions
         NANO_CHECK_EQUAL(task->idims(), idims);

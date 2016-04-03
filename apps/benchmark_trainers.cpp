@@ -191,7 +191,7 @@ int main(int argc, const char* argv[])
         const color_mode color = color_mode::rgb;
 
         charset_task_t task(charset::digit, color, rows, cols, count);
-        task.load("");
+        task.load();
 
         const size_t fold = 0;
         const auto outputs = task.osize();

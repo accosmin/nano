@@ -54,7 +54,7 @@ int main(int argc, const char *argv[])
 
         // generate synthetic task
         charset_task_t task(charset::digit, cmd_color, cmd_rows, cmd_cols, cmd_samples);
-        task.load("");
+        task.load();
 
         // construct models
         const string_t mlp0;
