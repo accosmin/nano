@@ -71,6 +71,7 @@ static void test_optimizer(model_t& model, const string_t& name, const string_t&
 static void evaluate(model_t& model,
         const task_t& task, const size_t fold,
         const loss_t& loss, const criterion_t& criterion, const vectors_t& x0s, const size_t iterations,
+        const bool use_batch, const bool use_minibatch, const bool use_stochastic,
         const string_t& basename, const string_t& basepath, nano::table_t& table)
 {
         const scalar_t epsilon = 1e-4;
@@ -107,6 +108,7 @@ static void evaluate(model_t& model,
         };
 
         // run optimizers and collect results
+        if (use_batch)
         for (nano::batch_optimizer optimizer : batch_optimizers)
         {
                 const auto optname = "batch-" + nano::to_string(optimizer);
@@ -117,6 +119,7 @@ static void evaluate(model_t& model,
                 });
         }
 
+        if (use_minibatch)
         for (nano::batch_optimizer optimizer : minibatch_optimizers)
         {
                 const auto optname = "minibatch-" + nano::to_string(optimizer);
@@ -127,6 +130,7 @@ static void evaluate(model_t& model,
                 });
         }
 
+        if (use_stochastic)
         for (nano::stoch_optimizer optimizer : stoch_optimizers)
         {
                 const auto optname = "stochastic-" + nano::to_string(optimizer);
@@ -146,13 +150,16 @@ int main(int argc, const char* argv[])
 
         // parse the command line
         nano::cmdline_t cmdline("benchmark trainers");
-        cmdline.add("", "mlp0",         "MLP with 0 hidden layers");
-        cmdline.add("", "mlp1",         "MLP with 1 hidden layers");
-        cmdline.add("", "mlp2",         "MLP with 2 hidden layers");
-        cmdline.add("", "mlp3",         "MLP with 3 hidden layers");
-        cmdline.add("", "convnet1",     "convolution network (conv-pool-conv)");
-        cmdline.add("", "convnet2",     "convolution network (conv-conv)");
-        cmdline.add("", "convnet3",     "convolution network (conv-conv-conv)");
+        cmdline.add("", "mlp0",         "use MLP with 0 hidden layers");
+        cmdline.add("", "mlp1",         "use MLP with 1 hidden layers");
+        cmdline.add("", "mlp2",         "use MLP with 2 hidden layers");
+        cmdline.add("", "mlp3",         "use MLP with 3 hidden layers");
+        cmdline.add("", "convnet1",     "use convolution network (conv-pool-conv)");
+        cmdline.add("", "convnet2",     "use convolution network (conv-conv)");
+        cmdline.add("", "convnet3",     "use convolution network (conv-conv-conv)");
+        cmdline.add("", "batch",        "evaluate batch optimizers");
+        cmdline.add("", "minibatch",    "evaluate mini-batch optimizers");
+        cmdline.add("", "stochastic",   "evaluate stochastic optimizers");
         cmdline.add("", "l2n-reg",      "also evaluate the l2-norm-based regularizer");
         cmdline.add("", "var-reg",      "also evaluate the variance-based regularizer");
         cmdline.add("", "trials",       "number of models to train & evaluate", "10");
@@ -168,6 +175,9 @@ int main(int argc, const char* argv[])
         const bool use_convnet1 = cmdline.has("convnet1");
         const bool use_convnet2 = cmdline.has("convnet2");
         const bool use_convnet3 = cmdline.has("convnet3");
+        const bool use_batch = cmdline.has("batch");
+        const bool use_minibatch = cmdline.has("minibatch");
+        const bool use_stochastic = cmdline.has("stochastic");
         const bool use_reg_l2n = cmdline.has("l2n-reg");
         const bool use_reg_var = cmdline.has("var-reg");
         const auto trials = cmdline.get<size_t>("trials");
@@ -180,6 +190,13 @@ int main(int argc, const char* argv[])
                 !use_convnet1 &&
                 !use_convnet2 &&
                 !use_convnet3)
+        {
+                cmdline.usage();
+        }
+
+        if (    !use_batch &&
+                !use_minibatch &&
+                !use_stochastic)
         {
                 cmdline.usage();
         }
@@ -270,7 +287,9 @@ int main(int argc, const char* argv[])
                                 const auto basename = "[" + icriterion + "] ";
                                 const auto basepath = netname + "-" + iloss + "-" + icriterion + "-";
 
-                                evaluate(*model, task, fold, *loss, *criterion, x0s, iterations, basename, basepath, table);
+                                evaluate(*model, task, fold, *loss, *criterion, x0s, iterations,
+                                         use_batch, use_minibatch, use_stochastic,
+                                         basename, basepath, table);
                         }
 
                         // show results
