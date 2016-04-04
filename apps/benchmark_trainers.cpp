@@ -42,7 +42,7 @@ static void test_optimizer(model_t& model, const string_t& name, const string_t&
 
         for (size_t i = 0; i < x0s.size(); ++ i)
         {
-                const timer_t timer;
+                const nano::timer_t timer;
 
                 model.load_params(x0s[i]);
 
