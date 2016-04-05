@@ -1,6 +1,5 @@
 #pragma once
 
-#include <set>
 #include "tune_result.hpp"
 #include "tune_grid_space.hpp"
 #include "tune_finite_space.hpp"
