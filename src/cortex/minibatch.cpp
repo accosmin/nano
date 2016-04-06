@@ -1,7 +1,7 @@
 #include "timer.h"
-#include "iterator.h"
 #include "minibatch.h"
 #include "math/batch.hpp"
+#include "task_iterator.h"
 #include "thread/thread.h"
 #include "trainer_loop.hpp"
 #include "text/to_string.hpp"

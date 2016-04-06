@@ -1,6 +1,7 @@
 #include "math/clamp.hpp"
 #include "text/cmdline.h"
 #include "cortex/cortex.h"
+#include "cortex/task_util.h"
 #include "text/concatenate.hpp"
 #include "cortex/measure_and_log.hpp"
 
@@ -42,7 +43,7 @@ int main(int argc, const char *argv[])
                 "load task <" + cmd_task + ">");
 
         // describe task
-        task->describe();
+        nano::describe(*task);
 
         // save samples as images
         if (cmdline.has("save-dir"))
@@ -55,7 +56,7 @@ int main(int argc, const char *argv[])
                                 const auto fold = fold_t{f, p};
                                 const auto path = cmd_save_dir + "/" + cmd_task + "_" + to_string(p) + to_string(f + 1);
                                 nano::measure_and_log(
-                                        [&] () { task->save_as_images(fold, path, cmd_save_grows, cmd_save_gcols); },
+                                        [&] () { save_as_images(*task, fold, path, cmd_save_grows, cmd_save_gcols); },
                                         "save samples as images to <" + path + "*.png>");
                         }
                 }

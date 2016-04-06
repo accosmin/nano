@@ -1,5 +1,6 @@
 #include "text/cmdline.h"
 #include "cortex/cortex.h"
+#include "cortex/task_util.h"
 #include "cortex/accumulator.h"
 #include "text/concatenate.hpp"
 #include "cortex/measure_and_log.hpp"
@@ -45,7 +46,7 @@ int main(int argc, const char *argv[])
                 "load task <" + cmd_task + ">");
 
         // describe task
-        task->describe();
+        nano::describe(*task);
 
         // create loss
         const auto loss = nano::get_losses().get(cmd_loss);

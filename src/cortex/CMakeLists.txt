@@ -10,7 +10,6 @@ set(libcortex_sources
         cortex.h
         criterion.cpp
         criterion.h
-        iterator.h
         layer.cpp
         layer.h
         loss.cpp
@@ -25,6 +24,9 @@ set(libcortex_sources
         stochastic.h
         task.cpp
         task.h
+        task_util.h
+        task_util.cpp
+        task_iterator.h
         trainer.cpp
         trainer.h
         trainer_loop.hpp

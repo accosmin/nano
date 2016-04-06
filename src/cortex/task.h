@@ -51,17 +51,6 @@ namespace nano
                 virtual bool load() = 0;
 
                 ///
-                /// \brief print a short description
-                ///
-                void describe() const;
-
-                ///
-                /// \brief save the samples for the given fold as images (if possible) to the given path
-                ///
-                void save_as_images(const fold_t&, const string_t& basepath,
-                        const tensor_size_t grows, const tensor_size_t gcols) const;
-
-                ///
                 /// \brief input size
                 ///
                 virtual tensor_size_t idims() const = 0;

@@ -1,11 +1,10 @@
 #include "timer.h"
-#include "iterator.h"
 #include "stochastic.h"
 #include "math/stoch.hpp"
+#include "task_iterator.h"
 #include "thread/thread.h"
 #include "trainer_loop.hpp"
 #include "text/to_string.hpp"
-
 #include "logger.h"
 
 namespace nano
