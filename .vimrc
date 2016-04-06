@@ -1,13 +1,24 @@
-set tabstop=8       " The width of a TAB
-set shiftwidth=8    " Indent size
-set softtabstop=8   " Sets the number of columns for a TAB
-set expandtab       " Expand TABs to spaces
-set smarttab        " Make "tab" insert indents instead of tabs at the beginning of a line
+set nocompatible
+
+syntax enable
+
+set tabstop=8           " The width of a TAB
+set shiftwidth=8        " Indent size
+set softtabstop=8       " Sets the number of columns for a TAB
+set expandtab           " Expand TABs to spaces
+set smarttab            " Make "tab" insert indents instead of tabs at the beginning of a line
 set exrc
 set secure
 
-set number
-syntax on
+set number              " Show line numbers
+set showcmd             " Show command in bottom bar
+set nocursorline        " Highlight current line
+set wildmenu
+"set lazyredraw
+set showmatch           " Higlight matching parenthesis
+
+set incsearch           " search as characters are entered
+set hlsearch            " highlight matches
 
 " Replace tabs with spaces
 map <F2> :retab <CR> :w <CR>
@@ -31,11 +42,11 @@ set path+=src/io
 set path+=apps
 set path+=test
 
-" Trim trailing whitespaces when saving                                                                                                     
-function! StripTrailingWhitespaces()                                                                                                        
-        let l = line(".")                                                                                                                       
-        let c = col(".")                                                                                                                        
-        %s/\s\+$//e                                                                                                                             
-        call cursor(l, c)                                                                                                                       
-endfunction                                                                                                                                 
-autocmd BufWritePre     * :call StripTrailingWhitespaces()  
+" Trim trailing whitespaces when saving
+function! StripTrailingWhitespaces()
+        let l = line(".")
+        let c = col(".")
+        %s/\s\+$//e
+        call cursor(l, c)
+endfunction
+autocmd BufWritePre     * :call StripTrailingWhitespaces()
