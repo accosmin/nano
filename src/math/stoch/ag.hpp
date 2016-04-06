@@ -134,7 +134,7 @@ namespace nano
 
                         // OK, assembly the optimizer
                         return  stoch_loop(problem, param, istate, op_iter,
-                                {{"alpha0", alpha0}, {"q", q}});
+                                {{"alpha0", alpha0}, {"decay", decay}, {"q", q}});
                 }
         };
 
