@@ -16,7 +16,7 @@ namespace nano
 
         inline auto make_decays()
         {
-                return nano::make_finite_space(0.10, 0.25, 0.50, 0.75, 1.00);
+                return nano::make_log10_space(-3.0, -1.0, 0.1);
         }
 
         inline auto make_momenta()
@@ -55,6 +55,7 @@ namespace nano
 
                 // best state
                 auto bstate = istate;
+                bstate.f = std::numeric_limits<typename tproblem::tscalar>::max();
 
                 // for each epoch ...
                 for (std::size_t e = 0, k = 1; e < params.m_epochs; ++ e)
