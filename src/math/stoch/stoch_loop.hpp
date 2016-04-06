@@ -11,17 +11,17 @@ namespace nano
         ///
         inline auto make_alpha0s()
         {
-                return nano::make_finite_space(1e-4, 1e-3, 1e-2, 1e-1, 1e+0);
+                return nano::make_finite_space(1e-3, 1e-2, 1e-1, 1e+0);
         }
 
         inline auto make_decays()
         {
-                return nano::make_log10_space(-3.0, -1.0, 0.1);
+                return nano::make_log10_space(-3.0, -0.1, 0.1);
         }
 
         inline auto make_momenta()
         {
-                return nano::make_finite_space(0.10, 0.25, 0.50, 0.90, 0.95);
+                return nano::make_linear_space(0.09, 0.99, 0.05);
         }
 
         inline auto make_epsilons()
