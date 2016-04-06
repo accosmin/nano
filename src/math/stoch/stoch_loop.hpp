@@ -16,12 +16,12 @@ namespace nano
 
         inline auto make_decays()
         {
-                return nano::make_log10_space(-3.0, -0.1, 0.1);
+                return nano::make_log10_space(-3.0, -1.0, 0.2);
         }
 
         inline auto make_momenta()
         {
-                return nano::make_linear_space(0.09, 0.99, 0.05);
+                return nano::make_linear_space(0.10, 0.90, 0.05);
         }
 
         inline auto make_epsilons()
@@ -48,9 +48,10 @@ namespace nano
                 auto cstate = istate;
 
                 // average state
+                // - similar to average stochastic gradient descent, but using an exponential moving average
                 auto astate = istate;
 
-                const typename tproblem::tscalar momentum = 0.90;
+                const typename tproblem::tscalar momentum = 0.95;
                 momentum_vector_t<typename tproblem::tvector> xavg(momentum, istate.x.size());
 
                 // best state
