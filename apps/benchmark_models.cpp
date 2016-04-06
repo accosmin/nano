@@ -8,6 +8,7 @@
 #include "tensor/random.hpp"
 #include "cortex/measure.hpp"
 #include "cortex/accumulator.h"
+#include "text/table_row_mark.h"
 #include "cortex/measure_and_log.hpp"
 #include "cortex/layers/make_layers.h"
 #include "cortex/tasks/task_charset.h"
@@ -202,11 +203,13 @@ int main(int argc, const char *argv[])
         // print results
         if (cmd_forward)
         {
+                ftable.mark(nano::make_table_mark_minimum_percentage_cols<size_t>(5));
                 ftable.print(std::cout);
         }
         log_info();
         if (cmd_backward)
         {
+                btable.mark(nano::make_table_mark_minimum_percentage_cols<size_t>(5));
                 btable.print(std::cout);
         }
 
