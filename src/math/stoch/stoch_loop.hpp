@@ -26,7 +26,7 @@ namespace nano
 
         inline auto make_epsilons()
         {
-                return nano::make_finite_space(1e-4, 1e-6, 1e-8);
+                return nano::make_log10_space(-8.0, -2.0, 0.5);
         }
 
         ///
