@@ -6,7 +6,7 @@
 build-rel*
 build-debug*
 install
-docs/html
+dox/html
 *~
 *.bak
 *.log
