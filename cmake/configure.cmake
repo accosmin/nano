@@ -1,49 +1,10 @@
-# check some compiler flags
-include(CheckCXXCompilerFlag)
+include(cmake/utils.cmake)
 
-set(TEST_PROGRAM "int main() { return 0; }")
-
-CHECK_CXX_COMPILER_FLAG(-std=c++14 COMPILER_SUPPORTS_CXX14)
-
-#CHECK_CXX_COMPILER_FLAG(-fsanitize=address COMPILER_SUPPORTS_SANITIZE_ADDRESS)
-#CHECK_CXX_COMPILER_FLAG(-fsanitize=undefined COMPILER_SUPPORTS_SANITIZE_UNDEFINED)
-#CHECK_CXX_COMPILER_FLAG(-fsanitize=leak COMPILER_SUPPORTS_SANITIZE_LEAK)
-#CHECK_CXX_COMPILER_FLAG(-fsanitize=thread COMPILER_SUPPORTS_SANITIZE_THREAD)
-
-set(CMAKE_REQUIRED_FLAGS "-fsanitize=address")
-CHECK_CXX_SOURCE_COMPILES("${TEST_PROGRAM}" COMPILER_SUPPORTS_SANITIZE_ADDRESS)
-
-set(CMAKE_REQUIRED_FLAGS "-fsanitize=undefined")
-CHECK_CXX_SOURCE_COMPILES("${TEST_PROGRAM}" COMPILER_SUPPORTS_SANITIZE_UNDEFINED)
-
-set(CMAKE_REQUIRED_FLAGS "-fsanitize=vptr")
-CHECK_CXX_SOURCE_COMPILES("${TEST_PROGRAM}" COMPILER_SUPPORTS_SANITIZE_VPTR)
-
-set(CMAKE_REQUIRED_FLAGS "-fsanitize=leak")
-CHECK_CXX_SOURCE_COMPILES("${TEST_PROGRAM}" COMPILER_SUPPORTS_SANITIZE_LEAK)
-
-set(CMAKE_REQUIRED_FLAGS "-fsanitize=integer")
-CHECK_CXX_SOURCE_COMPILES("${TEST_PROGRAM}" COMPILER_SUPPORTS_SANITIZE_INTEGER)
-
-set(CMAKE_REQUIRED_FLAGS "-fsanitize=thread")
-CHECK_CXX_SOURCE_COMPILES("${TEST_PROGRAM}" COMPILER_SUPPORTS_SANITIZE_THREAD)
-
-set(CMAKE_REQUIRED_FLAGS "-fsanitize=memory")
-CHECK_CXX_SOURCE_COMPILES("${TEST_PROGRAM}" COMPILER_SUPPORTS_SANITIZE_MEMORY)
-
-set(CMAKE_REQUIRED_FLAGS "-fuse-ld=gold")
-CHECK_CXX_SOURCE_COMPILES("${TEST_PROGRAM}" COMPILER_SUPPORTS_GOLD)
-
-# setup compiler
+# setup compiler (gcc or clang)
 if(CMAKE_CXX_COMPILER_ID MATCHES GNU OR CMAKE_CXX_COMPILER_ID MATCHES Clang)
         message("++ Compiling with ${CMAKE_CXX_COMPILER_ID} ${CMAKE_CXX_COMPILER_VERSION} ...")
 
-        # check C++14
-        CHECK_CXX_COMPILER_FLAG(-std=c++14 COMPILER_SUPPORTS_CXX14)
-
-        if(NOT COMPILER_SUPPORTS_CXX14)
-                message(FATAL_ERROR "The compiler has no C++14 support.")
-        endif()
+        require_cpp14()
 
         # set flags
         set(CMAKE_CXX_FLAGS                     "-std=c++14 -pedantic -march=native -mtune=native")
@@ -72,44 +33,19 @@ if(CMAKE_CXX_COMPILER_ID MATCHES GNU OR CMAKE_CXX_COMPILER_ID MATCHES Clang)
 
         # set gold linker
         if(NANO_WITH_GOLD)
-                if(COMPILER_SUPPORTS_GOLD)
-                        set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -fuse-ld=gold -Wl,--disable-new-dtags")
-                        set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -fuse-ld=gold -Wl,--disable-new-dtags")
-                endif()
+                setup_gold()
         endif()
 
-        # set address sanitizer
+        # set sanitizers
         if(NANO_WITH_ASAN)
-                if(COMPILER_SUPPORTS_SANITIZE_ADDRESS)
-                        set(CMAKE_CXX_FLAGS     "${CMAKE_CXX_FLAGS} -fsanitize=address")
-                endif()
-                if(COMPILER_SUPPORTS_SANITIZE_UNDEFINED)
-                        set(CMAKE_CXX_FLAGS     "${CMAKE_CXX_FLAGS} -fsanitize=undefined")
-                endif()
-                if(COMPILER_SUPPORTS_SANITIZE_VPTR)
-                        set(CMAKE_CXX_FLAGS     "${CMAKE_CXX_FLAGS} -fno-sanitize=vptr")
-                endif()
-                if(COMPILER_SUPPORTS_SANITIZE_LEAK)
-                        set(CMAKE_CXX_FLAGS     "${CMAKE_CXX_FLAGS} -fsanitize=leak")
-                endif()
-                if(COMPILER_SUPPORTS_SANITIZE_INTEGER)
-                        set(CMAKE_CXX_FLAGS     "${CMAKE_CXX_FLAGS} -fsanitize=integer")
-                endif()
-
-        # set memory sanitizer
+                setup_asan()
         elseif(NANO_WITH_MSAN)
-                if(COMPILER_SUPPORTS_SANITIZE_MEMORY)
-                        set(CMAKE_CXX_FLAGS     "${CMAKE_CXX_FLAGS} -fsanitize=memory -fsanitize-memory-track-origins -fPIE")
-                        set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -pie")
-                endif()
-
-        # set thread sanitizer
+                setup_msan()
         elseif(NANO_WITH_TSAN)
-                if(COMPILER_SUPPORTS_SANITIZE_THREAD)
-                        set(CMAKE_CXX_FLAGS     "${CMAKE_CXX_FLAGS} -fsanitize=thread")
-                endif()
+                setup_tsan()
         endif()
 
+# setup compiler (unsupported)
 else()
         message(WARNING "Compiling with an unsupported compiler ...")
 endif()
