@@ -11,6 +11,7 @@ msan_flag="OFF"
 tsan_flag="OFF"
 test_flag="ON"
 libcpp_flag="OFF"
+gold_flag="OFF"
 
 # usage
 function usage
@@ -25,6 +26,7 @@ function usage
         echo -e "\t--tsan               <thread sanitizer [ON/OFF]>                     default=${tsan_flag}"
         echo -e "\t--compiler           <c++ compiler (g++, clang++)>                   optional"
         echo -e "\t--libc++             <use libc++ instead of default libstdc++>       optional"
+        echo -e "\t--gold               <use gold linker instead of default linker>     optional"
         echo
 }
 
@@ -57,6 +59,8 @@ do
                                 compiler=$1
                                 ;;
                 --libc++)       libcpp_flag="ON"
+                                ;;
+                --gold)         gold_flag="ON"
                                 ;;
                 -h | --help)    usage
                                 exit
@@ -131,6 +135,7 @@ cmake \
         -DNANO_WITH_TSAN=${tsan_flag} \
         -DNANO_WITH_TESTS=${test_flag} \
         -DNANO_WITH_LIBCPP=${libcpp_flag} \
+        -DNANO_WITH_GOLD=${gold_flag} \
         -G "${generator}" \
         -DCMAKE_INSTALL_PREFIX=${install_dir} \
         ${current_dir}/
