@@ -99,10 +99,10 @@ endfunction()
 
 # setup LTO
 function(setup_lto)
-        set(CMAKE_REQUIRE_FLAGS "-flto")
+        set(CMAKE_REQUIRED_FLAGS "-flto")
         CHECK_CXX_SOURCE_COMPILES("${TEST_PROGRAM}" COMPILER_SUPPORTS_LTO)
 
-        set(CMAKE_REQUIRE_FLAGS "-fno-fat-lto-objects")
+        set(CMAKE_REQUIRED_FLAGS "-fno-fat-lto-objects")
         CHECK_CXX_SOURCE_COMPILES("${TEST_PROGRAM}" COMPILER_SUPPORTS_NO_FAT_LTO_OBJECTS)
 
         if(COMPILER_SUPPORTS_LTO)
