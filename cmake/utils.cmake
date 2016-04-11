@@ -23,6 +23,14 @@ function(require_cpp14)
         endif()
 endfunction()
 
+# setup libc++
+function(setup_libcpp)
+        set(CMAKE_CXX_FLAGS "-stdlib=libc++ ${CMAKE_CXX_FLAGS}")
+        set(CMAKE_EXE_LINKER_FLAGS "-lc++abi ${CMAKE_EXE_LINKER_FLAGS}")
+
+        to_parent()
+endfunction()
+
 # setup sanitizers compatible with address sanitizer
 function(setup_asan)
         set(CMAKE_REQUIRED_FLAGS "-fsanitize=address")

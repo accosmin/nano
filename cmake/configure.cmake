@@ -26,8 +26,7 @@ if(CMAKE_CXX_COMPILER_ID MATCHES GNU OR CMAKE_CXX_COMPILER_ID MATCHES Clang)
 
         # set libc++
         if(NANO_WITH_LIBCPP)
-                set(CMAKE_CXX_FLAGS             "-stdlib=libc++ ${CMAKE_CXX_FLAGS}")
-                set(CMAKE_EXE_LINKER_FLAGS      "-lc++abi ${CMAKE_EXE_LINKER_FLAGS}")
+                setup_libcpp()
         endif()
 
         # set gold linker
