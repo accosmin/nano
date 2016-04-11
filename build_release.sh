@@ -4,6 +4,7 @@ compiler=$CXX
 generator=ninja
 libcpp=""
 gold=""
+lto=""
 
 install_dir="`pwd`/install"
 
@@ -20,6 +21,7 @@ function usage
         echo -e "\t--compiler           <c++ compiler (g++, clang++)>                   optional"
         echo -e "\t--libc++             <use libc++ instead of default libstdc++>       optional"
         echo -e "\t--gold               <use gold linker instead of default linker>     optional"
+        echo -e "\t--lto                <use link time optimization>                    optional"
         echo
 }
 
@@ -36,6 +38,8 @@ do
                 --libc++)       libcpp="--libc++"
                                 ;;
                 --gold)         gold="--gold"
+                                ;;
+                --lto)          lto="--lto"
                                 ;;
                 -h | --help)    usage
                                 exit
@@ -54,7 +58,7 @@ bash build.sh \
         --generator ${generator} \
         --install-dir ${install_dir} \
         --install OFF \
-        --asan OFF --msan OFF --tsan OFF ${libcpp} ${gold}
+        --asan OFF --msan OFF --tsan OFF ${libcpp} ${gold} ${lto}
 
 bash build.sh \
         --compiler ${compiler} \

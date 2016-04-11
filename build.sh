@@ -12,6 +12,7 @@ tsan_flag="OFF"
 test_flag="ON"
 libcpp_flag="OFF"
 gold_flag="OFF"
+lto_flag="OFF"
 
 # usage
 function usage
@@ -27,6 +28,7 @@ function usage
         echo -e "\t--compiler           <c++ compiler (g++, clang++)>                   optional"
         echo -e "\t--libc++             <use libc++ instead of default libstdc++>       optional"
         echo -e "\t--gold               <use gold linker instead of default linker>     optional"
+        echo -e "\t--lto                <use link time optimization>                    optional"
         echo
 }
 
@@ -62,6 +64,8 @@ do
                                 ;;
                 --gold)         gold_flag="ON"
                                 ;;
+                --lto)          lto_flag="ON"
+                                ;;
                 -h | --help)    usage
                                 exit
                                 ;;
@@ -80,7 +84,10 @@ current_dir=`pwd`
 # create build directory
 build_dir=build-$(echo ${build_type} | tr '[:upper:]' '[:lower:]')
 #build_dir=build-${build_type,,}
-if [ "${asan_flag}" == "ON" ]
+if [ "${lto_flag}" == "ON" ]
+then
+        build_dir+=-lto
+elif [ "${asan_flag}" == "ON" ]
 then
         build_dir+=-asan
 elif [ "${msan_flag}" == "ON" ]
@@ -136,6 +143,7 @@ cmake \
         -DNANO_WITH_TESTS=${test_flag} \
         -DNANO_WITH_LIBCPP=${libcpp_flag} \
         -DNANO_WITH_GOLD=${gold_flag} \
+        -DNANO_WITH_LTO=${lto_flag} \
         -G "${generator}" \
         -DCMAKE_INSTALL_PREFIX=${install_dir} \
         ${current_dir}/

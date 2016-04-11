@@ -19,7 +19,6 @@ if(CMAKE_CXX_COMPILER_ID MATCHES GNU OR CMAKE_CXX_COMPILER_ID MATCHES Clang)
         set(CMAKE_CXX_FLAGS_RELEASE             "-O3 -DNDEBUG")                         # -DEIGEN_NO_DEBUG")
         set(CMAKE_CXX_FLAGS_RELWITHDEBINFO      "-O3 -g -fno-omit-frame-pointer")       # -DEIGEN_NO_DEBUG")
         set(CMAKE_CXX_FLAGS_MINSIZEREL          "-Os -DNDEBUG")                         # -DEIGEN_NO_DEBUG")
-        set(CMAKE_EXE_LINKER_FLAGS              "-flto")
 
         if(NOT CMAKE_CXX_COMPILER_ID MATCHES AppleClang)
                 set(CMAKE_CXX_FLAGS             "${CMAKE_CXX_FLAGS} -pthread")
@@ -45,9 +44,14 @@ if(CMAKE_CXX_COMPILER_ID MATCHES GNU OR CMAKE_CXX_COMPILER_ID MATCHES Clang)
                 setup_tsan()
         endif()
 
+        # set LTO
+        if(NANO_WITH_LTO)
+                setup_lto()
+        endif()
+
 # setup compiler (unsupported)
 else()
-        message(WARNING "Compiling with an unsupported compiler ...")
+        message(WARNING "++Compiling with an unsupported compiler ...")
 endif()
 
 # debug

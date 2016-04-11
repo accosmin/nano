@@ -4,3 +4,4 @@ option(NANO_WITH_TSAN           "build with thread sanitizer suppport (if availa
 option(NANO_WITH_TESTS          "build the unit tests"                                          ON)
 option(NANO_WITH_LIBCPP         "use libc++ instead of default libstdc++ (if applicable)"       OFF)
 option(NANO_WITH_GOLD           "use gold linker (if available)"                                OFF)
+option(NANO_WITH_LTO            "use link time optimization (if available)"                     OFF)
