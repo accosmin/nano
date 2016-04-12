@@ -8,19 +8,19 @@ namespace nano
         {
                 struct unit_activation_layer_eval_t
                 {
-                        scalar_t operator()(scalar_t x) const
+                        template <typename tivector, typename tovector>
+                        void operator()(const tivector& idata, tovector&& odata) const
                         {
-                                return x;
+                                odata = idata;
                         }
                 };
 
                 struct unit_activation_layer_grad_t
                 {
-                        scalar_t operator()(scalar_t g, scalar_t o) const
+                        template <typename tgvector, typename tiovector>
+                        void operator()(const tgvector& gdata, tiovector&& iodata) const
                         {
-                                NANO_UNUSED1(o);
-
-                                return g;
+                                iodata = gdata;
                         }
                 };
         }

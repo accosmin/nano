@@ -8,17 +8,19 @@ namespace nano
         {
                 struct softplus_activation_layer_eval_t
                 {
-                        scalar_t operator()(scalar_t x) const
+                        template <typename tivector, typename tovector>
+                        void operator()(const tivector& idata, tovector&& odata) const
                         {
-                                return std::log1p(std::exp(x));
+                                odata.array() = (1 + idata.array().exp()).log();
                         }
                 };
 
                 struct softplus_activation_layer_grad_t
                 {
-                        scalar_t operator()(scalar_t g, scalar_t o) const
+                        template <typename tgvector, typename tiovector>
+                        void operator()(const tgvector& gdata, tiovector&& iodata) const
                         {
-                                return g * (1.0 - std::exp(-o));
+                                iodata.array() = gdata.array() * (1 - (- iodata.array()).exp());
                         }
                 };
         }

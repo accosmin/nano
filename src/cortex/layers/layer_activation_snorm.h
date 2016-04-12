@@ -8,18 +8,22 @@ namespace nano
         {
                 struct snorm_activation_layer_eval_t
                 {
-                        scalar_t operator()(scalar_t x) const
+                        template <typename tivector, typename tovector>
+                        void operator()(const tivector& idata, tovector&& odata) const
                         {
-                                return x / std::sqrt(1.0 + x * x);
+                                odata = idata.array() /
+                                        (1 + idata.array() * idata.array()).sqrt();
                         }
                 };
 
                 struct snorm_activation_layer_grad_t
                 {
-                        scalar_t operator()(scalar_t g, scalar_t o) const
+                        template <typename tgvector, typename tiovector>
+                        void operator()(const tgvector& gdata, tiovector&& iodata) const
                         {
-                                const scalar_t d = 1.0 - o * o;
-                                return g * d * std::sqrt(d);
+                                iodata.array() = gdata.array() *
+                                        (1 - iodata.array() * iodata.array()) *
+                                        (1 - iodata.array() * iodata.array()).sqrt();
                         }
                 };
         }

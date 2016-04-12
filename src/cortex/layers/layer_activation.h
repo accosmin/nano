@@ -10,10 +10,10 @@ namespace nano
         ///
         template
         <
-                /// activation value o: o = teval_op(x)
+                /// activation value: teval_op(input, output)
                 typename teval_op,
 
-                /// & its gradient wrt to input x, given the output o and propagated gradient g: g = tgrad_op(g, o)
+                /// & its gradient wrt to input, given the output and the gradient: tgrad_op(gradient, input-output)
                 typename tgrad_op
 
         >
@@ -75,8 +75,7 @@ namespace nano
                         assert(m_data.size<1>() == input.size<1>());
                         assert(m_data.size<2>() == input.size<2>());
 
-                        tensor::transform(input, m_data,
-                                          [op = teval_op()] (auto x) { return op(x); });
+                        teval_op()(input.vector(), m_data.vector());
 
                         return m_data;
                 }
@@ -88,8 +87,7 @@ namespace nano
                         assert(m_data.size<1>() == output.size<1>());
                         assert(m_data.size<2>() == output.size<2>());
 
-                        tensor::transform(output, m_data, m_data,
-                                          [op = tgrad_op()] (auto g, auto o) { return op(g, o); });
+                        tgrad_op()(output.vector(), m_data.vector());
 
                         return m_data;
                 }
