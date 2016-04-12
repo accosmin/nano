@@ -29,7 +29,7 @@ namespace nano
         const tensor3d_t& forward_network_t::output(const tensor3d_t& _input)
         {
                 const tensor3d_t* input = &_input;
-                for (rlayers_t::const_iterator it = m_layers.begin(); it != m_layers.end(); ++ it)
+                for (auto it = m_layers.begin(); it != m_layers.end(); ++ it)
                 {
                         const rlayer_t& layer = *it;
 
@@ -49,7 +49,7 @@ namespace nano
 
                 // backward step
                 const tensor3d_t* poutput = &m_odata;
-                for (rlayers_t::const_reverse_iterator it = m_layers.rbegin(); it != m_layers.rend(); ++ it)
+                for (auto it = m_layers.rbegin(); it != m_layers.rend(); ++ it)
                 {
                         const rlayer_t& layer = *it;
 
@@ -74,7 +74,7 @@ namespace nano
                 const tensor3d_t* poutput = &m_odata;
                 scalar_t* gparamient = m_gparam.data() + m_gparam.size();
 
-                for (rlayers_t::const_reverse_iterator it = m_layers.rbegin(); it != m_layers.rend(); ++ it)
+                for (auto it = m_layers.rbegin(); it != m_layers.rend(); ++ it)
                 {
                         const rlayer_t& layer = *it;
 
@@ -101,7 +101,7 @@ namespace nano
                 }
 
                 scalar_t* px = x.data() + x.size();
-                for (rlayers_t::const_reverse_iterator it = m_layers.rbegin(); it != m_layers.rend(); ++ it)
+                for (auto it = m_layers.rbegin(); it != m_layers.rend(); ++ it)
                 {
                         const rlayer_t& layer = *it;
 
@@ -117,7 +117,7 @@ namespace nano
                 if (x.size() == psize())
                 {
                         const scalar_t* px = x.data() + x.size();
-                        for (rlayers_t::const_reverse_iterator it = m_layers.rbegin(); it != m_layers.rend(); ++ it)
+                        for (auto it = m_layers.rbegin(); it != m_layers.rend(); ++ it)
                         {
                                 const rlayer_t& layer = *it;
 

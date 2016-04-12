@@ -88,6 +88,80 @@ namespace nano
                 return oend(cs) - obegin(cs);
         }
 
+        template
+        <
+                typename tindex,
+                typename tsize
+        >
+        tensor3d_t get_object_patch(const image_tensor_t& image,
+                const tindex object_index, const tsize objects, const scalar_t max_offset)
+        {
+                nano::random_t<scalar_t> rng(-max_offset, max_offset);
+
+                const auto icols = static_cast<int>(image.cols());
+                const auto irows = static_cast<int>(image.rows());
+
+                const auto dx = static_cast<scalar_t>(icols) / static_cast<scalar_t>(objects);
+
+                const auto x = dx * static_cast<scalar_t>(object_index) + rng();
+
+                const auto ppx = nano::clamp(nano::cast<int>(x), 0, icols - 1);
+                const auto ppw = nano::clamp(nano::cast<int>(dx + rng()), 0, icols - ppx);
+
+                const auto ppy = nano::clamp(nano::cast<int>(rng()), 0, irows - 1);
+                const auto pph = nano::clamp(nano::cast<int>(irows + rng()), 0, irows - ppy);
+
+                tensor3d_t ret(4, pph, ppw);
+                ret.matrix(0) = image.matrix(0).block(ppy, ppx, pph, ppw).cast<scalar_t>() / 255.0;
+                ret.matrix(1) = image.matrix(1).block(ppy, ppx, pph, ppw).cast<scalar_t>() / 255.0;
+                ret.matrix(2) = image.matrix(2).block(ppy, ppx, pph, ppw).cast<scalar_t>() / 255.0;
+                ret.matrix(3) = image.matrix(3).block(ppy, ppx, pph, ppw).cast<scalar_t>() / 255.0;
+
+                return ret;
+        }
+
+        tensor3d_t make_random_rgba_image(const tensor_size_t rows, const tensor_size_t cols,
+                const rgba_t back_color,
+                const scalar_t max_noise, const scalar_t sigma)
+        {
+                const scalar_t ir = back_color(0) / 255.0;
+                const scalar_t ig = back_color(1) / 255.0;
+                const scalar_t ib = back_color(2) / 255.0;
+
+                tensor3d_t image(4, rows, cols);
+
+                // noisy background
+                nano::random_t<scalar_t> back_noise(-max_noise, +max_noise);
+                tensor::for_each(image.matrix(0), [&] (scalar_t& value) { value = ir + back_noise(); });
+                tensor::for_each(image.matrix(1), [&] (scalar_t& value) { value = ig + back_noise(); });
+                tensor::for_each(image.matrix(2), [&] (scalar_t& value) { value = ib + back_noise(); });
+                image.matrix(3).setConstant(1.0);
+
+                // smooth background
+                const nano::gauss_kernel_t<scalar_t> back_gauss(sigma);
+                nano::convolve(back_gauss, image.matrix(0));
+                nano::convolve(back_gauss, image.matrix(1));
+                nano::convolve(back_gauss, image.matrix(2));
+
+                return image;
+        }
+
+        tensor3d_t alpha_blend(const tensor3d_t& mask, const tensor3d_t& img1, const tensor3d_t& img2)
+        {
+                const auto op = [] (const auto a, const auto v1, const auto v2)
+                {
+                        return (1.0 - a) * v1 + a * v2;
+                };
+
+                tensor3d_t imgb(4, mask.rows(), mask.cols());
+                tensor::transform(mask.matrix(3), img1.matrix(0), img2.matrix(0), imgb.matrix(0), op);
+                tensor::transform(mask.matrix(3), img1.matrix(1), img2.matrix(1), imgb.matrix(1), op);
+                tensor::transform(mask.matrix(3), img1.matrix(2), img2.matrix(2), imgb.matrix(2), op);
+                imgb.matrix(3).setConstant(1.0);
+
+                return imgb;
+        }
+
         charset_task_t::charset_task_t(const string_t& configuration) : mem_vision_task_t(
                 "charset",
                 nano::from_params<color_mode>(configuration, "color", color_mode::rgb),
@@ -107,83 +181,6 @@ namespace nano
                 "color=" + to_string(mode) + ",irows=" + to_string(irows) + ",icols=" + to_string(icols) +
                 ",type=" + to_string(type) + ",count=" + to_string(count))
         {
-        }
-
-        namespace
-        {
-                template
-                <
-                        typename tindex,
-                        typename tsize
-                >
-                tensor3d_t get_object_patch(const image_tensor_t& image,
-                        const tindex object_index, const tsize objects, const scalar_t max_offset)
-                {
-                        nano::random_t<scalar_t> rng(-max_offset, max_offset);
-
-                        const auto icols = static_cast<int>(image.cols());
-                        const auto irows = static_cast<int>(image.rows());
-
-                        const auto dx = static_cast<scalar_t>(icols) / static_cast<scalar_t>(objects);
-
-                        const auto x = dx * static_cast<scalar_t>(object_index) + rng();
-
-                        const auto ppx = nano::clamp(nano::cast<int>(x), 0, icols - 1);
-                        const auto ppw = nano::clamp(nano::cast<int>(dx + rng()), 0, icols - ppx);
-
-                        const auto ppy = nano::clamp(nano::cast<int>(rng()), 0, irows - 1);
-                        const auto pph = nano::clamp(nano::cast<int>(irows + rng()), 0, irows - ppy);
-
-                        tensor3d_t ret(4, pph, ppw);
-                        ret.matrix(0) = image.matrix(0).block(ppy, ppx, pph, ppw).cast<scalar_t>() / 255.0;
-                        ret.matrix(1) = image.matrix(1).block(ppy, ppx, pph, ppw).cast<scalar_t>() / 255.0;
-                        ret.matrix(2) = image.matrix(2).block(ppy, ppx, pph, ppw).cast<scalar_t>() / 255.0;
-                        ret.matrix(3) = image.matrix(3).block(ppy, ppx, pph, ppw).cast<scalar_t>() / 255.0;
-
-                        return ret;
-                }
-
-                tensor3d_t make_random_rgba_image(const tensor_size_t rows, const tensor_size_t cols,
-                        const rgba_t back_color,
-                        const scalar_t max_noise, const scalar_t sigma)
-                {
-                        const scalar_t ir = back_color(0) / 255.0;
-                        const scalar_t ig = back_color(1) / 255.0;
-                        const scalar_t ib = back_color(2) / 255.0;
-
-                        tensor3d_t image(4, rows, cols);
-
-                        // noisy background
-                        nano::random_t<scalar_t> back_noise(-max_noise, +max_noise);
-                        tensor::for_each(image.matrix(0), [&] (scalar_t& value) { value = ir + back_noise(); });
-                        tensor::for_each(image.matrix(1), [&] (scalar_t& value) { value = ig + back_noise(); });
-                        tensor::for_each(image.matrix(2), [&] (scalar_t& value) { value = ib + back_noise(); });
-                        image.matrix(3).setConstant(1.0);
-
-                        // smooth background
-                        const nano::gauss_kernel_t<scalar_t> back_gauss(sigma);
-                        nano::convolve(back_gauss, image.matrix(0));
-                        nano::convolve(back_gauss, image.matrix(1));
-                        nano::convolve(back_gauss, image.matrix(2));
-
-                        return image;
-                }
-
-                tensor3d_t alpha_blend(const tensor3d_t& mask, const tensor3d_t& img1, const tensor3d_t& img2)
-                {
-                        const auto op = [] (const auto a, const auto v1, const auto v2)
-                        {
-                                return (1.0 - a) * v1 + a * v2;
-                        };
-
-                        tensor3d_t imgb(4, mask.rows(), mask.cols());
-                        tensor::transform(mask.matrix(3), img1.matrix(0), img2.matrix(0), imgb.matrix(0), op);
-                        tensor::transform(mask.matrix(3), img1.matrix(1), img2.matrix(1), imgb.matrix(1), op);
-                        tensor::transform(mask.matrix(3), img1.matrix(2), img2.matrix(2), imgb.matrix(2), op);
-                        imgb.matrix(3).setConstant(1.0);
-
-                        return imgb;
-                }
         }
 
         bool charset_task_t::populate()
