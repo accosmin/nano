@@ -7,6 +7,7 @@
 #include "tensor/conv2d_cpp.hpp"
 #include "tensor/conv2d_dyn.hpp"
 #include "tensor/conv2d_eig.hpp"
+#include "tensor/conv2d_fix.hpp"
 #include "tensor/corr2d_cpp.hpp"
 #include "tensor/corr2d_dyn.hpp"
 #include "tensor/corr2d_egb.hpp"
@@ -71,6 +72,7 @@ namespace
                 row << measure_op(tensor::conv2d_mad_t(), idata, kdata, odata, trials);
                 row << measure_op(tensor::conv2d_mad_dyn_t(), idata, kdata, odata, trials);
                 row << measure_op(tensor::conv2d_dyn_t(), idata, kdata, odata, trials);
+                row << measure_op(tensor::conv2d_fix_t(), idata, kdata, odata, trials);
         }
 
         template
@@ -130,7 +132,8 @@ int main(int argc, const char* argv[])
                         << "dot-dyn"
                         << "mad"
                         << "mad-dyn"
-                        << "dyn";
+                        << "dyn"
+                        << "fix";
 
                 for (int isize = min_isize; isize <= max_isize; ++ isize)
                 {

@@ -5,6 +5,7 @@
 #include "tensor/conv2d_cpp.hpp"
 #include "tensor/conv2d_dyn.hpp"
 #include "tensor/conv2d_eig.hpp"
+#include "tensor/conv2d_fix.hpp"
 
 namespace test
 {
@@ -46,6 +47,7 @@ namespace test
                 const scalar_t convcpu_dot = test_cpu(tensor::conv2d_dot_t(), idata, kdata, odata);
                 const scalar_t convcpu_mad = test_cpu(tensor::conv2d_mad_t(), idata, kdata, odata);
                 const scalar_t convcpu_dyn = test_cpu(tensor::conv2d_dyn_t(), idata, kdata, odata);
+                const scalar_t convcpu_fix = test_cpu(tensor::conv2d_fix_t(), idata, kdata, odata);
                 const scalar_t convcpu_dot_dyn = test_cpu(tensor::conv2d_dot_dyn_t(), idata, kdata, odata);
                 const scalar_t convcpu_mad_dyn = test_cpu(tensor::conv2d_mad_dyn_t(), idata, kdata, odata);
 
@@ -56,6 +58,7 @@ namespace test
                 NANO_CHECK_CLOSE(convcpu_dot, convcpu_eig, epsilon);
                 NANO_CHECK_CLOSE(convcpu_mad, convcpu_eig, epsilon);
                 NANO_CHECK_CLOSE(convcpu_dyn, convcpu_eig, epsilon);
+                NANO_CHECK_CLOSE(convcpu_fix, convcpu_eig, epsilon);
                 NANO_CHECK_CLOSE(convcpu_dot_dyn, convcpu_eig, epsilon);
                 NANO_CHECK_CLOSE(convcpu_mad_dyn, convcpu_eig, epsilon);
         }
