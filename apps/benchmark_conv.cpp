@@ -7,7 +7,6 @@
 #include "tensor/conv2d_cpp.hpp"
 #include "tensor/conv2d_dyn.hpp"
 #include "tensor/conv2d_eig.hpp"
-#include "tensor/conv2d_fix.hpp"
 #include "tensor/corr2d_cpp.hpp"
 #include "tensor/corr2d_dyn.hpp"
 #include "tensor/corr2d_egb.hpp"
@@ -72,7 +71,6 @@ namespace
                 row << measure_op(tensor::conv2d_mad_t(), idata, kdata, odata, trials);
                 row << measure_op(tensor::conv2d_mad_dyn_t(), idata, kdata, odata, trials);
                 row << measure_op(tensor::conv2d_dyn_t(), idata, kdata, odata, trials);
-                row << measure_op(tensor::conv2d_fix_t(), idata, kdata, odata, trials);
         }
 
         template
@@ -99,22 +97,23 @@ int main(int argc, const char* argv[])
 {
         using namespace nano;
 
-        const int min_isize = 4;
-        const int max_isize = 48;
-
         const int min_ksize = 3;
         const int max_ksize = 15;
 
         // parse the command line
         nano::cmdline_t cmdline("benchmark 2D convolutions & correlations");
-        cmdline.add("", "conv", "benchmark convolutions");
-        cmdline.add("", "corr", "benchmark correlations");
+        cmdline.add("", "conv",         "benchmark convolutions");
+        cmdline.add("", "corr",         "benchmark correlations");
+        cmdline.add("", "min-isize",    "minimum input size (pixels)", "4");
+        cmdline.add("", "max-isize",    "maximum input size (pixels)", "48");
 
         cmdline.process(argc, argv);
 
         // check arguments and options
         const auto has_conv = cmdline.has("conv");
         const auto has_corr = cmdline.has("corr");
+        const int min_isize = cmdline.get<int>("min-isize");
+        const int max_isize = cmdline.get<int>("max-isize");
 
         if (!has_conv && !has_corr)
         {
@@ -132,8 +131,7 @@ int main(int argc, const char* argv[])
                         << "dot-dyn"
                         << "mad"
                         << "mad-dyn"
-                        << "dyn"
-                        << "fix";
+                        << "dyn";
 
                 for (int isize = min_isize; isize <= max_isize; ++ isize)
                 {

@@ -5,7 +5,6 @@ set(libtensor_sources
         ${CMAKE_CURRENT_SOURCE_DIR}/conv2d_dot.hpp
         ${CMAKE_CURRENT_SOURCE_DIR}/conv2d_dyn.hpp
         ${CMAKE_CURRENT_SOURCE_DIR}/conv2d_eig.hpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/conv2d_fix.hpp
         ${CMAKE_CURRENT_SOURCE_DIR}/conv2d_mad.hpp
         ${CMAKE_CURRENT_SOURCE_DIR}/corr2d_cpp.hpp
         ${CMAKE_CURRENT_SOURCE_DIR}/corr2d_dyn.hpp
