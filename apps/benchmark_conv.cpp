@@ -49,10 +49,10 @@ namespace
         auto measure_op(const top& op,
                 const tmatrixi& idata, const tmatrixk& kdata, tmatrixo&& odata, const size_t trials = 16)
         {
-                return nano::measure_robustly_nsec([&] ()
+                return (nano::measure_robustly_nsec([&] ()
                 {
                         op(idata, kdata, odata);
-                }, trials).count();
+                }, trials).count() * 1000 + kdata.size() * odata.size() - 1) / (kdata.size() * odata.size());
         }
 
         template
@@ -123,7 +123,7 @@ int main(int argc, const char* argv[])
         // convolutions
         if (has_conv)
         {
-                nano::table_t table("size\\convolution [ns]");
+                nano::table_t table("size\\method [ps/mul]");
                 table.header()
                         << "eig"
                         << "cpp"
@@ -161,7 +161,7 @@ int main(int argc, const char* argv[])
         // correlations
         if (has_corr)
         {
-                nano::table_t table("size\\correlation [ns]");
+                nano::table_t table("size\\method [ps/mul]");
                 table.header()
                         << "egb"
                         << "egr"
