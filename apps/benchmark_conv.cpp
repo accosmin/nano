@@ -34,9 +34,7 @@ namespace
                 kdata.resize(ksize, ksize);
                 odata.resize(osize, osize);
 
-                tensor::set_random(idata, rng);
-                tensor::set_random(kdata, rng);
-                tensor::set_random(odata, rng);
+                tensor::set_random(rng, idata, kdata, odata);
         }
 
         template

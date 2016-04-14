@@ -53,8 +53,7 @@ namespace nano
                 {
                         matrix_t fieldx(rows, cols), fieldy(rows, cols);
 
-                        tensor::set_random(fieldx, nano::make_rng<scalar_t>(-noise, +noise));
-                        tensor::set_random(fieldy, nano::make_rng<scalar_t>(-noise, +noise));
+                        tensor::set_random(nano::make_rng<scalar_t>(-noise, +noise), fieldx, fieldy);
 
                         smooth_field(fieldx, sigma);
                         smooth_field(fieldy, sigma);
@@ -68,8 +67,7 @@ namespace nano
                 {
                         matrix_t fieldx(rows, cols), fieldy(rows, cols);
 
-                        tensor::set_random(fieldx, nano::make_rng<scalar_t>(delta - noise, delta + noise));
-                        tensor::set_random(fieldy, nano::make_rng<scalar_t>(delta - noise, delta + noise));
+                        tensor::set_random(nano::make_rng<scalar_t>(delta - noise, delta + noise), fieldx, fieldy);
 
                         smooth_field(fieldx, sigma);
                         smooth_field(fieldy, sigma);

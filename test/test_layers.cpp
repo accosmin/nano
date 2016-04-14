@@ -48,8 +48,8 @@ namespace
                 nano::random_t<scalar_t> prgen(-0.1, +0.1);
                 nano::random_t<tensor_size_t> trgen(0, target.size() - 1);
 
-                tensor::set_random(inputs, irgen);
-                tensor::set_random(params, prgen);
+                tensor::set_random(irgen, inputs);
+                tensor::set_random(prgen, params);
                 target = nano::class_target(trgen(), target.size());
         }
 

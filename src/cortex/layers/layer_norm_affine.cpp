@@ -37,25 +37,17 @@ namespace nano
 
         void norm_affine_layer_t::random_params(scalar_t min, scalar_t max)
         {
-                tensor::set_random(m_vdata, nano::random_t<scalar_t>(min, max));
-                tensor::set_random(m_gdata, nano::random_t<scalar_t>(min, max));
-                tensor::set_random(m_bdata, nano::random_t<scalar_t>(min, max));
+                tensor::set_random(nano::random_t<scalar_t>(min, max), m_vdata, m_gdata, m_bdata);
         }
 
         scalar_t* norm_affine_layer_t::save_params(scalar_t* params) const
         {
-                params = tensor::to_array(m_vdata, params);
-                params = tensor::to_array(m_gdata, params);
-                params = tensor::to_array(m_bdata, params);
-                return params;
+                return tensor::to_array(params, m_vdata, m_gdata, m_bdata);
         }
 
         const scalar_t* norm_affine_layer_t::load_params(const scalar_t* params)
         {
-                params = tensor::from_array(m_vdata, params);
-                params = tensor::from_array(m_gdata, params);
-                params = tensor::from_array(m_bdata, params);
-                return params;
+                return tensor::from_array(params, m_vdata, m_gdata, m_bdata);
         }
 
         const tensor3d_t& norm_affine_layer_t::output(const tensor3d_t& input)

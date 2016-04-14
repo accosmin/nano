@@ -9,12 +9,24 @@ namespace tensor
         ///
         template
         <
+                typename tscalar,
                 typename ttensor
         >
-        typename ttensor::Scalar* to_array(const ttensor& t, typename ttensor::Scalar* data)
+        tscalar* to_array(tscalar* data, const ttensor& t)
         {
                 tensor::map_vector(data, t.size()) = tensor::map_vector(t.data(), t.size());
                 return data + t.size();
+        }
+
+        template
+        <
+                typename tscalar,
+                typename ttensor,
+                typename... tothers
+        >
+        tscalar* to_array(tscalar* data, const ttensor& t, const tothers&... o)
+        {
+                return to_array(to_array(data, t), o...);
         }
 
         ///
@@ -22,12 +34,24 @@ namespace tensor
         ///
         template
         <
+                typename tscalar,
                 typename ttensor
         >
-        const typename ttensor::Scalar* from_array(ttensor& t, const typename ttensor::Scalar* data)
+        const tscalar* from_array(const tscalar* data, ttensor& t)
         {
                 tensor::map_vector(t.data(), t.size()) = tensor::map_vector(data, t.size());
                 return data + t.size();
+        }
+
+        template
+        <
+                typename tscalar,
+                typename ttensor,
+                typename... tothers
+        >
+        const tscalar* from_array(const tscalar* data, ttensor& t, tothers&... o)
+        {
+                return from_array(from_array(data, t), o...);
         }
 }
 

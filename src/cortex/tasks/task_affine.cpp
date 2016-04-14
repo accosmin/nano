@@ -30,21 +30,21 @@ namespace nano
                 matrix_t A(osize(), isize);
                 vector_t b(osize());
 
-                tensor::set_random(A, rng_input); A /= static_cast<scalar_t>(isize);
-                tensor::set_random(b, rng_input);
+                tensor::set_random(rng_input, A, b);
+                A /= static_cast<scalar_t>(isize);
 
                 // generate samples
                 for (size_t i = 0; i < m_count; ++ i)
                 {
                         // random input
                         tensor3d_t input(idims(), irows(), icols());
-                        tensor::set_random(input, rng_input);
+                        tensor::set_random(rng_input, input);
 
                         add_chunk(input);
 
                         // affine target
                         vector_t target = A * input.vector() + b;
-                        tensor::add_random(target, rng_noise);
+                        tensor::add_random(rng_noise, target);
 
                         add_sample(make_fold(0), i, target);
                 }
