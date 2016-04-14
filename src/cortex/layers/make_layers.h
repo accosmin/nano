@@ -16,6 +16,12 @@ namespace nano
         }
 
         template <typename tsize>
+        string_t make_norm_affine_layer(const tsize dims, const string_t& activation = "act-snorm")
+        {
+                return "norm-affine:dims=" + nano::to_string(dims) + ";" + activation + ";";
+        }
+
+        template <typename tsize>
         string_t make_output_layer(const tsize dims)
         {
                 return make_affine_layer(dims, "");   // NB: no activation for the output layer!

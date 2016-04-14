@@ -5,19 +5,21 @@
 namespace nano
 {
         ///
-        /// \brief fully-connected affine layer that works with 1D tensors (as in MLP models).
+        /// \brief fully-connected normalized affine layer that works with 1D tensors:
+        ///     see "Weight Normalization: A Simple Reparameterization to Accelerate Training of Deep Neural Networks",
+        ///     by Tim Salimans & Diederik P. Kingma
         ///
         /// parameters:
         ///     dims    - number of output dimensions
         ///
-        class affine_layer_t : public layer_t
+        class norm_affine_layer_t : public layer_t
         {
         public:
 
-                NANO_MAKE_CLONABLE(affine_layer_t, "fully-connected 1D affine layer: dims=10[1,4096]")
+                NANO_MAKE_CLONABLE(norm_affine_layer_t, "fully-connected normalized 1D affine layer: dims=10[1,4096]")
 
                 // constructor
-                explicit affine_layer_t(const string_t& parameters = string_t());
+                explicit norm_affine_layer_t(const string_t& parameters = string_t());
 
                 // resize to process new tensors of the given type
                 virtual tensor_size_t resize(const tensor3d_t& tensor) override;
@@ -42,14 +44,15 @@ namespace nano
                 virtual tensor_size_t odims() const override { return m_odata.size<0>(); }
                 virtual tensor_size_t orows() const override { return m_odata.size<1>(); }
                 virtual tensor_size_t ocols() const override { return m_odata.size<2>(); }
-                virtual tensor_size_t psize() const override { return m_wdata.size() + m_bdata.size(); }
+                virtual tensor_size_t psize() const override { return m_vdata.size() + m_gdata.size() + m_bdata.size(); }
 
         private:
 
                 // attributes
                 tensor3d_t      m_idata;        ///< input buffer:      idims x 1 x 1
                 tensor3d_t      m_odata;        ///< output buffer:     odims x 1 x 1
-                matrix_t        m_wdata;        ///< weights:           odims x idims
+                matrix_t        m_vdata;        ///< normalized weights:odims x idims
+                vector_t        m_gdata;        ///< weighting factor:  odims
                 vector_t        m_bdata;        ///< bias:              odims
         };
 }

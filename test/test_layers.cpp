@@ -148,6 +148,13 @@ NANO_CASE(affine)
         test_model(make_affine_layer(7));
 }
 
+NANO_CASE(norm_affine)
+{
+        nano::init();
+
+        test_model(make_norm_affine_layer(9));
+}
+
 NANO_CASE(conv)
 {
         nano::init();
@@ -162,23 +169,18 @@ NANO_CASE(multi_layer_models)
 {
         nano::init();
 
-        const strings_t descriptions =
-        {
+        test_model(
                 make_affine_layer(7, "act-snorm") +
-                make_affine_layer(5, "act-splus"),
+                make_affine_layer(5, "act-splus"));
 
+        test_model(
                 make_conv_pool_layer(7, 3, 3, "act-snorm", "pool-max") +
-                make_conv_layer(4, 3, 3, "act-splus"),
+                make_conv_layer(4, 3, 3, "act-splus"));
 
+        test_model(
                 make_conv_pool_layer(7, 3, 3, "act-snorm", "pool-max") +
                 make_conv_layer(5, 3, 3, "act-splus") +
-                make_affine_layer(5, "act-splus")
-        };
-
-        for (const auto& description : descriptions)
-        {
-                test_model(description);
-        }
+                make_affine_layer(5, "act-splus"));
 }
 
 NANO_END_MODULE()

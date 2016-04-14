@@ -7,8 +7,8 @@
 
 namespace nano
 {
-        affine_layer_t::affine_layer_t(const string_t& parameters)
-                :       layer_t(parameters)
+        affine_layer_t::affine_layer_t(const string_t& parameters) :
+                layer_t(parameters)
         {
         }
 

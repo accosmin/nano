@@ -154,6 +154,10 @@ int main(int argc, const char* argv[])
         cmdline.add("", "mlp1",         "use MLP with 1 hidden layers");
         cmdline.add("", "mlp2",         "use MLP with 2 hidden layers");
         cmdline.add("", "mlp3",         "use MLP with 3 hidden layers");
+        cmdline.add("", "nmlp0",        "use normalized MLP with 0 hidden layers");
+        cmdline.add("", "nmlp1",        "use normalized MLP with 1 hidden layers");
+        cmdline.add("", "nmlp2",        "use normalized MLP with 2 hidden layers");
+        cmdline.add("", "nmlp3",        "use normalized MLP with 3 hidden layers");
         cmdline.add("", "convnet1",     "use convolution network (conv-pool-conv)");
         cmdline.add("", "convnet2",     "use convolution network (conv-conv)");
         cmdline.add("", "convnet3",     "use convolution network (conv-conv-conv)");
@@ -172,6 +176,10 @@ int main(int argc, const char* argv[])
         const bool use_mlp1 = cmdline.has("mlp1");
         const bool use_mlp2 = cmdline.has("mlp2");
         const bool use_mlp3 = cmdline.has("mlp3");
+        const bool use_nmlp0 = cmdline.has("nmlp0");
+        const bool use_nmlp1 = cmdline.has("nmlp1");
+        const bool use_nmlp2 = cmdline.has("nmlp2");
+        const bool use_nmlp3 = cmdline.has("nmlp3");
         const bool use_convnet1 = cmdline.has("convnet1");
         const bool use_convnet2 = cmdline.has("convnet2");
         const bool use_convnet3 = cmdline.has("convnet3");
@@ -187,6 +195,10 @@ int main(int argc, const char* argv[])
                 !use_mlp1 &&
                 !use_mlp2 &&
                 !use_mlp3 &&
+                !use_nmlp0 &&
+                !use_nmlp1 &&
+                !use_nmlp2 &&
+                !use_nmlp3 &&
                 !use_convnet1 &&
                 !use_convnet2 &&
                 !use_convnet3)
@@ -219,6 +231,11 @@ int main(int argc, const char* argv[])
         const auto mlp2 = mlp1 + make_affine_layer(16);
         const auto mlp3 = mlp2 + make_affine_layer(16);
 
+        const auto nmlp0 = string_t();
+        const auto nmlp1 = nmlp0 + make_norm_affine_layer(16);
+        const auto nmlp2 = nmlp1 + make_norm_affine_layer(16);
+        const auto nmlp3 = nmlp2 + make_norm_affine_layer(16);
+
         const auto convnet1 =
                 make_conv_pool_layer(16, 7, 7);
 
@@ -234,13 +251,21 @@ int main(int argc, const char* argv[])
         const string_t outlayer = make_output_layer(outputs);
 
         std::vector<std::pair<string_t, string_t>> networks;
-        if (use_mlp0) { networks.emplace_back(mlp0 + outlayer, "mlp0"); }
-        if (use_mlp1) { networks.emplace_back(mlp1 + outlayer, "mlp1"); }
-        if (use_mlp2) { networks.emplace_back(mlp2 + outlayer, "mlp2"); }
-        if (use_mlp3) { networks.emplace_back(mlp3 + outlayer, "mlp3"); }
-        if (use_convnet1) { networks.emplace_back(convnet1 + outlayer, "convnet1"); }
-        if (use_convnet2) { networks.emplace_back(convnet2 + outlayer, "convnet2"); }
-        if (use_convnet3) { networks.emplace_back(convnet3 + outlayer, "convnet3"); }
+        #define DEFINE(config) networks.emplace_back(config + outlayer, NANO_STRINGIFY(config))
+
+        if (use_mlp0) { DEFINE(mlp0); }
+        if (use_mlp1) { DEFINE(mlp1); }
+        if (use_mlp2) { DEFINE(mlp2); }
+        if (use_mlp3) { DEFINE(mlp3); }
+        if (use_nmlp0) { DEFINE(nmlp0); }
+        if (use_nmlp1) { DEFINE(nmlp1); }
+        if (use_nmlp2) { DEFINE(nmlp2); }
+        if (use_nmlp3) { DEFINE(nmlp3); }
+        if (use_convnet1) { DEFINE(convnet1); }
+        if (use_convnet2) { DEFINE(convnet2); }
+        if (use_convnet3) { DEFINE(convnet3); }
+
+        #undef DEFINE
 
         const strings_t losses = { "classnll" }; //nano::get_losses().ids();
 
