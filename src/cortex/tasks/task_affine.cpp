@@ -1,7 +1,7 @@
 #include "task_affine.h"
 #include "math/clamp.hpp"
 #include "math/random.hpp"
-#include "tensor/random.hpp"
+#include "tensor/numeric.hpp"
 #include "text/to_string.hpp"
 #include "text/from_params.hpp"
 

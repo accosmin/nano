@@ -2,7 +2,7 @@
 #include "text/table.h"
 #include "text/cmdline.h"
 #include "math/random.hpp"
-#include "tensor/random.hpp"
+#include "tensor/numeric.hpp"
 #include "cortex/measure.hpp"
 #include "tensor/conv2d_cpp.hpp"
 #include "tensor/conv2d_dyn.hpp"

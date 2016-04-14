@@ -1,7 +1,6 @@
 #pragma once
 
 #include "cortex/layer.h"
-#include "tensor/transform.hpp"
 
 namespace nano
 {
@@ -22,8 +21,8 @@ namespace nano
         public:
 
                 // constructor
-                explicit activation_layer_t(const string_t& parameters)
-                        :       layer_t(parameters)
+                explicit activation_layer_t(const string_t& parameters) :
+                        layer_t(parameters)
                 {
                 }
 

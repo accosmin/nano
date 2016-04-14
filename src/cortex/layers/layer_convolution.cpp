@@ -1,7 +1,7 @@
 #include "math/clamp.hpp"
 #include "math/random.hpp"
 #include "cortex/logger.h"
-#include "tensor/random.hpp"
+#include "tensor/numeric.hpp"
 #include "text/to_string.hpp"
 #include "layer_convolution.h"
 #include "text/from_params.hpp"
@@ -52,8 +52,7 @@ namespace nano
 
         void conv_layer_t::zero_params()
         {
-                m_kdata.setZero();
-                m_bdata.setZero();
+                tensor::set_zero(m_kdata, m_bdata);
         }
 
         void conv_layer_t::random_params(scalar_t min, scalar_t max)

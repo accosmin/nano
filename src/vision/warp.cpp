@@ -4,8 +4,8 @@
 #include "math/gauss.hpp"
 #include "math/random.hpp"
 #include "math/numeric.hpp"
-#include "tensor/random.hpp"
-#include "tensor/transform.hpp"
+#include "tensor/numeric.hpp"
+#include "tensor/algorithm.hpp"
 
 namespace nano
 {

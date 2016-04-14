@@ -4,7 +4,7 @@
 #include "cortex/cortex.h"
 #include "math/random.hpp"
 #include "math/epsilon.hpp"
-#include "tensor/random.hpp"
+#include "tensor/numeric.hpp"
 #include "cortex/optimizer.h"
 #include "text/to_string.hpp"
 #include "cortex/layers/make_layers.h"

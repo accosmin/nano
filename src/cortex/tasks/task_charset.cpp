@@ -3,11 +3,10 @@
 #include "math/gauss.hpp"
 #include "math/clamp.hpp"
 #include "math/random.hpp"
-#include "tensor/random.hpp"
+#include "tensor/numeric.hpp"
 #include "text/to_string.hpp"
-#include "tensor/for_each.hpp"
 #include "text/from_params.hpp"
-#include "tensor/transform.hpp"
+#include "tensor/algorithm.hpp"
 #include "vision/warp.h"
 #include "vision/image_io.h"
 #include "vision/convolve.hpp"
@@ -124,18 +123,15 @@ namespace nano
                 const rgba_t back_color,
                 const scalar_t max_noise, const scalar_t sigma)
         {
-                const scalar_t ir = back_color(0) / 255.0;
-                const scalar_t ig = back_color(1) / 255.0;
-                const scalar_t ib = back_color(2) / 255.0;
-
-                tensor3d_t image(4, rows, cols);
-
                 // noisy background
-                nano::random_t<scalar_t> back_noise(-max_noise, +max_noise);
-                tensor::for_each(image.matrix(0), [&] (scalar_t& value) { value = ir + back_noise(); });
-                tensor::for_each(image.matrix(1), [&] (scalar_t& value) { value = ig + back_noise(); });
-                tensor::for_each(image.matrix(2), [&] (scalar_t& value) { value = ib + back_noise(); });
+                tensor3d_t image(4, rows, cols);
+                image.matrix(0).setConstant(back_color(0) / 255.0);
+                image.matrix(1).setConstant(back_color(1) / 255.0);
+                image.matrix(2).setConstant(back_color(2) / 255.0);
                 image.matrix(3).setConstant(1.0);
+
+                tensor::add_random(nano::make_rng<scalar_t>(-max_noise, +max_noise),
+                        image.matrix(0), image.matrix(1), image.matrix(2));
 
                 // smooth background
                 const nano::gauss_kernel_t<scalar_t> back_gauss(sigma);

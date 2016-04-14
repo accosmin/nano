@@ -1,6 +1,6 @@
 #include "math/clamp.hpp"
 #include "math/random.hpp"
-#include "tensor/random.hpp"
+#include "tensor/numeric.hpp"
 #include "layer_norm_affine.h"
 #include "text/from_params.hpp"
 #include "tensor/serialize.hpp"
@@ -30,9 +30,7 @@ namespace nano
 
         void norm_affine_layer_t::zero_params()
         {
-                m_vdata.setZero();
-                m_gdata.setZero();
-                m_bdata.setZero();
+                tensor::set_zero(m_vdata, m_gdata, m_bdata);
         }
 
         void norm_affine_layer_t::random_params(scalar_t min, scalar_t max)

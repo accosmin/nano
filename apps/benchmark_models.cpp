@@ -5,7 +5,7 @@
 #include "math/clamp.hpp"
 #include "math/random.hpp"
 #include "thread/thread.h"
-#include "tensor/random.hpp"
+#include "tensor/numeric.hpp"
 #include "cortex/measure.hpp"
 #include "cortex/accumulator.h"
 #include "text/table_row_mark.h"

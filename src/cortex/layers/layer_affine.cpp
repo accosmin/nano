@@ -1,7 +1,7 @@
 #include "layer_affine.h"
 #include "math/clamp.hpp"
 #include "math/random.hpp"
-#include "tensor/random.hpp"
+#include "tensor/numeric.hpp"
 #include "text/from_params.hpp"
 #include "tensor/serialize.hpp"
 
@@ -29,8 +29,7 @@ namespace nano
 
         void affine_layer_t::zero_params()
         {
-                m_wdata.setZero();
-                m_bdata.setZero();
+                tensor::set_zero(m_wdata, m_bdata);
         }
 
         void affine_layer_t::random_params(scalar_t min, scalar_t max)
