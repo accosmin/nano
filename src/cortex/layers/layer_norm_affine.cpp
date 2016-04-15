@@ -63,7 +63,7 @@ namespace nano
                         const auto vdata = m_vdata.row(o);
                         const auto vv = vdata.dot(vdata);
                         const auto vi = vdata.dot(idata);
-                        odata(o) = m_gdata(o) * vi / vv + m_bdata(o);
+                        odata(o) = m_gdata(o) * vi / std::sqrt(vv) + m_bdata(o);
                 }
 
                 // TODO: vdata.dot(vdata) is constant for each sample and it should be stored!
@@ -86,7 +86,7 @@ namespace nano
                 {
                         const auto vdata = m_vdata.row(o);
                         const auto vv = vdata.dot(vdata);
-                        idata += (odata(o) * m_gdata(o) / vv) * vdata;
+                        idata += (odata(o) * m_gdata(o) / std::sqrt(vv)) * vdata;
                 }
 
                 return m_idata;
@@ -111,8 +111,8 @@ namespace nano
                         const auto vdata = m_vdata.row(o);
                         const auto vv = vdata.dot(vdata);
                         const auto vi = vdata.dot(idata);
-                        gvdata.row(o) = (odata(o) * m_gdata(o) / vv / vv) * (idata * vv - 2 * vdata.transpose() * vi);
-                        ggdata(o) = odata(o) * vi / vv;
+                        gvdata.row(o) = (odata(o) * m_gdata(o) / (vv * std::sqrt(vv))) * (idata * vv - vdata.transpose() * vi);
+                        ggdata(o) = odata(o) * vi / std::sqrt(vv);
                 }
                 gbdata = odata;
         }
