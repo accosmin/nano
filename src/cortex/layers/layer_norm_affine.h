@@ -48,11 +48,17 @@ namespace nano
 
         private:
 
+                void update();
+
+        private:
+
                 // attributes
                 tensor3d_t      m_idata;        ///< input buffer:      idims x 1 x 1
                 tensor3d_t      m_odata;        ///< output buffer:     odims x 1 x 1
-                matrix_t        m_vdata;        ///< normalized weights:odims x idims
+                matrix_t        m_vdata;        ///< weights:           odims x idims
                 vector_t        m_gdata;        ///< weighting factor:  odims
                 vector_t        m_bdata;        ///< bias:              odims
+
+                matrix_t        m_wdata;        ///< normalized weights: g * v / ||v||
         };
 }

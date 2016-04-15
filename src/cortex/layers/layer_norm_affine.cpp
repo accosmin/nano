@@ -25,17 +25,21 @@ namespace nano
                 m_gdata.resize(odims);
                 m_bdata.resize(odims);
 
+                m_wdata.resize(odims, idims);
+
                 return psize();
         }
 
         void norm_affine_layer_t::zero_params()
         {
                 tensor::set_zero(m_vdata, m_gdata, m_bdata);
+                update();
         }
 
         void norm_affine_layer_t::random_params(scalar_t min, scalar_t max)
         {
                 tensor::set_random(nano::random_t<scalar_t>(min, max), m_vdata, m_gdata, m_bdata);
+                update();
         }
 
         scalar_t* norm_affine_layer_t::save_params(scalar_t* params) const
@@ -45,7 +49,17 @@ namespace nano
 
         const scalar_t* norm_affine_layer_t::load_params(const scalar_t* params)
         {
-                return tensor::from_array(params, m_vdata, m_gdata, m_bdata);
+                const auto ret = tensor::from_array(params, m_vdata, m_gdata, m_bdata);
+                update();
+                return ret;
+        }
+
+        void norm_affine_layer_t::update()
+        {
+                for (auto o = 0; o < odims(); ++ o)
+                {
+                        m_wdata.row(o) = (m_gdata(o) / m_vdata.row(o).norm()) * m_vdata.row(o);
+                }
         }
 
         const tensor3d_t& norm_affine_layer_t::output(const tensor3d_t& input)
@@ -55,18 +69,8 @@ namespace nano
                 assert(icols() == input.size<2>());
 
                 m_idata = input;
-                const auto& idata = m_idata.vector();
 
-                auto odata = m_odata.vector();
-                for (auto o = 0; o < odims(); ++ o)
-                {
-                        const auto vdata = m_vdata.row(o);
-                        const auto vv = vdata.dot(vdata);
-                        const auto vi = vdata.dot(idata);
-                        odata(o) = m_gdata(o) * vi / std::sqrt(vv) + m_bdata(o);
-                }
-
-                // TODO: vdata.dot(vdata) is constant for each sample and it should be stored!
+                m_odata.vector() = m_wdata * m_idata.vector() + m_bdata;
 
                 return m_odata;
         }
@@ -78,16 +82,8 @@ namespace nano
                 assert(output.size<2>() == ocols());
 
                 m_odata = output;
-                const auto& odata = m_odata.vector();
 
-                auto idata = m_idata.vector();
-                idata.setZero();
-                for (auto o = 0; o < odims(); ++ o)
-                {
-                        const auto vdata = m_vdata.row(o);
-                        const auto vv = vdata.dot(vdata);
-                        idata += (odata(o) * m_gdata(o) / std::sqrt(vv)) * vdata;
-                }
+                m_idata.vector() = m_wdata.transpose() * m_odata.vector();
 
                 return m_idata;
         }
@@ -114,7 +110,7 @@ namespace nano
                         gvdata.row(o) = (odata(o) * m_gdata(o) / (vv * std::sqrt(vv))) * (idata * vv - vdata.transpose() * vi);
                         ggdata(o) = odata(o) * vi / std::sqrt(vv);
                 }
-                gbdata = odata;
+                gbdata = m_odata.vector();
         }
 }
 
