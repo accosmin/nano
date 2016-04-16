@@ -148,13 +148,6 @@ NANO_CASE(affine)
         test_model(make_affine_layer(7));
 }
 
-NANO_CASE(norm_affine)
-{
-        nano::init();
-
-        test_model(make_norm_affine_layer(9));
-}
-
 NANO_CASE(conv)
 {
         nano::init();

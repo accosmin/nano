@@ -23,7 +23,6 @@ int main(int argc, const char *argv[])
         nano::cmdline_t cmdline("benchmark models");
         cmdline.add("s", "samples",     "number of samples to use [100, 100000]", "10000");
         cmdline.add("", "mlp",          "benchmark MLP models");
-        cmdline.add("", "nmlp",         "benchmark normalized MLP models");
         cmdline.add("", "convnet",      "benchmark convolution networks");
         cmdline.add("", "forward",      "evaluate the \'forward\' pass (output)");
         cmdline.add("", "backward",     "evaluate the \'backward' pass (gradient)");
@@ -35,7 +34,6 @@ int main(int argc, const char *argv[])
         const auto cmd_forward = cmdline.has("forward");
         const auto cmd_backward = cmdline.has("backward");
         const auto cmd_mlp = cmdline.has("mlp");
-        const auto cmd_nmlp = cmdline.has("nmlp");
         const auto cmd_convnet = cmdline.has("convnet");
 
         if (!cmd_forward && !cmd_backward)
@@ -43,7 +41,7 @@ int main(int argc, const char *argv[])
                 cmdline.usage();
         }
 
-        if (!cmd_mlp && !cmd_nmlp && !cmd_convnet)
+        if (!cmd_mlp && !cmd_convnet)
         {
                 cmdline.usage();
         }
@@ -66,13 +64,6 @@ int main(int argc, const char *argv[])
         const string_t mlp3 = mlp2 + make_affine_layer(100);
         const string_t mlp4 = mlp3 + make_affine_layer(100);
         const string_t mlp5 = mlp4 + make_affine_layer(100);
-
-        const string_t nmlp0;
-        const string_t nmlp1 = nmlp0 + make_norm_affine_layer(100);
-        const string_t nmlp2 = nmlp1 + make_norm_affine_layer(100);
-        const string_t nmlp3 = nmlp2 + make_norm_affine_layer(100);
-        const string_t nmlp4 = nmlp3 + make_norm_affine_layer(100);
-        const string_t nmlp5 = nmlp4 + make_norm_affine_layer(100);
 
         const string_t convnet_9x9p_5x5p_3x3 =
                 make_conv_pool_layer(16, 9, 9) +
@@ -124,15 +115,6 @@ int main(int argc, const char *argv[])
                 DEFINE(mlp3);
                 DEFINE(mlp4);
                 DEFINE(mlp5);
-        }
-        if (cmd_nmlp)
-        {
-                DEFINE(nmlp0);
-                DEFINE(nmlp1);
-                DEFINE(nmlp2);
-                DEFINE(nmlp3);
-                DEFINE(nmlp4);
-                DEFINE(nmlp5);
         }
         if (cmd_convnet)
         {
