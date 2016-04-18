@@ -30,9 +30,13 @@ set listchars=tab:>-,trail:-
 " Toggle between header and implementation
 map <F4> :e %:p:s,.h$,.X123X,:s,.cpp$,.h,:s,.X123X$,.cpp,<CR>
 
-" http://www.alexeyshmalko.com/2014/using-vim-as-c-cpp-ide/
+" Line extend: http://www.alexeyshmalko.com/2014/using-vim-as-c-cpp-ide/
 set colorcolumn=120
 highlight ColorColumn ctermbg=darkgray
+
+" Text search
+highlight Search cterm=NONE ctermfg=NONE ctermbg=darkgray
+
 set path+=src
 set path+=src/cortex
 set path+=src/thread
