@@ -12,65 +12,54 @@ namespace
         }
 }
 
-nano::worker_t::worker_t(queue_t& queue, const bool active) :
+thread::worker_t::worker_t(queue_t& queue, const bool active) :
         m_queue(queue),
         m_active(active)
 {
 }
 
-void nano::worker_t::operator()() const
+void thread::worker_t::operator()() const
 {
         while (true)
         {
-                job_t job;
+                task_t task;
 
-                // wait for a new job to be available in the queue
+                // wait for a new task to be available in the queue
                 {
                         std::unique_lock<std::mutex> lock(m_queue.m_mutex);
 
                         m_queue.m_condition.wait(lock, [&]
                         {
-                                return m_queue.m_stop || (active() && !m_queue.m_jobs.empty());
+                                return m_queue.m_stop || (active() && !m_queue.m_tasks.empty());
                         });
 
                         if (m_queue.m_stop)
                         {
-                                m_queue.m_running = 0;
-                                m_queue.m_jobs.clear();
+                                m_queue.m_tasks.clear();
                                 m_queue.m_condition.notify_all();
                                 break;
                         }
 
-                        job = std::move(m_queue.m_jobs.front());
-                        m_queue.m_jobs.pop_front();
-                        m_queue.m_running ++;
+                        task = std::move(m_queue.m_tasks.front());
+                        m_queue.m_tasks.pop_front();
                 }
 
-                // execute the job
-                job();
-
-                // announce that a job was completed
-                {
-                        const std::lock_guard<std::mutex> lock(m_queue.m_mutex);
-
-                        assert(m_queue.m_running > 0);
-                        m_queue.m_running --;
-                        m_queue.m_condition.notify_all();
-                }
+                // execute the task
+                task();
         }
 }
 
-bool nano::worker_t::activate()
+bool thread::worker_t::activate()
 {
         return toggle(m_active, true);
 }
 
-bool nano::worker_t::deactivate()
+bool thread::worker_t::deactivate()
 {
         return toggle(m_active, false);
 }
 
-bool nano::worker_t::active() const
+bool thread::worker_t::active() const
 {
         return m_active;
 }

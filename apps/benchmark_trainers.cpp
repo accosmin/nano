@@ -77,7 +77,7 @@ static void evaluate(model_t& model,
         const string_t& basename, const string_t& basepath, nano::table_t& table)
 {
         const scalar_t epsilon = 1e-4;
-        const size_t n_threads = nano::n_threads();
+        const size_t n_threads = thread::concurrency();
         const bool verbose = true;
 
         for (auto optimizer : batch_optimizers)
@@ -204,7 +204,7 @@ int main(int argc, const char* argv[])
         // create task
         const size_t rows = 16;
         const size_t cols = 16;
-        const size_t count = nano::n_threads() * 32 * 100;
+        const size_t count = thread::concurrency() * 32 * 100;
         const color_mode color = color_mode::rgb;
 
         charset_task_t task(charset::digit, color, rows, cols, count);

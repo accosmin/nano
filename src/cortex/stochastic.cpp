@@ -22,7 +22,7 @@ namespace nano
                 const auto test_fold = fold_t{fold, protocol::test};
 
                 const auto train_size = task.n_samples(train_fold);
-                const auto batch_size = 16 * nano::n_threads();
+                const auto batch_size = 16 * thread::concurrency();
                 const auto epoch_size = (train_size + batch_size - 1) / batch_size;
 
                 size_t epoch = 0;

@@ -13,7 +13,8 @@ namespace nano
                         const criterion_t& criterion, const criterion_t::type type, const scalar_t lambda) :
                         m_loss(loss)
                 {
-                        for (size_t i = 0; i < m_pool.n_workers(); ++ i)
+                        const auto size = thread::pool_t::instance().n_workers();
+                        for (size_t i = 0; i < size; ++ i)
                         {
                                 const auto cache = criterion.clone();
                                 cache->reset(model);
@@ -40,7 +41,6 @@ namespace nano
 
                 // attributes
                 const loss_t&                   m_loss;
-                nano::pool_t                    m_pool;         ///< thread pool
                 std::vector<rcriterion_t>       m_criteria;     ///< cached criterion / thread
         };
 
@@ -81,7 +81,7 @@ namespace nano
 
         void accumulator_t::set_threads(size_t nthreads) const
         {
-                m_impl->m_pool.activate(nthreads);
+                thread::pool_t::instance().activate(nthreads);
         }
 
         void accumulator_t::update(const task_t& task, const fold_t& fold) const
@@ -92,7 +92,7 @@ namespace nano
         void accumulator_t::update(const task_t& task, const fold_t& fold, const size_t begin, const size_t end) const
         {
                 const loss_t& loss = m_impl->m_loss;
-                nano::loopit(end - begin, m_impl->m_pool, [&] (const size_t offset, const size_t th)
+                thread::loopit(end - begin, [&] (const size_t offset, const size_t th)
                 {
                         const auto index = begin + offset;
                         m_impl->m_criteria[th]->update(task.input(fold, index), task.target(fold, index), loss);

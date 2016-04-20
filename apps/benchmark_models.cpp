@@ -51,7 +51,7 @@ int main(int argc, const char *argv[])
         const color_mode cmd_color = color_mode::luma;
 
         const size_t cmd_min_nthreads = 1;
-        const size_t cmd_max_nthreads = nano::n_threads();
+        const size_t cmd_max_nthreads = thread::concurrency();
 
         // generate synthetic task
         charset_task_t task(charset::digit, cmd_color, cmd_rows, cmd_cols, cmd_samples);

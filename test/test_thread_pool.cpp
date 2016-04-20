@@ -7,22 +7,22 @@ NANO_BEGIN_MODULE(test_thread_pool)
 
 NANO_CASE(empty)
 {
-        nano::pool_t pool;
+        auto& pool = thread::pool_t::instance();
 
-        const size_t n_threads = nano::n_threads();
+        const size_t n_threads = thread::concurrency();
         const size_t n_active_workers = n_threads;
 
         NANO_CHECK_EQUAL(pool.n_workers(), n_threads);
         NANO_CHECK_EQUAL(pool.n_active_workers(), n_active_workers);
-        NANO_CHECK_EQUAL(pool.n_jobs(), 0);
+        NANO_CHECK_EQUAL(pool.n_tasks(), 0);
 }
 
 NANO_CASE(enqueue)
 {
-        nano::pool_t pool;
+        auto& pool = thread::pool_t::instance();
 
-        const size_t n_threads = nano::n_threads();
-        const size_t n_max_jobs = n_threads * 16;
+        const size_t n_threads = thread::concurrency();
+        const size_t n_max_tasks = n_threads * 16;
 
         for (size_t n_active_workers = 1; n_active_workers <= n_threads; ++ n_active_workers)
         {
@@ -30,18 +30,19 @@ NANO_CASE(enqueue)
 
                 NANO_CHECK_EQUAL(pool.n_workers(), n_threads);
                 NANO_CHECK_EQUAL(pool.n_active_workers(), n_active_workers);
-                NANO_CHECK_EQUAL(pool.n_jobs(), 0);
+                NANO_CHECK_EQUAL(pool.n_tasks(), 0);
 
-                nano::random_t<size_t> rnd(1, n_max_jobs);
+                nano::random_t<size_t> rnd(1, n_max_tasks);
                 const size_t n_tasks = rnd();
 
                 std::vector<size_t> tasks_done;
 
                 std::mutex mutex;
 
+                thread::section_t<thread::future_t> futures;
                 for (size_t j = 0; j < n_tasks; ++ j)
                 {
-                        pool.enqueue([=, &mutex, &tasks_done]()
+                        futures.push_back(pool.enqueue([=, &mutex, &tasks_done]()
                         {
                                 const size_t sleep1 = nano::random_t<size_t>(1, 5)();
                                 std::this_thread::sleep_for(std::chrono::milliseconds(sleep1));
@@ -51,14 +52,13 @@ NANO_CASE(enqueue)
 
                                         tasks_done.push_back(j + 1);
                                 }
-                        });
+                        }));
                 }
-
-                pool.wait();
+                futures.wait();
 
                 NANO_CHECK_EQUAL(pool.n_workers(), n_threads);
                 NANO_CHECK_EQUAL(pool.n_active_workers(), n_active_workers);
-                NANO_CHECK_EQUAL(pool.n_jobs(), 0);
+                NANO_CHECK_EQUAL(pool.n_tasks(), 0);
 
                 NANO_CHECK_EQUAL(tasks_done.size(), n_tasks);
                 for (size_t j = 0; j < n_tasks; ++ j)

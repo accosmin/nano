@@ -60,7 +60,7 @@ NANO_CASE(evaluate)
         NANO_CHECK_CLOSE(vgrad1, value1, nano::epsilon1<scalar_t>());
 
         // check results with multiple threads
-        for (size_t th = 2; th <= nano::n_threads(); ++ th)
+        for (size_t th = 2; th <= thread::concurrency(); ++ th)
         {
                 accumulator_t laccx(*model, *loss, *criterion, criterion_t::type::value, lambda); laccx.set_threads(th);
                 accumulator_t gaccx(*model, *loss, *criterion, criterion_t::type::vgrad, lambda); gaccx.set_threads(th);

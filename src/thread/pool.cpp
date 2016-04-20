@@ -3,7 +3,7 @@
 #include <cassert>
 #include <algorithm>
 
-namespace nano
+namespace thread
 {
         static std::size_t n_active_workers(const std::vector<worker_t>& workers)
         {
@@ -12,29 +12,30 @@ namespace nano
         }
 }
 
-nano::pool_t::pool_t() :
-        pool_t(nano::n_threads())
+thread::pool_t& thread::pool_t::instance()
 {
+        static pool_t the_pool;
+        return the_pool;
 }
 
-nano::pool_t::pool_t(std::size_t active_threads)
+thread::pool_t::pool_t()
 {
-        const auto n_workers = static_cast<std::size_t>(nano::n_threads());
-        active_threads = std::max(std::size_t(1), active_threads);
+        const auto n_workers = static_cast<std::size_t>(thread::concurrency());
+        const auto n_active_threads = n_workers;
 
         for (size_t i = 0; i < n_workers; ++ i)
         {
-                m_workers.emplace_back(m_queue, i < active_threads);
+                m_workers.emplace_back(m_queue, i < n_active_threads);
         }
         for (size_t i = 0; i < n_workers; ++ i)
         {
                 m_threads.emplace_back(std::ref(m_workers[i]));
         }
 
-        assert(active_threads == nano::n_active_workers(m_workers));
+        assert(n_active_threads == thread::n_active_workers(m_workers));
 }
 
-nano::pool_t::~pool_t()
+thread::pool_t::~pool_t()
 {
         // stop & join
         {
@@ -50,26 +51,13 @@ nano::pool_t::~pool_t()
         }
 }
 
-void nano::pool_t::wait()
-{
-        // wait for all jobs to be taken and the workers to finish
-        std::unique_lock<std::mutex> lock(m_queue.m_mutex);
-
-        assert(nano::n_active_workers(m_workers) > 0);
-
-        m_queue.m_condition.wait(lock, [&] ()
-        {
-                return m_queue.m_jobs.empty() && m_queue.m_running == 0;
-        });
-}
-
-void nano::pool_t::activate(std::size_t count)
+void thread::pool_t::activate(std::size_t count)
 {
         const std::lock_guard<std::mutex> lock(m_queue.m_mutex);
 
         count = std::max(std::size_t(1), std::min(count, n_workers()));
 
-        std::size_t crt_count = nano::n_active_workers(m_workers);
+        std::size_t crt_count = thread::n_active_workers(m_workers);
         assert(crt_count > 0);
         for (auto& worker :  m_workers)
         {
@@ -95,26 +83,26 @@ void nano::pool_t::activate(std::size_t count)
                 }
         }
 
-        assert(count == nano::n_active_workers(m_workers));
+        assert(count == thread::n_active_workers(m_workers));
 
         m_queue.m_condition.notify_all();
 }
 
-std::size_t nano::pool_t::n_workers() const
+std::size_t thread::pool_t::n_workers() const
 {
         return m_workers.size();
 }
 
-std::size_t nano::pool_t::n_active_workers() const
+std::size_t thread::pool_t::n_active_workers() const
 {
         const std::lock_guard<std::mutex> lock(m_queue.m_mutex);
 
-        return nano::n_active_workers(m_workers);
+        return thread::n_active_workers(m_workers);
 }
 
-std::size_t nano::pool_t::n_jobs() const
+std::size_t thread::pool_t::n_tasks() const
 {
         const std::lock_guard<std::mutex> lock(m_queue.m_mutex);
 
-        return m_queue.m_jobs.size();
+        return m_queue.m_tasks.size();
 }

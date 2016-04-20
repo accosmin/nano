@@ -32,7 +32,7 @@ namespace
         tscalar test_mt(const size_t size, const toperator op, const size_t splits)
         {
                 std::vector<tscalar> results(size);
-                nano::loopi(size, [results = std::ref(results), op = op] (size_t i)
+                thread::loopi(size, [results = std::ref(results), op = op] (size_t i)
                 {
                         results.get()[i] = op(i);
                 }, splits);
@@ -49,7 +49,7 @@ namespace
         tscalar test_mt(const size_t size, const size_t nthreads, const toperator op, const size_t splits)
         {
                 std::vector<tscalar> results(size);
-                nano::loopi(size, nthreads, [results = std::ref(results), op = op] (size_t i)
+                thread::loopi(size, nthreads, [results = std::ref(results), op = op] (size_t i)
                 {
                         results.get()[i] = op(i);
                 }, splits);
@@ -84,7 +84,7 @@ NANO_CASE(evaluate)
                 const scalar_t mt = test_mt<scalar_t>(size, op, 1);
                 NANO_CHECK_CLOSE(st, mt, nano::epsilon1<scalar_t>());
 
-                for (size_t nthreads = 1; nthreads <= nano::n_threads(); nthreads += 2)
+                for (size_t nthreads = 1; nthreads <= thread::concurrency(); nthreads += 2)
                 {
                         for (size_t splits = 1; splits <= 8; ++ splits)
                         {

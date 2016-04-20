@@ -3,12 +3,12 @@
 #include <thread>
 #include <algorithm>
 
-namespace nano
+namespace thread
 {
         ///
-        /// \brief the number of threads available on the system (usually #CPU cores x 2 (HT))
+        /// \brief the number of threads available on the system (usually #CPU cores x 2 (HT)).
         ///
-        inline unsigned int n_threads()
+        inline unsigned int concurrency()
         {
                 return std::max((unsigned int)(1), std::thread::hardware_concurrency());
         }

@@ -5,7 +5,7 @@
 #include <vector>
 #include <thread>
 
-namespace nano
+namespace thread
 {
         ///
         /// \brief thread pool
@@ -17,14 +17,9 @@ namespace nano
         public:
 
                 ///
-                /// \brief constructor (all available threads are active by default)
+                /// \brief single instance
                 ///
-                pool_t();
-
-                ///
-                /// \brief constructor (specify the number of threads to activate by default)
-                ///
-                explicit pool_t(std::size_t active_threads);
+                static pool_t& instance();
 
                 ///
                 /// \brief disable copying
@@ -33,19 +28,15 @@ namespace nano
                 pool_t& operator=(const pool_t&) = delete;
 
                 ///
+                /// \brief disable moving
+                ///
+                pool_t(pool_t&&) = delete;
+                pool_t& operator=(pool_t&&) = delete;
+
+                ///
                 /// \brief destructor
                 ///
                 ~pool_t();
-
-                ///
-                /// \brief movable
-                ///
-                pool_t(pool_t&&) = default;
-
-                ///
-                /// \brief movable
-                ///
-                pool_t& operator=(pool_t&&) = default;
 
                 ///
                 /// \brief set the given number of active workers [1, n_workers]
@@ -53,18 +44,13 @@ namespace nano
                 void activate(const std::size_t count);
 
                 ///
-                /// \brief enqueue a new job to execute
+                /// \brief enqueue a new task to execute
                 ///
                 template<class F>
-                void enqueue(F f)
+                auto enqueue(F f)
                 {
-                        m_queue.enqueue(f);
+                        return m_queue.enqueue(f);
                 }
-
-                ///
-                /// \brief wait for all workers to finish running the jobs
-                ///
-                void wait();
 
                 ///
                 /// \brief number of available worker threads
@@ -77,15 +63,22 @@ namespace nano
                 std::size_t n_active_workers() const;
 
                 ///
-                /// \brief number of jobs to run
+                /// \brief number of tasks still enqueued
                 ///
-                std::size_t n_jobs() const;
+                std::size_t n_tasks() const;
+
+        private:
+
+                ///
+                /// \brief constructor (all available threads are active by default)
+                ///
+                pool_t();
 
         private:
 
                 // attributes
                 std::vector<std::thread>        m_threads;      ///<
                 std::vector<worker_t>           m_workers;      ///<
-                queue_t                         m_queue;        ///< jobs to execute + synchronization
+                queue_t                         m_queue;        ///< tasks to execute + synchronization
         };
 }
