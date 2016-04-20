@@ -46,7 +46,7 @@ namespace nano
                         lrate_t<tscalar> lrate(alpha0, decay);
 
                         // first-order momentum of the update
-                        momentum_vector_t<tvector> davg(1 - momentum, x0.size());
+                        momentum_vector_t<tvector> davg(momentum, x0.size());
 
                         const auto op_iter = [&] (tstate& cstate, const std::size_t iter)
                         {
