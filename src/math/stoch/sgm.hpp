@@ -45,8 +45,8 @@ namespace nano
                         // learning rate schedule
                         lrate_t<tscalar> lrate(alpha0, decay);
 
-                        // first-order momentum of the gradient
-                        momentum_vector_t<tvector> gavg(momentum, x0.size());
+                        // first-order momentum of the update
+                        momentum_vector_t<tvector> davg(momentum, x0.size());
 
                         const auto op_iter = [&] (tstate& cstate, const std::size_t iter)
                         {
@@ -54,11 +54,11 @@ namespace nano
                                 const tscalar alpha = lrate.get(iter);
 
                                 // descent direction
-                                gavg.update(cstate.g.array());
-                                cstate.d = -gavg.value();
+                                davg.update(-alpha * cstate.g);
+                                cstate.d = davg.value();
 
                                 // update solution
-                                cstate.update(problem, alpha);
+                                cstate.update(problem, 1);
                         };
 
                         // OK, assembly the optimizer
