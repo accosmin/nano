@@ -44,7 +44,7 @@ namespace nano
                                 return this->operator()(param.tunable(), problem, x0, params...);
                         };
 
-                        const auto qs = nano::make_finite_space(0.0);
+                        const auto qs = nano::make_finite_space(0.1);
 
                         const auto config = nano::tune(op, make_alpha0s(), make_decays(), qs);
                         return operator()(param, problem, x0, config.param0(), config.param1(), config.param2());
