@@ -15,8 +15,6 @@
 
 int main(int argc, const char *argv[])
 {
-        nano::init();
-
         using namespace nano;
 
         // parse the command line

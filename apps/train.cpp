@@ -9,8 +9,6 @@ int main(int argc, const char *argv[])
 {
         using namespace nano;
 
-        nano::init();
-
         // prepare object string-based selection
         const strings_t task_ids = nano::get_tasks().ids();
         const strings_t loss_ids = nano::get_losses().ids();

@@ -7,12 +7,6 @@
 
 namespace nano
 {
-        model_manager_t& get_models()
-        {
-                static model_manager_t manager;
-                return manager;
-        }
-
         model_t::model_t(const string_t& parameters) :
                 clonable_t<model_t>(parameters),
                 m_idims(0),

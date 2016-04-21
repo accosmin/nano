@@ -5,16 +5,10 @@
 
 namespace nano
 {
-        criterion_manager_t& get_criteria()
-        {
-                static criterion_manager_t manager;
-                return manager;
-        }
-
-        criterion_t::criterion_t(const string_t& configuration)
-                :       clonable_t<criterion_t>(configuration),
-                        m_lambda(0.0),
-                        m_type(type::value)
+        criterion_t::criterion_t(const string_t& configuration) :
+                clonable_t<criterion_t>(configuration),
+                m_lambda(0.0),
+                m_type(type::value)
         {
         }
 

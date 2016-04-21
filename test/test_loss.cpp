@@ -60,8 +60,6 @@ NANO_BEGIN_MODULE(test_loss)
 
 NANO_CASE(evaluate)
 {
-        nano::init();
-
         using namespace nano;
 
         const strings_t loss_ids = nano::get_losses().ids();

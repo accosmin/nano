@@ -11,8 +11,6 @@ NANO_BEGIN_MODULE(test_model)
 
 NANO_CASE(evaluate)
 {
-        nano::init();
-
         using namespace nano;
 
         const auto task = nano::get_tasks().get("affine", "idims=1,irows=16,icols=16,osize=2,count=128");

@@ -13,8 +13,6 @@ NANO_CASE(evaluate)
 {
         using namespace nano;
 
-        nano::init();
-
         const auto task = nano::get_tasks().get("affine", "idims=2,irows=5,icols=5,osize=2,count=20");
         NANO_CHECK_EQUAL(task->load(), true);
 

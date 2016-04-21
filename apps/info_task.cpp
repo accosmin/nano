@@ -9,8 +9,6 @@ int main(int argc, const char *argv[])
 {
         using namespace nano;
 
-        nano::init();
-
         const strings_t task_ids = nano::get_tasks().ids();
 
         // parse the command line

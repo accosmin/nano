@@ -8,7 +8,6 @@ NANO_BEGIN_MODULE(test_svhn)
 NANO_CASE(construction)
 {
         using namespace nano;
-        nano::init();
 
         const auto path = string_t(std::getenv("HOME")) + "/experiments/databases/svhn";
 

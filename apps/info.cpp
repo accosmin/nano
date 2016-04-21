@@ -30,8 +30,6 @@ namespace
 
 int main(int argc, const char* argv[])
 {
-        nano::init();
-
         // parse the command line
         nano::cmdline_t cmdline("display the registered objects");
         cmdline.add("", "loss",         "loss functions");

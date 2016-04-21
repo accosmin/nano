@@ -6,10 +6,3 @@
 #include "trainer.h"
 #include "criterion.h"
 
-namespace nano
-{
-        ///
-        /// \brief initialize library (setup flags, register default objects ...)
-        ///
-        NANO_PUBLIC void init();
-}

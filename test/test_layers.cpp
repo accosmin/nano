@@ -133,8 +133,6 @@ NANO_BEGIN_MODULE(test_layers)
 
 NANO_CASE(activation)
 {
-        nano::init();
-
         for (const auto& activation_id : { "act-unit", "act-tanh", "act-snorm", "act-splus" })
         {
                 test_model(activation_id);
@@ -143,15 +141,11 @@ NANO_CASE(activation)
 
 NANO_CASE(affine)
 {
-        nano::init();
-
         test_model(make_affine_layer(7));
 }
 
 NANO_CASE(conv)
 {
-        nano::init();
-
         test_model(make_conv_pool_layer(3, 3, 3, "", ""));
         test_model(make_conv_pool_layer(3, 3, 3, "", "pool-max"));
         test_model(make_conv_pool_layer(3, 3, 3, "", "pool-min"));
@@ -160,8 +154,6 @@ NANO_CASE(conv)
 
 NANO_CASE(multi_layer_models)
 {
-        nano::init();
-
         test_model(
                 make_affine_layer(7, "act-snorm") +
                 make_affine_layer(5, "act-splus"));

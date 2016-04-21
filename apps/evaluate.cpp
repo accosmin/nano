@@ -7,8 +7,6 @@
 
 int main(int argc, const char *argv[])
 {
-        nano::init();
-
         using namespace nano;
 
         // prepare object string-based selection
