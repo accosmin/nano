@@ -47,10 +47,12 @@ namespace
         auto measure_op(const top& op,
                 const tmatrixi& idata, const tmatrixk& kdata, tmatrixo&& odata, const size_t trials = 16)
         {
-                return (nano::measure_robustly_nsec([&] ()
+                const auto size = kdata.size() * odata.size();
+                const auto nsec = nano::measure_robustly_nsec([&] ()
                 {
                         op(idata, kdata, odata);
-                }, trials).count() * 1000 + kdata.size() * odata.size() - 1) / (kdata.size() * odata.size());
+                }, trials).count();
+                return (nsec * 1000 + size - 1) / size;
         }
 
         template
