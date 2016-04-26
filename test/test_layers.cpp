@@ -146,10 +146,10 @@ NANO_CASE(affine)
 
 NANO_CASE(conv)
 {
-        test_model(make_conv_pool_layer(3, 3, 3, "", ""));
-        test_model(make_conv_pool_layer(3, 3, 3, "", "pool-max"));
-        test_model(make_conv_pool_layer(3, 3, 3, "", "pool-min"));
-        test_model(make_conv_pool_layer(3, 3, 3, "", "pool-avg"));
+        test_model(make_conv_pool_layer(3, 3, 3, 1, "act-unit", ""));
+        test_model(make_conv_pool_layer(3, 3, 3, 1, "act-unit", "pool-max"));
+        test_model(make_conv_pool_layer(3, 3, 3, 1, "act-unit", "pool-min"));
+        test_model(make_conv_pool_layer(3, 3, 3, 1, "act-unit", "pool-avg"));
 }
 
 NANO_CASE(multi_layer_models)
@@ -159,12 +159,27 @@ NANO_CASE(multi_layer_models)
                 make_affine_layer(5, "act-splus"));
 
         test_model(
-                make_conv_pool_layer(7, 3, 3, "act-snorm", "pool-max") +
-                make_conv_layer(4, 3, 3, "act-splus"));
+                make_conv_pool_layer(7, 3, 3, 1, "act-snorm", "pool-max") +
+                make_conv_layer(4, 3, 3, 1, "act-splus"));
 
         test_model(
-                make_conv_pool_layer(7, 3, 3, "act-snorm", "pool-max") +
-                make_conv_layer(5, 3, 3, "act-splus") +
+                make_conv_pool_layer(7, 3, 3, 1, "act-snorm", "pool-max") +
+                make_conv_layer(5, 3, 3, 1, "act-splus") +
+                make_affine_layer(5, "act-splus"));
+
+        test_model(
+                make_conv_pool_layer(7, 3, 3, 1, "act-snorm", "pool-max") +
+                make_conv_layer(5, 3, 3, 2, "act-splus") +
+                make_affine_layer(5, "act-splus"));
+
+        test_model(
+                make_conv_pool_layer(8, 3, 3, 1, "act-snorm", "pool-max") +
+                make_conv_layer(5, 3, 3, 2, "act-splus") +
+                make_affine_layer(5, "act-splus"));
+
+        test_model(
+                make_conv_pool_layer(9, 3, 3, 1, "act-snorm", "pool-max") +
+                make_conv_layer(5, 3, 3, 3, "act-splus") +
                 make_affine_layer(5, "act-splus"));
 }
 

@@ -218,16 +218,16 @@ int main(int argc, const char* argv[])
         const auto mlp3 = mlp2 + make_affine_layer(16);
 
         const auto convnet1 =
-                make_conv_pool_layer(16, 7, 7);
+                make_conv_pool_layer(16, 7, 7, 1);
 
         const auto convnet2 =
-                make_conv_pool_layer(16, 7, 7) +
-                make_conv_layer(16, 5, 5);
+                make_conv_pool_layer(16, 7, 7, 1) +
+                make_conv_layer(16, 5, 5, 1);
 
         const auto convnet3 =
-                make_conv_layer(16, 7, 7) +
-                make_conv_layer(16, 5, 5) +
-                make_conv_layer(16, 3, 3);
+                make_conv_layer(16, 7, 7, 1) +
+                make_conv_layer(16, 5, 5, 1) +
+                make_conv_layer(16, 3, 3, 1);
 
         const string_t outlayer = make_output_layer(outputs);
 
