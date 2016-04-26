@@ -38,7 +38,7 @@ namespace nano
                 const auto odims = nano::clamp(nano::from_params<tensor_size_t>(configuration(), "dims", 16), 1, 256);
                 const auto krows = nano::clamp(nano::from_params<tensor_size_t>(configuration(), "rows", 8), 1, 32);
                 const auto kcols = nano::clamp(nano::from_params<tensor_size_t>(configuration(), "cols", 8), 1, 32);
-                m_kconn = nano::clamp(nano::from_params<tensor_size_t>(configuration(), "conn", 1), 1, 16);
+                const auto kconn = nano::clamp(nano::from_params<tensor_size_t>(configuration(), "conn", 1), 1, 16);
 
                 const auto orows = irows - krows + 1;
                 const auto ocols = icols - kcols + 1;
@@ -52,7 +52,7 @@ namespace nano
                 }
 
                 // check input connectivity factor
-                if (m_kconn > 1 && idims < 2 * m_kconn)
+                if (kconn > 1 && idims < 2 * kconn)
                 {
                         log_error() << "convolution layer: invalid input connectivity factor!";
                         throw std::invalid_argument("invalid configuration for the convolution layer");
@@ -61,8 +61,9 @@ namespace nano
                 // resize buffers
                 m_idata.resize(idims, irows, icols);
                 m_odata.resize(odims, orows, ocols);
-                m_kdata.resize(odims, idims / m_kconn, krows, kcols);
+                m_kdata.resize(odims, idims / kconn, krows, kcols);
                 m_bdata.resize(odims, 1, 1);
+                m_kconn = kconn;
 
                 return psize();
         }
