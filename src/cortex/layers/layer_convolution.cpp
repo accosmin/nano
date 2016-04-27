@@ -61,7 +61,7 @@ namespace nano
                 // resize buffers
                 m_idata.resize(idims, irows, icols);
                 m_odata.resize(odims, orows, ocols);
-                m_kdata.resize(odims, idims / kconn, krows, kcols);
+                m_kdata.resize(odims, (idims + kconn - 1) / kconn, krows, kcols);
                 m_bdata.resize(odims, 1, 1);
                 m_kconn = kconn;
 
@@ -142,7 +142,7 @@ namespace nano
                 m_odata = output;
 
                 // wrt convolution
-                auto gkdata = tensor::map_tensor(gradient, odims(), idims() / kconn(), krows(), kcols());
+                auto gkdata = tensor::map_tensor(gradient, m_kdata.size<0>(), m_kdata.size<1>(), krows(), kcols());
                 gkdata.setZero();
 
                 tensor::conv2d_dyn_t op;
