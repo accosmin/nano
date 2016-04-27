@@ -222,12 +222,12 @@ int main(int argc, const char* argv[])
 
         const auto convnet2 =
                 make_conv_pool_layer(16, 7, 7, 1) +
-                make_conv_layer(16, 5, 5, 1);
+                make_conv_layer(32, 5, 5, 2);
 
         const auto convnet3 =
                 make_conv_layer(16, 7, 7, 1) +
-                make_conv_layer(16, 5, 5, 1) +
-                make_conv_layer(16, 3, 3, 1);
+                make_conv_layer(32, 5, 5, 2) +
+                make_conv_layer(64, 3, 3, 4);
 
         const string_t outlayer = make_output_layer(outputs);
 
