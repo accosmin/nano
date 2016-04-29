@@ -148,8 +148,9 @@ NANO_CASE(conv)
 {
         test_model(make_conv_pool_layer(3, 3, 3, 1, "act-unit", ""));
         test_model(make_conv_pool_layer(3, 3, 3, 1, "act-unit", "pool-max"));
+        test_model(make_conv_pool_layer(3, 3, 3, 1, "act-unit", "pool-max"));
         test_model(make_conv_pool_layer(3, 3, 3, 1, "act-unit", "pool-min"));
-        test_model(make_conv_pool_layer(3, 3, 3, 1, "act-unit", "pool-avg"));
+        test_model(make_conv_pool_layer(3, 3, 3, 1, "act-unit", "pool-ada3x3"));
 }
 
 NANO_CASE(multi_layer_models)
