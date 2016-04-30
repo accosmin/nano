@@ -23,6 +23,7 @@
 #include "layers/layer_pool.h"
 #include "layers/layer_pooling_ada3x3.h"
 #include "layers/layer_pooling_gauss.h"
+#include "layers/layer_pooling_adaexp.h"
 
 #include "models/forward_network.h"
 
@@ -110,6 +111,7 @@ namespace nano
                         nano::get_layers().add("conv", conv_layer_t());
                         nano::get_layers().add("pool-ada3x3", pooling_ada3x3_layer_t());
                         nano::get_layers().add("pool-gauss", pooling_gauss_layer_t());
+                        nano::get_layers().add("pool-adaexp", pooling_adaexp_layer_t());
                         nano::get_layers().add("pool-max", pool_max_layer_t());
                         nano::get_layers().add("pool-min", pool_min_layer_t());
                         nano::get_layers().add("pool-avg", pool_avg_layer_t());

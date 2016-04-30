@@ -14,6 +14,8 @@ list(APPEND libcortex_sources
         ${CMAKE_CURRENT_SOURCE_DIR}/layer_pooling_ada3x3.h
         ${CMAKE_CURRENT_SOURCE_DIR}/layer_pooling_gauss.h
         ${CMAKE_CURRENT_SOURCE_DIR}/layer_pooling_gauss.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/layer_pooling_adaexp.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/layer_pooling_adaexp.h
         ${CMAKE_CURRENT_SOURCE_DIR}/pooling.hpp
         ${CMAKE_CURRENT_SOURCE_DIR}/make_layers.h)
 
