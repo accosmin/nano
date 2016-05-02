@@ -86,26 +86,40 @@ namespace nano
         {
                 const auto wei = make_gauss(gdata);
                 const auto sum = wei.sum();
-                const auto grad = (sum - wei.array()) / (2 * sum * (sum * wei.array()).sqrt());
 
                 const auto meanx = gdata(0, 0);
                 const auto meany = gdata(0, 1);
                 const auto precx = gdata(1, 0);
                 const auto precy = gdata(1, 1);
 
-                matrix_t ret(9, 4);
+                matrix_t agrad(9, 4);
                 for (int y = -1, i = 0; y <= 1; ++ y)
                 {
                         for (int x = -1; x <= 1; ++ x, ++ i)
                         {
-                                ret(i, 0) = grad(y + 1, x + 1) * wei(y + 1, x + 1) * precx * (x - meanx);
-                                ret(i, 1) = grad(y + 1, x + 1) * wei(y + 1, x + 1) * precy * (y - meany);
-                                ret(i, 2) = grad(y + 1, x + 1) * wei(y + 1, x + 1) * (- square(x - meanx) / 2);
-                                ret(i, 3) = grad(y + 1, x + 1) * wei(y + 1, x + 1) * (- square(y - meany) / 2);
+                                agrad(i, 0) = wei(y + 1, x + 1) * precx * (x - meanx);
+                                agrad(i, 1) = wei(y + 1, x + 1) * precy * (y - meany);
+                                agrad(i, 2) = wei(y + 1, x + 1) * (- square(x - meanx) / 2);
+                                agrad(i, 3) = wei(y + 1, x + 1) * (- square(y - meany) / 2);
                         }
                 }
 
-                return ret;
+                const auto sum_agrad0 = agrad.col(0).sum();
+                const auto sum_agrad1 = agrad.col(1).sum();
+                const auto sum_agrad2 = agrad.col(2).sum();
+                const auto sum_agrad3 = agrad.col(3).sum();
+
+                matrix_t grad(9, 4);
+                for (int i = 0; i < 9; ++ i)
+                {
+                        const auto div = 1 / (2 * sum * std::sqrt(sum * wei(i)));
+                        grad(i, 0) = (sum * agrad(i, 0) - wei(i) * sum_agrad0) * div;
+                        grad(i, 1) = (sum * agrad(i, 1) - wei(i) * sum_agrad1) * div;
+                        grad(i, 2) = (sum * agrad(i, 2) - wei(i) * sum_agrad2) * div;
+                        grad(i, 3) = (sum * agrad(i, 3) - wei(i) * sum_agrad3) * div;
+                }
+
+                return grad;
         }
 
         const tensor3d_t& pooling_gauss_layer_t::output(const tensor3d_t& input)
