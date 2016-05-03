@@ -117,13 +117,8 @@ int main(int argc, const char* argv[])
 
         // parse the command line
         nano::cmdline_t cmdline("benchmark trainers");
-        cmdline.add("", "mlp0",                 "use MLP with 0 hidden layers");
-        cmdline.add("", "mlp1",                 "use MLP with 1 hidden layers");
-        cmdline.add("", "mlp2",                 "use MLP with 2 hidden layers");
-        cmdline.add("", "mlp3",                 "use MLP with 3 hidden layers");
-        cmdline.add("", "convnet1",             "use convolution network (conv-pool-conv)");
-        cmdline.add("", "convnet2",             "use convolution network (conv-conv)");
-        cmdline.add("", "convnet3",             "use convolution network (conv-conv-conv)");
+        cmdline.add("", "mlps",                 "use MLPs with varying number of hidden layers");
+        cmdline.add("", "convnets",             "use convolution networks with varying number of convolution layers");
         cmdline.add("", "batch",                "evaluate batch optimizers");
         cmdline.add("", "batch-gd",             "evaluate batch optimizer GD (gradient descent)");
         cmdline.add("", "batch-cgd",            "evaluate batch optimizer CGD (conjugate gradient descent)");
@@ -149,25 +144,15 @@ int main(int argc, const char* argv[])
         cmdline.process(argc, argv);
 
         // check arguments and options
-        const bool use_mlp0 = cmdline.has("mlp0");
-        const bool use_mlp1 = cmdline.has("mlp1");
-        const bool use_mlp2 = cmdline.has("mlp2");
-        const bool use_mlp3 = cmdline.has("mlp3");
-        const bool use_convnet1 = cmdline.has("convnet1");
-        const bool use_convnet2 = cmdline.has("convnet2");
-        const bool use_convnet3 = cmdline.has("convnet3");
+        const bool use_mlps = cmdline.has("mlps");
+        const bool use_convnets = cmdline.has("convnets");
         const bool use_reg_l2n = cmdline.has("l2n-reg");
         const bool use_reg_var = cmdline.has("var-reg");
         const auto trials = cmdline.get<size_t>("trials");
         const auto iterations = cmdline.get<size_t>("iterations");
 
-        if (    !use_mlp0 &&
-                !use_mlp1 &&
-                !use_mlp2 &&
-                !use_mlp3 &&
-                !use_convnet1 &&
-                !use_convnet2 &&
-                !use_convnet3)
+        if (    !use_mlps &&
+                !use_convnets)
         {
                 cmdline.usage();
         }
@@ -202,7 +187,7 @@ int main(int argc, const char* argv[])
         // create task
         const size_t rows = 16;
         const size_t cols = 16;
-        const size_t count = thread::concurrency() * 32 * 100;
+        const size_t count = thread::concurrency() * 32 * 20;
         const color_mode color = color_mode::rgb;
 
         charset_task_t task(charset::digit, color, rows, cols, count);
@@ -212,37 +197,42 @@ int main(int argc, const char* argv[])
         const auto outputs = task.osize();
 
         // construct models
+        const auto activation = "act-snorm";
+        const auto pooling = "pool-full";
+
         const auto mlp0 = string_t();
-        const auto mlp1 = mlp0 + make_affine_layer(16);
-        const auto mlp2 = mlp1 + make_affine_layer(16);
-        const auto mlp3 = mlp2 + make_affine_layer(16);
+        const auto mlp1 = mlp0 + make_affine_layer(16, activation);
+        const auto mlp2 = mlp1 + make_affine_layer(16, activation);
+        const auto mlp3 = mlp2 + make_affine_layer(16, activation);
 
         const auto convnet1 =
-                make_conv_pool_layer(16, 7, 7, 1);
+                make_conv_pool_layer(16, 7, 7, 1, activation, pooling);
 
         const auto convnet2 =
-                make_conv_pool_layer(16, 7, 7, 1) +
+                make_conv_pool_layer(16, 7, 7, 1, activation, pooling) +
                 make_conv_layer(32, 5, 5, 2);
 
         const auto convnet3 =
-                make_conv_layer(16, 7, 7, 1) +
-                make_conv_layer(32, 5, 5, 2) +
-                make_conv_layer(64, 3, 3, 4);
+                make_conv_layer(16, 7, 7, 1, activation) +
+                make_conv_layer(32, 5, 5, 2, activation) +
+                make_conv_layer(64, 3, 3, 4, activation);
 
         const string_t outlayer = make_output_layer(outputs);
 
         std::vector<std::pair<string_t, string_t>> networks;
-        #define DEFINE(config) networks.emplace_back(config + outlayer, NANO_STRINGIFY(config))
-
-        if (use_mlp0) { DEFINE(mlp0); }
-        if (use_mlp1) { DEFINE(mlp1); }
-        if (use_mlp2) { DEFINE(mlp2); }
-        if (use_mlp3) { DEFINE(mlp3); }
-        if (use_convnet1) { DEFINE(convnet1); }
-        if (use_convnet2) { DEFINE(convnet2); }
-        if (use_convnet3) { DEFINE(convnet3); }
-
-        #undef DEFINE
+        if (use_mlps)
+        {
+                networks.emplace_back(mlp0 + outlayer, "mlp0");
+                networks.emplace_back(mlp1 + outlayer, "mlp1");
+                networks.emplace_back(mlp2 + outlayer, "mlp2");
+                networks.emplace_back(mlp3 + outlayer, "mlp3");
+        }
+        if (use_convnets)
+        {
+                networks.emplace_back(convnet1 + outlayer, "convnet1");
+                networks.emplace_back(convnet2 + outlayer, "convnet2");
+                networks.emplace_back(convnet3 + outlayer, "convnet3");
+        }
 
         const strings_t losses = { "classnll" }; //nano::get_losses().ids();
 
