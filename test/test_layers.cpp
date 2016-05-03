@@ -147,12 +147,9 @@ NANO_CASE(affine)
 NANO_CASE(conv)
 {
         test_model(make_conv_pool_layer(3, 3, 3, 1, "act-unit", ""));
-        test_model(make_conv_pool_layer(3, 3, 3, 1, "act-unit", "pool-max"));
-        test_model(make_conv_pool_layer(3, 3, 3, 1, "act-unit", "pool-max"));
-        test_model(make_conv_pool_layer(3, 3, 3, 1, "act-unit", "pool-min"));
-        test_model(make_conv_pool_layer(3, 3, 3, 1, "act-unit", "pool-ada3x3"));
+        test_model(make_conv_pool_layer(3, 3, 3, 1, "act-unit", "pool-full"));
+        test_model(make_conv_pool_layer(3, 3, 3, 1, "act-unit", "pool-soft"));
         test_model(make_conv_pool_layer(3, 3, 3, 1, "act-unit", "pool-gauss"));
-        test_model(make_conv_pool_layer(3, 3, 3, 1, "act-unit", "pool-adaexp"));
 }
 
 NANO_CASE(multi_layer_models)
@@ -162,26 +159,26 @@ NANO_CASE(multi_layer_models)
                 make_affine_layer(5, "act-splus"));
 
         test_model(
-                make_conv_pool_layer(7, 3, 3, 1, "act-snorm", "pool-max") +
+                make_conv_pool_layer(7, 3, 3, 1, "act-snorm", "pool-soft") +
                 make_conv_layer(4, 3, 3, 1, "act-splus"));
 
         test_model(
-                make_conv_pool_layer(7, 3, 3, 1, "act-snorm", "pool-max") +
+                make_conv_pool_layer(7, 3, 3, 1, "act-snorm", "pool-gauss") +
                 make_conv_layer(5, 3, 3, 1, "act-splus") +
                 make_affine_layer(5, "act-splus"));
 
         test_model(
-                make_conv_pool_layer(7, 3, 3, 1, "act-snorm", "pool-max") +
+                make_conv_pool_layer(7, 3, 3, 1, "act-snorm", "pool-soft") +
                 make_conv_layer(5, 3, 3, 2, "act-splus") +
                 make_affine_layer(5, "act-splus"));
 
         test_model(
-                make_conv_pool_layer(8, 3, 3, 1, "act-snorm", "pool-max") +
+                make_conv_pool_layer(8, 3, 3, 1, "act-snorm", "pool-full") +
                 make_conv_layer(5, 3, 3, 2, "act-splus") +
                 make_affine_layer(5, "act-splus"));
 
         test_model(
-                make_conv_pool_layer(9, 3, 3, 1, "act-snorm", "pool-max") +
+                make_conv_pool_layer(9, 3, 3, 1, "act-snorm", "pool-soft") +
                 make_conv_layer(5, 3, 3, 3, "act-splus") +
                 make_affine_layer(5, "act-splus"));
 }

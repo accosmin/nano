@@ -17,8 +17,8 @@ namespace nano
         >
         struct mapping_t
         {
-                mapping_t(const tto_param& to_param, const tfrom_param& from_param)
-                        :       m_to_param(to_param), m_from_param(from_param)
+                mapping_t(const tto_param& to_param, const tfrom_param& from_param) :
+                        m_to_param(to_param), m_from_param(from_param)
                 {
                 }
 
@@ -75,15 +75,14 @@ namespace nano
 
                 tune_grid_space_t(
                         const tscalar min, const tscalar max, const tscalar epsilon, const tmapping& mapping,
-                        const int splits = 6)
-                        :       m_min(min), m_orig_min(min),
-                                m_max(max), m_orig_max(max),
-                                m_epsilon(epsilon), m_splits(splits), m_mapping(mapping)
+                        const int splits = 6) :
+                        m_min(min), m_orig_min(min),
+                        m_max(max), m_orig_max(max),
+                        m_epsilon(epsilon), m_splits(splits), m_mapping(mapping)
                 {
                         assert(min < max);
                         assert(epsilon > 0);
                         assert(splits > 3);
-                        assert(epsilon < (max - min) / m_splits);
                 }
 
                 tscalars values() const

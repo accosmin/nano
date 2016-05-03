@@ -5,17 +5,23 @@
 namespace nano
 {
         ///
-        /// \brief pooling layer:
-        ///     down-sample by 2 using 3x3 overlapping regions with adaptive (learned) 3x3 weights
+        /// \brief pooling layer to down-sample by 2 using 3x3 overlapping regions.
+        ///     the weighting is performed using an adaptive approximation of the generalized mean:
+        ///             pool(x/2, y/2) = log(1/9 * sum(dx, dy) exp(beta * input(x+dx, y+dy))),
+        ///     where:
+        ///             beta is positive the max is approximated
+        ///             beta is negative the min is approximated
+        ///             beta is close to zero the mean is approximated
         ///
-        class pooling_adaexp_layer_t : public layer_t
+        class pooling_soft_layer_t : public layer_t
         {
         public:
 
-                NANO_MAKE_CLONABLE(pooling_adaexp_layer_t, "adaptive pooling layer using 3x3 overlapping regions")
+                NANO_MAKE_CLONABLE(pooling_soft_layer_t,
+                        "adaptive pooling layer using soft approximation of generalized mean")
 
                 // constructor
-                explicit pooling_adaexp_layer_t(const string_t& parameters = string_t());
+                explicit pooling_soft_layer_t(const string_t& parameters = string_t());
 
                 // resize to process new tensors of the given type
                 virtual tensor_size_t resize(const tensor3d_t& tensor) override;
@@ -48,6 +54,6 @@ namespace nano
                 tensor3d_t      m_idata;        ///< input buffer
                 tensor3d_t      m_odata;        ///< output buffer
                 tensor3d_t      m_edata;        ///< exponential input buffer
-                vector_t        m_wdata;        ///< exponential weighting factors: odims
+                vector_t        m_wdata;        ///< weighting factors: odims
         };
 }

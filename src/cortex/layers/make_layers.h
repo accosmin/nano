@@ -29,7 +29,7 @@ namespace nano
 
         template <typename tsize>
         string_t make_conv_pool_layer(const tsize dims, const tsize rows, const tsize cols, const tsize conn,
-                const string_t& activation = "act-snorm", const string_t& pooling = "pool-max")
+                const string_t& activation = "act-snorm", const string_t& pooling = "pool-soft")
         {
                 return  make_layer(
                         "conv:dims=" + to_string(dims) + ",rows=" + to_string(rows) +

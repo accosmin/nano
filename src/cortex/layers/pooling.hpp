@@ -1,71 +1,67 @@
 #pragma once
 
-#include "tensor/matrix.hpp"
+#include "tensor.h"
 
 namespace nano
 {
+        ///
+        /// \brief utilities to down-sample by 2 using 3x3 overlapping regions.
+        ///
         namespace pooling
         {
-                ///
-                /// \brief pooling output (2x downsampling)
-                ///
-                template
-                <
-                        typename tmatrixi,
-                        typename tscalar,
-                        typename tmatrixw,
-                        typename tmatrixs,
-                        typename tmatrixc,
-                        typename tmatrixo
-                >
-                void output(
-                        const tmatrixi& idata, tscalar alpha,
-                        tmatrixw&& wdata, tmatrixs&& sdata, tmatrixc&& cdata, tmatrixo&& odata)
+                template <typename tiplane, typename toplane, typename toperator>
+                void output(const tiplane& iplane, toplane&& oplane, const toperator& op)
                 {
-                        const auto irows = idata.rows();
-                        const auto icols = idata.cols();
-                        const tscalar ialpha = 1 / alpha;
-
-                        wdata = (idata.array() * alpha).exp();
-
-                        sdata.setZero();
-                        cdata.setZero();
-
-                        for (auto r = 0, rr = 0; r < irows; ++ r, rr = r / 2)
+                        for (tensor_size_t r = 1; r < iplane.rows(); r += 2)
                         {
-                                for (auto c = 0, cc = 0; c < icols; ++ c, cc = c / 2)
+                                for (tensor_size_t c = 1; c < iplane.cols(); c += 2)
                                 {
-                                        sdata(rr, cc) += wdata(r, c);
-                                        cdata(rr, cc) += 1;
+                                        const auto c0 = c - 1, c1 = c, c2 = std::min(c + 1, iplane.cols() - 1);
+                                        const auto r0 = r - 1, r1 = r, r2 = std::min(r + 1, iplane.rows() - 1);
+
+                                        oplane(r / 2, c / 2) = op(
+                                                iplane(r0, c0), iplane(r0, c1), iplane(r0, c2),
+                                                iplane(r1, c0), iplane(r1, c1), iplane(r1, c2),
+                                                iplane(r2, c0), iplane(r2, c1), iplane(r2, c2));
                                 }
                         }
-
-                        odata = ialpha * (sdata.array() / cdata.array()).log();
                 }
 
-                ///
-                /// \brief gradient wrt inputs
-                ///
-                template
-                <
-                        typename tmatrixi,
-                        typename tmatrixw,
-                        typename tmatrixs,
-                        typename tmatrixc,
-                        typename tmatrixo
-                >
-                void ginput(
-                        tmatrixi&& gidata,
-                        const tmatrixw& wdata, const tmatrixs& sdata, const tmatrixc&, const tmatrixo& odata)
+                template <typename tiplane, typename toplane, typename toperator>
+                void ginput(tiplane&& iplane, const toplane& oplane, const toperator& op)
                 {
-                        const auto irows = gidata.rows();
-                        const auto icols = gidata.cols();
+                        iplane.setZero();
 
-                        for (auto r = 0, rr = 0; r < irows; ++ r, rr = r / 2)
+                        for (tensor_size_t r = 1; r < iplane.rows(); r += 2)
                         {
-                                for (auto c = 0, cc = 0; c < icols; ++ c, cc = c / 2)
+                                for (tensor_size_t c = 1; c < iplane.cols(); c += 2)
                                 {
-                                        gidata(r, c) = odata(rr, cc) * wdata(r, c) / sdata(rr, cc);
+                                        const auto c0 = c - 1, c1 = c, c2 = std::min(c + 1, iplane.cols() - 1);
+                                        const auto r0 = r - 1, r1 = r, r2 = std::min(r + 1, iplane.rows() - 1);
+
+                                        op(     oplane(r / 2, c / 2),
+                                                iplane(r0, c0), iplane(r0, c1), iplane(r0, c2),
+                                                iplane(r1, c0), iplane(r1, c1), iplane(r1, c2),
+                                                iplane(r2, c0), iplane(r2, c1), iplane(r2, c2));
+                                }
+                        }
+                }
+
+                template <typename tiplane, typename toplane, typename toperator>
+                void gparam(const tiplane& iplane, const toplane& oplane, const toperator& op)
+                {
+                        for (tensor_size_t r = 1; r < iplane.rows(); r += 2)
+                        {
+                                for (tensor_size_t c = 1; c < iplane.cols(); c += 2)
+                                {
+                                        const auto c0 = c - 1, c1 = c, c2 = std::min(c + 1, iplane.cols() - 1);
+                                        const auto r0 = r - 1, r1 = r, r2 = std::min(r + 1, iplane.rows() - 1);
+
+                                        const auto ooo = oplane(r / 2, c / 2);
+
+                                        op(     ooo * iplane(r0, c0), ooo * iplane(r0, c1), ooo * iplane(r0, c2),
+                                                ooo * iplane(r1, c0), ooo * iplane(r1, c1), ooo * iplane(r1, c2),
+                                                ooo * iplane(r2, c0), ooo * iplane(r2, c1), ooo * iplane(r2, c2));
                                 }
                         }
                 }

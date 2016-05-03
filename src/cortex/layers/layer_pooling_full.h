@@ -5,17 +5,18 @@
 namespace nano
 {
         ///
-        /// \brief pooling layer:
-        ///     down-sample by 2 using 3x3 overlapping regions with adaptive (learned) 3x3 weights
+        /// \brief pooling layer to down-sample by 2 using 3x3 overlapping regions.
+        ///     the weighting is performed using an adaptive 3x3 unconstrained matrix:
+        ///             pool(x/2, y/2) = sum(dx, dy) input(x+dx, y+dy) * weight(dx, dy)
         ///
-        class pooling_ada3x3_layer_t : public layer_t
+        class pooling_full_layer_t : public layer_t
         {
         public:
 
-                NANO_MAKE_CLONABLE(pooling_ada3x3_layer_t, "adaptive pooling layer using 3x3 overlapping regions")
+                NANO_MAKE_CLONABLE(pooling_full_layer_t, "adaptive pooling layer using unconstrained 3x3 weights")
 
                 // constructor
-                explicit pooling_ada3x3_layer_t(const string_t& parameters = string_t());
+                explicit pooling_full_layer_t(const string_t& parameters = string_t());
 
                 // resize to process new tensors of the given type
                 virtual tensor_size_t resize(const tensor3d_t& tensor) override;
