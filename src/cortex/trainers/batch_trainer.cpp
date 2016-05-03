@@ -23,7 +23,7 @@ namespace nano
 
                 // parameters
                 const auto iterations = nano::clamp(nano::from_params<size_t>(configuration(), "iters", 1024), 4, 4096);
-                const auto epsilon = nano::clamp(nano::from_params<scalar_t>(configuration(), "eps", 1e-4), 1e-8, 1e-3);
+                const auto epsilon = nano::clamp(nano::from_params<scalar_t>(configuration(), "eps", 1e-6), 1e-8, 1e-3);
 
                 const auto optimizer = nano::from_string<nano::batch_optimizer>
                         (nano::from_params<string_t>(configuration(), "opt", "lbfgs"));

@@ -53,13 +53,13 @@ function fn_make_trainers
         stoch_adadelta="--trainer stochastic --trainer-params opt=adadelta,epoch=${epochs}"
         stoch_adam="--trainer stochastic --trainer-params opt=adam,epoch=${epochs}"
 
-        mbatch_lbfgs="--trainer minibatch --trainer-params opt=lbfgs,epoch=${epochs},eps=1e-4"
-        mbatch_cgd="--trainer minibatch --trainer-params opt=cgd,epoch=${epochs},eps=1e-4"
-        mbatch_gd="--trainer minibatch --trainer-params opt=gd,epoch=${epochs},eps=1e-4"
+        mbatch_lbfgs="--trainer minibatch --trainer-params opt=lbfgs,epoch=${epochs},eps=1e-6"
+        mbatch_cgd="--trainer minibatch --trainer-params opt=cgd,epoch=${epochs},eps=1e-6"
+        mbatch_gd="--trainer minibatch --trainer-params opt=gd,epoch=${epochs},eps=1e-6"
 
-        batch_lbfgs="--trainer batch --trainer-params opt=lbfgs,iters=${epochs},eps=1e-4"
-        batch_cgd="--trainer batch --trainer-params opt=cgd,iters=${epochs},eps=1e-4"
-        batch_gd="--trainer batch --trainer-params opt=gd,iters=${epochs},eps=1e-4"
+        batch_lbfgs="--trainer batch --trainer-params opt=lbfgs,iters=${epochs},eps=1e-6"
+        batch_cgd="--trainer batch --trainer-params opt=cgd,iters=${epochs},eps=1e-6"
+        batch_gd="--trainer batch --trainer-params opt=gd,iters=${epochs},eps=1e-6"
 }
 
 # available loss

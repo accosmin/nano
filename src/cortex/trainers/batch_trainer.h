@@ -12,7 +12,7 @@ namespace nano
         public:
 
                 NANO_MAKE_CLONABLE(batch_trainer_t,
-                        "parameters: opt=lbfgs[,cgd,gd],iters=1024[4,4096],eps=1e-4[1e-8,1e-3]")
+                        "parameters: opt=lbfgs[,cgd,gd],iters=1024[4,4096],eps=1e-6[1e-8,1e-3]")
 
                 // constructor
                 explicit batch_trainer_t(const string_t& parameters = string_t());

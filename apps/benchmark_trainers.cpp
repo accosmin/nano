@@ -76,7 +76,7 @@ static void evaluate(model_t& model,
         const std::vector<stoch_optimizer>& stochastic_optimizers,
         const string_t& basename, const string_t& basepath, nano::table_t& table)
 {
-        const scalar_t epsilon = 1e-4;
+        const scalar_t epsilon = 1e-6;
         const size_t n_threads = thread::concurrency();
         const bool verbose = true;
 
