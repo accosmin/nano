@@ -7,21 +7,26 @@ common="${task_mnist} ${loss_classnll} --threads ${max_threads}"
 
 # models
 conv="--model forward-network --model-params "
-conv=${conv}"conv:dims=32,rows=9,cols=9;act-snorm;pool-max;"
-conv=${conv}"conv:dims=32,rows=5,cols=5;act-snorm;pool-max;"
-conv=${conv}"conv:dims=32,rows=3,cols=3;act-snorm;"
+conv=${conv}"conv:dims=16,rows=9,cols=9,conn=1;act-snorm;pool-soft;"
+conv=${conv}"conv:dims=32,rows=5,cols=5,conn=2;act-snorm;pool-soft;"
+conv=${conv}"conv:dims=64,rows=3,cols=3,conn=4;act-snorm;"
+
+convpsoft=${conv}                               # adaptive pooling using soft approximation of mean
+convpfull=${conv//pool-soft/pool-full}          # adaptive pooling using unconstrained weighting
+convpgauss=${conv//pool-soft/pool-gauss}        # adaptive pooling using gaussian weighting
 
 mlp0="--model forward-network --model-params "
 mlp1=${mlp0}"affine:dims=128;act-snorm;"
-mlp2=${mlp1}"affine:dims=64;act-snorm;"
-mlp3=${mlp2}"affine:dims=32;act-snorm;"
+mlp2=${mlp1}"affine:dims=128;act-snorm;"
+mlp3=${mlp2}"affine:dims=128;act-snorm;"
 
 outlayer="affine:dims=10;"
 
-models="mlp0 mlp1 mlp2 mlp3 conv"
+models="mlp0 mlp1 mlp2 mlp3 convpsoft convpfull convpgauss"
 
 # trainers
-epochs=100 #1000
+epochs=1000
+trials=10
 fn_make_trainers ${epochs}
 
 trainers="stoch_agfr"
@@ -33,7 +38,7 @@ trainers="stoch_agfr"
 criteria="crit_avg" #crit_l2n crit_var"
 
 # train models
-for ((trial=0;trial<10;trial++))
+for ((trial=0;trial<${trials};trial++))
 do
         for model in ${models}
         do
