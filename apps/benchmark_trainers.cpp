@@ -267,7 +267,7 @@ int main(int argc, const char* argv[])
 
                         const auto loss = nano::get_losses().get(iloss);
 
-                        nano::table_t table("optimizer");
+                        nano::table_t table(netname +"-" + iloss);
                         table.header() << "test error"
                                        << "convergence speed"
                                        << "time [sec]";
