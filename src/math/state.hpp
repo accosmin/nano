@@ -28,12 +28,12 @@ namespace nano
                 ///
                 /// \brief constructor
                 ///
-                explicit state_t(const tsize size = 0)
-                        :       x(size), g(size), d(size),
-                                f(std::numeric_limits<tscalar>::max()),
-                                m_iterations(0),
-                                m_fcalls(0),
-                                m_gcalls(0)
+                explicit state_t(const tsize size = 0) :
+                        x(size), g(size), d(size),
+                        f(std::numeric_limits<tscalar>::max()),
+                        m_iterations(0),
+                        m_fcalls(0),
+                        m_gcalls(0)
                 {
                 }
 
@@ -44,8 +44,8 @@ namespace nano
                 <
                         typename tproblem
                 >
-                state_t(const tproblem& problem, const tvector& x0)
-                        :       state_t(problem.size())
+                state_t(const tproblem& problem, const tvector& x0) :
+                        state_t(problem.size())
                 {
                         x = x0;
                         f = problem(x, g);
