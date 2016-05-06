@@ -1,6 +1,5 @@
 #pragma once
 
-#include "lrate.hpp"
 #include "stoch_loop.hpp"
 
 namespace nano
@@ -30,7 +29,10 @@ namespace nano
                                 return this->operator()(param.tunable(), problem, x0, params...);
                         };
 
-                        const auto config = nano::tune(op, make_alpha0s(), make_decays(), make_epsilons(), make_momenta());
+                        const auto beta1s = make_log10_space(std::log10(0.1), std::log10(0.9), 0.2);
+                        const auto beta2s = make_log10_space(std::log10(0.9), std::log10(0.9999), 0.2);
+
+                        const auto config = nano::tune(op, make_alpha0s(), make_epsilons(), beta1s, beta2s);
                         return operator()(param, problem, x0, config.param0(), config.param1(), config.param2(), config.param3());
                 }
 
@@ -38,12 +40,10 @@ namespace nano
                 /// \brief minimize starting from the initial guess x0
                 ///
                 tstate operator()(const param_t& param, const tproblem& problem, const tvector& x0,
-                        const tscalar alpha0, const tscalar decay, const tscalar epsilon, const tscalar momentum) const
+                        const tscalar alpha0, const tscalar epsilon,
+                        const tscalar beta1, const tscalar beta2) const
                 {
                         assert(problem.size() == x0.size());
-
-                        const tscalar beta1 = momentum; // 0.900
-                        const tscalar beta2 = momentum; // 0.999
 
                         // first-order momentum of the gradient
                         momentum_vector_t<tvector> m(beta1, x0.size());
@@ -51,13 +51,10 @@ namespace nano
                         // second-order momentum of the gradient
                         momentum_vector_t<tvector> v(beta2, x0.size());
 
-                        // learning rate schedule
-                        lrate_t<tscalar> lrate(alpha0, decay);
-
-                        const auto op_iter = [&] (tstate& cstate, const std::size_t iter)
+                        const auto op_iter = [&] (tstate& cstate, const std::size_t)
                         {
                                 // learning rate
-                                const tscalar alpha = lrate.get(iter);
+                                const tscalar alpha = alpha0;
 
                                 // descent direction
                                 m.update(cstate.g);
@@ -71,8 +68,7 @@ namespace nano
 
                         // OK, assembly the optimizer
                         return  stoch_loop(problem, param, tstate(problem, x0), op_iter,
-                                {{"alpha0", alpha0}, {"decay", decay}, {"epsilon", epsilon},
-                                {"beta1", beta1}, {"beta2", beta2}});
+                                {{"alpha0", alpha0}, {"epsilon", epsilon}, {"beta1", beta1}, {"beta2", beta2}});
                 }
         };
 }

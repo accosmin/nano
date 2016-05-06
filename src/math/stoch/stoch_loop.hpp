@@ -21,7 +21,7 @@ namespace nano
 
         inline auto make_momenta()
         {
-                return nano::make_log10_space(-2.0, -0.01, 0.5);
+                return nano::make_log10_space(std::log10(0.1), std::log10(0.99), 0.2);
         }
 
         inline auto make_epsilons()

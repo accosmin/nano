@@ -59,6 +59,7 @@ namespace nano
                 auto param1() const { return param<1>(); }
                 auto param2() const { return param<2>(); }
                 auto param3() const { return param<3>(); }
+                auto param4() const { return param<4>(); }
 
                 ///
                 /// \brief returns the list of optimum parameters
