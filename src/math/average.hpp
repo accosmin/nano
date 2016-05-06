@@ -10,9 +10,9 @@ namespace nano
         class average_t
         {
         public:
-                explicit average_t(const tvalue& initial)
-                        :       m_count(0),
-                                m_value(initial)
+                explicit average_t(const tvalue& initial) :
+                        m_count(0),
+                        m_value(initial)
                 {
                 }
 
@@ -45,8 +45,8 @@ namespace nano
         {
         public:
 
-                average_scalar_t()
-                        :       tbase(0)
+                average_scalar_t() :
+                        tbase(0)
                 {
                 }
         };
@@ -68,8 +68,8 @@ namespace nano
                 <
                         typename tsize
                 >
-                explicit average_vector_t(const tsize dimensions)
-                        :       tbase(tvector::Zero(dimensions))
+                explicit average_vector_t(const tsize dimensions) :
+                        tbase(tvector::Zero(dimensions))
                 {
                 }
         };

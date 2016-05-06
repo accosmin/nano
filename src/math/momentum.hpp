@@ -16,10 +16,10 @@ namespace nano
         class momentum_t
         {
         public:
-                momentum_t(const tscalar momentum, const tvalue& initial)
-                        :       m_momentum(momentum),
-                                m_correction(1),
-                                m_value(initial)
+                momentum_t(const tscalar momentum, const tvalue& initial) :
+                        m_momentum(momentum),
+                        m_correction(1),
+                        m_value(initial)
                 {
                         assert(momentum > 0);
                         assert(momentum < 1);
@@ -56,8 +56,8 @@ namespace nano
         >
         struct momentum_scalar_t : public tbase
         {
-                explicit momentum_scalar_t(const tscalar momentum)
-                        :       tbase(momentum, 0)
+                explicit momentum_scalar_t(const tscalar momentum) :
+                        tbase(momentum, 0)
                 {
                 }
         };
@@ -77,8 +77,8 @@ namespace nano
                 <
                         typename tsize
                 >
-                momentum_vector_t(const tscalar momentum, const tsize dimensions)
-                        :       tbase(momentum, tvector::Zero(dimensions))
+                momentum_vector_t(const tscalar momentum, const tsize dimensions) :
+                        tbase(momentum, tvector::Zero(dimensions))
                 {
                 }
         };
