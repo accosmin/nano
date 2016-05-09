@@ -24,18 +24,18 @@ namespace nano
                 ///
                 /// \brief constructor
                 ///
-                batch_params_t( std::size_t max_iterations,
-                                tscalar epsilon,
-                                ls_initializer lsinit,
-                                ls_strategy lsstrat,
-                                std::size_t hsize,
-                                const topulog& ulog = topulog())
-                        :       m_ulog(ulog),
-                                m_max_iterations(max_iterations),
-                                m_epsilon(epsilon),
-                                m_ls_initializer(lsinit),
-                                m_ls_strategy(lsstrat),
-                                m_hsize(hsize)
+                batch_params_t( const std::size_t max_iterations,
+                                const tscalar epsilon,
+                                const ls_initializer lsinit,
+                                const ls_strategy lsstrat,
+                                const std::size_t hsize,
+                                const topulog& ulog = topulog()) :
+                        m_ulog(ulog),
+                        m_max_iterations(max_iterations),
+                        m_epsilon(epsilon),
+                        m_ls_initializer(lsinit),
+                        m_ls_strategy(lsstrat),
+                        m_hsize(hsize)
                 {
                 }
 

@@ -4,8 +4,8 @@
 #include "task_iterator.h"
 #include "thread/thread.h"
 #include "trainer_loop.hpp"
-#include "math/momentum.hpp"
 #include "text/to_string.hpp"
+#include "math/stoch/stoch_loop.hpp"
 #include "logger.h"
 
 namespace nano
@@ -30,6 +30,7 @@ namespace nano
 
                 minibatch_iterator_t<shuffle::on> iter(task, train_fold, batch_size);
 
+                size_t epoch = 0;
                 trainer_result_t result;
 
                 // construct the optimization problem
@@ -53,29 +54,10 @@ namespace nano
                         return gacc.value();
                 };
 
-                const auto fn_ulog = nullptr;
-
-                // optimize the model
-                vector_t x = x0;
-
-                const scalar_t momentum = 0.95;
-                momentum_vector_t<vector_t> xavg(momentum, x0.size());
-
-                for (size_t epoch = 1; epoch <= epochs; ++ epoch)
+                const auto fn_ulog = [&] (const opt_state_t& state, const auto&)
                 {
-                        // optimize mini-batches in sequence
-                        for (size_t i = 0; i < epoch_size; ++ i)
-                        {
-                                const auto state = nano::minimize(
-                                        opt_problem_t(fn_size, fn_fval, fn_grad), fn_ulog,
-                                        x, optimizer, epoch_iterations, epsilon, history_size);
-                                xavg.update(state.x);
-                                x = state.x;
-                                iter.next();
-                        }
-
                         // evaluate the current state
-                        lacc.set_params(xavg.value());
+                        lacc.set_params(state.x);
 
                         lacc.update(task, train_fold);
                         const auto train = trainer_measurement_t{lacc.value(), lacc.avg_error(), lacc.var_error()};
@@ -89,7 +71,7 @@ namespace nano
                         // OK, update the optimum state
                         const auto milis = timer.milliseconds();
                         const auto config = trainer_config_t{{"lambda", lacc.lambda()}};
-                        const auto ret = result.update(xavg.value(), {milis, epoch, train, valid, test}, config);
+                        const auto ret = result.update(state.x, {milis, ++epoch, train, valid, test}, config);
 
                         if (verbose)
                         {
@@ -102,11 +84,23 @@ namespace nano
                                         << "] " << timer.elapsed() << ".";
                         }
 
-                        if (nano::is_done(ret))
-                        {
-                                break;
-                        }
-                }
+                        return !nano::is_done(ret);
+                };
+
+                const auto op = [&] (opt_state_t& state, const size_t)
+                {
+                        state = nano::minimize(
+                                opt_problem_t(fn_size, fn_fval, fn_grad), nullptr,
+                                state.x, optimizer, epoch_iterations, epsilon, history_size);
+                        iter.next();
+                };
+
+                // optimize the model
+                const auto problem = opt_problem_t(fn_size, fn_fval, fn_grad);
+                const auto params = stoch_params_t<opt_problem_t>(epochs, epoch_size, fn_ulog);
+
+                nano::stoch_loop(
+                        problem, params, opt_state_t(problem, x0), op);
 
                 return result;
         }

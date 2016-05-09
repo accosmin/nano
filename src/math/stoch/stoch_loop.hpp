@@ -35,14 +35,16 @@ namespace nano
         template
         <
                 typename tproblem,      ///< optimization problem
-                typename toperator      ///< operator to call for each optimization iteration
+                typename toperator,     ///< operator to call for each optimization iteration
+                typename tstate = typename stoch_params_t<tproblem>::tstate,
+                typename tconfig = typename stoch_params_t<tproblem>::tconfig
         >
         auto stoch_loop(
                 const tproblem& problem,
                 const stoch_params_t<tproblem>& params,
-                const typename stoch_params_t<tproblem>::tstate& istate,
+                const tstate& istate,
                 const toperator& op,
-                const typename stoch_params_t<tproblem>::tconfig& config)
+                const tconfig& config = tconfig())
         {
                 // current state
                 auto cstate = istate;

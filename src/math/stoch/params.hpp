@@ -41,12 +41,12 @@ namespace nano
                                 const std::size_t epoch_size,
                                 const topulog& ulog = topulog(),
                                 const toptlog& tlog = toptlog(),
-                                const state st = state::optimization)
-                        :       m_epochs(epochs),
-                                m_epoch_size(epoch_size),
-                                m_ulog(ulog),
-                                m_tlog(tlog),
-                                m_state(st)
+                                const state st = state::optimization) :
+                        m_epochs(epochs),
+                        m_epoch_size(epoch_size),
+                        m_ulog(ulog),
+                        m_tlog(tlog),
+                        m_state(st)
                 {
                 }
 
