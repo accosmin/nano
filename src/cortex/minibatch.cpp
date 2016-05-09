@@ -4,6 +4,7 @@
 #include "task_iterator.h"
 #include "thread/thread.h"
 #include "trainer_loop.hpp"
+#include "math/momentum.hpp"
 #include "text/to_string.hpp"
 #include "logger.h"
 
@@ -57,6 +58,9 @@ namespace nano
                 // optimize the model
                 vector_t x = x0;
 
+                const scalar_t momentum = 0.95;
+                momentum_vector_t<vector_t> xavg(momentum, x0.size());
+
                 for (size_t epoch = 1; epoch <= epochs; ++ epoch)
                 {
                         // optimize mini-batches in sequence
@@ -65,12 +69,13 @@ namespace nano
                                 const auto state = nano::minimize(
                                         opt_problem_t(fn_size, fn_fval, fn_grad), fn_ulog,
                                         x, optimizer, epoch_iterations, epsilon, history_size);
+                                xavg.update(state.x);
                                 x = state.x;
                                 iter.next();
                         }
 
                         // evaluate the current state
-                        lacc.set_params(x);
+                        lacc.set_params(xavg.value());
 
                         lacc.update(task, train_fold);
                         const auto train = trainer_measurement_t{lacc.value(), lacc.avg_error(), lacc.var_error()};
@@ -84,7 +89,7 @@ namespace nano
                         // OK, update the optimum state
                         const auto milis = timer.milliseconds();
                         const auto config = trainer_config_t{{"lambda", lacc.lambda()}};
-                        const auto ret = result.update(x, {milis, epoch, train, valid, test}, config);
+                        const auto ret = result.update(xavg.value(), {milis, epoch, train, valid, test}, config);
 
                         if (verbose)
                         {
