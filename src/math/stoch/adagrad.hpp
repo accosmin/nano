@@ -48,7 +48,7 @@ namespace nano
                         // second-order gradient momentum
                         average_vector_t<tvector> gavg(x0.size());
 
-                        const auto op_iter = [&] (tstate& cstate, const std::size_t)
+                        const auto op_iter = [&] (tstate& cstate)
                         {
                                 // learning rate
                                 const tscalar alpha = alpha0;

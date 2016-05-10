@@ -46,10 +46,10 @@ namespace nano
                         // learning rate schedule
                         lrate_t<tscalar> lrate(alpha0, decay);
 
-                        const auto op_iter = [&] (tstate& cstate, const std::size_t iter)
+                        const auto op_iter = [&] (tstate& cstate)
                         {
                                 // learning rate
-                                const tscalar alpha = lrate.get(iter);
+                                const tscalar alpha = lrate.get();
 
                                 // descent direction
                                 cstate.d = -cstate.g;

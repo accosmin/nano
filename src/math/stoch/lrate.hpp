@@ -22,9 +22,10 @@ namespace nano
                 ///
                 /// \brief constructor
                 ///
-                lrate_t(const tscalar alpha0, const tscalar decay)
-                        :       m_alpha0(alpha0),
-                                m_decay(decay)
+                lrate_t(const tscalar alpha0, const tscalar decay) :
+                        m_alpha0(alpha0),
+                        m_decay(decay),
+                        m_iteration(0)
                 {
                         assert(decay >= tscalar(0));
                         assert(decay <= tscalar(1));
@@ -34,20 +35,15 @@ namespace nano
                 ///
                 /// \brief update the current learning rate for the given iteration
                 ///
-                template
-                <
-                        typename tsize
-                >
-                tscalar get(const tsize iter) const
+                tscalar get()
                 {
-                        const tscalar base = static_cast<tscalar>(iter + 1);
-
-                        return m_alpha0 / static_cast<tscalar>(std::pow(base, m_decay));
+                        return m_alpha0 / std::pow(++ m_iteration, m_decay);
                 }
 
                 // attributes
                 tscalar         m_alpha0;
                 tscalar         m_decay;
+                tscalar         m_iteration;
         };
 
 }

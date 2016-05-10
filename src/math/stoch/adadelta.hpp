@@ -48,7 +48,7 @@ namespace nano
                         // second-order momentum of the step updates
                         momentum_vector_t<tvector> davg(momentum, x0.size());
 
-                        const auto op_iter = [&] (tstate& cstate, const std::size_t)
+                        const auto op_iter = [&] (tstate& cstate)
                         {
                                 // learning rate
                                 const tscalar alpha = 1;

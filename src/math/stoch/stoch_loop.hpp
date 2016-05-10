@@ -59,12 +59,12 @@ namespace nano
                 bstate.f = std::numeric_limits<typename tproblem::tscalar>::max();
 
                 // for each epoch ...
-                for (std::size_t e = 0, k = 1; e < params.m_epochs; ++ e)
+                for (std::size_t e = 0; e < params.m_epochs; ++ e)
                 {
                         // for each iteration ...
-                        for (std::size_t i = 0; i < params.m_epoch_size; ++ i, ++ k)
+                        for (std::size_t i = 0; i < params.m_epoch_size; ++ i)
                         {
-                                optimizer(cstate, k);
+                                optimizer(cstate);
                                 xavg.update(cstate.x);
                         }
 

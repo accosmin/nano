@@ -52,7 +52,7 @@ namespace nano
                         // second-order momentum of the gradient
                         momentum_vector_t<tvector> v(beta2, x0.size());
 
-                        const auto op_iter = [&] (tstate& cstate, const std::size_t)
+                        const auto op_iter = [&] (tstate& cstate)
                         {
                                 // learning rate
                                 const tscalar alpha = alpha0;

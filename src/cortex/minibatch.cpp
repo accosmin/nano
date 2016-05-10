@@ -87,7 +87,7 @@ namespace nano
                         return !nano::is_done(ret);
                 };
 
-                const auto op = [&] (opt_state_t& state, const size_t)
+                const auto op = [&] (opt_state_t& state)
                 {
                         state = nano::minimize(
                                 opt_problem_t(fn_size, fn_fval, fn_grad), nullptr,

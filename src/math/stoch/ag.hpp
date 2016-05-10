@@ -90,10 +90,10 @@ namespace nano
                                 return ptheta * (1 - ptheta) / (ptheta * ptheta + ctheta);
                         };
 
-                        const auto op_iter = [&] (tstate& cstate, const std::size_t iter)
+                        const auto op_iter = [&] (tstate& cstate)
                         {
                                 // learning rate
-                                const tscalar alpha = lrate.get(iter);
+                                const tscalar alpha = lrate.get();
 
                                 // momentum
                                 ctheta = get_theta(ptheta, q);

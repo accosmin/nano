@@ -48,10 +48,10 @@ namespace nano
                         // first-order momentum of the update
                         momentum_vector_t<tvector> davg(momentum, x0.size());
 
-                        const auto op_iter = [&] (tstate& cstate, const std::size_t iter)
+                        const auto op_iter = [&] (tstate& cstate)
                         {
                                 // learning rate
-                                const tscalar alpha = lrate.get(iter);
+                                const tscalar alpha = lrate.get();
 
                                 // descent direction
                                 davg.update(-alpha * cstate.g);
