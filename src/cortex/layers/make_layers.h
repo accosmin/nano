@@ -24,7 +24,7 @@ namespace nano
         template <typename tsize>
         string_t make_output_layer(const tsize dims)
         {
-                return make_affine_layer(dims, "");
+                return make_affine_layer(dims, "act-snorm");
         }
 
         template <typename tsize>
