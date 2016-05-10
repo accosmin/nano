@@ -79,6 +79,16 @@ NANO_CASE(scalar)
         test::check_momentum<double>(0.9, 253);
 }
 
+NANO_CASE(finite)
+{
+        nano::momentum_scalar_t<double> mom(0.1);
+        for (auto i = 0; i < 100000; ++ i)
+        {
+                mom.update(0.0001 * i);
+                NANO_CHECK(std::isfinite(mom.value()));
+        }
+}
+
 NANO_CASE(vector)
 {
         test::check_momentum<Eigen::VectorXd>(13, 0.1, 98);
