@@ -7,7 +7,8 @@ list(APPEND libmath_sources
         ${CMAKE_CURRENT_SOURCE_DIR}/lrate.hpp
         ${CMAKE_CURRENT_SOURCE_DIR}/params.hpp
         ${CMAKE_CURRENT_SOURCE_DIR}/sg.hpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/sgm.hpp)
+        ${CMAKE_CURRENT_SOURCE_DIR}/sgm.hpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/sng.hpp)
 
 set(libmath_sources "${libmath_sources}" PARENT_SCOPE)
 

@@ -28,10 +28,10 @@ namespace nano
                 const auto epoch_iterations = size_t(4);
                 const auto history_size = epoch_iterations;
 
-                minibatch_iterator_t<shuffle::on> iter(task, train_fold, batch_size);
-
                 size_t epoch = 0;
                 trainer_result_t result;
+
+                minibatch_iterator_t<shuffle::on> iter(task, train_fold, batch_size);
 
                 // construct the optimization problem
                 const auto fn_size = [&] ()
@@ -54,7 +54,7 @@ namespace nano
                         return gacc.value();
                 };
 
-                const auto fn_ulog = [&] (const opt_state_t& state, const auto&)
+                const auto fn_ulog = [&] (const opt_state_t& state, const auto& sconfig)
                 {
                         // evaluate the current state
                         lacc.set_params(state.x);
@@ -68,9 +68,9 @@ namespace nano
                         lacc.update(task, test_fold);
                         const auto test = trainer_measurement_t{lacc.value(), lacc.avg_error(), lacc.var_error()};
 
-                        // OK, update the optimum state
+                        // OK, update the optimum solution
                         const auto milis = timer.milliseconds();
-                        const auto config = trainer_config_t{{"lambda", lacc.lambda()}};
+                        const auto config = nano::append(sconfig, "lambda", lacc.lambda());
                         const auto ret = result.update(state.x, {milis, ++epoch, train, valid, test}, config);
 
                         if (verbose)

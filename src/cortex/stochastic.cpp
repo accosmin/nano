@@ -15,7 +15,7 @@ namespace nano
                 const vector_t& x0, const stoch_optimizer optimizer, const size_t epochs,
                 const bool verbose)
         {
-                const nano::timer_t timer;
+                const timer_t timer;
 
                 const auto train_fold = fold_t{fold, protocol::train};
                 const auto valid_fold = fold_t{fold, protocol::valid};

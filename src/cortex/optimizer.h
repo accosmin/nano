@@ -27,6 +27,7 @@ namespace nano
                 return
                 {
                         { nano::stoch_optimizer::SG,           "sg" },
+                        { nano::stoch_optimizer::SNG,          "sng" },
                         { nano::stoch_optimizer::SGM,          "sgm" },
                         { nano::stoch_optimizer::AG,           "ag" },
                         { nano::stoch_optimizer::AGFR,         "agfr" },
