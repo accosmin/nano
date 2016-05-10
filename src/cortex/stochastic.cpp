@@ -105,7 +105,7 @@ namespace nano
                         return !nano::is_done(ret);
                 };
 
-                // optimize the model
+                // assembly optimization problem & optimize the model
                 nano::minimize(
                         opt_problem_t(fn_size, fn_fval, fn_grad), fn_ulog, fn_tlog,
                         x0, optimizer, epochs, epoch_size);

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstddef>
+#include <functional>
 #include "math/lsearch_types.h"
 
 namespace nano

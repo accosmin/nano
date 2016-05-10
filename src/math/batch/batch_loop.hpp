@@ -10,12 +10,12 @@ namespace nano
         template
         <
                 typename tproblem,      ///< optimization problem
-                typename toperator      ///< operator to call for each optimization iteration
+                typename toptimizer     ///< operator to call for each optimization iteration
         >
         auto batch_loop(
                 const batch_params_t<tproblem>& params,
                 const typename batch_params_t<tproblem>::tstate& istate,
-                const toperator& op)
+                const toptimizer& optimizer)
         {
                 // current state
                 auto cstate = istate;
@@ -29,7 +29,7 @@ namespace nano
                                 break;
                         }
 
-                        if (!op(cstate, i))
+                        if (!optimizer(cstate, i))
                         {
                                 break;
                         }

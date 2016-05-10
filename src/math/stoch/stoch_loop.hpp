@@ -35,16 +35,14 @@ namespace nano
         template
         <
                 typename tproblem,      ///< optimization problem
-                typename toperator,     ///< operator to call for each optimization iteration
-                typename tstate = typename stoch_params_t<tproblem>::tstate,
-                typename tconfig = typename stoch_params_t<tproblem>::tconfig
+                typename toptimizer     ///< operator to call for each optimization iteration
         >
         auto stoch_loop(
                 const tproblem& problem,
                 const stoch_params_t<tproblem>& params,
-                const tstate& istate,
-                const toperator& op,
-                const tconfig& config = tconfig())
+                const typename stoch_params_t<tproblem>::tstate& istate,
+                const toptimizer& optimizer,
+                const typename stoch_params_t<tproblem>::tconfig& config)
         {
                 // current state
                 auto cstate = istate;
@@ -66,7 +64,7 @@ namespace nano
                         // for each iteration ...
                         for (std::size_t i = 0; i < params.m_epoch_size; ++ i, ++ k)
                         {
-                                op(cstate, k);
+                                optimizer(cstate, k);
                                 xavg.update(cstate.x);
                         }
 

@@ -49,12 +49,12 @@ namespace nano
                 explicit problem_t(
                         const topsize& opsize,
                         const topfval& opfval,
-                        const topgrad& opgrad)
-                        :       m_opsize(opsize),
-                                m_opfval(opfval),
-                                m_opgrad(opgrad),
-                                m_fcalls(0),
-                                m_gcalls(0)
+                        const topgrad& opgrad) :
+                        m_opsize(opsize),
+                        m_opfval(opfval),
+                        m_opgrad(opgrad),
+                        m_fcalls(0),
+                        m_gcalls(0)
                 {
                 }
 
@@ -68,8 +68,8 @@ namespace nano
                 >
                 explicit problem_t(
                         const topsize& opsize,
-                        const topfval& opfval)
-                        :       problem_t(opsize, opfval, topgrad())
+                        const topfval& opfval) :
+                        problem_t(opsize, opfval, topgrad())
                 {
                 }
 
