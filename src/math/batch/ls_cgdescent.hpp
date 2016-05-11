@@ -28,10 +28,10 @@ namespace nano
                 ///
                 /// \brief constructor
                 ///
-                ls_cgdescent_t()
-                        :       m_sumQ(0),
-                                m_sumC(0),
-                                m_approx(false)
+                ls_cgdescent_t() :
+                        m_sumQ(0),
+                        m_sumC(0),
+                        m_approx(false)
                 {
                 }
 

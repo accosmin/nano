@@ -26,10 +26,10 @@ namespace nano
                 /// \brief constructor
                 ///
                 ls_strategy_t(  const ls_strategy strategy,
-                                const tscalar c1 = 1e-4, const tscalar c2 = 0.1)
-                        :       m_strategy(strategy),
-                                m_c1(c1),
-                                m_c2(c2)
+                                const tscalar c1 = 1e-4, const tscalar c2 = 0.1) :
+                        m_strategy(strategy),
+                        m_c1(c1),
+                        m_c2(c2)
                 {
                 }
 

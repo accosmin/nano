@@ -19,11 +19,11 @@ namespace nano
                 ///
                 /// \brief constructor
                 ///
-                cubic_t(const tscalar a, const tscalar b, const tscalar c, const tscalar d)
-                        :       m_a(a),
-                                m_b(b),
-                                m_c(c),
-                                m_d(d)
+                cubic_t(const tscalar a, const tscalar b, const tscalar c, const tscalar d) :
+                        m_a(a),
+                        m_b(b),
+                        m_c(c),
+                        m_d(d)
                 {
                 }
 
@@ -33,12 +33,11 @@ namespace nano
                 ///     [x1, f1 = f(x1), g1 = f'(x1)]
                 ///
                 cubic_t(const tscalar x0, const tscalar f0, const tscalar g0,
-                        const tscalar x1, const tscalar f1, const tscalar g1)
-                        :       cubic_t(
-                                std::numeric_limits<tscalar>::infinity(),
-                                std::numeric_limits<tscalar>::infinity(),
-                                std::numeric_limits<tscalar>::infinity(),
-                                std::numeric_limits<tscalar>::infinity())
+                        const tscalar x1, const tscalar f1, const tscalar g1) : cubic_t(
+                        std::numeric_limits<tscalar>::infinity(),
+                        std::numeric_limits<tscalar>::infinity(),
+                        std::numeric_limits<tscalar>::infinity(),
+                        std::numeric_limits<tscalar>::infinity())
 
                 {
                         if (    (x0 - x1) != tscalar(0) &&

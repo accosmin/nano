@@ -161,8 +161,8 @@ namespace nano
         charset_task_t::charset_task_t(const string_t& configuration) : mem_vision_task_t(
                 "charset",
                 nano::from_params<color_mode>(configuration, "color", color_mode::rgb),
-                nano::clamp(nano::from_params<tensor_size_t>(configuration, "irows", 32), 16, 128),
-                nano::clamp(nano::from_params<tensor_size_t>(configuration, "icols", 32), 16, 128),
+                nano::clamp(nano::from_params<tensor_size_t>(configuration, "irows", 32), 12, 128),
+                nano::clamp(nano::from_params<tensor_size_t>(configuration, "icols", 32), 12, 128),
                 nano::osize(nano::from_params<charset>(configuration, "type", charset::digit)),
                 1),
                 m_charset(nano::from_params<charset>(configuration, "type", charset::digit)),

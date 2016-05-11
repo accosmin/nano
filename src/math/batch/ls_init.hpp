@@ -21,12 +21,12 @@ namespace nano
                 ///
                 /// \brief constructor
                 ///
-                explicit ls_init_t(ls_initializer type)
-                        :       m_type(type),
-                                m_first(true),
-                                m_prevf(0),
-                                m_prevt0(1),
-                                m_prevdg(1)
+                explicit ls_init_t(ls_initializer type) :
+                        m_type(type),
+                        m_first(true),
+                        m_prevf(0),
+                        m_prevt0(1),
+                        m_prevdg(1)
                 {
                 }
 

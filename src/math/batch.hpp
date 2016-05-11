@@ -16,7 +16,7 @@ namespace nano
         template
         <
                 typename tproblem,      ///< optimization problem
-                typename topulog,       ///< logging operator (update)
+                typename topulog,       ///< logging operator
                 typename tvector = typename tproblem::tvector,
                 typename tscalar = typename tproblem::tscalar
         >

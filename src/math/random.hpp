@@ -25,11 +25,11 @@ namespace nano
                 /// \brief constructor
                 ///
                 explicit random_t(
-                         tscalar min = std::numeric_limits<tscalar>::lowest(),
-                         tscalar max = std::numeric_limits<tscalar>::max())
-                        :       m_gen(std::random_device()()),
-                                m_die(std::min(min, max),
-                                      std::max(min, max))
+                        tscalar min = std::numeric_limits<tscalar>::lowest(),
+                        tscalar max = std::numeric_limits<tscalar>::max()) :
+                        m_gen(std::random_device()()),
+                        m_die(std::min(min, max),
+                        std::max(min, max))
                 {
                 }
 

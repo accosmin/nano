@@ -83,10 +83,10 @@ namespace nano
                 }
 
                 // attributes
-                std::size_t             m_epochs;       ///< number of epochs
-                std::size_t             m_epoch_size;   ///< epoch size in number of iterations
-                topulog                 m_ulog;         ///< update log: (the current_state_after_each_epoch)
-                toptlog                 m_tlog;         ///< tuning log: (the current_state_after_first_epoch)
-                state                   m_state;        ///
+                std::size_t     m_epochs;               ///< number of epochs
+                std::size_t     m_epoch_size;           ///< epoch size in number of iterations
+                topulog         m_ulog;                 ///< update log: (the current_state_after_each_epoch)
+                toptlog         m_tlog;                 ///< tuning log: (the current_state_after_first_epoch)
+                state           m_state;                ///
         };
 }

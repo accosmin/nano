@@ -9,7 +9,7 @@
 
 namespace nano
 {
-        using opt_problem_t = nano::problem_t<scalar_t>;
+        using opt_problem_t = problem_t<scalar_t>;
 
         using opt_size_t = opt_problem_t::tsize;
         using opt_state_t = opt_problem_t::tstate;

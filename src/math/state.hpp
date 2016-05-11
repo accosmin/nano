@@ -1,6 +1,7 @@
 #pragma once
 
 #include <limits>
+#include <type_traits>
 #include <eigen3/Eigen/Core>
 
 namespace nano
@@ -17,7 +18,8 @@ namespace nano
         <
                 typename tscalar_,
                 typename tvector_ = Eigen::Matrix<tscalar_, Eigen::Dynamic, 1, Eigen::ColMajor>,
-                typename tsize_ = typename tvector_::Index
+                typename tsize_ = typename tvector_::Index,
+                typename tvalid_tscalar = typename std::enable_if<std::is_floating_point<tscalar_>::value>::type
         >
         struct state_t
         {

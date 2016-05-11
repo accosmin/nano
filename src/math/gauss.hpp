@@ -39,9 +39,10 @@ namespace nano
                 /// \param cutoff threshold to cut/prune the kernel
                 /// \param normalize normalize the kernel after cutoff
                 ///
-                gauss_kernel_t(tscalar sigma,
-                               tscalar cutoff = tscalar(0.01),
-                               gauss::kernel_normalization normalize = gauss::kernel_normalization::on)
+                explicit gauss_kernel_t(
+                        const tscalar sigma,
+                        const tscalar cutoff = tscalar(0.01),
+                        const gauss::kernel_normalization normalize = gauss::kernel_normalization::on)
                 {
                         setup(sigma, cutoff, normalize);
                 }

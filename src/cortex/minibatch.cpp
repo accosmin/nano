@@ -100,8 +100,7 @@ namespace nano
                 const auto params = stoch_params_t<opt_problem_t>(epochs, epoch_size, fn_ulog);
                 const auto config = stoch_params_t<opt_problem_t>::tconfig();
 
-                nano::stoch_loop(
-                        problem, params, opt_state_t(problem, x0), op, config);
+                nano::stoch_loop(problem, params, opt_state_t(problem, x0), op, config);
 
                 return result;
         }

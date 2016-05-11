@@ -18,10 +18,10 @@ namespace nano
                 ///
                 /// \brief constructor
                 ///
-                quadratic_t(const tscalar a, const tscalar b, const tscalar c)
-                        :       m_a(a),
-                                m_b(b),
-                                m_c(c)
+                quadratic_t(const tscalar a, const tscalar b, const tscalar c) :
+                        m_a(a),
+                        m_b(b),
+                        m_c(c)
                 {
                 }
 
@@ -31,11 +31,10 @@ namespace nano
                 ///     [x1, f1 = f(x1)]
                 ///
                 quadratic_t(const tscalar x0, const tscalar f0, const tscalar g0,
-                            const tscalar x1, const tscalar f1)
-                        :       quadratic_t(
-                                std::numeric_limits<tscalar>::infinity(),
-                                std::numeric_limits<tscalar>::infinity(),
-                                std::numeric_limits<tscalar>::infinity())
+                            const tscalar x1, const tscalar f1) : quadratic_t(
+                        std::numeric_limits<tscalar>::infinity(),
+                        std::numeric_limits<tscalar>::infinity(),
+                        std::numeric_limits<tscalar>::infinity())
                 {
                         if ((x0 - x1) != tscalar(0))
                         {

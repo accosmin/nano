@@ -12,8 +12,6 @@ namespace nano
         template
         <
                 typename tscalar_,
-
-                /// disable for invalid types!
                 typename tvalid_tscalar = typename std::enable_if<std::is_floating_point<tscalar_>::value>::type
         >
         class problem_t

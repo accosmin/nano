@@ -29,7 +29,7 @@ namespace nano
 
                 NANO_MAKE_CLONABLE(charset_task_t,
                         "synthetic character classification: type=digit[lalpha,ualpha,alpha,alphanum],"\
-                        "color=rgb[,luma,rgba],irows=32[16,128],icols=32[16,128],count=1000[100,1M]")
+                        "color=rgb[,luma,rgba],irows=32[12,128],icols=32[12,128],count=1000[100,1M]")
 
                 ///
                 /// \brief constructor
