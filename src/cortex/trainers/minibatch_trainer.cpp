@@ -22,7 +22,7 @@ namespace nano
                 model.random_params();
 
                 // parameters
-                const auto epochs = clamp(from_params<size_t>(configuration(), "epoch", 16), 1, 1024);
+                const auto epochs = clamp(from_params<size_t>(configuration(), "epochs", 16), 1, 1024);
                 const auto epsilon = clamp(from_params<scalar_t>(configuration(), "eps", 1e-6), 1e-8, 1e-3);
                 const auto optimizer = from_string<batch_optimizer>(from_params<string_t>(configuration(), "opt", "cgd"));
 

@@ -133,7 +133,8 @@ namespace nano
                 return os << "train=" << state.m_train
                           << ", valid=" << state.m_valid
                           << ", test=" << state.m_test
-                          << ", " << result.optimum_config() << ",epoch=" << result.optimum_epoch();
+                          << ", " << result.optimum_config() << ",epoch=" << result.optimum_epoch()
+                          << ", speed=" << convergence_speed(result.optimum_states()) << "/s";
         }
 }
 

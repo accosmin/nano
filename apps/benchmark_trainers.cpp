@@ -1,13 +1,11 @@
 #include "text/table.h"
 #include "text/cmdline.h"
-#include "cortex/batch.h"
 #include "cortex/cortex.h"
 #include "cortex/logger.h"
 #include "thread/thread.h"
 #include "cortex/measure.hpp"
-#include "cortex/minibatch.h"
-#include "cortex/stochastic.h"
-#include "cortex/accumulator.h"
+#include "cortex/optimizer.h"
+#include "text/to_params.hpp"
 #include "text/concatenate.hpp"
 #include "cortex/tasks/task_charset.h"
 #include "cortex/layers/make_layers.h"
@@ -54,7 +52,7 @@ static void test_optimizer(model_t& model, const string_t& name, const string_t&
                 speeds(opt_speed);
                 timings(static_cast<scalar_t>(timer.seconds().count()));
 
-                log_info() << "<<< " << name << ": " << result << ", speed = " << opt_speed << "/s.";
+                log_info() << "<<< " << name << ": " << result << ".";
 
                 const auto path = basepath + "-trial" + nano::to_string(i) + ".state";
 
@@ -77,16 +75,16 @@ static void evaluate(model_t& model,
         const string_t& basename, const string_t& basepath, nano::table_t& table)
 {
         const scalar_t epsilon = 1e-6;
-        const size_t n_threads = thread::concurrency();
-        const bool verbose = true;
+        const size_t nthreads = thread::concurrency();
 
         for (auto optimizer : batch_optimizers)
         {
                 const auto optname = "batch-" + nano::to_string(optimizer);
                 test_optimizer(model, basename + optname, basepath + optname, table, x0s, [&] ()
                 {
-                        return  nano::batch_train(model, task, fold,
-                                n_threads, loss, criterion, optimizer, iterations, epsilon, verbose);
+                        const auto params = nano::to_params("opt", optimizer, "iters", iterations, "eps", epsilon);
+                        const auto trainer = nano::get_trainers().get("batch", params);
+                        return trainer->train(task, fold, nthreads, loss, criterion, model);
                 });
         }
 
@@ -94,9 +92,10 @@ static void evaluate(model_t& model,
         {
                 const auto optname = "minibatch-" + nano::to_string(optimizer);
                 test_optimizer(model, basename + optname, basepath + optname, table, x0s, [&] ()
-                {
-                        return  nano::minibatch_train(model, task, fold,
-                                n_threads, loss, criterion, optimizer, iterations, epsilon, verbose);
+               {
+                        const auto params = nano::to_params("opt", optimizer, "epochs", iterations, "eps", epsilon);
+                        const auto trainer = nano::get_trainers().get("minibatch", params);
+                        return trainer->train(task, fold, nthreads, loss, criterion, model);
                 });
         }
 
@@ -105,8 +104,9 @@ static void evaluate(model_t& model,
                 const auto optname = "stochastic-" + nano::to_string(optimizer);
                 test_optimizer(model, basename + optname, basepath + optname, table, x0s, [&] ()
                 {
-                        return  nano::stochastic_train(model, task, fold,
-                                n_threads, loss, criterion, optimizer, iterations, verbose);
+                        const auto params = nano::to_params("opt", optimizer, "epochs", iterations);
+                        const auto trainer = nano::get_trainers().get("stochastic", params);
+                        return trainer->train(task, fold, nthreads, loss, criterion, model);
                 });
         }
 }
@@ -269,7 +269,7 @@ int main(int argc, const char* argv[])
 
                         const auto loss = nano::get_losses().get(iloss);
 
-                        nano::table_t table(netname +"-" + iloss);
+                        nano::table_t table(netname + "-" + iloss);
                         table.header() << "test error"
                                        << "convergence speed"
                                        << "time [sec]";
