@@ -52,8 +52,6 @@ static void test_optimizer(model_t& model, const string_t& name, const string_t&
                 speeds(opt_speed);
                 timings(static_cast<scalar_t>(timer.seconds().count()));
 
-                log_info() << "<<< " << name << ": " << result << ".";
-
                 const auto path = basepath + "-trial" + nano::to_string(i) + ".state";
 
                 const auto opt_states = result.optimum_states();

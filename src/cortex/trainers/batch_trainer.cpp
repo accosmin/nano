@@ -3,6 +3,7 @@
 #include "math/clamp.hpp"
 #include "batch_trainer.h"
 #include "cortex/logger.h"
+#include "text/to_string.hpp"
 #include "text/from_params.hpp"
 
 namespace nano
@@ -30,7 +31,7 @@ namespace nano
                 const auto result = batch_train(model, task, fold, nthreads, loss, criterion,
                         optimizer, iterations, epsilon);
 
-                log_info() << "<<< " << result << ".";
+                log_info() << "<<< batch-" << to_string(optimizer) << ": " << result << ".";
 
                 // OK
                 if (result.valid())

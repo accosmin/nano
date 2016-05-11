@@ -1,6 +1,7 @@
 #include "cortex/model.h"
 #include "math/clamp.hpp"
 #include "cortex/logger.h"
+#include "text/to_string.hpp"
 #include "cortex/stochastic.h"
 #include "stochastic_trainer.h"
 #include "text/from_params.hpp"
@@ -29,7 +30,7 @@ namespace nano
                 const auto result = stochastic_train(model, task, fold, nthreads, loss, criterion,
                         optimizer, epochs);
 
-                log_info() << "<<< " << result << ".";
+                log_info() << "<<< stoch-" << to_string(optimizer) << ": " << result << ".";
 
                 // OK
                 if (result.valid())

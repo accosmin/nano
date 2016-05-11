@@ -1,6 +1,7 @@
 #include "math/clamp.hpp"
 #include "cortex/model.h"
 #include "cortex/logger.h"
+#include "text/to_string.hpp"
 #include "cortex/minibatch.h"
 #include "minibatch_trainer.h"
 #include "text/from_params.hpp"
@@ -30,7 +31,7 @@ namespace nano
                 const auto result = minibatch_train(model, task, fold, nthreads, loss, criterion,
                         optimizer, epochs, epsilon);
 
-                log_info() << "<<< " << result << ".";
+                log_info() << "<<< minibatch-" << to_string(optimizer) << ": " << result << ".";
 
                 // OK
                 if (result.valid())
