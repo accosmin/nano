@@ -5,12 +5,16 @@
 namespace nano
 {
         ///
-        /// \brief batch optimization loop
+        /// \brief batch optimization loop running until:
+        ///     - convergence is achieved (critical point, possiblly a local/global minima) or
+        ///     - the maximum number of iterations is reached or
+        ///     - the user canceled the optimization (using the logging function) or
+        ///     - the optimizer failed (e.g. line-search failed)
         ///
         template
         <
                 typename tproblem,      ///< optimization problem
-                typename toptimizer     ///< operator to call for each optimization iteration
+                typename toptimizer     ///< optimization algorithm
         >
         auto batch_loop(
                 const batch_params_t<tproblem>& params,

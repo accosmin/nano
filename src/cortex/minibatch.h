@@ -17,5 +17,5 @@ namespace nano
         NANO_PUBLIC trainer_result_t minibatch_train(
                 const model_t&, const task_t&, const size_t fold_t, const size_t nthreads,
                 const loss_t&, const criterion_t& criterion,
-                batch_optimizer optimizer, size_t epochs, scalar_t epsilon, bool verbose = true);
+                const batch_optimizer, const size_t epochs, const scalar_t epsilon, const bool verbose = true);
 }

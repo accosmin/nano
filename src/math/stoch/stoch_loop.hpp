@@ -30,12 +30,15 @@ namespace nano
         }
 
         ///
-        /// \brief stochastic optimization loop.
+        /// \brief stochastic optimization loop until:
+        ///     - the maximum number of iterations/epochs is reached or
+        ///     - the user canceled the optimization (using the logging function)
+        /// NB: convergence to a critical point is not guaranteed in general.
         ///
         template
         <
                 typename tproblem,      ///< optimization problem
-                typename toptimizer     ///< operator to call for each optimization iteration
+                typename toptimizer     ///< optimization method
         >
         auto stoch_loop(
                 const tproblem& problem,

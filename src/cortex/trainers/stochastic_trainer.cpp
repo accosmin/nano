@@ -22,13 +22,12 @@ namespace nano
                 model.random_params();
 
                 // parameters
-                const auto epochs = nano::clamp(nano::from_params<size_t>(configuration(), "epoch", 16), 1, 1024);
-
-                const auto optimizer = nano::from_string<nano::stoch_optimizer>
-                        (nano::from_params<string_t>(configuration(), "opt", "sg"));
+                const auto epochs = clamp(from_params<size_t>(configuration(), "epoch", 16), 1, 1024);
+                const auto optimizer = from_string<stoch_optimizer>(from_params<string_t>(configuration(), "opt", "sg"));
 
                 // train the model
-                const auto result = stochastic_train(model, task, fold, nthreads, loss, criterion, optimizer, epochs);
+                const auto result = stochastic_train(model, task, fold, nthreads, loss, criterion,
+                        optimizer, epochs);
 
                 log_info() << "<<< " << result << ".";
 
