@@ -1,6 +1,7 @@
 #include "unit_test.hpp"
 #include "text/align.hpp"
 #include "text/algorithm.h"
+#include "text/to_params.hpp"
 #include "text/from_params.hpp"
 #include "text/concatenate.hpp"
 #include <list>
@@ -185,6 +186,16 @@ NANO_CASE(from_params)
         NANO_CHECK_EQUAL(nano::from_params(config, "param1", 2.0), 1.7);
         NANO_CHECK_EQUAL(nano::from_params(config, "param2", 4343), 3);
         NANO_CHECK_EQUAL(nano::from_params(config, "paramx", 2.0), 2.0);
+}
+
+NANO_CASE(to_params)
+{
+        const auto param1 = 7;
+        const auto param2 = 42;
+        const auto config = nano::to_params("param1", param1, "param2", param2);
+
+        NANO_CHECK_EQUAL(nano::from_params(config, "param1", 34243), param1);
+        NANO_CHECK_EQUAL(nano::from_params(config, "param2", 32322), param2);
 }
 
 NANO_END_MODULE()

@@ -11,6 +11,7 @@ set(libtext_sources
         ${CMAKE_CURRENT_SOURCE_DIR}/enum_string.hpp
         ${CMAKE_CURRENT_SOURCE_DIR}/from_params.hpp
         ${CMAKE_CURRENT_SOURCE_DIR}/from_string.hpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/to_params.hpp
         ${CMAKE_CURRENT_SOURCE_DIR}/to_string.hpp
         ${CMAKE_CURRENT_SOURCE_DIR}/table.h
         ${CMAKE_CURRENT_SOURCE_DIR}/table.cpp
@@ -28,4 +29,4 @@ install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
         FILES_MATCHING PATTERN "*.h" PATTERN "*.hpp")
 
 
-                
+
