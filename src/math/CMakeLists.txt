@@ -13,8 +13,6 @@ set(libmath_sources
         ${CMAKE_CURRENT_SOURCE_DIR}/quadratic.hpp
         ${CMAKE_CURRENT_SOURCE_DIR}/random.hpp
         ${CMAKE_CURRENT_SOURCE_DIR}/stats.hpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/usampling.hpp
-
         ${CMAKE_CURRENT_SOURCE_DIR}/batch.hpp
         ${CMAKE_CURRENT_SOURCE_DIR}/batch_types.h
         ${CMAKE_CURRENT_SOURCE_DIR}/lsearch_types.h
