@@ -1,4 +1,5 @@
 #include "math/cast.hpp"
+#include "text/align.hpp"
 #include "cortex/logger.h"
 #include "text/algorithm.h"
 #include "math/numeric.hpp"
@@ -9,16 +10,16 @@
 
 namespace nano
 {
-        forward_network_t::forward_network_t(const string_t& parameters)
-                :       model_t(parameters)
+        forward_network_t::forward_network_t(const string_t& parameters) :
+                model_t(parameters)
         {
         }
 
-        forward_network_t::forward_network_t(const forward_network_t& other)
-                :       model_t(other),
-                        m_layers(other.m_layers),
-                        m_gparam(other.m_gparam),
-                        m_odata(other.m_odata)
+        forward_network_t::forward_network_t(const forward_network_t& other) :
+                model_t(other),
+                m_layers(other.m_layers),
+                m_gparam(other.m_gparam),
+                m_odata(other.m_odata)
         {
                 for (size_t l = 0; l < n_layers(); ++ l)
                 {
@@ -222,10 +223,13 @@ namespace nano
                 {
                         const rlayer_t& layer = m_layers[l];
 
-                        log_info() << "forward network [" << (l + 1) << "/" << m_layers.size() << "]: "
-                                   << "[" << layer_ids[l] << "] "
-                                   << "(" << layer->idims() << "x" << layer->irows() << "x" << layer->icols() << ") -> "
-                                   << "(" << layer->odims() << "x" << layer->orows() << "x" << layer->ocols() << ").";
+                        log_info()
+                                << "forward network [" << align(to_string(l + 1), 2, alignment::right, '0')
+                                << "/" << align(to_string(m_layers.size()), 2, alignment::right, '0') << "]: "
+                                << "[" << align(layer_ids[l], 12, alignment::right, '.') << "] "
+                                << "in(" << layer->idims() << "x" << layer->irows() << "x" << layer->icols() << ") -> "
+                                << "out(" << layer->odims() << "x" << layer->orows() << "x" << layer->ocols() << ") == "
+                                << layer->psize() << " parameters.";
                 }
         }
 

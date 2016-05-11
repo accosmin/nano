@@ -250,7 +250,7 @@ int main(int argc, const char* argv[])
                 log_info() << "<<< running network [" << network << "] ...";
 
                 const auto model = nano::get_models().get("forward-network", network);
-                model->resize(task, true);
+                model->resize(task, false);
 
                 // generate fixed random starting points
                 vectors_t x0s(trials);
