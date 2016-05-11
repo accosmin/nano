@@ -212,7 +212,7 @@ int main(int argc, const char* argv[])
 
         const auto convnet2 =
                 make_conv_pool_layer(16, 5, 5, 1, activation, pooling) +
-                make_conv_layer(32, 5, 5, 2);
+                make_conv_layer(32, 3, 3, 2);
 
         const auto convnet3 =
                 make_conv_layer(16, 5, 5, 1, activation) +

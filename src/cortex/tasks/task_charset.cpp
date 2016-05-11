@@ -5,6 +5,7 @@
 #include "math/random.hpp"
 #include "tensor/numeric.hpp"
 #include "text/to_string.hpp"
+#include "text/to_params.hpp"
 #include "text/from_params.hpp"
 #include "tensor/algorithm.hpp"
 #include "vision/warp.h"
@@ -173,9 +174,7 @@ namespace nano
 
         charset_task_t::charset_task_t(const charset type, const color_mode mode,
                 const tensor_size_t irows, const tensor_size_t icols, const size_t count) :
-                charset_task_t(
-                "color=" + to_string(mode) + ",irows=" + to_string(irows) + ",icols=" + to_string(icols) +
-                ",type=" + to_string(type) + ",count=" + to_string(count))
+                charset_task_t(to_params("color", mode, "irows", irows, "icols", icols, "type", type, "count", count))
         {
         }
 

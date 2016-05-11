@@ -2,7 +2,6 @@
 #include "math/abs.hpp"
 #include "cortex/cortex.h"
 #include "math/epsilon.hpp"
-#include "text/to_string.hpp"
 #include "cortex/optimizer.h"
 #include "cortex/accumulator.h"
 #include "cortex/layers/make_layers.h"
@@ -13,7 +12,7 @@ NANO_CASE(evaluate)
 {
         using namespace nano;
 
-        const auto task = nano::get_tasks().get("affine", "idims=2,irows=5,icols=5,osize=2,count=20");
+        const auto task = get_tasks().get("affine", to_params("idims", 2, "irows", 5, "icols", 5, "osize", 2, "count", 20));
         NANO_CHECK_EQUAL(task->load(), true);
 
         const auto cmd_model = make_affine_layer(3) + make_output_layer(task->osize());
