@@ -4,6 +4,7 @@
 #include "task_iterator.h"
 #include "thread/thread.h"
 #include "trainer_loop.hpp"
+#include "math/numeric.hpp"
 #include "text/to_string.hpp"
 #include "math/stoch/stoch_loop.hpp"
 #include "logger.h"
@@ -24,7 +25,7 @@ namespace nano
 
                 const auto train_size = task.n_samples(train_fold);
                 const auto batch_size = 32 * thread::concurrency();
-                const auto epoch_size = (train_size + batch_size - 1) / batch_size;
+                const auto epoch_size = idiv(train_size, batch_size);
                 const auto epoch_iterations = size_t(4);
                 const auto history_size = epoch_iterations;
 

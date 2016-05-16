@@ -168,18 +168,18 @@ NANO_CASE(multi_layer_models)
                 make_affine_layer(5, "act-splus"));
 
         test_model(
-                make_conv_pool_layer(7, 3, 3, 1, "act-snorm", "pool-soft") +
-                make_conv_layer(5, 3, 3, 2, "act-splus") +
+                make_conv_pool_layer(8, 3, 3, 1, "act-snorm", "pool-soft") +
+                make_conv_layer(6, 3, 3, 2, "act-splus") +
                 make_affine_layer(5, "act-splus"));
 
         test_model(
                 make_conv_pool_layer(8, 3, 3, 1, "act-snorm", "pool-full") +
-                make_conv_layer(5, 3, 3, 2, "act-splus") +
+                make_conv_layer(6, 3, 3, 2, "act-splus") +
                 make_affine_layer(5, "act-splus"));
 
         test_model(
                 make_conv_pool_layer(9, 3, 3, 1, "act-snorm", "pool-soft") +
-                make_conv_layer(5, 3, 3, 3, "act-splus") +
+                make_conv_layer(6, 3, 3, 3, "act-splus") +
                 make_affine_layer(5, "act-splus"));
 }
 

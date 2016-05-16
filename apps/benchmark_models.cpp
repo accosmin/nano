@@ -3,8 +3,9 @@
 #include "cortex/class.h"
 #include "cortex/cortex.h"
 #include "math/clamp.hpp"
-#include "math/random.hpp"
 #include "thread/thread.h"
+#include "math/random.hpp"
+#include "math/numeric.hpp"
 #include "tensor/numeric.hpp"
 #include "cortex/measure.hpp"
 #include "cortex/accumulator.h"
@@ -130,8 +131,8 @@ int main(int argc, const char *argv[])
         const auto criterion = nano::get_criteria().get("l2n-reg");
 
         // construct tables to compare models
-        nano::table_t ftable("model-forward [ms]");
-        nano::table_t btable("model-backward [ms]");
+        nano::table_t ftable("model-forward [ms] / 1000 samples");
+        nano::table_t btable("model-backward [ms] / 1000 samples");
 
         for (size_t nthreads = cmd_min_nthreads; nthreads <= cmd_max_nthreads; ++ nthreads)
         {
@@ -174,7 +175,7 @@ int main(int argc, const char *argv[])
                                 log_info() << "<<< processed [" << lacc.count()
                                            << "] forward samples in " << milis.count() << " ms.";
 
-                                frow << milis.count();
+                                frow << idiv(static_cast<size_t>(milis.count()) * 1000, lacc.count());
                         }
 
                         if (cmd_backward)
@@ -191,7 +192,7 @@ int main(int argc, const char *argv[])
                                 log_info() << "<<< processed [" << gacc.count()
                                            << "] backward samples in " << milis.count() << " ms.";
 
-                                brow << milis.count();
+                                brow << idiv(static_cast<size_t>(milis.count()) * 1000, gacc.count());
                         }
                 }
 

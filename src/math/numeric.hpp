@@ -5,11 +5,8 @@ namespace nano
         ///
         /// \brief square
         ///
-        template
-        <
-                typename tvalue
-        >
-        tvalue square(tvalue value)
+        template <typename tscalar>
+        tscalar square(const tscalar value)
         {
                 return value * value;
         }
@@ -17,11 +14,8 @@ namespace nano
         ///
         /// \brief cube
         ///
-        template
-        <
-                typename tvalue
-        >
-        tvalue cube(tvalue value)
+        template <typename tscalar>
+        tscalar cube(const tscalar value)
         {
                 return value * square(value);
         }
@@ -29,13 +23,19 @@ namespace nano
         ///
         /// \brief quartic
         ///
-        template
-        <
-                typename tvalue
-        >
-        tvalue quartic(tvalue value)
+        template <typename tscalar>
+        tscalar quartic(const tscalar value)
         {
                 return square(square(value));
+        }
+
+        ///
+        /// \brief integer division with rounding
+        ///
+        template <typename tinteger, typename tinteger2>
+        tinteger idiv(const tinteger nominator, const tinteger2 denominator)
+        {
+                return (nominator + denominator - 1) / static_cast<tinteger>(denominator);
         }
 }
 

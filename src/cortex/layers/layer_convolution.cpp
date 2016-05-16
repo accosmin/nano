@@ -52,7 +52,7 @@ namespace nano
                 }
 
                 // check input connectivity factor
-                if (kconn > 1 && idims < 2 * kconn)
+                if ((idims % kconn) || (odims % kconn))
                 {
                         log_error() << "convolution layer: invalid input connectivity factor!";
                         throw std::invalid_argument("invalid configuration for the convolution layer");
@@ -61,7 +61,7 @@ namespace nano
                 // resize buffers
                 m_idata.resize(idims, irows, icols);
                 m_odata.resize(odims, orows, ocols);
-                m_kdata.resize(odims, (idims + kconn - 1) / kconn, krows, kcols);
+                m_kdata.resize(odims, idims / kconn, krows, kcols);
                 m_bdata.resize(odims, 1, 1);
                 m_kconn = kconn;
 

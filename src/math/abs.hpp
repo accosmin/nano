@@ -7,10 +7,7 @@ namespace nano
         ///
         /// \brief absolute value
         ///
-        template
-        <
-                typename tscalar
-        >
+        template <typename tscalar>
         tscalar abs(tscalar v)
         {
                 return std::abs(v);
