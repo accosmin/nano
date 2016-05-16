@@ -217,7 +217,7 @@ int main(int argc, const char* argv[])
                 make_conv_layer(32, 5, 5, 2, activation) +
                 make_conv_layer(64, 3, 3, 4, activation);
 
-        const string_t outlayer = make_output_layer(outputs);
+        const string_t outlayer = make_output_layer(outputs, activation);
 
         std::vector<std::pair<string_t, string_t>> networks;
         if (use_mlps)
