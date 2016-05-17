@@ -5,7 +5,7 @@
 namespace nano
 {
         ///
-        /// \brief stochastic normalized gradient (descent)
+        /// \brief (stochastic) normalized gradient descent
         ///     see "Beyond Convexity: Stochastic Quasi-Convex Optimization",
         ///     by Elan Hazan, Kfir Y. Levi, Shai Shalev-Shwartz
         ///
@@ -13,7 +13,7 @@ namespace nano
         <
                 typename tproblem               ///< optimization problem
         >
-        struct stoch_sng_t
+        struct stoch_ngd_t
         {
                 using param_t = stoch_params_t<tproblem>;
                 using tstate = typename param_t::tstate;

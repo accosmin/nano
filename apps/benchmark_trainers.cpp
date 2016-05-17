@@ -127,7 +127,7 @@ int main(int argc, const char* argv[])
         cmdline.add("", "minibatch-lbfgs",      "evaluate mini-batch optimizer LBFGS");
         cmdline.add("", "stochastic",           "evaluate stochastic optimizers");
         cmdline.add("", "stochastic-sg",        "evaluate stochastic optimizer SG (stochastic gradient)");
-        cmdline.add("", "stochastic-sng",       "evaluate stochastic optimizer SNG (stochastic normalized gradient)");
+        cmdline.add("", "stochastic-ngd",       "evaluate stochastic optimizer NGS (normalized gradient descent)");
         cmdline.add("", "stochastic-sgm",       "evaluate stochastic optimizer SGM (stochastic gradient with momentum)");
         cmdline.add("", "stochastic-ag",        "evaluate stochastic optimizer AG (Nesterov's accelerated gradient)");
         cmdline.add("", "stochastic-agfr",      "evaluate stochastic optimizer AG (AG + function value restarts)");
@@ -168,7 +168,7 @@ int main(int argc, const char* argv[])
 
         std::vector<stoch_optimizer> stochastic_optimizers;
         if (cmdline.has("stochastic") || cmdline.has("stochastic-sg")) stochastic_optimizers.push_back(stoch_optimizer::SG);
-        if (cmdline.has("stochastic") || cmdline.has("stochastic-sng")) stochastic_optimizers.push_back(stoch_optimizer::SNG);
+        if (cmdline.has("stochastic") || cmdline.has("stochastic-ngd")) stochastic_optimizers.push_back(stoch_optimizer::NGD);
         if (cmdline.has("stochastic") || cmdline.has("stochastic-sgm")) stochastic_optimizers.push_back(stoch_optimizer::SGM);
         if (cmdline.has("stochastic") || cmdline.has("stochastic-ag")) stochastic_optimizers.push_back(stoch_optimizer::AG);
         if (cmdline.has("stochastic") || cmdline.has("stochastic-agfr")) stochastic_optimizers.push_back(stoch_optimizer::AGFR);

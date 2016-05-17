@@ -7,8 +7,8 @@ namespace nano
         ///
         enum class stoch_optimizer
         {
-                SG,                             ///< stochastic gradient
-                SNG,                            ///< stochastic normalized gradient
+                SG,                             ///< stochastic gradient (descent)
+                NGD,                            ///< normalized gradient descent
                 SGM,                            ///< stochastic gradient with momentum
                 AG,                             ///< Nesterov's accelerated gradient
                 AGFR,                           ///< Nesterov's accelerated gradient (with function value-based restarts)

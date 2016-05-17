@@ -5,7 +5,7 @@
 #include "stoch_types.h"
 #include "stoch/ag.hpp"
 #include "stoch/sg.hpp"
-#include "stoch/sng.hpp"
+#include "stoch/ngd.hpp"
 #include "stoch/sgm.hpp"
 #include "stoch/adam.hpp"
 #include "stoch/adagrad.hpp"
@@ -37,8 +37,8 @@ namespace nano
                 case stoch_optimizer::SGM:
                         return stoch_sgm_t<tproblem>()(param, problem, x0);
 
-                case stoch_optimizer::SNG:
-                        return stoch_sng_t<tproblem>()(param, problem, x0);
+                case stoch_optimizer::NGD:
+                        return stoch_ngd_t<tproblem>()(param, problem, x0);
 
                 case stoch_optimizer::AG:
                         return stoch_ag_t<tproblem>()(param, problem, x0);

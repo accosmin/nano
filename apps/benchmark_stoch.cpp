@@ -45,7 +45,7 @@ namespace
                 const auto optimizers =
                 {
                         nano::stoch_optimizer::SG,
-                        nano::stoch_optimizer::SNG,
+                        nano::stoch_optimizer::NGD,
                         nano::stoch_optimizer::SGM,
                         nano::stoch_optimizer::AG,
                         nano::stoch_optimizer::AGFR,
