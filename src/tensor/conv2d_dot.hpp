@@ -69,7 +69,7 @@ namespace tensor
                                 for (auto kr = 0; kr < krows; kr ++)
                                 {
                                         const auto irow = idata.row(r + kr);
-                                        const auto krow = kdata.row(kr).template segment<kcols>(0);
+                                        const auto krow = kdata.row(kr);
 
                                         for (auto c = 0; c < ocols; c ++)
                                         {
