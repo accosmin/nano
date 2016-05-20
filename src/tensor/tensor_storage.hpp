@@ -89,6 +89,7 @@ namespace tensor
                 tsize cols() const { return size<tdimensions - 1>(); }
                 tsize planeSize() const { return rows() * cols(); }
                 const tdims& dims() const { return m_dims; }
+                auto dimensionality() const { return tdimensions; }
 
                 ///
                 /// \brief access the whole tensor as a vector (size() x 1)
