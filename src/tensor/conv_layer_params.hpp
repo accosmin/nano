@@ -5,9 +5,9 @@
 namespace tensor
 {
         template <typename tsize>
-        struct conv_layer_param_t
+        struct conv_layer_params_t
         {
-                conv_layer_param_t(
+                conv_layer_params_t(
                         const tsize idims, const tsize irows, const tsize icols,
                         const tsize odims, const tsize krows, const tsize kcols, const tsize kconn) :
                         m_idims(idims), m_irows(irows), m_icols(icols),

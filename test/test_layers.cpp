@@ -152,6 +152,11 @@ NANO_CASE(conv)
         test_model(make_conv_pool_layer(3, 3, 3, 1, "act-unit", "pool-gauss"));
 }
 
+NANO_CASE(conv_layers)
+{
+        // TODO: check 2D-operator-based & toeplitz-based implementations
+}
+
 NANO_CASE(multi_layer_models)
 {
         test_model(
