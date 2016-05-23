@@ -11,7 +11,10 @@ namespace nano
                 convolution_toeplitz_t(
                         const tensor_size_t idims, const tensor_size_t irows, const tensor_size_t icols,
                         const tensor_size_t odims, const tensor_size_t krows, const tensor_size_t kcols, const tensor_size_t kconn) :
-                        m_params(idims, irows, icols, odims, krows, kcols, kconn)
+                        m_params(idims, irows, icols, odims, krows, kcols, kconn),
+                        m_ikdata(krows * kcols, orows() * ocols()),
+                        m_iodata(orows() * ocols(), krows * kcols),
+                        m_okdata(krows * kcols, irows * icols)
                 {
                 }
 
@@ -20,14 +23,17 @@ namespace nano
                 {
                         m_params.check(idata, kdata, odata);
 
-                        odata.setZero();
-                        /*for (tensor_size_t i = 0; i < idims(); ++ i)
-                        {
-                                make_conv(idata.matrix(i), krows(), kcols(), m_iodata);
+                        // todo: assuming kdata(i, o)
 
-                                const auto kdata = tensor::map_matrix(kdata.planeData(i, 0), odims(), krows() * kcols());
-                                tensor::map_matrix(odata.data(), odims(), orows() * ocols()) += kdata * m_toeiodata;
-                        }*/
+                        odata.setZero();
+                        for (tensor_size_t i = 0; i < idims(); ++ i)
+                        {
+                                make_conv(idata.matrix(i), krows(), kcols(), m_ikdata);
+
+                                tensor::map_matrix(odata.data(), odims(), orows() * ocols()) +=
+                                        tensor::map_matrix(kdata.planeData(i, 0), odims(), krows() * kcols()) *
+                                        m_ikdata;
+                        }
                 }
 
                 template <typename ttensori, typename ttensork, typename ttensoro>
@@ -35,14 +41,17 @@ namespace nano
                 {
                         m_params.check(idata, kdata, odata);
 
-                        kdata.setZero();
-                        /*for (tensor_size_t i = 0; i < idims(); ++ i)
-                        {
-                                make_conv(idata.matrix(i), orows(), ocols(), m_toeikdata);
+                        // todo: assuming kdata(i, o)
 
-                                const auto odata = tensor::map_matrix(odata.data(), odims(), orows() * ocols());
-                                tensor::map_matrix(kdata.planeData(i, 0), odims(), krows() * kcols()) = odata * m_toeikdata;
-                        }*/
+                        kdata.setZero();
+                        for (tensor_size_t i = 0; i < idims(); ++ i)
+                        {
+                                make_conv(idata.matrix(i), orows(), ocols(), m_iodata);
+
+                                tensor::map_matrix(kdata.planeData(i, 0), odims(), krows() * kcols()) =
+                                        tensor::map_matrix(odata.data(), odims(), orows() * ocols()) *
+                                        m_iodata;
+                        }
                 }
 
                 template <typename ttensori, typename ttensork, typename ttensoro>
@@ -50,19 +59,17 @@ namespace nano
                 {
                         m_params.check(idata, kdata, odata);
 
+                        // todo: assuming kdata(o, i)
+
                         idata.setZero();
-                        /*for (tensor_size_t o = 0; o < idims(); ++ o)
+                        for (tensor_size_t o = 0; o < idims(); ++ o)
                         {
-                                make_corr(odata.matrix(o), krows(), kcols(), m_toeokdata);
+                                make_corr(odata.matrix(o), krows(), kcols(), m_okdata);
 
-                                for (tensor_size_t i = 0; i < idims(); ++ i)
-                                {
-                                        m_toekdata.row(i) = m_kdata.vector(i, o);
-                                }
-
-                                //const auto kdata = tensor::map_matrix(m_kdata.planeData(o, 0), idims(), krows() * kcols());
-                                tensor::map_matrix(idata.data(), idims(), irows() * icols()) += m_toekdata * m_toeokdata;
-                        }*/
+                                tensor::map_matrix(idata.data(), idims(), irows() * icols()) +=
+                                        tensor::map_matrix(kdata.planeData(o, 0), idims(), krows() * kcols()) *
+                                        m_okdata;
+                        }
                 }
 
         private:
@@ -134,6 +141,9 @@ namespace nano
 
                 // attributes
                 convolution_params_t    m_params;
+                matrix_t                m_ikdata;       ///< input-kernel convolution
+                matrix_t                m_iodata;       ///< input-output convolution
+                matrix_t                m_okdata;       ///< output-kernel correlation
         };
 }
 

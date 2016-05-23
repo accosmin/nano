@@ -24,7 +24,8 @@ namespace nano
                 const auto odims = nano::clamp(nano::from_params<tensor_size_t>(configuration(), "dims", 16), 1, 256);
                 const auto krows = nano::clamp(nano::from_params<tensor_size_t>(configuration(), "rows", 8), 1, 32);
                 const auto kcols = nano::clamp(nano::from_params<tensor_size_t>(configuration(), "cols", 8), 1, 32);
-                const auto kconn = nano::clamp(nano::from_params<tensor_size_t>(configuration(), "conn", 1), 1, 16);
+                const auto kconn = tensor_size_t(1);
+                //nano::clamp(nano::from_params<tensor_size_t>(configuration(), "conn", 1), 1, 16);
 
                 const auto orows = irows - krows + 1;
                 const auto ocols = icols - kcols + 1;
