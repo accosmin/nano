@@ -12,10 +12,6 @@ set(libtensor_sources
         ${CMAKE_CURRENT_SOURCE_DIR}/corr2d_egr.hpp
         ${CMAKE_CURRENT_SOURCE_DIR}/corr2d_mdk.hpp
         ${CMAKE_CURRENT_SOURCE_DIR}/corr2d_mdo.hpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/conv_layer_op.hpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/conv_layer_params.hpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/conv_layer_toeplitz.hpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/matrix.hpp
         ${CMAKE_CURRENT_SOURCE_DIR}/numeric.hpp
         ${CMAKE_CURRENT_SOURCE_DIR}/serialize.hpp
         ${CMAKE_CURRENT_SOURCE_DIR}/tensor.hpp

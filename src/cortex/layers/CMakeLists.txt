@@ -6,6 +6,9 @@ list(APPEND libcortex_sources
         ${CMAKE_CURRENT_SOURCE_DIR}/layer_activation_unit.h
         ${CMAKE_CURRENT_SOURCE_DIR}/layer_convolution.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/layer_convolution.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/convolution_params.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/convolution_kernel2d.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/convolution_toeplitz.h
         ${CMAKE_CURRENT_SOURCE_DIR}/layer_affine.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/layer_affine.h
         ${CMAKE_CURRENT_SOURCE_DIR}/layer_pooling_full.cpp

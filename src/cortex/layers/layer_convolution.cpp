@@ -6,26 +6,12 @@
 #include "layer_convolution.h"
 #include "text/from_params.hpp"
 #include "tensor/serialize.hpp"
-#include "tensor/conv2d_dyn.hpp"
-#include "tensor/corr2d_dyn.hpp"
 
 namespace nano
 {
-        template <typename tsize, typename toperator>
-        static void conv_loop(const tsize idims, const tsize kconn, const tsize odims, const toperator& op)
-        {
-                for (tsize o = 0; o < odims; ++ o)
-                {
-                        for (tsize i = (o % kconn), ik = 0; i < idims; ++ ik, i += kconn)
-                        {
-                                op(i, ik, o);
-                        }
-                }
-        }
-
         conv_layer_t::conv_layer_t(const string_t& parameters) :
                 layer_t(parameters),
-                m_kconn(1)
+                m_impl(1, 1, 1, 1, 1, 1, 1)
         {
         }
 
@@ -63,7 +49,7 @@ namespace nano
                 m_odata.resize(odims, orows, ocols);
                 m_kdata.resize(odims, idims / kconn, krows, kcols);
                 m_bdata.resize(odims, 1, 1);
-                m_kconn = kconn;
+                m_impl = impl_t(idims, irows, icols, odims, krows, kcols, kconn);
 
                 return psize();
         }
@@ -97,13 +83,7 @@ namespace nano
                 m_idata = input;
 
                 // convolution
-                m_odata.setZero();
-
-                tensor::conv2d_dyn_t op;
-                conv_loop(idims(), kconn(), odims(), [&] (const auto i, const auto ik, const auto o)
-                {
-                        op(m_idata.matrix(i), m_kdata.matrix(o, ik), m_odata.matrix(o));
-                });
+                m_impl.output(m_idata, m_kdata, m_odata);
 
                 // +bias
                 for (tensor_size_t o = 0; o < odims(); ++ o)
@@ -122,13 +102,7 @@ namespace nano
 
                 m_odata = output;
 
-                m_idata.setZero();
-
-                tensor::corr2d_dyn_t op;
-                conv_loop(idims(), kconn(), odims(), [&] (const auto i, const auto ik, const auto o)
-                {
-                        op(m_odata.matrix(o), m_kdata.matrix(o, ik), m_idata.matrix(i));
-                });
+                m_impl.ginput(m_idata, m_kdata, m_odata);
 
                 return m_idata;
         }
@@ -143,13 +117,7 @@ namespace nano
 
                 // wrt convolution
                 auto gkdata = tensor::map_tensor(gradient, m_kdata.size<0>(), m_kdata.size<1>(), krows(), kcols());
-                gkdata.setZero();
-
-                tensor::conv2d_dyn_t op;
-                conv_loop(idims(), kconn(), odims(), [&] (const auto i, const auto ik, const auto o)
-                {
-                        op(m_idata.matrix(i), m_odata.matrix(o), gkdata.matrix(o, ik));
-                });
+                m_impl.gparam(m_idata, gkdata, m_odata);
 
                 // wrt bias
                 for (tensor_size_t o = 0; o < odims(); ++ o)
