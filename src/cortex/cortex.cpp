@@ -18,7 +18,8 @@
 #include "layers/layer_activation_tanh.h"
 #include "layers/layer_activation_snorm.h"
 #include "layers/layer_activation_splus.h"
-#include "layers/layer_convolution.h"
+#include "layers/layer_convolution_kernel2d.h"
+#include "layers/layer_convolution_toeplitz.h"
 #include "layers/layer_affine.h"
 #include "layers/layer_pooling_full.h"
 #include "layers/layer_pooling_soft.h"
@@ -107,7 +108,8 @@ namespace nano
                         nano::get_layers().add("act-snorm", snorm_activation_layer_t());
                         nano::get_layers().add("act-splus", softplus_activation_layer_t());
                         nano::get_layers().add("affine", affine_layer_t());
-                        nano::get_layers().add("conv", conv_layer_t());
+                        nano::get_layers().add("conv-k2d", conv_layer_kernel2d_t());
+                        nano::get_layers().add("conv-toe", conv_layer_toeplitz_t());
                         nano::get_layers().add("pool-full", pooling_full_layer_t());
                         nano::get_layers().add("pool-soft", pooling_soft_layer_t());
                         nano::get_layers().add("pool-gauss", pooling_gauss_layer_t());

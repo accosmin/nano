@@ -1,8 +1,6 @@
 #pragma once
 
 #include "cortex/layer.h"
-#include "convolution_kernel2d.h"
-#include "convolution_toeplitz.h"
 
 namespace nano
 {
@@ -15,15 +13,16 @@ namespace nano
         ///     cols    - convolution size
         ///     conn    - connectivity factor: default = 1 (fully connected)
         ///
-        class conv_layer_t : public layer_t
+        class conv_layer_kernel2d_t : public layer_t
         {
         public:
 
-                NANO_MAKE_CLONABLE(conv_layer_t,
-                        "convolution layer: dims=16[1,256],rows=8[1,32],cols=8[1,32],conn=1[1,16]")
+                NANO_MAKE_CLONABLE(conv_layer_kernel2d_t,
+                        "convolution layer (implemented using 2D kernels): "\
+                        "dims=16[1,256],rows=8[1,32],cols=8[1,32],conn=1[1,16]")
 
                 // constructor
-                explicit conv_layer_t(const string_t& parameters = string_t());
+                explicit conv_layer_kernel2d_t(const string_t& parameters = string_t());
 
                 // resize to process new tensors of the given type
                 virtual tensor_size_t resize(const tensor3d_t& tensor) override;
@@ -52,19 +51,17 @@ namespace nano
 
         private:
 
+                tensor_size_t kconn() const { return m_kconn; }
                 tensor_size_t krows() const { return m_kdata.size<2>(); }
                 tensor_size_t kcols() const { return m_kdata.size<3>(); }
 
         private:
 
-                using impl_t = convolution_kernel2d_t<>;
-                //using impl_t = convolution_toeplitz_t;
-
                 // attributes
                 tensor3d_t      m_idata;        ///< input buffer:              idims x irows x icols
                 tensor3d_t      m_odata;        ///< output buffer:             odims x orows x ocols
+                tensor_size_t   m_kconn;        ///< input connectivity factor
                 tensor4d_t      m_kdata;        ///< convolution kernels:       odims x (idims/kconn) x krows x kcols
                 tensor3d_t      m_bdata;        ///< convolution bias:          odims x 1 x 1
-                impl_t          m_impl;
         };
 }
