@@ -61,13 +61,7 @@ namespace nano
                 tensor3d_t      m_idata;        ///< input buffer:              idims x irows x icols
                 tensor3d_t      m_odata;        ///< output buffer:             odims x orows x ocols
                 tensor_size_t   m_kconn;        ///< input connectivity factor
-                tensor4d_t      m_kdata;        ///< convolution kernels:       idims x (odims/kconn) x krows x kcols
+                tensor4d_t      m_kdata;        ///< convolution kernels:       odims x (idims/kconn) x krows x kcols
                 vector_t        m_bdata;        ///< convolution bias:          odims
-
-                matrix_t        m_toeikdata;    ///< toeplitz matrix for an input plane
-                matrix_t        m_toeiodata;    ///<
-                matrix_t        m_toeokdata;
-                matrix_t        m_toeodata;
-                matrix_t        m_toekdata;
         };
 }

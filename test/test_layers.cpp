@@ -151,8 +151,6 @@ namespace
                         const auto output2 = model2->output(inputs).vector();
 
                         NANO_CHECK_EIGEN_CLOSE(output1, output2, epsilon);
-                        std::cout << "output1: " << output1.transpose() << std::endl;
-                        std::cout << "output2: " << output2.transpose() << std::endl;
                 }
         }
 }
@@ -198,6 +196,7 @@ NANO_CASE(conv_compare)
         };
 
         compare_models(make_model("conv-k2d", 1), make_model("conv-toe", 1));
+        compare_models(make_model("conv-k2d", 3), make_model("conv-toe", 3));
 }
 
 NANO_CASE(multi_layer)
