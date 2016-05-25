@@ -127,6 +127,34 @@ namespace
                         }
                 }
         }
+
+        void compare_models(const string_t& model_description1, const string_t& model_description2,
+                const scalar_t epsilon = nano::epsilon2<scalar_t>())
+        {
+                const auto model1 = get_model(model_description1);
+                const auto model2 = get_model(model_description2);
+
+                NANO_REQUIRE_EQUAL(model1->psize(), model2->psize());
+
+                vector_t params(model1->psize());
+                vector_t target(model1->psize());
+                tensor3d_t inputs(model1->idims(), model1->irows(), model1->icols());
+
+                for (size_t t = 0; t < cmd_tests; ++ t)
+                {
+                        make_random_config(inputs, params, target);
+
+                        model1->load_params(params);
+                        model2->load_params(params);
+
+                        const auto output1 = model1->output(inputs).vector();
+                        const auto output2 = model2->output(inputs).vector();
+
+                        NANO_CHECK_EIGEN_CLOSE(output1, output2, epsilon);
+                        std::cout << "output1: " << output1.transpose() << std::endl;
+                        std::cout << "output2: " << output2.transpose() << std::endl;
+                }
+        }
 }
 
 NANO_BEGIN_MODULE(test_layers)
@@ -160,7 +188,19 @@ NANO_CASE(convtoe)
         test_model(make_conv_pool_layer("conv-toe", 3, 3, 3, 1, "act-unit", "pool-gauss"));
 }
 
-NANO_CASE(multi_layer_models)
+NANO_CASE(conv_compare)
+{
+        const auto make_model = [] (const string_t& conv_type, const auto conn)
+        {
+                return  make_conv_pool_layer(conv_type, 9, 3, 3, 1, "act-snorm", "pool-gauss") +
+                        make_conv_layer(conv_type, 6, 3, 3, conn, "act-splus") +
+                        make_affine_layer(5, "act-splus");
+        };
+
+        compare_models(make_model("conv-k2d", 1), make_model("conv-toe", 1));
+}
+
+NANO_CASE(multi_layer)
 {
         test_model(
                 make_affine_layer(7, "act-snorm") +
