@@ -106,6 +106,18 @@ namespace nano
                 m_bdata.resize(odims);
                 m_kconn = kconn;
 
+                m_toe_oidata.resize(krows * kcols, orows * ocols);
+                m_toe_okdata.resize(odims / kconn, krows * kcols);
+                m_toe_oodata.resize(odims / kconn, orows * ocols);
+
+                m_toe_iodata.resize(krows * kcols, irows * icols);
+                m_toe_ikdata.resize(idims / kconn, krows * kcols);
+                m_toe_iidata.resize(idims / kconn, irows * icols);
+
+                m_toe_kidata.resize(orows * ocols, krows * kcols);
+                m_toe_kodata.resize(odims / kconn, orows * ocols);
+                m_toe_kkdata.resize(odims / kconn, krows * kcols);
+
                 return psize();
         }
 
@@ -140,22 +152,18 @@ namespace nano
                 // convolution
                 m_odata.setZero();
 
-                matrix_t toe_idata(krows() * kcols(), orows() * ocols());
-                matrix_t toe_kdata(odims() / kconn(), krows() * kcols());
-                matrix_t toe_odata(odims() / kconn(), orows() * ocols());
-
                 for (tensor_size_t i = 0; i < idims(); ++ i)
                 {
-                        make_conv(m_idata.matrix(i), krows(), kcols(), toe_idata);
+                        make_conv(m_idata.matrix(i), krows(), kcols(), m_toe_oidata);
                         for (tensor_size_t o = (i % kconn()), ok = 0; o < odims(); ++ ok, o += kconn())
                         {
-                                toe_kdata.row(ok) = m_kdata.vector(o, i / kconn());
+                                m_toe_okdata.row(ok) = m_kdata.vector(o, i / kconn());
                         }
 
-                        toe_odata.noalias() = toe_kdata * toe_idata;
+                        m_toe_oodata.noalias() = m_toe_okdata * m_toe_oidata;
                         for (tensor_size_t o = (i % kconn()), ok = 0; o < odims(); ++ ok, o += kconn())
                         {
-                                m_odata.vector(o) += toe_odata.row(ok);
+                                m_odata.vector(o) += m_toe_oodata.row(ok);
                         }
                 }
 
@@ -178,22 +186,18 @@ namespace nano
 
                 m_idata.setZero();
 
-                matrix_t toe_odata(krows() * kcols(), irows() * icols());
-                matrix_t toe_kdata(idims() / kconn(), krows() * kcols());
-                matrix_t toe_idata(idims() / kconn(), irows() * icols());
-
                 for (tensor_size_t o = 0; o < odims(); ++ o)
                 {
-                        make_corr(m_odata.matrix(o), krows(), kcols(), toe_odata);
+                        make_corr(m_odata.matrix(o), krows(), kcols(), m_toe_iodata);
                         for (tensor_size_t i = (o % kconn()), ik = 0; i < idims(); ++ ik, i += kconn())
                         {
-                                toe_kdata.row(ik) = m_kdata.vector(o, ik);
+                                m_toe_ikdata.row(ik) = m_kdata.vector(o, ik);
                         }
 
-                        toe_idata.noalias() = toe_kdata * toe_odata;
+                        m_toe_iidata.noalias() = m_toe_ikdata * m_toe_iodata;
                         for (tensor_size_t i = (o % kconn()), ik = 0; i < idims(); ++ ik, i += kconn())
                         {
-                                m_idata.vector(i) += toe_idata.row(ik);
+                                m_idata.vector(i) += m_toe_iidata.row(ik);
                         }
                 }
 
@@ -212,22 +216,18 @@ namespace nano
                 auto gkdata = tensor::map_tensor(gradient, m_kdata.size<0>(), m_kdata.size<1>(), krows(), kcols());
                 gkdata.setZero();
 
-                matrix_t toe_idata(orows() * ocols(), krows() * kcols());
-                matrix_t toe_odata(odims() / kconn(), orows() * ocols());
-                matrix_t toe_kdata(odims() / kconn(), krows() * kcols());
-
                 for (tensor_size_t i = 0; i < idims(); ++ i)
                 {
-                        make_conv(m_idata.matrix(i), orows(), ocols(), toe_idata);
+                        make_conv(m_idata.matrix(i), orows(), ocols(), m_toe_kidata);
                         for (tensor_size_t o = (i % kconn()), ok = 0; o < odims(); ++ ok, o += kconn())
                         {
-                                toe_odata.row(ok) = m_odata.vector(o);
+                                m_toe_kodata.row(ok) = m_odata.vector(o);
                         }
 
-                        toe_kdata.noalias() = toe_odata * toe_idata;
+                        m_toe_kkdata.noalias() = m_toe_kodata * m_toe_kidata;
                         for (tensor_size_t o = (i % kconn()), ok = 0; o < odims(); ++ ok, o += kconn())
                         {
-                                gkdata.vector(o, i / kconn()) += toe_kdata.row(ok);
+                                gkdata.vector(o, i / kconn()) += m_toe_kkdata.row(ok);
                         }
                 }
 

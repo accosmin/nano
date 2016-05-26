@@ -64,42 +64,43 @@ int main(int argc, const char *argv[])
         const string_t mlp4 = mlp3 + make_affine_layer(100);
         const string_t mlp5 = mlp4 + make_affine_layer(100);
 
-        const string_t convnet_9x9p_5x5p_3x3 =
-                make_conv_pool_layer(16, 9, 9, 1) +
-                make_conv_pool_layer(32, 5, 5, 2) +
-                make_conv_layer(64, 3, 3, 4);
+        const string_t convnetk2d_9x9p_5x5p_3x3 =
+                make_conv_pool_layer("conv-k2d", 16, 9, 9, 1) +
+                make_conv_pool_layer("conv-k2d", 32, 5, 5, 2) +
+                make_conv_layer("conv-k2d", 64, 3, 3, 4);
 
-        const string_t convnet_7x7p_5x5p_3x3 =
-                make_conv_pool_layer(16, 7, 7, 1) +
-                make_conv_pool_layer(32, 5, 5, 2) +
-                make_conv_layer(64, 3, 3, 4);
+        const string_t convnettoe_9x9p_5x5p_3x3 =
+                nano::replace(convnetk2d_9x9p_5x5p_3x3, "conv-k2d", "conv-toe");
 
-        const string_t convnet_11x11_9x9_7x7_3x3 =
-                make_conv_layer(16, 11, 11, 1) +
-                make_conv_layer(32, 9, 9, 2) +
-                make_conv_layer(64, 7, 7, 4) +
-                make_conv_layer(64, 3, 3, 8);
+        const string_t convnetk2d_11x11_9x9_7x7_3x3 =
+                make_conv_layer("conv-k2d", 16, 11, 11, 1) +
+                make_conv_layer("conv-k2d", 32, 9, 9, 2) +
+                make_conv_layer("conv-k2d", 64, 7, 7, 4) +
+                make_conv_layer("conv-k2d", 64, 3, 3, 8);
 
-        const string_t convnet_11x11_9x9_5x5_5x5 =
-                make_conv_layer(16, 11, 11, 1) +
-                make_conv_layer(32, 9, 9, 2) +
-                make_conv_layer(64, 5, 5, 4) +
-                make_conv_layer(64, 5, 5, 8);
+        const string_t convnettoe_11x11_9x9_7x7_3x3 =
+                nano::replace(convnetk2d_11x11_9x9_7x7_3x3, "conv-k2d", "conv-toe");
 
-        const string_t convnet_9x9_7x7_7x7_5x5_3x3 =
-                make_conv_layer(16, 9, 9, 1) +
-                make_conv_layer(32, 7, 7, 2) +
-                make_conv_layer(32, 7, 7, 4) +
-                make_conv_layer(64, 5, 5, 4) +
-                make_conv_layer(64, 3, 3, 8);
+        const string_t convnetk2d_9x9_7x7_7x7_5x5_3x3 =
+                make_conv_layer("conv-k2d", 16, 9, 9, 1) +
+                make_conv_layer("conv-k2d", 32, 7, 7, 2) +
+                make_conv_layer("conv-k2d", 32, 7, 7, 4) +
+                make_conv_layer("conv-k2d", 64, 5, 5, 4) +
+                make_conv_layer("conv-k2d", 64, 3, 3, 8);
 
-        const string_t convnet_7x7_7x7_5x5_5x5_5x5_3x3 =
-                make_conv_layer(16, 7, 7, 1) +
-                make_conv_layer(16, 7, 7, 2) +
-                make_conv_layer(32, 5, 5, 2) +
-                make_conv_layer(32, 5, 5, 4) +
-                make_conv_layer(32, 5, 5, 4) +
-                make_conv_layer(64, 3, 3, 4);
+        const string_t convnettoe_9x9_7x7_7x7_5x5_3x3 =
+                nano::replace(convnetk2d_9x9_7x7_7x7_5x5_3x3, "conv-k2d", "conv-toe");
+
+        const string_t convnetk2d_7x7_7x7_5x5_5x5_5x5_3x3 =
+                make_conv_layer("conv-k2d", 16, 7, 7, 1) +
+                make_conv_layer("conv-k2d", 16, 7, 7, 2) +
+                make_conv_layer("conv-k2d", 32, 5, 5, 2) +
+                make_conv_layer("conv-k2d", 32, 5, 5, 4) +
+                make_conv_layer("conv-k2d", 32, 5, 5, 4) +
+                make_conv_layer("conv-k2d", 64, 3, 3, 4);
+
+        const string_t convnettoe_7x7_7x7_5x5_5x5_5x5_3x3 =
+                nano::replace(convnetk2d_7x7_7x7_5x5_5x5_5x5_3x3, "conv-k2d", "conv-toe");
 
         const string_t outlayer = make_output_layer(task.osize());
 
@@ -117,12 +118,14 @@ int main(int argc, const char *argv[])
         }
         if (cmd_convnet)
         {
-                DEFINE(convnet_9x9p_5x5p_3x3);
-                DEFINE(convnet_7x7p_5x5p_3x3);
-                DEFINE(convnet_11x11_9x9_7x7_3x3);
-                DEFINE(convnet_11x11_9x9_5x5_5x5);
-                DEFINE(convnet_9x9_7x7_7x7_5x5_3x3);
-                DEFINE(convnet_7x7_7x7_5x5_5x5_5x5_3x3);
+                DEFINE(convnetk2d_9x9p_5x5p_3x3);
+                DEFINE(convnettoe_9x9p_5x5p_3x3);
+                DEFINE(convnetk2d_11x11_9x9_7x7_3x3);
+                DEFINE(convnettoe_11x11_9x9_7x7_3x3);
+                DEFINE(convnetk2d_9x9_7x7_7x7_5x5_3x3);
+                DEFINE(convnettoe_9x9_7x7_7x7_5x5_3x3);
+                DEFINE(convnetk2d_7x7_7x7_5x5_5x5_5x5_3x3);
+                DEFINE(convnettoe_7x7_7x7_5x5_5x5_5x5_3x3);
         }
 
         #undef DEFINE

@@ -26,6 +26,23 @@ namespace nano
                 return ret;
         }
 
+        std::string replace(const std::string& str, const std::string& token, const std::string& newtoken)
+        {
+                std::string ret = str;
+                size_t index = 0;
+                while (true)
+                {
+                        index = ret.find(token, index);
+                        if (index == std::string::npos)
+                        {
+                                break;
+                        }
+                        ret.replace(index, token.size(), newtoken);
+                        index += newtoken.size();
+                }
+                return ret;
+        }
+
         bool contains(const std::string& str, const char token)
         {
                 return std::find(str.begin(), str.end(), token) != str.end();

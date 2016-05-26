@@ -22,6 +22,11 @@ namespace nano
         NANO_PUBLIC std::string replace(const std::string& str, const char token, const char newtoken);
 
         ///
+        /// \brief replace all occurencies of a string with another one
+        ///
+        NANO_PUBLIC std::string replace(const std::string& str, const std::string& token, const std::string& newtoken);
+
+        ///
         /// \brief check if a string contains a given character
         ///
         NANO_PUBLIC bool contains(const std::string& str, const char token);
