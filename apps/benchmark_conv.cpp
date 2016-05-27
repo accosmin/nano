@@ -2,6 +2,7 @@
 #include "text/table.h"
 #include "text/cmdline.h"
 #include "math/random.hpp"
+#include "math/numeric.hpp"
 #include "tensor/numeric.hpp"
 #include "cortex/measure.hpp"
 #include "tensor/conv2d_cpp.hpp"
@@ -44,15 +45,14 @@ namespace
                 typename tmatrixk,
                 typename tmatrixo
         >
-        auto measure_op(const top& op,
+        auto measure_op(const tensor_size_t flops, const top& op,
                 const tmatrixi& idata, const tmatrixk& kdata, tmatrixo&& odata, const size_t trials = 16)
         {
-                const auto size = kdata.size() * odata.size();
                 const auto nsec = nano::measure_robustly_nsec([&] ()
                 {
                         op(idata, kdata, odata);
                 }, trials).count();
-                return (nsec * 1000 + size - 1) / size;
+                return nano::idiv(flops * 1000, nsec);
         }
 
         template
@@ -64,13 +64,15 @@ namespace
                 tmatrix idata, kdata, odata;
                 make_matrices(isize, ksize, idata, kdata, odata);
 
-                row << measure_op(tensor::conv2d_eig_t(), idata, kdata, odata, trials);
-                row << measure_op(tensor::conv2d_cpp_t(), idata, kdata, odata, trials);
-                row << measure_op(tensor::conv2d_dot_t(), idata, kdata, odata, trials);
-                row << measure_op(tensor::conv2d_dot_dyn_t(), idata, kdata, odata, trials);
-                row << measure_op(tensor::conv2d_mad_t(), idata, kdata, odata, trials);
-                row << measure_op(tensor::conv2d_mad_dyn_t(), idata, kdata, odata, trials);
-                row << measure_op(tensor::conv2d_dyn_t(), idata, kdata, odata, trials);
+                const auto flops = kdata.size() * odata.size();
+
+                row << measure_op(flops, tensor::conv2d_eig_t(), idata, kdata, odata, trials);
+                row << measure_op(flops, tensor::conv2d_cpp_t(), idata, kdata, odata, trials);
+                row << measure_op(flops, tensor::conv2d_dot_t(), idata, kdata, odata, trials);
+                row << measure_op(flops, tensor::conv2d_dot_dyn_t(), idata, kdata, odata, trials);
+                row << measure_op(flops, tensor::conv2d_mad_t(), idata, kdata, odata, trials);
+                row << measure_op(flops, tensor::conv2d_mad_dyn_t(), idata, kdata, odata, trials);
+                row << measure_op(flops, tensor::conv2d_dyn_t(), idata, kdata, odata, trials);
         }
 
         template
@@ -82,14 +84,16 @@ namespace
                 tmatrix idata, kdata, odata;
                 make_matrices(isize, ksize, idata, kdata, odata);
 
-                row << measure_op(tensor::corr2d_egb_t(), odata, kdata, idata, trials);
-                row << measure_op(tensor::corr2d_egr_t(), odata, kdata, idata, trials);
-                row << measure_op(tensor::corr2d_cpp_t(), odata, kdata, idata, trials);
-                row << measure_op(tensor::corr2d_mdk_t(), odata, kdata, idata, trials);
-                row << measure_op(tensor::corr2d_mdk_dyn_t(), odata, kdata, idata, trials);
-                row << measure_op(tensor::corr2d_mdo_t(), odata, kdata, idata, trials);
-                row << measure_op(tensor::corr2d_mdo_dyn_t(), odata, kdata, idata, trials);
-                row << measure_op(tensor::corr2d_dyn_t(), odata, kdata, idata, trials);
+                const auto flops = kdata.size() * odata.size();
+
+                row << measure_op(flops, tensor::corr2d_egb_t(), odata, kdata, idata, trials);
+                row << measure_op(flops, tensor::corr2d_egr_t(), odata, kdata, idata, trials);
+                row << measure_op(flops, tensor::corr2d_cpp_t(), odata, kdata, idata, trials);
+                row << measure_op(flops, tensor::corr2d_mdk_t(), odata, kdata, idata, trials);
+                row << measure_op(flops, tensor::corr2d_mdk_dyn_t(), odata, kdata, idata, trials);
+                row << measure_op(flops, tensor::corr2d_mdo_t(), odata, kdata, idata, trials);
+                row << measure_op(flops, tensor::corr2d_mdo_dyn_t(), odata, kdata, idata, trials);
+                row << measure_op(flops, tensor::corr2d_dyn_t(), odata, kdata, idata, trials);
         }
 }
 
@@ -123,7 +127,7 @@ int main(int argc, const char* argv[])
         // convolutions
         if (has_conv)
         {
-                nano::table_t table("size\\method [ps/mul]");
+                nano::table_t table("size\\method [MFLOPS]");
                 table.header()
                         << "eig"
                         << "cpp"
@@ -154,14 +158,14 @@ int main(int argc, const char* argv[])
                         }
                 }
 
-                table.mark(nano::make_table_mark_minimum_percentage_cols<size_t>(10));
+                table.mark(nano::make_table_mark_maximum_percentage_cols<size_t>(10));
                 table.print(std::cout);
         }
 
         // correlations
         if (has_corr)
         {
-                nano::table_t table("size\\method [ps/mul]");
+                nano::table_t table("size\\method [MFLOPS]");
                 table.header()
                         << "egb"
                         << "egr"
@@ -186,7 +190,7 @@ int main(int argc, const char* argv[])
                         }
                 }
 
-                table.mark(nano::make_table_mark_minimum_percentage_cols<size_t>(10));
+                table.mark(nano::make_table_mark_maximum_percentage_cols<size_t>(10));
                 table.print(std::cout);
         }
 

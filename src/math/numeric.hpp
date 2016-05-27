@@ -35,7 +35,7 @@ namespace nano
         template <typename tinteger, typename tinteger2>
         tinteger idiv(const tinteger nominator, const tinteger2 denominator)
         {
-                return (nominator + denominator - 1) / static_cast<tinteger>(denominator);
+                return (nominator + static_cast<tinteger>(denominator) - 1) / static_cast<tinteger>(denominator);
         }
 }
 
