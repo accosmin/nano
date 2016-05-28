@@ -28,8 +28,8 @@ namespace nano
                 ///
                 /// \brief constructor
                 ///
-                explicit layer_t(const string_t& parameters)
-                        :       clonable_t<layer_t>(parameters)
+                explicit layer_t(const string_t& parameters) :
+                        clonable_t<layer_t>(parameters)
                 {
                 }
 

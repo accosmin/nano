@@ -124,13 +124,11 @@ namespace nano
         void conv_layer_toeplitz_t::zero_params()
         {
                 tensor::set_zero(m_kdata, m_bdata);
-                changed();
         }
 
         void conv_layer_toeplitz_t::random_params(scalar_t min, scalar_t max)
         {
                 tensor::set_random(random_t<scalar_t>(min, max), m_kdata, m_bdata);
-                changed();
         }
 
         scalar_t* conv_layer_toeplitz_t::save_params(scalar_t* params) const
@@ -140,22 +138,7 @@ namespace nano
 
         const scalar_t* conv_layer_toeplitz_t::load_params(const scalar_t* params)
         {
-                const auto ret = tensor::from_array(params, m_kdata, m_bdata);
-                changed();
-                return ret;
-        }
-
-        void conv_layer_toeplitz_t::changed()
-        {
-                // store kernels as (idims, odims/kconn)
-                m_kdata_io.resize(idims(), odims() / kconn(), krows(), kcols());
-                for (tensor_size_t i = 0; i < idims(); ++ i)
-                {
-                        for (tensor_size_t o = (i % kconn()), ok = 0; o < odims(); ++ ok, o += kconn())
-                        {
-                                m_kdata_io.vector(i, ok) = m_kdata.vector(o, i / kconn());
-                        }
-                }
+                return tensor::from_array(params, m_kdata, m_bdata);
         }
 
         const tensor3d_t& conv_layer_toeplitz_t::output(const tensor3d_t& input)
@@ -172,11 +155,12 @@ namespace nano
                 for (tensor_size_t i = 0; i < idims(); ++ i)
                 {
                         make_conv(m_idata.matrix(i), krows(), kcols(), m_toe_oidata);
+                        for (tensor_size_t o = (i % kconn()), ok = 0; o < odims(); ++ ok, o += kconn())
+                        {
+                                m_toe_okdata.row(ok) = m_kdata.vector(o, i / kconn());
+                        }
 
-                        m_toe_oodata.noalias() =
-                                tensor::map_matrix(m_kdata_io.planeData(i, 0), odims() / kconn(), krows() * kcols()) *
-                                m_toe_oidata;
-
+                        m_toe_oodata = m_toe_okdata * m_toe_oidata;
                         for (tensor_size_t o = (i % kconn()), ok = 0; o < odims(); ++ ok, o += kconn())
                         {
                                 m_odata.vector(o) += m_toe_oodata.row(ok);
