@@ -21,8 +21,8 @@ int main(int argc, const char *argv[])
         // parse the command line
         nano::cmdline_t cmdline("benchmark models");
         cmdline.add("s", "samples",     "number of samples to use [100, 100000]", "10000");
-        cmdline.add("", "mlp",          "benchmark MLP models");
-        cmdline.add("", "convnet",      "benchmark convolution networks");
+        cmdline.add("", "mlps",         "benchmark MLP models");
+        cmdline.add("", "convnets",     "benchmark convolution networks");
         cmdline.add("", "forward",      "evaluate the \'forward\' pass (output)");
         cmdline.add("", "backward",     "evaluate the \'backward' pass (gradient)");
 
@@ -32,15 +32,15 @@ int main(int argc, const char *argv[])
         const auto cmd_samples = nano::clamp(cmdline.get<size_t>("samples"), 100, 100 * 1000);
         const auto cmd_forward = cmdline.has("forward");
         const auto cmd_backward = cmdline.has("backward");
-        const auto cmd_mlp = cmdline.has("mlp");
-        const auto cmd_convnet = cmdline.has("convnet");
+        const auto cmd_mlps = cmdline.has("mlps");
+        const auto cmd_convnets = cmdline.has("convnets");
 
         if (!cmd_forward && !cmd_backward)
         {
                 cmdline.usage();
         }
 
-        if (!cmd_mlp && !cmd_convnet)
+        if (!cmd_mlps && !cmd_convnets)
         {
                 cmdline.usage();
         }
@@ -107,7 +107,7 @@ int main(int argc, const char *argv[])
         std::vector<std::pair<string_t, string_t>> networks;
         #define DEFINE(config) networks.emplace_back(config + outlayer, NANO_STRINGIFY(config))
 
-        if (cmd_mlp)
+        if (cmd_mlps)
         {
                 DEFINE(mlp0);
                 DEFINE(mlp1);
@@ -116,7 +116,7 @@ int main(int argc, const char *argv[])
                 DEFINE(mlp4);
                 DEFINE(mlp5);
         }
-        if (cmd_convnet)
+        if (cmd_convnets)
         {
                 DEFINE(convnetk2d_9x9p_5x5p_3x3);
                 DEFINE(convnettoe_9x9p_5x5p_3x3);
