@@ -5,8 +5,8 @@
 
 namespace nano
 {
-        logistic_loss_t::logistic_loss_t(const string_t& configuration)
-                :       loss_t(configuration)
+        logistic_loss_t::logistic_loss_t(const string_t& configuration) :
+                loss_t(configuration)
         {
         }
 

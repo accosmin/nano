@@ -125,7 +125,7 @@ namespace nano
                 ///
                 /// \brief loss term's weight
                 ///
-                scalar_t lweight() const { return 1.0 - lambda(); }
+                scalar_t lweight() const { return 1 - lambda(); }
 
                 ///
                 /// \brief regularizer term's weight

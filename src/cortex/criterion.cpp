@@ -105,14 +105,14 @@ namespace nano
         {
                 assert(m_estats.count() > 0);
 
-                return m_estats.avg();
+                return static_cast<scalar_t>(m_estats.avg());
         }
 
         scalar_t criterion_t::var_error() const
         {
                 assert(m_estats.count() > 0);
 
-                return m_estats.var();
+                return static_cast<scalar_t>(m_estats.var());
         }
 
         size_t criterion_t::count() const

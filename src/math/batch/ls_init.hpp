@@ -42,7 +42,7 @@ namespace nano
                         if (m_first)
                         {
                                 // following CG_DESCENT's initial procedure ...
-                                const tscalar phi0(0.01);
+                                const tscalar phi0 = tscalar(0.01);
 
                                 const tscalar xnorm = cstate.x.template lpNorm<Eigen::Infinity>();
                                 const tscalar fnorm = std::fabs(cstate.f);

@@ -151,8 +151,8 @@ namespace nano
                         const auto fanout = layer->odims() * layer->orows() * layer->ocols();
 
                         const auto div = static_cast<scalar_t>(fanin + fanout);
-                        const auto min = -std::sqrt(6.0 / (1.0 + div));
-                        const auto max = +std::sqrt(6.0 / (1.0 + div));
+                        const auto min = -std::sqrt(6 / (1 + div));
+                        const auto max = +std::sqrt(6 / (1 + div));
 
                         layer->random_params(min, max);
                 }

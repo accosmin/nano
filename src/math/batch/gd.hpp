@@ -31,7 +31,7 @@ namespace nano
                         ls_init_t<tstate> ls_init(param.m_ls_initializer);
 
                         // line-search step
-                        ls_strategy_t<tproblem> ls_step(param.m_ls_strategy, 1e-4, 0.1);
+                        ls_strategy_t<tproblem> ls_step(param.m_ls_strategy, tscalar(1e-4), tscalar(0.1));
 
                         const auto op = [&] (tstate& cstate, const std::size_t)
                         {

@@ -54,7 +54,7 @@ namespace nano
                 // - similar to average stochastic gradient descent, but using an exponential moving average
                 auto astate = istate;
 
-                const typename tproblem::tscalar momentum = 0.95;
+                const typename tproblem::tscalar momentum = typename tproblem::tscalar(0.95);
                 momentum_vector_t<typename tproblem::tvector> xavg(momentum, istate.x.size());
 
                 // best state

@@ -140,7 +140,7 @@ namespace nano
                 ///
                 tscalar convergence_criteria() const
                 {
-                        return (g.template lpNorm<Eigen::Infinity>()) / (1.0 + std::fabs(f));
+                        return (g.template lpNorm<Eigen::Infinity>()) / (1 + std::fabs(f));
                 }
 
                 // attributes
