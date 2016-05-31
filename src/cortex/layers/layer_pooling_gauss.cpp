@@ -23,7 +23,8 @@ namespace nano
                 {
                         for (int x = -1; x <= 1; ++ x)
                         {
-                                wei(y + 1, x + 1) = std::exp(- precx / 2 * square(x - meanx) - precy / 2 * square(y - meany));
+                                wei(y + 1, x + 1) =
+                                std::exp(- precx / 2 * square(x - meanx) - precy / 2 * square(y - meany));
                         }
                 }
 

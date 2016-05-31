@@ -43,6 +43,7 @@ namespace nano
                 virtual tensor_size_t orows() const override { return m_odata.size<1>(); }
                 virtual tensor_size_t ocols() const override { return m_odata.size<2>(); }
                 virtual tensor_size_t psize() const override { return m_wdata.size() + m_bdata.size(); }
+                virtual tensor_size_t flops() const override { return psize(); }
 
         private:
 

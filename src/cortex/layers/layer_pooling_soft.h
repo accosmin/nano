@@ -47,12 +47,13 @@ namespace nano
                 virtual tensor_size_t orows() const override { return m_odata.size<1>(); }
                 virtual tensor_size_t ocols() const override { return m_odata.size<2>(); }
                 virtual tensor_size_t psize() const override { return m_wdata.size(); }
+                virtual tensor_size_t flops() const override { return m_idata.size() * 9; }
 
         private:
 
                 // attributes
-                tensor3d_t      m_idata;        ///< input buffer
-                tensor3d_t      m_odata;        ///< output buffer
+                tensor3d_t      m_idata;        ///< input buffer: idims x irows x icols
+                tensor3d_t      m_odata;        ///< output buffer: idims x irows x icols
                 tensor3d_t      m_edata;        ///< exponential input buffer
                 vector_t        m_wdata;        ///< weighting factors: odims
         };

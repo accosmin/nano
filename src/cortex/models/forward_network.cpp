@@ -228,8 +228,8 @@ namespace nano
                                 << "/" << align(to_string(m_layers.size()), 2, alignment::right, '0') << "]: "
                                 << "[" << align(layer_ids[l], 12, alignment::right, '.') << "] "
                                 << "in(" << layer->idims() << "x" << layer->irows() << "x" << layer->icols() << ") -> "
-                                << "out(" << layer->odims() << "x" << layer->orows() << "x" << layer->ocols() << ") == "
-                                << layer->psize() << " parameters.";
+                                << "out(" << layer->odims() << "x" << layer->orows() << "x" << layer->ocols()
+                                << "), parameters = " << layer->psize() << ", FLOPs = " << layer->flops() << ".";
                 }
         }
 

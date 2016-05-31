@@ -84,6 +84,11 @@ namespace nano
                 /// \brief returns the number of (optimization) parameters
                 ///
                 virtual tensor_size_t psize() const = 0;
+
+                ///
+                /// \brief returns the (approximated) FLOPs necessary to compute the output
+                ///
+                virtual tensor_size_t flops() const = 0;
         };
 }
 
