@@ -16,6 +16,8 @@ namespace nano
         using scalar_t = double;
 #elif defined(NANO_LONG_DOUBLE_SCALAR)
         using scalar_t = long double;
+#else
+        #error Scalar type not defined! User one of the NANO_[FLOAT|DOUBLE|LONG_DOUBLE]_SCALAR options.
 #endif
         using scalars_t = std::vector<scalar_t>;
 }

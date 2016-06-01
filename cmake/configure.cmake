@@ -50,7 +50,7 @@ if(CMAKE_CXX_COMPILER_ID MATCHES GNU OR CMAKE_CXX_COMPILER_ID MATCHES Clang)
 
 # setup compiler (unsupported)
 else()
-        message(WARNING "++Compiling with an unsupported compiler ...")
+        message(WARNING "++ Compiling with an unsupported compiler ...")
 endif()
 
 # debug
@@ -58,13 +58,16 @@ if(CMAKE_BUILD_TYPE MATCHES "[Dd][Ee][Bb][Uu][Gg]")
         add_definitions(-DNANO_DEBUG)
 endif()
 
-# scalar
-if(NANO_WITH_FLOAT_SCALAR)
+# scalar type
+if((NANO_WITH_FLOAT_SCALAR) AND (NOT NANO_WITH_DOUBLE_SCALAR) AND (NOT NANO_WITH_LONG_DOUBLE_SCALAR))
+        message("++ Using float as the default scalar type.")
         add_definitions(-DNANO_FLOAT_SCALAR)
-elseif(NANO_WITH_DOUBLE_SCALAR)
+elseif((NOT NANO_WITH_FLOAT_SCALAR) AND (NANO_WITH_DOUBLE_SCALAR) AND (NOT NANO_WITH_LONG_DOUBLE_SCALAR))
+        message("++ Using double as the default scalar type.")
         add_definitions(-DNANO_DOUBLE_SCALAR)
-elseif(NANO_WITH_LONG_DOUBLE_SCALAR)
+elseif((NOT NANO_WITH_FLOAT_SCALAR) AND (NOT NANO_WITH_DOUBLE_SCALAR) AND (NANO_WITH_LONG_DOUBLE_SCALAR))
+        message("++ Using long double as the default scalar type.")
         add_definitions(-DNANO_LONG_DOUBLE_SCALAR)
 else()
-        add_definitions(-DNANO_DOUBLE_SCALAR)
+        message(ERROR "++ The scalar type is not specified! Use one of the NANO_WITH_[FLOAT|DOUBLE|LONG_DOUBLE]_SCALAR options.")
 endif()
