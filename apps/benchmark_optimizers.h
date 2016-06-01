@@ -13,8 +13,9 @@ namespace benchmark
 
         struct optimizer_stat_t
         {
-                explicit optimizer_stat_t(const scalars_t& gthres = {1e-12, 1e-10, 1e-8, 1e-6})
-                        :       m_gthres(gthres)
+                explicit optimizer_stat_t(const scalars_t& gthres =
+                        {scalar_t(1e-12), scalar_t(1e-10), scalar_t(1e-8), scalar_t(1e-6)}) :
+                        m_gthres(gthres)
                 {
                         assert(gthres.size() == 4);
                 }
@@ -38,7 +39,7 @@ namespace benchmark
                 nano::stats_t<scalar_t> stats;
                 for (size_t i = 0; i < values.size(); i ++)
                 {
-                        if (flags[i] >= 0.0)
+                        if (flags[i] >= 0)
                         {
                                 stats(values[i]);
                         }
@@ -124,7 +125,7 @@ namespace benchmark
 
                         const auto g = state.convergence_criteria();
                         const auto cost = state.m_fcalls + 2 * state.m_gcalls;
-                        const auto speed = std::pow(g / g0, 1.0 / (1.0 + static_cast<scalar_t>(cost)));
+                        const auto speed = std::pow(g / g0, 1 / (1 + static_cast<scalar_t>(cost)));
 
                         // ignore out-of-domain solutions
                         if (func.is_valid(state.x))
@@ -132,10 +133,10 @@ namespace benchmark
                                 // update stats
                                 crits[t] = g;
                                 iters[t] = static_cast<scalar_t>(state.m_iterations);
-                                fail0s[t] = !state.converged(gthres[0]) ? 1.0 : 0.0;
-                                fail1s[t] = !state.converged(gthres[1]) ? 1.0 : 0.0;
-                                fail2s[t] = !state.converged(gthres[2]) ? 1.0 : 0.0;
-                                fail3s[t] = !state.converged(gthres[3]) ? 1.0 : 0.0;
+                                fail0s[t] = !state.converged(gthres[0]) ? 1 : 0;
+                                fail1s[t] = !state.converged(gthres[1]) ? 1 : 0;
+                                fail2s[t] = !state.converged(gthres[2]) ? 1 : 0;
+                                fail3s[t] = !state.converged(gthres[3]) ? 1 : 0;
                                 fcalls[t] = static_cast<scalar_t>(state.m_fcalls);
                                 gcalls[t] = static_cast<scalar_t>(state.m_gcalls);
                                 speeds[t] = speed;
@@ -143,7 +144,7 @@ namespace benchmark
                         else
                         {
                                 // skip this from statistics!
-                                crits[t] = -1.0;
+                                crits[t] = -1;
                         }
                 });
 

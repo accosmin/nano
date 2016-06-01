@@ -69,7 +69,8 @@ namespace
                         const auto name =
                                 nano::to_string(optimizer);
 
-                        benchmark::benchmark_function(function, x0s, op, name, {1e-6, 1e-5, 1e-4, 1e-3}, stats, gstats);
+                        benchmark::benchmark_function(function, x0s, op, name,
+                                {scalar_t(1e-6), scalar_t(1e-5), scalar_t(1e-4), scalar_t(1e-3)}, stats, gstats);
                 }
 
                 // show per-problem statistics

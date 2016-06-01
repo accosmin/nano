@@ -73,7 +73,7 @@ namespace nano
                         speeds(op(states[i], states[i + 1]));
                 }
 
-                return speeds.avg();
+                return static_cast<scalar_t>(speeds.avg());
         }
 
         bool operator<(const trainer_state_t& one, const trainer_state_t& two)

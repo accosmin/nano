@@ -10,7 +10,7 @@ namespace nano
         scalar_t avg_l2_criterion_t::value() const
         {
                 return  lweight() * (avg_criterion_t::value()) +
-                        rweight() * (0.5 * params().squaredNorm() / static_cast<scalar_t>(psize()));
+                        rweight() * (scalar_t(0.5) * params().squaredNorm() / static_cast<scalar_t>(psize()));
         }
 
         vector_t avg_l2_criterion_t::vgrad() const

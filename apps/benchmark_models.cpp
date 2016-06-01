@@ -166,7 +166,7 @@ int main(int argc, const char *argv[])
                 {
                         if (cmd_forward)
                         {
-                                accumulator_t lacc(*model, *loss, *criterion, criterion_t::type::value, 0.1);
+                                accumulator_t lacc(*model, *loss, *criterion, criterion_t::type::value, scalar_t(0.1));
                                 lacc.set_threads(nthreads);
 
                                 const auto milis = nano::measure_robustly_msec([&] ()
@@ -183,7 +183,7 @@ int main(int argc, const char *argv[])
 
                         if (cmd_backward)
                         {
-                                accumulator_t gacc(*model, *loss, *criterion, criterion_t::type::vgrad, 0.1);
+                                accumulator_t gacc(*model, *loss, *criterion, criterion_t::type::vgrad, scalar_t(0.1));
                                 gacc.set_threads(nthreads);
 
                                 const auto milis = nano::measure_robustly_msec([&] ()

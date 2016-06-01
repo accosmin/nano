@@ -50,7 +50,7 @@ int main(int argc, const char *argv[])
                 ftype = field_type::random;
         }
 
-        const warp_params_t params(ftype, 0.1, 4.0, cmd_alpha, cmd_beta);
+        const warp_params_t params(ftype, scalar_t(0.1), scalar_t(4.0), cmd_alpha, cmd_beta);
 
         // load input image
         image_t iimage;

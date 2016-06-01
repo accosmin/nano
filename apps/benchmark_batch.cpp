@@ -97,7 +97,8 @@ namespace
                                 nano::to_string(ls_init) + "][" +
                                 nano::to_string(ls_strat) + "]";
 
-                        benchmark::benchmark_function(function, x0s, op, name, {1e-12, 1e-10, 1e-8, 1e-6}, stats, gstats);
+                        benchmark::benchmark_function(function, x0s, op, name,
+                                {scalar_t(1e-12), scalar_t(1e-10), scalar_t(1e-8), scalar_t(1e-6)}, stats, gstats);
                 }
 
                 // show per-problem statistics

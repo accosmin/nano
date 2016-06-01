@@ -9,24 +9,28 @@ namespace nano
         ///
         /// \brief hyper-parameter tuning for stochastic optimizers.
         ///
-        inline auto make_alpha0s()
+        template <typename tscalar>
+        auto make_alpha0s()
         {
-                return nano::make_finite_space(1e-3, 1e-2, 1e-1);
+                return nano::make_finite_space(tscalar(1e-3), tscalar(1e-2), tscalar(1e-1));
         }
 
-        inline auto make_decays()
+        template <typename tscalar>
+        auto make_decays()
         {
-                return nano::make_log10_space(-3.0, -1.0, 0.2);
+                return nano::make_log10_space(tscalar(-3.0), tscalar(-1.0), tscalar(0.2));
         }
 
-        inline auto make_momenta()
+        template <typename tscalar>
+        auto make_momenta()
         {
-                return nano::make_log10_space(std::log10(0.1), std::log10(0.99), 0.2);
+                return nano::make_log10_space(std::log10(tscalar(0.1)), std::log10(tscalar(0.99)), tscalar(0.2));
         }
 
-        inline auto make_epsilons()
+        template <typename tscalar>
+        auto make_epsilons()
         {
-                return nano::make_finite_space(1e-4, 1e-6, 1e-8);
+                return nano::make_finite_space(tscalar(1e-4), tscalar(1e-6), tscalar(1e-8));
         }
 
         ///

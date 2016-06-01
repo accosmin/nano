@@ -44,8 +44,8 @@ namespace
 
         void make_random_config(tensor3d_t& inputs, vector_t& params, vector_t& target)
         {
-                nano::random_t<scalar_t> irgen(-0.1, +0.1);
-                nano::random_t<scalar_t> prgen(-0.1, +0.1);
+                nano::random_t<scalar_t> irgen(-scalar_t(0.1), +scalar_t(0.1));
+                nano::random_t<scalar_t> prgen(-scalar_t(0.1), +scalar_t(0.1));
                 nano::random_t<tensor_size_t> trgen(0, target.size() - 1);
 
                 tensor::set_random(irgen, inputs);

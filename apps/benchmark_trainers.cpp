@@ -72,8 +72,8 @@ static void evaluate(model_t& model,
         const std::vector<stoch_optimizer>& stochastic_optimizers,
         const string_t& basename, const string_t& basepath, nano::table_t& table)
 {
-        const scalar_t epsilon = 1e-6;
-        const size_t nthreads = thread::concurrency();
+        const auto epsilon = scalar_t(1e-6);
+        const auto nthreads = thread::concurrency();
 
         for (auto optimizer : batch_optimizers)
         {
@@ -90,7 +90,7 @@ static void evaluate(model_t& model,
         {
                 const auto optname = "minibatch-" + nano::to_string(optimizer);
                 test_optimizer(model, basename + optname, basepath + optname, table, x0s, [&] ()
-               {
+                {
                         const auto params = nano::to_params("opt", optimizer, "epochs", iterations, "eps", epsilon);
                         const auto trainer = nano::get_trainers().get("minibatch", params);
                         return trainer->train(task, fold, nthreads, loss, criterion, model);

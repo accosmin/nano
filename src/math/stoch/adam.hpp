@@ -29,11 +29,11 @@ namespace nano
                                 return this->operator()(param.tunable(), problem, x0, params...);
                         };
 
-                        const auto alpha0s = make_finite_space(1e-4, 1e-3);
-                        const auto beta1s = make_log10_space(std::log10(0.1), std::log10(0.9), 0.2);
-                        const auto beta2s = make_log10_space(std::log10(0.9), std::log10(0.9999), 0.2);
-
-                        const auto config = nano::tune(op, alpha0s, make_epsilons(), beta1s, beta2s);
+                        const auto param0 = make_finite_space(tscalar(1e-4), tscalar(1e-3));
+                        const auto param1 = make_epsilons<tscalar>();
+                        const auto param2 = make_log10_space(std::log10(tscalar(0.1)), std::log10(tscalar(0.9000)), tscalar(0.2));
+                        const auto param3 = make_log10_space(std::log10(tscalar(0.9)), std::log10(tscalar(0.9999)), tscalar(0.2));
+                        const auto config = nano::tune(op, param0, param1, param2, param3);
                         return operator()(param, problem, x0, config.param0(), config.param1(), config.param2(), config.param3());
                 }
 

@@ -35,7 +35,7 @@ namespace nano
 
                 if (lacc.can_regularize())
                 {
-                        const auto space = nano::make_log10_space(-6.0, +6.0, 0.5);
+                        const auto space = nano::make_log10_space(scalar_t(-6.0), scalar_t(+6.0), scalar_t(0.5));
                         return nano::tune(op, space).optimum();
                 }
                 else

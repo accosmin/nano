@@ -21,10 +21,10 @@ namespace nano
         {
                 explicit warp_params_t(
                         field_type ftype = field_type::random,
-                        scalar_t noise = 0.1,
-                        scalar_t sigma = 4.0,
-                        scalar_t alpha = 1.0,
-                        scalar_t beta = 1.0);
+                        scalar_t noise = scalar_t(0.1),
+                        scalar_t sigma = scalar_t(4.0),
+                        scalar_t alpha = scalar_t(1.0),
+                        scalar_t beta = scalar_t(1.0));
 
                 field_type      m_ftype;
                 scalar_t        m_noise;                ///< noise level of the fields

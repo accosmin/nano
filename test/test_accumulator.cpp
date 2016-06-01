@@ -20,7 +20,7 @@ NANO_CASE(evaluate)
         const auto fold = fold_t{0, protocol::train};
         const auto loss = nano::get_losses().get("logistic");
 
-        const scalar_t lambda = 0.1;
+        const scalar_t lambda = scalar_t(0.1);
 
         // create model
         const auto model = nano::get_models().get("forward-network", cmd_model);

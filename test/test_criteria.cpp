@@ -18,7 +18,7 @@ NANO_CASE(evaluate)
         const auto cmd_model = make_affine_layer(3) + make_output_layer(task->osize());
         const auto loss = nano::get_losses().get("logistic");
         const auto fold = fold_t{0, protocol::train};
-        const auto lambda = 0.1;
+        const auto lambda = scalar_t(0.1);
 
         // create model
         const auto model = nano::get_models().get("forward-network", cmd_model);
@@ -64,7 +64,7 @@ NANO_CASE(evaluate)
                 model->random_params();
                 model->save_params(x);
 
-                NANO_CHECK_GREATER(problem(x), 0.0);
+                NANO_CHECK_GREATER(problem(x), scalar_t(0));
                 NANO_CHECK_LESS(problem.grad_accuracy(x), nano::epsilon1<scalar_t>());
         }
 }

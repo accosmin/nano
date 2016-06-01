@@ -30,7 +30,9 @@ namespace nano
                                 return this->operator()(param.tunable(), problem, x0, params...);
                         };
 
-                        const auto config = nano::tune(op, make_momenta(), make_epsilons());
+                        const auto param0 = make_momenta<tscalar>();
+                        const auto param1 = make_epsilons<tscalar>();
+                        const auto config = nano::tune(op, param0, param1);
                         return operator()(param, problem, x0, config.param0(), config.param1());
                 }
 

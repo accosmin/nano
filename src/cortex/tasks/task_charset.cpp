@@ -112,10 +112,10 @@ namespace nano
                 const auto pph = nano::clamp(nano::cast<int>(irows + rng()), 0, irows - ppy);
 
                 tensor3d_t ret(4, pph, ppw);
-                ret.matrix(0) = image.matrix(0).block(ppy, ppx, pph, ppw).cast<scalar_t>() / 255.0;
-                ret.matrix(1) = image.matrix(1).block(ppy, ppx, pph, ppw).cast<scalar_t>() / 255.0;
-                ret.matrix(2) = image.matrix(2).block(ppy, ppx, pph, ppw).cast<scalar_t>() / 255.0;
-                ret.matrix(3) = image.matrix(3).block(ppy, ppx, pph, ppw).cast<scalar_t>() / 255.0;
+                ret.matrix(0) = image.matrix(0).block(ppy, ppx, pph, ppw).cast<scalar_t>() / 255;
+                ret.matrix(1) = image.matrix(1).block(ppy, ppx, pph, ppw).cast<scalar_t>() / 255;
+                ret.matrix(2) = image.matrix(2).block(ppy, ppx, pph, ppw).cast<scalar_t>() / 255;
+                ret.matrix(3) = image.matrix(3).block(ppy, ppx, pph, ppw).cast<scalar_t>() / 255;
 
                 return ret;
         }
@@ -126,10 +126,10 @@ namespace nano
         {
                 // noisy background
                 tensor3d_t image(4, rows, cols);
-                image.matrix(0).setConstant(back_color(0) / 255.0);
-                image.matrix(1).setConstant(back_color(1) / 255.0);
-                image.matrix(2).setConstant(back_color(2) / 255.0);
-                image.matrix(3).setConstant(1.0);
+                image.matrix(0).setConstant(back_color(0) / 255);
+                image.matrix(1).setConstant(back_color(1) / 255);
+                image.matrix(2).setConstant(back_color(2) / 255);
+                image.matrix(3).setConstant(1);
 
                 tensor::add_random(nano::make_rng<scalar_t>(-max_noise, +max_noise),
                         image.matrix(0), image.matrix(1), image.matrix(2));
@@ -147,14 +147,14 @@ namespace nano
         {
                 const auto op = [] (const auto a, const auto v1, const auto v2)
                 {
-                        return (1.0 - a) * v1 + a * v2;
+                        return (1 - a) * v1 + a * v2;
                 };
 
                 tensor3d_t imgb(4, mask.rows(), mask.cols());
                 tensor::transform(mask.matrix(3), img1.matrix(0), img2.matrix(0), imgb.matrix(0), op);
                 tensor::transform(mask.matrix(3), img1.matrix(1), img2.matrix(1), imgb.matrix(1), op);
                 tensor::transform(mask.matrix(3), img1.matrix(2), img2.matrix(2), imgb.matrix(2), op);
-                imgb.matrix(3).setConstant(1.0);
+                imgb.matrix(3).setConstant(1);
 
                 return imgb;
         }
@@ -211,7 +211,7 @@ namespace nano
 
                 nano::random_t<tensor_size_t> rng_output(obegin(m_charset), oend(m_charset) - 1);
                 nano::random_t<size_t> rng_font(1, n_fonts);
-                nano::random_t<scalar_t> rng_gauss(0.0, 2.0);
+                nano::random_t<scalar_t> rng_gauss(0, 2);
 
                 // generate samples
                 for (size_t i = 0; i < m_count; ++ i)
@@ -230,14 +230,15 @@ namespace nano
                         nano::bilinear(opatch.matrix(3), mpatch.matrix(3));
 
                         // image: random warping
-                        mpatch = nano::warp(mpatch, warp_params_t(field_type::random, 0.1, 4.0, 16.0, 2.0));
+                        mpatch = nano::warp(mpatch,
+                                warp_params_t(field_type::random, scalar_t(0.1), scalar_t(4.0), scalar_t(16.0), scalar_t(2.0)));
 
                         // image: background & foreground layer
                         const auto bcolor = make_random_rgba();
                         const auto fcolor = make_random_opposite_rgba(bcolor);
 
-                        const auto bnoise = 0.1;
-                        const auto fnoise = 0.1;
+                        const auto bnoise = scalar_t(0.1);
+                        const auto fnoise = scalar_t(0.1);
 
                         const auto bsigma = rng_gauss();
                         const auto fsigma = rng_gauss();
