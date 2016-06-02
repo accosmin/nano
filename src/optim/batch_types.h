@@ -1,5 +1,7 @@
 #pragma once
 
+#include "text/enum_string.hpp"
+
 namespace nano
 {
         ///
@@ -21,5 +23,24 @@ namespace nano
                 CGD_DYCD,
                 CGD_DYHS
         };
-}
 
+        template <>
+        inline std::map<batch_optimizer, std::string> enum_string<batch_optimizer>()
+        {
+                return
+                {
+                        { batch_optimizer::GD,           "gd" },
+                        { batch_optimizer::CGD,          "cgd" },
+                        { batch_optimizer::LBFGS,        "lbfgs" },
+                        { batch_optimizer::CGD_HS,       "cgd-hs" },
+                        { batch_optimizer::CGD_FR,       "cgd-fr" },
+                        { batch_optimizer::CGD_PRP,      "cgd-prp" },
+                        { batch_optimizer::CGD_CD,       "cgd-cd" },
+                        { batch_optimizer::CGD_LS,       "cgd-ls" },
+                        { batch_optimizer::CGD_DY,       "cgd-dy" },
+                        { batch_optimizer::CGD_N,        "cgd-n" },
+                        { batch_optimizer::CGD_DYCD,     "cgd-dycd" },
+                        { batch_optimizer::CGD_DYHS,     "cgd-dyhs" }
+                };
+        }
+}

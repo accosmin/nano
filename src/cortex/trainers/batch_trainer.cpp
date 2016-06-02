@@ -1,6 +1,6 @@
 #include "cortex/model.h"
-#include "math/batch.hpp"
 #include "math/clamp.hpp"
+#include "optim/batch.hpp"
 #include "batch_trainer.h"
 #include "cortex/logger.h"
 #include "text/to_string.hpp"

@@ -6,7 +6,7 @@
 build-rel*
 build-debug*
 install
-dox/html
+doxygen/html
 *~
 *.bak
 *.log

@@ -1,7 +1,7 @@
 #pragma once
 
-#include "params.hpp"
 #include "math/tune.hpp"
+#include "stoch_params.hpp"
 #include "math/momentum.hpp"
 
 namespace nano

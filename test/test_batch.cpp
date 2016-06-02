@@ -1,11 +1,10 @@
 #include "unit_test.hpp"
 #include "math/abs.hpp"
-#include "math/batch.hpp"
+#include "optim/batch.hpp"
 #include "math/random.hpp"
 #include "math/numeric.hpp"
 #include "math/epsilon.hpp"
 #include "text/to_string.hpp"
-#include "cortex/optimizer.h"
 #include "math/funcs/foreach.hpp"
 #include <iomanip>
 

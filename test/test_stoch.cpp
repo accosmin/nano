@@ -1,10 +1,9 @@
 #include "unit_test.hpp"
-#include "math/stoch.hpp"
+#include "optim/stoch.hpp"
 #include "math/random.hpp"
 #include "math/numeric.hpp"
 #include "math/epsilon.hpp"
 #include "text/to_string.hpp"
-#include "cortex/optimizer.h"
 #include "math/funcs/foreach.hpp"
 
 template

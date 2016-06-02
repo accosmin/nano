@@ -1,6 +1,6 @@
 #include "cortex/model.h"
 #include "math/clamp.hpp"
-#include "math/stoch.hpp"
+#include "optim/stoch.hpp"
 #include "thread/thread.h"
 #include "math/numeric.hpp"
 #include "text/to_string.hpp"

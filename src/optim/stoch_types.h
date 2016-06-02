@@ -1,5 +1,7 @@
 #pragma once
 
+#include "text/enum_string.hpp"
+
 namespace nano
 {
         ///
@@ -17,5 +19,22 @@ namespace nano
                 ADADELTA,                       ///< AdaDelta
                 ADAM                            ///< Adam
         };
+
+        template <>
+        inline std::map<stoch_optimizer, std::string> enum_string<stoch_optimizer>()
+        {
+                return
+                {
+                        { stoch_optimizer::SG,           "sg" },
+                        { stoch_optimizer::NGD,          "ngd" },
+                        { stoch_optimizer::SGM,          "sgm" },
+                        { stoch_optimizer::AG,           "ag" },
+                        { stoch_optimizer::AGFR,         "agfr" },
+                        { stoch_optimizer::AGGR,         "aggr" },
+                        { stoch_optimizer::ADAGRAD,      "adagrad" },
+                        { stoch_optimizer::ADADELTA,     "adadelta" },
+                        { stoch_optimizer::ADAM,         "adam" }
+                };
+        }
 }
 

@@ -1,12 +1,12 @@
 #pragma once
 
 #include "problem.h"
-#include "lsearch_types.h"
+#include "ls_types.h"
 
 #include "batch_types.h"
-#include "batch/gd.hpp"
-#include "batch/cgd.hpp"
-#include "batch/lbfgs.hpp"
+#include "batch/batch_gd.hpp"
+#include "batch/batch_cgd.hpp"
+#include "batch/batch_lbfgs.hpp"
 
 namespace nano
 {

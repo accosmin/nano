@@ -3,13 +3,13 @@
 #include "problem.h"
 
 #include "stoch_types.h"
-#include "stoch/ag.hpp"
-#include "stoch/sg.hpp"
-#include "stoch/ngd.hpp"
-#include "stoch/sgm.hpp"
-#include "stoch/adam.hpp"
-#include "stoch/adagrad.hpp"
-#include "stoch/adadelta.hpp"
+#include "stoch/stoch_ag.hpp"
+#include "stoch/stoch_sg.hpp"
+#include "stoch/stoch_ngd.hpp"
+#include "stoch/stoch_sgm.hpp"
+#include "stoch/stoch_adam.hpp"
+#include "stoch/stoch_adagrad.hpp"
+#include "stoch/stoch_adadelta.hpp"
 
 namespace nano
 {

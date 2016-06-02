@@ -12,7 +12,6 @@ set(libcortex_sources
         loss.h
         model.cpp
         model.h
-        optimizer.h
         protocol.h
         task.h
         task_util.h

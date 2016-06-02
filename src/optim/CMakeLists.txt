@@ -1,38 +1,25 @@
 # build library
-set(libmath_sources
-        ${CMAKE_CURRENT_SOURCE_DIR}/abs.hpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/average.hpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/cast.hpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/clamp.hpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/close.hpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/cubic.hpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/epsilon.hpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/gauss.hpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/momentum.hpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/numeric.hpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/quadratic.hpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/random.hpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/stats.hpp
+set(liboptim_sources
         ${CMAKE_CURRENT_SOURCE_DIR}/batch.hpp
         ${CMAKE_CURRENT_SOURCE_DIR}/batch_types.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/lsearch_types.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/ls_types.h
         ${CMAKE_CURRENT_SOURCE_DIR}/problem.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/problem.h
         ${CMAKE_CURRENT_SOURCE_DIR}/state.h
         ${CMAKE_CURRENT_SOURCE_DIR}/stoch.hpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/stoch_types.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/tune.hpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/tune_result.hpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/tune_grid_space.hpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/tune_finite_space.hpp)
+        ${CMAKE_CURRENT_SOURCE_DIR}/stoch_types.h)
 
 add_subdirectory(batch)
 add_subdirectory(stoch)
 add_subdirectory(funcs)
 
-add_library(math ${libmath_sources})
+add_library(optim SHARED ${liboptim_sources})
+target_link_libraries(optim math text tensor)
 
 # install library
+install(TARGETS optim
+        DESTINATION lib)
+
 install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
         DESTINATION include
         FILES_MATCHING PATTERN "*.h" PATTERN "*.hpp")

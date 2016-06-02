@@ -1,6 +1,6 @@
 #pragma once
 
-#include "math/problem.h"
+#include "optim/problem.h"
 #include "math/numeric.hpp"
 
 namespace nano
