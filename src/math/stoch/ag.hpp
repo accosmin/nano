@@ -24,29 +24,23 @@ namespace nano
         ///
         template
         <
-                typename tproblem,              ///< optimization problem
                 ag_restart trestart             ///< restart method
         >
         struct stoch_ag_base_t
         {
-                using param_t = stoch_params_t<tproblem>;
-                using tstate = typename param_t::tstate;
-                using tscalar = typename param_t::tscalar;
-                using tvector = typename param_t::tvector;
-
                 ///
                 /// \brief minimize starting from the initial guess x0
                 ///
-                tstate operator()(const param_t& param, const tproblem& problem, const tvector& x0) const
+                state_t operator()(const stoch_params_t& param, const problem_t& problem, const vector_t& x0) const
                 {
                         const auto op = [&] (const auto... params)
                         {
                                 return this->operator()(param.tunable(), problem, x0, params...);
                         };
 
-                        const auto param0 = make_alpha0s<tscalar>();
-                        const auto param1 = make_decays<tscalar>();
-                        const auto param2 = make_finite_space(tscalar(0.05), tscalar(0.10), tscalar(0.15), tscalar(0.20));
+                        const auto param0 = make_alpha0s();
+                        const auto param1 = make_decays();
+                        const auto param2 = make_finite_space(scalar_t(0.05), scalar_t(0.10), scalar_t(0.15), scalar_t(0.20));
                         const auto config = nano::tune(op, param0, param1, param2);
                         return operator()(param, problem, x0, config.param0(), config.param1(), config.param2());
                 }
@@ -54,32 +48,32 @@ namespace nano
                 ///
                 /// \brief minimize starting from the initial guess x0
                 ///
-                tstate operator()(const param_t& param, const tproblem& problem, const tvector& x0,
-                        const tscalar alpha0, const tscalar decay, const tscalar q) const
+                state_t operator()(const stoch_params_t& param, const problem_t& problem, const vector_t& x0,
+                        const scalar_t alpha0, const scalar_t decay, const scalar_t q) const
                 {
                         assert(problem.size() == x0.size());
 
                         // initial state
-                        tstate istate(problem, x0);
+                        state_t istate(problem, x0);
 
                         // current & previous iterations
-                        tvector cx = istate.x;
-                        tvector px = istate.x;
-                        tvector cy = istate.x;
-                        tvector py = istate.x;
+                        vector_t cx = istate.x;
+                        vector_t px = istate.x;
+                        vector_t cy = istate.x;
+                        vector_t py = istate.x;
 
-                        tscalar cfx = istate.f;
-                        tscalar pfx = istate.f;
+                        scalar_t cfx = istate.f;
+                        scalar_t pfx = istate.f;
 
-                        tscalar ptheta = 1;
-                        tscalar ctheta = 1;
+                        scalar_t ptheta = 1;
+                        scalar_t ctheta = 1;
 
                         // learning rate schedule
-                        lrate_t<tscalar> lrate(alpha0, decay);
+                        lrate_t<scalar_t> lrate(alpha0, decay);
 
                         const auto get_theta = [] (const auto ptheta, const auto q)
                         {
-                                const auto a = tscalar(1);
+                                const auto a = scalar_t(1);
                                 const auto b = ptheta * ptheta - q;
                                 const auto c = - ptheta * ptheta;
 
@@ -91,14 +85,14 @@ namespace nano
                                 return ptheta * (1 - ptheta) / (ptheta * ptheta + ctheta);
                         };
 
-                        const auto op_iter = [&] (tstate& cstate)
+                        const auto op_iter = [&] (state_t& cstate)
                         {
                                 // learning rate
-                                const tscalar alpha = lrate.get();
+                                const scalar_t alpha = lrate.get();
 
                                 // momentum
                                 ctheta = get_theta(ptheta, q);
-                                const tscalar beta = get_beta(ptheta, ctheta);
+                                const scalar_t beta = get_beta(ptheta, ctheta);
 
                                 // update solution
                                 cstate.update(problem, py);
@@ -119,7 +113,7 @@ namespace nano
                                         break;
 
                                 case ag_restart::gradient:
-                                        if (cstate.g.dot(cx - px) > tscalar(0))
+                                        if (cstate.g.dot(cx - px) > scalar_t(0))
                                         {
                                                 ctheta = 1;
                                         }
@@ -140,13 +134,8 @@ namespace nano
         };
 
         // create various AG implementations
-        template <typename tproblem>
-        using stoch_ag_t = stoch_ag_base_t<tproblem, ag_restart::none>;
-
-        template <typename tproblem>
-        using stoch_agfr_t = stoch_ag_base_t<tproblem, ag_restart::function>;
-
-        template <typename tproblem>
-        using stoch_aggr_t = stoch_ag_base_t<tproblem, ag_restart::gradient>;
+        using stoch_ag_t = stoch_ag_base_t<ag_restart::none>;
+        using stoch_agfr_t = stoch_ag_base_t<ag_restart::function>;
+        using stoch_aggr_t = stoch_ag_base_t<ag_restart::gradient>;
 }
 

@@ -10,48 +10,40 @@ namespace nano
         ///
         /// https://en.wikipedia.org/wiki/Test_functions_for_optimization
         ///
-        template
-        <
-                typename tscalar
-        >
-        struct function_beale_t : public function_t<tscalar>
+        struct function_beale_t : public function_t
         {
-                using tsize = typename function_t<tscalar>::tsize;
-                using tvector = typename function_t<tscalar>::tvector;
-                using tproblem = typename function_t<tscalar>::tproblem;
-
                 virtual std::string name() const override
                 {
                         return "Beale";
                 }
 
-                virtual tproblem problem() const override
+                virtual problem_t problem() const override
                 {
                         const auto fn_size = [=] ()
                         {
-                                return 2;
+                                return vector_t::Index(2);
                         };
 
-                        const auto fn_fval = [=] (const tvector& x)
+                        const auto fn_fval = [=] (const vector_t& x)
                         {
                                 const auto a = x(0);
                                 const auto b = x(1), b2 = b * b, b3 = b2 * b;
 
-                                const auto z0 = tscalar(1.5) - a + a * b;
-                                const auto z1 = tscalar(2.25) - a + a * b2;
-                                const auto z2 = tscalar(2.625) - a + a * b3;
+                                const auto z0 = scalar_t(1.5) - a + a * b;
+                                const auto z1 = scalar_t(2.25) - a + a * b2;
+                                const auto z2 = scalar_t(2.625) - a + a * b3;
 
                                 return z0 * z0 + z1 * z1 + z2 * z2;
                         };
 
-                        const auto fn_grad = [=] (const tvector& x, tvector& gx)
+                        const auto fn_grad = [=] (const vector_t& x, vector_t& gx)
                         {
                                 const auto a = x(0);
                                 const auto b = x(1), b2 = b * b, b3 = b2 * b;
 
-                                const auto z0 = tscalar(1.5) - a + a * b;
-                                const auto z1 = tscalar(2.25) - a + a * b2;
-                                const auto z2 = tscalar(2.625) - a + a * b3;
+                                const auto z0 = scalar_t(1.5) - a + a * b;
+                                const auto z1 = scalar_t(2.25) - a + a * b2;
+                                const auto z2 = scalar_t(2.625) - a + a * b3;
 
                                 gx.resize(2);
                                 gx(0) = 2 * (z0 * (-1 + b) + z1 * (-1 + b2) + z2 * (-1 + b3));
@@ -60,19 +52,19 @@ namespace nano
                                 return fn_fval(x);
                         };
 
-                        return tproblem(fn_size, fn_fval, fn_grad);
+                        return {fn_size, fn_fval, fn_grad};
                 }
 
-                virtual bool is_valid(const tvector& x) const override
+                virtual bool is_valid(const vector_t& x) const override
                 {
-                        return util::norm(x) < tscalar(4.5);
+                        return util::norm(x) < scalar_t(4.5);
                 }
 
-                virtual bool is_minima(const tvector& x, const tscalar epsilon) const override
+                virtual bool is_minima(const vector_t& x, const scalar_t epsilon) const override
                 {
                         const auto xmins =
                         {
-                                std::vector<tscalar>{ tscalar(3.0), tscalar(0.5) }
+                                std::vector<scalar_t>{ scalar_t(3.0), scalar_t(0.5) }
                         };
 
                         return util::check_close(x, xmins, epsilon);

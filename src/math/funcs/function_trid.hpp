@@ -8,18 +8,10 @@ namespace nano
         ///
         /// \brief create Trid test functions
         ///
-        template
-        <
-                typename tscalar
-        >
-        struct function_trid_t : public function_t<tscalar>
+        struct function_trid_t : public function_t
         {
-                using tsize = typename function_t<tscalar>::tsize;
-                using tvector = typename function_t<tscalar>::tvector;
-                using tproblem = typename function_t<tscalar>::tproblem;
-
-                explicit function_trid_t(const tsize dims)
-                        :       m_dims(dims)
+                explicit function_trid_t(const vector_t::Index dims) :
+                        m_dims(dims)
                 {
                 }
 
@@ -28,20 +20,20 @@ namespace nano
                         return "Trid" + std::to_string(m_dims) + "D";
                 }
 
-                virtual tproblem problem() const override
+                virtual problem_t problem() const override
                 {
                         const auto fn_size = [=] ()
                         {
                                 return m_dims;
                         };
 
-                        const auto fn_fval = [=] (const tvector& x)
+                        const auto fn_fval = [=] (const vector_t& x)
                         {
-                                return (x.array() - 1).square().sum() - 
+                                return (x.array() - 1).square().sum() -
                                        (x.segment(0, m_dims - 1).array() * x.segment(1, m_dims - 1).array()).sum();
                         };
 
-                        const auto fn_grad = [=] (const tvector& x, tvector& gx)
+                        const auto fn_grad = [=] (const vector_t& x, vector_t& gx)
                         {
                                 gx = 2 * (x.array() - 1);
                                 gx.segment(1, m_dims - 1) -= x.segment(0, m_dims - 1);
@@ -50,20 +42,20 @@ namespace nano
                                 return fn_fval(x);
                         };
 
-                        return tproblem(fn_size, fn_fval, fn_grad);
+                        return {fn_size, fn_fval, fn_grad};
                 }
 
-                virtual bool is_valid(const tvector& x) const override
+                virtual bool is_valid(const vector_t& x) const override
                 {
-                        return util::norm(x) < tscalar(1 + m_dims * m_dims);
+                        return util::norm(x) < scalar_t(1 + m_dims * m_dims);
                 }
 
-                virtual bool is_minima(const tvector& x, const tscalar epsilon) const override
+                virtual bool is_minima(const vector_t& x, const scalar_t epsilon) const override
                 {
-                        tvector xmin(m_dims);
+                        vector_t xmin(m_dims);
                         for (tsize d = 0; d < m_dims; d ++)
                         {
-                                xmin(d) = tscalar(d + 1) * tscalar(m_dims - d);
+                                xmin(d) = scalar_t(d + 1) * scalar_t(m_dims - d);
                         }
 
                         return util::distance(x, xmin) < epsilon;

@@ -8,23 +8,15 @@ namespace nano
         ///
         /// \brief create Zakharov test functions
         ///
-        template
-        <
-                typename tscalar
-        >
-        struct function_zakharov_t : public function_t<tscalar>
+        struct function_zakharov_t : public function_t
         {
-                using tsize = typename function_t<tscalar>::tsize;
-                using tvector = typename function_t<tscalar>::tvector;
-                using tproblem = typename function_t<tscalar>::tproblem;
-
-                explicit function_zakharov_t(const tsize dims)
-                        :       m_dims(dims),
-                                m_weights(dims)
+                explicit function_zakharov_t(const tsize dims) :
+                        m_dims(dims),
+                        m_weights(dims)
                 {
                         for (tsize i = 0; i < dims; i ++)
                         {
-                                m_weights(i) = static_cast<tscalar>(i / 2);
+                                m_weights(i) = static_cast<scalar_t>(i / 2);
                         }
                 }
 
@@ -33,45 +25,45 @@ namespace nano
                         return "Zakharov" + std::to_string(m_dims) + "D";
                 }
 
-                virtual tproblem problem() const override
+                virtual problem_t problem() const override
                 {
                         const auto fn_size = [=] ()
                         {
                                 return m_dims;
                         };
 
-                        const auto fn_fval = [=] (const tvector& x)
+                        const auto fn_fval = [=] (const vector_t& x)
                         {
-                                const tscalar u = x.array().square().sum();
-                                const tscalar v = (m_weights.array() * x.array()).sum();
+                                const scalar_t u = x.array().square().sum();
+                                const scalar_t v = (m_weights.array() * x.array()).sum();
 
                                 return u + nano::square(v) + nano::quartic(v);
                         };
 
-                        const auto fn_grad = [=] (const tvector& x, tvector& gx)
+                        const auto fn_grad = [=] (const vector_t& x, vector_t& gx)
                         {
-                                const tscalar u = x.array().square().sum();
-                                const tscalar v = (m_weights.array() * x.array()).sum();
+                                const scalar_t u = x.array().square().sum();
+                                const scalar_t v = (m_weights.array() * x.array()).sum();
 
                                 gx = 2 * x + (2 * v + 4 * nano::cube(v)) * m_weights;
 
                                 return u + nano::square(v) + nano::quartic(v);
                         };
 
-                        return tproblem(fn_size, fn_fval, fn_grad);
+                        return {fn_size, fn_fval, fn_grad};
                 }
 
-                virtual bool is_valid(const tvector& x) const override
+                virtual bool is_valid(const vector_t& x) const override
                 {
-                        return tscalar(-5.0) < x.minCoeff() && x.maxCoeff() < tscalar(10.0);
+                        return scalar_t(-5.0) < x.minCoeff() && x.maxCoeff() < scalar_t(10.0);
                 }
 
-                virtual bool is_minima(const tvector& x, const tscalar epsilon) const override
+                virtual bool is_minima(const vector_t& x, const scalar_t epsilon) const override
                 {
-                        return util::distance(x, tvector::Zero(m_dims)) < epsilon;
+                        return util::distance(x, vector_t::Zero(m_dims)) < epsilon;
                 }
 
-                tsize   m_dims;
-                tvector m_weights;
-        };  
+                tsize           m_dims;
+                vector_t        m_weights;
+        };
 }

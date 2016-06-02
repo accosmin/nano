@@ -16,8 +16,9 @@ set(libmath_sources
         ${CMAKE_CURRENT_SOURCE_DIR}/batch.hpp
         ${CMAKE_CURRENT_SOURCE_DIR}/batch_types.h
         ${CMAKE_CURRENT_SOURCE_DIR}/lsearch_types.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/problem.hpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/state.hpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/problem.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/problem.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/state.h
         ${CMAKE_CURRENT_SOURCE_DIR}/stoch.hpp
         ${CMAKE_CURRENT_SOURCE_DIR}/stoch_types.h
         ${CMAKE_CURRENT_SOURCE_DIR}/tune.hpp
@@ -29,7 +30,7 @@ add_subdirectory(batch)
 add_subdirectory(stoch)
 add_subdirectory(funcs)
 
-add_library(math INTERFACE)
+add_library(math ${libmath_sources})
 
 # install library
 install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}

@@ -13,12 +13,11 @@ namespace nano
         ///
         template
         <
-                typename tproblem,      ///< optimization problem
                 typename toptimizer     ///< optimization algorithm
         >
         auto batch_loop(
-                const batch_params_t<tproblem>& params,
-                const typename batch_params_t<tproblem>::tstate& istate,
+                const batch_params_t& params,
+                const state_t& istate,
                 const toptimizer& optimizer)
         {
                 // current state

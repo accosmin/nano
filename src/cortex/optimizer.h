@@ -9,18 +9,6 @@
 
 namespace nano
 {
-        using opt_problem_t = problem_t<scalar_t>;
-
-        using opt_size_t = opt_problem_t::tsize;
-        using opt_state_t = opt_problem_t::tstate;
-
-        using opt_opsize_t = opt_problem_t::topsize;
-        using opt_opfval_t = opt_problem_t::topfval;
-        using opt_opgrad_t = opt_problem_t::topgrad;
-}
-
-namespace nano
-{
         template <>
         inline std::map<nano::stoch_optimizer, std::string> enum_string<nano::stoch_optimizer>()
         {

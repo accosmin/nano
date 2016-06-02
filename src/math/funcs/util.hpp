@@ -1,7 +1,7 @@
 #pragma once
 
+#include "math/problem.h"
 #include "math/numeric.hpp"
-#include "math/problem.hpp"
 
 namespace nano
 {
@@ -42,7 +42,7 @@ namespace nano
                 >
                 auto map_vector(const tscalar* data, const tsize size)
                 {
-                        return Eigen::Map<const typename nano::problem_t<tscalar>::tvector>(data, size);
+                        return Eigen::Map<vector_t>(data, size);
                 }
 
                 template

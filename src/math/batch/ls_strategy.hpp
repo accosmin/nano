@@ -2,7 +2,7 @@
 
 #include <cassert>
 #include "ls_step.hpp"
-#include "math/state.hpp"
+#include "math/state.h"
 #include "ls_backtrack.hpp"
 #include "ls_cgdescent.hpp"
 #include "ls_interpolate.hpp"

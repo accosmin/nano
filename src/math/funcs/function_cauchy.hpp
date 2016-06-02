@@ -8,18 +8,10 @@ namespace nano
         ///
         /// \brief create Cauchy test functions
         ///
-        template
-        <
-                typename tscalar
-        >
-        struct function_cauchy_t : public function_t<tscalar>
+        struct function_cauchy_t : public function_t
         {
-                using tsize = typename function_t<tscalar>::tsize;
-                using tvector = typename function_t<tscalar>::tvector;
-                using tproblem = typename function_t<tscalar>::tproblem;
-
-                explicit function_cauchy_t(const tsize dims)
-                        :       m_dims(dims)
+                explicit function_cauchy_t(const tsize dims) :
+                        m_dims(dims)
                 {
                 }
 
@@ -28,36 +20,36 @@ namespace nano
                         return "Cauchy" + std::to_string(m_dims) + "D";
                 }
 
-                virtual tproblem problem() const override
+                virtual problem_t problem() const override
                 {
                         const auto fn_size = [=] ()
                         {
                                 return m_dims;
                         };
 
-                        const auto fn_fval = [=] (const tvector& x)
+                        const auto fn_fval = [=] (const vector_t& x)
                         {
                                 return std::log((1.0 + x.array().square()).prod());
                         };
 
-                        const auto fn_grad = [=] (const tvector& x, tvector& gx)
+                        const auto fn_grad = [=] (const vector_t& x, vector_t& gx)
                         {
                                 gx = (2 * x.array()) / (1 + x.array().square());
 
                                 return fn_fval(x);
                         };
 
-                        return tproblem(fn_size, fn_fval, fn_grad);
+                        return {fn_size, fn_fval, fn_grad};
                 }
 
-                virtual bool is_valid(const tvector&) const override
+                virtual bool is_valid(const vector_t&) const override
                 {
                         return true;
                 }
 
-                virtual bool is_minima(const tvector& x, const tscalar epsilon) const override
+                virtual bool is_minima(const vector_t& x, const scalar_t epsilon) const override
                 {
-                        return util::distance(x, tvector::Zero(m_dims)) < epsilon;
+                        return util::distance(x, vector_t::Zero(m_dims)) < epsilon;
                 }
 
                 tsize   m_dims;

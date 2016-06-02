@@ -1,6 +1,6 @@
 #pragma once
 
-#include "problem.hpp"
+#include "problem.h"
 
 #include "stoch_types.h"
 #include "stoch/ag.hpp"
@@ -18,19 +18,17 @@ namespace nano
         ///
         template
         <
-                typename tproblem,      ///< optimization problem
                 typename topulog,       ///< logging operator
-                typename toptlog,       ///< tuning operator
-                typename tvector = typename tproblem::tvector
+                typename toptlog        ///< tuning operator
         >
         auto minimize(
-                const tproblem& problem,
+                const problem_t& problem,
                 const topulog& fn_ulog,
                 const toptlog& fn_tlog,
-                const tvector& x0,
+                const vector_t& x0,
                 const stoch_optimizer optimizer, const std::size_t epochs, const std::size_t epoch_size)
         {
-                const stoch_params_t<tproblem> param(epochs, epoch_size, fn_ulog, fn_tlog);
+                const stoch_params_t param(epochs, epoch_size, fn_ulog, fn_tlog);
 
                 switch (optimizer)
                 {

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "problem.hpp"
+#include "problem.h"
 #include "lsearch_types.h"
 
 #include "batch_types.h"
@@ -15,21 +15,18 @@ namespace nano
         ///
         template
         <
-                typename tproblem,      ///< optimization problem
-                typename topulog,       ///< logging operator
-                typename tvector = typename tproblem::tvector,
-                typename tscalar = typename tproblem::tscalar
+                typename topulog        ///< logging operator
         >
         auto minimize(
-                const tproblem& problem,
+                const problem_t& problem,
                 const topulog& fn_ulog,
-                const tvector& x0,
-                const batch_optimizer optimizer, const std::size_t iterations, const tscalar epsilon,
+                const vector_t& x0,
+                const batch_optimizer optimizer, const std::size_t iterations, const scalar_t epsilon,
                 const ls_initializer lsinit,
                 const ls_strategy lsstrat,
                 const std::size_t history_size = 6)
         {
-                const batch_params_t<tproblem> param(iterations, epsilon, lsinit, lsstrat, history_size, fn_ulog);
+                const batch_params_t param(iterations, epsilon, lsinit, lsstrat, history_size, fn_ulog);
 
                 switch (optimizer)
                 {
@@ -77,16 +74,13 @@ namespace nano
         ///
         template
         <
-                typename tproblem,      ///< optimization problem
-                typename topulog,       ///< logging operator (update)
-                typename tvector = typename tproblem::tvector,
-                typename tscalar = typename tproblem::tscalar
+                typename topulog        ///< logging operator (update)
         >
         auto minimize(
-                const tproblem& problem,
+                const problem_t& problem,
                 const topulog& fn_ulog,
-                const tvector& x0,
-                const batch_optimizer optimizer, const std::size_t iterations, const tscalar epsilon,
+                const vector_t& x0,
+                const batch_optimizer optimizer, const std::size_t iterations, const scalar_t epsilon,
                 const std::size_t history_size = 6)
         {
                 switch (optimizer)

@@ -1,11 +1,14 @@
 #pragma once
 
 #include <limits>
-#include <type_traits>
-#include <eigen3/Eigen/Core>
+#include "tensor.h"
 
 namespace nano
 {
+        struct state_t;
+
+        bool operator<(const state_t& one, const state_t& two);
+
         ///
         /// \brief optimization state described as:
         ///     current point (x),
@@ -14,25 +17,15 @@ namespace nano
         ///     descent direction (d) &
         ///     line-search step (t)
         ///
-        template
-        <
-                typename tscalar_,
-                typename tvector_ = Eigen::Matrix<tscalar_, Eigen::Dynamic, 1, Eigen::ColMajor>,
-                typename tsize_ = typename tvector_::Index,
-                typename tvalid_tscalar = typename std::enable_if<std::is_floating_point<tscalar_>::value>::type
-        >
         struct state_t
         {
-                using tsize = tsize_;
-                using tscalar = tscalar_;
-                using tvector = tvector_;
-
                 ///
                 /// \brief constructor
                 ///
+                template <typename tsize>
                 explicit state_t(const tsize size = 0) :
                         x(size), g(size), d(size),
-                        f(std::numeric_limits<tscalar>::max()),
+                        f(std::numeric_limits<scalar_t>::max()),
                         m_iterations(0),
                         m_fcalls(0),
                         m_gcalls(0)
@@ -42,11 +35,8 @@ namespace nano
                 ///
                 /// \brief constructor
                 ///
-                template
-                <
-                        typename tproblem
-                >
-                state_t(const tproblem& problem, const tvector& x0) :
+                template <typename tproblem>
+                state_t(const tproblem& problem, const vector_t& x0) :
                         state_t(problem.size())
                 {
                         x = x0;
@@ -56,11 +46,8 @@ namespace nano
                 ///
                 /// \brief update current state (move to another position)
                 ///
-                template
-                <
-                        typename tproblem
-                >
-                void update(const tproblem& problem, const tvector& xx)
+                template <typename tproblem>
+                void update(const tproblem& problem, const vector_t& xx)
                 {
                         x = xx;
                         f = problem(x, g);
@@ -73,11 +60,8 @@ namespace nano
                 ///
                 /// \brief update current state (move t along the chosen direction)
                 ///
-                template
-                <
-                        typename tproblem
-                >
-                void update(const tproblem& problem, tscalar t)
+                template <typename tproblem>
+                void update(const tproblem& problem, const scalar_t t)
                 {
                         x.noalias() += t * d;
                         f = problem(x, g);
@@ -91,11 +75,8 @@ namespace nano
                 /// \brief update current state (move t along the chosen direction,
                 /// but the function value & gradient are already computed)
                 ///
-                template
-                <
-                        typename tproblem
-                >
-                void update(const tproblem& problem, tscalar t, tscalar ft, const tvector& gt)
+                template <typename tproblem>
+                void update(const tproblem& problem, const scalar_t t, const scalar_t ft, const vector_t& gt)
                 {
                         x.noalias() += t * d;
                         f = ft;
@@ -130,7 +111,7 @@ namespace nano
                 ///
                 /// \brief check convergence: the gradient is relatively small
                 ///
-                bool converged(const tscalar epsilon) const
+                bool converged(const scalar_t epsilon) const
                 {
                         return convergence_criteria() < epsilon;
                 }
@@ -138,14 +119,14 @@ namespace nano
                 ///
                 /// \brief convergence criteria: relative gradient
                 ///
-                tscalar convergence_criteria() const
+                scalar_t convergence_criteria() const
                 {
                         return (g.template lpNorm<Eigen::Infinity>()) / (1 + std::fabs(f));
                 }
 
                 // attributes
-                tvector         x, g, d;                ///< parameter, gradient, descent direction
-                tscalar         f;                      ///< function value, step size
+                vector_t        x, g, d;                ///< parameter, gradient, descent direction
+                scalar_t        f;                      ///< function value, step size
 
                 std::size_t     m_iterations;
                 std::size_t     m_fcalls;               ///< #function value evaluations
@@ -155,16 +136,10 @@ namespace nano
         ///
         /// \brief compare two optimization states
         ///
-        template
-        <
-                typename tscalar,
-                typename tsize
-        >
-        bool operator<(const state_t<tscalar, tsize>& one,
-                       const state_t<tscalar, tsize>& two)
+        inline bool operator<(const state_t& one, const state_t& two)
         {
-                const tscalar f1 = std::isfinite(one.f) ? one.f : std::numeric_limits<tscalar>::max();
-                const tscalar f2 = std::isfinite(two.f) ? two.f : std::numeric_limits<tscalar>::max();
+                const auto f1 = std::isfinite(one.f) ? one.f : std::numeric_limits<scalar_t>::max();
+                const auto f2 = std::isfinite(two.f) ? two.f : std::numeric_limits<scalar_t>::max();
 
                 return f1 < f2;
         }

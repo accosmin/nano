@@ -10,29 +10,21 @@ namespace nano
         ///
         /// https://en.wikipedia.org/wiki/Test_functions_for_optimization
         ///
-        template
-        <
-                typename tscalar
-        >
-        struct function_goldstein_price_t : public function_t<tscalar>
+        struct function_goldstein_price_t : public function_t
         {
-                using tsize = typename function_t<tscalar>::tsize;
-                using tvector = typename function_t<tscalar>::tvector;
-                using tproblem = typename function_t<tscalar>::tproblem;
-
                 virtual std::string name() const override
                 {
                         return "Goldstein-Price";
                 }
 
-                virtual tproblem problem() const override
+                virtual problem_t problem() const override
                 {
                         const auto fn_size = [=] ()
                         {
-                                return 2;
+                                return vector_t::Index(2);
                         };
 
-                        const auto fn_fval = [=] (const tvector& x)
+                        const auto fn_fval = [=] (const vector_t& x)
                         {
                                 const auto a = x(0), b = x(1);
 
@@ -47,7 +39,7 @@ namespace nano
                                 return u * v;
                         };
 
-                        const auto fn_grad = [=] (const tvector& x, tvector& gx)
+                        const auto fn_grad = [=] (const vector_t& x, vector_t& gx)
                         {
                                 const auto a = x(0), b = x(1);
 
@@ -80,22 +72,22 @@ namespace nano
                                 return u * v;
                         };
 
-                        return tproblem(fn_size, fn_fval, fn_grad);
+                        return {fn_size, fn_fval, fn_grad};
                 }
 
-                virtual bool is_valid(const tvector& x) const override
+                virtual bool is_valid(const vector_t& x) const override
                 {
                         return util::norm(x) < 2.0;
                 }
 
-                virtual bool is_minima(const tvector& x, const tscalar epsilon) const override
+                virtual bool is_minima(const vector_t& x, const scalar_t epsilon) const override
                 {
                         const auto xmins =
                         {
-                                std::vector<tscalar>{ tscalar(+0.0), tscalar(-1.0) },
-                                std::vector<tscalar>{ tscalar(+1.2), tscalar(+0.8) },
-                                std::vector<tscalar>{ tscalar(+1.8), tscalar(+0.2) },
-                                std::vector<tscalar>{ tscalar(-0.6), tscalar(-0.4) }
+                                std::vector<scalar_t>{ scalar_t(+0.0), scalar_t(-1.0) },
+                                std::vector<scalar_t>{ scalar_t(+1.2), scalar_t(+0.8) },
+                                std::vector<scalar_t>{ scalar_t(+1.8), scalar_t(+0.2) },
+                                std::vector<scalar_t>{ scalar_t(-0.6), scalar_t(-0.4) }
                         };
 
                         return util::check_close(x, xmins, epsilon);

@@ -9,28 +9,24 @@ namespace nano
         ///
         /// \brief hyper-parameter tuning for stochastic optimizers.
         ///
-        template <typename tscalar>
-        auto make_alpha0s()
+        inline auto make_alpha0s()
         {
-                return nano::make_finite_space(tscalar(1e-3), tscalar(1e-2), tscalar(1e-1));
+                return make_finite_space(scalar_t(1e-3), scalar_t(1e-2), scalar_t(1e-1));
         }
 
-        template <typename tscalar>
-        auto make_decays()
+        inline auto make_decays()
         {
-                return nano::make_log10_space(tscalar(-3.0), tscalar(-1.0), tscalar(0.2));
+                return make_log10_space(scalar_t(-3.0), scalar_t(-1.0), scalar_t(0.2));
         }
 
-        template <typename tscalar>
-        auto make_momenta()
+        inline auto make_momenta()
         {
-                return nano::make_log10_space(std::log10(tscalar(0.1)), std::log10(tscalar(0.99)), tscalar(0.2));
+                return make_log10_space(std::log10(scalar_t(0.1)), std::log10(scalar_t(0.99)), scalar_t(0.2));
         }
 
-        template <typename tscalar>
-        auto make_epsilons()
+        inline auto make_epsilons()
         {
-                return nano::make_finite_space(tscalar(1e-4), tscalar(1e-6), tscalar(1e-8));
+                return make_finite_space(scalar_t(1e-4), scalar_t(1e-6), scalar_t(1e-8));
         }
 
         ///
@@ -41,15 +37,14 @@ namespace nano
         ///
         template
         <
-                typename tproblem,      ///< optimization problem
                 typename toptimizer     ///< optimization method
         >
         auto stoch_loop(
-                const tproblem& problem,
-                const stoch_params_t<tproblem>& params,
-                const typename stoch_params_t<tproblem>::tstate& istate,
+                const problem_t& problem,
+                const stoch_params_t& params,
+                const state_t& istate,
                 const toptimizer& optimizer,
-                const typename stoch_params_t<tproblem>::tconfig& config)
+                const stoch_params_t::config_t& config)
         {
                 // current state
                 auto cstate = istate;
@@ -58,12 +53,12 @@ namespace nano
                 // - similar to average stochastic gradient descent, but using an exponential moving average
                 auto astate = istate;
 
-                const typename tproblem::tscalar momentum = typename tproblem::tscalar(0.95);
-                momentum_vector_t<typename tproblem::tvector> xavg(momentum, istate.x.size());
+                const scalar_t momentum = scalar_t(0.95);
+                momentum_vector_t<vector_t> xavg(momentum, istate.x.size());
 
                 // best state
                 auto bstate = istate;
-                bstate.f = std::numeric_limits<typename tproblem::tscalar>::max();
+                bstate.f = std::numeric_limits<scalar_t>::max();
 
                 // for each epoch ...
                 for (std::size_t e = 0; e < params.m_epochs; ++ e)

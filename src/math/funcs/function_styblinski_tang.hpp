@@ -8,18 +8,10 @@ namespace nano
         ///
         /// \brief create Styblinski-Tang test functions
         ///
-        template
-        <
-                typename tscalar
-        >
-        struct function_styblinski_tang_t : public function_t<tscalar>
+        struct function_styblinski_tang_t : public function_t
         {
-                using tsize = typename function_t<tscalar>::tsize;
-                using tvector = typename function_t<tscalar>::tvector;
-                using tproblem = typename function_t<tscalar>::tproblem;
-
-                explicit function_styblinski_tang_t(const tsize dims)
-                        :       m_dims(dims)
+                explicit function_styblinski_tang_t(const tsize dims) :
+                        m_dims(dims)
                 {
                 }
 
@@ -28,37 +20,37 @@ namespace nano
                         return "Styblinski-Tang" + std::to_string(m_dims) + "D";
                 }
 
-                virtual tproblem problem() const override
+                virtual problem_t problem() const override
                 {
                         const auto fn_size = [=] ()
                         {
                                 return m_dims;
                         };
 
-                        const auto fn_fval = [=] (const tvector& x)
+                        const auto fn_fval = [=] (const vector_t& x)
                         {
                                 return (x.array().square().square() - 16 * x.array().square() + 5 * x.array()).sum();
                         };
 
-                        const auto fn_grad = [=] (const tvector& x, tvector& gx)
+                        const auto fn_grad = [=] (const vector_t& x, vector_t& gx)
                         {
                                 gx = 4 * x.array().cube() - 32 * x.array() + 5;
 
                                 return fn_fval(x);
                         };
 
-                        return tproblem(fn_size, fn_fval, fn_grad);
+                        return {fn_size, fn_fval, fn_grad};
                 }
 
-                virtual bool is_valid(const tvector& x) const override
+                virtual bool is_valid(const vector_t& x) const override
                 {
-                        return tscalar(-5.0) < x.minCoeff() && x.maxCoeff() < tscalar(5.0);
+                        return scalar_t(-5.0) < x.minCoeff() && x.maxCoeff() < scalar_t(5.0);
                 }
 
-                virtual bool is_minima(const tvector& x, const tscalar epsilon) const override
+                virtual bool is_minima(const vector_t& x, const scalar_t epsilon) const override
                 {
-                        const auto u1 = tscalar(-2.9035340);
-                        const auto u2 = tscalar(+2.7468027);
+                        const auto u1 = scalar_t(-2.9035340);
+                        const auto u2 = scalar_t(+2.7468027);
 
                         bool ok = true;
                         for (tsize i = 0; i < m_dims && ok; i ++)

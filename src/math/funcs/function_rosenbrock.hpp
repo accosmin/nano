@@ -10,18 +10,10 @@ namespace nano
         ///
         /// https://en.wikipedia.org/wiki/Test_functions_for_optimization
         ///
-        template
-        <
-                typename tscalar
-        >
-        struct function_rosenbrock_t : public function_t<tscalar>
+        struct function_rosenbrock_t : public function_t
         {
-                using tsize = typename function_t<tscalar>::tsize;
-                using tvector = typename function_t<tscalar>::tvector;
-                using tproblem = typename function_t<tscalar>::tproblem;
-
-                explicit function_rosenbrock_t(const tsize dims)
-                        :       m_dims(dims)
+                explicit function_rosenbrock_t(const tsize dims) :
+                        m_dims(dims)
                 {
                 }
 
@@ -30,16 +22,16 @@ namespace nano
                         return "Rosenbrock" + std::to_string(m_dims) + "D";
                 }
 
-                virtual tproblem problem() const override
+                virtual problem_t problem() const override
                 {
                         const auto fn_size = [=] ()
                         {
                                 return m_dims;
                         };
 
-                        const auto fn_fval = [=] (const tvector& x)
+                        const auto fn_fval = [=] (const vector_t& x)
                         {
-                                tscalar fx = 0;
+                                scalar_t fx = 0;
                                 for (tsize i = 0; i + 1 < m_dims; i ++)
                                 {
                                         fx += 100 * nano::square(x(i + 1) - x(i) * x(i)) + nano::square(x(i) - 1);
@@ -48,7 +40,7 @@ namespace nano
                                 return fx;
                         };
 
-                        const auto fn_grad = [=] (const tvector& x, tvector& gx)
+                        const auto fn_grad = [=] (const vector_t& x, vector_t& gx)
                         {
                                 gx.resize(m_dims);
                                 gx.setZero();
@@ -62,18 +54,18 @@ namespace nano
                                 return fn_fval(x);
                         };
 
-                        return tproblem(fn_size, fn_fval, fn_grad);
+                        return {fn_size, fn_fval, fn_grad};
                 }
 
-                virtual bool is_valid(const tvector& x) const override
+                virtual bool is_valid(const vector_t& x) const override
                 {
-                        return util::norm(x) < tscalar(2.4);
+                        return util::norm(x) < scalar_t(2.4);
                 }
 
-                virtual bool is_minima(const tvector& x, const tscalar epsilon) const override
+                virtual bool is_minima(const vector_t& x, const scalar_t epsilon) const override
                 {
                         {
-                                const tvector xmin = tvector::Ones(m_dims);
+                                const vector_t xmin = vector_t::Ones(m_dims);
 
                                 if (util::distance(x, xmin) < epsilon)
                                 {
@@ -83,7 +75,7 @@ namespace nano
 
                         if (m_dims >= 4 && m_dims <= 7)
                         {
-                                tvector xmin = tvector::Ones(m_dims);
+                                vector_t xmin = vector_t::Ones(m_dims);
                                 xmin(0) = -1;
 
                                 if (util::distance(x, xmin) < epsilon)
