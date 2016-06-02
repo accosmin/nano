@@ -11,7 +11,7 @@ compilers="$@"
 configs="asan msan" # tsan"
 builds="release debug"
 
-basedir=$(dirname $0)"/../"
+basedir=$(dirname $0)
 
 # cppcheck
 idirs=""

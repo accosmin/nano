@@ -22,8 +22,11 @@ namespace nano
                 model.save_params(x0);
 
                 // setup accumulators
-                accumulator_t lacc(model, loss, criterion, criterion_t::type::value); lacc.set_threads(nthreads);
-                accumulator_t gacc(model, loss, criterion, criterion_t::type::vgrad); gacc.set_threads(nthreads);
+                accumulator_t lacc(model, loss, criterion, criterion_t::type::value);
+                accumulator_t gacc(model, loss, criterion, criterion_t::type::vgrad);
+
+                lacc.set_threads(nthreads);
+                gacc.set_threads(nthreads);
 
                 // tune the regularization factor (if needed)
                 const auto op = [&] (const scalar_t lambda)
