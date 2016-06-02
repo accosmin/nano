@@ -1,6 +1,5 @@
 #pragma once
 
-#include "algorithm.h"
 #include "from_string.hpp"
 
 namespace nano

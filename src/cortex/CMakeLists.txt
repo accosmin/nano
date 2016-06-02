@@ -2,8 +2,6 @@
 set(libcortex_sources
         accumulator.cpp
         accumulator.h
-        batch.cpp
-        batch.h
         class.cpp
         class.h
         cortex.cpp
@@ -12,14 +10,10 @@ set(libcortex_sources
         criterion.h
         layer.h
         loss.h
-        minibatch.cpp
-        minibatch.h
         model.cpp
         model.h
         optimizer.h
         protocol.h
-        stochastic.cpp
-        stochastic.h
         task.h
         task_util.h
         task_util.cpp
