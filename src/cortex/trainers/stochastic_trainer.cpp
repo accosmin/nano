@@ -33,9 +33,12 @@ namespace nano
                 const auto verbose = true;
 
                 // train the model
-                const auto result = train(task, fold, nthreads, loss, criterion, model,
-                        optimizer, epochs, verbose);
+                const auto op = [&] (const auto& lacc, const auto& gacc, const auto& x0)
+                {
+                        return train(task, fold, lacc, gacc, x0, optimizer, epochs, verbose);
+                };
 
+                const auto result = trainer_loop(model, nthreads, loss, criterion, op);
                 log_info() << "<<< stoch-" << to_string(optimizer) << ": " << result << ".";
 
                 // OK
@@ -44,19 +47,6 @@ namespace nano
                         model.load_params(result.optimum_params());
                 }
                 return result;
-        }
-
-        trainer_result_t stochastic_trainer_t::train(
-                const task_t& task, const size_t fold,
-                const size_t nthreads, const loss_t& loss, const criterion_t& criterion, const model_t& model,
-                const stoch_optimizer optimizer, const size_t epochs, const bool verbose) const
-        {
-                const auto op = [&] (const auto& lacc, const auto& gacc, const auto& x0)
-                {
-                        return train(task, fold, lacc, gacc, x0, optimizer, epochs, verbose);
-                };
-
-                return trainer_loop(model, nthreads, loss, criterion, op);
         }
 
         trainer_result_t stochastic_trainer_t::train(

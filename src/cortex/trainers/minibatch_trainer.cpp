@@ -35,9 +35,12 @@ namespace nano
                 const auto verbose = true;
 
                 // train the model
-                const auto result = train(task, fold, nthreads, loss, criterion, model,
-                        optimizer, epochs, epsilon, verbose);
+                const auto op = [&] (const auto& lacc, const auto& gacc, const auto& x0)
+                {
+                        return train(task, fold, lacc, gacc, x0, optimizer, epochs, epsilon, verbose);
+                };
 
+                const auto result = trainer_loop(model, nthreads, loss, criterion, op);
                 log_info() << "<<< minibatch-" << to_string(optimizer) << ": " << result << ".";
 
                 // OK
@@ -46,20 +49,6 @@ namespace nano
                         model.load_params(result.optimum_params());
                 }
                 return result;
-        }
-
-        trainer_result_t minibatch_trainer_t::train(
-                const task_t& task, const size_t fold,
-                const size_t nthreads, const loss_t& loss, const criterion_t& criterion, const model_t& model,
-                const batch_optimizer optimizer, const size_t epochs, const scalar_t epsilon,
-                const bool verbose) const
-        {
-                const auto op = [&] (const auto& lacc, const auto& gacc, const auto& x0)
-                {
-                        return train(task, fold, lacc, gacc, x0, optimizer, epochs, epsilon, verbose);
-                };
-
-                return trainer_loop(model, nthreads, loss, criterion, op);
         }
 
         trainer_result_t minibatch_trainer_t::train(

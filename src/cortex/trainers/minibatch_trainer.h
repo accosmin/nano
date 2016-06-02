@@ -28,12 +28,6 @@ namespace nano
 
                 trainer_result_t train(
                         const task_t&, const size_t fold,
-                        const size_t nthreads, const loss_t&, const criterion_t&, const model_t&,
-                        const batch_optimizer, const size_t epochs, const scalar_t epsilon,
-                        const bool verbose) const;
-
-                trainer_result_t train(
-                        const task_t&, const size_t fold,
                         const accumulator_t& lacc, const accumulator_t& gacc, const vector_t& x0,
                         const batch_optimizer, const size_t epochs, const scalar_t epsilon,
                         const bool verbose) const;
