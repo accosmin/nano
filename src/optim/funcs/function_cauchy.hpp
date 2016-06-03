@@ -10,7 +10,7 @@ namespace nano
         ///
         struct function_cauchy_t : public function_t
         {
-                explicit function_cauchy_t(const tsize dims) :
+                explicit function_cauchy_t(const tensor_size_t dims) :
                         m_dims(dims)
                 {
                 }
@@ -52,6 +52,6 @@ namespace nano
                         return util::distance(x, vector_t::Zero(m_dims)) < epsilon;
                 }
 
-                tsize   m_dims;
+                tensor_size_t   m_dims;
         };
 }

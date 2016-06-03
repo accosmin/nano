@@ -82,7 +82,7 @@ namespace nano
                         return gacc.value();
                 };
 
-                auto fn_ulog = [&] (const opt_state_t& state)
+                auto fn_ulog = [&] (const state_t& state)
                 {
                         // evaluate the current state
                         lacc.set_params(state.x);
@@ -117,7 +117,7 @@ namespace nano
 
                 // assembly optimization problem & optimize the model
                 nano::minimize(
-                        opt_problem_t(fn_size, fn_fval, fn_grad), fn_ulog,
+                        problem_t(fn_size, fn_fval, fn_grad), fn_ulog,
                         x0, optimizer, iterations, epsilon);
 
                 return result;

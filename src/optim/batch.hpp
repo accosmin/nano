@@ -1,12 +1,11 @@
 #pragma once
 
 #include "problem.h"
-#include "ls_types.h"
+#include "batch/params.hpp"
 
-#include "batch_types.h"
-#include "batch/batch_gd.hpp"
-#include "batch/batch_cgd.hpp"
-#include "batch/batch_lbfgs.hpp"
+#include "batch/gd.hpp"
+#include "batch/cgd.hpp"
+#include "batch/lbfgs.hpp"
 
 namespace nano
 {
@@ -31,41 +30,41 @@ namespace nano
                 switch (optimizer)
                 {
                 case batch_optimizer::LBFGS:
-                        return batch_lbfgs_t<tproblem>()(param, problem, x0);
+                        return batch_lbfgs_t()(param, problem, x0);
 
                 case batch_optimizer::CGD:
-                        return batch_cgd_prp_t<tproblem>()(param, problem, x0);
+                        return batch_cgd_prp_t()(param, problem, x0);
 
                 case batch_optimizer::CGD_CD:
-                        return batch_cgd_cd_t<tproblem>()(param, problem, x0);
+                        return batch_cgd_cd_t()(param, problem, x0);
 
                 case batch_optimizer::CGD_DY:
-                        return batch_cgd_dy_t<tproblem>()(param, problem, x0);
+                        return batch_cgd_dy_t()(param, problem, x0);
 
                 case batch_optimizer::CGD_FR:
-                        return batch_cgd_fr_t<tproblem>()(param, problem, x0);
+                        return batch_cgd_fr_t()(param, problem, x0);
 
                 case batch_optimizer::CGD_HS:
-                        return batch_cgd_hs_t<tproblem>()(param, problem, x0);
+                        return batch_cgd_hs_t()(param, problem, x0);
 
                 case batch_optimizer::CGD_LS:
-                        return batch_cgd_ls_t<tproblem>()(param, problem, x0);
+                        return batch_cgd_ls_t()(param, problem, x0);
 
                 case batch_optimizer::CGD_N:
-                        return batch_cgd_n_t<tproblem>()(param, problem, x0);
+                        return batch_cgd_n_t()(param, problem, x0);
 
                 case batch_optimizer::CGD_PRP:
-                        return batch_cgd_prp_t<tproblem>()(param, problem, x0);
+                        return batch_cgd_prp_t()(param, problem, x0);
 
                 case batch_optimizer::CGD_DYCD:
-                        return batch_cgd_dycd_t<tproblem>()(param, problem, x0);
+                        return batch_cgd_dycd_t()(param, problem, x0);
 
                 case batch_optimizer::CGD_DYHS:
-                        return batch_cgd_dyhs_t<tproblem>()(param, problem, x0);
+                        return batch_cgd_dyhs_t()(param, problem, x0);
 
                 case batch_optimizer::GD:
                 default:
-                        return batch_gd_t<tproblem>()(param, problem, x0);
+                        return batch_gd_t()(param, problem, x0);
                 }
         }
 

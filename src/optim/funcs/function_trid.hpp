@@ -10,7 +10,7 @@ namespace nano
         ///
         struct function_trid_t : public function_t
         {
-                explicit function_trid_t(const vector_t::Index dims) :
+                explicit function_trid_t(const tensor_size_t dims) :
                         m_dims(dims)
                 {
                 }
@@ -53,7 +53,7 @@ namespace nano
                 virtual bool is_minima(const vector_t& x, const scalar_t epsilon) const override
                 {
                         vector_t xmin(m_dims);
-                        for (tsize d = 0; d < m_dims; d ++)
+                        for (tensor_size_t d = 0; d < m_dims; d ++)
                         {
                                 xmin(d) = scalar_t(d + 1) * scalar_t(m_dims - d);
                         }
@@ -61,6 +61,6 @@ namespace nano
                         return util::distance(x, xmin) < epsilon;
                 }
 
-                tsize   m_dims;
+                tensor_size_t   m_dims;
         };
 }

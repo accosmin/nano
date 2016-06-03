@@ -1,5 +1,6 @@
 #pragma once
 
+#include "ls_step.hpp"
 #include "math/cubic.hpp"
 #include <utility>
 
@@ -9,20 +10,15 @@ namespace nano
         /// \brief cubic interpolation in the [step0, step1] line-search interval
         ///     see "Numerical optimization", Nocedal & Wright, 2nd edition, p.59
         ///
-        template
-        <
-                typename tstep,
-                typename tscalar = typename tstep::tscalar
-        >
-        auto ls_cubic(const tstep& step0, const tstep& step1)
+        inline auto ls_cubic(const ls_step_t& step0, const ls_step_t& step1)
         {
-                const tscalar x0 = step0.alpha(), f0 = step0.phi(), g0 = step0.gphi();
-                const tscalar x1 = step1.alpha(), f1 = step1.phi(), g1 = step1.gphi();
+                const scalar_t x0 = step0.alpha(), f0 = step0.phi(), g0 = step0.gphi();
+                const scalar_t x1 = step1.alpha(), f1 = step1.phi(), g1 = step1.gphi();
 
-                const cubic_t<tscalar> c(x0, f0, g0, x1, f1, g1);
+                const cubic_t<scalar_t> c(x0, f0, g0, x1, f1, g1);
 
-                tscalar min1 = std::numeric_limits<tscalar>::infinity();
-                tscalar min2 = std::numeric_limits<tscalar>::infinity();
+                scalar_t min1 = std::numeric_limits<scalar_t>::infinity();
+                scalar_t min2 = std::numeric_limits<scalar_t>::infinity();
 
                 if (c)
                 {

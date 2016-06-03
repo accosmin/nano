@@ -42,7 +42,7 @@ add_subdirectory(tasks)
 add_subdirectory(trainers)
 
 add_library(cortex SHARED ${libcortex_sources})
-target_link_libraries(cortex vision io thread)
+target_link_libraries(cortex vision io thread optim)
 
 # install library
 install(TARGETS cortex

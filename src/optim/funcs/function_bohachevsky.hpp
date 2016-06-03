@@ -40,7 +40,7 @@ namespace nano
                 {
                         const auto fn_size = [=] ()
                         {
-                                return vector_t::Index(2);
+                                return tensor_size_t(2);
                         };
 
                         const auto fn_fval = [=] (const vector_t& x)
@@ -110,7 +110,7 @@ namespace nano
                                 return fn_fval(x);
                         };
 
-                        return tproblem{fn_size, fn_fval, fn_grad};
+                        return {fn_size, fn_fval, fn_grad};
                 }
 
                 virtual bool is_valid(const vector_t& x) const override

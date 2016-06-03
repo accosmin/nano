@@ -37,8 +37,8 @@ namespace nano
                 typename toperator
         >
         void foreach_test_function(
-                const vector_t::Index min_dims,
-                const vector_t::Index max_dims,
+                const tensor_size_t min_dims,
+                const tensor_size_t max_dims,
                 const toperator& op)
         {
                 if (min_dims == 1)
@@ -66,7 +66,7 @@ namespace nano
                         }
                 }
 
-                for (typename nano::problem_t::tsize dims = min_dims; dims <= max_dims; dims *= 2)
+                for (tensor_size_t dims = min_dims; dims <= max_dims; dims *= 2)
                 {
                         switch (type)
                         {

@@ -10,8 +10,8 @@ namespace nano
         ///
         struct function_powell_t : public function_t
         {
-                explicit function_powell_t(const tsize dims) :
-                        m_dims(std::max(tsize(4), dims - dims % 4))
+                explicit function_powell_t(const tensor_size_t dims) :
+                        m_dims(std::max(tensor_size_t(4), dims - dims % 4))
                 {
                 }
 
@@ -30,7 +30,7 @@ namespace nano
                         const auto fn_fval = [=] (const vector_t& x)
                         {
                                 scalar_t fx = 0;
-                                for (tsize i = 0, i4 = 0; i < m_dims / 4; i ++, i4 += 4)
+                                for (tensor_size_t i = 0, i4 = 0; i < m_dims / 4; i ++, i4 += 4)
                                 {
                                         fx += nano::square(x(i4 + 0) + x(i4 + 1) * 10);
                                         fx += nano::square(x(i4 + 2) - x(i4 + 3)) * 5;
@@ -44,7 +44,7 @@ namespace nano
                         const auto fn_grad = [=] (const vector_t& x, vector_t& gx)
                         {
                                 gx.resize(m_dims);
-                                for (tsize i = 0, i4 = 0; i < m_dims / 4; i ++, i4 += 4)
+                                for (tensor_size_t i = 0, i4 = 0; i < m_dims / 4; i ++, i4 += 4)
                                 {
                                         const auto gfx1 = (x(i4 + 0) + x(i4 + 1) * 10) * 2;
                                         const auto gfx2 = (x(i4 + 2) - x(i4 + 3)) * 5 * 2;
@@ -73,6 +73,6 @@ namespace nano
                         return util::distance(x, vector_t::Zero(m_dims)) < epsilon;
                 }
 
-                tsize   m_dims;
+                tensor_size_t   m_dims;
         };
 }

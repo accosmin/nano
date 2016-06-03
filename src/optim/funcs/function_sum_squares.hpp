@@ -10,11 +10,11 @@ namespace nano
         ///
         struct function_sum_squares_t : public function_t
         {
-                explicit function_sum_squares_t(const tsize dims) :
+                explicit function_sum_squares_t(const tensor_size_t dims) :
                         m_dims(dims),
                         m_weights(dims)
                 {
-                        for (tsize i = 0; i < dims; i ++)
+                        for (tensor_size_t i = 0; i < dims; i ++)
                         {
                                 m_weights(i) = static_cast<scalar_t>(i + 1);
                         }
@@ -57,7 +57,7 @@ namespace nano
                         return util::distance(x, vector_t::Zero(m_dims)) < epsilon;
                 }
 
-                tsize   m_dims;
-                vector_t m_weights;
+                tensor_size_t   m_dims;
+                vector_t        m_weights;
         };
 }

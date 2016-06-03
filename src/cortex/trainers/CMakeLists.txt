@@ -8,4 +8,4 @@ list(APPEND libcortex_sources
 
 set(libcortex_sources "${libcortex_sources}" PARENT_SCOPE)
 
-                
+

@@ -1,7 +1,7 @@
 #pragma once
 
+#include "loop.hpp"
 #include "lrate.hpp"
-#include "stoch_loop.hpp"
 
 namespace nano
 {

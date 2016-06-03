@@ -1,6 +1,7 @@
 #pragma once
 
 #include <limits>
+#include "arch.h"
 #include "tensor.h"
 
 namespace nano
@@ -17,20 +18,12 @@ namespace nano
         ///     descent direction (d) &
         ///     line-search step (t)
         ///
-        struct state_t
+        struct NANO_PUBLIC state_t
         {
                 ///
                 /// \brief constructor
                 ///
-                template <typename tsize>
-                explicit state_t(const tsize size = 0) :
-                        x(size), g(size), d(size),
-                        f(std::numeric_limits<scalar_t>::max()),
-                        m_iterations(0),
-                        m_fcalls(0),
-                        m_gcalls(0)
-                {
-                }
+                explicit state_t(const tensor_size_t size = 0);
 
                 ///
                 /// \brief constructor
@@ -90,23 +83,7 @@ namespace nano
                 ///
                 /// \brief update the current state (if an improvement)
                 ///
-                bool update(const state_t& state)
-                {
-                        const bool better = state < (*this);
-                        if (better)
-                        {
-                                x = state.x;
-                                g = state.g;
-                                d = state.d;
-                                f = state.f;
-                        }
-
-                        m_iterations = state.m_iterations;
-                        m_fcalls = state.m_fcalls;
-                        m_gcalls = state.m_gcalls;
-
-                        return better;
-                }
+                bool update(const state_t& state);
 
                 ///
                 /// \brief check convergence: the gradient is relatively small

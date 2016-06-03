@@ -10,11 +10,11 @@ namespace nano
         ///
         struct function_dixon_price_t : public function_t
         {
-                explicit function_dixon_price_t(const tsize dims) :
+                explicit function_dixon_price_t(const tensor_size_t dims) :
                         m_dims(dims),
                         m_weights(dims)
                 {
-                        for (tsize i = 0; i < m_dims; ++ i)
+                        for (tensor_size_t i = 0; i < m_dims; ++ i)
                         {
                                m_weights(i) = scalar_t(i + 1);
                         }
@@ -72,7 +72,7 @@ namespace nano
                         return true;
 
 //                        vector_t xmin(m_dims);
-//                        for (tsize i = 0; i < m_dims; i ++)
+//                        for (tensor_size_t i = 0; i < m_dims; i ++)
 //                        {
 //                                xmin(i) = std::pow(2.0, -1.0 + std::pow(2.0, -i));
 //                        }
@@ -80,7 +80,7 @@ namespace nano
 //                        return distance(x, xmin) < epsilon;
                 }
 
-                tsize   m_dims;
+                tensor_size_t   m_dims;
                 vector_t m_weights;
         };
 }

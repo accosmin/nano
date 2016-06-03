@@ -1,6 +1,6 @@
 #pragma once
 
-#include "stoch_loop.hpp"
+#include "loop.hpp"
 
 namespace nano
 {
@@ -9,28 +9,19 @@ namespace nano
         ///     see "Beyond Convexity: Stochastic Quasi-Convex Optimization",
         ///     by Elan Hazan, Kfir Y. Levi, Shai Shalev-Shwartz
         ///
-        template
-        <
-                typename tproblem               ///< optimization problem
-        >
         struct stoch_ngd_t
         {
-                using param_t = stoch_params_t<tproblem>;
-                using tstate = typename param_t::tstate;
-                using tscalar = typename param_t::tscalar;
-                using tvector = typename param_t::tvector;
-
                 ///
                 /// \brief minimize starting from the initial guess x0
                 ///
-                tstate operator()(const param_t& param, const tproblem& problem, const tvector& x0) const
+                state_t operator()(const stoch_params_t& param, const problem_t& problem, const vector_t& x0) const
                 {
                         const auto op = [&] (const auto... params)
                         {
                                 return this->operator()(param.tunable(), problem, x0, params...);
                         };
 
-                        const auto param0 = make_alpha0s<tscalar>();
+                        const auto param0 = make_alpha0s();
                         const auto config = nano::tune(op, param0);
                         return operator()(param, problem, x0, config.param0());
                 }
@@ -38,18 +29,18 @@ namespace nano
                 ///
                 /// \brief minimize starting from the initial guess x0
                 ///
-                tstate operator()(const param_t& param, const tproblem& problem, const tvector& x0,
-                        const tscalar alpha0) const
+                state_t operator()(const stoch_params_t& param, const problem_t& problem, const vector_t& x0,
+                        const scalar_t alpha0) const
                 {
                         assert(problem.size() == x0.size());
 
-                        const auto op_iter = [&] (tstate& cstate)
+                        const auto op_iter = [&] (state_t& cstate)
                         {
                                 // learning rate
-                                const tscalar alpha = alpha0;
+                                const scalar_t alpha = alpha0;
 
                                 // descent direction
-                                const tscalar norm = 1 / cstate.g.template lpNorm<2>();
+                                const scalar_t norm = 1 / cstate.g.template lpNorm<2>();
                                 cstate.d = -cstate.g * norm;
 
                                 // update solution
@@ -57,7 +48,7 @@ namespace nano
                         };
 
                         // OK, assembly the optimizer
-                        return  stoch_loop(problem, param, tstate(problem, x0), op_iter,
+                        return  stoch_loop(problem, param, state_t(problem, x0), op_iter,
                                 {{"alpha0", alpha0}});
                 }
         };

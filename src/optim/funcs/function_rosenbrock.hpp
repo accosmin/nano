@@ -12,7 +12,7 @@ namespace nano
         ///
         struct function_rosenbrock_t : public function_t
         {
-                explicit function_rosenbrock_t(const tsize dims) :
+                explicit function_rosenbrock_t(const tensor_size_t dims) :
                         m_dims(dims)
                 {
                 }
@@ -32,7 +32,7 @@ namespace nano
                         const auto fn_fval = [=] (const vector_t& x)
                         {
                                 scalar_t fx = 0;
-                                for (tsize i = 0; i + 1 < m_dims; i ++)
+                                for (tensor_size_t i = 0; i + 1 < m_dims; i ++)
                                 {
                                         fx += 100 * nano::square(x(i + 1) - x(i) * x(i)) + nano::square(x(i) - 1);
                                 }
@@ -44,7 +44,7 @@ namespace nano
                         {
                                 gx.resize(m_dims);
                                 gx.setZero();
-                                for (tsize i = 0; i + 1 < m_dims; i ++)
+                                for (tensor_size_t i = 0; i + 1 < m_dims; i ++)
                                 {
                                         gx(i) += 2 * (x(i) - 1);
                                         gx(i) += 100 * 2 * (x(i + 1) - x(i) * x(i)) * (- 2 * x(i));
@@ -87,6 +87,6 @@ namespace nano
                         return false;
                 }
 
-                tsize   m_dims;
+                tensor_size_t   m_dims;
         };
 }

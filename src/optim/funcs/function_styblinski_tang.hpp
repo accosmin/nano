@@ -10,7 +10,7 @@ namespace nano
         ///
         struct function_styblinski_tang_t : public function_t
         {
-                explicit function_styblinski_tang_t(const tsize dims) :
+                explicit function_styblinski_tang_t(const tensor_size_t dims) :
                         m_dims(dims)
                 {
                 }
@@ -53,7 +53,7 @@ namespace nano
                         const auto u2 = scalar_t(+2.7468027);
 
                         bool ok = true;
-                        for (tsize i = 0; i < m_dims && ok; i ++)
+                        for (tensor_size_t i = 0; i < m_dims && ok; i ++)
                         {
                                 ok = std::fabs(x(i) - u1) < epsilon || std::fabs(x(i) - u2) < epsilon;
                         }
@@ -61,6 +61,6 @@ namespace nano
                         return ok;
                 }
 
-                tsize   m_dims;
+                tensor_size_t   m_dims;
         };
 }

@@ -1,16 +1,13 @@
 #pragma once
 
+#include "ls_step.hpp"
+
 namespace nano
 {
         ///
         /// \brief bisection interpolation in the [step0, step1] line-search interval
         ///
-        template
-        <
-                typename tstep,
-                typename tscalar = typename tstep::tscalar
-        >
-        tscalar ls_bisection(const tstep& step0, const tstep& step1)
+        inline auto ls_bisection(const ls_step_t& step0, const ls_step_t& step1)
         {
                 return (step0.alpha() + step1.alpha()) / 2;
         }

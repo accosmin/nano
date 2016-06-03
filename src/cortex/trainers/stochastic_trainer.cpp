@@ -93,7 +93,7 @@ namespace nano
                         return gacc.value();
                 };
 
-                auto fn_tlog = [&] (const opt_state_t& state, const auto& config)
+                auto fn_tlog = [&] (const state_t& state, const auto& config)
                 {
                         // evaluate training samples
                         lacc.set_params(state.x);
@@ -112,7 +112,7 @@ namespace nano
                         return tvalue;
                 };
 
-                auto fn_ulog = [&] (const opt_state_t& state, const auto& sconfig)
+                auto fn_ulog = [&] (const state_t& state, const auto& sconfig)
                 {
                         // evaluate the current state
                         lacc.set_params(state.x);
@@ -147,7 +147,7 @@ namespace nano
 
                 // assembly optimization problem & optimize the model
                 nano::minimize(
-                        opt_problem_t(fn_size, fn_fval, fn_grad), fn_ulog, fn_tlog,
+                        problem_t(fn_size, fn_fval, fn_grad), fn_ulog, fn_tlog,
                         x0, optimizer, epochs, epoch_size);
 
                 return result;

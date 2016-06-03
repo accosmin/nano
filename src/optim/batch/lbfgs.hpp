@@ -1,7 +1,7 @@
 #pragma once
 
+#include "loop.hpp"
 #include "ls_init.hpp"
-#include "batch_loop.hpp"
 #include "ls_strategy.hpp"
 #include <deque>
 
@@ -10,37 +10,28 @@ namespace nano
         ///
         /// \brief limited memory bfgs (l-bfgs)
         ///
-        template
-        <
-                typename tproblem                       ///< optimization problem
-        >
         struct batch_lbfgs_t
         {
-                using tparam = batch_params_t<tproblem>;
-                using tstate = typename tparam::tstate;
-                using tscalar = typename tparam::tscalar;
-                using tvector = typename tparam::tvector;
-
                 ///
                 /// \brief minimize starting from the initial guess x0
                 ///
-                tstate operator()(const tparam& param, const tproblem& problem, const tvector& x0) const
+                state_t operator()(const batch_params_t& param, const problem_t& problem, const vector_t& x0) const
                 {
                         assert(problem.size() == x0.size());
 
-                        std::deque<tvector> ss, ys;
-                        tstate istate(problem, x0);             // initial state
-                        tstate pstate = istate;                 // previous state
+                        std::deque<vector_t> ss, ys;
+                        state_t istate(problem, x0);             // initial state
+                        state_t pstate = istate;                 // previous state
 
-                        tvector q, r;
+                        vector_t q, r;
 
                         // line-search initial step length
-                        ls_init_t<tstate> ls_init(param.m_ls_initializer);
+                        ls_init_t ls_init(param.m_ls_initializer);
 
                         // line-search step
-                        ls_strategy_t<tproblem> ls_step(param.m_ls_strategy, tscalar(1e-4), tscalar(0.9));
+                        ls_strategy_t ls_step(param.m_ls_strategy, scalar_t(1e-4), scalar_t(0.9));
 
-                        const auto op = [&] (tstate& cstate, const std::size_t i)
+                        const auto op = [&] (state_t& cstate, const std::size_t i)
                         {
                                 // descent direction
                                 //      (see "Numerical optimization", Nocedal & Wright, 2nd edition, p.178)
@@ -48,13 +39,13 @@ namespace nano
 
                                 auto itr_s = ss.rbegin();
                                 auto itr_y = ys.rbegin();
-                                std::vector<tscalar> alphas;
+                                std::vector<scalar_t> alphas;
                                 for (std::size_t j = 1; j <= param.m_hsize && i >= j; j ++)
                                 {
-                                        const tvector& s = (*itr_s ++);
-                                        const tvector& y = (*itr_y ++);
+                                        const vector_t& s = (*itr_s ++);
+                                        const vector_t& y = (*itr_y ++);
 
-                                        const tscalar alpha = s.dot(q) / s.dot(y);
+                                        const scalar_t alpha = s.dot(q) / s.dot(y);
                                         q.noalias() -= alpha * y;
                                         alphas.push_back(alpha);
                                 }
@@ -65,8 +56,8 @@ namespace nano
                                 }
                                 else
                                 {
-                                        const tvector& s = *ss.rbegin();
-                                        const tvector& y = *ys.rbegin();
+                                        const vector_t& s = *ss.rbegin();
+                                        const vector_t& y = *ys.rbegin();
                                         r = s.dot(y) / y.dot(y) * q;
                                 }
 
@@ -75,11 +66,11 @@ namespace nano
                                 auto itr_alpha = alphas.rbegin();
                                 for (std::size_t j = 1; j <= param.m_hsize && i >= j; j ++)
                                 {
-                                        const tvector& s = (*it_s ++);
-                                        const tvector& y = (*it_y ++);
+                                        const vector_t& s = (*it_s ++);
+                                        const vector_t& y = (*it_y ++);
 
-                                        const tscalar alpha = *(itr_alpha ++);
-                                        const tscalar beta = y.dot(r) / s.dot(y);
+                                        const scalar_t alpha = *(itr_alpha ++);
+                                        const scalar_t beta = y.dot(r) / s.dot(y);
                                         r.noalias() += s * (alpha - beta);
                                 }
 
@@ -88,7 +79,7 @@ namespace nano
                                 // line-search
                                 pstate = cstate;
 
-                                const tscalar t0 = ls_init(cstate);
+                                const scalar_t t0 = ls_init(cstate);
                                 if (!ls_step(problem, t0, cstate))
                                 {
                                         return false;

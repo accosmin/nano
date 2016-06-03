@@ -3,6 +3,7 @@ list(APPEND libmath_sources
         ${CMAKE_CURRENT_SOURCE_DIR}/cgd_steps.hpp
         ${CMAKE_CURRENT_SOURCE_DIR}/gd.hpp
         ${CMAKE_CURRENT_SOURCE_DIR}/lbfgs.hpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/loop.hpp
         ${CMAKE_CURRENT_SOURCE_DIR}/ls_backtrack.hpp
         ${CMAKE_CURRENT_SOURCE_DIR}/ls_bisection.hpp
         ${CMAKE_CURRENT_SOURCE_DIR}/ls_cgdescent.hpp

@@ -5,10 +5,10 @@
 #include "math/numeric.hpp"
 #include "text/to_string.hpp"
 #include "minibatch_trainer.h"
+#include "optim/stoch/loop.hpp"
 #include "text/from_params.hpp"
 #include "cortex/task_iterator.h"
 #include "cortex/trainer_loop.hpp"
-#include "math/stoch/stoch_loop.hpp"
 
 #include "cortex/logger.h"
 
@@ -95,7 +95,7 @@ namespace nano
                         return gacc.value();
                 };
 
-                const auto fn_ulog = [&] (const opt_state_t& state, const auto& sconfig)
+                const auto fn_ulog = [&] (const state_t& state, const auto& sconfig)
                 {
                         // evaluate the current state
                         lacc.set_params(state.x);
@@ -128,20 +128,20 @@ namespace nano
                         return !nano::is_done(ret);
                 };
 
-                const auto op = [&] (opt_state_t& state)
+                const auto op = [&] (state_t& state)
                 {
                         state = nano::minimize(
-                                opt_problem_t(fn_size, fn_fval, fn_grad), nullptr,
+                                problem_t(fn_size, fn_fval, fn_grad), nullptr,
                                 state.x, optimizer, epoch_iterations, epsilon, history_size);
                         iter.next();
                 };
 
                 // assembly optimization problem & optimize the model
-                const auto problem = opt_problem_t(fn_size, fn_fval, fn_grad);
-                const auto params = stoch_params_t<opt_problem_t>(epochs, epoch_size, fn_ulog);
-                const auto config = stoch_params_t<opt_problem_t>::tconfig();
+                const auto problem = problem_t(fn_size, fn_fval, fn_grad);
+                const auto params = stoch_params_t(epochs, epoch_size, fn_ulog);
+                const auto config = stoch_params_t::config_t();
 
-                nano::stoch_loop(problem, params, opt_state_t(problem, x0), op, config);
+                nano::stoch_loop(problem, params, state_t(problem, x0), op, config);
 
                 return result;
         }

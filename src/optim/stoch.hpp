@@ -1,15 +1,15 @@
 #pragma once
 
 #include "problem.h"
+#include "stoch/params.hpp"
 
-#include "stoch_types.h"
-#include "stoch/stoch_ag.hpp"
-#include "stoch/stoch_sg.hpp"
-#include "stoch/stoch_ngd.hpp"
-#include "stoch/stoch_sgm.hpp"
-#include "stoch/stoch_adam.hpp"
-#include "stoch/stoch_adagrad.hpp"
-#include "stoch/stoch_adadelta.hpp"
+#include "stoch/ag.hpp"
+#include "stoch/sg.hpp"
+#include "stoch/ngd.hpp"
+#include "stoch/sgm.hpp"
+#include "stoch/adam.hpp"
+#include "stoch/adagrad.hpp"
+#include "stoch/adadelta.hpp"
 
 namespace nano
 {
@@ -33,32 +33,32 @@ namespace nano
                 switch (optimizer)
                 {
                 case stoch_optimizer::SGM:
-                        return stoch_sgm_t<tproblem>()(param, problem, x0);
+                        return stoch_sgm_t()(param, problem, x0);
 
                 case stoch_optimizer::NGD:
-                        return stoch_ngd_t<tproblem>()(param, problem, x0);
+                        return stoch_ngd_t()(param, problem, x0);
 
                 case stoch_optimizer::AG:
-                        return stoch_ag_t<tproblem>()(param, problem, x0);
+                        return stoch_ag_t()(param, problem, x0);
 
                 case stoch_optimizer::AGFR:
-                        return stoch_agfr_t<tproblem>()(param, problem, x0);
+                        return stoch_agfr_t()(param, problem, x0);
 
                 case stoch_optimizer::AGGR:
-                        return stoch_aggr_t<tproblem>()(param, problem, x0);
+                        return stoch_aggr_t()(param, problem, x0);
 
                 case stoch_optimizer::ADAGRAD:
-                        return stoch_adagrad_t<tproblem>()(param, problem, x0);
+                        return stoch_adagrad_t()(param, problem, x0);
 
                 case stoch_optimizer::ADADELTA:
-                        return stoch_adadelta_t<tproblem>()(param, problem, x0);
+                        return stoch_adadelta_t()(param, problem, x0);
 
                 case stoch_optimizer::ADAM:
-                        return stoch_adam_t<tproblem>()(param, problem, x0);
+                        return stoch_adam_t()(param, problem, x0);
 
                 case stoch_optimizer::SG:
                 default:
-                        return stoch_sg_t<tproblem>()(param, problem, x0);
+                        return stoch_sg_t()(param, problem, x0);
                 }
         }
 }

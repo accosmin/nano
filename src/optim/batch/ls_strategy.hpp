@@ -1,23 +1,12 @@
 #pragma once
 
 #include <cassert>
-#include "ls_step.hpp"
-#include "math/state.h"
 #include "ls_backtrack.hpp"
 #include "ls_cgdescent.hpp"
 #include "ls_interpolate.hpp"
 
 namespace nano
 {
-        template
-        <
-                typename tproblem,
-                typename tscalar = typename tproblem::tscalar,
-                typename tsize = typename tproblem::tsize,
-                typename tvector = typename tproblem::tvector,
-                typename tstate = typename tproblem::tstate,
-                typename tstep = ls_step_t<tproblem>
-        >
         class ls_strategy_t
         {
         public:
@@ -26,7 +15,7 @@ namespace nano
                 /// \brief constructor
                 ///
                 ls_strategy_t(  const ls_strategy strategy,
-                                const tscalar c1 = 1e-4, const tscalar c2 = 0.1) :
+                                const scalar_t c1 = 1e-4, const scalar_t c2 = 0.1) :
                         m_strategy(strategy),
                         m_c1(c1),
                         m_c2(c2)
@@ -36,17 +25,17 @@ namespace nano
                 ///
                 /// \brief update the current state
                 ///
-                bool operator()(const tproblem& problem, tscalar t0, tstate& state) const
+                bool operator()(const problem_t& problem, const scalar_t t0, state_t& state) const
                 {
                         assert(m_c1 < m_c2);
-                        assert(m_c1 > tscalar(0) && m_c1 < tscalar(1));
-                        assert(m_c2 > tscalar(0) && m_c2 < tscalar(1));
+                        assert(m_c1 > scalar_t(0) && m_c1 < scalar_t(1));
+                        assert(m_c2 > scalar_t(0) && m_c2 < scalar_t(1));
 
-                        const tscalar eps = std::numeric_limits<tscalar>::epsilon();
+                        const scalar_t eps = std::numeric_limits<scalar_t>::epsilon();
 
                         // check descent direction
-                        const tscalar dg0 = state.d.dot(state.g);
-                        if (dg0 >= tscalar(0))
+                        const scalar_t dg0 = state.d.dot(state.g);
+                        if (dg0 >= scalar_t(0))
                         {
                                 return false;
                         }
@@ -58,8 +47,8 @@ namespace nano
                         }
 
                         // check valid step
-                        const tstep step0(problem, state);
-                        const tstep step = get_step(step0, t0);
+                        const ls_step_t step0(problem, state);
+                        const ls_step_t step = get_step(step0, t0);
 
                         if (!step || !(step < step0))
                         {
@@ -75,7 +64,7 @@ namespace nano
 
         private:
 
-                tstep get_step(const tstep& step0, const tscalar t0) const
+                ls_step_t get_step(const ls_step_t& step0, const scalar_t t0) const
                 {
                         switch (m_strategy)
                         {
@@ -97,12 +86,12 @@ namespace nano
 
                 // attributes
                 ls_strategy             m_strategy;     ///<
-                tscalar                 m_c1;           ///< sufficient decrease rate
-                tscalar                 m_c2;           ///< sufficient curvature
+                scalar_t                m_c1;           ///< sufficient decrease rate
+                scalar_t                m_c2;           ///< sufficient curvature
 
-                ls_cgdescent_t<tstep>   m_ls_cgdescent;
-                ls_backtrack_t<tstep>   m_ls_backtrack;
-                ls_interpolate_t<tstep> m_ls_interpolate;
+                ls_cgdescent_t          m_ls_cgdescent;
+                ls_backtrack_t          m_ls_backtrack;
+                ls_interpolate_t        m_ls_interpolate;
         };
 }
 

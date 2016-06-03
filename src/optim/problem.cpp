@@ -27,7 +27,7 @@ namespace nano
                 m_gcalls = 0;
         }
 
-        vector_t::Index problem_t::size() const
+        tensor_size_t problem_t::size() const
         {
                 return m_opsize();
         }

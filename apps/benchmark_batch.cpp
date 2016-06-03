@@ -1,109 +1,105 @@
 #include "math/abs.hpp"
 #include "text/table.h"
-#include "math/batch.hpp"
 #include "math/clamp.hpp"
 #include "text/cmdline.h"
+#include "optim/batch.hpp"
 #include "math/random.hpp"
 #include "cortex/logger.h"
 #include "math/numeric.hpp"
 #include "math/epsilon.hpp"
 #include "text/algorithm.h"
-#include "cortex/optimizer.h"
 #include "text/from_string.hpp"
 #include "math/funcs/foreach.hpp"
 #include "benchmark_optimizers.h"
 #include <map>
 #include <tuple>
 
-namespace
+using namespace nano;
+
+template
+<
+        typename tscalar,
+        typename tostats,
+        typename tsize = typename function_t<tscalar>::tsize,
+        typename tvector = typename function_t<tscalar>::tvector,
+        typename tproblem = typename function_t<tscalar>::tproblem
+>
+void check_function(const function_t<tscalar>& function,
+        const size_t trials, const size_t iterations,
+        tostats& gstats)
 {
-        using namespace nano;
+        const auto epsilon = epsilon0<tscalar>();
+        const auto dims = function.problem().size();
 
-        template
-        <
-                typename tscalar,
-                typename tostats,
-                typename tsize = typename nano::function_t<tscalar>::tsize,
-                typename tvector = typename nano::function_t<tscalar>::tvector,
-                typename tproblem = typename nano::function_t<tscalar>::tproblem
-        >
-        void check_function(const nano::function_t<tscalar>& function,
-                const size_t trials, const size_t iterations,
-                tostats& gstats)
+        random_t<tscalar> rgen(tscalar(-1), tscalar(+1));
+
+        // generate fixed random trials
+        std::vector<tvector> x0s(trials);
+        for (auto& x0 : x0s)
         {
-                const auto epsilon = nano::epsilon0<tscalar>();
-                const auto dims = function.problem().size();
-
-                nano::random_t<tscalar> rgen(tscalar(-1), tscalar(+1));
-
-                // generate fixed random trials
-                std::vector<tvector> x0s(trials);
-                for (auto& x0 : x0s)
-                {
-                        x0.resize(dims);
-                        rgen(x0.data(), x0.data() + x0.size());
-                }
-
-                // optimizers to try
-                const auto optimizers =
-                {
-                        nano::batch_optimizer::GD,
-                        nano::batch_optimizer::CGD_CD,
-                        nano::batch_optimizer::CGD_DY,
-                        nano::batch_optimizer::CGD_FR,
-                        nano::batch_optimizer::CGD_HS,
-                        nano::batch_optimizer::CGD_LS,
-                        nano::batch_optimizer::CGD_DYCD,
-                        nano::batch_optimizer::CGD_DYHS,
-                        nano::batch_optimizer::CGD_PRP,
-                        nano::batch_optimizer::CGD_N,
-                        nano::batch_optimizer::LBFGS
-                };
-
-                // line search initialization methods to try
-                const auto ls_initializers =
-                {
-                        nano::ls_initializer::unit,
-                        nano::ls_initializer::quadratic,
-                        nano::ls_initializer::consistent
-                };
-
-                // line search strategies to try
-                const auto ls_strategies =
-                {
-                        nano::ls_strategy::backtrack_armijo,
-                        nano::ls_strategy::backtrack_wolfe,
-                        nano::ls_strategy::backtrack_strong_wolfe,
-                        nano::ls_strategy::interpolation,
-                        nano::ls_strategy::cg_descent
-                };
-
-                // per-problem statistics
-                tostats stats;
-
-                // evaluate all possible combinations
-                for (nano::batch_optimizer optimizer : optimizers)
-                        for (nano::ls_initializer ls_init : ls_initializers)
-                                for (nano::ls_strategy ls_strat : ls_strategies)
-                {
-                        const auto op = [&] (const tproblem& problem, const tvector& x0)
-                        {
-                                return  nano::minimize(
-                                        problem, nullptr, x0, optimizer, iterations, epsilon, ls_init, ls_strat);
-                        };
-
-                        const auto name =
-                                nano::to_string(optimizer) + "[" +
-                                nano::to_string(ls_init) + "][" +
-                                nano::to_string(ls_strat) + "]";
-
-                        benchmark::benchmark_function(function, x0s, op, name,
-                                {scalar_t(1e-12), scalar_t(1e-10), scalar_t(1e-8), scalar_t(1e-6)}, stats, gstats);
-                }
-
-                // show per-problem statistics
-                benchmark::show_table(function.name(), stats);
+                x0.resize(dims);
+                rgen(x0.data(), x0.data() + x0.size());
         }
+
+        // optimizers to try
+        const auto optimizers =
+        {
+                batch_optimizer::GD,
+                batch_optimizer::CGD_CD,
+                batch_optimizer::CGD_DY,
+                batch_optimizer::CGD_FR,
+                batch_optimizer::CGD_HS,
+                batch_optimizer::CGD_LS,
+                batch_optimizer::CGD_DYCD,
+                batch_optimizer::CGD_DYHS,
+                batch_optimizer::CGD_PRP,
+                batch_optimizer::CGD_N,
+                batch_optimizer::LBFGS
+        };
+
+        // line search initialization methods to try
+        const auto ls_initializers =
+        {
+                ls_initializer::unit,
+                ls_initializer::quadratic,
+                ls_initializer::consistent
+        };
+
+        // line search strategies to try
+        const auto ls_strategies =
+        {
+                ls_strategy::backtrack_armijo,
+                ls_strategy::backtrack_wolfe,
+                ls_strategy::backtrack_strong_wolfe,
+                ls_strategy::interpolation,
+                ls_strategy::cg_descent
+        };
+
+        // per-problem statistics
+        tostats stats;
+
+        // evaluate all possible combinations
+        for (batch_optimizer optimizer : optimizers)
+                for (ls_initializer ls_init : ls_initializers)
+                        for (ls_strategy ls_strat : ls_strategies)
+        {
+                const auto op = [&] (const tproblem& problem, const tvector& x0)
+                {
+                        return  minimize(
+                                problem, nullptr, x0, optimizer, iterations, epsilon, ls_init, ls_strat);
+                };
+
+                const auto name =
+                        to_string(optimizer) + "[" +
+                        to_string(ls_init) + "][" +
+                        to_string(ls_strat) + "]";
+
+                benchmark::benchmark_function(function, x0s, op, name,
+                        {scalar_t(1e-12), scalar_t(1e-10), scalar_t(1e-8), scalar_t(1e-6)}, stats, gstats);
+        }
+
+        // show per-problem statistics
+        benchmark::show_table(function.name(), stats);
 }
 
 int main(int argc, const char* argv[])
@@ -111,7 +107,7 @@ int main(int argc, const char* argv[])
         using namespace nano;
 
         // parse the command line
-        nano::cmdline_t cmdline("benchmark batch optimizers");
+        cmdline_t cmdline("benchmark batch optimizers");
         cmdline.add("", "min-dims",     "minimum number of dimensions for each test function (if feasible)", "100");
         cmdline.add("", "max-dims",     "maximum number of dimensions for each test function (if feasible)", "1000");
         cmdline.add("", "trials",       "number of random trials for each test function", "100");
@@ -127,8 +123,8 @@ int main(int argc, const char* argv[])
 
         std::map<std::string, benchmark::optimizer_stat_t> gstats;
 
-        nano::foreach_test_function<scalar_t, nano::test_type::all>(min_dims, max_dims,
-                [&] (const nano::function_t<scalar_t>& function)
+        foreach_test_function<scalar_t, test_type::all>(min_dims, max_dims,
+                [&] (const function_t<scalar_t>& function)
         {
                 check_function(function, trials, iterations, gstats);
         });
@@ -139,27 +135,27 @@ int main(int argc, const char* argv[])
         // show per-optimizer statistics
         const auto optimizers =
         {
-                nano::batch_optimizer::GD,
-                nano::batch_optimizer::CGD_CD,
-                nano::batch_optimizer::CGD_DY,
-                nano::batch_optimizer::CGD_FR,
-                nano::batch_optimizer::CGD_HS,
-                nano::batch_optimizer::CGD_LS,
-                nano::batch_optimizer::CGD_DYCD,
-                nano::batch_optimizer::CGD_DYHS,
-                nano::batch_optimizer::CGD_PRP,
-                nano::batch_optimizer::CGD_N,
-                nano::batch_optimizer::LBFGS
+                batch_optimizer::GD,
+                batch_optimizer::CGD_CD,
+                batch_optimizer::CGD_DY,
+                batch_optimizer::CGD_FR,
+                batch_optimizer::CGD_HS,
+                batch_optimizer::CGD_LS,
+                batch_optimizer::CGD_DYCD,
+                batch_optimizer::CGD_DYHS,
+                batch_optimizer::CGD_PRP,
+                batch_optimizer::CGD_N,
+                batch_optimizer::LBFGS
         };
 
-        for (nano::batch_optimizer optimizer : optimizers)
+        for (batch_optimizer optimizer : optimizers)
         {
-                const auto name = nano::to_string(optimizer) + "[";
+                const auto name = to_string(optimizer) + "[";
 
                 std::map<std::string, benchmark::optimizer_stat_t> stats;
                 for (const auto& gstat : gstats)
                 {
-                        if (nano::starts_with(gstat.first, name))
+                        if (starts_with(gstat.first, name))
                         {
                                 stats[gstat.first] = gstat.second;
                         }

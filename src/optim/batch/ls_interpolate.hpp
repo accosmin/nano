@@ -1,10 +1,9 @@
 #pragma once
 
+#include "types.h"
 #include "ls_cubic.hpp"
 #include "ls_bisection.hpp"
 #include "ls_quadratic.hpp"
-#include "math/lsearch_types.h"
-#include <vector>
 
 namespace nano
 {
@@ -12,12 +11,6 @@ namespace nano
         /// \brief interpolation-based line-search (More & Thuente -like?!),
         ///     see "Numerical optimization", Nocedal & Wright, 2nd edition, p.60
         ///
-        template
-        <
-                typename tstep,
-                typename tscalar = typename tstep::tscalar,
-                typename tsize = typename tstep::tsize
-        >
         class ls_interpolate_t
         {
         public:
@@ -32,19 +25,19 @@ namespace nano
                 ///
                 /// \brief compute the current step size
                 ///
-                tstep operator()(
-                        const ls_strategy strategy, const tscalar c1, const tscalar c2,
-                        const tstep& step0, const tscalar t0,
-                        const tsize max_iters = 64) const
+                ls_step_t operator()(
+                        const ls_strategy strategy, const scalar_t c1, const scalar_t c2,
+                        const ls_step_t& step0, const scalar_t t0,
+                        const int max_iters = 64) const
                 {
                         // previous step
-                        tstep stepp = step0;
+                        ls_step_t stepp = step0;
 
                         // current step
-                        tstep stept = step0;
-                        tscalar t = t0;
+                        ls_step_t stept = step0;
+                        scalar_t t = t0;
 
-                        for (tsize i = 1; i <= max_iters; i ++)
+                        for (int i = 1; i <= max_iters; i ++)
                         {
                                 // check sufficient decrease
                                 if (!stept.reset(t))
@@ -63,7 +56,7 @@ namespace nano
                                         return stept;
                                 }
 
-                                if (stept.gphi() >= tscalar(0))
+                                if (stept.gphi() >= scalar_t(0))
                                 {
                                         return zoom(strategy, c1, c2, step0, stept, stepp);
                                 }
@@ -82,15 +75,15 @@ namespace nano
                 /// \brief zoom-in in the bracketed interval,
                 ///     see "Numerical optimization", Nocedal & Wright, 2nd edition, p.60
                 ///
-                static tstep zoom(
-                        const ls_strategy, const tscalar c1, const tscalar c2,
-                        const tstep& step0, tstep steplo, tstep stephi,
-                        const tsize max_iters = 64)
+                static ls_step_t zoom(
+                        const ls_strategy, const scalar_t c1, const scalar_t c2,
+                        const ls_step_t& step0, ls_step_t steplo, ls_step_t stephi,
+                        const int max_iters = 64)
                 {
-                        tstep stept(step0);
-                        tscalar t;
+                        ls_step_t stept(step0);
+                        scalar_t t;
 
-                        for (   tsize i = 1; i <= max_iters &&
+                        for (   int i = 1; i <= max_iters &&
                                 std::fabs(steplo.alpha() - stephi.alpha()) > stept.minimum(); i ++)
                         {
                                 // try various interpolation methods
@@ -100,23 +93,23 @@ namespace nano
 
                                 t = tb;
 
-                                std::vector<tscalar> trials;
+                                std::vector<scalar_t> trials;
                                 trials.push_back(tb);
                                 trials.push_back(tq);
                                 trials.push_back(tc.first);
                                 trials.push_back(tc.second);
 
                                 // choose the valid interpolation step closest to the minimum value step
-                                const tscalar tmin = std::min(steplo.alpha(), stephi.alpha());
-                                const tscalar tmax = std::max(steplo.alpha(), stephi.alpha());
-                                const tscalar teps = (tmax - tmin) / 20;
+                                const scalar_t tmin = std::min(steplo.alpha(), stephi.alpha());
+                                const scalar_t tmax = std::max(steplo.alpha(), stephi.alpha());
+                                const scalar_t teps = (tmax - tmin) / 20;
 
-                                tscalar best_dist = std::numeric_limits<tscalar>::max();
+                                scalar_t best_dist = std::numeric_limits<scalar_t>::max();
                                 for (const auto tt : trials)
                                 {
                                         if (std::isfinite(tt) && tmin + teps < tt && tt < tmax - teps)
                                         {
-                                                const tscalar dist = std::fabs(tt - steplo.alpha());
+                                                const scalar_t dist = std::fabs(tt - steplo.alpha());
                                                 if (dist < best_dist)
                                                 {
                                                         best_dist = dist;

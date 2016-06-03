@@ -1,8 +1,8 @@
 #include "math/abs.hpp"
 #include "text/table.h"
 #include "text/cmdline.h"
-#include "math/stoch.hpp"
 #include "math/clamp.hpp"
+#include "optim/stoch.hpp"
 #include "cortex/logger.h"
 #include "math/random.hpp"
 #include "math/numeric.hpp"
@@ -13,77 +13,67 @@
 #include <map>
 #include <tuple>
 
-namespace
+using namespace nano;
+
+template
+<
+        typename tostats
+>
+void check_function(const function_t& function, const size_t trials, const size_t epochs, const size_t epoch_size,
+        tostats& gstats)
 {
-        using namespace nano;
+        const auto dims = function.problem().size();
 
-        template
-        <
-                typename tscalar,
-                typename tostats,
-                typename tsize = typename nano::function_t<tscalar>::tsize,
-                typename tvector = typename nano::function_t<tscalar>::tvector,
-                typename tproblem = typename nano::function_t<tscalar>::tproblem
-        >
-        void check_function(const nano::function_t<tscalar>& function,
-                const size_t trials, const size_t epochs, const size_t epoch_size,
-                tostats& gstats)
+        random_t<tscalar> rgen(tscalar(-1), tscalar(+1));
+
+        // generate fixed random trials
+        std::vector<tvector> x0s(trials);
+        for (auto& x0 : x0s)
         {
-                const auto dims = function.problem().size();
+                x0.resize(dims);
+                rgen(x0.data(), x0.data() + x0.size());
+        }
 
-                nano::random_t<tscalar> rgen(tscalar(-1), tscalar(+1));
+        // optimizers to try
+        const auto optimizers =
+        {
+                stoch_optimizer::SG,
+                stoch_optimizer::NGD,
+                stoch_optimizer::SGM,
+                stoch_optimizer::AG,
+                stoch_optimizer::AGFR,
+                stoch_optimizer::AGGR,
+                stoch_optimizer::ADAGRAD,
+                stoch_optimizer::ADADELTA,
+                stoch_optimizer::ADAM
+        };
 
-                // generate fixed random trials
-                std::vector<tvector> x0s(trials);
-                for (auto& x0 : x0s)
+        // per-problem statistics
+        tostats stats;
+
+        // evaluate all optimizers
+        for (const auto optimizer : optimizers)
+        {
+                const auto op = [&] (const tproblem& problem, const tvector& x0)
                 {
-                        x0.resize(dims);
-                        rgen(x0.data(), x0.data() + x0.size());
-                }
-
-                // optimizers to try
-                const auto optimizers =
-                {
-                        nano::stoch_optimizer::SG,
-                        nano::stoch_optimizer::NGD,
-                        nano::stoch_optimizer::SGM,
-                        nano::stoch_optimizer::AG,
-                        nano::stoch_optimizer::AGFR,
-                        nano::stoch_optimizer::AGGR,
-                        nano::stoch_optimizer::ADAGRAD,
-                        nano::stoch_optimizer::ADADELTA,
-                        nano::stoch_optimizer::ADAM
+                        return minimize(problem, nullptr, nullptr, x0, optimizer, epochs, epoch_size);
                 };
 
-                // per-problem statistics
-                tostats stats;
+                const auto name =
+                        to_string(optimizer);
 
-                // evaluate all optimizers
-                for (const auto optimizer : optimizers)
-                {
-                        const auto op = [&] (const tproblem& problem, const tvector& x0)
-                        {
-                                return nano::minimize(problem, nullptr, nullptr, x0, optimizer, epochs, epoch_size);
-                        };
-
-                        const auto name =
-                                nano::to_string(optimizer);
-
-                        benchmark::benchmark_function(function, x0s, op, name,
-                                {scalar_t(1e-6), scalar_t(1e-5), scalar_t(1e-4), scalar_t(1e-3)}, stats, gstats);
-                }
-
-                // show per-problem statistics
-                benchmark::show_table(function.name(), stats);
+                benchmark::benchmark_function(function, x0s, op, name,
+                        {scalar_t(1e-6), scalar_t(1e-5), scalar_t(1e-4), scalar_t(1e-3)}, stats, gstats);
         }
+
+        // show per-problem statistics
+        benchmark::show_table(function.name(), stats);
 }
 
 int main(int argc, const char* argv[])
 {
-        using namespace nano;
-
         // parse the command line
-        nano::cmdline_t cmdline("benchmark stochastic optimizers");
+        cmdline_t cmdline("benchmark stochastic optimizers");
         cmdline.add("", "min-dims",     "minimum number of dimensions for each test function (if feasible)", "100");
         cmdline.add("", "max-dims",     "maximum number of dimensions for each test function (if feasible)", "1000");
         cmdline.add("", "trials",       "number of random trials for each test function", "100");
@@ -101,8 +91,8 @@ int main(int argc, const char* argv[])
 
         std::map<std::string, benchmark::optimizer_stat_t> gstats;
 
-        nano::foreach_test_function<scalar_t, nano::test_type::all>(min_dims, max_dims,
-                [&] (const nano::function_t<scalar_t>& function)
+        foreach_test_function<scalar_t, test_type::all>(min_dims, max_dims,
+                [&] (const function_t<scalar_t>& function)
         {
                 check_function(function, trials, epochs, epoch_size, gstats);
         });

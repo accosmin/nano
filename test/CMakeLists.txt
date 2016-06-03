@@ -13,19 +13,20 @@ endfunction()
 
 # build unit tests
 build_test_app(test_average.cpp "")
-build_test_app(test_batch.cpp "")
 build_test_app(test_conv2d.cpp "")
 build_test_app(test_corr2d.cpp "")
 build_test_app(test_cubic.cpp "")
-build_test_app(test_functions.cpp "")
 build_test_app(test_gauss.cpp "")
 build_test_app(test_momentum.cpp "")
 build_test_app(test_quadratic.cpp "")
 build_test_app(test_random.cpp "")
 build_test_app(test_stats.cpp "")
-build_test_app(test_stoch.cpp "")
 build_test_app(test_tensor.cpp "")
 build_test_app(test_tune.cpp "")
+
+build_test_app(test_stoch.cpp optim)
+build_test_app(test_batch.cpp optim)
+build_test_app(test_functions.cpp optim)
 
 build_test_app(test_text.cpp text)
 build_test_app(test_cmdline.cpp text)

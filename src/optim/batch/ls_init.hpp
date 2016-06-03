@@ -1,7 +1,8 @@
 #pragma once
 
-#include "math/lsearch_types.h"
+#include "types.h"
 #include <algorithm>
+#include "optim/state.h"
 
 namespace nano
 {
@@ -9,11 +10,6 @@ namespace nano
         /// \brief heuristics to initialize the step length,
         ///     see "Numerical optimization", Nocedal & Wright, 2nd edition, p.59
         ///
-        template
-        <
-                typename tstate,
-                typename tscalar = typename tstate::tscalar
-        >
         class ls_init_t
         {
         public:
@@ -21,7 +17,7 @@ namespace nano
                 ///
                 /// \brief constructor
                 ///
-                explicit ls_init_t(ls_initializer type) :
+                explicit ls_init_t(const ls_initializer type) :
                         m_type(type),
                         m_first(true),
                         m_prevf(0),
@@ -33,19 +29,19 @@ namespace nano
                 ///
                 /// \brief compute the initial step length
                 ///
-                tscalar operator()(const tstate& cstate)
+                scalar_t operator()(const state_t& cstate)
                 {
-                        const tscalar unit = tscalar(1.0);
+                        const scalar_t unit = scalar_t(1.0);
 
-                        tscalar t0 = unit;
+                        scalar_t t0 = unit;
 
                         if (m_first)
                         {
                                 // following CG_DESCENT's initial procedure ...
-                                const tscalar phi0 = tscalar(0.01);
+                                const scalar_t phi0 = scalar_t(0.01);
 
-                                const tscalar xnorm = cstate.x.template lpNorm<Eigen::Infinity>();
-                                const tscalar fnorm = std::fabs(cstate.f);
+                                const scalar_t xnorm = cstate.x.template lpNorm<Eigen::Infinity>();
+                                const scalar_t fnorm = std::fabs(cstate.f);
 
                                 if (xnorm > 0)
                                 {
@@ -78,7 +74,7 @@ namespace nano
                                 {
                                 case ls_initializer::consistent:
                                         {
-                                                const tscalar dg = cstate.d.dot(cstate.g);
+                                                const scalar_t dg = cstate.d.dot(cstate.g);
 
                                                 t0 = (m_prevt0 * m_prevdg / dg);
 
@@ -88,8 +84,8 @@ namespace nano
 
                                 case ls_initializer::quadratic:
                                         {
-                                                const tscalar dg = cstate.d.dot(cstate.g);
-                                                const tscalar ro = tscalar(1.01 * 2.0);
+                                                const scalar_t dg = cstate.d.dot(cstate.g);
+                                                const scalar_t ro = scalar_t(1.01 * 2.0);
 
                                                 t0 = std::min(unit, ro * (cstate.f - m_prevf) / dg);
                                         }
@@ -113,9 +109,9 @@ namespace nano
 
                 ls_initializer  m_type;
                 bool            m_first;        ///< check if first iteration
-                tscalar         m_prevf;        ///< previous function evaluation
-                tscalar         m_prevt0;       ///< previous step length
-                tscalar         m_prevdg;       ///< previous direction dot product
+                scalar_t        m_prevf;        ///< previous function evaluation
+                scalar_t        m_prevt0;       ///< previous step length
+                scalar_t        m_prevdg;       ///< previous direction dot product
         };
 }
 

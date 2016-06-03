@@ -1,7 +1,7 @@
 #pragma once
 
 #include "cortex/trainer.h"
-#include "optim/stoch_types.h"
+#include "optim/stoch/types.h"
 
 namespace nano
 {

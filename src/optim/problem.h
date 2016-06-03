@@ -8,7 +8,7 @@ namespace nano
         ///
         /// \brief describes a multivariate optimization problem
         ///
-        class problem_t
+        class NANO_PUBLIC problem_t
         {
         public:
 
@@ -44,7 +44,7 @@ namespace nano
                 ///
                 /// \brief compute dimensionality
                 ///
-                vector_t::Index size() const;
+                tensor_size_t size() const;
 
                 ///
                 /// \brief compute function value

@@ -1,8 +1,9 @@
 #pragma once
 
-#include <vector>
 #include <utility>
 #include <functional>
+#include "types.h"
+#include "optim/state.h"
 
 namespace nano
 {

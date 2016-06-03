@@ -1,8 +1,8 @@
 #pragma once
 
-#include <cstddef>
+#include "types.h"
+#include "optim/state.h"
 #include <functional>
-#include "math/lsearch_types.h"
 
 namespace nano
 {

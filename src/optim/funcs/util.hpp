@@ -42,7 +42,7 @@ namespace nano
                 >
                 auto map_vector(const tscalar* data, const tsize size)
                 {
-                        return Eigen::Map<vector_t>(data, size);
+                        return Eigen::Map<const vector_t>(data, size);
                 }
 
                 template

@@ -5,25 +5,22 @@
 #include "math/numeric.hpp"
 #include "math/epsilon.hpp"
 #include "text/to_string.hpp"
-#include "math/funcs/foreach.hpp"
+#include "optim/funcs/foreach.hpp"
 #include <iomanip>
 
-template
-<
-        typename tscalar,
-        typename tvector = typename nano::function_t<tscalar>::tvector
->
-static void check_function(const nano::function_t<tscalar>& function)
+using namespace nano;
+
+static void check_function(const function_t& function)
 {
         const auto iterations = size_t(1024);
         const auto trials = size_t(32);
 
         const auto dims = function.problem().size();
 
-        nano::random_t<tscalar> rgen(tscalar(-1), tscalar(+1));
+        random_t<scalar_t> rgen(scalar_t(-1), scalar_t(+1));
 
         // generate fixed random trials
-        std::vector<tvector> x0s(trials);
+        std::vector<vector_t> x0s(trials);
         for (auto& x0 : x0s)
         {
                 x0.resize(dims);
@@ -33,20 +30,20 @@ static void check_function(const nano::function_t<tscalar>& function)
         // optimizers to try
         const auto optimizers =
         {
-                nano::batch_optimizer::GD,
+                batch_optimizer::GD,
 
-                nano::batch_optimizer::CGD,
-                nano::batch_optimizer::CGD_CD,
-                nano::batch_optimizer::CGD_DY,
-                nano::batch_optimizer::CGD_FR,
-                //nano::batch_optimizer::CGD_HS,
-                nano::batch_optimizer::CGD_LS,
-                nano::batch_optimizer::CGD_N,
-                nano::batch_optimizer::CGD_PRP,
-                nano::batch_optimizer::CGD_DYCD,
-                nano::batch_optimizer::CGD_DYHS,
+                batch_optimizer::CGD,
+                batch_optimizer::CGD_CD,
+                batch_optimizer::CGD_DY,
+                batch_optimizer::CGD_FR,
+                //batch_optimizer::CGD_HS,
+                batch_optimizer::CGD_LS,
+                batch_optimizer::CGD_N,
+                batch_optimizer::CGD_PRP,
+                batch_optimizer::CGD_DYCD,
+                batch_optimizer::CGD_DYHS,
 
-                nano::batch_optimizer::LBFGS,
+                batch_optimizer::LBFGS,
         };
 
         for (const auto& optimizer : optimizers)
@@ -61,16 +58,16 @@ static void check_function(const nano::function_t<tscalar>& function)
                         const auto f0 = problem(x0);
 
                         // optimize
-                        const auto state = nano::minimize(
-                                problem, nullptr, x0, optimizer, iterations, nano::epsilon0<tscalar>());
+                        const auto state = minimize(
+                                problem, nullptr, x0, optimizer, iterations, epsilon0<scalar_t>());
 
                         const auto x = state.x;
                         const auto f = state.f;
                         const auto g = state.convergence_criteria();
 
-                        const auto f_thres = nano::epsilon0<tscalar>();
-                        const auto g_thres = nano::epsilon3<tscalar>();
-                        const auto x_thres = nano::epsilon3<tscalar>() * 1e+3;
+                        const auto f_thres = epsilon0<scalar_t>();
+                        const auto g_thres = epsilon3<scalar_t>();
+                        const auto x_thres = epsilon3<scalar_t>() * 1e+3;
 
                         // ignore out-of-domain solutions
                         if (!function.is_valid(x))
@@ -79,7 +76,7 @@ static void check_function(const nano::function_t<tscalar>& function)
                                 continue;
                         }
 
-                        std::cout << function.name() << ", " << nano::to_string(optimizer)
+                        std::cout << function.name() << ", " << to_string(optimizer)
                                   << " [" << (t + 1) << "/" << trials << "]"
                                   << std::setprecision(12)
                                   << ": x = [" << x0.transpose() << "]/[" << x.transpose() << "]"
@@ -89,7 +86,7 @@ static void check_function(const nano::function_t<tscalar>& function)
 
                         // check function value decrease
                         NANO_CHECK_LESS(f, f0);
-                        NANO_CHECK_LESS(f, f0 - f_thres * nano::abs(f0));
+                        NANO_CHECK_LESS(f, f0 - f_thres * abs(f0));
 
                         // check convergence
                         NANO_CHECK_LESS(g, g_thres);
@@ -98,7 +95,7 @@ static void check_function(const nano::function_t<tscalar>& function)
                         NANO_CHECK(function.is_minima(x, x_thres));
                 }
 
-                std::cout << function.name() << ", " << nano::to_string(optimizer)
+                std::cout << function.name() << ", " << to_string(optimizer)
                           << ": out of domain " << out_of_domain << "/" << trials << ".\n";
         }
 }
@@ -107,7 +104,7 @@ NANO_BEGIN_MODULE(test_batch_optimizers)
 
 NANO_CASE(evaluate)
 {
-        nano::foreach_test_function<double, nano::test_type::easy>(1, 4, [] (const auto& function)
+        foreach_test_function<test_type::easy>(1, 4, [] (const auto& function)
         {
                 check_function(function);
         });

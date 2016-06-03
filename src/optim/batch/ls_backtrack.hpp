@@ -1,6 +1,7 @@
 #pragma once
 
-#include "math/lsearch_types.h"
+#include "types.h"
+#include "ls_step.hpp"
 
 namespace nano
 {
@@ -9,12 +10,6 @@ namespace nano
         ///     see "Numerical optimization", Nocedal & Wright, 2nd edition
         ///     see libLBFGS
         ///
-        template
-        <
-                typename tstep,
-                typename tscalar = typename tstep::tscalar,
-                typename tsize = typename tstep::tsize
-        >
         class ls_backtrack_t
         {
         public:
@@ -29,17 +24,17 @@ namespace nano
                 ///
                 /// \brief compute the current step size
                 ///
-                tstep operator()(
-                        const ls_strategy strategy, const tscalar c1, const tscalar c2,
-                        const tstep& step0, const tscalar t0,
-                        const tscalar decrement = tscalar(0.5),
-                        const tscalar increment = tscalar(2.1),
-                        const tsize max_iters = 64) const
+                ls_step_t operator()(
+                        const ls_strategy strategy, const scalar_t c1, const scalar_t c2,
+                        const ls_step_t& step0, const scalar_t t0,
+                        const scalar_t decrement = scalar_t(0.5),
+                        const scalar_t increment = scalar_t(2.1),
+                        const int max_iters = 64) const
                 {
-                        tstep step(step0);
-                        tscalar t = t0;
+                        ls_step_t step(step0);
+                        scalar_t t = t0;
 
-                        for (tsize i = 0; i < max_iters; i ++)
+                        for (int i = 0; i < max_iters; i ++)
                         {
                                 if (!step.reset(t))
                                 {
