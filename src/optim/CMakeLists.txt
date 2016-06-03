@@ -5,7 +5,8 @@ set(liboptim_sources
         ${CMAKE_CURRENT_SOURCE_DIR}/problem.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/state.h
         ${CMAKE_CURRENT_SOURCE_DIR}/state.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/stoch.hpp)
+        ${CMAKE_CURRENT_SOURCE_DIR}/stoch.hpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/test.hpp)
 
 add_subdirectory(batch)
 add_subdirectory(stoch)

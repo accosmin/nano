@@ -4,8 +4,9 @@
 #include "cortex/logger.h"
 #include "thread/thread.h"
 #include "cortex/measure.hpp"
-#include "cortex/optimizer.h"
 #include "text/to_params.hpp"
+#include "optim/batch/types.h"
+#include "optim/stoch/types.h"
 #include "text/concatenate.hpp"
 #include "cortex/tasks/task_charset.h"
 #include "cortex/layers/make_layers.h"
@@ -16,12 +17,12 @@ template
 <
         typename tvalue
 >
-static string_t stats_to_string(const nano::stats_t<tvalue>& stats)
+static string_t stats_to_string(const stats_t<tvalue>& stats)
 {
-        return  nano::to_string(static_cast<tvalue>(stats.avg()))
-                + "+/-" + nano::to_string(static_cast<tvalue>(stats.stdev()))
-                + " [" + nano::to_string(stats.min())
-                + ", " + nano::to_string(stats.max())
+        return  to_string(static_cast<tvalue>(stats.avg()))
+                + "+/-" + to_string(static_cast<tvalue>(stats.stdev()))
+                + " [" + to_string(stats.min())
+                + ", " + to_string(stats.max())
                 + "]";
 }
 
@@ -30,32 +31,32 @@ template
         typename ttrainer
 >
 static void test_optimizer(model_t& model, const string_t& name, const string_t& basepath,
-        nano::table_t& table, const vectors_t& x0s, const ttrainer& trainer)
+        table_t& table, const vectors_t& x0s, const ttrainer& trainer)
 {
-        nano::stats_t<scalar_t> errors;
-        nano::stats_t<scalar_t> speeds;
-        nano::stats_t<scalar_t> timings;
+        stats_t<scalar_t> errors;
+        stats_t<scalar_t> speeds;
+        stats_t<scalar_t> timings;
 
         log_info() << "<<< running " << name << " ...";
 
         for (size_t i = 0; i < x0s.size(); ++ i)
         {
-                const nano::timer_t timer;
+                const timer_t timer;
 
                 model.load_params(x0s[i]);
 
                 const auto result = trainer();
                 const auto opt_state = result.optimum_state();
-                const auto opt_speed = nano::convergence_speed(result.optimum_states());
+                const auto opt_speed = convergence_speed(result.optimum_states());
 
                 errors(opt_state.m_test.m_error_avg);
                 speeds(opt_speed);
                 timings(static_cast<scalar_t>(timer.seconds().count()));
 
-                const auto path = basepath + "-trial" + nano::to_string(i) + ".state";
+                const auto path = basepath + "-trial" + to_string(i) + ".state";
 
                 const auto opt_states = result.optimum_states();
-                nano::save(path, opt_states);
+                save(path, opt_states);
         }
 
         table.append(name)
@@ -70,40 +71,40 @@ static void evaluate(model_t& model,
         const std::vector<batch_optimizer>& batch_optimizers,
         const std::vector<batch_optimizer>& minibatch_optimizers,
         const std::vector<stoch_optimizer>& stochastic_optimizers,
-        const string_t& basename, const string_t& basepath, nano::table_t& table)
+        const string_t& basename, const string_t& basepath, table_t& table)
 {
         const auto epsilon = scalar_t(1e-6);
         const auto nthreads = thread::concurrency();
 
         for (auto optimizer : batch_optimizers)
         {
-                const auto optname = "batch-" + nano::to_string(optimizer);
+                const auto optname = "batch-" + to_string(optimizer);
                 test_optimizer(model, basename + optname, basepath + optname, table, x0s, [&] ()
                 {
-                        const auto params = nano::to_params("opt", optimizer, "iters", iterations, "eps", epsilon);
-                        const auto trainer = nano::get_trainers().get("batch", params);
+                        const auto params = to_params("opt", optimizer, "iters", iterations, "eps", epsilon);
+                        const auto trainer = get_trainers().get("batch", params);
                         return trainer->train(task, fold, nthreads, loss, criterion, model);
                 });
         }
 
         for (auto optimizer : minibatch_optimizers)
         {
-                const auto optname = "minibatch-" + nano::to_string(optimizer);
+                const auto optname = "minibatch-" + to_string(optimizer);
                 test_optimizer(model, basename + optname, basepath + optname, table, x0s, [&] ()
                 {
-                        const auto params = nano::to_params("opt", optimizer, "epochs", iterations, "eps", epsilon);
-                        const auto trainer = nano::get_trainers().get("minibatch", params);
+                        const auto params = to_params("opt", optimizer, "epochs", iterations, "eps", epsilon);
+                        const auto trainer = get_trainers().get("minibatch", params);
                         return trainer->train(task, fold, nthreads, loss, criterion, model);
                 });
         }
 
         for (auto optimizer : stochastic_optimizers)
         {
-                const auto optname = "stochastic-" + nano::to_string(optimizer);
+                const auto optname = "stochastic-" + to_string(optimizer);
                 test_optimizer(model, basename + optname, basepath + optname, table, x0s, [&] ()
                 {
-                        const auto params = nano::to_params("opt", optimizer, "epochs", iterations);
-                        const auto trainer = nano::get_trainers().get("stochastic", params);
+                        const auto params = to_params("opt", optimizer, "epochs", iterations);
+                        const auto trainer = get_trainers().get("stochastic", params);
                         return trainer->train(task, fold, nthreads, loss, criterion, model);
                 });
         }
@@ -114,7 +115,7 @@ int main(int argc, const char* argv[])
         using namespace nano;
 
         // parse the command line
-        nano::cmdline_t cmdline("benchmark trainers");
+        cmdline_t cmdline("benchmark trainers");
         cmdline.add("", "mlps",                 "use MLPs with varying number of hidden layers");
         cmdline.add("", "convnets",             "use convolution networks with varying number of convolution layers");
         cmdline.add("", "batch",                "evaluate batch optimizers");
@@ -234,10 +235,10 @@ int main(int argc, const char* argv[])
                 networks.emplace_back(convnet3 + outlayer, "convnet3");
         }
 
-        const strings_t losses = { "classnll" }; //nano::get_losses().ids();
+        const strings_t losses = { "classnll" }; //get_losses().ids();
 
         strings_t criteria;
-        criteria.push_back("avg"); //nano::get_criteria().ids();
+        criteria.push_back("avg"); //get_criteria().ids();
         if (use_reg_l2n) { criteria.push_back("l2n-reg"); }
         if (use_reg_var) { criteria.push_back("var-reg"); }
 
@@ -249,7 +250,7 @@ int main(int argc, const char* argv[])
 
                 log_info() << "<<< running network [" << network << "] ...";
 
-                const auto model = nano::get_models().get("forward-network", network);
+                const auto model = get_models().get("forward-network", network);
                 model->resize(task, false);
 
                 // generate fixed random starting points
@@ -265,9 +266,9 @@ int main(int argc, const char* argv[])
                 {
                         log_info() << "<<< running loss [" << iloss << "] ...";
 
-                        const auto loss = nano::get_losses().get(iloss);
+                        const auto loss = get_losses().get(iloss);
 
-                        nano::table_t table(netname + "-" + iloss);
+                        table_t table(netname + "-" + iloss);
                         table.header() << "test error"
                                        << "convergence speed"
                                        << "time [sec]";
@@ -275,7 +276,7 @@ int main(int argc, const char* argv[])
                         // vary the criteria
                         for (const string_t& icriterion : criteria)
                         {
-                                const auto criterion = nano::get_criteria().get(icriterion);
+                                const auto criterion = get_criteria().get(icriterion);
                                 const auto basename = "[" + icriterion + "] ";
                                 const auto basepath = netname + "-" + iloss + "-" + icriterion + "-";
 

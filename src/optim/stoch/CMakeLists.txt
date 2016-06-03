@@ -1,4 +1,4 @@
-list(APPEND libmath_sources
+list(APPEND liboptim_sources
         ${CMAKE_CURRENT_SOURCE_DIR}/adadelta.hpp
         ${CMAKE_CURRENT_SOURCE_DIR}/adagrad.hpp
         ${CMAKE_CURRENT_SOURCE_DIR}/adam.hpp
@@ -10,5 +10,5 @@ list(APPEND libmath_sources
         ${CMAKE_CURRENT_SOURCE_DIR}/sgm.hpp
         ${CMAKE_CURRENT_SOURCE_DIR}/ngd.hpp)
 
-set(libmath_sources "${libmath_sources}" PARENT_SCOPE)
+set(liboptim_sources "${liboptim_sources}" PARENT_SCOPE)
 

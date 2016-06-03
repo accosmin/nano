@@ -1,11 +1,11 @@
 #include "unit_test.hpp"
 #include "math/abs.hpp"
+#include "optim/test.hpp"
 #include "optim/batch.hpp"
 #include "math/random.hpp"
 #include "math/numeric.hpp"
 #include "math/epsilon.hpp"
 #include "text/to_string.hpp"
-#include "optim/funcs/foreach.hpp"
 #include <iomanip>
 
 using namespace nano;

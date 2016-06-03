@@ -9,7 +9,6 @@
 #include "math/epsilon.hpp"
 #include "text/algorithm.h"
 #include "text/from_string.hpp"
-#include "math/funcs/foreach.hpp"
 #include "benchmark_optimizers.h"
 #include <map>
 #include <tuple>
@@ -18,23 +17,18 @@ using namespace nano;
 
 template
 <
-        typename tscalar,
-        typename tostats,
-        typename tsize = typename function_t<tscalar>::tsize,
-        typename tvector = typename function_t<tscalar>::tvector,
-        typename tproblem = typename function_t<tscalar>::tproblem
+        typename tostats
 >
-void check_function(const function_t<tscalar>& function,
-        const size_t trials, const size_t iterations,
+static void check_function(const function_t& function, const size_t trials, const size_t iterations,
         tostats& gstats)
 {
-        const auto epsilon = epsilon0<tscalar>();
+        const auto epsilon = epsilon0<scalar_t>();
         const auto dims = function.problem().size();
 
-        random_t<tscalar> rgen(tscalar(-1), tscalar(+1));
+        random_t<scalar_t> rgen(scalar_t(-1), scalar_t(+1));
 
         // generate fixed random trials
-        std::vector<tvector> x0s(trials);
+        std::vector<vector_t> x0s(trials);
         for (auto& x0 : x0s)
         {
                 x0.resize(dims);
@@ -83,7 +77,7 @@ void check_function(const function_t<tscalar>& function,
                 for (ls_initializer ls_init : ls_initializers)
                         for (ls_strategy ls_strat : ls_strategies)
         {
-                const auto op = [&] (const tproblem& problem, const tvector& x0)
+                const auto op = [&] (const problem_t& problem, const vector_t& x0)
                 {
                         return  minimize(
                                 problem, nullptr, x0, optimizer, iterations, epsilon, ls_init, ls_strat);
@@ -123,8 +117,7 @@ int main(int argc, const char* argv[])
 
         std::map<std::string, benchmark::optimizer_stat_t> gstats;
 
-        foreach_test_function<scalar_t, test_type::all>(min_dims, max_dims,
-                [&] (const function_t<scalar_t>& function)
+        foreach_test_function<test_type::all>(min_dims, max_dims, [&] (const function_t& function)
         {
                 check_function(function, trials, iterations, gstats);
         });

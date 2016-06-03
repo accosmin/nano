@@ -4,6 +4,7 @@
 #include "text/align.hpp"
 #include "math/clamp.hpp"
 #include "math/stats.hpp"
+#include "optim/test.hpp"
 #include "thread/loopi.hpp"
 #include "text/table_row_comp.h"
 
@@ -89,13 +90,11 @@ namespace benchmark
 
         template
         <
-                typename tscalar,
-                typename tvector = typename nano::function_t<tscalar>::tvector,
                 typename toptimizer,
                 typename tostats
         >
         void benchmark_function(
-                const nano::function_t<tscalar>& func, const std::vector<tvector>& x0s,
+                const function_t& func, const std::vector<vector_t>& x0s,
                 const toptimizer& op, const std::string& name,
                 const scalars_t& gthres,
                 tostats& stats, tostats& gstats)
@@ -117,7 +116,7 @@ namespace benchmark
                         const auto& x0 = x0s[t];
 
                         const auto problem = func.problem();
-                        const auto state0 = typename nano::function_t<tscalar>::tproblem::tstate(problem, x0);
+                        const auto state0 = state_t(problem, x0);
                         const auto g0 = state0.convergence_criteria();
 
                         // optimize

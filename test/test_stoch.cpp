@@ -1,10 +1,10 @@
 #include "unit_test.hpp"
+#include "optim/test.hpp"
 #include "optim/stoch.hpp"
 #include "math/random.hpp"
 #include "math/numeric.hpp"
 #include "math/epsilon.hpp"
 #include "text/to_string.hpp"
-#include "optim/funcs/foreach.hpp"
 
 using namespace nano;
 

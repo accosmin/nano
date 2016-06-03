@@ -1,4 +1,4 @@
-list(APPEND libmath_sources
+list(APPEND liboptim_sources
         ${CMAKE_CURRENT_SOURCE_DIR}/cgd.hpp
         ${CMAKE_CURRENT_SOURCE_DIR}/cgd_steps.hpp
         ${CMAKE_CURRENT_SOURCE_DIR}/gd.hpp
@@ -15,4 +15,4 @@ list(APPEND libmath_sources
         ${CMAKE_CURRENT_SOURCE_DIR}/ls_strategy.hpp
         ${CMAKE_CURRENT_SOURCE_DIR}/params.hpp)
 
-set(libmath_sources "${libmath_sources}" PARENT_SCOPE)
+set(liboptim_sources "${liboptim_sources}" PARENT_SCOPE)

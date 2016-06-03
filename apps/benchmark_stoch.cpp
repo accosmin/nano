@@ -6,9 +6,7 @@
 #include "cortex/logger.h"
 #include "math/random.hpp"
 #include "math/numeric.hpp"
-#include "cortex/optimizer.h"
 #include "text/from_string.hpp"
-#include "math/funcs/foreach.hpp"
 #include "benchmark_optimizers.h"
 #include <map>
 #include <tuple>
@@ -24,10 +22,10 @@ void check_function(const function_t& function, const size_t trials, const size_
 {
         const auto dims = function.problem().size();
 
-        random_t<tscalar> rgen(tscalar(-1), tscalar(+1));
+        random_t<scalar_t> rgen(scalar_t(-1), scalar_t(+1));
 
         // generate fixed random trials
-        std::vector<tvector> x0s(trials);
+        std::vector<vector_t> x0s(trials);
         for (auto& x0 : x0s)
         {
                 x0.resize(dims);
@@ -54,7 +52,7 @@ void check_function(const function_t& function, const size_t trials, const size_
         // evaluate all optimizers
         for (const auto optimizer : optimizers)
         {
-                const auto op = [&] (const tproblem& problem, const tvector& x0)
+                const auto op = [&] (const problem_t& problem, const vector_t& x0)
                 {
                         return minimize(problem, nullptr, nullptr, x0, optimizer, epochs, epoch_size);
                 };
@@ -91,8 +89,7 @@ int main(int argc, const char* argv[])
 
         std::map<std::string, benchmark::optimizer_stat_t> gstats;
 
-        foreach_test_function<scalar_t, test_type::all>(min_dims, max_dims,
-                [&] (const function_t<scalar_t>& function)
+        foreach_test_function<test_type::all>(min_dims, max_dims, [&] (const function_t& function)
         {
                 check_function(function, trials, epochs, epoch_size, gstats);
         });

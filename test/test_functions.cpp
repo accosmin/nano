@@ -1,7 +1,7 @@
 #include "unit_test.hpp"
+#include "optim/test.hpp"
 #include "math/random.hpp"
 #include "math/epsilon.hpp"
-#include "optim/funcs/foreach.hpp"
 
 using namespace nano;
 
