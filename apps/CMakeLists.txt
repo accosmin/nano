@@ -1,26 +1,26 @@
-# build command line programs
-set(apps
-        benchmark_conv.cpp
-        benchmark_funcs.cpp
-        benchmark_batch.cpp
-        benchmark_stoch.cpp
-        benchmark_models.cpp
-        benchmark_trainers.cpp
-        embed.cpp
-        info_archive.cpp
-        info.cpp
-        info_task.cpp
-        max_threads.cpp
-        train.cpp
-        evaluate.cpp
-        warp.cpp
-        generate_convnets.cpp)
-
-foreach(app ${apps})
+# function to create an application
+function(build_app app libs)
         get_filename_component(app_name ${app} NAME_WE)
         add_executable(${app_name} ${app})
-        target_link_libraries(${app_name} cortex)
-endforeach()
+        target_link_libraries(${app_name} ${libs})
+endfunction()
+
+# build command line programs
+build_app(benchmark_conv.cpp cortex)
+build_app(benchmark_funcs.cpp cortex)
+build_app(benchmark_batch.cpp cortex)
+build_app(benchmark_stoch.cpp cortex)
+build_app(benchmark_models.cpp cortex)
+build_app(benchmark_trainers.cpp cortex)
+build_app(embed.cpp cortex)
+build_app(info_archive.cpp cortex)
+build_app(info.cpp cortex)
+build_app(info_task.cpp cortex)
+build_app(max_threads.cpp thread)
+build_app(train.cpp cortex)
+build_app(evaluate.cpp cortex)
+build_app(warp.cpp cortex)
+build_app(generate_convnets.cpp cortex)
 
 # install (some) programs
 set(programs
