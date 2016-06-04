@@ -7,6 +7,7 @@ endfunction()
 
 # build command line programs
 build_app(benchmark_conv.cpp cortex)
+build_app(benchmark_eigen.cpp cortex)
 build_app(benchmark_funcs.cpp cortex)
 build_app(benchmark_batch.cpp cortex)
 build_app(benchmark_stoch.cpp cortex)

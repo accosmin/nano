@@ -1,6 +1,7 @@
 #pragma once
 
 #include "timer.h"
+#include "math/numeric.hpp"
 
 namespace nano
 {
@@ -30,7 +31,7 @@ namespace nano
                         nsecs = timer.nanoseconds();
                 }
 
-                return nsecs / count;
+                return nanoseconds_t(nano::idiv(nsecs.count(), count));
         }
 
         ///
@@ -55,5 +56,17 @@ namespace nano
         milliseconds_t measure_robustly_msec(const toperator& op, const std::size_t trials)
         {
                 return std::chrono::duration_cast<milliseconds_t>(measure_robustly_nsec(op, trials));
+        }
+
+        ///
+        /// \brief compute MFLOPS (mega floating point operations per seconds) given duration in nanoseconds
+        ///
+        template
+        <
+                typename tinteger
+        >
+        tinteger mflops(const tinteger flops, const nanoseconds_t& duration)
+        {
+                return nano::idiv(flops * 1000, duration.count());
         }
 }

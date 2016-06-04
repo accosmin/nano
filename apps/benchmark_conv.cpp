@@ -2,7 +2,6 @@
 #include "text/table.h"
 #include "text/cmdline.h"
 #include "math/random.hpp"
-#include "math/numeric.hpp"
 #include "tensor/numeric.hpp"
 #include "cortex/measure.hpp"
 #include "tensor/conv2d_cpp.hpp"
@@ -48,11 +47,12 @@ namespace
         auto measure_op(const tensor_size_t flops, const top& op,
                 const tmatrixi& idata, const tmatrixk& kdata, tmatrixo&& odata, const size_t trials = 16)
         {
-                const auto nsec = nano::measure_robustly_nsec([&] ()
+                const auto duration = nano::measure_robustly_nsec([&] ()
                 {
                         op(idata, kdata, odata);
-                }, trials).count();
-                return nano::idiv(flops * 1000, nsec);
+                }, trials);
+
+                return nano::mflops(flops, duration);
         }
 
         template
