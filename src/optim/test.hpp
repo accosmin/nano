@@ -1,24 +1,24 @@
 #pragma once
 
-#include "funcs/trid.hpp"
-#include "funcs/beale.hpp"
-#include "funcs/booth.hpp"
-#include "funcs/cauchy.hpp"
-#include "funcs/sphere.hpp"
-#include "funcs/matyas.hpp"
-#include "funcs/powell.hpp"
-#include "funcs/colville.hpp"
-#include "funcs/zakharov.hpp"
-#include "funcs/mccormick.hpp"
-#include "funcs/himmelblau.hpp"
-#include "funcs/rosenbrock.hpp"
-#include "funcs/3hump_camel.hpp"
-#include "funcs/sum_squares.hpp"
-#include "funcs/dixon_price.hpp"
-#include "funcs/bohachevsky.hpp"
-#include "funcs/goldstein_price.hpp"
-#include "funcs/styblinski_tang.hpp"
-#include "funcs/rotated_ellipsoid.hpp"
+#include "funcs/trid.h"
+#include "funcs/beale.h"
+#include "funcs/booth.h"
+#include "funcs/cauchy.h"
+#include "funcs/sphere.h"
+#include "funcs/matyas.h"
+#include "funcs/powell.h"
+#include "funcs/colville.h"
+#include "funcs/zakharov.h"
+#include "funcs/mccormick.h"
+#include "funcs/himmelblau.h"
+#include "funcs/rosenbrock.h"
+#include "funcs/3hump_camel.h"
+#include "funcs/sum_squares.h"
+#include "funcs/dixon_price.h"
+#include "funcs/bohachevsky.h"
+#include "funcs/goldstein_price.h"
+#include "funcs/styblinski_tang.h"
+#include "funcs/rotated_ellipsoid.h"
 
 namespace nano
 {
@@ -56,9 +56,9 @@ namespace nano
                                 op(function_3hump_camel_t());
                                 op(function_goldstein_price_t());
                                 op(function_himmelblau_t());
-                                op(function_bohachevsky_t(btype::one));
-                                op(function_bohachevsky_t(btype::two));
-                                op(function_bohachevsky_t(btype::three));
+                                op(function_bohachevsky_t(function_bohachevsky_t::btype::one));
+                                op(function_bohachevsky_t(function_bohachevsky_t::btype::two));
+                                op(function_bohachevsky_t(function_bohachevsky_t::btype::three));
                                 break;
 
                         default:
