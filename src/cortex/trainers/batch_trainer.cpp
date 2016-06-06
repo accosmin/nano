@@ -3,9 +3,9 @@
 #include "optim/batch.hpp"
 #include "batch_trainer.h"
 #include "cortex/logger.h"
+#include "trainer_loop.hpp"
 #include "text/to_string.hpp"
 #include "text/from_params.hpp"
-#include "cortex/trainer_loop.hpp"
 
 namespace nano
 {

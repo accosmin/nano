@@ -1,8 +1,8 @@
 #pragma once
 
 #include "math/tune.hpp"
-#include "accumulator.h"
-#include "trainer_result.h"
+#include "cortex/accumulator.h"
+#include "cortex/trainer_result.h"
 
 namespace nano
 {

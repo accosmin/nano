@@ -3,11 +3,11 @@
 #include "optim/stoch.hpp"
 #include "thread/thread.h"
 #include "math/numeric.hpp"
+#include "trainer_loop.hpp"
 #include "text/to_string.hpp"
 #include "stochastic_trainer.h"
 #include "text/from_params.hpp"
 #include "cortex/task_iterator.h"
-#include "cortex/trainer_loop.hpp"
 
 #include "cortex/logger.h"
 

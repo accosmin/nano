@@ -3,12 +3,12 @@
 #include "optim/batch.hpp"
 #include "thread/thread.h"
 #include "math/numeric.hpp"
+#include "trainer_loop.hpp"
 #include "text/to_string.hpp"
 #include "minibatch_trainer.h"
 #include "optim/stoch/loop.hpp"
 #include "text/from_params.hpp"
 #include "cortex/task_iterator.h"
-#include "cortex/trainer_loop.hpp"
 
 #include "cortex/logger.h"
 
