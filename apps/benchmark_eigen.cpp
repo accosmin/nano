@@ -107,7 +107,7 @@ namespace
                 z.setZero();
                 const auto duration = nano::measure_robustly_nsec([&] ()
                 {
-                        z += x.transpose() * y;
+                        z += x * y.transpose();
                 }, trials);
                 NANO_UNUSED1(z);
 
@@ -141,7 +141,7 @@ int main(int, const char* [])
         fillrow(table.append("z += x * 0.5 + y * 0.3"), measure_sumv2);
         fillrow(table.append("z += X * y"), measure_mulv);
         fillrow(table.append("Z += X * Y"), measure_mulm);
-        fillrow(table.append("Z += x^t * y"), measure_outv);
+        fillrow(table.append("Z += x * y^t"), measure_outv);
 
         table.mark(nano::make_table_mark_maximum_percentage_cols<size_t>(10));
         table.print(std::cout);
