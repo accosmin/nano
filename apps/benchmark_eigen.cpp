@@ -30,7 +30,23 @@ namespace
                 return nano::mflops(2 * dims, duration);
         }
 
-        tensor_size_t measure_sumv(const tensor_size_t dims)
+        tensor_size_t measure_sumv1(const tensor_size_t dims)
+        {
+                vector_t x(dims);
+                vector_t z(dims);
+                tensor::set_random(rng, x);
+
+                z.setZero();
+                const auto duration = nano::measure_robustly_nsec([&] ()
+                {
+                        z += x * 0.5;
+                }, trials);
+                NANO_UNUSED1(z);
+
+                return nano::mflops(2 * dims, duration);
+        }
+
+        tensor_size_t measure_sumv2(const tensor_size_t dims)
         {
                 vector_t x(dims);
                 vector_t y(dims);
@@ -80,6 +96,23 @@ namespace
 
                 return nano::mflops(dims * dims * dims + dims * dims, duration);
         }
+
+        tensor_size_t measure_outv(const tensor_size_t dims)
+        {
+                vector_t x(dims);
+                vector_t y(dims);
+                matrix_t z(dims, dims);
+                tensor::set_random(rng, x, y);
+
+                z.setZero();
+                const auto duration = nano::measure_robustly_nsec([&] ()
+                {
+                        z += x.transpose() * y;
+                }, trials);
+                NANO_UNUSED1(z);
+
+                return nano::mflops(2 * dims * dims, duration);
+        }
 }
 
 int main(int, const char* [])
@@ -104,9 +137,11 @@ int main(int, const char* [])
         foreach_dims([&] (const auto dims) { table.header() << to_string(dims); });
 
         fillrow(table.append("z += x.dot(y)"), measure_dot);
-        fillrow(table.append("z += x * 0.5 + y * 0.3"), measure_sumv);
+        fillrow(table.append("z += x * 0.5"), measure_sumv1);
+        fillrow(table.append("z += x * 0.5 + y * 0.3"), measure_sumv2);
         fillrow(table.append("z += X * y"), measure_mulv);
         fillrow(table.append("Z += X * Y"), measure_mulm);
+        fillrow(table.append("Z += x^t * y"), measure_outv);
 
         table.mark(nano::make_table_mark_maximum_percentage_cols<size_t>(10));
         table.print(std::cout);
