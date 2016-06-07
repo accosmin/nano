@@ -5,6 +5,9 @@ generator=ninja
 libcpp=""
 gold=""
 lto=""
+float=""
+double=""
+long_double=""
 
 install_dir="`pwd`/install"
 
@@ -22,6 +25,9 @@ function usage
         echo -e "\t--libc++             <use libc++ instead of default libstdc++>       optional"
         echo -e "\t--gold               <use gold linker instead of default linker>     optional"
         echo -e "\t--lto                <use link time optimization>                    optional"
+        echo -e "\t--float              <use float as the default scalar>               optional"
+        echo -e "\t--double             <use double as the default scalar>              optional"
+        echo -e "\t--long-double        <use long double as the default scalar>         optional"
         echo
 }
 
@@ -41,6 +47,12 @@ do
                                 ;;
                 --lto)          lto="--lto"
                                 ;;
+                --float)        float="--float"
+                                ;;
+                --double)       double="--double"
+                                ;;
+                --long-double)  long_double="--long-double"
+                                ;;
                 -h | --help)    usage
                                 exit
                                 ;;
@@ -58,7 +70,7 @@ bash build.sh \
         --generator ${generator} \
         --install-dir ${install_dir} \
         --install OFF \
-        --asan OFF --msan OFF --tsan OFF ${libcpp} ${gold} ${lto}
+        --asan OFF --msan OFF --tsan OFF ${libcpp} ${gold} ${lto} ${float} ${double} ${long_double}
 
 bash build.sh \
         --compiler ${compiler} \
@@ -66,5 +78,5 @@ bash build.sh \
         --generator ${generator} \
         --install-dir ${install_dir} \
         --install OFF \
-        --asan OFF --msan OFF --tsan OFF ${libcpp} ${gold}
+        --asan OFF --msan OFF --tsan OFF ${libcpp} ${gold} ${float} ${double} ${long_double}
 

@@ -69,5 +69,5 @@ elseif((NOT NANO_WITH_FLOAT_SCALAR) AND (NOT NANO_WITH_DOUBLE_SCALAR) AND (NANO_
         message("++ Using long double as the default scalar type.")
         add_definitions(-DNANO_LONG_DOUBLE_SCALAR)
 else()
-        message(ERROR "++ The scalar type is not specified! Use one of the NANO_WITH_[FLOAT|DOUBLE|LONG_DOUBLE]_SCALAR options.")
+        message(FATAL_ERROR "++ The scalar type is not specified! Use one of the NANO_WITH_[FLOAT|DOUBLE|LONG_DOUBLE]_SCALAR options.")
 endif()
