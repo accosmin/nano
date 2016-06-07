@@ -30,7 +30,7 @@ namespace nano
                 const auto verbose = true;
 
                 // train the model
-                const auto op = [&] (const auto& lacc, const auto& gacc, const auto& x0)
+                const auto op = [&] (const accumulator_t& lacc, const accumulator_t& gacc, const vector_t& x0)
                 {
                         return train(task, fold, lacc, gacc, x0, optimizer, iterations, epsilon, verbose);
                 };
