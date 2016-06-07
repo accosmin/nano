@@ -39,7 +39,7 @@ namespace
                 z.setZero();
                 const auto duration = nano::measure_robustly_nsec([&] ()
                 {
-                        z += x * scalar_t(0.5);
+                        z.noalias() += x * scalar_t(0.5);
                 }, trials);
                 NANO_UNUSED1(z);
 
@@ -56,7 +56,7 @@ namespace
                 z.setZero();
                 const auto duration = nano::measure_robustly_nsec([&] ()
                 {
-                        z += x * scalar_t(0.5) + y * scalar_t(0.3);
+                        z.noalias() += x * scalar_t(0.5) + y * scalar_t(0.3);
                 }, trials);
                 NANO_UNUSED1(z);
 
@@ -73,7 +73,7 @@ namespace
                 z.setZero();
                 const auto duration = nano::measure_robustly_nsec([&] ()
                 {
-                        z += x * y;
+                        z.noalias() += x * y;
                 }, trials);
                 NANO_UNUSED1(z);
 
@@ -90,7 +90,7 @@ namespace
                 z.setZero();
                 const auto duration = nano::measure_robustly_nsec([&] ()
                 {
-                        z += x * y;
+                        z.noalias() += x * y;
                 }, trials);
                 NANO_UNUSED1(z);
 
@@ -107,7 +107,7 @@ namespace
                 z.setZero();
                 const auto duration = nano::measure_robustly_nsec([&] ()
                 {
-                        z += x * y.transpose();
+                        z.noalias() += x * y.transpose();
                 }, trials);
                 NANO_UNUSED1(z);
 
