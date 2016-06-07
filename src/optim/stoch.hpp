@@ -1,15 +1,12 @@
 #pragma once
 
-#include "problem.h"
-#include "stoch/params.hpp"
-
-#include "stoch/ag.hpp"
-#include "stoch/sg.hpp"
-#include "stoch/ngd.hpp"
-#include "stoch/sgm.hpp"
-#include "stoch/adam.hpp"
-#include "stoch/adagrad.hpp"
-#include "stoch/adadelta.hpp"
+#include "stoch/ag.h"
+#include "stoch/sg.h"
+#include "stoch/ngd.h"
+#include "stoch/sgm.h"
+#include "stoch/adam.h"
+#include "stoch/adagrad.h"
+#include "stoch/adadelta.h"
 
 namespace nano
 {

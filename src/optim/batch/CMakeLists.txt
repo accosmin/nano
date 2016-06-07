@@ -7,7 +7,6 @@ list(APPEND liboptim_sources
         ${CMAKE_CURRENT_SOURCE_DIR}/ls_cgdescent.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/ls_init.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/ls_interpolate.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/ls_strategy.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/params.hpp)
+        ${CMAKE_CURRENT_SOURCE_DIR}/ls_strategy.cpp)
 
 set(liboptim_sources "${liboptim_sources}" PARENT_SCOPE)

@@ -2,6 +2,7 @@
 
 #include <cmath>
 #include <cassert>
+#include "scalar.h"
 
 namespace nano
 {
@@ -13,37 +14,33 @@ namespace nano
         ///
         /// learning rate = alpha0 / (iter + 1)^decay
         ///
-        template
-        <
-                typename tscalar
-        >
         struct lrate_t
         {
                 ///
                 /// \brief constructor
                 ///
-                lrate_t(const tscalar alpha0, const tscalar decay) :
+                lrate_t(const scalar_t alpha0, const scalar_t decay) :
                         m_alpha0(alpha0),
                         m_decay(decay),
                         m_iteration(0)
                 {
-                        assert(decay >= tscalar(0));
-                        assert(decay <= tscalar(1));
-                        assert(alpha0 > tscalar(0));
+                        assert(decay >= scalar_t(0));
+                        assert(decay <= scalar_t(1));
+                        assert(alpha0 > scalar_t(0));
                 }
 
                 ///
                 /// \brief update the current learning rate for the given iteration
                 ///
-                tscalar get()
+                scalar_t get()
                 {
                         return m_alpha0 / std::pow(++ m_iteration, m_decay);
                 }
 
                 // attributes
-                tscalar         m_alpha0;
-                tscalar         m_decay;
-                tscalar         m_iteration;
+                scalar_t        m_alpha0;
+                scalar_t        m_decay;
+                scalar_t        m_iteration;
         };
 
 }

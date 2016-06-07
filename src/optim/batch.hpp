@@ -1,8 +1,5 @@
 #pragma once
 
-#include "problem.h"
-#include "batch/params.hpp"
-
 #include "batch/gd.h"
 #include "batch/cgd.h"
 #include "batch/lbfgs.h"

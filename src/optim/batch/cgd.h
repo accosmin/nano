@@ -1,6 +1,6 @@
 #pragma once
 
-#include "params.hpp"
+#include "params.h"
 #include "cgd_steps.hpp"
 #include "optim/problem.h"
 

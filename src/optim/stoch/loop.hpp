@@ -1,6 +1,6 @@
 #pragma once
 
-#include "params.hpp"
+#include "params.h"
 #include "math/tune.hpp"
 #include "math/momentum.hpp"
 

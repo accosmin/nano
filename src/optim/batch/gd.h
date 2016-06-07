@@ -1,6 +1,6 @@
 #pragma once
 
-#include "params.hpp"
+#include "params.h"
 #include "optim/problem.h"
 
 namespace nano
