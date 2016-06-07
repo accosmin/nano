@@ -109,7 +109,7 @@ namespace nano
                 const auto ppw = nano::clamp(nano::cast<int>(dx + rng()), 0, icols - ppx);
 
                 const auto ppy = nano::clamp(nano::cast<int>(rng()), 0, irows - 1);
-                const auto pph = nano::clamp(nano::cast<int>(irows + rng()), 0, irows - ppy);
+                const auto pph = nano::clamp(nano::cast<int>(static_cast<scalar_t>(irows) + rng()), 0, irows - ppy);
 
                 tensor3d_t ret(4, pph, ppw);
                 ret.matrix(0) = image.matrix(0).block(ppy, ppx, pph, ppw).cast<scalar_t>() / 255;

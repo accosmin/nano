@@ -23,8 +23,10 @@ namespace nano
                 {
                         for (int x = -1; x <= 1; ++ x)
                         {
-                                wei(y + 1, x + 1) =
-                                std::exp(- precx / 2 * square(x - meanx) - precy / 2 * square(y - meany));
+                                const auto dx = static_cast<scalar_t>(x) - meanx;
+                                const auto dy = static_cast<scalar_t>(y) - meany;
+
+                                wei(y + 1, x + 1) = std::exp(- precx / 2 * square(dx) - precy / 2 * square(dy));
                         }
                 }
 
@@ -55,10 +57,13 @@ namespace nano
                 {
                         for (int x = -1; x <= 1; ++ x, ++ i)
                         {
-                                agrad(i, 0) = wei(y + 1, x + 1) * precx * (x - meanx);
-                                agrad(i, 1) = wei(y + 1, x + 1) * precy * (y - meany);
-                                agrad(i, 2) = wei(y + 1, x + 1) * (- square(x - meanx) / 2);
-                                agrad(i, 3) = wei(y + 1, x + 1) * (- square(y - meany) / 2);
+                                const auto dx = static_cast<scalar_t>(x) - meanx;
+                                const auto dy = static_cast<scalar_t>(y) - meany;
+
+                                agrad(i, 0) = wei(y + 1, x + 1) * precx * (dx);
+                                agrad(i, 1) = wei(y + 1, x + 1) * precy * (dy);
+                                agrad(i, 2) = wei(y + 1, x + 1) * (- square(dx) / 2);
+                                agrad(i, 3) = wei(y + 1, x + 1) * (- square(dy) / 2);
                         }
                 }
 

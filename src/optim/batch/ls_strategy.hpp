@@ -15,7 +15,7 @@ namespace nano
                 /// \brief constructor
                 ///
                 ls_strategy_t(  const ls_strategy strategy,
-                                const scalar_t c1 = 1e-4, const scalar_t c2 = 0.1) :
+                                const scalar_t c1 = scalar_t(1e-4), const scalar_t c2 = scalar_t(0.1)) :
                         m_strategy(strategy),
                         m_c1(c1),
                         m_c2(c2)

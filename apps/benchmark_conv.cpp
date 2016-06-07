@@ -28,7 +28,7 @@ namespace
         {
                 const int osize = isize - ksize + 1;
 
-                nano::random_t<typename tmatrix::Scalar> rng(-scalar_t(1) / isize, +scalar_t(1) / isize);
+                nano::random_t<scalar_t> rng(-scalar_t(1) / scalar_t(isize), +scalar_t(1) / scalar_t(isize));
 
                 idata.resize(isize, isize);
                 kdata.resize(ksize, ksize);

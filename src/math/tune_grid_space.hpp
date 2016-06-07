@@ -91,7 +91,7 @@ namespace nano
                         tscalars values;
                         for (auto i = 0; i <= m_splits; ++ i)
                         {
-                                const auto value = m_min + i * delta();
+                                const auto value = m_min + static_cast<tscalar>(i) * delta();
                                 values.push_back(m_mapping.to_param(value));
                         }
                         return values;
@@ -102,8 +102,8 @@ namespace nano
                         optimum = m_mapping.from_param(optimum);
 
                         const auto var = delta();
-                        const auto min = optimum - (m_splits - 1) * var / m_splits;
-                        const auto max = optimum + (m_splits - 1) * var / m_splits;
+                        const auto min = optimum - static_cast<tscalar>(m_splits - 1) * var / static_cast<tscalar>(m_splits);
+                        const auto max = optimum + static_cast<tscalar>(m_splits - 1) * var / static_cast<tscalar>(m_splits);
 
                         m_min = nano::clamp(min, m_orig_min, m_orig_max);
                         m_max = nano::clamp(max, m_orig_min, m_orig_max);
