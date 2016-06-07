@@ -93,7 +93,7 @@ namespace nano
                         return gacc.value();
                 };
 
-                auto fn_tlog = [&] (const state_t& state, const auto& config)
+                auto fn_tlog = [&] (const state_t& state, const trainer_config_t& config)
                 {
                         // evaluate training samples
                         lacc.set_params(state.x);
@@ -112,7 +112,7 @@ namespace nano
                         return tvalue;
                 };
 
-                auto fn_ulog = [&] (const state_t& state, const auto& sconfig)
+                auto fn_ulog = [&] (const state_t& state, const trainer_config_t& sconfig)
                 {
                         // evaluate the current state
                         lacc.set_params(state.x);

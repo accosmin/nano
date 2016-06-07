@@ -95,7 +95,7 @@ namespace nano
                         return gacc.value();
                 };
 
-                const auto fn_ulog = [&] (const state_t& state, const auto& sconfig)
+                const auto fn_ulog = [&] (const state_t& state, const trainer_config_t& sconfig)
                 {
                         // evaluate the current state
                         lacc.set_params(state.x);
