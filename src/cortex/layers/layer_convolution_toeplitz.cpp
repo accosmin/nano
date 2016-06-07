@@ -160,7 +160,7 @@ namespace nano
                                 m_toe_okdata.row(ok) = m_kdata.vector(o, i / kconn());
                         }
 
-                        m_toe_oodata = m_toe_okdata * m_toe_oidata;
+                        m_toe_oodata.noalias() = m_toe_okdata * m_toe_oidata;
                         for (tensor_size_t o = (i % kconn()), ok = 0; o < odims(); ++ ok, o += kconn())
                         {
                                 m_odata.vector(o) += m_toe_oodata.row(ok);
