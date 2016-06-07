@@ -1,6 +1,6 @@
 #pragma once
 
-#include "layer_activation.h"
+#include "activation.h"
 
 namespace nano
 {

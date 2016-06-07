@@ -1,12 +1,12 @@
 #include "pooling.hpp"
 #include "math/clamp.hpp"
+#include "pooling_gauss.h"
 #include "math/random.hpp"
 #include "cortex/logger.h"
 #include "math/numeric.hpp"
 #include "tensor/numeric.hpp"
 #include "text/from_params.hpp"
 #include "tensor/serialize.hpp"
-#include "layer_pooling_gauss.h"
 
 namespace nano
 {

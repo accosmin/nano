@@ -5,7 +5,7 @@
 #include "text/to_string.hpp"
 #include "text/from_params.hpp"
 #include "tensor/serialize.hpp"
-#include "layer_convolution_toeplitz.h"
+#include "convolution_toeplitz.h"
 
 namespace nano
 {

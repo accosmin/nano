@@ -1,10 +1,10 @@
 list(APPEND libcortex_sources
-        ${CMAKE_CURRENT_SOURCE_DIR}/batch_trainer.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/batch_trainer.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/minibatch_trainer.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/minibatch_trainer.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/stochastic_trainer.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/stochastic_trainer.h)
+        ${CMAKE_CURRENT_SOURCE_DIR}/batch.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/batch.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/minibatch.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/minibatch.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/stochastic.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/stochastic.h)
 
 set(libcortex_sources "${libcortex_sources}" PARENT_SCOPE)
 

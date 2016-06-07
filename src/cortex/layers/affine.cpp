@@ -1,4 +1,4 @@
-#include "layer_affine.h"
+#include "affine.h"
 #include "math/clamp.hpp"
 #include "math/random.hpp"
 #include "tensor/numeric.hpp"

@@ -1,11 +1,11 @@
 #include "pooling.hpp"
+#include "pooling_soft.h"
 #include "math/clamp.hpp"
 #include "math/random.hpp"
 #include "cortex/logger.h"
 #include "tensor/numeric.hpp"
 #include "text/from_params.hpp"
 #include "tensor/serialize.hpp"
-#include "layer_pooling_soft.h"
 
 namespace nano
 {

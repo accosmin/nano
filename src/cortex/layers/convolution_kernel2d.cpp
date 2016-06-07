@@ -7,7 +7,7 @@
 #include "tensor/serialize.hpp"
 #include "tensor/conv2d_dyn.hpp"
 #include "tensor/corr2d_dyn.hpp"
-#include "layer_convolution_kernel2d.h"
+#include "convolution_kernel2d.h"
 
 namespace nano
 {
