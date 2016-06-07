@@ -5,6 +5,7 @@ source $(dirname $0)/common_train.sh
 # common parameters
 common="${task_mnist} ${loss_classnll} --threads ${max_threads}"
 outdir="${dir_exp_mnist}/eval_regularizer"
+mkdir -p ${outdir}
 
 # models
 conv0="--model forward-network --model-params "
@@ -71,7 +72,8 @@ done
 
 exit
 
-# compare optimizers
+# compare
+for ((trial=0;trial<${trials};trial++))
 for model in ${models}
 do
         bash plot_models.sh ${dir_exp_mnist}/${model}.pdf ${dir_exp_mnist}/*_${model}*.state
