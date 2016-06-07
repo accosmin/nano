@@ -16,7 +16,7 @@ namespace nano
         ///
         /// \brief CGD update parameters (Hestenes and Stiefel, 1952 - see (1))
         ///
-        struct cgd_step_HS
+        struct NANO_PUBLIC cgd_step_HS
         {
                 scalar_t operator()(const state_t& prev, const state_t& curr) const
                 {
@@ -28,7 +28,7 @@ namespace nano
         ///
         /// \brief CGD update parameters (Fletcher and Reeves, 1964 - see (1))
         ///
-        struct cgd_step_FR
+        struct NANO_PUBLIC cgd_step_FR
         {
                 scalar_t operator()(const state_t& prev, const state_t& curr) const
                 {
@@ -40,7 +40,7 @@ namespace nano
         ///
         /// \brief CGD update parameters (Polak and Ribiere, 1969 - see (1))
         ///
-        struct cgd_step_PRP
+        struct NANO_PUBLIC cgd_step_PRP
         {
                 scalar_t operator()(const state_t& prev, const state_t& curr) const
                 {
@@ -53,7 +53,7 @@ namespace nano
         ///
         /// \brief CGD update parameters (Fletcher - Conjugate Descent, 1987 - see (1))
         ///
-        struct cgd_step_CD
+        struct NANO_PUBLIC cgd_step_CD
         {
                 scalar_t operator()(const state_t& prev, const state_t& curr) const
                 {
@@ -65,7 +65,7 @@ namespace nano
         ///
         /// \brief CGD update parameters (Liu and Storey, 1991 - see (1))
         ///
-        struct cgd_step_LS
+        struct NANO_PUBLIC cgd_step_LS
         {
                 scalar_t operator()(const state_t& prev, const state_t& curr) const
                 {
@@ -77,7 +77,7 @@ namespace nano
         ///
         /// \brief CGD update parameters (Dai and Yuan, 1999 - see (1))
         ///
-        struct cgd_step_DY
+        struct NANO_PUBLIC cgd_step_DY
         {
                 scalar_t operator()(const state_t& prev, const state_t& curr) const
                 {
@@ -89,7 +89,7 @@ namespace nano
         ///
         /// \brief CGD update parameters (Hager and Zhang, 2005 - see (1)) aka CG_DESCENT
         ///
-        struct cgd_step_N
+        struct NANO_PUBLIC cgd_step_N
         {
                 scalar_t operator()(const state_t& prev, const state_t& curr) const
                 {
@@ -110,7 +110,7 @@ namespace nano
         ///
         /// \brief CGD update parameters (Dai and Yuan, 2001  - see (2), page 21)
         ///
-        struct cgd_step_DYHS
+        struct NANO_PUBLIC cgd_step_DYHS
         {
                 scalar_t operator()(const state_t& prev, const state_t& curr) const
                 {
@@ -124,7 +124,7 @@ namespace nano
         ///
         /// \brief CGD update parameters (Dai, 2002 - see (2), page 22)
         ///
-        struct cgd_step_DYCD
+        struct NANO_PUBLIC cgd_step_DYCD
         {
                 scalar_t operator()(const state_t& prev, const state_t& curr) const
                 {

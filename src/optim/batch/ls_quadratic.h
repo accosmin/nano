@@ -1,6 +1,6 @@
 #pragma once
 
-#include "ls_step.hpp"
+#include "ls_step.h"
 #include "math/quadratic.hpp"
 
 namespace nano

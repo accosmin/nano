@@ -3,9 +3,9 @@
 #include "problem.h"
 #include "batch/params.hpp"
 
-#include "batch/gd.hpp"
-#include "batch/cgd.hpp"
-#include "batch/lbfgs.hpp"
+#include "batch/gd.h"
+#include "batch/cgd.h"
+#include "batch/lbfgs.h"
 
 namespace nano
 {

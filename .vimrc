@@ -40,8 +40,14 @@ highlight Search cterm=NONE ctermfg=NONE ctermbg=darkgray
 set path+=src
 set path+=src/cortex
 set path+=src/thread
+set path+=src/tensor
+set path+=src/vision
 set path+=src/text
 set path+=src/math
+set path+=src/optim
+set path+=src/optim/funcs
+set path+=src/optim/batch
+set path+=src/optim/stoch
 set path+=src/io
 set path+=apps
 set path+=test
