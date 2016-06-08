@@ -186,8 +186,8 @@ int main(int argc, const char* argv[])
         }
 
         // create task
-        const size_t rows = 12;
-        const size_t cols = 12;
+        const size_t rows = 16;
+        const size_t cols = 16;
         const size_t count = thread::concurrency() * 32 * 100;
         const color_mode color = color_mode::rgb;
 
@@ -202,21 +202,21 @@ int main(int argc, const char* argv[])
         const auto pooling = "pool-full";
 
         const auto mlp0 = string_t();
-        const auto mlp1 = mlp0 + make_affine_layer(16, activation);
-        const auto mlp2 = mlp1 + make_affine_layer(16, activation);
-        const auto mlp3 = mlp2 + make_affine_layer(16, activation);
+        const auto mlp1 = mlp0 + make_affine_layer(64, activation);
+        const auto mlp2 = mlp1 + make_affine_layer(64, activation);
+        const auto mlp3 = mlp2 + make_affine_layer(64, activation);
 
         const auto convnet1 =
-                make_conv_pool_layer(16, 5, 5, 1, activation, pooling);
+                make_conv_pool_layer(32, 7, 7, 1, activation, pooling);
 
         const auto convnet2 =
-                make_conv_pool_layer(16, 5, 5, 1, activation, pooling) +
-                make_conv_layer(32, 3, 3, 2);
+                make_conv_pool_layer(32, 7, 7, 1, activation, pooling) +
+                make_conv_layer(64, 5, 5, 4);
 
         const auto convnet3 =
-                make_conv_layer(16, 5, 5, 1, activation) +
-                make_conv_layer(32, 5, 5, 2, activation) +
-                make_conv_layer(64, 3, 3, 4, activation);
+                make_conv_layer(32, 7, 7, 1, activation) +
+                make_conv_layer(64, 5, 5, 4, activation) +
+                make_conv_layer(128, 3, 3, 8, activation);
 
         const string_t outlayer = make_output_layer(outputs, activation);
 
