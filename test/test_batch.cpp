@@ -65,8 +65,8 @@ static void check_function(const function_t& function)
                         const auto f = state.f;
                         const auto g = state.convergence_criteria();
 
-                        const auto f_thres = epsilon0<scalar_t>();
-                        const auto g_thres = epsilon3<scalar_t>();
+                        const auto f_thres = epsilon3<scalar_t>();
+                        const auto g_thres = epsilon3<scalar_t>() * scalar_t(1e+1);
                         const auto x_thres = epsilon3<scalar_t>() * scalar_t(1e+3);
 
                         // ignore out-of-domain solutions

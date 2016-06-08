@@ -51,7 +51,7 @@ void make_random_config(tensor3d_t& inputs, vector_t& params, vector_t& target)
         target = class_target(trgen(), target.size());
 }
 
-void test_model(const string_t& model_description, const scalar_t epsilon = epsilon2<scalar_t>())
+void test_model(const string_t& model_description, const scalar_t epsilon = epsilon3<scalar_t>())
 {
         const auto model = get_model(model_description);
         const auto loss = get_loss();

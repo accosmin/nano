@@ -9,9 +9,9 @@ using namespace nano;
 
 static void check_grad(const string_t& loss_id, tensor_size_t n_dims, size_t n_tests)
 {
-        const auto loss = nano::get_losses().get(loss_id);
+        const auto loss = get_losses().get(loss_id);
 
-        const vector_t target = nano::class_target(n_dims / 2, n_dims);
+        const vector_t target = class_target(n_dims / 2, n_dims);
 
         // optimization problem: size
         auto opt_fn_size = [&] ()
@@ -43,13 +43,13 @@ static void check_grad(const string_t& loss_id, tensor_size_t n_dims, size_t n_t
         // check the gradient using random parameters
         for (size_t t = 0; t < n_tests; ++ t)
         {
-                nano::random_t<scalar_t> rgen(-1.0, +1.0);
+                random_t<scalar_t> rgen(scalar_t(-0.1), scalar_t(+0.1));
 
                 vector_t x(n_dims);
                 rgen(x.data(), x.data() + n_dims);
 
                 NANO_CHECK_GREATER(problem(x), 0.0);
-                NANO_CHECK_LESS(problem.grad_accuracy(x), nano::epsilon2<scalar_t>());
+                NANO_CHECK_LESS(problem.grad_accuracy(x), epsilon3<scalar_t>());
         }
 }
 
@@ -57,7 +57,7 @@ NANO_BEGIN_MODULE(test_loss)
 
 NANO_CASE(evaluate)
 {
-        const strings_t loss_ids = nano::get_losses().ids();
+        const strings_t loss_ids = get_losses().ids();
 
         const tensor_size_t cmd_min_dims = 2;
         const tensor_size_t cmd_max_dims = 10;

@@ -8,14 +8,14 @@ using namespace nano;
 static void test_function(const function_t& function)
 {
         const auto trials = size_t(135);
-        const auto epsilon = epsilon2<scalar_t>();
+        const auto epsilon = 10 * epsilon3<scalar_t>();
 
         const auto dims = function.problem().size();
         NANO_CHECK_GREATER(dims, 0);
 
         for (size_t t = 0; t < trials; ++ t)
         {
-                random_t<scalar_t> rgen(scalar_t(-0.1), scalar_t(+0.1));
+                random_t<scalar_t> rgen(scalar_t(-0.01), scalar_t(+0.01));
 
                 vector_t x0(dims);
                 rgen(x0.data(), x0.data() + x0.size());

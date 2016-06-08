@@ -5,6 +5,7 @@
 #include "optim/batch.hpp"
 #include "math/random.hpp"
 #include "cortex/logger.h"
+#include "math/epsilon.hpp"
 #include "math/numeric.hpp"
 #include "math/epsilon.hpp"
 #include "text/algorithm.h"
@@ -88,8 +89,15 @@ static void check_function(const function_t& function, const size_t trials, cons
                         to_string(ls_init) + "][" +
                         to_string(ls_strat) + "]";
 
-                benchmark::benchmark_function(function, x0s, op, name,
-                        {scalar_t(1e-12), scalar_t(1e-10), scalar_t(1e-8), scalar_t(1e-6)}, stats, gstats);
+                const scalars_t thres =
+                {
+                        epsilon0<scalar_t>(),
+                        epsilon1<scalar_t>(),
+                        epsilon2<scalar_t>(),
+                        epsilon3<scalar_t>()
+                };
+
+                benchmark::benchmark_function(function, x0s, op, name, thres, stats, gstats);
         }
 
         // show per-problem statistics

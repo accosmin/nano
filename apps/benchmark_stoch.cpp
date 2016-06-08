@@ -5,6 +5,7 @@
 #include "optim/stoch.hpp"
 #include "cortex/logger.h"
 #include "math/random.hpp"
+#include "math/epsilon.hpp"
 #include "math/numeric.hpp"
 #include "text/from_string.hpp"
 #include "benchmark_optimizers.h"
@@ -60,8 +61,15 @@ void check_function(const function_t& function, const size_t trials, const size_
                 const auto name =
                         to_string(optimizer);
 
-                benchmark::benchmark_function(function, x0s, op, name,
-                        {scalar_t(1e-6), scalar_t(1e-5), scalar_t(1e-4), scalar_t(1e-3)}, stats, gstats);
+                const scalars_t thres =
+                {
+                        epsilon0<scalar_t>(),
+                        epsilon1<scalar_t>(),
+                        epsilon2<scalar_t>(),
+                        epsilon3<scalar_t>()
+                };
+
+                benchmark::benchmark_function(function, x0s, op, name, thres, stats, gstats);
         }
 
         // show per-problem statistics
