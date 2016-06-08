@@ -104,8 +104,8 @@ namespace nano
                         {{"alpha0", alpha0}, {"decay", decay}, {"q", q}});
         }
 
-        template class stoch_ag_base_t<ag_restart::none>;
-        template class stoch_ag_base_t<ag_restart::function>;
-        template class stoch_ag_base_t<ag_restart::gradient>;
+        template struct stoch_ag_base_t<ag_restart::none>;
+        template struct stoch_ag_base_t<ag_restart::function>;
+        template struct stoch_ag_base_t<ag_restart::gradient>;
 }
 

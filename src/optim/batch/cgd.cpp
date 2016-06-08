@@ -52,14 +52,14 @@ namespace nano
                 return batch_loop(param, istate, op);
         }
 
-        template class batch_cgd_t<cgd_step_HS>;
-        template class batch_cgd_t<cgd_step_FR>;
-        template class batch_cgd_t<cgd_step_PRP>;
-        template class batch_cgd_t<cgd_step_CD>;
-        template class batch_cgd_t<cgd_step_LS>;
-        template class batch_cgd_t<cgd_step_DY>;
-        template class batch_cgd_t<cgd_step_N>;
-        template class batch_cgd_t<cgd_step_DYCD>;
-        template class batch_cgd_t<cgd_step_DYHS>;
+        template struct batch_cgd_t<cgd_step_HS>;
+        template struct batch_cgd_t<cgd_step_FR>;
+        template struct batch_cgd_t<cgd_step_PRP>;
+        template struct batch_cgd_t<cgd_step_CD>;
+        template struct batch_cgd_t<cgd_step_LS>;
+        template struct batch_cgd_t<cgd_step_DY>;
+        template struct batch_cgd_t<cgd_step_N>;
+        template struct batch_cgd_t<cgd_step_DYCD>;
+        template struct batch_cgd_t<cgd_step_DYHS>;
 }
 
