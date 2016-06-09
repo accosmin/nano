@@ -6,10 +6,11 @@
 
 namespace nano
 {
-        using seconds_t = std::chrono::seconds;
-        using milliseconds_t = std::chrono::milliseconds;
-        using microseconds_t = std::chrono::microseconds;
-        using nanoseconds_t = std::chrono::nanoseconds;
+        using picoseconds_t = std::chrono::duration<long long, std::pico>;
+        using nanoseconds_t = std::chrono::duration<long long, std::nano>;
+        using microseconds_t = std::chrono::duration<long long, std::micro>;
+        using milliseconds_t = std::chrono::duration<long long, std::milli>;
+        using seconds_t = std::chrono::duration<long long>;
 
         using timepoint_t = std::chrono::high_resolution_clock::time_point;
 

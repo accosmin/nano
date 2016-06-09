@@ -5,10 +5,10 @@
 
 namespace nano
 {
-        logger_t::logger_t(std::ostream& stream, const char* header, bool flush)
-                :       m_stream(stream),
-                        m_precision(stream.precision()),
-                        m_flush(flush)
+        logger_t::logger_t(std::ostream& stream, const char* header, bool flush) :
+                m_stream(stream),
+                m_precision(stream.precision()),
+                m_flush(flush)
         {
                 log_time();
                 m_stream << std::fixed << std::setprecision(8);

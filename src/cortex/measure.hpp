@@ -1,25 +1,26 @@
 #pragma once
 
 #include "timer.h"
+#include "math/cast.hpp"
 #include "math/numeric.hpp"
 
 namespace nano
 {
         ///
-        /// \brief robustly measure a function call (in nanoseconds)
+        /// \brief robustly measure a function call (in picoseconds)
         ///
         template
         <
                 typename toperator
         >
-        nanoseconds_t measure_robustly_nsec(const toperator& op, const std::size_t trials)
+        picoseconds_t measure_robustly_psec(const toperator& op, const std::size_t trials)
         {
-                const nanoseconds_t min_nsecs(10 * 1000 * 1000);
+                const microseconds_t min_usecs(10 * 1000);
 
                 // calibrate the number of function calls to achieve the minimum time resolution
                 std::size_t count = std::max(std::size_t(1), trials / 2);
-                nanoseconds_t nsecs(0);
-                while (nsecs < min_nsecs)
+                microseconds_t usecs(0);
+                while (usecs < min_usecs)
                 {
                         count *= 2;
 
@@ -28,45 +29,52 @@ namespace nano
                         {
                                 op();
                         }
-                        nsecs = timer.nanoseconds();
+                        usecs = timer.microseconds();
                 }
 
-                return nanoseconds_t(nano::idiv(nsecs.count(), count));
+                return picoseconds_t(nano::idiv(usecs.count() * 1000 * 1000, count));
         }
 
         ///
         /// \brief robustly measure a function call (in microseconds)
         ///
-        template
-        <
-                typename toperator
-        >
+        template <typename toperator>
+        nanoseconds_t measure_robustly_nsec(const toperator& op, const std::size_t trials)
+        {
+                return std::chrono::duration_cast<nanoseconds_t>(measure_robustly_psec(op, trials));
+        }
+
+        ///
+        /// \brief robustly measure a function call (in microseconds)
+        ///
+        template <typename toperator>
         microseconds_t measure_robustly_usec(const toperator& op, const std::size_t trials)
         {
-                return std::chrono::duration_cast<microseconds_t>(measure_robustly_nsec(op, trials));
+                return std::chrono::duration_cast<microseconds_t>(measure_robustly_psec(op, trials));
         }
 
         ///
-        /// \brief robustly measure a function call (in miliseconds)
+        /// \brief robustly measure a function call (in milliseconds)
         ///
-        template
-        <
-                typename toperator
-        >
+        template <typename toperator>
         milliseconds_t measure_robustly_msec(const toperator& op, const std::size_t trials)
         {
-                return std::chrono::duration_cast<milliseconds_t>(measure_robustly_nsec(op, trials));
+                return std::chrono::duration_cast<milliseconds_t>(measure_robustly_psec(op, trials));
         }
 
         ///
-        /// \brief compute MFLOPS (mega floating point operations per seconds) given duration in nanoseconds
+        /// \brief compute GFLOPS (giga floating point operations per seconds)
+        ///     given the number of FLOPs run in the given duration
         ///
         template
         <
-                typename tinteger
+                typename tinteger,
+                typename tduration
         >
-        tinteger mflops(const tinteger flops, const nanoseconds_t& duration)
+        int gflops(const tinteger flops, const tduration& duration)
         {
-                return nano::idiv(flops * 1000, duration.count());
+                return  nano::cast<int>(
+                        static_cast<double>(flops) /
+                        static_cast<double>(std::chrono::duration_cast<picoseconds_t>(duration).count()) * 1e+3);
         }
 }

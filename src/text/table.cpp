@@ -6,8 +6,8 @@
 
 namespace nano
 {
-        table_t::table_t(const std::string& title)
-                :       m_title(title)
+        table_t::table_t(const std::string& title) :
+                m_title(title)
         {
         }
 
