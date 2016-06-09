@@ -71,10 +71,9 @@ namespace nano
                 typename tinteger,
                 typename tduration
         >
-        int gflops(const tinteger flops, const tduration& duration)
+        double gflops(const tinteger flops, const tduration& duration)
         {
-                return  nano::cast<int>(
-                        static_cast<double>(flops) /
-                        static_cast<double>(std::chrono::duration_cast<picoseconds_t>(duration).count()) * 1e+3);
+                return  static_cast<double>(flops) /
+                        static_cast<double>(std::chrono::duration_cast<picoseconds_t>(duration).count()) * 1e+3;
         }
 }

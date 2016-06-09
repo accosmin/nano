@@ -20,6 +20,21 @@ namespace
                 return nano::gflops(flops, duration);
         }
 
+        auto measure_sum(const tensor_size_t dims)
+        {
+                vector_t x(dims);
+                tensor::set_random(rng, x);
+
+                volatile scalar_t z = 0;
+                const auto duration = nano::measure_robustly_psec([&] ()
+                {
+                        z += x.sum();
+                }, trials);
+                NANO_UNUSED1(z);
+
+                return get(dims, duration);
+        }
+
         auto measure_dot(const tensor_size_t dims)
         {
                 vector_t x(dims);
@@ -159,6 +174,7 @@ int main(int, const char* [])
         table_t table("operation\\dimensions [GFLOPS]");
         foreach_dims([&] (const auto dims) { table.header() << to_string(dims); });
 
+        fillrow(table.append("z += x.sum()"), measure_sum);
         fillrow(table.append("z += x.dot(y)"), measure_dot);
         fillrow(table.append("z += 0.5"), measure_sumv0);
         fillrow(table.append("z += x * 0.5"), measure_sumv1);
