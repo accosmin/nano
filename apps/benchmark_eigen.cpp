@@ -26,7 +26,7 @@ namespace
                 vector_t y(dims);
                 tensor::set_random(rng, x, y);
 
-                scalar_t z = 0;
+                volatile scalar_t z = 0;
                 const auto duration = nano::measure_robustly_psec([&] ()
                 {
                         z += x.dot(y);
