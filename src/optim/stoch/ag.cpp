@@ -4,8 +4,12 @@
 
 namespace nano
 {
-        template <ag_restart trestart>
-        state_t stoch_ag_base_t<trestart>::operator()(const stoch_params_t& param, const problem_t& problem, const vector_t& x0) const
+        stoch_ag_t::stoch_ag_t(const ag_restart restart) :
+                m_restart(restart)
+        {
+        }
+
+        state_t stoch_ag_t::operator()(const stoch_params_t& param, const problem_t& problem, const vector_t& x0) const
         {
                 const auto op = [&] (const auto... params)
                 {
@@ -19,8 +23,7 @@ namespace nano
                 return operator()(param, problem, x0, config.param0(), config.param1(), config.param2());
         }
 
-        template <ag_restart trestart>
-        state_t stoch_ag_base_t<trestart>::operator()(const stoch_params_t& param, const problem_t& problem, const vector_t& x0,
+        state_t stoch_ag_t::operator()(const stoch_params_t& param, const problem_t& problem, const vector_t& x0,
                 const scalar_t alpha0, const scalar_t decay, const scalar_t q) const
         {
                 assert(problem.size() == x0.size());
@@ -72,7 +75,7 @@ namespace nano
                         cy = cx + beta * (cx - px);
                         cstate.x = cx; // NB: to propagate the current parameters!
 
-                        switch (trestart)
+                        switch (m_restart)
                         {
                         case ag_restart::none:
                                 break;
@@ -103,9 +106,5 @@ namespace nano
                 return  stoch_loop(problem, param, istate, op_iter,
                         {{"alpha0", alpha0}, {"decay", decay}, {"q", q}});
         }
-
-        template struct stoch_ag_base_t<ag_restart::none>;
-        template struct stoch_ag_base_t<ag_restart::function>;
-        template struct stoch_ag_base_t<ag_restart::gradient>;
 }
 
