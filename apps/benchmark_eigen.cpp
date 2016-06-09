@@ -30,6 +30,20 @@ namespace
                 return nano::mflops(2 * dims, duration);
         }
 
+        tensor_size_t measure_sumv0(const tensor_size_t dims)
+        {
+                vector_t z(dims);
+
+                z.setZero();
+                const auto duration = nano::measure_robustly_nsec([&] ()
+                {
+                        z.array() += scalar_t(0.5);
+                }, trials);
+                NANO_UNUSED1(z);
+
+                return nano::mflops(dims, duration);
+        }
+
         tensor_size_t measure_sumv1(const tensor_size_t dims)
         {
                 vector_t x(dims);
@@ -137,6 +151,7 @@ int main(int, const char* [])
         foreach_dims([&] (const auto dims) { table.header() << to_string(dims); });
 
         fillrow(table.append("z += x.dot(y)"), measure_dot);
+        fillrow(table.append("z += 0.5"), measure_sumv0);
         fillrow(table.append("z += x * 0.5"), measure_sumv1);
         fillrow(table.append("z += x * 0.5 + y * 0.3"), measure_sumv2);
         fillrow(table.append("z += X * y"), measure_mulv);
