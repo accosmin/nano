@@ -30,7 +30,6 @@ namespace
                 {
                         z += x.sum();
                 }, trials);
-                NANO_UNUSED1(z);
 
                 return get(dims, duration);
         }
@@ -46,7 +45,6 @@ namespace
                 {
                         z += x.dot(y);
                 }, trials);
-                NANO_UNUSED1(z);
 
                 return get(2 * dims, duration);
         }
