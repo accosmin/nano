@@ -19,7 +19,7 @@ namespace nano
                 return os;
         }
 
-        trainer_result_return_t trainer_result_t::update(const vector_t& params,
+        trainer_state trainer_result_t::update(const vector_t& params,
                 const trainer_state_t& state, const trainer_config_t& config)
         {
                 m_history[config].push_back(state);
@@ -36,7 +36,7 @@ namespace nano
                         m_opt_state = state;
                         m_opt_config = config;
 
-                        return trainer_result_return_t::solved;
+                        return trainer_state::solved;
                 }
 
                 // improved performance
@@ -46,7 +46,7 @@ namespace nano
                         m_opt_state = state;
                         m_opt_config = config;
 
-                        return trainer_result_return_t::better;
+                        return trainer_state::better;
                 }
 
                 // worse performance
@@ -55,7 +55,7 @@ namespace nano
                         // not enough epochs, keep training
                         if (state.m_epoch < max_epochs_without_improvement)
                         {
-                                return trainer_result_return_t::worse;
+                                return trainer_state::worse;
                         }
 
                         else
@@ -63,29 +63,29 @@ namespace nano
                                 // last improvement not far in the past, keep training
                                 if (state.m_epoch < m_opt_state.m_epoch + max_epochs_without_improvement)
                                 {
-                                        return trainer_result_return_t::worse;
+                                        return trainer_state::worse;
                                 }
 
                                 // no improvement since many epochs, overfitting detected
                                 else
                                 {
-                                        return trainer_result_return_t::overfitting;
+                                        return trainer_state::overfit;
                                 }
                         }
                 }
         }
 
-        trainer_result_return_t trainer_result_t::update(const trainer_result_t& other)
+        trainer_state trainer_result_t::update(const trainer_result_t& other)
         {
                 if (*this < other)
                 {
                         *this = other;
-                        return trainer_result_return_t::better;
+                        return trainer_state::better;
                 }
 
                 else
                 {
-                        return trainer_result_return_t::worse;
+                        return trainer_state::worse;
                 }
         }
 
@@ -120,10 +120,18 @@ namespace nano
                 return one.optimum_state() < other.optimum_state();
         }
 
-        bool is_done(const trainer_result_return_t code)
+        bool is_done(const trainer_state code, const trainer_policy policy)
         {
-                return  code == trainer_result_return_t::overfitting ||
-                        code == trainer_result_return_t::solved;
+                switch (policy)
+                {
+                case trainer_policy::stop_early:
+                        return  code == trainer_state::overfit ||
+                                code == trainer_state::solved;
+
+                case trainer_policy::all_epochs:
+                default:
+                        return false;
+                }
         }
 
         std::ostream& operator<<(std::ostream& os, const trainer_result_t& result)

@@ -1,10 +1,10 @@
+#include "loop.hpp"
 #include "minibatch.h"
 #include "math/clamp.hpp"
 #include "cortex/model.h"
 #include "optim/batch.hpp"
 #include "thread/thread.h"
 #include "math/numeric.hpp"
-#include "trainer_loop.hpp"
 #include "text/to_string.hpp"
 #include "optim/stoch/loop.hpp"
 #include "text/from_params.hpp"
@@ -31,13 +31,14 @@ namespace nano
                 // parameters
                 const auto epochs = clamp(from_params<size_t>(configuration(), "epochs", 16), 1, 1024);
                 const auto epsilon = clamp(from_params<scalar_t>(configuration(), "eps", scalar_t(1e-6)), scalar_t(1e-8), scalar_t(1e-3));
-                const auto optimizer = from_string<batch_optimizer>(from_params<string_t>(configuration(), "opt", "cgd"));
+                const auto optimizer = from_params<batch_optimizer>(configuration(), "opt", batch_optimizer::CGD);
+                const auto policy = from_params<trainer_policy>(configuration(), "policy", trainer_policy::stop_early);
                 const auto verbose = true;
 
                 // train the model
                 const auto op = [&] (const accumulator_t& lacc, const accumulator_t& gacc, const vector_t& x0)
                 {
-                        return train(task, fold, lacc, gacc, x0, optimizer, epochs, epsilon, verbose);
+                        return train(task, fold, lacc, gacc, x0, optimizer, epochs, epsilon, policy, verbose);
                 };
 
                 const auto result = trainer_loop(model, nthreads, loss, criterion, op);
@@ -55,7 +56,7 @@ namespace nano
                 const task_t& task, const size_t fold,
                 const accumulator_t& lacc, const accumulator_t& gacc, const vector_t& x0,
                 const batch_optimizer optimizer, const size_t epochs, const scalar_t epsilon,
-                const bool verbose) const
+                const trainer_policy policy, const bool verbose) const
         {
                 const timer_t timer;
 
@@ -125,7 +126,7 @@ namespace nano
                                         << "] " << timer.elapsed() << ".";
                         }
 
-                        return !nano::is_done(ret);
+                        return !nano::is_done(ret, policy);
                 };
 
                 const auto op = [&] (state_t& state)

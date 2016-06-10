@@ -31,20 +31,29 @@ namespace nano
         >;
 
         ///
-        /// \brief return code for updating the state
+        /// \brief
         ///
-        enum class trainer_result_return_t
+        enum class trainer_state
         {
                 better,         ///< performance improved
                 worse,          ///< performance decreased (but not critically)
-                overfitting,    ///< overfitting detected (processing should stop)
+                overfit,    ///< overfit detected (processing should stop)
                 solved          ///< problem solved with arbitrary accuracy (processing should stop)
         };
 
         ///
-        /// \brief check if the training should be stopped based on the return code
+        /// \brief
         ///
-        NANO_PUBLIC bool is_done(const trainer_result_return_t);
+        enum class trainer_policy
+        {
+                stop_early,     ///<
+                all_epochs      ///< consume all epochs
+        };
+
+        ///
+        /// \brief check if the training should be stopped
+        ///
+        NANO_PUBLIC bool is_done(const trainer_state, const trainer_policy);
 
         ///
         /// \brief track the current/optimum model state
@@ -56,12 +65,12 @@ namespace nano
                 ///
                 /// \brief update the current/optimum state with a possible better state
                 ///
-                trainer_result_return_t update(const vector_t& params, const trainer_state_t&, const trainer_config_t&);
+                trainer_state update(const vector_t& params, const trainer_state_t&, const trainer_config_t&);
 
                 ///
                 /// \brief update the current/optimum state with a possible better state
                 ///
-                trainer_result_return_t update(const trainer_result_t& other);
+                trainer_state update(const trainer_result_t& other);
 
                 ///
                 /// \brief check if valid result
@@ -119,14 +128,24 @@ namespace nano
 namespace nano
 {
         template <>
-        inline std::map<nano::trainer_result_return_t, std::string> enum_string<nano::trainer_result_return_t>()
+        inline std::map<nano::trainer_state, std::string> enum_string<nano::trainer_state>()
         {
                 return
                 {
-                        { nano::trainer_result_return_t::better,      "+better" },
-                        { nano::trainer_result_return_t::worse,       "--worse" },
-                        { nano::trainer_result_return_t::overfitting, "overfit" },
-                        { nano::trainer_result_return_t::solved,      "!solved" }
+                        { nano::trainer_state::better,          "+better" },
+                        { nano::trainer_state::worse,           "--worse" },
+                        { nano::trainer_state::overfit,         "overfit" },
+                        { nano::trainer_state::solved,          "!solved" }
+                };
+        }
+
+        template <>
+        inline std::map<nano::trainer_policy, std::string> enum_string<nano::trainer_policy>()
+        {
+                return
+                {
+                        { nano::trainer_policy::stop_early,     "stop_early" },
+                        { nano::trainer_policy::all_epochs,     "all_epochs" }
                 };
         }
 }

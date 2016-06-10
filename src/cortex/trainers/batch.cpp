@@ -1,9 +1,9 @@
 #include "batch.h"
+#include "loop.hpp"
 #include "cortex/model.h"
 #include "math/clamp.hpp"
 #include "optim/batch.hpp"
 #include "cortex/logger.h"
-#include "trainer_loop.hpp"
 #include "text/to_string.hpp"
 #include "text/from_params.hpp"
 
@@ -26,13 +26,14 @@ namespace nano
                 // parameters
                 const auto iterations = clamp(from_params<size_t>(configuration(), "iters", 1024), 4, 4096);
                 const auto epsilon = clamp(from_params<scalar_t>(configuration(), "eps", scalar_t(1e-6)), scalar_t(1e-8), scalar_t(1e-3));
-                const auto optimizer = from_string<batch_optimizer>(from_params<string_t>(configuration(), "opt", "lbfgs"));
+                const auto optimizer = from_params<batch_optimizer>(configuration(), "opt", batch_optimizer::LBFGS);
+                const auto policy = from_params<trainer_policy>(configuration(), "policy", trainer_policy::stop_early);
                 const auto verbose = true;
 
                 // train the model
                 const auto op = [&] (const accumulator_t& lacc, const accumulator_t& gacc, const vector_t& x0)
                 {
-                        return train(task, fold, lacc, gacc, x0, optimizer, iterations, epsilon, verbose);
+                        return train(task, fold, lacc, gacc, x0, optimizer, iterations, epsilon, policy, verbose);
                 };
 
                 const auto result = trainer_loop(model, nthreads, loss, criterion, op);
@@ -50,7 +51,7 @@ namespace nano
                 const task_t& task, const size_t fold,
                 const accumulator_t& lacc, const accumulator_t& gacc, const vector_t& x0,
                 const batch_optimizer optimizer, const size_t iterations, const scalar_t epsilon,
-                const bool verbose) const
+                const trainer_policy policy, const bool verbose) const
         {
                 const timer_t timer;
 
@@ -112,7 +113,7 @@ namespace nano
                                         << "] " << timer.elapsed() << ".";
                         }
 
-                        return !nano::is_done(ret);
+                        return !nano::is_done(ret, policy);
                 };
 
                 // assembly optimization problem & optimize the model
