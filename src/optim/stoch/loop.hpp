@@ -16,12 +16,12 @@ namespace nano
 
         inline auto make_decays()
         {
-                return make_log10_space(scalar_t(-3.0), scalar_t(-1.0), scalar_t(0.2));
+                return make_finite_space(scalar_t(0.1), scalar_t(0.2), scalar_t(0.5), scalar_t(0.75));
         }
 
         inline auto make_momenta()
         {
-                return make_log10_space(std::log10(scalar_t(0.1)), std::log10(scalar_t(0.99)), scalar_t(0.2));
+                return make_finite_space(scalar_t(0.1), scalar_t(0.2), scalar_t(0.5), scalar_t(0.90));
         }
 
         inline auto make_epsilons()
@@ -72,11 +72,7 @@ namespace nano
 
                         // log the current state & check the stopping criteria
                         astate.update(problem, xavg.value());
-                        if (params.tuning())
-                        {
-                                astate.f = params.tlog(astate, config);
-                        }
-                        else if (!params.ulog(astate, config))
+                        if (!params.ulog(astate, config))
                         {
                                 break;
                         }

@@ -93,25 +93,6 @@ namespace nano
                         return gacc.value();
                 };
 
-                auto fn_tlog = [&] (const state_t& state, const trainer_config_t& config)
-                {
-                        // evaluate training samples
-                        lacc.set_params(state.x);
-                        lacc.update(task, train_fold);
-                        const auto tvalue = lacc.value();
-                        const auto terror_avg = lacc.avg_error();
-
-                        if (verbose)
-                        {
-                                log_info()
-                                        << "[tune: train=" << tvalue << "|" << terror_avg
-                                        << ", " << append(config, "lambda", lacc.lambda()) << ",batch=" << batch_size
-                                        << "] " << timer.elapsed() << ".";
-                        }
-
-                        return tvalue;
-                };
-
                 auto fn_ulog = [&] (const state_t& state, const trainer_config_t& sconfig)
                 {
                         // evaluate the current state
@@ -147,7 +128,7 @@ namespace nano
 
                 // assembly optimization problem & optimize the model
                 nano::minimize(
-                        problem_t(fn_size, fn_fval, fn_grad), fn_ulog, fn_tlog,
+                        problem_t(fn_size, fn_fval, fn_grad), fn_ulog,
                         x0, optimizer, epochs, epoch_size);
 
                 return result;

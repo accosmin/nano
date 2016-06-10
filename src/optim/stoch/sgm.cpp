@@ -7,16 +7,12 @@ namespace nano
 {
         state_t stoch_sgm_t::operator()(const stoch_params_t& param, const problem_t& problem, const vector_t& x0) const
         {
-                const auto op = [&] (const auto... params)
+                const auto op = [&] (const auto... hypers)
                 {
-                        return this->operator()(param.tunable(), problem, x0, params...);
+                        return this->operator()(param, problem, x0, hypers...);
                 };
 
-                const auto param0 = make_alpha0s();
-                const auto param1 = make_decays();
-                const auto param2 = make_momenta();
-                const auto config = nano::tune(op, param0, param1, param2);
-                return operator()(param, problem, x0, config.param0(), config.param1(), config.param2());
+                return nano::tune(op, make_alpha0s(), make_decays(), make_momenta()).optimum();
         }
 
         state_t stoch_sgm_t::operator()(const stoch_params_t& param, const problem_t& problem, const vector_t& x0,

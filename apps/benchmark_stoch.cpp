@@ -55,7 +55,7 @@ void check_function(const function_t& function, const size_t trials, const size_
         {
                 const auto op = [&] (const problem_t& problem, const vector_t& x0)
                 {
-                        return minimize(problem, nullptr, nullptr, x0, optimizer, epochs, epoch_size);
+                        return minimize(problem, nullptr, x0, optimizer, epochs, epoch_size);
                 };
 
                 const auto name =
@@ -83,8 +83,8 @@ int main(int argc, const char* argv[])
         cmdline.add("", "min-dims",     "minimum number of dimensions for each test function (if feasible)", "100");
         cmdline.add("", "max-dims",     "maximum number of dimensions for each test function (if feasible)", "1000");
         cmdline.add("", "trials",       "number of random trials for each test function", "100");
-        cmdline.add("", "epochs",       "optimization: number of epochs", "400");
-        cmdline.add("", "epoch-size",   "optimization: number of iterations per epoch", "200");
+        cmdline.add("", "epochs",       "optimization: number of epochs", "200");
+        cmdline.add("", "epoch-size",   "optimization: number of iterations per epoch", "20");
 
         cmdline.process(argc, argv);
 

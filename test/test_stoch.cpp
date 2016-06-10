@@ -52,15 +52,15 @@ static void check_function(const function_t& function)
                         const auto f0 = problem(x0);
 
                         // optimize
-                        const auto state = minimize(problem, nullptr, nullptr, x0, optimizer, epochs, epoch_size);
+                        const auto state = minimize(problem, nullptr, x0, optimizer, epochs, epoch_size);
 
                         const auto x = state.x;
                         const auto f = state.f;
                         const auto g = state.convergence_criteria();
 
                         const auto f_thres = epsilon3<scalar_t>();
-                        const auto g_thres = scalar_t(1e+1);//epsilon3<scalar_t>() * scalar_t(1e+4);
-                        const auto x_thres = scalar_t(1e+1);//epsilon3<scalar_t>() * scalar_t(1e+4);
+                        const auto g_thres = epsilon3<scalar_t>() * scalar_t(1e+1);
+                        const auto x_thres = epsilon3<scalar_t>() * scalar_t(1e+3);
 
                         // ignore out-of-domain solutions
                         if (!function.is_valid(x))

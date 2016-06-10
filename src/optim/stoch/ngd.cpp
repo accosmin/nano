@@ -5,14 +5,12 @@ namespace nano
 {
         state_t stoch_ngd_t::operator()(const stoch_params_t& param, const problem_t& problem, const vector_t& x0) const
         {
-                const auto op = [&] (const auto... params)
+                const auto op = [&] (const auto... hypers)
                 {
-                        return this->operator()(param.tunable(), problem, x0, params...);
+                        return this->operator()(param, problem, x0, hypers...);
                 };
 
-                const auto param0 = make_alpha0s();
-                const auto config = nano::tune(op, param0);
-                return operator()(param, problem, x0, config.param0());
+                return nano::tune(op, make_alpha0s()).optimum();
         }
 
         state_t stoch_ngd_t::operator()(const stoch_params_t& param, const problem_t& problem, const vector_t& x0,

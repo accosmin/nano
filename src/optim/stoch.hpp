@@ -15,17 +15,15 @@ namespace nano
         ///
         template
         <
-                typename topulog,       ///< logging operator
-                typename toptlog        ///< tuning operator
+                typename topulog        ///< logging operator
         >
         auto minimize(
                 const problem_t& problem,
                 const topulog& fn_ulog,
-                const toptlog& fn_tlog,
                 const vector_t& x0,
                 const stoch_optimizer optimizer, const std::size_t epochs, const std::size_t epoch_size)
         {
-                const stoch_params_t param(epochs, epoch_size, fn_ulog, fn_tlog);
+                const stoch_params_t param(epochs, epoch_size, fn_ulog);
 
                 switch (optimizer)
                 {
