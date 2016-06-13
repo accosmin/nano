@@ -74,6 +74,7 @@ namespace nano
                         astate.update(problem, xavg.value());
                         if (!params.ulog(astate, config))
                         {
+                                bstate.m_status = state_t::status::stopped;
                                 break;
                         }
 

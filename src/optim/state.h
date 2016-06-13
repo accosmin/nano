@@ -20,6 +20,14 @@ namespace nano
         ///
         struct NANO_PUBLIC state_t
         {
+                enum class status
+                {
+                        converged,      ///< convergence criteria reached
+                        max_iters,      ///< maximum number of iterations reached without convergence (default)
+                        failed,         ///< optimization failed (e.g. line-search failed)
+                        stopped         ///< user requested stop
+                };
+
                 ///
                 /// \brief constructor
                 ///
@@ -108,6 +116,7 @@ namespace nano
                 std::size_t     m_iterations;
                 std::size_t     m_fcalls;               ///< #function value evaluations
                 std::size_t     m_gcalls;               ///< #function gradient evaluations
+                status          m_status;               ///<
         };
 
         ///

@@ -7,7 +7,8 @@ namespace nano
                 f(std::numeric_limits<scalar_t>::max()),
                 m_iterations(0),
                 m_fcalls(0),
-                m_gcalls(0)
+                m_gcalls(0),
+                m_status(status::max_iters)
         {
         }
 
