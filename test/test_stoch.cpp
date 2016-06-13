@@ -12,7 +12,7 @@ static void check_function(const function_t& function)
 {
         const auto epochs = size_t(32);
         const auto epoch_size = size_t(16);
-        const auto trials = size_t(32);
+        const auto trials = size_t(16);
 
         const auto dims = function.problem().size();
 
@@ -59,8 +59,8 @@ static void check_function(const function_t& function)
                         const auto g = state.convergence_criteria();
 
                         const auto f_thres = epsilon3<scalar_t>();
-                        const auto g_thres = epsilon3<scalar_t>() * scalar_t(1e+1);
-                        const auto x_thres = epsilon3<scalar_t>() * scalar_t(1e+3);
+                        const auto g_thres = std::cbrt(epsilon3<scalar_t>());
+                        const auto x_thres = std::sqrt(epsilon3<scalar_t>());
 
                         // ignore out-of-domain solutions
                         if (!function.is_valid(x))

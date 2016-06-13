@@ -79,29 +79,13 @@ static void evaluate(model_t& model,
 
         for (auto optimizer : batch_optimizers)
         {
-                if (optimizer == batch_optimizer::LBFGS)
+                const auto optname = "batch-" + to_string(optimizer);
+                const auto params = to_params("opt", optimizer, "iters", iterations, "eps", epsilon, "policy", policy);
+                test_optimizer(model, basename + optname, basepath + optname, table, x0s, [&] ()
                 {
-                        for (const auto history : {4, 6, 8, 10})
-                        {
-                                const auto optname = "batch-" + to_string(optimizer) + "[" + to_string(history) + "]";
-                                const auto params = to_params("opt", optimizer, "iters", iterations, "eps", epsilon, "history", history, "policy", policy);
-                                test_optimizer(model, basename + optname, basepath + optname, table, x0s, [&] ()
-                                {
-                                        const auto trainer = get_trainers().get("batch", params);
-                                        return trainer->train(task, fold, nthreads, loss, criterion, model);
-                                });
-                        }
-                }
-                else
-                {
-                        const auto optname = "batch-" + to_string(optimizer);
-                        const auto params = to_params("opt", optimizer, "iters", iterations, "eps", epsilon, "policy", policy);
-                        test_optimizer(model, basename + optname, basepath + optname, table, x0s, [&] ()
-                        {
-                                const auto trainer = get_trainers().get("batch", params);
-                                return trainer->train(task, fold, nthreads, loss, criterion, model);
-                        });
-                }
+                        const auto trainer = get_trainers().get("batch", params);
+                        return trainer->train(task, fold, nthreads, loss, criterion, model);
+                });
         }
 
         for (auto optimizer : minibatch_optimizers)
