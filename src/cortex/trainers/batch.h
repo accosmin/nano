@@ -13,7 +13,7 @@ namespace nano
         public:
 
                 NANO_MAKE_CLONABLE(batch_trainer_t,
-                        "parameters: opt=lbfgs[,cgd,gd],iters=1024[4,4096],eps=1e-6[1e-8,1e-3],"\
+                        "parameters: opt=lbfgs[,cgd,gd],iters=1024[4,4096],eps=1e-6[1e-8,1e-3],history=6[4,20],"\
                         "policy=stop_early[,all_epochs]")
 
                 // constructor
@@ -30,7 +30,7 @@ namespace nano
                 trainer_result_t train(
                         const task_t&, const size_t fold,
                         const accumulator_t& lacc, const accumulator_t& gacc, const vector_t& x0,
-                        const batch_optimizer, const size_t iterations, const scalar_t epsilon,
+                        const batch_optimizer, const size_t iterations, const scalar_t epsilon, const size_t history,
                         const trainer_policy, const bool verbose) const;
         };
 }

@@ -75,24 +75,41 @@ static void evaluate(model_t& model,
 {
         const auto epsilon = scalar_t(1e-6);
         const auto nthreads = thread::concurrency();
+        const auto policy = trainer_policy::all_epochs;
 
         for (auto optimizer : batch_optimizers)
         {
-                const auto optname = "batch-" + to_string(optimizer);
-                test_optimizer(model, basename + optname, basepath + optname, table, x0s, [&] ()
+                if (optimizer == batch_optimizer::LBFGS)
                 {
-                        const auto params = to_params("opt", optimizer, "iters", iterations, "eps", epsilon, "policy", trainer_policy::all_epochs);
-                        const auto trainer = get_trainers().get("batch", params);
-                        return trainer->train(task, fold, nthreads, loss, criterion, model);
-                });
+                        for (const auto history : {4, 6, 8, 10})
+                        {
+                                const auto optname = "batch-" + to_string(optimizer) + "[" + to_string(history) + "]";
+                                const auto params = to_params("opt", optimizer, "iters", iterations, "eps", epsilon, "history", history, "policy", policy);
+                                test_optimizer(model, basename + optname, basepath + optname, table, x0s, [&] ()
+                                {
+                                        const auto trainer = get_trainers().get("batch", params);
+                                        return trainer->train(task, fold, nthreads, loss, criterion, model);
+                                });
+                        }
+                }
+                else
+                {
+                        const auto optname = "batch-" + to_string(optimizer);
+                        const auto params = to_params("opt", optimizer, "iters", iterations, "eps", epsilon, "policy", policy);
+                        test_optimizer(model, basename + optname, basepath + optname, table, x0s, [&] ()
+                        {
+                                const auto trainer = get_trainers().get("batch", params);
+                                return trainer->train(task, fold, nthreads, loss, criterion, model);
+                        });
+                }
         }
 
         for (auto optimizer : minibatch_optimizers)
         {
                 const auto optname = "minibatch-" + to_string(optimizer);
+                const auto params = to_params("opt", optimizer, "epochs", iterations, "eps", epsilon, "policy", policy);
                 test_optimizer(model, basename + optname, basepath + optname, table, x0s, [&] ()
                 {
-                        const auto params = to_params("opt", optimizer, "epochs", iterations, "eps", epsilon, "policy", trainer_policy::all_epochs);
                         const auto trainer = get_trainers().get("minibatch", params);
                         return trainer->train(task, fold, nthreads, loss, criterion, model);
                 });
@@ -101,9 +118,9 @@ static void evaluate(model_t& model,
         for (auto optimizer : stochastic_optimizers)
         {
                 const auto optname = "stochastic-" + to_string(optimizer);
+                const auto params = to_params("opt", optimizer, "epochs", iterations, "policy", policy);
                 test_optimizer(model, basename + optname, basepath + optname, table, x0s, [&] ()
                 {
-                        const auto params = to_params("opt", optimizer, "epochs", iterations, "policy", trainer_policy::all_epochs);
                         const auto trainer = get_trainers().get("stochastic", params);
                         return trainer->train(task, fold, nthreads, loss, criterion, model);
                 });
