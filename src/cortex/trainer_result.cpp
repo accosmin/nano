@@ -1,3 +1,4 @@
+#include "optim/state.h"
 #include "trainer_result.h"
 
 namespace nano
@@ -19,32 +20,44 @@ namespace nano
                 return os;
         }
 
-        trainer_state trainer_result_t::update(const vector_t& params,
+        trainer_state trainer_result_t::update(const state_t& opt_state,
                 const trainer_state_t& state, const trainer_config_t& config)
         {
                 m_history[config].push_back(state);
 
-                const scalar_t beste = m_opt_state.m_valid.m_error_avg;
-                const scalar_t curre = state.m_valid.m_error_avg;
+                const auto beste = m_opt_state.m_valid.m_error_avg;
+                const auto curre = state.m_valid.m_error_avg;
+
+                const auto updater = [&] ()
+                {
+                        m_opt_params = opt_state.x;
+                        m_opt_state = state;
+                        m_opt_config = config;
+                };
 
                 const size_t max_epochs_without_improvement = 32;
 
-                // arbitrary precision (problem solved!)
-                if (curre < std::numeric_limits<scalar_t>::epsilon())
+                // optimization finished successfully
+                if (opt_state.m_status == state_t::status::converged)
                 {
-                        m_opt_params = params;
-                        m_opt_state = state;
-                        m_opt_config = config;
+                        if (curre < beste)
+                        {
+                                updater();
+                        }
 
                         return trainer_state::solved;
+                }
+
+                // optimization failed
+                else if (opt_state.m_status == state_t::status::failed)
+                {
+                        return trainer_state::failed;
                 }
 
                 // improved performance
                 else if (curre < beste)
                 {
-                        m_opt_params = params;
-                        m_opt_state = state;
-                        m_opt_config = config;
+                        updater();
 
                         return trainer_state::better;
                 }
@@ -126,11 +139,12 @@ namespace nano
                 {
                 case trainer_policy::stop_early:
                         return  code == trainer_state::overfit ||
-                                code == trainer_state::solved;
+                                code == trainer_state::solved ||
+                                code == trainer_state::failed;
 
                 case trainer_policy::all_epochs:
                 default:
-                        return false;
+                        return  code == trainer_state::failed;
                 }
         }
 

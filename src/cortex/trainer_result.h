@@ -6,6 +6,8 @@
 
 namespace nano
 {
+        struct state_t;
+
         ///
         /// \brief training configuration (e.g. {name, value:learning rate, regularization weight}+)
         ///
@@ -35,9 +37,10 @@ namespace nano
         ///
         enum class trainer_state
         {
+                failed,         ///< optimization failed
                 better,         ///< performance improved
                 worse,          ///< performance decreased (but not critically)
-                overfit,    ///< overfit detected (processing should stop)
+                overfit,        ///< overfitting detected (processing should stop)
                 solved          ///< problem solved with arbitrary accuracy (processing should stop)
         };
 
@@ -65,7 +68,7 @@ namespace nano
                 ///
                 /// \brief update the current/optimum state with a possible better state
                 ///
-                trainer_state update(const vector_t& params, const trainer_state_t&, const trainer_config_t&);
+                trainer_state update(const state_t&, const trainer_state_t&, const trainer_config_t&);
 
                 ///
                 /// \brief update the current/optimum state with a possible better state
@@ -132,6 +135,7 @@ namespace nano
         {
                 return
                 {
+                        { nano::trainer_state::failed,          "*failed" },
                         { nano::trainer_state::better,          "+better" },
                         { nano::trainer_state::worse,           "--worse" },
                         { nano::trainer_state::overfit,         "overfit" },

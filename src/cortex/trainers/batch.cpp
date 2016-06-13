@@ -100,7 +100,7 @@ namespace nano
                         // OK, update the optimum solution
                         const auto milis = timer.milliseconds();
                         const auto config = trainer_config_t{{"lambda", lacc.lambda()}};
-                        const auto ret = result.update(state.x, {milis, ++iteration, train, valid, test}, config);
+                        const auto ret = result.update(state, {milis, ++iteration, train, valid, test}, config);
 
                         if (verbose)
                         {
