@@ -81,7 +81,7 @@ static void evaluate(model_t& model,
                 const auto optname = "batch-" + to_string(optimizer);
                 test_optimizer(model, basename + optname, basepath + optname, table, x0s, [&] ()
                 {
-                        const auto params = to_params("opt", optimizer, "iters", iterations, "eps", epsilon);
+                        const auto params = to_params("opt", optimizer, "iters", iterations, "eps", epsilon, "policy", trainer_policy::all_epochs);
                         const auto trainer = get_trainers().get("batch", params);
                         return trainer->train(task, fold, nthreads, loss, criterion, model);
                 });
@@ -92,7 +92,7 @@ static void evaluate(model_t& model,
                 const auto optname = "minibatch-" + to_string(optimizer);
                 test_optimizer(model, basename + optname, basepath + optname, table, x0s, [&] ()
                 {
-                        const auto params = to_params("opt", optimizer, "epochs", iterations, "eps", epsilon);
+                        const auto params = to_params("opt", optimizer, "epochs", iterations, "eps", epsilon, "policy", trainer_policy::all_epochs);
                         const auto trainer = get_trainers().get("minibatch", params);
                         return trainer->train(task, fold, nthreads, loss, criterion, model);
                 });
@@ -103,7 +103,7 @@ static void evaluate(model_t& model,
                 const auto optname = "stochastic-" + to_string(optimizer);
                 test_optimizer(model, basename + optname, basepath + optname, table, x0s, [&] ()
                 {
-                        const auto params = to_params("opt", optimizer, "epochs", iterations);
+                        const auto params = to_params("opt", optimizer, "epochs", iterations, "policy", trainer_policy::all_epochs);
                         const auto trainer = get_trainers().get("stochastic", params);
                         return trainer->train(task, fold, nthreads, loss, criterion, model);
                 });
