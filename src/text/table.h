@@ -24,9 +24,9 @@ namespace nano
                 enum class marking
                 {
                         none,
-                        min_abs,
+                        min_abs,        ///<
                         max_abs,
-                        min_per,
+                        min_per,        ///<
                         max_per
                 };
 
@@ -149,10 +149,6 @@ namespace nano
 
                 case sorting::desc:
                         sort(nano::make_greater_from_string<tvalue>(), columns);
-                        break;
-
-                default:
-                        assert(false);
                         break;
                 }
         }
