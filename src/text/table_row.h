@@ -15,8 +15,8 @@ namespace nano
                 ///
                 /// \brief constructor
                 ///
-                explicit table_row_t(const std::string& name)
-                        :       m_name(name)
+                explicit table_row_t(const std::string& name) :
+                        m_name(name)
                 {
                 }
 
@@ -41,8 +41,8 @@ namespace nano
                 ///
                 /// \brief retrieve the column values
                 ///
-                const auto& operator[](size_t i) const { return m_values[i]; }
-                auto& operator[](size_t i) { return m_values[i]; }
+                const auto& operator[](size_t i) const { return m_values.at(i); }
+                auto& operator[](size_t i) { return m_values.at(i); }
 
                 ///
                 /// \brief retrieve the column value range

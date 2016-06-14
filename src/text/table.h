@@ -3,7 +3,7 @@
 #include "arch.h"
 #include "table_row.h"
 #include "table_header.h"
-#include <cassert>
+#include "from_string.hpp"
 #include <algorithm>
 
 namespace nano
@@ -14,6 +14,21 @@ namespace nano
         class NANO_PUBLIC table_t
         {
         public:
+
+                enum class sorting
+                {
+                        asc,
+                        desc
+                };
+
+                enum class marking
+                {
+                        none,
+                        min_abs,
+                        max_abs,
+                        min_per,
+                        max_per
+                };
 
                 ///
                 /// \brief constructor
@@ -36,36 +51,28 @@ namespace nano
                 table_row_t& append(const std::string& name);
 
                 ///
-                /// \brief sort the table using the given row comparison
+                /// \brief (stable) sort the table using the given row-based comparison operator
                 ///
-                template
-                <
-                        typename trow_comp
-                >
-                void sort(const trow_comp& comp)
-                {
-                        std::stable_sort(m_rows.begin(), m_rows.end(), comp);
-                }
+                template <typename toperator>
+                void sort(const toperator&);
+
+                ///
+                /// \brief (stable) sort the table using the given columns
+                ///
+                template <typename toperator>
+                void sort(const toperator&, const std::vector<std::size_t>& columns);
+
+                ///
+                /// \brief (stable) sort the table using the given columns
+                ///
+                template <typename tvalue>
+                void sort(const sorting, const std::vector<std::size_t>& columns);
 
                 ///
                 /// \brief mark row-wise the selected columns with the given operator
                 ///
-                template
-                <
-                        typename trow_marker
-                >
-                void mark(const trow_marker& marker, const char* marker_string = " (*)")
-                {
-                        for (auto& row : m_rows)
-                        {
-                                const auto sel_cols = marker(row);
-                                for (const auto& col : sel_cols)
-                                {
-                                        assert(col < cols());
-                                        row[col] += marker_string;
-                                }
-                        }
-                }
+                template <typename tmarker>
+                void mark(const tmarker& marker, const char* marker_string = " (*)");
 
                 ///
                 /// \brief pretty-print its content
@@ -73,14 +80,12 @@ namespace nano
                 void print(std::ostream& os, const bool use_row_delim = false) const;
 
                 ///
-                /// \brief retrieve the number of columns
+                /// \brief access functions
                 ///
                 std::size_t cols() const;
-
-                ///
-                /// \brief retrieve the (current) number of rows
-                ///
                 std::size_t rows() const;
+                const table_header_t& header() const;
+                const table_row_t& row(const std::size_t index) const;
 
         private:
 
@@ -106,5 +111,63 @@ namespace nano
                 table_header_t                  m_header;       ///<
                 std::vector<table_row_t>        m_rows;         ///<
         };
+
+        template <typename toperator>
+        void table_t::sort(const toperator& comp)
+        {
+                std::stable_sort(m_rows.begin(), m_rows.end(), comp);
+        }
+
+        template <typename toperator>
+        void table_t::sort(const toperator& comp, const std::vector<std::size_t>& columns)
+        {
+                sort([&] (const auto& row1, const auto& row2)
+                {
+                        for (const auto col : columns)
+                        {
+                                if (comp(row1[col], row2[col]))
+                                {
+                                        return true;
+                                }
+                                else if (comp(row2[col], row1[col]))
+                                {
+                                        return false;
+                                }
+                        }
+                        return true;
+                });
+        }
+
+        template <typename tvalue>
+        void table_t::sort(const sorting type, const std::vector<std::size_t>& columns)
+        {
+                switch (type)
+                {
+                case sorting::asc:
+                        sort(nano::make_less_from_string<tvalue>(), columns);
+                        break;
+
+                case sorting::desc:
+                        sort(nano::make_greater_from_string<tvalue>(), columns);
+                        break;
+
+                default:
+                        assert(false);
+                        break;
+                }
+        }
+
+        template <typename tmarker>
+        void table_t::mark(const tmarker& marker, const char* marker_string)
+        {
+                for (auto& row : m_rows)
+                {
+                        const auto sel_cols = marker(row);
+                        for (const auto& col : sel_cols)
+                        {
+                                row[col] += marker_string;
+                        }
+                }
+        }
 }
 

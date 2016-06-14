@@ -9,7 +9,6 @@
 #include "math/numeric.hpp"
 #include "math/epsilon.hpp"
 #include "text/algorithm.h"
-#include "text/from_string.hpp"
 #include "benchmark_optimizers.h"
 #include <map>
 #include <tuple>

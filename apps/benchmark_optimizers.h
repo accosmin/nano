@@ -6,7 +6,6 @@
 #include "math/stats.hpp"
 #include "optim/test.hpp"
 #include "thread/loopi.hpp"
-#include "text/table_row_comp.h"
 
 namespace benchmark
 {
@@ -21,16 +20,16 @@ namespace benchmark
                         assert(gthres.size() == 4);
                 }
 
-                scalars_t               m_gthres;       ///< thresholds for the convergence criterias
-                nano::stats_t<scalar_t> m_crits;        ///< convergence criteria
-                nano::stats_t<scalar_t> m_fail0s;       ///< #convergence failures
-                nano::stats_t<scalar_t> m_fail1s;       ///< #convergence failures
-                nano::stats_t<scalar_t> m_fail2s;       ///< #convergence failures
-                nano::stats_t<scalar_t> m_fail3s;       ///< #convergence failures
-                nano::stats_t<scalar_t> m_iters;        ///< #iterations
-                nano::stats_t<scalar_t> m_fcalls;       ///< #function value calls
-                nano::stats_t<scalar_t> m_gcalls;       ///< #gradient calls
-                nano::stats_t<scalar_t> m_speeds;       ///< convergence speed (actually the average decrease ratio of the convergence criteria)
+                scalars_t         m_gthres;     ///< thresholds for the convergence criterias
+                stats_t<scalar_t> m_crits;      ///< convergence criteria
+                stats_t<scalar_t> m_fail0s;     ///< #convergence failures
+                stats_t<scalar_t> m_fail1s;     ///< #convergence failures
+                stats_t<scalar_t> m_fail2s;     ///< #convergence failures
+                stats_t<scalar_t> m_fail3s;     ///< #convergence failures
+                stats_t<scalar_t> m_iters;      ///< #iterations
+                stats_t<scalar_t> m_fcalls;     ///< #function value calls
+                stats_t<scalar_t> m_gcalls;     ///< #gradient calls
+                stats_t<scalar_t> m_speeds;     ///< convergence speed (actually the average decrease ratio of the convergence criteria)
         };
 
         nano::stats_t<scalar_t> make_stats(const scalars_t& values, const scalars_t& flags)
@@ -84,7 +83,7 @@ namespace benchmark
                                            << stat.m_speeds.avg();
                 }
 
-                table.sort(nano::make_table_row_ascending_comp<scalar_t>(indices_t({2, 3, 0})));
+                table.sort<scalar_t>(table_t::sorting::asc, {2, 3, 0});
                 table.print(std::cout);
         }
 

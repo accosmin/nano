@@ -13,8 +13,27 @@ namespace nano
 
         table_header_t& table_t::header()
         {
-                clear();
                 return m_header;
+        }
+
+        const table_header_t& table_t::header() const
+        {
+                return m_header;
+        }
+
+        const table_row_t& table_t::row(const std::size_t index) const
+        {
+                return m_rows.at(index);
+        }
+
+        std::size_t table_t::cols() const
+        {
+                return header().size();
+        }
+
+        std::size_t table_t::rows() const
+        {
+                return m_rows.size();
         }
 
         void table_t::clear()
@@ -26,16 +45,6 @@ namespace nano
         {
                 m_rows.emplace_back(name);
                 return *m_rows.rbegin();
-        }
-
-        std::size_t table_t::cols() const
-        {
-                return m_header.size();
-        }
-
-        std::size_t table_t::rows() const
-        {
-                return m_rows.size();
         }
 
         size_t table_t::name_colsize() const

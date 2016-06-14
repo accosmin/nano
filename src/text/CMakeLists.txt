@@ -16,9 +16,7 @@ set(libtext_sources
         ${CMAKE_CURRENT_SOURCE_DIR}/table.h
         ${CMAKE_CURRENT_SOURCE_DIR}/table.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/table_header.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/table_row.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/table_row_comp.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/table_row_mark.h)
+        ${CMAKE_CURRENT_SOURCE_DIR}/table_row.h)
 
 add_library(text SHARED
         ${libtext_sources})

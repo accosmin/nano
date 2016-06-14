@@ -7,7 +7,6 @@
 #include "math/random.hpp"
 #include "math/epsilon.hpp"
 #include "math/numeric.hpp"
-#include "text/from_string.hpp"
 #include "benchmark_optimizers.h"
 #include <map>
 #include <tuple>
