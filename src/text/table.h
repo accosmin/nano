@@ -1,6 +1,6 @@
 #pragma once
 
-#include "arch.h"
+#include "scalar.h"
 #include "table_row.h"
 #include "table_header.h"
 #include "from_string.hpp"
@@ -24,7 +24,7 @@ namespace nano
                 ///
                 /// \brief constructor
                 ///
-                explicit table_t(const std::string& title);
+                explicit table_t(const string_t& title);
 
                 ///
                 /// \brief remove all rows, but keeps the header
@@ -39,7 +39,7 @@ namespace nano
                 ///
                 /// \brief append a new row
                 ///
-                table_row_t& append(const std::string& name);
+                table_row_t& append(const string_t& name);
 
                 ///
                 /// \brief (stable) sort the table using the given row-based comparison operator
@@ -51,13 +51,13 @@ namespace nano
                 /// \brief (stable) sort the table using the given columns
                 ///
                 template <typename toperator>
-                void sort(const toperator&, const std::vector<std::size_t>& columns);
+                void sort(const toperator&, const indices_t& columns);
 
                 ///
                 /// \brief (stable) sort the table using the given columns
                 ///
                 template <typename tvalue>
-                void sort(const sorting, const std::vector<std::size_t>& columns);
+                void sort(const sorting, const indices_t& columns);
 
                 ///
                 /// \brief mark row-wise the selected columns with the given operator
@@ -83,7 +83,7 @@ namespace nano
                 ///
                 /// \brief compute the size of each value column
                 ///
-                std::vector<std::size_t> value_colsizes() const;
+                sizes_t value_colsizes() const;
 
                 ///
                 /// \brief compute the size of the name column
@@ -98,7 +98,7 @@ namespace nano
         private:
 
                 // attributes
-                std::string                     m_title;        ///<
+                string_t                        m_title;        ///<
                 table_header_t                  m_header;       ///<
                 std::vector<table_row_t>        m_rows;         ///<
         };
@@ -110,7 +110,7 @@ namespace nano
         }
 
         template <typename toperator>
-        void table_t::sort(const toperator& comp, const std::vector<std::size_t>& columns)
+        void table_t::sort(const toperator& comp, const indices_t& columns)
         {
                 sort([&] (const auto& row1, const auto& row2)
                 {
@@ -130,7 +130,7 @@ namespace nano
         }
 
         template <typename tvalue>
-        void table_t::sort(const sorting type, const std::vector<std::size_t>& columns)
+        void table_t::sort(const sorting type, const indices_t& columns)
         {
                 switch (type)
                 {

@@ -16,7 +16,7 @@ namespace nano
                 template <>
                 struct to_string_t<int>
                 {
-                        static std::string dispatch(int value)
+                        static string_t dispatch(int value)
                         {
                                 return std::to_string(value);
                         }
@@ -25,7 +25,7 @@ namespace nano
                 template <>
                 struct to_string_t<long>
                 {
-                        static std::string dispatch(long value)
+                        static string_t dispatch(long value)
                         {
                                 return std::to_string(value);
                         }
@@ -34,7 +34,7 @@ namespace nano
                 template <>
                 struct to_string_t<long long>
                 {
-                        static std::string dispatch(long long value)
+                        static string_t dispatch(long long value)
                         {
                                 return std::to_string(value);
                         }
@@ -43,7 +43,7 @@ namespace nano
                 template <>
                 struct to_string_t<unsigned int>
                 {
-                        static std::string dispatch(unsigned int value)
+                        static string_t dispatch(unsigned int value)
                         {
                                 return std::to_string(value);
                         }
@@ -52,7 +52,7 @@ namespace nano
                 template <>
                 struct to_string_t<unsigned long>
                 {
-                        static std::string dispatch(unsigned long value)
+                        static string_t dispatch(unsigned long value)
                         {
                                 return std::to_string(value);
                         }
@@ -61,7 +61,7 @@ namespace nano
                 template <>
                 struct to_string_t<unsigned long long>
                 {
-                        static std::string dispatch(unsigned long long value)
+                        static string_t dispatch(unsigned long long value)
                         {
                                 return std::to_string(value);
                         }
@@ -70,7 +70,7 @@ namespace nano
                 template <>
                 struct to_string_t<float>
                 {
-                        static std::string dispatch(float value)
+                        static string_t dispatch(float value)
                         {
                                 return std::to_string(value);
                         }
@@ -79,7 +79,7 @@ namespace nano
                 template <>
                 struct to_string_t<double>
                 {
-                        static std::string dispatch(double value)
+                        static string_t dispatch(double value)
                         {
                                 return std::to_string(value);
                         }
@@ -88,16 +88,16 @@ namespace nano
                 template <>
                 struct to_string_t<long double>
                 {
-                        static std::string dispatch(long double value)
+                        static string_t dispatch(long double value)
                         {
                                 return std::to_string(value);
                         }
                 };
 
                 template <>
-                struct to_string_t<std::string>
+                struct to_string_t<string_t>
                 {
-                        static std::string dispatch(std::string value)
+                        static string_t dispatch(string_t value)
                         {
                                 return value;
                         }
@@ -106,7 +106,7 @@ namespace nano
                 template <>
                 struct to_string_t<const char*>
                 {
-                        static std::string dispatch(const char* value)
+                        static string_t dispatch(const char* value)
                         {
                                 return value;
                         }
@@ -121,7 +121,7 @@ namespace nano
                 >
                 struct to_string_t<tvalue, typename std::enable_if<std::is_enum<tvalue>::value>::type>
                 {
-                        static std::string dispatch(tvalue value)
+                        static string_t dispatch(tvalue value)
                         {
                                 const auto vm = enum_string<tvalue>();
                                 const auto it = vm.find(value);
@@ -135,7 +135,7 @@ namespace nano
         <
                 typename tvalue
         >
-        std::string to_string(tvalue value)
+        string_t to_string(tvalue value)
         {
                 return detail::to_string_t<tvalue>::dispatch(value);
         }

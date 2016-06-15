@@ -9,10 +9,10 @@ namespace nano
 {
         struct option_t
         {
-                explicit option_t(const std::string& short_name = std::string(),
-                                  const std::string& name = std::string(),
-                                  const std::string& description = std::string(),
-                                  const std::string& default_value = std::string()) :
+                explicit option_t(const string_t& short_name = string_t(),
+                                  const string_t& name = string_t(),
+                                  const string_t& description = string_t(),
+                                  const string_t& default_value = string_t()) :
                         m_short_name(short_name),
                         m_name(name),
                         m_description(description),
@@ -21,7 +21,7 @@ namespace nano
                 {
                 }
 
-                std::string concatenate() const
+                string_t concatenate() const
                 {
                         return  (m_short_name.empty() ? "" : ("-" + m_short_name) + ",") +
                                 "--" + m_name +
@@ -33,21 +33,21 @@ namespace nano
                         return m_given;
                 }
 
-                std::string get() const
+                string_t get() const
                 {
                         return m_value.empty() ? m_default_value : m_value;
                 }
 
                 // attributes
-                std::string     m_short_name;
-                std::string     m_name;
-                std::string     m_description;
-                std::string     m_default_value;
-                std::string     m_value;
+                string_t        m_short_name;
+                string_t        m_name;
+                string_t        m_description;
+                string_t        m_default_value;
+                string_t        m_value;
                 bool            m_given;
         };
 
-        bool operator==(const option_t& option, const std::string& name_or_short_name)
+        bool operator==(const option_t& option, const string_t& name_or_short_name)
         {
                 return  option.m_short_name == name_or_short_name ||
                         option.m_name == name_or_short_name;
@@ -57,17 +57,17 @@ namespace nano
 
         struct cmdline_t::impl_t
         {
-                explicit impl_t(const std::string& title) :
+                explicit impl_t(const string_t& title) :
                         m_title(title)
                 {
                 }
 
-                auto find(const std::string& name_or_short_name)
+                auto find(const string_t& name_or_short_name)
                 {
                         return std::find(m_options.begin(), m_options.end(), name_or_short_name);
                 }
 
-                auto store(const std::string& name_or_short_name, const std::string& value = std::string())
+                auto store(const string_t& name_or_short_name, const string_t& value = string_t())
                 {
                         auto it = find(name_or_short_name);
                         if (it == m_options.end())
@@ -81,7 +81,7 @@ namespace nano
                         }
                 }
 
-                void log_critical(const std::string& message) const
+                void log_critical(const string_t& message) const
                 {
                         std::cout << message << std::endl << std::endl;
                         usage();
@@ -109,11 +109,11 @@ namespace nano
                         exit(EXIT_FAILURE);
                 }
 
-                std::string     m_title;
+                string_t     m_title;
                 options_t       m_options;
         };
 
-        cmdline_t::cmdline_t(const std::string& title) :
+        cmdline_t::cmdline_t(const string_t& title) :
                 m_impl(new impl_t(title))
         {
                 add("h", "help", "usage");
@@ -121,15 +121,15 @@ namespace nano
 
         cmdline_t::~cmdline_t() = default;
 
-        void cmdline_t::add(const std::string& short_name, const std::string& name, const std::string& description) const
+        void cmdline_t::add(const string_t& short_name, const string_t& name, const string_t& description) const
         {
-                const std::string default_value;
+                const string_t default_value;
                 add(short_name, name, description, default_value);
         }
 
         void cmdline_t::add(
-                const std::string& short_name, const std::string& name, const std::string& description,
-                const std::string& default_value) const
+                const string_t& short_name, const string_t& name, const string_t& description,
+                const string_t& default_value) const
         {
                 if (    name.empty() ||
                         nano::starts_with(name, "-") ||
@@ -160,16 +160,16 @@ namespace nano
 
         void cmdline_t::process(const int argc, const char* argv[]) const
         {
-                std::string current_name_or_short_name;
+                string_t current_name_or_short_name;
 
                 for (int i = 1; i < argc; ++ i)
                 {
-                        const std::string token = argv[i];
+                        const string_t token = argv[i];
                         assert(!token.empty());
 
                         if (nano::starts_with(token, "--"))
                         {
-                                const std::string name = token.substr(2);
+                                const string_t name = token.substr(2);
 
                                 if (name.empty())
                                 {
@@ -182,7 +182,7 @@ namespace nano
                         }
                         else if (nano::starts_with(token, "-"))
                         {
-                                const std::string short_name = token.substr(1);
+                                const string_t short_name = token.substr(1);
 
                                 if (short_name.size() != 1)
                                 {
@@ -195,7 +195,7 @@ namespace nano
                         }
                         else
                         {
-                                const std::string& value = token;
+                                const string_t& value = token;
 
                                 if (current_name_or_short_name.empty())
                                 {
@@ -213,7 +213,7 @@ namespace nano
                 }
         }
 
-        void cmdline_t::process(const std::string& config) const
+        void cmdline_t::process(const string_t& config) const
         {
                 const auto tokens = nano::split(config, " \t\n\r");
 
@@ -227,15 +227,15 @@ namespace nano
                 process(static_cast<int>(tokens.size() + 1), ptokens.data());
         }
 
-        void cmdline_t::process_config_file(const std::string& path) const
+        void cmdline_t::process_config_file(const string_t& path) const
         {
                 std::ifstream in(path.c_str());
-                const std::string config((std::istreambuf_iterator<char>(in)), std::istreambuf_iterator<char>());
+                const string_t config((std::istreambuf_iterator<char>(in)), std::istreambuf_iterator<char>());
 
                 process(config);
         }
 
-        bool cmdline_t::has(const std::string& name_or_short_name) const
+        bool cmdline_t::has(const string_t& name_or_short_name) const
         {
                 const auto it = m_impl->find(name_or_short_name);
                 if (it == m_impl->m_options.end())
@@ -245,7 +245,7 @@ namespace nano
                 return it->m_given;
         }
 
-        std::string cmdline_t::get(const std::string& name_or_short_name) const
+        string_t cmdline_t::get(const string_t& name_or_short_name) const
         {
                 const auto it = m_impl->find(name_or_short_name);
                 if (it == m_impl->m_options.end())
@@ -259,7 +259,7 @@ namespace nano
                 return it->get();
         }
 
-        void cmdline_t::log_critical(const std::string& message) const
+        void cmdline_t::log_critical(const string_t& message) const
         {
                 m_impl->log_critical(message);
         }

@@ -1,7 +1,6 @@
 #pragma once
 
 #include "to_string.hpp"
-#include <vector>
 
 namespace nano
 {
@@ -15,7 +14,7 @@ namespace nano
                 ///
                 /// \brief constructor
                 ///
-                explicit table_row_t(const std::string& name) :
+                explicit table_row_t(const string_t& name) :
                         m_name(name)
                 {
                 }
@@ -30,7 +29,7 @@ namespace nano
                 table_row_t& operator<<(tvalue value)
                 {
                         m_values.emplace_back(nano::to_string(value));
-                        m_markings.push_back(std::string());
+                        m_markings.push_back(string_t());
                         return *this;
                 }
 
@@ -62,9 +61,9 @@ namespace nano
         private:
 
                 // attributes
-                std::string                     m_name;         ///< row name
-                std::vector<std::string>        m_values;       ///< column values
-                std::vector<std::string>        m_markings;     ///< column marking (e.g. min|max decoration)
+                string_t                m_name;         ///< row name
+                strings_t               m_values;       ///< column values
+                strings_t               m_markings;     ///< column marking (e.g. min|max decoration)
         };
 }
 

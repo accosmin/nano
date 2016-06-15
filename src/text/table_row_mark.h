@@ -1,5 +1,6 @@
 #pragma once
 
+#include "scalar.h"
 #include "table_row.h"
 #include "from_string.hpp"
 #include <algorithm>
@@ -7,8 +8,6 @@
 
 namespace nano
 {
-        using indices_t = std::vector<std::size_t>;
-
         namespace detail
         {
                 template

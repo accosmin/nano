@@ -1,7 +1,6 @@
 #pragma once
 
 #include "to_string.hpp"
-#include <vector>
 
 namespace nano
 {
@@ -39,7 +38,7 @@ namespace nano
         private:
 
                 // attributes
-                std::vector<std::string>        m_values;       ///< column values
+                strings_t       m_values;       ///< column values
         };
 }
 

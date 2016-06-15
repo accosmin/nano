@@ -12,9 +12,9 @@ namespace nano
         <
                 class tvalue
         >
-        std::string to_params(const char* name, const tvalue& value)
+        string_t to_params(const char* name, const tvalue& value)
         {
-                return std::string(name) + "=" + to_string(value);
+                return string_t(name) + "=" + to_string(value);
         }
 
         template
@@ -22,7 +22,7 @@ namespace nano
                 class tvalue,
                 class... tvalues
         >
-        std::string to_params(const char* name, const tvalue& value, const tvalues&... values)
+        string_t to_params(const char* name, const tvalue& value, const tvalues&... values)
         {
                 return to_params(name, value) + "," + to_params(values...);
         }

@@ -6,7 +6,7 @@
 
 namespace nano
 {
-        table_t::table_t(const std::string& title) :
+        table_t::table_t(const string_t& title) :
                 m_title(title)
         {
         }
@@ -41,7 +41,7 @@ namespace nano
                 m_rows.clear();
         }
 
-        table_row_t& table_t::append(const std::string& name)
+        table_row_t& table_t::append(const string_t& name)
         {
                 m_rows.emplace_back(name);
                 return *m_rows.rbegin();
@@ -58,9 +58,9 @@ namespace nano
                 return colsize;
         }
 
-        std::vector<std::size_t> table_t::value_colsizes() const
+        sizes_t table_t::value_colsizes() const
         {
-                std::vector<std::size_t> colsizes(cols(), 0);
+                sizes_t colsizes(cols(), 0);
 
                 for (size_t c = 0; c < cols(); ++ c)
                 {
@@ -84,10 +84,10 @@ namespace nano
                 const auto namesize = name_colsize();
                 const auto colsizes = value_colsizes();
 
-                os << "|" << std::string(namesize + 2, '-');
+                os << "|" << string_t(namesize + 2, '-');
                 for (size_t c = 0; c < cols(); ++ c)
                 {
-                        os << "+" << std::string(colsizes[c] + 2, '-');
+                        os << "+" << string_t(colsizes[c] + 2, '-');
                 }
                 os << "|" << std::endl;
         }
@@ -122,7 +122,7 @@ namespace nano
 
                         if (r > 0 && r < m_rows.size() && use_row_delim)
                         {
-                                os << std::string(rowsize, '-') << std::endl;
+                                os << string_t(rowsize, '-') << std::endl;
                         }
 
                         os << nano::align("| " + row.name(), namesize + 3);

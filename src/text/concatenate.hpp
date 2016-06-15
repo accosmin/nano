@@ -12,9 +12,9 @@ namespace nano
                 typename tcontainer,
                 typename tvalue = decltype(*std::begin(tcontainer()))
         >
-        std::string concatenate(const tcontainer& values, const std::string& glue = ",")
+        string_t concatenate(const tcontainer& values, const string_t& glue = ",")
         {
-                std::string ret;
+                string_t ret;
                 for (auto value : values)
                 {
                         ret += to_string(value) + glue;

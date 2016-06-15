@@ -19,7 +19,7 @@ namespace nano
                 template <>
                 struct from_string_t<short>
                 {
-                        static short dispatch(const std::string& str)
+                        static short dispatch(const string_t& str)
                         {
                                 return static_cast<short>(std::stoi(str));
                         }
@@ -28,7 +28,7 @@ namespace nano
                 template <>
                 struct from_string_t<int>
                 {
-                        static int dispatch(const std::string& str)
+                        static int dispatch(const string_t& str)
                         {
                                 return std::stoi(str);
                         }
@@ -37,7 +37,7 @@ namespace nano
                 template <>
                 struct from_string_t<long>
                 {
-                        static long dispatch(const std::string& str)
+                        static long dispatch(const string_t& str)
                         {
                                 return std::stol(str);
                         }
@@ -46,7 +46,7 @@ namespace nano
                 template <>
                 struct from_string_t<long long>
                 {
-                        static long long dispatch(const std::string& str)
+                        static long long dispatch(const string_t& str)
                         {
                                 return std::stoll(str);
                         }
@@ -55,7 +55,7 @@ namespace nano
                 template <>
                 struct from_string_t<unsigned long>
                 {
-                        static unsigned long dispatch(const std::string& str)
+                        static unsigned long dispatch(const string_t& str)
                         {
                                 return std::stoul(str);
                         }
@@ -64,7 +64,7 @@ namespace nano
                 template <>
                 struct from_string_t<unsigned long long>
                 {
-                        static unsigned long long dispatch(const std::string& str)
+                        static unsigned long long dispatch(const string_t& str)
                         {
                                 return std::stoull(str);
                         }
@@ -73,7 +73,7 @@ namespace nano
                 template <>
                 struct from_string_t<float>
                 {
-                        static float dispatch(const std::string& str)
+                        static float dispatch(const string_t& str)
                         {
                                 return std::stof(str);
                         }
@@ -82,7 +82,7 @@ namespace nano
                 template <>
                 struct from_string_t<double>
                 {
-                        static double dispatch(const std::string& str)
+                        static double dispatch(const string_t& str)
                         {
                                 return std::stod(str);
                         }
@@ -91,16 +91,16 @@ namespace nano
                 template <>
                 struct from_string_t<long double>
                 {
-                        static long double dispatch(const std::string& str)
+                        static long double dispatch(const string_t& str)
                         {
                                 return std::stold(str);
                         }
                 };
 
                 template <>
-                struct from_string_t<std::string>
+                struct from_string_t<string_t>
                 {
-                        static std::string dispatch(const std::string& str)
+                        static string_t dispatch(const string_t& str)
                         {
                                 return str;
                         }
@@ -115,7 +115,7 @@ namespace nano
                 >
                 struct from_string_t<tvalue, typename std::enable_if<std::is_enum<tvalue>::value>::type>
                 {
-                        static tvalue dispatch(const std::string& str)
+                        static tvalue dispatch(const string_t& str)
                         {
                                 const auto vm = enum_string<tvalue>();
                                 const auto it = std::find_if(vm.begin(), vm.end(), [&str] (const auto& v)
@@ -125,7 +125,7 @@ namespace nano
 
                                 if (it == vm.end())
                                 {
-                                        const auto msg = std::string("invalid ") + typeid(tvalue).name() + " <" + str + ">!";
+                                        const auto msg = string_t("invalid ") + typeid(tvalue).name() + " <" + str + ">!";
                                         throw std::invalid_argument(msg);
                                 }
                                 return it->first;
@@ -137,7 +137,7 @@ namespace nano
         <
                 typename tvalue
         >
-        tvalue from_string(const std::string& str)
+        tvalue from_string(const string_t& str)
         {
                 return detail::from_string_t<tvalue>::dispatch(str);
         }
@@ -151,7 +151,7 @@ namespace nano
         >
         auto make_less_from_string()
         {
-                return [] (const std::string& v1, const std::string& v2)
+                return [] (const string_t& v1, const string_t& v2)
                 {
                         return from_string<tscalar>(v1) < from_string<tscalar>(v2);
                 };
@@ -166,7 +166,7 @@ namespace nano
         >
         auto make_greater_from_string()
         {
-                return [] (const std::string& v1, const std::string& v2)
+                return [] (const string_t& v1, const string_t& v2)
                 {
                         return from_string<tscalar>(v1) > from_string<tscalar>(v2);
                 };

@@ -1,7 +1,7 @@
 #pragma once
 
 #include <map>
-#include <string>
+#include "stringi.h"
 
 namespace nano
 {
@@ -14,6 +14,6 @@ namespace nano
         <
                 typename tenum
         >
-        std::map<tenum, std::string> enum_string();
+        std::map<tenum, string_t> enum_string();
 }
 

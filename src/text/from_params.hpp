@@ -12,7 +12,7 @@ namespace nano
         <
                 class tvalue
         >
-        tvalue from_params(const std::string& params, const std::string& param_name, tvalue default_value)
+        tvalue from_params(const string_t& params, const string_t& param_name, tvalue default_value)
         {
                 const auto tokens = nano::split(params, ",");
                 for (std::size_t i = 0; i < tokens.size(); i ++)
@@ -20,9 +20,9 @@ namespace nano
                         const auto dual = nano::split(tokens[i], "=");
                         if (dual.size() == 2 && dual[0] == param_name)
                         {
-                                std::string value = dual[1];
+                                string_t value = dual[1];
                                 for (   std::size_t j = i + 1;
-                                        j < tokens.size() && tokens[j].find("=") == std::string::npos;
+                                        j < tokens.size() && tokens[j].find("=") == string_t::npos;
                                         j ++)
                                 {
                                         value += "," + tokens[j];

@@ -1,6 +1,5 @@
 #pragma once
 
-#include "arch.h"
 #include "to_string.hpp"
 #include "from_string.hpp"
 #include <memory>
@@ -26,7 +25,7 @@ namespace nano
                 ///
                 /// \brief constructor
                 ///
-                explicit cmdline_t(const std::string& title);
+                explicit cmdline_t(const string_t& title);
 
                 ///
                 /// \brief disable copying
@@ -42,7 +41,7 @@ namespace nano
                 ///
                 /// \brief add new option by name and short name (without dash)
                 ///
-                void add(const std::string& short_name, const std::string& name, const std::string& description) const;
+                void add(const string_t& short_name, const string_t& name, const string_t& description) const;
 
                 ///
                 /// \brief add new option with default value by name and short name (without dash)
@@ -51,7 +50,7 @@ namespace nano
                 <
                         typename tvalue
                 >
-                void add(const std::string& short_name, const std::string& name, const std::string& description,
+                void add(const string_t& short_name, const string_t& name, const string_t& description,
                          const tvalue default_value) const
                 {
                         add(short_name, name, description, to_string(default_value));
@@ -65,22 +64,22 @@ namespace nano
                 ///
                 /// \brief process the command line arguments
                 ///
-                void process(const std::string& config) const;
+                void process(const string_t& config) const;
 
                 ///
                 /// \brief process the command line arguments from configuration file
                 ///
-                void process_config_file(const std::string& path) const;
+                void process_config_file(const string_t& path) const;
 
                 ///
                 /// \brief check if an option was set
                 ///
-                bool has(const std::string& name_or_short_name) const;
+                bool has(const string_t& name_or_short_name) const;
 
                 ///
                 /// \brief get the value of an option
                 ///
-                std::string get(const std::string& name_or_short_name) const;
+                string_t get(const string_t& name_or_short_name) const;
 
                 ///
                 /// \brief get the value of an option as a given type
@@ -89,7 +88,7 @@ namespace nano
                 <
                         typename tvalue
                 >
-                tvalue get(const std::string& name_or_short_name) const
+                tvalue get(const string_t& name_or_short_name) const
                 {
                         return nano::from_string<tvalue>(get(name_or_short_name));
                 }
@@ -101,13 +100,13 @@ namespace nano
 
         private:
 
-                void log_critical(const std::string& message) const;
+                void log_critical(const string_t& message) const;
 
                 ///
                 /// \brief add a new option
                 ///
-                void add(const std::string& short_name, const std::string& name, const std::string& description,
-                         const std::string& default_value) const;
+                void add(const string_t& short_name, const string_t& name, const string_t& description,
+                         const string_t& default_value) const;
 
         private:
 
