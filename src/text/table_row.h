@@ -30,6 +30,7 @@ namespace nano
                 table_row_t& operator<<(tvalue value)
                 {
                         m_values.emplace_back(nano::to_string(value));
+                        m_markings.push_back(std::string());
                         return *this;
                 }
 
@@ -39,10 +40,13 @@ namespace nano
                 const auto& name() const { return m_name; }
 
                 ///
-                /// \brief retrieve the column values
+                /// \brief retrieve the column values & markings
                 ///
-                const auto& operator[](size_t i) const { return m_values.at(i); }
-                auto& operator[](size_t i) { return m_values.at(i); }
+                const auto& value(const size_t i) const { return m_values.at(i); }
+                auto& value(const size_t i) { return m_values.at(i); }
+
+                const auto& marking(const size_t i) const { return m_markings.at(i); }
+                auto& marking(const size_t i) { return m_markings.at(i); }
 
                 ///
                 /// \brief retrieve the column value range
@@ -60,6 +64,7 @@ namespace nano
                 // attributes
                 std::string                     m_name;         ///< row name
                 std::vector<std::string>        m_values;       ///< column values
+                std::vector<std::string>        m_markings;     ///< column marking (e.g. min|max decoration)
         };
 }
 

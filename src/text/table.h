@@ -21,15 +21,6 @@ namespace nano
                         desc
                 };
 
-                enum class marking
-                {
-                        none,
-                        min_abs,        ///<
-                        max_abs,
-                        min_per,        ///<
-                        max_per
-                };
-
                 ///
                 /// \brief constructor
                 ///
@@ -125,11 +116,11 @@ namespace nano
                 {
                         for (const auto col : columns)
                         {
-                                if (comp(row1[col], row2[col]))
+                                if (comp(row1.value(col), row2.value(col)))
                                 {
                                         return true;
                                 }
-                                else if (comp(row2[col], row1[col]))
+                                else if (comp(row2.value(col), row1.value(col)))
                                 {
                                         return false;
                                 }
@@ -161,7 +152,7 @@ namespace nano
                         const auto sel_cols = marker(row);
                         for (const auto& col : sel_cols)
                         {
-                                row[col] += marker_string;
+                                row.marking(col) = marker_string;
                         }
                 }
         }

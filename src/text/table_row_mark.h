@@ -21,7 +21,7 @@ namespace nano
                         indices_t indices;
                         for (std::size_t i = 0; i < row.size(); ++ i)
                         {
-                                if (op(nano::from_string<tscalar>(row[i])))
+                                if (op(nano::from_string<tscalar>(row.value(i))))
                                 {
                                         indices.push_back(i);
                                 }

@@ -72,7 +72,7 @@ namespace nano
                         assert(cols() == row.size());
                         for (size_t c = 0; c < cols(); ++ c)
                         {
-                                colsizes[c] = std::max(colsizes[c], row[c].size());
+                                colsizes[c] = std::max(colsizes[c], row.value(c).size() + row.marking(c).size());
                         }
                 }
 
@@ -90,8 +90,6 @@ namespace nano
                         os << "+" << std::string(colsizes[c] + 2, '-');
                 }
                 os << "|" << std::endl;
-
-//                os << "|" + std::string(rowsize, '-') << "|" << std::endl;
         }
 
         void table_t::print(std::ostream& os, const bool use_row_delim) const
@@ -130,7 +128,7 @@ namespace nano
                         os << nano::align("| " + row.name(), namesize + 3);
                         for (size_t c = 0; c < cols(); ++ c)
                         {
-                                os << nano::align("| " + row[c], colsizes[c] + 3);
+                                os << nano::align("| " + row.value(c) + row.marking(c), colsizes[c] + 3);
                         }
                         os << "|" << std::endl;
                 }
