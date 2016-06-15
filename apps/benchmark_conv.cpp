@@ -155,7 +155,7 @@ int main(int argc, const char* argv[])
                         }
                 }
 
-                table.mark(nano::make_table_mark_maximum_percentage_cols<size_t>(10));
+                table.mark(nano::make_table_mark_maximum_percentage_cols<scalar_t>(10));
                 table.print(std::cout);
         }
 
@@ -187,7 +187,7 @@ int main(int argc, const char* argv[])
                         }
                 }
 
-                table.mark(nano::make_table_mark_maximum_percentage_cols<size_t>(10));
+                table.mark(nano::make_table_mark_maximum_percentage_cols<scalar_t>(10));
                 table.print(std::cout);
         }
 

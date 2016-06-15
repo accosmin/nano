@@ -181,7 +181,7 @@ int main(int, const char* [])
         fillrow(table.append("Z += X * Y"), measure_mulm);
         fillrow(table.append("Z += x * y^t"), measure_outv);
 
-        table.mark(nano::make_table_mark_maximum_percentage_cols<size_t>(10));
+        table.mark(nano::make_table_mark_maximum_percentage_cols<scalar_t>(10));
         table.print(std::cout);
 
         return EXIT_SUCCESS;
