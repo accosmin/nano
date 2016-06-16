@@ -14,32 +14,26 @@ namespace nano
         >
         tvalue from_params(const string_t& params, const string_t& param_name, tvalue default_value)
         {
-                const auto tokens = nano::split(params, ",");
-                for (std::size_t i = 0; i < tokens.size(); i ++)
+                auto begin = params.find(param_name + "=");
+                if (begin == string_t::npos)
                 {
-                        const auto dual = nano::split(tokens[i], "=");
-                        if (dual.size() == 2 && dual[0] == param_name)
+                        return default_value;
+                }
+                else
+                {
+                        begin += param_name.size() + 1;
+                        const auto end = params.find(",", begin);
+                        const auto size = (end == string_t::npos ? params.size() : end) - begin;
+                        const auto value = params.substr(begin, size);
+                        try
                         {
-                                string_t value = dual[1];
-                                for (   std::size_t j = i + 1;
-                                        j < tokens.size() && tokens[j].find("=") == string_t::npos;
-                                        j ++)
-                                {
-                                        value += "," + tokens[j];
-                                }
-
-                                try
-                                {
-                                        return from_string<tvalue>(value);
-                                }
-                                catch (std::exception&)
-                                {
-                                        return default_value;
-                                }
+                                return from_string<tvalue>(value);
+                        }
+                        catch (std::exception&)
+                        {
+                                return default_value;
                         }
                 }
-
-                return default_value;
         }
 }
 
