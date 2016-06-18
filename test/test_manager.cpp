@@ -1,64 +1,63 @@
 #include "unit_test.hpp"
 #include "cortex/manager.hpp"
 
-namespace test
+using namespace nano;
+
+class test_clonable_t : public nano::clonable_t<test_clonable_t>
 {
-        class test_clonable_t : public nano::clonable_t<test_clonable_t>
+public:
+
+        explicit test_clonable_t(const string_t& configuration = string_t()) :
+                nano::clonable_t<test_clonable_t>(configuration)
         {
-        public:
+        }
 
-                explicit test_clonable_t(const std::string& configuration = std::string())
-                        :       nano::clonable_t<test_clonable_t>(configuration)
-                {
-                }
-
-                virtual ~test_clonable_t()
-                {
-                }
-        };
-
-        class test_obj1_clonable_t : public test_clonable_t
+        virtual ~test_clonable_t()
         {
-        public:
+        }
+};
 
-                NANO_MAKE_CLONABLE(test_obj1_clonable_t, "test obj1")
+class test_obj1_clonable_t : public test_clonable_t
+{
+public:
 
-                explicit test_obj1_clonable_t(const std::string& configuration = std::string())
-                        :       test_clonable_t(configuration)
-                {
-                }
-        };
+        NANO_MAKE_CLONABLE(test_obj1_clonable_t, "test obj1")
 
-        class test_obj2_clonable_t : public test_clonable_t
+        explicit test_obj1_clonable_t(const string_t& configuration = string_t()) :
+                test_clonable_t(configuration)
         {
-        public:
+        }
+};
 
-                NANO_MAKE_CLONABLE(test_obj2_clonable_t, "test obj2")
+class test_obj2_clonable_t : public test_clonable_t
+{
+public:
 
-                explicit test_obj2_clonable_t(const std::string& configuration = std::string())
-                        :       test_clonable_t(configuration)
-                {
-                }
-        };
+        NANO_MAKE_CLONABLE(test_obj2_clonable_t, "test obj2")
 
-        class test_obj3_clonable_t : public test_clonable_t
+        explicit test_obj2_clonable_t(const string_t& configuration = string_t()) :
+                test_clonable_t(configuration)
         {
-        public:
+        }
+};
 
-                NANO_MAKE_CLONABLE(test_obj3_clonable_t, "test obj3")
+class test_obj3_clonable_t : public test_clonable_t
+{
+public:
 
-                explicit test_obj3_clonable_t(const std::string& configuration = std::string())
-                        :       test_clonable_t(configuration)
-                {
-                }
-        };
-}
+        NANO_MAKE_CLONABLE(test_obj3_clonable_t, "test obj3")
+
+        explicit test_obj3_clonable_t(const string_t& configuration = string_t()) :
+                test_clonable_t(configuration)
+        {
+        }
+};
 
 NANO_BEGIN_MODULE(test_manager)
 
 NANO_CASE(empty)
 {
-        nano::manager_t<test::test_clonable_t> manager;
+        nano::manager_t<test_clonable_t> manager;
 
         NANO_CHECK(manager.ids().empty());
         NANO_CHECK(manager.descriptions().empty());
@@ -66,20 +65,20 @@ NANO_CASE(empty)
         NANO_CHECK(!manager.has("ds"));
         NANO_CHECK(!manager.has("ds1"));
         NANO_CHECK(!manager.has("dd"));
-        NANO_CHECK(!manager.has(""));       
+        NANO_CHECK(!manager.has(""));
 }
 
 NANO_CASE(retrieval)
 {
-        nano::manager_t<test::test_clonable_t> manager;
+        nano::manager_t<test_clonable_t> manager;
 
-        const test::test_obj1_clonable_t obj1;
-        const test::test_obj2_clonable_t obj2;
-        const test::test_obj3_clonable_t obj3;
+        const test_obj1_clonable_t obj1;
+        const test_obj2_clonable_t obj2;
+        const test_obj3_clonable_t obj3;
 
-        const std::string id1 = "obj1";
-        const std::string id2 = "obj2";
-        const std::string id3 = "obj3";
+        const string_t id1 = "obj1";
+        const string_t id2 = "obj2";
+        const string_t id3 = "obj3";
 
         // register objects
         NANO_CHECK(manager.add(id1, obj1));

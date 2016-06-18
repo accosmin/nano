@@ -13,7 +13,7 @@ namespace nano
         public:
 
                 NANO_MAKE_CLONABLE(stochastic_trainer_t,
-                        "parameters: opt=sg[,ngd,sgm,ag,agfr,aggr,adagrad,adadelta,adam],epochs=16[1,1024],"\
+                        "parameters: opt=sg[...],epochs=16[1,1024],"\
                         "policy=stop_early[,all_epochs]")
 
                 // constructor

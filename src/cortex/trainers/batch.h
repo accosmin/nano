@@ -13,7 +13,7 @@ namespace nano
         public:
 
                 NANO_MAKE_CLONABLE(batch_trainer_t,
-                        "parameters: opt=lbfgs[,cgd,gd],iters=1024[4,4096],eps=1e-6[1e-8,1e-3],history=6[4,20],"\
+                        "parameters: opt=lbfgs[...],iters=1024[4,4096],eps=1e-6[1e-8,1e-3],history=6[4,20],"\
                         "policy=stop_early[,all_epochs]")
 
                 // constructor

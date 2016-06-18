@@ -1,7 +1,6 @@
 #pragma once
 
 #include <map>
-#include <vector>
 #include <stdexcept>
 #include "clonable.hpp"
 
@@ -18,8 +17,7 @@ namespace nano
 	{
         public:
 
-                using tid = std::string;
-                using tstring = std::string;
+                using tid = string_t;
                 using trobject = std::shared_ptr<tobject>;
 
                 ///
@@ -49,7 +47,7 @@ namespace nano
                 ///
                 /// \brief retrieve the object with the given ID, constructed from the given parameters
                 ///
-                trobject get(const tid& id, const tstring& params) const
+                trobject get(const tid& id, const string_t& params) const
                 {
                         return get_it(id)->clone(params);
                 }
@@ -65,9 +63,9 @@ namespace nano
                 ///
                 /// \brief get the descriptions of all registered objects
                 ///
-                std::vector<tstring> descriptions() const
+                strings_t descriptions() const
                 {
-                        return collect<tstring>([] (const auto& it) { return it.second->description(); });
+                        return collect<string_t>([] (const auto& it) { return it.second->description(); });
                 }
 
         private:

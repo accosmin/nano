@@ -1,6 +1,6 @@
 #pragma once
 
-#include <string>
+#include "stringi.h"
 #include <memory>
 
 namespace nano
@@ -8,7 +8,7 @@ namespace nano
         ///
         /// \brief the clonable interface to be used with a manager:
         ///      ::clone()                      - clone the current object
-        ///      ::clone(const tstring&)        - create a new object (with the given configuration)
+        ///      ::clone(const string_t&)       - create a new object (with the given configuration)
         ///      ::configuration()              - parametrization
         ///      ::description()                - short description (configuration included)
         ///
@@ -20,14 +20,13 @@ namespace nano
         {
         public:
 
-                using tstring = std::string;
                 using trobject = std::shared_ptr<tobject>;
 
                 ///
                 /// \brief constructor
                 ///
-                explicit clonable_t(const tstring& configuration = tstring())
-                        :       m_configuration(configuration)
+                explicit clonable_t(const string_t& configuration = string_t()) :
+                        m_configuration(configuration)
                 {
                 }
 
@@ -39,7 +38,7 @@ namespace nano
                 ///
                 /// \brief create an object of the same type with the given configuration
                 ///
-                virtual trobject clone(const tstring& configuration) const = 0;
+                virtual trobject clone(const string_t& configuration) const = 0;
 
                 ///
                 /// \brief create an object clone
@@ -47,23 +46,23 @@ namespace nano
                 virtual trobject clone() const = 0;
 
                 ///
-                /// \brief short description (e.g. purpose, parameters)
+                /// \brief short description (e.g. purpose)
                 ///
-                virtual tstring description() const = 0;
+                virtual string_t description() const = 0;
 
                 ///
                 /// \brief current configuration (aka parameters)
                 ///
-                tstring configuration() const { return m_configuration; }
+                string_t configuration() const { return m_configuration; }
 
         protected:
 
                 // attributes
-                tstring         m_configuration;
+                string_t         m_configuration;
         };
 
         #define NANO_MAKE_CLONABLE(base_class, description_text) \
-                virtual trobject clone(const tstring& configuration) const override \
+                virtual trobject clone(const string_t& configuration) const override \
                 { \
                         return std::make_shared<base_class>(configuration); \
                 } \
@@ -71,7 +70,7 @@ namespace nano
                 { \
                         return std::make_shared<base_class>(*this); \
                 } \
-                virtual tstring description() const override \
+                virtual string_t description() const override \
                 { \
                         return description_text; \
                 }
