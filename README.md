@@ -7,7 +7,8 @@ This library provides numerical optimization and machine learning utilities. It 
 
 The core modules are independent of each other and are designed to be as generic as possible.
 
-* **math** - numerical utilities, batch and stochastic numerical optimization and line-search methods. `Dependencies: Eigen3.`
+* **math** - numerical utilities. `No dependencies.`
+* **optim** - batch and stochastic numerical optimization and line-search methods. `Dependencies: Eigen3.`
 * **text** - string processing utilities. `No dependencies.`
 * **tensor** - vector, matrix and tensor utilities, 2D/3D convolution and correlations. `Dependencies: Eigen3.`
 * **io** - I/O utilities, wrappers over LibArchive and std::streams. `Dependencies: LibArchive, Zlib and BZip2.`
