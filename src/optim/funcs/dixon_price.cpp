@@ -9,7 +9,7 @@ namespace nano
         {
                 for (tensor_size_t i = 0; i < m_dims; ++ i)
                 {
-                       m_weights(i) = scalar_t(i + 1);
+                       m_weights(i) = scalar_t(i + 1) / scalar_t(dims);
                 }
         }
 
@@ -59,8 +59,12 @@ namespace nano
                 return util::norm(x) < scalar_t(10);
         }
 
-        bool function_dixon_price_t::is_minima(const vector_t&, const scalar_t) const
+        bool function_dixon_price_t::is_minima(const vector_t& x, const scalar_t epsilon) const
         {
+                const auto p = problem();
+
+                return std::fabs(p(x)) < epsilon;
+
                 // NB: there are quite a few local minima that are not easy to compute!
                 return true;
 

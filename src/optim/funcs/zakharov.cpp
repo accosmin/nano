@@ -9,7 +9,7 @@ namespace nano
         {
                 for (tensor_size_t i = 0; i < dims; i ++)
                 {
-                        m_weights(i) = static_cast<scalar_t>(i / 2);
+                        m_weights(i) = scalar_t(i) / scalar_t(2) / scalar_t(dims);
                 }
         }
 
