@@ -79,7 +79,7 @@ namespace nano
                                 op(function_sargan_t(dims));
                                 op(function_powell_t(dims));
                                 op(function_zakharov_t(dims));
-                                op(function_rosenbrock_t(dims));
+                                if (dims > 1) op(function_rosenbrock_t(dims));
                                 op(function_exponential_t(dims));
                                 op(function_dixon_price_t(dims));
                                 op(function_chung_reynolds_t(dims));
