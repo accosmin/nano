@@ -74,7 +74,7 @@ namespace nano
                         {
                         case test_type::all:
                                 op(function_trid_t(dims));
-                                op(function_qing_t(dims));
+                                if (dims > 1) op(function_qing_t(dims));
                                 op(function_cauchy_t(dims));
                                 op(function_sargan_t(dims));
                                 op(function_powell_t(dims));
