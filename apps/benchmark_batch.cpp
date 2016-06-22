@@ -15,14 +15,11 @@
 
 using namespace nano;
 
-template
-<
-        typename tostats
->
-static void check_function(const function_t& function, const size_t trials, const size_t iterations,
+template <typename tostats>
+static void check_function(
+        const function_t& function, const size_t trials, const size_t iterations, const scalar_t epsilon,
         tostats& gstats)
 {
-        const auto epsilon = epsilon0<scalar_t>();
         const auto dims = function.problem().size();
 
         random_t<scalar_t> rgen(scalar_t(-1), scalar_t(+1));
@@ -36,38 +33,13 @@ static void check_function(const function_t& function, const size_t trials, cons
         }
 
         // optimizers to try
-        const auto optimizers =
-        {
-                batch_optimizer::GD,
-                batch_optimizer::CGD_CD,
-                batch_optimizer::CGD_DY,
-                batch_optimizer::CGD_FR,
-                batch_optimizer::CGD_HS,
-                batch_optimizer::CGD_LS,
-                batch_optimizer::CGD_DYCD,
-                batch_optimizer::CGD_DYHS,
-                batch_optimizer::CGD_PRP,
-                batch_optimizer::CGD_N,
-                batch_optimizer::LBFGS
-        };
+        const auto optimizers = enum_values<batch_optimizer>();
 
         // line search initialization methods to try
-        const auto ls_initializers =
-        {
-                ls_initializer::unit,
-                ls_initializer::quadratic,
-                ls_initializer::consistent
-        };
+        const auto ls_initializers = enum_values<ls_initializer>();
 
         // line search strategies to try
-        const auto ls_strategies =
-        {
-                ls_strategy::backtrack_armijo,
-                ls_strategy::backtrack_wolfe,
-                ls_strategy::backtrack_strong_wolfe,
-                ls_strategy::interpolation,
-                ls_strategy::cg_descent
-        };
+        const auto ls_strategies = enum_values<ls_strategy>();
 
         // per-problem statistics
         tostats stats;
@@ -88,15 +60,7 @@ static void check_function(const function_t& function, const size_t trials, cons
                         to_string(ls_init) + "][" +
                         to_string(ls_strat) + "]";
 
-                const scalars_t thres =
-                {
-                        epsilon0<scalar_t>(),
-                        epsilon1<scalar_t>(),
-                        epsilon2<scalar_t>(),
-                        epsilon3<scalar_t>()
-                };
-
-                benchmark::benchmark_function(function, x0s, op, name, thres, stats, gstats);
+                benchmark::benchmark_function(function, x0s, op, name, stats, gstats);
         }
 
         // show per-problem statistics
@@ -113,6 +77,7 @@ int main(int argc, const char* argv[])
         cmdline.add("", "max-dims",     "maximum number of dimensions for each test function (if feasible)", "1000");
         cmdline.add("", "trials",       "number of random trials for each test function", "100");
         cmdline.add("", "iterations",   "maximum number of iterations", "8000");
+        cmdline.add("", "epsilon",      "convergence criteria", nano::epsilon2<scalar_t>());
 
         cmdline.process(argc, argv);
 
@@ -121,34 +86,20 @@ int main(int argc, const char* argv[])
         const auto max_dims = cmdline.get<tensor_size_t>("max-dims");
         const auto trials = cmdline.get<size_t>("trials");
         const auto iterations = cmdline.get<size_t>("iterations");
+        const auto epsilon = cmdline.get<scalar_t>("epsilon");
 
         std::map<std::string, benchmark::optimizer_stat_t> gstats;
 
         foreach_test_function<test_type::all>(min_dims, max_dims, [&] (const function_t& function)
         {
-                check_function(function, trials, iterations, gstats);
+                check_function(function, trials, iterations, epsilon, gstats);
         });
 
         // show global statistics
         benchmark::show_table(std::string(), gstats);
 
         // show per-optimizer statistics
-        const auto optimizers =
-        {
-                batch_optimizer::GD,
-                batch_optimizer::CGD_CD,
-                batch_optimizer::CGD_DY,
-                batch_optimizer::CGD_FR,
-                batch_optimizer::CGD_HS,
-                batch_optimizer::CGD_LS,
-                batch_optimizer::CGD_DYCD,
-                batch_optimizer::CGD_DYHS,
-                batch_optimizer::CGD_PRP,
-                batch_optimizer::CGD_N,
-                batch_optimizer::LBFGS
-        };
-
-        for (batch_optimizer optimizer : optimizers)
+        for (const batch_optimizer optimizer : enum_values<batch_optimizer>())
         {
                 const auto name = to_string(optimizer) + "[";
 

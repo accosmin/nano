@@ -13,11 +13,9 @@
 
 using namespace nano;
 
-template
-<
-        typename tostats
->
-void check_function(const function_t& function, const size_t trials, const size_t epochs, const size_t epoch_size,
+template <typename tostats>
+void check_function(
+        const function_t& function, const size_t trials, const size_t epochs, const size_t epoch_size,
         tostats& gstats)
 {
         const auto dims = function.problem().size();
@@ -33,18 +31,7 @@ void check_function(const function_t& function, const size_t trials, const size_
         }
 
         // optimizers to try
-        const auto optimizers =
-        {
-                stoch_optimizer::SG,
-                stoch_optimizer::NGD,
-                stoch_optimizer::SGM,
-                stoch_optimizer::AG,
-                stoch_optimizer::AGFR,
-                stoch_optimizer::AGGR,
-                stoch_optimizer::ADAGRAD,
-                stoch_optimizer::ADADELTA,
-                stoch_optimizer::ADAM
-        };
+        const auto optimizers = enum_values<stoch_optimizer>();
 
         // per-problem statistics
         tostats stats;
@@ -60,15 +47,7 @@ void check_function(const function_t& function, const size_t trials, const size_
                 const auto name =
                         to_string(optimizer);
 
-                const scalars_t thres =
-                {
-                        epsilon0<scalar_t>(),
-                        epsilon1<scalar_t>(),
-                        epsilon2<scalar_t>(),
-                        epsilon3<scalar_t>()
-                };
-
-                benchmark::benchmark_function(function, x0s, op, name, thres, stats, gstats);
+                benchmark::benchmark_function(function, x0s, op, name, stats, gstats);
         }
 
         // show per-problem statistics

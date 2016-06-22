@@ -13,19 +13,9 @@ namespace benchmark
 
         struct optimizer_stat_t
         {
-                explicit optimizer_stat_t(const scalars_t& gthres =
-                        {scalar_t(1e-12), scalar_t(1e-10), scalar_t(1e-8), scalar_t(1e-6)}) :
-                        m_gthres(gthres)
-                {
-                        assert(gthres.size() == 4);
-                }
-
-                scalars_t         m_gthres;     ///< thresholds for the convergence criterias
                 stats_t<scalar_t> m_crits;      ///< convergence criteria
-                stats_t<scalar_t> m_fail0s;     ///< #convergence failures
-                stats_t<scalar_t> m_fail1s;     ///< #convergence failures
-                stats_t<scalar_t> m_fail2s;     ///< #convergence failures
-                stats_t<scalar_t> m_fail3s;     ///< #convergence failures
+                stats_t<scalar_t> m_cfails;     ///< #convergence failures
+                stats_t<scalar_t> m_ifails;     ///< #internal failures
                 stats_t<scalar_t> m_iters;      ///< #iterations
                 stats_t<scalar_t> m_fcalls;     ///< #function value calls
                 stats_t<scalar_t> m_gcalls;     ///< #gradient calls
@@ -51,16 +41,12 @@ namespace benchmark
         {
                 assert(!ostats.empty());
 
-                const auto gthres = ostats.begin()->second.m_gthres;
-
                 // show global statistics
                 nano::table_t table(nano::align(table_name.empty() ? "optimizer" : table_name, 24));
                 table.header() << "cost"
                                << "|grad|/|fval|"
-                               << ("#>1e-" + nano::to_string(static_cast<size_t>(-std::log10(gthres[3]))))
-                               << ("#>1e-" + nano::to_string(static_cast<size_t>(-std::log10(gthres[2]))))
-                               << ("#>1e-" + nano::to_string(static_cast<size_t>(-std::log10(gthres[1]))))
-                               << ("#>1e-" + nano::to_string(static_cast<size_t>(-std::log10(gthres[0]))))
+                               << "#fails (convergence)"
+                               << "#fails (internal)"
                                << "#iters"
                                << "#fcalls"
                                << "#gcalls"
@@ -73,17 +59,15 @@ namespace benchmark
 
                         table.append(name) << static_cast<size_t>(stat.m_fcalls.avg() + 2 * stat.m_gcalls.avg())
                                            << stat.m_crits.avg()
-                                           << static_cast<size_t>(stat.m_fail3s.sum())
-                                           << static_cast<size_t>(stat.m_fail2s.sum())
-                                           << static_cast<size_t>(stat.m_fail1s.sum())
-                                           << static_cast<size_t>(stat.m_fail0s.sum())
+                                           << static_cast<size_t>(stat.m_cfails.sum())
+                                           << static_cast<size_t>(stat.m_ifails.sum())
                                            << static_cast<size_t>(stat.m_iters.avg())
                                            << static_cast<size_t>(stat.m_fcalls.avg())
                                            << static_cast<size_t>(stat.m_gcalls.avg())
                                            << stat.m_speeds.avg();
                 }
 
-                table.sort<scalar_t>(table_t::sorting::asc, {2, 3, 0});
+                table.sort<scalar_t>(table_t::sorting::asc, {2, 0});
                 table.print(std::cout);
         }
 
@@ -95,17 +79,14 @@ namespace benchmark
         void benchmark_function(
                 const function_t& func, const std::vector<vector_t>& x0s,
                 const toptimizer& op, const std::string& name,
-                const scalars_t& gthres,
                 tostats& stats, tostats& gstats)
         {
                 const auto trials = x0s.size();
 
                 scalars_t crits(trials);
                 scalars_t iters(trials);
-                scalars_t fail0s(trials);
-                scalars_t fail1s(trials);
-                scalars_t fail2s(trials);
-                scalars_t fail3s(trials);
+                scalars_t cfails(trials);
+                scalars_t ifails(trials);
                 scalars_t fcalls(trials);
                 scalars_t gcalls(trials);
                 scalars_t speeds(trials);
@@ -131,10 +112,8 @@ namespace benchmark
                                 // update stats
                                 crits[t] = g;
                                 iters[t] = static_cast<scalar_t>(state.m_iterations);
-                                fail0s[t] = !state.converged(gthres[0]) ? 1 : 0;
-                                fail1s[t] = !state.converged(gthres[1]) ? 1 : 0;
-                                fail2s[t] = !state.converged(gthres[2]) ? 1 : 0;
-                                fail3s[t] = !state.converged(gthres[3]) ? 1 : 0;
+                                cfails[t] = (state.m_status != state_t::status::converged) ? 1 : 0;
+                                ifails[t] = (state.m_status == state_t::status::failed) ? 1 : 0;
                                 fcalls[t] = static_cast<scalar_t>(state.m_fcalls);
                                 gcalls[t] = static_cast<scalar_t>(state.m_gcalls);
                                 speeds[t] = speed;
@@ -148,26 +127,20 @@ namespace benchmark
 
                 // update per-problem statistics
                 optimizer_stat_t& stat = stats[name];
-                stat.m_gthres = gthres;
                 stat.m_crits(make_stats(crits, crits));
                 stat.m_iters(make_stats(iters, crits));
-                stat.m_fail0s(make_stats(fail0s, crits));
-                stat.m_fail1s(make_stats(fail1s, crits));
-                stat.m_fail2s(make_stats(fail2s, crits));
-                stat.m_fail3s(make_stats(fail3s, crits));
+                stat.m_cfails(make_stats(cfails, crits));
+                stat.m_ifails(make_stats(ifails, crits));
                 stat.m_speeds(make_stats(speeds, crits));
                 stat.m_fcalls(make_stats(fcalls, crits));
                 stat.m_gcalls(make_stats(gcalls, crits));
 
                 // update global statistics
                 optimizer_stat_t& gstat = gstats[name];
-                gstat.m_gthres = gthres;
                 gstat.m_crits(stat.m_crits);
                 gstat.m_iters(stat.m_iters);
-                gstat.m_fail0s(stat.m_fail0s);
-                gstat.m_fail1s(stat.m_fail1s);
-                gstat.m_fail2s(stat.m_fail2s);
-                gstat.m_fail3s(stat.m_fail3s);
+                gstat.m_cfails(stat.m_cfails);
+                gstat.m_ifails(stat.m_ifails);
                 gstat.m_speeds(stat.m_speeds);
                 gstat.m_fcalls(stat.m_fcalls);
                 gstat.m_gcalls(stat.m_gcalls);

@@ -14,7 +14,7 @@ namespace nano
         std::map<tenum, string_t> enum_string();
 
         ///
-        /// \brief collect the names for each enum value
+        /// \brief collect the associated names for an enum
         ///
         template <typename tenum>
         strings_t enum_strings()
@@ -23,6 +23,20 @@ namespace nano
                 for (const auto& elem : enum_string<tenum>())
                 {
                         ret.push_back(elem.second);
+                }
+                return ret;
+        }
+
+        ///
+        /// \brief collect the values for an enum
+        ///
+        template <typename tenum>
+        std::vector<tenum> enum_values()
+        {
+                std::vector<tenum> ret;
+                for (const auto& elem : enum_string<tenum>())
+                {
+                        ret.push_back(elem.first);
                 }
                 return ret;
         }
