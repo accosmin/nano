@@ -17,7 +17,7 @@ static void check_function(const function_t& function)
 
         const auto dims = function.problem().size();
 
-        random_t<scalar_t> rgen(scalar_t(-1), scalar_t(+1));
+        auto rgen = make_rng(scalar_t(-1), scalar_t(+1));
 
         // generate fixed random trials
         std::vector<vector_t> x0s(trials);
@@ -33,9 +33,9 @@ static void check_function(const function_t& function)
                 batch_optimizer::GD,
 
                 batch_optimizer::CGD,
-                batch_optimizer::CGD_CD,
-                batch_optimizer::CGD_DY,
-                batch_optimizer::CGD_FR,
+                //batch_optimizer::CGD_CD,
+                //batch_optimizer::CGD_DY,
+                //batch_optimizer::CGD_FR,
                 //batch_optimizer::CGD_HS,
                 batch_optimizer::CGD_LS,
                 batch_optimizer::CGD_N,

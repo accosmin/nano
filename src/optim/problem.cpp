@@ -76,7 +76,7 @@ namespace nano
         {
                 // accuracy epsilon as defined in:
                 //      see "Numerical optimization", Nocedal & Wright, 2nd edition, p.197
-                const auto dx = std::cbrt(scalar_t(10) * std::numeric_limits<scalar_t>::epsilon());
+                const auto dx = std::sqrt(scalar_t(10) * std::numeric_limits<scalar_t>::epsilon());
 
                 const auto n = size();
 

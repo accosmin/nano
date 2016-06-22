@@ -15,6 +15,8 @@ namespace nano
 
         problem_t function_rosenbrock_t::problem() const
         {
+                const auto ct = scalar_t(100);
+
                 const auto fn_size = [=] ()
                 {
                         return m_dims;
@@ -25,7 +27,7 @@ namespace nano
                         scalar_t fx = 0;
                         for (tensor_size_t i = 0; i + 1 < m_dims; i ++)
                         {
-                                fx += 100 * nano::square(x(i + 1) - x(i) * x(i)) + nano::square(x(i) - 1);
+                                fx += ct * nano::square(x(i + 1) - x(i) * x(i)) + nano::square(x(i) - 1);
                         }
 
                         return fx;
@@ -38,8 +40,8 @@ namespace nano
                         for (tensor_size_t i = 0; i + 1 < m_dims; i ++)
                         {
                                 gx(i) += 2 * (x(i) - 1);
-                                gx(i) += 100 * 2 * (x(i + 1) - x(i) * x(i)) * (- 2 * x(i));
-                                gx(i + 1) += 100 * 2 * (x(i + 1) - x(i) * x(i));
+                                gx(i) += ct * 2 * (x(i + 1) - x(i) * x(i)) * (- 2 * x(i));
+                                gx(i + 1) += ct * 2 * (x(i + 1) - x(i) * x(i));
                         }
 
                         return fn_fval(x);

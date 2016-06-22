@@ -1,12 +1,14 @@
 #pragma once
 
 #include "funcs/trid.h"
+#include "funcs/qing.h"
 #include "funcs/beale.h"
 #include "funcs/booth.h"
 #include "funcs/cauchy.h"
 #include "funcs/sphere.h"
 #include "funcs/matyas.h"
 #include "funcs/powell.h"
+#include "funcs/sargan.h"
 #include "funcs/colville.h"
 #include "funcs/zakharov.h"
 #include "funcs/mccormick.h"
@@ -16,9 +18,11 @@
 #include "funcs/sum_squares.h"
 #include "funcs/dixon_price.h"
 #include "funcs/bohachevsky.h"
+#include "funcs/chung_reynolds.h"
 #include "funcs/goldstein_price.h"
 #include "funcs/styblinski_tang.h"
 #include "funcs/rotated_ellipsoid.h"
+#include "funcs/schumer_steiglitz.h"
 
 namespace nano
 {
@@ -51,8 +55,6 @@ namespace nano
                                 op(function_matyas_t());
                                 op(function_colville_t());
                                 op(function_mccormick_t());
-                                op(function_rosenbrock_t(2));
-                                op(function_rosenbrock_t(3));
                                 op(function_3hump_camel_t());
                                 op(function_goldstein_price_t());
                                 op(function_himmelblau_t());
@@ -72,18 +74,22 @@ namespace nano
                         {
                         case test_type::all:
                                 op(function_trid_t(dims));
+                                op(function_qing_t(dims));
                                 op(function_powell_t(dims));
                                 op(function_zakharov_t(dims));
+                                op(function_rosenbrock_t(dims));
                                 op(function_dixon_price_t(dims));
+                                op(function_chung_reynolds_t(dims));
                                 op(function_styblinski_tang_t(dims));
                                 // NB: fallthrough!
 
                         case test_type::easy:
                         default:
-
                                 op(function_cauchy_t(dims));
+                                op(function_sargan_t(dims));
                                 op(function_sphere_t(dims));
                                 op(function_sum_squares_t(dims));
+                                op(function_schumer_steiglitz_t(dims));
                                 op(function_rotated_ellipsoid_t(dims));
                                 break;
                         }
