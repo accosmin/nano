@@ -14,8 +14,8 @@
 #include "funcs/mccormick.h"
 #include "funcs/himmelblau.h"
 #include "funcs/rosenbrock.h"
+#include "funcs/exponential.h"
 #include "funcs/3hump_camel.h"
-#include "funcs/sum_squares.h"
 #include "funcs/dixon_price.h"
 #include "funcs/bohachevsky.h"
 #include "funcs/chung_reynolds.h"
@@ -75,9 +75,12 @@ namespace nano
                         case test_type::all:
                                 op(function_trid_t(dims));
                                 op(function_qing_t(dims));
+                                op(function_cauchy_t(dims));
+                                op(function_sargan_t(dims));
                                 op(function_powell_t(dims));
                                 op(function_zakharov_t(dims));
                                 op(function_rosenbrock_t(dims));
+                                op(function_exponential_t(dims));
                                 op(function_dixon_price_t(dims));
                                 op(function_chung_reynolds_t(dims));
                                 op(function_styblinski_tang_t(dims));
@@ -85,10 +88,7 @@ namespace nano
 
                         case test_type::easy:
                         default:
-                                op(function_cauchy_t(dims));
-                                op(function_sargan_t(dims));
                                 op(function_sphere_t(dims));
-                                op(function_sum_squares_t(dims));
                                 op(function_schumer_steiglitz_t(dims));
                                 op(function_rotated_ellipsoid_t(dims));
                                 break;

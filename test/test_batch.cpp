@@ -82,7 +82,10 @@ static void check_function(const function_t& function)
                                   << ": x = [" << x0.transpose() << "]/[" << x.transpose() << "]"
                                   << ", f = " << f0 << "/" << f
                                   << ", g = " << g
-                                  << ", i = " << state.m_iterations << ".\n";
+                                  << ", i = " << state.m_iterations
+                                  << ", status = " << to_string(state.m_status) << ".\n";
+
+                        NANO_CHECK(state.m_status == state_t::status::converged);
 
                         // check function value decrease
                         NANO_CHECK_LESS(f, f0);

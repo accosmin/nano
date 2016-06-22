@@ -1,5 +1,6 @@
-#include "rotated_ellipsoid.h"
 #include "util.hpp"
+#include "math/numeric.hpp"
+#include "rotated_ellipsoid.h"
 
 namespace nano
 {
@@ -15,7 +16,7 @@ namespace nano
 
         std::string function_rotated_ellipsoid_t::name() const
         {
-                return "rotated ellipsoid" + std::to_string(m_dims) + "D";
+                return "Rotated Hyper-Ellipsoid" + std::to_string(m_dims) + "D";
         }
 
         problem_t function_rotated_ellipsoid_t::problem() const
@@ -27,14 +28,34 @@ namespace nano
 
                 const auto fn_fval = [=] (const vector_t& x)
                 {
-                        return (m_weights.array() * x.array().square()).sum();
+                        scalar_t fx = 0, fi = 0;
+                        for (auto i = 0; i < m_dims; i ++)
+                        {
+                                fi += x(i);
+                                fx += nano::square(fi);
+                        }
+
+                        return fx;
                 };
 
                 const auto fn_grad = [=] (const vector_t& x, vector_t& gx)
                 {
-                        gx = 2 * m_weights.array() * x.array();
+                        gx.resize(m_dims);
 
-                        return fn_fval(x);
+                        scalar_t fx = 0, fi = 0;
+                        for (auto i = 0; i < m_dims; i ++)
+                        {
+                                fi += x(i);
+                                fx += nano::square(fi);
+                                gx(i) = 2 * fi;
+                        }
+
+                        for (auto i = m_dims - 2; i >= 0; i --)
+                        {
+                                gx(i) += gx(i + 1);
+                        }
+
+                        return fx;
                 };
 
                 return {fn_size, fn_fval, fn_grad};
@@ -42,7 +63,7 @@ namespace nano
 
         bool function_rotated_ellipsoid_t::is_valid(const vector_t& x) const
         {
-                return util::norm(x) < 65.536;
+                return util::norm(x) < 100;
         }
 
         bool function_rotated_ellipsoid_t::is_minima(const vector_t& x, const scalar_t epsilon) const

@@ -10,7 +10,7 @@ namespace nano
 
         std::string function_sphere_t::name() const
         {
-                return "sphere" + std::to_string(m_dims) + "D";
+                return "Sphere" + std::to_string(m_dims) + "D";
         }
 
         problem_t function_sphere_t::problem() const

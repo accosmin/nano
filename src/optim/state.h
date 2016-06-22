@@ -3,6 +3,7 @@
 #include <limits>
 #include "arch.h"
 #include "tensor.h"
+#include "text/enum_string.hpp"
 
 namespace nano
 {
@@ -129,5 +130,19 @@ namespace nano
 
                 return f1 < f2;
         }
+
+        template <>
+        inline std::map<state_t::status, string_t> enum_string<state_t::status>()
+        {
+                return
+                {
+                        { state_t::status::converged,   "converged" },
+                        { state_t::status::max_iters,   "max_iters" },
+                        { state_t::status::failed,      "failed" },
+                        { state_t::status::stopped,     "stopped" }
+                };
+        }
+
+
 }
 

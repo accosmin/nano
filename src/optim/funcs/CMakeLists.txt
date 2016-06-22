@@ -7,6 +7,7 @@ list(APPEND liboptim_sources
         ${CMAKE_CURRENT_SOURCE_DIR}/chung_reynolds.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/colville.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/dixon_price.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/exponential.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/goldstein_price.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/himmelblau.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/matyas.cpp
@@ -19,7 +20,6 @@ list(APPEND liboptim_sources
         ${CMAKE_CURRENT_SOURCE_DIR}/schumer_steiglitz.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/sphere.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/styblinski_tang.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/sum_squares.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/trid.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/zakharov.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/util.hpp)
