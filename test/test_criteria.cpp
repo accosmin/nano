@@ -65,7 +65,7 @@ NANO_CASE(evaluate)
                 model->save_params(x);
 
                 NANO_CHECK_GREATER(problem(x), scalar_t(0));
-                NANO_CHECK_LESS(problem.grad_accuracy(x), epsilon1<scalar_t>());
+                NANO_CHECK_LESS(problem.grad_accuracy(x), epsilon2<scalar_t>());
         }
 }
 
