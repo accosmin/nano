@@ -15,8 +15,6 @@ namespace nano
 
         problem_t function_chung_reynolds_t::problem() const
         {
-                const auto scale = scalar_t(1) / scalar_t(m_dims);
-
                 const auto fn_size = [=] ()
                 {
                         return m_dims;
@@ -24,15 +22,15 @@ namespace nano
 
                 const auto fn_fval = [=] (const vector_t& x)
                 {
-                        const auto u = scale * x.array().square().sum();
+                        const auto u = x.array().square().sum();
                         return u * u;
                 };
 
                 const auto fn_grad = [=] (const vector_t& x, vector_t& gx)
                 {
-                        const auto u = scale * x.array().square().sum();
+                        const auto u = x.array().square().sum();
 
-                        gx = (4 * scale * u) * x;
+                        gx = (4 * u) * x;
 
                         return u * u;
                 };
