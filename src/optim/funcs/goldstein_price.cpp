@@ -55,10 +55,8 @@ namespace nano
                         const auto z3db = +48 - 36 * a + 54 * b;
 
                         gx.resize(2);
-                        gx(0) = u * z2 * (2 * z2da * z3 + z2 * z3da) +
-                                v * z0 * (2 * z0da * z1 + z0 * z1da);
-                        gx(1) = u * z2 * (2 * z2db * z3 + z2 * z3db) +
-                                v * z0 * (2 * z0db * z1 + z0 * z1db);
+                        gx(0) = u * z2 * (2 * z2da * z3 + z2 * z3da) + v * z0 * (2 * z0da * z1 + z0 * z1da);
+                        gx(1) = u * z2 * (2 * z2db * z3 + z2 * z3db) + v * z0 * (2 * z0db * z1 + z0 * z1db);
 
                         return u * v;
                 };

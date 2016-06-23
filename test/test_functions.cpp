@@ -11,10 +11,8 @@ static void test_function(const function_t& function)
         std::cout << function.name() << std::endl;
 
         const auto trials = size_t(1000);
-        const auto epsilon = epsilon3<scalar_t>();
 
         const auto dims = function.problem().size();
-
         NANO_CHECK_GREATER(dims, 0);
         NANO_CHECK_GREATER_EQUAL(dims, function.min_dims());
         NANO_CHECK_GREATER_EQUAL(function.max_dims(), dims);
@@ -29,7 +27,7 @@ static void test_function(const function_t& function)
 
                 const auto problem = function.problem();
                 NANO_REQUIRE_EQUAL(problem.size(), dims);
-//                NANO_CHECK_LESS(problem.grad_accuracy(x0), epsilon);
+                NANO_CHECK_LESS(problem.grad_accuracy(x0), epsilon3<scalar_t>());
                 is_convex = is_convex && problem.is_convex(x0, x1, 10);
         }
 

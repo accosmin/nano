@@ -15,7 +15,7 @@ namespace nano
 
         problem_t function_zakharov_t::problem() const
         {
-                const auto bias = vector_t::LinSpaced(m_dims, scalar_t(1) / 2, scalar_t(m_dims) / 2);
+                const auto bias = vector_t::LinSpaced(m_dims, scalar_t(1) / scalar_t(2), scalar_t(m_dims) / scalar_t(2));
 
                 const auto fn_size = [=] ()
                 {
@@ -35,7 +35,7 @@ namespace nano
                         const scalar_t u = x.array().square().sum();
                         const scalar_t v = (bias.array() * x.array()).sum();
 
-                        gx = 2 * x.array() + (2 * v + 4 * nano::cube(v));
+                        gx = 2 * x.array() + (2 * v + 4 * nano::cube(v)) * bias.array();
 
                         return u + nano::square(v) + nano::quartic(v);
                 };
