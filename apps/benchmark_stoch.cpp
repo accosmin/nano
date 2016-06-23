@@ -75,7 +75,7 @@ int main(int argc, const char* argv[])
 
         std::map<std::string, benchmark::optimizer_stat_t> gstats;
 
-        foreach_test_function<test_type::all>(min_dims, max_dims, [&] (const function_t& function)
+        foreach_test_function(make_functions(min_dims, max_dims), [&] (const function_t& function)
         {
                 check_function(function, trials, epochs, epoch_size, gstats);
         });

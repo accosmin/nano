@@ -47,4 +47,19 @@ namespace nano
         {
                 return util::distance(x, vector_t::Zero(m_dims)) < epsilon;
         }
+
+        bool function_chung_reynolds_t::is_convex() const
+        {
+                return true;
+        }
+
+        tensor_size_t function_chung_reynolds_t::min_dims() const
+        {
+                return 1;
+        }
+
+        tensor_size_t function_chung_reynolds_t::max_dims() const
+        {
+                return 100 * 1000;
+        }
 }

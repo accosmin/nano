@@ -1,10 +1,10 @@
 #include "tensor.h"
 #include "math/abs.hpp"
 #include "text/table.h"
+#include "optim/test.h"
 #include "text/align.hpp"
 #include "math/clamp.hpp"
 #include "math/stats.hpp"
-#include "optim/test.hpp"
 #include "thread/loopi.hpp"
 
 namespace benchmark

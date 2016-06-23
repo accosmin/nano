@@ -96,5 +96,24 @@ namespace nano
                         g(i) = (m_opfval(xp) - m_opfval(xn)) / (xp(i) - xn(i));
                 }
         }
+
+        bool problem_t::is_convex(const vector_t& x1, const vector_t& x2, const int steps) const
+        {
+                assert(steps > 2);
+
+                const auto f1 = operator()(x1);
+                const auto f2 = operator()(x2);
+
+                for (int step = 1; step < steps; step ++)
+                {
+                        const auto t = scalar_t(step) / scalar_t(steps);
+                        if (operator()(t * x1 + (1 - t) * x2) > t * f1 + (1 - t) * f2)
+                        {
+                                return false;
+                        }
+                }
+
+                return true;
+        }
 }
 

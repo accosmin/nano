@@ -4,13 +4,8 @@
 namespace nano
 {
         function_dixon_price_t::function_dixon_price_t(const tensor_size_t dims) :
-                m_dims(dims),
-                m_weights(dims)
+                m_dims(dims)
         {
-                for (tensor_size_t i = 0; i < m_dims; ++ i)
-                {
-                       m_weights(i) = scalar_t(i + 1) / scalar_t(dims);
-                }
         }
 
         std::string function_dixon_price_t::name() const
@@ -20,6 +15,8 @@ namespace nano
 
         problem_t function_dixon_price_t::problem() const
         {
+                const auto bias = vector_t::LinSpaced(m_dims, scalar_t(1), scalar_t(m_dims));
+
                 const auto fn_size = [=] ()
                 {
                         return m_dims;
@@ -31,7 +28,7 @@ namespace nano
                         const auto xsegm1 = x.segment(1, m_dims - 1);
 
                         return  nano::square(x(0) - 1) +
-                                (m_weights.segment(1, m_dims - 1).array() *
+                                (bias.segment(1, m_dims - 1).array() *
                                 (2 * xsegm1.array().square() - xsegm0.array()).square()).sum();
                 };
 
@@ -39,7 +36,7 @@ namespace nano
                 {
                         const auto xsegm0 = x.segment(0, m_dims - 1);
                         const auto xsegm1 = x.segment(1, m_dims - 1);
-                        const auto weight = m_weights.segment(1, m_dims - 1).array() *
+                        const auto weight = bias.segment(1, m_dims - 1).array() *
                                 2 * (2 * xsegm1.array().square() - xsegm0.array());
 
                         gx.resize(m_dims);
@@ -75,5 +72,20 @@ namespace nano
 //                        }
 
 //                        return distance(x, xmin) < epsilon;
+        }
+
+        bool function_dixon_price_t::is_convex() const
+        {
+                return false;
+        }
+
+        tensor_size_t function_dixon_price_t::min_dims() const
+        {
+                return 2;
+        }
+
+        tensor_size_t function_dixon_price_t::max_dims() const
+        {
+                return 100 * 1000;
         }
 }

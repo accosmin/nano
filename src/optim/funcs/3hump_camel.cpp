@@ -69,4 +69,19 @@ namespace nano
 
                 return util::check_close(x, xmins, epsilon);
         }
+
+        bool function_3hump_camel_t::is_convex() const
+        {
+                return false;
+        }
+
+        tensor_size_t function_3hump_camel_t::min_dims() const
+        {
+                return 2;
+        }
+
+        tensor_size_t function_3hump_camel_t::max_dims() const
+        {
+                return 2;
+        }
 }

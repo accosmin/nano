@@ -53,4 +53,19 @@ namespace nano
 
                 return util::distance(x, xmin) < epsilon;
         }
+
+        bool function_trid_t::is_convex() const
+        {
+                return true;
+        }
+
+        tensor_size_t function_trid_t::min_dims() const
+        {
+                return 2;
+        }
+
+        tensor_size_t function_trid_t::max_dims() const
+        {
+                return 100 * 1000;
+        }
 }

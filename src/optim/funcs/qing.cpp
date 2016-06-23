@@ -53,4 +53,19 @@ namespace nano
                 }
                 return true;
         }
+
+        bool function_qing_t::is_convex() const
+        {
+                return true;
+        }
+
+        tensor_size_t function_qing_t::min_dims() const
+        {
+                return 2;
+        }
+
+        tensor_size_t function_qing_t::max_dims() const
+        {
+                return 100 * 1000;
+        }
 }

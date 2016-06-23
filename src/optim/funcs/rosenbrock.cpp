@@ -79,4 +79,19 @@ namespace nano
 
                 return false;
         }
+
+        bool function_rosenbrock_t::is_convex() const
+        {
+                return false;
+        }
+
+        tensor_size_t function_rosenbrock_t::min_dims() const
+        {
+                return 2;
+        }
+
+        tensor_size_t function_rosenbrock_t::max_dims() const
+        {
+                return 100 * 1000;
+        }
 }

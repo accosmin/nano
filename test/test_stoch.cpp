@@ -1,5 +1,5 @@
 #include "unit_test.hpp"
-#include "optim/test.hpp"
+#include "optim/test.h"
 #include "optim/stoch.hpp"
 #include "math/random.hpp"
 #include "math/numeric.hpp"
@@ -95,10 +95,7 @@ NANO_BEGIN_MODULE(test_stoch_optimizers)
 
 NANO_CASE(evaluate)
 {
-        foreach_test_function<test_type::easy>(1, 4, [] (const auto& function)
-        {
-                check_function(function);
-        });
+        foreach_test_function(make_convex_functions(1, 4), check_function);
 }
 
 NANO_END_MODULE()

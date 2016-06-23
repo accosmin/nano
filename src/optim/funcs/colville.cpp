@@ -12,7 +12,7 @@ namespace nano
         {
                 const auto fn_size = [=] ()
                 {
-                        return vector_t::Index(4);
+                        return 4;
                 };
 
                 const auto fn_fval = [=] (const vector_t& x)
@@ -58,5 +58,20 @@ namespace nano
         bool function_colville_t::is_minima(const vector_t& x, const scalar_t epsilon) const
         {
                 return util::distance(x, vector_t::Ones(4)) < epsilon;
+        }
+
+        bool function_colville_t::is_convex() const
+        {
+                return false;
+        }
+
+        tensor_size_t function_colville_t::min_dims() const
+        {
+                return 4;
+        }
+
+        tensor_size_t function_colville_t::max_dims() const
+        {
+                return 4;
         }
 }

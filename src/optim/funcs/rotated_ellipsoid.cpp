@@ -5,13 +5,8 @@
 namespace nano
 {
         function_rotated_ellipsoid_t::function_rotated_ellipsoid_t(const tensor_size_t dims) :
-                m_dims(dims),
-                m_weights(dims)
+                m_dims(dims)
         {
-                for (tensor_size_t i = 0; i < dims; i ++)
-                {
-                        m_weights(i) = static_cast<scalar_t>(dims - i);
-                }
         }
 
         std::string function_rotated_ellipsoid_t::name() const
@@ -69,5 +64,20 @@ namespace nano
         bool function_rotated_ellipsoid_t::is_minima(const vector_t& x, const scalar_t epsilon) const
         {
                 return util::distance(x, vector_t::Zero(m_dims)) < epsilon;
+        }
+
+        bool function_rotated_ellipsoid_t::is_convex() const
+        {
+                return true;
+        }
+
+        tensor_size_t function_rotated_ellipsoid_t::min_dims() const
+        {
+                return 1;
+        }
+
+        tensor_size_t function_rotated_ellipsoid_t::max_dims() const
+        {
+                return 100 * 1000;
         }
 }

@@ -65,4 +65,19 @@ namespace nano
         {
                 return util::distance(x, vector_t::Zero(m_dims)) < epsilon;
         }
+
+        bool function_powell_t::is_convex() const
+        {
+                return true;
+        }
+
+        tensor_size_t function_powell_t::min_dims() const
+        {
+                return 4;
+        }
+
+        tensor_size_t function_powell_t::max_dims() const
+        {
+                return 100 * 1000;
+        }
 }

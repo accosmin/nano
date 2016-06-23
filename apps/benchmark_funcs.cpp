@@ -1,5 +1,5 @@
 #include "text/table.h"
-#include "optim/test.hpp"
+#include "optim/test.h"
 #include "text/cmdline.h"
 #include "math/stats.hpp"
 #include "cortex/timer.h"
@@ -55,7 +55,7 @@ int main(int argc, const char* argv[])
         table_t table("function");
         table.header() << "f(x) [ns]" << "f(x, g) [ns]";
 
-        foreach_test_function<test_type::all>(min_dims, max_dims, [&] (const function_t& function)
+        foreach_test_function(make_functions(min_dims, max_dims), [&] (const function_t& function)
         {
                 eval_func(function, table);
         });

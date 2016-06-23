@@ -45,4 +45,19 @@ namespace nano
         {
                 return util::distance(x, vector_t::Zero(2)) < epsilon;
         }
+
+        bool function_matyas_t::is_convex() const
+        {
+                return true;
+        }
+
+        tensor_size_t function_matyas_t::min_dims() const
+        {
+                return 2;
+        }
+
+        tensor_size_t function_matyas_t::max_dims() const
+        {
+                return 2;
+        }
 }

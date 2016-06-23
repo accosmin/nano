@@ -59,4 +59,19 @@ namespace nano
 
                 return util::check_close(x, xmins, epsilon);
         }
+
+        bool function_himmelblau_t::is_convex() const
+        {
+                return false;
+        }
+
+        tensor_size_t function_himmelblau_t::min_dims() const
+        {
+                return 2;
+        }
+
+        tensor_size_t function_himmelblau_t::max_dims() const
+        {
+                return 2;
+        }
 }

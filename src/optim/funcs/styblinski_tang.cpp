@@ -53,4 +53,19 @@ namespace nano
 
                 return ok;
         }
+
+        bool function_styblinski_tang_t::is_convex() const
+        {
+                return false;
+        }
+
+        tensor_size_t function_styblinski_tang_t::min_dims() const
+        {
+                return 1;
+        }
+
+        tensor_size_t function_styblinski_tang_t::max_dims() const
+        {
+                return 100 * 1000;
+        }
 }

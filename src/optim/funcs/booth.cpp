@@ -12,7 +12,7 @@ namespace nano
         {
                 const auto fn_size = [=] ()
                 {
-                        return vector_t::Index(2);
+                        return 2;
                 };
 
                 const auto fn_fval = [=] (const vector_t& x)
@@ -55,6 +55,21 @@ namespace nano
                 };
 
                 return util::check_close(x, xmins, epsilon);
+        }
+
+        bool function_booth_t::is_convex() const
+        {
+                return true;
+        }
+
+        tensor_size_t function_booth_t::min_dims() const
+        {
+                return 2;
+        }
+
+        tensor_size_t function_booth_t::max_dims() const
+        {
+                return 2;
         }
 }
 

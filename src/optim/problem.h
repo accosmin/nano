@@ -71,6 +71,11 @@ namespace nano
                 ///
                 scalar_t grad_accuracy(const vector_t& x) const;
 
+                ///
+                /// \brief check if the function is convex along the [x1, x2] line
+                ///
+                bool is_convex(const vector_t& x1, const vector_t& x2, const int steps) const;
+
         private:
 
                 void eval_grad(const vector_t& x, vector_t& g) const;

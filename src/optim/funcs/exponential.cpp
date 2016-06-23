@@ -22,14 +22,14 @@ namespace nano
 
                 const auto fn_fval = [=] (const vector_t& x)
                 {
-                        return -std::exp(-scalar_t(0.5) * x.array().square().sum());
+                        return std::exp(scalar_t(0.5) * x.array().square().sum());
                 };
 
                 const auto fn_grad = [=] (const vector_t& x, vector_t& gx)
                 {
                         const auto fx = fn_fval(x);
 
-                        gx = -fx * x;
+                        gx = fx * x;
 
                         return fx;
                 };
@@ -45,5 +45,20 @@ namespace nano
         bool function_exponential_t::is_minima(const vector_t& x, const scalar_t epsilon) const
         {
                 return util::distance(x, vector_t::Zero(m_dims)) < epsilon;
+        }
+
+        bool function_exponential_t::is_convex() const
+        {
+                return true;
+        }
+
+        tensor_size_t function_exponential_t::min_dims() const
+        {
+                return 1;
+        }
+
+        tensor_size_t function_exponential_t::max_dims() const
+        {
+                return 100 * 1000;
         }
 }

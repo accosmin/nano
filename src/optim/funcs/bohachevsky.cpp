@@ -23,7 +23,7 @@ namespace nano
         {
                 const auto fn_size = [=] ()
                 {
-                        return tensor_size_t(2);
+                        return 2;
                 };
 
                 const auto fn_fval = [=] (const vector_t& x)
@@ -106,5 +106,20 @@ namespace nano
                 // NB: there are quite a few local minima that are not easy to compute!
                 return true;
 //                        return distance(x, vector_t::Zero(2)) < epsilon;
+        }
+
+        bool function_bohachevsky_t::is_convex() const
+        {
+                return false;
+        }
+
+        tensor_size_t function_bohachevsky_t::min_dims() const
+        {
+                return 2;
+        }
+
+        tensor_size_t function_bohachevsky_t::max_dims() const
+        {
+                return 2;
         }
 }
