@@ -56,7 +56,7 @@ namespace nano
 
         bool function_qing_t::is_convex() const
         {
-                return true;
+                return false;
         }
 
         tensor_size_t function_qing_t::min_dims() const
