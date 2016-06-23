@@ -60,7 +60,7 @@ namespace nano
 
         tensor_size_t function_zakharov_t::min_dims() const
         {
-                return 1;
+                return 2;
         }
 
         tensor_size_t function_zakharov_t::max_dims() const

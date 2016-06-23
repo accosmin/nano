@@ -21,7 +21,7 @@ static void test_function(const function_t& function)
 
         auto rgen = make_rng(scalar_t(-1), scalar_t(+1));
 
-        bool is_convex = true;
+        bool is_convex = function.is_convex();
         for (size_t t = 0; t < trials; ++ t)
         {
                 vector_t x0(dims), x1(dims);

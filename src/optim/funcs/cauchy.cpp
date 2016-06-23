@@ -35,9 +35,9 @@ namespace nano
                 return {fn_size, fn_fval, fn_grad};
         }
 
-        bool function_cauchy_t::is_valid(const vector_t&) const
+        bool function_cauchy_t::is_valid(const vector_t& x) const
         {
-                return true;
+                return util::norm(x) < scalar_t(1);
         }
 
         bool function_cauchy_t::is_minima(const vector_t& x, const scalar_t epsilon) const
@@ -47,7 +47,7 @@ namespace nano
 
         bool function_cauchy_t::is_convex() const
         {
-                return true;
+                return true; // in the [-1, +1] interval
         }
 
         tensor_size_t function_cauchy_t::min_dims() const

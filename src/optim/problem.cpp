@@ -1,4 +1,5 @@
 #include "problem.h"
+#include "math/epsilon.hpp"
 
 namespace nano
 {
@@ -102,12 +103,20 @@ namespace nano
                 assert(steps > 2);
 
                 const auto f1 = operator()(x1);
+                assert(std::isfinite(f1));
+
                 const auto f2 = operator()(x2);
+                assert(std::isfinite(f2));
 
                 for (int step = 1; step < steps; step ++)
                 {
-                        const auto t = scalar_t(step) / scalar_t(steps);
-                        if (operator()(t * x1 + (1 - t) * x2) > t * f1 + (1 - t) * f2)
+                        const auto t1 = scalar_t(step) / scalar_t(steps);
+                        const auto t2 = scalar_t(1) - t1;
+
+                        const auto ft = operator()(t1 * x1 + t2 * x2);
+                        assert(std::isfinite(ft));
+
+                        if (ft > (t1 * f1 + t2 * f2) + epsilon0<scalar_t>())
                         {
                                 return false;
                         }

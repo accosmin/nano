@@ -33,8 +33,8 @@ namespace nano
                         const auto v = 2 * a + b - 5;
 
                         gx.resize(2);
-                        gx(0) = 2 * u + 2 * v * 2;
-                        gx(1) = 2 * u * 2 + 2 * v;
+                        gx(0) = 2 * u + 4 * v;
+                        gx(1) = 4 * u + 2 * v;
 
                         return fn_fval(x);
                 };
@@ -59,7 +59,7 @@ namespace nano
 
         bool function_booth_t::is_convex() const
         {
-                return true;
+                return false;
         }
 
         tensor_size_t function_booth_t::min_dims() const
