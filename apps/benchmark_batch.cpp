@@ -77,6 +77,7 @@ int main(int argc, const char* argv[])
         cmdline.add("", "trials",       "number of random trials for each test function", "100");
         cmdline.add("", "iterations",   "maximum number of iterations", "8000");
         cmdline.add("", "epsilon",      "convergence criteria", nano::epsilon3<scalar_t>());
+        cmdline.add("", "convex",       "use only convex test functions");
 
         cmdline.process(argc, argv);
 
@@ -86,10 +87,12 @@ int main(int argc, const char* argv[])
         const auto trials = cmdline.get<size_t>("trials");
         const auto iterations = cmdline.get<size_t>("iterations");
         const auto epsilon = cmdline.get<scalar_t>("epsilon");
+        const auto is_convex = cmdline.has("convex");
 
         std::map<std::string, benchmark::optimizer_stat_t> gstats;
 
-        foreach_test_function(make_functions(min_dims, max_dims), [&] (const function_t& function)
+        const auto functions = (is_convex ? make_convex_functions : make_functions)(min_dims, max_dims);
+        foreach_test_function(functions, [&] (const function_t& function)
         {
                 check_function(function, trials, iterations, epsilon, gstats);
         });
