@@ -15,11 +15,6 @@ namespace nano
         public:
 
                 ///
-                /// \brief constructor
-                ///
-                ls_backtrack_t();
-
-                ///
                 /// \brief compute the current step size
                 ///
                 ls_step_t operator()(

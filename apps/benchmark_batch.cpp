@@ -51,8 +51,7 @@ static void check_function(
         {
                 const auto op = [&] (const problem_t& problem, const vector_t& x0)
                 {
-                        return  minimize(
-                                problem, nullptr, x0, optimizer, iterations, epsilon, ls_init, ls_strat);
+                        return minimize(problem, nullptr, x0, optimizer, iterations, epsilon, ls_init, ls_strat);
                 };
 
                 const auto name =
