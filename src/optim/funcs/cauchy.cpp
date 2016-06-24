@@ -22,7 +22,7 @@ namespace nano
 
                 const auto fn_fval = [=] (const vector_t& x)
                 {
-                        return (1.0 + x.array().square()).log().sum();
+                        return std::log((1.0 + x.array().square()).prod());//.log().sum();
                 };
 
                 const auto fn_grad = [=] (const vector_t& x, vector_t& gx)
