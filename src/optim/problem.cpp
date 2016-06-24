@@ -64,7 +64,7 @@ namespace nano
                         vector_t gx_approx;
                         eval_grad(x, gx_approx);
 
-                        return  (gx - gx_approx).template lpNorm<Eigen::Infinity>() /
+                        return  (gx - gx_approx).lpNorm<Eigen::Infinity>() /
                                 (scalar_t(1) + std::fabs(fx));
                 }
                 else
@@ -77,7 +77,9 @@ namespace nano
         {
                 // accuracy epsilon as defined in:
                 //      see "Numerical optimization", Nocedal & Wright, 2nd edition, p.197
-                const auto dx = std::sqrt(scalar_t(10) * std::numeric_limits<scalar_t>::epsilon());
+                const auto dx =
+                        std::sqrt(std::numeric_limits<scalar_t>::epsilon()) *
+                        (1 + x.lpNorm<Eigen::Infinity>());
 
                 const auto n = size();
 
@@ -94,7 +96,9 @@ namespace nano
                         xp(i) += dx;
                         xn(i) -= dx;
 
-                        g(i) = (m_opfval(xp) - m_opfval(xn)) / (xp(i) - xn(i));
+                        const auto dfi = m_opfval(xp) - m_opfval(xn);
+                        const auto dxi = xp(i) - xn(i);
+                        g(i) = static_cast<scalar_t>(dfi / dxi);
                 }
         }
 
