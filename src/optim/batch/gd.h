@@ -8,7 +8,7 @@ namespace nano
         ///
         /// \brief gradient descent
         ///
-        struct batch_gd_t
+        struct NANO_PUBLIC batch_gd_t
         {
                 ///
                 /// \brief minimize starting from the initial guess x0

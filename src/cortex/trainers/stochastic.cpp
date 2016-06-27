@@ -1,8 +1,8 @@
 #include "loop.hpp"
 #include "stochastic.h"
+#include "optim/stoch.h"
 #include "cortex/model.h"
 #include "math/clamp.hpp"
-#include "optim/stoch.hpp"
 #include "thread/thread.h"
 #include "math/numeric.hpp"
 #include "text/to_string.hpp"
@@ -129,8 +129,8 @@ namespace nano
 
                 // assembly optimization problem & optimize the model
                 nano::minimize(
-                        problem_t(fn_size, fn_fval, fn_grad), fn_ulog,
-                        x0, optimizer, epochs, epoch_size);
+                        stoch_params_t(epochs, epoch_size, optimizer, fn_ulog),
+                        problem_t(fn_size, fn_fval, fn_grad), x0);
 
                 return result;
         }

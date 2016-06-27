@@ -28,9 +28,7 @@ static void check_function(const function_t& function)
         }
 
         // optimizers to try
-        const auto optimizers = enum_values<batch_optimizer>();
-
-        for (const auto& optimizer : optimizers)
+        for (const auto optimizer : enum_values<batch_optimizer>())
         {
                 size_t out_of_domain = 0;
 

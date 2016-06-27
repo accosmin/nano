@@ -21,11 +21,14 @@ namespace nano
                 ///
                 /// \brief constructor
                 ///
-                stoch_params_t( const std::size_t epochs,
-                                const std::size_t epoch_size,
-                                const opulog_t& ulog = opulog_t()) :
+                stoch_params_t(
+                        const std::size_t epochs,
+                        const std::size_t epoch_size,
+                        const stoch_optimizer optimizer,
+                        const opulog_t& ulog = opulog_t()) :
                         m_epochs(epochs),
                         m_epoch_size(epoch_size),
+                        m_optimizer(optimizer),
                         m_ulog(ulog)
                 {
                 }
@@ -41,6 +44,7 @@ namespace nano
                 // attributes
                 std::size_t     m_epochs;               ///< number of epochs
                 std::size_t     m_epoch_size;           ///< epoch size in number of iterations
+                stoch_optimizer m_optimizer;            ///< optimization algorithm
                 opulog_t        m_ulog;                 ///< update log: (the current_state_after_each_epoch)
         };
 }

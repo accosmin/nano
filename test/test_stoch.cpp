@@ -1,6 +1,6 @@
 #include "unit_test.hpp"
 #include "optim/test.h"
-#include "optim/stoch.hpp"
+#include "optim/stoch.h"
 #include "math/random.hpp"
 #include "math/numeric.hpp"
 #include "math/epsilon.hpp"
@@ -27,20 +27,7 @@ static void check_function(const function_t& function)
         }
 
         // optimizers to try
-        const auto optimizers =
-        {
-                stoch_optimizer::SG,
-//                stoch_optimizer::NGD,
-                stoch_optimizer::SGM,
-                stoch_optimizer::AG,
-                stoch_optimizer::AGFR,
-                stoch_optimizer::AGGR,
-                stoch_optimizer::ADAGRAD,
-                stoch_optimizer::ADADELTA,
-                stoch_optimizer::ADAM
-        };
-
-        for (const auto optimizer : optimizers)
+        for (const auto optimizer : enum_values<stoch_optimizer>())
         {
                 size_t out_of_domain = 0;
 
@@ -52,7 +39,8 @@ static void check_function(const function_t& function)
                         const auto f0 = problem(x0);
 
                         // optimize
-                        const auto state = minimize(problem, nullptr, x0, optimizer, epochs, epoch_size);
+                        const auto params = stoch_params_t(epochs, epoch_size, optimizer);
+                        const auto state = minimize(params, problem, x0);
 
                         const auto x = state.x;
                         const auto f = state.f;

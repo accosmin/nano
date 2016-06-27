@@ -1,8 +1,8 @@
 #include "math/abs.hpp"
 #include "text/table.h"
+#include "optim/stoch.h"
 #include "text/cmdline.h"
 #include "math/clamp.hpp"
-#include "optim/stoch.hpp"
 #include "cortex/logger.h"
 #include "math/random.hpp"
 #include "math/epsilon.hpp"
@@ -41,7 +41,8 @@ void check_function(
         {
                 const auto op = [&] (const problem_t& problem, const vector_t& x0)
                 {
-                        return minimize(problem, nullptr, x0, optimizer, epochs, epoch_size);
+                        const auto params = stoch_params_t(epochs, epoch_size, optimizer);
+                        return minimize(params, problem, x0);
                 };
 
                 const auto name =

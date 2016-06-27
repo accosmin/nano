@@ -13,7 +13,7 @@ namespace nano
         <
                 typename tcgd_update                    ///< CGD step update
         >
-        struct batch_cgd_t
+        struct NANO_PUBLIC batch_cgd_t
         {
                 ///
                 /// \brief minimize starting from the initial guess x0

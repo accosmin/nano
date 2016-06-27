@@ -139,7 +139,7 @@ namespace nano
 
                 // assembly optimization problem & optimize the model
                 const auto problem = problem_t(fn_size, fn_fval, fn_grad);
-                const auto params = stoch_params_t(epochs, epoch_size, fn_ulog);
+                const auto params = stoch_params_t(epochs, epoch_size, stoch_optimizer::SG, fn_ulog);
                 const auto config = stoch_params_t::config_t();
 
                 nano::stoch_loop(problem, params, state_t(problem, x0), op, config);

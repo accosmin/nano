@@ -8,7 +8,7 @@ namespace nano
         ///
         /// \brief limited memory bfgs (l-bfgs)
         ///
-        struct batch_lbfgs_t
+        struct NANO_PUBLIC batch_lbfgs_t
         {
                 ///
                 /// \brief minimize starting from the initial guess x0
