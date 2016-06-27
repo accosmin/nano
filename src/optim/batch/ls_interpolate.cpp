@@ -2,10 +2,6 @@
 
 namespace nano
 {
-        ls_interpolate_t::ls_interpolate_t()
-        {
-        }
-
         ls_step_t ls_interpolate_t::operator()(
                 const ls_strategy strategy, const scalar_t c1, const scalar_t c2,
                 const ls_step_t& step0, const scalar_t t0,
