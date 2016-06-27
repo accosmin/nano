@@ -1,8 +1,8 @@
 #include "math/abs.hpp"
 #include "text/table.h"
+#include "optim/batch.h"
 #include "math/clamp.hpp"
 #include "text/cmdline.h"
-#include "optim/batch.hpp"
 #include "math/random.hpp"
 #include "cortex/logger.h"
 #include "math/epsilon.hpp"
@@ -49,9 +49,11 @@ static void check_function(
                 for (ls_initializer ls_init : ls_initializers)
                         for (ls_strategy ls_strat : ls_strategies)
         {
+                const auto params = batch_params_t(iterations, epsilon, optimizer, ls_init, ls_strat);
                 const auto op = [&] (const problem_t& problem, const vector_t& x0)
                 {
-                        return minimize(problem, nullptr, x0, optimizer, iterations, epsilon, ls_init, ls_strat);
+
+                        return minimize(params, problem, x0);
                 };
 
                 const auto name =

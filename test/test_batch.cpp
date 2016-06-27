@@ -1,7 +1,7 @@
 #include "unit_test.hpp"
 #include "math/abs.hpp"
 #include "optim/test.h"
-#include "optim/batch.hpp"
+#include "optim/batch.h"
 #include "math/random.hpp"
 #include "math/numeric.hpp"
 #include "math/epsilon.hpp"
@@ -28,23 +28,7 @@ static void check_function(const function_t& function)
         }
 
         // optimizers to try
-        const auto optimizers =
-        {
-                batch_optimizer::GD,
-
-                batch_optimizer::CGD,
-                //batch_optimizer::CGD_CD,
-                //batch_optimizer::CGD_DY,
-                //batch_optimizer::CGD_FR,
-                //batch_optimizer::CGD_HS,
-                batch_optimizer::CGD_LS,
-                batch_optimizer::CGD_N,
-                batch_optimizer::CGD_PRP,
-                batch_optimizer::CGD_DYCD,
-                batch_optimizer::CGD_DYHS,
-
-                batch_optimizer::LBFGS,
-        };
+        const auto optimizers = enum_values<batch_optimizer>();
 
         for (const auto& optimizer : optimizers)
         {
@@ -58,8 +42,8 @@ static void check_function(const function_t& function)
                         const auto f0 = problem(x0);
 
                         // optimize
-                        const auto state = minimize(
-                                problem, nullptr, x0, optimizer, iterations, epsilon0<scalar_t>());
+                        const auto params = batch_params_t(iterations, epsilon0<scalar_t>(), optimizer);
+                        const auto state = minimize(params, problem, x0);
 
                         const auto x = state.x;
                         const auto f = state.f;

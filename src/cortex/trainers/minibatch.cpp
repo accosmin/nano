@@ -1,8 +1,8 @@
 #include "loop.hpp"
 #include "minibatch.h"
+#include "optim/batch.h"
 #include "math/clamp.hpp"
 #include "cortex/model.h"
-#include "optim/batch.hpp"
 #include "thread/thread.h"
 #include "math/numeric.hpp"
 #include "text/to_string.hpp"
@@ -132,8 +132,8 @@ namespace nano
                 const auto op = [&] (state_t& state)
                 {
                         state = nano::minimize(
-                                problem_t(fn_size, fn_fval, fn_grad), nullptr,
-                                state.x, optimizer, epoch_iterations, epsilon, history_size);
+                                batch_params_t(epoch_iterations, epsilon, optimizer, nullptr, history_size),
+                                problem_t(fn_size, fn_fval, fn_grad), state.x);
                         iter.next();
                 };
 

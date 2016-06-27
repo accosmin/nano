@@ -1,8 +1,8 @@
 #include "batch.h"
 #include "loop.hpp"
+#include "optim/batch.h"
 #include "cortex/model.h"
 #include "math/clamp.hpp"
-#include "optim/batch.hpp"
 #include "cortex/logger.h"
 #include "text/to_string.hpp"
 #include "text/from_params.hpp"
@@ -119,8 +119,8 @@ namespace nano
 
                 // assembly optimization problem & optimize the model
                 nano::minimize(
-                        problem_t(fn_size, fn_fval, fn_grad), fn_ulog,
-                        x0, optimizer, iterations, epsilon, history);
+                        batch_params_t(iterations, epsilon, optimizer, fn_ulog, history),
+                        problem_t(fn_size, fn_fval, fn_grad), x0);
 
                 return result;
         }

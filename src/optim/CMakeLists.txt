@@ -1,6 +1,6 @@
 # build library
 set(liboptim_sources
-        ${CMAKE_CURRENT_SOURCE_DIR}/batch.hpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/batch.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/problem.h
         ${CMAKE_CURRENT_SOURCE_DIR}/problem.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/state.h
