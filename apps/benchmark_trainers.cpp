@@ -67,20 +67,19 @@ static void test_optimizer(model_t& model, const string_t& name, const string_t&
 
 static void evaluate(model_t& model,
         const task_t& task, const size_t fold,
-        const loss_t& loss, const criterion_t& criterion, const vectors_t& x0s, const size_t iterations,
+        const loss_t& loss, const criterion_t& criterion, const vectors_t& x0s, const size_t epochs,
         const std::vector<batch_optimizer>& batch_optimizers,
         const std::vector<batch_optimizer>& minibatch_optimizers,
         const std::vector<stoch_optimizer>& stochastic_optimizers,
         const string_t& basename, const string_t& basepath, table_t& table)
 {
-        const auto epsilon = scalar_t(1e-6);
         const auto nthreads = thread::concurrency();
         const auto policy = trainer_policy::all_epochs;
 
         for (auto optimizer : batch_optimizers)
         {
                 const auto optname = "batch-" + to_string(optimizer);
-                const auto params = to_params("opt", optimizer, "iters", iterations, "eps", epsilon, "policy", policy);
+                const auto params = to_params("opt", optimizer, "epochs", epochs, "policy", policy);
                 test_optimizer(model, basename + optname, basepath + optname, table, x0s, [&] ()
                 {
                         const auto trainer = get_trainers().get("batch", params);
@@ -91,7 +90,7 @@ static void evaluate(model_t& model,
         for (auto optimizer : minibatch_optimizers)
         {
                 const auto optname = "minibatch-" + to_string(optimizer);
-                const auto params = to_params("opt", optimizer, "epochs", iterations, "eps", epsilon, "policy", policy);
+                const auto params = to_params("opt", optimizer, "epochs", epochs, "policy", policy);
                 test_optimizer(model, basename + optname, basepath + optname, table, x0s, [&] ()
                 {
                         const auto trainer = get_trainers().get("minibatch", params);
@@ -102,7 +101,7 @@ static void evaluate(model_t& model,
         for (auto optimizer : stochastic_optimizers)
         {
                 const auto optname = "stochastic-" + to_string(optimizer);
-                const auto params = to_params("opt", optimizer, "epochs", iterations, "policy", policy);
+                const auto params = to_params("opt", optimizer, "epochs", epochs, "policy", policy);
                 test_optimizer(model, basename + optname, basepath + optname, table, x0s, [&] ()
                 {
                         const auto trainer = get_trainers().get("stochastic", params);
@@ -140,7 +139,7 @@ int main(int argc, const char* argv[])
         cmdline.add("", "l2n-reg",              "also evaluate the l2-norm-based regularizer");
         cmdline.add("", "var-reg",              "also evaluate the variance-based regularizer");
         cmdline.add("", "trials",               "number of models to train & evaluate", "10");
-        cmdline.add("", "iterations",           "number of iterations/epochs", "64");
+        cmdline.add("", "epochs",               "number of epochs", "64");
 
         cmdline.process(argc, argv);
 
@@ -150,7 +149,7 @@ int main(int argc, const char* argv[])
         const bool use_reg_l2n = cmdline.has("l2n-reg");
         const bool use_reg_var = cmdline.has("var-reg");
         const auto trials = cmdline.get<size_t>("trials");
-        const auto iterations = cmdline.get<size_t>("iterations");
+        const auto epochs = cmdline.get<size_t>("epochs");
 
         if (    !use_mlps &&
                 !use_convnets)
@@ -281,7 +280,7 @@ int main(int argc, const char* argv[])
                                 const auto basename = "[" + icriterion + "] ";
                                 const auto basepath = netname + "-" + iloss + "-" + icriterion + "-";
 
-                                evaluate(*model, task, fold, *loss, *criterion, x0s, iterations,
+                                evaluate(*model, task, fold, *loss, *criterion, x0s, epochs,
                                          batch_optimizers, minibatch_optimizers, stochastic_optimizers,
                                          basename, basepath, table);
                         }

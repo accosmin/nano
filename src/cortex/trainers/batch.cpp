@@ -4,6 +4,7 @@
 #include "cortex/model.h"
 #include "math/clamp.hpp"
 #include "cortex/logger.h"
+#include "math/epsilon.hpp"
 #include "text/to_string.hpp"
 #include "text/from_params.hpp"
 
@@ -24,17 +25,16 @@ namespace nano
                 model.random_params();
 
                 // parameters
-                const auto iterations = clamp(from_params<size_t>(configuration(), "iters", 1024), 4, 4096);
-                const auto epsilon = clamp(from_params<scalar_t>(configuration(), "eps", scalar_t(1e-6)), scalar_t(1e-8), scalar_t(1e-3));
+                const auto epochs = clamp(from_params<size_t>(configuration(), "epochs", 1024), 4, 4096);
                 const auto optimizer = from_params<batch_optimizer>(configuration(), "opt", batch_optimizer::LBFGS);
-                const auto history = clamp(from_params<size_t>(configuration(), "history", 6), 4, 20);
                 const auto policy = from_params<trainer_policy>(configuration(), "policy", trainer_policy::stop_early);
+                const auto epsilon = epsilon3<scalar_t>();
                 const auto verbose = true;
 
                 // train the model
                 const auto op = [&] (const accumulator_t& lacc, const accumulator_t& gacc, const vector_t& x0)
                 {
-                        return train(task, fold, lacc, gacc, x0, optimizer, iterations, epsilon, history, policy, verbose);
+                        return train(task, fold, lacc, gacc, x0, optimizer, epochs, epsilon, policy, verbose);
                 };
 
                 const auto result = trainer_loop(model, nthreads, loss, criterion, op);
@@ -51,7 +51,7 @@ namespace nano
         trainer_result_t batch_trainer_t::train(
                 const task_t& task, const size_t fold,
                 const accumulator_t& lacc, const accumulator_t& gacc, const vector_t& x0,
-                const batch_optimizer optimizer, const size_t iterations, const scalar_t epsilon, const size_t history,
+                const batch_optimizer optimizer, const size_t epochs, const scalar_t epsilon,
                 const trainer_policy policy, const bool verbose) const
         {
                 const timer_t timer;
@@ -106,7 +106,7 @@ namespace nano
                         if (verbose)
                         {
                                 log_info()
-                                        << "[" << iteration << "/" << iterations
+                                        << "[" << iteration << "/" << epochs
                                         << ": train=" << train
                                         << ", valid=" << valid << "|" << nano::to_string(ret)
                                         << ", test=" << test
@@ -119,7 +119,7 @@ namespace nano
 
                 // assembly optimization problem & optimize the model
                 nano::minimize(
-                        batch_params_t(iterations, epsilon, optimizer, fn_ulog, history),
+                        batch_params_t(epochs, epsilon, optimizer, fn_ulog),
                         problem_t(fn_size, fn_fval, fn_grad), x0);
 
                 return result;

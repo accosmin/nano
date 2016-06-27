@@ -13,8 +13,7 @@ namespace nano
         public:
 
                 NANO_MAKE_CLONABLE(minibatch_trainer_t,
-                        "parameters: opt=cgd[...],epochs=16[1,1024],eps=1e-6[1e-8,1e-3],"\
-                        "policy=stop_early[,all_epochs]")
+                        "parameters: opt=cgd[...],epochs=16[1,1024],policy=stop_early[,all_epochs]")
 
                 // constructor
                 explicit minibatch_trainer_t(const string_t& parameters = string_t());

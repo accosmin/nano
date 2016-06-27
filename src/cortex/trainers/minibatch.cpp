@@ -5,6 +5,7 @@
 #include "cortex/model.h"
 #include "thread/thread.h"
 #include "math/numeric.hpp"
+#include "math/epsilon.hpp"
 #include "text/to_string.hpp"
 #include "optim/stoch/loop.hpp"
 #include "text/from_params.hpp"
@@ -30,9 +31,9 @@ namespace nano
 
                 // parameters
                 const auto epochs = clamp(from_params<size_t>(configuration(), "epochs", 16), 1, 1024);
-                const auto epsilon = clamp(from_params<scalar_t>(configuration(), "eps", scalar_t(1e-6)), scalar_t(1e-8), scalar_t(1e-3));
                 const auto optimizer = from_params<batch_optimizer>(configuration(), "opt", batch_optimizer::CGD);
                 const auto policy = from_params<trainer_policy>(configuration(), "policy", trainer_policy::stop_early);
+                const auto epsilon = epsilon3<scalar_t>();
                 const auto verbose = true;
 
                 // train the model
