@@ -7,7 +7,7 @@ namespace nano
         ///
         /// \brief create Colville test functions
         ///
-        struct NANO_PUBLIC function_colville_t : public function_t
+        struct function_colville_t : public function_t
         {
                 virtual std::string name() const override;
                 virtual problem_t problem() const override;

@@ -7,7 +7,7 @@ namespace nano
         ///
         /// \brief create Chung-Reynolds test functions
         ///
-        struct NANO_PUBLIC function_chung_reynolds_t : public function_t
+        struct function_chung_reynolds_t : public function_t
         {
                 explicit function_chung_reynolds_t(const tensor_size_t dims);
 

@@ -7,7 +7,7 @@ namespace nano
         ///
         /// \brief create sphere test functions
         ///
-        struct NANO_PUBLIC function_sphere_t : public function_t
+        struct function_sphere_t : public function_t
         {
                 explicit function_sphere_t(const tensor_size_t dims);
 

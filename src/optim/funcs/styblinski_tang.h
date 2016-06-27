@@ -7,7 +7,7 @@ namespace nano
         ///
         /// \brief create Styblinski-Tang test functions
         ///
-        struct NANO_PUBLIC function_styblinski_tang_t : public function_t
+        struct function_styblinski_tang_t : public function_t
         {
                 explicit function_styblinski_tang_t(const tensor_size_t dims);
 

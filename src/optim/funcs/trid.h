@@ -7,7 +7,7 @@ namespace nano
         ///
         /// \brief create Trid test functions
         ///
-        struct NANO_PUBLIC function_trid_t : public function_t
+        struct function_trid_t : public function_t
         {
                 explicit function_trid_t(const tensor_size_t dims);
 

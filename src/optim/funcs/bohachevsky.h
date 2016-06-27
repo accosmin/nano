@@ -7,7 +7,7 @@ namespace nano
         ///
         /// \brief create Bohachevsky test functions
         ///
-        struct NANO_PUBLIC function_bohachevsky_t : public function_t
+        struct function_bohachevsky_t : public function_t
         {
                 enum btype
                 {

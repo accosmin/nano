@@ -7,7 +7,7 @@ namespace nano
         ///
         /// \brief create exponential test functions
         ///
-        struct NANO_PUBLIC function_exponential_t : public function_t
+        struct function_exponential_t : public function_t
         {
                 explicit function_exponential_t(const tensor_size_t dims);
 

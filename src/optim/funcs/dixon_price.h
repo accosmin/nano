@@ -7,7 +7,7 @@ namespace nano
         ///
         /// \brief create Dixon-Price test functions
         ///
-        struct NANO_PUBLIC function_dixon_price_t : public function_t
+        struct function_dixon_price_t : public function_t
         {
                 explicit function_dixon_price_t(const tensor_size_t dims);
 

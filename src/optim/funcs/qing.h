@@ -7,7 +7,7 @@ namespace nano
         ///
         /// \brief create Qing test functions
         ///
-        struct NANO_PUBLIC function_qing_t : public function_t
+        struct function_qing_t : public function_t
         {
                 explicit function_qing_t(const tensor_size_t dims);
 

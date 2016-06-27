@@ -7,7 +7,7 @@ namespace nano
         ///
         /// \brief create Powell test functions
         ///
-        struct NANO_PUBLIC function_powell_t : public function_t
+        struct function_powell_t : public function_t
         {
                 explicit function_powell_t(const tensor_size_t dims);
 

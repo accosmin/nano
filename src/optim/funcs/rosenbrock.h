@@ -9,7 +9,7 @@ namespace nano
         ///
         /// https://en.wikipedia.org/wiki/Test_functions_for_optimization
         ///
-        struct NANO_PUBLIC function_rosenbrock_t : public function_t
+        struct function_rosenbrock_t : public function_t
         {
                 explicit function_rosenbrock_t(const tensor_size_t dims);
 

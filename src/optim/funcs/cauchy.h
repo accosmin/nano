@@ -7,7 +7,7 @@ namespace nano
         ///
         /// \brief create Cauchy test functions
         ///
-        struct NANO_PUBLIC function_cauchy_t : public function_t
+        struct function_cauchy_t : public function_t
         {
                 explicit function_cauchy_t(const tensor_size_t dims);
 

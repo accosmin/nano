@@ -7,7 +7,7 @@ namespace nano
         ///
         /// \brief create Zakharov test functions
         ///
-        struct NANO_PUBLIC function_zakharov_t : public function_t
+        struct function_zakharov_t : public function_t
         {
                 explicit function_zakharov_t(const tensor_size_t dims);
 

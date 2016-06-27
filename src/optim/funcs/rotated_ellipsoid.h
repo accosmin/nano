@@ -7,7 +7,7 @@ namespace nano
         ///
         /// \brief create rotated hyper-ellipsoid test functions
         ///
-        struct NANO_PUBLIC function_rotated_ellipsoid_t : public function_t
+        struct function_rotated_ellipsoid_t : public function_t
         {
                 explicit function_rotated_ellipsoid_t(const tensor_size_t dims);
 
