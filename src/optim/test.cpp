@@ -18,6 +18,7 @@
 #include "funcs/3hump_camel.h"
 #include "funcs/dixon_price.h"
 #include "funcs/bohachevsky.h"
+#include "funcs/axis_ellipsoid.h"
 #include "funcs/chung_reynolds.h"
 #include "funcs/goldstein_price.h"
 #include "funcs/styblinski_tang.h"
@@ -64,6 +65,7 @@ namespace nano
                         append(std::make_shared<function_exponential_t>(dims), dims, funcs);
                         append(std::make_shared<function_dixon_price_t>(dims), dims, funcs);
                         append(std::make_shared<function_chung_reynolds_t>(dims), dims, funcs);
+                        append(std::make_shared<function_axis_ellipsoid_t>(dims), dims, funcs);
                         append(std::make_shared<function_styblinski_tang_t>(dims), dims, funcs);
                         append(std::make_shared<function_sphere_t>(dims), dims, funcs);
                         append(std::make_shared<function_schumer_steiglitz_t>(dims), dims, funcs);

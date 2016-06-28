@@ -1,5 +1,6 @@
 list(APPEND liboptim_sources
         ${CMAKE_CURRENT_SOURCE_DIR}/3hump_camel.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/axis_ellipsoid.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/beale.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/bohachevsky.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/booth.cpp
