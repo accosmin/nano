@@ -34,8 +34,12 @@ namespace nano
 
                 // check valid step
                 const ls_step_t step0(problem, state);
-                const ls_step_t step = get_step(step0, t0);
+                if (!step0)
+                {
+                        return false;
+                }
 
+                const ls_step_t step = get_step(step0, t0);
                 if (!step || !(step < step0))
                 {
                         return false;

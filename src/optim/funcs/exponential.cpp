@@ -15,6 +15,8 @@ namespace nano
 
         problem_t function_exponential_t::problem() const
         {
+                const auto scale = scalar_t(1) / scalar_t(m_dims);
+
                 const auto fn_size = [=] ()
                 {
                         return m_dims;
@@ -22,14 +24,14 @@ namespace nano
 
                 const auto fn_fval = [=] (const vector_t& x)
                 {
-                        return std::exp(scalar_t(0.5) * x.array().square().sum());
+                        return std::exp(scalar_t(0.5) * scale * x.array().square().sum());
                 };
 
                 const auto fn_grad = [=] (const vector_t& x, vector_t& gx)
                 {
                         const auto fx = fn_fval(x);
 
-                        gx = fx * x;
+                        gx = fx * x * scale;
 
                         return fx;
                 };

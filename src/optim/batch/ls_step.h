@@ -49,7 +49,7 @@ namespace nano
                                 m_alpha = alpha;
                                 m_func = m_problem.get()(m_state.get().x + m_alpha * m_state.get().d, m_grad);
                                 m_gphi = m_grad.dot(m_state.get().d);
-                                return std::isfinite(phi()) && std::isfinite(gphi());
+                                return operator bool();
                         }
                 }
 

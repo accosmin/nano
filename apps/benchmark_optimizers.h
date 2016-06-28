@@ -21,7 +21,7 @@ namespace benchmark
                 stats_t<scalar_t> m_speeds;     ///< convergence speed (actually the average decrease ratio of the convergence criteria)
         };
 
-        nano::stats_t<scalar_t> make_stats(const scalars_t& values, const scalars_t& flags)
+        stats_t<scalar_t> make_stats(const scalars_t& values, const scalars_t& flags)
         {
                 assert(values.size() == flags.size());
 
