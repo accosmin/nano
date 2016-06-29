@@ -31,7 +31,7 @@ namespace nano
                         auto itr_s = ss.rbegin();
                         auto itr_y = ys.rbegin();
                         std::vector<scalar_t> alphas;
-                        for (std::size_t j = 1; j <= param.m_hsize && i >= j; j ++)
+                        for (std::size_t j = 1; j <= param.m_lbfgs_hsize && i >= j; j ++)
                         {
                                 const vector_t& s = (*itr_s ++);
                                 const vector_t& y = (*itr_y ++);
@@ -55,7 +55,7 @@ namespace nano
                         auto it_s = ss.begin();
                         auto it_y = ys.begin();
                         auto itr_alpha = alphas.rbegin();
-                        for (std::size_t j = 1; j <= param.m_hsize && i >= j; j ++)
+                        for (std::size_t j = 1; j <= param.m_lbfgs_hsize && i >= j; j ++)
                         {
                                 const vector_t& s = (*it_s ++);
                                 const vector_t& y = (*it_y ++);
@@ -78,7 +78,7 @@ namespace nano
 
                         ss.push_back(cstate.x - pstate.x);
                         ys.push_back(cstate.g - pstate.g);
-                        if (ss.size() > param.m_hsize)
+                        if (ss.size() > param.m_lbfgs_hsize)
                         {
                                 ss.pop_front();
                                 ys.pop_front();

@@ -95,14 +95,16 @@ namespace nano
                 const ls_initializer lsinit,
                 const ls_strategy lsstrat,
                 const opulog_t& ulog,
-                const std::size_t hsize) :
+                const std::size_t lbfgs_hsize,
+                const scalar_t cgd_orthotest) :
                 m_ulog(ulog),
                 m_max_iterations(max_iterations),
                 m_epsilon(epsilon),
                 m_optimizer(optimizer),
                 m_ls_initializer(lsinit),
                 m_ls_strategy(lsstrat),
-                m_hsize(hsize)
+                m_lbfgs_hsize(lbfgs_hsize),
+                m_cgd_orthotest(cgd_orthotest)
         {
         }
 
@@ -111,14 +113,16 @@ namespace nano
                 const scalar_t epsilon,
                 const batch_optimizer optimizer,
                 const opulog_t& ulog,
-                const std::size_t hsize) :
+                const std::size_t lbfgs_hsize,
+                const scalar_t cgd_orthotest) :
                 m_ulog(ulog),
                 m_max_iterations(max_iterations),
                 m_epsilon(epsilon),
                 m_optimizer(optimizer),
                 m_ls_initializer(make_lsinit(optimizer)),
                 m_ls_strategy(make_lsstrat(optimizer)),
-                m_hsize(hsize)
+                m_lbfgs_hsize(lbfgs_hsize),
+                m_cgd_orthotest(cgd_orthotest)
         {
         }
 }

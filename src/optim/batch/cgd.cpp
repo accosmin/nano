@@ -35,9 +35,16 @@ namespace nano
                                 cstate.d = -cstate.g + beta * pstate.d;
                         }
 
+                        // restart:
+                        //  - if not a descent direction
+                        //  - or two consecutive gradients far from being orthogonal
+                        //      (see "Numerical optimization", Nocedal & Wright, 2nd edition, p.124-125)
                         if (cstate.d.dot(cstate.g) > scalar_t(0))
                         {
-                                // reset to gradient descent, if not a descent direction!
+                                cstate.d = -cstate.g;
+                        }
+                        else if (std::fabs(cstate.g.dot(pstate.g)) >= param.m_cgd_orthotest * cstate.g.dot(cstate.g))
+                        {
                                 cstate.d = -cstate.g;
                         }
 
