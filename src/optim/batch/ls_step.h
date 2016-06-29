@@ -151,7 +151,7 @@ namespace nano
 
                 scalar_t         m_alpha;       ///< line-search step (current estimate)
                 scalar_t         m_func;        ///< function value at alpha
-                vector_t         m_grad;        //< function gradient at alpha
+                vector_t         m_grad;        ///< function gradient at alpha
                 scalar_t         m_gphi;        ///< line-search function gradient at alpha
         };
 
