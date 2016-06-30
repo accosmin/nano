@@ -54,6 +54,7 @@ int main(int argc, const char* argv[])
         cmdline.add("", "criterion",    "training criteria");
         cmdline.add("", "batch",        "batch optimization algorithms");
         cmdline.add("", "stoch",        "stochastic optimization algorithms");
+        cmdline.add("", "system",       "information about the system");
 
         cmdline.process(argc, argv);
 
@@ -65,6 +66,7 @@ int main(int argc, const char* argv[])
         const bool has_criterion = cmdline.has("criterion");
         const bool has_batch = cmdline.has("batch");
         const bool has_stoch = cmdline.has("stoch");
+        const bool has_system = cmdline.has("system");
 
         if (    !has_loss &&
                 !has_task &&
@@ -73,7 +75,8 @@ int main(int argc, const char* argv[])
                 !has_trainer &&
                 !has_criterion &&
                 !has_batch &&
-                !has_stoch)
+                !has_stoch &&
+                !has_system)
         {
                 cmdline.usage();
                 return EXIT_FAILURE;
@@ -112,6 +115,13 @@ int main(int argc, const char* argv[])
         {
                 print<stoch_optimizer>("stochastic optimizer");
         }
+        if (has_system)
+        {
+                std::cout << "physical CPUs..." << get_physical_cpus() << std::endl;
+                std::cout << "logical CPUs...." << get_logical_cpus() << std::endl;
+                std::cout << "memsize........." << get_memsize_gb() << "GB" << std::endl;
+        }
+
         // OK
         return EXIT_SUCCESS;
 }

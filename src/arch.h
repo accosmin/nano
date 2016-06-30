@@ -33,3 +33,37 @@
 // string a given variable
 #define NANO_STRINGIFY_(x) #x
 #define NANO_STRINGIFY(x) NANO_STRINGIFY_(x)
+
+// system information
+#if defined(__APPLE__)
+        #include <sys/sysctl.h>
+
+        template <typename tinteger>
+        tinteger get_sysctl_var(const char* name, const tinteger default_value)
+        {
+                tinteger value = 0;
+                size_t size = sizeof(value);
+                return sysctlbyname(name, &value, &size, NULL, 0) ? default_value : value;
+        }
+
+        inline auto get_logical_cpus()
+        {
+                return get_sysctl_var<unsigned int>("hw.logicalcpu", 0);
+        }
+
+        inline auto get_physical_cpus()
+        {
+                return get_sysctl_var<unsigned int>("hw.physicalcpu", 0);
+        }
+
+        inline auto get_memsize()
+        {
+                return get_sysctl_var<unsigned long int>("hw.memsize", 0);
+        }
+
+        inline auto get_memsize_gb()
+        {
+                const unsigned long int giga = 1LL << 30;
+                return static_cast<unsigned int>((get_memsize() + giga - 1) / giga);
+        }
+#endif
