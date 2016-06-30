@@ -12,8 +12,8 @@ using namespace nano;
 
 static void check_function(const function_t& function)
 {
-        const auto iterations = size_t(1024);
-        const auto trials = size_t(32);
+        const auto iterations = size_t(100000);
+        const auto trials = size_t(100);
 
         const auto dims = function.problem().size();
 
@@ -47,8 +47,7 @@ static void check_function(const function_t& function)
                         const auto f = state.f;
                         const auto g = state.convergence_criteria();
 
-                        const auto f_thres = epsilon3<scalar_t>();
-                        const auto g_thres = std::sqrt(epsilon3<scalar_t>());
+                        const auto g_thres = epsilon3<scalar_t>();
                         const auto x_thres = std::sqrt(epsilon3<scalar_t>());
 
                         // ignore out-of-domain solutions
@@ -67,13 +66,11 @@ static void check_function(const function_t& function)
                                   << ", i = " << state.m_iterations
                                   << ", status = " << to_string(state.m_status) << ".\n";
 
-                        NANO_CHECK(state.m_status == state_t::status::converged);
-
                         // check function value decrease
                         NANO_CHECK_LESS(f, f0);
-                        NANO_CHECK_LESS(f, f0 - f_thres * abs(f0));
 
                         // check convergence
+                        NANO_CHECK(state.m_status == state_t::status::converged || g < g_thres);
                         NANO_CHECK_LESS(g, g_thres);
 
                         // check local minimas (if any known)

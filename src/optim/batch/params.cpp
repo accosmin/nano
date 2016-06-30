@@ -60,7 +60,7 @@ namespace nano
                         return ls_strategy::interpolation;
 
                 case batch_optimizer::CGD_DY:
-                        return ls_strategy::backtrack_wolfe;
+                        return ls_strategy::interpolation;
 
                 case batch_optimizer::CGD_FR:
                         return ls_strategy::interpolation;
@@ -75,13 +75,13 @@ namespace nano
                         return ls_strategy::interpolation;
 
                 case batch_optimizer::CGD_DYCD:
-                        return ls_strategy::backtrack_wolfe;
+                        return ls_strategy::interpolation;
 
                 case batch_optimizer::CGD_DYHS:
-                        return ls_strategy::backtrack_wolfe;
+                        return ls_strategy::interpolation;
 
                 case batch_optimizer::GD:
-                        return ls_strategy::backtrack_wolfe;
+                        return ls_strategy::backtrack_strong_wolfe;
 
                 default:
                         throw std::runtime_error("make_lsstrat: optimization method not handled");

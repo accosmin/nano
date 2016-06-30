@@ -22,7 +22,7 @@ static void check_function(
 {
         const auto dims = function.problem().size();
 
-        random_t<scalar_t> rgen(scalar_t(-1), scalar_t(+1));
+        auto rgen = make_rng(scalar_t(-1), scalar_t(+1));
 
         // generate fixed random trials
         std::vector<vector_t> x0s(trials);
@@ -32,22 +32,13 @@ static void check_function(
                 rgen(x0.data(), x0.data() + x0.size());
         }
 
-        // optimizers to try
-        const auto optimizers = enum_values<batch_optimizer>();
-
-        // line search initialization methods to try
-        const auto ls_initializers = enum_values<ls_initializer>();
-
-        // line search strategies to try
-        const auto ls_strategies = enum_values<ls_strategy>();
-
         // per-problem statistics
         tostats stats;
 
-        // evaluate all possible combinations
-        for (batch_optimizer optimizer : optimizers)
-                for (ls_initializer ls_init : ls_initializers)
-                        for (ls_strategy ls_strat : ls_strategies)
+        // evaluate all possible combinations (optimizer & line-search)
+        for (const batch_optimizer optimizer : enum_values<batch_optimizer>())
+                for (const ls_initializer ls_init : enum_values<ls_initializer>())
+                        for (const ls_strategy ls_strat : enum_values<ls_strategy>())
         {
                 const auto params = batch_params_t(iterations, epsilon, optimizer, ls_init, ls_strat);
                 const auto op = [&] (const problem_t& problem, const vector_t& x0)
