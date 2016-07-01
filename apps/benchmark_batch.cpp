@@ -68,7 +68,7 @@ int main(int argc, const char* argv[])
         cmdline.add("", "min-dims",     "minimum number of dimensions for each test function (if feasible)", "100");
         cmdline.add("", "max-dims",     "maximum number of dimensions for each test function (if feasible)", "1000");
         cmdline.add("", "trials",       "number of random trials for each test function", "100");
-        cmdline.add("", "iterations",   "maximum number of iterations", "8000");
+        cmdline.add("", "iterations",   "maximum number of iterations", "1000");
         cmdline.add("", "epsilon",      "convergence criteria", nano::epsilon3<scalar_t>());
         cmdline.add("", "convex",       "use only convex test functions");
 

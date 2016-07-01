@@ -23,7 +23,8 @@ namespace nano
 
         private:
 
-                ls_step_t get_step(const ls_step_t& step0, const scalar_t t0) const;
+                bool setup(const problem_t&, const ls_step_t& step0, const ls_step_t& step, state_t& state) const;
+                bool setup(const problem_t&, const ls_step_t& step, state_t& state) const;
 
         private:
 
