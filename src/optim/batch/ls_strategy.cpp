@@ -9,16 +9,13 @@ namespace nano
                 m_c1(c1),
                 m_c2(c2)
         {
+                assert(m_c1 < m_c2);
+                assert(m_c1 > scalar_t(0) && m_c1 < scalar_t(1));
+                assert(m_c2 > scalar_t(0) && m_c2 < scalar_t(1));
         }
 
         bool ls_strategy_t::operator()(const problem_t& problem, const scalar_t t0, state_t& state) const
         {
-                assert(m_c1 < m_c2);
-                assert(m_c1 > scalar_t(0) && m_c1 < scalar_t(1));
-                assert(m_c2 > scalar_t(0) && m_c2 < scalar_t(1));
-
-                const scalar_t eps = std::numeric_limits<scalar_t>::epsilon();
-
                 // check descent direction
                 const scalar_t dg0 = state.d.dot(state.g);
                 if (dg0 >= scalar_t(0))
@@ -26,13 +23,13 @@ namespace nano
                         return false;
                 }
 
-                // check valid initial step
-                if (t0 < eps)
+                // check initial step length
+                if (t0 < ls_step_t::minimum() || t0 > ls_step_t::maximum())
                 {
                         return false;
                 }
 
-                // check valid step
+                // check step
                 const ls_step_t step0(problem, state);
                 if (!step0)
                 {

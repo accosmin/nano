@@ -4,17 +4,16 @@ namespace nano
 {
         ls_step_t ls_interpolate_t::operator()(
                 const ls_strategy strategy, const scalar_t c1, const scalar_t c2,
-                const ls_step_t& step0, const scalar_t t0,
-                const int max_iters) const
+                const ls_step_t& step0, const scalar_t t0) const
         {
                 // previous step
                 ls_step_t stepp = step0;
 
                 // current step
                 ls_step_t stept = step0;
-                scalar_t t = t0;
 
-                for (int i = 1; i <= max_iters; i ++)
+                scalar_t t = t0;
+                for (int i = 1; t < ls_step_t::maximum(); i ++)
                 {
                         // check sufficient decrease
                         if (!stept.reset(t))
@@ -39,7 +38,7 @@ namespace nano
                         }
 
                         stepp = stept;
-                        t = std::min(stept.maximum(), t * 3);
+                        t *= 3;
                 }
 
                 // NOK, give up
@@ -48,14 +47,12 @@ namespace nano
 
         ls_step_t ls_interpolate_t::zoom(
                 const ls_strategy, const scalar_t c1, const scalar_t c2,
-                const ls_step_t& step0, ls_step_t steplo, ls_step_t stephi,
-                const int max_iters)
+                const ls_step_t& step0, ls_step_t steplo, ls_step_t stephi)
         {
                 ls_step_t stept(step0);
-                scalar_t t;
 
-                for (   int i = 1; i <= max_iters &&
-                        std::fabs(steplo.alpha() - stephi.alpha()) > stept.minimum(); i ++)
+                scalar_t t;
+                while (std::fabs(steplo.alpha() - stephi.alpha()) > ls_step_t::minimum())
                 {
                         // try various interpolation methods
                         const auto tb = ls_bisection(steplo, stephi);

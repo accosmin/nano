@@ -6,13 +6,12 @@ namespace nano
                 const ls_strategy strategy, const scalar_t c1, const scalar_t c2,
                 const ls_step_t& step0, const scalar_t t0,
                 const scalar_t decrement,
-                const scalar_t increment,
-                const int max_iters) const
+                const scalar_t increment) const
         {
                 ls_step_t step(step0);
-                scalar_t t = t0;
 
-                for (int i = 0; i < max_iters; i ++)
+                scalar_t t = t0;
+                while (t > ls_step_t::minimum() && t < ls_step_t::maximum())
                 {
                         if (!step.reset(t))
                         {

@@ -2,8 +2,8 @@
 
 namespace nano
 {
-        avg_l2_criterion_t::avg_l2_criterion_t(const string_t& configuration)
-                :       avg_criterion_t(configuration)
+        avg_l2_criterion_t::avg_l2_criterion_t(const string_t& configuration) :
+                avg_criterion_t(configuration)
         {
         }
 

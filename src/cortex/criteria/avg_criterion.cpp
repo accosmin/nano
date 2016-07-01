@@ -2,9 +2,9 @@
 
 namespace nano
 {
-        avg_criterion_t::avg_criterion_t(const string_t& configuration)
-                :       criterion_t(configuration),
-                        m_value(0.0)
+        avg_criterion_t::avg_criterion_t(const string_t& configuration) :
+                criterion_t(configuration),
+                m_value(0.0)
         {
         }
 

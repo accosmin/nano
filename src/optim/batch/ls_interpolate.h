@@ -20,8 +20,7 @@ namespace nano
                 ///
                 ls_step_t operator()(
                         const ls_strategy strategy, const scalar_t c1, const scalar_t c2,
-                        const ls_step_t& step0, const scalar_t t0,
-                        const int max_iters = 64) const;
+                        const ls_step_t& step0, const scalar_t t0) const;
 
         private:
 
@@ -31,8 +30,7 @@ namespace nano
                 ///
                 static ls_step_t zoom(
                         const ls_strategy, const scalar_t c1, const scalar_t c2,
-                        const ls_step_t& step0, ls_step_t steplo, ls_step_t stephi,
-                        const int max_iters = 64);
+                        const ls_step_t& step0, ls_step_t steplo, ls_step_t stephi);
         };
 }
 

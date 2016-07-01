@@ -1,6 +1,5 @@
 #pragma once
 
-#include <typeinfo>
 #include "enum_string.hpp"
 
 namespace nano
