@@ -46,15 +46,18 @@ int main(int argc, const char* argv[])
 {
         // parse the command line
         cmdline_t cmdline("display the registered objects");
-        cmdline.add("", "loss",         "loss functions");
-        cmdline.add("", "task",         "tasks");
-        cmdline.add("", "layer",        "layer types to built models");
-        cmdline.add("", "model",        "model types");
-        cmdline.add("", "trainer",      "training methods");
-        cmdline.add("", "criterion",    "training criteria");
-        cmdline.add("", "batch",        "batch optimization algorithms");
-        cmdline.add("", "stoch",        "stochastic optimization algorithms");
-        cmdline.add("", "system",       "information about the system");
+        cmdline.add("", "loss",                 "loss functions");
+        cmdline.add("", "task",                 "tasks");
+        cmdline.add("", "layer",                "layer types to built models");
+        cmdline.add("", "model",                "model types");
+        cmdline.add("", "trainer",              "training methods");
+        cmdline.add("", "criterion",            "training criteria");
+        cmdline.add("", "batch",                "batch optimization algorithms");
+        cmdline.add("", "stoch",                "stochastic optimization algorithms");
+        cmdline.add("", "system",               "system: all available information");
+        cmdline.add("", "sys-logical-cpus",     "system: number of logical cpus");
+        cmdline.add("", "sys-physical-cpus",    "system: number of physical cpus");
+        cmdline.add("", "sys-memsize",          "system: memory size in GB");
 
         cmdline.process(argc, argv);
 
@@ -67,6 +70,9 @@ int main(int argc, const char* argv[])
         const bool has_batch = cmdline.has("batch");
         const bool has_stoch = cmdline.has("stoch");
         const bool has_system = cmdline.has("system");
+        const bool has_sys_logical = cmdline.has("sys-logical-cpus");
+        const bool has_sys_physical = cmdline.has("sys-physical-cpus");
+        const bool has_sys_memsize = cmdline.has("sys-memsize");
 
         if (    !has_loss &&
                 !has_task &&
@@ -76,7 +82,10 @@ int main(int argc, const char* argv[])
                 !has_criterion &&
                 !has_batch &&
                 !has_stoch &&
-                !has_system)
+                !has_system &&
+                !has_sys_logical &&
+                !has_sys_physical &&
+                !has_sys_memsize)
         {
                 cmdline.usage();
                 return EXIT_FAILURE;
@@ -115,10 +124,16 @@ int main(int argc, const char* argv[])
         {
                 print<stoch_optimizer>("stochastic optimizer");
         }
-        if (has_system)
+        if (has_system || has_sys_physical)
         {
                 std::cout << "physical CPUs..." << get_physical_cpus() << std::endl;
+        }
+        if (has_system || has_sys_logical)
+        {
                 std::cout << "logical CPUs...." << get_logical_cpus() << std::endl;
+        }
+        if (has_system || has_sys_memsize)
+        {
                 std::cout << "memsize........." << get_memsize_gb() << "GB" << std::endl;
         }
 
