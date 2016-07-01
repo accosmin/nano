@@ -10,8 +10,10 @@ namespace nano
         {
                 ls_step_t step(step0);
 
+                const int max_iters = 100;
+
                 scalar_t t = t0;
-                while (t > ls_step_t::minimum() && t < ls_step_t::maximum())
+                for (int i = 0; i < max_iters && t > ls_step_t::minimum() && t < ls_step_t::maximum(); ++ i)
                 {
                         if (!step.reset(t))
                         {
