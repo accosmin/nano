@@ -37,9 +37,8 @@
 #if defined(__APPLE__)
         #include <sys/sysctl.h>
 #elif defined(__linux__)
-        #include <cstdlib>
-        #include <string>
-        #include <fstream>
+        #include <unistd.h>
+        #include <sys/sysinfo.h>
 #endif
 
 // system information
@@ -80,40 +79,30 @@ namespace nano
         }
 
 #elif defined(__linux__)
-        template <typename tinteger>
-        tinteger system_value(const char* command, const tinteger default_value)
-        {
-                static const char* filename = "/tmp/cmd.txt";
-
-                const auto ret = std::system((std::string(command) + " > " + filename).c_str());
-                NANO_UNUSED1(ret);
-
-                tinteger value = default_value;
-                std::ifstream is(filename);
-                is >> value;
-                return value;
-        }
-
         inline unsigned int logical_cpus()
         {
-                static const auto ret =
-                system_value<unsigned int>("grep processor /proc/cpuinfo | wc -l", 0);
-                return ret;
+                return (unsigned int)sysconf(_SC_NPROCESSORS_ONLN);
         }
 
         inline unsigned int physical_cpus()
         {
-                static const auto ret =
-                system_value<unsigned int>("grep cores /proc/cpuinfo | cut -d ':' -f 2 | sort -u", 0);
-                return ret;
+                unsigned int registers[4];
+                __asm__ __volatile__ ("cpuid " :
+                      "=a" (registers[0]),
+                      "=b" (registers[1]),
+                      "=c" (registers[2]),
+                      "=d" (registers[3])
+                      : "a" (1), "c" (0));
+                const unsigned CPUFeatureSet = registers[3];
+                const bool hyperthreading = CPUFeatureSet & (1 << 28);
+                return hyperthreading ? (logical_cpus() / 2) : logical_cpus();
         }
 
         inline unsigned long long int memsize()
         {
-                static const unsigned long long int kilo = 1024;
-                static const auto ret =
-                system_value<unsigned long long int>("grep MemTotal /proc/meminfo | tr -s ' ' | cut -d ' ' -f 2", 0) * kilo;
-                return ret;
+                struct sysinfo info;
+                sysinfo(&info);
+                return (unsigned long long int)info.totalram * (unsigned long long int)info.mem_unit;
         }
 #endif
 }
