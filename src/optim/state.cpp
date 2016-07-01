@@ -1,4 +1,5 @@
 #include "state.h"
+#include "problem.h"
 
 namespace nano
 {
@@ -10,6 +11,44 @@ namespace nano
                 m_gcalls(0),
                 m_status(status::max_iters)
         {
+        }
+
+        state_t::state_t(const problem_t& problem, const vector_t& x0) :
+                state_t(problem.size())
+        {
+                x = x0;
+                f = problem(x, g);
+        }
+
+        void state_t::update(const problem_t& problem, const vector_t& xx)
+        {
+                x = xx;
+                f = problem(x, g);
+
+                m_iterations ++;
+                m_fcalls = problem.fcalls();
+                m_gcalls = problem.gcalls();
+        }
+
+        void state_t::update(const problem_t& problem, const scalar_t t)
+        {
+                x.noalias() += t * d;
+                f = problem(x, g);
+
+                m_iterations ++;
+                m_fcalls = problem.fcalls();
+                m_gcalls = problem.gcalls();
+        }
+
+        void state_t::update(const problem_t& problem, const scalar_t t, const scalar_t ft, const vector_t& gt)
+        {
+                x.noalias() += t * d;
+                f = ft;
+                g = gt;
+
+                m_iterations ++;
+                m_fcalls = problem.fcalls();
+                m_gcalls = problem.gcalls();
         }
 
         bool state_t::update(const state_t& state)

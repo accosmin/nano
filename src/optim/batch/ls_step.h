@@ -1,5 +1,6 @@
 #pragma once
 
+#include "optim/state.h"
 #include "optim/problem.h"
 
 namespace nano

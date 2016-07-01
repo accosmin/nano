@@ -8,6 +8,7 @@
 namespace nano
 {
         struct state_t;
+        class problem_t;
 
         bool operator<(const state_t& one, const state_t& two);
 
@@ -37,57 +38,23 @@ namespace nano
                 ///
                 /// \brief constructor
                 ///
-                template <typename tproblem>
-                state_t(const tproblem& problem, const vector_t& x0) :
-                        state_t(problem.size())
-                {
-                        x = x0;
-                        f = problem(x, g);
-                }
+                state_t(const problem_t& problem, const vector_t& x0);
 
                 ///
                 /// \brief update current state (move to another position)
                 ///
-                template <typename tproblem>
-                void update(const tproblem& problem, const vector_t& xx)
-                {
-                        x = xx;
-                        f = problem(x, g);
-
-                        m_iterations ++;
-                        m_fcalls = problem.fcalls();
-                        m_gcalls = problem.gcalls();
-                }
+                void update(const problem_t& problem, const vector_t& xx);
 
                 ///
                 /// \brief update current state (move t along the chosen direction)
                 ///
-                template <typename tproblem>
-                void update(const tproblem& problem, const scalar_t t)
-                {
-                        x.noalias() += t * d;
-                        f = problem(x, g);
-
-                        m_iterations ++;
-                        m_fcalls = problem.fcalls();
-                        m_gcalls = problem.gcalls();
-                }
+                void update(const problem_t& problem, const scalar_t t);
 
                 ///
                 /// \brief update current state (move t along the chosen direction,
                 /// but the function value & gradient are already computed)
                 ///
-                template <typename tproblem>
-                void update(const tproblem& problem, const scalar_t t, const scalar_t ft, const vector_t& gt)
-                {
-                        x.noalias() += t * d;
-                        f = ft;
-                        g = gt;
-
-                        m_iterations ++;
-                        m_fcalls = problem.fcalls();
-                        m_gcalls = problem.gcalls();
-                }
+                void update(const problem_t& problem, const scalar_t t, const scalar_t ft, const vector_t& gt);
 
                 ///
                 /// \brief update the current state (if an improvement)
@@ -107,7 +74,7 @@ namespace nano
                 ///
                 scalar_t convergence_criteria() const
                 {
-                        return (g.template lpNorm<Eigen::Infinity>()) / (1 + std::fabs(f));
+                        return (g.lpNorm<Eigen::Infinity>()) / (1 + std::fabs(f));
                 }
 
                 // attributes

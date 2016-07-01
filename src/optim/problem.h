@@ -1,6 +1,7 @@
 #pragma once
 
-#include "state.h"
+#include "arch.h"
+#include "tensor.h"
 #include <functional>
 
 namespace nano
