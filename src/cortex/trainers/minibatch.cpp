@@ -3,7 +3,6 @@
 #include "optim/batch.h"
 #include "math/clamp.hpp"
 #include "cortex/model.h"
-#include "thread/thread.h"
 #include "math/numeric.hpp"
 #include "math/epsilon.hpp"
 #include "text/to_string.hpp"
@@ -66,7 +65,7 @@ namespace nano
                 const auto test_fold = fold_t{fold, protocol::test};
 
                 const auto train_size = task.n_samples(train_fold);
-                const auto batch_size = 32 * thread::concurrency();
+                const auto batch_size = 32 * nano::logical_cpus();
                 const auto epoch_size = idiv(train_size, batch_size);
                 const auto epoch_iterations = size_t(4);
                 const auto history_size = epoch_iterations;

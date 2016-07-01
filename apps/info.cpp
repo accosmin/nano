@@ -126,15 +126,15 @@ int main(int argc, const char* argv[])
         }
         if (has_system || has_sys_physical)
         {
-                std::cout << "physical CPUs..." << get_physical_cpus() << std::endl;
+                std::cout << "physical CPUs..." << nano::physical_cpus() << std::endl;
         }
         if (has_system || has_sys_logical)
         {
-                std::cout << "logical CPUs...." << get_logical_cpus() << std::endl;
+                std::cout << "logical CPUs...." << nano::logical_cpus() << std::endl;
         }
         if (has_system || has_sys_memsize)
         {
-                std::cout << "memsize........." << get_memsize_gb() << "GB" << std::endl;
+                std::cout << "memsize........." << nano::memsize_gb() << "GB" << std::endl;
         }
 
         // OK

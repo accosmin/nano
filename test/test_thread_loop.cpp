@@ -1,5 +1,4 @@
 #include "unit_test.hpp"
-#include "thread/thread.h"
 #include "thread/loopi.hpp"
 #include "math/epsilon.hpp"
 #include <numeric>
@@ -84,7 +83,7 @@ NANO_CASE(evaluate)
                 const scalar_t mt = test_mt<scalar_t>(size, op, 1);
                 NANO_CHECK_CLOSE(st, mt, nano::epsilon1<scalar_t>());
 
-                for (size_t nthreads = 1; nthreads <= thread::concurrency(); nthreads += 2)
+                for (size_t nthreads = 1; nthreads <= nano::logical_cpus(); nthreads += 2)
                 {
                         for (size_t splits = 1; splits <= 8; ++ splits)
                         {

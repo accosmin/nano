@@ -3,7 +3,6 @@
 #include "cortex/class.h"
 #include "cortex/cortex.h"
 #include "math/clamp.hpp"
-#include "thread/thread.h"
 #include "math/random.hpp"
 #include "math/numeric.hpp"
 #include "tensor/numeric.hpp"
@@ -50,7 +49,7 @@ int main(int argc, const char *argv[])
         const color_mode cmd_color = color_mode::luma;
 
         const size_t cmd_min_nthreads = 1;
-        const size_t cmd_max_nthreads = thread::concurrency();
+        const size_t cmd_max_nthreads = nano::logical_cpus();
 
         // generate synthetic task
         charset_task_t task(charset::digit, cmd_color, cmd_rows, cmd_cols, cmd_samples);

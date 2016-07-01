@@ -1,6 +1,5 @@
 #include "unit_test.hpp"
 #include "thread/pool.h"
-#include "thread/thread.h"
 #include "math/random.hpp"
 
 NANO_BEGIN_MODULE(test_thread_pool)
@@ -9,7 +8,7 @@ NANO_CASE(empty)
 {
         auto& pool = thread::pool_t::instance();
 
-        const size_t n_threads = thread::concurrency();
+        const size_t n_threads = nano::logical_cpus();
         const size_t n_active_workers = n_threads;
 
         NANO_CHECK_EQUAL(pool.n_workers(), n_threads);
@@ -21,7 +20,7 @@ NANO_CASE(enqueue)
 {
         auto& pool = thread::pool_t::instance();
 
-        const size_t n_threads = thread::concurrency();
+        const size_t n_threads = nano::logical_cpus();
         const size_t n_max_tasks = n_threads * 16;
 
         for (size_t n_active_workers = 1; n_active_workers <= n_threads; ++ n_active_workers)

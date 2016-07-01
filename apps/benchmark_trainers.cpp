@@ -2,7 +2,6 @@
 #include "text/cmdline.h"
 #include "cortex/cortex.h"
 #include "cortex/logger.h"
-#include "thread/thread.h"
 #include "cortex/measure.hpp"
 #include "text/to_params.hpp"
 #include "optim/batch/types.h"
@@ -73,7 +72,7 @@ static void evaluate(model_t& model,
         const std::vector<stoch_optimizer>& stochastic_optimizers,
         const string_t& basename, const string_t& basepath, table_t& table)
 {
-        const auto nthreads = thread::concurrency();
+        const auto nthreads = nano::logical_cpus();
         const auto policy = trainer_policy::all_epochs;
 
         for (auto optimizer : batch_optimizers)
@@ -188,7 +187,7 @@ int main(int argc, const char* argv[])
         // create task
         const size_t rows = 16;
         const size_t cols = 16;
-        const size_t count = thread::concurrency() * 32 * 20;
+        const size_t count = nano::logical_cpus() * 32 * 20;
         const color_mode color = color_mode::rgb;
 
         charset_task_t task(charset::digit, color, rows, cols, count);

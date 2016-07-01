@@ -17,7 +17,6 @@ build_app(embed.cpp cortex)
 build_app(info_archive.cpp cortex)
 build_app(info.cpp cortex)
 build_app(info_task.cpp cortex)
-build_app(max_threads.cpp thread)
 build_app(train.cpp cortex)
 build_app(evaluate.cpp cortex)
 build_app(warp.cpp cortex)
@@ -25,7 +24,6 @@ build_app(generate_convnets.cpp cortex)
 
 # install (some) programs
 set(programs
-        max_threads
         info
         info_task
         train

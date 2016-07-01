@@ -6,7 +6,6 @@ set(libthread_sources
         ${CMAKE_CURRENT_SOURCE_DIR}/pool.h
         ${CMAKE_CURRENT_SOURCE_DIR}/queue.h
         ${CMAKE_CURRENT_SOURCE_DIR}/section.hpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/thread.h
         ${CMAKE_CURRENT_SOURCE_DIR}/worker.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/worker.h)
 

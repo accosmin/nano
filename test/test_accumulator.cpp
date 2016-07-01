@@ -1,7 +1,6 @@
 #include "unit_test.hpp"
 #include "math/abs.hpp"
 #include "cortex/cortex.h"
-#include "thread/thread.h"
 #include "math/epsilon.hpp"
 #include "cortex/accumulator.h"
 #include "cortex/layers/make_layers.h"
@@ -57,7 +56,7 @@ NANO_CASE(evaluate)
         NANO_CHECK_CLOSE(vgrad1, value1, nano::epsilon1<scalar_t>());
 
         // check results with multiple threads
-        for (size_t th = 2; th <= thread::concurrency(); ++ th)
+        for (size_t th = 2; th <= nano::logical_cpus(); ++ th)
         {
                 accumulator_t laccx(*model, *loss, *criterion, criterion_t::type::value, lambda); laccx.set_threads(th);
                 accumulator_t gaccx(*model, *loss, *criterion, criterion_t::type::vgrad, lambda); gaccx.set_threads(th);
