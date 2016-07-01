@@ -35,6 +35,16 @@
 #define NANO_STRINGIFY(x) NANO_STRINGIFY_(x)
 
 // system information
+unsigned int get_logical_cpus();
+unsigned int get_physical_cpus();
+unsigned long long int get_memsize();
+
+inline unsigned int get_memsize_gb()
+{
+        const unsigned long long int giga = 1LL << 30;
+        return static_cast<unsigned int>((get_memsize() + giga - 1) / giga);
+}
+
 #if defined(__APPLE__)
         #include <sys/sysctl.h>
 
@@ -43,27 +53,55 @@
         {
                 tinteger value = 0;
                 size_t size = sizeof(value);
-                return sysctlbyname(name, &value, &size, NULL, 0) ? default_value : value;
+                return sysctlbyname(name, &value, &size, nullptr, 0) ? default_value : value;
         }
 
-        inline auto get_logical_cpus()
+        inline unsigned int get_logical_cpus()
         {
                 return get_sysctl_var<unsigned int>("hw.logicalcpu", 0);
         }
 
-        inline auto get_physical_cpus()
+        inline unsigned int get_physical_cpus()
         {
                 return get_sysctl_var<unsigned int>("hw.physicalcpu", 0);
         }
 
-        inline auto get_memsize()
+        inline unsigned long long int get_memsize()
         {
-                return get_sysctl_var<unsigned long int>("hw.memsize", 0);
+                return get_sysctl_var<unsigned long long int>("hw.memsize", 0);
         }
 
-        inline auto get_memsize_gb()
+#elif defined(__linux__)
+        #include <cstdlib>
+        #include <string>
+        #include <fstream>
+
+        template <typename tinteger>
+        tinteger get_command_value(const char* command, const tinteger default_value)
         {
-                const unsigned long int giga = 1LL << 30;
-                return static_cast<unsigned int>((get_memsize() + giga - 1) / giga);
+                static const char* filename = "/tmp/cmd.txt";
+
+                const auto ret = std::system((std::string(command) + " > " + filename).c_str());
+                NANO_UNUSED1(ret);
+
+                tinteger value = default_value;
+                std::ifstream is(filename);
+                is >> value;
+                return value;
+        }
+
+        inline unsigned int get_logical_cpus()
+        {
+                return get_command_value<unsigned int>("grep processor /proc/cpuinfo | wc -l", 0);
+        }
+
+        inline unsigned int get_physical_cpus()
+        {
+                return get_command_value<unsigned int>("grep cores /proc/cpuinfo | cut -d ':' -f 2 | sort -u", 0);
+        }
+
+        inline unsigned long long int get_memsize()
+        {
+                return get_command_value<unsigned long long int>("grep MemTotal /proc/meminfo | tr -s ' ' | cut -d ' ' -f 2", 0) * 1024;
         }
 #endif
