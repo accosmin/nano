@@ -59,7 +59,10 @@ namespace nano
                         append(std::make_shared<function_qing_t>(dims), dims, funcs);
                         append(std::make_shared<function_cauchy_t>(dims), dims, funcs);
                         append(std::make_shared<function_sargan_t>(dims), dims, funcs);
-                        append(std::make_shared<function_powell_t>(dims), dims, funcs);
+                        if (dims % 4 == 0)
+                        {
+                                append(std::make_shared<function_powell_t>(dims), dims, funcs);
+                        }
                         append(std::make_shared<function_zakharov_t>(dims), dims, funcs);
                         append(std::make_shared<function_rosenbrock_t>(dims), dims, funcs);
                         append(std::make_shared<function_exponential_t>(dims), dims, funcs);
