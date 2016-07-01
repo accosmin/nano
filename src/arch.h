@@ -39,6 +39,8 @@
 #elif defined(__linux__)
         #include <unistd.h>
         #include <sys/sysinfo.h>
+#else
+        #error Unsupported platform
 #endif
 
 // system information
