@@ -19,13 +19,12 @@ namespace nano
                 const scalar_t gamma,
                 const scalar_t delta,
                 const scalar_t omega,
-                const scalar_t ro,
-                const int max_iters) const
+                const scalar_t ro) const
         {
                 ls_step_t a(step0), b(step0), c(step0);
 
                 // bracket the initial step size
-                c.reset(t0);
+                c.update(t0);
                 std::tie(a, b) = bracket(step0, c, epsilon, theta, ro);
 
                 // reset to the original interval [0, t0) if bracketing fails
@@ -42,7 +41,7 @@ namespace nano
 
                 const scalar_t approx_epsilon = epsilon * m_sumC;
 
-                for (int i = 0; i < max_iters && a && b; i ++)
+                for (int i = 0; i < 100 && a && b; i ++)
                 {
                         // check Armijo+Wolfe or approximate Wolfe condition
                         if (    (!m_approx && a.has_armijo(c1) && a.has_wolfe(c2)) ||
@@ -58,7 +57,7 @@ namespace nano
                         // update search interval
                         if ((B.alpha() - A.alpha()) > gamma * (b.alpha() - a.alpha()))
                         {
-                                c.reset((A.alpha() + B.alpha()) / 2);
+                                c.update((A.alpha() + B.alpha()) / 2);
                                 std::tie(a, b) = update(A, B, c, approx_epsilon, theta);
                         }
                         else
@@ -86,11 +85,10 @@ namespace nano
         std::pair<ls_step_t, ls_step_t> ls_cgdescent_t::bracket(const ls_step_t& step0, ls_step_t c,
                 const scalar_t epsilon,
                 const scalar_t theta,
-                const scalar_t ro,
-                const int max_iters)
+                const scalar_t ro)
         {
                 std::vector<ls_step_t> steps;
-                for (int i = 0; i <= max_iters && c; i ++)
+                for (int i = 0; i <= 100 && c; i ++)
                 {
                         if (c.gphi() >= 0)
                         {
@@ -113,7 +111,7 @@ namespace nano
                         else
                         {
                                 steps.push_back(c);
-                                c.reset(ro * c.alpha());
+                                c.update(ro * c.alpha());
                         }
                 }
 
@@ -127,7 +125,7 @@ namespace nano
                                (b.gphi() - a.gphi());
 
                 ls_step_t c = a;
-                if (!c.reset(t))
+                if (!c.update(t))
                 {
                         return a;
                 }
@@ -189,13 +187,12 @@ namespace nano
 
         std::pair<ls_step_t, ls_step_t> ls_cgdescent_t::updateU(ls_step_t a, ls_step_t b,
                 const scalar_t epsilon,
-                const scalar_t theta,
-                const int max_iters)
+                const scalar_t theta)
         {
                 ls_step_t c(a);
-                for (int i = 0; i < max_iters && (b.alpha() - a.alpha()) > a.minimum(); i ++)
+                for (int i = 0; i < 100 && (b.alpha() - a.alpha()) > a.minimum(); i ++)
                 {
-                        c.reset((1 - theta) * a.alpha() + theta * b.alpha());
+                        c.update((1 - theta) * a.alpha() + theta * b.alpha());
 
                         if (c.gphi() >= 0)
                         {

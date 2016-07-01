@@ -28,17 +28,23 @@ namespace nano
                 ///
                 /// \brief minimum allowed line-search step
                 ///
-                static scalar_t minimum() { return scalar_t(10) * std::numeric_limits<scalar_t>::epsilon(); }
+                static scalar_t minimum()
+                {
+                        return scalar_t(10) * std::numeric_limits<scalar_t>::epsilon();
+                }
 
                 ///
                 /// \brief maximum allowed line-search step
                 ///
-                static scalar_t maximum() { return scalar_t(1) / minimum(); }
+                static scalar_t maximum()
+                {
+                        return scalar_t(1) / minimum();
+                }
 
                 ///
                 /// \brief change the line-search step
                 ///
-                bool reset(const scalar_t alpha)
+                bool update(const scalar_t alpha)
                 {
                         if (!std::isfinite(alpha))
                         {

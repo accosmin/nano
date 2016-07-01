@@ -13,10 +13,10 @@ namespace nano
                 ls_step_t stept = step0;
 
                 scalar_t t = t0;
-                for (int i = 1; t < ls_step_t::maximum(); i ++)
+                for (int i = 1; i < 100 && t < ls_step_t::maximum(); i ++)
                 {
                         // check sufficient decrease
-                        if (!stept.reset(t))
+                        if (!stept.update(t))
                         {
                                 return step0;
                         }
@@ -87,7 +87,7 @@ namespace nano
                         }
 
                         // check sufficient decrease
-                        if (!stept.reset(t))
+                        if (!stept.update(t))
                         {
                                 return step0;
                         }

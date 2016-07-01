@@ -23,7 +23,7 @@ namespace nano
                         // following CG_DESCENT's initial procedure ...
                         const scalar_t phi0 = scalar_t(0.01);
 
-                        const scalar_t xnorm = cstate.x.template lpNorm<Eigen::Infinity>();
+                        const scalar_t xnorm = cstate.x.lpNorm<Eigen::Infinity>();
                         const scalar_t fnorm = std::fabs(cstate.f);
 
                         if (xnorm > 0)

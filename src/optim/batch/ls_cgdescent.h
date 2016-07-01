@@ -33,8 +33,7 @@ namespace nano
                         const scalar_t gamma = scalar_t(0.66),
                         const scalar_t delta = scalar_t(0.7),
                         const scalar_t omega = scalar_t(1e-3),
-                        const scalar_t ro = scalar_t(5.0),
-                        const int max_iters = 32) const;
+                        const scalar_t ro = scalar_t(5.0)) const;
 
         private:
 
@@ -46,8 +45,7 @@ namespace nano
                 static std::pair<ls_step_t, ls_step_t> bracket(const ls_step_t& step0, ls_step_t c,
                         const scalar_t epsilon,
                         const scalar_t theta,
-                        const scalar_t ro,
-                        const int max_iters = 32);
+                        const scalar_t ro);
 
                 ///
                 /// \brief [a, b] line-search interval secant interpolation (see CG_DESCENT)
@@ -73,8 +71,7 @@ namespace nano
                 ///
                 static std::pair<ls_step_t, ls_step_t> updateU(ls_step_t a, ls_step_t b,
                         const scalar_t epsilon,
-                        const scalar_t theta,
-                        const int max_iters = 128);
+                        const scalar_t theta);
 
         private:
 
