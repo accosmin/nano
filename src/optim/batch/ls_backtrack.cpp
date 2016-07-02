@@ -2,18 +2,20 @@
 
 namespace nano
 {
-        bool ls_backtrack_t::operator()(
+        ls_step_t ls_backtrack_t::operator()(
                 const ls_strategy strategy, const scalar_t c1, const scalar_t c2,
-                ls_step_t& step, const scalar_t t0,
+                const ls_step_t& step0, const scalar_t t0,
                 const scalar_t decrement,
                 const scalar_t increment) const
         {
+                ls_step_t step(step0);
+
                 scalar_t t = t0;
                 for (int i = 0; i < 100 && t > ls_step_t::minimum() && t < ls_step_t::maximum(); ++ i)
                 {
                         if (!step.update(t))
                         {
-                                return false;
+                                return step0;
                         }
 
                         // check Armijo condition
@@ -23,7 +25,7 @@ namespace nano
                         }
                         else if (strategy == ls_strategy::backtrack_armijo)
                         {
-                                return true;
+                                return step;
                         }
 
                         // check Wolfe condition
@@ -33,7 +35,7 @@ namespace nano
                         }
                         else if (strategy == ls_strategy::backtrack_wolfe)
                         {
-                                return true;
+                                return step;
                         }
 
                         // check strong Wolfe condition
@@ -43,12 +45,12 @@ namespace nano
                         }
                         else
                         {
-                                return true;
+                                return step;
                         }
                 }
 
                 // NOK, give up
-                return false;
+                return step0;
         }
 }
 

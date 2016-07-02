@@ -17,9 +17,9 @@ namespace nano
                 ///
                 /// \brief compute the current step size
                 ///
-                bool operator()(
+                ls_step_t operator()(
                         const ls_strategy strategy, const scalar_t c1, const scalar_t c2,
-                        ls_step_t& step, const scalar_t t0,
+                        const ls_step_t& step0, const scalar_t t0,
                         const scalar_t decrement = scalar_t(0.5),
                         const scalar_t increment = scalar_t(2.1)) const;
         };

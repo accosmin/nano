@@ -42,14 +42,13 @@ namespace nano
                 case ls_strategy::backtrack_armijo:
                 case ls_strategy::backtrack_wolfe:
                 case ls_strategy::backtrack_strong_wolfe:
-                        return  m_ls_backtrack(m_strategy, m_c1, m_c2, step0, t0) &&
-                                setup(problem, step0, state);
+                        return setup(problem, step0, m_ls_backtrack(m_strategy, m_c1, m_c2, step0, t0), state);
 
                 case ls_strategy::cg_descent:
-                        return  setup(problem, step0, m_ls_cgdescent(m_strategy, m_c1, m_c2, step0, t0), state);
+                        return setup(problem, step0, m_ls_cgdescent(m_strategy, m_c1, m_c2, step0, t0), state);
 
                 case ls_strategy::interpolation:
-                        return  setup(problem, step0, m_ls_interpolate(m_strategy, m_c1, m_c2, step0, t0), state);
+                        return setup(problem, step0, m_ls_interpolate(m_strategy, m_c1, m_c2, step0, t0), state);
 
                 default:
                         throw std::runtime_error("unhandled line-search strategy type");

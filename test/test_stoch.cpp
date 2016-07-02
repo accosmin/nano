@@ -10,13 +10,13 @@ using namespace nano;
 
 static void check_function(const function_t& function)
 {
-        const auto epochs = size_t(32);
-        const auto epoch_size = size_t(16);
-        const auto trials = size_t(16);
+        const auto epochs = size_t(100);
+        const auto epoch_size = size_t(10);
+        const auto trials = size_t(20);
 
         const auto dims = function.problem().size();
 
-        random_t<scalar_t> rgen(scalar_t(-1), scalar_t(+1));
+        auto rgen = make_rng(scalar_t(-1), scalar_t(+1));
 
         // generate fixed random trials
         std::vector<vector_t> x0s(trials);
@@ -48,7 +48,7 @@ static void check_function(const function_t& function)
 
                         const auto f_thres = epsilon3<scalar_t>();
                         const auto g_thres = std::cbrt(epsilon3<scalar_t>());
-                        const auto x_thres = std::sqrt(epsilon3<scalar_t>());
+                        const auto x_thres = std::cbrt(epsilon3<scalar_t>()) * scalar_t(10);
 
                         // ignore out-of-domain solutions
                         if (!function.is_valid(x))
