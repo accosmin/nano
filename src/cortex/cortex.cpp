@@ -34,6 +34,7 @@
 #include "criteria/average.h"
 #include "criteria/average_l2reg.h"
 #include "criteria/average_varreg.h"
+#include "criteria/softmax.h"
 
 #include <cfenv>
 
@@ -127,6 +128,7 @@ namespace nano
                         nano::get_criteria().add("avg", avg_criterion_t());
                         nano::get_criteria().add("l2n-reg", avg_l2_criterion_t());
                         nano::get_criteria().add("var-reg", avg_var_criterion_t());
+                        nano::get_criteria().add("softmax", softmax_criterion_t());
                 }
         };
 
