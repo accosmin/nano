@@ -1,4 +1,4 @@
-#include "loss_cauchy.h"
+#include "cauchy.h"
 #include <cassert>
 
 namespace nano

@@ -1,6 +1,6 @@
-#include "loss_logistic.h"
+#include "logistic.h"
 #include "cortex/class.h"
-#include "softmax.hpp"
+#include "math/softmax.hpp"
 #include <cassert>
 
 namespace nano

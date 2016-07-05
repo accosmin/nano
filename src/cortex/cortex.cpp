@@ -1,10 +1,10 @@
 #include "cortex.h"
 
-#include "losses/loss_square.h"
-#include "losses/loss_cauchy.h"
-#include "losses/loss_logistic.h"
-#include "losses/loss_classnll.h"
-#include "losses/loss_exponential.h"
+#include "losses/square.h"
+#include "losses/cauchy.h"
+#include "losses/logistic.h"
+#include "losses/classnll.h"
+#include "losses/exponential.h"
 
 #include "tasks/task_mnist.h"
 #include "tasks/task_cifar10.h"
@@ -31,9 +31,9 @@
 #include "trainers/minibatch.h"
 #include "trainers/stochastic.h"
 
-#include "criteria/avg_criterion.h"
-#include "criteria/avg_l2_criterion.h"
-#include "criteria/avg_var_criterion.h"
+#include "criteria/average.h"
+#include "criteria/average_l2reg.h"
+#include "criteria/average_varreg.h"
 
 #include <cfenv>
 

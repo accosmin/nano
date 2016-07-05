@@ -13,6 +13,7 @@ set(libmath_sources
         ${CMAKE_CURRENT_SOURCE_DIR}/quadratic.hpp
         ${CMAKE_CURRENT_SOURCE_DIR}/random.hpp
         ${CMAKE_CURRENT_SOURCE_DIR}/stats.hpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/softmax.hpp
         ${CMAKE_CURRENT_SOURCE_DIR}/tune.hpp
         ${CMAKE_CURRENT_SOURCE_DIR}/tune_result.hpp
         ${CMAKE_CURRENT_SOURCE_DIR}/tune_grid_space.hpp

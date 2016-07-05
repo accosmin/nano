@@ -1,4 +1,4 @@
-#include "loss_square.h"
+#include "square.h"
 #include <cassert>
 
 namespace nano

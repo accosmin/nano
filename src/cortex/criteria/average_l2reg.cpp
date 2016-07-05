@@ -1,4 +1,4 @@
-#include "avg_l2_criterion.h"
+#include "average_l2reg.h"
 
 namespace nano
 {

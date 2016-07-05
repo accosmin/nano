@@ -1,6 +1,6 @@
 #pragma once
 
-#include "avg_criterion.h"
+#include "average.h"
 
 namespace nano
 {

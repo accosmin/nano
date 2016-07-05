@@ -1,4 +1,4 @@
-#include "loss_classnll.h"
+#include "classnll.h"
 #include "cortex/class.h"
 #include "math/numeric.hpp"
 #include <cassert>

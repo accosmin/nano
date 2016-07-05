@@ -1,16 +1,16 @@
 #pragma once
 
-#include "avg_criterion.h"
+#include "average.h"
 
 namespace nano
-{        
+{
         ///
         /// \brief L2-norm regularized loss
         ///
         class avg_l2_criterion_t : public avg_criterion_t
         {
         public:
-                
+
                 NANO_MAKE_CLONABLE(avg_l2_criterion_t, "L2-norm regularized loss")
 
                 ///
