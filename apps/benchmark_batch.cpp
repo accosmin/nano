@@ -43,7 +43,6 @@ static void check_function(
                 const auto params = batch_params_t(iterations, epsilon, optimizer, ls_init, ls_strat);
                 const auto op = [&] (const problem_t& problem, const vector_t& x0)
                 {
-
                         return minimize(params, problem, x0);
                 };
 

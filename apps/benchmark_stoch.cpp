@@ -15,7 +15,7 @@ using namespace nano;
 
 template <typename tostats>
 void check_function(
-        const function_t& function, const size_t trials, const size_t epochs, const size_t epoch_size,
+        const function_t& function, const size_t trials, const size_t epochs, const size_t epoch_size, const scalar_t epsilon,
         tostats& gstats)
 {
         const auto dims = function.problem().size();
@@ -39,10 +39,15 @@ void check_function(
         // evaluate all optimizers
         for (const auto optimizer : optimizers)
         {
+                const auto params = stoch_params_t(epochs, epoch_size, optimizer);
                 const auto op = [&] (const problem_t& problem, const vector_t& x0)
                 {
-                        const auto params = stoch_params_t(epochs, epoch_size, optimizer);
-                        return minimize(params, problem, x0);
+                        auto state = minimize(params, problem, x0);
+                        if (state.converged(epsilon))
+                        {
+                                state.m_status = state_t::status::converged;
+                        }
+                        return state;
                 };
 
                 const auto name =
@@ -62,8 +67,9 @@ int main(int argc, const char* argv[])
         cmdline.add("", "min-dims",     "minimum number of dimensions for each test function (if feasible)", "100");
         cmdline.add("", "max-dims",     "maximum number of dimensions for each test function (if feasible)", "1000");
         cmdline.add("", "trials",       "number of random trials for each test function", "100");
-        cmdline.add("", "epochs",       "optimization: number of epochs", "200");
-        cmdline.add("", "epoch-size",   "optimization: number of iterations per epoch", "20");
+        cmdline.add("", "epochs",       "optimization: number of epochs", "100");
+        cmdline.add("", "epoch-size",   "optimization: number of iterations per epoch", "10");
+        cmdline.add("", "epsilon",      "convergence criteria", std::sqrt(nano::epsilon3<scalar_t>()));
 
         cmdline.process(argc, argv);
 
@@ -73,12 +79,13 @@ int main(int argc, const char* argv[])
         const auto trials = cmdline.get<size_t>("trials");
         const auto epochs = cmdline.get<size_t>("epochs");
         const auto epoch_size = cmdline.get<size_t>("epoch-size");
+        const auto epsilon = cmdline.get<scalar_t>("epsilon");
 
         std::map<std::string, benchmark::optimizer_stat_t> gstats;
 
         foreach_test_function(make_functions(min_dims, max_dims), [&] (const function_t& function)
         {
-                check_function(function, trials, epochs, epoch_size, gstats);
+                check_function(function, trials, epochs, epoch_size, epsilon, gstats);
         });
 
         // show global statistics
