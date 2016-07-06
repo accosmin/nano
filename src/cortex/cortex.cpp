@@ -128,7 +128,7 @@ namespace nano
                         nano::get_criteria().add("avg", avg_criterion_t());
                         nano::get_criteria().add("l2n-reg", avg_l2_criterion_t());
                         nano::get_criteria().add("var-reg", avg_var_criterion_t());
-                        nano::get_criteria().add("softmax", softmax_criterion_t());
+                        nano::get_criteria().add("max", softmax_criterion_t());
                 }
         };
 

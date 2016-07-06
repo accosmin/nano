@@ -138,7 +138,7 @@ int main(int argc, const char* argv[])
         cmdline.add("", "l2n-reg",              "also evaluate the l2-norm-based regularizer");
         cmdline.add("", "var-reg",              "also evaluate the variance-based regularizer");
         cmdline.add("", "trials",               "number of models to train & evaluate", "10");
-        cmdline.add("", "epochs",               "number of epochs", "64");
+        cmdline.add("", "epochs",               "number of epochs", "100");
 
         cmdline.process(argc, argv);
 
@@ -236,8 +236,7 @@ int main(int argc, const char* argv[])
 
         const strings_t losses = { "classnll" }; //get_losses().ids();
 
-        strings_t criteria;
-        criteria.push_back("avg"); //get_criteria().ids();
+        strings_t criteria = { "avg", "max" }; //get_criteria().ids();
         if (use_reg_l2n) { criteria.push_back("l2n-reg"); }
         if (use_reg_var) { criteria.push_back("var-reg"); }
 
