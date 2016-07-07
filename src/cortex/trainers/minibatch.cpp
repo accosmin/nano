@@ -32,7 +32,7 @@ namespace nano
                 const auto epochs = clamp(from_params<size_t>(configuration(), "epochs", 16), 1, 1024);
                 const auto optimizer = from_params<batch_optimizer>(configuration(), "opt", batch_optimizer::CGD);
                 const auto policy = from_params<trainer_policy>(configuration(), "policy", trainer_policy::stop_early);
-                const auto epsilon = epsilon3<scalar_t>();
+                const auto epsilon = epsilon0<scalar_t>();
                 const auto verbose = true;
 
                 // train the model
