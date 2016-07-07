@@ -16,10 +16,7 @@ namespace nano
                         return this->operator()(param, problem, x0, hypers...);
                 };
 
-                return  nano::tune(op,
-                        make_alpha0s(),
-                        make_decays(),
-                        make_finite_space(scalar_t(0.05), scalar_t(0.10), scalar_t(0.20))).optimum();
+                return nano::tune(op, make_alpha0s(), make_decays(), make_finite_space(scalar_t(0.0))).optimum();
         }
 
         state_t stoch_ag_t::operator()(const stoch_params_t& param, const problem_t& problem, const vector_t& x0,
