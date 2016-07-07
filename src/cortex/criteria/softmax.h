@@ -11,7 +11,7 @@ namespace nano
         {
         public:
 
-                NANO_MAKE_CLONABLE(softmax_criterion_t, "average loss")
+                NANO_MAKE_CLONABLE(softmax_criterion_t, "softmax loss, parameters: beta=5[1,10]")
 
                 ///
                 /// \brief constructor
@@ -59,6 +59,7 @@ namespace nano
         protected:
 
                 // attributes
+                scalar_t                m_beta;
                 scalar_t                m_value;        ///< cumulated loss value
                 vector_t                m_vgrad;        ///< cumulated gradient
         };

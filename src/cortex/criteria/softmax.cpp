@@ -1,11 +1,12 @@
 #include "softmax.h"
+#include "math/clamp.hpp"
+#include "text/from_params.hpp"
 
 namespace nano
 {
-        const scalar_t beta = 10;
-
         softmax_criterion_t::softmax_criterion_t(const string_t& configuration) :
                 criterion_t(configuration),
+                m_beta(clamp(from_params(configuration, "beta", scalar_t(5)), scalar_t(1), scalar_t(10))),
                 m_value(0.0)
         {
         }
@@ -19,13 +20,13 @@ namespace nano
 
         void softmax_criterion_t::accumulate(const scalar_t value)
         {
-                m_value += std::exp(value * beta);
+                m_value += std::exp(value * m_beta);
         }
 
         void softmax_criterion_t::accumulate(const vector_t& vgrad, const scalar_t value)
         {
-                m_value += std::exp(value * beta);
-                m_vgrad += vgrad * std::exp(value * beta);
+                m_value += std::exp(value * m_beta);
+                m_vgrad += vgrad * std::exp(value * m_beta);
         }
 
         void softmax_criterion_t::accumulate(const criterion_t& other)
@@ -40,7 +41,7 @@ namespace nano
         {
                 assert(count() > 0);
 
-                return std::log(m_value) / beta;
+                return std::log(m_value) / m_beta;
         }
 
         vector_t softmax_criterion_t::vgrad() const
