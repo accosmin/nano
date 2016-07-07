@@ -7,21 +7,21 @@ namespace nano
         ///
         /// \brief average loss
         ///
-        class avg_criterion_t : public criterion_t
+        class average_criterion_t : public criterion_t
         {
         public:
 
-                NANO_MAKE_CLONABLE(avg_criterion_t, "average loss")
+                NANO_MAKE_CLONABLE(average_criterion_t, "average loss")
 
                 ///
                 /// \brief constructor
                 ///
-                explicit avg_criterion_t(const string_t& configuration = string_t());
+                explicit average_criterion_t(const string_t& configuration = string_t());
 
                 ///
                 /// \brief destructor
                 ///
-                virtual ~avg_criterion_t() {}
+                virtual ~average_criterion_t() {}
 
                 ///
                 /// \brief cumulated loss value

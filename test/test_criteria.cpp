@@ -28,7 +28,7 @@ NANO_CASE(evaluate)
         const strings_t ids = get_criteria().ids();
         for (const string_t& id : ids)
         {
-                const auto criterion = get_criteria().get(id);
+                const auto criterion = get_criteria().get(id, "beta=1.0");
 
                 accumulator_t lacc(*model, *loss, *criterion, criterion_t::type::value, lambda); lacc.set_threads(1);
                 accumulator_t gacc(*model, *loss, *criterion, criterion_t::type::vgrad, lambda); gacc.set_threads(1);
@@ -65,7 +65,7 @@ NANO_CASE(evaluate)
                 model->save_params(x);
 
                 NANO_CHECK_GREATER(problem(x), scalar_t(0));
-                NANO_CHECK_LESS(problem.grad_accuracy(x), epsilon2<scalar_t>());
+                NANO_CHECK_LESS(problem.grad_accuracy(x), epsilon3<scalar_t>());
         }
 }
 

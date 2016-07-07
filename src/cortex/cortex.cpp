@@ -31,10 +31,8 @@
 #include "trainers/minibatch.h"
 #include "trainers/stochastic.h"
 
-#include "criteria/average.h"
-#include "criteria/average_l2reg.h"
-#include "criteria/average_varreg.h"
-#include "criteria/softmax.h"
+#include "criteria/l2nreg.h"
+#include "criteria/varreg.h"
 
 #include <cfenv>
 
@@ -125,10 +123,12 @@ namespace nano
                         nano::get_trainers().add("stochastic", stochastic_trainer_t());
 
                         // register criteria
-                        nano::get_criteria().add("avg", avg_criterion_t());
-                        nano::get_criteria().add("l2n-reg", avg_l2_criterion_t());
-                        nano::get_criteria().add("var-reg", avg_var_criterion_t());
+                        nano::get_criteria().add("avg", average_criterion_t());
+                        nano::get_criteria().add("avg-l2n", average_l2n_criterion_t());
+                        nano::get_criteria().add("avg-var", average_var_criterion_t());
                         nano::get_criteria().add("max", softmax_criterion_t());
+                        nano::get_criteria().add("max-l2n", softmax_l2n_criterion_t());
+                        nano::get_criteria().add("max-var", softmax_var_criterion_t());
                 }
         };
 
