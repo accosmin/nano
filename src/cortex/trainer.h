@@ -21,7 +21,7 @@ namespace nano
         NANO_PUBLIC trainer_manager_t& get_trainers();
 
         ///
-        /// \brief generic trainer: optimizes a model on a given task
+        /// \brief generic trainer: optimizes a model on a given compatible task.
         ///
         class NANO_PUBLIC trainer_t : public clonable_t<trainer_t>
         {
@@ -36,7 +36,7 @@ namespace nano
                 }
 
                 ///
-                /// \brief train the given model
+                /// \brief train the given model starting from the current model parameters
                 ///
                 virtual trainer_result_t train(
                         const task_t&, const size_t fold, const size_t nthreads,

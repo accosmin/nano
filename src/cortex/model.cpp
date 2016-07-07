@@ -90,4 +90,17 @@ namespace nano
 
                 return true;
         }
+
+        bool operator==(const model_t& model, const task_t& task)
+        {
+                return  model.idims() == task.idims() &&
+                        model.irows() == task.irows() &&
+                        model.icols() == task.icols() &&
+                        model.osize() == task.osize();
+        }
+
+        bool operator!=(const model_t& model, const task_t& task)
+        {
+                return !(model == task);
+        }
 }

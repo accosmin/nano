@@ -108,5 +108,11 @@ namespace nano
                 tensor_size_t   m_icols;        ///< input size
                 tensor_size_t   m_osize;        ///< output size
         };
+
+        ///
+        /// \brief check if the given model is compatible with the given task.
+        ///
+        NANO_PUBLIC bool operator==(const model_t& model, const task_t& task);
+        NANO_PUBLIC bool operator!=(const model_t& model, const task_t& task);
 }
 

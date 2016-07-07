@@ -20,9 +20,10 @@ namespace nano
                 const loss_t& loss, const criterion_t& criterion,
                 model_t& model) const
         {
-                // initialize the model
-                model.resize(task, true);
-                model.random_params();
+                if (model != task)
+                {
+                        throw std::runtime_error("batch trainer: mis-matching model and task");
+                }
 
                 // parameters
                 const auto epochs = clamp(from_params<size_t>(configuration(), "epochs", 1024), 4, 4096);
