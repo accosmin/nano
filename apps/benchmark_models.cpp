@@ -161,7 +161,7 @@ int main(int argc, const char *argv[])
         #undef DEFINE
 
         const auto loss = nano::get_losses().get("logistic");
-        const auto criterion = nano::get_criteria().get("l2n-reg");
+        const auto criterion = nano::get_criteria().get("avg");
 
         // construct tables to compare models
         nano::table_t ftable("model-forward [ms] / 1000 samples");
