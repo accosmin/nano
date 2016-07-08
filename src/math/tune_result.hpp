@@ -6,7 +6,7 @@
 namespace nano
 {
         ///
-        /// \brief stores the tuning result: optimum and its associated list of parameters.
+        /// \brief stores the tuning result: optimum and its associated tuple of parameters.
         ///
         template
         <
