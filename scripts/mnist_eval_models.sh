@@ -3,39 +3,38 @@
 source $(dirname $0)/common_train.sh
 
 # common parameters
-common="${task_mnist} ${loss_classnll} --threads ${max_threads}"
+common="${task_mnist} ${loss_classnll}"
+outdir="${dir_exp_mnist}/eval_models"
+mkdir -p ${outdir}
 
 # models
-conv="--model forward-network --model-params "
-conv=${conv}"conv:dims=16,rows=9,cols=9,conn=1;act-snorm;pool-soft;"
-conv=${conv}"conv:dims=32,rows=5,cols=5,conn=2;act-snorm;pool-soft;"
-conv=${conv}"conv:dims=64,rows=3,cols=3,conn=4;act-snorm;"
-
-convpsoft=${conv}                               # adaptive pooling using soft approximation of mean
-convpfull=${conv//pool-soft/pool-full}          # adaptive pooling using unconstrained weighting
-convpgauss=${conv//pool-soft/pool-gauss}        # adaptive pooling using gaussian weighting
+conv0="--model forward-network --model-params "
+conv1=${conv0}"conv:dims=16,rows=9,cols=9,conn=1;act-snorm;"
+conv2=${conv1}"conv:dims=32,rows=7,cols=7,conn=2;act-snorm;"
+conv3=${conv2}"conv:dims=64,rows=5,cols=5,conn=4;act-snorm;"
+conv4=${conv3}"conv:dims=128,rows=3,cols=3,conn=8;act-snorm;"
 
 mlp0="--model forward-network --model-params "
 mlp1=${mlp0}"affine:dims=128;act-snorm;"
 mlp2=${mlp1}"affine:dims=128;act-snorm;"
 mlp3=${mlp2}"affine:dims=128;act-snorm;"
+mlp4=${mlp3}"affine:dims=128;act-snorm;"
 
 outlayer="affine:dims=10;"
 
-models="mlp0 mlp1 mlp2 mlp3 convpsoft convpfull convpgauss"
+models=""
+models=${models}" mlp0 mlp1 mlp2 mlp3 mlp4"
+models=${models}" conv1 conv2 conv3 conv4"
 
 # trainers
 epochs=1000
 trials=10
 fn_make_trainers ${epochs}
 
-trainers="stoch_agfr"
-#trainers=${trainers}" batch_gd batch_cgd batch_lbfgs"
-#trainers=${trainers}" mbatch_gd mbatch_cgd mbatch_lbfgs"
-#trainers=${trainers}" stoch_ag stoch_aggr stoch_agfr stoch_adagrad stoch_adadelta stoch_adam stoch_sg stoch_sgm"
+trainers="stoch_ngd"
 
 # criteria
-criteria="crit_avg" #crit_l2n crit_var"
+criteria="crit_avg"
 
 # train models
 for ((trial=0;trial<${trials};trial++))
@@ -46,9 +45,9 @@ do
                 do
                         for criterion in ${criteria}
                         do
-                                mfile=${dir_exp_mnist}/trial${trial}_${trainer}_${model}_${criterion}.model
-                                sfile=${dir_exp_mnist}/trial${trial}_${trainer}_${model}_${criterion}.state
-                                lfile=${dir_exp_mnist}/trial${trial}_${trainer}_${model}_${criterion}.log
+                                mfile=${outdir}/trial${trial}_${trainer}_${model}_${criterion}.model
+                                sfile=${outdir}/trial${trial}_${trainer}_${model}_${criterion}.state
+                                lfile=${outdir}/trial${trial}_${trainer}_${model}_${criterion}.log
 
                                 params="${common} ${!model}${outlayer} ${!trainer} ${!criterion} --model-file ${mfile}"
 
