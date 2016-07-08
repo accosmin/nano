@@ -135,8 +135,6 @@ int main(int argc, const char* argv[])
         cmdline.add("", "stochastic-adam",      "evaluate stochastic optimizer ADAM");
         cmdline.add("", "stochastic-adagrad",   "evaluate stochastic optimizer ADAGRAD");
         cmdline.add("", "stochastic-adadelta",  "evaluate stochastic optimizer ADADELTA");
-        cmdline.add("", "l2n-reg",              "also evaluate the l2-norm-based regularizer");
-        cmdline.add("", "var-reg",              "also evaluate the variance-based regularizer");
         cmdline.add("", "trials",               "number of models to train & evaluate", "10");
         cmdline.add("", "epochs",               "number of epochs", "100");
 
@@ -145,8 +143,6 @@ int main(int argc, const char* argv[])
         // check arguments and options
         const bool use_mlps = cmdline.has("mlps");
         const bool use_convnets = cmdline.has("convnets");
-        const bool use_reg_l2n = cmdline.has("l2n-reg");
-        const bool use_reg_var = cmdline.has("var-reg");
         const auto trials = cmdline.get<size_t>("trials");
         const auto epochs = cmdline.get<size_t>("epochs");
 
@@ -237,8 +233,6 @@ int main(int argc, const char* argv[])
         const strings_t losses = { "classnll" }; //get_losses().ids();
 
         strings_t criteria = { "avg", "max" }; //get_criteria().ids();
-        if (use_reg_l2n) { criteria.push_back("l2n-reg"); }
-        if (use_reg_var) { criteria.push_back("var-reg"); }
 
         // vary the model
         for (const auto& net : networks)
