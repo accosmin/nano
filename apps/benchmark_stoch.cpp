@@ -68,8 +68,9 @@ int main(int argc, const char* argv[])
         cmdline.add("", "max-dims",     "maximum number of dimensions for each test function (if feasible)", "1000");
         cmdline.add("", "trials",       "number of random trials for each test function", "100");
         cmdline.add("", "epochs",       "optimization: number of epochs", "100");
-        cmdline.add("", "epoch-size",   "optimization: number of iterations per epoch", "10");
+        cmdline.add("", "epoch-size",   "optimization: number of iterations per epoch", "100");
         cmdline.add("", "epsilon",      "convergence criteria", std::sqrt(nano::epsilon3<scalar_t>()));
+        cmdline.add("", "convex",       "use only convex test functions");
 
         cmdline.process(argc, argv);
 
@@ -80,10 +81,12 @@ int main(int argc, const char* argv[])
         const auto epochs = cmdline.get<size_t>("epochs");
         const auto epoch_size = cmdline.get<size_t>("epoch-size");
         const auto epsilon = cmdline.get<scalar_t>("epsilon");
+        const auto is_convex = cmdline.has("convex");
 
         std::map<std::string, benchmark::optimizer_stat_t> gstats;
 
-        foreach_test_function(make_functions(min_dims, max_dims), [&] (const function_t& function)
+        const auto functions = (is_convex ? make_convex_functions : make_functions)(min_dims, max_dims);
+        foreach_test_function(functions, [&] (const function_t& function)
         {
                 check_function(function, trials, epochs, epoch_size, epsilon, gstats);
         });

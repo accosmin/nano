@@ -16,12 +16,12 @@ namespace nano
 
         inline auto make_decays()
         {
-                return make_finite_space(scalar_t(0), scalar_t(0.5), scalar_t(0.75));
+                return make_finite_space(scalar_t(0.1), scalar_t(0.2), scalar_t(0.5), scalar_t(0.75), scalar_t(1.0));
         }
 
         inline auto make_momenta()
         {
-                return make_finite_space(scalar_t(0.1), scalar_t(0.2), scalar_t(0.5), scalar_t(0.90));
+                return make_finite_space(scalar_t(0.5), scalar_t(0.9), scalar_t(0.95));
         }
 
         inline auto make_epsilons()
@@ -72,6 +72,7 @@ namespace nano
 
                         // log the current state & check the stopping criteria
                         astate.update(problem, xavg.value());
+                        astate.f = params.tlog(astate, config);
                         if (!params.ulog(astate, config))
                         {
                                 bstate.m_status = state_t::status::stopped;

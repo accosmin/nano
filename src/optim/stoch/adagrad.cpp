@@ -8,10 +8,11 @@ namespace nano
         {
                 const auto op = [&] (const auto... hypers)
                 {
-                        return this->operator()(param, problem, x0, hypers...);
+                        return this->operator()(param.tunable(), problem, x0, hypers...);
                 };
 
-                return nano::tune(op, make_alpha0s(), make_epsilons()).optimum();
+                const auto config = nano::tune(op, make_alpha0s(), make_epsilons());
+                return operator()(param.tuned(), problem, x0, config.param0(), config.param1());
         }
 
         state_t stoch_adagrad_t::operator()(const stoch_params_t& param, const problem_t& problem, const vector_t& x0,
