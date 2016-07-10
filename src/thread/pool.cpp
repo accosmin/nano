@@ -19,7 +19,7 @@ thread::pool_t& thread::pool_t::instance()
 
 thread::pool_t::pool_t()
 {
-        const auto n_workers = static_cast<std::size_t>(nano::physical_cpus());
+        const auto n_workers = static_cast<std::size_t>(nano::logical_cpus());
         const auto n_active_threads = n_workers;
 
         for (size_t i = 0; i < n_workers; ++ i)
@@ -54,6 +54,10 @@ void thread::pool_t::activate(std::size_t count)
 {
         const std::lock_guard<std::mutex> lock(m_queue.m_mutex);
 
+        if (!count)
+        {
+                count = n_workers();
+        }
         count = std::max(std::size_t(1), std::min(count, n_workers()));
 
         std::size_t crt_count = thread::n_active_workers(m_workers);
