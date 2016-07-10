@@ -28,7 +28,7 @@ int main(int argc, const char *argv[])
         cmdline.add("", "trainer-params",       "trainer parameters (if any)");
         cmdline.add("", "loss",                 nano::concatenate(loss_ids));
         cmdline.add("", "criterion",            nano::concatenate(criterion_ids));
-        cmdline.add("", "threads",              "number of threads to use (0 - all available)", "0");
+        cmdline.add("", "threads",              "number of threads to use", logical_cpus());
 
         cmdline.process(argc, argv);
 
