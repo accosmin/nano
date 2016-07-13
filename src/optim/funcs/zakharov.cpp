@@ -15,7 +15,7 @@ namespace nano
 
         problem_t function_zakharov_t::problem() const
         {
-                const auto bias = vector_t::LinSpaced(m_dims, scalar_t(1) / scalar_t(2), scalar_t(m_dims) / scalar_t(2));
+                const vector_t bias = vector_t::LinSpaced(m_dims, scalar_t(1) / scalar_t(2), scalar_t(m_dims) / scalar_t(2));
 
                 const auto fn_size = [=] ()
                 {

@@ -15,7 +15,7 @@ namespace nano
 
         problem_t function_qing_t::problem() const
         {
-                const auto bias = vector_t::LinSpaced(m_dims, scalar_t(1), scalar_t(m_dims));
+                const vector_t bias = vector_t::LinSpaced(m_dims, scalar_t(1), scalar_t(m_dims));
 
                 const auto fn_size = [=] ()
                 {
