@@ -164,8 +164,8 @@ int main(int argc, const char *argv[])
         const auto criterion = nano::get_criteria().get("avg");
 
         // construct tables to compare models
-        nano::table_t ftable("model-forward [ms] / 1000 samples");
-        nano::table_t btable("model-backward [ms] / 1000 samples");
+        nano::table_t ftable("model-forward [us] / 1000 samples");
+        nano::table_t btable("model-backward [us] / 1000 samples");
 
         for (size_t nthreads = cmd_min_nthreads; nthreads <= cmd_max_nthreads; ++ nthreads)
         {
@@ -199,16 +199,16 @@ int main(int argc, const char *argv[])
                                 accumulator_t lacc(*model, *loss, *criterion, criterion_t::type::value, scalar_t(0.1));
                                 lacc.set_threads(nthreads);
 
-                                const auto milis = nano::measure_robustly_msec([&] ()
+                                const auto duration = nano::measure_robustly_usec([&] ()
                                 {
                                         lacc.reset();
                                         lacc.update(task, fold);
                                 }, 1);
 
                                 log_info() << "<<< processed [" << lacc.count()
-                                           << "] forward samples in " << milis.count() << " ms.";
+                                           << "] forward samples in " << duration.count() << " us.";
 
-                                frow << idiv(static_cast<size_t>(milis.count()) * 1000, lacc.count());
+                                frow << idiv(static_cast<size_t>(duration.count()) * 1000, lacc.count());
                         }
 
                         if (cmd_backward)
@@ -216,16 +216,16 @@ int main(int argc, const char *argv[])
                                 accumulator_t gacc(*model, *loss, *criterion, criterion_t::type::vgrad, scalar_t(0.1));
                                 gacc.set_threads(nthreads);
 
-                                const auto milis = nano::measure_robustly_msec([&] ()
+                                const auto duration = nano::measure_robustly_usec([&] ()
                                 {
                                         gacc.reset();
                                         gacc.update(task, fold);
                                 }, 1);
 
                                 log_info() << "<<< processed [" << gacc.count()
-                                           << "] backward samples in " << milis.count() << " ms.";
+                                           << "] backward samples in " << duration.count() << " us.";
 
-                                brow << idiv(static_cast<size_t>(milis.count()) * 1000, gacc.count());
+                                brow << idiv(static_cast<size_t>(duration.count()) * 1000, gacc.count());
                         }
                 }
 
