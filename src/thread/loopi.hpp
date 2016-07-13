@@ -18,7 +18,7 @@ namespace thread
                 auto& pool = pool_t::instance();
 
                 assert(split > 0);
-                const auto n_workers = static_cast<tsize>(pool.n_workers());
+                const auto n_workers = static_cast<tsize>(pool.n_active_workers());
                 const auto task_size = (size + n_workers * split - 1) / (n_workers * split);
 
                 section_t<future_t> futures;
