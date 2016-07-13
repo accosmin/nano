@@ -92,7 +92,6 @@ namespace nano
         void accumulator_t::update(const task_t& task, const fold_t& fold, const size_t begin, const size_t end) const
         {
                 const loss_t& loss = m_impl->m_loss;
-                const size_t split = thread::pool_t::instance().n_active_workers();
 
                 thread::loopit(end - begin, [&] (const size_t offset, const size_t th)
                 {
@@ -101,7 +100,7 @@ namespace nano
                         assert(index < task.n_samples(fold));
                         assert(index >= begin && index < end);
                         m_impl->m_criteria[th]->update(task.input(fold, index), task.target(fold, index), loss);
-                }, split);
+                });
 
                 m_impl->cumulate();
         }
