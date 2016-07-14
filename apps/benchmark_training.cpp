@@ -11,6 +11,9 @@
 
 using namespace nano;
 
+size_t gmin_threads = 1;
+size_t gmax_threads = 1;
+
 template
 <
         typename ttrainer
@@ -19,7 +22,7 @@ static void evaluate_trainer(model_t& model, const string_t& name,
         table_t& table, const vector_t& x0, const ttrainer& trainer)
 {
         auto& row = table.append(name);
-        for (size_t nthreads = 1; nthreads <= nano::physical_cpus(); ++ nthreads)
+        for (size_t nthreads = gmin_threads; nthreads <= gmax_threads; ++ nthreads)
         {
                 model.load_params(x0);
 
@@ -111,6 +114,8 @@ int main(int argc, const char* argv[])
         cmdline.add("", "stochastic-adam",      "evaluate stochastic optimizer ADAM");
         cmdline.add("", "stochastic-adagrad",   "evaluate stochastic optimizer ADAGRAD");
         cmdline.add("", "stochastic-adadelta",  "evaluate stochastic optimizer ADADELTA");
+        cmdline.add("", "min-threads",          "minimum number of threads to use", 1);
+        cmdline.add("", "max-threads",          "maximum number of threads to use", nano::logical_cpus());
 
         cmdline.process(argc, argv);
 
@@ -125,6 +130,8 @@ int main(int argc, const char* argv[])
         const bool use_convnet2 = cmdline.has("convnet2");
         const bool use_convnet3 = cmdline.has("convnet3");
         const auto epochs = size_t(100);
+        gmin_threads = cmdline.get<size_t>("min-threads");
+        gmax_threads = cmdline.get<size_t>("max-threads");
 
         if (    !use_mlps &&
                 !use_mlp0 &&
