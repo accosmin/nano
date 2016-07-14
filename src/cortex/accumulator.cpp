@@ -8,7 +8,6 @@ namespace nano
 {
         struct accumulator_t::impl_t
         {
-                // constructor
                 impl_t( const model_t& model, const loss_t& loss,
                         const criterion_t& criterion, const criterion_t::type type, const scalar_t lambda) :
                         m_loss(loss)
@@ -24,7 +23,6 @@ namespace nano
                         }
                 }
 
-                // cumulate criterion using the results for each thread
                 void cumulate() const
                 {
                         for (std::size_t i = 1; i < m_criteria.size(); ++ i)
@@ -33,7 +31,6 @@ namespace nano
                         }
                 }
 
-                // cumulated criterion
                 criterion_t& criterion() const
                 {
                         return **m_criteria.begin();
@@ -93,16 +90,27 @@ namespace nano
         {
                 const loss_t& loss = m_impl->m_loss;
 
-                thread::loopit(end - begin, [&] (const size_t offset, const size_t th)
+                if (thread::pool_t::instance().n_active_workers() == 1)
                 {
-                        const auto index = begin + offset;
-                        assert(th < m_impl->m_criteria.size());
-                        assert(index < task.n_samples(fold));
-                        assert(index >= begin && index < end);
-                        m_impl->m_criteria[th]->update(task.input(fold, index), task.target(fold, index), loss);
-                });
+                        for (size_t index = begin; index < end; ++ index)
+                        {
+                                m_impl->criterion().update(task.input(fold, index), task.target(fold, index), loss);
+                        }
+                }
 
-                m_impl->cumulate();
+                else
+                {
+                        thread::loopit(end - begin, [&] (const size_t offset, const size_t th)
+                        {
+                                const auto index = begin + offset;
+                                assert(th < m_impl->m_criteria.size());
+                                assert(index < task.n_samples(fold));
+                                assert(index >= begin && index < end);
+                                m_impl->m_criteria[th]->update(task.input(fold, index), task.target(fold, index), loss);
+                        });
+
+                        m_impl->cumulate();
+                }
         }
 
         scalar_t accumulator_t::value() const
