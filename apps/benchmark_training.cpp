@@ -222,7 +222,7 @@ int main(int argc, const char* argv[])
         const strings_t criteria = { "avg" }; //get_criteria().ids();
 
         table_t table("training time [s]");
-        for (size_t nthreads = 1; nthreads <= nano::physical_cpus(); ++ nthreads)
+        for (size_t nthreads = gmin_threads; nthreads <= gmax_threads; ++ nthreads)
         {
                 table.header() << (to_string(nthreads) + "xCPU");
         }
