@@ -59,6 +59,19 @@ namespace nano
                 return *this;
         }
 
+        void criterion_t::update(const task_t& task, const fold_t& fold, const loss_t& loss)
+        {
+                update(task, fold, 0, task.n_samples(fold), loss);
+        }
+
+        void criterion_t::update(const task_t& task, const fold_t& fold, const size_t begin, const size_t end, const loss_t& loss)
+        {
+                for (size_t index = begin; index < end; ++ index)
+                {
+                        update(task.input(fold, index), task.target(fold, index), loss);
+                }
+        }
+
         void criterion_t::update(const tensor3d_t& input, const vector_t& target, const loss_t& loss)
         {
                 assert(input.size<0>() == m_model->idims());

@@ -8,6 +8,7 @@ namespace nano
         class criterion_t;
         class loss_t;
         class task_t;
+        class fold_t;
 
         ///
         /// \brief stores registered prototypes
@@ -53,6 +54,12 @@ namespace nano
                 /// \brief update statistics with a new sample
                 ///
                 void update(const tensor3d_t& input, const vector_t& target, const loss_t& loss);
+
+                ///
+                /// \brief update statistics with a set of new samples
+                ///
+                void update(const task_t& task, const fold_t&, const loss_t&);
+                void update(const task_t& task, const fold_t&, const size_t begin, const size_t end, const loss_t&);
 
                 ///
                 /// \brief update statistics with cumulated samples
