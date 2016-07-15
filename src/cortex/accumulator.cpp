@@ -92,10 +92,7 @@ namespace nano
 
                 if (thread::pool_t::instance().n_active_workers() == 1)
                 {
-                        for (size_t index = begin; index < end; ++ index)
-                        {
-                                m_impl->criterion().update(task.input(fold, index), task.target(fold, index), loss);
-                        }
+                        m_impl->criterion().update(task, fold, begin, end, loss);
                 }
 
                 else
