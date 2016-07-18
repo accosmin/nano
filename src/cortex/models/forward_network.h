@@ -40,11 +40,13 @@ namespace nano
                 /// \brief compute the model's gradient wrt parameters
                 ///
                 virtual const vector_t& gparam(const vector_t& output) override;
+                const vector_t& gparam(const tensor3d_t& output);
 
                 ///
                 /// \brief compute the model's gradient wrt inputs
                 ///
                 virtual const tensor3d_t& ginput(const vector_t& output) override;
+                const tensor3d_t& ginput(const tensor3d_t& output);
 
                 ///
                 /// \brief save/load/initialize parameters

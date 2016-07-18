@@ -45,11 +45,14 @@ namespace nano
                 assert(_output.size() == osize());
                 assert(!m_layers.empty());
 
-                // output (gradient)
                 m_odata = tensor::map_tensor(_output.data(), osize(), tensor_size_t(1), tensor_size_t(1));
 
-                // backward step
-                const tensor3d_t* poutput = &m_odata;
+                return ginput(m_odata);
+        }
+
+        const tensor3d_t& forward_network_t::ginput(const tensor3d_t& output)
+        {
+                const tensor3d_t* poutput = &output;
                 for (auto it = m_layers.rbegin(); it != m_layers.rend(); ++ it)
                 {
                         const rlayer_t& layer = *it;
@@ -65,14 +68,17 @@ namespace nano
                 assert(_output.size() == osize());
                 assert(!m_layers.empty());
 
-                // output (gradient)
                 m_odata = tensor::map_tensor(_output.data(), osize(), tensor_size_t(1), tensor_size_t(1));
 
-                // parameter gradient
+                return gparam(m_odata);
+        }
+
+        const vector_t& forward_network_t::gparam(const tensor3d_t& output)
+        {
                 m_gparam.resize(psize());
 
                 // backward step
-                const tensor3d_t* poutput = &m_odata;
+                const tensor3d_t* poutput = &output;
                 scalar_t* gparamient = m_gparam.data() + m_gparam.size();
 
                 for (auto it = m_layers.rbegin(); it != m_layers.rend(); ++ it)
@@ -95,19 +101,12 @@ namespace nano
 
         bool forward_network_t::save_params(vector_t& x) const
         {
-                const auto psize = this->psize();
-                if (psize != x.size())
-                {
-                        x.resize(psize);
-                }
+                x.resize(psize());
 
-                scalar_t* px = x.data() + x.size();
-                for (auto it = m_layers.rbegin(); it != m_layers.rend(); ++ it)
+                scalar_t* px = x.data();
+                for (const auto& layer : m_layers)
                 {
-                        const rlayer_t& layer = *it;
-
-                        px -= layer->psize();
-                        layer->save_params(px);
+                        px = layer->save_params(px);
                 }
 
                 return true;
@@ -117,18 +116,14 @@ namespace nano
         {
                 if (x.size() == psize())
                 {
-                        const scalar_t* px = x.data() + x.size();
-                        for (auto it = m_layers.rbegin(); it != m_layers.rend(); ++ it)
+                        const scalar_t* px = x.data();
+                        for (const auto& layer : m_layers)
                         {
-                                const rlayer_t& layer = *it;
-
-                                px -= layer->psize();
-                                layer->load_params(px);
+                                px = layer->load_params(px);
                         }
 
                         return true;
                 }
-
                 else
                 {
                         return false;
