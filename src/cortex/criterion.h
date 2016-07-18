@@ -5,10 +5,10 @@
 
 namespace nano
 {
-        class criterion_t;
         class loss_t;
         class task_t;
-        class fold_t;
+        struct fold_t;
+        class criterion_t;
 
         ///
         /// \brief stores registered prototypes
