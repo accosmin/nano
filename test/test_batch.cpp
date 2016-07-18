@@ -12,7 +12,7 @@ using namespace nano;
 
 static void check_function(const function_t& function)
 {
-        const auto iterations = size_t(100000);
+        const auto iterations = size_t(10000);
         const auto trials = size_t(100);
 
         const auto dims = function.problem().size();
@@ -67,7 +67,7 @@ static void check_function(const function_t& function)
                                   << ", status = " << to_string(state.m_status) << ".\n";
 
                         // check function value decrease
-                        NANO_CHECK_LESS(f, f0);
+                        NANO_CHECK_LESS_EQUAL(f, f0);
 
                         // check convergence
                         NANO_CHECK(state.m_status == state_t::status::converged || g < g_thres);

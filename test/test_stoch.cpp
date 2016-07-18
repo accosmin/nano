@@ -12,7 +12,7 @@ static void check_function(const function_t& function)
 {
         const auto epochs = size_t(100);
         const auto epoch_size = size_t(10);
-        const auto trials = size_t(20);
+        const auto trials = size_t(100);
 
         const auto dims = function.problem().size();
 
@@ -46,9 +46,8 @@ static void check_function(const function_t& function)
                         const auto f = state.f;
                         const auto g = state.convergence_criteria();
 
-                        const auto f_thres = epsilon3<scalar_t>();
-                        const auto g_thres = std::cbrt(epsilon3<scalar_t>());
-                        const auto x_thres = std::cbrt(epsilon3<scalar_t>()) * scalar_t(10);
+                        const auto g_thres = epsilon3<scalar_t>();
+                        const auto x_thres = std::cbrt(epsilon3<scalar_t>());
 
                         // ignore out-of-domain solutions
                         if (!function.is_valid(x))
@@ -65,7 +64,6 @@ static void check_function(const function_t& function)
 
                         // check function value decrease
                         NANO_CHECK_LESS_EQUAL(f, f0);
-                        NANO_CHECK_LESS_EQUAL(f, f0 - f_thres * abs(f0));
 
                         // check convergence
                         NANO_CHECK_LESS_EQUAL(g, g_thres);

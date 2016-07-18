@@ -12,39 +12,36 @@ namespace nano
         <
                 typename tscalar
         >
-        tscalar epsilon0();
+        tscalar epsilon0()
+        {
+                return 10 * std::numeric_limits<tscalar>::epsilon();
+        }
 
         template
         <
                 typename tscalar
         >
-        tscalar epsilon1();
+        tscalar epsilon1()
+        {
+                return std::pow(std::cbrt(epsilon0<tscalar>()), tscalar(2));
+        }
 
         template
         <
                 typename tscalar
         >
-        tscalar epsilon2();
+        tscalar epsilon2()
+        {
+                return std::sqrt(epsilon0<tscalar>());
+        }
 
         template
         <
                 typename tscalar
         >
-        tscalar epsilon3();
-
-        template <> inline float epsilon0<float>() { return 1e-6f; }
-        template <> inline float epsilon1<float>() { return 1e-5f; }
-        template <> inline float epsilon2<float>() { return 1e-4f; }
-        template <> inline float epsilon3<float>() { return 1e-3f; }
-
-        template <> inline double epsilon0<double>() { return 1e-12; }
-        template <> inline double epsilon1<double>() { return 1e-10; }
-        template <> inline double epsilon2<double>() { return 1e-8; }
-        template <> inline double epsilon3<double>() { return 1e-6; }
-
-        template <> inline long double epsilon0<long double>() { return 1e-14; }
-        template <> inline long double epsilon1<long double>() { return 1e-12; }
-        template <> inline long double epsilon2<long double>() { return 1e-10; }
-        template <> inline long double epsilon3<long double>() { return 1e-8; }
+        tscalar epsilon3()
+        {
+                return std::cbrt(epsilon0<tscalar>());
+        }
 }
 
