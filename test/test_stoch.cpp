@@ -46,7 +46,7 @@ static void check_function(const function_t& function)
                         const auto f = state.f;
                         const auto g = state.convergence_criteria();
 
-                        const auto g_thres = epsilon3<scalar_t>();
+                        const auto g_thres = std::cbrt(epsilon3<scalar_t>());
                         const auto x_thres = std::cbrt(epsilon3<scalar_t>());
 
                         // ignore out-of-domain solutions
@@ -81,7 +81,7 @@ NANO_BEGIN_MODULE(test_stoch_optimizers)
 
 NANO_CASE(evaluate)
 {
-        foreach_test_function(make_convex_functions(1, 4), check_function);
+        foreach_test_function(make_convex_functions(1, 2), check_function);
 }
 
 NANO_END_MODULE()
