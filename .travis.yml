@@ -3,7 +3,7 @@ branches:
     - 0.3
 
 git:
-  depth: 3
+  depth: 4
 
 sudo: required
 
