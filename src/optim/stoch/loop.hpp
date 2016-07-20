@@ -67,7 +67,7 @@ namespace nano
         ///
         template <typename toptimizer, typename... tspaces>
         auto stoch_tune(const toptimizer* optimizer,
-                const stoch_params_t& param, const problem_t& problem, const vector_t& x0,
+                const stoch_params_t& param, const problem_t& problem, vector_t x0,
                 tspaces... spaces)
         {
                 const auto tune_op = [&] (const auto... hypers)
@@ -82,6 +82,7 @@ namespace nano
                 };
 
                 const auto config = nano::tune(tune_op, spaces...);
+                x0 = config.optimum().x;
                 detail::call(done_op, config.params());
                 return state;
         }
