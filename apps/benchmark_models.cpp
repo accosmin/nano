@@ -101,19 +101,19 @@ int main(int argc, const char *argv[])
         const string_t convnettoe_7x7_7x7_5x5_5x5_5x5_3x3 =
                 nano::replace(convnetk2d_7x7_7x7_5x5_5x5_5x5_3x3, "conv-k2d", "conv-toe");
 
-        const string_t convnetk2d_5x5_5x5_5x5_5x5_5x5_5x5_5x5 =
+        const string_t convnetk2d_5x5_5x5_5x5_5x5_5x5_5x5_3x3 =
                 make_conv_layer("conv-k2d", 16, 5, 5, 1) +
                 make_conv_layer("conv-k2d", 32, 5, 5, 2) +
                 make_conv_layer("conv-k2d", 64, 5, 5, 4) +
                 make_conv_layer("conv-k2d", 64, 5, 5, 8) +
                 make_conv_layer("conv-k2d", 64, 5, 5, 8) +
-                make_conv_layer("conv-k2d", 64, 3, 3, 8) +
+                make_conv_layer("conv-k2d", 64, 5, 5, 8) +
                 make_conv_layer("conv-k2d", 64, 3, 3, 8);
 
-        const string_t convnettoe_5x5_5x5_5x5_5x5_5x5_5x5_5x5 =
-                nano::replace(convnetk2d_5x5_5x5_5x5_5x5_5x5_5x5_5x5, "conv-k2d", "conv-toe");
+        const string_t convnettoe_5x5_5x5_5x5_5x5_5x5_5x5_3x3 =
+                nano::replace(convnetk2d_5x5_5x5_5x5_5x5_5x5_5x5_3x3, "conv-k2d", "conv-toe");
 
-        const string_t convnetk2d_3x3_3x3_3x3_3x3_3x3_3x3_3x3_3x3_3x3_3x3 =
+        const string_t convnetk2d_3x3_3x3_3x3_3x3_3x3_3x3_3x3_3x3_3x3_3x3_3x3_3x3 =
                 make_conv_layer("conv-k2d", 16, 3, 3, 1) +
                 make_conv_layer("conv-k2d", 32, 3, 3, 2) +
                 make_conv_layer("conv-k2d", 64, 3, 3, 4) +
@@ -123,10 +123,13 @@ int main(int argc, const char *argv[])
                 make_conv_layer("conv-k2d", 64, 3, 3, 8) +
                 make_conv_layer("conv-k2d", 64, 3, 3, 8) +
                 make_conv_layer("conv-k2d", 64, 3, 3, 8) +
+                make_conv_layer("conv-k2d", 64, 3, 3, 8) +
+                make_conv_layer("conv-k2d", 64, 3, 3, 8) +
+                make_conv_layer("conv-k2d", 64, 3, 3, 8) +
                 make_conv_layer("conv-k2d", 64, 3, 3, 8);
 
-        const string_t convnettoe_3x3_3x3_3x3_3x3_3x3_3x3_3x3_3x3_3x3_3x3 =
-                nano::replace(convnetk2d_3x3_3x3_3x3_3x3_3x3_3x3_3x3_3x3_3x3_3x3, "conv-k2d", "conv-toe");
+        const string_t convnettoe_3x3_3x3_3x3_3x3_3x3_3x3_3x3_3x3_3x3_3x3_3x3_3x3 =
+                nano::replace(convnetk2d_3x3_3x3_3x3_3x3_3x3_3x3_3x3_3x3_3x3_3x3_3x3_3x3, "conv-k2d", "conv-toe");
 
         const string_t outlayer = make_output_layer(task.osize());
 
@@ -152,10 +155,10 @@ int main(int argc, const char *argv[])
                 DEFINE(convnettoe_9x9_7x7_7x7_5x5_3x3);
                 DEFINE(convnetk2d_7x7_7x7_5x5_5x5_5x5_3x3);
                 DEFINE(convnettoe_7x7_7x7_5x5_5x5_5x5_3x3);
-                DEFINE(convnetk2d_5x5_5x5_5x5_5x5_5x5_5x5_5x5);
-                DEFINE(convnettoe_5x5_5x5_5x5_5x5_5x5_5x5_5x5);
-                DEFINE(convnetk2d_3x3_3x3_3x3_3x3_3x3_3x3_3x3_3x3_3x3_3x3);
-                DEFINE(convnettoe_3x3_3x3_3x3_3x3_3x3_3x3_3x3_3x3_3x3_3x3);
+                DEFINE(convnetk2d_5x5_5x5_5x5_5x5_5x5_5x5_3x3);
+                DEFINE(convnetk2d_5x5_5x5_5x5_5x5_5x5_5x5_3x3);
+                DEFINE(convnetk2d_3x3_3x3_3x3_3x3_3x3_3x3_3x3_3x3_3x3_3x3_3x3_3x3);
+                DEFINE(convnettoe_3x3_3x3_3x3_3x3_3x3_3x3_3x3_3x3_3x3_3x3_3x3_3x3);
         }
 
         #undef DEFINE
