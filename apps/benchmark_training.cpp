@@ -215,7 +215,7 @@ int main(int argc, const char* argv[])
                 log_info() << "<<< running network [" << network << "] ...";
 
                 const auto model = get_models().get("forward-network", network);
-                model->resize(task, false);
+                model->resize(task, true);
 
                 // generate fixed random starting point
                 vector_t x0;
