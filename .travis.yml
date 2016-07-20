@@ -14,7 +14,7 @@ matrix:
       dist: trusty
       sudo: required
       compiler: clang
-   - os: osx
+    - os: osx
       osx_image: xcode7.2
 
 addons:
