@@ -36,7 +36,7 @@ before_script:
 
 script:
   - time bash build_release.sh --generator ninja
-  - cd build-release/test && time ctest -j 3
+  - cd build-release/test && time ctest -j 3 -E "test_mnist|test_cifar10|test_cifar100|test_svhn|test_stl10"
 
 compiler:
   - clang
