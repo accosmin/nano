@@ -2,14 +2,9 @@ branches:
   only:
     - 0.3
 
-git:
-  depth: 4
-
 sudo: required
 
 language: cpp
-
-sudo: false
 
 addons:
   apt:
