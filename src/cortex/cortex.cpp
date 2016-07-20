@@ -28,7 +28,6 @@
 #include "models/forward_network.h"
 
 #include "trainers/batch.h"
-#include "trainers/minibatch.h"
 #include "trainers/stochastic.h"
 
 #include "criteria/l2nreg.h"
@@ -119,7 +118,6 @@ namespace nano
 
                         // register trainers
                         nano::get_trainers().add("batch", batch_trainer_t());
-                        nano::get_trainers().add("minibatch", minibatch_trainer_t());
                         nano::get_trainers().add("stochastic", stochastic_trainer_t());
 
                         // register criteria

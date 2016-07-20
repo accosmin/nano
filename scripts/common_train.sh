@@ -48,10 +48,6 @@ function fn_make_trainers
         stoch_adadelta="--trainer stochastic --trainer-params opt=adadelta,epochs=${epochs}"
         stoch_adam="--trainer stochastic --trainer-params opt=adam,epochs=${epochs}"
 
-        mbatch_lbfgs="--trainer minibatch --trainer-params opt=lbfgs,epochs=${epochs}"
-        mbatch_cgd="--trainer minibatch --trainer-params opt=cgd,epochs=${epochs}"
-        mbatch_gd="--trainer minibatch --trainer-params opt=gd,epochs=${epochs}"
-
         batch_lbfgs="--trainer batch --trainer-params opt=lbfgs,epochs=${epochs}"
         batch_cgd="--trainer batch --trainer-params opt=cgd,epochs=${epochs}"
         batch_gd="--trainer batch --trainer-params opt=gd,epochs=${epochs}"

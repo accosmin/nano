@@ -41,7 +41,6 @@ static void evaluate(model_t& model,
         const task_t& task, const size_t fold,
         const loss_t& loss, const criterion_t& criterion, const vector_t& x0, const size_t epochs,
         const std::vector<batch_optimizer>& batch_optimizers,
-        const std::vector<batch_optimizer>& minibatch_optimizers,
         const std::vector<stoch_optimizer>& stochastic_optimizers,
         const string_t& basename, table_t& table)
 {
@@ -54,17 +53,6 @@ static void evaluate(model_t& model,
                 evaluate_trainer(model, basename + optname, table, x0, [&] (const size_t nthreads)
                 {
                         const auto trainer = get_trainers().get("batch", params);
-                        return trainer->train(task, fold, nthreads, loss, criterion, model);
-                });
-        }
-
-        for (auto optimizer : minibatch_optimizers)
-        {
-                const auto optname = "minibatch-" + to_string(optimizer);
-                const auto params = to_params("opt", optimizer, "epochs", epochs, "policy", policy);
-                evaluate_trainer(model, basename + optname, table, x0, [&] (const size_t nthreads)
-                {
-                        const auto trainer = get_trainers().get("minibatch", params);
                         return trainer->train(task, fold, nthreads, loss, criterion, model);
                 });
         }
@@ -100,10 +88,6 @@ int main(int argc, const char* argv[])
         cmdline.add("", "batch-gd",             "evaluate batch optimizer GD (gradient descent)");
         cmdline.add("", "batch-cgd",            "evaluate batch optimizer CGD (conjugate gradient descent)");
         cmdline.add("", "batch-lbfgs",          "evaluate batch optimizer LBFGS");
-        cmdline.add("", "minibatch",            "evaluate mini-batch optimizers");
-        cmdline.add("", "minibatch-gd",         "evaluate mini-batch optimizer GD (gradient descent)");
-        cmdline.add("", "minibatch-cgd",        "evaluate mini-batch optimizer CGD (conjugate gradient descent)");
-        cmdline.add("", "minibatch-lbfgs",      "evaluate mini-batch optimizer LBFGS");
         cmdline.add("", "stochastic",           "evaluate stochastic optimizers");
         cmdline.add("", "stochastic-sg",        "evaluate stochastic optimizer SG (stochastic gradient)");
         cmdline.add("", "stochastic-ngd",       "evaluate stochastic optimizer NGS (normalized gradient descent)");
@@ -114,6 +98,7 @@ int main(int argc, const char* argv[])
         cmdline.add("", "stochastic-adam",      "evaluate stochastic optimizer ADAM");
         cmdline.add("", "stochastic-adagrad",   "evaluate stochastic optimizer ADAGRAD");
         cmdline.add("", "stochastic-adadelta",  "evaluate stochastic optimizer ADADELTA");
+        cmdline.add("", "epochs",               "number of epochs", "100");
         cmdline.add("", "min-threads",          "minimum number of threads to use", 1);
         cmdline.add("", "max-threads",          "maximum number of threads to use", nano::logical_cpus());
 
@@ -129,7 +114,7 @@ int main(int argc, const char* argv[])
         const bool use_convnet1 = cmdline.has("convnet1");
         const bool use_convnet2 = cmdline.has("convnet2");
         const bool use_convnet3 = cmdline.has("convnet3");
-        const auto epochs = size_t(100);
+        const auto epochs = cmdline.get<size_t>("epochs");
         gmin_threads = cmdline.get<size_t>("min-threads");
         gmax_threads = cmdline.get<size_t>("max-threads");
 
@@ -151,11 +136,6 @@ int main(int argc, const char* argv[])
         if (cmdline.has("batch") || cmdline.has("batch-cgd")) batch_optimizers.push_back(batch_optimizer::CGD);
         if (cmdline.has("batch") || cmdline.has("batch-lbfgs")) batch_optimizers.push_back(batch_optimizer::LBFGS);
 
-        std::vector<batch_optimizer> minibatch_optimizers;
-        if (cmdline.has("minibatch") || cmdline.has("minibatch-gd")) minibatch_optimizers.push_back(batch_optimizer::GD);
-        if (cmdline.has("minibatch") || cmdline.has("minibatch-cgd")) minibatch_optimizers.push_back(batch_optimizer::CGD);
-        if (cmdline.has("minibatch") || cmdline.has("minibatch-lbfgs")) minibatch_optimizers.push_back(batch_optimizer::LBFGS);
-
         std::vector<stoch_optimizer> stochastic_optimizers;
         if (cmdline.has("stochastic") || cmdline.has("stochastic-sg")) stochastic_optimizers.push_back(stoch_optimizer::SG);
         if (cmdline.has("stochastic") || cmdline.has("stochastic-ngd")) stochastic_optimizers.push_back(stoch_optimizer::NGD);
@@ -168,7 +148,6 @@ int main(int argc, const char* argv[])
         if (cmdline.has("stochastic") || cmdline.has("stochastic-adadelta")) stochastic_optimizers.push_back(stoch_optimizer::ADADELTA);
 
         if (    batch_optimizers.empty() &&
-                minibatch_optimizers.empty() &&
                 stochastic_optimizers.empty())
         {
                 cmdline.usage();
@@ -257,7 +236,7 @@ int main(int argc, const char* argv[])
                                 const auto basename = netname + "-" + iloss + "-" + icriterion + "-";
 
                                 evaluate(*model, task, fold, *loss, *criterion, x0, epochs,
-                                         batch_optimizers, minibatch_optimizers, stochastic_optimizers,
+                                         batch_optimizers, stochastic_optimizers,
                                          basename, table);
                         }
                 }
