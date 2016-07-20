@@ -3,11 +3,9 @@ branches:
     - 0.3
 
 sudo: required
+dist: trusty
 
 language: cpp
-
-before_install:
-  - sudo apt-get -qq update
 
 addons:
   apt:
