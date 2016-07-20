@@ -156,7 +156,7 @@ int main(int argc, const char *argv[])
                 DEFINE(convnetk2d_7x7_7x7_5x5_5x5_5x5_3x3);
                 DEFINE(convnettoe_7x7_7x7_5x5_5x5_5x5_3x3);
                 DEFINE(convnetk2d_5x5_5x5_5x5_5x5_5x5_5x5_3x3);
-                DEFINE(convnetk2d_5x5_5x5_5x5_5x5_5x5_5x5_3x3);
+                DEFINE(convnettoe_5x5_5x5_5x5_5x5_5x5_5x5_3x3);
                 DEFINE(convnetk2d_3x3_3x3_3x3_3x3_3x3_3x3_3x3_3x3_3x3_3x3_3x3_3x3);
                 DEFINE(convnettoe_3x3_3x3_3x3_3x3_3x3_3x3_3x3_3x3_3x3_3x3_3x3_3x3);
         }
