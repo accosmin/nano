@@ -46,5 +46,5 @@ before_script:
   - pwd
 
 script:
-  - time bash build_release.sh --generator ninja
+  - time bash build.sh --build-type Release --generator ninja --float
   - cd build-release/test && time ctest -j 3 -E "test_mnist|test_cifar10|test_cifar100|test_svhn|test_stl10"
