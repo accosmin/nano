@@ -6,6 +6,9 @@ sudo: required
 
 language: cpp
 
+before_install:
+  - sudo apt-get -qq update
+
 addons:
   apt:
     sources:
