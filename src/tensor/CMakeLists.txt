@@ -1,5 +1,4 @@
-# build library
-set(libtensor_sources
+list(APPEND libnano_sources
         ${CMAKE_CURRENT_SOURCE_DIR}/conv2d_assert.hpp
         ${CMAKE_CURRENT_SOURCE_DIR}/conv2d_cpp.hpp
         ${CMAKE_CURRENT_SOURCE_DIR}/conv2d_dot.hpp
@@ -20,10 +19,5 @@ set(libtensor_sources
         ${CMAKE_CURRENT_SOURCE_DIR}/algorithm.hpp
         ${CMAKE_CURRENT_SOURCE_DIR}/vector.hpp)
 
-add_library(tensor INTERFACE)
-
-# install headers
-install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-        DESTINATION include
-        FILES_MATCHING PATTERN "*.h" PATTERN "*.hpp")
+set(libnano_sources "${libnano_sources}" PARENT_SCOPE)
 

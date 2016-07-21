@@ -34,77 +34,16 @@
 #define NANO_STRINGIFY_(x) #x
 #define NANO_STRINGIFY(x) NANO_STRINGIFY_(x)
 
-#if defined(__APPLE__)
-        #include <sys/sysctl.h>
-#elif defined(__linux__)
-        #include <unistd.h>
-        #include <sys/sysinfo.h>
-#else
-        #error Unsupported platform
-#endif
-
-// system information
 namespace nano
 {
-        unsigned int logical_cpus();
-        unsigned int physical_cpus();
-        unsigned long long int memsize();
+        // system information
+        NANO_PUBLIC unsigned int logical_cpus();
+        NANO_PUBLIC unsigned int physical_cpus();
+        NANO_PUBLIC unsigned long long int memsize();
 
         inline unsigned int memsize_gb()
         {
                 const unsigned long long int giga = 1LL << 30;
                 return static_cast<unsigned int>((memsize() + giga - 1) / giga);
         }
-
-#if defined(__APPLE__)
-        template <typename tinteger>
-        tinteger sysctl_var(const char* name, const tinteger default_value)
-        {
-                tinteger value = 0;
-                size_t size = sizeof(value);
-                return sysctlbyname(name, &value, &size, nullptr, 0) ? default_value : value;
-        }
-
-        inline unsigned int logical_cpus()
-        {
-                return sysctl_var<unsigned int>("hw.logicalcpu", 0);
-        }
-
-        inline unsigned int physical_cpus()
-        {
-                return sysctl_var<unsigned int>("hw.physicalcpu", 0);
-        }
-
-        inline unsigned long long int memsize()
-        {
-                return sysctl_var<unsigned long long int>("hw.memsize", 0);
-        }
-
-#elif defined(__linux__)
-        inline unsigned int logical_cpus()
-        {
-                return (unsigned int)sysconf(_SC_NPROCESSORS_ONLN);
-        }
-
-        inline unsigned int physical_cpus()
-        {
-                unsigned int registers[4];
-                __asm__ __volatile__ ("cpuid " :
-                      "=a" (registers[0]),
-                      "=b" (registers[1]),
-                      "=c" (registers[2]),
-                      "=d" (registers[3])
-                      : "a" (1), "c" (0));
-                const unsigned CPUFeatureSet = registers[3];
-                const bool hyperthreading = CPUFeatureSet & (1 << 28);
-                return hyperthreading ? (logical_cpus() / 2) : logical_cpus();
-        }
-
-        inline unsigned long long int memsize()
-        {
-                struct sysinfo info;
-                sysinfo(&info);
-                return (unsigned long long int)info.totalram * (unsigned long long int)info.mem_unit;
-        }
-#endif
 }

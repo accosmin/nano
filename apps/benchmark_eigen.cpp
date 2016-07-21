@@ -1,9 +1,9 @@
 #include "tensor.h"
+#include "measure.hpp"
 #include "text/table.h"
 #include "text/cmdline.h"
 #include "math/random.hpp"
 #include "tensor/numeric.hpp"
-#include "cortex/measure.hpp"
 #include "text/table_row_mark.h"
 #include <iomanip>
 #include <iostream>

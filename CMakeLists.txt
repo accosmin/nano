@@ -32,17 +32,8 @@ message("++ --------------------------------------------------------------------
 
 include_directories(${nano_SOURCE_DIR}/src)
 
-add_subdirectory(src/io)
-add_subdirectory(src/math)
-add_subdirectory(src/text)
-add_subdirectory(src/optim)
-add_subdirectory(src/tensor)
-add_subdirectory(src/thread)
-add_subdirectory(src/vision)
-add_subdirectory(src/cortex)
-
+add_subdirectory(src)
 add_subdirectory(apps)
-
 if(NANO_WITH_TESTS)
         add_subdirectory(test)
 endif()

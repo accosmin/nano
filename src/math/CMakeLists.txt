@@ -1,5 +1,4 @@
-# build library
-set(libmath_sources
+list(APPEND libnano_sources
         ${CMAKE_CURRENT_SOURCE_DIR}/abs.hpp
         ${CMAKE_CURRENT_SOURCE_DIR}/average.hpp
         ${CMAKE_CURRENT_SOURCE_DIR}/cast.hpp
@@ -19,10 +18,4 @@ set(libmath_sources
         ${CMAKE_CURRENT_SOURCE_DIR}/tune_grid_space.hpp
         ${CMAKE_CURRENT_SOURCE_DIR}/tune_finite_space.hpp)
 
-add_library(math INTERFACE)
-
-# install library
-install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-        DESTINATION include
-        FILES_MATCHING PATTERN "*.h" PATTERN "*.hpp")
-
+set(libnano_sources "${libnano_sources}" PARENT_SCOPE)

@@ -1,10 +1,10 @@
+#include "timer.h"
+#include "logger.h"
+#include "measure.hpp"
 #include "text/table.h"
 #include "optim/test.h"
 #include "text/cmdline.h"
 #include "math/stats.hpp"
-#include "cortex/timer.h"
-#include "cortex/logger.h"
-#include "cortex/measure.hpp"
 #include <iostream>
 
 using namespace nano;

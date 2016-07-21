@@ -1,4 +1,4 @@
-list(APPEND liboptim_sources
+list(APPEND libnano_sources
         ${CMAKE_CURRENT_SOURCE_DIR}/3hump_camel.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/axis_ellipsoid.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/beale.cpp
@@ -25,6 +25,6 @@ list(APPEND liboptim_sources
         ${CMAKE_CURRENT_SOURCE_DIR}/zakharov.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/util.hpp)
 
-set(liboptim_sources "${liboptim_sources}" PARENT_SCOPE)
+set(libnano_sources "${libnano_sources}" PARENT_SCOPE)
 
 

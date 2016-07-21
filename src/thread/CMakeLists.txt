@@ -1,5 +1,4 @@
-# build library
-set(libthread_sources
+list(APPEND libnano_sources
         ${CMAKE_CURRENT_SOURCE_DIR}/loopi.hpp
         ${CMAKE_CURRENT_SOURCE_DIR}/loopit.hpp
         ${CMAKE_CURRENT_SOURCE_DIR}/pool.cpp
@@ -9,15 +8,4 @@ set(libthread_sources
         ${CMAKE_CURRENT_SOURCE_DIR}/worker.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/worker.h)
 
-add_library(thread SHARED ${libthread_sources})
-
-# install library
-install(TARGETS thread
-        DESTINATION lib)
-
-install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-        DESTINATION include
-        FILES_MATCHING PATTERN "*.h" PATTERN "*.hpp")
-
-
-
+set(libnano_sources "${libnano_sources}" PARENT_SCOPE)

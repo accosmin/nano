@@ -1,5 +1,5 @@
-#include "unit_test.hpp"
-#include "cortex/tasks/task_charset.h"
+#include "utest.hpp"
+#include "tasks/task_charset.h"
 
 NANO_BEGIN_MODULE(test_charset)
 

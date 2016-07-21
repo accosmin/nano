@@ -1,5 +1,4 @@
-# build library
-set(libio_sources
+list(APPEND libnano_sources
         ${CMAKE_CURRENT_SOURCE_DIR}/archive.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/archive.h
         ${CMAKE_CURRENT_SOURCE_DIR}/buffer.cpp
@@ -17,20 +16,4 @@ set(libio_sources
         ${CMAKE_CURRENT_SOURCE_DIR}/obstream.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/obstream.h)
 
-add_library(io SHARED ${libio_sources})
-target_link_libraries(io
-        ${ZLIB_LIBRARIES}
-        ${BZIP2_LIBRARIES}
-        ${LibArchive_LIBRARIES}
-        text)
-
-# install library
-install(TARGETS io
-        DESTINATION lib)
-
-install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-        DESTINATION include
-        FILES_MATCHING PATTERN "*.h" PATTERN "*.hpp")
-
-
-                
+set(libnano_sources "${libnano_sources}" PARENT_SCOPE)

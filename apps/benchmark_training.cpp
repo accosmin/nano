@@ -1,13 +1,13 @@
+#include "nano.h"
+#include "logger.h"
+#include "measure.hpp"
 #include "text/table.h"
 #include "text/cmdline.h"
-#include "cortex/cortex.h"
-#include "cortex/logger.h"
-#include "cortex/measure.hpp"
 #include "text/to_params.hpp"
 #include "optim/batch/types.h"
 #include "optim/stoch/types.h"
-#include "cortex/tasks/task_charset.h"
-#include "cortex/layers/make_layers.h"
+#include "tasks/task_charset.h"
+#include "layers/make_layers.h"
 
 using namespace nano;
 

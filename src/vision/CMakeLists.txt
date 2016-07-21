@@ -1,5 +1,4 @@
-# build library
-set(libvision_sources
+list(APPEND libnano_sources
         ${CMAKE_CURRENT_SOURCE_DIR}/bilinear.hpp
         ${CMAKE_CURRENT_SOURCE_DIR}/color.h
         ${CMAKE_CURRENT_SOURCE_DIR}/convolve.hpp
@@ -18,16 +17,4 @@ set(libvision_sources
         ${CMAKE_CURRENT_SOURCE_DIR}/warp.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/warp.h)
 
-add_library(vision SHARED ${libvision_sources})
-target_link_libraries(vision ${IL_LIBRARIES} math text tensor)
-
-# install library
-install(TARGETS vision
-        DESTINATION lib)
-
-install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-        DESTINATION include
-        FILES_MATCHING PATTERN "*.h" PATTERN "*.hpp")
-
-
-
+set(libnano_sources "${libnano_sources}" PARENT_SCOPE)

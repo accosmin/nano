@@ -1,13 +1,13 @@
-#include "unit_test.hpp"
-#include "cortex/class.h"
+#include "nano.h"
+#include "class.h"
+#include "utest.hpp"
 #include "math/close.hpp"
-#include "cortex/cortex.h"
 #include "optim/problem.h"
 #include "math/random.hpp"
 #include "math/epsilon.hpp"
 #include "tensor/numeric.hpp"
 #include "text/to_string.hpp"
-#include "cortex/layers/make_layers.h"
+#include "layers/make_layers.h"
 
 using namespace nano;
 

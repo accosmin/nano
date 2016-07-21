@@ -1,5 +1,4 @@
-# build library
-set(libtext_sources
+list(APPEND libnano_sources
         ${CMAKE_CURRENT_SOURCE_DIR}/align.hpp
         ${CMAKE_CURRENT_SOURCE_DIR}/algorithm.h
         ${CMAKE_CURRENT_SOURCE_DIR}/algorithm.cpp
@@ -18,13 +17,4 @@ set(libtext_sources
         ${CMAKE_CURRENT_SOURCE_DIR}/table_header.h
         ${CMAKE_CURRENT_SOURCE_DIR}/table_row.h)
 
-add_library(text SHARED
-        ${libtext_sources})
-
-# install library
-install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-        DESTINATION include
-        FILES_MATCHING PATTERN "*.h" PATTERN "*.hpp")
-
-
-
+set(libnano_sources "${libnano_sources}" PARENT_SCOPE)

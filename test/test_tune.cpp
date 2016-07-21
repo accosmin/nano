@@ -1,5 +1,5 @@
 #include "scalar.h"
-#include "unit_test.hpp"
+#include "utest.hpp"
 #include "math/tune.hpp"
 #include "math/random.hpp"
 #include "math/epsilon.hpp"

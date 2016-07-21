@@ -4,7 +4,7 @@
 #include "vision/image.h"
 #include "text/filesystem.h"
 #include "text/to_string.hpp"
-#include "cortex/measure_and_log.hpp"
+#include "measure_and_log.hpp"
 
 int main(int argc, const char *argv[])
 {

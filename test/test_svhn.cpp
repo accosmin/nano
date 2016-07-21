@@ -1,6 +1,6 @@
 #include <set>
-#include "unit_test.hpp"
-#include "cortex/cortex.h"
+#include "nano.h"
+#include "utest.hpp"
 #include "math/epsilon.hpp"
 
 NANO_BEGIN_MODULE(test_svhn)

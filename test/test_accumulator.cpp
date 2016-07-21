@@ -1,9 +1,9 @@
-#include "unit_test.hpp"
+#include "nano.h"
+#include "utest.hpp"
 #include "math/abs.hpp"
-#include "cortex/cortex.h"
+#include "accumulator.h"
 #include "math/epsilon.hpp"
-#include "cortex/accumulator.h"
-#include "cortex/layers/make_layers.h"
+#include "layers/make_layers.h"
 
 NANO_BEGIN_MODULE(test_accumulator)
 
