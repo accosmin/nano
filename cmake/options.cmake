@@ -2,6 +2,7 @@ option(NANO_WITH_ASAN                   "build with address sanitizers suppport 
 option(NANO_WITH_MSAN                   "build with memory sanitizer suppport (if available)"           OFF)
 option(NANO_WITH_TSAN                   "build with thread sanitizer suppport (if available)"           OFF)
 option(NANO_WITH_TESTS                  "build the unit tests"                                          ON)
+option(NANO_WITH_OPENCL                 "build with OpenCL as dependency"                               OFF)
 option(NANO_WITH_LIBCPP                 "use libc++ instead of default libstdc++ (if applicable)"       OFF)
 option(NANO_WITH_GOLD                   "use gold linker (if available)"                                OFF)
 option(NANO_WITH_LTO                    "use link time optimization (if available)"                     OFF)

@@ -39,9 +39,15 @@ add_subdirectory(losses)
 add_subdirectory(models)
 add_subdirectory(tasks)
 add_subdirectory(trainers)
+if(NANO_WITH_OPENCL)
+        add_subdirectory(opencl)
+endif()
 
 add_library(cortex SHARED ${libcortex_sources})
 target_link_libraries(cortex vision io thread optim)
+if(NANO_WITH_OPENCL)
+        target_link_libraries(cortex ${OpenCL_LIBRARIES})
+endif()
 
 # install library
 install(TARGETS cortex

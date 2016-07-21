@@ -7,6 +7,7 @@ gold=""
 float=""
 double=""
 long_double=""
+opencl=""
 
 build_type=Debug
 
@@ -21,6 +22,7 @@ function usage
         echo "Usage: "
         echo -e "\t--generator          <build system [codelite-][ninja/make]>          default=${generator}"
         echo -e "\t--compiler           <c++ compiler (g++, clang++)>                   optional"
+        echo -e "\t--opencl             <use OpenCL>                                    optional"
         echo -e "\t--libc++             <use libc++ instead of default libstdc++>       optional"
         echo -e "\t--gold               <use gold linker instead of default linker>     optional"
         echo -e "\t--float              <use float as the default scalar>               optional"
@@ -38,6 +40,8 @@ do
                                 ;;
                 --compiler)     shift
                                 compiler=$1
+                                ;;
+                --opencl)       opencl="--opencl"
                                 ;;
                 --libc++)       libcpp="--libc++"
                                 ;;
@@ -64,22 +68,22 @@ bash build.sh \
         --compiler ${compiler} \
         --build-type ${build_type} \
         --generator ${generator} \
-        --asan OFF --msan OFF --tsan OFF ${libcpp} ${gold} ${float} ${double} ${long_double}
+        --asan OFF --msan OFF --tsan OFF ${libcpp} ${gold} ${float} ${double} ${long_double} ${opencl}
 
 bash build.sh \
         --compiler ${compiler} \
         --build-type ${build_type} \
         --generator ${generator} \
-        --asan ON --msan OFF --tsan OFF ${libcpp} ${gold} ${float} ${double} ${long_double}
+        --asan ON --msan OFF --tsan OFF ${libcpp} ${gold} ${float} ${double} ${long_double} ${opencl}
 
 bash build.sh \
         --compiler ${compiler} \
         --build-type ${build_type} \
         --generator ${generator} \
-        --asan OFF --msan ON --tsan OFF ${libcpp} ${gold} ${float} ${double} ${long_double}
+        --asan OFF --msan ON --tsan OFF ${libcpp} ${gold} ${float} ${double} ${long_double} ${opencl}
 
 bash build.sh \
         --compiler ${compiler} \
         --build-type ${build_type} \
         --generator ${generator} \
-        --asan OFF --msan OFF --tsan ON ${libcpp} ${gold} ${float} ${double} ${long_double}
+        --asan OFF --msan OFF --tsan ON ${libcpp} ${gold} ${float} ${double} ${long_double} ${opencl}

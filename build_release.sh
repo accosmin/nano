@@ -8,6 +8,7 @@ lto=""
 float=""
 double=""
 long_double=""
+opencl=""
 
 install_dir="`pwd`/install"
 
@@ -22,6 +23,7 @@ function usage
         echo "Usage: "
         echo -e "\t--generator          <build system [codelite-][ninja/make]>          default=${generator}"
         echo -e "\t--compiler           <c++ compiler (g++, clang++)>                   optional"
+        echo -e "\t--opencl             <use OpenCL>                                    optional"
         echo -e "\t--libc++             <use libc++ instead of default libstdc++>       optional"
         echo -e "\t--gold               <use gold linker instead of default linker>     optional"
         echo -e "\t--lto                <use link time optimization>                    optional"
@@ -42,6 +44,8 @@ do
                                 compiler=$1
                                 ;;
                 --libc++)       libcpp="--libc++"
+                                ;;
+                --opencl)       opencl="--opencl"
                                 ;;
                 --gold)         gold="--gold"
                                 ;;
@@ -70,7 +74,7 @@ bash build.sh \
         --generator ${generator} \
         --install-dir ${install_dir} \
         --install OFF \
-        --asan OFF --msan OFF --tsan OFF ${libcpp} ${gold} ${lto} ${float} ${double} ${long_double}
+        --asan OFF --msan OFF --tsan OFF ${libcpp} ${gold} ${lto} ${float} ${double} ${long_double} ${opencl}
 
 bash build.sh \
         --compiler ${compiler} \
@@ -78,5 +82,5 @@ bash build.sh \
         --generator ${generator} \
         --install-dir ${install_dir} \
         --install OFF \
-        --asan OFF --msan OFF --tsan OFF ${libcpp} ${gold} ${float} ${double} ${long_double}
+        --asan OFF --msan OFF --tsan OFF ${libcpp} ${gold} ${float} ${double} ${long_double} ${opencl}
 
