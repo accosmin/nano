@@ -26,3 +26,11 @@ if(NANO_WITH_OPENCL)
         add_definitions(-DNANO_WITH_OPENCL)
 endif()
 
+# CUDA
+if(NANO_WITH_CUDA)
+        find_package(CUDA REQUIRED)
+        set(CUDA_PROPAGATE_HOST_FLAGS OFF)
+        set(CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS};-O3 -gencode arch=compute_20,code=sm_20)
+        add_definitions(-DNANO_WITH_CUDA -D_FORCE_INLINES)
+endif()
+

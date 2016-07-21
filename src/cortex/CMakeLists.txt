@@ -42,11 +42,17 @@ add_subdirectory(trainers)
 if(NANO_WITH_OPENCL)
         add_subdirectory(opencl)
 endif()
+if(NANO_WITH_CUDA)
+        add_subdirectory(cuda)
+endif()
 
 add_library(cortex SHARED ${libcortex_sources})
 target_link_libraries(cortex vision io thread optim)
 if(NANO_WITH_OPENCL)
         target_link_libraries(cortex ${OpenCL_LIBRARIES})
+endif()
+if(NANO_WITH_CUDA)
+        target_link_libraries(cortex libcortex_cuda)
 endif()
 
 # install library
