@@ -12,7 +12,7 @@ using namespace nano;
 
 static void check_function(const function_t& function)
 {
-        const auto iterations = size_t(10000);
+        const auto iterations = size_t(100000);
         const auto trials = size_t(100);
 
         const auto dims = function.problem().size();

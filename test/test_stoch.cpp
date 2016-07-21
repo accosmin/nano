@@ -11,8 +11,8 @@ using namespace nano;
 static void check_function(const function_t& function)
 {
         const auto epochs = size_t(100);
-        const auto epoch_size = size_t(10);
-        const auto trials = size_t(100);
+        const auto epoch_size = size_t(100);
+        const auto trials = size_t(20);
 
         const auto dims = function.problem().size();
 
@@ -46,7 +46,8 @@ static void check_function(const function_t& function)
                         const auto f = state.f;
                         const auto g = state.convergence_criteria();
 
-                        const auto g_thres = std::cbrt(epsilon3<scalar_t>());
+                        const auto can_eps = optimizer != stoch_optimizer::NGD;
+                        const auto g_thres = can_eps ? epsilon3<scalar_t>() : std::cbrt(epsilon3<scalar_t>());
                         const auto x_thres = std::cbrt(epsilon3<scalar_t>());
 
                         // ignore out-of-domain solutions
@@ -63,7 +64,7 @@ static void check_function(const function_t& function)
                                   << ", g = " << g << ".\n";
 
                         // check function value decrease
-                        NANO_CHECK_LESS_EQUAL(f, f0);
+                        NANO_CHECK_LESS_EQUAL(f, f0 + epsilon0<scalar_t>());
 
                         // check convergence
                         NANO_CHECK_LESS_EQUAL(g, g_thres);
