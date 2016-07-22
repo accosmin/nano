@@ -26,10 +26,8 @@ namespace nano
                         {
                                 for (tsize r = 0; r < orows; ++ r)
                                 {
-                                        for (tsize c = 0; c < ocols; ++ c)
-                                        {
-                                                omat(kr * kcols + kc, r * ocols + c) = imat(r + kr, c + kc);
-                                        }
+                                        omat.row(kr * kcols + kc).segment(r * ocols, ocols) =
+                                        imat.row(r + kr).segment(kc, ocols);
                                 }
                         }
                 }
@@ -55,10 +53,8 @@ namespace nano
                         {
                                 for (tsize r = 0; r < orows; ++ r)
                                 {
-                                        for (tsize c = 0; c < ocols; ++ c)
-                                        {
-                                                imat(kr * kcols + kc, (r + kr) * icols + c + kc) += omat(r, c);
-                                        }
+                                        imat.row(kr * kcols + kc).segment((r + kr) * icols + kc, ocols) +=
+                                        omat.row(r);
                                 }
                         }
                 }
