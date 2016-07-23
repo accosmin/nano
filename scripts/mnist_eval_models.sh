@@ -29,7 +29,7 @@ models=${models}" conv1 conv2 conv3 conv4"
 # trainers
 epochs=1000
 trials=10
-fn_make_trainers ${epochs}
+fn_make_trainers ${epochs} "stop_early"
 
 trainers="stoch_ngd"
 
