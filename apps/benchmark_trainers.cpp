@@ -192,24 +192,16 @@ int main(int argc, const char* argv[])
 
         // construct models
         const auto activation = "act-snorm";
-        const auto pooling = "pool-full";
 
         const auto mlp0 = string_t();
         const auto mlp1 = mlp0 + make_affine_layer(64, activation);
         const auto mlp2 = mlp1 + make_affine_layer(64, activation);
         const auto mlp3 = mlp2 + make_affine_layer(64, activation);
 
-        const auto convnet1 =
-                make_conv_pool_layer(32, 7, 7, 1, activation, pooling);
-
-        const auto convnet2 =
-                make_conv_pool_layer(32, 7, 7, 1, activation, pooling) +
-                make_conv_layer(64, 5, 5, 4);
-
-        const auto convnet3 =
-                make_conv_layer(32, 7, 7, 1, activation) +
-                make_conv_layer(64, 5, 5, 4, activation) +
-                make_conv_layer(128, 3, 3, 8, activation);
+        const auto convnet0 = string_t();
+        const auto convnet1 = convnet0 + make_conv_pool_layer(32, 7, 7, 1, activation);
+        const auto convnet2 = convnet1 + make_conv_pool_layer(32, 5, 5, 4, activation);
+        const auto convnet3 = convnet2 + make_conv_pool_layer(32, 3, 3, 4, activation);
 
         const string_t outlayer = make_output_layer(outputs, activation);
 

@@ -57,79 +57,24 @@ int main(int argc, const char *argv[])
 
         // construct models
         const string_t mlp0;
-        const string_t mlp1 = mlp0 + make_affine_layer(100);
-        const string_t mlp2 = mlp1 + make_affine_layer(100);
-        const string_t mlp3 = mlp2 + make_affine_layer(100);
-        const string_t mlp4 = mlp3 + make_affine_layer(100);
-        const string_t mlp5 = mlp4 + make_affine_layer(100);
+        const string_t mlp1 = mlp0 + make_affine_layer(128);
+        const string_t mlp2 = mlp1 + make_affine_layer(128);
+        const string_t mlp3 = mlp2 + make_affine_layer(128);
+        const string_t mlp4 = mlp3 + make_affine_layer(128);
+        const string_t mlp5 = mlp4 + make_affine_layer(128);
 
-        const string_t convnetk2d_9x9p_5x5p_3x3 =
-                make_conv_pool_layer("conv-k2d", 16, 9, 9, 1) +
-                make_conv_pool_layer("conv-k2d", 32, 5, 5, 2) +
-                make_conv_layer("conv-k2d", 64, 3, 3, 4);
+        const string_t convnet0_k2d;
+        const string_t convnet1_k2d = convnet0_k2d + make_conv_layer("conv-k2d", 64, 9, 9, 1);
+        const string_t convnet2_k2d = convnet1_k2d + make_conv_layer("conv-k2d", 64, 7, 7, 8);
+        const string_t convnet3_k2d = convnet2_k2d + make_conv_layer("conv-k2d", 64, 5, 5, 8);
+        const string_t convnet4_k2d = convnet3_k2d + make_conv_layer("conv-k2d", 64, 5, 5, 8);
+        const string_t convnet5_k2d = convnet4_k2d + make_conv_layer("conv-k2d", 64, 3, 3, 8);
 
-        const string_t convnettoe_9x9p_5x5p_3x3 =
-                nano::replace(convnetk2d_9x9p_5x5p_3x3, "conv-k2d", "conv-toe");
-
-        const string_t convnetk2d_11x11_9x9_7x7_3x3 =
-                make_conv_layer("conv-k2d", 16, 11, 11, 1) +
-                make_conv_layer("conv-k2d", 32, 9, 9, 2) +
-                make_conv_layer("conv-k2d", 64, 7, 7, 4) +
-                make_conv_layer("conv-k2d", 64, 3, 3, 8);
-
-        const string_t convnettoe_11x11_9x9_7x7_3x3 =
-                nano::replace(convnetk2d_11x11_9x9_7x7_3x3, "conv-k2d", "conv-toe");
-
-        const string_t convnetk2d_9x9_7x7_7x7_5x5_3x3 =
-                make_conv_layer("conv-k2d", 16, 9, 9, 1) +
-                make_conv_layer("conv-k2d", 32, 7, 7, 2) +
-                make_conv_layer("conv-k2d", 32, 7, 7, 4) +
-                make_conv_layer("conv-k2d", 64, 5, 5, 4) +
-                make_conv_layer("conv-k2d", 64, 3, 3, 8);
-
-        const string_t convnettoe_9x9_7x7_7x7_5x5_3x3 =
-                nano::replace(convnetk2d_9x9_7x7_7x7_5x5_3x3, "conv-k2d", "conv-toe");
-
-        const string_t convnetk2d_7x7_7x7_5x5_5x5_5x5_3x3 =
-                make_conv_layer("conv-k2d", 16, 7, 7, 1) +
-                make_conv_layer("conv-k2d", 16, 7, 7, 2) +
-                make_conv_layer("conv-k2d", 32, 5, 5, 2) +
-                make_conv_layer("conv-k2d", 32, 5, 5, 4) +
-                make_conv_layer("conv-k2d", 32, 5, 5, 4) +
-                make_conv_layer("conv-k2d", 64, 3, 3, 4);
-
-        const string_t convnettoe_7x7_7x7_5x5_5x5_5x5_3x3 =
-                nano::replace(convnetk2d_7x7_7x7_5x5_5x5_5x5_3x3, "conv-k2d", "conv-toe");
-
-        const string_t convnetk2d_5x5_5x5_5x5_5x5_5x5_5x5_3x3 =
-                make_conv_layer("conv-k2d", 16, 5, 5, 1) +
-                make_conv_layer("conv-k2d", 32, 5, 5, 2) +
-                make_conv_layer("conv-k2d", 64, 5, 5, 4) +
-                make_conv_layer("conv-k2d", 64, 5, 5, 8) +
-                make_conv_layer("conv-k2d", 64, 5, 5, 8) +
-                make_conv_layer("conv-k2d", 64, 5, 5, 8) +
-                make_conv_layer("conv-k2d", 64, 3, 3, 8);
-
-        const string_t convnettoe_5x5_5x5_5x5_5x5_5x5_5x5_3x3 =
-                nano::replace(convnetk2d_5x5_5x5_5x5_5x5_5x5_5x5_3x3, "conv-k2d", "conv-toe");
-
-        const string_t convnetk2d_3x3_3x3_3x3_3x3_3x3_3x3_3x3_3x3_3x3_3x3_3x3_3x3 =
-                make_conv_layer("conv-k2d", 16, 3, 3, 1) +
-                make_conv_layer("conv-k2d", 32, 3, 3, 2) +
-                make_conv_layer("conv-k2d", 64, 3, 3, 4) +
-                make_conv_layer("conv-k2d", 64, 3, 3, 8) +
-                make_conv_layer("conv-k2d", 64, 3, 3, 8) +
-                make_conv_layer("conv-k2d", 64, 3, 3, 8) +
-                make_conv_layer("conv-k2d", 64, 3, 3, 8) +
-                make_conv_layer("conv-k2d", 64, 3, 3, 8) +
-                make_conv_layer("conv-k2d", 64, 3, 3, 8) +
-                make_conv_layer("conv-k2d", 64, 3, 3, 8) +
-                make_conv_layer("conv-k2d", 64, 3, 3, 8) +
-                make_conv_layer("conv-k2d", 64, 3, 3, 8) +
-                make_conv_layer("conv-k2d", 64, 3, 3, 8);
-
-        const string_t convnettoe_3x3_3x3_3x3_3x3_3x3_3x3_3x3_3x3_3x3_3x3_3x3_3x3 =
-                nano::replace(convnetk2d_3x3_3x3_3x3_3x3_3x3_3x3_3x3_3x3_3x3_3x3_3x3_3x3, "conv-k2d", "conv-toe");
+        const string_t convnet1_toe = nano::replace(convnet1_k2d, "conv-k2d", "conv-toe");
+        const string_t convnet2_toe = nano::replace(convnet2_k2d, "conv-k2d", "conv-toe");
+        const string_t convnet3_toe = nano::replace(convnet3_k2d, "conv-k2d", "conv-toe");
+        const string_t convnet4_toe = nano::replace(convnet4_k2d, "conv-k2d", "conv-toe");
+        const string_t convnet5_toe = nano::replace(convnet5_k2d, "conv-k2d", "conv-toe");
 
         const string_t outlayer = make_output_layer(task.osize());
 
@@ -147,18 +92,16 @@ int main(int argc, const char *argv[])
         }
         if (cmd_convnets)
         {
-                DEFINE(convnetk2d_9x9p_5x5p_3x3);
-                DEFINE(convnettoe_9x9p_5x5p_3x3);
-                DEFINE(convnetk2d_11x11_9x9_7x7_3x3);
-                DEFINE(convnettoe_11x11_9x9_7x7_3x3);
-                DEFINE(convnetk2d_9x9_7x7_7x7_5x5_3x3);
-                DEFINE(convnettoe_9x9_7x7_7x7_5x5_3x3);
-                DEFINE(convnetk2d_7x7_7x7_5x5_5x5_5x5_3x3);
-                DEFINE(convnettoe_7x7_7x7_5x5_5x5_5x5_3x3);
-                DEFINE(convnetk2d_5x5_5x5_5x5_5x5_5x5_5x5_3x3);
-                DEFINE(convnettoe_5x5_5x5_5x5_5x5_5x5_5x5_3x3);
-                DEFINE(convnetk2d_3x3_3x3_3x3_3x3_3x3_3x3_3x3_3x3_3x3_3x3_3x3_3x3);
-                DEFINE(convnettoe_3x3_3x3_3x3_3x3_3x3_3x3_3x3_3x3_3x3_3x3_3x3_3x3);
+                DEFINE(convnet1_k2d);
+                DEFINE(convnet1_toe);
+                DEFINE(convnet2_k2d);
+                DEFINE(convnet2_toe);
+                DEFINE(convnet3_k2d);
+                DEFINE(convnet3_toe);
+                DEFINE(convnet4_k2d);
+                DEFINE(convnet4_toe);
+                DEFINE(convnet5_k2d);
+                DEFINE(convnet5_toe);
         }
 
         #undef DEFINE
