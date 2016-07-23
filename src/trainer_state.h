@@ -22,6 +22,11 @@ namespace nano
                 ///
                 trainer_measurement_t(const scalar_t value, const scalar_t error_avg, const scalar_t error_var);
 
+                ///
+                /// \brief check validity of measurements (detect divergence)
+                ///
+                operator bool() const;
+
                 // attributes
                 scalar_t        m_value;        ///< loss value
                 scalar_t        m_error_avg;    ///< error (average)
@@ -58,6 +63,14 @@ namespace nano
                                 const trainer_measurement_t& train,
                                 const trainer_measurement_t& valid,
                                 const trainer_measurement_t& test);
+
+                ///
+                /// \brief check validity
+                ///
+                operator bool() const
+                {
+                        return m_train && m_valid && m_test;
+                }
 
                 // attributes
                 milliseconds_t          m_milis;        ///< (cumulated) elapsed time since the optimization started

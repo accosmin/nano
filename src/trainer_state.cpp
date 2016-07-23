@@ -24,6 +24,11 @@ namespace nano
         {
         }
 
+        trainer_measurement_t::operator bool() const
+        {
+                return std::isfinite(m_value) && std::isfinite(m_error_avg) && std::isfinite(m_error_var);
+        }
+
         bool operator<(const trainer_measurement_t& one, const trainer_measurement_t& two)
         {
                 const auto v1 = std::isfinite(one.m_error_avg) ? one.m_error_avg : std::numeric_limits<scalar_t>::max();

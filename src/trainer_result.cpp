@@ -23,6 +23,12 @@ namespace nano
         trainer_state trainer_result_t::update(const state_t& opt_state,
                 const trainer_state_t& state, const trainer_config_t& config)
         {
+                //
+                if (!state)
+                {
+                        return trainer_state::diverge;
+                }
+
                 m_history[config].push_back(state);
 
                 const auto beste = m_opt_state.m_valid.m_error_avg;
@@ -138,13 +144,15 @@ namespace nano
                 switch (policy)
                 {
                 case trainer_policy::stop_early:
-                        return  code == trainer_state::overfit ||
+                        return  code == trainer_state::diverge ||
+                                code == trainer_state::overfit ||
                                 code == trainer_state::solved ||
                                 code == trainer_state::failed;
 
                 case trainer_policy::all_epochs:
                 default:
-                        return  code == trainer_state::failed;
+                        return  code == trainer_state::diverge ||
+                                code == trainer_state::failed;
                 }
         }
 

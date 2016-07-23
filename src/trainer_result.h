@@ -41,6 +41,7 @@ namespace nano
                 better,         ///< performance improved
                 worse,          ///< performance decreased (but not critically)
                 overfit,        ///< overfitting detected (processing should stop)
+                diverge,        ///< divergence detected aka Nan/Inf (processing should stop)
                 solved          ///< problem solved with arbitrary accuracy (processing should stop)
         };
 
@@ -139,6 +140,7 @@ namespace nano
                         { nano::trainer_state::better,          "+better" },
                         { nano::trainer_state::worse,           "--worse" },
                         { nano::trainer_state::overfit,         "overfit" },
+                        { nano::trainer_state::diverge,         "diverge" },
                         { nano::trainer_state::solved,          "!solved" }
                 };
         }
