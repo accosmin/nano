@@ -39,8 +39,6 @@ function fn_make_trainers
         epochs=$1
         policy=$2
 
-        ,policy=${policy}
-
         stoch_ag="--trainer stochastic --trainer-params opt=ag,epochs=${epochs},policy=${policy}"
         stoch_agfr="--trainer stochastic --trainer-params opt=agfr,epochs=${epochs},policy=${policy}"
         stoch_aggr="--trainer stochastic --trainer-params opt=aggr,epochs=${epochs},policy=${policy}"

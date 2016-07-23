@@ -12,7 +12,7 @@ conv0="--model forward-network --model-params "
 conv1=${conv0}"conv:dims=16,rows=9,cols=9,conn=1;act-snorm;"
 conv2=${conv1}"conv:dims=32,rows=7,cols=7,conn=2;act-snorm;"
 conv3=${conv2}"conv:dims=64,rows=5,cols=5,conn=4;act-snorm;"
-conv4=${conv3}"conv:dims=128,rows=3,cols=3,conn=8;act-snorm;"
+conv4=${conv3}"conv:dims=128,rows=5,cols=5,conn=8;act-snorm;"
 
 mlp0="--model forward-network --model-params "
 mlp1=${mlp0}"affine:dims=128;act-snorm;"
