@@ -2,32 +2,13 @@
 
 This library provides numerical optimization and machine learning utilities. It can be used to train models such as neural networks and convolution networks.
 
-
-#### Core modules
-
-The core modules are independent of each other and are designed to be as generic as possible.
-
-* **math** - numerical utilities. `No dependencies.`
-* **optim** - batch and stochastic numerical optimization and line-search methods. `Dependencies: Eigen3.`
-* **text** - string processing utilities. `No dependencies.`
-* **tensor** - vector, matrix and tensor utilities, 2D/3D convolution and correlations. `Dependencies: Eigen3.`
-* **io** - I/O utilities, wrappers over LibArchive and std::streams. `Dependencies: LibArchive, Zlib and BZip2.`
-* **thread** - thread pool, loop processing in parallel. `No dependencies.`
-
-Most notably the **math** module implements the following:
+The numerical optimization module provides the following:
 * batch optimization methods: `gradient descent`, various `non-linear conjugate gradient descent`, `L-BFGS`.
-* stochastic optimization methods: `Nesterov's accelerated gradient`, `stochastic gradient`, `ADADELTA`, `ADAGRAD`, `ADAM`.
-* line-search methods: `backtracking`, `More & Thuente`, `CG_DESCENT`.
+* stochastic optimization methods: `Nesterov's accelerated gradient`, `stochastic gradient` (with or without momentum), `normalized gradient descent`, `ADADELTA`, `ADAGRAD`, `ADAM`.
+* line-search methods: `backtracking`, `cubic interpolation`, `CG_DESCENT`. 
+* a large set of unconstrained problems to benchmark the optimization algorithms. 
 
-
-#### Vision module
-
-The **vision** module provides basic image I/O and processing. `Dependencies: DevIL.`
-
-
-#### Cortex module
-
-The **cortex** module contains various machine learning utilities. This module is built around several key concepts mapped to C++ object interfaces. Each object type is registered with an **ID** and thus it can be selected from command line arguments. Also new objects can be easily registered and then they are automatically visible across the library and its associated programs.
+The machine learning module is built around several key concepts mapped to C++ object interfaces. Each object type is registered with an **ID** and thus it can be selected from command line arguments. Also new objects can be easily registered and then they are automatically visible across the library and its associated programs.
 
 A **task** describes a classification or regression problem consisting of separate training and test image patches with associated target outputs if any. The library has built-in support for various standard benchmark datasets like: `MNIST`, `CIFAR-10`, `CIFAR-100`, `STL-10`, `SVHN`. These datasets are loaded directly from the original (compressed) files.
 
@@ -40,9 +21,9 @@ A **trainer** optimizes the parameters of a given model to produce the correct o
 
 #### Compilation
 
-Use a C++14 compiler and install Eigen3, LibArchive and DevIL.
+Use a C++14 compiler and install Eigen3, LibArchive, Zlib, BZip2 and DevIL.
 
-Nano is tested on ArchLinux ([gcc 4.9.3+ | gcc 5.3+ | clang 3.5+], CMake 3.1+, Ninja or Make) and OSX (clang, homebrew, CMake 3.1+, Ninja or Make). The code is written to be cross-platform, so it may work (with minor fixes) on other platforms as well (e.g. Windows/MSVC).
+Nano is tested on Linux ([gcc 4.9.3+ | gcc 5.3+ | clang 3.5+], CMake 3.1+, Ninja or Make) and OSX (clang, homebrew, CMake 3.1+, Ninja or Make). The code is written to be cross-platform, so it may work (with minor fixes) on other platforms as well (e.g. Windows/MSVC).
 
 The easiest way to compile (and install) is to run the `build_release.sh` bash script. The test programs and utilities will be found in the `build-release` directory. The `build_debug.sh` bash script will build the debugging version with and without address, leak and thread sanitizers (if available).
 
