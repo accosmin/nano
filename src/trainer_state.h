@@ -10,7 +10,7 @@ namespace nano
         ///
         /// \brief training measurement usually after a training epoch.
         ///
-        struct trainer_measurement_t
+        struct NANO_PUBLIC trainer_measurement_t
         {
                 ///
                 /// \brief constructor

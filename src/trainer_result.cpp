@@ -20,13 +20,13 @@ namespace nano
                 return os;
         }
 
-        trainer_state trainer_result_t::update(const state_t& opt_state,
+        trainer_status trainer_result_t::update(const state_t& opt_state,
                 const trainer_state_t& state, const trainer_config_t& config)
         {
-                //
+                // out-of-bounds values (e.g. caused by invalid line-search steps)
                 if (!state)
                 {
-                        return trainer_state::diverge;
+                        return trainer_status::diverge;
                 }
 
                 m_history[config].push_back(state);
@@ -51,13 +51,13 @@ namespace nano
                                 updater();
                         }
 
-                        return trainer_state::solved;
+                        return trainer_status::solved;
                 }
 
                 // optimization failed
                 else if (opt_state.m_status == state_t::status::failed)
                 {
-                        return trainer_state::failed;
+                        return trainer_status::failed;
                 }
 
                 // improved performance
@@ -65,7 +65,7 @@ namespace nano
                 {
                         updater();
 
-                        return trainer_state::better;
+                        return trainer_status::better;
                 }
 
                 // worse performance
@@ -74,7 +74,7 @@ namespace nano
                         // not enough epochs, keep training
                         if (state.m_epoch < max_epochs_without_improvement)
                         {
-                                return trainer_state::worse;
+                                return trainer_status::worse;
                         }
 
                         else
@@ -82,29 +82,29 @@ namespace nano
                                 // last improvement not far in the past, keep training
                                 if (state.m_epoch < m_opt_state.m_epoch + max_epochs_without_improvement)
                                 {
-                                        return trainer_state::worse;
+                                        return trainer_status::worse;
                                 }
 
                                 // no improvement since many epochs, overfitting detected
                                 else
                                 {
-                                        return trainer_state::overfit;
+                                        return trainer_status::overfit;
                                 }
                         }
                 }
         }
 
-        trainer_state trainer_result_t::update(const trainer_result_t& other)
+        trainer_status trainer_result_t::update(const trainer_result_t& other)
         {
                 if (*this < other)
                 {
                         *this = other;
-                        return trainer_state::better;
+                        return trainer_status::better;
                 }
 
                 else
                 {
-                        return trainer_state::worse;
+                        return trainer_status::worse;
                 }
         }
 
@@ -139,20 +139,20 @@ namespace nano
                 return one.optimum_state() < other.optimum_state();
         }
 
-        bool is_done(const trainer_state code, const trainer_policy policy)
+        bool is_done(const trainer_status code, const trainer_policy policy)
         {
                 switch (policy)
                 {
                 case trainer_policy::stop_early:
-                        return  code == trainer_state::diverge ||
-                                code == trainer_state::overfit ||
-                                code == trainer_state::solved ||
-                                code == trainer_state::failed;
+                        return  code == trainer_status::diverge ||
+                                code == trainer_status::overfit ||
+                                code == trainer_status::solved ||
+                                code == trainer_status::failed;
 
                 case trainer_policy::all_epochs:
                 default:
-                        return  code == trainer_state::diverge ||
-                                code == trainer_state::failed;
+                        return  code == trainer_status::diverge ||
+                                code == trainer_status::failed;
                 }
         }
 
