@@ -45,7 +45,7 @@ void check_function(
                         auto state = minimize(params, problem, x0);
                         if (state.converged(epsilon))
                         {
-                                state.m_status = state_t::status::converged;
+                                state.m_status = opt_status::converged;
                         }
                         return state;
                 };

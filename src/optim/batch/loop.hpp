@@ -29,20 +29,20 @@ namespace nano
                         // check convergence
                         if (cstate.converged(params.m_epsilon))
                         {
-                                cstate.m_status = state_t::status::converged;
+                                cstate.m_status = opt_status::converged;
                                 break;
                         }
 
                         if (!optimizer(cstate, i))
                         {
-                                cstate.m_status = state_t::status::failed;
+                                cstate.m_status = opt_status::failed;
                                 break;
                         }
 
                         // log the current state & check the stopping criteria
                         if (!params.ulog(cstate))
                         {
-                                cstate.m_status = state_t::status::stopped;
+                                cstate.m_status = opt_status::stopped;
                                 break;
                         }
                 }

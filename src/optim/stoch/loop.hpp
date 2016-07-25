@@ -133,7 +133,7 @@ namespace nano
                         astate.f = params.tlog(astate, config);
                         if (!params.ulog(astate, config))
                         {
-                                bstate.m_status = state_t::status::stopped;
+                                bstate.m_status = opt_status::stopped;
                                 break;
                         }
 

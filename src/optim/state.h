@@ -13,6 +13,17 @@ namespace nano
         bool operator<(const state_t& one, const state_t& two);
 
         ///
+        /// \brief optimization status
+        ///
+        enum class opt_status
+        {
+                converged,      ///< convergence criteria reached
+                max_iters,      ///< maximum number of iterations reached without convergence (default)
+                failed,         ///< optimization failed (e.g. line-search failed)
+                stopped         ///< user requested stop
+        };
+
+        ///
         /// \brief optimization state described as:
         ///     current point (x),
         ///     function value (f),
@@ -22,14 +33,6 @@ namespace nano
         ///
         struct NANO_PUBLIC state_t
         {
-                enum class status
-                {
-                        converged,      ///< convergence criteria reached
-                        max_iters,      ///< maximum number of iterations reached without convergence (default)
-                        failed,         ///< optimization failed (e.g. line-search failed)
-                        stopped         ///< user requested stop
-                };
-
                 ///
                 /// \brief constructor
                 ///
@@ -84,7 +87,7 @@ namespace nano
                 std::size_t     m_iterations;
                 std::size_t     m_fcalls;               ///< #function value evaluations
                 std::size_t     m_gcalls;               ///< #function gradient evaluations
-                status          m_status;               ///<
+                opt_status      m_status;               ///<
         };
 
         ///
@@ -99,14 +102,14 @@ namespace nano
         }
 
         template <>
-        inline std::map<state_t::status, string_t> enum_string<state_t::status>()
+        inline std::map<opt_status, string_t> enum_string<opt_status>()
         {
                 return
                 {
-                        { state_t::status::converged,   "converged" },
-                        { state_t::status::max_iters,   "max_iters" },
-                        { state_t::status::failed,      "failed" },
-                        { state_t::status::stopped,     "stopped" }
+                        { opt_status::converged,   "converged" },
+                        { opt_status::max_iters,   "max_iters" },
+                        { opt_status::failed,      "failed" },
+                        { opt_status::stopped,     "stopped" }
                 };
         }
 

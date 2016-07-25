@@ -70,7 +70,7 @@ static void check_function(const function_t& function)
                         NANO_CHECK_LESS_EQUAL(f, f0);
 
                         // check convergence
-                        NANO_CHECK(state.m_status == state_t::status::converged || g < g_thres);
+                        NANO_CHECK(state.m_status == opt_status::converged || g < g_thres);
                         NANO_CHECK_LESS(g, g_thres);
 
                         // check local minimas (if any known)

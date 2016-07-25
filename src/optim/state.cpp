@@ -9,7 +9,7 @@ namespace nano
                 m_iterations(0),
                 m_fcalls(0),
                 m_gcalls(0),
-                m_status(status::max_iters)
+                m_status(opt_status::max_iters)
         {
         }
 

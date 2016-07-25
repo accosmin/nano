@@ -108,7 +108,7 @@ namespace benchmark
                                 // update stats
                                 crits[t] = g;
                                 iters[t] = static_cast<scalar_t>(state.m_iterations);
-                                fails[t] = (state.m_status != state_t::status::converged) ? 1 : 0;
+                                fails[t] = (state.m_status != opt_status::converged) ? 1 : 0;
                                 fcalls[t] = static_cast<scalar_t>(state.m_fcalls);
                                 gcalls[t] = static_cast<scalar_t>(state.m_gcalls);
                                 speeds[t] = speed;

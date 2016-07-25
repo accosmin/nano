@@ -39,7 +39,7 @@ namespace nano
                 };
 
                 // optimization finished successfully
-                if (opt_state.m_status == state_t::status::converged)
+                if (opt_state.m_status == opt_status::converged)
                 {
                         if (state < m_opt_state)
                         {
@@ -49,7 +49,7 @@ namespace nano
                 }
 
                 // optimization failed
-                else if (opt_state.m_status == state_t::status::failed)
+                else if (opt_state.m_status == opt_status::failed)
                 {
                         return trainer_status::failed;
                 }
