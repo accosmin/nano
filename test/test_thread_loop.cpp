@@ -31,7 +31,7 @@ namespace
         tscalar test_mt(const size_t size, const toperator op, const size_t splits)
         {
                 std::vector<tscalar> results(size);
-                thread::loopi(size, [results = std::ref(results), op = op] (size_t i)
+                nano::loopi(size, [results = std::ref(results), op = op] (size_t i)
                 {
                         results.get()[i] = op(i);
                 }, splits);
@@ -48,7 +48,7 @@ namespace
         tscalar test_mt(const size_t size, const size_t nthreads, const toperator op, const size_t splits)
         {
                 std::vector<tscalar> results(size);
-                thread::loopi(size, nthreads, [results = std::ref(results), op = op] (size_t i)
+                nano::loopi(size, nthreads, [results = std::ref(results), op = op] (size_t i)
                 {
                         results.get()[i] = op(i);
                 }, splits);

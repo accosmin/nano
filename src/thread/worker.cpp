@@ -12,17 +12,17 @@ namespace
         }
 }
 
-thread::worker_t::worker_t(queue_t& queue, const bool active) :
+nano::worker_t::worker_t(worker_queue_t& queue, const bool active) :
         m_queue(queue),
         m_active(active)
 {
 }
 
-void thread::worker_t::operator()() const
+void nano::worker_t::operator()() const
 {
         while (true)
         {
-                task_t task;
+                worker_task_t task;
 
                 // wait for a new task to be available in the queue
                 {
@@ -49,17 +49,17 @@ void thread::worker_t::operator()() const
         }
 }
 
-bool thread::worker_t::activate()
+bool nano::worker_t::activate()
 {
         return toggle(m_active, true);
 }
 
-bool thread::worker_t::deactivate()
+bool nano::worker_t::deactivate()
 {
         return toggle(m_active, false);
 }
 
-bool thread::worker_t::active() const
+bool nano::worker_t::active() const
 {
         return m_active;
 }

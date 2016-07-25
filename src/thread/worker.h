@@ -2,9 +2,9 @@
 
 #include "arch.h"
 
-namespace thread
+namespace nano
 {
-        struct queue_t;
+        struct worker_queue_t;
 
         ///
         /// \brief worker to process tasks enqueued in a thread pool.
@@ -16,7 +16,7 @@ namespace thread
                 ///
                 /// \brief constructor
                 ///
-                explicit worker_t(queue_t& queue, const bool active = true);
+                explicit worker_t(worker_queue_t& queue, const bool active = true);
 
                 ///
                 /// \brief execute tasks when available
@@ -38,7 +38,7 @@ namespace thread
         private:
 
                 // attributes
-                queue_t&        m_queue;        ///< task queue to process
+                worker_queue_t& m_queue;        ///< task queue to process
                 bool            m_active;       ///< is worker active for processing tasks?
         };
 }

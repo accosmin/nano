@@ -2,7 +2,7 @@
 
 #include "pool.h"
 
-namespace thread
+namespace nano
 {
         ///
         /// \brief split a loop computation of the given size using a thread pool.
@@ -15,7 +15,7 @@ namespace thread
         >
         void loopit(const tsize size, const toperator op, const tsize split = 1)
         {
-                auto& pool = pool_t::instance();
+                auto& pool = thread_pool_t::instance();
 
                 assert(split > 0);
                 const auto n_workers = static_cast<tsize>(pool.n_workers());
@@ -47,7 +47,7 @@ namespace thread
         >
         void loopit(const tsize size, const tsize nthreads, const toperator op, const tsize split = 1)
         {
-                pool_t::instance().activate(nthreads);
+                thread_pool_t::instance().activate(nthreads);
                 loopit(size, op, split);
         }
 }

@@ -2,7 +2,7 @@
 
 #include <vector>
 
-namespace thread
+namespace nano
 {
         ///
         /// \brief RAII object to wait for a given set of futures.

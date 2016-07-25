@@ -2,11 +2,13 @@
 #include "thread/pool.h"
 #include "math/random.hpp"
 
+using namespace nano;
+
 NANO_BEGIN_MODULE(test_thread_pool)
 
 NANO_CASE(empty)
 {
-        auto& pool = thread::pool_t::instance();
+        auto& pool = thread_pool_t::instance();
 
         const size_t n_threads = nano::logical_cpus();
         const size_t n_active_workers = n_threads;
@@ -18,7 +20,7 @@ NANO_CASE(empty)
 
 NANO_CASE(enqueue)
 {
-        auto& pool = thread::pool_t::instance();
+        auto& pool = thread_pool_t::instance();
 
         const size_t n_threads = nano::logical_cpus();
         const size_t n_max_tasks = n_threads * 16;
@@ -38,7 +40,7 @@ NANO_CASE(enqueue)
 
                 std::mutex mutex;
 
-                thread::section_t<thread::future_t> futures;
+                section_t<future_t> futures;
                 for (size_t j = 0; j < n_tasks; ++ j)
                 {
                         futures.push_back(pool.enqueue([=, &mutex, &tasks_done]()

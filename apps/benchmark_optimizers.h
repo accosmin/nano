@@ -87,7 +87,7 @@ namespace benchmark
                 scalars_t gcalls(trials);
                 scalars_t speeds(trials);
 
-                thread::loopi(trials, [&] (size_t t)
+                nano::loopi(trials, [&] (size_t t)
                 {
                         const auto& x0 = x0s[t];
 
