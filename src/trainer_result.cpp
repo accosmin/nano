@@ -31,9 +31,6 @@ namespace nano
 
                 m_history[config].push_back(state);
 
-                const auto beste = m_opt_state.m_valid.m_error_avg;
-                const auto curre = state.m_valid.m_error_avg;
-
                 const auto updater = [&] ()
                 {
                         m_opt_params = opt_state.x;
@@ -41,16 +38,13 @@ namespace nano
                         m_opt_config = config;
                 };
 
-                const size_t max_epochs_without_improvement = 32;
-
                 // optimization finished successfully
                 if (opt_state.m_status == state_t::status::converged)
                 {
-                        if (curre < beste)
+                        if (state < m_opt_state)
                         {
                                 updater();
                         }
-
                         return trainer_status::solved;
                 }
 
@@ -61,10 +55,9 @@ namespace nano
                 }
 
                 // improved performance
-                else if (curre < beste)
+                else if (state < m_opt_state)
                 {
                         updater();
-
                         return trainer_status::better;
                 }
 
@@ -72,15 +65,14 @@ namespace nano
                 else
                 {
                         // not enough epochs, keep training
-                        if (state.m_epoch < max_epochs_without_improvement)
+                        if (state.m_epoch < overfitting_slack())
                         {
                                 return trainer_status::worse;
                         }
-
                         else
                         {
                                 // last improvement not far in the past, keep training
-                                if (state.m_epoch < m_opt_state.m_epoch + max_epochs_without_improvement)
+                                if (state.m_epoch < m_opt_state.m_epoch + overfitting_slack())
                                 {
                                         return trainer_status::worse;
                                 }
@@ -92,6 +84,11 @@ namespace nano
                                 }
                         }
                 }
+        }
+
+        size_t trainer_result_t::overfitting_slack()
+        {
+                return 32;
         }
 
         trainer_status trainer_result_t::update(const trainer_result_t& other)

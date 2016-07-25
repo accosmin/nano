@@ -109,6 +109,11 @@ namespace nano
                 ///
                 size_t optimum_epoch() const;
 
+                ///
+                /// \brief the number of epochs to wait for overfitting detection
+                ///
+                static size_t overfitting_slack();
+
         private:
 
                 // attributes
@@ -127,10 +132,7 @@ namespace nano
         /// \brief streaming training results
         ///
         NANO_PUBLIC std::ostream& operator<<(std::ostream&, const trainer_result_t&);
-}
 
-namespace nano
-{
         template <>
         inline std::map<trainer_status, std::string> enum_string<trainer_status>()
         {
