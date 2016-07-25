@@ -8,11 +8,12 @@ using namespace nano;
 const int epochs = 200;
 const int best_epoch = 50;
 
-static auto make_trainer_state(const scalar_t valid_value, const size_t ms = 0, const size_t epoch = 0)
+template <typename tvalue>
+static auto make_trainer_state(const tvalue valid_value, const size_t ms = 0, const size_t epoch = 0)
 {
         return trainer_state_t(milliseconds_t(ms), epoch,
                 trainer_measurement_t{0, 0, 0},
-                trainer_measurement_t{valid_value, 0, 0},
+                trainer_measurement_t{static_cast<scalar_t>(valid_value), 0, 0},
                 trainer_measurement_t{0, 0, 0});
 }
 
@@ -24,7 +25,7 @@ static auto update_result(trainer_result_t& result, const opt_status status, con
 
         const auto config = trainer_config_t(1, {"param", scalar_t(0)});
 
-        return result.update(opt_state, make_trainer_state(value, 0, size_t(epoch)), config);
+        return result.update(opt_state, make_trainer_state(value, 0, static_cast<size_t>(epoch)), config);
 }
 
 NANO_BEGIN_MODULE(test_trainer)
