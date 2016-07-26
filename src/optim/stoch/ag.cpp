@@ -1,5 +1,4 @@
 #include "ag.h"
-#include "lrate.h"
 #include "loop.hpp"
 
 namespace nano
@@ -12,11 +11,11 @@ namespace nano
         state_t stoch_ag_t::operator()(const stoch_params_t& param, const problem_t& problem, const vector_t& x0) const
         {
                 const auto qs = make_finite_space(scalar_t(0.0));
-                return stoch_tune(this, param, problem, x0, make_alpha0s(), make_decays(), qs);
+                return stoch_tune(this, param, problem, x0, make_alpha0s(), qs);
         }
 
         state_t stoch_ag_t::operator()(const stoch_params_t& param, const problem_t& problem, const vector_t& x0,
-                const scalar_t alpha0, const scalar_t decay, const scalar_t q) const
+                const scalar_t alpha0, const scalar_t q) const
         {
                 assert(problem.size() == x0.size());
 
@@ -35,9 +34,6 @@ namespace nano
                 scalar_t ptheta = 1;
                 scalar_t ctheta = 1;
 
-                // learning rate schedule
-                lrate_t lrate(alpha0, decay);
-
                 const auto get_theta = [] (const auto ptheta, const auto q)
                 {
                         const auto a = scalar_t(1);
@@ -55,7 +51,7 @@ namespace nano
                 const auto op_iter = [&] (state_t& cstate)
                 {
                         // learning rate
-                        const scalar_t alpha = lrate.get();
+                        const scalar_t alpha = alpha0;
 
                         // momentum
                         ctheta = get_theta(ptheta, q);
@@ -96,7 +92,7 @@ namespace nano
 
                 // OK, assembly the optimizer
                 return  stoch_loop(problem, param, istate, op_iter,
-                        {{"alpha0", alpha0}, {"decay", decay}, {"q", q}});
+                        {{"alpha0", alpha0}, {"q", q}});
         }
 }
 
