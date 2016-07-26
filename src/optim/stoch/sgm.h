@@ -19,7 +19,7 @@ namespace nano
                 /// \brief minimize starting from the initial guess x0
                 ///
                 state_t operator()(const stoch_params_t& param, const problem_t& problem, const vector_t& x0,
-                        const scalar_t alpha0, const scalar_t decay, const scalar_t momentum) const;
+                        const scalar_t alpha0, const scalar_t momentum) const;
         };
 }
 
