@@ -39,7 +39,8 @@ namespace nano
                 ///
                 /// \brief append a new row
                 ///
-                table_row_t& append(const string_t& name);
+                template <typename tname>
+                table_row_t& append(const tname& name);
 
                 ///
                 /// \brief (stable) sort the table using the given row-based comparison operator
@@ -102,6 +103,13 @@ namespace nano
                 table_header_t                  m_header;       ///<
                 std::vector<table_row_t>        m_rows;         ///<
         };
+
+        template <typename tname>
+        table_row_t& table_t::append(const tname& name)
+        {
+                m_rows.emplace_back(to_string(name));
+                return *m_rows.rbegin();
+        }
 
         template <typename toperator>
         void table_t::sort(const toperator& comp)

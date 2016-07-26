@@ -41,12 +41,6 @@ namespace nano
                 m_rows.clear();
         }
 
-        table_row_t& table_t::append(const string_t& name)
-        {
-                m_rows.emplace_back(name);
-                return *m_rows.rbegin();
-        }
-
         size_t table_t::name_colsize() const
         {
                 size_t colsize = m_title.size();
