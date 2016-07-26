@@ -1,12 +1,13 @@
 #include "utest.hpp"
+#include "task_iterator.h"
 #include "tasks/task_charset.h"
+
+using namespace nano;
 
 NANO_BEGIN_MODULE(test_charset)
 
 NANO_CASE(construction)
 {
-        using namespace nano;
-
         // <charset, color mode, number of outputs/classes/characters>
         std::vector<std::tuple<charset, color_mode, tensor_size_t>> configs;
         configs.emplace_back(charset::digit,            color_mode::luma,       tensor_size_t(10));
@@ -45,10 +46,41 @@ NANO_CASE(construction)
         }
 }
 
+NANO_CASE(minibatch_iterator)
+{
+        charset_task_t task(charset::digit, color_mode::rgba, 16, 16, 10000);
+
+        NANO_CHECK_EQUAL(task.load(), true);
+
+        const auto batch = size_t(123);
+        const auto fold = fold_t{0, protocol::train};
+        const auto fold_size = task.n_samples(fold);
+
+        minibatch_iterator_t<shuffle::off> it(task, fold, batch);
+        for (size_t i = 0; i < 1000; ++ i)
+        {
+                NANO_CHECK_LESS(it.begin(), it.end());
+                NANO_CHECK_LESS_EQUAL(it.end(), fold_size);
+                NANO_CHECK_LESS_EQUAL(it.end(), it.begin() + batch);
+
+                const auto end = it.end();
+
+                it.next();
+
+                if (end == fold_size)
+                {
+                        NANO_CHECK_EQUAL(it.begin(), size_t(0));
+                        NANO_CHECK_EQUAL(it.end(), batch);
+                }
+                else
+                {
+                        NANO_CHECK_EQUAL(end, it.begin());
+                }
+        }
+}
+
 NANO_CASE(from_params)
 {
-        using namespace nano;
-
         charset_task_t task("type=alpha,color=rgb,irows=23,icols=29,count=102");
         NANO_CHECK(task.load());
 
