@@ -57,7 +57,7 @@ int main(int argc, const char *argv[])
                                 const auto fold = fold_t{0, protocol::train};
                                 const auto epochs = 100 * nano::idiv(task.n_samples(fold), batch_size);
 
-                                minibatch_iterator_t<shuffle::on> it(task, fold, batch_size);
+                                task_iterator_t it(task, fold, batch_size);
 
                                 volatile size_t count = 0;
                                 volatile long double sum = 0;

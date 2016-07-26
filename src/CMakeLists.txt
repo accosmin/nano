@@ -7,6 +7,7 @@ set(libnano_sources
         criterion.cpp
         model.cpp
         task_util.cpp
+        task_iterator.cpp
         trainer_result.cpp
         trainer_state.cpp
         version.cpp

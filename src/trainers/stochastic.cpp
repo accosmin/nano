@@ -1,12 +1,12 @@
+#include "model.h"
 #include "loop.hpp"
 #include "stochastic.h"
 #include "optim/stoch.h"
-#include "model.h"
+#include "task_iterator.h"
 #include "math/clamp.hpp"
 #include "math/numeric.hpp"
 #include "text/to_string.hpp"
 #include "text/from_params.hpp"
-#include "task_iterator.h"
 
 #include "logger.h"
 
@@ -19,7 +19,7 @@ namespace nano
 
         trainer_result_t stochastic_trainer_t::train(
                 const task_t& task, const size_t fold, const size_t nthreads,
-                const loss_t& loss, const criterion_t& criterion,
+                const loss_t& loss, const criterion_t& crition,
                 model_t& model) const
         {
                 if (model != task)
@@ -39,7 +39,7 @@ namespace nano
                         return train(task, fold, lacc, gacc, x0, optimizer, epochs, policy, verbose);
                 };
 
-                const auto result = trainer_loop(model, nthreads, loss, criterion, op);
+                const auto result = trainer_loop(model, nthreads, loss, crition, op);
                 log_info() << "<<< stoch-" << to_string(optimizer) << ": " << result << ".";
 
                 // OK
@@ -69,7 +69,7 @@ namespace nano
                 size_t epoch = 0;
                 trainer_result_t result;
 
-                minibatch_iterator_t<shuffle::on> iter(task, train_fold, batch_size);
+                task_iterator_t it(task, train_fold, batch_size);
 
                 // construct the optimization problem
                 const auto fn_size = [&] ()
@@ -79,17 +79,17 @@ namespace nano
 
                 const auto fn_fval = [&] (const vector_t& x)
                 {
-                        iter.next();
+                        it.next();
                         lacc.set_params(x);
-                        lacc.update(task, iter.fold(), iter.begin(), iter.end());
+                        lacc.update(task, it.fold(), it.begin(), it.end());
                         return lacc.value();
                 };
 
                 const auto fn_grad = [&] (const vector_t& x, vector_t& gx)
                 {
-                        iter.next();
+                        it.next();
                         gacc.set_params(x);
-                        gacc.update(task, iter.fold(), iter.begin(), iter.end());
+                        gacc.update(task, it.fold(), it.begin(), it.end());
                         gx = gacc.vgrad();
                         return gacc.value();
                 };

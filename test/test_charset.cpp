@@ -46,7 +46,7 @@ NANO_CASE(construction)
         }
 }
 
-NANO_CASE(minibatch_iterator)
+NANO_CASE(fixed_batch_iterator)
 {
         charset_task_t task(charset::digit, color_mode::rgba, 16, 16, 10000);
 
@@ -56,7 +56,7 @@ NANO_CASE(minibatch_iterator)
         const auto fold = fold_t{0, protocol::train};
         const auto fold_size = task.n_samples(fold);
 
-        minibatch_iterator_t<shuffle::off> it(task, fold, batch);
+        task_iterator_t it(task, fold, batch);
         for (size_t i = 0; i < 1000; ++ i)
         {
                 NANO_CHECK_LESS(it.begin(), it.end());
@@ -64,10 +64,9 @@ NANO_CASE(minibatch_iterator)
                 NANO_CHECK_LESS_EQUAL(it.end(), it.begin() + batch);
 
                 const auto end = it.end();
-
                 it.next();
 
-                if (end == fold_size)
+                if (end + batch >= fold_size)
                 {
                         NANO_CHECK_EQUAL(it.begin(), size_t(0));
                         NANO_CHECK_EQUAL(it.end(), batch);
@@ -75,6 +74,35 @@ NANO_CASE(minibatch_iterator)
                 else
                 {
                         NANO_CHECK_EQUAL(end, it.begin());
+                }
+        }
+}
+
+NANO_CASE(increasing_batch_iterator)
+{
+        charset_task_t task(charset::digit, color_mode::rgba, 16, 16, 10000);
+
+        NANO_CHECK_EQUAL(task.load(), true);
+
+        const auto batch0 = size_t(3);
+        const auto factor = scalar_t(1.05);
+        const auto fold = fold_t{0, protocol::train};
+        const auto fold_size = task.n_samples(fold);
+
+        task_iterator_t it(task, fold, batch0, factor);
+        for (size_t i = 0; i < 1000; ++ i)
+        {
+                NANO_CHECK_LESS(it.begin(), it.end());
+                NANO_CHECK_LESS_EQUAL(it.end(), fold_size);
+                NANO_CHECK_GREATER_EQUAL(it.end(), it.begin() + batch0);
+
+                const auto begin = it.begin();
+                const auto end = it.end();
+                it.next();
+
+                if (end + (end - begin) >= fold_size)
+                {
+                        NANO_CHECK_EQUAL(it.begin(), size_t(0));
                 }
         }
 }
