@@ -199,9 +199,9 @@ int main(int argc, const char* argv[])
         const auto mlp3 = mlp2 + make_affine_layer(64, activation);
 
         const auto convnet0 = string_t();
-        const auto convnet1 = convnet0 + make_conv_pool_layer(32, 7, 7, 1, activation);
-        const auto convnet2 = convnet1 + make_conv_pool_layer(32, 5, 5, 4, activation);
-        const auto convnet3 = convnet2 + make_conv_pool_layer(32, 3, 3, 4, activation);
+        const auto convnet1 = convnet0 + make_conv_layer(32, 7, 7, 1, activation);
+        const auto convnet2 = convnet1 + make_conv_layer(32, 5, 5, 4, activation);
+        const auto convnet3 = convnet2 + make_conv_layer(32, 3, 3, 4, activation);
 
         const string_t outlayer = make_output_layer(outputs, activation);
 
