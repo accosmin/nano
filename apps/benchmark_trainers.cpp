@@ -85,9 +85,10 @@ static void evaluate(model_t& model,
         }
 
         for (auto optimizer : stochastic_optimizers)
+                for (auto ratio : {1, 2, 4, 8, 16})
         {
-                const auto optname = "stochastic-" + to_string(optimizer);
-                const auto params = to_params("opt", optimizer, "epochs", epochs, "policy", policy);
+                const auto optname = "stochastic-" + to_string(optimizer) + "-x" + to_string(ratio);
+                const auto params = to_params("opt", optimizer, "epochs", epochs, "ratio", ratio, "policy", policy);
                 evaluate_trainer(model, basename + optname, basepath + optname, table, x0s, [&] ()
                 {
                         const auto trainer = get_trainers().get("stochastic", params);

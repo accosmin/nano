@@ -19,6 +19,11 @@ namespace nano
                 task_iterator_t(const task_t&, const fold_t&, const size_t batch0, const scalar_t factor = scalar_t(1));
 
                 ///
+                /// \brief reset configuration, keep the task
+                ///
+                void reset(const size_t batch0, const scalar_t factor = scalar_t(1));
+
+                ///
                 /// \brief advance to the next minibatch by wrapping the fold if the end is reached.
                 ///
                 void next();

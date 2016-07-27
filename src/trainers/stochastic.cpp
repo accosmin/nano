@@ -2,8 +2,9 @@
 #include "loop.hpp"
 #include "stochastic.h"
 #include "optim/stoch.h"
-#include "task_iterator.h"
+#include "math/cast.hpp"
 #include "math/clamp.hpp"
+#include "task_iterator.h"
 #include "math/numeric.hpp"
 #include "text/to_string.hpp"
 #include "text/from_params.hpp"
@@ -30,17 +31,18 @@ namespace nano
                 // parameters
                 const auto epochs = clamp(from_params<size_t>(configuration(), "epochs", 16), 1, 1024);
                 const auto optimizer = from_params<stoch_optimizer>(configuration(), "opt", stoch_optimizer::SG);
+                const auto ratio = clamp(from_params<size_t>(configuration(), "ratio", 1), 1, 16);
                 const auto policy = from_params<trainer_policy>(configuration(), "policy", trainer_policy::stop_early);
                 const auto verbose = true;
 
                 // train the model
                 const auto op = [&] (const accumulator_t& lacc, const accumulator_t& gacc, const vector_t& x0)
                 {
-                        return train(task, fold, lacc, gacc, x0, optimizer, epochs, policy, verbose);
+                        return train(task, fold, lacc, gacc, x0, optimizer, epochs, ratio, policy, verbose);
                 };
 
                 const auto result = trainer_loop(model, nthreads, loss, crition, op);
-                log_info() << "<<< stoch-" << to_string(optimizer) << ": " << result << ".";
+                log_info() << "<<< stoch-" << to_string(optimizer) << "-x" << ratio << ": " << result << ".";
 
                 // OK
                 if (result.valid())
@@ -53,7 +55,7 @@ namespace nano
         trainer_result_t stochastic_trainer_t::train(
                 const task_t& task, const size_t fold,
                 const accumulator_t& lacc, const accumulator_t& gacc, const vector_t& x0,
-                const stoch_optimizer optimizer, const size_t epochs,
+                const stoch_optimizer optimizer, const size_t epochs, const size_t ratio,
                 const trainer_policy policy, const bool verbose) const
         {
                 const timer_t timer;
@@ -63,13 +65,22 @@ namespace nano
                 const auto test_fold = fold_t{fold, protocol::test};
 
                 const auto train_size = task.n_samples(train_fold);
-                const auto batch_size = 16 * nano::logical_cpus();
-                const auto epoch_size = idiv(train_size, batch_size);
+
+                const auto batch0 = clamp(8 * nano::logical_cpus(), size_t(1), train_size / 4);
+                const auto batchK = clamp(batch0 * ratio, size_t(1), train_size / 4);
+
+                const auto factor = clamp(scalar_t(epochs * train_size - batch0) / scalar_t(epochs * train_size - batchK),
+                        scalar_t(1), scalar_t(2));
+                const auto epoch_size = idiv(train_size, batch0);
+
+                log_info() << "<<< stoch: " << "ratio = " << ratio
+                        << ", batch0 = " << batch0 << ", batchK = " << batchK
+                        << ", factor = " << factor << ", epoch_size = " << epoch_size;
 
                 size_t epoch = 0;
                 trainer_result_t result;
 
-                task_iterator_t it(task, train_fold, batch_size);
+                task_iterator_t it(task, train_fold, batch0, factor);
 
                 // construct the optimization problem
                 const auto fn_size = [&] ()
@@ -106,8 +117,11 @@ namespace nano
                         {
                                 log_info()
                                         << "tune: train=" << train
-                                        << ", " << config << ",batch=" << batch_size
+                                        << ", " << config << ",batch=" << (it.end() - it.begin())
                                         << "] " << timer.elapsed() << ".";
+
+                                // NB: need to reset the minibatch size (changed during tuning)!
+                                it.reset(batch0, factor);
                         }
 
                         return train.m_value;
@@ -139,7 +153,7 @@ namespace nano
                                         << ": train=" << train
                                         << ", valid=" << valid << "|" << nano::to_string(ret)
                                         << ", test=" << test
-                                        << ", " << config << ",batch=" << batch_size
+                                        << ", " << config << ",batch=" << (it.end() - it.begin())
                                         << "] " << timer.elapsed() << ".";
                         }
 
