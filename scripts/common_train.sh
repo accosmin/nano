@@ -33,11 +33,48 @@ mkdir -p ${dir_exp_stl10}
 mkdir -p ${dir_exp_cifar10}
 mkdir -p ${dir_exp_cifar100}
 
+# default parameters
+trials=10
+epochs=1000
+
+# usage
+function fn_usage
+{
+        echo "Usage: "
+        echo -e "\t--trials     <number of random models to train per configuration>    default=${trials}"
+        echo -e "\t--epochs     <number of epochs to train a model>                     default=${epochs}"
+        echo
+}
+
+# decode command line arguments
+function fn_cmdline
+{
+        while [ "$1" != "" ]
+        do
+                case $1 in
+                        --trials)       shift
+                                        trials=$1
+                                        ;;
+                        --epochs)       shift
+                                        epochs=$1
+                                        ;;
+                        -h | --help)    fn_usage
+                                        exit
+                                        ;;
+                        * )             echo "unrecognized option $1"
+                                        echo
+                                        fn_usage
+                                        exit 1
+                esac
+                shift
+        done
+}
+
 # available trainers (based on the given number of epochs)
 function fn_make_trainers
 {
-        epochs=$1
-        policy=$2
+        local epochs=$1
+        local policy=$2
 
         stoch_ag="--trainer stochastic --trainer-params opt=ag,epochs=${epochs},policy=${policy}"
         stoch_agfr="--trainer stochastic --trainer-params opt=agfr,epochs=${epochs},policy=${policy}"

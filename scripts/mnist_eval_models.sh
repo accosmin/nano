@@ -2,6 +2,8 @@
 
 source $(dirname $0)/common_train.sh
 
+fn_cmdline $*
+
 # common parameters
 common="${task_mnist} ${loss_classnll}"
 outdir="${dir_exp_mnist}/eval_models"
@@ -29,11 +31,9 @@ models=${models}" mlp0 mlp1 mlp2 mlp3 mlp4 mlp5"
 models=${models}" conv1 conv2 conv3 conv4 conv5"
 
 # trainers
-epochs=1000
-trials=10
 fn_make_trainers ${epochs} "stop_early"
 
-trainers="stoch_ngd"
+trainers="stoch_adadelta"
 
 # criteria
 criteria="crit_avg"
