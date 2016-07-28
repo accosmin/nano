@@ -13,7 +13,7 @@ namespace nano
         public:
 
                 NANO_MAKE_CLONABLE(stochastic_trainer_t,
-                        "parameters: opt=sg[...],epochs=16[1,1024],ratio=1[1,16],"\
+                        "parameters: opt=sg[...],epochs=16[1,1024],"\
                         "policy=stop_early[,all_epochs]")
 
                 // constructor
@@ -30,7 +30,7 @@ namespace nano
                 trainer_result_t train(
                         const task_t&, const size_t fold,
                         const accumulator_t& lacc, const accumulator_t& gacc, const vector_t& x0,
-                        const stoch_optimizer, const size_t epochs, const size_t ratio,
+                        const stoch_optimizer, const size_t epochs,
                         const trainer_policy, const bool verbose) const;
         };
 }
