@@ -74,15 +74,20 @@ do
         bash $(dirname $0)/plot_models.sh ${outdir}/trial${trial}_convs.pdf ${outdir}/trial${trial}_*conv*.state
 done
 
+printf "%-16s %-48s %-48s\n" "model" "test error" "epochs"
+printf "%0.s-" {1..120}
+printf "\n"
 for model in ${models}
 do
         for trainer in ${trainers}
         do
                 for criterion in ${criteria}
                 do
-                        values=$(grep "<<<" ${outdir}/trial*_${trainer}_${model}_${criterion}.log | grep "test=" | cut -d',' -f3 | cut -d'|' -f2 | cut -d'+' -f1)
-                        stats=$(${exe_stats} ${values})
-                        printf "test errors for ${model}: %s\n" "${stats}"
+                        errors=$(grep "<<<" ${outdir}/trial*_${trainer}_${model}_${criterion}.log | grep "test=" | sed 's/^.*test=//g' | cut -d'|' -f2 | cut -d'+' -f1)
+                        epochs=$(grep "<<<" ${outdir}/trial*_${trainer}_${model}_${criterion}.log | grep "test=" | sed 's/^.*epoch=//g' | cut -d',' -f1)
+                        error_stats=$(${exe_stats} ${errors})
+                        epoch_stats=$(${exe_stats} ${epochs})
+                        printf "%-16s %-48s %-48s\n" "${model}" "${error_stats}" "${epoch_stats}"
                 done
         done
 done
