@@ -80,7 +80,7 @@ do
         do
                 for criterion in ${criteria}
                 do
-                        values=$(grep "<<<" ${outdir}/trial*_${trainer}_${model}_${criterion}.log | grep "test=" | cut -d',' -f3 | cut -d'|' -f1 | cut -d'=' -f2)
+                        values=$(grep "<<<" ${outdir}/trial*_${trainer}_${model}_${criterion}.log | grep "test=" | cut -d',' -f3 | cut -d'|' -f2 | cut -d'+' -f1)
                         stats=$(${exe_stats} ${values})
                         printf "test errors for ${model}: %s\n" "${stats}"
                 done
