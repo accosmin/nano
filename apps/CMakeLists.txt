@@ -21,6 +21,7 @@ build_app(info_task.cpp nano)
 build_app(train.cpp nano)
 build_app(evaluate.cpp nano)
 build_app(warp.cpp nano)
+build_app(stats.cpp nano)
 build_app(generate_convnets.cpp nano)
 
 # install (some) programs

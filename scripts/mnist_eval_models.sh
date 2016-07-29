@@ -66,18 +66,24 @@ do
         done
 done
 
-exit
-
-# compare optimizers
-for model in ${models}
+# compare models
+for ((trial=0;trial<${trials};trial++))
 do
-        bash plot_models.sh ${dir_exp_mnist}/${model}.pdf ${dir_exp_mnist}/*_${model}*.state
-        bash plot_models.sh ${dir_exp_mnist}/${model}_stoch.pdf ${dir_exp_mnist}/stoch_*_${model}*.state
-        bash plot_models.sh ${dir_exp_mnist}/${model}_mbatch.pdf ${dir_exp_mnist}/mbatch_*_${model}*.state
+        bash $(dirname $0)/plot_models.sh ${outdir}/trial${trial}_all.pdf ${outdir}/trial${trial}_*.state
+        bash $(dirname $0)/plot_models.sh ${outdir}/trial${trial}_mlps.pdf ${outdir}/trial${trial}_*mlp*.state
+        bash $(dirname $0)/plot_models.sh ${outdir}/trial${trial}_convs.pdf ${outdir}/trial${trial}_*conv*.state
 done
 
-# compare models
-# bash plot_models.sh ${dir_exp_mnist}/conv_models.pdf ${dir_exp_mnist}/conv_*.state
-# bash plot_models.sh ${dir_exp_mnist}/conv_min_models.pdf ${dir_exp_mnist}/conv_min_*.state
-# bash plot_models.sh ${dir_exp_mnist}/conv_avg_models.pdf ${dir_exp_mnist}/conv_avg_*.state
+for model in ${models}
+do
+        for trainer in ${trainers}
+        do
+                for criterion in ${criteria}
+                do
+                        values=$(grep "<<<" ${outdir}/trial*_${trainer}_${model}_${criterion}.log | grep "test=" | cut -d',' -f3 | cut -d'|' -f1 | cut -d'=' -f2)
+                        stats=$(${exe_stats} ${values})
+                        printf "test errors for ${model}: %s\n" "${stats}"
+                done
+        done
+done
 

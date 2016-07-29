@@ -5,6 +5,7 @@ dir_exp=$HOME/experiments/results
 dir_db=$HOME/experiments/databases
 
 exe_trainer=$(dirname $0)/../build-release/apps/train
+exe_stats=$(dirname $0)/../build-release/apps/stats
 exe_info=$(dirname $0)/../build-release/apps/info
 
 # available datasets
