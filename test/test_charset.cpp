@@ -20,8 +20,8 @@ NANO_CASE(construction)
         {
                 const auto type = std::get<0>(config);
                 const auto mode = std::get<1>(config);
-                const auto irows = size_t(17);
-                const auto icols = size_t(16);
+                const auto irows = tensor_size_t(17);
+                const auto icols = tensor_size_t(16);
                 const auto osize = std::get<2>(config);
                 const auto count = size_t(10 * osize);
                 const auto fsize = size_t(1);   // folds

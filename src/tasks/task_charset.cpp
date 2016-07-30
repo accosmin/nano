@@ -112,10 +112,10 @@ namespace nano
                 const auto pph = nano::clamp(nano::cast<int>(static_cast<scalar_t>(irows) + rng()), 0, irows - ppy);
 
                 tensor3d_t ret(4, pph, ppw);
-                ret.matrix(0) = image.matrix(0).block(ppy, ppx, pph, ppw).cast<scalar_t>() / scalar_t(255);
-                ret.matrix(1) = image.matrix(1).block(ppy, ppx, pph, ppw).cast<scalar_t>() / scalar_t(255);
-                ret.matrix(2) = image.matrix(2).block(ppy, ppx, pph, ppw).cast<scalar_t>() / scalar_t(255);
-                ret.matrix(3) = image.matrix(3).block(ppy, ppx, pph, ppw).cast<scalar_t>() / scalar_t(255);
+                ret.matrix(0) = image.matrix(0).block(ppy, ppx, pph, ppw).template cast<scalar_t>() / scalar_t(255);
+                ret.matrix(1) = image.matrix(1).block(ppy, ppx, pph, ppw).template cast<scalar_t>() / scalar_t(255);
+                ret.matrix(2) = image.matrix(2).block(ppy, ppx, pph, ppw).template cast<scalar_t>() / scalar_t(255);
+                ret.matrix(3) = image.matrix(3).block(ppy, ppx, pph, ppw).template cast<scalar_t>() / scalar_t(255);
 
                 return ret;
         }

@@ -16,8 +16,8 @@ namespace nano
                         {
                                 for (tensor_size_t c = 1; c < iplane.cols(); c += 2)
                                 {
-                                        const auto c0 = c - 1, c1 = c, c2 = std::min(c + 1, iplane.cols() - 1);
-                                        const auto r0 = r - 1, r1 = r, r2 = std::min(r + 1, iplane.rows() - 1);
+                                        const tensor_size_t c0 = c - 1, c1 = c, c2 = std::min(c + 1, iplane.cols() - 1);
+                                        const tensor_size_t r0 = r - 1, r1 = r, r2 = std::min(r + 1, iplane.rows() - 1);
 
                                         oplane(r / 2, c / 2) = op(
                                                 iplane(r0, c0), iplane(r0, c1), iplane(r0, c2),
@@ -36,8 +36,8 @@ namespace nano
                         {
                                 for (tensor_size_t c = 1; c < iplane.cols(); c += 2)
                                 {
-                                        const auto c0 = c - 1, c1 = c, c2 = std::min(c + 1, iplane.cols() - 1);
-                                        const auto r0 = r - 1, r1 = r, r2 = std::min(r + 1, iplane.rows() - 1);
+                                        const tensor_size_t c0 = c - 1, c1 = c, c2 = std::min(c + 1, iplane.cols() - 1);
+                                        const tensor_size_t r0 = r - 1, r1 = r, r2 = std::min(r + 1, iplane.rows() - 1);
 
                                         op(     oplane(r / 2, c / 2),
                                                 iplane(r0, c0), iplane(r0, c1), iplane(r0, c2),
@@ -54,8 +54,8 @@ namespace nano
                         {
                                 for (tensor_size_t c = 1; c < iplane.cols(); c += 2)
                                 {
-                                        const auto c0 = c - 1, c1 = c, c2 = std::min(c + 1, iplane.cols() - 1);
-                                        const auto r0 = r - 1, r1 = r, r2 = std::min(r + 1, iplane.rows() - 1);
+                                        const tensor_size_t c0 = c - 1, c1 = c, c2 = std::min(c + 1, iplane.cols() - 1);
+                                        const tensor_size_t r0 = r - 1, r1 = r, r2 = std::min(r + 1, iplane.rows() - 1);
 
                                         const auto ooo = oplane(r / 2, c / 2);
 
