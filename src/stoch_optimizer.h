@@ -1,6 +1,5 @@
 #pragma once
 
-#include "state.h"
 #include "problem.h"
 #include "manager.hpp"
 #include "stoch/params.h"

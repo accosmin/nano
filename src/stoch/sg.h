@@ -1,20 +1,22 @@
 #pragma once
 
-#include "optim/stoch_optimizer.h"
+#include "stoch_optimizer.h"
 
 namespace nano
 {
         ///
-        /// \brief stochastic gradient (descent) with momentum
+        /// \brief stochastic gradient (descent)
+        ///     see "Minimizing Finite Sums with the Stochastic Average Gradient",
+        ///     by Mark Schmidth, Nicolas Le Roux, Francis Bach
         ///
-        struct stoch_sgm_t : public stoch_optimizer_t
+        struct stoch_sg_t : public stoch_optimizer_t
         {
-                NANO_MAKE_CLONABLE(stoch_sgm_t, "stochastic gradient (descent) with momentum")
+                NANO_MAKE_CLONABLE(stoch_sg_t, "stochastic gradient (descent)")
 
                 ///
                 /// \brief constructor
                 ///
-                stoch_sgm_t(const string_t& configuration = string_t());
+                stoch_sg_t(const string_t& configuration = string_t());
 
                 ///
                 /// \brief minimize starting from the initial guess x0.
@@ -25,7 +27,7 @@ namespace nano
                 /// \brief minimize starting from the initial guess x0 using the given hyper-parameters.
                 ///
                 state_t minimize(const stoch_params_t&, const problem_t&, const vector_t& x0,
-                        const scalar_t alpha0, const scalar_t momentum) const;
+                        const scalar_t alpha0, const scalar_t decay) const;
         };
 }
 

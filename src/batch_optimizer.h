@@ -1,6 +1,5 @@
 #pragma once
 
-#include "state.h"
 #include "problem.h"
 #include "manager.hpp"
 #include "batch/params.h"
@@ -23,8 +22,6 @@ namespace nano
         class NANO_PUBLIC batch_optimizer_t : public clonable_t<batch_optimizer_t>
         {
         public:
-
-                using clonable_t<batch_optimizer_t>::get_param;
 
                 ///
                 /// \brief constructor

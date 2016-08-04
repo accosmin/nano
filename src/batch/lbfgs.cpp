@@ -2,6 +2,7 @@
 #include "loop.hpp"
 #include "ls_init.h"
 #include "ls_strategy.h"
+#include "text/from_params.hpp"
 #include <deque>
 
 namespace nano
@@ -22,10 +23,11 @@ namespace nano
                 vector_t q, r;
 
                 // line-search initial step length
-                ls_init_t ls_init(get_param("ls_init", ls_initializer::quadratic));
+                ls_init_t ls_init(from_params<ls_initializer>(configuration(), "ls_init", ls_initializer::quadratic));
 
                 // line-search step
-                ls_strategy_t ls_step(get_param("ls_strat", ls_strategy::interpolation), scalar_t(1e-4), scalar_t(0.9));
+                ls_strategy_t ls_step(from_params<ls_strategy>(configuration(), "ls_strat", ls_strategy::interpolation),
+                        scalar_t(1e-4), scalar_t(0.9));
 
                 const auto op = [&] (state_t& cstate, const std::size_t i)
                 {

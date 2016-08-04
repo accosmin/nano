@@ -1,7 +1,7 @@
 #pragma once
 
 #include "types.h"
-#include "optim/state.h"
+#include "state.h"
 #include <functional>
 
 namespace nano

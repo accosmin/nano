@@ -1,6 +1,6 @@
 #pragma once
 
-#include "optim/stoch_optimizer.h"
+#include "stoch_optimizer.h"
 
 namespace nano
 {

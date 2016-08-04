@@ -1,7 +1,6 @@
 #include "nano.h"
 #include "class.h"
 #include "utest.hpp"
-#include "optim/problem.h"
 #include "math/random.hpp"
 #include "math/epsilon.hpp"
 

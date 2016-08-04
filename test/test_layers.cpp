@@ -2,7 +2,6 @@
 #include "class.h"
 #include "utest.hpp"
 #include "math/close.hpp"
-#include "optim/problem.h"
 #include "math/random.hpp"
 #include "math/epsilon.hpp"
 #include "tensor/numeric.hpp"

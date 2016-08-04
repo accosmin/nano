@@ -1,24 +1,21 @@
 #pragma once
 
-#include "optim/stoch_optimizer.h"
+#include "stoch_optimizer.h"
 
 namespace nano
 {
         ///
-        /// \brief stochastic AdaGrad
-        ///     see "Adaptive subgradient methods for online learning and stochastic optimization"
-        ///     by J. C. Duchi, E. Hazan, and Y. Singer
+        /// \brief stochastic AdaDelta,
+        ///     see "ADADELTA: An Adaptive Learning Rate Method", by Matthew D. Zeiler
         ///
-        ///     see http://xcorr.net/2014/01/23/adagrad-eliminating-learning-rates-in-stochastic-gradient-descent/
-        ///
-        struct stoch_adagrad_t : public stoch_optimizer_t
+        struct stoch_adadelta_t : public stoch_optimizer_t
         {
-                NANO_MAKE_CLONABLE(stoch_adagrad_t, "AdaGrad")
+                NANO_MAKE_CLONABLE(stoch_adadelta_t, "AdaDelta")
 
                 ///
                 /// \brief constructor
                 ///
-                stoch_adagrad_t(const string_t& configuration = string_t());
+                stoch_adadelta_t(const string_t& configuration = string_t());
 
                 ///
                 /// \brief minimize starting from the initial guess x0.
@@ -29,7 +26,7 @@ namespace nano
                 /// \brief minimize starting from the initial guess x0 using the given hyper-parameters.
                 ///
                 state_t minimize(const stoch_params_t&, const problem_t&, const vector_t& x0,
-                        const scalar_t alpha0, const scalar_t epsilon) const;
+                        const scalar_t momentum, const scalar_t epsilon) const;
         };
 }
 

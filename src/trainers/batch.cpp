@@ -4,8 +4,9 @@
 #include "logger.h"
 #include "math/clamp.hpp"
 #include "math/epsilon.hpp"
+#include "batch_optimizer.h"
 #include "text/to_string.hpp"
-#include "optim/batch_optimizer.h"
+#include "text/from_params.hpp"
 
 namespace nano
 {

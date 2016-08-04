@@ -3,9 +3,11 @@ set(libnano_sources
         arch.cpp
         accumulator.cpp
         class.cpp
-        nano.cpp
         criterion.cpp
         model.cpp
+        nano.cpp
+        problem.cpp
+        state.cpp
         task_util.cpp
         task_iterator.cpp
         trainer_result.cpp
@@ -17,7 +19,9 @@ set(libnano_sources
 add_subdirectory(io)
 add_subdirectory(math)
 add_subdirectory(text)
-add_subdirectory(optim)
+add_subdirectory(batch)
+add_subdirectory(stoch)
+add_subdirectory(funcs)
 add_subdirectory(tensor)
 add_subdirectory(thread)
 add_subdirectory(vision)

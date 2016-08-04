@@ -1,22 +1,22 @@
 #pragma once
 
-#include "optim/batch_optimizer.h"
+#include "batch_optimizer.h"
 
 namespace nano
 {
         ///
-        /// \brief gradient descent
+        /// \brief limited memory bfgs (l-bfgs)
         ///
-        struct batch_gd_t : public batch_optimizer_t
+        struct batch_lbfgs_t : public batch_optimizer_t
         {
-                NANO_MAKE_CLONABLE(batch_gd_t,
-                        "gradient descent, parameters: "\
-                        "ls_init=quadratic,ls_strat=backtrack_strong_wolfe")
+                NANO_MAKE_CLONABLE(batch_lbfgs_t,
+                        "limited-memory BFGS, parameters: "\
+                        "ls_init=quadratic,ls_strat=interpolation")
 
                 ///
                 /// \brief constructor
                 ///
-                batch_gd_t(const string_t& configuration = string_t());
+                batch_lbfgs_t(const string_t& configuration = string_t());
 
                 ///
                 /// \brief minimize starting from the initial guess x0.

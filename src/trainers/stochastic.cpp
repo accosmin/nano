@@ -5,9 +5,9 @@
 #include "math/clamp.hpp"
 #include "task_iterator.h"
 #include "math/numeric.hpp"
+#include "stoch_optimizer.h"
 #include "text/to_string.hpp"
 #include "text/from_params.hpp"
-#include "optim/stoch_optimizer.h"
 
 #include "logger.h"
 

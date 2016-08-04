@@ -1,10 +1,10 @@
 #include "utest.hpp"
-#include "optim/test.h"
+#include "funcs/test.h"
 #include "math/random.hpp"
 #include "math/numeric.hpp"
 #include "math/epsilon.hpp"
+#include "stoch_optimizer.h"
 #include "text/to_string.hpp"
-#include "optim/stoch_optimizer.h"
 
 using namespace nano;
 

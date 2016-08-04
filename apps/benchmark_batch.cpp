@@ -1,16 +1,15 @@
 #include "logger.h"
 #include "math/abs.hpp"
-#include "text/table.h"
-#include "math/clamp.hpp"
 #include "text/cmdline.h"
+#include "math/clamp.hpp"
 #include "math/random.hpp"
 #include "math/epsilon.hpp"
 #include "math/numeric.hpp"
 #include "math/epsilon.hpp"
 #include "text/algorithm.h"
 #include "text/to_params.hpp"
+#include "batch_optimizer.h"
 #include "benchmark_optimizers.h"
-#include "optim/batch_optimizer.h"
 #include <map>
 #include <tuple>
 
@@ -42,7 +41,7 @@ static void check_function(
                 for (const ls_initializer ls_init : enum_values<ls_initializer>())
                         for (const ls_strategy ls_strat : enum_values<ls_strategy>())
         {
-                const auto optimizer = get_batch_optimizers().get(to_params("ls_init", ls_init, "ls_strat", ls_strat));
+                const auto optimizer = get_batch_optimizers().get(id, to_params("ls_init", ls_init, "ls_strat", ls_strat));
                 const auto params = batch_params_t(iterations, epsilon);
                 const auto op = [&] (const problem_t& problem, const vector_t& x0)
                 {

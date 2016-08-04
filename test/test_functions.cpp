@@ -1,5 +1,5 @@
 #include "utest.hpp"
-#include "optim/test.h"
+#include "funcs/test.h"
 #include "math/random.hpp"
 #include "math/epsilon.hpp"
 #include "tensor/numeric.hpp"

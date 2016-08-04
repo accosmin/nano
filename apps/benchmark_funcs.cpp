@@ -2,7 +2,7 @@
 #include "logger.h"
 #include "measure.hpp"
 #include "text/table.h"
-#include "optim/test.h"
+#include "funcs/test.h"
 #include "text/cmdline.h"
 #include "math/stats.hpp"
 #include <iostream>

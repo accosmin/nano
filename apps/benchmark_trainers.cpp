@@ -2,9 +2,9 @@
 #include "logger.h"
 #include "measure.hpp"
 #include "text/table.h"
+#include "batch/types.h"
 #include "text/cmdline.h"
 #include "text/to_params.hpp"
-#include "optim/batch/types.h"
 #include "tasks/task_charset.h"
 #include "layers/make_layers.h"
 

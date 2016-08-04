@@ -1,7 +1,7 @@
 #pragma once
 
 #include "cgd_steps.hpp"
-#include "optim/batch_optimizer.h"
+#include "batch_optimizer.h"
 
 namespace nano
 {

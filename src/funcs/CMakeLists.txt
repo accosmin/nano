@@ -1,4 +1,5 @@
 list(APPEND libnano_sources
+        ${CMAKE_CURRENT_SOURCE_DIR}/test.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/3hump_camel.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/axis_ellipsoid.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/beale.cpp

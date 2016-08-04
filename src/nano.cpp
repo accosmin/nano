@@ -33,17 +33,17 @@
 #include "criteria/l2nreg.h"
 #include "criteria/varreg.h"
 
-#include "optim/stoch/ag.h"
-#include "optim/stoch/adam.h"
-#include "optim/stoch/adagrad.h"
-#include "optim/stoch/adadelta.h"
-#include "optim/stoch/ngd.h"
-#include "optim/stoch/sg.h"
-#include "optim/stoch/sgm.h"
+#include "stoch/ag.h"
+#include "stoch/adam.h"
+#include "stoch/adagrad.h"
+#include "stoch/adadelta.h"
+#include "stoch/ngd.h"
+#include "stoch/sg.h"
+#include "stoch/sgm.h"
 
-#include "optim/batch/gd.h"
-#include "optim/batch/cgd.h"
-#include "optim/batch/lbfgs.h"
+#include "batch/gd.h"
+#include "batch/cgd.h"
+#include "batch/lbfgs.h"
 
 #include <cfenv>
 

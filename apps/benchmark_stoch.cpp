@@ -1,13 +1,12 @@
 #include "logger.h"
 #include "math/abs.hpp"
-#include "text/table.h"
 #include "text/cmdline.h"
 #include "math/clamp.hpp"
 #include "math/random.hpp"
 #include "math/epsilon.hpp"
 #include "math/numeric.hpp"
+#include "stoch_optimizer.h"
 #include "benchmark_optimizers.h"
-#include "optim/stoch_optimizer.h"
 #include <tuple>
 
 using namespace nano;
