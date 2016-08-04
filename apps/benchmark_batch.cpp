@@ -1,7 +1,6 @@
 #include "logger.h"
 #include "math/abs.hpp"
 #include "text/table.h"
-#include "optim/batch.h"
 #include "math/clamp.hpp"
 #include "text/cmdline.h"
 #include "math/random.hpp"
@@ -9,7 +8,9 @@
 #include "math/numeric.hpp"
 #include "math/epsilon.hpp"
 #include "text/algorithm.h"
+#include "text/to_params.hpp"
 #include "benchmark_optimizers.h"
+#include "optim/batch_optimizer.h"
 #include <map>
 #include <tuple>
 
@@ -36,18 +37,20 @@ static void check_function(
         tostats stats;
 
         // evaluate all possible combinations (optimizer & line-search)
-        for (const batch_optimizer optimizer : enum_values<batch_optimizer>())
+        const auto ids = get_batch_optimizers().ids();
+        for (const auto id : ids)
                 for (const ls_initializer ls_init : enum_values<ls_initializer>())
                         for (const ls_strategy ls_strat : enum_values<ls_strategy>())
         {
-                const auto params = batch_params_t(iterations, epsilon, optimizer, ls_init, ls_strat);
+                const auto optimizer = get_batch_optimizers().get(to_params("ls_init", ls_init, "ls_strat", ls_strat));
+                const auto params = batch_params_t(iterations, epsilon);
                 const auto op = [&] (const problem_t& problem, const vector_t& x0)
                 {
-                        return minimize(params, problem, x0);
+                        return optimizer->minimize(params, problem, x0);
                 };
 
                 const auto name =
-                        to_string(optimizer) + "[" +
+                        id + "[" +
                         to_string(ls_init) + "][" +
                         to_string(ls_strat) + "]";
 
@@ -93,9 +96,10 @@ int main(int argc, const char* argv[])
         benchmark::show_table(std::string(), gstats);
 
         // show per-optimizer statistics
-        for (const batch_optimizer optimizer : enum_values<batch_optimizer>())
+        const auto ids = get_batch_optimizers().ids();
+        for (const auto optimizer : ids)
         {
-                const auto name = to_string(optimizer) + "[";
+                const auto name = optimizer + "[";
 
                 std::map<std::string, benchmark::optimizer_stat_t> stats;
                 for (const auto& gstat : gstats)

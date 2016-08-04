@@ -41,6 +41,10 @@
 #include "optim/stoch/sg.h"
 #include "optim/stoch/sgm.h"
 
+#include "optim/batch/gd.h"
+#include "optim/batch/cgd.h"
+#include "optim/batch/lbfgs.h"
+
 #include <cfenv>
 
 namespace nano
@@ -84,6 +88,12 @@ namespace nano
         stoch_optimizer_manager_t& get_stoch_optimizers()
         {
                 static stoch_optimizer_manager_t manager;
+                return manager;
+        }
+
+        batch_optimizer_manager_t& get_batch_optimizers()
+        {
+                static batch_optimizer_manager_t manager;
                 return manager;
         }
 
@@ -152,6 +162,20 @@ namespace nano
                         nano::get_stoch_optimizers().add("adam", stoch_adam_t());
                         nano::get_stoch_optimizers().add("adagrad", stoch_adagrad_t());
                         nano::get_stoch_optimizers().add("adadelta", stoch_adadelta_t());
+
+                        // register batch optimizers
+                        nano::get_batch_optimizers().add("gd", batch_gd_t());
+                        nano::get_batch_optimizers().add("cgd", batch_cgd_prp_t());
+                        nano::get_batch_optimizers().add("cgd-n", batch_cgd_n_t());
+                        nano::get_batch_optimizers().add("cgd-hs", batch_cgd_hs_t());
+                        nano::get_batch_optimizers().add("cgd-fr", batch_cgd_fr_t());
+                        nano::get_batch_optimizers().add("cgd-prp", batch_cgd_prp_t());
+                        nano::get_batch_optimizers().add("cgd-cd", batch_cgd_cd_t());
+                        nano::get_batch_optimizers().add("cgd-ls", batch_cgd_ls_t());
+                        nano::get_batch_optimizers().add("cgd-dy", batch_cgd_dy_t());
+                        nano::get_batch_optimizers().add("cgd-dycd", batch_cgd_dycd_t());
+                        nano::get_batch_optimizers().add("cgd-dyhs", batch_cgd_dyhs_t());
+                        nano::get_batch_optimizers().add("lbfgs", batch_lbfgs_t());
                 }
         };
 

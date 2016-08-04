@@ -1,7 +1,7 @@
 #pragma once
 
-#include "stringi.h"
 #include <memory>
+#include "text/from_params.hpp"
 
 namespace nano
 {
@@ -54,6 +54,14 @@ namespace nano
                 /// \brief current configuration (aka parameters)
                 ///
                 string_t configuration() const { return m_configuration; }
+
+        protected:
+
+                template <typename tvalue>
+                tvalue get_param(const char* const name, const tvalue default_value) const
+                {
+                        return from_params<tvalue>(configuration(), name, default_value);
+                }
 
         protected:
 

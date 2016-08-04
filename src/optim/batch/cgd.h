@@ -1,8 +1,7 @@
 #pragma once
 
-#include "params.h"
 #include "cgd_steps.hpp"
-#include "optim/problem.h"
+#include "optim/batch_optimizer.h"
 
 namespace nano
 {
@@ -13,12 +12,32 @@ namespace nano
         <
                 typename tcgd_update                    ///< CGD step update
         >
-        struct NANO_PUBLIC batch_cgd_t
+        struct batch_cgd_t : public batch_optimizer_t
         {
                 ///
-                /// \brief minimize starting from the initial guess x0
+                /// \brief constructor
                 ///
-                state_t operator()(const batch_params_t& param, const problem_t& problem, const vector_t& x0) const;
+                batch_cgd_t(const string_t& configuration = string_t());
+
+                ///
+                /// \brief create an object of the same type with the given configuration
+                ///
+                virtual rbatch_optimizer_t clone(const string_t& configuration) const override;
+
+                ///
+                /// \brief create an object clone
+                ///
+                virtual rbatch_optimizer_t clone() const override;
+
+                ///
+                /// \brief short description (e.g. purpose)
+                ///
+                virtual string_t description() const override;
+
+                ///
+                /// \brief minimize starting from the initial guess x0.
+                ///
+                virtual state_t minimize(const batch_params_t&, const problem_t&, const vector_t& x0) const override;
         };
 
         // create various CGD algorithms

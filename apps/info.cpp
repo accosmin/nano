@@ -1,8 +1,6 @@
 #include "nano.h"
 #include "text/table.h"
 #include "text/cmdline.h"
-#include "optim/batch/types.h"
-#include "optim/stoch_optimizer.h"
 #include <iostream>
 
 using namespace nano;
@@ -21,21 +19,6 @@ namespace
                 for (size_t i = 0; i < ids.size(); ++ i)
                 {
                         table.append(ids[i]) << descriptions[i];
-                }
-                table.print(std::cout);
-                std::cout << std::endl;
-        }
-
-        template <typename tenum>
-        void print(const string_t& name)
-        {
-                const strings_t ids = enum_strings<tenum>();
-
-                table_t table(name);
-
-                for (size_t i = 0; i < ids.size(); ++ i)
-                {
-                        table.append(ids[i]);
                 }
                 table.print(std::cout);
                 std::cout << std::endl;
@@ -118,7 +101,7 @@ int main(int argc, const char* argv[])
         }
         if (has_batch)
         {
-                print<batch_optimizer>("batch optimizer");
+                print("batch optimizers", get_batch_optimizers());
         }
         if (has_stoch)
         {

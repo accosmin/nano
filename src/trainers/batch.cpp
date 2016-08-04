@@ -1,12 +1,11 @@
 #include "batch.h"
 #include "loop.hpp"
-#include "optim/batch.h"
 #include "model.h"
-#include "math/clamp.hpp"
 #include "logger.h"
+#include "math/clamp.hpp"
 #include "math/epsilon.hpp"
 #include "text/to_string.hpp"
-#include "text/from_params.hpp"
+#include "optim/batch_optimizer.h"
 
 namespace nano
 {
@@ -27,7 +26,7 @@ namespace nano
 
                 // parameters
                 const auto epochs = clamp(from_params<size_t>(configuration(), "epochs", 1024), 4, 4096);
-                const auto optimizer = from_params<batch_optimizer>(configuration(), "opt", batch_optimizer::LBFGS);
+                const auto optimizer = from_params<string_t>(configuration(), "opt", "lbfgs");
                 const auto policy = from_params<trainer_policy>(configuration(), "policy", trainer_policy::stop_early);
                 const auto epsilon = epsilon0<scalar_t>();
                 const auto verbose = true;
@@ -35,11 +34,12 @@ namespace nano
                 // train the model
                 const auto op = [&] (const accumulator_t& lacc, const accumulator_t& gacc, const vector_t& x0)
                 {
-                        return train(task, fold, lacc, gacc, x0, optimizer, epochs, epsilon, policy, verbose);
+                        auto batch_optimizer = get_batch_optimizers().get(optimizer);
+                        return train(task, fold, lacc, gacc, x0, *batch_optimizer, epochs, epsilon, policy, verbose);
                 };
 
                 const auto result = trainer_loop(model, nthreads, loss, criterion, op);
-                log_info() << "<<< batch-" << to_string(optimizer) << ": " << result << ".";
+                log_info() << "<<< batch-" << optimizer << ": " << result << ".";
 
                 // OK
                 if (result.valid())
@@ -52,7 +52,7 @@ namespace nano
         trainer_result_t batch_trainer_t::train(
                 const task_t& task, const size_t fold,
                 const accumulator_t& lacc, const accumulator_t& gacc, const vector_t& x0,
-                const batch_optimizer optimizer, const size_t epochs, const scalar_t epsilon,
+                const batch_optimizer_t& optimizer, const size_t epochs, const scalar_t epsilon,
                 const trainer_policy policy, const bool verbose) const
         {
                 const timer_t timer;
@@ -119,8 +119,8 @@ namespace nano
                 };
 
                 // assembly optimization problem & optimize the model
-                nano::minimize(
-                        batch_params_t(epochs, epsilon, optimizer, fn_ulog),
+                optimizer.minimize(
+                        batch_params_t(epochs, epsilon, fn_ulog),
                         problem_t(fn_size, fn_fval, fn_grad), x0);
 
                 return result;

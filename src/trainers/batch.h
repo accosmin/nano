@@ -1,10 +1,11 @@
 #pragma once
 
 #include "trainer.h"
-#include "optim/batch/types.h"
 
 namespace nano
 {
+        class batch_optimizer_t;
+
         ///
         /// \brief batch trainer: each gradient update is computed for all samples.
         ///
@@ -29,7 +30,7 @@ namespace nano
                 trainer_result_t train(
                         const task_t&, const size_t fold,
                         const accumulator_t& lacc, const accumulator_t& gacc, const vector_t& x0,
-                        const batch_optimizer, const size_t epochs, const scalar_t epsilon,
+                        const batch_optimizer_t&, const size_t epochs, const scalar_t epsilon,
                         const trainer_policy, const bool verbose) const;
         };
 }

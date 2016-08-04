@@ -18,6 +18,11 @@ namespace nano
         ///
         struct NANO_PUBLIC cgd_step_HS
         {
+                static const char* name()
+                {
+                        return "hs";
+                }
+
                 scalar_t operator()(const state_t& prev, const state_t& curr) const
                 {
                         return  curr.g.dot(curr.g - prev.g) /
@@ -30,6 +35,11 @@ namespace nano
         ///
         struct NANO_PUBLIC cgd_step_FR
         {
+                static const char* name()
+                {
+                        return "fr";
+                }
+
                 scalar_t operator()(const state_t& prev, const state_t& curr) const
                 {
                         return  curr.g.squaredNorm() /
@@ -42,6 +52,11 @@ namespace nano
         ///
         struct NANO_PUBLIC cgd_step_PRP
         {
+                static const char* name()
+                {
+                        return "prp";
+                }
+
                 scalar_t operator()(const state_t& prev, const state_t& curr) const
                 {
                         return  std::max(scalar_t(0),                    // PRP(+)
@@ -55,6 +70,11 @@ namespace nano
         ///
         struct NANO_PUBLIC cgd_step_CD
         {
+                static const char* name()
+                {
+                        return "cd";
+                }
+
                 scalar_t operator()(const state_t& prev, const state_t& curr) const
                 {
                         return -curr.g.squaredNorm() /
@@ -67,6 +87,11 @@ namespace nano
         ///
         struct NANO_PUBLIC cgd_step_LS
         {
+                static const char* name()
+                {
+                        return "ls";
+                }
+
                 scalar_t operator()(const state_t& prev, const state_t& curr) const
                 {
                         return -curr.g.dot(curr.g - prev.g) /
@@ -79,6 +104,11 @@ namespace nano
         ///
         struct NANO_PUBLIC cgd_step_DY
         {
+                static const char* name()
+                {
+                        return "dy";
+                }
+
                 scalar_t operator()(const state_t& prev, const state_t& curr) const
                 {
                         return  curr.g.squaredNorm() /
@@ -91,6 +121,11 @@ namespace nano
         ///
         struct NANO_PUBLIC cgd_step_N
         {
+                static const char* name()
+                {
+                        return "n";
+                }
+
                 scalar_t operator()(const state_t& prev, const state_t& curr) const
                 {
                         const auto y = curr.g - prev.g;
@@ -112,6 +147,11 @@ namespace nano
         ///
         struct NANO_PUBLIC cgd_step_DYHS
         {
+                static const char* name()
+                {
+                        return "dyhs";
+                }
+
                 scalar_t operator()(const state_t& prev, const state_t& curr) const
                 {
                         const scalar_t dy = cgd_step_DY()(prev, curr);
@@ -126,6 +166,11 @@ namespace nano
         ///
         struct NANO_PUBLIC cgd_step_DYCD
         {
+                static const char* name()
+                {
+                        return "dycd";
+                }
+
                 scalar_t operator()(const state_t& prev, const state_t& curr) const
                 {
                         return  curr.g.squaredNorm() /

@@ -7,7 +7,6 @@
 #include "optim/batch/types.h"
 #include "tasks/task_charset.h"
 #include "layers/make_layers.h"
-#include "optim/stoch_optimizer.h"
 
 using namespace nano;
 
@@ -66,7 +65,7 @@ static void evaluate_trainer(model_t& model, const string_t& name, const string_
 static void evaluate(model_t& model,
         const task_t& task, const size_t fold,
         const loss_t& loss, const criterion_t& criterion, const vectors_t& x0s, const size_t epochs,
-        const std::vector<batch_optimizer>& batch_optimizers,
+        const strings_t& batch_optimizers,
         const strings_t& stoch_optimizers,
         const string_t& basename, const string_t& basepath, table_t& table)
 {
@@ -75,7 +74,7 @@ static void evaluate(model_t& model,
 
         for (auto optimizer : batch_optimizers)
         {
-                const auto optname = "batch-" + to_string(optimizer);
+                const auto optname = "batch-" + optimizer;
                 const auto params = to_params("opt", optimizer, "epochs", epochs, "policy", policy);
                 evaluate_trainer(model, basename + optname, basepath + optname, table, x0s, [&] ()
                 {
@@ -156,10 +155,11 @@ int main(int argc, const char* argv[])
                 cmdline.usage();
         }
 
-        std::vector<batch_optimizer> batch_optimizers;
-        if (cmdline.has("batch") || cmdline.has("batch-gd")) batch_optimizers.push_back(batch_optimizer::GD);
-        if (cmdline.has("batch") || cmdline.has("batch-cgd")) batch_optimizers.push_back(batch_optimizer::CGD);
-        if (cmdline.has("batch") || cmdline.has("batch-lbfgs")) batch_optimizers.push_back(batch_optimizer::LBFGS);
+        strings_t batch_optimizers;
+        if (cmdline.has("batch")) batch_optimizers = get_batch_optimizers().ids();
+        if (cmdline.has("batch") || cmdline.has("batch-gd")) batch_optimizers.push_back("gd");
+        if (cmdline.has("batch") || cmdline.has("batch-cgd")) batch_optimizers.push_back("cgd");
+        if (cmdline.has("batch") || cmdline.has("batch-lbfgs")) batch_optimizers.push_back("lbfgs");
 
         strings_t stoch_optimizers;
         if (cmdline.has("stoch")) stoch_optimizers = get_stoch_optimizers().ids();

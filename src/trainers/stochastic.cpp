@@ -42,7 +42,7 @@ namespace nano
                 };
 
                 const auto result = trainer_loop(model, nthreads, loss, crition, op);
-                log_info() << "<<< stoch-" << to_string(optimizer) << ": " << result << ".";
+                log_info() << "<<< stoch-" << optimizer << ": " << result << ".";
 
                 // OK
                 if (result.valid())

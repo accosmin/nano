@@ -1,19 +1,27 @@
 #pragma once
 
-#include "params.h"
-#include "optim/problem.h"
+#include "optim/batch_optimizer.h"
 
 namespace nano
 {
         ///
         /// \brief limited memory bfgs (l-bfgs)
         ///
-        struct NANO_PUBLIC batch_lbfgs_t
+        struct batch_lbfgs_t : public batch_optimizer_t
         {
+                NANO_MAKE_CLONABLE(batch_lbfgs_t,
+                        "limited-memory BFGS, parameters: "\
+                        "ls_init=quadratic,ls_strat=interpolation")
+
                 ///
-                /// \brief minimize starting from the initial guess x0
+                /// \brief constructor
                 ///
-                state_t operator()(const batch_params_t& param, const problem_t& problem, const vector_t& x0) const;
+                batch_lbfgs_t(const string_t& configuration = string_t());
+
+                ///
+                /// \brief minimize starting from the initial guess x0.
+                ///
+                virtual state_t minimize(const batch_params_t&, const problem_t&, const vector_t& x0) const override;
         };
 }
 

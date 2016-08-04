@@ -1,11 +1,11 @@
 #include "utest.hpp"
 #include "math/abs.hpp"
 #include "optim/test.h"
-#include "optim/batch.h"
 #include "math/random.hpp"
 #include "math/numeric.hpp"
 #include "math/epsilon.hpp"
 #include "text/to_string.hpp"
+#include "optim/batch_optimizer.h"
 #include <iomanip>
 
 using namespace nano;
@@ -28,8 +28,11 @@ static void check_function(const function_t& function)
         }
 
         // optimizers to try
-        for (const auto optimizer : enum_values<batch_optimizer>())
+        const auto ids = get_batch_optimizers().ids();
+        for (const auto id : ids)
         {
+                const auto optimizer = get_batch_optimizers().get(id);
+
                 size_t out_of_domain = 0;
 
                 for (size_t t = 0; t < trials; ++ t)
@@ -40,8 +43,8 @@ static void check_function(const function_t& function)
                         const auto f0 = problem(x0);
 
                         // optimize
-                        const auto params = batch_params_t(iterations, epsilon0<scalar_t>(), optimizer);
-                        const auto state = minimize(params, problem, x0);
+                        const auto params = batch_params_t(iterations, epsilon0<scalar_t>());
+                        const auto state = optimizer->minimize(params, problem, x0);
 
                         const auto x = state.x;
                         const auto f = state.f;
@@ -57,7 +60,7 @@ static void check_function(const function_t& function)
                                 continue;
                         }
 
-                        std::cout << function.name() << ", " << to_string(optimizer)
+                        std::cout << function.name() << ", " << id
                                   << " [" << (t + 1) << "/" << trials << "]"
                                   << std::setprecision(12)
                                   << ": x = [" << x0.transpose() << "]/[" << x.transpose() << "]"
@@ -77,7 +80,7 @@ static void check_function(const function_t& function)
                         NANO_CHECK(function.is_minima(x, x_thres));
                 }
 
-                std::cout << function.name() << ", " << to_string(optimizer)
+                std::cout << function.name() << ", " << id
                           << ": out of domain " << out_of_domain << "/" << trials << ".\n";
         }
 }

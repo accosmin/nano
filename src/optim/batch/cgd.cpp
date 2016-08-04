@@ -6,7 +6,32 @@
 namespace nano
 {
         template <typename tcgd_update>
-        state_t batch_cgd_t<tcgd_update>::operator()(const batch_params_t& param, const problem_t& problem, const vector_t& x0) const
+        batch_cgd_t<tcgd_update>::batch_cgd_t(const string_t& configuration) :
+                batch_optimizer_t(configuration)
+        {
+        }
+
+        template <typename tcgd_update>
+        rbatch_optimizer_t batch_cgd_t<tcgd_update>::clone(const string_t& configuration) const
+        {
+                return rbatch_optimizer_t(new batch_cgd_t(configuration));
+        }
+
+        template <typename tcgd_update>
+        rbatch_optimizer_t batch_cgd_t<tcgd_update>::clone() const
+        {
+                return rbatch_optimizer_t(new batch_cgd_t());
+        }
+
+        template <typename tcgd_update>
+        string_t batch_cgd_t<tcgd_update>::description() const
+        {
+                return  string_t("conjugate gradient descent (") + tcgd_update::name() + "), parameters: " +
+                        "ls_init=quadratic,ls_strat=interpolation";
+        }
+
+        template <typename tcgd_update>
+        state_t batch_cgd_t<tcgd_update>::minimize(const batch_params_t& param, const problem_t& problem, const vector_t& x0) const
         {
                 assert(problem.size() == x0.size());
 
@@ -14,10 +39,10 @@ namespace nano
                 state_t pstate = istate;        // previous state
 
                 // line-search initial step length
-                ls_init_t ls_init(param.m_ls_initializer);
+                ls_init_t ls_init(get_param("ls_init", ls_initializer::quadratic));
 
                 // line-search step
-                ls_strategy_t ls_step(param.m_ls_strategy, scalar_t(1e-4), scalar_t(0.1));
+                ls_strategy_t ls_step(get_param("ls_strat", ls_strategy::interpolation), scalar_t(1e-4), scalar_t(0.1));
 
                 // CGD direction strategy
                 const tcgd_update op_update{};
