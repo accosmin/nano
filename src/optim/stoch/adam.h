@@ -1,7 +1,6 @@
 #pragma once
 
-#include "params.h"
-#include "optim/problem.h"
+#include "optim/stoch_optimizer.h"
 
 namespace nano
 {
@@ -9,17 +8,24 @@ namespace nano
         /// \brief stochastic Adam,
         ///     see "Adam: A method for stochastic optimization", by Diederik P. Kingma & Jimmy Lei Ba
         ///
-        struct NANO_PUBLIC stoch_adam_t
+        struct stoch_adam_t : public stoch_optimizer_t
         {
-                ///
-                /// \brief minimize starting from the initial guess x0
-                ///
-                state_t operator()(const stoch_params_t& param, const problem_t& problem, const vector_t& x0) const;
+                NANO_MAKE_CLONABLE(stoch_adam_t, "Adam")
 
                 ///
-                /// \brief minimize starting from the initial guess x0
+                /// \brief constructor
                 ///
-                state_t operator()(const stoch_params_t& param, const problem_t& problem, const vector_t& x0,
+                stoch_adam_t(const string_t& configuration = string_t());
+
+                ///
+                /// \brief minimize starting from the initial guess x0.
+                ///
+                virtual state_t minimize(const stoch_params_t&, const problem_t&, const vector_t& x0) const override;
+
+                ///
+                /// \brief minimize starting from the initial guess x0 using the given hyper-parameters.
+                ///
+                state_t minimize(const stoch_params_t&, const problem_t&, const vector_t& x0,
                         const scalar_t alpha0, const scalar_t epsilon) const;
         };
 }

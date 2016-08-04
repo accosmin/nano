@@ -3,12 +3,17 @@
 
 namespace nano
 {
-        state_t stoch_ngd_t::operator()(const stoch_params_t& param, const problem_t& problem, const vector_t& x0) const
+        stoch_ngd_t::stoch_ngd_t(const string_t& configuration) :
+                stoch_optimizer_t(configuration)
+        {
+        }
+
+        state_t stoch_ngd_t::minimize(const stoch_params_t& param, const problem_t& problem, const vector_t& x0) const
         {
                 return stoch_tune(this, param, problem, x0, make_alpha0s());
         }
 
-        state_t stoch_ngd_t::operator()(const stoch_params_t& param, const problem_t& problem, const vector_t& x0,
+        state_t stoch_ngd_t::minimize(const stoch_params_t& param, const problem_t& problem, const vector_t& x0,
                 const scalar_t alpha0) const
         {
                 assert(problem.size() == x0.size());

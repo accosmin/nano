@@ -2,7 +2,7 @@
 #include "text/table.h"
 #include "text/cmdline.h"
 #include "optim/batch/types.h"
-#include "optim/stoch/types.h"
+#include "optim/stoch_optimizer.h"
 #include <iostream>
 
 using namespace nano;
@@ -122,7 +122,7 @@ int main(int argc, const char* argv[])
         }
         if (has_stoch)
         {
-                print<stoch_optimizer>("stochastic optimizer");
+                print("stochastic optimizers", get_stoch_optimizers());
         }
         if (has_system || has_sys_physical)
         {

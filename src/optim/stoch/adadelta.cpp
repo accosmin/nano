@@ -4,12 +4,17 @@
 
 namespace nano
 {
-        state_t stoch_adadelta_t::operator()(const stoch_params_t& param, const problem_t& problem, const vector_t& x0) const
+        stoch_adadelta_t::stoch_adadelta_t(const string_t& configuration) :
+                stoch_optimizer_t(configuration)
+        {
+        }
+
+        state_t stoch_adadelta_t::minimize(const stoch_params_t& param, const problem_t& problem, const vector_t& x0) const
         {
                 return stoch_tune(this, param, problem, x0, make_momenta(), make_epsilons());
         }
 
-        state_t stoch_adadelta_t::operator()(const stoch_params_t& param, const problem_t& problem, const vector_t& x0,
+        state_t stoch_adadelta_t::minimize(const stoch_params_t& param, const problem_t& problem, const vector_t& x0,
                 const scalar_t momentum, const scalar_t epsilon) const
         {
                 assert(problem.size() == x0.size());

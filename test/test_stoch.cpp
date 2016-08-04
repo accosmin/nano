@@ -1,10 +1,10 @@
 #include "utest.hpp"
 #include "optim/test.h"
-#include "optim/stoch.h"
 #include "math/random.hpp"
 #include "math/numeric.hpp"
 #include "math/epsilon.hpp"
 #include "text/to_string.hpp"
+#include "optim/stoch_optimizer.h"
 
 using namespace nano;
 
@@ -27,8 +27,11 @@ static void check_function(const function_t& function)
         }
 
         // optimizers to try
-        for (const auto optimizer : enum_values<stoch_optimizer>())
+        const auto ids = get_stoch_optimizers().ids();
+        for (const auto id : ids)
         {
+                const auto optimizer = get_stoch_optimizers().get(id);
+
                 size_t out_of_domain = 0;
 
                 for (size_t t = 0; t < trials; ++ t)
@@ -39,14 +42,14 @@ static void check_function(const function_t& function)
                         const auto f0 = problem(x0);
 
                         // optimize
-                        const auto params = stoch_params_t(epochs, epoch_size, optimizer);
-                        const auto state = minimize(params, problem, x0);
+                        const auto params = stoch_params_t(epochs, epoch_size);
+                        const auto state = optimizer->minimize(params, problem, x0);
 
                         const auto x = state.x;
                         const auto f = state.f;
                         const auto g = state.convergence_criteria();
 
-                        const auto can_eps = optimizer != stoch_optimizer::NGD;
+                        const auto can_eps = id != "ngd";
                         const auto g_thres = can_eps ? epsilon3<scalar_t>() : std::cbrt(epsilon3<scalar_t>());
                         const auto x_thres = std::cbrt(epsilon3<scalar_t>());
 
@@ -57,7 +60,7 @@ static void check_function(const function_t& function)
                                 continue;
                         }
 
-                        std::cout << function.name() << ", " << to_string(optimizer)
+                        std::cout << function.name() << ", " << id
                                   << " [" << (t + 1) << "/" << trials << "]"
                                   << ": x = [" << x0.transpose() << "]/[" << x.transpose() << "]"
                                   << ", f = " << f0 << "/" << f
@@ -73,7 +76,7 @@ static void check_function(const function_t& function)
                         NANO_CHECK(function.is_minima(x, x_thres));
                 }
 
-                std::cout << function.name() << ", " << to_string(optimizer)
+                std::cout << function.name() << ", " << id
                           << ": out of domain " << out_of_domain << "/" << trials << ".\n";
         }
 }

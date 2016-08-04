@@ -5,9 +5,9 @@
 #include "text/cmdline.h"
 #include "text/to_params.hpp"
 #include "optim/batch/types.h"
-#include "optim/stoch/types.h"
 #include "tasks/task_charset.h"
 #include "layers/make_layers.h"
+#include "optim/stoch_optimizer.h"
 
 using namespace nano;
 
@@ -67,7 +67,7 @@ static void evaluate(model_t& model,
         const task_t& task, const size_t fold,
         const loss_t& loss, const criterion_t& criterion, const vectors_t& x0s, const size_t epochs,
         const std::vector<batch_optimizer>& batch_optimizers,
-        const std::vector<stoch_optimizer>& stochastic_optimizers,
+        const strings_t& stoch_optimizers,
         const string_t& basename, const string_t& basepath, table_t& table)
 {
         const auto nthreads = nano::logical_cpus();
@@ -84,13 +84,13 @@ static void evaluate(model_t& model,
                 });
         }
 
-        for (auto optimizer : stochastic_optimizers)
+        for (auto optimizer : stoch_optimizers)
         {
-                const auto optname = "stoch-" + to_string(optimizer);
+                const auto optname = "stoch-" + optimizer;
                 const auto params = to_params("opt", optimizer, "epochs", epochs, "policy", policy);
                 evaluate_trainer(model, basename + optname, basepath + optname, table, x0s, [&] ()
                 {
-                        const auto trainer = get_trainers().get("stochastic", params);
+                        const auto trainer = get_trainers().get("stoch", params);
                         return trainer->train(task, fold, nthreads, loss, criterion, model);
                 });
         }
@@ -115,16 +115,16 @@ int main(int argc, const char* argv[])
         cmdline.add("", "batch-gd",             "evaluate batch optimizer GD (gradient descent)");
         cmdline.add("", "batch-cgd",            "evaluate batch optimizer CGD (conjugate gradient descent)");
         cmdline.add("", "batch-lbfgs",          "evaluate batch optimizer LBFGS");
-        cmdline.add("", "stochastic",           "evaluate stochastic optimizers");
-        cmdline.add("", "stochastic-sg",        "evaluate stochastic optimizer SG (stochastic gradient)");
-        cmdline.add("", "stochastic-ngd",       "evaluate stochastic optimizer NGS (normalized gradient descent)");
-        cmdline.add("", "stochastic-sgm",       "evaluate stochastic optimizer SGM (stochastic gradient with momentum)");
-        cmdline.add("", "stochastic-ag",        "evaluate stochastic optimizer AG (Nesterov's accelerated gradient)");
-        cmdline.add("", "stochastic-agfr",      "evaluate stochastic optimizer AG (AG + function value restarts)");
-        cmdline.add("", "stochastic-aggr",      "evaluate stochastic optimizer AG (AG + gradient restarts)");
-        cmdline.add("", "stochastic-adam",      "evaluate stochastic optimizer ADAM");
-        cmdline.add("", "stochastic-adagrad",   "evaluate stochastic optimizer ADAGRAD");
-        cmdline.add("", "stochastic-adadelta",  "evaluate stochastic optimizer ADADELTA");
+        cmdline.add("", "stoch",                "evaluate stoch optimizers");
+        cmdline.add("", "stoch-sg",             "evaluate stoch optimizer SG (stoch gradient)");
+        cmdline.add("", "stoch-ngd",            "evaluate stoch optimizer NGS (normalized gradient descent)");
+        cmdline.add("", "stoch-sgm",            "evaluate stoch optimizer SGM (stoch gradient with momentum)");
+        cmdline.add("", "stoch-ag",             "evaluate stoch optimizer AG (Nesterov's accelerated gradient)");
+        cmdline.add("", "stoch-agfr",           "evaluate stoch optimizer AG (AG + function value restarts)");
+        cmdline.add("", "stoch-aggr",           "evaluate stoch optimizer AG (AG + gradient restarts)");
+        cmdline.add("", "stoch-adam",           "evaluate stoch optimizer ADAM");
+        cmdline.add("", "stoch-adagrad",        "evaluate stoch optimizer ADAGRAD");
+        cmdline.add("", "stoch-adadelta",       "evaluate stoch optimizer ADADELTA");
         cmdline.add("", "trials",               "number of models to train & evaluate", "10");
         cmdline.add("", "epochs",               "number of epochs", "100");
 
@@ -161,19 +161,20 @@ int main(int argc, const char* argv[])
         if (cmdline.has("batch") || cmdline.has("batch-cgd")) batch_optimizers.push_back(batch_optimizer::CGD);
         if (cmdline.has("batch") || cmdline.has("batch-lbfgs")) batch_optimizers.push_back(batch_optimizer::LBFGS);
 
-        std::vector<stoch_optimizer> stochastic_optimizers;
-        if (cmdline.has("stochastic") || cmdline.has("stochastic-sg")) stochastic_optimizers.push_back(stoch_optimizer::SG);
-        if (cmdline.has("stochastic") || cmdline.has("stochastic-ngd")) stochastic_optimizers.push_back(stoch_optimizer::NGD);
-        if (cmdline.has("stochastic") || cmdline.has("stochastic-sgm")) stochastic_optimizers.push_back(stoch_optimizer::SGM);
-        if (cmdline.has("stochastic") || cmdline.has("stochastic-ag")) stochastic_optimizers.push_back(stoch_optimizer::AG);
-        if (cmdline.has("stochastic") || cmdline.has("stochastic-agfr")) stochastic_optimizers.push_back(stoch_optimizer::AGFR);
-        if (cmdline.has("stochastic") || cmdline.has("stochastic-aggr")) stochastic_optimizers.push_back(stoch_optimizer::AGGR);
-        if (cmdline.has("stochastic") || cmdline.has("stochastic-adam")) stochastic_optimizers.push_back(stoch_optimizer::ADAM);
-        if (cmdline.has("stochastic") || cmdline.has("stochastic-adagrad")) stochastic_optimizers.push_back(stoch_optimizer::ADAGRAD);
-        if (cmdline.has("stochastic") || cmdline.has("stochastic-adadelta")) stochastic_optimizers.push_back(stoch_optimizer::ADADELTA);
+        strings_t stoch_optimizers;
+        if (cmdline.has("stoch")) stoch_optimizers = get_stoch_optimizers().ids();
+        if (cmdline.has("stoch") || cmdline.has("stoch-sg")) stoch_optimizers.push_back("sg");
+        if (cmdline.has("stoch") || cmdline.has("stoch-ngd")) stoch_optimizers.push_back("ngd");
+        if (cmdline.has("stoch") || cmdline.has("stoch-sgm")) stoch_optimizers.push_back("sgm");
+        if (cmdline.has("stoch") || cmdline.has("stoch-ag")) stoch_optimizers.push_back("ag");
+        if (cmdline.has("stoch") || cmdline.has("stoch-agfr")) stoch_optimizers.push_back("agfr");
+        if (cmdline.has("stoch") || cmdline.has("stoch-aggr")) stoch_optimizers.push_back("aggr");
+        if (cmdline.has("stoch") || cmdline.has("stoch-adam")) stoch_optimizers.push_back("adam");
+        if (cmdline.has("stoch") || cmdline.has("stoch-adagrad")) stoch_optimizers.push_back("adagrad");
+        if (cmdline.has("stoch") || cmdline.has("stoch-adadelta")) stoch_optimizers.push_back("adadelta");
 
         if (    batch_optimizers.empty() &&
-                stochastic_optimizers.empty())
+                stoch_optimizers.empty())
         {
                 cmdline.usage();
         }
@@ -256,7 +257,7 @@ int main(int argc, const char* argv[])
                                 const auto basepath = netname + "-" + iloss + "-" + icriterion + "-";
 
                                 evaluate(*model, task, fold, *loss, *criterion, x0s, epochs,
-                                         batch_optimizers, stochastic_optimizers,
+                                         batch_optimizers, stoch_optimizers,
                                          basename, basepath, table);
                         }
 

@@ -1,14 +1,13 @@
 #include "logger.h"
 #include "math/abs.hpp"
 #include "text/table.h"
-#include "optim/stoch.h"
 #include "text/cmdline.h"
 #include "math/clamp.hpp"
 #include "math/random.hpp"
 #include "math/epsilon.hpp"
 #include "math/numeric.hpp"
 #include "benchmark_optimizers.h"
-#include <map>
+#include "optim/stoch_optimizer.h"
 #include <tuple>
 
 using namespace nano;
@@ -20,10 +19,10 @@ void check_function(
 {
         const auto dims = function.problem().size();
 
-        random_t<scalar_t> rgen(scalar_t(-1), scalar_t(+1));
+        auto rgen = make_rng(scalar_t(-1), scalar_t(+1));
 
         // generate fixed random trials
-        std::vector<vector_t> x0s(trials);
+        vectors_t x0s(trials);
         for (auto& x0 : x0s)
         {
                 x0.resize(dims);
@@ -31,18 +30,19 @@ void check_function(
         }
 
         // optimizers to try
-        const auto optimizers = enum_values<stoch_optimizer>();
+        const auto ids = get_stoch_optimizers().ids();
 
         // per-problem statistics
         tostats stats;
 
         // evaluate all optimizers
-        for (const auto optimizer : optimizers)
+        for (const auto id : ids)
         {
-                const auto params = stoch_params_t(epochs, epoch_size, optimizer);
+                const auto optimizer = get_stoch_optimizers().get(id);
+                const auto params = stoch_params_t(epochs, epoch_size);
                 const auto op = [&] (const problem_t& problem, const vector_t& x0)
                 {
-                        auto state = minimize(params, problem, x0);
+                        auto state = optimizer->minimize(params, problem, x0);
                         if (state.converged(epsilon))
                         {
                                 state.m_status = opt_status::converged;
@@ -50,8 +50,7 @@ void check_function(
                         return state;
                 };
 
-                const auto name =
-                        to_string(optimizer);
+                const auto name = id;
 
                 benchmark::benchmark_function(function, x0s, op, name, stats, gstats);
         }

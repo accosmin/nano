@@ -72,13 +72,13 @@ namespace nano
         {
                 const auto tune_op = [&] (const auto... hypers)
                 {
-                        return optimizer->operator()(param.tunable(), problem, x0, hypers...);
+                        return optimizer->minimize(param.tunable(), problem, x0, hypers...);
                 };
 
                 state_t state;
                 const auto done_op = [&] (const auto... hypers)
                 {
-                        state = optimizer->operator()(param.tuned(), problem, x0, hypers...);
+                        state = optimizer->minimize(param.tuned(), problem, x0, hypers...);
                 };
 
                 const auto config = nano::tune(tune_op, spaces...);

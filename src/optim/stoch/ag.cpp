@@ -3,18 +3,47 @@
 
 namespace nano
 {
-        stoch_ag_t::stoch_ag_t(const ag_restart restart) :
-                m_restart(restart)
+        template <ag_restart trestart>
+        stoch_ag_base_t<trestart>::stoch_ag_base_t(const string_t& configuration) :
+                stoch_optimizer_t(configuration)
         {
         }
 
-        state_t stoch_ag_t::operator()(const stoch_params_t& param, const problem_t& problem, const vector_t& x0) const
+        template <ag_restart trestart>
+        rstoch_optimizer_t stoch_ag_base_t<trestart>::clone(const string_t& configuration) const
+        {
+                return rstoch_optimizer_t(new stoch_ag_base_t<trestart>(configuration));
+        }
+
+        template <ag_restart trestart>
+        rstoch_optimizer_t stoch_ag_base_t<trestart>::clone() const
+        {
+                return rstoch_optimizer_t(new stoch_ag_base_t<trestart>(*this));
+        }
+
+        template <ag_restart trestart>
+        string_t stoch_ag_base_t<trestart>::description() const
+        {
+                switch (trestart)
+                {
+                case ag_restart::function:      return "Nesterov's accelerated gradient with function value restarts";
+                case ag_restart::gradient:      return "Nesterov's accelerated gradient with gradient restarts";
+                case ag_restart::none:          return "Nesterov's accelerated gradient";
+                default:                        assert(false); return "---";
+                }
+        }
+
+        template <ag_restart trestart>
+        state_t stoch_ag_base_t<trestart>::minimize(const stoch_params_t& param,
+                const problem_t& problem, const vector_t& x0) const
         {
                 const auto qs = make_finite_space(scalar_t(0.0));
                 return stoch_tune(this, param, problem, x0, make_alpha0s(), qs);
         }
 
-        state_t stoch_ag_t::operator()(const stoch_params_t& param, const problem_t& problem, const vector_t& x0,
+        template <ag_restart trestart>
+        state_t stoch_ag_base_t<trestart>::minimize(const stoch_params_t& param,
+                const problem_t& problem, const vector_t& x0,
                 const scalar_t alpha0, const scalar_t q) const
         {
                 assert(problem.size() == x0.size());
@@ -63,7 +92,7 @@ namespace nano
                         cy = cx + beta * (cx - px);
                         cstate.x = cx; // NB: to propagate the current parameters!
 
-                        switch (m_restart)
+                        switch (trestart)
                         {
                         case ag_restart::none:
                                 break;
@@ -94,5 +123,9 @@ namespace nano
                 return  stoch_loop(problem, param, istate, op_iter,
                         {{"alpha0", alpha0}, {"q", q}});
         }
+
+        template class stoch_ag_base_t<ag_restart::none>;
+        template class stoch_ag_base_t<ag_restart::function>;
+        template class stoch_ag_base_t<ag_restart::gradient>;
 }
 

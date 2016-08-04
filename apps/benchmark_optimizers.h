@@ -2,6 +2,7 @@
 #include "math/abs.hpp"
 #include "text/table.h"
 #include "optim/test.h"
+#include "optim/state.h"
 #include "text/align.hpp"
 #include "math/clamp.hpp"
 #include "math/stats.hpp"

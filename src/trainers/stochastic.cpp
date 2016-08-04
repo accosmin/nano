@@ -1,13 +1,13 @@
 #include "model.h"
 #include "loop.hpp"
 #include "stochastic.h"
-#include "optim/stoch.h"
 #include "math/cast.hpp"
 #include "math/clamp.hpp"
 #include "task_iterator.h"
 #include "math/numeric.hpp"
 #include "text/to_string.hpp"
 #include "text/from_params.hpp"
+#include "optim/stoch_optimizer.h"
 
 #include "logger.h"
 
@@ -30,14 +30,15 @@ namespace nano
 
                 // parameters
                 const auto epochs = clamp(from_params<size_t>(configuration(), "epochs", 16), 1, 1024);
-                const auto optimizer = from_params<stoch_optimizer>(configuration(), "opt", stoch_optimizer::SG);
+                const auto optimizer = from_params<string_t>(configuration(), "opt", "sg");
                 const auto policy = from_params<trainer_policy>(configuration(), "policy", trainer_policy::stop_early);
                 const auto verbose = true;
 
                 // train the model
                 const auto op = [&] (const accumulator_t& lacc, const accumulator_t& gacc, const vector_t& x0)
                 {
-                        return train(task, fold, lacc, gacc, x0, optimizer, epochs, policy, verbose);
+                        auto stoch_optimizer = get_stoch_optimizers().get(optimizer);
+                        return train(task, fold, lacc, gacc, x0, *stoch_optimizer, epochs, policy, verbose);
                 };
 
                 const auto result = trainer_loop(model, nthreads, loss, crition, op);
@@ -54,7 +55,7 @@ namespace nano
         trainer_result_t stochastic_trainer_t::train(
                 const task_t& task, const size_t fold,
                 const accumulator_t& lacc, const accumulator_t& gacc, const vector_t& x0,
-                const stoch_optimizer optimizer, const size_t epochs,
+                const stoch_optimizer_t& optimizer, const size_t epochs,
                 const trainer_policy policy, const bool verbose) const
         {
                 const timer_t timer;
@@ -156,8 +157,8 @@ namespace nano
                 };
 
                 // assembly optimization problem & optimize the model
-                nano::minimize(
-                        stoch_params_t(epochs, epoch_size, optimizer, fn_ulog, fn_tlog),
+                optimizer.minimize(
+                        stoch_params_t(epochs, epoch_size, fn_ulog, fn_tlog),
                         problem_t(fn_size, fn_fval, fn_grad), x0);
 
                 return result;

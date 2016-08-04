@@ -2,7 +2,6 @@
 
 #include <utility>
 #include <functional>
-#include "types.h"
 #include "optim/state.h"
 
 namespace nano
@@ -27,12 +26,10 @@ namespace nano
                 stoch_params_t(
                         const std::size_t epochs,
                         const std::size_t epoch_size,
-                        const stoch_optimizer optimizer,
                         const opulog_t& ulog = opulog_t(),
                         const optlog_t& tlog = optlog_t()) :
                         m_epochs(epochs),
                         m_epoch_size(epoch_size),
-                        m_optimizer(optimizer),
                         m_ulog(ulog),
                         m_tlog(tlog)
                 {
@@ -43,7 +40,7 @@ namespace nano
                 ///
                 auto tunable() const
                 {
-                        return stoch_params_t{1, m_epoch_size, m_optimizer, nullptr, m_tlog};
+                        return stoch_params_t{1, m_epoch_size, nullptr, m_tlog};
                 }
 
                 ///
@@ -51,7 +48,7 @@ namespace nano
                 ///
                 auto tuned() const
                 {
-                        return stoch_params_t{m_epochs, m_epoch_size, m_optimizer, m_ulog, nullptr};
+                        return stoch_params_t{m_epochs, m_epoch_size, m_ulog, nullptr};
                 }
 
                 ///
@@ -73,7 +70,6 @@ namespace nano
                 // attributes
                 std::size_t     m_epochs;               ///< number of epochs
                 std::size_t     m_epoch_size;           ///< epoch size in number of iterations
-                stoch_optimizer m_optimizer;            ///< optimization algorithm
                 opulog_t        m_ulog;                 ///< update log: (the current_state_after_each_epoch)
                 optlog_t        m_tlog;                 ///< tuning log: (the current_state_after_each_epoch)
         };

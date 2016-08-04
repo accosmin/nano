@@ -1,10 +1,11 @@
 #pragma once
 
 #include "trainer.h"
-#include "optim/stoch/types.h"
 
 namespace nano
 {
+        class stoch_optimizer_t;
+
         ///
         /// \brief stochastic trainer: each gradient update is computed for a random sub-set of samples.
         ///
@@ -30,7 +31,7 @@ namespace nano
                 trainer_result_t train(
                         const task_t&, const size_t fold,
                         const accumulator_t& lacc, const accumulator_t& gacc, const vector_t& x0,
-                        const stoch_optimizer, const size_t epochs,
+                        const stoch_optimizer_t&, const size_t epochs,
                         const trainer_policy, const bool verbose) const;
         };
 }

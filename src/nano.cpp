@@ -33,6 +33,14 @@
 #include "criteria/l2nreg.h"
 #include "criteria/varreg.h"
 
+#include "optim/stoch/ag.h"
+#include "optim/stoch/adam.h"
+#include "optim/stoch/adagrad.h"
+#include "optim/stoch/adadelta.h"
+#include "optim/stoch/ngd.h"
+#include "optim/stoch/sg.h"
+#include "optim/stoch/sgm.h"
+
 #include <cfenv>
 
 namespace nano
@@ -70,6 +78,12 @@ namespace nano
         trainer_manager_t& get_trainers()
         {
                 static trainer_manager_t manager;
+                return manager;
+        }
+
+        stoch_optimizer_manager_t& get_stoch_optimizers()
+        {
+                static stoch_optimizer_manager_t manager;
                 return manager;
         }
 
@@ -127,6 +141,17 @@ namespace nano
                         nano::get_criteria().add("max", softmax_criterion_t());
                         nano::get_criteria().add("max-l2n", softmax_l2n_criterion_t());
                         nano::get_criteria().add("max-var", softmax_var_criterion_t());
+
+                        // register stochastic optimizers
+                        nano::get_stoch_optimizers().add("sg", stoch_sg_t());
+                        nano::get_stoch_optimizers().add("sgm", stoch_sgm_t());
+                        nano::get_stoch_optimizers().add("ngd", stoch_ngd_t());
+                        nano::get_stoch_optimizers().add("ag", stoch_ag_t());
+                        nano::get_stoch_optimizers().add("agfr", stoch_agfr_t());
+                        nano::get_stoch_optimizers().add("aggr", stoch_aggr_t());
+                        nano::get_stoch_optimizers().add("adam", stoch_adam_t());
+                        nano::get_stoch_optimizers().add("adagrad", stoch_adagrad_t());
+                        nano::get_stoch_optimizers().add("adadelta", stoch_adadelta_t());
                 }
         };
 
