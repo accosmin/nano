@@ -1,7 +1,7 @@
 #pragma once
 
-#include "funcs/function.h"
 #include <memory>
+#include "function.h"
 
 namespace nano
 {

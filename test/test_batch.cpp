@@ -1,9 +1,9 @@
 #include "utest.hpp"
-#include "funcs/test.h"
 #include "math/abs.hpp"
 #include "math/random.hpp"
 #include "math/numeric.hpp"
 #include "math/epsilon.hpp"
+#include "functions/test.h"
 #include "batch_optimizer.h"
 #include "text/to_string.hpp"
 #include <iomanip>

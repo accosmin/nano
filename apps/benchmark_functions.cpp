@@ -2,9 +2,9 @@
 #include "logger.h"
 #include "measure.hpp"
 #include "text/table.h"
-#include "funcs/test.h"
 #include "text/cmdline.h"
 #include "math/stats.hpp"
+#include "functions/test.h"
 #include <iostream>
 
 using namespace nano;

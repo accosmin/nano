@@ -1,8 +1,8 @@
 #include "utest.hpp"
-#include "funcs/test.h"
 #include "math/random.hpp"
 #include "math/numeric.hpp"
 #include "math/epsilon.hpp"
+#include "functions/test.h"
 #include "stoch_optimizer.h"
 #include "text/to_string.hpp"
 

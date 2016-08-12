@@ -1,7 +1,7 @@
 #include "utest.hpp"
-#include "funcs/test.h"
 #include "math/random.hpp"
 #include "math/epsilon.hpp"
+#include "functions/test.h"
 #include "tensor/numeric.hpp"
 
 using namespace nano;

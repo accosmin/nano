@@ -2,11 +2,11 @@
 #include "tensor.h"
 #include "math/abs.hpp"
 #include "text/table.h"
-#include "funcs/test.h"
 #include "text/align.hpp"
 #include "math/clamp.hpp"
 #include "math/stats.hpp"
 #include "thread/loopi.hpp"
+#include "functions/test.h"
 
 namespace benchmark
 {
