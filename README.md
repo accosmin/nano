@@ -1,14 +1,13 @@
 ### Nano
 
-This library provides numerical optimization and machine learning utilities. It can be used to train models such as neural networks and convolution networks.
+Nano provides numerical optimization and machine learning utilities. For example it can be used to train models such as neural networks and convolution networks.
 
-The numerical optimization module provides the following:
-* batch optimization methods: `gradient descent`, various `non-linear conjugate gradient descent`, `L-BFGS`.
-* stochastic optimization methods: `Nesterov's accelerated gradient`, `stochastic gradient` (with or without momentum), `normalized gradient descent`, `ADADELTA`, `ADAGRAD`, `ADAM`.
-* line-search methods: `backtracking`, `cubic interpolation`, `CG_DESCENT`. 
-* a large set of unconstrained problems to benchmark the optimization algorithms. 
+This library is built around several key concepts mapped to C++ object interfaces. Each object type is registered with an **ID** and thus it can be selected from command line arguments. Also new objects can be easily registered and then they are automatically visible across the library and its associated programs.
 
-The machine learning module is built around several key concepts mapped to C++ object interfaces. Each object type is registered with an **ID** and thus it can be selected from command line arguments. Also new objects can be easily registered and then they are automatically visible across the library and its associated programs.
+
+#### Structure
+
+The **batch optimizer** and the **stochastic optimizer** are gradient-based methods used for minimizing generic multi-dimensional functions. They are suitable for large-scale numerical optimization which are often the product of machine learning problems. Examples of batch optimization methods: `gradient descent`, various `non-linear conjugate gradient descent`, `L-BFGS`. Examples of stochastic optimization methods: `Nesterov's accelerated gradient`, `stochastic gradient` (with or without momentum), `normalized gradient descent`, `ADADELTA`, `ADAGRAD`, `ADAM`. Examples of line-search methods: `backtracking`, `cubic interpolation`, `CG_DESCENT`. Additionally, Nano provides a large set of unconstrained problems to benchmark the optimization algorithms. 
 
 A **task** describes a classification or regression problem consisting of separate training and test image patches with associated target outputs if any. The library has built-in support for various standard benchmark datasets like: `MNIST`, `CIFAR-10`, `CIFAR-100`, `STL-10`, `SVHN`. These datasets are loaded directly from the original (compressed) files.
 
@@ -41,8 +40,3 @@ Most notably:
 * **benchmark_trainers** - benchmark all training methods on a synthetic task.
 
 The `scripts` directory contains examples on how to train various models on different tasks.
-
-
-
-
-
