@@ -156,13 +156,11 @@ int main(int argc, const char* argv[])
         }
 
         strings_t batch_optimizers;
-        if (cmdline.has("batch")) batch_optimizers = get_batch_optimizers().ids();
         if (cmdline.has("batch") || cmdline.has("batch-gd")) batch_optimizers.push_back("gd");
         if (cmdline.has("batch") || cmdline.has("batch-cgd")) batch_optimizers.push_back("cgd");
         if (cmdline.has("batch") || cmdline.has("batch-lbfgs")) batch_optimizers.push_back("lbfgs");
 
         strings_t stoch_optimizers;
-        if (cmdline.has("stoch")) stoch_optimizers = get_stoch_optimizers().ids();
         if (cmdline.has("stoch") || cmdline.has("stoch-sg")) stoch_optimizers.push_back("sg");
         if (cmdline.has("stoch") || cmdline.has("stoch-ngd")) stoch_optimizers.push_back("ngd");
         if (cmdline.has("stoch") || cmdline.has("stoch-sgm")) stoch_optimizers.push_back("sgm");
