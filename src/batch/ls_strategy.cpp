@@ -40,15 +40,19 @@ namespace nano
                 switch (m_strategy)
                 {
                 case ls_strategy::backtrack_armijo:
+                        return setup(problem, step0, m_ls_backtrack_armijo(m_c1, m_c2, step0, t0), state);
+
                 case ls_strategy::backtrack_wolfe:
+                        return setup(problem, step0, m_ls_backtrack_wolfe(m_c1, m_c2, step0, t0), state);
+
                 case ls_strategy::backtrack_strong_wolfe:
-                        return setup(problem, step0, m_ls_backtrack(m_strategy, m_c1, m_c2, step0, t0), state);
+                        return setup(problem, step0, m_ls_backtrack_strong_wolfe(m_c1, m_c2, step0, t0), state);
 
                 case ls_strategy::cg_descent:
-                        return setup(problem, step0, m_ls_cgdescent(m_strategy, m_c1, m_c2, step0, t0), state);
+                        return setup(problem, step0, m_ls_cgdescent(m_c1, m_c2, step0, t0), state);
 
                 case ls_strategy::interpolation:
-                        return setup(problem, step0, m_ls_interpolate(m_strategy, m_c1, m_c2, step0, t0), state);
+                        return setup(problem, step0, m_ls_interpolate(m_c1, m_c2, step0, t0), state);
 
                 default:
                         throw std::runtime_error("unhandled line-search strategy type");

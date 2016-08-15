@@ -29,13 +29,15 @@ namespace nano
         private:
 
                 // attributes
-                ls_strategy             m_strategy;     ///<
-                scalar_t                m_c1;           ///< sufficient decrease rate
-                scalar_t                m_c2;           ///< sufficient curvature
+                ls_strategy                     m_strategy;     ///<
+                scalar_t                        m_c1;           ///< sufficient decrease rate
+                scalar_t                        m_c2;           ///< sufficient curvature
 
-                ls_cgdescent_t          m_ls_cgdescent;
-                ls_backtrack_t          m_ls_backtrack;
-                ls_interpolate_t        m_ls_interpolate;
+                ls_cgdescent_t                  m_ls_cgdescent;
+                ls_backtrack_armijo_t           m_ls_backtrack_armijo;
+                ls_backtrack_wolfe_t            m_ls_backtrack_wolfe;
+                ls_backtrack_strong_wolfe_t     m_ls_backtrack_strong_wolfe;
+                ls_interpolate_t                m_ls_interpolate;
         };
 }
 

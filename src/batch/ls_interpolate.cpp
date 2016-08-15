@@ -3,7 +3,7 @@
 namespace nano
 {
         ls_step_t ls_interpolate_t::operator()(
-                const ls_strategy strategy, const scalar_t c1, const scalar_t c2,
+                const scalar_t c1, const scalar_t c2,
                 const ls_step_t& step0, const scalar_t t0) const
         {
                 // previous step
@@ -23,7 +23,7 @@ namespace nano
 
                         if (!stept.has_armijo(c1) || (stept.func() >= stepp.func() && i > 1))
                         {
-                                return zoom(strategy, c1, c2, step0, stepp, stept);
+                                return zoom(c1, c2, step0, stepp, stept);
                         }
 
                         // check curvature
@@ -34,7 +34,7 @@ namespace nano
 
                         if (stept.gphi() >= scalar_t(0))
                         {
-                                return zoom(strategy, c1, c2, step0, stept, stepp);
+                                return zoom(c1, c2, step0, stept, stepp);
                         }
 
                         stepp = stept;
@@ -46,7 +46,7 @@ namespace nano
         }
 
         ls_step_t ls_interpolate_t::zoom(
-                const ls_strategy, const scalar_t c1, const scalar_t c2,
+                const scalar_t c1, const scalar_t c2,
                 const ls_step_t& step0, ls_step_t steplo, ls_step_t stephi)
         {
                 ls_step_t stept(step0);

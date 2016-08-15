@@ -12,7 +12,7 @@ namespace nano
         }
 
         ls_step_t ls_cgdescent_t::operator()(
-                const ls_strategy, const scalar_t c1, const scalar_t c2,
+                const scalar_t c1, const scalar_t c2,
                 const ls_step_t& step0, const scalar_t t0,
                 const scalar_t epsilon,
                 const scalar_t theta,

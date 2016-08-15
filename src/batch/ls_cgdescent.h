@@ -1,6 +1,5 @@
 #pragma once
 
-#include "types.h"
 #include "ls_step.h"
 
 namespace nano
@@ -26,7 +25,7 @@ namespace nano
                 /// \brief compute the current step size
                 ///
                 ls_step_t operator()(
-                        const ls_strategy, const scalar_t c1, const scalar_t c2,
+                        const scalar_t c1, const scalar_t c2,
                         const ls_step_t& step0, const scalar_t t0,
                         const scalar_t epsilon = scalar_t(1e-6),
                         const scalar_t theta = scalar_t(0.5),
