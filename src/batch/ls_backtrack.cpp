@@ -5,8 +5,7 @@ namespace nano
         enum class ls_status
         {
                 next,
-                done,
-                fail
+                done
         };
 
         template <typename toperator>
@@ -18,11 +17,15 @@ namespace nano
 
                 for (int i = 0; i < 100 && t > ls_step_t::minimum() && t < ls_step_t::maximum(); ++ i)
                 {
+                        if (!step.update(t))
+                        {
+                                return step0;
+                        }
+
                         switch (op(step, t))
                         {
                         case ls_status::next:   continue;
                         case ls_status::done:   return step;
-                        case ls_status::fail:   return step0;
                         }
                 }
 
@@ -37,11 +40,7 @@ namespace nano
         {
                 const auto op = [=] (ls_step_t& step, scalar_t& t)
                 {
-                        if (!step.update(t))
-                        {
-                                return ls_status::fail;
-                        }
-                        else if (!step.has_armijo(c1))
+                        if (!step.has_armijo(c1))
                         {
                                 t *= decrement;
                                 return ls_status::next;
@@ -64,11 +63,7 @@ namespace nano
         {
                 const auto op = [=] (ls_step_t& step, scalar_t& t)
                 {
-                        if (!step.update(t))
-                        {
-                                return ls_status::fail;
-                        }
-                        else if (!step.has_armijo(c1))
+                        if (!step.has_armijo(c1))
                         {
                                 t *= decrement;
                                 return ls_status::next;
@@ -95,11 +90,7 @@ namespace nano
         {
                 const auto op = [=] (ls_step_t& step, scalar_t& t)
                 {
-                        if (!step.update(t))
-                        {
-                                return ls_status::fail;
-                        }
-                        else if (!step.has_armijo(c1))
+                        if (!step.has_armijo(c1))
                         {
                                 t *= decrement;
                                 return ls_status::next;
