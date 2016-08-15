@@ -86,7 +86,7 @@ namespace nano
                         const auto it = m_protos.find(id);
                         if (it == m_protos.end())
                         {
-                                throw std::runtime_error("invalid object id <" + id + ">!");
+                                throw std::runtime_error("invalid object id <" + id + "> of type <" + typeid(tobject).name() + ">!");
                         }
                         return it->second;
                 }

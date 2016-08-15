@@ -142,7 +142,7 @@ namespace nano
 
                         // register trainers
                         nano::get_trainers().add("batch", batch_trainer_t());
-                        nano::get_trainers().add("stochastic", stochastic_trainer_t());
+                        nano::get_trainers().add("stoch", stochastic_trainer_t());
 
                         // register criteria
                         nano::get_criteria().add("avg", average_criterion_t());

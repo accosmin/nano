@@ -77,15 +77,15 @@ function fn_make_trainers
         local epochs=$1
         local policy=$2
 
-        stoch_ag="--trainer stochastic --trainer-params opt=ag,epochs=${epochs},policy=${policy}"
-        stoch_agfr="--trainer stochastic --trainer-params opt=agfr,epochs=${epochs},policy=${policy}"
-        stoch_aggr="--trainer stochastic --trainer-params opt=aggr,epochs=${epochs},policy=${policy}"
-        stoch_sg="--trainer stochastic --trainer-params opt=sg,epochs=${epochs},policy=${policy}"
-        stoch_sgm="--trainer stochastic --trainer-params opt=sgm,epochs=${epochs},policy=${policy}"
-        stoch_ngd="--trainer stochastic --trainer-params opt=ngd,epochs=${epochs},policy=${policy}"
-        stoch_adagrad="--trainer stochastic --trainer-params opt=adagrad,epochs=${epochs},policy=${policy}"
-        stoch_adadelta="--trainer stochastic --trainer-params opt=adadelta,epochs=${epochs},policy=${policy}"
-        stoch_adam="--trainer stochastic --trainer-params opt=adam,epochs=${epochs},policy=${policy}"
+        stoch_ag="--trainer stoch --trainer-params opt=ag,epochs=${epochs},policy=${policy}"
+        stoch_agfr="--trainer stoch --trainer-params opt=agfr,epochs=${epochs},policy=${policy}"
+        stoch_aggr="--trainer stoch --trainer-params opt=aggr,epochs=${epochs},policy=${policy}"
+        stoch_sg="--trainer stoch --trainer-params opt=sg,epochs=${epochs},policy=${policy}"
+        stoch_sgm="--trainer stoch --trainer-params opt=sgm,epochs=${epochs},policy=${policy}"
+        stoch_ngd="--trainer stoch --trainer-params opt=ngd,epochs=${epochs},policy=${policy}"
+        stoch_adagrad="--trainer stoch --trainer-params opt=adagrad,epochs=${epochs},policy=${policy}"
+        stoch_adadelta="--trainer stoch --trainer-params opt=adadelta,epochs=${epochs},policy=${policy}"
+        stoch_adam="--trainer stoch --trainer-params opt=adam,epochs=${epochs},policy=${policy}"
 
         batch_lbfgs="--trainer batch --trainer-params opt=lbfgs,epochs=${epochs},policy=${policy}"
         batch_cgd="--trainer batch --trainer-params opt=cgd,epochs=${epochs},policy=${policy}"
