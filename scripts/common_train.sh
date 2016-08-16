@@ -136,8 +136,8 @@ function fn_sumarize
 
         log=${outdir}/result.log
 
-        printf "%-16s %-48s %-48s\n" "model" "test error" "epochs" > ${log}
-        printf "%0.s-" {1..120} >> ${log}
+        printf "%-16s %-16s %-16s %-48s %-48s\n" "model" "trainer" "criterion" "test error" "epochs" > ${log}
+        printf "%0.s-" {1..140} >> ${log}
         printf "\n" >> ${log}
 
         for model in ${models}
@@ -146,11 +146,13 @@ function fn_sumarize
                 do
                         for criterion in ${criteria}
                         do
-                                errors=$(grep "<<<" ${outdir}/trial*_${trainer}_${model}_${criterion}.log | grep "test=" | sed 's/^.*test=//g' | cut -d'|' -f2 | cut -d'+' -f1)
-                                epochs=$(grep "<<<" ${outdir}/trial*_${trainer}_${model}_${criterion}.log | grep "test=" | sed 's/^.*epoch=//g' | cut -d',' -f1)
+                                src=${outdir}/trial*_${trainer}_${model}_${criterion}.log
+                                errors=$(grep "<<<" ${src} | grep "test=" | sed 's/^.*test=//g' | cut -d'|' -f2 | cut -d'+' -f1)
+                                epochs=$(grep "<<<" ${src} | grep "test=" | sed 's/^.*epoch=//g' | cut -d',' -f1)
                                 error_stats=$(${exe_stats} ${errors})
                                 epoch_stats=$(${exe_stats} ${epochs})
-                                printf "%-16s %-48s %-48s\n" "${model}" "${error_stats}" "${epoch_stats}" >> ${log}
+
+                                printf "%-16s %-16s %-16s %-48s %-48s\n" "${model}" "${trainer}" "${criterion}" "${error_stats}" "${epoch_stats}" >> ${log}
                         done
                 done
         done
