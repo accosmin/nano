@@ -74,8 +74,7 @@ function fn_cmdline
 # available trainers (based on the given number of epochs)
 function fn_make_trainers
 {
-        local epochs=$1
-        local policy=$2
+        local policy=$1
 
         stoch_ag="--trainer stoch --trainer-params opt=ag,epochs=${epochs},policy=${policy}"
         stoch_agfr="--trainer stoch --trainer-params opt=agfr,epochs=${epochs},policy=${policy}"
@@ -90,6 +89,73 @@ function fn_make_trainers
         batch_lbfgs="--trainer batch --trainer-params opt=lbfgs,epochs=${epochs},policy=${policy}"
         batch_cgd="--trainer batch --trainer-params opt=cgd,epochs=${epochs},policy=${policy}"
         batch_gd="--trainer batch --trainer-params opt=gd,epochs=${epochs},policy=${policy}"
+}
+
+# train models for all the given configurations
+function fn_train
+{
+        local models=$1
+        local trainers=$2
+        local criteria=$3
+
+        for ((trial=0;trial<${trials};trial++))
+        do
+                for model in ${models}
+                do
+                        for trainer in ${trainers}
+                        do
+                                for criterion in ${criteria}
+                                do
+                                        mfile=${outdir}/trial${trial}_${trainer}_${model}_${criterion}.model
+                                        sfile=${outdir}/trial${trial}_${trainer}_${model}_${criterion}.state
+                                        lfile=${outdir}/trial${trial}_${trainer}_${model}_${criterion}.log
+
+                                        params="${common} ${!model}${outlayer} ${!trainer} ${!criterion} --model-file ${mfile}"
+
+                                        printf "running <%s> ...\n" "${params}"
+                                        printf "running <%s> ...\n" "${params}" > ${lfile}
+                                        time ${exe_trainer} ${params} >> ${lfile}
+                                        printf "\tlog saved to <%s>\n" "${lfile}"
+                                        printf "\n"
+                                        printf "\tplotting training evolution ...\n"
+                                        bash $(dirname $0)/plot_model.sh ${sfile}
+                                        printf "\n"
+                                done
+                        done
+                done
+        done
+}
+
+# sumarize experimentation results
+function fn_sumarize
+{
+        local outdir=$1
+        local models=$2
+        local trainers=$3
+        local criteria=$4
+
+        log=${outdir}/result.log
+
+        printf "%-16s %-48s %-48s\n" "model" "test error" "epochs" > ${log}
+        printf "%0.s-" {1..120} >> ${log}
+        printf "\n" >> ${log}
+
+        for model in ${models}
+        do
+                for trainer in ${trainers}
+                do
+                        for criterion in ${criteria}
+                        do
+                                errors=$(grep "<<<" ${outdir}/trial*_${trainer}_${model}_${criterion}.log | grep "test=" | sed 's/^.*test=//g' | cut -d'|' -f2 | cut -d'+' -f1)
+                                epochs=$(grep "<<<" ${outdir}/trial*_${trainer}_${model}_${criterion}.log | grep "test=" | sed 's/^.*epoch=//g' | cut -d',' -f1)
+                                error_stats=$(${exe_stats} ${errors})
+                                epoch_stats=$(${exe_stats} ${epochs})
+                                printf "%-16s %-48s %-48s\n" "${model}" "${error_stats}" "${epoch_stats}" >> ${log}
+                        done
+                done
+        done
+
+        head -n 100 ${log}
 }
 
 # available loss
