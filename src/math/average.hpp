@@ -41,10 +41,8 @@ namespace nano
                 typename tscalar,
                 typename tbase = average_t<tscalar, tscalar>
         >
-        class average_scalar_t : public tbase
+        struct average_scalar_t : public tbase
         {
-        public:
-
                 average_scalar_t() :
                         tbase(0)
                 {
@@ -60,10 +58,8 @@ namespace nano
                 typename tscalar = typename tvector::Scalar,
                 typename tbase = average_t<tscalar, tvector>
         >
-        class average_vector_t : public tbase
+        struct average_vector_t : public tbase
         {
-        public:
-
                 template
                 <
                         typename tsize
