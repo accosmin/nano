@@ -16,10 +16,10 @@ namespace nano
         class momentum_t
         {
         public:
-                momentum_t(const tscalar momentum, const tvalue& initial) :
+                momentum_t(const tscalar momentum, tvalue&& initial) :
                         m_momentum(momentum),
                         m_correction(1),
-                        m_value(initial)
+                        m_value(std::move(initial))
                 {
                         assert(momentum > 0);
                         assert(momentum < 1);
