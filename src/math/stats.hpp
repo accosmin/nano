@@ -30,7 +30,7 @@ namespace nano
                 ///
                 /// \brief update statistics with a new value
                 ///
-                void operator()(tscalar value)
+                void operator()(const tscalar value)
                 {
                         m_count ++;
                         m_sum += value;
@@ -58,7 +58,7 @@ namespace nano
                 <
                         class titerator
                 >
-                void operator()(titerator begin, titerator end)
+                void operator()(titerator begin, const titerator end)
                 {
                         for ( ; begin != end; ++ begin)
                         {
