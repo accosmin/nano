@@ -1,4 +1,5 @@
 #include "utest.hpp"
+#include "task_util.h"
 #include "task_iterator.h"
 #include "tasks/task_charset.h"
 
@@ -139,6 +140,8 @@ NANO_CASE(from_params)
                         NANO_CHECK_EQUAL(target.size(), 52);
                 }
         }
+
+        NANO_CHECK(nano::check(task));
 }
 
 NANO_END_MODULE()
