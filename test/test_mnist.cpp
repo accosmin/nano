@@ -1,6 +1,7 @@
 #include <set>
 #include "nano.h"
 #include "utest.hpp"
+#include "task_util.h"
 #include "math/epsilon.hpp"
 
 NANO_BEGIN_MODULE(test_mnist)
@@ -66,6 +67,7 @@ NANO_CASE(construction)
                 }
         }
 
+        NANO_CHECK(nano::check(*task));
         NANO_CHECK_EQUAL(labels.size(), osize);
 }
 
