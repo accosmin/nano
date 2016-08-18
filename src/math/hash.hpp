@@ -10,7 +10,7 @@ namespace nano
         template <typename tvalue, typename thasher>
         inline void hash_combine(std::size_t& seed, const tvalue& v, thasher& hasher)
         {
-                seed ^= hasher(v) + 0x9e3779b9 + (seed << 6) + (seed >> 2);
+                seed ^= hasher(v) + 0x9E3779B97F4A7C15 + (seed << 6) + (seed >> 2);
         }
 
         template <class tvalue>
