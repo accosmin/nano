@@ -20,6 +20,7 @@ int main(int argc, const char *argv[])
         // parse the command line
         nano::cmdline_t cmdline("benchmark models");
         cmdline.add("s", "samples",     "number of samples to use [100, 100000]", "10000");
+        cmdline.add("c", "conn",        "plane connectivity for convolution networks [1, 16]", "8");
         cmdline.add("", "mlps",         "benchmark MLP models");
         cmdline.add("", "convnets",     "benchmark convolution networks");
         cmdline.add("", "forward",      "evaluate the \'forward\' pass (output)");
@@ -29,6 +30,7 @@ int main(int argc, const char *argv[])
 
         // check arguments and options
         const auto cmd_samples = nano::clamp(cmdline.get<size_t>("samples"), 100, 100 * 1000);
+        const auto cmd_conn = nano::clamp(cmdline.get<int>("conn"), 1, 16);
         const auto cmd_forward = cmdline.has("forward");
         const auto cmd_backward = cmdline.has("backward");
         const auto cmd_mlps = cmdline.has("mlps");
@@ -65,10 +67,10 @@ int main(int argc, const char *argv[])
 
         const string_t convnet0_k2d;
         const string_t convnet1_k2d = convnet0_k2d + make_conv_layer("conv-k2d", 64, 9, 9, 1);
-        const string_t convnet2_k2d = convnet1_k2d + make_conv_layer("conv-k2d", 64, 7, 7, 8);
-        const string_t convnet3_k2d = convnet2_k2d + make_conv_layer("conv-k2d", 64, 5, 5, 8);
-        const string_t convnet4_k2d = convnet3_k2d + make_conv_layer("conv-k2d", 64, 5, 5, 8);
-        const string_t convnet5_k2d = convnet4_k2d + make_conv_layer("conv-k2d", 64, 3, 3, 8);
+        const string_t convnet2_k2d = convnet1_k2d + make_conv_layer("conv-k2d", 64, 7, 7, cmd_conn);
+        const string_t convnet3_k2d = convnet2_k2d + make_conv_layer("conv-k2d", 64, 5, 5, cmd_conn);
+        const string_t convnet4_k2d = convnet3_k2d + make_conv_layer("conv-k2d", 64, 5, 5, cmd_conn);
+        const string_t convnet5_k2d = convnet4_k2d + make_conv_layer("conv-k2d", 64, 3, 3, cmd_conn);
 
         const string_t convnet1_toe = nano::replace(convnet1_k2d, "conv-k2d", "conv-toe");
         const string_t convnet2_toe = nano::replace(convnet2_k2d, "conv-k2d", "conv-toe");
