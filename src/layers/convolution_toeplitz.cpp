@@ -158,19 +158,16 @@ namespace nano
                         for (tensor_size_t i = c, ik = 0; i < idims(); ++ ik, i += kconn())
                         {
                                 make_conv(m_idata.matrix(i), krows(), kcols(),
-                                        tensor::map_matrix(m_toe_oidata.data() + ik * ksize * osize, ksize, osize));
+                                tensor::map_matrix(m_toe_oidata.data() + ik * ksize * osize, ksize, osize));
                         }
 
                         for (tensor_size_t o = c, ok = 0; o < odims(); ++ ok, o += kconn())
                         {
-                                for (tensor_size_t i = c, ik = 0; i < idims(); ++ ik, i += kconn())
-                                {
-                                        m_toe_okdata.row(ok).segment(ik * ksize, ksize) = m_kdata.vector(o, ik);
-                                }
+                                m_toe_okdata.row(ok) =
+                                tensor::map_vector(m_kdata.planeData(o, 0), idims() / kconn() * ksize);
                         }
 
                         m_toe_oodata.noalias() = m_toe_okdata * m_toe_oidata;
-
                         for (tensor_size_t o = c, ok = 0; o < odims(); ++ ok, o += kconn())
                         {
                                 m_odata.vector(o) = m_toe_oodata.row(ok);
