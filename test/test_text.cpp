@@ -181,11 +181,15 @@ NANO_CASE(concatenate)
 
 NANO_CASE(from_params)
 {
-        const auto config = "param1=1.7,param2=3";
+        const auto config = "param1=1.7,param2=3,param3=-5[-inf,+inf],param4=alpha,param5=beta[description],param6=7";
 
         NANO_CHECK_EQUAL(nano::from_params(config, "param1", 2.0), 1.7);
-        NANO_CHECK_EQUAL(nano::from_params(config, "param2", 4343), 3);
-        NANO_CHECK_EQUAL(nano::from_params(config, "paramx", 2.0), 2.0);
+        NANO_CHECK_EQUAL(nano::from_params(config, "param2", 42), 3);
+        NANO_CHECK_EQUAL(nano::from_params(config, "paramx", 2.4), 2.4);
+        NANO_CHECK_EQUAL(nano::from_params(config, "param3", -5), -5);
+        NANO_CHECK_EQUAL(nano::from_params(config, "param4", nano::string_t("ccc")), nano::string_t("alpha"));
+        NANO_CHECK_EQUAL(nano::from_params(config, "param5", nano::string_t("ddd")), nano::string_t("beta"));
+        NANO_CHECK_EQUAL(nano::from_params(config, "param6", 42), 7);
 }
 
 NANO_CASE(to_params)

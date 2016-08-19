@@ -5,7 +5,7 @@
 namespace nano
 {
         ///
-        /// \brief decode parameter by name: [name1=value1[,name2=value2[...]]
+        /// \brief decode parameter by name: [name1=value1[\[description\]][,name2=value2[...]]
         /// the default value is returned if the parameter cannot be found or is invalid.
         ///
         template
@@ -22,7 +22,7 @@ namespace nano
                 else
                 {
                         begin += param_name.size() + 1;
-                        const auto end = params.find(",", begin);
+                        const auto end = std::min(params.find(",", begin), params.find("[", begin));
                         const auto size = (end == string_t::npos ? params.size() : end) - begin;
                         const auto value = params.substr(begin, size);
                         try
