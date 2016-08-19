@@ -194,6 +194,7 @@ namespace nano
 
                 m_odata = output;
 
+                // correlation
                 m_idata.setZero();
 
                 for (tensor_size_t o = 0; o < odims(); ++ o)
