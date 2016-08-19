@@ -98,23 +98,24 @@ int main(int argc, const char* argv[])
 {
         using namespace nano;
 
-        const tensor_size_t min_ksize = 3;
-        const tensor_size_t max_ksize = 15;
-
         // parse the command line
         nano::cmdline_t cmdline("benchmark 2D convolutions & correlations");
         cmdline.add("", "conv",         "benchmark convolutions");
         cmdline.add("", "corr",         "benchmark correlations");
         cmdline.add("", "min-isize",    "minimum input size (pixels)", "4");
         cmdline.add("", "max-isize",    "maximum input size (pixels)", "48");
+        cmdline.add("", "min-ksize",    "minimum kernel size (pixels)", "3");
+        cmdline.add("", "max-ksize",    "maximum kernel size (pixels)", "15");
 
         cmdline.process(argc, argv);
 
         // check arguments and options
         const auto has_conv = cmdline.has("conv");
         const auto has_corr = cmdline.has("corr");
-        const tensor_size_t min_isize = cmdline.get<tensor_size_t>("min-isize");
-        const tensor_size_t max_isize = cmdline.get<tensor_size_t>("max-isize");
+        const auto min_ksize = cmdline.get<tensor_size_t>("min-ksize");
+        const auto min_isize = cmdline.get<tensor_size_t>("min-isize");
+        const auto max_ksize = cmdline.get<tensor_size_t>("max-ksize");
+        const auto max_isize = cmdline.get<tensor_size_t>("max-isize");
 
         if (!has_conv && !has_corr)
         {
