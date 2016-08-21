@@ -16,7 +16,7 @@ namespace nano
         {
         public:
 
-                NANO_MAKE_CLONABLE(cifar100_task_t, "CIFAR-100 (object classification)")
+                NANO_MAKE_CLONABLE(cifar100_task_t, "CIFAR-100 (object classification)", "dir=.")
 
                 ///
                 /// \brief constructor

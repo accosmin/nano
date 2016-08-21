@@ -10,7 +10,7 @@ namespace nano
         ///
         struct stoch_adam_t : public stoch_optimizer_t
         {
-                NANO_MAKE_CLONABLE(stoch_adam_t, "Adam")
+                NANO_MAKE_CLONABLE(stoch_adam_t, "Adam", "")
 
                 ///
                 /// \brief constructor

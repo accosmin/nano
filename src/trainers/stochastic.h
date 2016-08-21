@@ -14,8 +14,8 @@ namespace nano
         public:
 
                 NANO_MAKE_CLONABLE(stochastic_trainer_t,
-                        "parameters: opt=sg[...],epochs=16[1,1024],"\
-                        "policy=stop_early[,all_epochs]")
+                        "stochastic trainer",
+                        "opt=sg[...],epochs=16[1,1024],policy=stop_early[,all_epochs]")
 
                 // constructor
                 explicit stochastic_trainer_t(const string_t& parameters = string_t());

@@ -11,7 +11,7 @@ namespace nano
         {
         public:
 
-                NANO_MAKE_CLONABLE(softmax_criterion_t, "softmax loss, parameters: beta=5[1,10]")
+                NANO_MAKE_CLONABLE(softmax_criterion_t, "softmax loss", "beta=5[1,10]")
 
                 ///
                 /// \brief constructor

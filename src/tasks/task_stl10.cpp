@@ -32,7 +32,7 @@ namespace nano
         {
                 m_samples.clear();
 
-                const string_t dir = nano::from_params<string_t>(configuration(), "dir", ".");
+                const string_t dir = nano::from_params<string_t>(config(), "dir");
 
                 const string_t bfile = dir + "/stl10_binary.tar.gz";
 

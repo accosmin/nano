@@ -15,7 +15,7 @@ namespace nano
         tensor_size_t affine_layer_t::resize(const tensor3d_t& tensor)
         {
                 const auto idims = tensor.size();
-                const auto odims = nano::clamp(nano::from_params<tensor_size_t>(configuration(), "dims", 10), 1, 4096);
+                const auto odims = nano::clamp(nano::from_params<tensor_size_t>(config(), "dims"), 1, 4096);
 
                 // resize buffers
                 m_idata.resize(tensor.dims());

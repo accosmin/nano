@@ -21,7 +21,7 @@ class test_obj1_clonable_t : public test_clonable_t
 {
 public:
 
-        NANO_MAKE_CLONABLE(test_obj1_clonable_t, "test obj1")
+        NANO_MAKE_CLONABLE(test_obj1_clonable_t, "test obj1", "p1=def1")
 
         explicit test_obj1_clonable_t(const string_t& configuration = string_t()) :
                 test_clonable_t(configuration)
@@ -33,7 +33,7 @@ class test_obj2_clonable_t : public test_clonable_t
 {
 public:
 
-        NANO_MAKE_CLONABLE(test_obj2_clonable_t, "test obj2")
+        NANO_MAKE_CLONABLE(test_obj2_clonable_t, "test obj2", "p2=def2")
 
         explicit test_obj2_clonable_t(const string_t& configuration = string_t()) :
                 test_clonable_t(configuration)
@@ -45,7 +45,7 @@ class test_obj3_clonable_t : public test_clonable_t
 {
 public:
 
-        NANO_MAKE_CLONABLE(test_obj3_clonable_t, "test obj3")
+        NANO_MAKE_CLONABLE(test_obj3_clonable_t, "test obj3", "p3=def3")
 
         explicit test_obj3_clonable_t(const string_t& configuration = string_t()) :
                 test_clonable_t(configuration)
@@ -107,9 +107,13 @@ NANO_CASE(retrieval)
         NANO_CHECK(!manager.has(id2 + id3));
         NANO_CHECK(!manager.has(id3 + id1));
 
-        NANO_CHECK_EQUAL(manager.get(id1)->configuration(), obj1.configuration());
-        NANO_CHECK_EQUAL(manager.get(id2)->configuration(), obj2.configuration());
-        NANO_CHECK_EQUAL(manager.get(id3)->configuration(), obj3.configuration());
+        NANO_CHECK_EQUAL(manager.get(id1)->config(), obj1.config());
+        NANO_CHECK_EQUAL(manager.get(id2)->config(), obj2.config());
+        NANO_CHECK_EQUAL(manager.get(id3)->config(), obj3.config());
+
+        NANO_CHECK_EQUAL(manager.get(id1, "p1=v1")->config(), "p1=v1,p1=def1");
+        NANO_CHECK_EQUAL(manager.get(id2, "p2=v2")->config(), "p2=v2,p2=def2");
+        NANO_CHECK_EQUAL(manager.get(id3, "p3=v3")->config(), "p3=v3,p3=def3");
 
         NANO_CHECK_EQUAL(manager.get(id1)->description(), obj1.description());
         NANO_CHECK_EQUAL(manager.get(id2)->description(), obj2.description());

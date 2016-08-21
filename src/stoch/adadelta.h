@@ -10,7 +10,7 @@ namespace nano
         ///
         struct stoch_adadelta_t : public stoch_optimizer_t
         {
-                NANO_MAKE_CLONABLE(stoch_adadelta_t, "AdaDelta")
+                NANO_MAKE_CLONABLE(stoch_adadelta_t, "AdaDelta", "")
 
                 ///
                 /// \brief constructor

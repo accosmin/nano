@@ -16,7 +16,7 @@ namespace nano
 
         bool mnist_task_t::populate()
         {
-                const string_t dir = nano::from_params<string_t>(configuration(), "dir", ".");
+                const string_t dir = nano::from_params<string_t>(config(), "dir");
 
                 const string_t test_ifile = dir + "/t10k-images-idx3-ubyte.gz";
                 const string_t test_gfile = dir + "/t10k-labels-idx1-ubyte.gz";

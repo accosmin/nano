@@ -11,7 +11,7 @@ namespace nano
         ///
         struct stoch_ngd_t : public stoch_optimizer_t
         {
-                NANO_MAKE_CLONABLE(stoch_ngd_t, "(stochastic) normalized gradient descent")
+                NANO_MAKE_CLONABLE(stoch_ngd_t, "(stochastic) normalized gradient descent", "")
 
                 ///
                 /// \brief constructor

@@ -76,10 +76,10 @@ namespace nano
                 const auto irows = tensor.size<1>();
                 const auto icols = tensor.size<2>();
 
-                const auto odims = clamp(from_params<tensor_size_t>(configuration(), "dims", 16), 1, 256);
-                const auto krows = clamp(from_params<tensor_size_t>(configuration(), "rows", 8), 1, 32);
-                const auto kcols = clamp(from_params<tensor_size_t>(configuration(), "cols", 8), 1, 32);
-                const auto kconn = clamp(from_params<tensor_size_t>(configuration(), "conn", 1), 1, 16);
+                const auto odims = clamp(from_params<tensor_size_t>(config(), "dims"), 1, 256);
+                const auto krows = clamp(from_params<tensor_size_t>(config(), "rows"), 1, 32);
+                const auto kcols = clamp(from_params<tensor_size_t>(config(), "cols"), 1, 32);
+                const auto kconn = clamp(from_params<tensor_size_t>(config(), "conn"), 1, 16);
 
                 const auto orows = irows - krows + 1;
                 const auto ocols = icols - kcols + 1;

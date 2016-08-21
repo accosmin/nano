@@ -17,7 +17,7 @@ namespace nano
         {
         public:
 
-                NANO_MAKE_CLONABLE(svhn_task_t, "SVHN (object classification)")
+                NANO_MAKE_CLONABLE(svhn_task_t, "SVHN (object classification)", "dir=.")
 
                 ///
                 /// \brief constructor

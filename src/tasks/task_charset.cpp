@@ -165,10 +165,10 @@ namespace nano
                 nano::clamp(nano::from_params<tensor_size_t>(configuration, "irows", 32), 12, 128),
                 nano::clamp(nano::from_params<tensor_size_t>(configuration, "icols", 32), 12, 128),
                 nano::osize(nano::from_params<charset>(configuration, "type", charset::digit)),
-                1),
-                m_charset(nano::from_params<charset>(configuration, "type", charset::digit)),
-                m_color(nano::from_params<color_mode>(configuration, "color", color_mode::rgb)),
-                m_count(nano::clamp(nano::from_params<size_t>(configuration, "count", 1000), 100, 1024 * 1024))
+                1, configuration),
+                m_charset(nano::from_params<charset>(config(), "type")),
+                m_color(nano::from_params<color_mode>(config(), "color")),
+                m_count(nano::clamp(nano::from_params<size_t>(config(), "count"), 100, 1024 * 1024))
         {
         }
 

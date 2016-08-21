@@ -30,15 +30,13 @@ namespace nano
         ///
         /// \brief hyperbolic tangent activation function
         ///
-        class tanh_activation_layer_t : public activation_layer_t
+        struct tanh_activation_layer_t : public activation_layer_t
         <
                 detail::tanh_activation_layer_eval_t,
                 detail::tanh_activation_layer_grad_t
         >
         {
-        public:
-
-                NANO_MAKE_CLONABLE(tanh_activation_layer_t, "hyperbolic tangent activation layer")
+                NANO_MAKE_CLONABLE(tanh_activation_layer_t, "hyperbolic tangent activation layer", "")
 
                 // constructor
                 explicit tanh_activation_layer_t(const string_t& parameters = string_t()) :

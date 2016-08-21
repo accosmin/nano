@@ -18,7 +18,7 @@ namespace nano
         public:
 
                 NANO_MAKE_CLONABLE(pooling_soft_layer_t,
-                        "adaptive pooling layer using soft approximation of generalized mean")
+                        "adaptive pooling layer using soft approximation of generalized mean", "")
 
                 // constructor
                 explicit pooling_soft_layer_t(const string_t& parameters = string_t());

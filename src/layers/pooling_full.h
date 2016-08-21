@@ -13,7 +13,7 @@ namespace nano
         {
         public:
 
-                NANO_MAKE_CLONABLE(pooling_full_layer_t, "adaptive pooling layer using unconstrained 3x3 weights")
+                NANO_MAKE_CLONABLE(pooling_full_layer_t, "adaptive pooling layer using unconstrained 3x3 weights", "")
 
                 // constructor
                 explicit pooling_full_layer_t(const string_t& parameters = string_t());

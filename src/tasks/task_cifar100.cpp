@@ -120,7 +120,7 @@ namespace nano
 
         bool cifar100_task_t::populate()
         {
-                const string_t dir = nano::from_params<string_t>(configuration(), "dir", ".");
+                const string_t dir = nano::from_params<string_t>(config(), "dir");
 
                 const string_t bfile = dir + "/cifar-100-binary.tar.gz";
 

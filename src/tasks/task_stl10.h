@@ -17,7 +17,7 @@ namespace nano
         {
         public:
 
-                NANO_MAKE_CLONABLE(stl10_task_t, "STL-10 (object classification)")
+                NANO_MAKE_CLONABLE(stl10_task_t, "STL-10 (object classification)", "dir=.")
 
                 ///
                 /// \brief constructor

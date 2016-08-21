@@ -14,7 +14,7 @@ namespace nano
         {
         public:
 
-                NANO_MAKE_CLONABLE(pooling_gauss_layer_t, "adaptive pooling layer using Gaussian weighting")
+                NANO_MAKE_CLONABLE(pooling_gauss_layer_t, "adaptive pooling layer using Gaussian weighting", "")
 
                 // constructor
                 explicit pooling_gauss_layer_t(const string_t& parameters = string_t());

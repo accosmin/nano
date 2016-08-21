@@ -28,15 +28,13 @@ namespace nano
         ///
         /// \brief soft-plus (max approximation) activation function
         ///
-        class softplus_activation_layer_t : public activation_layer_t
+        struct softplus_activation_layer_t : public activation_layer_t
         <
                 detail::softplus_activation_layer_eval_t,
                 detail::softplus_activation_layer_grad_t
         >
         {
-        public:
-
-                NANO_MAKE_CLONABLE(softplus_activation_layer_t, "soft-plus activation layer")
+                NANO_MAKE_CLONABLE(softplus_activation_layer_t, "soft-plus activation layer", "")
 
                 // constructor
                 explicit softplus_activation_layer_t(const string_t& parameters = string_t()) :

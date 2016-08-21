@@ -163,12 +163,12 @@ namespace nano
                 strings_t layer_ids;
 
                 // create layers
-                const string_t config = this->configuration();
+                const string_t config = this->config();
 
                 const strings_t net_params = nano::split(config, ";");
                 for (size_t l = 0; l < net_params.size(); ++ l)
                 {
-                        if (net_params[l].empty())
+                        if (net_params[l].size() <= 1)
                         {
                                 continue;
                         }

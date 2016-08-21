@@ -27,8 +27,13 @@ namespace nano
         template <typename tcgd_update>
         string_t batch_cgd_t<tcgd_update>::description() const
         {
-                return  string_t("conjugate gradient descent (") + tcgd_update::name() + "), parameters: " +
-                        "ls_init=quadratic,ls_strat=interpolation";
+                return  string_t("conjugate gradient descent (") + tcgd_update::name() + ")";
+        }
+
+        template <typename tcgd_update>
+        string_t batch_cgd_t<tcgd_update>::default_config() const
+        {
+                return "ls_init=init-quadratic,ls_strat=interpolation,c1=1e-4,c2=0.1";
         }
 
         template <typename tcgd_update>
@@ -40,11 +45,12 @@ namespace nano
                 state_t pstate = istate;        // previous state
 
                 // line-search initial step length
-                ls_init_t ls_init(from_params<ls_initializer>(configuration(), "ls_init", ls_initializer::quadratic));
+                ls_init_t ls_init(from_params<ls_initializer>(config(), "ls_init"));
 
                 // line-search step
-                ls_strategy_t ls_step(from_params<ls_strategy>(configuration(), "ls_strat", ls_strategy::interpolation),
-                        scalar_t(1e-4), scalar_t(0.1));
+                const auto c1 = from_params<scalar_t>(config(), "c1");
+                const auto c2 = from_params<scalar_t>(config(), "c2");
+                ls_strategy_t ls_step(from_params<ls_strategy>(config(), "ls_strat"), c1, c2);
 
                 // CGD direction strategy
                 const tcgd_update op_update{};

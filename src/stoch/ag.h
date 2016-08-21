@@ -45,6 +45,11 @@ namespace nano
                 virtual string_t description() const override;
 
                 ///
+                /// \brief default configuration (aka parameters)
+                ///
+                virtual string_t default_config() const override;
+
+                ///
                 ///
                 /// \brief minimize starting from the initial guess x0.
                 ///

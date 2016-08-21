@@ -12,7 +12,7 @@ namespace nano
         {
         public:
 
-                NANO_MAKE_CLONABLE(forward_network_t, "parameters: [layer_id[:layer_parameters][;]]*")
+                NANO_MAKE_CLONABLE(forward_network_t, "feed-forward network", "")
 
                 using model_t::resize;
 

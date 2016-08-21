@@ -50,7 +50,7 @@ namespace nano
                         { ls_strategy::backtrack_armijo,         "backtrack-Armijo" },
                         { ls_strategy::backtrack_wolfe,          "backtrack-Wolfe" },
                         { ls_strategy::backtrack_strong_wolfe,   "backtrack-strong-Wolfe" },
-                        { ls_strategy::interpolation,            "interp" },
+                        { ls_strategy::interpolation,            "interpolation" },
                         { ls_strategy::cg_descent,               "cgdescent" }
                 };
         }

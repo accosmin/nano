@@ -26,9 +26,9 @@ namespace nano
                 }
 
                 // parameters
-                const auto epochs = clamp(from_params<size_t>(configuration(), "epochs", 1024), 4, 4096);
-                const auto optimizer = from_params<string_t>(configuration(), "opt", "lbfgs");
-                const auto policy = from_params<trainer_policy>(configuration(), "policy", trainer_policy::stop_early);
+                const auto epochs = clamp(from_params<size_t>(config(), "epochs"), 4, 4096);
+                const auto optimizer = from_params<string_t>(config(), "opt");
+                const auto policy = from_params<trainer_policy>(config(), "policy");
                 const auto epsilon = epsilon0<scalar_t>();
                 const auto verbose = true;
 

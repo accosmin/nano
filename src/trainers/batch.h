@@ -14,7 +14,8 @@ namespace nano
         public:
 
                 NANO_MAKE_CLONABLE(batch_trainer_t,
-                        "parameters: opt=lbfgs[...],epochs=1024[4,4096],policy=stop_early[,all_epochs]")
+                        "batch trainer",
+                        "opt=lbfgs[...],epochs=1024[4,4096],policy=stop_early[,all_epochs]")
 
                 // constructor
                 explicit batch_trainer_t(const string_t& parameters = string_t());

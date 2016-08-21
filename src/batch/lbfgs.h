@@ -10,8 +10,8 @@ namespace nano
         struct batch_lbfgs_t : public batch_optimizer_t
         {
                 NANO_MAKE_CLONABLE(batch_lbfgs_t,
-                        "limited-memory BFGS, parameters: "\
-                        "ls_init=quadratic,ls_strat=interpolation")
+                        "limited-memory BFGS",
+                        "ls_init=init-quadratic,ls_strat=interpolation,c1=1e-4,c2=0.9")
 
                 ///
                 /// \brief constructor

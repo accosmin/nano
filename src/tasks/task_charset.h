@@ -28,7 +28,8 @@ namespace nano
         public:
 
                 NANO_MAKE_CLONABLE(charset_task_t,
-                        "synthetic character classification: type=digit[lalpha,ualpha,alpha,alphanum],"\
+                        "synthetic character classification",
+                        "type=digit[lalpha,ualpha,alpha,alphanum],"\
                         "color=rgb[,luma,rgba],irows=32[12,128],icols=32[12,128],count=1000[100,1M]")
 
                 ///

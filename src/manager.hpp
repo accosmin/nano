@@ -68,6 +68,15 @@ namespace nano
                         return collect<string_t>([] (const auto& it) { return it.second->description(); });
                 }
 
+                ///
+                /// \brief get the configurations of all registered objects
+                ///
+                strings_t configs() const
+                {
+                        return collect<string_t>([] (const auto& it) { return it.second->config(); });
+                }
+
+        private:
         private:
 
                 template <typename treturn, typename tfunctor>

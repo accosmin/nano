@@ -53,7 +53,15 @@ namespace nano
                 ///
                 /// \brief current configuration (aka parameters)
                 ///
-                string_t configuration() const { return m_configuration; }
+                string_t config() const
+                {
+                        return m_configuration.empty() ? default_config() : (m_configuration + "," + default_config());
+                }
+
+                ///
+                /// \brief default configuration (aka parameters)
+                ///
+                virtual string_t default_config() const = 0;
 
         protected:
 
@@ -61,7 +69,7 @@ namespace nano
                 string_t         m_configuration;
         };
 
-        #define NANO_MAKE_CLONABLE(base_class, description_text) \
+        #define NANO_MAKE_CLONABLE(base_class, description_text, default_text) \
                 virtual trobject clone(const string_t& configuration) const override \
                 { \
                         return std::make_shared<base_class>(configuration); \
@@ -73,5 +81,9 @@ namespace nano
                 virtual string_t description() const override \
                 { \
                         return description_text; \
+                } \
+                virtual string_t default_config() const override \
+                { \
+                        return default_text; \
                 }
 }

@@ -18,7 +18,7 @@ namespace nano
 
         bool svhn_task_t::populate()
         {
-                const string_t dir = nano::from_params<string_t>(configuration(), "dir", ".");
+                const string_t dir = nano::from_params<string_t>(config(), "dir");
 
                 const string_t train_file = dir + "/train_32x32.mat";
                 const string_t extra_file = dir + "/extra_32x32.mat";

@@ -13,7 +13,7 @@ namespace nano
         ///
         struct stoch_adagrad_t : public stoch_optimizer_t
         {
-                NANO_MAKE_CLONABLE(stoch_adagrad_t, "AdaGrad")
+                NANO_MAKE_CLONABLE(stoch_adagrad_t, "AdaGrad", "")
 
                 ///
                 /// \brief constructor

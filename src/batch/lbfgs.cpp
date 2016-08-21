@@ -23,11 +23,12 @@ namespace nano
                 vector_t q, r;
 
                 // line-search initial step length
-                ls_init_t ls_init(from_params<ls_initializer>(configuration(), "ls_init", ls_initializer::quadratic));
+                ls_init_t ls_init(from_params<ls_initializer>(config(), "ls_init"));
 
                 // line-search step
-                ls_strategy_t ls_step(from_params<ls_strategy>(configuration(), "ls_strat", ls_strategy::interpolation),
-                        scalar_t(1e-4), scalar_t(0.9));
+                const auto c1 = from_params<scalar_t>(config(), "c1");
+                const auto c2 = from_params<scalar_t>(config(), "c2");
+                ls_strategy_t ls_step(from_params<ls_strategy>(config(), "ls_strat"), c1, c2);
 
                 const auto op = [&] (state_t& cstate, const std::size_t i)
                 {

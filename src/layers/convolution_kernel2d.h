@@ -18,7 +18,7 @@ namespace nano
         public:
 
                 NANO_MAKE_CLONABLE(conv_layer_kernel2d_t,
-                        "convolution layer (implemented using 2D kernels): "\
+                        "convolution layer (implemented using 2D kernels)",
                         "dims=16[1,256],rows=8[1,32],cols=8[1,32],conn=1[1,16]")
 
                 // constructor

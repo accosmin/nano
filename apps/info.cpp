@@ -10,15 +10,16 @@ namespace
         template <typename tobject>
         void print(const string_t& name, const manager_t<tobject>& manager)
         {
-                const strings_t ids = manager.ids();
-                const strings_t descriptions = manager.descriptions();
+                const auto ids = manager.ids();
+                const auto descriptions = manager.descriptions();
+                const auto configurations = manager.configs();
 
                 table_t table(name);
-                table.header() << "description";
+                table.header() << "description" << "configuration";
 
                 for (size_t i = 0; i < ids.size(); ++ i)
                 {
-                        table.append(ids[i]) << descriptions[i];
+                        table.append(ids[i]) << descriptions[i] << configurations[i];
                 }
                 table.print(std::cout);
                 std::cout << std::endl;
