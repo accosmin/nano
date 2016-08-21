@@ -192,6 +192,19 @@ NANO_CASE(from_params)
         NANO_CHECK_EQUAL(nano::from_params(config, "param6", 42), 7);
 }
 
+NANO_CASE(from_params_no_defaults)
+{
+        const auto config = "param1=1.7,param2=3,param3=-5[-inf,+inf],param4=alpha,param5=beta[description],param6=7";
+
+        NANO_CHECK_EQUAL(nano::from_params<double>(config, "param1"), 1.7);
+        NANO_CHECK_EQUAL(nano::from_params<int>(config, "param2"), 3);
+        NANO_CHECK_THROW(nano::from_params<double>(config, "paramx"), std::runtime_error);
+        NANO_CHECK_EQUAL(nano::from_params<int>(config, "param3"), -5);
+        NANO_CHECK_EQUAL(nano::from_params<nano::string_t>(config, "param4"), nano::string_t("alpha"));
+        NANO_CHECK_EQUAL(nano::from_params<nano::string_t>(config, "param5"), nano::string_t("beta"));
+        NANO_CHECK_EQUAL(nano::from_params<int>(config, "param6"), 7);
+}
+
 NANO_CASE(to_params)
 {
         const auto param1 = 7;
