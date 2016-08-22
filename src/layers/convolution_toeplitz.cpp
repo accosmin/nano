@@ -106,8 +106,8 @@ namespace nano
                 m_bdata.resize(odims);
                 m_kconn = kconn;
 
-                m_toe_oidata.resize(krows * kcols * idims / kconn, orows * ocols);
-                m_toe_okdata.resize(odims / kconn, krows * kcols * idims / kconn);
+                m_toe_oidata.resize(krows * kcols, orows * ocols);
+                m_toe_okdata.resize(odims / kconn, krows * kcols);
                 m_toe_oodata.resize(odims / kconn, orows * ocols);
 
                 m_toe_iodata.resize(krows * kcols, irows * icols);
@@ -150,27 +150,20 @@ namespace nano
                 m_idata = input;
 
                 // convolution
-                for (tensor_size_t c = 0; c < kconn(); ++ c)
+                m_odata.setZero();
+
+                for (tensor_size_t i = 0; i < idims(); ++ i)
                 {
-                        const auto ksize = krows() * kcols();
-                        const auto osize = orows() * ocols();
-
-                        for (tensor_size_t i = c, ik = 0; i < idims(); ++ ik, i += kconn())
+                        make_conv(m_idata.matrix(i), krows(), kcols(), m_toe_oidata);
+                        for (tensor_size_t o = (i % kconn()), ok = 0; o < odims(); ++ ok, o += kconn())
                         {
-                                make_conv(m_idata.matrix(i), krows(), kcols(),
-                                tensor::map_matrix(m_toe_oidata.data() + ik * ksize * osize, ksize, osize));
-                        }
-
-                        for (tensor_size_t o = c, ok = 0; o < odims(); ++ ok, o += kconn())
-                        {
-                                m_toe_okdata.row(ok) =
-                                tensor::map_vector(m_kdata.planeData(o, 0), idims() / kconn() * ksize);
+                                m_toe_okdata.row(ok) = m_kdata.vector(o, i / kconn());
                         }
 
                         m_toe_oodata.noalias() = m_toe_okdata * m_toe_oidata;
-                        for (tensor_size_t o = c, ok = 0; o < odims(); ++ ok, o += kconn())
+                        for (tensor_size_t o = (i % kconn()), ok = 0; o < odims(); ++ ok, o += kconn())
                         {
-                                m_odata.vector(o) = m_toe_oodata.row(ok);
+                                m_odata.vector(o) += m_toe_oodata.row(ok);
                         }
                 }
 
