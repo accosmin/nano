@@ -11,8 +11,7 @@ namespace nano
                         template <typename tivector, typename tovector>
                         void operator()(const tivector& idata, tovector&& odata) const
                         {
-                                odata = idata.array() /
-                                        (1 + idata.array() * idata.array()).sqrt();
+                                odata = idata.array() / (1 + idata.array().square()).sqrt();
                         }
                 };
 
@@ -22,8 +21,8 @@ namespace nano
                         void operator()(const tgvector& gdata, tiovector&& iodata) const
                         {
                                 iodata.array() = gdata.array() *
-                                        (1 - iodata.array() * iodata.array()) *
-                                        (1 - iodata.array() * iodata.array()).sqrt();
+                                        (1 - iodata.array().square()) *
+                                        (1 - iodata.array().square()).sqrt();
                         }
                 };
         }
