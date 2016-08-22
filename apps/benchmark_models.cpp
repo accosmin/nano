@@ -176,8 +176,6 @@ int main(int argc, const char *argv[])
                                 brow << idiv(static_cast<size_t>(duration.count()) * 1000, gacc.count());
                         }
                 }
-
-                log_info();
         }
 
         // print results
@@ -186,7 +184,6 @@ int main(int argc, const char *argv[])
                 ftable.mark(nano::make_table_mark_minimum_percentage_cols<size_t>(5));
                 ftable.print(std::cout);
         }
-        log_info();
         if (cmd_backward)
         {
                 btable.mark(nano::make_table_mark_minimum_percentage_cols<size_t>(5));
