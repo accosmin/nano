@@ -7,6 +7,9 @@
 
 namespace nano
 {
+        template <typename tscalar>
+        class stats_t;
+
         ///
         /// \brief training measurement usually after a training epoch.
         ///
@@ -20,17 +23,27 @@ namespace nano
                 ///
                 /// \brief constructor
                 ///
-                trainer_measurement_t(const scalar_t value, const scalar_t error_avg, const scalar_t error_var);
+                trainer_measurement_t(
+                        const scalar_t value,
+                        const scalar_t value_avg, const scalar_t value_var, const scalar_t value_max,
+                        const scalar_t error_avg, const scalar_t error_var, const scalar_t error_max);
 
+                ///
+                /// \brief constructor
+                ///
+                trainer_measurement_t(
+                        const scalar_t value, const stats_t<scalar_t>& vstats, const stats_t<scalar_t>& estats);
+
+                ///
                 ///
                 /// \brief check validity of measurements (detect divergence)
                 ///
                 operator bool() const;
 
                 // attributes
-                scalar_t        m_value;        ///< loss value
-                scalar_t        m_error_avg;    ///< error (average)
-                scalar_t        m_error_var;    ///< error (variance)
+                scalar_t        m_value;                                ///< loss value
+                scalar_t        m_value_avg, m_value_var, m_value_max;  ///< loss value (average, variance, maximum)
+                scalar_t        m_error_avg, m_error_var, m_error_max;  ///< error (average, variance, maximum)
         };
 
         ///

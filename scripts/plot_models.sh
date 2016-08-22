@@ -30,11 +30,6 @@ format="${ofile##*.}"
 # temporary gnuplot script file
 pfile=${ofile/.${format}/.gnuplot}
 
-# data attributes
-indices=(1 2 3 4 5 6 7 8 9)
-titles=(`echo "train-loss train-error train-error-var valid-loss valid-error valid-error-var test-loss test-error test-error-var"`)
-ylabels=(`echo "loss error error-var loss error error-var loss error error-var"`)
-
 # set the plotting attributes
 rm -f ${pfile}
 prepare_terminal ${pfile} ${ofile}
@@ -67,7 +62,7 @@ do
                 ifile=${ifiles[$i]}
                 iname=${inames[$i]}
 
-                printf "'%s' using 10:%d title '%s' with line" "${ifiles[$i]}" ${index} "${inames[$i]}" >> ${pfile}
+                printf "'%s' using %d:%d title '%s' with line" "${ifiles[$i]}" ${index_time} ${index} "${inames[$i]}" >> ${pfile}
                 [[ $(($i+1)) != ${isize} ]] && printf ", " >> ${pfile}
         done
         printf "\n" >> ${pfile}

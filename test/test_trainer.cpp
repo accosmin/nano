@@ -11,10 +11,11 @@ const int best_epoch = 50;
 template <typename tvalue>
 static auto make_trainer_state(const tvalue valid_value, const size_t ms = 0, const size_t epoch = 0)
 {
-        return trainer_state_t(milliseconds_t(ms), epoch,
-                trainer_measurement_t{0, 0, 0},
-                trainer_measurement_t{static_cast<scalar_t>(valid_value), 0, 0},
-                trainer_measurement_t{0, 0, 0});
+        const auto v = static_cast<scalar_t>(valid_value);
+        return  trainer_state_t(milliseconds_t(ms), epoch,
+                trainer_measurement_t{0, 0, 0, 0, 0, 0, 0},
+                trainer_measurement_t{v, 0, 0, 0, 0, 0, 0},
+                trainer_measurement_t{0, 0, 0, 0, 0, 0, 0});
 }
 
 template <typename tvalue, typename tepoch>

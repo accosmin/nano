@@ -77,7 +77,6 @@ namespace nano
                 }
 
         private:
-        private:
 
                 template <typename treturn, typename tfunctor>
                 auto collect(const tfunctor& fun) const

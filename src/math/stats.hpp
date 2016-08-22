@@ -10,11 +10,7 @@ namespace nano
         ///
         /// \brief computes statistics: average, standard deviation etc.
         ///
-        template
-        <
-                typename tscalar = double,
-                typename tsize = std::size_t
-        >
+        template <typename tscalar = long double>
         class stats_t
         {
         public:
@@ -54,10 +50,7 @@ namespace nano
                 ///
                 /// \brief update statistics with the given [begin, end) range
                 ///
-                template
-                <
-                        class titerator
-                >
+                template <typename titerator>
                 void operator()(titerator begin, const titerator end)
                 {
                         for ( ; begin != end; ++ begin)
@@ -81,32 +74,30 @@ namespace nano
                 // access functions
                 operator bool() const { return count() > 1; }
 
-                tsize count() const { return m_count; }
+                std::size_t count() const { return m_count; }
                 tscalar min() const { return m_min; }
                 tscalar max() const { return m_max; }
                 tscalar sum() const { return m_sum; }
 
-                double avg() const
+                tscalar avg() const
                 {
                         assert(count() > 0);
-                        return  static_cast<double>(sum()) /
-                                static_cast<double>(count());
+                        return sum() / static_cast<tscalar>(count());
                 }
 
-                double var2() const
+                tscalar var2() const
                 {
                         assert(count() > 0);
-                        return  static_cast<double>(m_sumsq) -
-                                static_cast<double>(m_sum * m_sum) / static_cast<double>(count());
+                        return m_sumsq - m_sum * m_sum / static_cast<tscalar>(count());
                 }
 
-                double var() const
+                tscalar var() const
                 {
                         assert(count() > 0);
-                        return (count() == 1) ? 0.0 : (var2() / static_cast<double>(count() - 1));
+                        return (count() == 1) ? tscalar(0) : (var2() / static_cast<tscalar>(count() - 1));
                 }
 
-                double stdev() const
+                tscalar stdev() const
                 {
                         return std::sqrt(var());
                 }
@@ -114,7 +105,7 @@ namespace nano
         private:
 
                 // attributes
-                tsize           m_count;
+                std::size_t     m_count;
                 tscalar         m_sum, m_sumsq;
                 tscalar         m_min, m_max;
         };

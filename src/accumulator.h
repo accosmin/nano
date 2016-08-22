@@ -42,12 +42,12 @@ namespace nano
                 ///
                 /// \brief change the regularization weight (keeps parameters)
                 ///
-                void set_lambda(scalar_t lambda) const;
+                void set_lambda(const scalar_t lambda) const;
 
                 ///
                 /// \brief change the number of active threads
                 ///
-                void set_threads(size_t nthreads) const;
+                void set_threads(const size_t nthreads) const;
 
                 ///
                 /// \brief cumulate statistics with a set of samples
@@ -66,14 +66,14 @@ namespace nano
                 vector_t vgrad() const;
 
                 ///
-                /// \brief averaged error value
+                /// \brief loss function values
                 ///
-                scalar_t avg_error() const;
+                const stats_t<scalar_t>& vstats() const;
 
                 ///
-                /// \brief variance error value
+                /// \brief error function values
                 ///
-                scalar_t var_error() const;
+                const stats_t<scalar_t>& estats() const;
 
                 ///
                 /// \brief total number of processed samples

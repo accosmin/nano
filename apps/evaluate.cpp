@@ -71,7 +71,7 @@ int main(int argc, const char *argv[])
                 "evaluate model");
 
         const auto lvalue = lacc.value();
-        const auto lerror = lacc.avg_error();
+        const auto lerror = lacc.estats().avg();
 
         log_info() << "test = " << lvalue << "/" << lerror << ".";
 

@@ -66,7 +66,7 @@ NANO_CASE(evaluate)
                         accumulator_t bacc(*model, *loss, *criterion, criterion_t::type::value);
                         bacc.update(*task, fold);
                         const auto lvalue_before = bacc.value();
-                        const auto lerror_before = bacc.avg_error();
+                        const auto lerror_before = bacc.estats().avg();
                         const auto lcount_before = bacc.count();
 
                         vector_t params(model->psize());
@@ -82,7 +82,7 @@ NANO_CASE(evaluate)
                         accumulator_t aacc(*model, *loss, *criterion, criterion_t::type::value);
                         aacc.update(*task, fold);
                         const auto lvalue_after = aacc.value();
-                        const auto lerror_after = aacc.avg_error();
+                        const auto lerror_after = aacc.estats().avg();
                         const auto lcount_after = aacc.count();
 
                         vector_t xparams(model->psize());

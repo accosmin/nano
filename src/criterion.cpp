@@ -36,14 +36,14 @@ namespace nano
                 return reset();
         }
 
-        criterion_t& criterion_t::reset(type t)
+        criterion_t& criterion_t::reset(const type t)
         {
                 m_type = t;
 
                 return reset();
         }
 
-        criterion_t& criterion_t::reset(scalar_t lambda)
+        criterion_t& criterion_t::reset(const scalar_t lambda)
         {
                 m_lambda = lambda;
 
@@ -52,6 +52,7 @@ namespace nano
 
         criterion_t& criterion_t::reset()
         {
+                m_vstats.clear();
                 m_estats.clear();
 
                 clear();
@@ -91,6 +92,7 @@ namespace nano
                 const scalar_t value = loss.value(target, output);
                 const scalar_t error = loss.error(target, output);
 
+                m_vstats(value);
                 m_estats(error);
 
                 switch (m_type)
@@ -107,6 +109,7 @@ namespace nano
 
         criterion_t& criterion_t::update(const criterion_t& other)
         {
+                m_vstats(other.m_vstats);
                 m_estats(other.m_estats);
 
                 accumulate(other);
@@ -114,22 +117,21 @@ namespace nano
                 return *this;
         }
 
-        scalar_t criterion_t::avg_error() const
+        const stats_t<scalar_t>& criterion_t::vstats() const
         {
-                assert(m_estats.count() > 0);
-
-                return static_cast<scalar_t>(m_estats.avg());
+                assert(m_vstats.count() > 0);
+                return m_vstats;
         }
 
-        scalar_t criterion_t::var_error() const
+        const stats_t<scalar_t>& criterion_t::estats() const
         {
                 assert(m_estats.count() > 0);
-
-                return static_cast<scalar_t>(m_estats.var());
+                return m_estats;
         }
 
         size_t criterion_t::count() const
         {
+                assert(m_vstats.count() == m_estats.count());
                 return m_estats.count();
         }
 
@@ -140,7 +142,7 @@ namespace nano
 
         tensor_size_t criterion_t::psize() const
         {
-                return m_params.size();
+                return params().size();
         }
 
         scalar_t criterion_t::lambda() const

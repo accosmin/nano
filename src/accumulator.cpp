@@ -58,10 +58,9 @@ namespace nano
                 }
         }
 
-        void accumulator_t::set_lambda(scalar_t lambda) const
+        void accumulator_t::set_lambda(const scalar_t ilambda) const
         {
-                lambda = nano::clamp(lambda, 0.0, 1.0);
-
+                const auto lambda = nano::clamp(ilambda, 0.0, 1.0);
                 for (const auto& cache : m_impl->m_criteria)
                 {
                         cache->reset(lambda);
@@ -76,7 +75,7 @@ namespace nano
                 }
         }
 
-        void accumulator_t::set_threads(size_t nthreads) const
+        void accumulator_t::set_threads(const size_t nthreads) const
         {
                 thread_pool_t::instance().activate(nthreads);
         }
@@ -115,14 +114,14 @@ namespace nano
                 return m_impl->criterion().value();
         }
 
-        scalar_t accumulator_t::avg_error() const
+        const stats_t<scalar_t>& accumulator_t::vstats() const
         {
-                return m_impl->criterion().avg_error();
+                return m_impl->criterion().vstats();
         }
 
-        scalar_t accumulator_t::var_error() const
+        const stats_t<scalar_t>& accumulator_t::estats() const
         {
-                return m_impl->criterion().var_error();
+                return m_impl->criterion().estats();
         }
 
         vector_t accumulator_t::vgrad() const

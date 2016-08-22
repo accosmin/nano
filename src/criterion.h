@@ -46,8 +46,8 @@ namespace nano
                 criterion_t& reset(const rmodel_t& rmodel);
                 criterion_t& reset(const model_t& model);
                 criterion_t& reset(const vector_t& params);
-                criterion_t& reset(type t);
-                criterion_t& reset(scalar_t lambda);
+                criterion_t& reset(const type t);
+                criterion_t& reset(const scalar_t lambda);
                 criterion_t& reset();
 
                 ///
@@ -77,14 +77,14 @@ namespace nano
                 virtual vector_t vgrad() const = 0;
 
                 ///
-                /// \brief averaged error value
+                /// \brief loss function values
                 ///
-                scalar_t avg_error() const;
+                const stats_t<scalar_t>& vstats() const;
 
                 ///
-                /// \brief variance error value
+                /// \brief error function values
                 ///
-                scalar_t var_error() const;
+                const stats_t<scalar_t>& estats() const;
 
                 ///
                 /// \brief total number of processed samples
@@ -121,8 +121,8 @@ namespace nano
                 ///
                 /// \brief update statistics with the loss value/error/gradient for a sample
                 ///
-                virtual void accumulate(scalar_t value) = 0;
-                virtual void accumulate(const vector_t& vgrad, scalar_t value) = 0;
+                virtual void accumulate(const scalar_t value) = 0;
+                virtual void accumulate(const vector_t& vgrad, const scalar_t value) = 0;
 
                 ///
                 /// \brief update statistics with cumulated samples
@@ -155,7 +155,8 @@ namespace nano
                 scalar_t                m_lambda;       ///< regularization weight (if any)
                 type                    m_type;         ///<
 
-                stats_t<scalar_t>       m_estats;       ///< loss error statistics
+                stats_t<scalar_t>       m_vstats;       ///< statistics for the loss function values
+                stats_t<scalar_t>       m_estats;       ///< statistics for the error function values
         };
 }
 

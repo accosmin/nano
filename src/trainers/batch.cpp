@@ -92,13 +92,13 @@ namespace nano
                         lacc.set_params(state.x);
 
                         lacc.update(task, train_fold);
-                        const auto train = trainer_measurement_t{lacc.value(), lacc.avg_error(), lacc.var_error()};
+                        const auto train = trainer_measurement_t{lacc.value(), lacc.vstats(), lacc.estats()};
 
                         lacc.update(task, valid_fold);
-                        const auto valid = trainer_measurement_t{lacc.value(), lacc.avg_error(), lacc.var_error()};
+                        const auto valid = trainer_measurement_t{lacc.value(), lacc.vstats(), lacc.estats()};
 
                         lacc.update(task, test_fold);
-                        const auto test = trainer_measurement_t{lacc.value(), lacc.avg_error(), lacc.var_error()};
+                        const auto test = trainer_measurement_t{lacc.value(), lacc.vstats(), lacc.estats()};
 
                         // OK, update the optimum solution
                         const auto milis = timer.milliseconds();

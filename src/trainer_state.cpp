@@ -12,15 +12,30 @@ namespace nano
         trainer_measurement_t::trainer_measurement_t() : trainer_measurement_t(
                 std::numeric_limits<scalar_t>::max(),
                 std::numeric_limits<scalar_t>::max(),
+                std::numeric_limits<scalar_t>::max(),
+                std::numeric_limits<scalar_t>::max(),
+                std::numeric_limits<scalar_t>::max(),
+                std::numeric_limits<scalar_t>::max(),
                 std::numeric_limits<scalar_t>::max())
         {
         }
 
         trainer_measurement_t::trainer_measurement_t(
-                const scalar_t value, const scalar_t error_avg, const scalar_t error_var) :
+                const scalar_t value,
+                const scalar_t value_avg, const scalar_t value_var, const scalar_t value_max,
+                const scalar_t error_avg, const scalar_t error_var, const scalar_t error_max) :
                 m_value(value),
-                m_error_avg(error_avg),
-                m_error_var(error_var)
+                m_value_avg(value_avg), m_value_var(value_var), m_value_max(value_max),
+                m_error_avg(error_avg), m_error_var(error_var), m_error_max(error_max)
+        {
+        }
+
+        trainer_measurement_t::trainer_measurement_t(
+                const scalar_t value,
+                const stats_t<scalar_t>& vstats, const stats_t<scalar_t>& estats) : trainer_measurement_t(
+                value,
+                vstats.avg(), vstats.var(), vstats.max(),
+                estats.avg(), estats.var(), estats.max())
         {
         }
 
@@ -95,36 +110,40 @@ namespace nano
                         return false;
                 }
 
-                const string_t delim = "\t";
+                const string_t delim = "    ";
                 const size_t colsize = 24;
 
                 // header
+                for (const string_t& proto : {"train", "valid", "test"})
+                {
+                        ofs
+                        << nano::align(proto + "-criterion", colsize) << delim
+                        << nano::align(proto + "-loss-avg", colsize) << delim
+                        << nano::align(proto + "-loss-var", colsize) << delim
+                        << nano::align(proto + "-loss-max", colsize) << delim
+                        << nano::align(proto + "-error-avg", colsize) << delim
+                        << nano::align(proto + "-error-var", colsize) << delim
+                        << nano::align(proto + "-error-max", colsize) << delim;
+                }
                 ofs
-                << nano::align("train-loss", colsize) << delim
-                << nano::align("train-error-average", colsize) << delim
-                << nano::align("train-error-variance", colsize) << delim
-                << nano::align("valid-loss", colsize) << delim
-                << nano::align("valid-error-average", colsize) << delim
-                << nano::align("valid-error-variance", colsize) << delim
-                << nano::align("test-loss", colsize) << delim
-                << nano::align("test-error-average", colsize) << delim
-                << nano::align("test-error-variance", colsize) << delim
                 << nano::align("time-seconds", colsize) << delim
                 << std::endl;
 
                 // optimization states
                 for (const trainer_state_t& state : states)
                 {
+                        for (const auto& measurement : {state.m_train, state.m_valid, state.m_test})
+                        {
+                                ofs
+                                << nano::align(nano::to_string(measurement.m_value), colsize) << delim
+                                << nano::align(nano::to_string(measurement.m_value_avg), colsize) << delim
+                                << nano::align(nano::to_string(measurement.m_value_var), colsize) << delim
+                                << nano::align(nano::to_string(measurement.m_value_max), colsize) << delim
+                                << nano::align(nano::to_string(measurement.m_error_avg), colsize) << delim
+                                << nano::align(nano::to_string(measurement.m_error_var), colsize) << delim
+                                << nano::align(nano::to_string(measurement.m_error_max), colsize) << delim;
+                        }
                         ofs
-                        << nano::align(nano::to_string(state.m_train.m_value), colsize) << delim
-                        << nano::align(nano::to_string(state.m_train.m_error_avg), colsize) << delim
-                        << nano::align(nano::to_string(state.m_train.m_error_var), colsize) << delim
-                        << nano::align(nano::to_string(state.m_valid.m_value), colsize) << delim
-                        << nano::align(nano::to_string(state.m_valid.m_error_avg), colsize) << delim
-                        << nano::align(nano::to_string(state.m_valid.m_error_var), colsize) << delim
-                        << nano::align(nano::to_string(state.m_test.m_value), colsize) << delim
-                        << nano::align(nano::to_string(state.m_test.m_error_avg), colsize) << delim
-                        << nano::align(nano::to_string(state.m_test.m_error_var), colsize) << delim
                         << nano::align(nano::to_string((state.m_milis.count() + 500) / 1000), colsize) << delim
                         << std::endl;
                 }
