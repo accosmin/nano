@@ -4,6 +4,7 @@
 #include <limits>
 #include <cassert>
 #include <algorithm>
+#include <type_traits>
 
 namespace nano
 {
@@ -14,6 +15,9 @@ namespace nano
         class stats_t
         {
         public:
+
+                static_assert(std::is_floating_point<tscalar>::value,
+                        "stats_t can be used only with floating point types");
 
                 ///
                 /// \brief constructor
