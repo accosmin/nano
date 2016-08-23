@@ -5,6 +5,7 @@
 #include "batch/types.h"
 #include "text/cmdline.h"
 #include "text/to_params.hpp"
+#include "text/concatenate.hpp"
 #include "tasks/task_charset.h"
 #include "layers/make_layers.h"
 
@@ -124,6 +125,8 @@ int main(int argc, const char* argv[])
         cmdline.add("", "stoch-adam",           "evaluate stoch optimizer ADAM");
         cmdline.add("", "stoch-adagrad",        "evaluate stoch optimizer ADAGRAD");
         cmdline.add("", "stoch-adadelta",       "evaluate stoch optimizer ADADELTA");
+        cmdline.add("", "loss",                 "loss function (" + nano::concatenate(get_losses().ids()) + ")", "classnll");
+        cmdline.add("", "criterion",            "training criterion (" + nano::concatenate(get_criteria().ids()) + ")", "avg");
         cmdline.add("", "trials",               "number of models to train & evaluate", "10");
         cmdline.add("", "epochs",               "number of epochs", "100");
 
@@ -139,6 +142,8 @@ int main(int argc, const char* argv[])
         const bool use_convnet1 = cmdline.has("convnet1");
         const bool use_convnet2 = cmdline.has("convnet2");
         const bool use_convnet3 = cmdline.has("convnet3");
+        const auto cmd_loss = cmdline.get("loss");
+        const auto cmd_criterion = cmdline.get("criterion");
         const auto trials = cmdline.get<size_t>("trials");
         const auto epochs = cmdline.get<size_t>("epochs");
 
@@ -213,9 +218,6 @@ int main(int argc, const char* argv[])
         if (use_convnets || use_convnet2) networks.emplace_back(convnet2 + outlayer, "convnet2");
         if (use_convnets || use_convnet3) networks.emplace_back(convnet3 + outlayer, "convnet3");
 
-        const strings_t losses = { "classnll" }; //get_losses().ids();
-        const strings_t criteria = { "avg", "max" }; //get_criteria().ids();
-
         // vary the model
         for (const auto& net : networks)
         {
@@ -235,35 +237,26 @@ int main(int argc, const char* argv[])
                         model->save_params(x0);
                 }
 
-                // vary the loss
-                for (const string_t& iloss : losses)
-                {
-                        log_info() << "<<< running loss [" << iloss << "] ...";
+                log_info() << "<<< running loss [" << cmd_loss << "] ...";
 
-                        const auto loss = get_losses().get(iloss);
+                const auto loss = get_losses().get(cmd_loss);
 
-                        table_t table(netname + "-" + iloss);
-                        table.header() << "test error"
-                                       << "convergence speed"
-                                       << "time [sec]";
+                table_t table(netname + "-" + cmd_loss);
+                table.header() << "test error"
+                               << "convergence speed"
+                               << "time [sec]";
 
-                        // vary the criteria
-                        for (const string_t& icriterion : criteria)
-                        {
-                                const auto criterion = get_criteria().get(icriterion);
-                                const auto basename = "[" + icriterion + "] ";
-                                const auto basepath = netname + "-" + iloss + "-" + icriterion + "-";
+                // vary the criteria
+                const auto criterion = get_criteria().get(cmd_criterion);
+                const auto basename = "[" + cmd_criterion + "] ";
+                const auto basepath = netname + "-" + cmd_loss + "-" + cmd_criterion + "-";
 
-                                evaluate(*model, task, fold, *loss, *criterion, x0s, epochs,
-                                         batch_optimizers, stoch_optimizers,
-                                         basename, basepath, table);
-                        }
+                evaluate(*model, task, fold, *loss, *criterion, x0s, epochs,
+                         batch_optimizers, stoch_optimizers,
+                         basename, basepath, table);
 
-                        // show results
-                        table.print(std::cout);
-                }
-
-                log_info();
+                // show results
+                table.print(std::cout);
         }
 
         // OK
