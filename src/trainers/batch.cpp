@@ -90,13 +90,14 @@ namespace nano
                 {
                         // evaluate the current state
                         lacc.set_params(state.x);
-
                         lacc.update(task, train_fold);
                         const auto train = trainer_measurement_t{lacc.value(), lacc.vstats(), lacc.estats()};
 
+                        lacc.set_params(state.x);
                         lacc.update(task, valid_fold);
                         const auto valid = trainer_measurement_t{lacc.value(), lacc.vstats(), lacc.estats()};
 
+                        lacc.set_params(state.x);
                         lacc.update(task, test_fold);
                         const auto test = trainer_measurement_t{lacc.value(), lacc.vstats(), lacc.estats()};
 

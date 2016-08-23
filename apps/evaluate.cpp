@@ -70,10 +70,7 @@ int main(int argc, const char *argv[])
                 [&] () { lacc.reset(); lacc.update(*task, tfold); },
                 "evaluate model");
 
-        const auto lvalue = lacc.value();
-        const auto lerror = lacc.estats().avg();
-
-        log_info() << "test = " << lvalue << "/" << lerror << ".";
+        log_info() << "test=" << lacc.value() << "|" << lacc.estats().avg() << "+/-" << lacc.estats().var() << ".";
 
         // OK
         log_info() << done;
