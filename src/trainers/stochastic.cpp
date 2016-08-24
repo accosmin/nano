@@ -112,8 +112,8 @@ namespace nano
                         if (verbose)
                         {
                                 log_info()
-                                        << "tune: train=" << train
-                                        << ", " << config << ",batch=" << (it.end() - it.begin())
+                                        << "tune:train=" << train
+                                        << "," << config << ",batch=" << (it.end() - it.begin())
                                         << "] " << timer.elapsed() << ".";
 
                                 // NB: need to reset the minibatch size (changed during tuning)!
@@ -147,11 +147,12 @@ namespace nano
                         {
                                 log_info()
                                         << "[" << epoch << "/" << epochs
-                                        << ": train=" << train
-                                        << ", valid=" << valid << "|" << nano::to_string(ret)
-                                        << ", test=" << test
-                                        << ", " << config << ",batch=" << (it.end() - it.begin())
-                                        << "] " << timer.elapsed() << ".";
+                                        << ":train=" << train
+                                        << ",valid=" << valid << "|" << nano::to_string(ret)
+                                        << ",test=" << test
+                                        << "," << config << ",batch=" << (it.end() - it.begin())
+                                        << ",g=" << state.g.lpNorm<Eigen::Infinity>()
+                                        << "]" << timer.elapsed() << ".";
                         }
 
                         return !nano::is_done(ret, policy);

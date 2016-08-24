@@ -110,10 +110,11 @@ namespace nano
                         {
                                 log_info()
                                         << "[" << iteration << "/" << epochs
-                                        << ": train=" << train
-                                        << ", valid=" << valid << "|" << nano::to_string(ret)
-                                        << ", test=" << test
-                                        << ", " << config << ",calls=" << state.m_fcalls << "/" << state.m_gcalls
+                                        << ":train=" << train
+                                        << ",valid=" << valid << "|" << nano::to_string(ret)
+                                        << ",test=" << test
+                                        << "," << config << ",calls=" << state.m_fcalls << "/" << state.m_gcalls
+                                        << ",g=" << state.g.lpNorm<Eigen::Infinity>()
                                         << "] " << timer.elapsed() << ".";
                         }
 
