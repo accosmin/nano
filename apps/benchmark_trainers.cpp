@@ -11,10 +11,7 @@
 
 using namespace nano;
 
-template
-<
-        typename tvalue
->
+template <typename tvalue>
 static string_t stats_to_string(const stats_t<tvalue>& stats)
 {
         return  to_string(static_cast<tvalue>(stats.avg()))
@@ -24,10 +21,7 @@ static string_t stats_to_string(const stats_t<tvalue>& stats)
                 + "]";
 }
 
-template
-<
-        typename ttrainer
->
+template <typename ttrainer>
 static void evaluate_trainer(model_t& model, const string_t& name, const string_t& basepath,
         table_t& table, const vectors_t& x0s, const ttrainer& trainer)
 {
