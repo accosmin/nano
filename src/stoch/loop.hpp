@@ -26,7 +26,7 @@ namespace nano
 
         inline auto make_epsilons()
         {
-                return make_finite_space(scalar_t(1e-4), scalar_t(1e-6), scalar_t(1e-8));
+                return make_finite_space(scalar_t(1e-4), scalar_t(1e-6));
         }
 
         namespace detail

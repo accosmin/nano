@@ -35,6 +35,7 @@ namespace nano
                 const auto verbose = true;
 
                 // train the model
+                const timer_t timer;
                 const auto op = [&] (const accumulator_t& lacc, const accumulator_t& gacc, const vector_t& x0)
                 {
                         auto stoch_optimizer = get_stoch_optimizers().get(optimizer);
@@ -42,7 +43,7 @@ namespace nano
                 };
 
                 const auto result = trainer_loop(model, nthreads, loss, crition, op);
-                log_info() << "<<< stoch-" << optimizer << ": " << result << ".";
+                log_info() << "<<< stoch-" << optimizer << ": " << result << ",time=" << timer.elapsed() << ".";
 
                 // OK
                 if (result.valid())

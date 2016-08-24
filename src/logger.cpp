@@ -11,7 +11,7 @@ namespace nano
                 m_flush(flush)
         {
                 log_time();
-                m_stream << std::fixed << std::setprecision(8);
+                m_stream << std::fixed << std::setprecision(6);
                 m_stream << "[" << header << "] ";
         }
 

@@ -33,6 +33,7 @@ namespace nano
                 const auto verbose = true;
 
                 // train the model
+                const timer_t timer;
                 const auto op = [&] (const accumulator_t& lacc, const accumulator_t& gacc, const vector_t& x0)
                 {
                         auto batch_optimizer = get_batch_optimizers().get(optimizer);
@@ -40,7 +41,7 @@ namespace nano
                 };
 
                 const auto result = trainer_loop(model, nthreads, loss, criterion, op);
-                log_info() << "<<< batch-" << optimizer << ": " << result << ".";
+                log_info() << "<<< batch-" << optimizer << ": " << result << ",time=" << timer.elapsed() << ".";
 
                 // OK
                 if (result.valid())
