@@ -5,8 +5,8 @@ source $(dirname $0)/common_train.sh
 fn_cmdline $*
 
 # common parameters
-common="${task_mnist} ${loss_classnll}"
-outdir="${dir_exp_mnist}/eval_depth"
+common="${task_cifar10} ${loss_classnll}"
+outdir="${dir_exp_cifar10}/eval_depth"
 mkdir -p ${outdir}
 
 # models
