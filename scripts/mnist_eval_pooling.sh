@@ -35,7 +35,7 @@ models=${models}" conv2_full conv2_soft conv2_gauss"
 
 # trainers
 fn_make_trainers "stop_early"
-trainers="stoch_adadelta"
+trainers="stoch_adam"
 
 # criteria
 criteria="crit_avg"
