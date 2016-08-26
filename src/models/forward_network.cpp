@@ -1,4 +1,3 @@
-#include "math/cast.hpp"
 #include "text/align.hpp"
 #include "logger.h"
 #include "text/algorithm.h"
