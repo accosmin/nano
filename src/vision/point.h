@@ -16,8 +16,8 @@ namespace nano
                 ///
                 /// \brief constructor
                 ///
-                explicit point_t(coord_t x = 0, coord_t y = 0)
-                        :       m_x(x), m_y(y)
+                explicit point_t(coord_t x = 0, coord_t y = 0) :
+                        m_x(x), m_y(y)
                 {
                 }
 

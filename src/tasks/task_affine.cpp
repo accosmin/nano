@@ -40,7 +40,7 @@ namespace nano
                         tensor3d_t input(idims(), irows(), icols());
                         tensor::set_random(rng_input, input);
 
-                        add_chunk(input);
+                        add_chunk(input, i);
 
                         // affine target
                         vector_t target = A * input.vector() + b;

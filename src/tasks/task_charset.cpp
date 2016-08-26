@@ -259,7 +259,7 @@ namespace nano
                         }
 
                         // generate image
-                        add_chunk(image);
+                        add_chunk(image, image.hash());
 
                         // generate sample
                         const auto fold = make_fold(0);

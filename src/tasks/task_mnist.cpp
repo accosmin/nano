@@ -56,7 +56,7 @@ namespace nano
                         {
                                 image_t image;
                                 image.load_luma(buffer.data(), irows(), icols());
-                                add_chunk(image);
+                                add_chunk(image, image.hash());
 
                                 ++ icount;
                         }

@@ -67,7 +67,8 @@ NANO_CASE(construction)
                 }
         }
 
-        NANO_CHECK(nano::check(*task));
+        NANO_CHECK(nano::check_duplicates(*task));
+        NANO_CHECK(nano::check_intersection(*task));
         NANO_CHECK_EQUAL(labels.size(), osize);
 }
 

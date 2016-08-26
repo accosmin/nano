@@ -111,7 +111,7 @@ namespace nano
                         image.plane(0) = tensor::map_matrix(iptr + 0 * px, icols(), irows()).cast<luma_t>().transpose();
                         image.plane(1) = tensor::map_matrix(iptr + 1 * px, icols(), irows()).cast<luma_t>().transpose();
                         image.plane(2) = tensor::map_matrix(iptr + 2 * px, icols(), irows()).cast<luma_t>().transpose();
-                        add_chunk(image);
+                        add_chunk(image, image.hash());
 
                         if (unlabeled)
                         {

@@ -16,6 +16,7 @@ namespace nano
 
                 auto index() const { return m_index; }
                 auto input(const tensor3d_t& tensor) const { return tensor; }
+                auto hash(const size_t seed) const { return seed; }
                 auto target() const { return m_target; }
                 auto label() const { return m_label; }
 

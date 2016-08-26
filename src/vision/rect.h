@@ -15,8 +15,8 @@ namespace nano
                 ///
                 /// \brief constructor
                 ///
-                explicit rect_t(coord_t left = 0, coord_t top = 0, coord_t width = 0, coord_t height = 0)
-                        :       m_x(left), m_y(top), m_w(width), m_h(height)
+                explicit rect_t(coord_t left = 0, coord_t top = 0, coord_t width = 0, coord_t height = 0) :
+                        m_x(left), m_y(top), m_w(width), m_h(height)
                 {
                 }
 

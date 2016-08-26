@@ -1,6 +1,7 @@
 #pragma once
 
 #include "task_mem.hpp"
+#include "math/hash.hpp"
 #include "vision/image.h"
 
 namespace nano
@@ -17,7 +18,8 @@ namespace nano
                 }
 
                 auto index() const { return m_index; }
-                auto input(const image_t& image) const { return m_region.empty() ? image.to_tensor() : image.to_tensor(m_region); }
+                tensor3d_t input(const image_t& image) const;
+                size_t hash(size_t seed) const;
                 auto target() const { return m_target; }
                 auto label() const { return m_label; }
 
@@ -26,6 +28,21 @@ namespace nano
                 vector_t        m_target;
                 string_t        m_label;
         };
+
+        inline tensor3d_t mem_vision_sample_t::input(const image_t& image) const
+        {
+                return m_region.empty() ? image.to_tensor() : image.to_tensor(m_region);
+        }
+
+        inline size_t mem_vision_sample_t::hash(size_t seed) const
+        {
+                std::hash<coord_t> hasher;
+                nano::hash_combine(seed, m_region.top(), hasher);
+                nano::hash_combine(seed, m_region.left(), hasher);
+                nano::hash_combine(seed, m_region.right(), hasher);
+                nano::hash_combine(seed, m_region.bottom(), hasher);
+                return seed;
+        }
 
         ///
         /// \brief in-memory generic computer vision task consisting of images and

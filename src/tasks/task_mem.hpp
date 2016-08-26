@@ -13,6 +13,7 @@ namespace nano
         /// tsample is a sample associated to a chunk (e.g. can map to the whole or a part of the chunk):
         ///     ::index()                       - index of the associated chunk
         ///     ::input(const tchunk&)          - 3D input tensor
+        ///     ::input(const size_t chunk_hash)- hash of the input tensor given the hash of the associated chunk
         ///     ::target()                      - target vector
         ///     ::label()                       - associated label (if any)
         ///
@@ -103,16 +104,23 @@ namespace nano
                 ///
                 virtual string_t label(const fold_t&, const size_t index) const override final;
 
+                ///
+                /// \brief retrieve the hash for a given sample
+                ///
+                virtual size_t hash(const fold_t&, const size_t index) const override final;
+
         protected:
 
                 void reserve_chunks(const size_t count)
                 {
                         m_chunks.reserve(count);
+                        m_hashes.reserve(count);
                 }
 
-                void add_chunk(const tchunk& chunk)
+                void add_chunk(const tchunk& chunk, const size_t hash)
                 {
                         m_chunks.push_back(chunk);
+                        m_hashes.push_back(hash);
                 }
 
                 template <typename... t>
@@ -149,7 +157,6 @@ namespace nano
 
         private:
 
-                using tchunks = std::vector<tchunk>;
                 using tsamples = std::map<fold_t, std::vector<tsample>>;
 
                 const tsample& get_sample(const fold_t& fold, const size_t sample_index) const
@@ -167,6 +174,13 @@ namespace nano
                         return m_chunks[chunk_index];
                 }
 
+                const size_t& get_hash(const tsample& sample) const
+                {
+                        const auto hash_index = sample.index();
+                        assert(hash_index < m_hashes.size());
+                        return m_hashes[hash_index];
+                }
+
         private:
 
                 // attributes
@@ -177,7 +191,8 @@ namespace nano
                 tensor_size_t                   m_osize;        ///< output size
                 size_t                          m_fsize;        ///< number of folds
                 mutable random_t<size_t>        m_frand;        ///< rng for training-validation fold assignment
-                tchunks                         m_chunks;
+                std::vector<tchunk>             m_chunks;       ///<
+                std::vector<size_t>             m_hashes;       ///< hash / chunk
                 mutable tsamples                m_samples;      ///< stored samples (training, validation, test)
         };
 
@@ -237,6 +252,14 @@ namespace nano
                 const auto& sample = get_sample(fold, index);
                 const auto& chunk = get_chunk(sample);
                 return sample.input(chunk);
+        }
+
+        template <typename tchunk, typename tsample>
+        size_t mem_task_t<tchunk, tsample>::hash(const fold_t& fold, const size_t index) const
+        {
+                const auto& sample = get_sample(fold, index);
+                const auto& hash = get_hash(sample);
+                return sample.hash(hash);
         }
 
         template <typename tchunk, typename tsample>

@@ -97,6 +97,7 @@ namespace nano
                 coord_t rows() const { return static_cast<coord_t>(m_data.size<1>()); }
                 coord_t cols() const { return static_cast<coord_t>(m_data.size<2>()); }
                 coord_t size() const { return rows() * cols(); }
+                size_t hash() const;
 
                 bool is_rgb() const { return mode() == color_mode::rgb; }
                 bool is_rgba() const { return mode() == color_mode::rgba; }

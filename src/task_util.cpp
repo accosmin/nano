@@ -1,7 +1,6 @@
 #include <set>
 #include "logger.h"
 #include "task_util.h"
-#include "math/hash.hpp"
 #include "text/to_string.hpp"
 #include "vision/image_grid.h"
 
@@ -56,45 +55,47 @@ namespace nano
                 return !intersection.empty();
         }
 
-        bool check(const task_t& task)
+        template <typename thashes>
+        static void add_hashes(const task_t& task, const fold_t& fold, thashes& hashes)
         {
-                using hash_t = std::size_t;
-                using hashes_t = std::vector<hash_t>;
+                const auto size = task.n_samples(fold);
+                for (size_t i = 0; i < size; ++ i)
+                {
+                        hashes.push_back(task.hash(fold, i));
+                }
+        }
 
-                // hash all samples to check folds
-                std::map<fold_t, hashes_t> hashes;
+        bool check_duplicates(const task_t& task)
+        {
                 for (size_t f = 0; f < task.n_folds(); ++ f)
                 {
-                        for (auto p : {protocol::train, protocol::valid, protocol::test})
-                        {
-                                const auto fold = fold_t{f, p};
-                                const auto size = task.n_samples(fold);
+                        std::vector<size_t> hashes;
 
-                                for (size_t i = 0; i < size; ++ i)
-                                {
-                                        const auto input = task.input(fold, i);
-                                        const auto hash = nano::hash_range(input.data(), input.data() + input.size());
-                                        hashes[fold].push_back(hash);
-                                }
-                        }
-                }
+                        add_hashes(task, fold_t{f, protocol::train}, hashes);
+                        add_hashes(task, fold_t{f, protocol::valid}, hashes);
+                        add_hashes(task, fold_t{f, protocol::test}, hashes);
 
-                // check if any duplicated samples
-                for (auto& h : hashes)
-                {
-                        std::sort(h.second.begin(), h.second.end());
-                        if (has_duplicates(h.second))
+                        std::sort(hashes.begin(), hashes.end());
+                        if (has_duplicates(hashes))
                         {
                                 return false;
                         }
                 }
 
-                // check if the training, validation and tests datasets intersect
+                return true;
+        }
+
+        bool check_intersection(const task_t& task)
+        {
                 for (size_t f = 0; f < task.n_folds(); ++ f)
                 {
-                        const auto& train_hashes = hashes[fold_t{f, protocol::train}];
-                        const auto& valid_hashes = hashes[fold_t{f, protocol::valid}];
-                        const auto& test_hashes = hashes[fold_t{f, protocol::test}];
+                        std::vector<size_t> train_hashes;
+                        std::vector<size_t> valid_hashes;
+                        std::vector<size_t> test_hashes;
+
+                        add_hashes(task, fold_t{f, protocol::train}, train_hashes);
+                        add_hashes(task, fold_t{f, protocol::valid}, valid_hashes);
+                        add_hashes(task, fold_t{f, protocol::test}, test_hashes);
 
                         if (    intersects(train_hashes, valid_hashes) ||
                                 intersects(valid_hashes, test_hashes) ||
@@ -104,7 +105,6 @@ namespace nano
                         }
                 }
 
-                // OK
                 return true;
         }
 

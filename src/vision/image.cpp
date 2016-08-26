@@ -1,5 +1,6 @@
 #include "image.h"
 #include "image_io.h"
+#include "math/hash.hpp"
 
 namespace nano
 {
@@ -17,6 +18,11 @@ namespace nano
         image_t::image_t(const coord_t rows, const coord_t cols, const color_mode mode) :
                 m_data(mode_to_dims(mode), rows, cols)
         {
+        }
+
+        size_t image_t::hash() const
+        {
+                return nano::hash_range(m_data.data(), m_data.data() + m_data.size());
         }
 
         void image_t::resize(const coord_t rows, const coord_t cols, const color_mode mode)

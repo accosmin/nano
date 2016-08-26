@@ -96,5 +96,10 @@ namespace nano
                 /// \brief retrieve the associated label (if any) for a given sample
                 ///
                 virtual string_t label(const fold_t&, const size_t index) const = 0;
+
+                ///
+                /// \brief retrieve the hash for a given sample
+                ///
+                virtual size_t hash(const fold_t&, const size_t index) const = 0;
         };
 }

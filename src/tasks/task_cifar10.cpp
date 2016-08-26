@@ -96,7 +96,7 @@ namespace nano
 
                         image_t image;
                         image.load_rgb(buffer.data(), irows(), icols(), irows() * icols());
-                        add_chunk(image);
+                        add_chunk(image, image.hash());
 
                         const auto fold = make_fold(0, p);
                         add_sample(fold, n_chunks() - 1, class_target(ilabel, osize()), tlabels[ilabel]);

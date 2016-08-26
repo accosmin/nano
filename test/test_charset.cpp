@@ -141,7 +141,8 @@ NANO_CASE(from_params)
                 }
         }
 
-        NANO_CHECK(nano::check(task));
+        NANO_CHECK(nano::check_duplicates(task));
+        NANO_CHECK(nano::check_intersection(task));
 }
 
 NANO_END_MODULE()
