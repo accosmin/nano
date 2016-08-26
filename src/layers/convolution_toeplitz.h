@@ -59,6 +59,8 @@ namespace nano
                 tensor_size_t krows() const { return m_kdata.size<2>(); }
                 tensor_size_t kcols() const { return m_kdata.size<3>(); }
 
+                void params_changed();
+
         private:
 
                 // attributes
@@ -68,8 +70,8 @@ namespace nano
                 tensor4d_t      m_kdata;        ///< convolution kernels:       odims x (idims/kconn) x krows x kcols
                 vector_t        m_bdata;        ///< convolution bias:          odims
 
-                matrix_t        m_toe_oidata, m_toe_okdata, m_toe_oodata;
-                matrix_t        m_toe_iidata, m_toe_ikdata, m_toe_iodata;
+                matrix_t        m_toe_oidata, m_toe_oodata; matrices_t m_toe_okdata;
+                matrix_t        m_toe_iidata, m_toe_iodata; matrices_t m_toe_ikdata;
                 matrix_t        m_toe_kidata, m_toe_kkdata, m_toe_kodata;
         };
 }
