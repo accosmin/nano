@@ -28,7 +28,7 @@ conv2_full=${conv2//pool-full/pool-full}
 conv2_soft=${conv2//pool-full/pool-soft}
 conv2_gauss=${conv2//pool-full/pool-gauss}
 
-outlayer="affine:dims=10;"
+outlayer="affine:dims=10;act-snorm;"
 
 models=${models}" conv1_full conv1_soft conv1_gauss"
 models=${models}" conv2_full conv2_soft conv2_gauss"

@@ -24,7 +24,7 @@ mlp3=${mlp2}"affine:dims=128;act-snorm;"
 mlp4=${mlp3}"affine:dims=128;act-snorm;"
 mlp5=${mlp4}"affine:dims=128;act-snorm;"
 
-outlayer="affine:dims=10;"
+outlayer="affine:dims=10;act-snorm;"
 
 models=${models}" mlp0 mlp1 mlp2 mlp3 mlp4 mlp5"
 models=${models}" conv1 conv2 conv3 conv4 conv5"
