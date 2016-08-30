@@ -1,6 +1,5 @@
 #include "logistic.h"
 #include "class.h"
-#include "math/softmax.hpp"
 #include <cassert>
 
 namespace nano
@@ -23,16 +22,15 @@ namespace nano
         {
                 assert(targets.size() == scores.size());
 
-                return softmax_value((1 + (-targets.array() * scores.array()).exp()).log());
+                return std::log(1 + std::exp((-targets.array() * scores.array()).sum()));
         }
 
         vector_t logistic_loss_t::vgrad(const vector_t& targets, const vector_t& scores) const
         {
                 assert(targets.size() == scores.size());
 
-                return  -targets.array() * (-targets.array() * scores.array()).exp() /
-                        (1 + (-targets.array() * scores.array()).exp()) *
-                        softmax_vgrad((1 + (-targets.array() * scores.array()).exp()).log());
+                return  -targets.array() * std::exp((-targets.array() * scores.array()).sum()) /
+                        (1 + std::exp((-targets.array() * scores.array()).sum()));
         }
 
         indices_t logistic_loss_t::labels(const vector_t& scores) const
