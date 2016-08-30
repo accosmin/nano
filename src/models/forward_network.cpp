@@ -1,5 +1,6 @@
-#include "text/align.hpp"
+#include "timer.h"
 #include "logger.h"
+#include "text/align.hpp"
 #include "text/algorithm.h"
 #include "math/numeric.hpp"
 #include "forward_network.h"
@@ -9,6 +10,31 @@
 
 namespace nano
 {
+        const tensor3d_t& forward_network_t::layer_info_t::output(const tensor3d_t& input)
+        {
+                const timer_t timer;
+                const auto& ret = m_layer->output(input);
+                m_output_timings(static_cast<scalar_t>(timer.microseconds().count()));
+                return ret;
+        }
+
+        const tensor3d_t& forward_network_t::layer_info_t::ginput(const tensor3d_t& output)
+        {
+                const timer_t timer;
+                const auto& ret = m_layer->ginput(output);
+                m_ginput_timings(static_cast<scalar_t>(timer.microseconds().count()));
+                return ret;
+        }
+
+        scalar_t* forward_network_t::layer_info_t::gparam(const tensor3d_t& output, scalar_t* gparam)
+        {
+                const timer_t timer;
+                gparam -= m_layer->psize();
+                m_layer->gparam(output, gparam);
+                m_gparam_timings(static_cast<scalar_t>(timer.microseconds().count()));
+                return gparam;
+        }
+
         forward_network_t::forward_network_t(const string_t& parameters) :
                 model_t(parameters)
         {
@@ -22,18 +48,16 @@ namespace nano
         {
                 for (size_t l = 0; l < n_layers(); ++ l)
                 {
-                        m_layers[l] = other.m_layers[l]->clone();
+                        m_layers[l].m_layer = other.m_layers[l].m_layer->clone();
                 }
         }
 
         const tensor3d_t& forward_network_t::output(const tensor3d_t& _input)
         {
                 const tensor3d_t* input = &_input;
-                for (auto it = m_layers.begin(); it != m_layers.end(); ++ it)
+                for (size_t l = 0; l < n_layers(); ++ l)
                 {
-                        const rlayer_t& layer = *it;
-
-                        input = &layer->output(*input);
+                        input = &m_layers[l].output(*input);
                 }
 
                 return *input;
@@ -49,17 +73,15 @@ namespace nano
                 return ginput(m_odata);
         }
 
-        const tensor3d_t& forward_network_t::ginput(const tensor3d_t& output)
+        const tensor3d_t& forward_network_t::ginput(const tensor3d_t& _output)
         {
-                const tensor3d_t* poutput = &output;
-                for (auto it = m_layers.rbegin(); it != m_layers.rend(); ++ it)
+                const tensor3d_t* output = &_output;
+                for (size_t l = n_layers(); l > 0; l --)
                 {
-                        const rlayer_t& layer = *it;
-
-                        poutput = &layer->ginput(*poutput);
+                        output = &m_layers[l - 1].ginput(*output);
                 }
 
-                return *poutput;
+                return *output;
         }
 
         const vector_t& forward_network_t::gparam(const vector_t& _output)
@@ -72,27 +94,20 @@ namespace nano
                 return gparam(m_odata);
         }
 
-        const vector_t& forward_network_t::gparam(const tensor3d_t& output)
+        const vector_t& forward_network_t::gparam(const tensor3d_t& _output)
         {
                 m_gparam.resize(psize());
 
                 // backward step
-                const tensor3d_t* poutput = &output;
-                scalar_t* gparamient = m_gparam.data() + m_gparam.size();
-
-                for (auto it = m_layers.rbegin(); it != m_layers.rend(); ++ it)
+                const tensor3d_t* output = &_output;
+                scalar_t* gparam = m_gparam.data() + m_gparam.size();
+                for (size_t l = n_layers(); l > 0; l --)
                 {
-                        const rlayer_t& layer = *it;
-
-                        gparamient -= layer->psize();
-                        layer->gparam(*poutput, gparamient);
-
-                        ++ it;
-                        if (it != m_layers.rend())
+                        gparam = m_layers[l - 1].gparam(*output, gparam);
+                        if (l > 1)
                         {
-                                poutput = &layer->ginput(*poutput);
+                                output = &m_layers[l - 1].ginput(*output);
                         }
-                        -- it;
                 }
 
                 return m_gparam;
@@ -105,7 +120,7 @@ namespace nano
                 scalar_t* px = x.data();
                 for (const auto& layer : m_layers)
                 {
-                        px = layer->save_params(px);
+                        px = layer.m_layer->save_params(px);
                 }
 
                 return true;
@@ -118,7 +133,7 @@ namespace nano
                         const scalar_t* px = x.data();
                         for (const auto& layer : m_layers)
                         {
-                                px = layer->load_params(px);
+                                px = layer.m_layer->load_params(px);
                         }
 
                         return true;
@@ -131,24 +146,24 @@ namespace nano
 
         void forward_network_t::zero_params()
         {
-                for (const rlayer_t& layer : m_layers)
+                for (const auto& layer : m_layers)
                 {
-                        layer->zero_params();
+                        layer.m_layer->zero_params();
                 }
         }
 
         void forward_network_t::random_params()
         {
-                for (const rlayer_t& layer : m_layers)
+                for (const auto& layer : m_layers)
                 {
-                        const auto fanin = layer->idims() * layer->irows() * layer->icols();
-                        const auto fanout = layer->odims() * layer->orows() * layer->ocols();
+                        const auto fanin = layer.m_layer->idims() * layer.m_layer->irows() * layer.m_layer->icols();
+                        const auto fanout = layer.m_layer->odims() * layer.m_layer->orows() * layer.m_layer->ocols();
 
                         const auto div = static_cast<scalar_t>(fanin + fanout);
                         const auto min = -std::sqrt(6 / (1 + div));
                         const auto max = +std::sqrt(6 / (1 + div));
 
-                        layer->random_params(min, max);
+                        layer.m_layer->random_params(min, max);
                 }
         }
 
@@ -186,8 +201,7 @@ namespace nano
                         const rlayer_t layer = nano::get_layers().get(layer_id, layer_params);
 
                         n_params += layer->resize(input);
-                        m_layers.push_back(layer);
-                        layer_ids.push_back(layer_id);
+                        m_layers.emplace_back(layer_id, layer);
 
                         input.resize(layer->odims(), layer->orows(), layer->ocols());
                 }
@@ -203,24 +217,23 @@ namespace nano
 
                 if (verbose)
                 {
-                        print(layer_ids);
+                        print();
                 }
 
                 return n_params;
         }
 
-        void forward_network_t::print(const strings_t& layer_ids) const
+        void forward_network_t::print() const
         {
-                assert(n_layers() == layer_ids.size());
-
                 for (size_t l = 0; l < n_layers(); ++ l)
                 {
-                        const rlayer_t& layer = m_layers[l];
+                        const auto& id = m_layers[l].m_id;
+                        const auto& layer = m_layers[l].m_layer;
 
                         log_info()
                                 << "forward network [" << align(to_string(l + 1), 2, alignment::right, '0')
                                 << "/" << align(to_string(m_layers.size()), 2, alignment::right, '0') << "]: "
-                                << "[" << align(layer_ids[l], 12, alignment::right, '.') << "] "
+                                << "[" << align(id, 12, alignment::right, '.') << "] "
                                 << "in(" << layer->idims() << "x" << layer->irows() << "x" << layer->icols() << ") -> "
                                 << "out(" << layer->odims() << "x" << layer->orows() << "x" << layer->ocols()
                                 << "), parameters = " << layer->psize() << ", FLOPs = " << layer->flops() << ".";
@@ -230,9 +243,9 @@ namespace nano
         tensor_size_t forward_network_t::psize() const
         {
                 tensor_size_t nparams = 0;
-                for (const rlayer_t& layer : m_layers)
+                for (const auto& layer : m_layers)
                 {
-                        nparams += layer->psize();
+                        nparams += layer.m_layer->psize();
                 }
 
                 return nparams;

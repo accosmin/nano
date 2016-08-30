@@ -2,6 +2,7 @@
 
 #include "model.h"
 #include "layer.h"
+#include "math/stats.hpp"
 
 namespace nano
 {
@@ -76,14 +77,39 @@ namespace nano
                 ///
                 /// \brief display the model structure
                 ///
-                void print(const strings_t& layer_ids) const;
+                void print() const;
+
+                ///
+                /// \brief
+                ///
+                struct layer_info_t
+                {
+                        using timings_t = stats_t<scalar_t>;
+
+                        layer_info_t(const string_t& id = string_t(), const rlayer_t& layer = rlayer_t()) :
+                                m_id(id), m_layer(layer)
+                        {
+                        }
+
+                        const tensor3d_t& output(const tensor3d_t&);
+                        const tensor3d_t& ginput(const tensor3d_t&);
+                        scalar_t* gparam(const tensor3d_t&, scalar_t*);
+
+                        string_t        m_id;
+                        rlayer_t        m_layer;
+                        timings_t       m_output_timings;
+                        timings_t       m_ginput_timings;
+                        timings_t       m_gparam_timings;
+                };
+
+                using layer_infos_t = std::vector<layer_info_t>;
 
         private:
 
                 // attributes
-                rlayers_t               m_layers;               ///< feed-forward layers
-                vector_t                m_gparam;               ///< buffer gradient wrt parameters
-                tensor3d_t              m_odata;                ///< bufer output
+                layer_infos_t           m_layers;       ///< feed-forward layers
+                vector_t                m_gparam;       ///< buffer gradient wrt parameters
+                tensor3d_t              m_odata;        ///< bufer output
         };
 }
 
