@@ -7,7 +7,7 @@ This library is built around several key concepts mapped to C++ object interface
 
 #### Structure
 
-The **batch optimizer** and the **stochastic optimizer** are gradient-based methods used for minimizing generic multi-dimensional functions. They are suitable for large-scale numerical optimization which are often the product of machine learning problems. Examples of batch optimization methods: `gradient descent`, various `non-linear conjugate gradient descent`, `L-BFGS`. Examples of stochastic optimization methods: `Nesterov's accelerated gradient`, `stochastic gradient` (with or without momentum), `normalized gradient descent`, `ADADELTA`, `ADAGRAD`, `ADAM`. Examples of line-search methods: `backtracking`, `cubic interpolation`, `CG_DESCENT`. Additionally, Nano provides a large set of unconstrained problems to benchmark the optimization algorithms. 
+The **batch optimizer** and the **stochastic optimizer** are gradient-based methods used for minimizing generic multi-dimensional functions. They are suitable for large-scale numerical optimization which are often the product of machine learning problems. Examples of batch optimization methods: `gradient descent`, various `non-linear conjugate gradient descent`, `L-BFGS`. Examples of stochastic optimization methods: `Nesterov's accelerated gradient`, `stochastic gradient` (with or without momentum), `normalized gradient descent`, `ADADELTA`, `ADAGRAD`, `ADAM`. Examples of line-search methods: `backtracking`, `cubic interpolation`, `CG_DESCENT`. Additionally, Nano provides a large set of unconstrained problems to benchmark the optimization algorithms.
 
 A **task** describes a classification or regression problem consisting of separate training and test image patches with associated target outputs if any. The library has built-in support for various standard benchmark datasets like: `MNIST`, `CIFAR-10`, `CIFAR-100`, `STL-10`, `SVHN`. These datasets are loaded directly from the original (compressed) files.
 
@@ -15,7 +15,7 @@ A **model** predicts the correct output for a given image patch, either its labe
 
 A **loss** function assigns a scalar score to the prediction of a model by comparing it with the ground truth target (if provided): the lower the score, the better the prediction. The loss functions are combined into training **criteria** to account for all training samples and to regularize the model.
 
-A **trainer** optimizes the parameters of a given model to produce the correct outputs for a given task using the cumulated values of a given loss over the training samples as a numerical optimization criteria. All the available trainers tune all their required hyper parameters on a separate validation dataset. The library provides `batch`, `minibatch` and `stochastic` instances.
+A **trainer** optimizes the parameters of a given model to produce the correct outputs for a given task using the cumulated values of a given loss over the training samples as a numerical optimization criteria. All the available trainers tune all their required hyper parameters on a separate validation dataset. The library provides `batch` and `stochastic` instances.
 
 
 #### Compilation

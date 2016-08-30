@@ -5,7 +5,7 @@
 namespace nano
 {
         ///
-        /// \brief softmax multi-class logistic loss: softmax(log(1 + exp(-targets_k * scores_k)), k)
+        /// \brief multi-class logistic loss: log(1 + exp(sum(-targets_k * scores_k, k)))
         ///
         class logistic_loss_t : public loss_t
         {
