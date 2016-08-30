@@ -7,7 +7,7 @@ namespace nano
         ///
         /// \brief pooling layer to down-sample by 2 using 3x3 overlapping regions.
         ///     the weighting is performed using an adaptive 3x3 unconstrained matrix:
-        ///             pool(x/2, y/2) = sum(dx, dy) input(x+dx, y+dy) * weight(dx, dy)
+        ///             pool(x/2, y/2) = sum(dx, dy) input(x+dx, y+dy) * weight(dx, dy) / sqrt(w^w + 1)
         ///
         class pooling_full_layer_t : public layer_t
         {

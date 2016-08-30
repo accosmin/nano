@@ -27,7 +27,7 @@ static void test_function(const function_t& function)
 
                 const auto problem = function.problem();
                 NANO_REQUIRE_EQUAL(problem.size(), dims);
-                NANO_CHECK_LESS(problem.grad_accuracy(x0), 2 * epsilon3<scalar_t>());
+                NANO_CHECK_LESS(problem.grad_accuracy(x0), epsilon3<scalar_t>());
                 is_convex = is_convex && problem.is_convex(x0, x1, 10);
         }
 

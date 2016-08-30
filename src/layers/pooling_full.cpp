@@ -62,15 +62,18 @@ namespace nano
                 for (tensor_size_t o = 0; o < odims(); ++ o)
                 {
                         const auto wdata = m_wdata.matrix(o);
+                        const auto wnorm = scalar_t(1) / std::sqrt(wdata.array().square().sum() + 1);
 
                         pooling::output(m_idata.matrix(o), m_odata.matrix(o), [&] (
                                 const auto i00, const auto i01, const auto i02,
                                 const auto i10, const auto i11, const auto i12,
                                 const auto i20, const auto i21, const auto i22)
                         {
-                                return  i00 * wdata(0, 0) + i01 * wdata(0, 1) + i02 * wdata(0, 2) +
+                                const auto sum =
+                                        i00 * wdata(0, 0) + i01 * wdata(0, 1) + i02 * wdata(0, 2) +
                                         i10 * wdata(1, 0) + i11 * wdata(1, 1) + i12 * wdata(1, 2) +
                                         i20 * wdata(2, 0) + i21 * wdata(2, 1) + i22 * wdata(2, 2);
+                                return wnorm * sum;
                         });
                 }
 
@@ -88,12 +91,14 @@ namespace nano
                 for (tensor_size_t o = 0; o < odims(); ++ o)
                 {
                         const auto wdata = m_wdata.matrix(o);
+                        const auto wnorm = scalar_t(1) / std::sqrt(wdata.array().square().sum() + 1);
 
-                        pooling::ginput(m_idata.matrix(o), m_odata.matrix(o), [&] (const auto ooo,
+                        pooling::ginput(m_idata.matrix(o), m_odata.matrix(o), [&] (const auto ooo_,
                                 auto& i00, auto& i01, auto& i02,
                                 auto& i10, auto& i11, auto& i12,
                                 auto& i20, auto& i21, auto& i22)
                         {
+                                const auto ooo = wnorm * ooo_;
                                 i00 += ooo * wdata(0, 0); i01 += ooo * wdata(0, 1); i02 += ooo * wdata(0, 2);
                                 i10 += ooo * wdata(1, 0); i11 += ooo * wdata(1, 1); i12 += ooo * wdata(1, 2);
                                 i20 += ooo * wdata(2, 0); i21 += ooo * wdata(2, 1); i22 += ooo * wdata(2, 2);
@@ -115,18 +120,23 @@ namespace nano
 
                 for (tensor_size_t o = 0; o < odims(); ++ o)
                 {
-                        auto wdata = gwdata.matrix(o);
-                        wdata.setZero();
+                        matrix_t gdata = matrix_t::Zero(3, 3);
 
                         pooling::gparam(m_idata.matrix(o), m_odata.matrix(o), [&] (
                                 const auto g00, const auto g01, const auto g02,
                                 const auto g10, const auto g11, const auto g12,
                                 const auto g20, const auto g21, const auto g22)
                         {
-                                wdata(0, 0) += g00; wdata(0, 1) += g01; wdata(0, 2) += g02;
-                                wdata(1, 0) += g10; wdata(1, 1) += g11; wdata(1, 2) += g12;
-                                wdata(2, 0) += g20; wdata(2, 1) += g21; wdata(2, 2) += g22;
+                                gdata(0, 0) += g00; gdata(0, 1) += g01; gdata(0, 2) += g02;
+                                gdata(1, 0) += g10; gdata(1, 1) += g11; gdata(1, 2) += g12;
+                                gdata(2, 0) += g20; gdata(2, 1) += g21; gdata(2, 2) += g22;
                         });
+
+                        const auto wdata = m_wdata.matrix(o);
+                        const auto ww = (wdata.array() * wdata.array()).sum();
+                        const auto wg = (gdata.array() * wdata.array()).sum();
+                        const auto wnorm = scalar_t(1) / ((ww + 1) * std::sqrt(ww + 1));
+                        gwdata.matrix(o) = wnorm * (gdata.array() * (ww + 1) - wdata.array() * wg);
                 }
         }
 }
