@@ -50,7 +50,6 @@ void make_random_config(tensor3d_t& inputs, vector_t& target)
 
 void test_model(const string_t& model_description, const scalar_t epsilon = epsilon2<scalar_t>())
 {
-        std::cout << "test_model: " << (model_description + ";" + cmd_layer_output) << std::endl;
         const auto model = get_model(model_description);
         const auto loss = get_loss();
 
