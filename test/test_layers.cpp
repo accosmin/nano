@@ -39,25 +39,26 @@ rmodel_t get_model(const string_t& description)
         return model;
 }
 
-void make_random_config(tensor3d_t& inputs, vector_t& params, vector_t& target)
+void make_random_config(tensor3d_t& inputs, vector_t& target)
 {
-        random_t<scalar_t> irgen(-scalar_t(0.1), +scalar_t(0.1));
-        random_t<scalar_t> prgen(-scalar_t(0.1), +scalar_t(0.1));
+        random_t<scalar_t> irgen(-scalar_t(1.0), +scalar_t(1.0));
         random_t<tensor_size_t> trgen(0, target.size() - 1);
 
         tensor::set_random(irgen, inputs);
-        tensor::set_random(prgen, params);
         target = class_target(trgen(), target.size());
 }
 
-void test_model(const string_t& model_description, const scalar_t epsilon = epsilon3<scalar_t>())
+void test_model(const string_t& model_description, const scalar_t epsilon = epsilon2<scalar_t>())
 {
+        std::cout << "test_model: " << (model_description + ";" + cmd_layer_output) << std::endl;
         const auto model = get_model(model_description);
         const auto loss = get_loss();
 
         vector_t params(model->psize());
         vector_t target(model->osize());
         tensor3d_t inputs(model->idims(), model->irows(), model->icols());
+
+        NANO_CHECK_EQUAL(model->osize(), cmd_osize);
 
         // optimization problem (wrt parameters & inputs): size
         auto fn_params_size = [&] ()
@@ -112,7 +113,9 @@ void test_model(const string_t& model_description, const scalar_t epsilon = epsi
         // construct optimization problem: analytic gradient vs finite difference approximation
         for (size_t t = 0; t < cmd_tests; ++ t)
         {
-                make_random_config(inputs, params, target);
+                make_random_config(inputs, target);
+                model->random_params();
+                NANO_CHECK(model->save_params(params));
 
                 {
                         const problem_t problem(fn_params_size, fn_params_fval, fn_params_grad);
@@ -126,7 +129,7 @@ void test_model(const string_t& model_description, const scalar_t epsilon = epsi
 }
 
 void compare_models(const string_t& model_description1, const string_t& model_description2,
-        const scalar_t epsilon = epsilon2<scalar_t>())
+        const scalar_t epsilon = epsilon1<scalar_t>())
 {
         const auto model1 = get_model(model_description1);
         const auto model2 = get_model(model_description2);
@@ -139,10 +142,13 @@ void compare_models(const string_t& model_description1, const string_t& model_de
 
         for (size_t t = 0; t < cmd_tests; ++ t)
         {
-                make_random_config(inputs, params, target);
+                make_random_config(inputs, target);
 
-                model1->load_params(params);
-                model2->load_params(params);
+                model1->random_params();
+                model1->save_params(params);
+
+                NANO_CHECK(model1->load_params(params));
+                NANO_CHECK(model2->load_params(params));
 
                 const auto output1 = model1->output(inputs).vector();
                 const auto output2 = model2->output(inputs).vector();
