@@ -34,7 +34,7 @@ fn_make_trainers "stop_early"
 trainers="stoch_adam"
 
 # criteria
-criteria="crit_avg"
+criteria="crit_avg_l2n"
 
 # train models
 fn_train "${models}" "${trainers}" "${criteria}"
