@@ -15,15 +15,14 @@ namespace nano
 
                 NANO_MAKE_CLONABLE(stochastic_trainer_t,
                         "stochastic trainer",
-                        "opt=sg[...],epochs=16[1,1024],policy=stop_early[,all_epochs]")
+                        "opt=sg[...],epochs=16[1,1024],policy=stop_early[,all_epochs],min_batch=32[32,1024],max_batch=256[32,4096]")
 
                 // constructor
                 explicit stochastic_trainer_t(const string_t& parameters = string_t());
 
                 // train the model
                 virtual trainer_result_t train(
-                        const task_t&, const size_t fold, const size_t nthreads,
-                        const loss_t&, const criterion_t& criterion,
+                        const task_t&, const size_t fold, const size_t nthreads, const loss_t&, const criterion_t&,
                         model_t&) const override;
 
         private:
@@ -31,8 +30,7 @@ namespace nano
                 trainer_result_t train(
                         const task_t&, const size_t fold,
                         const accumulator_t& lacc, const accumulator_t& gacc, const vector_t& x0,
-                        const stoch_optimizer_t&, const size_t epochs,
-                        const trainer_policy, const bool verbose) const;
+                        const stoch_optimizer_t&) const;
         };
 }
 

@@ -19,7 +19,7 @@ namespace nano
 
         trainer_result_t stochastic_trainer_t::train(
                 const task_t& task, const size_t fold, const size_t nthreads,
-                const loss_t& loss, const criterion_t& crition,
+                const loss_t& loss, const criterion_t& criterion,
                 model_t& model) const
         {
                 if (model != task)
@@ -27,21 +27,17 @@ namespace nano
                         throw std::runtime_error("stochastic trainer: mis-matching model and task");
                 }
 
-                // parameters
-                const auto epochs = clamp(from_params<size_t>(config(), "epochs"), 1, 1024);
                 const auto optimizer = from_params<string_t>(config(), "opt");
-                const auto policy = from_params<trainer_policy>(config(), "policy");
-                const auto verbose = true;
 
                 // train the model
                 const timer_t timer;
                 const auto op = [&] (const accumulator_t& lacc, const accumulator_t& gacc, const vector_t& x0)
                 {
                         auto stoch_optimizer = get_stoch_optimizers().get(optimizer);
-                        return train(task, fold, lacc, gacc, x0, *stoch_optimizer, epochs, policy, verbose);
+                        return train(task, fold, lacc, gacc, x0, *stoch_optimizer);
                 };
 
-                const auto result = trainer_loop(model, nthreads, loss, crition, op);
+                const auto result = trainer_loop(model, nthreads, loss, criterion, op);
                 log_info() << "<<< stoch-" << optimizer << ": " << result << ",time=" << timer.elapsed() << ".";
 
                 // OK
@@ -55,10 +51,16 @@ namespace nano
         trainer_result_t stochastic_trainer_t::train(
                 const task_t& task, const size_t fold,
                 const accumulator_t& lacc, const accumulator_t& gacc, const vector_t& x0,
-                const stoch_optimizer_t& optimizer, const size_t epochs,
-                const trainer_policy policy, const bool verbose) const
+                const stoch_optimizer_t& optimizer) const
         {
                 const timer_t timer;
+
+                // parameters
+                const auto epochs = clamp(from_params<size_t>(config(), "epochs"), 1, 1024);
+                const auto policy = from_params<trainer_policy>(config(), "policy");
+                const auto batch0 = clamp(from_params<size_t>(config(), "min_batch"), 32, 1024);
+                const auto batchK = clamp(from_params<size_t>(config(), "max_batch"), 32, 1024);
+                const auto verbose = true;
 
                 const auto train_fold = fold_t{fold, protocol::train};
                 const auto valid_fold = fold_t{fold, protocol::valid};
@@ -66,9 +68,6 @@ namespace nano
 
                 const auto train_size = task.n_samples(train_fold);
                 const auto samples = epochs * train_size;
-
-                const auto batch0 = 8 * nano::logical_cpus();
-                const auto batchK = 32 * nano::logical_cpus();
 
                 const auto factor = clamp(scalar_t(samples - batch0) / scalar_t(samples - batchK), scalar_t(1), scalar_t(2));
                 const auto epoch_size = idiv(static_cast<size_t>(std::log(batchK / batch0) / std::log(factor)), epochs);
