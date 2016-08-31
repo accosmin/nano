@@ -203,6 +203,9 @@ int main(int argc, const char *argv[])
                 {
                         for (const auto& timing0 : timings[cmd_min_nthreads])
                         {
+                                if (timing0.second.count() < 2)
+                                        continue;
+
                                 auto& row = table.append(basename + timing0.first);
 
                                 for (size_t nthreads = cmd_min_nthreads; nthreads <= cmd_max_nthreads; ++ nthreads)
