@@ -17,8 +17,7 @@ int main(int argc, const char* argv[])
                 stats(nano::from_string<double>(argv[i]));
         }
 
-        std::cout << std::fixed << std::setprecision(6);
-        std::cout << stats.avg() << "+/-" << stats.stdev() << " [" << stats.min() << ", " << stats.max() << "]\n";
+        std::cout << std::fixed << std::setprecision(6) << stats << "\n";
 
         // OK
         return EXIT_SUCCESS;

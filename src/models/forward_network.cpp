@@ -14,7 +14,7 @@ namespace nano
         {
                 const timer_t timer;
                 const auto& ret = m_layer->output(input);
-                m_output_timings(static_cast<scalar_t>(timer.microseconds().count()));
+                m_output_timings(static_cast<size_t>(timer.microseconds().count()));
                 return ret;
         }
 
@@ -22,7 +22,7 @@ namespace nano
         {
                 const timer_t timer;
                 const auto& ret = m_layer->ginput(output);
-                m_ginput_timings(static_cast<scalar_t>(timer.microseconds().count()));
+                m_ginput_timings(static_cast<size_t>(timer.microseconds().count()));
                 return ret;
         }
 
@@ -31,7 +31,7 @@ namespace nano
                 const timer_t timer;
                 gparam -= m_layer->psize();
                 m_layer->gparam(output, gparam);
-                m_gparam_timings(static_cast<scalar_t>(timer.microseconds().count()));
+                m_gparam_timings(static_cast<size_t>(timer.microseconds().count()));
                 return gparam;
         }
 
@@ -46,9 +46,7 @@ namespace nano
                 {
                         if (stats.count() > 1)
                         {
-                                log_info()
-                                << "forward network " << name << ": " << type << " "
-                                << stats.avg() << "+/-" << stats.stdev() << "[" << stats.min() << "," << stats.max() << "]us";
+                                log_info() << "forward network " << name << ": " << type << " " << stats << " us.";
                         }
                 };
 

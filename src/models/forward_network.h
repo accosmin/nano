@@ -86,7 +86,7 @@ namespace nano
                 ///
                 struct layer_info_t
                 {
-                        using timings_t = stats_t<scalar_t>;
+                        using timings_t = stats_t<size_t>;
 
                         layer_info_t(const string_t& name = string_t(), const rlayer_t& layer = rlayer_t()) :
                                 m_name(name), m_layer(layer)

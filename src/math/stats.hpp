@@ -4,7 +4,6 @@
 #include <limits>
 #include <cassert>
 #include <algorithm>
-#include <type_traits>
 
 namespace nano
 {
@@ -16,8 +15,7 @@ namespace nano
         {
         public:
 
-                static_assert(std::is_floating_point<tscalar>::value,
-                        "stats_t can be used only with floating point types");
+                using tstorage = long double;
 
                 ///
                 /// \brief constructor
@@ -79,38 +77,46 @@ namespace nano
                 operator bool() const { return count() > 1; }
 
                 std::size_t count() const { return m_count; }
+                tstorage count1() const { return static_cast<tstorage>(count() - 1); }
                 tscalar min() const { return m_min; }
                 tscalar max() const { return m_max; }
-                tscalar sum() const { return m_sum; }
+                tstorage sum() const { return m_sum; }
 
                 tscalar avg() const
                 {
                         assert(count() > 0);
-                        return sum() / static_cast<tscalar>(count());
+                        return static_cast<tscalar>(sum() / count());
                 }
 
                 tscalar var2() const
                 {
                         assert(count() > 0);
-                        return m_sumsq - m_sum * m_sum / static_cast<tscalar>(count());
+                        return static_cast<tscalar>(m_sumsq - m_sum * m_sum / count());
                 }
 
                 tscalar var() const
                 {
                         assert(count() > 0);
-                        return (count() == 1) ? tscalar(0) : (var2() / static_cast<tscalar>(count() - 1));
+                        return (count() == 1) ? tscalar(0) : static_cast<tscalar>(var2() / count1());
                 }
 
                 tscalar stdev() const
                 {
-                        return std::sqrt(var());
+                        assert(count() > 0);
+                        return (count() == 1) ? tscalar(0) : static_cast<tscalar>(std::sqrt(var2() / count1()));
                 }
 
         private:
 
                 // attributes
                 std::size_t     m_count;
-                tscalar         m_sum, m_sumsq;
+                tstorage        m_sum, m_sumsq;
                 tscalar         m_min, m_max;
         };
+
+        template <typename tostream, typename tscalar>
+        tostream& operator<<(tostream& os, const stats_t<tscalar>& stats)
+        {
+                return os << stats.avg() << " +/- " << stats.stdev() << " [" << stats.min() << ", " << stats.max() << "]";
+        }
 }
