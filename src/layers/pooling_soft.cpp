@@ -73,8 +73,11 @@ namespace nano
                                 const auto i10, const auto i11, const auto i12,
                                 const auto i20, const auto i21, const auto i22)
                         {
-                                return std::log((i00 + i01 + i02 + i10 + i11 + i12 + i20 + i21 + i22) / 9);
+                                return i00 + i01 + i02 + i10 + i11 + i12 + i20 + i21 + i22;
                         });
+
+                        const auto scale = scalar_t(1) / scalar_t(9);
+                        m_odata.matrix(o) = (m_odata.matrix(o) * scale).array().log();
                 }
 
                 return m_odata;
