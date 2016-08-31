@@ -4,6 +4,7 @@
 #include "tensor.h"
 #include "stringi.h"
 #include "manager.hpp"
+#include "math/stats.hpp"
 
 namespace nano
 {
@@ -25,6 +26,10 @@ namespace nano
         {
         public:
 
+                /// <entity, timing statistics in microseconds>
+                using timing_t = stats_t<size_t>;
+                using timings_t = std::map<string_t, timing_t>;
+
                 ///
                 /// \brief constructor
                 ///
@@ -41,11 +46,6 @@ namespace nano
                 /// \brief resize to process new inputs compatible with the given task
                 ///
                 bool resize(const task_t& task, bool verbose);
-
-                ///
-                /// \brief compute the model's output
-                ///
-                virtual const tensor3d_t& output(const tensor3d_t& input) = 0;
 
                 ///
                 /// \brief save its parameters to file
@@ -78,6 +78,11 @@ namespace nano
                 virtual void random_params() = 0;
 
                 ///
+                /// \brief compute the model's output
+                ///
+                virtual const tensor3d_t& output(const tensor3d_t& input) = 0;
+
+                ///
                 /// \brief compute the model's gradient wrt parameters
                 ///
                 virtual const vector_t& gparam(const vector_t& output) = 0;
@@ -86,6 +91,14 @@ namespace nano
                 /// \brief compute the model's gradient wrt inputs
                 ///
                 virtual const tensor3d_t& ginput(const vector_t& output) = 0;
+
+                ///
+                /// \brief retrieve timing information (in microseconds) regarding various components
+                ///      for the three basic operations (output, gradient wrt parameters, gradient wrt inputs)
+                ///
+                virtual timings_t output_timings() const = 0;
+                virtual timings_t gparam_timings() const = 0;
+                virtual timings_t ginput_timings() const = 0;
 
                 // access functions
                 tensor_size_t idims() const { return m_idims; }
@@ -99,6 +112,8 @@ namespace nano
 
                 // resize to new inputs/outputs, returns the number of parameters
                 virtual tensor_size_t resize(bool verbose) = 0;
+
+
 
         private:
 

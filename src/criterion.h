@@ -1,7 +1,6 @@
 #pragma once
 
 #include "model.h"
-#include "math/stats.hpp"
 
 namespace nano
 {
@@ -105,6 +104,11 @@ namespace nano
                 /// \brief regularization weight (if any)
                 ///
                 scalar_t lambda() const;
+
+                ///
+                /// \brief cached model
+                ///
+                const model_t& model() const;
 
                 ///
                 /// \brief check if the criterion has a regularization term to tune

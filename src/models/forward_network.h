@@ -2,7 +2,6 @@
 
 #include "model.h"
 #include "layer.h"
-#include "math/stats.hpp"
 
 namespace nano
 {
@@ -21,8 +20,6 @@ namespace nano
                 /// \brief constructor
                 ///
                 explicit forward_network_t(const string_t& parameters = string_t());
-
-                ~forward_network_t();
 
                 ///
                 /// \brief copy constructor
@@ -50,6 +47,13 @@ namespace nano
                 ///
                 virtual const tensor3d_t& ginput(const vector_t& output) override;
                 const tensor3d_t& ginput(const tensor3d_t& output);
+
+                ///
+                /// \brief retrieve timing information regarding various components for the three basic operations
+                ///
+                virtual timings_t output_timings() const override;
+                virtual timings_t ginput_timings() const override;
+                virtual timings_t gparam_timings() const override;
 
                 ///
                 /// \brief save/load/initialize parameters
@@ -86,8 +90,6 @@ namespace nano
                 ///
                 struct layer_info_t
                 {
-                        using timings_t = stats_t<size_t>;
-
                         layer_info_t(const string_t& name = string_t(), const rlayer_t& layer = rlayer_t()) :
                                 m_name(name), m_layer(layer)
                         {
@@ -99,9 +101,9 @@ namespace nano
 
                         string_t        m_name;
                         rlayer_t        m_layer;
-                        timings_t       m_output_timings;
-                        timings_t       m_ginput_timings;
-                        timings_t       m_gparam_timings;
+                        timing_t        m_output_timings;
+                        timing_t        m_ginput_timings;
+                        timing_t        m_gparam_timings;
                 };
 
                 using layer_infos_t = std::vector<layer_info_t>;

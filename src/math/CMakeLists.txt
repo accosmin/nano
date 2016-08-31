@@ -1,7 +1,6 @@
 list(APPEND libnano_sources
         ${CMAKE_CURRENT_SOURCE_DIR}/abs.hpp
         ${CMAKE_CURRENT_SOURCE_DIR}/average.hpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/cast.hpp
         ${CMAKE_CURRENT_SOURCE_DIR}/clamp.hpp
         ${CMAKE_CURRENT_SOURCE_DIR}/close.hpp
         ${CMAKE_CURRENT_SOURCE_DIR}/cubic.hpp

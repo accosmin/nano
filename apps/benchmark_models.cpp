@@ -120,8 +120,8 @@ int main(int argc, const char *argv[])
         const auto criterion = nano::get_criteria().get("avg");
 
         // construct tables to compare models
-        nano::table_t ftable("model-forward [us] / 1000 samples");
-        nano::table_t btable("model-backward [us] / 1000 samples");
+        nano::table_t ftable("model-forward [us] / sample");
+        nano::table_t btable("model-backward [us] / sample");
 
         for (size_t nthreads = cmd_min_nthreads; nthreads <= cmd_max_nthreads; ++ nthreads)
         {
@@ -142,10 +142,14 @@ int main(int argc, const char *argv[])
                 model->resize(task, true);
                 model->random_params();
 
-                nano::table_row_t& frow = ftable.append(cmd_name + " (" + nano::to_string(model->psize()) + ")");
-                nano::table_row_t& brow = btable.append(cmd_name + " (" + nano::to_string(model->psize()) + ")");
+                auto& frow = ftable.append(cmd_name + " (" + nano::to_string(model->psize()) + ")");
+                auto& brow = btable.append(cmd_name + " (" + nano::to_string(model->psize()) + ")");
 
                 const auto fold = fold_t{0, protocol::train};
+
+                std::vector<model_t::timings_t> output_timings(cmd_max_nthreads + 1);
+                std::vector<model_t::timings_t> ginput_timings(cmd_max_nthreads + 1);
+                std::vector<model_t::timings_t> gparam_timings(cmd_max_nthreads + 1);
 
                 // process the samples
                 for (size_t nthreads = cmd_min_nthreads; nthreads <= cmd_max_nthreads; ++ nthreads)
@@ -164,7 +168,9 @@ int main(int argc, const char *argv[])
                                 log_info() << "<<< processed [" << lacc.count()
                                            << "] forward samples in " << duration.count() << " us.";
 
-                                frow << idiv(static_cast<size_t>(duration.count()) * 1000, lacc.count());
+                                frow << idiv(static_cast<size_t>(duration.count()), lacc.count());
+
+                                output_timings[nthreads] = lacc.output_timings();
                         }
 
                         if (cmd_backward)
@@ -181,8 +187,41 @@ int main(int argc, const char *argv[])
                                 log_info() << "<<< processed [" << gacc.count()
                                            << "] backward samples in " << duration.count() << " us.";
 
-                                brow << idiv(static_cast<size_t>(duration.count()) * 1000, gacc.count());
+                                brow << idiv(static_cast<size_t>(duration.count()), gacc.count());
+
+                                output_timings[nthreads] = gacc.output_timings();
+                                ginput_timings[nthreads] = gacc.ginput_timings();
+                                gparam_timings[nthreads] = gacc.gparam_timings();
                         }
+                }
+
+                // detailed per-component (e.g. per-layer) timing information
+                const auto print_timings = [&] (table_t& table, const string_t& basename,
+                        const std::vector<model_t::timings_t>& timings)
+                {
+                        for (const auto& timing0 : timings[cmd_min_nthreads])
+                        {
+                                auto& row = table.append(basename + timing0.first);
+
+                                for (size_t nthreads = cmd_min_nthreads; nthreads <= cmd_max_nthreads; ++ nthreads)
+                                {
+                                        const auto& timingT = timings[nthreads];
+                                        assert(timingT.find(timing0.first) != timingT.end());
+                                        row << timingT.find(timing0.first)->second.avg();
+                                }
+                        }
+                };
+
+                if (cmd_forward)
+                {
+                        print_timings(ftable, " output: ", output_timings);
+                }
+
+                if (cmd_backward)
+                {
+                        print_timings(btable, " output: ", output_timings);
+                        print_timings(btable, " ginput: ", ginput_timings);
+                        print_timings(btable, " gparam: ", gparam_timings);
                 }
         }
 

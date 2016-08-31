@@ -40,25 +40,6 @@ namespace nano
         {
         }
 
-        forward_network_t::~forward_network_t()
-        {
-                const auto op = [] (const auto& name, const auto& type, const auto& stats)
-                {
-                        if (stats.count() > 1)
-                        {
-                                log_info() << "forward network " << name << ": " << type << " " << stats << " us.";
-                        }
-                };
-
-                for (size_t l = 0; l < n_layers(); ++ l)
-                {
-                        const auto& layer = m_layers[l];
-                        op(layer.m_name, "output", layer.m_output_timings);
-                        op(layer.m_name, "ginput", layer.m_ginput_timings);
-                        op(layer.m_name, "gparam", layer.m_gparam_timings);
-                }
-        }
-
         forward_network_t::forward_network_t(const forward_network_t& other) :
                 model_t(other),
                 m_layers(other.m_layers),
@@ -222,7 +203,7 @@ namespace nano
 
                         const string_t layer_name =
                                 "[" + align(to_string(l + 1), 2, alignment::right, '0') +
-                                "," + align(layer_id, 12, alignment::right, '.') + "]";
+                                align(layer_id, 12, alignment::right, '.') + "]";
                         m_layers.emplace_back(layer_name, layer);
 
                         input.resize(layer->odims(), layer->orows(), layer->ocols());
@@ -270,5 +251,30 @@ namespace nano
 
                 return nparams;
         }
-}
 
+        template <typename tlayers, typename tgetter>
+        static auto get_timings(const tlayers& layers, const tgetter& getter)
+        {
+                model_t::timings_t ret;
+                for (const auto& layer : layers)
+                {
+                        ret[layer.m_name] = getter(layer);
+                }
+                return ret;
+        }
+
+        model_t::timings_t forward_network_t::output_timings() const
+        {
+                return get_timings(m_layers, [] (const auto& layer) { return layer.m_output_timings; });
+        }
+
+        model_t::timings_t forward_network_t::ginput_timings() const
+        {
+                return get_timings(m_layers, [] (const auto& layer) { return layer.m_ginput_timings; });
+        }
+
+        model_t::timings_t forward_network_t::gparam_timings() const
+        {
+                return get_timings(m_layers, [] (const auto& layer) { return layer.m_gparam_timings; });
+        }
+}

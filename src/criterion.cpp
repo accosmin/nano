@@ -149,5 +149,11 @@ namespace nano
         {
                 return m_lambda;
         }
+
+        const model_t& criterion_t::model() const
+        {
+                assert(m_model);
+                return *m_model;
+        }
 }
 

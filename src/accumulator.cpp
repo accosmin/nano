@@ -148,5 +148,35 @@ namespace nano
         {
                 return m_impl->criterion().can_regularize();
         }
+
+        template <typename tcriteria, typename tgetter>
+        static auto get_timings(const tcriteria& criteria, const tgetter& getter)
+        {
+                model_t::timings_t ret;
+                for (const auto& criterion : criteria)
+                {
+                        const auto timings = getter(criterion->model());
+                        for (const auto& timing : timings)
+                        {
+                                ret[timing.first](timing.second);
+                        }
+                }
+                return ret;
+        }
+
+        model_t::timings_t accumulator_t::output_timings() const
+        {
+                return get_timings(m_impl->m_criteria, [] (const auto& model) { return model.output_timings(); });
+        }
+
+        model_t::timings_t accumulator_t::ginput_timings() const
+        {
+                return get_timings(m_impl->m_criteria, [] (const auto& model) { return model.ginput_timings(); });
+        }
+
+        model_t::timings_t accumulator_t::gparam_timings() const
+        {
+                return get_timings(m_impl->m_criteria, [] (const auto& model) { return model.gparam_timings(); });
+        }
 }
 
