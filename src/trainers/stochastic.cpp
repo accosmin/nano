@@ -1,7 +1,6 @@
 #include "model.h"
 #include "loop.hpp"
 #include "stochastic.h"
-#include "math/cast.hpp"
 #include "math/clamp.hpp"
 #include "task_iterator.h"
 #include "math/numeric.hpp"
@@ -72,7 +71,7 @@ namespace nano
                 const auto batchK = 32 * nano::logical_cpus();
 
                 const auto factor = clamp(scalar_t(samples - batch0) / scalar_t(samples - batchK), scalar_t(1), scalar_t(2));
-                const auto epoch_size = idiv(nano::cast<size_t>(std::log(batchK / batch0) / std::log(factor)), epochs);
+                const auto epoch_size = idiv(static_cast<size_t>(std::log(batchK / batch0) / std::log(factor)), epochs);
 
                 size_t epoch = 0;
                 trainer_result_t result;

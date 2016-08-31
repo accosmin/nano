@@ -2,7 +2,6 @@
 
 #include <cassert>
 #include <algorithm>
-#include "math/cast.hpp"
 
 namespace nano
 {
@@ -41,7 +40,7 @@ namespace nano
                                 const int ic0 = static_cast<int>(isc), ic1 = std::min(ic0 + 1, icols - 1);
                                 const double wc1 = isc - ic0, wc0 = 1.0 - wc1;
 
-                                dstplane(_or, _oc) = nano::cast<typename tmatrixo::Scalar>(
+                                dstplane(_or, _oc) = static_cast<typename tmatrixo::Scalar>(
                                         wr0 * wc0 * srcplane(ir0, ic0) +
                                         wr0 * wc1 * srcplane(ir0, ic1) +
                                         wr1 * wc1 * srcplane(ir1, ic1) +

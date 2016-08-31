@@ -1,10 +1,8 @@
-#include "archive.h"
-#include "task_stl10.h"
-#include "io/archive.h"
-#include "math/cast.hpp"
-#include "io/imstream.h"
 #include "class.h"
 #include "logger.h"
+#include "task_stl10.h"
+#include "io/archive.h"
+#include "io/imstream.h"
 #include "text/from_params.hpp"
 
 namespace nano
@@ -141,7 +139,7 @@ namespace nano
                 // load annotations
                 while (stream.read(&label, 1))
                 {
-                        const tensor_index_t ilabel = nano::cast<tensor_index_t>(label) - 1;
+                        const tensor_index_t ilabel = static_cast<tensor_index_t>(label) - 1;
 
                         if (ilabel < osize())
                         {

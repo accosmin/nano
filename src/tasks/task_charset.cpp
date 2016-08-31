@@ -1,5 +1,5 @@
-#include "task_charset.h"
 #include "class.h"
+#include "task_charset.h"
 #include "math/gauss.hpp"
 #include "math/clamp.hpp"
 #include "math/random.hpp"
@@ -105,11 +105,11 @@ namespace nano
 
                 const auto x = dx * static_cast<scalar_t>(object_index) + rng();
 
-                const auto ppx = nano::clamp(nano::cast<int>(x), 0, icols - 1);
-                const auto ppw = nano::clamp(nano::cast<int>(dx + rng()), 0, icols - ppx);
+                const auto ppx = nano::clamp(std::lround(x), 0, icols - 1);
+                const auto ppw = nano::clamp(std::lround(dx + rng()), 0, icols - ppx);
 
-                const auto ppy = nano::clamp(nano::cast<int>(rng()), 0, irows - 1);
-                const auto pph = nano::clamp(nano::cast<int>(static_cast<scalar_t>(irows) + rng()), 0, irows - ppy);
+                const auto ppy = nano::clamp(std::lround(rng()), 0, irows - 1);
+                const auto pph = nano::clamp(std::lround(static_cast<scalar_t>(irows) + rng()), 0, irows - ppy);
 
                 tensor3d_t ret(4, pph, ppw);
                 ret.matrix(0) = image.matrix(0).block(ppy, ppx, pph, ppw).template cast<scalar_t>() / scalar_t(255);

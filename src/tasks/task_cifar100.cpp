@@ -1,9 +1,7 @@
-#include "archive.h"
-#include "io/archive.h"
-#include "io/imstream.h"
-#include "math/cast.hpp"
 #include "class.h"
 #include "logger.h"
+#include "io/archive.h"
+#include "io/imstream.h"
 #include "task_cifar100.h"
 #include "text/from_params.hpp"
 

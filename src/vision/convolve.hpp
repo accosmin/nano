@@ -2,7 +2,6 @@
 
 #include <cassert>
 #include <algorithm>
-#include "math/cast.hpp"
 #include "math/clamp.hpp"
 #include "tensor/vector.hpp"
 
@@ -36,7 +35,7 @@ namespace nano
                 {
                         for (int c = 0; c < cols; ++ c)
                         {
-                                buff(c) = nano::cast<tscalar>(src(r, c));
+                                buff(c) = static_cast<tscalar>(src(r, c));
                         }
 
                         for (int c = 0; c < cols; ++ c)
@@ -48,7 +47,7 @@ namespace nano
                                         v += kernel[k + krad] * buff(cc);
                                 }
 
-                                src(r, c) = nano::cast<tvalue>(v);
+                                src(r, c) = static_cast<tvalue>(v);
                         }
                 }
 
@@ -57,7 +56,7 @@ namespace nano
                 {
                         for (int r = 0; r < rows; ++ r)
                         {
-                                buff(r) = nano::cast<tscalar>(src(r, c));
+                                buff(r) = static_cast<tscalar>(src(r, c));
                         }
 
                         for (int r = 0; r < rows; ++ r)
@@ -69,7 +68,7 @@ namespace nano
                                         v += kernel[k + krad] * buff(rr);
                                 }
 
-                                src(r, c) = nano::cast<tvalue>(v);
+                                src(r, c) = static_cast<tvalue>(v);
                         }
                 }
         }

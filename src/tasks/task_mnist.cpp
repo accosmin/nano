@@ -1,10 +1,8 @@
-#include "archive.h"
+#include "class.h"
+#include "logger.h"
 #include "task_mnist.h"
 #include "io/archive.h"
 #include "io/imstream.h"
-#include "math/cast.hpp"
-#include "class.h"
-#include "logger.h"
 #include "text/from_params.hpp"
 
 namespace nano
@@ -79,7 +77,7 @@ namespace nano
                         stream.read(buffer.data(), 8);
                         while (stream.read(label, 1) && stream.gcount() == 1)
                         {
-                                const tensor_index_t ilabel = nano::cast<tensor_index_t>(label[0]);
+                                const tensor_index_t ilabel = static_cast<tensor_index_t>(label[0]);
                                 if (ilabel >= osize())
                                 {
                                         continue;
