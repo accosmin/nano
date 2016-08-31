@@ -66,7 +66,7 @@ int main(int argc, const char *argv[])
         const string_t mlp5 = mlp4 + make_affine_layer(128);
 
         const string_t convnet0_k2d;
-        const string_t convnet1_k2d = convnet0_k2d + make_conv_layer("conv-k2d", 64, 9, 9, 1);
+        const string_t convnet1_k2d = convnet0_k2d + make_conv_layer("conv-k2d", 64, 7, 7, 1);
         const string_t convnet2_k2d = convnet1_k2d + make_conv_layer("conv-k2d", 64, 7, 7, cmd_conn);
         const string_t convnet3_k2d = convnet2_k2d + make_conv_layer("conv-k2d", 64, 5, 5, cmd_conn);
         const string_t convnet4_k2d = convnet3_k2d + make_conv_layer("conv-k2d", 64, 5, 5, cmd_conn);
@@ -77,6 +77,11 @@ int main(int argc, const char *argv[])
         const string_t convnet3_toe = nano::replace(convnet3_k2d, "conv-k2d", "conv-toe");
         const string_t convnet4_toe = nano::replace(convnet4_k2d, "conv-k2d", "conv-toe");
         const string_t convnet5_toe = nano::replace(convnet5_k2d, "conv-k2d", "conv-toe");
+
+        const string_t pconvnet0;
+        const string_t pconvnet1 = pconvnet0 + make_conv_pool_layer("conv", 64, 7, 7, 1);
+        const string_t pconvnet2 = pconvnet1 + make_conv_pool_layer("conv", 64, 5, 5, cmd_conn);
+        const string_t pconvnet3 = pconvnet2 + make_conv_layer("conv", 64, 3, 3, cmd_conn);
 
         const string_t outlayer = make_output_layer(task.osize());
 
@@ -104,6 +109,9 @@ int main(int argc, const char *argv[])
                 DEFINE(convnet4_toe);
                 DEFINE(convnet5_k2d);
                 DEFINE(convnet5_toe);
+                DEFINE(pconvnet1);
+                DEFINE(pconvnet2);
+                DEFINE(pconvnet3);
         }
 
         #undef DEFINE
