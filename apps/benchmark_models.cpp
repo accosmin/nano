@@ -25,6 +25,7 @@ int main(int argc, const char *argv[])
         cmdline.add("", "convnets",     "benchmark convolution networks");
         cmdline.add("", "forward",      "evaluate the \'forward\' pass (output)");
         cmdline.add("", "backward",     "evaluate the \'backward' pass (gradient)");
+        cmdline.add("", "detailed",     "print detailed measurements (e.g. per-layer)");
 
         cmdline.process(argc, argv);
 
@@ -35,6 +36,7 @@ int main(int argc, const char *argv[])
         const auto cmd_backward = cmdline.has("backward");
         const auto cmd_mlps = cmdline.has("mlps");
         const auto cmd_convnets = cmdline.has("convnets");
+        const auto cmd_detailed = cmdline.has("detailed");
 
         if (!cmd_forward && !cmd_backward)
         {
@@ -212,12 +214,12 @@ int main(int argc, const char *argv[])
                         }
                 };
 
-                if (cmd_forward)
+                if (cmd_forward && cmd_detailed)
                 {
                         print_timings(ftable, " output: ", output_timings);
                 }
 
-                if (cmd_backward)
+                if (cmd_backward && cmd_detailed)
                 {
                         print_timings(btable, " output: ", output_timings);
                         print_timings(btable, " ginput: ", ginput_timings);
