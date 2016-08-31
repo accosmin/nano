@@ -40,6 +40,27 @@ namespace nano
         {
         }
 
+        forward_network_t::~forward_network_t()
+        {
+                const auto op = [] (const auto& name, const auto& type, const auto& stats)
+                {
+                        if (stats.count() > 1)
+                        {
+                                log_info()
+                                << "forward network " << name << ": " << type << " "
+                                << stats.avg() << "+/-" << stats.stdev() << "[" << stats.min() << "," << stats.max() << "]us";
+                        }
+                };
+
+                for (size_t l = 0; l < n_layers(); ++ l)
+                {
+                        const auto& layer = m_layers[l];
+                        op(layer.m_name, "output", layer.m_output_timings);
+                        op(layer.m_name, "ginput", layer.m_ginput_timings);
+                        op(layer.m_name, "gparam", layer.m_gparam_timings);
+                }
+        }
+
         forward_network_t::forward_network_t(const forward_network_t& other) :
                 model_t(other),
                 m_layers(other.m_layers),
@@ -199,9 +220,12 @@ namespace nano
                         const string_t layer_params = layer_tokens.size() == 2 ? layer_tokens[1] : string_t();
 
                         const rlayer_t layer = nano::get_layers().get(layer_id, layer_params);
-
                         n_params += layer->resize(input);
-                        m_layers.emplace_back(layer_id, layer);
+
+                        const string_t layer_name =
+                                "[" + align(to_string(l + 1), 2, alignment::right, '0') +
+                                "," + align(layer_id, 12, alignment::right, '.') + "]";
+                        m_layers.emplace_back(layer_name, layer);
 
                         input.resize(layer->odims(), layer->orows(), layer->ocols());
                 }
@@ -227,14 +251,12 @@ namespace nano
         {
                 for (size_t l = 0; l < n_layers(); ++ l)
                 {
-                        const auto& id = m_layers[l].m_id;
+                        const auto& name = m_layers[l].m_name;
                         const auto& layer = m_layers[l].m_layer;
 
                         log_info()
-                                << "forward network [" << align(to_string(l + 1), 2, alignment::right, '0')
-                                << "/" << align(to_string(m_layers.size()), 2, alignment::right, '0') << "]: "
-                                << "[" << align(id, 12, alignment::right, '.') << "] "
-                                << "in(" << layer->idims() << "x" << layer->irows() << "x" << layer->icols() << ") -> "
+                                << "forward network " << name
+                                << ": in(" << layer->idims() << "x" << layer->irows() << "x" << layer->icols() << ") -> "
                                 << "out(" << layer->odims() << "x" << layer->orows() << "x" << layer->ocols()
                                 << "), parameters = " << layer->psize() << ", FLOPs = " << layer->flops() << ".";
                 }

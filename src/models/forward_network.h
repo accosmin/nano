@@ -22,6 +22,8 @@ namespace nano
                 ///
                 explicit forward_network_t(const string_t& parameters = string_t());
 
+                ~forward_network_t();
+
                 ///
                 /// \brief copy constructor
                 ///
@@ -86,8 +88,8 @@ namespace nano
                 {
                         using timings_t = stats_t<scalar_t>;
 
-                        layer_info_t(const string_t& id = string_t(), const rlayer_t& layer = rlayer_t()) :
-                                m_id(id), m_layer(layer)
+                        layer_info_t(const string_t& name = string_t(), const rlayer_t& layer = rlayer_t()) :
+                                m_name(name), m_layer(layer)
                         {
                         }
 
@@ -95,7 +97,7 @@ namespace nano
                         const tensor3d_t& ginput(const tensor3d_t&);
                         scalar_t* gparam(const tensor3d_t&, scalar_t*);
 
-                        string_t        m_id;
+                        string_t        m_name;
                         rlayer_t        m_layer;
                         timings_t       m_output_timings;
                         timings_t       m_ginput_timings;
