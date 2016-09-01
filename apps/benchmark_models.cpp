@@ -25,17 +25,21 @@ int main(int argc, const char *argv[])
         cmdline.add("", "convnets",     "benchmark convolution networks");
         cmdline.add("", "forward",      "evaluate the \'forward\' pass (output)");
         cmdline.add("", "backward",     "evaluate the \'backward' pass (gradient)");
+        cmdline.add("", "activation",   "activation layer (act-unit, act-tanh, act-splus, act-snorm)", "act-snorm");
+        cmdline.add("", "pooling",      "pooling layer (pool-full, pool-soft, pool-gauss)", "pool-soft");
         cmdline.add("", "detailed",     "print detailed measurements (e.g. per-layer)");
 
         cmdline.process(argc, argv);
 
         // check arguments and options
         const auto cmd_samples = nano::clamp(cmdline.get<size_t>("samples"), 100, 100 * 1000);
-        const auto cmd_conn = nano::clamp(cmdline.get<int>("conn"), 1, 16);
+        const auto conn = nano::clamp(cmdline.get<int>("conn"), 1, 16);
         const auto cmd_forward = cmdline.has("forward");
         const auto cmd_backward = cmdline.has("backward");
         const auto cmd_mlps = cmdline.has("mlps");
         const auto cmd_convnets = cmdline.has("convnets");
+        const auto activation = cmdline.get("activation");
+        const auto pooling = cmdline.get("pooling");
         const auto cmd_detailed = cmdline.has("detailed");
 
         if (!cmd_forward && !cmd_backward)
@@ -61,18 +65,18 @@ int main(int argc, const char *argv[])
 
         // construct models
         const string_t mlp0;
-        const string_t mlp1 = mlp0 + make_affine_layer(128);
-        const string_t mlp2 = mlp1 + make_affine_layer(128);
-        const string_t mlp3 = mlp2 + make_affine_layer(128);
-        const string_t mlp4 = mlp3 + make_affine_layer(128);
-        const string_t mlp5 = mlp4 + make_affine_layer(128);
+        const string_t mlp1 = mlp0 + make_affine_layer(128, activation);
+        const string_t mlp2 = mlp1 + make_affine_layer(128, activation);
+        const string_t mlp3 = mlp2 + make_affine_layer(128, activation);
+        const string_t mlp4 = mlp3 + make_affine_layer(128, activation);
+        const string_t mlp5 = mlp4 + make_affine_layer(128, activation);
 
         const string_t convnet0_k2d;
-        const string_t convnet1_k2d = convnet0_k2d + make_conv_layer("conv-k2d", 64, 7, 7, 1);
-        const string_t convnet2_k2d = convnet1_k2d + make_conv_layer("conv-k2d", 64, 7, 7, cmd_conn);
-        const string_t convnet3_k2d = convnet2_k2d + make_conv_layer("conv-k2d", 64, 5, 5, cmd_conn);
-        const string_t convnet4_k2d = convnet3_k2d + make_conv_layer("conv-k2d", 64, 5, 5, cmd_conn);
-        const string_t convnet5_k2d = convnet4_k2d + make_conv_layer("conv-k2d", 64, 3, 3, cmd_conn);
+        const string_t convnet1_k2d = convnet0_k2d + make_conv_layer("conv-k2d", 64, 7, 7, 1, activation);
+        const string_t convnet2_k2d = convnet1_k2d + make_conv_layer("conv-k2d", 64, 7, 7, conn, activation);
+        const string_t convnet3_k2d = convnet2_k2d + make_conv_layer("conv-k2d", 64, 5, 5, conn, activation);
+        const string_t convnet4_k2d = convnet3_k2d + make_conv_layer("conv-k2d", 64, 5, 5, conn, activation);
+        const string_t convnet5_k2d = convnet4_k2d + make_conv_layer("conv-k2d", 64, 3, 3, conn, activation);
 
         const string_t convnet1_toe = nano::replace(convnet1_k2d, "conv-k2d", "conv-toe");
         const string_t convnet2_toe = nano::replace(convnet2_k2d, "conv-k2d", "conv-toe");
@@ -81,9 +85,9 @@ int main(int argc, const char *argv[])
         const string_t convnet5_toe = nano::replace(convnet5_k2d, "conv-k2d", "conv-toe");
 
         const string_t pconvnet0;
-        const string_t pconvnet1 = pconvnet0 + make_conv_pool_layer("conv", 64, 7, 7, 1);
-        const string_t pconvnet2 = pconvnet1 + make_conv_pool_layer("conv", 64, 5, 5, cmd_conn);
-        const string_t pconvnet3 = pconvnet2 + make_conv_layer("conv", 64, 3, 3, cmd_conn);
+        const string_t pconvnet1 = pconvnet0 + make_conv_pool_layer("conv", 64, 7, 7, 1, activation, pooling);
+        const string_t pconvnet2 = pconvnet1 + make_conv_pool_layer("conv", 64, 5, 5, conn, activation, pooling);
+        const string_t pconvnet3 = pconvnet2 + make_conv_layer("conv", 64, 3, 3, conn, activation);
 
         const string_t outlayer = make_output_layer(task.osize());
 
