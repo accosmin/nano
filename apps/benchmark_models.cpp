@@ -149,9 +149,8 @@ int main(int argc, const char *argv[])
 
                 const auto fold = fold_t{0, protocol::train};
 
-                std::vector<model_t::timings_t> output_timings(cmd_max_nthreads + 1);
-                std::vector<model_t::timings_t> ginput_timings(cmd_max_nthreads + 1);
-                std::vector<model_t::timings_t> gparam_timings(cmd_max_nthreads + 1);
+                std::vector<model_t::timings_t> ftimings(cmd_max_nthreads + 1);
+                std::vector<model_t::timings_t> btimings(cmd_max_nthreads + 1);
 
                 // process the samples
                 for (size_t nthreads = cmd_min_nthreads; nthreads <= cmd_max_nthreads; ++ nthreads)
@@ -172,7 +171,7 @@ int main(int argc, const char *argv[])
 
                                 frow << idiv(static_cast<size_t>(duration.count()), lacc.count());
 
-                                output_timings[nthreads] = lacc.output_timings();
+                                ftimings[nthreads] = lacc.timings();
                         }
 
                         if (cmd_backward)
@@ -191,9 +190,7 @@ int main(int argc, const char *argv[])
 
                                 brow << idiv(static_cast<size_t>(duration.count()), gacc.count());
 
-                                output_timings[nthreads] = gacc.output_timings();
-                                ginput_timings[nthreads] = gacc.ginput_timings();
-                                gparam_timings[nthreads] = gacc.gparam_timings();
+                                btimings[nthreads] = gacc.timings();
                         }
                 }
 
@@ -203,9 +200,6 @@ int main(int argc, const char *argv[])
                 {
                         for (const auto& timing0 : timings[cmd_min_nthreads])
                         {
-                                if (timing0.second.count() < 2)
-                                        continue;
-
                                 auto& row = table.append(basename + timing0.first);
 
                                 for (size_t nthreads = cmd_min_nthreads; nthreads <= cmd_max_nthreads; ++ nthreads)
@@ -219,14 +213,12 @@ int main(int argc, const char *argv[])
 
                 if (cmd_forward && cmd_detailed)
                 {
-                        print_timings(ftable, " output: ", output_timings);
+                        print_timings(ftable, ">", ftimings);
                 }
 
                 if (cmd_backward && cmd_detailed)
                 {
-                        print_timings(btable, " output: ", output_timings);
-                        print_timings(btable, " ginput: ", ginput_timings);
-                        print_timings(btable, " gparam: ", gparam_timings);
+                        print_timings(btable, ">", btimings);
                 }
         }
 

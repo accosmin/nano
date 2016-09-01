@@ -96,9 +96,7 @@ namespace nano
                 /// \brief retrieve timing information (in microseconds) regarding various components
                 ///      for the three basic operations (output, gradient wrt parameters, gradient wrt inputs)
                 ///
-                virtual timings_t output_timings() const = 0;
-                virtual timings_t gparam_timings() const = 0;
-                virtual timings_t ginput_timings() const = 0;
+                virtual timings_t timings() const = 0;
 
                 // access functions
                 tensor_size_t idims() const { return m_idims; }

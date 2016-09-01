@@ -252,29 +252,16 @@ namespace nano
                 return nparams;
         }
 
-        template <typename tlayers, typename tgetter>
-        static auto get_timings(const tlayers& layers, const tgetter& getter)
+        model_t::timings_t forward_network_t::timings() const
         {
                 model_t::timings_t ret;
-                for (const auto& layer : layers)
+                for (const auto& layer : m_layers)
                 {
-                        ret[layer.m_name] = getter(layer);
+                        if (layer.m_output_timings.count() > 1) ret[layer.m_name + " (output)"] = layer.m_output_timings;
+                        if (layer.m_ginput_timings.count() > 1) ret[layer.m_name + " (ginput)"] = layer.m_ginput_timings;
+                        if (layer.m_gparam_timings.count() > 1) ret[layer.m_name + " (gparam)"] = layer.m_gparam_timings;
                 }
+
                 return ret;
-        }
-
-        model_t::timings_t forward_network_t::output_timings() const
-        {
-                return get_timings(m_layers, [] (const auto& layer) { return layer.m_output_timings; });
-        }
-
-        model_t::timings_t forward_network_t::ginput_timings() const
-        {
-                return get_timings(m_layers, [] (const auto& layer) { return layer.m_ginput_timings; });
-        }
-
-        model_t::timings_t forward_network_t::gparam_timings() const
-        {
-                return get_timings(m_layers, [] (const auto& layer) { return layer.m_gparam_timings; });
         }
 }

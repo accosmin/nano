@@ -49,11 +49,9 @@ namespace nano
                 const tensor3d_t& ginput(const tensor3d_t& output);
 
                 ///
-                /// \brief retrieve timing information regarding various components for the three basic operations
+                /// \brief retrieve timing information regarding various components
                 ///
-                virtual timings_t output_timings() const override;
-                virtual timings_t ginput_timings() const override;
-                virtual timings_t gparam_timings() const override;
+                virtual timings_t timings() const override;
 
                 ///
                 /// \brief save/load/initialize parameters
