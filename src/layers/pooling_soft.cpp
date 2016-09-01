@@ -75,10 +75,10 @@ namespace nano
                         {
                                 return i00 + i01 + i02 + i10 + i11 + i12 + i20 + i21 + i22;
                         });
-
-                        const auto scale = scalar_t(1) / scalar_t(9);
-                        m_odata.matrix(o) = (m_odata.matrix(o) * scale).array().log();
                 }
+
+                const auto delta = std::log(scalar_t(9));
+                m_odata.vector() = m_odata.vector().array().log() - delta;
 
                 return m_odata;
         }
