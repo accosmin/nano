@@ -202,8 +202,8 @@ namespace nano
                         n_params += layer->resize(input);
 
                         const string_t layer_name =
-                                "[" + align(to_string(l + 1), 2, alignment::right, '0') +
-                                align(layer_id, 12, alignment::right, '.') + "]";
+                                "[" + align(to_string(l + 1), 2, alignment::right, '0') + ":" +
+                                align(layer_id, 10, alignment::left, '.') + "]";
                         m_layers.emplace_back(layer_name, layer);
 
                         input.resize(layer->odims(), layer->orows(), layer->ocols());
