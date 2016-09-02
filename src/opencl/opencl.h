@@ -33,10 +33,7 @@ namespace nano
                 ///
                 /// \brief byte size
                 ///
-                template
-                <
-                        typename ttensor
-                >
+                template <typename ttensor>
                 size_t bytesize(const ttensor& tensor)
                 {
                         return tensor.size() * sizeof(typename ttensor::Scalar);

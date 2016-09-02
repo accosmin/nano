@@ -8,10 +8,7 @@ namespace nano
         ///
         /// \brief robustly measure a function call (in picoseconds)
         ///
-        template
-        <
-                typename toperator
-        >
+        template <typename toperator>
         picoseconds_t measure_robustly_psec(const toperator& op, const std::size_t trials)
         {
                 const microseconds_t min_usecs(10 * 1000);
