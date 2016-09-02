@@ -139,14 +139,14 @@ namespace nano
                 {
                         const auto gauss = make_gauss_weights(m_gdata.matrix(o));
 
-                        pooling::output(m_idata.matrix(o), m_odata.matrix(o), [&] (
-                                const auto i00, const auto i01, const auto i02,
-                                const auto i10, const auto i11, const auto i12,
-                                const auto i20, const auto i21, const auto i22)
+                        tensor::vector_t<scalar_t, 9> wei;
+                        wei <<  gauss(0, 0), gauss(0, 1), gauss(0, 2),
+                                gauss(1, 0), gauss(1, 1), gauss(1, 2),
+                                gauss(2, 0), gauss(2, 1), gauss(2, 2);
+
+                        pooling::output(m_idata.matrix(o), m_odata.matrix(o), [&] (const auto& ivec)
                         {
-                                return  i00 * gauss(0, 0) + i01 * gauss(0, 1) + i02 * gauss(0, 2) +
-                                        i10 * gauss(1, 0) + i11 * gauss(1, 1) + i12 * gauss(1, 2) +
-                                        i20 * gauss(2, 0) + i21 * gauss(2, 1) + i22 * gauss(2, 2);
+                                return ivec.dot(wei);
                         });
                 }
 
@@ -196,18 +196,10 @@ namespace nano
                         auto gdata = ggdata.vector(o);
                         gdata.setZero();
 
-                        vector_t gg(9);
-
                         pooling::gparam(m_idata.matrix(o), m_odata.matrix(o), [&] (const auto ooo,
-                                const auto i00, const auto i01, const auto i02,
-                                const auto i10, const auto i11, const auto i12,
-                                const auto i20, const auto i21, const auto i22)
+                                const auto& ivec)
                         {
-                                gg(0) = ooo * i00; gg(1) = ooo * i01; gg(2) = ooo * i02;
-                                gg(3) = ooo * i10; gg(4) = ooo * i11; gg(5) = ooo * i12;
-                                gg(6) = ooo * i20; gg(7) = ooo * i21; gg(8) = ooo * i22;
-
-                                gdata += gauss.transpose() * gg;
+                                gdata += gauss.transpose() * ooo * ivec;
                         });
                 }
         }

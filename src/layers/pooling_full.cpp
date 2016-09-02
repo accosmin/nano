@@ -61,19 +61,12 @@ namespace nano
 
                 for (tensor_size_t o = 0; o < odims(); ++ o)
                 {
-                        const auto wdata = m_wdata.matrix(o);
+                        const auto wdata = m_wdata.vector(o);
                         const auto wnorm = scalar_t(1) / std::sqrt(wdata.array().square().sum() + 1);
 
-                        pooling::output(m_idata.matrix(o), m_odata.matrix(o), [&] (
-                                const auto i00, const auto i01, const auto i02,
-                                const auto i10, const auto i11, const auto i12,
-                                const auto i20, const auto i21, const auto i22)
+                        pooling::output(m_idata.matrix(o), m_odata.matrix(o), [&] (const auto& ivec)
                         {
-                                const auto sum =
-                                        i00 * wdata(0, 0) + i01 * wdata(0, 1) + i02 * wdata(0, 2) +
-                                        i10 * wdata(1, 0) + i11 * wdata(1, 1) + i12 * wdata(1, 2) +
-                                        i20 * wdata(2, 0) + i21 * wdata(2, 1) + i22 * wdata(2, 2);
-                                return wnorm * sum;
+                                return wnorm * wdata.dot(ivec);
                         });
                 }
 
@@ -120,23 +113,19 @@ namespace nano
 
                 for (tensor_size_t o = 0; o < odims(); ++ o)
                 {
-                        matrix_t gdata = matrix_t::Zero(3, 3);
-
+                        tensor::vector_t<scalar_t, 9> gdata;
+                        gdata.setZero();
                         pooling::gparam(m_idata.matrix(o), m_odata.matrix(o), [&] (const auto ooo,
-                                const auto i00, const auto i01, const auto i02,
-                                const auto i10, const auto i11, const auto i12,
-                                const auto i20, const auto i21, const auto i22)
+                                const auto& ivec)
                         {
-                                gdata(0, 0) += ooo * i00; gdata(0, 1) += ooo * i01; gdata(0, 2) += ooo * i02;
-                                gdata(1, 0) += ooo * i10; gdata(1, 1) += ooo * i11; gdata(1, 2) += ooo * i12;
-                                gdata(2, 0) += ooo * i20; gdata(2, 1) += ooo * i21; gdata(2, 2) += ooo * i22;
+                                gdata += ooo * ivec;
                         });
 
-                        const auto wdata = m_wdata.matrix(o);
+                        const auto wdata = m_wdata.vector(o);
                         const auto ww = (wdata.array() * wdata.array()).sum();
                         const auto wg = (gdata.array() * wdata.array()).sum();
                         const auto wnorm = scalar_t(1) / ((ww + 1) * std::sqrt(ww + 1));
-                        gwdata.matrix(o) = wnorm * (gdata.array() * (ww + 1) - wdata.array() * wg);
+                        gwdata.vector(o) = wnorm * (gdata.array() * (ww + 1) - wdata.array() * wg);
                 }
         }
 }

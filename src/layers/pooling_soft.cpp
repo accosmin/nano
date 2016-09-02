@@ -64,12 +64,9 @@ namespace nano
                 {
                         m_edata.vector(o) = (m_idata.vector(o) * m_wdata(o)).array().exp();
 
-                        pooling::output(m_edata.matrix(o), m_odata.matrix(o), [] (
-                                const auto i00, const auto i01, const auto i02,
-                                const auto i10, const auto i11, const auto i12,
-                                const auto i20, const auto i21, const auto i22)
+                        pooling::output(m_edata.matrix(o), m_odata.matrix(o), [] (const auto& ivec)
                         {
-                                return i00 + i01 + i02 + i10 + i11 + i12 + i20 + i21 + i22;
+                                return ivec.sum();
                         });
                 }
 
@@ -123,27 +120,13 @@ namespace nano
 
                 for (tensor_size_t o = 0; o < odims(); ++ o)
                 {
-                        const auto idata = m_idata.matrix(o);
-                        const auto edata = m_edata.matrix(o);
-                        const auto odata = m_odata.matrix(o);
-
                         auto& wdata = gwdata(o);
                         wdata = 0;
 
                         pooling::gparam(m_idata.matrix(o), m_odata.matrix(o), m_edata.matrix(o), [&] (const auto ooo,
-                                const auto i00, const auto i01, const auto i02,
-                                const auto i10, const auto i11, const auto i12,
-                                const auto i20, const auto i21, const auto i22,
-                                const auto e00, const auto e01, const auto e02,
-                                const auto e10, const auto e11, const auto e12,
-                                const auto e20, const auto e21, const auto e22)
+                                const auto& ivec, const auto& evec)
                         {
-                                const auto sum = e00 + e01 + e02 + e10 + e11 + e12 + e20 + e21 + e22;
-
-                                wdata += ooo / sum * (
-                                        e00 * i00 + e01 * i01 + e02 * i02 +
-                                        e10 * i10 + e11 * i11 + e12 * i12 +
-                                        e20 * i20 + e21 * i21 + e22 * i22);
+                                wdata += ooo / evec.sum() * ivec.dot(evec);
                         });
                 }
         }
