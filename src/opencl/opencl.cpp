@@ -10,27 +10,24 @@ namespace nano
         {
                 try
                 {
-                        cl_int err = cl::Platform::get(&m_platforms);
+                        const cl_int err = cl::Platform::get(&m_platforms);
                         log_info() << "OpenCL status (platform query): " << ocl::error_string(err);
-
                         if (m_platforms.empty())
                         {
-                                log_error() << "Cannot find any OpenCL platforms!";
+                                log_error() << "cannot find any OpenCL platforms!";
                                 return;
                         }
 
-                        cl_context_properties properties[] =
+                        for (size_t i = 0; i < m_platforms.size(); ++ i)
                         {
-                                CL_CONTEXT_PLATFORM,
-                                (cl_context_properties)(m_platforms[0])(),
-                                0
-                        };
-                        const cl::Context context(CL_DEVICE_TYPE_GPU, properties);
-                        m_devices = context.getInfo<CL_CONTEXT_DEVICES>();
+                                log_info() << "OpenCL platform [" << (i + 1) << "/" << m_platforms.size() << "]: "
+                                           << m_platforms[i].getInfo<CL_PLATFORM_NAME>();
+                        }
 
+                        m_platforms[0].getDevices(CL_DEVICE_TYPE_ALL, &m_devices);
                         if (m_devices.empty())
                         {
-                                log_error() << "Cannot find any OpenCL GPU device!";
+                                log_error() << "cannot find any OpenCL GPU device!";
                                 return;
                         }
 
@@ -94,14 +91,7 @@ namespace nano
         {
                 assert(valid());
 
-                cl_context_properties properties[] =
-                {
-                        CL_CONTEXT_PLATFORM,
-                        (cl_context_properties)(m_platforms[0])(),
-                        0
-                };
-
-                return cl::Context(CL_DEVICE_TYPE_GPU, properties);
+                return cl::Context({m_devices[0]});
         }
 
         cl::CommandQueue ocl::manager_t::make_command_queue(const cl::Context& context) const
