@@ -62,13 +62,9 @@ namespace nano
 
                 for (tensor_size_t o = 0; o < odims(); ++ o)
                 {
-                        const auto idata = m_idata.matrix(o);
-                        const auto wdata = m_wdata(o);
+                        m_edata.vector(o) = (m_idata.vector(o) * m_wdata(o)).array().exp();
 
-                        auto edata = m_edata.matrix(o);
-                        edata = (idata.array() * wdata).exp();
-
-                        pooling::output(edata, m_odata.matrix(o), [&] (
+                        pooling::output(m_edata.matrix(o), m_odata.matrix(o), [] (
                                 const auto i00, const auto i01, const auto i02,
                                 const auto i10, const auto i11, const auto i12,
                                 const auto i20, const auto i21, const auto i22)
@@ -93,40 +89,23 @@ namespace nano
 
                 for (tensor_size_t o = 0; o < odims(); ++ o)
                 {
-                        const auto odata = m_odata.matrix(o);
-                        const auto edata = m_edata.matrix(o);
                         const auto wdata = m_wdata(o);
 
-                        auto idata = m_idata.matrix(o);
-                        idata.setZero();
-
-                        for (tensor_size_t r = 1; r < idata.rows(); r += 2)
+                        pooling::ginput(m_idata.matrix(o), m_odata.matrix(o), m_edata.matrix(o), [=] (const auto ooo,
+                                auto& i00, auto& i01, auto& i02,
+                                auto& i10, auto& i11, auto& i12,
+                                auto& i20, auto& i21, auto& i22,
+                                const auto e00, const auto e01, const auto e02,
+                                const auto e10, const auto e11, const auto e12,
+                                const auto e20, const auto e21, const auto e22)
                         {
-                                for (tensor_size_t c = 1; c < idata.cols(); c += 2)
-                                {
-                                        const auto c0 = c - 1, c1 = c, c2 = std::min(c + 1, idata.cols() - 1);
-                                        const auto r0 = r - 1, r1 = r, r2 = std::min(r + 1, idata.rows() - 1);
+                                const auto sum = e00 + e01 + e02 + e10 + e11 + e12 + e20 + e21 + e22;
+                                const auto wei = ooo * wdata / sum;
 
-                                        const auto sum =
-                                        edata(r0, c0) + edata(r0, c1) + edata(r0, c2) +
-                                        edata(r1, c0) + edata(r1, c1) + edata(r1, c2) +
-                                        edata(r2, c0) + edata(r2, c1) + edata(r2, c2);
-
-                                        const auto wei = odata(r / 2, c / 2) / sum * wdata;
-
-                                        idata(r0, c0) += wei * edata(r0, c0);
-                                        idata(r0, c1) += wei * edata(r0, c1);
-                                        idata(r0, c2) += wei * edata(r0, c2);
-
-                                        idata(r1, c0) += wei * edata(r1, c0);
-                                        idata(r1, c1) += wei * edata(r1, c1);
-                                        idata(r1, c2) += wei * edata(r1, c2);
-
-                                        idata(r2, c0) += wei * edata(r2, c0);
-                                        idata(r2, c1) += wei * edata(r2, c1);
-                                        idata(r2, c2) += wei * edata(r2, c2);
-                                }
-                        }
+                                i00 += wei * e00; i01 += wei * e01; i02 += wei * e02;
+                                i10 += wei * e10; i11 += wei * e11; i12 += wei * e12;
+                                i20 += wei * e20; i21 += wei * e21; i22 += wei * e22;
+                        });
                 }
 
                 return m_idata;
@@ -151,32 +130,21 @@ namespace nano
                         auto& wdata = gwdata(o);
                         wdata = 0;
 
-                        for (tensor_size_t r = 1; r < idata.rows(); r += 2)
+                        pooling::gparam(m_idata.matrix(o), m_odata.matrix(o), m_edata.matrix(o), [&] (const auto ooo,
+                                const auto i00, const auto i01, const auto i02,
+                                const auto i10, const auto i11, const auto i12,
+                                const auto i20, const auto i21, const auto i22,
+                                const auto e00, const auto e01, const auto e02,
+                                const auto e10, const auto e11, const auto e12,
+                                const auto e20, const auto e21, const auto e22)
                         {
-                                for (tensor_size_t c = 1; c < idata.cols(); c += 2)
-                                {
-                                        const auto c0 = c - 1, c1 = c, c2 = std::min(c + 1, idata.cols() - 1);
-                                        const auto r0 = r - 1, r1 = r, r2 = std::min(r + 1, idata.rows() - 1);
+                                const auto sum = e00 + e01 + e02 + e10 + e11 + e12 + e20 + e21 + e22;
 
-                                        const auto sum =
-                                        edata(r0, c0) + edata(r0, c1) + edata(r0, c2) +
-                                        edata(r1, c0) + edata(r1, c1) + edata(r1, c2) +
-                                        edata(r2, c0) + edata(r2, c1) + edata(r2, c2);
-
-                                        wdata += odata(r / 2, c / 2) / sum * (
-                                        edata(r0, c0) * idata(r0, c0) +
-                                        edata(r0, c1) * idata(r0, c1) +
-                                        edata(r0, c2) * idata(r0, c2) +
-
-                                        edata(r1, c0) * idata(r1, c0) +
-                                        edata(r1, c1) * idata(r1, c1) +
-                                        edata(r1, c2) * idata(r1, c2) +
-
-                                        edata(r2, c0) * idata(r2, c0) +
-                                        edata(r2, c1) * idata(r2, c1) +
-                                        edata(r2, c2) * idata(r2, c2));
-                                }
-                        }
+                                wdata += ooo / sum * (
+                                        e00 * i00 + e01 * i01 + e02 * i02 +
+                                        e10 * i10 + e11 * i11 + e12 * i12 +
+                                        e20 * i20 + e21 * i21 + e22 * i22);
+                        });
                 }
         }
 }

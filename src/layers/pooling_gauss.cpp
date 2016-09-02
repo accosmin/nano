@@ -198,14 +198,14 @@ namespace nano
 
                         vector_t gg(9);
 
-                        pooling::gparam(m_idata.matrix(o), m_odata.matrix(o), [&] (
-                                const auto g00, const auto g01, const auto g02,
-                                const auto g10, const auto g11, const auto g12,
-                                const auto g20, const auto g21, const auto g22)
+                        pooling::gparam(m_idata.matrix(o), m_odata.matrix(o), [&] (const auto ooo,
+                                const auto i00, const auto i01, const auto i02,
+                                const auto i10, const auto i11, const auto i12,
+                                const auto i20, const auto i21, const auto i22)
                         {
-                                gg(0) = g00; gg(1) = g01; gg(2) = g02;
-                                gg(3) = g10; gg(4) = g11; gg(5) = g12;
-                                gg(6) = g20; gg(7) = g21; gg(8) = g22;
+                                gg(0) = ooo * i00; gg(1) = ooo * i01; gg(2) = ooo * i02;
+                                gg(3) = ooo * i10; gg(4) = ooo * i11; gg(5) = ooo * i12;
+                                gg(6) = ooo * i20; gg(7) = ooo * i21; gg(8) = ooo * i22;
 
                                 gdata += gauss.transpose() * gg;
                         });

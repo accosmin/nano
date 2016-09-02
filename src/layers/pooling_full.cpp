@@ -122,14 +122,14 @@ namespace nano
                 {
                         matrix_t gdata = matrix_t::Zero(3, 3);
 
-                        pooling::gparam(m_idata.matrix(o), m_odata.matrix(o), [&] (
-                                const auto g00, const auto g01, const auto g02,
-                                const auto g10, const auto g11, const auto g12,
-                                const auto g20, const auto g21, const auto g22)
+                        pooling::gparam(m_idata.matrix(o), m_odata.matrix(o), [&] (const auto ooo,
+                                const auto i00, const auto i01, const auto i02,
+                                const auto i10, const auto i11, const auto i12,
+                                const auto i20, const auto i21, const auto i22)
                         {
-                                gdata(0, 0) += g00; gdata(0, 1) += g01; gdata(0, 2) += g02;
-                                gdata(1, 0) += g10; gdata(1, 1) += g11; gdata(1, 2) += g12;
-                                gdata(2, 0) += g20; gdata(2, 1) += g21; gdata(2, 2) += g22;
+                                gdata(0, 0) += ooo * i00; gdata(0, 1) += ooo * i01; gdata(0, 2) += ooo * i02;
+                                gdata(1, 0) += ooo * i10; gdata(1, 1) += ooo * i11; gdata(1, 2) += ooo * i12;
+                                gdata(2, 0) += ooo * i20; gdata(2, 1) += ooo * i21; gdata(2, 2) += ooo * i22;
                         });
 
                         const auto wdata = m_wdata.matrix(o);
