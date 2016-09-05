@@ -192,7 +192,7 @@ int main(int argc, const char* argv[])
         // create task
         const size_t rows = 16;
         const size_t cols = 16;
-        const size_t count = nano::logical_cpus() * 32 * 100;
+        const size_t count = 60000;
         const color_mode color = color_mode::rgb;
 
         charset_task_t task(charset::digit, color, rows, cols, count);
