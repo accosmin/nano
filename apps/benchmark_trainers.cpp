@@ -105,6 +105,7 @@ int main(int argc, const char* argv[])
         cmdline.add("", "convnet1",             "use convolution networks with 1 convolution layer");
         cmdline.add("", "convnet2",             "use convolution networks with 2 convolution layers");
         cmdline.add("", "convnet3",             "use convolution networks with 3 convolution layers");
+        cmdline.add("", "pconvnets",            "use convolution networks with varying number of convolution & pooling layers");
         cmdline.add("", "pconvnet1",            "use convolution networks with 1 convolution layer with pooling");
         cmdline.add("", "pconvnet2",            "use convolution networks with 2 convolution layers with pooling");
         cmdline.add("", "batch",                "evaluate batch optimizers");
@@ -140,6 +141,7 @@ int main(int argc, const char* argv[])
         const bool use_convnet1 = cmdline.has("convnet1");
         const bool use_convnet2 = cmdline.has("convnet2");
         const bool use_convnet3 = cmdline.has("convnet3");
+        const bool use_pconvnets = cmdline.has("pconvnets");
         const bool use_pconvnet1 = cmdline.has("pconvnet1");
         const bool use_pconvnet2 = cmdline.has("pconvnet2");
         const auto cmd_loss = cmdline.get("loss");
@@ -158,6 +160,7 @@ int main(int argc, const char* argv[])
                 !use_convnet1 &&
                 !use_convnet2 &&
                 !use_convnet3 &&
+                !use_pconvnets &&
                 !use_pconvnet1 &&
                 !use_pconvnet2)
         {
@@ -223,8 +226,8 @@ int main(int argc, const char* argv[])
         if (use_convnets || use_convnet1) networks.emplace_back(convnet1 + outlayer, "convnet1");
         if (use_convnets || use_convnet2) networks.emplace_back(convnet2 + outlayer, "convnet2");
         if (use_convnets || use_convnet3) networks.emplace_back(convnet3 + outlayer, "convnet3");
-        if (use_convnets || use_pconvnet1) networks.emplace_back(pconvnet1 + outlayer, "pconvnet1");
-        if (use_convnets || use_pconvnet2) networks.emplace_back(pconvnet2 + outlayer, "pconvnet2");
+        if (use_pconvnets || use_pconvnet1) networks.emplace_back(pconvnet1 + outlayer, "pconvnet1");
+        if (use_pconvnets || use_pconvnet2) networks.emplace_back(pconvnet2 + outlayer, "pconvnet2");
 
         // vary the model
         for (const auto& net : networks)

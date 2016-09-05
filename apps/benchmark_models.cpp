@@ -23,6 +23,7 @@ int main(int argc, const char *argv[])
         cmdline.add("c", "conn",        "plane connectivity for convolution networks [1, 16]", "8");
         cmdline.add("", "mlps",         "benchmark MLP models");
         cmdline.add("", "convnets",     "benchmark convolution networks");
+        cmdline.add("", "pconvnets",    "benchmark convolution networks with pooling layers");
         cmdline.add("", "forward",      "evaluate the \'forward\' pass (output)");
         cmdline.add("", "backward",     "evaluate the \'backward' pass (gradient)");
         cmdline.add("", "activation",   "activation layer (act-unit, act-tanh, act-splus, act-snorm)", "act-snorm");
@@ -38,6 +39,7 @@ int main(int argc, const char *argv[])
         const auto cmd_backward = cmdline.has("backward");
         const auto cmd_mlps = cmdline.has("mlps");
         const auto cmd_convnets = cmdline.has("convnets");
+        const auto cmd_pconvnets = cmdline.has("pconvnets");
         const auto activation = cmdline.get("activation");
         const auto pooling = cmdline.get("pooling");
         const auto cmd_detailed = cmdline.has("detailed");
@@ -47,7 +49,7 @@ int main(int argc, const char *argv[])
                 cmdline.usage();
         }
 
-        if (!cmd_mlps && !cmd_convnets)
+        if (!cmd_mlps && !cmd_convnets && !cmd_pconvnets)
         {
                 cmdline.usage();
         }
@@ -115,6 +117,9 @@ int main(int argc, const char *argv[])
                 DEFINE(convnet4_toe);
                 DEFINE(convnet5_k2d);
                 DEFINE(convnet5_toe);
+        }
+        if (cmd_pconvnets)
+        {
                 DEFINE(pconvnet1);
                 DEFINE(pconvnet2);
                 DEFINE(pconvnet3);
