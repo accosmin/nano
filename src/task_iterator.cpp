@@ -3,6 +3,12 @@
 namespace nano
 {
         task_iterator_t::task_iterator_t(
+                const task_t& task, const fold_t& fold) :
+                task_iterator_t(task, fold, task.n_samples(fold))
+        {
+        }
+
+        task_iterator_t::task_iterator_t(
                 const task_t& task, const fold_t& fold, const size_t batch0, const scalar_t factor) :
                 m_task(task), m_fold(fold), m_batch(0), m_factor(0), m_begin(0), m_end(0)
         {

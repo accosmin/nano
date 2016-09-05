@@ -57,76 +57,24 @@ namespace nano
                 const auto epochs = clamp(from_params<size_t>(config(), "epochs"), 4, 4096);
                 const auto policy = from_params<trainer_policy>(config(), "policy");
                 const auto epsilon = epsilon0<scalar_t>();
-                const auto verbose = true;
 
-                // train the model
                 const auto train_fold = fold_t{fold, protocol::train};
-                const auto valid_fold = fold_t{fold, protocol::valid};
-                const auto test_fold = fold_t{fold, protocol::test};
-
-                size_t iteration = 0;
+                size_t epoch = 0;
                 trainer_result_t result;
 
-                // construct the optimization problem
-                const auto fn_size = [&] ()
-                {
-                        return lacc.psize();
-                };
+                task_iterator_t it(task, train_fold);
 
-                const auto fn_fval = [&] (const vector_t& x)
-                {
-                        lacc.set_params(x);
-                        lacc.update(task, train_fold);
-                        return lacc.value();
-                };
-
-                const auto fn_grad = [&] (const vector_t& x, vector_t& gx)
-                {
-                        gacc.set_params(x);
-                        gacc.update(task, train_fold);
-                        gx = gacc.vgrad();
-                        return gacc.value();
-                };
-
+                // logging operator
+                const auto logger = make_trainer_logger(lacc, it, epoch, epochs, result, policy, timer);
                 auto fn_ulog = [&] (const state_t& state)
                 {
-                        // evaluate the current state
-                        lacc.set_params(state.x);
-                        lacc.update(task, train_fold);
-                        const auto train = trainer_measurement_t{lacc.value(), lacc.vstats(), lacc.estats()};
-
-                        lacc.set_params(state.x);
-                        lacc.update(task, valid_fold);
-                        const auto valid = trainer_measurement_t{lacc.value(), lacc.vstats(), lacc.estats()};
-
-                        lacc.set_params(state.x);
-                        lacc.update(task, test_fold);
-                        const auto test = trainer_measurement_t{lacc.value(), lacc.vstats(), lacc.estats()};
-
-                        // OK, update the optimum solution
-                        const auto milis = timer.milliseconds();
-                        const auto config = trainer_config_t{{"lambda", lacc.lambda()}};
-                        const auto ret = result.update(state, {milis, ++iteration, train, valid, test}, config);
-
-                        if (verbose)
-                        {
-                                log_info()
-                                        << "[" << iteration << "/" << epochs
-                                        << ":train=" << train
-                                        << ",valid=" << valid << "|" << nano::to_string(ret)
-                                        << ",test=" << test
-                                        << "," << config << ",calls=" << state.m_fcalls << "/" << state.m_gcalls
-                                        << ",g=" << state.g.lpNorm<Eigen::Infinity>()
-                                        << "] " << timer.elapsed() << ".";
-                        }
-
-                        return !nano::is_done(ret, policy);
+                        return logger(state, trainer_config_t());
                 };
 
                 // assembly optimization problem & optimize the model
-                optimizer.minimize(
-                        batch_params_t(epochs, epsilon, fn_ulog),
-                        problem_t(fn_size, fn_fval, fn_grad), x0);
+                const auto problem = make_trainer_problem(lacc, gacc, it);
+                const auto params = batch_params_t{epochs, epsilon, fn_ulog};
+                optimizer.minimize(params, problem, x0);
 
                 return result;
         }

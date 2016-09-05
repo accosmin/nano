@@ -1,11 +1,88 @@
 #pragma once
 
+#include "state.h"
+#include "logger.h"
+#include "problem.h"
 #include "math/tune.hpp"
 #include "accumulator.h"
+#include "task_iterator.h"
 #include "trainer_result.h"
+#include "text/to_string.hpp"
 
 namespace nano
 {
+        ///
+        /// \brief construct optimization problem for a particular trainer.
+        ///
+        inline problem_t make_trainer_problem(const accumulator_t& lacc, const accumulator_t& gacc, task_iterator_t& it)
+        {
+                const auto fn_size = [&] ()
+                {
+                        return lacc.psize();
+                };
+
+                const auto fn_fval = [&] (const vector_t& x)
+                {
+                        it.next();
+                        lacc.set_params(x);
+                        lacc.update(it.task(), it.fold(), it.begin(), it.end());
+                        return lacc.value();
+                };
+
+                const auto fn_grad = [&] (const vector_t& x, vector_t& gx)
+                {
+                        it.next();
+                        gacc.set_params(x);
+                        gacc.update(it.task(), it.fold(), it.begin(), it.end());
+                        gx = gacc.vgrad();
+                        return gacc.value();
+                };
+
+                return problem_t(fn_size, fn_fval, fn_grad);
+        }
+
+        ///
+        /// \brief construct optimization problem for a particular trainer.
+        ///
+        inline auto make_trainer_logger(const accumulator_t& lacc, task_iterator_t& it,
+                size_t& epoch, const size_t epochs, trainer_result_t& result, const trainer_policy policy,
+                const timer_t& timer)
+        {
+                auto fn_ulog = [&] (const state_t& state, const trainer_config_t& sconfig)
+                {
+                        // evaluate the current state
+                        lacc.set_params(state.x);
+                        lacc.update(it.task(), it.train_fold());
+                        const auto train = trainer_measurement_t{lacc.value(), lacc.vstats(), lacc.estats()};
+
+                        lacc.set_params(state.x);
+                        lacc.update(it.task(), it.valid_fold());
+                        const auto valid = trainer_measurement_t{lacc.value(), lacc.vstats(), lacc.estats()};
+
+                        lacc.set_params(state.x);
+                        lacc.update(it.task(), it.test_fold());
+                        const auto test = trainer_measurement_t{lacc.value(), lacc.vstats(), lacc.estats()};
+
+                        // OK, update the optimum solution
+                        const auto milis = timer.milliseconds();
+                        const auto config = nano::append(sconfig, "lambda", lacc.lambda());
+                        const auto ret = result.update(state, {milis, ++epoch, train, valid, test}, config);
+
+                        log_info()
+                                << "[" << epoch << "/" << epochs
+                                << ":train=" << train
+                                << ",valid=" << valid << "|" << nano::to_string(ret)
+                                << ",test=" << test
+                                << "," << config << ",batch=" << (it.end() - it.begin())
+                                << ",g=" << state.g.lpNorm<Eigen::Infinity>()
+                                << "]" << timer.elapsed() << ".";
+
+                        return !nano::is_done(ret, policy);
+                };
+
+                return fn_ulog;
+        }
+
         ///
         /// \brief generic training loop given a suitable optimization operator.
         ///

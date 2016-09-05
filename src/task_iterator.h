@@ -14,12 +14,17 @@ namespace nano
         public:
 
                 ///
-                /// \brief constructor
+                /// \brief constructor - use all samples.
+                ///
+                task_iterator_t(const task_t&, const fold_t&);
+
+                ///
+                /// \brief constructor - use a minibatch of samples.
                 ///
                 task_iterator_t(const task_t&, const fold_t&, const size_t batch0, const scalar_t factor = scalar_t(1));
 
                 ///
-                /// \brief reset configuration, keep the task
+                /// \brief reset configuration, keep the task.
                 ///
                 void reset(const size_t batch0, const scalar_t factor = scalar_t(1));
 
@@ -34,7 +39,12 @@ namespace nano
                 size_t begin() const { return m_begin; }
                 size_t end() const { return m_end; }
 
+                const task_t& task() const { return m_task; }
                 const fold_t& fold() const { return m_fold; }
+
+                fold_t train_fold() const { return {m_fold.m_index, protocol::train}; }
+                fold_t valid_fold() const { return {m_fold.m_index, protocol::valid}; }
+                fold_t test_fold() const { return {m_fold.m_index, protocol::test}; }
 
         private:
 
