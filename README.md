@@ -1,6 +1,6 @@
 ### Nano
 
-Nano provides numerical optimization and machine learning utilities. For example it can be used to train models such as neural networks and convolution networks.
+Nano provides numerical optimization and machine learning utilities. For example it can be used to train models such as multi-layer perceptrons (classical neural networks) and convolution networks.
 
 This library is built around several key concepts mapped to C++ object interfaces. Each object type is registered with an **ID** and thus it can be selected from command line arguments. Also new objects can be easily registered and then they are automatically visible across the library and its associated programs.
 
@@ -32,11 +32,13 @@ The easiest way to compile (and install) is to run the `build_release.sh` bash s
 The library provides various command line programs and utilities. Each program displays its possible arguments with short explanations by running it with `--help`.
 
 Most notably:
-* **info** - prints all registered objects with the associated ID and a short description.
-* **info_task** - loads a task and prints its detailed description.
-* **train** - train a model on a given task.
-* **benchmark_batch** - benchmark all batch optimization methods with varying the line-search parameters on standard test functions.
-* **benchmark_stoch** - benchmark all stochastic optimization methods on standard test functions.
-* **benchmark_trainers** - benchmark all training methods on a synthetic task.
+* **apps/info** - prints all registered objects with the associated ID and a short description.
+* **apps/info_task** - loads a task and prints its detailed description.
+* **apps/train** - train a model on a given task.
+* **apps/evaluate** - test a model on a given task.
+* **apps/benchmark_batch** - benchmark all batch optimization methods with varying the line-search parameters on standard test functions.
+* **apps/benchmark_stoch** - benchmark all stochastic optimization methods on standard test functions.
+* **apps/benchmark_models** - bechmark speed-wise some typical models on a synthetic task.
+* **apps/benchmark_trainers** - benchmark all training methods on a synthetic task.
 
 The `scripts` directory contains examples on how to train various models on different tasks.
