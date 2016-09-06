@@ -7,8 +7,6 @@
 #include "text/to_string.hpp"
 #include "text/from_params.hpp"
 
-#include "logger.h"
-
 namespace nano
 {
         stochastic_trainer_t::stochastic_trainer_t(const string_t& parameters) :
@@ -93,11 +91,7 @@ namespace nano
                 };
 
                 // logging operator
-                const auto logger = make_trainer_logger(lacc, it, epoch, epochs, result, policy, timer);
-                auto fn_ulog = [&] (const state_t& state, const trainer_config_t& config)
-                {
-                        return logger(state, config);
-                };
+                auto fn_ulog = make_trainer_logger(lacc, it, epoch, epochs, result, policy, timer);
 
                 // assembly optimization problem & optimize the model
                 const auto problem = make_trainer_problem(lacc, gacc, it);

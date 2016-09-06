@@ -14,7 +14,7 @@ namespace nano
         ///
         /// \brief construct optimization problem for a particular trainer.
         ///
-        inline problem_t make_trainer_problem(const accumulator_t& lacc, const accumulator_t& gacc, task_iterator_t& it)
+        inline auto make_trainer_problem(const accumulator_t& lacc, const accumulator_t& gacc, task_iterator_t& it)
         {
                 const auto fn_size = [&] ()
                 {
@@ -48,7 +48,7 @@ namespace nano
                 size_t& epoch, const size_t epochs, trainer_result_t& result, const trainer_policy policy,
                 const timer_t& timer)
         {
-                auto fn_ulog = [&] (const state_t& state, const trainer_config_t& sconfig)
+                auto fn_ulog = [&] (const state_t& state, const trainer_config_t& sconfig = trainer_config_t())
                 {
                         // evaluate the current state
                         lacc.set_params(state.x);

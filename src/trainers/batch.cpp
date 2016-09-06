@@ -1,7 +1,6 @@
 #include "batch.h"
 #include "loop.hpp"
 #include "model.h"
-#include "logger.h"
 #include "math/clamp.hpp"
 #include "math/epsilon.hpp"
 #include "batch_optimizer.h"
@@ -65,11 +64,7 @@ namespace nano
                 task_iterator_t it(task, train_fold);
 
                 // logging operator
-                const auto logger = make_trainer_logger(lacc, it, epoch, epochs, result, policy, timer);
-                auto fn_ulog = [&] (const state_t& state)
-                {
-                        return logger(state, trainer_config_t());
-                };
+                auto fn_ulog = make_trainer_logger(lacc, it, epoch, epochs, result, policy, timer);
 
                 // assembly optimization problem & optimize the model
                 const auto problem = make_trainer_problem(lacc, gacc, it);
