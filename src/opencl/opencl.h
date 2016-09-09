@@ -2,7 +2,8 @@
 
 #undef CL_HPP_ENABLE_PROGRAM_CONSTRUCTION_FROM_ARRAY_COMPATIBILITY
 #define CL_HPP_ENABLE_EXCEPTIONS
-#define CL_HPP_TARGET_OPENCL_VERSION 200
+#define CL_HPP_MINIMUM_OPENCL_VERSION 120
+#define CL_HPP_TARGET_OPENCL_VERSION 120
 
 #if defined(__APPLE__) || defined(__MACOSX)
 #include <OpenCL/cl.hpp>        // NB: may need to manually install/copy the C++ wrapper from kronos' website!
@@ -23,7 +24,12 @@ namespace nano
                 ///
                 /// \brief map the given OpenCL error code to a string
                 ///
-                NANO_PUBLIC const char* error_string(cl_int error);
+                NANO_PUBLIC const char* error_string(const cl_int error);
+
+                ///
+                /// \brief map the given device type to a string
+                ///
+                NANO_PUBLIC const char* device_type_string(const cl_device_type type);
 
                 ///
                 /// \brief load text file (e.g. program/kernel source)
@@ -52,9 +58,9 @@ namespace nano
                         manager_t();
 
                         ///
-                        /// \brief check if an OpenCL instance was correctly loaded
+                        /// \brief select the current device using the given type as a hint
                         ///
-                        bool valid() const { return !m_platforms.empty() && !m_devices.empty(); }
+                        bool select(const cl_device_type type = CL_DEVICE_TYPE_GPU);
 
                         ///
                         /// \brief create OpenCL objects
@@ -68,9 +74,14 @@ namespace nano
 
                 private:
 
+                        void select(const cl::Device& device);
+
+                private:
+
                         // attributes
-                        std::vector<cl::Platform>       m_platforms;
-                        std::vector<cl::Device>         m_devices;
+                        std::vector<cl::Platform>       m_platforms;    ///< available platforms
+                        std::vector<cl::Device>         m_devices;      ///< available devices for all platforms
+                        cl::Device                      m_device;       ///< selected device
                 };
         }
 }

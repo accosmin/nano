@@ -2,9 +2,7 @@
 #include "tensor.h"
 #include "measure.hpp"
 #include "text/table.h"
-#ifdef NANO_WITH_OPENCL
 #include "opencl/opencl.h"
-#endif
 #include "math/epsilon.hpp"
 
 int main(int, char* [])
@@ -14,10 +12,6 @@ int main(int, char* [])
         try
         {
                 ocl::manager_t theocl;
-                if (!theocl.valid())
-                {
-                        exit(EXIT_FAILURE);
-                }
 
                 const auto context = theocl.make_context();
                 const auto queue = theocl.make_command_queue(context);
