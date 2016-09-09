@@ -21,6 +21,9 @@ add_definitions(-DEIGEN_DONT_PARALLELIZE)
 
 # OpenCL
 if(NANO_WITH_OPENCL)
+        if(NOT NANO_WITH_FLOAT_SCALAR)
+                message(FATAL_ERROR "++ OpenCL support is available only for float scalar!")
+        endif()
         find_package(OpenCL REQUIRED)
         include_directories(SYSTEM ${OpenCL_INCLUDE_DIRS})
         add_definitions(-DNANO_WITH_OPENCL)
