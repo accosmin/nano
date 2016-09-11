@@ -40,9 +40,9 @@ namespace nano
                 /// \brief byte size
                 ///
                 template <typename ttensor>
-                size_t bytesize(const ttensor& tensor)
+                size_t byte_size(const ttensor& tensor)
                 {
-                        return tensor.size() * sizeof(typename ttensor::Scalar);
+                        return static_cast<size_t>(tensor.size()) * sizeof(typename ttensor::Scalar);
                 }
 
                 ///
@@ -53,9 +53,9 @@ namespace nano
                 public:
 
                         ///
-                        /// \brief constructor
+                        /// \brief initialize OpenCL platforms & devices
                         ///
-                        manager_t();
+                        void init();
 
                         ///
                         /// \brief select the current device using the given type as a hint
@@ -65,12 +65,13 @@ namespace nano
                         ///
                         /// \brief create OpenCL objects
                         ///
-                        cl::Context make_context() const;
-                        cl::CommandQueue make_command_queue(const cl::Context& context) const;
-                        cl::Program make_program_from_file(const cl::Context& context, const std::string& filepath) const;
-                        cl::Program make_program_from_text(const cl::Context& context, const std::string& source) const;
+                        cl::Program make_program_from_file(const std::string& filepath) const;
+                        cl::Program make_program_from_text(const std::string& source) const;
                         cl::Kernel make_kernel(const cl::Program& program, const std::string& name) const;
-                        cl::Buffer make_buffer(const cl::Context& context, const size_t bytesize, const cl_mem_flags) const;
+                        cl::Buffer make_buffer(const size_t bytesize, const cl_mem_flags) const;
+
+                        cl::Context& context() { return m_context; }
+                        cl::CommandQueue& command_queue() { return m_command_queue; }
 
                 private:
 
@@ -82,6 +83,8 @@ namespace nano
                         std::vector<cl::Platform>       m_platforms;    ///< available platforms
                         std::vector<cl::Device>         m_devices;      ///< available devices for all platforms
                         cl::Device                      m_device;       ///< selected device
+                        cl::Context                     m_context;      ///< context for the selected device
+                        cl::CommandQueue                m_command_queue;///< command queue for the selected contex
                 };
         }
 }

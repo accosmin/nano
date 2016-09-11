@@ -3,7 +3,57 @@
 #include "measure.hpp"
 #include "text/table.h"
 #include "opencl/opencl.h"
-#include "math/epsilon.hpp"
+#include "math/random.hpp"
+#include "tensor/numeric.hpp"
+#include "text/table_row_mark.h"
+#include <iomanip>
+#include <iostream>
+
+namespace
+{
+        using namespace nano;
+
+        ocl::manager_t theocl;
+        cl::CommandQueue& queue = theocl.command_queue();
+
+        nano::random_t<scalar_t> rng(scalar_t(-1e-3), scalar_t(+1e-3));
+        const size_t trials = 16;
+
+        auto measure_read(const tensor_size_t dims)
+        {
+                vector_t x(dims);
+                tensor::set_random(rng, x);
+
+                cl::Buffer buffer = theocl.make_buffer(ocl::byte_size(x), CL_MEM_READ_WRITE);
+                queue.enqueueWriteBuffer(buffer, CL_TRUE, 0, ocl::byte_size(x), x.data());
+
+                volatile scalar_t z = 0;
+                const auto duration = nano::measure_robustly_psec([&] ()
+                {
+                        queue.enqueueReadBuffer(buffer, CL_TRUE, 0, ocl::byte_size(x), x.data());
+                        ++ z;
+                }, trials);
+
+                return nano::gflops(dims, duration);
+        }
+
+        auto measure_write(const tensor_size_t dims)
+        {
+                vector_t x(dims);
+                tensor::set_random(rng, x);
+
+                cl::Buffer buffer = theocl.make_buffer(ocl::byte_size(x), CL_MEM_READ_WRITE);
+
+                volatile scalar_t z = 0;
+                const auto duration = nano::measure_robustly_psec([&] ()
+                {
+                        queue.enqueueWriteBuffer(buffer, CL_TRUE, 0, ocl::byte_size(x), x.data());
+                        ++ z;
+                }, trials);
+
+                return nano::gflops(dims, duration);
+        }
+}
 
 int main(int, char* [])
 {
@@ -11,51 +61,33 @@ int main(int, char* [])
 
         try
         {
-                ocl::manager_t theocl;
+                theocl.init();
+                theocl.select(CL_DEVICE_TYPE_GPU);
 
-                const auto context = theocl.make_context();
-                const auto queue = theocl.make_command_queue(context);
-
-                const size_t trials = 16;
-                const size_t minsize = 32;
-                const size_t maxsize = 32 * 1024;
-
-                table_t table("vector size \\ GPU operation");
-                table.header() << "write [ns]" << "read [ns]";
-
-                // try various data sizes
-                for (size_t size = minsize; size <= maxsize; size *= 2)
+                const auto min_dims = tensor_size_t(8);
+                const auto max_dims = tensor_size_t(1024);
+                const auto foreach_dims = [&] (const auto& op)
                 {
-                        vector_t a(size);
-                        vector_t b(size);
-
-                        const auto array_size = size * sizeof(scalar_t);
-                        const auto abuffer = theocl.make_buffer(context, array_size, CL_MEM_READ_WRITE);
-
-                        a.setRandom();
-                        b.setRandom();
-
-                        // write to GPU
-                        const auto write_ns = nano::measure_robustly_nsec([&] ()
+                        for (tensor_size_t dims = min_dims; dims <= max_dims; dims *= 2)
                         {
-                                queue.enqueueWriteBuffer(abuffer, CL_TRUE, 0, array_size, a.data());
-                        }, trials).count();
-
-                        // read from GPU
-                        const auto read_ns = nano::measure_robustly_nsec([&] ()
-                        {
-                                queue.enqueueReadBuffer(abuffer, CL_TRUE, 0, array_size, b.data());
-                        }, trials).count();
-
-                        // check buffers
-                        if ((a - b).lpNorm<Eigen::Infinity>() > nano::epsilon0<scalar_t>())
-                        {
-                                log_error() << "copying to/from GPU failed!";
+                                op(dims);
                         }
+                };
+                const auto fillrow = [&] (auto&& row, const auto& op)
+                {
+                        foreach_dims([&] (const auto dims)
+                        {
+                                row << op(dims);
+                        });
+                };
 
-                        table.append(size) << write_ns << read_ns;
-                }
+                table_t table("operation\\dimensions [GFLOPS]");
+                foreach_dims([&] (const auto dims) { table.header() << to_string(dims); });
 
+                fillrow(table.append("read"), measure_read);
+                fillrow(table.append("write"), measure_write);
+
+                table.mark(nano::make_table_mark_maximum_percentage_cols<scalar_t>(10));
                 table.print(std::cout);
         }
 

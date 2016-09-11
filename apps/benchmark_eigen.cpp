@@ -13,12 +13,7 @@ namespace
         using namespace nano;
 
         nano::random_t<scalar_t> rng(scalar_t(-1e-3), scalar_t(+1e-3));
-        const std::size_t trials = 16;
-
-        auto get(const tensor_size_t flops, const picoseconds_t& duration)
-        {
-                return nano::gflops(flops, duration);
-        }
+        const size_t trials = 16;
 
         auto measure_sum(const tensor_size_t dims)
         {
@@ -31,7 +26,7 @@ namespace
                         z += x.sum();
                 }, trials);
 
-                return get(dims, duration);
+                return nano::gflops(dims, duration);
         }
 
         auto measure_dot(const tensor_size_t dims)
@@ -46,7 +41,7 @@ namespace
                         z += x.dot(y);
                 }, trials);
 
-                return get(2 * dims, duration);
+                return nano::gflops(2 * dims, duration);
         }
 
         auto measure_sumv0(const tensor_size_t dims)
@@ -60,7 +55,7 @@ namespace
                 }, trials);
                 NANO_UNUSED1(z);
 
-                return get(dims, duration);
+                return nano::gflops(dims, duration);
         }
 
         auto measure_sumv1(const tensor_size_t dims)
@@ -76,7 +71,7 @@ namespace
                 }, trials);
                 NANO_UNUSED1(z);
 
-                return get(2 * dims, duration);
+                return nano::gflops(2 * dims, duration);
         }
 
         auto measure_sumv2(const tensor_size_t dims)
@@ -93,7 +88,7 @@ namespace
                 }, trials);
                 NANO_UNUSED1(z);
 
-                return get(4 * dims, duration);
+                return nano::gflops(4 * dims, duration);
         }
 
         auto measure_mulv(const tensor_size_t dims)
@@ -110,7 +105,7 @@ namespace
                 }, trials);
                 NANO_UNUSED1(z);
 
-                return get(dims * dims + dims, duration);
+                return nano::gflops(dims * dims + dims, duration);
         }
 
         auto measure_mulm(const tensor_size_t dims)
@@ -127,7 +122,7 @@ namespace
                 }, trials);
                 NANO_UNUSED1(z);
 
-                return get(dims * dims * dims + dims * dims, duration);
+                return nano::gflops(dims * dims * dims + dims * dims, duration);
         }
 
         auto measure_outv(const tensor_size_t dims)
@@ -144,7 +139,7 @@ namespace
                 }, trials);
                 NANO_UNUSED1(z);
 
-                return get(2 * dims * dims, duration);
+                return nano::gflops(2 * dims * dims, duration);
         }
 }
 

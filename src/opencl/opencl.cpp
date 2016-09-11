@@ -7,7 +7,7 @@
 
 namespace nano
 {
-        ocl::manager_t::manager_t()
+        void ocl::manager_t::init()
         {
                 const cl_int ret = cl::Platform::get(&m_platforms);
                 if (m_platforms.empty() || ret != CL_SUCCESS)
@@ -85,8 +85,6 @@ namespace nano
                                 log_info() << base << "CL_DEVICE_MAX_PARAMETER_SIZE: " << maxkparams;
                         }
                 }
-
-                select(CL_DEVICE_TYPE_GPU);
         }
 
         bool ocl::manager_t::select(const cl_device_type type)
@@ -128,32 +126,25 @@ namespace nano
                 log_info()
                         << "selected OpenCL device " << device.getInfo<CL_DEVICE_NAME>()
                         << " of type " << ocl::device_type_string(device.getInfo<CL_DEVICE_TYPE>()) << ".";
+
                 m_device = device;
+                m_context = cl::Context({m_device});
+                m_command_queue = cl::CommandQueue(m_context, m_device, 0);
         }
 
-        cl::Context ocl::manager_t::make_context() const
+        cl::Program ocl::manager_t::make_program_from_file(const std::string& filepath) const
         {
-                return cl::Context({m_device});
+                return make_program_from_text(ocl::load_text_file(filepath));
         }
 
-        cl::CommandQueue ocl::manager_t::make_command_queue(const cl::Context& context) const
-        {
-                return cl::CommandQueue(context, m_device, 0);
-        }
-
-        cl::Program ocl::manager_t::make_program_from_file(const cl::Context& context, const std::string& filepath) const
-        {
-                return make_program_from_text(context, ocl::load_text_file(filepath));
-        }
-
-        cl::Program ocl::manager_t::make_program_from_text(const cl::Context& context, const std::string& source) const
+        cl::Program ocl::manager_t::make_program_from_text(const std::string& source) const
         {
                 cl::Program::Sources sources(1, source);
-                cl::Program program = cl::Program(context, sources);
+                cl::Program program = cl::Program(m_context, sources);
 
                 try
                 {
-                        program.build(m_devices, "-cl-mad-enable");//, "-cl-fast-relaxed-math");
+                        program.build({m_device}, "-cl-mad-enable");//, "-cl-fast-relaxed-math");
                 }
                 catch (cl::Error& e)
                 {
@@ -174,9 +165,9 @@ namespace nano
                 return cl::Kernel(program, name.c_str());
         }
 
-        cl::Buffer ocl::manager_t::make_buffer(const cl::Context& context, size_t bytesize, cl_mem_flags flags) const
+        cl::Buffer ocl::manager_t::make_buffer(const size_t bytesize, cl_mem_flags flags) const
         {
-                return cl::Buffer(context, flags, bytesize);
+                return cl::Buffer(m_context, flags, bytesize);
         }
 
         const char* ocl::device_type_string(const cl_device_type type)
