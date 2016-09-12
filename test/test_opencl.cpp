@@ -95,4 +95,50 @@ NANO_CASE(mul_mv)
         }
 }
 
+NANO_CASE(mul_mm)
+{
+        opencl_manager_t theocl;
+        NANO_REQUIRE_NOTHROW(theocl.init());
+        NANO_REQUIRE_NOTHROW(theocl.select(CL_DEVICE_TYPE_GPU));
+
+        cl::Program program;
+        NANO_REQUIRE_NOTHROW(program = theocl.make_program_from_text(opencl_kernels()));
+
+        cl::Kernel kernel;
+        NANO_REQUIRE_NOTHROW(kernel = theocl.make_kernel(program, "mul_mm"));
+
+        for (int test = 0; test < n_tests; ++ test)
+        {
+                const auto rowsA = rng_size();
+                const auto colsA = rng_size();
+                const auto rowsB = colsA;
+                const auto colsB = rng_size();
+
+                matrix_t A(rowsA, colsA);
+                matrix_t B(rowsB, colsB);
+                matrix_t C(rowsA, colsB);
+                tensor::set_random(rng_value, A, B, C);
+
+                cl::Buffer Abuffer = theocl.make_buffer(A, CL_MEM_READ_WRITE);
+                cl::Buffer Bbuffer = theocl.make_buffer(B, CL_MEM_READ_WRITE);
+                cl::Buffer Cbuffer = theocl.make_buffer(C, CL_MEM_READ_ONLY);
+
+                kernel.setArg(0, Abuffer);
+                kernel.setArg(1, static_cast<int>(colsA));
+                kernel.setArg(2, Bbuffer);
+                kernel.setArg(3, static_cast<int>(colsB));
+                kernel.setArg(4, Cbuffer);
+
+                NANO_CHECK(theocl.write(Abuffer, A) == CL_SUCCESS);
+                NANO_CHECK(theocl.write(Bbuffer, B) == CL_SUCCESS);
+
+                cl::CommandQueue& queue = theocl.command_queue();
+                queue.enqueueNDRangeKernel(kernel, cl::NullRange, cl::NDRange(size_t(rowsA), size_t(colsB)), cl::NullRange);
+                queue.finish();
+
+                NANO_CHECK(theocl.read(Cbuffer, C) == CL_SUCCESS);
+                NANO_CHECK_EIGEN_CLOSE((A * B), C, nano::epsilon0<scalar_t>());
+        }
+}
+
 NANO_END_MODULE()

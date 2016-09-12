@@ -31,6 +31,22 @@ namespace nano
                         y[row] = sum;
                 }
 
+                // multiply a matrix by a matrix: C = A * B
+                __kernel void mul_mm(
+                        __global const float* A, const int colsA,
+                        __global const float* B, const int colsB,
+                        __global float* C)
+                {
+                        const int rowA = get_global_id(0);
+                        const int colB = get_global_id(1);
+                        float sum = 0;
+                        for (int colA = 0; colA < colsA; ++ colA)
+                        {
+                                sum += A[rowA * colsA + colA] * B[colA * colsB + colB];
+                        }
+                        C[rowA * colsB + colB] = sum;
+                }
+
                 )xxx";
         }
 }
