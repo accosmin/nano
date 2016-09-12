@@ -14,15 +14,17 @@ auto n_tests = 11;
 
 NANO_BEGIN_MODULE(test_opencl)
 
+opencl_manager_t theocl;
+NANO_REQUIRE_NOTHROW(theocl.init());
+NANO_REQUIRE_NOTHROW(theocl.select(CL_DEVICE_TYPE_GPU));
+
+cl::Program program;
+NANO_REQUIRE_NOTHROW(program = theocl.make_program_from_text(opencl_kernels()));
+
+cl::CommandQueue& queue = theocl.command_queue();
+
 NANO_CASE(add_vv)
 {
-        opencl_manager_t theocl;
-        NANO_REQUIRE_NOTHROW(theocl.init());
-        NANO_REQUIRE_NOTHROW(theocl.select(CL_DEVICE_TYPE_GPU));
-
-        cl::Program program;
-        NANO_REQUIRE_NOTHROW(program = theocl.make_program_from_text(opencl_kernels()));
-
         cl::Kernel kernel;
         NANO_REQUIRE_NOTHROW(kernel = theocl.make_kernel(program, "add_vv"));
 
@@ -44,7 +46,6 @@ NANO_CASE(add_vv)
                 NANO_CHECK(theocl.write(xbuffer, x) == CL_SUCCESS);
                 NANO_CHECK(theocl.write(ybuffer, y) == CL_SUCCESS);
 
-                cl::CommandQueue& queue = theocl.command_queue();
                 queue.enqueueNDRangeKernel(kernel, cl::NullRange, cl::NDRange(size_t(dims)), cl::NullRange);
                 queue.finish();
 
@@ -55,13 +56,6 @@ NANO_CASE(add_vv)
 
 NANO_CASE(mul_mv)
 {
-        opencl_manager_t theocl;
-        NANO_REQUIRE_NOTHROW(theocl.init());
-        NANO_REQUIRE_NOTHROW(theocl.select(CL_DEVICE_TYPE_GPU));
-
-        cl::Program program;
-        NANO_REQUIRE_NOTHROW(program = theocl.make_program_from_text(opencl_kernels()));
-
         cl::Kernel kernel;
         NANO_REQUIRE_NOTHROW(kernel = theocl.make_kernel(program, "mul_mv"));
 
@@ -86,7 +80,6 @@ NANO_CASE(mul_mv)
                 NANO_CHECK(theocl.write(Abuffer, A) == CL_SUCCESS);
                 NANO_CHECK(theocl.write(xbuffer, x) == CL_SUCCESS);
 
-                cl::CommandQueue& queue = theocl.command_queue();
                 queue.enqueueNDRangeKernel(kernel, cl::NullRange, cl::NDRange(size_t(rows)), cl::NullRange);
                 queue.finish();
 
@@ -97,13 +90,6 @@ NANO_CASE(mul_mv)
 
 NANO_CASE(mul_mm)
 {
-        opencl_manager_t theocl;
-        NANO_REQUIRE_NOTHROW(theocl.init());
-        NANO_REQUIRE_NOTHROW(theocl.select(CL_DEVICE_TYPE_GPU));
-
-        cl::Program program;
-        NANO_REQUIRE_NOTHROW(program = theocl.make_program_from_text(opencl_kernels()));
-
         cl::Kernel kernel;
         NANO_REQUIRE_NOTHROW(kernel = theocl.make_kernel(program, "mul_mm"));
 
@@ -132,7 +118,6 @@ NANO_CASE(mul_mm)
                 NANO_CHECK(theocl.write(Abuffer, A) == CL_SUCCESS);
                 NANO_CHECK(theocl.write(Bbuffer, B) == CL_SUCCESS);
 
-                cl::CommandQueue& queue = theocl.command_queue();
                 queue.enqueueNDRangeKernel(kernel, cl::NullRange, cl::NDRange(size_t(rowsA), size_t(colsB)), cl::NullRange);
                 queue.finish();
 
