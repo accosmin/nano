@@ -14,7 +14,6 @@ namespace
         using namespace nano;
 
         opencl_manager_t theocl;
-        cl::CommandQueue& queue = theocl.command_queue();
 
         nano::random_t<scalar_t> rng(scalar_t(-1e-3), scalar_t(+1e-3));
         const size_t trials = 16;
@@ -24,13 +23,13 @@ namespace
                 vector_t x(dims);
                 tensor::set_random(rng, x);
 
-                cl::Buffer buffer = theocl.make_buffer(tensor_size(x), CL_MEM_READ_WRITE);
-                queue.enqueueWriteBuffer(buffer, CL_TRUE, 0, tensor_size(x), x.data());
+                cl::Buffer buffer = theocl.make_buffer(x, CL_MEM_READ_WRITE);
+                theocl.write(buffer, x);
 
                 volatile scalar_t z = 0;
                 const auto duration = nano::measure_robustly_psec([&] ()
                 {
-                        queue.enqueueReadBuffer(buffer, CL_TRUE, 0, tensor_size(x), x.data());
+                        theocl.read(buffer, x);
                         ++ z;
                 }, trials);
 
@@ -42,12 +41,12 @@ namespace
                 vector_t x(dims);
                 tensor::set_random(rng, x);
 
-                cl::Buffer buffer = theocl.make_buffer(tensor_size(x), CL_MEM_READ_WRITE);
+                cl::Buffer buffer = theocl.make_buffer(x, CL_MEM_READ_WRITE);
 
                 volatile scalar_t z = 0;
                 const auto duration = nano::measure_robustly_psec([&] ()
                 {
-                        queue.enqueueWriteBuffer(buffer, CL_TRUE, 0, tensor_size(x), x.data());
+                        theocl.write(buffer, x);
                         ++ z;
                 }, trials);
 

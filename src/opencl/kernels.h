@@ -6,7 +6,7 @@ namespace nano
         {
                 return R"xxx(
 
-                // adds two vectors: z = x + y
+                // add two vectors: z = x + y
                 __kernel void add_vv(
                         __global const float* x,
                         __global const float* y,
@@ -16,7 +16,7 @@ namespace nano
                         z[i] = x[i] + y[i];
                 }
 
-                // multiple a matrix by a vector: y = A * x
+                // multiply a matrix by a vector: y = A * x
                 __kernel void mul_mv(
                         __global const float* A, const int cols,
                         __global const float* x,

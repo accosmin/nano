@@ -33,23 +33,22 @@ NANO_CASE(add_vv)
                 vector_t x(dims), y(dims), z(dims);
                 tensor::set_random(rng_value, x, y, z);
 
-                cl::Buffer xbuffer = theocl.make_buffer(tensor_size(x), CL_MEM_READ_WRITE);
-                cl::Buffer ybuffer = theocl.make_buffer(tensor_size(y), CL_MEM_READ_WRITE);
-                cl::Buffer zbuffer = theocl.make_buffer(tensor_size(z), CL_MEM_READ_ONLY);
+                cl::Buffer xbuffer = theocl.make_buffer(x, CL_MEM_READ_WRITE);
+                cl::Buffer ybuffer = theocl.make_buffer(y, CL_MEM_READ_WRITE);
+                cl::Buffer zbuffer = theocl.make_buffer(z, CL_MEM_READ_ONLY);
 
                 kernel.setArg(0, xbuffer);
                 kernel.setArg(1, ybuffer);
                 kernel.setArg(2, zbuffer);
 
-                cl::CommandQueue& queue = theocl.command_queue();
-                queue.enqueueWriteBuffer(xbuffer, CL_FALSE, 0, tensor_size(x), x.data());
-                queue.enqueueWriteBuffer(ybuffer, CL_FALSE, 0, tensor_size(y), y.data());
-                queue.finish();
+                NANO_CHECK(theocl.write(xbuffer, x) == CL_SUCCESS);
+                NANO_CHECK(theocl.write(ybuffer, y) == CL_SUCCESS);
 
+                cl::CommandQueue& queue = theocl.command_queue();
                 queue.enqueueNDRangeKernel(kernel, cl::NullRange, cl::NDRange(size_t(dims)), cl::NullRange);
                 queue.finish();
 
-                queue.enqueueReadBuffer(zbuffer, CL_TRUE, 0, tensor_size(z), z.data());
+                NANO_CHECK(theocl.read(zbuffer, z) == CL_SUCCESS);
                 NANO_CHECK_EIGEN_CLOSE((x + y), z, nano::epsilon0<scalar_t>());
         }
 }
@@ -75,24 +74,23 @@ NANO_CASE(mul_mv)
                 vector_t x(cols), y(rows);
                 tensor::set_random(rng_value, x, y, A);
 
-                cl::Buffer Abuffer = theocl.make_buffer(tensor_size(A), CL_MEM_READ_WRITE);
-                cl::Buffer xbuffer = theocl.make_buffer(tensor_size(x), CL_MEM_READ_WRITE);
-                cl::Buffer ybuffer = theocl.make_buffer(tensor_size(y), CL_MEM_READ_ONLY);
+                cl::Buffer Abuffer = theocl.make_buffer(A, CL_MEM_READ_WRITE);
+                cl::Buffer xbuffer = theocl.make_buffer(x, CL_MEM_READ_WRITE);
+                cl::Buffer ybuffer = theocl.make_buffer(y, CL_MEM_READ_ONLY);
 
                 kernel.setArg(0, Abuffer);
                 kernel.setArg(1, static_cast<int>(cols));
                 kernel.setArg(2, xbuffer);
                 kernel.setArg(3, ybuffer);
 
-                cl::CommandQueue& queue = theocl.command_queue();
-                queue.enqueueWriteBuffer(Abuffer, CL_FALSE, 0, tensor_size(A), A.data());
-                queue.enqueueWriteBuffer(xbuffer, CL_FALSE, 0, tensor_size(x), x.data());
-                queue.finish();
+                NANO_CHECK(theocl.write(Abuffer, A) == CL_SUCCESS);
+                NANO_CHECK(theocl.write(xbuffer, x) == CL_SUCCESS);
 
+                cl::CommandQueue& queue = theocl.command_queue();
                 queue.enqueueNDRangeKernel(kernel, cl::NullRange, cl::NDRange(size_t(rows)), cl::NullRange);
                 queue.finish();
 
-                queue.enqueueReadBuffer(ybuffer, CL_TRUE, 0, tensor_size(y), y.data());
+                NANO_CHECK(theocl.read(ybuffer, y) == CL_SUCCESS);
                 NANO_CHECK_EIGEN_CLOSE((A * x), y, nano::epsilon0<scalar_t>());
         }
 }
