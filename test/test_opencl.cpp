@@ -8,24 +8,25 @@
 
 using namespace nano;
 
-auto rng_size = nano::make_rng<tensor_size_t>(1, 1024);
-auto rng_value = nano::make_rng<scalar_t>(-1, +1);
+auto rng_size = nano::make_rng<tensor_size_t>(1, 137);
+auto rng_value = nano::make_rng<scalar_t>(scalar_t(-0.1), scalar_t(+0.1));
+auto n_tests = 11;
 
 NANO_BEGIN_MODULE(test_opencl)
 
-NANO_CASE(addv)
+NANO_CASE(add_vv)
 {
         opencl_manager_t theocl;
         NANO_REQUIRE_NOTHROW(theocl.init());
         NANO_REQUIRE_NOTHROW(theocl.select(CL_DEVICE_TYPE_GPU));
 
         cl::Program program;
-        NANO_REQUIRE_NOTHROW(program = theocl.make_program_from_text(opencl_kernel_addv()));
+        NANO_REQUIRE_NOTHROW(program = theocl.make_program_from_text(opencl_kernels()));
 
         cl::Kernel kernel;
-        NANO_REQUIRE_NOTHROW(kernel = theocl.make_kernel(program, "addv"));
+        NANO_REQUIRE_NOTHROW(kernel = theocl.make_kernel(program, "add_vv"));
 
-        for (int test = 0; test < 11; ++ test)
+        for (int test = 0; test < n_tests; ++ test)
         {
                 const auto dims = rng_size();
 
@@ -50,6 +51,49 @@ NANO_CASE(addv)
 
                 queue.enqueueReadBuffer(zbuffer, CL_TRUE, 0, tensor_size(z), z.data());
                 NANO_CHECK_EIGEN_CLOSE((x + y), z, nano::epsilon0<scalar_t>());
+        }
+}
+
+NANO_CASE(mul_mv)
+{
+        opencl_manager_t theocl;
+        NANO_REQUIRE_NOTHROW(theocl.init());
+        NANO_REQUIRE_NOTHROW(theocl.select(CL_DEVICE_TYPE_GPU));
+
+        cl::Program program;
+        NANO_REQUIRE_NOTHROW(program = theocl.make_program_from_text(opencl_kernels()));
+
+        cl::Kernel kernel;
+        NANO_REQUIRE_NOTHROW(kernel = theocl.make_kernel(program, "mul_mv"));
+
+        for (int test = 0; test < n_tests; ++ test)
+        {
+                const auto rows = rng_size();
+                const auto cols = rng_size();
+
+                matrix_t A(rows, cols);
+                vector_t x(cols), y(rows);
+                tensor::set_random(rng_value, x, y, A);
+
+                cl::Buffer Abuffer = theocl.make_buffer(tensor_size(A), CL_MEM_READ_WRITE);
+                cl::Buffer xbuffer = theocl.make_buffer(tensor_size(x), CL_MEM_READ_WRITE);
+                cl::Buffer ybuffer = theocl.make_buffer(tensor_size(y), CL_MEM_READ_ONLY);
+
+                kernel.setArg(0, Abuffer);
+                kernel.setArg(1, static_cast<int>(cols));
+                kernel.setArg(2, xbuffer);
+                kernel.setArg(3, ybuffer);
+
+                cl::CommandQueue& queue = theocl.command_queue();
+                queue.enqueueWriteBuffer(Abuffer, CL_FALSE, 0, tensor_size(A), A.data());
+                queue.enqueueWriteBuffer(xbuffer, CL_FALSE, 0, tensor_size(x), x.data());
+                queue.finish();
+
+                queue.enqueueNDRangeKernel(kernel, cl::NullRange, cl::NDRange(size_t(rows)), cl::NullRange);
+                queue.finish();
+
+                queue.enqueueReadBuffer(ybuffer, CL_TRUE, 0, tensor_size(y), y.data());
+                NANO_CHECK_EIGEN_CLOSE((A * x), y, nano::epsilon0<scalar_t>());
         }
 }
 
