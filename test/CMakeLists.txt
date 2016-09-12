@@ -54,3 +54,7 @@ build_test_app(test_stl10.cpp nano)
 build_test_app(test_mnist.cpp nano)
 build_test_app(test_cifar10.cpp nano)
 build_test_app(test_cifar100.cpp nano)
+
+if(NANO_WITH_OPENCL)
+build_test_app(test_opencl.cpp nano)
+endif()

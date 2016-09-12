@@ -83,6 +83,23 @@ int main(int, char* []) \
 #define NANO_REQUIRE_THROW(call, exception) \
         NANO_THROW(call, exception, true)
 
+#define NANO_NOTHROW(call, critical) \
+        ++ n_checks; \
+        try \
+        { \
+                call; \
+        } \
+        catch (...) \
+        { \
+                NANO_HANDLE_FAILURE() \
+                        << "]: call {" << NANO_STRINGIFY(call) << "} throws!" << std::endl; \
+                NANO_HANDLE_CRITICAL(critical) \
+        }
+#define NANO_CHECK_NOTHROW(call) \
+        NANO_NOTHROW(call, false)
+#define NANO_REQUIRE_NOTHROW(call) \
+        NANO_NOTHROW(call, true)
+
 #define NANO_EVALUATE_BINARY_OP(left, right, op, critical) \
         ++ n_checks; \
         if (!((left) op (right))) \

@@ -13,7 +13,7 @@ namespace
 {
         using namespace nano;
 
-        ocl::manager_t theocl;
+        opencl_manager_t theocl;
         cl::CommandQueue& queue = theocl.command_queue();
 
         nano::random_t<scalar_t> rng(scalar_t(-1e-3), scalar_t(+1e-3));
@@ -24,13 +24,13 @@ namespace
                 vector_t x(dims);
                 tensor::set_random(rng, x);
 
-                cl::Buffer buffer = theocl.make_buffer(ocl::byte_size(x), CL_MEM_READ_WRITE);
-                queue.enqueueWriteBuffer(buffer, CL_TRUE, 0, ocl::byte_size(x), x.data());
+                cl::Buffer buffer = theocl.make_buffer(tensor_size(x), CL_MEM_READ_WRITE);
+                queue.enqueueWriteBuffer(buffer, CL_TRUE, 0, tensor_size(x), x.data());
 
                 volatile scalar_t z = 0;
                 const auto duration = nano::measure_robustly_psec([&] ()
                 {
-                        queue.enqueueReadBuffer(buffer, CL_TRUE, 0, ocl::byte_size(x), x.data());
+                        queue.enqueueReadBuffer(buffer, CL_TRUE, 0, tensor_size(x), x.data());
                         ++ z;
                 }, trials);
 
@@ -42,12 +42,12 @@ namespace
                 vector_t x(dims);
                 tensor::set_random(rng, x);
 
-                cl::Buffer buffer = theocl.make_buffer(ocl::byte_size(x), CL_MEM_READ_WRITE);
+                cl::Buffer buffer = theocl.make_buffer(tensor_size(x), CL_MEM_READ_WRITE);
 
                 volatile scalar_t z = 0;
                 const auto duration = nano::measure_robustly_psec([&] ()
                 {
-                        queue.enqueueWriteBuffer(buffer, CL_TRUE, 0, ocl::byte_size(x), x.data());
+                        queue.enqueueWriteBuffer(buffer, CL_TRUE, 0, tensor_size(x), x.data());
                         ++ z;
                 }, trials);
 
@@ -93,7 +93,7 @@ int main(int, char* [])
 
         catch (cl::Error& e)
         {
-                log_error() << "OpenCL fatal error: <" << e.what() << "> (" << ocl::error_string(e.err()) << ")!";
+                log_error() << "OpenCL fatal error: <" << e.what() << "> (" << error_string(e.err()) << ")!";
                 return EXIT_FAILURE;
         }
 

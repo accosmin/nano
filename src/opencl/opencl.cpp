@@ -7,7 +7,7 @@
 
 namespace nano
 {
-        void ocl::manager_t::init()
+        void opencl_manager_t::init()
         {
                 const cl_int ret = cl::Platform::get(&m_platforms);
                 if (m_platforms.empty() || ret != CL_SUCCESS)
@@ -46,7 +46,7 @@ namespace nano
                                 const std::string vendor = device.getInfo<CL_DEVICE_VENDOR>();
                                 const std::string driver = device.getInfo<CL_DRIVER_VERSION>();
                                 const std::string version = device.getInfo<CL_DEVICE_VERSION>();
-                                const std::string type = ocl::device_type_string(device.getInfo<CL_DEVICE_TYPE>());
+                                const std::string type = device_type_string(device.getInfo<CL_DEVICE_TYPE>());
 
                                 const size_t gmemsize = device.getInfo<CL_DEVICE_GLOBAL_MEM_SIZE>();
                                 const size_t lmemsize = device.getInfo<CL_DEVICE_LOCAL_MEM_SIZE>();
@@ -87,7 +87,7 @@ namespace nano
                 }
         }
 
-        bool ocl::manager_t::select(const cl_device_type type)
+        bool opencl_manager_t::select(const cl_device_type type)
         {
                 // <number of compute units, index>
                 std::map<size_t, size_t, std::greater<size_t>> cuByIndex;
@@ -121,23 +121,35 @@ namespace nano
                 }
         }
 
-        void ocl::manager_t::select(const cl::Device& device)
+        void opencl_manager_t::select(const cl::Device& device)
         {
                 log_info()
                         << "selected OpenCL device " << device.getInfo<CL_DEVICE_NAME>()
-                        << " of type " << ocl::device_type_string(device.getInfo<CL_DEVICE_TYPE>()) << ".";
+                        << " of type " << device_type_string(device.getInfo<CL_DEVICE_TYPE>()) << ".";
 
                 m_device = device;
                 m_context = cl::Context({m_device});
                 m_command_queue = cl::CommandQueue(m_context, m_device, 0);
         }
 
-        cl::Program ocl::manager_t::make_program_from_file(const std::string& filepath) const
+        cl::Program opencl_manager_t::make_program_from_file(const std::string& filepath) const
         {
-                return make_program_from_text(ocl::load_text_file(filepath));
+                std::ifstream file(filepath, std::ios::in);
+
+                if (file.is_open())
+                {
+                        std::ostringstream oss;
+                        oss << file.rdbuf();
+                        return make_program_from_text(oss.str());
+                }
+
+                else
+                {
+                        return make_program_from_text("cannot load file!");
+                }
         }
 
-        cl::Program ocl::manager_t::make_program_from_text(const std::string& source) const
+        cl::Program opencl_manager_t::make_program_from_text(const std::string& source) const
         {
                 cl::Program::Sources sources(1, source);
                 cl::Program program = cl::Program(m_context, sources);
@@ -160,17 +172,28 @@ namespace nano
                 return program;
         }
 
-        cl::Kernel ocl::manager_t::make_kernel(const cl::Program& program, const std::string& name) const
+        cl::Kernel opencl_manager_t::make_kernel(const cl::Program& program, const std::string& name) const
         {
-                return cl::Kernel(program, name.c_str());
+                try
+                {
+                        return cl::Kernel(program, name.c_str());
+                }
+                catch (cl::Error& e)
+                {
+                        // load kernel errors
+                        log_error() << "OpenCL kernel error: " << error_string(e.err());
+
+                        // and re-throw the exception
+                        throw cl::Error(e.err());
+                }
         }
 
-        cl::Buffer ocl::manager_t::make_buffer(const size_t bytesize, cl_mem_flags flags) const
+        cl::Buffer opencl_manager_t::make_buffer(const size_t bytesize, cl_mem_flags flags) const
         {
                 return cl::Buffer(m_context, flags, bytesize);
         }
 
-        const char* ocl::device_type_string(const cl_device_type type)
+        const char* device_type_string(const cl_device_type type)
         {
                 switch (type)
                 {
@@ -183,7 +206,7 @@ namespace nano
                 }
         }
 
-        const char* ocl::error_string(const cl_int error)
+        const char* error_string(const cl_int error)
         {
                 static const char* errorString[] =
                 {
@@ -257,23 +280,6 @@ namespace nano
 
                 const int index = -error;
                 return (index >= 0 && index < errorCount) ? errorString[index] : "";
-        }
-
-        std::string ocl::load_text_file(const std::string& filepath)
-        {
-                std::ifstream file(filepath, std::ios::in);
-
-                if (file.is_open())
-                {
-                        std::ostringstream oss;
-                        oss << file.rdbuf();
-                        return oss.str();
-                }
-
-                else
-                {
-                        return std::string();
-                }
         }
 }
 
