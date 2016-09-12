@@ -1,8 +1,7 @@
-#include "opencl.h"
 #include "logger.h"
+#include "manager.h"
 #include <fstream>
 #include <sstream>
-#include <cassert>
 #include <map>
 
 namespace nano

@@ -1,8 +1,8 @@
 #include "utest.hpp"
 #include "tensor.h"
 #include "math/random.hpp"
-#include "opencl/opencl.h"
 #include "opencl/kernels.h"
+#include "opencl/manager.h"
 #include "math/epsilon.hpp"
 #include "tensor/numeric.hpp"
 

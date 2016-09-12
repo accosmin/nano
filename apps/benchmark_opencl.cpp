@@ -2,8 +2,8 @@
 #include "tensor.h"
 #include "measure.hpp"
 #include "text/table.h"
-#include "opencl/opencl.h"
 #include "math/random.hpp"
+#include "opencl/manager.h"
 #include "tensor/numeric.hpp"
 #include "text/table_row_mark.h"
 #include <iomanip>
