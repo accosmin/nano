@@ -20,10 +20,10 @@ NANO_CASE(addv)
         NANO_REQUIRE_NOTHROW(theocl.select(CL_DEVICE_TYPE_GPU));
 
         cl::Program program;
-        NANO_REQUIRE_NOTHROW(theocl.make_program_from_text(opencl_kernel_addv()));
+        NANO_REQUIRE_NOTHROW(program = theocl.make_program_from_text(opencl_kernel_addv()));
 
         cl::Kernel kernel;
-        NANO_REQUIRE_NOTHROW(theocl.make_kernel(program, "addv"));
+        NANO_REQUIRE_NOTHROW(kernel = theocl.make_kernel(program, "addv"));
 
         for (int test = 0; test < 11; ++ test)
         {
