@@ -78,9 +78,7 @@ NANO_CASE(vpc)
                 cl::Buffer xbuffer = theocl.make_buffer(x, CL_MEM_READ_WRITE);
                 cl::Buffer zbuffer = theocl.make_buffer(z, CL_MEM_READ_ONLY);
 
-                kernel_vpc.setArg(0, xbuffer);
-                kernel_vpc.setArg(1, c);
-                kernel_vpc.setArg(2, zbuffer);
+                NANO_REQUIRE_NOTHROW(nano::set_args(kernel_vpc, xbuffer, c, zbuffer));
 
                 NANO_CHECK(theocl.write(xbuffer, x) == CL_SUCCESS);
 
@@ -106,9 +104,7 @@ NANO_CASE(vpv)
                 cl::Buffer ybuffer = theocl.make_buffer(y, CL_MEM_READ_WRITE);
                 cl::Buffer zbuffer = theocl.make_buffer(z, CL_MEM_READ_ONLY);
 
-                kernel_vpv.setArg(0, xbuffer);
-                kernel_vpv.setArg(1, ybuffer);
-                kernel_vpv.setArg(2, zbuffer);
+                NANO_REQUIRE_NOTHROW(nano::set_args(kernel_vpv, xbuffer, ybuffer, zbuffer));
 
                 NANO_CHECK(theocl.write(xbuffer, x) == CL_SUCCESS);
                 NANO_CHECK(theocl.write(ybuffer, y) == CL_SUCCESS);
@@ -137,11 +133,7 @@ NANO_CASE(vcpvc)
                 cl::Buffer ybuffer = theocl.make_buffer(y, CL_MEM_READ_WRITE);
                 cl::Buffer zbuffer = theocl.make_buffer(z, CL_MEM_READ_ONLY);
 
-                kernel_vcpvc.setArg(0, xbuffer);
-                kernel_vcpvc.setArg(1, a);
-                kernel_vcpvc.setArg(2, ybuffer);
-                kernel_vcpvc.setArg(3, b);
-                kernel_vcpvc.setArg(4, zbuffer);
+                NANO_REQUIRE_NOTHROW(nano::set_args(kernel_vcpvc, xbuffer, a, ybuffer, b, zbuffer));
 
                 NANO_CHECK(theocl.write(xbuffer, x) == CL_SUCCESS);
                 NANO_CHECK(theocl.write(ybuffer, y) == CL_SUCCESS);
@@ -169,10 +161,7 @@ NANO_CASE(mv)
                 cl::Buffer xbuffer = theocl.make_buffer(x, CL_MEM_READ_WRITE);
                 cl::Buffer zbuffer = theocl.make_buffer(z, CL_MEM_READ_ONLY);
 
-                kernel_mv.setArg(0, Abuffer);
-                kernel_mv.setArg(1, static_cast<int>(cols));
-                kernel_mv.setArg(2, xbuffer);
-                kernel_mv.setArg(3, zbuffer);
+                NANO_REQUIRE_NOTHROW(nano::set_args(kernel_mv, Abuffer, static_cast<int>(cols), xbuffer, zbuffer));
 
                 NANO_CHECK(theocl.write(Abuffer, A) == CL_SUCCESS);
                 NANO_CHECK(theocl.write(xbuffer, x) == CL_SUCCESS);
@@ -201,11 +190,7 @@ NANO_CASE(mvpc)
                 cl::Buffer xbuffer = theocl.make_buffer(x, CL_MEM_READ_WRITE);
                 cl::Buffer zbuffer = theocl.make_buffer(z, CL_MEM_READ_ONLY);
 
-                kernel_mvpc.setArg(0, Abuffer);
-                kernel_mvpc.setArg(1, static_cast<int>(cols));
-                kernel_mvpc.setArg(2, xbuffer);
-                kernel_mvpc.setArg(3, c);
-                kernel_mvpc.setArg(4, zbuffer);
+                NANO_REQUIRE_NOTHROW(nano::set_args(kernel_mvpc, Abuffer, static_cast<int>(cols), xbuffer, c, zbuffer));
 
                 NANO_CHECK(theocl.write(Abuffer, A) == CL_SUCCESS);
                 NANO_CHECK(theocl.write(xbuffer, x) == CL_SUCCESS);
@@ -235,11 +220,7 @@ NANO_CASE(mvpv)
                 cl::Buffer ybuffer = theocl.make_buffer(y, CL_MEM_READ_WRITE);
                 cl::Buffer zbuffer = theocl.make_buffer(z, CL_MEM_READ_ONLY);
 
-                kernel_mvpv.setArg(0, Abuffer);
-                kernel_mvpv.setArg(1, static_cast<int>(cols));
-                kernel_mvpv.setArg(2, xbuffer);
-                kernel_mvpv.setArg(3, ybuffer);
-                kernel_mvpv.setArg(4, zbuffer);
+                NANO_REQUIRE_NOTHROW(nano::set_args(kernel_mvpv, Abuffer, static_cast<int>(cols), xbuffer, ybuffer, zbuffer));
 
                 NANO_CHECK(theocl.write(Abuffer, A) == CL_SUCCESS);
                 NANO_CHECK(theocl.write(xbuffer, x) == CL_SUCCESS);
@@ -270,11 +251,7 @@ NANO_CASE(mm)
                 cl::Buffer Bbuffer = theocl.make_buffer(B, CL_MEM_READ_WRITE);
                 cl::Buffer Zbuffer = theocl.make_buffer(Z, CL_MEM_READ_ONLY);
 
-                kernel_mm.setArg(0, Abuffer);
-                kernel_mm.setArg(1, static_cast<int>(colsA));
-                kernel_mm.setArg(2, Bbuffer);
-                kernel_mm.setArg(3, static_cast<int>(colsB));
-                kernel_mm.setArg(4, Zbuffer);
+                NANO_REQUIRE_NOTHROW(nano::set_args(kernel_mm, Abuffer, static_cast<int>(colsA), Bbuffer, static_cast<int>(colsB), Zbuffer));
 
                 NANO_CHECK(theocl.write(Abuffer, A) == CL_SUCCESS);
                 NANO_CHECK(theocl.write(Bbuffer, B) == CL_SUCCESS);

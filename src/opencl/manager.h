@@ -18,14 +18,39 @@
 namespace nano
 {
         ///
-        /// \brief map the given OpenCL error code to a string
+        /// \brief map the given OpenCL error code to a string.
         ///
         NANO_PUBLIC const char* error_string(const cl_int error);
 
         ///
-        /// \brief map the given device type to a string
+        /// \brief map the given device type to a string.
         ///
         NANO_PUBLIC const char* device_type_string(const cl_device_type type);
+
+        namespace detail
+        {
+                template <typename targ>
+                void set_args(cl::Kernel& kernel, const cl_uint index, const targ& arg)
+                {
+                        kernel.setArg(index, arg);
+                }
+
+                template <typename targ, typename... targs>
+                void set_args(cl::Kernel& kernel, const cl_uint index, const targ& arg, const targs&... args)
+                {
+                        kernel.setArg(index, arg);
+                        set_args(kernel, index + 1, args...);
+                }
+        }
+
+        ///
+        /// \brief set arguments to an OpenCL kernel.
+        ///
+        template <typename... targs>
+        void set_args(cl::Kernel& kernel, targs... args)
+        {
+                detail::set_args(kernel, 0, args...);
+        }
 
         ///
         /// \brief OpenCL instance: platform information, manages devices, command queue, kernels and buffers.
