@@ -67,6 +67,31 @@ namespace
                 return nano::gflops(dims, duration);
         }
 
+#ifdef NANO_WITH_OPENCL
+        auto measure_vpc_ocl(const tensor_size_t dims)
+        {
+                auto x = make_vector(dims);
+                auto c = make_scalar();
+                auto z = make_vector(dims);
+
+                cl::Buffer xbuffer = theocl.make_buffer(x, CL_MEM_READ_WRITE);
+                cl::Buffer zbuffer = theocl.make_buffer(z, CL_MEM_READ_ONLY);
+
+                nano::set_args(kernel_vpc, xbuffer, c, zbuffer);
+                theocl.write(xbuffer, x);
+
+                const auto duration = nano::measure_robustly_psec([&] ()
+                {
+                        queue.enqueueNDRangeKernel(kernel_vpc, cl::NullRange, cl::NDRange(size_t(dims)), cl::NullRange);
+                        queue.finish();
+                }, trials);
+
+                theocl.read(zbuffer, z);
+
+                return nano::gflops(dims, duration);
+        }
+#endif
+
         auto measure_vpv(const tensor_size_t dims)
         {
                 auto x = make_vector(dims);
@@ -81,6 +106,32 @@ namespace
                 return nano::gflops(dims, duration);
         }
 
+#ifdef NANO_WITH_OPENCL
+        auto measure_vpv_ocl(const tensor_size_t dims)
+        {
+                auto x = make_vector(dims);
+                auto y = make_vector(dims);
+                auto z = make_vector(dims);
+
+                cl::Buffer xbuffer = theocl.make_buffer(x, CL_MEM_READ_WRITE);
+                cl::Buffer ybuffer = theocl.make_buffer(y, CL_MEM_READ_WRITE);
+                cl::Buffer zbuffer = theocl.make_buffer(z, CL_MEM_READ_ONLY);
+
+                nano::set_args(kernel_vpv, xbuffer, ybuffer, zbuffer);
+                theocl.write(xbuffer, x);
+                theocl.write(ybuffer, y);
+
+                const auto duration = nano::measure_robustly_psec([&] ()
+                {
+                        queue.enqueueNDRangeKernel(kernel_vpv, cl::NullRange, cl::NDRange(size_t(dims)), cl::NullRange);
+                        queue.finish();
+                }, trials);
+
+                theocl.read(zbuffer, z);
+
+                return nano::gflops(dims, duration);
+        }
+#endif
         auto measure_vcpvc(const tensor_size_t dims)
         {
                 auto x = make_vector(dims); auto a = make_scalar();
@@ -95,6 +146,33 @@ namespace
                 return nano::gflops(3 * dims, duration);
         }
 
+#ifdef NANO_WITH_OPENCL
+        auto measure_vcpvc_ocl(const tensor_size_t dims)
+        {
+                auto x = make_vector(dims); auto a = make_scalar();
+                auto y = make_vector(dims); auto b = make_scalar();
+                auto z = make_vector(dims);
+
+                cl::Buffer xbuffer = theocl.make_buffer(x, CL_MEM_READ_WRITE);
+                cl::Buffer ybuffer = theocl.make_buffer(y, CL_MEM_READ_WRITE);
+                cl::Buffer zbuffer = theocl.make_buffer(z, CL_MEM_READ_ONLY);
+
+                nano::set_args(kernel_vcpvc, xbuffer, a, ybuffer, b, zbuffer);
+                theocl.write(xbuffer, x);
+                theocl.write(ybuffer, y);
+
+                const auto duration = nano::measure_robustly_psec([&] ()
+                {
+                        queue.enqueueNDRangeKernel(kernel_vcpvc, cl::NullRange, cl::NDRange(size_t(dims)), cl::NullRange);
+                        queue.finish();
+                }, trials);
+
+                theocl.read(zbuffer, z);
+
+                return nano::gflops(3 * dims, duration);
+        }
+#endif
+
         auto measure_mv(const tensor_size_t dims)
         {
                 auto A = make_matrix(dims, dims);
@@ -108,6 +186,33 @@ namespace
 
                 return nano::gflops(dims * dims, duration);
         }
+
+#ifdef NANO_WITH_OPENCL
+        auto measure_mv_ocl(const tensor_size_t dims)
+        {
+                auto A = make_matrix(dims, dims);
+                auto x = make_vector(dims);
+                auto z = make_vector(dims);
+
+                cl::Buffer Abuffer = theocl.make_buffer(A, CL_MEM_READ_WRITE);
+                cl::Buffer xbuffer = theocl.make_buffer(x, CL_MEM_READ_WRITE);
+                cl::Buffer zbuffer = theocl.make_buffer(z, CL_MEM_READ_ONLY);
+
+                nano::set_args(kernel_mv, Abuffer, int(dims), xbuffer, zbuffer);
+                theocl.write(Abuffer, A);
+                theocl.write(xbuffer, x);
+
+                const auto duration = nano::measure_robustly_psec([&] ()
+                {
+                        queue.enqueueNDRangeKernel(kernel_mv, cl::NullRange, cl::NDRange(size_t(dims)), cl::NullRange);
+                        queue.finish();
+                }, trials);
+
+                theocl.read(zbuffer, z);
+
+                return nano::gflops(dims * dims, duration);
+        }
+#endif
 
         auto measure_mvpc(const tensor_size_t dims)
         {
@@ -124,6 +229,34 @@ namespace
                 return nano::gflops(dims * dims + dims, duration);
         }
 
+#ifdef NANO_WITH_OPENCL
+        auto measure_mvpc_ocl(const tensor_size_t dims)
+        {
+                auto A = make_matrix(dims, dims);
+                auto x = make_vector(dims);
+                auto c = make_scalar();
+                auto z = make_vector(dims);
+
+                cl::Buffer Abuffer = theocl.make_buffer(A, CL_MEM_READ_WRITE);
+                cl::Buffer xbuffer = theocl.make_buffer(x, CL_MEM_READ_WRITE);
+                cl::Buffer zbuffer = theocl.make_buffer(z, CL_MEM_READ_ONLY);
+
+                nano::set_args(kernel_mvpc, Abuffer, int(dims), xbuffer, c, zbuffer);
+                theocl.write(Abuffer, A);
+                theocl.write(xbuffer, x);
+
+                const auto duration = nano::measure_robustly_psec([&] ()
+                {
+                        queue.enqueueNDRangeKernel(kernel_mvpc, cl::NullRange, cl::NDRange(size_t(dims)), cl::NullRange);
+                        queue.finish();
+                }, trials);
+
+                theocl.read(zbuffer, z);
+
+                return nano::gflops(dims * dims + dims, duration);
+        }
+#endif
+
         auto measure_mvpv(const tensor_size_t dims)
         {
                 auto A = make_matrix(dims, dims);
@@ -139,6 +272,36 @@ namespace
                 return nano::gflops(dims * dims + dims, duration);
         }
 
+#ifdef NANO_WITH_OPENCL
+        auto measure_mvpv_ocl(const tensor_size_t dims)
+        {
+                auto A = make_matrix(dims, dims);
+                auto x = make_vector(dims);
+                auto y = make_vector(dims);
+                auto z = make_vector(dims);
+
+                cl::Buffer Abuffer = theocl.make_buffer(A, CL_MEM_READ_WRITE);
+                cl::Buffer xbuffer = theocl.make_buffer(x, CL_MEM_READ_WRITE);
+                cl::Buffer ybuffer = theocl.make_buffer(y, CL_MEM_READ_WRITE);
+                cl::Buffer zbuffer = theocl.make_buffer(z, CL_MEM_READ_ONLY);
+
+                nano::set_args(kernel_mvpv, Abuffer, (int)dims, xbuffer, ybuffer, zbuffer);
+                theocl.write(Abuffer, A);
+                theocl.write(xbuffer, x);
+                theocl.write(ybuffer, y);
+
+                const auto duration = nano::measure_robustly_psec([&] ()
+                {
+                        queue.enqueueNDRangeKernel(kernel_mvpv, cl::NullRange, cl::NDRange(size_t(dims)), cl::NullRange);
+                        queue.finish();
+                }, trials);
+
+                theocl.read(zbuffer, z);
+
+                return nano::gflops(dims * dims + dims, duration);
+        }
+#endif
+
         auto measure_mm(const tensor_size_t dims)
         {
                 auto A = make_matrix(dims, dims);
@@ -152,6 +315,33 @@ namespace
 
                 return nano::gflops(dims * dims * dims, duration);
         }
+
+#ifdef NANO_WITH_OPENCL
+        auto measure_mm_ocl(const tensor_size_t dims)
+        {
+                auto A = make_matrix(dims, dims);
+                auto B = make_matrix(dims, dims);
+                auto Z = make_matrix(dims, dims);
+
+                cl::Buffer Abuffer = theocl.make_buffer(A, CL_MEM_READ_WRITE);
+                cl::Buffer Bbuffer = theocl.make_buffer(B, CL_MEM_READ_WRITE);
+                cl::Buffer Zbuffer = theocl.make_buffer(Z, CL_MEM_READ_ONLY);
+
+                nano::set_args(kernel_mm, Abuffer, (int)dims, Bbuffer, (int)dims, Zbuffer);
+                theocl.write(Abuffer, A);
+                theocl.write(Bbuffer, B);
+
+                const auto duration = nano::measure_robustly_psec([&] ()
+                {
+                        queue.enqueueNDRangeKernel(kernel_mm, cl::NullRange, cl::NDRange(size_t(dims), size_t(dims)), cl::NullRange);
+                        queue.finish();
+                }, trials);
+
+                theocl.read(Zbuffer, Z);
+
+                return nano::gflops(dims * dims * dims, duration);
+        }
+#endif
 }
 
 int main(int, const char* [])
@@ -196,18 +386,40 @@ int main(int, const char* [])
                 });
         };
 
-        table_t table("operation\\dimensions [GFLOPS]");
-        foreach_dims([&] (const auto dims) { table.header() << to_string(dims); });
+        table_t table("operation");
+        table.header() << "platform";
+        foreach_dims([&] (const auto dims) { table.header() << (to_string(dims) + " [GFLOPS]"); });
 
-        fillrow(table.append("vpc: z = x + c"), measure_vpc);
-        fillrow(table.append("vpv: z = x + y"), measure_vpv);
-        fillrow(table.append("vcpvc: z = a * x + b * y"), measure_vcpvc);
-        fillrow(table.append("mv: z = A * x"), measure_mv);
-        fillrow(table.append("mvpc: z = A * x + c"), measure_mvpc);
-        fillrow(table.append("mvpv: z = A * x + v"), measure_mvpv);
-        fillrow(table.append("mm: Z = A * B"), measure_mm);
+        fillrow(table.append("z = x + c") << "CPU", measure_vpc);
+#ifdef NANO_WITH_OPENCL
+        fillrow(table.append("z = x + c") << "OpenCL", measure_vpc_ocl);
+#endif
+        fillrow(table.append("z = x + y") << "CPU", measure_vpv);
+#ifdef NANO_WITH_OPENCL
+        fillrow(table.append("z = x + y") << "OpenCL", measure_vpv_ocl);
+#endif
+        fillrow(table.append("z = a * x + b * y") << "CPU", measure_vcpvc);
+#ifdef NANO_WITH_OPENCL
+        fillrow(table.append("z = a * x + b * y") << "OpenCL", measure_vcpvc_ocl);
+#endif
+        fillrow(table.append("z = A * x") << "CPU", measure_mv);
+#ifdef NANO_WITH_OPENCL
+        fillrow(table.append("z = A * x") << "OpenCL", measure_mv_ocl);
+#endif
+        fillrow(table.append("z = A * x + c") << "CPU", measure_mvpc);
+#ifdef NANO_WITH_OPENCL
+        fillrow(table.append("z = A * x + c") << "OpenCL", measure_mvpc_ocl);
+#endif
+        fillrow(table.append("z = A * x + y") << "CPU", measure_mvpv);
+#ifdef NANO_WITH_OPENCL
+        fillrow(table.append("z = A * x + y") << "OpenCL", measure_mvpv_ocl);
+#endif
+        fillrow(table.append("Z = A * B") << "CPU", measure_mm);
+#ifdef NANO_WITH_OPENCL
+        fillrow(table.append("z = A * B") << "OpenCL", measure_mm_ocl);
+#endif
 
-        table.mark(nano::make_table_mark_maximum_percentage_cols<scalar_t>(10));
+        //table.mark(nano::make_table_mark_maximum_percentage_cols<scalar_t>(10));
         table.print(std::cout);
 
 #ifdef NANO_WITH_OPENCL
