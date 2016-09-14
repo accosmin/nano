@@ -3,7 +3,6 @@
 #include "measure.hpp"
 #include "text/table.h"
 #include "text/cmdline.h"
-#include "math/clamp.hpp"
 #include "math/random.hpp"
 #include "tensor/numeric.hpp"
 #include "text/table_row_mark.h"

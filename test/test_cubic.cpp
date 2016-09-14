@@ -1,7 +1,7 @@
 #include "utest.hpp"
-#include "math/abs.hpp"
 #include "math/cubic.hpp"
 #include "math/random.hpp"
+#include "math/numeric.hpp"
 #include "math/epsilon.hpp"
 
 NANO_BEGIN_MODULE(test_cubic)

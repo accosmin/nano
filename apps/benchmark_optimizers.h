@@ -1,10 +1,9 @@
 #include "state.h"
 #include "tensor.h"
-#include "math/abs.hpp"
 #include "text/table.h"
 #include "text/align.hpp"
-#include "math/clamp.hpp"
 #include "math/stats.hpp"
+#include "math/numeric.hpp"
 #include "thread/loopi.hpp"
 #include "functions/test.h"
 

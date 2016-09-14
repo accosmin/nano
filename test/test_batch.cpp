@@ -1,5 +1,4 @@
 #include "utest.hpp"
-#include "math/abs.hpp"
 #include "math/random.hpp"
 #include "math/numeric.hpp"
 #include "math/epsilon.hpp"

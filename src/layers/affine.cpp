@@ -1,6 +1,6 @@
 #include "affine.h"
-#include "math/clamp.hpp"
 #include "math/random.hpp"
+#include "math/numeric.hpp"
 #include "tensor/numeric.hpp"
 #include "text/from_params.hpp"
 #include "tensor/serialize.hpp"

@@ -1,6 +1,6 @@
 #include "task.h"
 #include "accumulator.h"
-#include "math/clamp.hpp"
+#include "math/numeric.hpp"
 #include "thread/loopit.hpp"
 #include <cassert>
 

@@ -1,7 +1,7 @@
 #include "nano.h"
 #include "task_util.h"
-#include "math/clamp.hpp"
 #include "text/cmdline.h"
+#include "math/numeric.hpp"
 #include "measure_and_log.hpp"
 #include "text/concatenate.hpp"
 

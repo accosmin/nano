@@ -1,5 +1,5 @@
 #include "utest.hpp"
-#include "math/abs.hpp"
+#include "math/numeric.hpp"
 #include "math/epsilon.hpp"
 #include "tensor/matrix.hpp"
 #include "tensor/corr2d_cpp.hpp"
@@ -71,7 +71,7 @@ NANO_CASE(evaluate)
         const int min_isize = 3;
         const int max_isize = 23;
         const int min_ksize = 1;
-        
+
         for (int isize = min_isize; isize <= max_isize; ++ isize)
         {
                 for (int ksize = min_ksize; ksize <= isize - min_ksize; ++ ksize)

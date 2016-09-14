@@ -1,7 +1,7 @@
 #include <set>
 #include <iostream>
-#include "math/clamp.hpp"
 #include "text/cmdline.h"
+#include "math/numeric.hpp"
 
 namespace
 {

@@ -1,8 +1,7 @@
 #pragma once
 
 #include <cassert>
-#include <algorithm>
-#include "math/clamp.hpp"
+#include "math/numeric.hpp"
 #include "tensor/vector.hpp"
 
 namespace nano

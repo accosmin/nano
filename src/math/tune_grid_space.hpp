@@ -1,10 +1,9 @@
 #pragma once
 
-#include <cmath>
 #include <vector>
 #include <cassert>
 #include <type_traits>
-#include "math/clamp.hpp"
+#include "math/numeric.hpp"
 
 namespace nano
 {

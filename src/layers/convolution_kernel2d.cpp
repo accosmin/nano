@@ -1,6 +1,6 @@
-#include "math/clamp.hpp"
-#include "math/random.hpp"
 #include "logger.h"
+#include "math/random.hpp"
+#include "math/numeric.hpp"
 #include "tensor/numeric.hpp"
 #include "text/to_string.hpp"
 #include "text/from_params.hpp"

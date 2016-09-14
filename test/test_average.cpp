@@ -1,5 +1,5 @@
 #include "utest.hpp"
-#include "math/abs.hpp"
+#include "math/numeric.hpp"
 #include "math/average.hpp"
 #include "math/epsilon.hpp"
 

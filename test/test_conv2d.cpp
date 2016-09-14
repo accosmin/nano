@@ -1,5 +1,5 @@
 #include "utest.hpp"
-#include "math/abs.hpp"
+#include "math/numeric.hpp"
 #include "math/epsilon.hpp"
 #include "tensor/matrix.hpp"
 #include "tensor/conv2d_cpp.hpp"

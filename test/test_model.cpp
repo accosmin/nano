@@ -1,8 +1,8 @@
 #include "nano.h"
-#include "math/abs.hpp"
 #include "utest.hpp"
 #include "accumulator.h"
 #include "math/epsilon.hpp"
+#include "math/numeric.hpp"
 #include "layers/make_layers.h"
 #include <cstdio>
 

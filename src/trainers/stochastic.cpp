@@ -1,7 +1,6 @@
 #include "model.h"
 #include "loop.hpp"
 #include "stochastic.h"
-#include "math/clamp.hpp"
 #include "math/numeric.hpp"
 #include "stoch_optimizer.h"
 #include "text/from_params.hpp"

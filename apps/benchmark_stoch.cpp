@@ -1,7 +1,5 @@
 #include "logger.h"
-#include "math/abs.hpp"
 #include "text/cmdline.h"
-#include "math/clamp.hpp"
 #include "math/random.hpp"
 #include "math/epsilon.hpp"
 #include "math/numeric.hpp"
