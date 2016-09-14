@@ -3,6 +3,7 @@
 #include "measure.hpp"
 #include "text/table.h"
 #include "text/cmdline.h"
+#include "math/clamp.hpp"
 #include "math/random.hpp"
 #include "tensor/numeric.hpp"
 #include "text/table_row_mark.h"
@@ -339,9 +340,20 @@ namespace
 #endif
 }
 
-int main(int, const char* [])
+int main(int argc, const char* argv[])
 {
         using namespace nano;
+
+        // parse the command line
+        cmdline_t cmdline("benchmark linear algebra operations using Eigen and OpenCL (if available)");
+        cmdline.add("", "min-dims",     "minimum number of dimensions [1, 1024]", "8");
+        cmdline.add("", "max-dims",     "maximum number of dimensions [1, 4096]", "1024");
+
+        cmdline.process(argc, argv);
+
+        // check arguments and options
+        const auto min_dims = clamp(cmdline.get<tensor_size_t>("min-dims"), tensor_size_t(1), tensor_size_t(1024));
+        const auto max_dims = clamp(cmdline.get<tensor_size_t>("max-dims"), min_dims, tensor_size_t(4096));
 
 #ifdef NANO_WITH_OPENCL
         try
@@ -350,8 +362,6 @@ int main(int, const char* [])
         ocl::select(CL_DEVICE_TYPE_GPU);
 #endif
 
-        const auto min_dims = tensor_size_t(8);
-        const auto max_dims = tensor_size_t(32);//1024);
         const auto foreach_dims = [&] (const auto& op)
         {
                 for (tensor_size_t dims = min_dims; dims <= max_dims; dims *= 2)
@@ -361,7 +371,7 @@ int main(int, const char* [])
         };
         const auto fillrow = [&] (auto&& row, const auto& op)
         {
-                foreach_dims([&] (const auto dims)
+                foreach_dims([&] (const tensor_size_t dims)
                 {
                         row << op(dims);
                 });
@@ -369,7 +379,7 @@ int main(int, const char* [])
 
         table_t table("operation");
         table.header() << "platform";
-        foreach_dims([&] (const auto dims) { table.header() << (to_string(dims) + " [GFLOPS]"); });
+        foreach_dims([&] (const tensor_size_t dims) { table.header() << (to_string(dims) + " [GFLOPS]"); });
 
         fillrow(table.append("z = x + c") << "CPU", measure_vpc);
 #ifdef NANO_WITH_OPENCL
