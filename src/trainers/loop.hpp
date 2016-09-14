@@ -1,13 +1,14 @@
 #pragma once
 
 #include "state.h"
-#include "logger.h"
 #include "problem.h"
 #include "math/tune.hpp"
 #include "accumulator.h"
 #include "task_iterator.h"
 #include "trainer_result.h"
 #include "text/to_string.hpp"
+
+#include "logger.h"
 
 namespace nano
 {
