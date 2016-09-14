@@ -1,4 +1,5 @@
 #include "logger.h"
+#include "kernels.h"
 #include "manager.h"
 #include <fstream>
 #include <sstream>
@@ -129,6 +130,7 @@ namespace nano
                 m_device = device;
                 m_context = cl::Context({m_device});
                 m_command_queue = cl::CommandQueue(m_context, m_device, 0);
+                m_program = make_program_from_text(opencl_kernels());
         }
 
         cl::Program opencl_manager_t::make_program_from_file(const std::string& filepath) const
@@ -171,11 +173,16 @@ namespace nano
                 return program;
         }
 
-        cl::Kernel opencl_manager_t::make_kernel(const cl::Program& program, const std::string& name) const
+        cl::Kernel opencl_manager_t::kernel(const char* name) const
+        {
+                return make_kernel(m_program, name);
+        }
+
+        cl::Kernel opencl_manager_t::make_kernel(const cl::Program& program, const char* name) const
         {
                 try
                 {
-                        return cl::Kernel(program, name.c_str());
+                        return cl::Kernel(program, name);
                 }
                 catch (cl::Error& e)
                 {

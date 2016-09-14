@@ -1,7 +1,6 @@
 #include "utest.hpp"
 #include "tensor.h"
 #include "math/random.hpp"
-#include "opencl/kernels.h"
 #include "opencl/manager.h"
 #include "math/epsilon.hpp"
 #include "tensor/numeric.hpp"
@@ -38,30 +37,6 @@ opencl_manager_t theocl;
 NANO_REQUIRE_NOTHROW(theocl.init());
 NANO_REQUIRE_NOTHROW(theocl.select(CL_DEVICE_TYPE_GPU));
 
-// create supported kernels
-cl::Program program;
-NANO_REQUIRE_NOTHROW(program = theocl.make_program_from_text(opencl_kernels()));
-
-cl::Kernel kernel_vpc;
-cl::Kernel kernel_vpv;
-cl::Kernel kernel_vcpvc;
-
-cl::Kernel kernel_mv;
-cl::Kernel kernel_mvpc;
-cl::Kernel kernel_mvpv;
-
-cl::Kernel kernel_mm;
-
-NANO_REQUIRE_NOTHROW(kernel_vpc = theocl.make_kernel(program, "vpc"));
-NANO_REQUIRE_NOTHROW(kernel_vpv = theocl.make_kernel(program, "vpv"));
-NANO_REQUIRE_NOTHROW(kernel_vcpvc = theocl.make_kernel(program, "vcpvc"));
-
-NANO_REQUIRE_NOTHROW(kernel_mv = theocl.make_kernel(program, "mv"));
-NANO_REQUIRE_NOTHROW(kernel_mvpc = theocl.make_kernel(program, "mvpc"));
-NANO_REQUIRE_NOTHROW(kernel_mvpv = theocl.make_kernel(program, "mvpv"));
-
-NANO_REQUIRE_NOTHROW(kernel_mm = theocl.make_kernel(program, "mm"));
-
 // use this command queue to send tasks
 cl::CommandQueue& queue = theocl.command_queue();
 
@@ -77,12 +52,13 @@ NANO_CASE(vpc)
 
                 cl::Buffer xbuffer = theocl.make_buffer(x, CL_MEM_READ_WRITE);
                 cl::Buffer zbuffer = theocl.make_buffer(z, CL_MEM_READ_ONLY);
+                cl::Kernel kernel = theocl.kernel("vpc");
 
-                NANO_REQUIRE_NOTHROW(nano::set_args(kernel_vpc, xbuffer, c, zbuffer));
+                NANO_REQUIRE_NOTHROW(nano::set_args(kernel, xbuffer, c, zbuffer));
 
                 NANO_CHECK(theocl.write(xbuffer, x) == CL_SUCCESS);
 
-                queue.enqueueNDRangeKernel(kernel_vpc, cl::NullRange, cl::NDRange(size_t(dims)), cl::NullRange);
+                queue.enqueueNDRangeKernel(kernel, cl::NullRange, cl::NDRange(size_t(dims)), cl::NullRange);
                 queue.finish();
 
                 NANO_CHECK(theocl.read(zbuffer, z) == CL_SUCCESS);
@@ -103,13 +79,14 @@ NANO_CASE(vpv)
                 cl::Buffer xbuffer = theocl.make_buffer(x, CL_MEM_READ_WRITE);
                 cl::Buffer ybuffer = theocl.make_buffer(y, CL_MEM_READ_WRITE);
                 cl::Buffer zbuffer = theocl.make_buffer(z, CL_MEM_READ_ONLY);
+                cl::Kernel kernel = theocl.kernel("vpv");
 
-                NANO_REQUIRE_NOTHROW(nano::set_args(kernel_vpv, xbuffer, ybuffer, zbuffer));
+                NANO_REQUIRE_NOTHROW(nano::set_args(kernel, xbuffer, ybuffer, zbuffer));
 
                 NANO_CHECK(theocl.write(xbuffer, x) == CL_SUCCESS);
                 NANO_CHECK(theocl.write(ybuffer, y) == CL_SUCCESS);
 
-                queue.enqueueNDRangeKernel(kernel_vpv, cl::NullRange, cl::NDRange(size_t(dims)), cl::NullRange);
+                queue.enqueueNDRangeKernel(kernel, cl::NullRange, cl::NDRange(size_t(dims)), cl::NullRange);
                 queue.finish();
 
                 NANO_CHECK(theocl.read(zbuffer, z) == CL_SUCCESS);
@@ -132,13 +109,14 @@ NANO_CASE(vcpvc)
                 cl::Buffer xbuffer = theocl.make_buffer(x, CL_MEM_READ_WRITE);
                 cl::Buffer ybuffer = theocl.make_buffer(y, CL_MEM_READ_WRITE);
                 cl::Buffer zbuffer = theocl.make_buffer(z, CL_MEM_READ_ONLY);
+                cl::Kernel kernel = theocl.kernel("vcpvc");
 
-                NANO_REQUIRE_NOTHROW(nano::set_args(kernel_vcpvc, xbuffer, a, ybuffer, b, zbuffer));
+                NANO_REQUIRE_NOTHROW(nano::set_args(kernel, xbuffer, a, ybuffer, b, zbuffer));
 
                 NANO_CHECK(theocl.write(xbuffer, x) == CL_SUCCESS);
                 NANO_CHECK(theocl.write(ybuffer, y) == CL_SUCCESS);
 
-                queue.enqueueNDRangeKernel(kernel_vcpvc, cl::NullRange, cl::NDRange(size_t(dims)), cl::NullRange);
+                queue.enqueueNDRangeKernel(kernel, cl::NullRange, cl::NDRange(size_t(dims)), cl::NullRange);
                 queue.finish();
 
                 NANO_CHECK(theocl.read(zbuffer, z) == CL_SUCCESS);
@@ -160,13 +138,14 @@ NANO_CASE(mv)
                 cl::Buffer Abuffer = theocl.make_buffer(A, CL_MEM_READ_WRITE);
                 cl::Buffer xbuffer = theocl.make_buffer(x, CL_MEM_READ_WRITE);
                 cl::Buffer zbuffer = theocl.make_buffer(z, CL_MEM_READ_ONLY);
+                cl::Kernel kernel = theocl.kernel("mv");
 
-                NANO_REQUIRE_NOTHROW(nano::set_args(kernel_mv, Abuffer, static_cast<int>(cols), xbuffer, zbuffer));
+                NANO_REQUIRE_NOTHROW(nano::set_args(kernel, Abuffer, static_cast<int>(cols), xbuffer, zbuffer));
 
                 NANO_CHECK(theocl.write(Abuffer, A) == CL_SUCCESS);
                 NANO_CHECK(theocl.write(xbuffer, x) == CL_SUCCESS);
 
-                queue.enqueueNDRangeKernel(kernel_mv, cl::NullRange, cl::NDRange(size_t(rows)), cl::NullRange);
+                queue.enqueueNDRangeKernel(kernel, cl::NullRange, cl::NDRange(size_t(rows)), cl::NullRange);
                 queue.finish();
 
                 NANO_CHECK(theocl.read(zbuffer, z) == CL_SUCCESS);
@@ -189,13 +168,14 @@ NANO_CASE(mvpc)
                 cl::Buffer Abuffer = theocl.make_buffer(A, CL_MEM_READ_WRITE);
                 cl::Buffer xbuffer = theocl.make_buffer(x, CL_MEM_READ_WRITE);
                 cl::Buffer zbuffer = theocl.make_buffer(z, CL_MEM_READ_ONLY);
+                cl::Kernel kernel = theocl.kernel("mvpc");
 
-                NANO_REQUIRE_NOTHROW(nano::set_args(kernel_mvpc, Abuffer, static_cast<int>(cols), xbuffer, c, zbuffer));
+                NANO_REQUIRE_NOTHROW(nano::set_args(kernel, Abuffer, static_cast<int>(cols), xbuffer, c, zbuffer));
 
                 NANO_CHECK(theocl.write(Abuffer, A) == CL_SUCCESS);
                 NANO_CHECK(theocl.write(xbuffer, x) == CL_SUCCESS);
 
-                queue.enqueueNDRangeKernel(kernel_mvpc, cl::NullRange, cl::NDRange(size_t(rows)), cl::NullRange);
+                queue.enqueueNDRangeKernel(kernel, cl::NullRange, cl::NDRange(size_t(rows)), cl::NullRange);
                 queue.finish();
 
                 NANO_CHECK(theocl.read(zbuffer, z) == CL_SUCCESS);
@@ -219,14 +199,15 @@ NANO_CASE(mvpv)
                 cl::Buffer xbuffer = theocl.make_buffer(x, CL_MEM_READ_WRITE);
                 cl::Buffer ybuffer = theocl.make_buffer(y, CL_MEM_READ_WRITE);
                 cl::Buffer zbuffer = theocl.make_buffer(z, CL_MEM_READ_ONLY);
+                cl::Kernel kernel = theocl.kernel("mvpv");
 
-                NANO_REQUIRE_NOTHROW(nano::set_args(kernel_mvpv, Abuffer, static_cast<int>(cols), xbuffer, ybuffer, zbuffer));
+                NANO_REQUIRE_NOTHROW(nano::set_args(kernel, Abuffer, static_cast<int>(cols), xbuffer, ybuffer, zbuffer));
 
                 NANO_CHECK(theocl.write(Abuffer, A) == CL_SUCCESS);
                 NANO_CHECK(theocl.write(xbuffer, x) == CL_SUCCESS);
                 NANO_CHECK(theocl.write(ybuffer, y) == CL_SUCCESS);
 
-                queue.enqueueNDRangeKernel(kernel_mvpv, cl::NullRange, cl::NDRange(size_t(rows)), cl::NullRange);
+                queue.enqueueNDRangeKernel(kernel, cl::NullRange, cl::NDRange(size_t(rows)), cl::NullRange);
                 queue.finish();
 
                 NANO_CHECK(theocl.read(zbuffer, z) == CL_SUCCESS);
@@ -250,13 +231,14 @@ NANO_CASE(mm)
                 cl::Buffer Abuffer = theocl.make_buffer(A, CL_MEM_READ_WRITE);
                 cl::Buffer Bbuffer = theocl.make_buffer(B, CL_MEM_READ_WRITE);
                 cl::Buffer Zbuffer = theocl.make_buffer(Z, CL_MEM_READ_ONLY);
+                cl::Kernel kernel = theocl.kernel("mm");
 
-                NANO_REQUIRE_NOTHROW(nano::set_args(kernel_mm, Abuffer, static_cast<int>(colsA), Bbuffer, static_cast<int>(colsB), Zbuffer));
+                NANO_REQUIRE_NOTHROW(nano::set_args(kernel, Abuffer, static_cast<int>(colsA), Bbuffer, static_cast<int>(colsB), Zbuffer));
 
                 NANO_CHECK(theocl.write(Abuffer, A) == CL_SUCCESS);
                 NANO_CHECK(theocl.write(Bbuffer, B) == CL_SUCCESS);
 
-                queue.enqueueNDRangeKernel(kernel_mm, cl::NullRange, cl::NDRange(size_t(rowsA), size_t(colsB)), cl::NullRange);
+                queue.enqueueNDRangeKernel(kernel, cl::NullRange, cl::NDRange(size_t(rowsA), size_t(colsB)), cl::NullRange);
                 queue.finish();
 
                 NANO_CHECK(theocl.read(Zbuffer, Z) == CL_SUCCESS);

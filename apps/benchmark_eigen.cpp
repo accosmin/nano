@@ -41,16 +41,6 @@ namespace
 #ifdef NANO_WITH_OPENCL
         opencl_manager_t theocl;
         cl::CommandQueue& queue = theocl.command_queue();
-
-        cl::Kernel kernel_vpc;
-        cl::Kernel kernel_vpv;
-        cl::Kernel kernel_vcpvc;
-
-        cl::Kernel kernel_mv;
-        cl::Kernel kernel_mvpc;
-        cl::Kernel kernel_mvpv;
-
-        cl::Kernel kernel_mm;
 #endif
 
         auto measure_vpc(const tensor_size_t dims)
@@ -76,13 +66,14 @@ namespace
 
                 cl::Buffer xbuffer = theocl.make_buffer(x, CL_MEM_READ_WRITE);
                 cl::Buffer zbuffer = theocl.make_buffer(z, CL_MEM_READ_ONLY);
+                cl::Kernel kernel = theocl.kernel("vpc");
 
-                nano::set_args(kernel_vpc, xbuffer, c, zbuffer);
+                nano::set_args(kernel, xbuffer, c, zbuffer);
                 theocl.write(xbuffer, x);
 
                 const auto duration = nano::measure_robustly_psec([&] ()
                 {
-                        queue.enqueueNDRangeKernel(kernel_vpc, cl::NullRange, cl::NDRange(size_t(dims)), cl::NullRange);
+                        queue.enqueueNDRangeKernel(kernel, cl::NullRange, cl::NDRange(size_t(dims)), cl::NullRange);
                         queue.finish();
                 }, trials);
 
@@ -116,14 +107,15 @@ namespace
                 cl::Buffer xbuffer = theocl.make_buffer(x, CL_MEM_READ_WRITE);
                 cl::Buffer ybuffer = theocl.make_buffer(y, CL_MEM_READ_WRITE);
                 cl::Buffer zbuffer = theocl.make_buffer(z, CL_MEM_READ_ONLY);
+                cl::Kernel kernel = theocl.kernel("vpv");
 
-                nano::set_args(kernel_vpv, xbuffer, ybuffer, zbuffer);
+                nano::set_args(kernel, xbuffer, ybuffer, zbuffer);
                 theocl.write(xbuffer, x);
                 theocl.write(ybuffer, y);
 
                 const auto duration = nano::measure_robustly_psec([&] ()
                 {
-                        queue.enqueueNDRangeKernel(kernel_vpv, cl::NullRange, cl::NDRange(size_t(dims)), cl::NullRange);
+                        queue.enqueueNDRangeKernel(kernel, cl::NullRange, cl::NDRange(size_t(dims)), cl::NullRange);
                         queue.finish();
                 }, trials);
 
@@ -156,14 +148,15 @@ namespace
                 cl::Buffer xbuffer = theocl.make_buffer(x, CL_MEM_READ_WRITE);
                 cl::Buffer ybuffer = theocl.make_buffer(y, CL_MEM_READ_WRITE);
                 cl::Buffer zbuffer = theocl.make_buffer(z, CL_MEM_READ_ONLY);
+                cl::Kernel kernel = theocl.kernel("vcpvc");
 
-                nano::set_args(kernel_vcpvc, xbuffer, a, ybuffer, b, zbuffer);
+                nano::set_args(kernel, xbuffer, a, ybuffer, b, zbuffer);
                 theocl.write(xbuffer, x);
                 theocl.write(ybuffer, y);
 
                 const auto duration = nano::measure_robustly_psec([&] ()
                 {
-                        queue.enqueueNDRangeKernel(kernel_vcpvc, cl::NullRange, cl::NDRange(size_t(dims)), cl::NullRange);
+                        queue.enqueueNDRangeKernel(kernel, cl::NullRange, cl::NDRange(size_t(dims)), cl::NullRange);
                         queue.finish();
                 }, trials);
 
@@ -197,14 +190,15 @@ namespace
                 cl::Buffer Abuffer = theocl.make_buffer(A, CL_MEM_READ_WRITE);
                 cl::Buffer xbuffer = theocl.make_buffer(x, CL_MEM_READ_WRITE);
                 cl::Buffer zbuffer = theocl.make_buffer(z, CL_MEM_READ_ONLY);
+                cl::Kernel kernel = theocl.kernel("mv");
 
-                nano::set_args(kernel_mv, Abuffer, int(dims), xbuffer, zbuffer);
+                nano::set_args(kernel, Abuffer, int(dims), xbuffer, zbuffer);
                 theocl.write(Abuffer, A);
                 theocl.write(xbuffer, x);
 
                 const auto duration = nano::measure_robustly_psec([&] ()
                 {
-                        queue.enqueueNDRangeKernel(kernel_mv, cl::NullRange, cl::NDRange(size_t(dims)), cl::NullRange);
+                        queue.enqueueNDRangeKernel(kernel, cl::NullRange, cl::NDRange(size_t(dims)), cl::NullRange);
                         queue.finish();
                 }, trials);
 
@@ -240,14 +234,15 @@ namespace
                 cl::Buffer Abuffer = theocl.make_buffer(A, CL_MEM_READ_WRITE);
                 cl::Buffer xbuffer = theocl.make_buffer(x, CL_MEM_READ_WRITE);
                 cl::Buffer zbuffer = theocl.make_buffer(z, CL_MEM_READ_ONLY);
+                cl::Kernel kernel = theocl.kernel("mvpc");
 
-                nano::set_args(kernel_mvpc, Abuffer, int(dims), xbuffer, c, zbuffer);
+                nano::set_args(kernel, Abuffer, int(dims), xbuffer, c, zbuffer);
                 theocl.write(Abuffer, A);
                 theocl.write(xbuffer, x);
 
                 const auto duration = nano::measure_robustly_psec([&] ()
                 {
-                        queue.enqueueNDRangeKernel(kernel_mvpc, cl::NullRange, cl::NDRange(size_t(dims)), cl::NullRange);
+                        queue.enqueueNDRangeKernel(kernel, cl::NullRange, cl::NDRange(size_t(dims)), cl::NullRange);
                         queue.finish();
                 }, trials);
 
@@ -284,15 +279,16 @@ namespace
                 cl::Buffer xbuffer = theocl.make_buffer(x, CL_MEM_READ_WRITE);
                 cl::Buffer ybuffer = theocl.make_buffer(y, CL_MEM_READ_WRITE);
                 cl::Buffer zbuffer = theocl.make_buffer(z, CL_MEM_READ_ONLY);
+                cl::Kernel kernel = theocl.kernel("mvpv");
 
-                nano::set_args(kernel_mvpv, Abuffer, (int)dims, xbuffer, ybuffer, zbuffer);
+                nano::set_args(kernel, Abuffer, (int)dims, xbuffer, ybuffer, zbuffer);
                 theocl.write(Abuffer, A);
                 theocl.write(xbuffer, x);
                 theocl.write(ybuffer, y);
 
                 const auto duration = nano::measure_robustly_psec([&] ()
                 {
-                        queue.enqueueNDRangeKernel(kernel_mvpv, cl::NullRange, cl::NDRange(size_t(dims)), cl::NullRange);
+                        queue.enqueueNDRangeKernel(kernel, cl::NullRange, cl::NDRange(size_t(dims)), cl::NullRange);
                         queue.finish();
                 }, trials);
 
@@ -326,14 +322,15 @@ namespace
                 cl::Buffer Abuffer = theocl.make_buffer(A, CL_MEM_READ_WRITE);
                 cl::Buffer Bbuffer = theocl.make_buffer(B, CL_MEM_READ_WRITE);
                 cl::Buffer Zbuffer = theocl.make_buffer(Z, CL_MEM_READ_ONLY);
+                cl::Kernel kernel = theocl.kernel("mm");
 
-                nano::set_args(kernel_mm, Abuffer, (int)dims, Bbuffer, (int)dims, Zbuffer);
+                nano::set_args(kernel, Abuffer, (int)dims, Bbuffer, (int)dims, Zbuffer);
                 theocl.write(Abuffer, A);
                 theocl.write(Bbuffer, B);
 
                 const auto duration = nano::measure_robustly_psec([&] ()
                 {
-                        queue.enqueueNDRangeKernel(kernel_mm, cl::NullRange, cl::NDRange(size_t(dims), size_t(dims)), cl::NullRange);
+                        queue.enqueueNDRangeKernel(kernel, cl::NullRange, cl::NDRange(size_t(dims), size_t(dims)), cl::NullRange);
                         queue.finish();
                 }, trials);
 
@@ -354,23 +351,10 @@ int main(int, const char* [])
         // initialize OpenCL context
         theocl.init();
         theocl.select(CL_DEVICE_TYPE_GPU);
-
-        // create supported kernels
-        cl::Program program = theocl.make_program_from_text(opencl_kernels());
-
-        kernel_vpc = theocl.make_kernel(program, "vpc");
-        kernel_vpv = theocl.make_kernel(program, "vpv");
-        kernel_vcpvc = theocl.make_kernel(program, "vcpvc");
-
-        kernel_mv = theocl.make_kernel(program, "mv");
-        kernel_mvpc = theocl.make_kernel(program, "mvpc");
-        kernel_mvpv = theocl.make_kernel(program, "mvpv");
-
-        kernel_mm = theocl.make_kernel(program, "mm");
 #endif
 
         const auto min_dims = tensor_size_t(8);
-        const auto max_dims = tensor_size_t(1024);
+        const auto max_dims = tensor_size_t(32);//1024);
         const auto foreach_dims = [&] (const auto& op)
         {
                 for (tensor_size_t dims = min_dims; dims <= max_dims; dims *= 2)

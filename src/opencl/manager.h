@@ -55,7 +55,7 @@ namespace nano
                 ///
                 cl::Program make_program_from_file(const std::string& filepath) const;
                 cl::Program make_program_from_text(const std::string& source) const;
-                cl::Kernel make_kernel(const cl::Program& program, const std::string& name) const;
+                cl::Kernel make_kernel(const cl::Program& program, const char* name) const;
                 cl::Buffer make_buffer(const size_t bytesize, const cl_mem_flags) const;
 
                 ///
@@ -67,6 +67,11 @@ namespace nano
                 /// \brief current command queue.
                 ///
                 cl::CommandQueue& command_queue() { return m_command_queue; }
+
+                ///
+                /// \brief retrieve a built-in kernel.
+                ///
+                cl::Kernel kernel(const char* name) const;
 
         private:
 
@@ -85,7 +90,8 @@ namespace nano
                 std::vector<cl::Device>         m_devices;      ///< available devices for all platforms
                 cl::Device                      m_device;       ///< selected device
                 cl::Context                     m_context;      ///< context for the selected device
-                cl::CommandQueue                m_command_queue;///< command queue for the selected contex
+                cl::CommandQueue                m_command_queue;///< command queue for the selected context
+                cl::Program                     m_program;      ///< built-in kernels
         };
 }
 
