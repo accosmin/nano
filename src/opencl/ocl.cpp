@@ -184,7 +184,7 @@ namespace nano
 
                 try
                 {
-                        program.build({theocl.m_device}, "-cl-mad-enable");//, "-cl-fast-relaxed-math");
+                        program.build({theocl.m_device}, "-cl-mad-enable -Werror -std=CL1.2");//, "-cl-fast-relaxed-math");
                 }
                 catch (cl::Error& e)
                 {

@@ -13,6 +13,29 @@ namespace nano
         {
                 return R"xxx(
 
+                float vsum4(const float4 in)
+                {
+                        static const float4 unit = 1.0f;
+                        return dot(in, unit);
+                }
+
+                float dotx4(__global const float* x, __global const float* y, const int size)
+                {
+                        float4 acc = 0.0f;
+
+                        const int size4 = size - (size & 3);
+                        for (int i = 0; i < size4; i += 4)
+                        {
+                                acc += vload4(0, &x[i]) * vload4(0, &y[i]);
+                        }
+                        for (int i = size4; i < size; ++ i)
+                        {
+                                acc.x += x[i] * y[i];
+                        }
+
+                        return vsum4(acc);
+                }
+
                 // add a constant to a vector: z = x + c
                 __kernel void vpc(
                         __global const float* x,
@@ -50,12 +73,7 @@ namespace nano
                         __global float* z)
                 {
                         const int row = get_global_id(0);
-                        float sum = 0;
-                        for (int col = 0; col < cols; ++ col)
-                        {
-                                sum += A[row * cols + col] * x[col];
-                        }
-                        z[row] = sum;
+                        z[row] = dotx4(&A[row * cols], x, cols);
                 }
 
                 // multiply a matrix by a vector and add a constant: y = A * x + c
@@ -66,12 +84,7 @@ namespace nano
                         __global float* z)
                 {
                         const int row = get_global_id(0);
-                        float sum = 0;
-                        for (int col = 0; col < cols; ++ col)
-                        {
-                                sum += A[row * cols + col] * x[col];
-                        }
-                        z[row] = sum + c;
+                        z[row] = dotx4(&A[row * cols], x, cols) + c;
                 }
 
                 // multiply a matrix by a vector and add a vector: y = A * x + y
@@ -82,12 +95,7 @@ namespace nano
                         __global float* z)
                 {
                         const int row = get_global_id(0);
-                        float sum = 0;
-                        for (int col = 0; col < cols; ++ col)
-                        {
-                                sum += A[row * cols + col] * x[col];
-                        }
-                        z[row] = sum + y[row];
+                        z[row] = dotx4(&A[row * cols], x, cols) + y[row];
                 }
 
                 // multiply a matrix by a matrix: Z = A * B
