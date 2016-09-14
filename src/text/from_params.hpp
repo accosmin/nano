@@ -6,7 +6,7 @@ namespace nano
 {
         namespace detail
         {
-                static bool value_range(const string_t& params, const string_t& param_name, size_t& begin, size_t& size)
+                inline bool value_range(const string_t& params, const string_t& param_name, size_t& begin, size_t& size)
                 {
                         begin = params.find(param_name + "=");
                         if (begin == string_t::npos)
