@@ -1,4 +1,5 @@
 #include "tensor.h"
+#include "logger.h"
 #include "measure.hpp"
 #include "text/table.h"
 #include "text/cmdline.h"
@@ -6,9 +7,7 @@
 #include "tensor/numeric.hpp"
 #include "text/table_row_mark.h"
 #ifdef NANO_WITH_OPENCL
-#include "logger.h"
-#include "opencl/kernels.h"
-#include "opencl/manager.h"
+#include "opencl/ocl.h"
 #endif
 #include <iostream>
 
@@ -39,8 +38,7 @@ namespace
         }
 
 #ifdef NANO_WITH_OPENCL
-        opencl_manager_t theocl;
-        cl::CommandQueue& queue = theocl.command_queue();
+        cl::CommandQueue& queue = ocl::queue();
 #endif
 
         auto measure_vpc(const tensor_size_t dims)
@@ -64,12 +62,12 @@ namespace
                 auto c = make_scalar();
                 auto z = make_vector(dims);
 
-                cl::Buffer xbuffer = theocl.make_buffer(x, CL_MEM_READ_WRITE);
-                cl::Buffer zbuffer = theocl.make_buffer(z, CL_MEM_READ_ONLY);
-                cl::Kernel kernel = theocl.kernel("vpc");
+                cl::Buffer xbuffer = ocl::make_buffer(x, CL_MEM_READ_WRITE);
+                cl::Buffer zbuffer = ocl::make_buffer(z, CL_MEM_READ_ONLY);
+                cl::Kernel kernel = ocl::make_kernel("vpc");
 
-                nano::set_args(kernel, xbuffer, c, zbuffer);
-                theocl.write(xbuffer, x);
+                ocl::set_args(kernel, xbuffer, c, zbuffer);
+                ocl::write(xbuffer, x);
 
                 const auto duration = nano::measure_robustly_psec([&] ()
                 {
@@ -77,7 +75,7 @@ namespace
                         queue.finish();
                 }, trials);
 
-                theocl.read(zbuffer, z);
+                ocl::read(zbuffer, z);
 
                 return nano::gflops(dims, duration);
         }
@@ -104,14 +102,14 @@ namespace
                 auto y = make_vector(dims);
                 auto z = make_vector(dims);
 
-                cl::Buffer xbuffer = theocl.make_buffer(x, CL_MEM_READ_WRITE);
-                cl::Buffer ybuffer = theocl.make_buffer(y, CL_MEM_READ_WRITE);
-                cl::Buffer zbuffer = theocl.make_buffer(z, CL_MEM_READ_ONLY);
-                cl::Kernel kernel = theocl.kernel("vpv");
+                cl::Buffer xbuffer = ocl::make_buffer(x, CL_MEM_READ_WRITE);
+                cl::Buffer ybuffer = ocl::make_buffer(y, CL_MEM_READ_WRITE);
+                cl::Buffer zbuffer = ocl::make_buffer(z, CL_MEM_READ_ONLY);
+                cl::Kernel kernel = ocl::make_kernel("vpv");
 
-                nano::set_args(kernel, xbuffer, ybuffer, zbuffer);
-                theocl.write(xbuffer, x);
-                theocl.write(ybuffer, y);
+                ocl::set_args(kernel, xbuffer, ybuffer, zbuffer);
+                ocl::write(xbuffer, x);
+                ocl::write(ybuffer, y);
 
                 const auto duration = nano::measure_robustly_psec([&] ()
                 {
@@ -119,7 +117,7 @@ namespace
                         queue.finish();
                 }, trials);
 
-                theocl.read(zbuffer, z);
+                ocl::read(zbuffer, z);
 
                 return nano::gflops(dims, duration);
         }
@@ -145,14 +143,14 @@ namespace
                 auto y = make_vector(dims); auto b = make_scalar();
                 auto z = make_vector(dims);
 
-                cl::Buffer xbuffer = theocl.make_buffer(x, CL_MEM_READ_WRITE);
-                cl::Buffer ybuffer = theocl.make_buffer(y, CL_MEM_READ_WRITE);
-                cl::Buffer zbuffer = theocl.make_buffer(z, CL_MEM_READ_ONLY);
-                cl::Kernel kernel = theocl.kernel("vcpvc");
+                cl::Buffer xbuffer = ocl::make_buffer(x, CL_MEM_READ_WRITE);
+                cl::Buffer ybuffer = ocl::make_buffer(y, CL_MEM_READ_WRITE);
+                cl::Buffer zbuffer = ocl::make_buffer(z, CL_MEM_READ_ONLY);
+                cl::Kernel kernel = ocl::make_kernel("vcpvc");
 
-                nano::set_args(kernel, xbuffer, a, ybuffer, b, zbuffer);
-                theocl.write(xbuffer, x);
-                theocl.write(ybuffer, y);
+                ocl::set_args(kernel, xbuffer, a, ybuffer, b, zbuffer);
+                ocl::write(xbuffer, x);
+                ocl::write(ybuffer, y);
 
                 const auto duration = nano::measure_robustly_psec([&] ()
                 {
@@ -160,7 +158,7 @@ namespace
                         queue.finish();
                 }, trials);
 
-                theocl.read(zbuffer, z);
+                ocl::read(zbuffer, z);
 
                 return nano::gflops(3 * dims, duration);
         }
@@ -187,14 +185,14 @@ namespace
                 auto x = make_vector(dims);
                 auto z = make_vector(dims);
 
-                cl::Buffer Abuffer = theocl.make_buffer(A, CL_MEM_READ_WRITE);
-                cl::Buffer xbuffer = theocl.make_buffer(x, CL_MEM_READ_WRITE);
-                cl::Buffer zbuffer = theocl.make_buffer(z, CL_MEM_READ_ONLY);
-                cl::Kernel kernel = theocl.kernel("mv");
+                cl::Buffer Abuffer = ocl::make_buffer(A, CL_MEM_READ_WRITE);
+                cl::Buffer xbuffer = ocl::make_buffer(x, CL_MEM_READ_WRITE);
+                cl::Buffer zbuffer = ocl::make_buffer(z, CL_MEM_READ_ONLY);
+                cl::Kernel kernel = ocl::make_kernel("mv");
 
-                nano::set_args(kernel, Abuffer, int(dims), xbuffer, zbuffer);
-                theocl.write(Abuffer, A);
-                theocl.write(xbuffer, x);
+                ocl::set_args(kernel, Abuffer, int(dims), xbuffer, zbuffer);
+                ocl::write(Abuffer, A);
+                ocl::write(xbuffer, x);
 
                 const auto duration = nano::measure_robustly_psec([&] ()
                 {
@@ -202,7 +200,7 @@ namespace
                         queue.finish();
                 }, trials);
 
-                theocl.read(zbuffer, z);
+                ocl::read(zbuffer, z);
 
                 return nano::gflops(dims * dims, duration);
         }
@@ -231,14 +229,14 @@ namespace
                 auto c = make_scalar();
                 auto z = make_vector(dims);
 
-                cl::Buffer Abuffer = theocl.make_buffer(A, CL_MEM_READ_WRITE);
-                cl::Buffer xbuffer = theocl.make_buffer(x, CL_MEM_READ_WRITE);
-                cl::Buffer zbuffer = theocl.make_buffer(z, CL_MEM_READ_ONLY);
-                cl::Kernel kernel = theocl.kernel("mvpc");
+                cl::Buffer Abuffer = ocl::make_buffer(A, CL_MEM_READ_WRITE);
+                cl::Buffer xbuffer = ocl::make_buffer(x, CL_MEM_READ_WRITE);
+                cl::Buffer zbuffer = ocl::make_buffer(z, CL_MEM_READ_ONLY);
+                cl::Kernel kernel = ocl::make_kernel("mvpc");
 
-                nano::set_args(kernel, Abuffer, int(dims), xbuffer, c, zbuffer);
-                theocl.write(Abuffer, A);
-                theocl.write(xbuffer, x);
+                ocl::set_args(kernel, Abuffer, int(dims), xbuffer, c, zbuffer);
+                ocl::write(Abuffer, A);
+                ocl::write(xbuffer, x);
 
                 const auto duration = nano::measure_robustly_psec([&] ()
                 {
@@ -246,7 +244,7 @@ namespace
                         queue.finish();
                 }, trials);
 
-                theocl.read(zbuffer, z);
+                ocl::read(zbuffer, z);
 
                 return nano::gflops(dims * dims + dims, duration);
         }
@@ -275,16 +273,16 @@ namespace
                 auto y = make_vector(dims);
                 auto z = make_vector(dims);
 
-                cl::Buffer Abuffer = theocl.make_buffer(A, CL_MEM_READ_WRITE);
-                cl::Buffer xbuffer = theocl.make_buffer(x, CL_MEM_READ_WRITE);
-                cl::Buffer ybuffer = theocl.make_buffer(y, CL_MEM_READ_WRITE);
-                cl::Buffer zbuffer = theocl.make_buffer(z, CL_MEM_READ_ONLY);
-                cl::Kernel kernel = theocl.kernel("mvpv");
+                cl::Buffer Abuffer = ocl::make_buffer(A, CL_MEM_READ_WRITE);
+                cl::Buffer xbuffer = ocl::make_buffer(x, CL_MEM_READ_WRITE);
+                cl::Buffer ybuffer = ocl::make_buffer(y, CL_MEM_READ_WRITE);
+                cl::Buffer zbuffer = ocl::make_buffer(z, CL_MEM_READ_ONLY);
+                cl::Kernel kernel = ocl::make_kernel("mvpv");
 
-                nano::set_args(kernel, Abuffer, (int)dims, xbuffer, ybuffer, zbuffer);
-                theocl.write(Abuffer, A);
-                theocl.write(xbuffer, x);
-                theocl.write(ybuffer, y);
+                ocl::set_args(kernel, Abuffer, (int)dims, xbuffer, ybuffer, zbuffer);
+                ocl::write(Abuffer, A);
+                ocl::write(xbuffer, x);
+                ocl::write(ybuffer, y);
 
                 const auto duration = nano::measure_robustly_psec([&] ()
                 {
@@ -292,7 +290,7 @@ namespace
                         queue.finish();
                 }, trials);
 
-                theocl.read(zbuffer, z);
+                ocl::read(zbuffer, z);
 
                 return nano::gflops(dims * dims + dims, duration);
         }
@@ -319,14 +317,14 @@ namespace
                 auto B = make_matrix(dims, dims);
                 auto Z = make_matrix(dims, dims);
 
-                cl::Buffer Abuffer = theocl.make_buffer(A, CL_MEM_READ_WRITE);
-                cl::Buffer Bbuffer = theocl.make_buffer(B, CL_MEM_READ_WRITE);
-                cl::Buffer Zbuffer = theocl.make_buffer(Z, CL_MEM_READ_ONLY);
-                cl::Kernel kernel = theocl.kernel("mm");
+                cl::Buffer Abuffer = ocl::make_buffer(A, CL_MEM_READ_WRITE);
+                cl::Buffer Bbuffer = ocl::make_buffer(B, CL_MEM_READ_WRITE);
+                cl::Buffer Zbuffer = ocl::make_buffer(Z, CL_MEM_READ_ONLY);
+                cl::Kernel kernel = ocl::make_kernel("mm");
 
-                nano::set_args(kernel, Abuffer, (int)dims, Bbuffer, (int)dims, Zbuffer);
-                theocl.write(Abuffer, A);
-                theocl.write(Bbuffer, B);
+                ocl::set_args(kernel, Abuffer, (int)dims, Bbuffer, (int)dims, Zbuffer);
+                ocl::write(Abuffer, A);
+                ocl::write(Bbuffer, B);
 
                 const auto duration = nano::measure_robustly_psec([&] ()
                 {
@@ -334,7 +332,7 @@ namespace
                         queue.finish();
                 }, trials);
 
-                theocl.read(Zbuffer, Z);
+                ocl::read(Zbuffer, Z);
 
                 return nano::gflops(dims * dims * dims, duration);
         }
@@ -349,8 +347,7 @@ int main(int, const char* [])
         try
         {
         // initialize OpenCL context
-        theocl.init();
-        theocl.select(CL_DEVICE_TYPE_GPU);
+        ocl::select(CL_DEVICE_TYPE_GPU);
 #endif
 
         const auto min_dims = tensor_size_t(8);
@@ -410,7 +407,7 @@ int main(int, const char* [])
         }
         catch (cl::Error& e)
         {
-                log_error() << "OpenCL fatal error: <" << e.what() << "> (" << error_string(e.err()) << ")!";
+                log_error() << "OpenCL fatal error: <" << e.what() << "> (" << ocl::error_string(e.err()) << ")!";
                 return EXIT_FAILURE;
         }
 #endif

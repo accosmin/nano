@@ -2,8 +2,8 @@
 #include "tensor.h"
 #include "measure.hpp"
 #include "text/table.h"
+#include "opencl/ocl.h"
 #include "math/random.hpp"
-#include "opencl/manager.h"
 #include "tensor/numeric.hpp"
 #include "text/table_row_mark.h"
 #include <iomanip>
@@ -13,8 +13,6 @@ namespace
 {
         using namespace nano;
 
-        opencl_manager_t theocl;
-
         nano::random_t<scalar_t> rng(scalar_t(-1e-3), scalar_t(+1e-3));
         const size_t trials = 16;
 
@@ -23,13 +21,13 @@ namespace
                 vector_t x(dims);
                 tensor::set_random(rng, x);
 
-                cl::Buffer buffer = theocl.make_buffer(x, CL_MEM_READ_WRITE);
-                theocl.write(buffer, x);
+                cl::Buffer buffer = ocl::make_buffer(x, CL_MEM_READ_WRITE);
+                ocl::write(buffer, x);
 
                 volatile scalar_t z = 0;
                 const auto duration = nano::measure_robustly_psec([&] ()
                 {
-                        theocl.read(buffer, x);
+                        ocl::read(buffer, x);
                         ++ z;
                 }, trials);
 
@@ -41,12 +39,12 @@ namespace
                 vector_t x(dims);
                 tensor::set_random(rng, x);
 
-                cl::Buffer buffer = theocl.make_buffer(x, CL_MEM_READ_WRITE);
+                cl::Buffer buffer = ocl::make_buffer(x, CL_MEM_READ_WRITE);
 
                 volatile scalar_t z = 0;
                 const auto duration = nano::measure_robustly_psec([&] ()
                 {
-                        theocl.write(buffer, x);
+                        ocl::write(buffer, x);
                         ++ z;
                 }, trials);
 
@@ -60,8 +58,7 @@ int main(int, char* [])
 
         try
         {
-                theocl.init();
-                theocl.select(CL_DEVICE_TYPE_GPU);
+                ocl::select(CL_DEVICE_TYPE_GPU);
 
                 const auto min_dims = tensor_size_t(8);
                 const auto max_dims = tensor_size_t(1024);
@@ -92,7 +89,7 @@ int main(int, char* [])
 
         catch (cl::Error& e)
         {
-                log_error() << "OpenCL fatal error: <" << e.what() << "> (" << error_string(e.err()) << ")!";
+                log_error() << "OpenCL fatal error: <" << e.what() << "> (" << ocl::error_string(e.err()) << ")!";
                 return EXIT_FAILURE;
         }
 
