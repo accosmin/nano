@@ -18,7 +18,7 @@ namespace nano
                 std::vector<cl::Device>         m_devices;      ///< available devices for all platforms
                 cl::Device                      m_device;       ///< selected device
                 cl::Context                     m_context;      ///< context for the selected device
-                cl::CommandQueue                m_queue;///< command queue for the selected context
+                cl::CommandQueue                m_queue;        ///< command queue for the selected context
                 cl::Program                     m_program;      ///< built-in kernels
         };
 
@@ -184,7 +184,7 @@ namespace nano
 
                 try
                 {
-                        program.build({theocl.m_device}, "-cl-mad-enable -Werror -std=CL1.2");//, "-cl-fast-relaxed-math");
+                        program.build({theocl.m_device}, "-cl-mad-enable -Werror");//, "-cl-fast-relaxed-math");
                 }
                 catch (cl::Error& e)
                 {

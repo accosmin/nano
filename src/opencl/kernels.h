@@ -15,25 +15,32 @@ namespace nano
 
                 float vsum4(const float4 in)
                 {
-                        static const float4 unit = 1.0f;
+                        const float4 unit = 1.0f;
                         return dot(in, unit);
+                }
+
+                float dotx(__global const float* x, __global const float* y, const int size)
+                {
+                        float acc = 0.0f;
+                        for (int i = 0; i < size; ++ i)
+                        {
+                                acc += x[i] * y[i];
+                        }
+                        return acc;
                 }
 
                 float dotx4(__global const float* x, __global const float* y, const int size)
                 {
                         float4 acc = 0.0f;
 
-                        const int size4 = size - (size & 3);
+                        const int tail = size & 3;
+                        const int size4 = size - tail;
                         for (int i = 0; i < size4; i += 4)
                         {
                                 acc += vload4(0, &x[i]) * vload4(0, &y[i]);
                         }
-                        for (int i = size4; i < size; ++ i)
-                        {
-                                acc.x += x[i] * y[i];
-                        }
 
-                        return vsum4(acc);
+                        return (!tail) ? vsum4(acc) : vsum4(acc) + dotx(x + size4, y + size4, tail);
                 }
 
                 // add a constant to a vector: z = x + c
