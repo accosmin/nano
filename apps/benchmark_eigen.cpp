@@ -347,12 +347,23 @@ int main(int argc, const char* argv[])
         cmdline_t cmdline("benchmark linear algebra operations using Eigen and OpenCL (if available)");
         cmdline.add("", "min-dims",     "minimum number of dimensions [1, 1024]", "8");
         cmdline.add("", "max-dims",     "maximum number of dimensions [1, 4096]", "1024");
+        cmdline.add("", "level1",       "benchmark level1 operations (vector-vector)");
+        cmdline.add("", "level2",       "benchmark level2 operations (matrix-vector)");
+        cmdline.add("", "level3",       "benchmark level3 operations (matrix-matrix)");
 
         cmdline.process(argc, argv);
 
         // check arguments and options
         const auto min_dims = clamp(cmdline.get<tensor_size_t>("min-dims"), tensor_size_t(1), tensor_size_t(1024));
         const auto max_dims = clamp(cmdline.get<tensor_size_t>("max-dims"), min_dims, tensor_size_t(4096));
+        const auto level1 = cmdline.has("level1");
+        const auto level2 = cmdline.has("level2");
+        const auto level3 = cmdline.has("level3");
+
+        if (!level1 && !level2 && !level3)
+        {
+                cmdline.usage();
+        }
 
 #ifdef NANO_WITH_OPENCL
         try
@@ -378,36 +389,45 @@ int main(int argc, const char* argv[])
 
         table_t table("operation");
         table.header() << "platform";
-        foreach_dims([&] (const tensor_size_t dims) { table.header() << (to_string(dims) + " [GFLOPS]"); });
+        foreach_dims([&] (const tensor_size_t dims) { table.header() << (to_string(dims) + "D [GFLOPS]"); });
 
-        fillrow(table.append("z = x + c") << "CPU", measure_vpc);
+        if (level1)
+        {
+                fillrow(table.append("z = x + c") << "CPU", measure_vpc);
 #ifdef NANO_WITH_OPENCL
-        fillrow(table.append("z = x + c") << "OpenCL", measure_vpc_ocl);
+                fillrow(table.append("z = x + c") << "OpenCL", measure_vpc_ocl);
 #endif
-        fillrow(table.append("z = x + y") << "CPU", measure_vpv);
+                fillrow(table.append("z = x + y") << "CPU", measure_vpv);
 #ifdef NANO_WITH_OPENCL
-        fillrow(table.append("z = x + y") << "OpenCL", measure_vpv_ocl);
+                fillrow(table.append("z = x + y") << "OpenCL", measure_vpv_ocl);
 #endif
-        fillrow(table.append("z = a * x + b * y") << "CPU", measure_vcpvc);
+                fillrow(table.append("z = a * x + b * y") << "CPU", measure_vcpvc);
 #ifdef NANO_WITH_OPENCL
-        fillrow(table.append("z = a * x + b * y") << "OpenCL", measure_vcpvc_ocl);
+                fillrow(table.append("z = a * x + b * y") << "OpenCL", measure_vcpvc_ocl);
 #endif
-        fillrow(table.append("z = A * x") << "CPU", measure_mv);
+        }
+        if (level2)
+        {
+                fillrow(table.append("z = A * x") << "CPU", measure_mv);
 #ifdef NANO_WITH_OPENCL
-        fillrow(table.append("z = A * x") << "OpenCL", measure_mv_ocl);
+                fillrow(table.append("z = A * x") << "OpenCL", measure_mv_ocl);
 #endif
-        fillrow(table.append("z = A * x + c") << "CPU", measure_mvpc);
+                fillrow(table.append("z = A * x + c") << "CPU", measure_mvpc);
 #ifdef NANO_WITH_OPENCL
-        fillrow(table.append("z = A * x + c") << "OpenCL", measure_mvpc_ocl);
+                fillrow(table.append("z = A * x + c") << "OpenCL", measure_mvpc_ocl);
 #endif
-        fillrow(table.append("z = A * x + y") << "CPU", measure_mvpv);
+                fillrow(table.append("z = A * x + y") << "CPU", measure_mvpv);
 #ifdef NANO_WITH_OPENCL
-        fillrow(table.append("z = A * x + y") << "OpenCL", measure_mvpv_ocl);
+                fillrow(table.append("z = A * x + y") << "OpenCL", measure_mvpv_ocl);
 #endif
-        fillrow(table.append("Z = A * B") << "CPU", measure_mm);
+        }
+        if (level3)
+        {
+                fillrow(table.append("Z = A * B") << "CPU", measure_mm);
 #ifdef NANO_WITH_OPENCL
-        fillrow(table.append("z = A * B") << "OpenCL", measure_mm_ocl);
+                fillrow(table.append("z = A * B") << "OpenCL", measure_mm_ocl);
 #endif
+        }
 
         //table.mark(nano::make_table_mark_maximum_percentage_cols<scalar_t>(10));
         table.print(std::cout);
