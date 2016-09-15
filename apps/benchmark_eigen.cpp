@@ -37,10 +37,6 @@ namespace
                 return x;
         }
 
-#ifdef NANO_WITH_OPENCL
-        cl::CommandQueue& queue = ocl::queue();
-#endif
-
         auto measure_vpc(const tensor_size_t dims)
         {
                 auto x = make_vector(dims);
@@ -71,8 +67,8 @@ namespace
 
                 const auto duration = nano::measure_robustly_psec([&] ()
                 {
-                        queue.enqueueNDRangeKernel(kernel, cl::NullRange, cl::NDRange(size_t(dims)), cl::NullRange);
-                        queue.finish();
+                        ocl::enqueue(kernel, dims);
+                        ocl::wait();
                 }, trials);
 
                 ocl::read(zbuffer, z);
@@ -113,8 +109,8 @@ namespace
 
                 const auto duration = nano::measure_robustly_psec([&] ()
                 {
-                        queue.enqueueNDRangeKernel(kernel, cl::NullRange, cl::NDRange(size_t(dims)), cl::NullRange);
-                        queue.finish();
+                        ocl::enqueue(kernel, dims);
+                        ocl::wait();
                 }, trials);
 
                 ocl::read(zbuffer, z);
@@ -154,8 +150,8 @@ namespace
 
                 const auto duration = nano::measure_robustly_psec([&] ()
                 {
-                        queue.enqueueNDRangeKernel(kernel, cl::NullRange, cl::NDRange(size_t(dims)), cl::NullRange);
-                        queue.finish();
+                        ocl::enqueue(kernel, dims);
+                        ocl::wait();
                 }, trials);
 
                 ocl::read(zbuffer, z);
@@ -196,8 +192,8 @@ namespace
 
                 const auto duration = nano::measure_robustly_psec([&] ()
                 {
-                        queue.enqueueNDRangeKernel(kernel, cl::NullRange, cl::NDRange(size_t(dims)), cl::NullRange);
-                        queue.finish();
+                        ocl::enqueue(kernel, dims);
+                        ocl::wait();
                 }, trials);
 
                 ocl::read(zbuffer, z);
@@ -240,8 +236,8 @@ namespace
 
                 const auto duration = nano::measure_robustly_psec([&] ()
                 {
-                        queue.enqueueNDRangeKernel(kernel, cl::NullRange, cl::NDRange(size_t(dims)), cl::NullRange);
-                        queue.finish();
+                        ocl::enqueue(kernel, dims);
+                        ocl::wait();
                 }, trials);
 
                 ocl::read(zbuffer, z);
@@ -286,8 +282,8 @@ namespace
 
                 const auto duration = nano::measure_robustly_psec([&] ()
                 {
-                        queue.enqueueNDRangeKernel(kernel, cl::NullRange, cl::NDRange(size_t(dims)), cl::NullRange);
-                        queue.finish();
+                        ocl::enqueue(kernel, dims);
+                        ocl::wait();
                 }, trials);
 
                 ocl::read(zbuffer, z);
@@ -328,8 +324,8 @@ namespace
 
                 const auto duration = nano::measure_robustly_psec([&] ()
                 {
-                        queue.enqueueNDRangeKernel(kernel, cl::NullRange, cl::NDRange(size_t(dims), size_t(dims)), cl::NullRange);
-                        queue.finish();
+                        ocl::enqueue(kernel, dims, dims);
+                        ocl::wait();
                 }, trials);
 
                 ocl::read(Zbuffer, Z);

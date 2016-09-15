@@ -35,9 +35,6 @@ NANO_BEGIN_MODULE(test_opencl)
 // initialize OpenCL context
 NANO_REQUIRE_NOTHROW(ocl::select(CL_DEVICE_TYPE_GPU));
 
-// use this command queue to send tasks
-cl::CommandQueue& queue = ocl::queue();
-
 // I/O
 NANO_CASE(io)
 {
@@ -73,8 +70,8 @@ NANO_CASE(vpc)
 
                 NANO_CHECK(ocl::write(xbuffer, x) == CL_SUCCESS);
 
-                queue.enqueueNDRangeKernel(kernel, cl::NullRange, cl::NDRange(size_t(dims)), cl::NullRange);
-                queue.finish();
+                ocl::enqueue(kernel, dims);
+                ocl::wait();
 
                 NANO_CHECK(ocl::read(zbuffer, z) == CL_SUCCESS);
                 NANO_CHECK_EIGEN_CLOSE(x.array() + c, z.array(), nano::epsilon0<scalar_t>());
@@ -101,8 +98,8 @@ NANO_CASE(vpv)
                 NANO_CHECK(ocl::write(xbuffer, x) == CL_SUCCESS);
                 NANO_CHECK(ocl::write(ybuffer, y) == CL_SUCCESS);
 
-                queue.enqueueNDRangeKernel(kernel, cl::NullRange, cl::NDRange(size_t(dims)), cl::NullRange);
-                queue.finish();
+                ocl::enqueue(kernel, dims);
+                ocl::wait();
 
                 NANO_CHECK(ocl::read(zbuffer, z) == CL_SUCCESS);
                 NANO_CHECK_EIGEN_CLOSE((x + y), z, nano::epsilon0<scalar_t>());
@@ -131,8 +128,8 @@ NANO_CASE(vcpvc)
                 NANO_CHECK(ocl::write(xbuffer, x) == CL_SUCCESS);
                 NANO_CHECK(ocl::write(ybuffer, y) == CL_SUCCESS);
 
-                queue.enqueueNDRangeKernel(kernel, cl::NullRange, cl::NDRange(size_t(dims)), cl::NullRange);
-                queue.finish();
+                ocl::enqueue(kernel, dims);
+                ocl::wait();
 
                 NANO_CHECK(ocl::read(zbuffer, z) == CL_SUCCESS);
                 NANO_CHECK_EIGEN_CLOSE((a * x + b * y), z, nano::epsilon0<scalar_t>());
@@ -160,8 +157,8 @@ NANO_CASE(mv)
                 NANO_CHECK(ocl::write(Abuffer, A) == CL_SUCCESS);
                 NANO_CHECK(ocl::write(xbuffer, x) == CL_SUCCESS);
 
-                queue.enqueueNDRangeKernel(kernel, cl::NullRange, cl::NDRange(size_t(rows)), cl::NullRange);
-                queue.finish();
+                ocl::enqueue(kernel, rows);
+                ocl::wait();
 
                 NANO_CHECK(ocl::read(zbuffer, z) == CL_SUCCESS);
                 NANO_CHECK_EIGEN_CLOSE((A * x), z, nano::epsilon0<scalar_t>());
@@ -190,8 +187,8 @@ NANO_CASE(mvpc)
                 NANO_CHECK(ocl::write(Abuffer, A) == CL_SUCCESS);
                 NANO_CHECK(ocl::write(xbuffer, x) == CL_SUCCESS);
 
-                queue.enqueueNDRangeKernel(kernel, cl::NullRange, cl::NDRange(size_t(rows)), cl::NullRange);
-                queue.finish();
+                ocl::enqueue(kernel, rows);
+                ocl::wait();
 
                 NANO_CHECK(ocl::read(zbuffer, z) == CL_SUCCESS);
                 NANO_CHECK_EIGEN_CLOSE((A * x).array() + c, z.array(), nano::epsilon0<scalar_t>());
@@ -222,8 +219,8 @@ NANO_CASE(mvpv)
                 NANO_CHECK(ocl::write(xbuffer, x) == CL_SUCCESS);
                 NANO_CHECK(ocl::write(ybuffer, y) == CL_SUCCESS);
 
-                queue.enqueueNDRangeKernel(kernel, cl::NullRange, cl::NDRange(size_t(rows)), cl::NullRange);
-                queue.finish();
+                ocl::enqueue(kernel, rows);
+                ocl::wait();
 
                 NANO_CHECK(ocl::read(zbuffer, z) == CL_SUCCESS);
                 NANO_CHECK_EIGEN_CLOSE((A * x + y), z, nano::epsilon0<scalar_t>());
@@ -253,8 +250,8 @@ NANO_CASE(mm)
                 NANO_CHECK(ocl::write(Abuffer, A) == CL_SUCCESS);
                 NANO_CHECK(ocl::write(Bbuffer, B) == CL_SUCCESS);
 
-                queue.enqueueNDRangeKernel(kernel, cl::NullRange, cl::NDRange(size_t(rowsA), size_t(colsB)), cl::NullRange);
-                queue.finish();
+                ocl::enqueue(kernel, rowsA, colsB);
+                ocl::wait();
 
                 NANO_CHECK(ocl::read(Zbuffer, Z) == CL_SUCCESS);
                 NANO_CHECK_EIGEN_CLOSE((A * B), Z, nano::epsilon0<scalar_t>());

@@ -155,7 +155,7 @@ namespace nano
                 return theocl.select(type);
         }
 
-        cl::CommandQueue& ocl::queue()
+        static cl::CommandQueue& queue()
         {
                 return theocl.m_queue;
         }
@@ -322,6 +322,33 @@ namespace nano
 
                 const int index = -error;
                 return (index >= 0 && index < errorCount) ? errorString[index] : "UNKNOWN";
+        }
+
+        cl_int ocl::read(const cl::Buffer& buffer, const cl_bool blocking, const size_t bytes, void* ptr)
+        {
+                return queue().enqueueReadBuffer(buffer, blocking, 0, bytes, ptr);
+        }
+
+        cl_int ocl::write(const cl::Buffer& buffer, const cl_bool blocking, const size_t bytes, const void* ptr)
+        {
+                return queue().enqueueWriteBuffer(buffer, blocking, 0, bytes, ptr);
+        }
+
+        template <>
+        void ocl::enqueue<size_t>(const cl::Kernel& kernel, const size_t dims1)
+        {
+                queue().enqueueNDRangeKernel(kernel, cl::NullRange, cl::NDRange(dims1), cl::NullRange);
+        }
+
+        template <>
+        void ocl::enqueue<size_t>(const cl::Kernel& kernel, const size_t dims1, const size_t dims2)
+        {
+                queue().enqueueNDRangeKernel(kernel, cl::NullRange, cl::NDRange(dims1, dims2), cl::NullRange);
+        }
+
+        void ocl::wait()
+        {
+                queue().finish();
         }
 }
 

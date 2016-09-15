@@ -23,11 +23,6 @@ namespace ocl
         NANO_PUBLIC bool select(const cl_device_type type = CL_DEVICE_TYPE_GPU);
 
         ///
-        /// \brief current command queue.
-        ///
-        NANO_PUBLIC cl::CommandQueue& queue();
-
-        ///
         /// \brief tensor size in bytes.
         ///
         template <typename ttensor>
@@ -50,24 +45,6 @@ namespace ocl
         ///
         template <>
         NANO_PUBLIC cl::Buffer make_buffer<std::size_t>(const std::size_t& bytesize, const cl_mem_flags);
-
-        ///
-        /// \brief read a device buffer to the given tensor (blocking operation).
-        ///
-        template <typename ttensor>
-        cl_int read(const cl::Buffer& buffer, ttensor& t)
-        {
-                return queue().enqueueReadBuffer(buffer, CL_TRUE, 0, tensor_bytes(t), t.data());
-        }
-
-        ///
-        /// \brief write to a device buffer from the given tensor (blocking operation).
-        ///
-        template <typename ttensor>
-        cl_int write(const cl::Buffer& buffer, const ttensor& t)
-        {
-                return queue().enqueueWriteBuffer(buffer, CL_TRUE, 0, tensor_bytes(t), t.data());
-        }
 
         ///
         /// \brief create & compile a program from source file.
@@ -99,6 +76,34 @@ namespace ocl
         ///
         NANO_PUBLIC const char* device_type_string(const cl_device_type type);
 
+        ///
+        /// \brief read a device buffer to the given data pointer.
+        ///
+        NANO_PUBLIC cl_int read(const cl::Buffer& buffer, const cl_bool blocking, const size_t bytes, void* ptr);
+
+        ///
+        /// \brief read a device buffer to the given tensor (blocking operation).
+        ///
+        template <typename ttensor>
+        cl_int read(const cl::Buffer& buffer, ttensor& t)
+        {
+                return read(buffer, CL_TRUE, tensor_bytes(t), t.data());
+        }
+
+        ///
+        /// \brief write to a device buffer from the given data pointer.
+        ///
+        NANO_PUBLIC cl_int write(const cl::Buffer& buffer, const cl_bool blocking, const size_t bytes, const void* ptr);
+
+        ///
+        /// \brief write to a device buffer from the given tensor (blocking operation).
+        ///
+        template <typename ttensor>
+        cl_int write(const cl::Buffer& buffer, const ttensor& t)
+        {
+                return write(buffer, CL_TRUE, tensor_bytes(t), t.data());
+        }
+
         namespace detail
         {
                 template <typename targ>
@@ -123,6 +128,35 @@ namespace ocl
         {
                 detail::set_args(kernel, 0, args...);
         }
+
+        ///
+        /// \brief enqueue a 1D kernel.
+        ///
+        template <typename tsize1>
+        void enqueue(const cl::Kernel& kernel, const tsize1 dims1)
+        {
+                enqueue(kernel, static_cast<size_t>(dims1));
+        }
+
+        template <>
+        NANO_PUBLIC void enqueue<size_t>(const cl::Kernel& kernel, const size_t dims1);
+
+        ///
+        /// \brief enqueue a 2D kernel.
+        ///
+        template <typename tsize1, typename tsize2>
+        void enqueue(const cl::Kernel& kernel, const tsize1 dims1, const tsize2 dims2)
+        {
+                enqueue(kernel, static_cast<size_t>(dims1), static_cast<size_t>(dims2));
+        }
+
+        template <>
+        NANO_PUBLIC void enqueue<size_t>(const cl::Kernel& kernel, const size_t dims1, const size_t dims2);
+
+        ///
+        /// \brief wait for all enqueued kernels to finish.
+        ///
+        NANO_PUBLIC void wait();
 }
 }
 
