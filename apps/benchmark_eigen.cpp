@@ -184,7 +184,7 @@ namespace
                 cl::Buffer zbuffer = ocl::make_buffer(z, CL_MEM_READ_ONLY);
                 cl::Kernel kernel = ocl::make_kernel("mv");
 
-                ocl::set_args(kernel, Abuffer, int(dims), xbuffer, zbuffer);
+                ocl::set_args(kernel, Abuffer, dims, xbuffer, zbuffer);
                 ocl::write(Abuffer, A);
                 ocl::write(xbuffer, x);
 
@@ -227,7 +227,7 @@ namespace
                 cl::Buffer zbuffer = ocl::make_buffer(z, CL_MEM_READ_ONLY);
                 cl::Kernel kernel = ocl::make_kernel("mvpc");
 
-                ocl::set_args(kernel, Abuffer, int(dims), xbuffer, c, zbuffer);
+                ocl::set_args(kernel, Abuffer, dims, xbuffer, c, zbuffer);
                 ocl::write(Abuffer, A);
                 ocl::write(xbuffer, x);
 
@@ -271,7 +271,7 @@ namespace
                 cl::Buffer zbuffer = ocl::make_buffer(z, CL_MEM_READ_ONLY);
                 cl::Kernel kernel = ocl::make_kernel("mvpv");
 
-                ocl::set_args(kernel, Abuffer, (int)dims, xbuffer, ybuffer, zbuffer);
+                ocl::set_args(kernel, Abuffer, dims, xbuffer, ybuffer, zbuffer);
                 ocl::write(Abuffer, A);
                 ocl::write(xbuffer, x);
                 ocl::write(ybuffer, y);
@@ -313,7 +313,7 @@ namespace
                 cl::Buffer Zbuffer = ocl::make_buffer(Z, CL_MEM_READ_ONLY);
                 cl::Kernel kernel = ocl::make_kernel("mm");
 
-                ocl::set_args(kernel, Abuffer, (int)dims, Bbuffer, (int)dims, Zbuffer);
+                ocl::set_args(kernel, Abuffer, dims, Bbuffer, dims, Zbuffer);
                 ocl::write(Abuffer, A);
                 ocl::write(Bbuffer, B);
 

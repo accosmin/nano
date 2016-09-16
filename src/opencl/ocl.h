@@ -107,15 +107,33 @@ namespace ocl
         namespace detail
         {
                 template <typename targ>
-                void set_args(cl::Kernel& kernel, const cl_uint index, const targ& arg)
+                void set_arg(cl::Kernel& kernel, const cl_uint index, const targ& arg)
                 {
                         kernel.setArg(index, arg);
                 }
 
-                template <typename targ, typename... targs>
-                void set_args(cl::Kernel& kernel, const cl_uint index, const targ& arg, const targs&... args)
+                template <>
+                inline void set_arg<long int>(cl::Kernel& kernel, const cl_uint index, const long int& arg)
                 {
-                        kernel.setArg(index, arg);
+                        kernel.setArg(index, static_cast<int>(arg));
+                }
+
+                template <>
+                inline void set_arg<long long int>(cl::Kernel& kernel, const cl_uint index, const long long int& arg)
+                {
+                        kernel.setArg(index, static_cast<int>(arg));
+                }
+
+                template <typename targ>
+                void set_args(cl::Kernel& kernel, const cl_uint index, const targ& arg)
+                {
+                        set_arg(kernel, index, arg);
+                }
+
+                template <typename targ, typename... targs>
+                void set_args(cl::Kernel& kernel, const cl_uint index, const targ& arg, targs... args)
+                {
+                        set_arg(kernel, index, arg);
                         set_args(kernel, index + 1, args...);
                 }
         }
