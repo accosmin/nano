@@ -2,6 +2,7 @@
 #include "logger.h"
 #include "kernels.h"
 #include <map>
+#include <cmath>
 #include <fstream>
 #include <sstream>
 
@@ -337,9 +338,22 @@ namespace nano
         template <>
         cl::Event ocl::enqueue<size_t>(const cl::Kernel& kernel, const size_t dims1)
         {
+                const auto maxwgsize = theocl.m_device.getInfo<CL_DEVICE_MAX_WORK_GROUP_SIZE>() / 4;
+                const auto wgsize1 = (dims1 % maxwgsize) ? 1 : maxwgsize;
+
+                /*size_t wgsize1 = std::max(size_t(1), maxwgsize);
+                while (wgsize1 > 1)
+                {
+                        const bool nok1 = (dims1 % wgsize1);
+                        if (nok1) wgsize1 /= 2;
+                        if (!nok1) break;
+                }*/
+
                 const auto offset = cl::NullRange;
                 const auto global = cl::NDRange(dims1);
-                const auto local = cl::NullRange;
+                const auto local = cl::NDRange(wgsize1);
+
+  //              std::cout << "dims = {" << dims1 << "}, wgsize = {" << wgsize1 << "}" << std::endl;
 
                 cl::Event event;
                 queue().enqueueNDRangeKernel(kernel, offset, global, local, nullptr, &event);
@@ -349,9 +363,29 @@ namespace nano
         template <>
         cl::Event ocl::enqueue<size_t>(const cl::Kernel& kernel, const size_t dims1, const size_t dims2)
         {
+                const auto maxwgsize = size_t(std::sqrt(theocl.m_device.getInfo<CL_DEVICE_MAX_WORK_GROUP_SIZE>() / 4));
+                const auto wgsize1 = (dims1 % maxwgsize) ? 1 : maxwgsize;
+                const auto wgsize2 = (dims2 % maxwgsize) ? 1 : maxwgsize;
+
+                /*size_t wgsize1 = std::max(size_t(1), maxwgsize);
+                size_t wgsize2 = std::max(size_t(1), maxwgsize);
+                bool flip = false;
+                while (wgsize1 > 1 && wgsize2 > 1)
+                {
+                        const bool nokk = wgsize1 * wgsize2 > maxwgsize;
+                        const bool nok1 = (dims1 % wgsize1);
+                        const bool nok2 = (dims2 % wgsize2);
+                        if (nok1) wgsize1 /= 2;
+                        if (nok2) wgsize2 /= 2;
+                        if (!nok1 && !nok2 && nokk) { if (flip) wgsize1 /= 2; else wgsize2 /= 2; flip = !flip; }
+                        if (!nok1 && !nok2 && !nokk) break;
+                }*/
+
                 const auto offset = cl::NullRange;
                 const auto global = cl::NDRange(dims1, dims2);
-                const auto local = cl::NullRange;
+                const auto local = cl::NDRange(wgsize1, wgsize2);
+
+//                std::cout << "dims = {" << dims1 << ", " << dims2 << "}, wgsize = {" << wgsize1 << ", " << wgsize2 << "}" << std::endl;
 
                 cl::Event event;
                 queue().enqueueNDRangeKernel(kernel, offset, global, local, nullptr, &event);
