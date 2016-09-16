@@ -67,8 +67,7 @@ namespace
 
                 const auto duration = nano::measure_robustly_psec([&] ()
                 {
-                        ocl::enqueue(kernel, dims);
-                        ocl::wait();
+                        ocl::wait(ocl::enqueue(kernel, dims));
                 }, trials);
 
                 ocl::read(zbuffer, z);
@@ -109,8 +108,7 @@ namespace
 
                 const auto duration = nano::measure_robustly_psec([&] ()
                 {
-                        ocl::enqueue(kernel, dims);
-                        ocl::wait();
+                        ocl::wait(ocl::enqueue(kernel, dims));
                 }, trials);
 
                 ocl::read(zbuffer, z);
@@ -118,6 +116,7 @@ namespace
                 return nano::gflops(dims, duration);
         }
 #endif
+
         auto measure_vcpvc(const tensor_size_t dims)
         {
                 auto x = make_vector(dims); auto a = make_scalar();
@@ -150,8 +149,7 @@ namespace
 
                 const auto duration = nano::measure_robustly_psec([&] ()
                 {
-                        ocl::enqueue(kernel, dims);
-                        ocl::wait();
+                        ocl::wait(ocl::enqueue(kernel, dims));
                 }, trials);
 
                 ocl::read(zbuffer, z);
@@ -192,8 +190,7 @@ namespace
 
                 const auto duration = nano::measure_robustly_psec([&] ()
                 {
-                        ocl::enqueue(kernel, dims);
-                        ocl::wait();
+                        ocl::wait(ocl::enqueue(kernel, dims));
                 }, trials);
 
                 ocl::read(zbuffer, z);
@@ -236,8 +233,7 @@ namespace
 
                 const auto duration = nano::measure_robustly_psec([&] ()
                 {
-                        ocl::enqueue(kernel, dims);
-                        ocl::wait();
+                        ocl::wait(ocl::enqueue(kernel, dims));
                 }, trials);
 
                 ocl::read(zbuffer, z);
@@ -282,8 +278,7 @@ namespace
 
                 const auto duration = nano::measure_robustly_psec([&] ()
                 {
-                        ocl::enqueue(kernel, dims);
-                        ocl::wait();
+                        ocl::wait(ocl::enqueue(kernel, dims));
                 }, trials);
 
                 ocl::read(zbuffer, z);
@@ -324,8 +319,7 @@ namespace
 
                 const auto duration = nano::measure_robustly_psec([&] ()
                 {
-                        ocl::enqueue(kernel, dims, dims);
-                        ocl::wait();
+                        ocl::wait(ocl::enqueue(kernel, dims, dims));
                 }, trials);
 
                 ocl::read(Zbuffer, Z);

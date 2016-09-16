@@ -133,30 +133,42 @@ namespace ocl
         /// \brief enqueue a 1D kernel.
         ///
         template <typename tsize1>
-        void enqueue(const cl::Kernel& kernel, const tsize1 dims1)
+        cl::Event enqueue(const cl::Kernel& kernel, const tsize1 dims1)
         {
-                enqueue(kernel, static_cast<size_t>(dims1));
+                return enqueue(kernel, static_cast<size_t>(dims1));
         }
 
         template <>
-        NANO_PUBLIC void enqueue<size_t>(const cl::Kernel& kernel, const size_t dims1);
+        NANO_PUBLIC cl::Event enqueue<size_t>(const cl::Kernel& kernel, const size_t dims1);
 
         ///
         /// \brief enqueue a 2D kernel.
         ///
         template <typename tsize1, typename tsize2>
-        void enqueue(const cl::Kernel& kernel, const tsize1 dims1, const tsize2 dims2)
+        cl::Event enqueue(const cl::Kernel& kernel, const tsize1 dims1, const tsize2 dims2)
         {
-                enqueue(kernel, static_cast<size_t>(dims1), static_cast<size_t>(dims2));
+                return enqueue(kernel, static_cast<size_t>(dims1), static_cast<size_t>(dims2));
         }
 
         template <>
-        NANO_PUBLIC void enqueue<size_t>(const cl::Kernel& kernel, const size_t dims1, const size_t dims2);
+        NANO_PUBLIC cl::Event enqueue<size_t>(const cl::Kernel& kernel, const size_t dims1, const size_t dims2);
 
         ///
         /// \brief wait for all enqueued kernels to finish.
         ///
         NANO_PUBLIC void wait();
+
+        ///
+        /// \brief wait for particular events.
+        ///
+        NANO_PUBLIC void wait(const cl::Event& event);
+
+        template <typename... tevents>
+        NANO_PUBLIC void wait(const cl::Event& event, const tevents&... events)
+        {
+                wait(event);
+                wait(events...);
+        }
 }
 }
 

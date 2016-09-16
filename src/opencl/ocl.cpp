@@ -335,20 +335,37 @@ namespace nano
         }
 
         template <>
-        void ocl::enqueue<size_t>(const cl::Kernel& kernel, const size_t dims1)
+        cl::Event ocl::enqueue<size_t>(const cl::Kernel& kernel, const size_t dims1)
         {
-                queue().enqueueNDRangeKernel(kernel, cl::NullRange, cl::NDRange(dims1), cl::NullRange);
+                const auto offset = cl::NullRange;
+                const auto global = cl::NDRange(dims1);
+                const auto local = cl::NullRange;
+
+                cl::Event event;
+                queue().enqueueNDRangeKernel(kernel, offset, global, local, nullptr, &event);
+                return event;
         }
 
         template <>
-        void ocl::enqueue<size_t>(const cl::Kernel& kernel, const size_t dims1, const size_t dims2)
+        cl::Event ocl::enqueue<size_t>(const cl::Kernel& kernel, const size_t dims1, const size_t dims2)
         {
-                queue().enqueueNDRangeKernel(kernel, cl::NullRange, cl::NDRange(dims1, dims2), cl::NullRange);
+                const auto offset = cl::NullRange;
+                const auto global = cl::NDRange(dims1, dims2);
+                const auto local = cl::NullRange;
+
+                cl::Event event;
+                queue().enqueueNDRangeKernel(kernel, offset, global, local, nullptr, &event);
+                return event;
         }
 
         void ocl::wait()
         {
                 queue().finish();
+        }
+
+        void ocl::wait(const cl::Event& event)
+        {
+                event.wait();
         }
 }
 

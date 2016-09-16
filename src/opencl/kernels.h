@@ -8,6 +8,7 @@ namespace nano
         //      v - vector
         ///     m - matrix
         ///     p - plus (addition)
+        ///     N - N-elements at a time
         ///
         inline const char* opencl_kernels()
         {
@@ -19,6 +20,11 @@ namespace nano
                         return dot(in, unit);
                 }
 
+                float vsum8(const float8 in)
+                {
+                        return vsum4(in.lo) + vsum4(in.hi);
+                }
+
                 float dotx(__global const float* x, __global const float* y, const int size)
                 {
                         float acc = 0.0f;
@@ -26,15 +32,16 @@ namespace nano
                         {
                                 acc += x[i] * y[i];
                         }
+
                         return acc;
                 }
 
                 float dotx4(__global const float* x, __global const float* y, const int size)
                 {
-                        float4 acc = 0.0f;
-
                         const int tail = size & 3;
                         const int size4 = size - tail;
+
+                        float4 acc = 0.0f;
                         for (int i = 0; i < size4; i += 4)
                         {
                                 acc += vload4(0, &x[i]) * vload4(0, &y[i]);
@@ -43,7 +50,10 @@ namespace nano
                         return (!tail) ? vsum4(acc) : vsum4(acc) + dotx(x + size4, y + size4, tail);
                 }
 
-                // add a constant to a vector: z = x + c
+                ////////////////////////////////////////////////////////////////////////////////////
+                // level 1 vector-vector operations
+                ////////////////////////////////////////////////////////////////////////////////////
+
                 __kernel void vpc(
                         __global const float* x,
                         const float c,
@@ -53,7 +63,6 @@ namespace nano
                         z[i] = x[i] + c;
                 }
 
-                // add two vectors: z = x + y
                 __kernel void vpv(
                         __global const float* x,
                         __global const float* y,
@@ -63,7 +72,24 @@ namespace nano
                         z[i] = x[i] + y[i];
                 }
 
-                // add two vectors with multiplication factors: z = a * x + b * y
+                __kernel void vcpc(
+                        __global const float* x, const float a,
+                        const float c,
+                        __global float* z)
+                {
+                        const int i = get_global_id(0);
+                        z[i] = a * x[i] + c;
+                }
+
+                __kernel void vcpv(
+                        __global const float* x, const float a,
+                        __global const float* y,
+                        __global float* z)
+                {
+                        const int i = get_global_id(0);
+                        z[i] = a * x[i] + y[i];
+                }
+
                 __kernel void vcpvc(
                         __global const float* x, const float a,
                         __global const float* y, const float b,
@@ -73,7 +99,20 @@ namespace nano
                         z[i] = a * x[i] + b * y[i];
                 }
 
-                // multiply a matrix by a vector: z = A * x
+                __kernel void vcpvcpc(
+                        __global const float* x, const float a,
+                        __global const float* y, const float b,
+                        const float c,
+                        __global float* z)
+                {
+                        const int i = get_global_id(0);
+                        z[i] = a * x[i] + b * y[i] + c;
+                }
+
+                ////////////////////////////////////////////////////////////////////////////////////
+                // level 2 matrix-vector operations
+                ////////////////////////////////////////////////////////////////////////////////////
+
                 __kernel void mv(
                         __global const float* A, const int cols,
                         __global const float* x,
@@ -83,7 +122,6 @@ namespace nano
                         z[row] = dotx4(&A[row * cols], x, cols);
                 }
 
-                // multiply a matrix by a vector and add a constant: y = A * x + c
                 __kernel void mvpc(
                         __global const float* A, const int cols,
                         __global const float* x,
@@ -94,7 +132,6 @@ namespace nano
                         z[row] = dotx4(&A[row * cols], x, cols) + c;
                 }
 
-                // multiply a matrix by a vector and add a vector: y = A * x + y
                 __kernel void mvpv(
                         __global const float* A, const int cols,
                         __global const float* x,
@@ -105,7 +142,10 @@ namespace nano
                         z[row] = dotx4(&A[row * cols], x, cols) + y[row];
                 }
 
-                // multiply a matrix by a matrix: Z = A * B
+                ////////////////////////////////////////////////////////////////////////////////////
+                // level 3 matrix-matrix operations
+                ////////////////////////////////////////////////////////////////////////////////////
+
                 __kernel void mm(
                         __global const float* A, const int colsA,
                         __global const float* B, const int colsB,

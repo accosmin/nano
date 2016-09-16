@@ -52,68 +52,16 @@ NANO_CASE(io)
         }
 }
 
-// z = x + c
-NANO_CASE(vpc)
+// level1: vector-vector operations
+NANO_CASE(level1)
 {
         for (int test = 0; test < n_tests; ++ test)
         {
                 const auto dims = rng_size();
-                auto c = make_scalar();
-                auto x = make_vector(dims);
-                auto z = make_vector(dims);
 
-                cl::Buffer xbuffer = ocl::make_buffer(x, CL_MEM_READ_WRITE);
-                cl::Buffer zbuffer = ocl::make_buffer(z, CL_MEM_READ_ONLY);
-                cl::Kernel kernel = ocl::make_kernel("vpc");
-
-                NANO_REQUIRE_NOTHROW(ocl::set_args(kernel, xbuffer, c, zbuffer));
-
-                NANO_CHECK(ocl::write(xbuffer, x) == CL_SUCCESS);
-
-                ocl::enqueue(kernel, dims);
-                ocl::wait();
-
-                NANO_CHECK(ocl::read(zbuffer, z) == CL_SUCCESS);
-                NANO_CHECK_EIGEN_CLOSE(x.array() + c, z.array(), nano::epsilon0<scalar_t>());
-        }
-}
-
-// z = x + y
-NANO_CASE(vpv)
-{
-        for (int test = 0; test < n_tests; ++ test)
-        {
-                const auto dims = rng_size();
-                auto x = make_vector(dims);
-                auto y = make_vector(dims);
-                auto z = make_vector(dims);
-
-                cl::Buffer xbuffer = ocl::make_buffer(x, CL_MEM_READ_WRITE);
-                cl::Buffer ybuffer = ocl::make_buffer(y, CL_MEM_READ_WRITE);
-                cl::Buffer zbuffer = ocl::make_buffer(z, CL_MEM_READ_ONLY);
-                cl::Kernel kernel = ocl::make_kernel("vpv");
-
-                NANO_REQUIRE_NOTHROW(ocl::set_args(kernel, xbuffer, ybuffer, zbuffer));
-
-                NANO_CHECK(ocl::write(xbuffer, x) == CL_SUCCESS);
-                NANO_CHECK(ocl::write(ybuffer, y) == CL_SUCCESS);
-
-                ocl::enqueue(kernel, dims);
-                ocl::wait();
-
-                NANO_CHECK(ocl::read(zbuffer, z) == CL_SUCCESS);
-                NANO_CHECK_EIGEN_CLOSE((x + y), z, nano::epsilon0<scalar_t>());
-        }
-}
-
-// z = a * x + b * y
-NANO_CASE(vcpvc)
-{
-        for (int test = 0; test < n_tests; ++ test)
-        {
-                const auto dims = rng_size();
                 auto a = make_scalar();
                 auto b = make_scalar();
+                auto c = make_scalar();
                 auto x = make_vector(dims);
                 auto y = make_vector(dims);
                 auto z = make_vector(dims);
@@ -121,114 +69,113 @@ NANO_CASE(vcpvc)
                 cl::Buffer xbuffer = ocl::make_buffer(x, CL_MEM_READ_WRITE);
                 cl::Buffer ybuffer = ocl::make_buffer(y, CL_MEM_READ_WRITE);
                 cl::Buffer zbuffer = ocl::make_buffer(z, CL_MEM_READ_ONLY);
-                cl::Kernel kernel = ocl::make_kernel("vcpvc");
-
-                NANO_REQUIRE_NOTHROW(ocl::set_args(kernel, xbuffer, a, ybuffer, b, zbuffer));
 
                 NANO_CHECK(ocl::write(xbuffer, x) == CL_SUCCESS);
                 NANO_CHECK(ocl::write(ybuffer, y) == CL_SUCCESS);
 
-                ocl::enqueue(kernel, dims);
-                ocl::wait();
-
-                NANO_CHECK(ocl::read(zbuffer, z) == CL_SUCCESS);
-                NANO_CHECK_EIGEN_CLOSE((a * x + b * y), z, nano::epsilon0<scalar_t>());
+                // z = x + c
+                {
+                        cl::Kernel kernel = ocl::make_kernel("vpc");
+                        NANO_REQUIRE_NOTHROW(ocl::set_args(kernel, xbuffer, c, zbuffer));
+                        ocl::wait(ocl::enqueue(kernel, dims));
+                        NANO_CHECK(ocl::read(zbuffer, z) == CL_SUCCESS);
+                        NANO_CHECK_EIGEN_CLOSE(x.array() + c, z.array(), nano::epsilon0<scalar_t>());
+                }
+                // z = x + y
+                {
+                        cl::Kernel kernel = ocl::make_kernel("vpv");
+                        NANO_REQUIRE_NOTHROW(ocl::set_args(kernel, xbuffer, ybuffer, zbuffer));
+                        ocl::wait(ocl::enqueue(kernel, dims));
+                        NANO_CHECK(ocl::read(zbuffer, z) == CL_SUCCESS);
+                        NANO_CHECK_EIGEN_CLOSE(x.array() + y.array(), z.array(), nano::epsilon0<scalar_t>());
+                }
+                // z = a * x + c
+                {
+                        cl::Kernel kernel = ocl::make_kernel("vcpc");
+                        NANO_REQUIRE_NOTHROW(ocl::set_args(kernel, xbuffer, a, c, zbuffer));
+                        ocl::wait(ocl::enqueue(kernel, dims));
+                        NANO_CHECK(ocl::read(zbuffer, z) == CL_SUCCESS);
+                        NANO_CHECK_EIGEN_CLOSE(x.array() * a + c, z.array(), nano::epsilon0<scalar_t>());
+                }
+                // z = a * x + y
+                {
+                        cl::Kernel kernel = ocl::make_kernel("vcpv");
+                        NANO_REQUIRE_NOTHROW(ocl::set_args(kernel, xbuffer, a, ybuffer, zbuffer));
+                        ocl::wait(ocl::enqueue(kernel, dims));
+                        NANO_CHECK(ocl::read(zbuffer, z) == CL_SUCCESS);
+                        NANO_CHECK_EIGEN_CLOSE(x.array() * a + y.array(), z.array(), nano::epsilon0<scalar_t>());
+                }
+                // z = a * x + b * y
+                {
+                        cl::Kernel kernel = ocl::make_kernel("vcpvc");
+                        NANO_REQUIRE_NOTHROW(ocl::set_args(kernel, xbuffer, a, ybuffer, b, zbuffer));
+                        ocl::wait(ocl::enqueue(kernel, dims));
+                        NANO_CHECK(ocl::read(zbuffer, z) == CL_SUCCESS);
+                        NANO_CHECK_EIGEN_CLOSE(x.array() * a + y.array() * b, z.array(), nano::epsilon0<scalar_t>());
+                }
+                // z = a * x + b * y + c
+                {
+                        cl::Kernel kernel = ocl::make_kernel("vcpvcpc");
+                        NANO_REQUIRE_NOTHROW(ocl::set_args(kernel, xbuffer, a, ybuffer, b, c, zbuffer));
+                        ocl::wait(ocl::enqueue(kernel, dims));
+                        NANO_CHECK(ocl::read(zbuffer, z) == CL_SUCCESS);
+                        NANO_CHECK_EIGEN_CLOSE(x.array() * a + y.array() * b + c, z.array(), nano::epsilon0<scalar_t>());
+                }
         }
 }
 
-// Z = A * x
-NANO_CASE(mv)
+// level2: matrix-vector operations
+NANO_CASE(level2)
 {
         for (int test = 0; test < n_tests; ++ test)
         {
                 const auto rows = rng_size();
                 const auto cols = rng_size();
-                auto A = make_matrix(rows, cols);
-                auto x = make_vector(cols);
-                auto z = make_vector(rows);
 
-                cl::Buffer Abuffer = ocl::make_buffer(A, CL_MEM_READ_WRITE);
-                cl::Buffer xbuffer = ocl::make_buffer(x, CL_MEM_READ_WRITE);
-                cl::Buffer zbuffer = ocl::make_buffer(z, CL_MEM_READ_ONLY);
-                cl::Kernel kernel = ocl::make_kernel("mv");
-
-                NANO_REQUIRE_NOTHROW(ocl::set_args(kernel, Abuffer, static_cast<int>(cols), xbuffer, zbuffer));
-
-                NANO_CHECK(ocl::write(Abuffer, A) == CL_SUCCESS);
-                NANO_CHECK(ocl::write(xbuffer, x) == CL_SUCCESS);
-
-                ocl::enqueue(kernel, rows);
-                ocl::wait();
-
-                NANO_CHECK(ocl::read(zbuffer, z) == CL_SUCCESS);
-                NANO_CHECK_EIGEN_CLOSE((A * x), z, nano::epsilon0<scalar_t>());
-        }
-}
-
-// Z = A * x + c
-NANO_CASE(mvpc)
-{
-        for (int test = 0; test < n_tests; ++ test)
-        {
-                const auto rows = rng_size();
-                const auto cols = rng_size();
-                auto c = make_scalar();
-                auto A = make_matrix(rows, cols);
-                auto x = make_vector(cols);
-                auto z = make_vector(rows);
-
-                cl::Buffer Abuffer = ocl::make_buffer(A, CL_MEM_READ_WRITE);
-                cl::Buffer xbuffer = ocl::make_buffer(x, CL_MEM_READ_WRITE);
-                cl::Buffer zbuffer = ocl::make_buffer(z, CL_MEM_READ_ONLY);
-                cl::Kernel kernel = ocl::make_kernel("mvpc");
-
-                NANO_REQUIRE_NOTHROW(ocl::set_args(kernel, Abuffer, static_cast<int>(cols), xbuffer, c, zbuffer));
-
-                NANO_CHECK(ocl::write(Abuffer, A) == CL_SUCCESS);
-                NANO_CHECK(ocl::write(xbuffer, x) == CL_SUCCESS);
-
-                ocl::enqueue(kernel, rows);
-                ocl::wait();
-
-                NANO_CHECK(ocl::read(zbuffer, z) == CL_SUCCESS);
-                NANO_CHECK_EIGEN_CLOSE((A * x).array() + c, z.array(), nano::epsilon0<scalar_t>());
-        }
-}
-
-// Z = A * x + y
-NANO_CASE(mvpv)
-{
-        for (int test = 0; test < n_tests; ++ test)
-        {
-                const auto rows = rng_size();
-                const auto cols = rng_size();
                 auto A = make_matrix(rows, cols);
                 auto x = make_vector(cols);
                 auto y = make_vector(rows);
                 auto z = make_vector(rows);
+                auto c = make_scalar();
 
                 cl::Buffer Abuffer = ocl::make_buffer(A, CL_MEM_READ_WRITE);
                 cl::Buffer xbuffer = ocl::make_buffer(x, CL_MEM_READ_WRITE);
                 cl::Buffer ybuffer = ocl::make_buffer(y, CL_MEM_READ_WRITE);
                 cl::Buffer zbuffer = ocl::make_buffer(z, CL_MEM_READ_ONLY);
-                cl::Kernel kernel = ocl::make_kernel("mvpv");
-
-                NANO_REQUIRE_NOTHROW(ocl::set_args(kernel, Abuffer, static_cast<int>(cols), xbuffer, ybuffer, zbuffer));
 
                 NANO_CHECK(ocl::write(Abuffer, A) == CL_SUCCESS);
                 NANO_CHECK(ocl::write(xbuffer, x) == CL_SUCCESS);
                 NANO_CHECK(ocl::write(ybuffer, y) == CL_SUCCESS);
 
-                ocl::enqueue(kernel, rows);
-                ocl::wait();
-
-                NANO_CHECK(ocl::read(zbuffer, z) == CL_SUCCESS);
-                NANO_CHECK_EIGEN_CLOSE((A * x + y), z, nano::epsilon0<scalar_t>());
+                // z = A * x
+                {
+                        cl::Kernel kernel = ocl::make_kernel("mv");
+                        NANO_REQUIRE_NOTHROW(ocl::set_args(kernel, Abuffer, static_cast<int>(cols), xbuffer, zbuffer));
+                        ocl::wait(ocl::enqueue(kernel, rows));
+                        NANO_CHECK(ocl::read(zbuffer, z) == CL_SUCCESS);
+                        NANO_CHECK_EIGEN_CLOSE((A * x), z, nano::epsilon0<scalar_t>());
+                }
+                // z = A * x + c
+                {
+                        cl::Kernel kernel = ocl::make_kernel("mvpc");
+                        NANO_REQUIRE_NOTHROW(ocl::set_args(kernel, Abuffer, static_cast<int>(cols), xbuffer, c, zbuffer));
+                        ocl::wait(ocl::enqueue(kernel, rows));
+                        NANO_CHECK(ocl::read(zbuffer, z) == CL_SUCCESS);
+                        NANO_CHECK_EIGEN_CLOSE((A * x).array() + c, z.array(), nano::epsilon0<scalar_t>());
+                }
+                // z = A * x + y
+                {
+                        cl::Kernel kernel = ocl::make_kernel("mvpv");
+                        NANO_REQUIRE_NOTHROW(ocl::set_args(kernel, Abuffer, static_cast<int>(cols), xbuffer, ybuffer, zbuffer));
+                        ocl::wait(ocl::enqueue(kernel, rows));
+                        NANO_CHECK(ocl::read(zbuffer, z) == CL_SUCCESS);
+                        NANO_CHECK_EIGEN_CLOSE((A * x + y), z, nano::epsilon0<scalar_t>());
+                }
         }
 }
 
-// Z = A * B
-NANO_CASE(mm)
+// level3: matrix-matrix operations
+NANO_CASE(level3)
 {
         for (int test = 0; test < n_tests; ++ test)
         {
@@ -236,6 +183,7 @@ NANO_CASE(mm)
                 const auto colsA = rng_size();
                 const auto rowsB = colsA;
                 const auto colsB = rng_size();
+
                 auto A = make_matrix(rowsA, colsA);
                 auto B = make_matrix(rowsB, colsB);
                 auto Z = make_matrix(rowsA, colsB);
@@ -243,18 +191,18 @@ NANO_CASE(mm)
                 cl::Buffer Abuffer = ocl::make_buffer(A, CL_MEM_READ_WRITE);
                 cl::Buffer Bbuffer = ocl::make_buffer(B, CL_MEM_READ_WRITE);
                 cl::Buffer Zbuffer = ocl::make_buffer(Z, CL_MEM_READ_ONLY);
-                cl::Kernel kernel = ocl::make_kernel("mm");
-
-                NANO_REQUIRE_NOTHROW(ocl::set_args(kernel, Abuffer, static_cast<int>(colsA), Bbuffer, static_cast<int>(colsB), Zbuffer));
 
                 NANO_CHECK(ocl::write(Abuffer, A) == CL_SUCCESS);
                 NANO_CHECK(ocl::write(Bbuffer, B) == CL_SUCCESS);
 
-                ocl::enqueue(kernel, rowsA, colsB);
-                ocl::wait();
-
-                NANO_CHECK(ocl::read(Zbuffer, Z) == CL_SUCCESS);
-                NANO_CHECK_EIGEN_CLOSE((A * B), Z, nano::epsilon0<scalar_t>());
+                // Z = A * B
+                {
+                        cl::Kernel kernel = ocl::make_kernel("mm");
+                        NANO_REQUIRE_NOTHROW(ocl::set_args(kernel, Abuffer, static_cast<int>(colsA), Bbuffer, static_cast<int>(colsB), Zbuffer));
+                        ocl::wait(ocl::enqueue(kernel, rowsA, colsB));
+                        NANO_CHECK(ocl::read(Zbuffer, Z) == CL_SUCCESS);
+                        NANO_CHECK_EIGEN_CLOSE((A * B), Z, nano::epsilon0<scalar_t>());
+                }
         }
 }
 
