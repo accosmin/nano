@@ -62,7 +62,7 @@ namespace
                 cl::Buffer zbuffer = ocl::make_buffer(z, CL_MEM_READ_ONLY);
                 cl::Kernel kernel = ocl::make_kernel("vpc");
 
-                ocl::set_args(kernel, xbuffer, c, zbuffer);
+                ocl::set_args(kernel, xbuffer, c, zbuffer, dims);
                 ocl::write(xbuffer, x);
 
                 const auto duration = nano::measure_robustly_psec([&] ()
@@ -102,7 +102,7 @@ namespace
                 cl::Buffer zbuffer = ocl::make_buffer(z, CL_MEM_READ_ONLY);
                 cl::Kernel kernel = ocl::make_kernel("vpv");
 
-                ocl::set_args(kernel, xbuffer, ybuffer, zbuffer);
+                ocl::set_args(kernel, xbuffer, ybuffer, zbuffer, dims);
                 ocl::write(xbuffer, x);
                 ocl::write(ybuffer, y);
 
@@ -143,7 +143,7 @@ namespace
                 cl::Buffer zbuffer = ocl::make_buffer(z, CL_MEM_READ_ONLY);
                 cl::Kernel kernel = ocl::make_kernel("vcpvc");
 
-                ocl::set_args(kernel, xbuffer, a, ybuffer, b, zbuffer);
+                ocl::set_args(kernel, xbuffer, a, ybuffer, b, zbuffer, dims);
                 ocl::write(xbuffer, x);
                 ocl::write(ybuffer, y);
 
@@ -184,7 +184,7 @@ namespace
                 cl::Buffer zbuffer = ocl::make_buffer(z, CL_MEM_READ_ONLY);
                 cl::Kernel kernel = ocl::make_kernel("mv");
 
-                ocl::set_args(kernel, Abuffer, dims, xbuffer, zbuffer);
+                ocl::set_args(kernel, Abuffer, xbuffer, zbuffer, dims, dims);
                 ocl::write(Abuffer, A);
                 ocl::write(xbuffer, x);
 
@@ -227,7 +227,7 @@ namespace
                 cl::Buffer zbuffer = ocl::make_buffer(z, CL_MEM_READ_ONLY);
                 cl::Kernel kernel = ocl::make_kernel("mvpc");
 
-                ocl::set_args(kernel, Abuffer, dims, xbuffer, c, zbuffer);
+                ocl::set_args(kernel, Abuffer, xbuffer, c, zbuffer, dims, dims);
                 ocl::write(Abuffer, A);
                 ocl::write(xbuffer, x);
 
@@ -271,7 +271,7 @@ namespace
                 cl::Buffer zbuffer = ocl::make_buffer(z, CL_MEM_READ_ONLY);
                 cl::Kernel kernel = ocl::make_kernel("mvpv");
 
-                ocl::set_args(kernel, Abuffer, dims, xbuffer, ybuffer, zbuffer);
+                ocl::set_args(kernel, Abuffer, xbuffer, ybuffer, zbuffer, dims, dims);
                 ocl::write(Abuffer, A);
                 ocl::write(xbuffer, x);
                 ocl::write(ybuffer, y);
@@ -313,7 +313,7 @@ namespace
                 cl::Buffer Zbuffer = ocl::make_buffer(Z, CL_MEM_READ_ONLY);
                 cl::Kernel kernel = ocl::make_kernel("mm");
 
-                ocl::set_args(kernel, Abuffer, dims, Bbuffer, dims, Zbuffer);
+                ocl::set_args(kernel, Abuffer, Bbuffer, Zbuffer, dims, dims, dims);
                 ocl::write(Abuffer, A);
                 ocl::write(Bbuffer, B);
 
@@ -362,65 +362,88 @@ int main(int argc, const char* argv[])
         ocl::select(CL_DEVICE_TYPE_GPU);
 #endif
 
-        const auto foreach_dims = [&] (const auto& op)
+        const auto foreach_dims = [&] (const auto min, const auto max, const auto& op)
         {
-                for (tensor_size_t dims = min_dims; dims <= max_dims; dims *= 2)
+                for (tensor_size_t dims = min; dims <= max; dims *= 2)
                 {
                         op(dims);
                 }
         };
-        const auto fillrow = [&] (auto&& row, const auto& op)
+        const auto fillrow = [&] (const auto min, const auto max, auto&& row, const auto& op)
         {
-                foreach_dims([&] (const tensor_size_t dims)
+                foreach_dims(min, max, [&] (const tensor_size_t dims)
                 {
                         row << op(dims);
                 });
         };
-
-        table_t table("operation");
-        table.header() << "platform";
-        foreach_dims([&] (const tensor_size_t dims) { table.header() << (to_string(dims) + "D [GFLOPS]"); });
+        const auto fillheader = [&] (const auto min, const auto max, table_t& table)
+        {
+                table.header() << "platform";
+                foreach_dims(min, max, [&] (const tensor_size_t dims)
+                {
+                        const auto kilo = tensor_size_t(1) << 10;
+                        const auto mega = tensor_size_t(1) << 20;
+                        const auto value = (dims < kilo) ? dims : (dims < mega ? (dims / kilo) : (dims / mega));
+                        const auto units = (dims < kilo) ? string_t("") : (dims < mega ? string_t("K") : string_t("M"));
+                        table.header() << (to_string(value) + units + " [GFLOPS]");
+                });
+        };
 
         if (level1)
         {
-                fillrow(table.append("z = x + c") << "CPU", measure_vpc);
+                const auto min = 1024 * min_dims;
+                const auto max = 1024 * max_dims;
+
+                table_t table("operation");
+                fillheader(min, max, table);
+                fillrow(min, max, table.append("z = x + c") << "CPU", measure_vpc);
 #ifdef NANO_WITH_OPENCL
-                fillrow(table.append("z = x + c") << "OpenCL", measure_vpc_ocl);
+                fillrow(min, max, table.append("z = x + c") << "OpenCL", measure_vpc_ocl);
 #endif
-                fillrow(table.append("z = x + y") << "CPU", measure_vpv);
+                fillrow(min, max, table.append("z = x + y") << "CPU", measure_vpv);
 #ifdef NANO_WITH_OPENCL
-                fillrow(table.append("z = x + y") << "OpenCL", measure_vpv_ocl);
+                fillrow(min, max, table.append("z = x + y") << "OpenCL", measure_vpv_ocl);
 #endif
-                fillrow(table.append("z = a * x + b * y") << "CPU", measure_vcpvc);
+                fillrow(min, max, table.append("z = a * x + b * y") << "CPU", measure_vcpvc);
 #ifdef NANO_WITH_OPENCL
-                fillrow(table.append("z = a * x + b * y") << "OpenCL", measure_vcpvc_ocl);
+                fillrow(min, max, table.append("z = a * x + b * y") << "OpenCL", measure_vcpvc_ocl);
 #endif
+                table.print(std::cout);
         }
         if (level2)
         {
-                fillrow(table.append("z = A * x") << "CPU", measure_mv);
+                const auto min = min_dims;
+                const auto max = max_dims;
+
+                table_t table("operation");
+                fillheader(min, max, table);
+                fillrow(min, max, table.append("z = A * x") << "CPU", measure_mv);
 #ifdef NANO_WITH_OPENCL
-                fillrow(table.append("z = A * x") << "OpenCL", measure_mv_ocl);
+                fillrow(min, max, table.append("z = A * x") << "OpenCL", measure_mv_ocl);
 #endif
-                fillrow(table.append("z = A * x + c") << "CPU", measure_mvpc);
+                fillrow(min, max, table.append("z = A * x + c") << "CPU", measure_mvpc);
 #ifdef NANO_WITH_OPENCL
-                fillrow(table.append("z = A * x + c") << "OpenCL", measure_mvpc_ocl);
+                fillrow(min, max, table.append("z = A * x + c") << "OpenCL", measure_mvpc_ocl);
 #endif
-                fillrow(table.append("z = A * x + y") << "CPU", measure_mvpv);
+                fillrow(min, max, table.append("z = A * x + y") << "CPU", measure_mvpv);
 #ifdef NANO_WITH_OPENCL
-                fillrow(table.append("z = A * x + y") << "OpenCL", measure_mvpv_ocl);
+                fillrow(min, max, table.append("z = A * x + y") << "OpenCL", measure_mvpv_ocl);
 #endif
+                table.print(std::cout);
         }
         if (level3)
         {
-                fillrow(table.append("Z = A * B") << "CPU", measure_mm);
-#ifdef NANO_WITH_OPENCL
-                fillrow(table.append("z = A * B") << "OpenCL", measure_mm_ocl);
-#endif
-        }
+                const auto min = min_dims;
+                const auto max = max_dims;
 
-        //table.mark(nano::make_table_mark_maximum_percentage_cols<scalar_t>(10));
-        table.print(std::cout);
+                table_t table("operation");
+                fillheader(min, max, table);
+                fillrow(min, max, table.append("Z = A * B") << "CPU", measure_mm);
+#ifdef NANO_WITH_OPENCL
+                fillrow(min, max, table.append("z = A * B") << "OpenCL", measure_mm_ocl);
+#endif
+                table.print(std::cout);
+        }
 
 #ifdef NANO_WITH_OPENCL
         }

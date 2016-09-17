@@ -57,56 +57,74 @@ namespace nano
                 __kernel void vpc(
                         __global const float* x,
                         const float c,
-                        __global float* z)
+                        __global float* z, const int size)
                 {
                         const int i = get_global_id(0);
-                        z[i] = x[i] + c;
+                        if (i < size)
+                        {
+                                z[i] = x[i] + c;
+                        }
                 }
 
                 __kernel void vpv(
                         __global const float* x,
                         __global const float* y,
-                        __global float* z)
+                        __global float* z, const int size)
                 {
                         const int i = get_global_id(0);
-                        z[i] = x[i] + y[i];
+                        if (i < size)
+                        {
+                                z[i] = x[i] + y[i];
+                        }
                 }
 
                 __kernel void vcpc(
                         __global const float* x, const float a,
                         const float c,
-                        __global float* z)
+                        __global float* z, const int size)
                 {
                         const int i = get_global_id(0);
-                        z[i] = a * x[i] + c;
+                        if (i < size)
+                        {
+                                z[i] = a * x[i] + c;
+                        }
                 }
 
                 __kernel void vcpv(
                         __global const float* x, const float a,
                         __global const float* y,
-                        __global float* z)
+                        __global float* z, const int size)
                 {
                         const int i = get_global_id(0);
-                        z[i] = a * x[i] + y[i];
+                        if (i < size)
+                        {
+                                z[i] = a * x[i] + y[i];
+                        }
                 }
 
                 __kernel void vcpvc(
                         __global const float* x, const float a,
                         __global const float* y, const float b,
-                        __global float* z)
+                        __global float* z, const int size)
                 {
                         const int i = get_global_id(0);
-                        z[i] = a * x[i] + b * y[i];
+                        if (i < size)
+                        {
+                                z[i] = a * x[i] + b * y[i];
+                        }
                 }
 
                 __kernel void vcpvcpc(
                         __global const float* x, const float a,
                         __global const float* y, const float b,
                         const float c,
-                        __global float* z)
+                        __global float* z, const int size)
                 {
                         const int i = get_global_id(0);
-                        z[i] = a * x[i] + b * y[i] + c;
+                        if (i < size)
+                        {
+                                z[i] = a * x[i] + b * y[i] + c;
+                        }
                 }
 
                 ////////////////////////////////////////////////////////////////////////////////////
@@ -114,32 +132,41 @@ namespace nano
                 ////////////////////////////////////////////////////////////////////////////////////
 
                 __kernel void mv(
-                        __global const float* A, const int cols,
+                        __global const float* A,
                         __global const float* x,
-                        __global float* z)
+                        __global float* z, const int rows, const int cols)
                 {
                         const int row = get_global_id(0);
-                        z[row] = dotx4(&A[row * cols], x, cols);
+                        if (row < rows)
+                        {
+                                z[row] = dotx4(&A[row * cols], x, cols);
+                        }
                 }
 
                 __kernel void mvpc(
-                        __global const float* A, const int cols,
+                        __global const float* A,
                         __global const float* x,
                         const float c,
-                        __global float* z)
+                        __global float* z, const int rows, const int cols)
                 {
                         const int row = get_global_id(0);
-                        z[row] = dotx4(&A[row * cols], x, cols) + c;
+                        if (row < rows)
+                        {
+                                z[row] = dotx4(&A[row * cols], x, cols) + c;
+                        }
                 }
 
                 __kernel void mvpv(
-                        __global const float* A, const int cols,
+                        __global const float* A,
                         __global const float* x,
                         __global const float* y,
-                        __global float* z)
+                        __global float* z, const int rows, const int cols)
                 {
                         const int row = get_global_id(0);
-                        z[row] = dotx4(&A[row * cols], x, cols) + y[row];
+                        if (row < rows)
+                        {
+                                z[row] = dotx4(&A[row * cols], x, cols) + y[row];
+                        }
                 }
 
                 ////////////////////////////////////////////////////////////////////////////////////
@@ -147,18 +174,21 @@ namespace nano
                 ////////////////////////////////////////////////////////////////////////////////////
 
                 __kernel void mm(
-                        __global const float* A, const int colsA,
-                        __global const float* B, const int colsB,
-                        __global float* Z)
+                        __global const float* A,
+                        __global const float* B,
+                        __global float* Z, const int rowsA, const int colsA, const int colsB)
                 {
                         const int rowA = get_global_id(0);
                         const int colB = get_global_id(1);
-                        float sum = 0;
-                        for (int colA = 0; colA < colsA; ++ colA)
+                        if (rowA < rowsA && colB < colsB)
                         {
-                                sum += A[rowA * colsA + colA] * B[colA * colsB + colB];
+                                float sum = 0;
+                                for (int colA = 0; colA < colsA; ++ colA)
+                                {
+                                        sum += A[rowA * colsA + colA] * B[colA * colsB + colB];
+                                }
+                                Z[rowA * colsB + colB] = sum;
                         }
-                        Z[rowA * colsB + colB] = sum;
                 }
 
                 )xxx";

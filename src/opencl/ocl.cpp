@@ -38,13 +38,12 @@ namespace nano
                 {
                         const cl::Platform& platform = m_platforms[i];
 
-                        std::stringstream ss;
-                        ss << "OpenCL platform [" << (i + 1) << "/" << m_platforms.size() << "]: ";
-                        const std::string base = ss.str();
-
-                        log_info() << base << "CL_PLATFORM_NAME: " << platform.getInfo<CL_PLATFORM_NAME>();
-                        log_info() << base << "CL_PLATFORM_VENDOR: " << platform.getInfo<CL_PLATFORM_NAME>();
-                        log_info() << base << "CL_PLATFORM_VERSION: " << platform.getInfo<CL_PLATFORM_NAME>();
+#define LOG() \
+                        log_info() << "OpenCL platform [" << (i + 1) << "/" << m_platforms.size() << "]: "
+                        LOG() << "CL_PLATFORM_NAME: " << platform.getInfo<CL_PLATFORM_NAME>();
+                        LOG() << "CL_PLATFORM_VENDOR: " << platform.getInfo<CL_PLATFORM_NAME>();
+                        LOG() << "CL_PLATFORM_VERSION: " << platform.getInfo<CL_PLATFORM_NAME>();
+#undef LOG
 
                         std::vector<cl::Device> devices;
                         const cl_int ret = platform.getDevices(CL_DEVICE_TYPE_ALL, &devices);
@@ -60,12 +59,6 @@ namespace nano
                         {
                                 const cl::Device& device = devices[j];
 
-                                const std::string name = device.getInfo<CL_DEVICE_NAME>();
-                                const std::string vendor = device.getInfo<CL_DEVICE_VENDOR>();
-                                const std::string driver = device.getInfo<CL_DRIVER_VERSION>();
-                                const std::string version = device.getInfo<CL_DEVICE_VERSION>();
-                                const std::string type = ocl::device_type_string(device.getInfo<CL_DEVICE_TYPE>());
-
                                 const size_t gmemsize = device.getInfo<CL_DEVICE_GLOBAL_MEM_SIZE>();
                                 const size_t lmemsize = device.getInfo<CL_DEVICE_LOCAL_MEM_SIZE>();
                                 const size_t amemsize = device.getInfo<CL_DEVICE_MAX_MEM_ALLOC_SIZE>();
@@ -76,31 +69,30 @@ namespace nano
                                 const std::vector<size_t> maxwisizes = device.getInfo<CL_DEVICE_MAX_WORK_ITEM_SIZES>();
                                 const size_t maxkparams = device.getInfo<CL_DEVICE_MAX_PARAMETER_SIZE>();
 
-                                std::stringstream ss;
-                                ss << "-> OpenCL device [" << (j + 1) << "/" << devices.size() << "]: ";
-                                const std::string base = ss.str();
-
-                                log_info() << base << "CL_DEVICE_NAME: " << name;
-                                log_info() << base << "CL_DEVICE_VENDOR:" << vendor;
-                                log_info() << base << "CL_DRIVER_VERSION: " << driver;
-                                log_info() << base << "CL_DEVICE_VERSION: " << version;
-                                log_info() << base << "CL_DEVICE_TYPE: " << type;
-                                log_info() << base << "CL_DEVICE_GLOBAL_MEM_SIZE: " << gmemsize << "B = "
+#define LOG() \
+                                log_info() << "-> OpenCL device [" << (j + 1) << "/" << devices.size() << "]: "
+                                LOG() << "CL_DEVICE_NAME: " << device.getInfo<CL_DEVICE_NAME>();
+                                LOG() << "CL_DEVICE_VENDOR:" << device.getInfo<CL_DEVICE_VENDOR>();
+                                LOG() << "CL_DRIVER_VERSION: " << device.getInfo<CL_DRIVER_VERSION>();
+                                LOG() << "CL_DEVICE_VERSION: " << device.getInfo<CL_DEVICE_VERSION>();
+                                LOG() << "CL_DEVICE_TYPE: " << ocl::device_type_string(device.getInfo<CL_DEVICE_TYPE>());
+                                LOG() << "CL_DEVICE_GLOBAL_MEM_SIZE: " << gmemsize << "B = "
                                            << (gmemsize / 1024) << "KB = " << (gmemsize / 1024 / 1024) << "MB";
-                                log_info() << base << "CL_DEVICE_LOCAL_MEM_SIZE: " << lmemsize << "B = "
+                                LOG() << "CL_DEVICE_LOCAL_MEM_SIZE: " << lmemsize << "B = "
                                            << (lmemsize / 1024) << "KB = " << (lmemsize / 1024 / 1024) << "MB";
-                                log_info() << base << "CL_DEVICE_MAX_CONSTANT_BUFFER_SIZE: " << cmemsize << "B = "
+                                LOG() << "CL_DEVICE_MAX_CONSTANT_BUFFER_SIZE: " << cmemsize << "B = "
                                            << (cmemsize / 1024) << "KB = " << (cmemsize / 1024 / 1024) << "MB";
-                                log_info() << base << "CL_DEVICE_MAX_MEM_ALLOC_SIZE: " << amemsize << "B = "
+                                LOG() << "CL_DEVICE_MAX_MEM_ALLOC_SIZE: " << amemsize << "B = "
                                            << (amemsize / 1024) << "KB = " << (amemsize / 1024 / 1024) << "MB";
-                                log_info() << base << "CL_DEVICE_MAX_COMPUTE_UNITS: " << maxcus;
-                                log_info() << base << "CL_DEVICE_MAX_WORK_GROUP_SIZE: " << maxwgsize;
-                                log_info() << base << "CL_DEVICE_MAX_WORK_ITEM_DIMENSIONS: " << maxwidims;
-                                log_info() << base << "CL_DEVICE_MAX_WORK_ITEM_SIZES: "
+                                LOG() << "CL_DEVICE_MAX_COMPUTE_UNITS: " << maxcus;
+                                LOG() << "CL_DEVICE_MAX_WORK_GROUP_SIZE: " << maxwgsize;
+                                LOG() << "CL_DEVICE_MAX_WORK_ITEM_DIMENSIONS: " << maxwidims;
+                                LOG() << "CL_DEVICE_MAX_WORK_ITEM_SIZES: "
                                            << (maxwisizes.size() > 0 ? maxwisizes[0] : 0) << " / "
                                            << (maxwisizes.size() > 1 ? maxwisizes[1] : 0) << " / "
                                            << (maxwisizes.size() > 2 ? maxwisizes[2] : 0);
-                                log_info() << base << "CL_DEVICE_MAX_PARAMETER_SIZE: " << maxkparams;
+                                LOG() << "CL_DEVICE_MAX_PARAMETER_SIZE: " << maxkparams;
+#undef LOG
                         }
                 }
         }
@@ -335,25 +327,20 @@ namespace nano
                 return queue().enqueueWriteBuffer(buffer, blocking, 0, bytes, ptr);
         }
 
+        static size_t gsize(const size_t dims, const size_t wgsize)
+        {
+                return ((dims + wgsize - 1) / wgsize) * wgsize;
+        }
+
         template <>
         cl::Event ocl::enqueue<size_t>(const cl::Kernel& kernel, const size_t dims1)
         {
-                const auto maxwgsize = theocl.m_device.getInfo<CL_DEVICE_MAX_WORK_GROUP_SIZE>() / 4;
+                const auto maxwgsize = theocl.m_device.getInfo<CL_DEVICE_MAX_WORK_GROUP_SIZE>();
                 const auto wgsize1 = (dims1 % maxwgsize) ? 1 : maxwgsize;
 
-                /*size_t wgsize1 = std::max(size_t(1), maxwgsize);
-                while (wgsize1 > 1)
-                {
-                        const bool nok1 = (dims1 % wgsize1);
-                        if (nok1) wgsize1 /= 2;
-                        if (!nok1) break;
-                }*/
-
                 const auto offset = cl::NullRange;
-                const auto global = cl::NDRange(dims1);
+                const auto global = cl::NDRange(gsize(dims1, wgsize1));
                 const auto local = cl::NDRange(wgsize1);
-
-  //              std::cout << "dims = {" << dims1 << "}, wgsize = {" << wgsize1 << "}" << std::endl;
 
                 cl::Event event;
                 queue().enqueueNDRangeKernel(kernel, offset, global, local, nullptr, &event);
@@ -363,29 +350,13 @@ namespace nano
         template <>
         cl::Event ocl::enqueue<size_t>(const cl::Kernel& kernel, const size_t dims1, const size_t dims2)
         {
-                const auto maxwgsize = size_t(std::sqrt(theocl.m_device.getInfo<CL_DEVICE_MAX_WORK_GROUP_SIZE>() / 4));
-                const auto wgsize1 = (dims1 % maxwgsize) ? 1 : maxwgsize;
-                const auto wgsize2 = (dims2 % maxwgsize) ? 1 : maxwgsize;
-
-                /*size_t wgsize1 = std::max(size_t(1), maxwgsize);
-                size_t wgsize2 = std::max(size_t(1), maxwgsize);
-                bool flip = false;
-                while (wgsize1 > 1 && wgsize2 > 1)
-                {
-                        const bool nokk = wgsize1 * wgsize2 > maxwgsize;
-                        const bool nok1 = (dims1 % wgsize1);
-                        const bool nok2 = (dims2 % wgsize2);
-                        if (nok1) wgsize1 /= 2;
-                        if (nok2) wgsize2 /= 2;
-                        if (!nok1 && !nok2 && nokk) { if (flip) wgsize1 /= 2; else wgsize2 /= 2; flip = !flip; }
-                        if (!nok1 && !nok2 && !nokk) break;
-                }*/
+                const auto maxwgsize = theocl.m_device.getInfo<CL_DEVICE_MAX_WORK_GROUP_SIZE>() / 8;
+                const auto wgsize1 = static_cast<size_t>(std::sqrt(maxwgsize));
+                const auto wgsize2 = maxwgsize / wgsize1;//static_cast<size_t>(std::sqrt(maxwgsize));
 
                 const auto offset = cl::NullRange;
-                const auto global = cl::NDRange(dims1, dims2);
+                const auto global = cl::NDRange(gsize(dims1, wgsize1), gsize(dims2, wgsize2));
                 const auto local = cl::NDRange(wgsize1, wgsize2);
-
-//                std::cout << "dims = {" << dims1 << ", " << dims2 << "}, wgsize = {" << wgsize1 << ", " << wgsize2 << "}" << std::endl;
 
                 cl::Event event;
                 queue().enqueueNDRangeKernel(kernel, offset, global, local, nullptr, &event);
