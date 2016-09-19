@@ -20,34 +20,15 @@ namespace nano
                         return dot(in, unit);
                 }
 
-                float vsum8(const float8 in)
-                {
-                        return vsum4(in.lo) + vsum4(in.hi);
-                }
-
-                float dotx(__global const float* x, __global const float* y, const int size)
-                {
-                        float acc = 0.0f;
-                        for (int i = 0; i < size; ++ i)
-                        {
-                                acc += x[i] * y[i];
-                        }
-
-                        return acc;
-                }
-
                 float dotx4(__global const float* x, __global const float* y, const int size)
                 {
-                        const int tail = size & 3;
-                        const int size4 = size - tail;
-
                         float4 acc = 0.0f;
-                        for (int i = 0; i < size4; i += 4)
+                        for (int i = 0; i < size; i += 4)
                         {
                                 acc += vload4(0, &x[i]) * vload4(0, &y[i]);
                         }
 
-                        return (!tail) ? vsum4(acc) : vsum4(acc) + dotx(x + size4, y + size4, tail);
+                        return vsum4(acc);
                 }
 
                 ////////////////////////////////////////////////////////////////////////////////////
@@ -59,10 +40,17 @@ namespace nano
                         const float c,
                         __global float* z, const int size)
                 {
-                        const int i = get_global_id(0);
-                        if (i < size)
+                        const int i = get_global_id(0), i4 = i * 4;
+                        if (i4 + 4 < size)
                         {
-                                z[i] = x[i] + c;
+                                vstore4(vload4(i, x) + c, i, z);
+                        }
+                        else if (i4 < size)
+                        {
+                                for (int j = i4; j < size; ++ j)
+                                {
+                                        z[j] = x[j] + c;
+                                }
                         }
                 }
 
@@ -71,10 +59,17 @@ namespace nano
                         __global const float* y,
                         __global float* z, const int size)
                 {
-                        const int i = get_global_id(0);
-                        if (i < size)
+                        const int i = get_global_id(0), i4 = i * 4;
+                        if (i4 + 4 < size)
                         {
-                                z[i] = x[i] + y[i];
+                                vstore4(vload4(i, x) + vload4(i, y), i, z);
+                        }
+                        else if (i4 < size)
+                        {
+                                for (int j = i4; j < size; ++ j)
+                                {
+                                        z[j] = x[j] + y[j];
+                                }
                         }
                 }
 
@@ -83,10 +78,17 @@ namespace nano
                         const float c,
                         __global float* z, const int size)
                 {
-                        const int i = get_global_id(0);
-                        if (i < size)
+                        const int i = get_global_id(0), i4 = i * 4;
+                        if (i4 + 4 < size)
                         {
-                                z[i] = a * x[i] + c;
+                                vstore4(vload4(i, x) * a + c, i, z);
+                        }
+                        else if (i4 < size)
+                        {
+                                for (int j = i4; j < size; ++ j)
+                                {
+                                        z[j] = x[j] * a + c;
+                                }
                         }
                 }
 
@@ -95,10 +97,17 @@ namespace nano
                         __global const float* y,
                         __global float* z, const int size)
                 {
-                        const int i = get_global_id(0);
-                        if (i < size)
+                        const int i = get_global_id(0), i4 = i * 4;
+                        if (i4 + 4 < size)
                         {
-                                z[i] = a * x[i] + y[i];
+                                vstore4(vload4(i, x) * a + vload4(i, y), i, z);
+                        }
+                        else if (i4 < size)
+                        {
+                                for (int j = i4; j < size; ++ j)
+                                {
+                                        z[j] = x[j] * a + y[j];
+                                }
                         }
                 }
 
@@ -107,10 +116,17 @@ namespace nano
                         __global const float* y, const float b,
                         __global float* z, const int size)
                 {
-                        const int i = get_global_id(0);
-                        if (i < size)
+                        const int i = get_global_id(0), i4 = i * 4;
+                        if (i4 + 4 < size)
                         {
-                                z[i] = a * x[i] + b * y[i];
+                                vstore4(vload4(i, x) * a + vload4(i, y) * b, i, z);
+                        }
+                        else if (i4 < size)
+                        {
+                                for (int j = i4; j < size; ++ j)
+                                {
+                                        z[j] = x[j] * a + y[j] * b;
+                                }
                         }
                 }
 
@@ -120,10 +136,17 @@ namespace nano
                         const float c,
                         __global float* z, const int size)
                 {
-                        const int i = get_global_id(0);
-                        if (i < size)
+                        const int i = get_global_id(0), i4 = i * 4;
+                        if (i4 + 4 < size)
                         {
-                                z[i] = a * x[i] + b * y[i] + c;
+                                vstore4(vload4(i, x) * a + vload4(i, y) * b + c, i, z);
+                        }
+                        else if (i4 < size)
+                        {
+                                for (int j = i4; j < size; ++ j)
+                                {
+                                        z[j] = x[j] * a + y[j] * b + c;
+                                }
                         }
                 }
 
@@ -137,10 +160,7 @@ namespace nano
                         __global float* z, const int rows, const int cols)
                 {
                         const int row = get_global_id(0);
-                        if (row < rows)
-                        {
-                                z[row] = dotx4(&A[row * cols], x, cols);
-                        }
+                        z[row] = dotx4(&A[row * cols], x, cols);
                 }
 
                 __kernel void mvpc(
@@ -150,10 +170,7 @@ namespace nano
                         __global float* z, const int rows, const int cols)
                 {
                         const int row = get_global_id(0);
-                        if (row < rows)
-                        {
-                                z[row] = dotx4(&A[row * cols], x, cols) + c;
-                        }
+                        z[row] = dotx4(&A[row * cols], x, cols) + c;
                 }
 
                 __kernel void mvpv(
@@ -163,10 +180,7 @@ namespace nano
                         __global float* z, const int rows, const int cols)
                 {
                         const int row = get_global_id(0);
-                        if (row < rows)
-                        {
-                                z[row] = dotx4(&A[row * cols], x, cols) + y[row];
-                        }
+                        z[row] = dotx4(&A[row * cols], x, cols) + y[row];
                 }
 
                 ////////////////////////////////////////////////////////////////////////////////////

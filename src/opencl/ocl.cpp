@@ -1,8 +1,8 @@
 #include "ocl.h"
 #include "logger.h"
 #include "kernels.h"
+#include "math/numeric.hpp"
 #include <map>
-#include <cmath>
 #include <fstream>
 #include <sstream>
 
@@ -336,10 +336,10 @@ namespace nano
         cl::Event ocl::enqueue<size_t>(const cl::Kernel& kernel, const size_t dims1)
         {
                 const auto maxwgsize = theocl.m_device.getInfo<CL_DEVICE_MAX_WORK_GROUP_SIZE>();
-                const auto wgsize1 = (dims1 % maxwgsize) ? 1 : maxwgsize;
+                const auto wgsize1 = maxwgsize; //(dims1 % maxwgsize) ? 1 : maxwgsize;
 
                 const auto offset = cl::NullRange;
-                const auto global = cl::NDRange(gsize(dims1, wgsize1));
+                const auto global = cl::NDRange(idiv(idiv(dims1, 4), wgsize1) * wgsize1);
                 const auto local = cl::NDRange(wgsize1);
 
                 cl::Event event;
