@@ -8,6 +8,7 @@
 #include "text/table_row_mark.h"
 #ifdef NANO_WITH_OPENCL
 #include "opencl/ocl.h"
+#include "math/epsilon.hpp"
 #endif
 #include <iostream>
 
@@ -37,62 +38,90 @@ namespace
                 return x;
         }
 
-        auto measure_vpc(const tensor_size_t dims)
+        void measure_level1(const tensor_size_t dims,
+                table_row_t& row_vpc, table_row_t& row_vpv,
+                table_row_t& row_vcpc, table_row_t& row_vcpv,
+                table_row_t& row_vcpvc, table_row_t& row_vcpvcpc)
         {
-                auto x = make_vector(dims);
+                auto a = make_scalar();
+                auto b = make_scalar();
                 auto c = make_scalar();
-                auto z = make_vector(dims);
-
-                const auto duration = nano::measure_robustly_psec([&] ()
-                {
-                        z = x.array() + c;
-                }, trials);
-
-                return nano::gflops(dims, duration);
-        }
-
-#ifdef NANO_WITH_OPENCL
-        auto measure_vpc_ocl(const tensor_size_t dims)
-        {
-                auto x = make_vector(dims);
-                auto c = make_scalar();
-                auto z = make_vector(dims);
-
-                cl::Buffer xbuffer = ocl::make_buffer(x, CL_MEM_READ_WRITE);
-                cl::Buffer zbuffer = ocl::make_buffer(z, CL_MEM_READ_ONLY);
-                cl::Kernel kernel = ocl::make_kernel("vpc");
-
-                ocl::set_args(kernel, xbuffer, c, zbuffer, dims);
-                ocl::write(xbuffer, x);
-
-                const auto duration = nano::measure_robustly_psec([&] ()
-                {
-                        ocl::wait(ocl::enqueue(kernel, dims));
-                }, trials);
-
-                ocl::read(zbuffer, z);
-
-                return nano::gflops(dims, duration);
-        }
-#endif
-
-        auto measure_vpv(const tensor_size_t dims)
-        {
                 auto x = make_vector(dims);
                 auto y = make_vector(dims);
                 auto z = make_vector(dims);
 
-                const auto duration = nano::measure_robustly_psec([&] ()
                 {
-                        z = x + y;
-                }, trials);
-
-                return nano::gflops(dims, duration);
+                        row_vpc << nano::gflops(dims, nano::measure_robustly_psec([&] ()
+                        {
+                                z = x.array() + c;
+                        }, trials));
+                }
+                {
+                        row_vpv << nano::gflops(dims, nano::measure_robustly_psec([&] ()
+                        {
+                                z = x.array() + y.array();
+                        }, trials));
+                }
+                {
+                        row_vcpc << nano::gflops(dims, nano::measure_robustly_psec([&] ()
+                        {
+                                z = x.array() * a + c;
+                        }, trials));
+                }
+                {
+                        row_vcpv << nano::gflops(dims, nano::measure_robustly_psec([&] ()
+                        {
+                                z = x.array() * a + y.array();
+                        }, trials));
+                }
+                {
+                        row_vcpvc << nano::gflops(dims, nano::measure_robustly_psec([&] ()
+                        {
+                                z = x.array() * a + y.array() * b;
+                        }, trials));
+                }
+                {
+                        row_vcpvcpc << nano::gflops(dims, nano::measure_robustly_psec([&] ()
+                        {
+                                z = x.array() * a + y.array() * b + c;
+                        }, trials));
+                }
         }
 
 #ifdef NANO_WITH_OPENCL
-        auto measure_vpv_ocl(const tensor_size_t dims)
+        static void assert_equal(const vector_t& v1, const vector_t& v2)
         {
+                if ((v1 - v2).template lpNorm<Eigen::Infinity>() > nano::epsilon0<scalar_t>())
+                {
+                        throw std::runtime_error("invalid OpenCL kernel");
+                }
+        }
+
+        static void assert_equal(const matrix_t& m1, const matrix_t& m2)
+        {
+                if ((m1 - m2).template lpNorm<Eigen::Infinity>() > nano::epsilon0<scalar_t>())
+                {
+                        throw std::runtime_error("invalid OpenCL kernel");
+                }
+        }
+
+        template <typename... tdims>
+        static auto measure_opencl_kernel(const cl::Kernel& kernel, tdims... dims)
+        {
+                return nano::measure_robustly_psec([&] ()
+                {
+                        ocl::wait(ocl::enqueue(kernel, dims...));
+                }, trials);
+        }
+
+        void measure_level1_opencl(const tensor_size_t dims,
+                table_row_t& row_vpc, table_row_t& row_vpv,
+                table_row_t& row_vcpc, table_row_t& row_vcpv,
+                table_row_t& row_vcpvc, table_row_t& row_vcpvcpc)
+        {
+                auto a = make_scalar();
+                auto b = make_scalar();
+                auto c = make_scalar();
                 auto x = make_vector(dims);
                 auto y = make_vector(dims);
                 auto z = make_vector(dims);
@@ -100,209 +129,145 @@ namespace
                 cl::Buffer xbuffer = ocl::make_buffer(x, CL_MEM_READ_WRITE);
                 cl::Buffer ybuffer = ocl::make_buffer(y, CL_MEM_READ_WRITE);
                 cl::Buffer zbuffer = ocl::make_buffer(z, CL_MEM_READ_ONLY);
-                cl::Kernel kernel = ocl::make_kernel("vpv");
 
-                ocl::set_args(kernel, xbuffer, ybuffer, zbuffer, dims);
                 ocl::write(xbuffer, x);
                 ocl::write(ybuffer, y);
 
-                const auto duration = nano::measure_robustly_psec([&] ()
                 {
-                        ocl::wait(ocl::enqueue(kernel, dims));
-                }, trials);
-
-                ocl::read(zbuffer, z);
-
-                return nano::gflops(dims, duration);
+                        cl::Kernel kernel = ocl::make_kernel("vpc");
+                        ocl::set_args(kernel, xbuffer, c, zbuffer, dims);
+                        row_vpc << nano::gflops(dims, measure_opencl_kernel(kernel, dims));
+                        ocl::read(zbuffer, z);
+                        assert_equal(z, x.array() + c);
+                }
+                {
+                        cl::Kernel kernel = ocl::make_kernel("vpv");
+                        ocl::set_args(kernel, xbuffer, ybuffer, zbuffer, dims);
+                        row_vpv << nano::gflops(dims, measure_opencl_kernel(kernel, dims));
+                        ocl::read(zbuffer, z);
+                        assert_equal(z, x + y);
+                }
+                {
+                        cl::Kernel kernel = ocl::make_kernel("vcpc");
+                        ocl::set_args(kernel, xbuffer, a, c, zbuffer, dims);
+                        row_vcpc << nano::gflops(dims, measure_opencl_kernel(kernel, dims));
+                        ocl::read(zbuffer, z);
+                        assert_equal(z, x.array() * a + c);
+                }
+                {
+                        cl::Kernel kernel = ocl::make_kernel("vcpv");
+                        ocl::set_args(kernel, xbuffer, a, ybuffer, zbuffer, dims);
+                        row_vcpv << nano::gflops(dims, measure_opencl_kernel(kernel, dims));
+                        ocl::read(zbuffer, z);
+                        assert_equal(z, x * a + y);
+                }
+                {
+                        cl::Kernel kernel = ocl::make_kernel("vcpvc");
+                        ocl::set_args(kernel, xbuffer, a, ybuffer, b, zbuffer, dims);
+                        row_vcpvc << nano::gflops(dims, measure_opencl_kernel(kernel, dims));
+                        ocl::read(zbuffer, z);
+                        assert_equal(z, x * a + y * b);
+                }
+                {
+                        cl::Kernel kernel = ocl::make_kernel("vcpvcpc");
+                        ocl::set_args(kernel, xbuffer, a, ybuffer, b, c, zbuffer, dims);
+                        row_vcpvcpc << nano::gflops(dims, measure_opencl_kernel(kernel, dims));
+                        ocl::read(zbuffer, z);
+                        assert_equal(z, x.array() * a + y.array() * b + c);
+                }
         }
 #endif
 
-        auto measure_vcpvc(const tensor_size_t dims)
-        {
-                auto x = make_vector(dims); auto a = make_scalar();
-                auto y = make_vector(dims); auto b = make_scalar();
-                auto z = make_vector(dims);
-
-                const auto duration = nano::measure_robustly_psec([&] ()
-                {
-                        z = x.array() * a + y.array() * b;
-                }, trials);
-
-                return nano::gflops(3 * dims, duration);
-        }
-
-#ifdef NANO_WITH_OPENCL
-        auto measure_vcpvc_ocl(const tensor_size_t dims)
-        {
-                auto x = make_vector(dims); auto a = make_scalar();
-                auto y = make_vector(dims); auto b = make_scalar();
-                auto z = make_vector(dims);
-
-                cl::Buffer xbuffer = ocl::make_buffer(x, CL_MEM_READ_WRITE);
-                cl::Buffer ybuffer = ocl::make_buffer(y, CL_MEM_READ_WRITE);
-                cl::Buffer zbuffer = ocl::make_buffer(z, CL_MEM_READ_ONLY);
-                cl::Kernel kernel = ocl::make_kernel("vcpvc");
-
-                ocl::set_args(kernel, xbuffer, a, ybuffer, b, zbuffer, dims);
-                ocl::write(xbuffer, x);
-                ocl::write(ybuffer, y);
-
-                const auto duration = nano::measure_robustly_psec([&] ()
-                {
-                        ocl::wait(ocl::enqueue(kernel, dims));
-                }, trials);
-
-                ocl::read(zbuffer, z);
-
-                return nano::gflops(3 * dims, duration);
-        }
-#endif
-
-        auto measure_mv(const tensor_size_t dims)
-        {
-                auto A = make_matrix(dims, dims);
-                auto x = make_vector(dims);
-                auto z = make_vector(dims);
-
-                const auto duration = nano::measure_robustly_psec([&] ()
-                {
-                        z = A * x;
-                }, trials);
-
-                return nano::gflops(dims * dims, duration);
-        }
-
-#ifdef NANO_WITH_OPENCL
-        auto measure_mv_ocl(const tensor_size_t dims)
-        {
-                auto A = make_matrix(dims, dims);
-                auto x = make_vector(dims);
-                auto z = make_vector(dims);
-
-                cl::Buffer Abuffer = ocl::make_buffer(A, CL_MEM_READ_WRITE);
-                cl::Buffer xbuffer = ocl::make_buffer(x, CL_MEM_READ_WRITE);
-                cl::Buffer zbuffer = ocl::make_buffer(z, CL_MEM_READ_ONLY);
-                cl::Kernel kernel = ocl::make_kernel("mv");
-
-                ocl::set_args(kernel, Abuffer, xbuffer, zbuffer, dims, dims);
-                ocl::write(Abuffer, A);
-                ocl::write(xbuffer, x);
-
-                const auto duration = nano::measure_robustly_psec([&] ()
-                {
-                        ocl::wait(ocl::enqueue(kernel, dims));
-                }, trials);
-
-                ocl::read(zbuffer, z);
-
-                return nano::gflops(dims * dims, duration);
-        }
-#endif
-
-        auto measure_mvpc(const tensor_size_t dims)
-        {
-                auto A = make_matrix(dims, dims);
-                auto x = make_vector(dims);
-                auto c = make_scalar();
-                auto z = make_vector(dims);
-
-                const auto duration = nano::measure_robustly_psec([&] ()
-                {
-                        z = (A * x).array() + c;
-                }, trials);
-
-                return nano::gflops(dims * dims + dims, duration);
-        }
-
-#ifdef NANO_WITH_OPENCL
-        auto measure_mvpc_ocl(const tensor_size_t dims)
-        {
-                auto A = make_matrix(dims, dims);
-                auto x = make_vector(dims);
-                auto c = make_scalar();
-                auto z = make_vector(dims);
-
-                cl::Buffer Abuffer = ocl::make_buffer(A, CL_MEM_READ_WRITE);
-                cl::Buffer xbuffer = ocl::make_buffer(x, CL_MEM_READ_WRITE);
-                cl::Buffer zbuffer = ocl::make_buffer(z, CL_MEM_READ_ONLY);
-                cl::Kernel kernel = ocl::make_kernel("mvpc");
-
-                ocl::set_args(kernel, Abuffer, xbuffer, c, zbuffer, dims, dims);
-                ocl::write(Abuffer, A);
-                ocl::write(xbuffer, x);
-
-                const auto duration = nano::measure_robustly_psec([&] ()
-                {
-                        ocl::wait(ocl::enqueue(kernel, dims));
-                }, trials);
-
-                ocl::read(zbuffer, z);
-
-                return nano::gflops(dims * dims + dims, duration);
-        }
-#endif
-
-        auto measure_mvpv(const tensor_size_t dims)
+        void measure_level2(const tensor_size_t dims,
+                table_row_t& row_mv, table_row_t& row_mvpc, table_row_t& row_mvpv)
         {
                 auto A = make_matrix(dims, dims);
                 auto x = make_vector(dims);
                 auto y = make_vector(dims);
                 auto z = make_vector(dims);
+                auto c = make_scalar();
 
-                const auto duration = nano::measure_robustly_psec([&] ()
                 {
-                        z = A * x + y;
-                }, trials);
-
-                return nano::gflops(dims * dims + dims, duration);
+                        row_mv << nano::gflops(dims * dims, nano::measure_robustly_psec([&] ()
+                        {
+                                z = A * x;
+                        }, trials));
+                }
+                {
+                        row_mvpc << nano::gflops(dims * dims, nano::measure_robustly_psec([&] ()
+                        {
+                                z = (A * x).array() + c;
+                        }, trials));
+                }
+                {
+                        row_mvpv << nano::gflops(dims * dims, nano::measure_robustly_psec([&] ()
+                        {
+                                z = A * x + y;
+                        }, trials));
+                }
         }
 
 #ifdef NANO_WITH_OPENCL
-        auto measure_mvpv_ocl(const tensor_size_t dims)
+        auto measure_level2_opencl(const tensor_size_t dims,
+                table_row_t& row_mv, table_row_t& row_mvpc, table_row_t& row_mvpv)
         {
                 auto A = make_matrix(dims, dims);
                 auto x = make_vector(dims);
                 auto y = make_vector(dims);
                 auto z = make_vector(dims);
+                auto c = make_scalar();
 
                 cl::Buffer Abuffer = ocl::make_buffer(A, CL_MEM_READ_WRITE);
                 cl::Buffer xbuffer = ocl::make_buffer(x, CL_MEM_READ_WRITE);
                 cl::Buffer ybuffer = ocl::make_buffer(y, CL_MEM_READ_WRITE);
                 cl::Buffer zbuffer = ocl::make_buffer(z, CL_MEM_READ_ONLY);
-                cl::Kernel kernel = ocl::make_kernel("mvpv");
 
-                ocl::set_args(kernel, Abuffer, xbuffer, ybuffer, zbuffer, dims, dims);
                 ocl::write(Abuffer, A);
                 ocl::write(xbuffer, x);
                 ocl::write(ybuffer, y);
 
-                const auto duration = nano::measure_robustly_psec([&] ()
                 {
-                        ocl::wait(ocl::enqueue(kernel, dims));
-                }, trials);
-
-                ocl::read(zbuffer, z);
-
-                return nano::gflops(dims * dims + dims, duration);
+                        cl::Kernel kernel = ocl::make_kernel("mv");
+                        ocl::set_args(kernel, Abuffer, xbuffer, zbuffer, dims, dims);
+                        row_mv << nano::gflops(dims * dims, measure_opencl_kernel(kernel, dims));
+                        ocl::read(zbuffer, z);
+                        assert_equal(z, A * x);
+                }
+                {
+                        cl::Kernel kernel = ocl::make_kernel("mvpc");
+                        ocl::set_args(kernel, Abuffer, xbuffer, c, zbuffer, dims, dims);
+                        row_mvpc << nano::gflops(dims * dims, measure_opencl_kernel(kernel, dims));
+                        ocl::read(zbuffer, z);
+                        assert_equal(z, (A * x).array() + c);
+                }
+                {
+                        cl::Kernel kernel = ocl::make_kernel("mvpv");
+                        ocl::set_args(kernel, Abuffer, xbuffer, ybuffer, zbuffer, dims, dims);
+                        row_mvpv << nano::gflops(dims * dims, measure_opencl_kernel(kernel, dims));
+                        ocl::read(zbuffer, z);
+                        assert_equal(z, (A * x + y).array());
+                }
         }
 #endif
 
-        auto measure_mm(const tensor_size_t dims)
+        auto measure_level3(const tensor_size_t dims,
+                table_row_t& row_mm)
         {
                 auto A = make_matrix(dims, dims);
                 auto B = make_matrix(dims, dims);
                 auto Z = make_matrix(dims, dims);
 
-                const auto duration = nano::measure_robustly_psec([&] ()
                 {
-                        Z = A * B;
-                }, trials);
-
-                return nano::gflops(dims * dims * dims, duration);
+                        row_mm << nano::gflops(dims * dims * dims, nano::measure_robustly_psec([&] ()
+                        {
+                                Z = A * B;
+                        }, trials));
+                }
         }
 
 #ifdef NANO_WITH_OPENCL
-        auto measure_mm_ocl(const tensor_size_t dims)
+        auto measure_level3_opencl(const tensor_size_t dims,
+                table_row_t& row_mm)
         {
                 auto A = make_matrix(dims, dims);
                 auto B = make_matrix(dims, dims);
@@ -311,20 +276,17 @@ namespace
                 cl::Buffer Abuffer = ocl::make_buffer(A, CL_MEM_READ_WRITE);
                 cl::Buffer Bbuffer = ocl::make_buffer(B, CL_MEM_READ_WRITE);
                 cl::Buffer Zbuffer = ocl::make_buffer(Z, CL_MEM_READ_ONLY);
-                cl::Kernel kernel = ocl::make_kernel("mm");
 
-                ocl::set_args(kernel, Abuffer, Bbuffer, Zbuffer, dims, dims, dims);
                 ocl::write(Abuffer, A);
                 ocl::write(Bbuffer, B);
 
-                const auto duration = nano::measure_robustly_psec([&] ()
                 {
-                        ocl::wait(ocl::enqueue(kernel, dims, dims));
-                }, trials);
-
-                ocl::read(Zbuffer, Z);
-
-                return nano::gflops(dims * dims * dims, duration);
+                        cl::Kernel kernel = ocl::make_kernel("mm");
+                        ocl::set_args(kernel, Abuffer, Bbuffer, Zbuffer, dims, dims, dims);
+                        row_mm << nano::gflops(dims * dims * dims, measure_opencl_kernel(kernel, dims, dims));
+                        ocl::read(Zbuffer, Z);
+                        assert_equal(Z, A * B);
+                }
         }
 #endif
 }
@@ -369,13 +331,6 @@ int main(int argc, const char* argv[])
                         op(dims);
                 }
         };
-        const auto fillrow = [&] (const auto min, const auto max, auto&& row, const auto& op)
-        {
-                foreach_dims(min, max, [&] (const tensor_size_t dims)
-                {
-                        row << op(dims);
-                });
-        };
         const auto fillheader = [&] (const auto min, const auto max, table_t& table)
         {
                 table.header() << "platform";
@@ -396,17 +351,31 @@ int main(int argc, const char* argv[])
 
                 table_t table("operation");
                 fillheader(min, max, table);
-                fillrow(min, max, table.append("z = x + c") << "CPU", measure_vpc);
+                {
+                        auto& row_vpc = table.append("z = x + c") << "CPU";
+                        auto& row_vpv = table.append("z = x + y") << "CPU";
+                        auto& row_vcpc = table.append("z = x * a + c") << "CPU";
+                        auto& row_vcpv = table.append("z = x * a + y") << "CPU";
+                        auto& row_vcpvc = table.append("z = x * a + y * b") << "CPU";
+                        auto& row_vcpvcpc = table.append("z = x * a + y * b + c") << "CPU";
+                        foreach_dims(min, max, [&] (const auto dims)
+                        {
+                                measure_level1(dims, row_vpc, row_vpv, row_vcpc, row_vcpv, row_vcpvc, row_vcpvcpc);
+                        });
+                }
 #ifdef NANO_WITH_OPENCL
-                fillrow(min, max, table.append("z = x + c") << "OpenCL", measure_vpc_ocl);
-#endif
-                fillrow(min, max, table.append("z = x + y") << "CPU", measure_vpv);
-#ifdef NANO_WITH_OPENCL
-                fillrow(min, max, table.append("z = x + y") << "OpenCL", measure_vpv_ocl);
-#endif
-                fillrow(min, max, table.append("z = a * x + b * y") << "CPU", measure_vcpvc);
-#ifdef NANO_WITH_OPENCL
-                fillrow(min, max, table.append("z = a * x + b * y") << "OpenCL", measure_vcpvc_ocl);
+                {
+                        auto& row_vpc = table.append("z = x + c") << "OpenCL";
+                        auto& row_vpv = table.append("z = x + y") << "OpenCL";
+                        auto& row_vcpc = table.append("z = x * a + c") << "OpenCL";
+                        auto& row_vcpv = table.append("z = x * a + y") << "OpenCL";
+                        auto& row_vcpvc = table.append("z = x * a + y * b") << "OpenCL";
+                        auto& row_vcpvcpc = table.append("z = x * a + y * b + c") << "OpenCL";
+                        foreach_dims(min, max, [&] (const auto dims)
+                        {
+                                measure_level1_opencl(dims, row_vpc, row_vpv, row_vcpc, row_vcpv, row_vcpvc, row_vcpvcpc);
+                        });
+                }
 #endif
                 table.print(std::cout);
         }
@@ -417,17 +386,25 @@ int main(int argc, const char* argv[])
 
                 table_t table("operation");
                 fillheader(min, max, table);
-                fillrow(min, max, table.append("z = A * x") << "CPU", measure_mv);
+                {
+                        auto& row_mv = table.append("z = A * x") << "CPU";
+                        auto& row_mvpc = table.append("z = A * x + c") << "CPU";
+                        auto& row_mvpv = table.append("z = A * x + y") << "CPU";
+                        foreach_dims(min, max, [&] (const auto dims)
+                        {
+                                measure_level2(dims, row_mv, row_mvpc, row_mvpv);
+                        });
+                }
 #ifdef NANO_WITH_OPENCL
-                fillrow(min, max, table.append("z = A * x") << "OpenCL", measure_mv_ocl);
-#endif
-                fillrow(min, max, table.append("z = A * x + c") << "CPU", measure_mvpc);
-#ifdef NANO_WITH_OPENCL
-                fillrow(min, max, table.append("z = A * x + c") << "OpenCL", measure_mvpc_ocl);
-#endif
-                fillrow(min, max, table.append("z = A * x + y") << "CPU", measure_mvpv);
-#ifdef NANO_WITH_OPENCL
-                fillrow(min, max, table.append("z = A * x + y") << "OpenCL", measure_mvpv_ocl);
+                {
+                        auto& row_mv = table.append("z = A * x") << "OpenCL";
+                        auto& row_mvpc = table.append("z = A * x + c") << "OpenCL";
+                        auto& row_mvpv = table.append("z = A * x + y") << "OpenCL";
+                        foreach_dims(min, max, [&] (const auto dims)
+                        {
+                                measure_level2_opencl(dims, row_mv, row_mvpc, row_mvpv);
+                        });
+                }
 #endif
                 table.print(std::cout);
         }
@@ -438,9 +415,21 @@ int main(int argc, const char* argv[])
 
                 table_t table("operation");
                 fillheader(min, max, table);
-                fillrow(min, max, table.append("Z = A * B") << "CPU", measure_mm);
+                {
+                        auto& row_mm = table.append("Z = A * B") << "CPU";
+                        foreach_dims(min, max, [&] (const auto dims)
+                        {
+                                measure_level3(dims, row_mm);
+                        });
+                }
 #ifdef NANO_WITH_OPENCL
-                fillrow(min, max, table.append("z = A * B") << "OpenCL", measure_mm_ocl);
+                {
+                        auto& row_mm = table.append("Z = A * B") << "OpenCL";
+                        foreach_dims(min, max, [&] (const auto dims)
+                        {
+                                measure_level3_opencl(dims, row_mm);
+                        });
+                }
 #endif
                 table.print(std::cout);
         }

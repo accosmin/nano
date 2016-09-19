@@ -9,6 +9,7 @@ namespace nano
         table_t::table_t(const string_t& title) :
                 m_title(title)
         {
+                m_rows.reserve(1024);
         }
 
         table_header_t& table_t::header()
