@@ -40,18 +40,8 @@ namespace nano
                         const float c,
                         __global float* z, const int size)
                 {
-                        const int i = get_global_id(0), i4 = i * 4;
-                        if (i4 + 4 < size)
-                        {
-                                vstore4(vload4(i, x) + c, i, z);
-                        }
-                        else if (i4 < size)
-                        {
-                                for (int j = i4; j < size; ++ j)
-                                {
-                                        z[j] = x[j] + c;
-                                }
-                        }
+                        const int i = get_global_id(0);
+                        vstore4(vload4(i, x) + c, i, z);
                 }
 
                 __kernel void vpv(
@@ -59,18 +49,8 @@ namespace nano
                         __global const float* y,
                         __global float* z, const int size)
                 {
-                        const int i = get_global_id(0), i4 = i * 4;
-                        if (i4 + 4 < size)
-                        {
-                                vstore4(vload4(i, x) + vload4(i, y), i, z);
-                        }
-                        else if (i4 < size)
-                        {
-                                for (int j = i4; j < size; ++ j)
-                                {
-                                        z[j] = x[j] + y[j];
-                                }
-                        }
+                        const int i = get_global_id(0);
+                        vstore4(vload4(i, x) + vload4(i, y), i, z);
                 }
 
                 __kernel void vcpc(
@@ -78,18 +58,8 @@ namespace nano
                         const float c,
                         __global float* z, const int size)
                 {
-                        const int i = get_global_id(0), i4 = i * 4;
-                        if (i4 + 4 < size)
-                        {
-                                vstore4(vload4(i, x) * a + c, i, z);
-                        }
-                        else if (i4 < size)
-                        {
-                                for (int j = i4; j < size; ++ j)
-                                {
-                                        z[j] = x[j] * a + c;
-                                }
-                        }
+                        const int i = get_global_id(0);
+                        vstore4(vload4(i, x) * a + c, i, z);
                 }
 
                 __kernel void vcpv(
@@ -97,18 +67,8 @@ namespace nano
                         __global const float* y,
                         __global float* z, const int size)
                 {
-                        const int i = get_global_id(0), i4 = i * 4;
-                        if (i4 + 4 < size)
-                        {
-                                vstore4(vload4(i, x) * a + vload4(i, y), i, z);
-                        }
-                        else if (i4 < size)
-                        {
-                                for (int j = i4; j < size; ++ j)
-                                {
-                                        z[j] = x[j] * a + y[j];
-                                }
-                        }
+                        const int i = get_global_id(0);
+                        vstore4(vload4(i, x) * a + vload4(i, y), i, z);
                 }
 
                 __kernel void vcpvc(
@@ -116,18 +76,8 @@ namespace nano
                         __global const float* y, const float b,
                         __global float* z, const int size)
                 {
-                        const int i = get_global_id(0), i4 = i * 4;
-                        if (i4 + 4 < size)
-                        {
-                                vstore4(vload4(i, x) * a + vload4(i, y) * b, i, z);
-                        }
-                        else if (i4 < size)
-                        {
-                                for (int j = i4; j < size; ++ j)
-                                {
-                                        z[j] = x[j] * a + y[j] * b;
-                                }
-                        }
+                        const int i = get_global_id(0);
+                        vstore4(vload4(i, x) * a + vload4(i, y) * b, i, z);
                 }
 
                 __kernel void vcpvcpc(
@@ -136,18 +86,8 @@ namespace nano
                         const float c,
                         __global float* z, const int size)
                 {
-                        const int i = get_global_id(0), i4 = i * 4;
-                        if (i4 + 4 < size)
-                        {
-                                vstore4(vload4(i, x) * a + vload4(i, y) * b + c, i, z);
-                        }
-                        else if (i4 < size)
-                        {
-                                for (int j = i4; j < size; ++ j)
-                                {
-                                        z[j] = x[j] * a + y[j] * b + c;
-                                }
-                        }
+                        const int i = get_global_id(0);
+                        vstore4(vload4(i, x) * a + vload4(i, y) * b + c, i, z);
                 }
 
                 ////////////////////////////////////////////////////////////////////////////////////

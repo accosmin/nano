@@ -7,7 +7,7 @@
 
 using namespace nano;
 
-auto rng_size = nano::make_rng<tensor_size_t>(1, 137);
+auto rng_size = nano::make_rng<tensor_size_t>(1, 37);
 auto rng_value = nano::make_rng<scalar_t>(scalar_t(-0.1), scalar_t(+0.1));
 auto n_tests = 11;
 
@@ -58,7 +58,7 @@ NANO_CASE(level1)
 {
         for (int test = 0; test < n_tests; ++ test)
         {
-                const auto dims = rng_size();
+                const auto dims = ocl::level1::modulo * rng_size();
 
                 auto a = make_scalar();
                 auto b = make_scalar();
@@ -78,7 +78,7 @@ NANO_CASE(level1)
                 {
                         cl::Kernel kernel = ocl::make_kernel("vpc");
                         NANO_REQUIRE_NOTHROW(ocl::set_args(kernel, xbuffer, c, zbuffer, dims));
-                        ocl::wait(ocl::enqueue(kernel, dims));
+                        ocl::wait(ocl::level1::enqueue(kernel, dims));
                         NANO_CHECK(ocl::read(zbuffer, z) == CL_SUCCESS);
                         NANO_CHECK_EIGEN_CLOSE(x.array() + c, z.array(), nano::epsilon0<scalar_t>());
                 }
@@ -86,7 +86,7 @@ NANO_CASE(level1)
                 {
                         cl::Kernel kernel = ocl::make_kernel("vpv");
                         NANO_REQUIRE_NOTHROW(ocl::set_args(kernel, xbuffer, ybuffer, zbuffer, dims));
-                        ocl::wait(ocl::enqueue(kernel, dims));
+                        ocl::wait(ocl::level1::enqueue(kernel, dims));
                         NANO_CHECK(ocl::read(zbuffer, z) == CL_SUCCESS);
                         NANO_CHECK_EIGEN_CLOSE(x.array() + y.array(), z.array(), nano::epsilon0<scalar_t>());
                 }
@@ -94,7 +94,7 @@ NANO_CASE(level1)
                 {
                         cl::Kernel kernel = ocl::make_kernel("vcpc");
                         NANO_REQUIRE_NOTHROW(ocl::set_args(kernel, xbuffer, a, c, zbuffer, dims));
-                        ocl::wait(ocl::enqueue(kernel, dims));
+                        ocl::wait(ocl::level1::enqueue(kernel, dims));
                         NANO_CHECK(ocl::read(zbuffer, z) == CL_SUCCESS);
                         NANO_CHECK_EIGEN_CLOSE(x.array() * a + c, z.array(), nano::epsilon0<scalar_t>());
                 }
@@ -102,7 +102,7 @@ NANO_CASE(level1)
                 {
                         cl::Kernel kernel = ocl::make_kernel("vcpv");
                         NANO_REQUIRE_NOTHROW(ocl::set_args(kernel, xbuffer, a, ybuffer, zbuffer, dims));
-                        ocl::wait(ocl::enqueue(kernel, dims));
+                        ocl::wait(ocl::level1::enqueue(kernel, dims));
                         NANO_CHECK(ocl::read(zbuffer, z) == CL_SUCCESS);
                         NANO_CHECK_EIGEN_CLOSE(x.array() * a + y.array(), z.array(), nano::epsilon0<scalar_t>());
                 }
@@ -110,7 +110,7 @@ NANO_CASE(level1)
                 {
                         cl::Kernel kernel = ocl::make_kernel("vcpvc");
                         NANO_REQUIRE_NOTHROW(ocl::set_args(kernel, xbuffer, a, ybuffer, b, zbuffer, dims));
-                        ocl::wait(ocl::enqueue(kernel, dims));
+                        ocl::wait(ocl::level1::enqueue(kernel, dims));
                         NANO_CHECK(ocl::read(zbuffer, z) == CL_SUCCESS);
                         NANO_CHECK_EIGEN_CLOSE(x.array() * a + y.array() * b, z.array(), nano::epsilon0<scalar_t>());
                 }
@@ -118,7 +118,7 @@ NANO_CASE(level1)
                 {
                         cl::Kernel kernel = ocl::make_kernel("vcpvcpc");
                         NANO_REQUIRE_NOTHROW(ocl::set_args(kernel, xbuffer, a, ybuffer, b, c, zbuffer, dims));
-                        ocl::wait(ocl::enqueue(kernel, dims));
+                        ocl::wait(ocl::level1::enqueue(kernel, dims));
                         NANO_CHECK(ocl::read(zbuffer, z) == CL_SUCCESS);
                         NANO_CHECK_EIGEN_CLOSE(x.array() * a + y.array() * b + c, z.array(), nano::epsilon0<scalar_t>());
                 }
@@ -130,8 +130,8 @@ NANO_CASE(level2)
 {
         for (int test = 0; test < n_tests; ++ test)
         {
-                const auto rows = rng_size();
-                const auto cols = rng_size();
+                const auto rows = ocl::level2::modulo * rng_size();
+                const auto cols = ocl::level2::modulo * rng_size();
 
                 auto A = make_matrix(rows, cols);
                 auto x = make_vector(cols);
@@ -152,7 +152,7 @@ NANO_CASE(level2)
                 {
                         cl::Kernel kernel = ocl::make_kernel("mv");
                         NANO_REQUIRE_NOTHROW(ocl::set_args(kernel, Abuffer, xbuffer, zbuffer, rows, cols));
-                        ocl::wait(ocl::enqueue(kernel, rows));
+                        ocl::wait(ocl::level2::enqueue(kernel, rows));
                         NANO_CHECK(ocl::read(zbuffer, z) == CL_SUCCESS);
                         NANO_CHECK_EIGEN_CLOSE((A * x), z, nano::epsilon0<scalar_t>());
                 }
@@ -160,7 +160,7 @@ NANO_CASE(level2)
                 {
                         cl::Kernel kernel = ocl::make_kernel("mvpc");
                         NANO_REQUIRE_NOTHROW(ocl::set_args(kernel, Abuffer, xbuffer, c, zbuffer, rows, cols));
-                        ocl::wait(ocl::enqueue(kernel, rows));
+                        ocl::wait(ocl::level2::enqueue(kernel, rows));
                         NANO_CHECK(ocl::read(zbuffer, z) == CL_SUCCESS);
                         NANO_CHECK_EIGEN_CLOSE((A * x).array() + c, z.array(), nano::epsilon0<scalar_t>());
                 }
@@ -168,7 +168,7 @@ NANO_CASE(level2)
                 {
                         cl::Kernel kernel = ocl::make_kernel("mvpv");
                         NANO_REQUIRE_NOTHROW(ocl::set_args(kernel, Abuffer, xbuffer, ybuffer, zbuffer, rows, cols));
-                        ocl::wait(ocl::enqueue(kernel, rows));
+                        ocl::wait(ocl::level2::enqueue(kernel, rows));
                         NANO_CHECK(ocl::read(zbuffer, z) == CL_SUCCESS);
                         NANO_CHECK_EIGEN_CLOSE((A * x + y), z, nano::epsilon0<scalar_t>());
                 }
@@ -180,10 +180,10 @@ NANO_CASE(level3)
 {
         for (int test = 0; test < n_tests; ++ test)
         {
-                const auto rowsA = rng_size();
-                const auto colsA = rng_size();
+                const auto rowsA = ocl::level3::modulo * rng_size();
+                const auto colsA = ocl::level3::modulo * rng_size();
                 const auto rowsB = colsA;
-                const auto colsB = rng_size();
+                const auto colsB = ocl::level3::modulo * rng_size();
 
                 auto A = make_matrix(rowsA, colsA);
                 auto B = make_matrix(rowsB, colsB);
@@ -200,7 +200,7 @@ NANO_CASE(level3)
                 {
                         cl::Kernel kernel = ocl::make_kernel("mm");
                         NANO_REQUIRE_NOTHROW(ocl::set_args(kernel, Abuffer, Bbuffer, Zbuffer, rowsA, colsA, colsB));
-                        ocl::wait(ocl::enqueue(kernel, rowsA, colsB));
+                        ocl::wait(ocl::level3::enqueue(kernel, rowsA, colsB));
                         NANO_CHECK(ocl::read(Zbuffer, Z) == CL_SUCCESS);
                         NANO_CHECK_EIGEN_CLOSE((A * B), Z, nano::epsilon0<scalar_t>());
                 }

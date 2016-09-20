@@ -63,25 +63,25 @@ namespace
                         }, trials));
                 }
                 {
-                        row_vcpc << nano::gflops(dims, nano::measure_robustly_psec([&] ()
+                        row_vcpc << nano::gflops(2 * dims, nano::measure_robustly_psec([&] ()
                         {
                                 z = x.array() * a + c;
                         }, trials));
                 }
                 {
-                        row_vcpv << nano::gflops(dims, nano::measure_robustly_psec([&] ()
+                        row_vcpv << nano::gflops(2 * dims, nano::measure_robustly_psec([&] ()
                         {
                                 z = x.array() * a + y.array();
                         }, trials));
                 }
                 {
-                        row_vcpvc << nano::gflops(dims, nano::measure_robustly_psec([&] ()
+                        row_vcpvc << nano::gflops(3 * dims, nano::measure_robustly_psec([&] ()
                         {
                                 z = x.array() * a + y.array() * b;
                         }, trials));
                 }
                 {
-                        row_vcpvcpc << nano::gflops(dims, nano::measure_robustly_psec([&] ()
+                        row_vcpvcpc << nano::gflops(4 * dims, nano::measure_robustly_psec([&] ()
                         {
                                 z = x.array() * a + y.array() * b + c;
                         }, trials));
@@ -105,13 +105,19 @@ namespace
                 }
         }
 
-        template <typename... tdims>
-        static auto measure_opencl_kernel(const cl::Kernel& kernel, tdims... dims)
+        static auto measure_level1_kernel(const cl::Kernel& kernel, const tensor_size_t dims1)
         {
-                return nano::measure_robustly_psec([&] ()
-                {
-                        ocl::wait(ocl::enqueue(kernel, dims...));
-                }, trials);
+                return measure_robustly_psec([&] () { ocl::wait(ocl::level1::enqueue(kernel, dims1)); }, trials);
+        }
+
+        static auto measure_level2_kernel(const cl::Kernel& kernel, const tensor_size_t dims1)
+        {
+                return measure_robustly_psec([&] () { ocl::wait(ocl::level2::enqueue(kernel, dims1)); }, trials);
+        }
+
+        static auto measure_level3_kernel(const cl::Kernel& kernel, const tensor_size_t dims1, const tensor_size_t dims2)
+        {
+                return measure_robustly_psec([&] () { ocl::wait(ocl::level3::enqueue(kernel, dims1, dims2)); }, trials);
         }
 
         void measure_level1_opencl(const tensor_size_t dims,
@@ -136,42 +142,42 @@ namespace
                 {
                         cl::Kernel kernel = ocl::make_kernel("vpc");
                         ocl::set_args(kernel, xbuffer, c, zbuffer, dims);
-                        row_vpc << nano::gflops(dims, measure_opencl_kernel(kernel, dims));
+                        row_vpc << nano::gflops(dims, measure_level1_kernel(kernel, dims));
                         ocl::read(zbuffer, z);
                         assert_equal(z, x.array() + c);
                 }
                 {
                         cl::Kernel kernel = ocl::make_kernel("vpv");
                         ocl::set_args(kernel, xbuffer, ybuffer, zbuffer, dims);
-                        row_vpv << nano::gflops(dims, measure_opencl_kernel(kernel, dims));
+                        row_vpv << nano::gflops(dims, measure_level1_kernel(kernel, dims));
                         ocl::read(zbuffer, z);
                         assert_equal(z, x + y);
                 }
                 {
                         cl::Kernel kernel = ocl::make_kernel("vcpc");
                         ocl::set_args(kernel, xbuffer, a, c, zbuffer, dims);
-                        row_vcpc << nano::gflops(dims, measure_opencl_kernel(kernel, dims));
+                        row_vcpc << nano::gflops(2 * dims, measure_level1_kernel(kernel, dims));
                         ocl::read(zbuffer, z);
                         assert_equal(z, x.array() * a + c);
                 }
                 {
                         cl::Kernel kernel = ocl::make_kernel("vcpv");
                         ocl::set_args(kernel, xbuffer, a, ybuffer, zbuffer, dims);
-                        row_vcpv << nano::gflops(dims, measure_opencl_kernel(kernel, dims));
+                        row_vcpv << nano::gflops(2 * dims, measure_level1_kernel(kernel, dims));
                         ocl::read(zbuffer, z);
                         assert_equal(z, x * a + y);
                 }
                 {
                         cl::Kernel kernel = ocl::make_kernel("vcpvc");
                         ocl::set_args(kernel, xbuffer, a, ybuffer, b, zbuffer, dims);
-                        row_vcpvc << nano::gflops(dims, measure_opencl_kernel(kernel, dims));
+                        row_vcpvc << nano::gflops(3 * dims, measure_level1_kernel(kernel, dims));
                         ocl::read(zbuffer, z);
                         assert_equal(z, x * a + y * b);
                 }
                 {
                         cl::Kernel kernel = ocl::make_kernel("vcpvcpc");
                         ocl::set_args(kernel, xbuffer, a, ybuffer, b, c, zbuffer, dims);
-                        row_vcpvcpc << nano::gflops(dims, measure_opencl_kernel(kernel, dims));
+                        row_vcpvcpc << nano::gflops(4 * dims, measure_level1_kernel(kernel, dims));
                         ocl::read(zbuffer, z);
                         assert_equal(z, x.array() * a + y.array() * b + c);
                 }
@@ -188,19 +194,19 @@ namespace
                 auto c = make_scalar();
 
                 {
-                        row_mv << nano::gflops(dims * dims, nano::measure_robustly_psec([&] ()
+                        row_mv << nano::gflops(2 * dims * dims, nano::measure_robustly_psec([&] ()
                         {
                                 z = A * x;
                         }, trials));
                 }
                 {
-                        row_mvpc << nano::gflops(dims * dims, nano::measure_robustly_psec([&] ()
+                        row_mvpc << nano::gflops(2 * dims * dims + dims, nano::measure_robustly_psec([&] ()
                         {
                                 z = (A * x).array() + c;
                         }, trials));
                 }
                 {
-                        row_mvpv << nano::gflops(dims * dims, nano::measure_robustly_psec([&] ()
+                        row_mvpv << nano::gflops(2 * dims * dims + dims, nano::measure_robustly_psec([&] ()
                         {
                                 z = A * x + y;
                         }, trials));
@@ -229,21 +235,21 @@ namespace
                 {
                         cl::Kernel kernel = ocl::make_kernel("mv");
                         ocl::set_args(kernel, Abuffer, xbuffer, zbuffer, dims, dims);
-                        row_mv << nano::gflops(dims * dims, measure_opencl_kernel(kernel, dims));
+                        row_mv << nano::gflops(2 * dims * dims, measure_level2_kernel(kernel, dims));
                         ocl::read(zbuffer, z);
                         assert_equal(z, A * x);
                 }
                 {
                         cl::Kernel kernel = ocl::make_kernel("mvpc");
                         ocl::set_args(kernel, Abuffer, xbuffer, c, zbuffer, dims, dims);
-                        row_mvpc << nano::gflops(dims * dims, measure_opencl_kernel(kernel, dims));
+                        row_mvpc << nano::gflops(2 * dims * dims + dims, measure_level2_kernel(kernel, dims));
                         ocl::read(zbuffer, z);
                         assert_equal(z, (A * x).array() + c);
                 }
                 {
                         cl::Kernel kernel = ocl::make_kernel("mvpv");
                         ocl::set_args(kernel, Abuffer, xbuffer, ybuffer, zbuffer, dims, dims);
-                        row_mvpv << nano::gflops(dims * dims, measure_opencl_kernel(kernel, dims));
+                        row_mvpv << nano::gflops(2 * dims * dims + dims, measure_level2_kernel(kernel, dims));
                         ocl::read(zbuffer, z);
                         assert_equal(z, (A * x + y).array());
                 }
@@ -258,7 +264,7 @@ namespace
                 auto Z = make_matrix(dims, dims);
 
                 {
-                        row_mm << nano::gflops(dims * dims * dims, nano::measure_robustly_psec([&] ()
+                        row_mm << nano::gflops(2 * dims * dims * dims, nano::measure_robustly_psec([&] ()
                         {
                                 Z = A * B;
                         }, trials));
@@ -283,7 +289,7 @@ namespace
                 {
                         cl::Kernel kernel = ocl::make_kernel("mm");
                         ocl::set_args(kernel, Abuffer, Bbuffer, Zbuffer, dims, dims, dims);
-                        row_mm << nano::gflops(dims * dims * dims, measure_opencl_kernel(kernel, dims, dims));
+                        row_mm << nano::gflops(2 * dims * dims * dims, measure_level3_kernel(kernel, dims, dims));
                         ocl::read(Zbuffer, Z);
                         assert_equal(Z, A * B);
                 }
@@ -297,8 +303,8 @@ int main(int argc, const char* argv[])
 
         // parse the command line
         cmdline_t cmdline("benchmark linear algebra operations using Eigen and OpenCL (if available)");
-        cmdline.add("", "min-dims",     "minimum number of dimensions [1, 1024]", "8");
-        cmdline.add("", "max-dims",     "maximum number of dimensions [1, 4096]", "1024");
+        cmdline.add("", "min-dims",     "minimum number of dimensions [16, 1024]", "16");
+        cmdline.add("", "max-dims",     "maximum number of dimensions [16, 4096]", "1024");
         cmdline.add("", "level1",       "benchmark level1 operations (vector-vector)");
         cmdline.add("", "level2",       "benchmark level2 operations (matrix-vector)");
         cmdline.add("", "level3",       "benchmark level3 operations (matrix-matrix)");
@@ -306,7 +312,7 @@ int main(int argc, const char* argv[])
         cmdline.process(argc, argv);
 
         // check arguments and options
-        const auto min_dims = clamp(cmdline.get<tensor_size_t>("min-dims"), tensor_size_t(1), tensor_size_t(1024));
+        const auto min_dims = clamp(cmdline.get<tensor_size_t>("min-dims"), tensor_size_t(16), tensor_size_t(1024));
         const auto max_dims = clamp(cmdline.get<tensor_size_t>("max-dims"), min_dims, tensor_size_t(4096));
         const auto level1 = cmdline.has("level1");
         const auto level2 = cmdline.has("level2");

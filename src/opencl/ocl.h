@@ -147,29 +147,71 @@ namespace ocl
                 detail::set_args(kernel, 0, args...);
         }
 
-        ///
-        /// \brief enqueue a 1D kernel.
-        ///
-        template <typename tsize1>
-        cl::Event enqueue(const cl::Kernel& kernel, const tsize1 dims1)
+        /// \brief vector-vector linear algebra operations.
+        namespace level1
         {
-                return enqueue(kernel, static_cast<size_t>(dims1));
+                /// \brief supported vector size modulo.
+                constexpr int modulo = 1024;
+
+                /// \brief supported size of the work group.
+                constexpr int local_size = 256;
+
+                ///
+                /// \brief enqueue a kernel.
+                ///
+                template <typename tsize1>
+                cl::Event enqueue(const cl::Kernel& kernel, const tsize1 dims1)
+                {
+                        return enqueue(kernel, static_cast<size_t>(dims1));
+                }
+
+                template <>
+                NANO_PUBLIC cl::Event enqueue<size_t>(const cl::Kernel& kernel, const size_t dims1);
         }
 
-        template <>
-        NANO_PUBLIC cl::Event enqueue<size_t>(const cl::Kernel& kernel, const size_t dims1);
-
-        ///
-        /// \brief enqueue a 2D kernel.
-        ///
-        template <typename tsize1, typename tsize2>
-        cl::Event enqueue(const cl::Kernel& kernel, const tsize1 dims1, const tsize2 dims2)
+        /// \brief matrix-vector linear algebra operations.
+        namespace level2
         {
-                return enqueue(kernel, static_cast<size_t>(dims1), static_cast<size_t>(dims2));
+                /// \brief supported vector size modulo.
+                constexpr int modulo = 16;
+
+                /// \brief supported size of the work group.
+                constexpr int local_size = 16;
+
+                ///
+                /// \brief enqueue a kernel.
+                ///
+                template <typename tsize1>
+                cl::Event enqueue(const cl::Kernel& kernel, const tsize1 dims1)
+                {
+                        return enqueue(kernel, static_cast<size_t>(dims1));
+                }
+
+                template <>
+                NANO_PUBLIC cl::Event enqueue<size_t>(const cl::Kernel& kernel, const size_t dims1);
         }
 
-        template <>
-        NANO_PUBLIC cl::Event enqueue<size_t>(const cl::Kernel& kernel, const size_t dims1, const size_t dims2);
+        /// \brief matrix-matrix linear algebra operations.
+        namespace level3
+        {
+                /// \brief supported vector size modulo.
+                constexpr int modulo = 16;
+
+                /// \brief supported size of the work group.
+                constexpr int local_size = 16;
+
+                ///
+                /// \brief enqueue a kernel.
+                ///
+                template <typename tsize1, typename tsize2>
+                cl::Event enqueue(const cl::Kernel& kernel, const tsize1 dims1, const tsize2 dims2)
+                {
+                        return enqueue(kernel, static_cast<size_t>(dims1), static_cast<size_t>(dims2));
+                }
+
+                template <>
+                NANO_PUBLIC cl::Event enqueue<size_t>(const cl::Kernel& kernel, const size_t dims1, const size_t dims2);
+        }
 
         ///
         /// \brief wait for all enqueued kernels to finish.

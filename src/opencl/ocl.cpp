@@ -3,6 +3,7 @@
 #include "kernels.h"
 #include "math/numeric.hpp"
 #include <map>
+#include <cassert>
 #include <fstream>
 #include <sstream>
 
@@ -327,40 +328,47 @@ namespace nano
                 return queue().enqueueWriteBuffer(buffer, blocking, 0, bytes, ptr);
         }
 
-        static size_t gsize(const size_t dims, const size_t wgsize)
+        static cl::Event enqueue(const cl::Kernel& kernel,
+                const cl::NDRange& offset, const cl::NDRange& global, const cl::NDRange& local)
         {
-                return ((dims + wgsize - 1) / wgsize) * wgsize;
-        }
-
-        template <>
-        cl::Event ocl::enqueue<size_t>(const cl::Kernel& kernel, const size_t dims1)
-        {
-                const auto maxwgsize = theocl.m_device.getInfo<CL_DEVICE_MAX_WORK_GROUP_SIZE>();
-                const auto wgsize1 = maxwgsize; //(dims1 % maxwgsize) ? 1 : maxwgsize;
-
-                const auto offset = cl::NullRange;
-                const auto global = cl::NDRange(idiv(idiv(dims1, 4), wgsize1) * wgsize1);
-                const auto local = cl::NDRange(wgsize1);
-
                 cl::Event event;
                 queue().enqueueNDRangeKernel(kernel, offset, global, local, nullptr, &event);
                 return event;
         }
 
-        template <>
-        cl::Event ocl::enqueue<size_t>(const cl::Kernel& kernel, const size_t dims1, const size_t dims2)
+        static size_t round(const size_t dims, const size_t modulo, const size_t local_size)
         {
-                const auto maxwgsize = theocl.m_device.getInfo<CL_DEVICE_MAX_WORK_GROUP_SIZE>() / 8;
-                const auto wgsize1 = static_cast<size_t>(std::sqrt(maxwgsize));
-                const auto wgsize2 = maxwgsize / wgsize1;//static_cast<size_t>(std::sqrt(maxwgsize));
+                return nano::idiv(nano::idiv(dims, modulo / local_size), local_size) * local_size;
+        }
 
-                const auto offset = cl::NullRange;
-                const auto global = cl::NDRange(gsize(dims1, wgsize1), gsize(dims2, wgsize2));
-                const auto local = cl::NDRange(wgsize1, wgsize2);
+        template <>
+        cl::Event ocl::level1::enqueue<size_t>(const cl::Kernel& kernel, const size_t dims1)
+        {
+                assert(local_size <= theocl.m_device.getInfo<CL_DEVICE_MAX_WORK_GROUP_SIZE>());
 
-                cl::Event event;
-                queue().enqueueNDRangeKernel(kernel, offset, global, local, nullptr, &event);
-                return event;
+                return  nano::enqueue(kernel, cl::NullRange,
+                        cl::NDRange(round(dims1, modulo, local_size)),
+                        cl::NDRange(local_size));
+        }
+
+        template <>
+        cl::Event ocl::level2::enqueue<size_t>(const cl::Kernel& kernel, const size_t dims1)
+        {
+                assert(local_size <= theocl.m_device.getInfo<CL_DEVICE_MAX_WORK_GROUP_SIZE>());
+
+                return  nano::enqueue(kernel, cl::NullRange,
+                        cl::NDRange(round(dims1, modulo, local_size)),
+                        cl::NDRange(local_size));
+        }
+
+        template <>
+        cl::Event ocl::level3::enqueue<size_t>(const cl::Kernel& kernel, const size_t dims1, const size_t dims2)
+        {
+                assert(local_size * local_size <= theocl.m_device.getInfo<CL_DEVICE_MAX_WORK_GROUP_SIZE>());
+
+                return  nano::enqueue(kernel, cl::NullRange,
+                        cl::NDRange(round(dims1, modulo, local_size), round(dims2, modulo, local_size)),
+                        cl::NDRange(local_size, local_size));
         }
 
         void ocl::wait()
