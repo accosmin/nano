@@ -127,6 +127,8 @@ namespace nano
                 // level 3 matrix-matrix operations
                 ////////////////////////////////////////////////////////////////////////////////////
 
+#define LEVEL3_LOCAL_SIZE 16
+
                 __kernel void mm(
                         __global const float* A,
                         __global const float* B,
@@ -134,15 +136,31 @@ namespace nano
                 {
                         const int rowA = get_global_id(0);
                         const int colB = get_global_id(1);
-                        if (rowA < rowsA && colB < colsB)
+
+                        const int lrow = get_local_id(0);
+                        const int lcol = get_local_id(1);
+
+                        __local float Asub[LEVEL3_LOCAL_SIZE * LEVEL3_LOCAL_SIZE];
+                        __local float Bsub[LEVEL3_LOCAL_SIZE * LEVEL3_LOCAL_SIZE];
+
+                        __local float* arow = Asub + lrow * LEVEL3_LOCAL_SIZE;
+                        __local float* bcol = Bsub + lcol * LEVEL3_LOCAL_SIZE;
+
+                        float4 acc = 0.0f;
+                        for (int colA = lcol, rowB = lrow; colA < colsA; colA += LEVEL3_LOCAL_SIZE, rowB += LEVEL3_LOCAL_SIZE)
                         {
-                                float sum = 0;
-                                for (int colA = 0; colA < colsA; ++ colA)
+                                arow[lcol] = A[rowA * colsA + colA];
+                                bcol[lrow] = B[rowB * colsB + colB];
+                                barrier(CLK_LOCAL_MEM_FENCE);
+
+                                for (int k = 0; k < LEVEL3_LOCAL_SIZE/4; ++ k)
                                 {
-                                        sum += A[rowA * colsA + colA] * B[colA * colsB + colB];
+                                        acc += vload4(k, arow) * vload4(k, bcol);
                                 }
-                                Z[rowA * colsB + colB] = sum;
+                                barrier(CLK_LOCAL_MEM_FENCE);
                         }
+
+                        Z[rowA * colsB + colB] = vsum4(acc);
                 }
 
                 )xxx";

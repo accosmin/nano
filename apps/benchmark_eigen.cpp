@@ -444,7 +444,12 @@ int main(int argc, const char* argv[])
         }
         catch (cl::Error& e)
         {
-                log_error() << "OpenCL fatal error: <" << e.what() << "> (" << ocl::error_string(e.err()) << ")!";
+                log_error() << "OpenCL fatal error: " << e.what() << " (" << ocl::error_string(e.err()) << ")!";
+                return EXIT_FAILURE;
+        }
+        catch (std::exception& e)
+        {
+                log_error() << "OpenCL fatal error: " << e.what() << "!";
                 return EXIT_FAILURE;
         }
 #endif
