@@ -114,10 +114,7 @@ namespace nano
                 ///
                 /// \brief cast enums to strings
                 ///
-                template
-                <
-                        typename tvalue
-                >
+                template <typename tvalue>
                 struct to_string_t<tvalue, typename std::enable_if<std::is_enum<tvalue>::value>::type>
                 {
                         static string_t dispatch(tvalue value)
@@ -130,10 +127,7 @@ namespace nano
                 };
         }
 
-        template
-        <
-                typename tvalue
-        >
+        template <typename tvalue>
         string_t to_string(tvalue value)
         {
                 return detail::to_string_t<tvalue>::dispatch(value);

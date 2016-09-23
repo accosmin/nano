@@ -60,16 +60,13 @@ namespace nano
 
         ///
         /// \brief compute GFLOPS (giga floating point operations per seconds)
-        ///     given the number of FLOPs run in the given duration
+        ///     given the number of FLOPs run in the given duration.
         ///
-        template
-        <
-                typename tinteger,
-                typename tduration
-        >
-        double gflops(const tinteger flops, const tduration& duration)
+        template <typename tinteger, typename tduration>
+        int64_t gflops(const tinteger flops, const tduration& duration)
         {
-                return  static_cast<double>(flops) /
-                        static_cast<double>(std::chrono::duration_cast<picoseconds_t>(duration).count()) * 1e+3;
+                return  nano::idiv(
+                        static_cast<int64_t>(flops) * 1000,
+                        static_cast<int64_t>(std::chrono::duration_cast<picoseconds_t>(duration).count()));
         }
 }
