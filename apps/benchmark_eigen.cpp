@@ -121,6 +121,7 @@ namespace
         }
 
         void measure_level1_opencl(const tensor_size_t dims,
+                table_row_t& row_read, table_row_t& row_write,
                 table_row_t& row_vpc, table_row_t& row_vpv,
                 table_row_t& row_vcpc, table_row_t& row_vcpv,
                 table_row_t& row_vcpvc, table_row_t& row_vcpvcpc)
@@ -139,6 +140,20 @@ namespace
                 ocl::write(xbuffer, x);
                 ocl::write(ybuffer, y);
 
+                {
+                        row_read << nano::gflops(dims, nano::measure_robustly_psec([&] ()
+                        {
+                                ocl::read(xbuffer, z);
+                        }, trials));
+                        assert_equal(z, x);
+                }
+                {
+                        row_write << nano::gflops(dims, nano::measure_robustly_psec([&] ()
+                        {
+                                ocl::write(xbuffer, z);
+                        }, trials));
+                        assert_equal(z, x);
+                }
                 {
                         cl::Kernel kernel = ocl::make_kernel("vpc");
                         ocl::set_args(kernel, xbuffer, c, zbuffer, dims);
@@ -371,6 +386,8 @@ int main(int argc, const char* argv[])
                 }
 #ifdef NANO_WITH_OPENCL
                 {
+                        auto& row_read = table.append("read x") << "OpenCL";
+                        auto& row_write = table.append("write x") << "OpenCL";
                         auto& row_vpc = table.append("z = x + c") << "OpenCL";
                         auto& row_vpv = table.append("z = x + y") << "OpenCL";
                         auto& row_vcpc = table.append("z = x * a + c") << "OpenCL";
@@ -379,7 +396,7 @@ int main(int argc, const char* argv[])
                         auto& row_vcpvcpc = table.append("z = x * a + y * b + c") << "OpenCL";
                         foreach_dims(min, max, [&] (const auto dims)
                         {
-                                measure_level1_opencl(dims, row_vpc, row_vpv, row_vcpc, row_vcpv, row_vcpvc, row_vcpvcpc);
+                                measure_level1_opencl(dims, row_read, row_write, row_vpc, row_vpv, row_vcpc, row_vcpv, row_vcpvc, row_vcpvcpc);
                         });
                 }
 #endif

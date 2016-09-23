@@ -15,10 +15,6 @@ build_app(benchmark_iterator.cpp nano)
 build_app(benchmark_trainers.cpp nano)
 build_app(benchmark_functions.cpp nano)
 
-if (NANO_WITH_OPENCL)
-build_app(benchmark_opencl.cpp nano)
-endif()
-
 build_app(info.cpp nano)
 build_app(info_task.cpp nano)
 build_app(info_archive.cpp nano)
