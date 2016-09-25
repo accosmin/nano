@@ -372,7 +372,7 @@ int main(int argc, const char* argv[])
                         const auto value = (dims < kilo) ? dims : (dims < mega ? (dims / kilo) : (dims / mega));
                         const auto units = (dims < kilo) ? string_t("") : (dims < mega ? string_t("K") : string_t("M"));
                         const auto header = to_string(value) + units;
-                        table.header() << (header + "[us]") << (header + "[GFLOPS]");
+                        table.header() << (header + "[us]") << "GFLOPS";
                 });
         };
 
