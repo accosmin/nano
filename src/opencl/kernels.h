@@ -23,9 +23,9 @@ namespace nano
                 float dotx4(__global const float* x, __global const float* y, const int size)
                 {
                         float4 acc = 0.0f;
-                        for (int i = 0; i < size; i += 4)
+                        for (int i = 0, size4 = size/4; i < size4; ++ i)
                         {
-                                acc += vload4(0, &x[i]) * vload4(0, &y[i]);
+                                acc += vload4(i, x) * vload4(i, y);
                         }
 
                         return vsum4(acc);
