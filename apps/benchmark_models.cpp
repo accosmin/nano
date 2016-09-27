@@ -21,11 +21,9 @@ int main(int argc, const char *argv[])
         cmdline.add("c", "conn",        "plane connectivity for convolution networks [1, 16]", "8");
         cmdline.add("", "mlps",         "benchmark MLP models");
         cmdline.add("", "convnets",     "benchmark convolution networks");
-        cmdline.add("", "pconvnets",    "benchmark convolution networks with pooling layers");
         cmdline.add("", "forward",      "evaluate the \'forward\' pass (output)");
         cmdline.add("", "backward",     "evaluate the \'backward' pass (gradient)");
         cmdline.add("", "activation",   "activation layer (act-unit, act-tanh, act-splus, act-snorm)", "act-snorm");
-        cmdline.add("", "pooling",      "pooling layer (pool-full, pool-soft, pool-gauss)", "pool-soft");
         cmdline.add("", "detailed",     "print detailed measurements (e.g. per-layer)");
 
         cmdline.process(argc, argv);
@@ -37,9 +35,7 @@ int main(int argc, const char *argv[])
         const auto cmd_backward = cmdline.has("backward");
         const auto cmd_mlps = cmdline.has("mlps");
         const auto cmd_convnets = cmdline.has("convnets");
-        const auto cmd_pconvnets = cmdline.has("pconvnets");
         const auto activation = cmdline.get("activation");
-        const auto pooling = cmdline.get("pooling");
         const auto cmd_detailed = cmdline.has("detailed");
 
         if (!cmd_forward && !cmd_backward)
@@ -47,7 +43,7 @@ int main(int argc, const char *argv[])
                 cmdline.usage();
         }
 
-        if (!cmd_mlps && !cmd_convnets && !cmd_pconvnets)
+        if (!cmd_mlps && !cmd_convnets)
         {
                 cmdline.usage();
         }
@@ -84,16 +80,10 @@ int main(int argc, const char *argv[])
         const string_t convnet4_toe = nano::replace(convnet4_k2d, "conv-k2d", "conv-toe");
         const string_t convnet5_toe = nano::replace(convnet5_k2d, "conv-k2d", "conv-toe");
 
-        const string_t pconvnet0;
-        const string_t pconvnet1 = pconvnet0 + make_conv_pool_layer("conv", 64, 7, 7, 1, activation, pooling);
-        const string_t pconvnet2 = pconvnet1 + make_conv_pool_layer("conv", 64, 5, 5, conn, activation, pooling);
-        const string_t pconvnet3 = pconvnet2 + make_conv_layer("conv", 64, 3, 3, conn, activation);
-
         const string_t outlayer = make_output_layer(task.osize());
 
         std::vector<std::pair<string_t, string_t>> networks;
         #define DEFINE(config) networks.emplace_back(config + outlayer, NANO_STRINGIFY(config))
-
         if (cmd_mlps)
         {
                 DEFINE(mlp0);
@@ -116,13 +106,6 @@ int main(int argc, const char *argv[])
                 DEFINE(convnet5_k2d);
                 DEFINE(convnet5_toe);
         }
-        if (cmd_pconvnets)
-        {
-                DEFINE(pconvnet1);
-                DEFINE(pconvnet2);
-                DEFINE(pconvnet3);
-        }
-
         #undef DEFINE
 
         const auto loss = nano::get_losses().get("logistic");

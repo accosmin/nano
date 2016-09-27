@@ -105,9 +105,6 @@ int main(int argc, const char* argv[])
         cmdline.add("", "convnet1",             "use convolution networks with 1 convolution layer");
         cmdline.add("", "convnet2",             "use convolution networks with 2 convolution layers");
         cmdline.add("", "convnet3",             "use convolution networks with 3 convolution layers");
-        cmdline.add("", "pconvnets",            "use convolution networks with varying number of convolution & pooling layers");
-        cmdline.add("", "pconvnet1",            "use convolution networks with 1 convolution layer with pooling");
-        cmdline.add("", "pconvnet2",            "use convolution networks with 2 convolution layers with pooling");
         cmdline.add("", "batch",                "evaluate batch optimizers");
         cmdline.add("", "batch-gd",             "evaluate batch optimizer GD (gradient descent)");
         cmdline.add("", "batch-cgd",            "evaluate batch optimizer CGD (conjugate gradient descent)");
@@ -125,7 +122,6 @@ int main(int argc, const char* argv[])
         cmdline.add("", "loss",                 "loss function (" + nano::concatenate(get_losses().ids()) + ")", "classnll");
         cmdline.add("", "criterion",            "training criterion (" + nano::concatenate(get_criteria().ids()) + ")", "avg");
         cmdline.add("", "activation",           "activation layer (act-unit, act-tanh, act-splus, act-snorm)", "act-snorm");
-        cmdline.add("", "pooling",              "pooling layer (pool-full, pool-soft, pool-gauss)", "pool-soft");
         cmdline.add("", "trials",               "number of models to train & evaluate", "10");
         cmdline.add("", "epochs",               "number of epochs", "100");
 
@@ -141,13 +137,9 @@ int main(int argc, const char* argv[])
         const bool use_convnet1 = cmdline.has("convnet1");
         const bool use_convnet2 = cmdline.has("convnet2");
         const bool use_convnet3 = cmdline.has("convnet3");
-        const bool use_pconvnets = cmdline.has("pconvnets");
-        const bool use_pconvnet1 = cmdline.has("pconvnet1");
-        const bool use_pconvnet2 = cmdline.has("pconvnet2");
         const auto cmd_loss = cmdline.get("loss");
         const auto cmd_criterion = cmdline.get("criterion");
         const auto activation = cmdline.get("activation");
-        const auto pooling = cmdline.get("pooling");
         const auto trials = cmdline.get<size_t>("trials");
         const auto epochs = cmdline.get<size_t>("epochs");
 
@@ -159,10 +151,7 @@ int main(int argc, const char* argv[])
                 !use_convnets &&
                 !use_convnet1 &&
                 !use_convnet2 &&
-                !use_convnet3 &&
-                !use_pconvnets &&
-                !use_pconvnet1 &&
-                !use_pconvnet2)
+                !use_convnet3)
         {
                 cmdline.usage();
         }
@@ -212,10 +201,6 @@ int main(int argc, const char* argv[])
         const auto convnet2 = convnet1 + make_conv_layer(32, 5, 5, 4, activation);
         const auto convnet3 = convnet2 + make_conv_layer(32, 3, 3, 4, activation);
 
-        const auto pconvnet0 = string_t();
-        const auto pconvnet1 = pconvnet0 + make_conv_pool_layer(32, 5, 5, 1, activation, pooling);
-        const auto pconvnet2 = pconvnet1 + make_conv_layer(32, 3, 3, 4, activation);
-
         const string_t outlayer = make_output_layer(outputs, activation);
 
         std::vector<std::pair<string_t, string_t>> networks;
@@ -226,8 +211,6 @@ int main(int argc, const char* argv[])
         if (use_convnets || use_convnet1) networks.emplace_back(convnet1 + outlayer, "convnet1");
         if (use_convnets || use_convnet2) networks.emplace_back(convnet2 + outlayer, "convnet2");
         if (use_convnets || use_convnet3) networks.emplace_back(convnet3 + outlayer, "convnet3");
-        if (use_pconvnets || use_pconvnet1) networks.emplace_back(pconvnet1 + outlayer, "pconvnet1");
-        if (use_pconvnets || use_pconvnet2) networks.emplace_back(pconvnet2 + outlayer, "pconvnet2");
 
         // vary the model
         for (const auto& net : networks)

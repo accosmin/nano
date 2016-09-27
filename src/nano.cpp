@@ -21,9 +21,6 @@
 #include "layers/convolution_kernel2d.h"
 #include "layers/convolution_toeplitz.h"
 #include "layers/affine.h"
-#include "layers/pooling_full.h"
-#include "layers/pooling_soft.h"
-#include "layers/pooling_gauss.h"
 
 #include "models/forward_network.h"
 
@@ -133,9 +130,6 @@ namespace nano
                         nano::get_layers().add("conv-k2d", conv_layer_kernel2d_t());
                         nano::get_layers().add("conv-toe", conv_layer_toeplitz_t());
                         nano::get_layers().add("conv", conv_layer_toeplitz_t());
-                        nano::get_layers().add("pool-full", pooling_full_layer_t());
-                        nano::get_layers().add("pool-soft", pooling_soft_layer_t());
-                        nano::get_layers().add("pool-gauss", pooling_gauss_layer_t());
 
                         // register models
                         nano::get_models().add("forward-network", forward_network_t());

@@ -10,12 +10,6 @@ list(APPEND libnano_sources
         ${CMAKE_CURRENT_SOURCE_DIR}/convolution_toeplitz.h
         ${CMAKE_CURRENT_SOURCE_DIR}/affine.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/affine.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/pooling_full.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/pooling_full.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/pooling_soft.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/pooling_soft.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/pooling_gauss.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/pooling_gauss.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/make_layers.h)
 
 set(libnano_sources "${libnano_sources}" PARENT_SCOPE)

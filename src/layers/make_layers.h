@@ -28,34 +28,19 @@ namespace nano
         }
 
         template <typename tsize>
-        string_t make_conv_pool_layer(const string_t& type,
-                const tsize dims, const tsize rows, const tsize cols, const tsize conn,
-                const string_t& activation = "act-snorm", const string_t& pooling = "pool-soft")
-        {
-                return  make_layer(type + ":" + to_params("dims", dims, "rows", rows, "cols", cols, "conn", conn)) +
-                        make_layer(activation) +
-                        make_layer(pooling);
-        }
-
-        template <typename tsize>
-        string_t make_conv_pool_layer(const tsize dims, const tsize rows, const tsize cols, const tsize conn,
-                const string_t& activation = "act-snorm", const string_t& pooling = "pool-soft")
-        {
-                return  make_conv_pool_layer("conv-toe", dims, rows, cols, conn, activation, pooling);
-        }
-
-        template <typename tsize>
         string_t make_conv_layer(const string_t& type,
                 const tsize dims, const tsize rows, const tsize cols, const tsize conn,
                 const string_t& activation = "act-snorm")
         {
-                return  make_conv_pool_layer(type, dims, rows, cols, conn, activation, "");
+                return  make_layer(type + ":" + to_params("dims", dims, "rows", rows, "cols", cols, "conn", conn)) +
+                        make_layer(activation);
         }
 
         template <typename tsize>
-        string_t make_conv_layer(const tsize dims, const tsize rows, const tsize cols, const tsize conn,
+        string_t make_conv_layer(
+                const tsize dims, const tsize rows, const tsize cols, const tsize conn,
                 const string_t& activation = "act-snorm")
         {
-                return  make_conv_pool_layer(dims, rows, cols, conn, activation, "");
+                return  make_conv_layer("conv-toe", dims, rows, cols, conn, activation);
         }
 }

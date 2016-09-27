@@ -13,15 +13,14 @@ namespace
                 return irows >= krows && icols >= kcols;
         }
 
-        int make_orows(const int irows, const int krows, const bool use_pooling)
+        int make_orows(const int irows, const int krows)
         {
-                const auto orows = irows - krows + 1;
-                return use_pooling ? ((orows + 1) / 2) : orows;
+                return irows - krows + 1;
         }
 
-        int make_ocols(const int icols, const int kcols, const bool use_pooling)
+        int make_ocols(const int icols, const int kcols)
         {
-                return make_orows(icols, kcols, use_pooling);
+                return make_orows(icols, kcols);
         }
 
         convnet_t normalize(convnet_t net)
@@ -30,22 +29,22 @@ namespace
                 return net;
         }
 
-        void print(int irows, int icols, const bool use_pooling, const convnet_t& net)
+        void print(int irows, int icols, const convnet_t& net)
         {
                 std::cout << irows << "x" << icols << " -> ";
                 for (std::size_t i = 0; i < net.size(); ++ i)
                 {
                         const int krows = net[i];
                         const int kcols = krows;
-                        std::cout << "@" << krows << "x" << kcols << (use_pooling ? "p " : " ");
-                        irows = make_orows(irows, krows, use_pooling);
-                        icols = make_ocols(icols, kcols, use_pooling);
+                        std::cout << "@" << krows << "x" << kcols << " ";
+                        irows = make_orows(irows, krows);
+                        icols = make_ocols(icols, kcols);
                 }
                 std::cout << "-> " << irows << "x" << icols << std::endl;
         }
 
         convnets_t make_convnets(const int irows, const int icols, const int min_krows, const int max_krows,
-                const bool use_pooling, const convnet_t& basenet)
+                const convnet_t& basenet)
         {
                 convnets_t nets;
 
@@ -64,9 +63,9 @@ namespace
                                 knet.push_back(krows);
 
                                 const auto knets = make_convnets(
-                                        make_orows(irows, krows, use_pooling),
-                                        make_ocols(icols, kcols, use_pooling),
-                                        min_krows, max_krows, use_pooling,
+                                        make_orows(irows, krows),
+                                        make_ocols(icols, kcols),
+                                        min_krows, max_krows,
                                         knet);
 
                                 nets.insert(knets.begin(), knets.end());
@@ -84,7 +83,6 @@ int main(int argc, const char* argv[])
         cmdline.add("", "irows",        "number of input rows [16, 256]");
         cmdline.add("", "icols",        "number of input columns [16, 256]");
         cmdline.add("", "max-krows",    "maximum convolution size [3, 15]");
-        cmdline.add("", "pooling",      "use pooling after each layer");
 
         cmdline.process(argc, argv);
 
@@ -93,13 +91,12 @@ int main(int argc, const char* argv[])
         const auto icols = nano::clamp(cmdline.get<int>("icols"), 16, 256);
         const auto max_krows = nano::clamp(cmdline.get<int>("max-krows"), 3, 15);
         const auto min_krows = 3;
-        const auto use_pooling = cmdline.has("pooling");
 
-        const convnets_t nets = make_convnets(irows, icols, min_krows, max_krows, use_pooling, {});
+        const convnets_t nets = make_convnets(irows, icols, min_krows, max_krows, {});
 
         for (const auto& net : nets)
         {
-                print(irows, icols, use_pooling, net);
+                print(irows, icols, net);
         }
 
         // OK

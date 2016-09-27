@@ -173,25 +173,25 @@ NANO_CASE(affine)
 
 NANO_CASE(convk2d)
 {
-        test_model(make_conv_pool_layer("conv-k2d", 3, 3, 3, 1, "act-unit", ""));
-        test_model(make_conv_pool_layer("conv-k2d", 3, 3, 3, 1, "act-unit", "pool-full"));
-        test_model(make_conv_pool_layer("conv-k2d", 3, 3, 3, 1, "act-unit", "pool-soft"));
-        test_model(make_conv_pool_layer("conv-k2d", 3, 3, 3, 1, "act-unit", "pool-gauss"));
+        test_model(make_conv_layer("conv-k2d", 3, 3, 3, 1, "act-unit"));
+        test_model(make_conv_layer("conv-k2d", 3, 3, 3, 1, "act-snorm"));
+        test_model(make_conv_layer("conv-k2d", 3, 3, 3, 1, "act-splus"));
+        test_model(make_conv_layer("conv-k2d", 3, 3, 3, 1, "act-tanh"));
 }
 
 NANO_CASE(convtoe)
 {
-        test_model(make_conv_pool_layer("conv-toe", 3, 3, 3, 1, "act-unit", ""));
-        test_model(make_conv_pool_layer("conv-toe", 3, 3, 3, 1, "act-unit", "pool-full"));
-        test_model(make_conv_pool_layer("conv-toe", 3, 3, 3, 1, "act-unit", "pool-soft"));
-        test_model(make_conv_pool_layer("conv-toe", 3, 3, 3, 1, "act-unit", "pool-gauss"));
+        test_model(make_conv_layer("conv-toe", 3, 3, 3, 1, "act-unit"));
+        test_model(make_conv_layer("conv-toe", 3, 3, 3, 1, "act-snorm"));
+        test_model(make_conv_layer("conv-toe", 3, 3, 3, 1, "act-splus"));
+        test_model(make_conv_layer("conv-toe", 3, 3, 3, 1, "act-tanh"));
 }
 
 NANO_CASE(conv_compare)
 {
         const auto make_model = [] (const string_t& conv_type, const auto conn)
         {
-                return  make_conv_pool_layer(conv_type, 9, 3, 3, 1, "act-snorm", "pool-gauss") +
+                return  make_conv_layer(conv_type, 9, 3, 3, 1, "act-snorm") +
                         make_conv_layer(conv_type, 6, 3, 3, conn, "act-splus") +
                         make_affine_layer(5, "act-splus");
         };
@@ -207,26 +207,26 @@ NANO_CASE(multi_layer)
                 make_affine_layer(5, "act-splus"));
 
         test_model(
-                make_conv_pool_layer("conv-toe", 7, 3, 3, 1, "act-snorm", "pool-soft") +
+                make_conv_layer("conv-toe", 7, 3, 3, 1, "act-snorm") +
                 make_conv_layer("conv-toe", 4, 3, 3, 1, "act-splus"));
 
         test_model(
-                make_conv_pool_layer("conv-k2d", 7, 3, 3, 1, "act-snorm", "pool-gauss") +
+                make_conv_layer("conv-k2d", 7, 3, 3, 1, "act-snorm") +
                 make_conv_layer("conv-k2d", 5, 3, 3, 1, "act-splus") +
                 make_affine_layer(5, "act-splus"));
 
         test_model(
-                make_conv_pool_layer("conv-toe", 8, 3, 3, 1, "act-snorm", "pool-soft") +
+                make_conv_layer("conv-toe", 8, 3, 3, 1, "act-snorm") +
                 make_conv_layer("conv-toe", 6, 3, 3, 2, "act-splus") +
                 make_affine_layer(5, "act-splus"));
 
         test_model(
-                make_conv_pool_layer("conv-k2d", 8, 3, 3, 1, "act-snorm", "pool-full") +
+                make_conv_layer("conv-k2d", 8, 3, 3, 1, "act-snorm") +
                 make_conv_layer("conv-k2d", 6, 3, 3, 2, "act-splus") +
                 make_affine_layer(5, "act-splus"));
 
         test_model(
-                make_conv_pool_layer("conv-toe", 9, 3, 3, 1, "act-snorm", "pool-soft") +
+                make_conv_layer("conv-toe", 9, 3, 3, 1, "act-snorm") +
                 make_conv_layer("conv-toe", 6, 3, 3, 3, "act-splus") +
                 make_affine_layer(5, "act-splus"));
 }
