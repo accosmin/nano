@@ -67,18 +67,12 @@ int main(int argc, const char *argv[])
         const string_t mlp4 = mlp3 + make_affine_layer(128, activation);
         const string_t mlp5 = mlp4 + make_affine_layer(128, activation);
 
-        const string_t convnet0_k2d;
-        const string_t convnet1_k2d = convnet0_k2d + make_conv_layer("conv-k2d", 64, 7, 7, 1, activation);
-        const string_t convnet2_k2d = convnet1_k2d + make_conv_layer("conv-k2d", 64, 7, 7, conn, activation);
-        const string_t convnet3_k2d = convnet2_k2d + make_conv_layer("conv-k2d", 64, 5, 5, conn, activation);
-        const string_t convnet4_k2d = convnet3_k2d + make_conv_layer("conv-k2d", 64, 5, 5, conn, activation);
-        const string_t convnet5_k2d = convnet4_k2d + make_conv_layer("conv-k2d", 64, 3, 3, conn, activation);
-
-        const string_t convnet1_toe = nano::replace(convnet1_k2d, "conv-k2d", "conv-toe");
-        const string_t convnet2_toe = nano::replace(convnet2_k2d, "conv-k2d", "conv-toe");
-        const string_t convnet3_toe = nano::replace(convnet3_k2d, "conv-k2d", "conv-toe");
-        const string_t convnet4_toe = nano::replace(convnet4_k2d, "conv-k2d", "conv-toe");
-        const string_t convnet5_toe = nano::replace(convnet5_k2d, "conv-k2d", "conv-toe");
+        const string_t convnet0;
+        const string_t convnet1 = convnet0 + make_conv_layer(64, 7, 7, 1, activation);
+        const string_t convnet2 = convnet1 + make_conv_layer(64, 7, 7, conn, activation);
+        const string_t convnet3 = convnet2 + make_conv_layer(64, 5, 5, conn, activation);
+        const string_t convnet4 = convnet3 + make_conv_layer(64, 5, 5, conn, activation);
+        const string_t convnet5 = convnet4 + make_conv_layer(64, 3, 3, conn, activation);
 
         const string_t outlayer = make_output_layer(task.osize());
 
@@ -95,16 +89,11 @@ int main(int argc, const char *argv[])
         }
         if (cmd_convnets)
         {
-                DEFINE(convnet1_k2d);
-                DEFINE(convnet1_toe);
-                DEFINE(convnet2_k2d);
-                DEFINE(convnet2_toe);
-                DEFINE(convnet3_k2d);
-                DEFINE(convnet3_toe);
-                DEFINE(convnet4_k2d);
-                DEFINE(convnet4_toe);
-                DEFINE(convnet5_k2d);
-                DEFINE(convnet5_toe);
+                DEFINE(convnet1);
+                DEFINE(convnet2);
+                DEFINE(convnet3);
+                DEFINE(convnet4);
+                DEFINE(convnet5);
         }
         #undef DEFINE
 

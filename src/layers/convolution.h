@@ -13,16 +13,16 @@ namespace nano
         ///     cols    - convolution size
         ///     conn    - connectivity factor: default = 1 (fully connected)
         ///
-        class conv_layer_toeplitz_t : public layer_t
+        class convolution_layer_t : public layer_t
         {
         public:
 
-                NANO_MAKE_CLONABLE(conv_layer_toeplitz_t,
+                NANO_MAKE_CLONABLE(convolution_layer_t,
                         "convolution layer (implemented using Toeplitz matrices)",
                         "dims=16[1,256],rows=8[1,32],cols=8[1,32],conn=1[1,16]")
 
                 // constructor
-                explicit conv_layer_toeplitz_t(const string_t& parameters = string_t());
+                explicit convolution_layer_t(const string_t& parameters = string_t());
 
                 // resize to process new tensors of the given type
                 virtual tensor_size_t resize(const tensor3d_t& tensor) override;

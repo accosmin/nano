@@ -1,11 +1,11 @@
 #include "logger.h"
+#include "convolution.h"
 #include "math/random.hpp"
 #include "math/numeric.hpp"
 #include "tensor/numeric.hpp"
 #include "text/to_string.hpp"
 #include "text/from_params.hpp"
 #include "tensor/serialize.hpp"
-#include "convolution_toeplitz.h"
 
 namespace nano
 {
@@ -64,13 +64,13 @@ namespace nano
                 }
         }
 
-        conv_layer_toeplitz_t::conv_layer_toeplitz_t(const string_t& parameters) :
+        convolution_layer_t::convolution_layer_t(const string_t& parameters) :
                 layer_t(parameters),
                 m_kconn(1)
         {
         }
 
-        tensor_size_t conv_layer_toeplitz_t::resize(const tensor3d_t& tensor)
+        tensor_size_t convolution_layer_t::resize(const tensor3d_t& tensor)
         {
                 const auto idims = tensor.size<0>();
                 const auto irows = tensor.size<1>();
@@ -130,31 +130,31 @@ namespace nano
                 return psize();
         }
 
-        void conv_layer_toeplitz_t::zero_params()
+        void convolution_layer_t::zero_params()
         {
                 tensor::set_zero(m_kdata, m_bdata);
                 params_changed();
         }
 
-        void conv_layer_toeplitz_t::random_params(scalar_t min, scalar_t max)
+        void convolution_layer_t::random_params(scalar_t min, scalar_t max)
         {
                 tensor::set_random(random_t<scalar_t>(min, max), m_kdata, m_bdata);
                 params_changed();
         }
 
-        scalar_t* conv_layer_toeplitz_t::save_params(scalar_t* params) const
+        scalar_t* convolution_layer_t::save_params(scalar_t* params) const
         {
                 return tensor::to_array(params, m_kdata, m_bdata);
         }
 
-        const scalar_t* conv_layer_toeplitz_t::load_params(const scalar_t* params)
+        const scalar_t* convolution_layer_t::load_params(const scalar_t* params)
         {
                 auto ret = tensor::from_array(params, m_kdata, m_bdata);
                 params_changed();
                 return ret;
         }
 
-        void conv_layer_toeplitz_t::params_changed()
+        void convolution_layer_t::params_changed()
         {
                 for (tensor_size_t i = 0; i < idims(); ++ i)
                 {
@@ -175,7 +175,7 @@ namespace nano
                 }
         }
 
-        const tensor3d_t& conv_layer_toeplitz_t::output(const tensor3d_t& input)
+        const tensor3d_t& convolution_layer_t::output(const tensor3d_t& input)
         {
                 assert(idims() == input.size<0>());
                 assert(irows() == input.size<1>());
@@ -206,7 +206,7 @@ namespace nano
                 return m_odata;
         }
 
-        const tensor3d_t& conv_layer_toeplitz_t::ginput(const tensor3d_t& output)
+        const tensor3d_t& convolution_layer_t::ginput(const tensor3d_t& output)
         {
                 assert(odims() == output.size<0>());
                 assert(orows() == output.size<1>());
@@ -231,7 +231,7 @@ namespace nano
                 return m_idata;
         }
 
-        void conv_layer_toeplitz_t::gparam(const tensor3d_t& output, scalar_t* gradient)
+        void convolution_layer_t::gparam(const tensor3d_t& output, scalar_t* gradient)
         {
                 assert(odims() == output.size<0>());
                 assert(orows() == output.size<1>());

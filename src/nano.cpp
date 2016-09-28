@@ -18,8 +18,7 @@
 #include "layers/activation_tanh.h"
 #include "layers/activation_snorm.h"
 #include "layers/activation_splus.h"
-#include "layers/convolution_kernel2d.h"
-#include "layers/convolution_toeplitz.h"
+#include "layers/convolution.h"
 #include "layers/affine.h"
 
 #include "models/forward_network.h"
@@ -127,9 +126,7 @@ namespace nano
                         nano::get_layers().add("act-snorm", snorm_activation_layer_t());
                         nano::get_layers().add("act-splus", softplus_activation_layer_t());
                         nano::get_layers().add("affine", affine_layer_t());
-                        nano::get_layers().add("conv-k2d", conv_layer_kernel2d_t());
-                        nano::get_layers().add("conv-toe", conv_layer_toeplitz_t());
-                        nano::get_layers().add("conv", conv_layer_toeplitz_t());
+                        nano::get_layers().add("conv", convolution_layer_t());
 
                         // register models
                         nano::get_models().add("forward-network", forward_network_t());

@@ -13,8 +13,6 @@ endfunction()
 
 # build unit tests
 build_test_app(test_average.cpp "")
-build_test_app(test_conv2d.cpp "")
-build_test_app(test_corr2d.cpp "")
 build_test_app(test_cubic.cpp "")
 build_test_app(test_gauss.cpp "")
 build_test_app(test_momentum.cpp "")

@@ -6,7 +6,6 @@ function(build_app app libs)
 endfunction()
 
 # build command line programs
-build_app(benchmark_conv.cpp nano)
 build_app(benchmark_eigen.cpp nano)
 build_app(benchmark_batch.cpp nano)
 build_app(benchmark_stoch.cpp nano)

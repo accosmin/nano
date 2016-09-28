@@ -171,33 +171,12 @@ NANO_CASE(affine)
         test_model(make_affine_layer(7));
 }
 
-NANO_CASE(convk2d)
+NANO_CASE(conv)
 {
-        test_model(make_conv_layer("conv-k2d", 3, 3, 3, 1, "act-unit"));
-        test_model(make_conv_layer("conv-k2d", 3, 3, 3, 1, "act-snorm"));
-        test_model(make_conv_layer("conv-k2d", 3, 3, 3, 1, "act-splus"));
-        test_model(make_conv_layer("conv-k2d", 3, 3, 3, 1, "act-tanh"));
-}
-
-NANO_CASE(convtoe)
-{
-        test_model(make_conv_layer("conv-toe", 3, 3, 3, 1, "act-unit"));
-        test_model(make_conv_layer("conv-toe", 3, 3, 3, 1, "act-snorm"));
-        test_model(make_conv_layer("conv-toe", 3, 3, 3, 1, "act-splus"));
-        test_model(make_conv_layer("conv-toe", 3, 3, 3, 1, "act-tanh"));
-}
-
-NANO_CASE(conv_compare)
-{
-        const auto make_model = [] (const string_t& conv_type, const auto conn)
-        {
-                return  make_conv_layer(conv_type, 9, 3, 3, 1, "act-snorm") +
-                        make_conv_layer(conv_type, 6, 3, 3, conn, "act-splus") +
-                        make_affine_layer(5, "act-splus");
-        };
-
-        compare_models(make_model("conv-k2d", 1), make_model("conv-toe", 1));
-        compare_models(make_model("conv-k2d", 3), make_model("conv-toe", 3));
+        test_model(make_conv_layer(3, 3, 3, 1, "act-unit"));
+        test_model(make_conv_layer(3, 3, 3, 1, "act-snorm"));
+        test_model(make_conv_layer(3, 3, 3, 1, "act-splus"));
+        test_model(make_conv_layer(3, 3, 3, 1, "act-tanh"));
 }
 
 NANO_CASE(multi_layer)
@@ -207,27 +186,27 @@ NANO_CASE(multi_layer)
                 make_affine_layer(5, "act-splus"));
 
         test_model(
-                make_conv_layer("conv-toe", 7, 3, 3, 1, "act-snorm") +
-                make_conv_layer("conv-toe", 4, 3, 3, 1, "act-splus"));
+                make_conv_layer(7, 3, 3, 1, "act-snorm") +
+                make_conv_layer(4, 3, 3, 1, "act-splus"));
 
         test_model(
-                make_conv_layer("conv-k2d", 7, 3, 3, 1, "act-snorm") +
-                make_conv_layer("conv-k2d", 5, 3, 3, 1, "act-splus") +
+                make_conv_layer(7, 3, 3, 1, "act-snorm") +
+                make_conv_layer(5, 3, 3, 1, "act-splus") +
                 make_affine_layer(5, "act-splus"));
 
         test_model(
-                make_conv_layer("conv-toe", 8, 3, 3, 1, "act-snorm") +
-                make_conv_layer("conv-toe", 6, 3, 3, 2, "act-splus") +
+                make_conv_layer(8, 3, 3, 1, "act-snorm") +
+                make_conv_layer(6, 3, 3, 2, "act-splus") +
                 make_affine_layer(5, "act-splus"));
 
         test_model(
-                make_conv_layer("conv-k2d", 8, 3, 3, 1, "act-snorm") +
-                make_conv_layer("conv-k2d", 6, 3, 3, 2, "act-splus") +
+                make_conv_layer(8, 3, 3, 1, "act-snorm") +
+                make_conv_layer(6, 3, 3, 2, "act-splus") +
                 make_affine_layer(5, "act-splus"));
 
         test_model(
-                make_conv_layer("conv-toe", 9, 3, 3, 1, "act-snorm") +
-                make_conv_layer("conv-toe", 6, 3, 3, 3, "act-splus") +
+                make_conv_layer(9, 3, 3, 1, "act-snorm") +
+                make_conv_layer(6, 3, 3, 3, "act-splus") +
                 make_affine_layer(5, "act-splus"));
 }
 
