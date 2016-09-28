@@ -12,6 +12,8 @@ namespace nano
         ///     rows    - convolution size
         ///     cols    - convolution size
         ///     conn    - connectivity factor: default = 1 (fully connected)
+        ///     drow    - stride factor for the vertical axis: default = 1
+        ///     dcol    - stride factor for the horizontal axis: default = 1
         ///
         class convolution_layer_t : public layer_t
         {
@@ -19,7 +21,7 @@ namespace nano
 
                 NANO_MAKE_CLONABLE(convolution_layer_t,
                         "convolution layer (implemented using Toeplitz matrices)",
-                        "dims=16[1,256],rows=8[1,32],cols=8[1,32],conn=1[1,16]")
+                        "dims=16[1,256],rows=8[1,32],cols=8[1,32],conn=1[1,16],drow=1[1,8],dcol=1[1,8]")
 
                 // constructor
                 explicit convolution_layer_t(const string_t& parameters = string_t());
@@ -59,19 +61,19 @@ namespace nano
                 tensor_size_t krows() const { return m_kdata.size<2>(); }
                 tensor_size_t kcols() const { return m_kdata.size<3>(); }
 
-                void params_changed();
-
         private:
 
                 // attributes
                 tensor3d_t      m_idata;        ///< input buffer:              idims x irows x icols
                 tensor3d_t      m_odata;        ///< output buffer:             odims x orows x ocols
                 tensor_size_t   m_kconn;        ///< input connectivity factor
+                tensor_size_t   m_drows;        ///< stride factor
+                tensor_size_t   m_dcols;        ///< stride factor
                 tensor4d_t      m_kdata;        ///< convolution kernels:       odims x (idims/kconn) x krows x kcols
                 vector_t        m_bdata;        ///< convolution bias:          odims
 
-                matrix_t        m_toe_oidata, m_toe_oodata; matrices_t m_toe_okdata;
-                matrix_t        m_toe_iidata, m_toe_iodata; matrices_t m_toe_ikdata;
+                matrix_t        m_toe_oidata, m_toe_oodata, m_toe_okdata;
+                matrix_t        m_toe_iidata, m_toe_iodata, m_toe_ikdata;
                 matrix_t        m_toe_kidata, m_toe_kkdata, m_toe_kodata;
         };
 }
