@@ -30,9 +30,9 @@ namespace nano
         template <typename tsize>
         string_t make_conv_layer(
                 const tsize dims, const tsize rows, const tsize cols, const tsize conn,
-                const string_t& activation = "act-snorm")
+                const string_t& activation = "act-snorm", const tsize drow = 1, const tsize dcol = 1)
         {
-                return  make_layer("conv:" + to_params("dims", dims, "rows", rows, "cols", cols, "conn", conn)) +
+                return  make_layer("conv:" + to_params("dims", dims, "rows", rows, "cols", cols, "conn", conn, "drow", drow, "dcol", dcol)) +
                         make_layer(activation);
         }
 }

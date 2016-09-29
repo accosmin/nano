@@ -10,19 +10,12 @@
 namespace nano
 {
         template <typename timatrix, typename tsize, typename tomatrix>
-        static void make_conv(const timatrix& imat,
+        static void make_convo(const timatrix& imat,
+                const tsize orows, const tsize ocols,
                 const tsize krows, const tsize kcols,
                 const tsize drows, const tsize dcols,
                 tomatrix&& omat)
         {
-                const tsize irows = imat.rows();
-                const tsize icols = imat.cols();
-                const tsize orows = (irows - krows + 1) / drows;
-                const tsize ocols = (icols - kcols + 1) / dcols;
-
-                assert(omat.rows() == krows * kcols);
-                assert(omat.cols() == orows * ocols);
-
                 for (tsize kr = 0; kr < krows; ++ kr)
                 {
                         for (tsize kc = 0; kc < kcols; ++ kc)
@@ -32,7 +25,30 @@ namespace nano
                                         for (tsize c = 0; c < ocols; ++ c)
                                         {
                                                 omat(kr * kcols + kc, r * ocols + c) =
-                                                imat(r + kr, kc + c);
+                                                imat(r * drows + kr, c * dcols + kc);
+                                        }
+                                }
+                        }
+                }
+        }
+
+        template <typename timatrix, typename tsize, typename tkmatrix>
+        static void make_convk(const timatrix& imat,
+                const tsize orows, const tsize ocols,
+                const tsize krows, const tsize kcols,
+                const tsize drows, const tsize dcols,
+                tkmatrix&& kmat)
+        {
+                for (tsize kr = 0; kr < krows; ++ kr)
+                {
+                        for (tsize kc = 0; kc < kcols; ++ kc)
+                        {
+                                for (tsize r = 0; r < orows; ++ r)
+                                {
+                                        for (tsize c = 0; c < ocols; ++ c)
+                                        {
+                                                kmat(r * ocols + c, kr * kcols + kc) =
+                                                imat(r * drows + kr, c * dcols + kc);
                                         }
                                 }
                         }
@@ -41,20 +57,12 @@ namespace nano
 
         template <typename tomatrix, typename tsize, typename timatrix>
         static void make_corr(const tomatrix& omat,
+                const tsize orows, const tsize ocols,
                 const tsize krows, const tsize kcols,
                 const tsize drows, const tsize dcols,
+                const tsize icols,
                 timatrix& imat)
         {
-                const tsize orows = omat.rows();
-                const tsize ocols = omat.cols();
-                const tsize irows = orows * drows + krows - 1;
-                const tsize icols = ocols * dcols + kcols - 1;
-
-                NANO_UNUSED1_RELEASE(irows);
-
-                assert(imat.rows() == krows * kcols);
-                assert(imat.cols() == irows * icols);
-
                 imat.setZero();
                 for (tsize kr = 0; kr < krows; ++ kr)
                 {
@@ -64,7 +72,8 @@ namespace nano
                                 {
                                         for (tsize c = 0; c < ocols; ++ c)
                                         {
-                                                imat(kr * kcols + kc, (r + kr) * icols + c + kc) += omat(r, c);
+                                                imat(kr * kcols + kc, (r * drows + kr) * icols + c * dcols + kc) +=
+                                                omat(r, c);
                                         }
                                 }
                         }
@@ -94,7 +103,7 @@ namespace nano
                 const auto ocols = (icols - kcols + 1) / dcols;
 
                 // check convolution size
-                if (irows < krows || icols < kcols)
+                if (orows < 1 || ocols < 1)
                 {
                         log_error() << "convolution layer: invalid size (" << idims << "x" << irows << "x" << icols
                                     << ") -> (" << odims << "x" << krows << "x" << kcols << ")!";
@@ -172,7 +181,7 @@ namespace nano
 
                 for (tensor_size_t i = 0; i < idims(); ++ i)
                 {
-                        make_conv(m_idata.matrix(i), krows(), kcols(), m_drows, m_dcols, m_toe_oidata);
+                        make_convo(m_idata.matrix(i), orows(), ocols(), krows(), kcols(), drows(), dcols(), m_toe_oidata);
                         for (tensor_size_t o = (i % kconn()), ok = 0; o < odims(); ++ ok, o += kconn())
                         {
                                 m_toe_okdata.row(ok) = m_kdata.vector(o, i / kconn());
@@ -208,7 +217,7 @@ namespace nano
 
                 for (tensor_size_t o = 0; o < odims(); ++ o)
                 {
-                        make_corr(m_odata.matrix(o), krows(), kcols(), m_drows, m_dcols, m_toe_iodata);
+                        make_corr(m_odata.matrix(o), orows(), ocols(), krows(), kcols(), drows(), dcols(), icols(), m_toe_iodata);
                         for (tensor_size_t i = (o % kconn()), ik = 0; i < idims(); ++ ik, i += kconn())
                         {
                                 m_toe_ikdata.row(ik) = m_kdata.vector(o, ik);
@@ -239,7 +248,7 @@ namespace nano
 
                 for (tensor_size_t i = 0; i < idims(); ++ i)
                 {
-                        make_conv(m_idata.matrix(i), orows(), ocols(), m_drows, m_dcols, m_toe_kidata);
+                        make_convk(m_idata.matrix(i), orows(), ocols(), krows(), kcols(), drows(), dcols(), m_toe_kidata);
                         for (tensor_size_t o = (i % kconn()), ok = 0; o < odims(); ++ ok, o += kconn())
                         {
                                 m_toe_kodata.row(ok) = m_odata.vector(o);

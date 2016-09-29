@@ -127,35 +127,6 @@ void test_model(const string_t& model_description, const scalar_t epsilon = epsi
         }
 }
 
-void compare_models(const string_t& model_description1, const string_t& model_description2,
-        const scalar_t epsilon = epsilon1<scalar_t>())
-{
-        const auto model1 = get_model(model_description1);
-        const auto model2 = get_model(model_description2);
-
-        NANO_REQUIRE_EQUAL(model1->psize(), model2->psize());
-
-        vector_t params(model1->psize());
-        vector_t target(model1->psize());
-        tensor3d_t inputs(model1->idims(), model1->irows(), model1->icols());
-
-        for (size_t t = 0; t < cmd_tests; ++ t)
-        {
-                make_random_config(inputs, target);
-
-                model1->random_params();
-                model1->save_params(params);
-
-                NANO_CHECK(model1->load_params(params));
-                NANO_CHECK(model2->load_params(params));
-
-                const auto output1 = model1->output(inputs).vector();
-                const auto output2 = model2->output(inputs).vector();
-
-                NANO_CHECK_EIGEN_CLOSE(output1, output2, epsilon);
-        }
-}
-
 NANO_BEGIN_MODULE(test_layers)
 
 NANO_CASE(activation)
@@ -177,6 +148,13 @@ NANO_CASE(conv)
         test_model(make_conv_layer(3, 3, 3, 1, "act-snorm"));
         test_model(make_conv_layer(3, 3, 3, 1, "act-splus"));
         test_model(make_conv_layer(3, 3, 3, 1, "act-tanh"));
+}
+
+NANO_CASE(conv_stride)
+{
+        test_model(make_conv_layer(3, 5, 3, 1, "act-unit", 2, 1));
+        test_model(make_conv_layer(3, 3, 5, 1, "act-snorm", 1, 2));
+        test_model(make_conv_layer(3, 5, 5, 1, "act-splus", 2, 2));
 }
 
 NANO_CASE(multi_layer)

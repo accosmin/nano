@@ -61,6 +61,9 @@ namespace nano
                 tensor_size_t krows() const { return m_kdata.size<2>(); }
                 tensor_size_t kcols() const { return m_kdata.size<3>(); }
 
+                tensor_size_t drows() const { return m_drows; }
+                tensor_size_t dcols() const { return m_dcols; }
+
         private:
 
                 // attributes
