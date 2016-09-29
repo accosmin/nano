@@ -16,6 +16,9 @@ namespace nano
                 const tsize drows, const tsize dcols,
                 tomatrix&& omat)
         {
+                assert(omat.rows() == krows * kcols);
+                assert(omat.cols() == orows * ocols);
+
                 for (tsize kr = 0; kr < krows; ++ kr)
                 {
                         for (tsize kc = 0; kc < kcols; ++ kc)
@@ -39,13 +42,16 @@ namespace nano
                 const tsize drows, const tsize dcols,
                 tkmatrix&& kmat)
         {
-                for (tsize kr = 0; kr < krows; ++ kr)
+                assert(kmat.rows() == orows * ocols);
+                assert(kmat.cols() == krows * kcols);
+
+                for (tsize r = 0; r < orows; ++ r)
                 {
-                        for (tsize kc = 0; kc < kcols; ++ kc)
+                        for (tsize c = 0; c < ocols; ++ c)
                         {
-                                for (tsize r = 0; r < orows; ++ r)
+                                for (tsize kr = 0; kr < krows; ++ kr)
                                 {
-                                        for (tsize c = 0; c < ocols; ++ c)
+                                        for (tsize kc = 0; kc < kcols; ++ kc)
                                         {
                                                 kmat(r * ocols + c, kr * kcols + kc) =
                                                 imat(r * drows + kr, c * dcols + kc);
@@ -60,9 +66,14 @@ namespace nano
                 const tsize orows, const tsize ocols,
                 const tsize krows, const tsize kcols,
                 const tsize drows, const tsize dcols,
-                const tsize icols,
+                const tsize irows, const tsize icols,
                 timatrix& imat)
         {
+                assert(imat.rows() == krows * kcols);
+                assert(imat.cols() == irows * icols);
+
+                NANO_UNUSED1_RELEASE(irows);
+
                 imat.setZero();
                 for (tsize kr = 0; kr < krows; ++ kr)
                 {
@@ -217,7 +228,7 @@ namespace nano
 
                 for (tensor_size_t o = 0; o < odims(); ++ o)
                 {
-                        make_corr(m_odata.matrix(o), orows(), ocols(), krows(), kcols(), drows(), dcols(), icols(), m_toe_iodata);
+                        make_corr(m_odata.matrix(o), orows(), ocols(), krows(), kcols(), drows(), dcols(), irows(), icols(), m_toe_iodata);
                         for (tensor_size_t i = (o % kconn()), ik = 0; i < idims(); ++ ik, i += kconn())
                         {
                                 m_toe_ikdata.row(ik) = m_kdata.vector(o, ik);
