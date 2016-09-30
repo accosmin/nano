@@ -11,12 +11,12 @@ mkdir -p ${outdir}
 
 # models
 conv0="--model forward-network --model-params "
-conv1=${conv0}"conv:dims=64,rows=7,cols=7,conn=1;act-snorm;"
-conv2=${conv1}"conv:dims=64,rows=7,cols=7,conn=8;act-snorm;"
-conv3=${conv2}"conv:dims=64,rows=5,cols=5,conn=8;act-snorm;"
-conv4=${conv3}"conv:dims=64,rows=5,cols=5,conn=8;act-snorm;"
-conv5=${conv4}"conv:dims=64,rows=3,cols=3,conn=8;act-snorm;"
-conv6=${conv5}"conv:dims=64,rows=3,cols=3,conn=8;act-snorm;"
+conv1=${conv0}"conv:dims=64,rows=7,cols=7,conn=1,drow=1,dcol=1;act-snorm;"
+conv2=${conv1}"conv:dims=64,rows=7,cols=7,conn=8,drow=1,dcol=1;act-snorm;"
+conv3=${conv2}"conv:dims=64,rows=5,cols=5,conn=8,drow=1,dcol=1;act-snorm;"
+conv4=${conv3}"conv:dims=64,rows=5,cols=5,conn=8,drow=1,dcol=1;act-snorm;"
+conv5=${conv4}"conv:dims=64,rows=3,cols=3,conn=8,drow=1,dcol=1;act-snorm;"
+conv6=${conv5}"conv:dims=64,rows=3,cols=3,conn=8,drow=1,dcol=1;act-snorm;"
 
 mlp0="--model forward-network --model-params "
 mlp1=${mlp0}"affine:dims=128;act-snorm;"
@@ -32,7 +32,7 @@ models=${models}" conv1 conv2 conv3 conv4 conv5 conv6"
 
 # trainers
 fn_make_trainers "stop_early"
-trainers="stoch_ngd"
+trainers="stoch_adam"
 
 # criteria
 criteria="crit_avg"
