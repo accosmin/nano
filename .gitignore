@@ -11,3 +11,4 @@ doxygen/html
 *.bak
 *.log
 *.swp
+*.swo
