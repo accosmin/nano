@@ -15,7 +15,7 @@ namespace nano
         ///     drow    - stride factor for the vertical axis: default = 1
         ///     dcol    - stride factor for the horizontal axis: default = 1
         ///
-        class convolution_layer_t : public layer_t
+        class NANO_PUBLIC convolution_layer_t : public layer_t
         {
         public:
 
@@ -55,14 +55,15 @@ namespace nano
                         return (idims() * odims() / kconn()) * (orows() * ocols()) * (krows() * kcols());
                 }
 
-        private:
-
                 tensor_size_t kconn() const { return m_kconn; }
                 tensor_size_t krows() const { return m_kdata.size<2>(); }
                 tensor_size_t kcols() const { return m_kdata.size<3>(); }
 
                 tensor_size_t drows() const { return m_drows; }
                 tensor_size_t dcols() const { return m_dcols; }
+
+                const tensor4d_t& kdata() const { return m_kdata; }
+                const vector_t& bdata() const { return m_bdata; }
 
         private:
 

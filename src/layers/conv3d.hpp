@@ -80,7 +80,7 @@ namespace nano
                 for (tsize o = 0; o < odims; ++ o)
                 {
                         odata.matrix(o).setConstant(bdata(o));
-                        for (tsize i = 0, ik = 0; i < idims; i += conn, ++ ik)
+                        for (tsize i = (o % conn), ik = 0; i < idims; ++ ik, i += conn)
                         {
                                 conv2d(idata.matrix(i), kdata.matrix(o, ik), drows, dcols, odata.matrix(o));
                         }
@@ -99,14 +99,14 @@ namespace nano
 
                 assert(kdata.template size<0>() == odims);
                 assert(kdata.template size<1>() == idims / conn);
+                assert(bdata.size() == odims);
 
                 idata.setZero();
-                for (tsize i = 0; i < idims; ++ i)
+                for (tsize o = 0; o < odims; ++ o)
                 {
-                        idata.matrix(i).setZero();
-                        for (tsize o = 0, ok = 0; o < odims; o += conn, ++ ok)
+                        for (tsize i = (o % conn), ik = 0; i < idims; ++ ik, i += conn)
                         {
-                                corr2d(idata.matrix(i), kdata.matrix(ok, i % conn), drows, dcols, odata.matrix(o));
+                                corr2d(idata.matrix(i), kdata.matrix(o, ik), drows, dcols, odata.matrix(o));
                         }
                 }
         }
@@ -123,14 +123,15 @@ namespace nano
 
                 assert(kdata.template size<0>() == odims);
                 assert(kdata.template size<1>() == idims / conn);
+                assert(bdata.size() == odims);
 
                 kdata.setZero();
                 for (tsize o = 0; o < odims; ++ o)
                 {
                         bdata(o) = odata.matrix(o).sum();
-                        for (tsize i = 0; i < idims(); ++ i)
+                        for (tsize i = (o % conn), ik = 0; i < idims; ++ ik, i += conn)
                         {
-                                conv2d(idata.matrix(i), odata.matrix(o), drows, dcols, kdata.matrix(o, i % conn));
+                                conv2d(idata.matrix(i), odata.matrix(o), drows, dcols, kdata.matrix(o, ik));
                         }
                 }
         }

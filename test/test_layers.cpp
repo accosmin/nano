@@ -4,8 +4,10 @@
 #include "math/random.hpp"
 #include "math/numeric.hpp"
 #include "math/epsilon.hpp"
+#include "layers/conv3d.hpp"
 #include "tensor/numeric.hpp"
 #include "text/to_string.hpp"
+#include "layers/convolution.h"
 #include "layers/make_layers.h"
 
 using namespace nano;
@@ -142,6 +144,50 @@ static void test_model(const string_t& model_description, const tensor_size_t ex
         }
 }
 
+static void test_conv_layer(const tensor_size_t dims, const tensor_size_t krows, const tensor_size_t kcols,
+        const tensor_size_t conn, const tensor_size_t drow, const tensor_size_t dcol)
+{
+        convolution_layer_t layer(to_params(
+                "dims", dims, "rows", krows, "cols", kcols, "conn", conn, "drow", drow, "dcol", dcol));
+
+        tensor3d_t input(cmd_idims, cmd_irows, cmd_icols);
+        layer.resize(input);
+
+        tensor3d_t output(layer.odims(), layer.orows(), layer.ocols());
+        NANO_CHECK_EQUAL(layer.odims(), dims);
+        vector_t param(layer.psize());
+
+        tensor3d_t loutput = output, noutput = output;
+        tensor3d_t lginput = input, nginput = input;
+        vector_t lgparam = param, ngparam = param;
+
+        random_t<scalar_t> rgen(-scalar_t(0.1), +scalar_t(0.1));
+        for (size_t t = 0; t < cmd_tests; ++ t)
+        {
+                // generate random parameters and buffers
+                layer.random_params(rgen.min(), rgen.max());
+                tensor::set_random(rgen, input, output, param);
+
+                // compute using the convolution layer
+                loutput = layer.output(input);
+                lginput = layer.ginput(output);
+                layer.gparam(output, lgparam.data());
+
+                // compute using the naive implementation
+                conv3d_output(input, layer.kdata(), layer.bdata(), conn, drow, dcol, noutput);
+                conv3d_ginput(nginput, layer.kdata(), layer.bdata(), conn, drow, dcol, output);
+                conv3d_gparam(input,
+                        tensor::map_tensor(ngparam.data(), layer.kdata().size<0>(), layer.kdata().size<1>(), layer.krows(), layer.kcols()),
+                        tensor::map_vector(ngparam.data() + layer.kdata().size(), layer.bdata().size()),
+                        conn, drow, dcol, output);
+
+                // check agreement
+                NANO_CHECK_EIGEN_CLOSE(loutput.vector(), noutput.vector(), epsilon1<scalar_t>());
+                NANO_CHECK_EIGEN_CLOSE(lginput.vector(), nginput.vector(), epsilon1<scalar_t>());
+                NANO_CHECK_EIGEN_CLOSE(lgparam, ngparam, epsilon1<scalar_t>());
+        }
+}
+
 NANO_BEGIN_MODULE(test_layers)
 
 NANO_CASE(activation)
@@ -178,6 +224,11 @@ NANO_CASE(conv)
         test_model
                 (make_conv_layer(6, 3, 3, 1, "act-tanh"),
                 cpsize(cmd_idims, 6, 3, 3, 1) + apsize(6 * 6 * 6, cmd_osize));
+
+        test_conv_layer(3, 3, 3, 3, 1, 1);
+        test_conv_layer(4, 3, 3, 1, 1, 1);
+        test_conv_layer(5, 3, 3, 1, 1, 1);
+        test_conv_layer(6, 3, 3, 3, 1, 1);
 }
 
 NANO_CASE(conv_stride)
@@ -193,6 +244,10 @@ NANO_CASE(conv_stride)
         test_model(
                 make_conv_layer(3, 5, 5, 1, "act-splus", 2, 2),
                 cpsize(cmd_idims, 3, 5, 5, 1) + apsize(3 * 2 * 2, cmd_osize));
+
+        test_conv_layer(3, 5, 3, 1, 2, 1);
+        test_conv_layer(3, 3, 5, 1, 1, 2);
+        test_conv_layer(3, 5, 5, 3, 2, 2);
 }
 
 NANO_CASE(multi_layer)
