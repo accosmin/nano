@@ -36,8 +36,8 @@ namespace nano
         ///
         /// \brief 2D correlation: imat += omat @ kmat
         ///
-        template <typename timatrix, typename tkmatrix, typename tsize, typename tomatrix>
-        void corr2d(timatrix&& imat, const tkmatrix& kmat, const tsize drows, const tsize dcols, const tomatrix& omat)
+        template <typename tomatrix, typename tkmatrix, typename tsize, typename timatrix>
+        void corr2d(const tomatrix& omat, const tkmatrix& kmat, const tsize drows, const tsize dcols, timatrix&& imat)
         {
                 const tsize orows = omat.rows();
                 const tsize ocols = omat.cols();
@@ -47,7 +47,6 @@ namespace nano
                 assert(orows == (imat.rows() - krows + 1) / drows);
                 assert(ocols == (imat.cols() - kcols + 1) / dcols);
 
-                imat.setZero();
                 for (tsize r = 0; r < orows; ++ r)
                 {
                         for (tsize c = 0; c < ocols; ++ c)
@@ -106,7 +105,7 @@ namespace nano
                 {
                         for (tsize i = (o % conn), ik = 0; i < idims; ++ ik, i += conn)
                         {
-                                corr2d(idata.matrix(i), kdata.matrix(o, ik), drows, dcols, odata.matrix(o));
+                                corr2d(odata.matrix(o), kdata.matrix(o, ik), drows, dcols, idata.matrix(i));
                         }
                 }
         }

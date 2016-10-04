@@ -176,10 +176,12 @@ static void test_conv_layer(const tensor_size_t dims, const tensor_size_t krows,
                 // compute using the naive implementation
                 conv3d_output(input, layer.kdata(), layer.bdata(), conn, drow, dcol, noutput);
                 conv3d_ginput(nginput, layer.kdata(), layer.bdata(), conn, drow, dcol, output);
-                conv3d_gparam(input,
-                        tensor::map_tensor(ngparam.data(), layer.kdata().size<0>(), layer.kdata().size<1>(), layer.krows(), layer.kcols()),
-                        tensor::map_vector(ngparam.data() + layer.kdata().size(), layer.bdata().size()),
-                        conn, drow, dcol, output);
+
+                const auto kdims1 = layer.kdata().size<0>();
+                const auto kdims2 = layer.kdata().size<1>();
+                auto gkdata = tensor::map_tensor(ngparam.data(), kdims1, kdims2, layer.krows(), layer.kcols());
+                auto gbdata = tensor::map_vector(ngparam.data() + gkdata.size(), layer.bdata().size());
+                conv3d_gparam(input, gkdata, gbdata, conn, drow, dcol, output);
 
                 // check agreement
                 NANO_CHECK_EIGEN_CLOSE(loutput.vector(), noutput.vector(), epsilon1<scalar_t>());
@@ -210,8 +212,8 @@ NANO_CASE(affine)
 NANO_CASE(conv)
 {
         test_model(
-                make_conv_layer(3, 3, 3, 1, "act-unit"),
-                cpsize(cmd_idims, 3, 3, 3, 1) + apsize(3 * 6 * 6, cmd_osize));
+                make_conv_layer(3, 3, 3, 3, "act-unit"),
+                cpsize(cmd_idims, 3, 3, 3, 3) + apsize(3 * 6 * 6, cmd_osize));
 
         test_model(
                 make_conv_layer(4, 3, 3, 1, "act-snorm"),
@@ -222,8 +224,8 @@ NANO_CASE(conv)
                 cpsize(cmd_idims, 5, 3, 3, 1) + apsize(5 * 6 * 6, cmd_osize));
 
         test_model
-                (make_conv_layer(6, 3, 3, 1, "act-tanh"),
-                cpsize(cmd_idims, 6, 3, 3, 1) + apsize(6 * 6 * 6, cmd_osize));
+                (make_conv_layer(6, 3, 3, 3, "act-tanh"),
+                cpsize(cmd_idims, 6, 3, 3, 3) + apsize(6 * 6 * 6, cmd_osize));
 
         test_conv_layer(3, 3, 3, 3, 1, 1);
         test_conv_layer(4, 3, 3, 1, 1, 1);
@@ -234,20 +236,20 @@ NANO_CASE(conv)
 NANO_CASE(conv_stride)
 {
         test_model(
-                make_conv_layer(3, 5, 3, 1, "act-unit", 2, 1),
-                cpsize(cmd_idims, 3, 5, 3, 1) + apsize(3 * 2 * 6, cmd_osize));
+                make_conv_layer(3, 5, 3, 3, "act-unit", 2, 1),
+                cpsize(cmd_idims, 3, 5, 3, 3) + apsize(3 * 2 * 6, cmd_osize));
 
         test_model(
-                make_conv_layer(3, 3, 5, 1, "act-snorm", 1, 2),
-                cpsize(cmd_idims, 3, 3, 5, 1) + apsize(3 * 6 * 2, cmd_osize));
+                make_conv_layer(3, 3, 5, 3, "act-snorm", 1, 2),
+                cpsize(cmd_idims, 3, 3, 5, 3) + apsize(3 * 6 * 2, cmd_osize));
 
         test_model(
-                make_conv_layer(3, 5, 5, 1, "act-splus", 2, 2),
-                cpsize(cmd_idims, 3, 5, 5, 1) + apsize(3 * 2 * 2, cmd_osize));
+                make_conv_layer(3, 5, 5, 3, "act-splus", 2, 2),
+                cpsize(cmd_idims, 3, 5, 5, 3) + apsize(3 * 2 * 2, cmd_osize));
 
-        test_conv_layer(3, 5, 3, 1, 2, 1);
-        test_conv_layer(3, 3, 5, 1, 1, 2);
-        test_conv_layer(3, 5, 5, 3, 2, 2);
+        test_conv_layer(3, 5, 3, 3, 1, 1);
+        test_conv_layer(3, 3, 5, 1, 1, 1);
+        test_conv_layer(3, 5, 5, 3, 1, 1);
 }
 
 NANO_CASE(multi_layer)
