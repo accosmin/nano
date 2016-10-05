@@ -15,8 +15,8 @@ namespace nano
                 const tsize krows = kmat.rows();
                 const tsize kcols = kmat.cols();
 
-                assert(orows == (imat.rows() - krows + 1) / drows);
-                assert(ocols == (imat.cols() - kcols + 1) / dcols);
+                assert(orows * drows + krows - 1 <= imat.rows());
+                assert(ocols * dcols + kcols - 1 <= imat.cols());
 
                 for (tsize r = 0; r < orows; ++ r)
                 {
@@ -26,7 +26,7 @@ namespace nano
                                 {
                                         for (tsize kc = 0; kc < kcols; ++ kc)
                                         {
-                                                omat(r, c) += imat(r + kr, c + kc) * kmat(kr, kc);
+                                                omat(r, c) += imat(r * drows + kr, c * dcols + kc) * kmat(kr, kc);
                                         }
                                 }
                         }
@@ -44,8 +44,8 @@ namespace nano
                 const tsize krows = kmat.rows();
                 const tsize kcols = kmat.cols();
 
-                assert(orows == (imat.rows() - krows + 1) / drows);
-                assert(ocols == (imat.cols() - kcols + 1) / dcols);
+                assert(orows * drows + krows - 1 <= imat.rows());
+                assert(ocols * dcols + kcols - 1 <= imat.cols());
 
                 for (tsize r = 0; r < orows; ++ r)
                 {
@@ -55,7 +55,7 @@ namespace nano
                                 {
                                         for (tsize kc = 0; kc < kcols; ++ kc)
                                         {
-                                                imat(r + kr, c + kc) += omat(r, c) * kmat(kr, kc);
+                                                imat(r * drows + kr, c * dcols + kc) += omat(r, c) * kmat(kr, kc);
                                         }
                                 }
                         }
@@ -127,7 +127,7 @@ namespace nano
                 kdata.setZero();
                 for (tsize o = 0; o < odims; ++ o)
                 {
-                        bdata(o) = odata.matrix(o).sum();
+                        bdata(o) = odata.vector(o).sum();
                         for (tsize i = (o % conn), ik = 0; i < idims; ++ ik, i += conn)
                         {
                                 conv2d(idata.matrix(i), odata.matrix(o), drows, dcols, kdata.matrix(o, ik));
