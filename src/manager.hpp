@@ -9,21 +9,17 @@ namespace nano
         ///
         /// \brief manage objects of similar type.
         ///
-        template
-        <
-                class tobject
-        >
+        template <class tobject>
         class manager_t
 	{
         public:
 
-                using tid = string_t;
                 using trobject = std::shared_ptr<tobject>;
 
                 ///
                 /// \brief add a new object with the given ID
                 ///
-                bool add(const tid& id, const tobject& proto)
+                bool add(const string_t& id, const tobject& proto)
                 {
                         return m_protos.emplace(id, proto.clone()).second;
                 }
@@ -31,7 +27,7 @@ namespace nano
                 ///
                 /// \brief check if an objects was registered with the given ID
                 ///
-                bool has(const tid& id) const
+                bool has(const string_t& id) const
                 {
                         return m_protos.find(id) != m_protos.end();
                 }
@@ -39,7 +35,7 @@ namespace nano
                 ///
                 /// \brief retrieve the object with the given ID
                 ///
-                trobject get(const tid& id) const
+                trobject get(const string_t& id) const
                 {
                         return get_it(id)->clone();
                 }
@@ -47,7 +43,7 @@ namespace nano
                 ///
                 /// \brief retrieve the object with the given ID, constructed from the given parameters
                 ///
-                trobject get(const tid& id, const string_t& params) const
+                trobject get(const string_t& id, const string_t& params) const
                 {
                         return get_it(id)->clone(params);
                 }
@@ -55,9 +51,9 @@ namespace nano
                 ///
                 /// \brief get the IDs of all registered objects
                 ///
-                std::vector<tid> ids() const
+                strings_t ids() const
                 {
-                        return collect<tid>([] (const auto& it) { return it.first; });
+                        return collect<string_t>([] (const auto& it) { return it.first; });
                 }
 
                 ///
@@ -89,12 +85,13 @@ namespace nano
 			return result;
                 }
 
-                const trobject& get_it(const tid& id) const
+                const trobject& get_it(const string_t& id) const
                 {
                         const auto it = m_protos.find(id);
                         if (it == m_protos.end())
                         {
-                                throw std::runtime_error("invalid object id <" + id + "> of type <" + typeid(tobject).name() + ">!");
+                                throw std::runtime_error(
+                                        "invalid object id <" + id + "> of type <" + typeid(tobject).name() + ">!");
                         }
                         return it->second;
                 }
@@ -102,6 +99,6 @@ namespace nano
 	private:
 
                 // attributes
-                std::map<tid, trobject> m_protos;       ///< registered object instances
+                std::map<string_t, trobject> m_protos;       ///< registered object instances
         };
 }

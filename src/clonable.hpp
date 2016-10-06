@@ -12,10 +12,7 @@ namespace nano
         ///      ::configuration()              - parametrization
         ///      ::description()                - short description (configuration included)
         ///
-        template
-        <
-                typename tobject
-        >
+        template <typename tobject>
         class clonable_t
         {
         public:
