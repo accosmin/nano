@@ -178,8 +178,6 @@ namespace nano
 
                 // wrt convolution
                 auto gkdata = tensor::map_tensor(gradient, m_kdata.size<0>(), m_kdata.size<1>(), krows(), kcols());
-                gkdata.setZero();
-
                 for (tensor_size_t i = 0; i < idims(); ++ i)
                 {
                         make_toeplitz_gparam(
@@ -193,7 +191,7 @@ namespace nano
                         m_toe_kkdata.noalias() = m_toe_kodata * m_toe_kidata;
                         for (tensor_size_t o = (i % kconn()), ok = 0; o < odims(); ++ ok, o += kconn())
                         {
-                                gkdata.vector(o, i / kconn()) += m_toe_kkdata.row(ok);
+                                gkdata.vector(o, i / kconn()) = m_toe_kkdata.row(ok);
                         }
                 }
 

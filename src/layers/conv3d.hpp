@@ -121,7 +121,7 @@ namespace nano
         /// \brief
         ///
         template <typename titensor, typename tktensor, typename tvector, typename tsize, typename totensor>
-        void conv3d_ginput(titensor& idata, const tktensor& kdata, const tvector& bdata,
+        void conv3d_ginput(titensor& idata, const tktensor& kdata, const tvector&,
                 const tsize conn, const tsize drows, const tsize dcols, const totensor& odata)
         {
                 const tsize idims = idata.template size<0>();
