@@ -76,6 +76,8 @@ namespace nano
                 tensor4d_t      m_kdata;        ///< convolution kernels:       odims x (idims/kconn) x krows x kcols
                 vector_t        m_bdata;        ///< convolution bias:          odims
 
+                tensor3d_t      m_idata_toe;    ///< toeplitz-like matrices:    idims x (krows x kcols) x (orows x ocols)
+
                 matrix_t        m_toe_oidata, m_toe_oodata, m_toe_okdata;
                 matrix_t        m_toe_iidata, m_toe_iodata, m_toe_ikdata;
                 matrix_t        m_toe_kidata, m_toe_kkdata, m_toe_kodata;

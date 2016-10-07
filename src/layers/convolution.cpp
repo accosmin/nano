@@ -63,6 +63,8 @@ namespace nano
                 m_drows = drows;
                 m_dcols = dcols;
 
+                m_idata_toe.resize(idims, krows * kcols, orows * ocols);
+
                 m_toe_oidata.resize(krows * kcols, orows * ocols);
                 m_toe_okdata.resize(odims / kconn, krows * kcols);
                 m_toe_oodata.resize(odims / kconn, orows * ocols);
@@ -108,19 +110,18 @@ namespace nano
 
                 // convolution
                 m_odata.setZero();
-
                 for (tensor_size_t i = 0; i < idims(); ++ i)
                 {
                         make_toeplitz_output(
-                                m_idata.matrix(i), orows(), ocols(), krows(), kcols(), drows(), dcols(), m_toe_oidata);
+                                m_idata.matrix(i), orows(), ocols(), krows(), kcols(), drows(), dcols(),
+                                m_idata_toe.matrix(i));
 
                         for (tensor_size_t o = (i % kconn()), ok = 0; o < odims(); ++ ok, o += kconn())
                         {
                                 m_toe_okdata.row(ok) = m_kdata.vector(o, i / kconn());
                         }
 
-                        m_toe_oodata.noalias() = m_toe_okdata * m_toe_oidata;
-
+                        m_toe_oodata.noalias() = m_toe_okdata * m_idata_toe.matrix(i);
                         for (tensor_size_t o = (i % kconn()), ok = 0; o < odims(); ++ ok, o += kconn())
                         {
                                 m_odata.vector(o) += m_toe_oodata.row(ok);
@@ -180,15 +181,12 @@ namespace nano
                 auto gkdata = tensor::map_tensor(gradient, m_kdata.size<0>(), m_kdata.size<1>(), krows(), kcols());
                 for (tensor_size_t i = 0; i < idims(); ++ i)
                 {
-                        make_toeplitz_gparam(
-                                m_idata.matrix(i), orows(), ocols(), krows(), kcols(), drows(), dcols(), m_toe_kidata);
-
                         for (tensor_size_t o = (i % kconn()), ok = 0; o < odims(); ++ ok, o += kconn())
                         {
                                 m_toe_kodata.row(ok) = m_odata.vector(o);
                         }
 
-                        m_toe_kkdata.noalias() = m_toe_kodata * m_toe_kidata;
+                        m_toe_kkdata.noalias() = m_toe_kodata * m_idata_toe.matrix(i).transpose();
                         for (tensor_size_t o = (i % kconn()), ok = 0; o < odims(); ++ ok, o += kconn())
                         {
                                 gkdata.vector(o, i / kconn()) = m_toe_kkdata.row(ok);
