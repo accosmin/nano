@@ -4,12 +4,13 @@
 #include "math/numeric.hpp"
 #include "math/epsilon.hpp"
 #include "batch_optimizer.h"
+#include "text/to_params.hpp"
 #include "text/from_params.hpp"
 
 namespace nano
 {
         batch_trainer_t::batch_trainer_t(const string_t& parameters) :
-                trainer_t(parameters)
+                trainer_t(concat_params(parameters, "opt=lbfgs[...],epochs=1024[4,4096],policy=stop_early[,all_epochs]"))
         {
         }
 

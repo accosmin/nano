@@ -94,7 +94,7 @@ namespace nano
                 typename tindex,
                 typename tsize
         >
-        tensor3d_t get_object_patch(const image_tensor_t& image,
+        static tensor3d_t get_object_patch(const image_tensor_t& image,
                 const tindex object_index, const tsize objects, const scalar_t max_offset)
         {
                 nano::random_t<scalar_t> rng(-max_offset, max_offset);
@@ -144,7 +144,7 @@ namespace nano
                 return image;
         }
 
-        tensor3d_t alpha_blend(const tensor3d_t& mask, const tensor3d_t& img1, const tensor3d_t& img2)
+        static tensor3d_t alpha_blend(const tensor3d_t& mask, const tensor3d_t& img1, const tensor3d_t& img2)
         {
                 const auto op = [] (const auto a, const auto v1, const auto v2)
                 {
@@ -160,13 +160,20 @@ namespace nano
                 return imgb;
         }
 
+        static string_t append_config(const string_t& configuration)
+        {
+                return  concat_params(configuration,
+                        "type=digit[lalpha,ualpha,alpha,alphanum],"\
+                        "color=rgb[,luma,rgba],irows=32[12,128],icols=32[12,128],count=1000[100,1M]");
+        }
+
         charset_task_t::charset_task_t(const string_t& configuration) : mem_vision_task_t(
                 "charset",
-                nano::from_params<color_mode>(configuration, "color", color_mode::rgb),
-                nano::clamp(nano::from_params<tensor_size_t>(configuration, "irows", 32), 12, 128),
-                nano::clamp(nano::from_params<tensor_size_t>(configuration, "icols", 32), 12, 128),
-                nano::osize(nano::from_params<charset>(configuration, "type", charset::digit)),
-                1, configuration),
+                nano::from_params<color_mode>(append_config(configuration), "color", color_mode::rgb),
+                nano::clamp(from_params<tensor_size_t>(append_config(configuration), "irows", 32), 12, 128),
+                nano::clamp(from_params<tensor_size_t>(append_config(configuration), "icols", 32), 12, 128),
+                nano::osize(from_params<charset>(append_config(configuration), "type", charset::digit)),
+                1, append_config(configuration)),
                 m_charset(nano::from_params<charset>(config(), "type")),
                 m_color(nano::from_params<color_mode>(config(), "color")),
                 m_count(nano::clamp(nano::from_params<size_t>(config(), "count"), 100, 1024 * 1024))

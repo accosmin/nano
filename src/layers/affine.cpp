@@ -2,13 +2,14 @@
 #include "math/random.hpp"
 #include "math/numeric.hpp"
 #include "tensor/numeric.hpp"
+#include "text/to_params.hpp"
 #include "text/from_params.hpp"
 #include "tensor/serialize.hpp"
 
 namespace nano
 {
         affine_layer_t::affine_layer_t(const string_t& parameters) :
-                layer_t(parameters)
+                layer_t(concat_params(parameters, "dims=10[1,4096]"))
         {
         }
 

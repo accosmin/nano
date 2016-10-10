@@ -3,6 +3,7 @@
 #include "task_stl10.h"
 #include "io/archive.h"
 #include "io/imstream.h"
+#include "text/to_params.hpp"
 #include "text/from_params.hpp"
 
 namespace nano
@@ -22,7 +23,7 @@ namespace nano
         };
 
         stl10_task_t::stl10_task_t(const string_t& config) :
-                mem_vision_task_t("stl-10", 3, 96, 96, 10, 10, config)
+                mem_vision_task_t("stl-10", 3, 96, 96, 10, 10, concat_params(config, "dir=."))
         {
         }
 

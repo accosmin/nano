@@ -10,7 +10,6 @@ namespace nano
         ///      ::clone()                      - clone the current object
         ///      ::clone(const string_t&)       - create a new object (with the given configuration)
         ///      ::configuration()              - parametrization
-        ///      ::description()                - short description (configuration included)
         ///
         template <typename tobject>
         class clonable_t
@@ -47,13 +46,8 @@ namespace nano
                 ///
                 string_t config() const
                 {
-                        return m_configuration.empty() ? default_config() : (m_configuration + "," + default_config());
+                        return m_configuration;
                 }
-
-                ///
-                /// \brief default configuration (aka parameters)
-                ///
-                virtual string_t default_config() const = 0;
 
         protected:
 
@@ -61,7 +55,7 @@ namespace nano
                 string_t         m_configuration;
         };
 
-        #define NANO_MAKE_CLONABLE(base_class, default_text) \
+        #define NANO_MAKE_CLONABLE(base_class) \
                 virtual trobject clone(const string_t& configuration) const override \
                 { \
                         return std::make_shared<base_class>(configuration); \
@@ -69,9 +63,5 @@ namespace nano
                 virtual trobject clone() const override \
                 { \
                         return std::make_shared<base_class>(*this); \
-                } \
-                virtual string_t default_config() const override \
-                { \
-                        return default_text; \
                 }
 }

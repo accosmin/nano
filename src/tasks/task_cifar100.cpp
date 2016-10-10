@@ -3,6 +3,7 @@
 #include "io/archive.h"
 #include "io/imstream.h"
 #include "task_cifar100.h"
+#include "text/to_params.hpp"
 #include "text/from_params.hpp"
 
 namespace nano
@@ -112,7 +113,7 @@ namespace nano
         };
 
         cifar100_task_t::cifar100_task_t(const string_t& config) :
-                mem_vision_task_t("cifar-100", 3, 32, 32, 100, 1, config)
+                mem_vision_task_t("cifar-100", 3, 32, 32, 100, 1, concat_params(config, "dir=."))
         {
         }
 

@@ -3,12 +3,13 @@
 #include "task_mnist.h"
 #include "io/archive.h"
 #include "io/imstream.h"
+#include "text/to_params.hpp"
 #include "text/from_params.hpp"
 
 namespace nano
 {
         mnist_task_t::mnist_task_t(const string_t& config) :
-                mem_vision_task_t("mnist", 1, 28, 28, 10, 1, config)
+                mem_vision_task_t("mnist", 1, 28, 28, 10, 1, concat_params(config, "dir=."))
         {
         }
 

@@ -32,23 +32,18 @@ namespace nano
                 ///
                 /// \brief create an object of the same type with the given configuration
                 ///
-                virtual rstoch_optimizer_t clone(const string_t& configuration) const override;
+                virtual rstoch_optimizer_t clone(const string_t& configuration) const final;
 
                 ///
                 /// \brief create an object clone
                 ///
-                virtual rstoch_optimizer_t clone() const override;
-
-                ///
-                /// \brief default configuration (aka parameters)
-                ///
-                virtual string_t default_config() const override;
+                virtual rstoch_optimizer_t clone() const final;
 
                 ///
                 ///
                 /// \brief minimize starting from the initial guess x0.
                 ///
-                virtual state_t minimize(const stoch_params_t&, const problem_t&, const vector_t& x0) const override;
+                virtual state_t minimize(const stoch_params_t&, const problem_t&, const vector_t& x0) const final;
 
                 ///
                 /// \brief minimize starting from the initial guess x0 using the given hyper-parameters.

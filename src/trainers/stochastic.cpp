@@ -3,12 +3,13 @@
 #include "stochastic.h"
 #include "math/numeric.hpp"
 #include "stoch_optimizer.h"
+#include "text/to_params.hpp"
 #include "text/from_params.hpp"
 
 namespace nano
 {
         stochastic_trainer_t::stochastic_trainer_t(const string_t& parameters) :
-                trainer_t(parameters)
+                trainer_t(concat_params(parameters, "opt=sg[...],epochs=16[1,1024],policy=stop_early[,all_epochs],min_batch=32[32,1024],max_batch=256[32,4096]"))
         {
         }
 

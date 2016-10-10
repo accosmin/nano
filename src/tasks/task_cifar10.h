@@ -16,7 +16,7 @@ namespace nano
         {
         public:
 
-                NANO_MAKE_CLONABLE(cifar10_task_t, "dir=.")
+                NANO_MAKE_CLONABLE(cifar10_task_t)
 
                 ///
                 /// \brief constructor
@@ -25,7 +25,7 @@ namespace nano
 
         private:
 
-                virtual bool populate() override;
+                virtual bool populate() final;
 
                 // load binary file
                 bool load_binary(const string_t& filename, const char*, const size_t, const protocol, const size_t);

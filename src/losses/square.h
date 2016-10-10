@@ -13,20 +13,20 @@ namespace nano
 	{
 	public:
 
-                NANO_MAKE_CLONABLE(square_loss_t, "")
+                NANO_MAKE_CLONABLE(square_loss_t)
 
                 // constructor
                 explicit square_loss_t(const string_t& = string_t());
 
                 // compute the error value
-                virtual scalar_t error(const vector_t& targets, const vector_t& scores) const override;
+                virtual scalar_t error(const vector_t& targets, const vector_t& scores) const final;
 
                 // compute the loss value & derivatives
-                virtual scalar_t value(const vector_t& targets, const vector_t& scores) const override;
-                virtual vector_t vgrad(const vector_t& targets, const vector_t& scores) const override;
+                virtual scalar_t value(const vector_t& targets, const vector_t& scores) const final;
+                virtual vector_t vgrad(const vector_t& targets, const vector_t& scores) const final;
 
                 // predict label indices
-                virtual indices_t labels(const vector_t& scores) const override;
+                virtual indices_t labels(const vector_t& scores) const final;
 	};
 }
 

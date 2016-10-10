@@ -11,7 +11,7 @@ namespace nano
         {
         public:
 
-                NANO_MAKE_CLONABLE(average_criterion_t, "")
+                NANO_MAKE_CLONABLE(average_criterion_t)
 
                 ///
                 /// \brief constructor

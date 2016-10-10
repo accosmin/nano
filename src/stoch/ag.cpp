@@ -22,12 +22,6 @@ namespace nano
         }
 
         template <ag_restart trestart>
-        string_t stoch_ag_base_t<trestart>::default_config() const
-        {
-                return "";
-        }
-
-        template <ag_restart trestart>
         state_t stoch_ag_base_t<trestart>::minimize(const stoch_params_t& param,
                 const problem_t& problem, const vector_t& x0) const
         {

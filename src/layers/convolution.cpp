@@ -4,14 +4,14 @@
 #include "math/random.hpp"
 #include "math/numeric.hpp"
 #include "tensor/numeric.hpp"
-#include "text/to_string.hpp"
+#include "text/to_params.hpp"
 #include "text/from_params.hpp"
 #include "tensor/serialize.hpp"
 
 namespace nano
 {
         convolution_layer_t::convolution_layer_t(const string_t& parameters) :
-                layer_t(parameters),
+                layer_t(concat_params(parameters, "dims=16[1,256],rows=8[1,32],cols=8[1,32],conn=1[1,16],drow=1[1,8],dcol=1[1,8]")),
                 m_kconn(1), m_drows(1), m_dcols(1)
         {
         }

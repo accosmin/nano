@@ -2,12 +2,13 @@
 #include "loop.hpp"
 #include "ls_init.h"
 #include "ls_strategy.h"
+#include "text/to_params.hpp"
 #include "text/from_params.hpp"
 
 namespace nano
 {
         batch_gd_t::batch_gd_t(const string_t& configuration) :
-                batch_optimizer_t(configuration)
+                batch_optimizer_t(concat_params(configuration, "ls_init=init-quadratic,ls_strat=backtrack-strong-wolfe,c1=1e-4,c2=0.1"))
         {
         }
 

@@ -34,7 +34,7 @@ namespace nano
                 detail::tanh_activation_layer_grad_t
         >
         {
-                NANO_MAKE_CLONABLE(tanh_activation_layer_t, "")
+                NANO_MAKE_CLONABLE(tanh_activation_layer_t)
 
                 // constructor
                 explicit tanh_activation_layer_t(const string_t& parameters = string_t()) :

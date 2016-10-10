@@ -1,18 +1,19 @@
+#include "class.h"
+#include "logger.h"
 #include "io/mat5.h"
 #include "io/gzip.h"
 #include "task_svhn.h"
 #include "io/imstream.h"
 #include "vision/color.h"
-#include "class.h"
-#include "logger.h"
 #include "math/random.hpp"
+#include "text/to_params.hpp"
 #include "text/from_params.hpp"
 #include <fstream>
 
 namespace nano
 {
         svhn_task_t::svhn_task_t(const string_t& config) :
-                mem_vision_task_t("svhn", 3, 32, 32, 10, 1, config)
+                mem_vision_task_t("svhn", 3, 32, 32, 10, 1, concat_params(config, "dir=."))
         {
         }
 

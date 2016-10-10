@@ -9,7 +9,7 @@ namespace nano
         ///
         struct stoch_sgm_t : public stoch_optimizer_t
         {
-                NANO_MAKE_CLONABLE(stoch_sgm_t, "")
+                NANO_MAKE_CLONABLE(stoch_sgm_t)
 
                 ///
                 /// \brief constructor
@@ -19,7 +19,7 @@ namespace nano
                 ///
                 /// \brief minimize starting from the initial guess x0.
                 ///
-                virtual state_t minimize(const stoch_params_t&, const problem_t&, const vector_t& x0) const override;
+                virtual state_t minimize(const stoch_params_t&, const problem_t&, const vector_t& x0) const final;
 
                 ///
                 /// \brief minimize starting from the initial guess x0 using the given hyper-parameters.

@@ -2,13 +2,14 @@
 #include "loop.hpp"
 #include "ls_init.h"
 #include "ls_strategy.h"
+#include "text/to_params.hpp"
 #include "text/from_params.hpp"
 #include <deque>
 
 namespace nano
 {
         batch_lbfgs_t::batch_lbfgs_t(const string_t& configuration) :
-                batch_optimizer_t(configuration)
+                batch_optimizer_t(concat_params(configuration, "ls_init=init-quadratic,ls_strat=interpolation,c1=1e-4,c2=0.9"))
         {
         }
 

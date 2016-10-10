@@ -36,7 +36,7 @@ namespace nano
                 detail::snorm_activation_layer_grad_t
         >
         {
-                NANO_MAKE_CLONABLE(snorm_activation_layer_t, "")
+                NANO_MAKE_CLONABLE(snorm_activation_layer_t)
 
                 // constructor
                 explicit snorm_activation_layer_t(const string_t& parameters = string_t()) :

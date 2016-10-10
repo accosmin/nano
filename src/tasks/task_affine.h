@@ -11,9 +11,7 @@ namespace nano
         {
         public:
 
-                NANO_MAKE_CLONABLE(affine_task_t,
-                        "idims=10[1,100],irows=32[1,100],icols=32[1,100],osize=10[1,1000],"\
-                        "count=1000[10,1M],noise=0.1[0.001,0.5]")
+                NANO_MAKE_CLONABLE(affine_task_t)
 
                 ///
                 /// \brief constructor
@@ -22,7 +20,7 @@ namespace nano
 
         private:
 
-                virtual bool populate() override;
+                virtual bool populate() final;
 
         private:
 

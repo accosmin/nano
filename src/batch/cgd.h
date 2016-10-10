@@ -22,22 +22,17 @@ namespace nano
                 ///
                 /// \brief create an object of the same type with the given configuration
                 ///
-                virtual rbatch_optimizer_t clone(const string_t& configuration) const override;
+                virtual rbatch_optimizer_t clone(const string_t& configuration) const final;
 
                 ///
                 /// \brief create an object clone
                 ///
-                virtual rbatch_optimizer_t clone() const override;
-
-                ///
-                /// \brief default configuration (aka parameters)
-                ///
-                virtual string_t default_config() const override;
+                virtual rbatch_optimizer_t clone() const final;
 
                 ///
                 /// \brief minimize starting from the initial guess x0.
                 ///
-                virtual state_t minimize(const batch_params_t&, const problem_t&, const vector_t& x0) const override;
+                virtual state_t minimize(const batch_params_t&, const problem_t&, const vector_t& x0) const final;
         };
 
         // create various CGD algorithms

@@ -2,20 +2,27 @@
 #include "math/random.hpp"
 #include "math/numeric.hpp"
 #include "tensor/numeric.hpp"
-#include "text/to_string.hpp"
+#include "text/to_params.hpp"
 #include "text/from_params.hpp"
 
 namespace nano
 {
+        static string_t append_config(const string_t& configuration)
+        {
+                return  concat_params(configuration,
+                        "idims=10[1,100],irows=32[1,100],icols=32[1,100],osize=10[1,1000],"\
+                        "count=1000[10,1M],noise=0.1[0.001,0.5]");
+        }
+
         affine_task_t::affine_task_t(const string_t& configuration) : mem_tensor_task_t(
                 "affine",
-                clamp(from_params<tensor_size_t>(configuration, "idims", 10), 1, 100),
-                clamp(from_params<tensor_size_t>(configuration, "irows", 32), 1, 100),
-                clamp(from_params<tensor_size_t>(configuration, "icols", 32), 1, 100),
-                clamp(from_params<tensor_size_t>(configuration, "osize", 10), 1, 1000),
-                1),
-                m_count(clamp(from_params<size_t>(configuration, "count", 1000), 10, 100000)),
-                m_noise(clamp(from_params<scalar_t>(configuration, "noise", scalar_t(0.1)), scalar_t(0.001), scalar_t(0.5)))
+                clamp(from_params<tensor_size_t>(append_config(configuration), "idims", 10), 1, 100),
+                clamp(from_params<tensor_size_t>(append_config(configuration), "irows", 32), 1, 100),
+                clamp(from_params<tensor_size_t>(append_config(configuration), "icols", 32), 1, 100),
+                clamp(from_params<tensor_size_t>(append_config(configuration), "osize", 10), 1, 1000),
+                1, append_config(configuration)),
+                m_count(clamp(from_params<size_t>(config(), "count", 1000), 10, 100000)),
+                m_noise(clamp(from_params<scalar_t>(config(), "noise", scalar_t(0.1)), scalar_t(0.001), scalar_t(0.5)))
         {
         }
 

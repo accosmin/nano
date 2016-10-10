@@ -27,9 +27,7 @@ namespace nano
         {
         public:
 
-                NANO_MAKE_CLONABLE(charset_task_t,
-                        "type=digit[lalpha,ualpha,alpha,alphanum],"\
-                        "color=rgb[,luma,rgba],irows=32[12,128],icols=32[12,128],count=1000[100,1M]")
+                NANO_MAKE_CLONABLE(charset_task_t)
 
                 ///
                 /// \brief constructor
@@ -49,7 +47,7 @@ namespace nano
 
         private:
 
-                virtual bool populate() override;
+                virtual bool populate() final;
 
         private:
 

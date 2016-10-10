@@ -21,10 +21,10 @@ class test_obj1_clonable_t : public test_clonable_t
 {
 public:
 
-        NANO_MAKE_CLONABLE(test_obj1_clonable_t, "p1=def1")
+        NANO_MAKE_CLONABLE(test_obj1_clonable_t)
 
         explicit test_obj1_clonable_t(const string_t& configuration = string_t()) :
-                test_clonable_t(configuration)
+                test_clonable_t(configuration + ",p1=def1")
         {
         }
 };
@@ -33,10 +33,10 @@ class test_obj2_clonable_t : public test_clonable_t
 {
 public:
 
-        NANO_MAKE_CLONABLE(test_obj2_clonable_t, "p2=def2")
+        NANO_MAKE_CLONABLE(test_obj2_clonable_t)
 
         explicit test_obj2_clonable_t(const string_t& configuration = string_t()) :
-                test_clonable_t(configuration)
+                test_clonable_t(configuration + ",p2=def2")
         {
         }
 };
@@ -45,10 +45,10 @@ class test_obj3_clonable_t : public test_clonable_t
 {
 public:
 
-        NANO_MAKE_CLONABLE(test_obj3_clonable_t, "p3=def3")
+        NANO_MAKE_CLONABLE(test_obj3_clonable_t)
 
         explicit test_obj3_clonable_t(const string_t& configuration = string_t()) :
-                test_clonable_t(configuration)
+                test_clonable_t(configuration + ",p3=def3")
         {
         }
 };

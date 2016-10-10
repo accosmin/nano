@@ -2,13 +2,14 @@
 #include "loop.hpp"
 #include "ls_init.h"
 #include "ls_strategy.h"
+#include "text/to_params.hpp"
 #include "text/from_params.hpp"
 
 namespace nano
 {
         template <typename tcgd_update>
         batch_cgd_t<tcgd_update>::batch_cgd_t(const string_t& configuration) :
-                batch_optimizer_t(configuration)
+                batch_optimizer_t(concat_params(configuration, "ls_init=init-quadratic,ls_strat=interpolation,c1=1e-4,c2=0.1"))
         {
         }
 
@@ -22,12 +23,6 @@ namespace nano
         rbatch_optimizer_t batch_cgd_t<tcgd_update>::clone() const
         {
                 return rbatch_optimizer_t(new batch_cgd_t());
-        }
-
-        template <typename tcgd_update>
-        string_t batch_cgd_t<tcgd_update>::default_config() const
-        {
-                return "ls_init=init-quadratic,ls_strat=interpolation,c1=1e-4,c2=0.1";
         }
 
         template <typename tcgd_update>
