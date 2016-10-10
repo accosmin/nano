@@ -93,6 +93,86 @@ namespace nano
                 return manager;
         }
 
+        static void init_batch_optimizers()
+        {
+                nano::get_batch_optimizers().add("gd", "gradient descent", batch_gd_t());
+                nano::get_batch_optimizers().add("cgd", "nonlinear conjugate gradient descent (default)", batch_cgd_prp_t());
+                nano::get_batch_optimizers().add("cgd-n", "nonlinear conjugate gradient descent (N)", batch_cgd_n_t());
+                nano::get_batch_optimizers().add("cgd-hs", "nonlinear conjugate gradient descent (HS)", batch_cgd_hs_t());
+                nano::get_batch_optimizers().add("cgd-fr", "nonlinear conjugate gradient descent (FR)", batch_cgd_fr_t());
+                nano::get_batch_optimizers().add("cgd-prp", "nonlinear conjugate gradient descent (PRP+)", batch_cgd_prp_t());
+                nano::get_batch_optimizers().add("cgd-cd", "nonlinear conjugate gradient descent (CD)", batch_cgd_cd_t());
+                nano::get_batch_optimizers().add("cgd-ls", "nonlinear conjugate gradient descent (LS)", batch_cgd_ls_t());
+                nano::get_batch_optimizers().add("cgd-dy", "nonlinear conjugate gradient descent (DY)", batch_cgd_dy_t());
+                nano::get_batch_optimizers().add("cgd-dycd", "nonlinear conjugate gradient descent (DYCD)", batch_cgd_dycd_t());
+                nano::get_batch_optimizers().add("cgd-dyhs", "nonlinear conjugate gradient descent (DYHS)", batch_cgd_dyhs_t());
+                nano::get_batch_optimizers().add("lbfgs", "limited-memory BFGS", batch_lbfgs_t());
+        }
+
+        static void init_stoch_optimizers()
+        {
+                nano::get_stoch_optimizers().add("sg", "stochastic gradient (descent)", stoch_sg_t());
+                nano::get_stoch_optimizers().add("sgm", "stochastic gradient (descent) with momentum", stoch_sgm_t());
+                nano::get_stoch_optimizers().add("ngd", "stochastic normalized gradient descent", stoch_ngd_t());
+                nano::get_stoch_optimizers().add("ag", "Nesterov's accelerated gradient", stoch_ag_t());
+                nano::get_stoch_optimizers().add("agfr", "Nesterov's accelerated gradient with function value restarts", stoch_agfr_t());
+                nano::get_stoch_optimizers().add("aggr", "Nesterov's accelerated gradient with gradient restarts", stoch_aggr_t());
+                nano::get_stoch_optimizers().add("adam", "Adam (see citation)", stoch_adam_t());
+                nano::get_stoch_optimizers().add("adagrad", "AdaGrad (see citation)", stoch_adagrad_t());
+                nano::get_stoch_optimizers().add("adadelta", "AdaDelta (see citation)", stoch_adadelta_t());
+        }
+
+        static void init_trainers()
+        {
+                nano::get_trainers().add("batch", "batch trainer", batch_trainer_t());
+                nano::get_trainers().add("stoch", "stochastic trainer", stochastic_trainer_t());
+        }
+
+        static void init_criteria()
+        {
+                nano::get_criteria().add("avg", "average loss", average_criterion_t());
+                nano::get_criteria().add("avg-l2n", "L2-norm regularized average loss", average_l2n_criterion_t());
+                nano::get_criteria().add("avg-var", "variance-regularized average loss", average_var_criterion_t());
+                nano::get_criteria().add("max", "softmax loss", softmax_criterion_t());
+                nano::get_criteria().add("max-l2n", "L2-norm regularized softmax loss", softmax_l2n_criterion_t());
+                nano::get_criteria().add("max-var", "variance-regularized softmax loss", softmax_var_criterion_t());
+        }
+
+        static void init_losses()
+        {
+                nano::get_losses().add("square", "square loss (regression)", square_loss_t());
+                nano::get_losses().add("cauchy", "Cauchy loss (regression)", cauchy_loss_t());
+                nano::get_losses().add("logistic", "logistic loss (multi-class classification)", logistic_loss_t());
+                nano::get_losses().add("classnll", "negative log-likelihood loss (multi-class classification)", classnll_loss_t());
+                nano::get_losses().add("exponential", "exponential loss (multi-class classification)", exponential_loss_t());
+        }
+
+        static void init_tasks()
+        {
+                nano::get_tasks().add("mnist", "MNIST (1x28x28 digit classification)", mnist_task_t());
+                nano::get_tasks().add("cifar10", "CIFAR-10 (3x32x32 object classification)", cifar10_task_t());
+                nano::get_tasks().add("cifar100", "CIFAR-100 (3x32x32 object classification)", cifar100_task_t());
+                nano::get_tasks().add("stl10", "STL-10 (3x96x96 semi-supervised object classification)", stl10_task_t());
+                nano::get_tasks().add("svhn", "SVHN (3x32x32 digit classification in the wild)", svhn_task_t());
+                nano::get_tasks().add("charset", "synthetic character classification", charset_task_t());
+                nano::get_tasks().add("affine", "synthetic affine regression", affine_task_t());
+        }
+
+        static void init_layers()
+        {
+                nano::get_layers().add("act-unit", "identity activation layer (for testing purposes)", unit_activation_layer_t());
+                nano::get_layers().add("act-tanh", "hyperbolic tangent activation layer", tanh_activation_layer_t());
+                nano::get_layers().add("act-snorm", "x/sqrt(1+x^2) activation layer", snorm_activation_layer_t());
+                nano::get_layers().add("act-splus", "soft-plus activation layer", softplus_activation_layer_t());
+                nano::get_layers().add("affine", "fully-connected affine layer", affine_layer_t());
+                nano::get_layers().add("conv", "convolution layer", convolution_layer_t());
+        }
+
+        static void init_models()
+        {
+                nano::get_models().add("forward-network", "feed-forward network", forward_network_t());
+        }
+
         struct init_t
         {
                 init_t()
@@ -104,69 +184,16 @@ namespace nano
                         Eigen::initParallel();
                         Eigen::setNbThreads(0);
 
-                        // register losses
-                        nano::get_losses().add("square", square_loss_t());
-                        nano::get_losses().add("cauchy", cauchy_loss_t());
-                        nano::get_losses().add("logistic", logistic_loss_t());
-                        nano::get_losses().add("classnll", classnll_loss_t());
-                        nano::get_losses().add("exponential", exponential_loss_t());
+                        // register objects
+                        init_tasks();
+                        init_layers();
+                        init_models();
 
-                        // register tasks
-                        nano::get_tasks().add("mnist", mnist_task_t());
-                        nano::get_tasks().add("cifar10", cifar10_task_t());
-                        nano::get_tasks().add("cifar100", cifar100_task_t());
-                        nano::get_tasks().add("stl10", stl10_task_t());
-                        nano::get_tasks().add("svhn", svhn_task_t());
-                        nano::get_tasks().add("charset", charset_task_t());
-                        nano::get_tasks().add("affine", affine_task_t());
-
-                        // register layers
-                        nano::get_layers().add("act-unit", unit_activation_layer_t());
-                        nano::get_layers().add("act-tanh", tanh_activation_layer_t());
-                        nano::get_layers().add("act-snorm", snorm_activation_layer_t());
-                        nano::get_layers().add("act-splus", softplus_activation_layer_t());
-                        nano::get_layers().add("affine", affine_layer_t());
-                        nano::get_layers().add("conv", convolution_layer_t());
-
-                        // register models
-                        nano::get_models().add("forward-network", forward_network_t());
-
-                        // register trainers
-                        nano::get_trainers().add("batch", batch_trainer_t());
-                        nano::get_trainers().add("stoch", stochastic_trainer_t());
-
-                        // register criteria
-                        nano::get_criteria().add("avg", average_criterion_t());
-                        nano::get_criteria().add("avg-l2n", average_l2n_criterion_t());
-                        nano::get_criteria().add("avg-var", average_var_criterion_t());
-                        nano::get_criteria().add("max", softmax_criterion_t());
-                        nano::get_criteria().add("max-l2n", softmax_l2n_criterion_t());
-                        nano::get_criteria().add("max-var", softmax_var_criterion_t());
-
-                        // register stochastic optimizers
-                        nano::get_stoch_optimizers().add("sg", stoch_sg_t());
-                        nano::get_stoch_optimizers().add("sgm", stoch_sgm_t());
-                        nano::get_stoch_optimizers().add("ngd", stoch_ngd_t());
-                        nano::get_stoch_optimizers().add("ag", stoch_ag_t());
-                        nano::get_stoch_optimizers().add("agfr", stoch_agfr_t());
-                        nano::get_stoch_optimizers().add("aggr", stoch_aggr_t());
-                        nano::get_stoch_optimizers().add("adam", stoch_adam_t());
-                        nano::get_stoch_optimizers().add("adagrad", stoch_adagrad_t());
-                        nano::get_stoch_optimizers().add("adadelta", stoch_adadelta_t());
-
-                        // register batch optimizers
-                        nano::get_batch_optimizers().add("gd", batch_gd_t());
-                        nano::get_batch_optimizers().add("cgd", batch_cgd_prp_t());
-                        nano::get_batch_optimizers().add("cgd-n", batch_cgd_n_t());
-                        nano::get_batch_optimizers().add("cgd-hs", batch_cgd_hs_t());
-                        nano::get_batch_optimizers().add("cgd-fr", batch_cgd_fr_t());
-                        nano::get_batch_optimizers().add("cgd-prp", batch_cgd_prp_t());
-                        nano::get_batch_optimizers().add("cgd-cd", batch_cgd_cd_t());
-                        nano::get_batch_optimizers().add("cgd-ls", batch_cgd_ls_t());
-                        nano::get_batch_optimizers().add("cgd-dy", batch_cgd_dy_t());
-                        nano::get_batch_optimizers().add("cgd-dycd", batch_cgd_dycd_t());
-                        nano::get_batch_optimizers().add("cgd-dyhs", batch_cgd_dyhs_t());
-                        nano::get_batch_optimizers().add("lbfgs", batch_lbfgs_t());
+                        init_losses();
+                        init_criteria();
+                        init_trainers();
+                        init_batch_optimizers();
+                        init_stoch_optimizers();
                 }
         };
 

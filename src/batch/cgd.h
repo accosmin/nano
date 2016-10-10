@@ -30,11 +30,6 @@ namespace nano
                 virtual rbatch_optimizer_t clone() const override;
 
                 ///
-                /// \brief short description (e.g. purpose)
-                ///
-                virtual string_t description() const override;
-
-                ///
                 /// \brief default configuration (aka parameters)
                 ///
                 virtual string_t default_config() const override;

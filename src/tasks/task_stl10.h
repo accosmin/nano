@@ -7,8 +7,8 @@ namespace nano
 {
         ///
         /// STL10 task:
-        ///      - object classification
-        ///      - 96x96 color images as inputs
+        ///     - object classification
+        ///     - 96x96 color images as inputs
         ///     - 10 outputs (10 labels)
         ///
         /// http://www.stanford.edu/~acoates/stl10/
@@ -17,7 +17,7 @@ namespace nano
         {
         public:
 
-                NANO_MAKE_CLONABLE(stl10_task_t, "STL-10 (object classification)", "dir=.")
+                NANO_MAKE_CLONABLE(stl10_task_t, "dir=.")
 
                 ///
                 /// \brief constructor

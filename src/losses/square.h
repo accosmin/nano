@@ -13,7 +13,7 @@ namespace nano
 	{
 	public:
 
-                NANO_MAKE_CLONABLE(square_loss_t, "square loss", "")
+                NANO_MAKE_CLONABLE(square_loss_t, "")
 
                 // constructor
                 explicit square_loss_t(const string_t& = string_t());

@@ -9,9 +9,7 @@ namespace nano
         ///
         struct batch_gd_t : public batch_optimizer_t
         {
-                NANO_MAKE_CLONABLE(batch_gd_t,
-                        "gradient descent",
-                        "ls_init=init-quadratic,ls_strat=backtrack-strong-wolfe,c1=1e-4,c2=0.1")
+                NANO_MAKE_CLONABLE(batch_gd_t, "ls_init=init-quadratic,ls_strat=backtrack-strong-wolfe,c1=1e-4,c2=0.1")
 
                 ///
                 /// \brief constructor

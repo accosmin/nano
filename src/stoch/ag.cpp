@@ -22,18 +22,6 @@ namespace nano
         }
 
         template <ag_restart trestart>
-        string_t stoch_ag_base_t<trestart>::description() const
-        {
-                switch (trestart)
-                {
-                case ag_restart::function:      return "Nesterov's accelerated gradient with function value restarts";
-                case ag_restart::gradient:      return "Nesterov's accelerated gradient with gradient restarts";
-                case ag_restart::none:          return "Nesterov's accelerated gradient";
-                default:                        assert(false); return "---";
-                }
-        }
-
-        template <ag_restart trestart>
         string_t stoch_ag_base_t<trestart>::default_config() const
         {
                 return "";

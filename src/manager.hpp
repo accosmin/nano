@@ -19,9 +19,9 @@ namespace nano
                 ///
                 /// \brief add a new object with the given ID
                 ///
-                bool add(const string_t& id, const tobject& proto)
+                bool add(const string_t& id, const string_t& description, const tobject& proto)
                 {
-                        return m_protos.emplace(id, proto.clone()).second;
+                        return m_protos.emplace(id, proto_t{proto.clone(), description}).second;
                 }
 
                 ///
@@ -33,17 +33,9 @@ namespace nano
                 }
 
                 ///
-                /// \brief retrieve the object with the given ID
+                /// \brief retrieve the object with the given ID, constructed from the given parameters (if any)
                 ///
-                trobject get(const string_t& id) const
-                {
-                        return get_it(id)->clone();
-                }
-
-                ///
-                /// \brief retrieve the object with the given ID, constructed from the given parameters
-                ///
-                trobject get(const string_t& id, const string_t& params) const
+                trobject get(const string_t& id, const string_t& params = string_t()) const
                 {
                         return get_it(id)->clone(params);
                 }
@@ -61,7 +53,7 @@ namespace nano
                 ///
                 strings_t descriptions() const
                 {
-                        return collect<string_t>([] (const auto& it) { return it.second->description(); });
+                        return collect<string_t>([] (const auto& it) { return it.second.m_description; });
                 }
 
                 ///
@@ -69,7 +61,7 @@ namespace nano
                 ///
                 strings_t configs() const
                 {
-                        return collect<string_t>([] (const auto& it) { return it.second->config(); });
+                        return collect<string_t>([] (const auto& it) { return it.second.m_proto->config(); });
                 }
 
         private:
@@ -93,12 +85,20 @@ namespace nano
                                 throw std::runtime_error(
                                         "invalid object id <" + id + "> of type <" + typeid(tobject).name() + ">!");
                         }
-                        return it->second;
+                        return it->second.m_proto;
                 }
 
 	private:
 
+                struct proto_t
+                {
+                        trobject        m_proto;
+                        string_t        m_description;
+                };
+
+                using protos_t = std::map<string_t, proto_t>;
+
                 // attributes
-                std::map<string_t, trobject> m_protos;       ///< registered object instances
+                protos_t                m_protos;       ///< registered object instances
         };
 }

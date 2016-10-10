@@ -20,7 +20,6 @@ namespace nano
         public:
 
                 NANO_MAKE_CLONABLE(convolution_layer_t,
-                        "convolution layer (implemented using Toeplitz matrices)",
                         "dims=16[1,256],rows=8[1,32],cols=8[1,32],conn=1[1,16],drow=1[1,8],dcol=1[1,8]")
 
                 // constructor

@@ -13,7 +13,7 @@ namespace nano
         {
         public:
 
-                NANO_MAKE_CLONABLE(cauchy_loss_t, "Cauchy loss", "")
+                NANO_MAKE_CLONABLE(cauchy_loss_t, "")
 
                 // constructor
                 explicit cauchy_loss_t(const string_t& = string_t());

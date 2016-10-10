@@ -12,7 +12,7 @@ namespace nano
         {
         public:
 
-                NANO_MAKE_CLONABLE(classnll_loss_t, "class negative log-likelihood loss", "")
+                NANO_MAKE_CLONABLE(classnll_loss_t, "")
 
                 // constructor
                 explicit classnll_loss_t(const string_t& = string_t());

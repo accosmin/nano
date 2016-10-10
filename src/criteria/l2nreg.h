@@ -8,7 +8,7 @@ namespace nano
 {
         struct average_l2n_criterion_t : public l2n_criterion_t<average_criterion_t>
         {
-                NANO_MAKE_CLONABLE(average_l2n_criterion_t, "L2-norm regularized average loss", "")
+                NANO_MAKE_CLONABLE(average_l2n_criterion_t, "")
 
                 explicit average_l2n_criterion_t(const string_t& configuration = string_t()) :
                         l2n_criterion_t<average_criterion_t>(configuration)
@@ -18,7 +18,7 @@ namespace nano
 
         struct softmax_l2n_criterion_t : public l2n_criterion_t<softmax_criterion_t>
         {
-                NANO_MAKE_CLONABLE(softmax_l2n_criterion_t, "L2-norm regularized softmax loss", "beta=5[1,10]")
+                NANO_MAKE_CLONABLE(softmax_l2n_criterion_t, "beta=5[1,10]")
 
                 explicit softmax_l2n_criterion_t(const string_t& configuration = string_t()) :
                         l2n_criterion_t<softmax_criterion_t>(configuration)

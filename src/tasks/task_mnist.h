@@ -16,7 +16,7 @@ namespace nano
         {
         public:
 
-                NANO_MAKE_CLONABLE(mnist_task_t, "MNIST (digit classification)", "dir=.")
+                NANO_MAKE_CLONABLE(mnist_task_t, "dir=.")
 
                 ///
                 /// \brief constructor

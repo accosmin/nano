@@ -25,12 +25,6 @@ namespace nano
         }
 
         template <typename tcgd_update>
-        string_t batch_cgd_t<tcgd_update>::description() const
-        {
-                return  string_t("conjugate gradient descent (") + tcgd_update::name() + ")";
-        }
-
-        template <typename tcgd_update>
         string_t batch_cgd_t<tcgd_update>::default_config() const
         {
                 return "ls_init=init-quadratic,ls_strat=interpolation,c1=1e-4,c2=0.1";
