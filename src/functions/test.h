@@ -5,7 +5,7 @@
 
 namespace nano
 {
-        using rfunction_t = std::shared_ptr<function_t>;
+        using rfunction_t = std::unique_ptr<function_t>;
         using rfunctions_t = std::vector<rfunction_t>;
 
         ///

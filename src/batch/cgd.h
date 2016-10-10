@@ -22,12 +22,12 @@ namespace nano
                 ///
                 /// \brief create an object of the same type with the given configuration
                 ///
-                virtual rbatch_optimizer_t clone(const string_t& configuration) const final;
+                virtual std::unique_ptr<batch_optimizer_t> clone(const string_t& configuration) const final;
 
                 ///
                 /// \brief create an object clone
                 ///
-                virtual rbatch_optimizer_t clone() const final;
+                virtual std::unique_ptr<batch_optimizer_t> clone() const final;
 
                 ///
                 /// \brief minimize starting from the initial guess x0.

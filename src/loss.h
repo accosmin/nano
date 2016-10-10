@@ -6,13 +6,11 @@
 
 namespace nano
 {
-        class loss_t;
-
         ///
         /// \brief stores registered prototypes
         ///
+        class loss_t;
         using loss_manager_t = manager_t<loss_t>;
-        using rloss_t = loss_manager_t::trobject;
 
         NANO_PUBLIC loss_manager_t& get_losses();
 

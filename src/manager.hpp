@@ -14,7 +14,7 @@ namespace nano
 	{
         public:
 
-                using trobject = std::shared_ptr<tobject>;
+                using trobject = std::unique_ptr<tobject>;
 
                 ///
                 /// \brief add a new object with the given ID

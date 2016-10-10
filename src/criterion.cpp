@@ -12,12 +12,6 @@ namespace nano
         {
         }
 
-        criterion_t& criterion_t::reset(const rmodel_t& rmodel)
-        {
-                assert(rmodel);
-                return reset(*rmodel);
-        }
-
         criterion_t& criterion_t::reset(const model_t& model)
         {
                 m_model = model.clone();

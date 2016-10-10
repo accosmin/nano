@@ -32,12 +32,12 @@ namespace nano
                 ///
                 /// \brief create an object of the same type with the given configuration
                 ///
-                virtual rstoch_optimizer_t clone(const string_t& configuration) const final;
+                virtual std::unique_ptr<stoch_optimizer_t> clone(const string_t& configuration) const final;
 
                 ///
                 /// \brief create an object clone
                 ///
-                virtual rstoch_optimizer_t clone() const final;
+                virtual std::unique_ptr<stoch_optimizer_t> clone() const final;
 
                 ///
                 ///

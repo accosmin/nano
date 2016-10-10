@@ -7,7 +7,6 @@ namespace nano
 {
         class loss_t;
         class model_t;
-        class trainer_t;
         class sampler_t;
         class criterion_t;
         class accumulator_t;
@@ -15,8 +14,8 @@ namespace nano
         ///
         /// \brief stores registered prototypes
         ///
+        class trainer_t;
         using trainer_manager_t = manager_t<trainer_t>;
-        using rtrainer_t = trainer_manager_t::trobject;
 
         NANO_PUBLIC trainer_manager_t& get_trainers();
 

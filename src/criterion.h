@@ -7,11 +7,11 @@ namespace nano
         class loss_t;
         class task_t;
         struct fold_t;
-        class criterion_t;
 
         ///
         /// \brief stores registered prototypes
         ///
+        class criterion_t;
         using criterion_manager_t = manager_t<criterion_t>;
         using rcriterion_t = criterion_manager_t::trobject;
 
@@ -40,9 +40,14 @@ namespace nano
                 explicit criterion_t(const string_t& configuration);
 
                 ///
+                /// \brief enable moving
+                ///
+                criterion_t(criterion_t&&) = default;
+                criterion_t& operator=(criterion_t&&) = default;
+
+                ///
                 /// \brief reset statistics and settings
                 ///
-                criterion_t& reset(const rmodel_t& rmodel);
                 criterion_t& reset(const model_t& model);
                 criterion_t& reset(const vector_t& params);
                 criterion_t& reset(const type t);

@@ -32,7 +32,7 @@ static tensor_size_t cpsize(const tensor_size_t idims,
         return idims * odims * krows * kcols / kconn + odims;
 }
 
-static rloss_t get_loss()
+static auto get_loss()
 {
         const strings_t loss_ids = get_losses().ids();
 
@@ -42,9 +42,9 @@ static rloss_t get_loss()
         return get_losses().get(loss_id);
 }
 
-static rmodel_t get_model(const string_t& description)
+static auto get_model(const string_t& description)
 {
-        const auto model = get_models().get("forward-network", description + ";" + cmd_layer_output);
+        auto model = get_models().get("forward-network", description + ";" + cmd_layer_output);
         model->resize(cmd_idims, cmd_irows, cmd_icols, cmd_osize, false);
         NANO_CHECK_EQUAL(model->idims(), cmd_idims);
         NANO_CHECK_EQUAL(model->irows(), cmd_irows);

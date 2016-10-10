@@ -7,14 +7,12 @@
 
 namespace nano
 {
-        class layer_t;
-
         ///
         /// \brief stores registered prototypes
         ///
+        class layer_t;
         using layer_manager_t = manager_t<layer_t>;
         using rlayer_t = layer_manager_t::trobject;
-        using rlayers_t = std::vector<rlayer_t>;
 
         NANO_PUBLIC layer_manager_t& get_layers();
 

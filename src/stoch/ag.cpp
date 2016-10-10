@@ -10,15 +10,15 @@ namespace nano
         }
 
         template <ag_restart trestart>
-        rstoch_optimizer_t stoch_ag_base_t<trestart>::clone(const string_t& configuration) const
+        std::unique_ptr<stoch_optimizer_t> stoch_ag_base_t<trestart>::clone(const string_t& configuration) const
         {
-                return rstoch_optimizer_t(new stoch_ag_base_t<trestart>(configuration));
+                return std::unique_ptr<stoch_optimizer_t>(new stoch_ag_base_t<trestart>(configuration));
         }
 
         template <ag_restart trestart>
-        rstoch_optimizer_t stoch_ag_base_t<trestart>::clone() const
+        std::unique_ptr<stoch_optimizer_t> stoch_ag_base_t<trestart>::clone() const
         {
-                return rstoch_optimizer_t(new stoch_ag_base_t<trestart>(*this));
+                return std::unique_ptr<stoch_optimizer_t>(new stoch_ag_base_t<trestart>(*this));
         }
 
         template <ag_restart trestart>

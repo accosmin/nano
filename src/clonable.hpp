@@ -16,7 +16,7 @@ namespace nano
         {
         public:
 
-                using trobject = std::shared_ptr<tobject>;
+                using trobject = std::unique_ptr<tobject>;
 
                 ///
                 /// \brief constructor
@@ -36,10 +36,10 @@ namespace nano
                 ///
                 virtual trobject clone(const string_t& configuration) const = 0;
 
-                ///
-                /// \brief create an object clone
-                ///
-                virtual trobject clone() const = 0;
+                trobject clone() const
+                {
+                        return clone(config());
+                }
 
                 ///
                 /// \brief current configuration (aka parameters)
@@ -58,10 +58,6 @@ namespace nano
         #define NANO_MAKE_CLONABLE(base_class) \
                 virtual trobject clone(const string_t& configuration) const override \
                 { \
-                        return std::make_shared<base_class>(configuration); \
-                } \
-                virtual trobject clone() const override \
-                { \
-                        return std::make_shared<base_class>(*this); \
+                        return std::make_unique<base_class>(configuration); \
                 }
 }

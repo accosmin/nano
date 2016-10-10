@@ -6,13 +6,11 @@
 
 namespace nano
 {
-        class task_t;
-
         ///
         /// \brief manage tasks (register new ones, query and clone them)
         ///
+        class task_t;
         using task_manager_t = manager_t<task_t>;
-        using rtask_t = task_manager_t::trobject;
 
         NANO_PUBLIC task_manager_t& get_tasks();
 

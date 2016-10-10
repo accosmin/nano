@@ -27,11 +27,11 @@
 
 namespace nano
 {
-        static void append(const rfunction_t& func, const tensor_size_t dims, rfunctions_t& funcs)
+        static void append(rfunction_t&& func, const tensor_size_t dims, rfunctions_t& funcs)
         {
                 if (func->min_dims() <= dims && dims <= func->max_dims())
                 {
-                        funcs.push_back(func);
+                        funcs.push_back(std::move(func));
                 }
         }
 
@@ -43,36 +43,36 @@ namespace nano
                 rfunctions_t funcs;
                 for (tensor_size_t dims = min_dims; dims <= max_dims; )
                 {
-                        append(std::make_shared<function_beale_t>(), dims, funcs);
-                        append(std::make_shared<function_booth_t>(), dims, funcs);
-                        append(std::make_shared<function_matyas_t>(), dims, funcs);
-                        append(std::make_shared<function_colville_t>(), dims, funcs);
-                        append(std::make_shared<function_mccormick_t>(), dims, funcs);
-                        append(std::make_shared<function_3hump_camel_t>(), dims, funcs);
-                        append(std::make_shared<function_goldstein_price_t>(), dims, funcs);
-                        append(std::make_shared<function_himmelblau_t>(), dims, funcs);
-                        append(std::make_shared<function_bohachevsky_t>(function_bohachevsky_t::btype::one), dims, funcs);
-                        append(std::make_shared<function_bohachevsky_t>(function_bohachevsky_t::btype::two), dims, funcs);
-                        append(std::make_shared<function_bohachevsky_t>(function_bohachevsky_t::btype::three), dims, funcs);
+                        append(std::make_unique<function_beale_t>(), dims, funcs);
+                        append(std::make_unique<function_booth_t>(), dims, funcs);
+                        append(std::make_unique<function_matyas_t>(), dims, funcs);
+                        append(std::make_unique<function_colville_t>(), dims, funcs);
+                        append(std::make_unique<function_mccormick_t>(), dims, funcs);
+                        append(std::make_unique<function_3hump_camel_t>(), dims, funcs);
+                        append(std::make_unique<function_goldstein_price_t>(), dims, funcs);
+                        append(std::make_unique<function_himmelblau_t>(), dims, funcs);
+                        append(std::make_unique<function_bohachevsky_t>(function_bohachevsky_t::btype::one), dims, funcs);
+                        append(std::make_unique<function_bohachevsky_t>(function_bohachevsky_t::btype::two), dims, funcs);
+                        append(std::make_unique<function_bohachevsky_t>(function_bohachevsky_t::btype::three), dims, funcs);
 
-                        append(std::make_shared<function_trid_t>(dims), dims, funcs);
-                        append(std::make_shared<function_qing_t>(dims), dims, funcs);
-                        append(std::make_shared<function_cauchy_t>(dims), dims, funcs);
-                        append(std::make_shared<function_sargan_t>(dims), dims, funcs);
+                        append(std::make_unique<function_trid_t>(dims), dims, funcs);
+                        append(std::make_unique<function_qing_t>(dims), dims, funcs);
+                        append(std::make_unique<function_cauchy_t>(dims), dims, funcs);
+                        append(std::make_unique<function_sargan_t>(dims), dims, funcs);
                         if (dims % 4 == 0)
                         {
-                                append(std::make_shared<function_powell_t>(dims), dims, funcs);
+                                append(std::make_unique<function_powell_t>(dims), dims, funcs);
                         }
-                        append(std::make_shared<function_zakharov_t>(dims), dims, funcs);
-                        append(std::make_shared<function_rosenbrock_t>(dims), dims, funcs);
-                        append(std::make_shared<function_exponential_t>(dims), dims, funcs);
-                        append(std::make_shared<function_dixon_price_t>(dims), dims, funcs);
-                        append(std::make_shared<function_chung_reynolds_t>(dims), dims, funcs);
-                        append(std::make_shared<function_axis_ellipsoid_t>(dims), dims, funcs);
-                        append(std::make_shared<function_styblinski_tang_t>(dims), dims, funcs);
-                        append(std::make_shared<function_sphere_t>(dims), dims, funcs);
-                        append(std::make_shared<function_schumer_steiglitz_t>(dims), dims, funcs);
-                        append(std::make_shared<function_rotated_ellipsoid_t>(dims), dims, funcs);
+                        append(std::make_unique<function_zakharov_t>(dims), dims, funcs);
+                        append(std::make_unique<function_rosenbrock_t>(dims), dims, funcs);
+                        append(std::make_unique<function_exponential_t>(dims), dims, funcs);
+                        append(std::make_unique<function_dixon_price_t>(dims), dims, funcs);
+                        append(std::make_unique<function_chung_reynolds_t>(dims), dims, funcs);
+                        append(std::make_unique<function_axis_ellipsoid_t>(dims), dims, funcs);
+                        append(std::make_unique<function_styblinski_tang_t>(dims), dims, funcs);
+                        append(std::make_unique<function_sphere_t>(dims), dims, funcs);
+                        append(std::make_unique<function_schumer_steiglitz_t>(dims), dims, funcs);
+                        append(std::make_unique<function_rotated_ellipsoid_t>(dims), dims, funcs);
 
                         if (dims <= 8)
                         {

@@ -14,15 +14,15 @@ namespace nano
         }
 
         template <typename tcgd_update>
-        rbatch_optimizer_t batch_cgd_t<tcgd_update>::clone(const string_t& configuration) const
+        std::unique_ptr<batch_optimizer_t> batch_cgd_t<tcgd_update>::clone(const string_t& configuration) const
         {
-                return rbatch_optimizer_t(new batch_cgd_t(configuration));
+                return std::unique_ptr<batch_optimizer_t>(new batch_cgd_t<tcgd_update>(configuration));
         }
 
         template <typename tcgd_update>
-        rbatch_optimizer_t batch_cgd_t<tcgd_update>::clone() const
+        std::unique_ptr<batch_optimizer_t> batch_cgd_t<tcgd_update>::clone() const
         {
-                return rbatch_optimizer_t(new batch_cgd_t());
+                return std::unique_ptr<batch_optimizer_t>(new batch_cgd_t<tcgd_update>(*this));
         }
 
         template <typename tcgd_update>

@@ -15,11 +15,11 @@ namespace nano
                         const auto size = thread_pool_t::instance().n_workers();
                         for (size_t i = 0; i < size; ++ i)
                         {
-                                const auto cache = criterion.clone();
+                                auto cache = criterion.clone();
                                 cache->reset(model);
                                 cache->reset(lambda);
                                 cache->reset(type);
-                                m_criteria.push_back(cache);
+                                m_criteria.emplace_back(std::move(cache));
                         }
                 }
 

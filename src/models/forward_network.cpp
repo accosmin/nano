@@ -40,18 +40,6 @@ namespace nano
         {
         }
 
-        forward_network_t::forward_network_t(const forward_network_t& other) :
-                model_t(other),
-                m_layers(other.m_layers),
-                m_gparam(other.m_gparam),
-                m_odata(other.m_odata)
-        {
-                for (size_t l = 0; l < n_layers(); ++ l)
-                {
-                        m_layers[l].m_layer = other.m_layers[l].m_layer->clone();
-                }
-        }
-
         const tensor3d_t& forward_network_t::output(const tensor3d_t& _input)
         {
                 const tensor3d_t* input = &_input;
@@ -198,15 +186,15 @@ namespace nano
                         const string_t layer_id = layer_tokens[0];
                         const string_t layer_params = layer_tokens.size() == 2 ? layer_tokens[1] : string_t();
 
-                        const rlayer_t layer = nano::get_layers().get(layer_id, layer_params);
+                        auto layer = nano::get_layers().get(layer_id, layer_params);
                         n_params += layer->resize(input);
 
                         const string_t layer_name =
                                 "[" + align(to_string(l + 1), 2, alignment::right, '0') + ":" +
                                 align(layer_id, 10, alignment::left, '.') + "]";
-                        m_layers.emplace_back(layer_name, layer);
-
                         input.resize(layer->odims(), layer->orows(), layer->ocols());
+
+                        m_layers.emplace_back(layer_name, std::move(layer));
                 }
 
                 // check output size to match the target

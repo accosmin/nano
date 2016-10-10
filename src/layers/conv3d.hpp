@@ -129,7 +129,6 @@ namespace nano
 
                 assert(kdata.template size<0>() == odims);
                 assert(kdata.template size<1>() == idims / conn);
-                assert(bdata.size() == odims);
 
                 idata.setZero();
                 for (tsize o = 0; o < odims; ++ o)

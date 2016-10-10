@@ -9,11 +9,11 @@
 namespace nano
 {
         class task_t;
-        class model_t;
 
         ///
         /// \brief stores registered prototypes
         ///
+        class model_t;
         using model_manager_t = manager_t<model_t>;
         using rmodel_t = model_manager_t::trobject;
 

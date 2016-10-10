@@ -22,14 +22,10 @@ namespace nano
                 explicit forward_network_t(const string_t& parameters = string_t());
 
                 ///
-                /// \brief copy constructor
+                /// \brief enable moving
                 ///
-                forward_network_t(const forward_network_t& other);
-
-                ///
-                /// \brief assignment operator
-                ///
-                forward_network_t& operator=(const forward_network_t&) = delete;
+                forward_network_t(forward_network_t&& other) = default;
+                forward_network_t& operator=(forward_network_t&& other) = default;
 
                 ///
                 /// \brief compute the model's output
@@ -88,10 +84,13 @@ namespace nano
                 ///
                 struct layer_info_t
                 {
-                        layer_info_t(const string_t& name = string_t(), const rlayer_t& layer = rlayer_t()) :
-                                m_name(name), m_layer(layer)
+                        layer_info_t(const string_t& name = string_t(), rlayer_t layer = rlayer_t()) :
+                                m_name(name), m_layer(std::move(layer))
                         {
                         }
+
+                        layer_info_t(layer_info_t&&) = default;
+                        layer_info_t& operator=(layer_info_t&&) = default;
 
                         const tensor3d_t& output(const tensor3d_t&);
                         const tensor3d_t& ginput(const tensor3d_t&);
