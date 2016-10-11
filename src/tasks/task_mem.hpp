@@ -50,64 +50,64 @@ namespace nano
                 ///
                 /// \brief short name of this task
                 ///
-                virtual string_t name() const override final { return m_name; }
+                virtual string_t name() const final { return m_name; }
 
                 ///
                 /// \brief populate the task with samples
                 ///
-                virtual bool load() override final;
+                virtual bool load() final;
 
                 ///
                 /// \brief input size
                 ///
-                virtual tensor_size_t idims() const override final { return m_idims; }
-                virtual tensor_size_t irows() const override final { return m_irows; }
-                virtual tensor_size_t icols() const override final { return m_icols; }
+                virtual tensor_size_t idims() const final { return m_idims; }
+                virtual tensor_size_t irows() const final { return m_irows; }
+                virtual tensor_size_t icols() const final { return m_icols; }
 
                 ///
                 /// \brief output size
                 ///
-                virtual tensor_size_t osize() const override final { return m_osize; }
+                virtual tensor_size_t osize() const final { return m_osize; }
 
                 ///
                 /// \brief number of folds (not considering the protocol!)
                 ///
-                virtual size_t n_folds() const override final { return m_fsize; }
+                virtual size_t n_folds() const final { return m_fsize; }
 
                 ///
                 /// \brief total number of samples
                 ///
-                virtual size_t n_samples() const override final;
+                virtual size_t n_samples() const final;
 
                 ///
                 /// \brief number of samples for the given fold
                 ///
-                virtual size_t n_samples(const fold_t&) const override final;
+                virtual size_t n_samples(const fold_t&) const final;
 
                 ///
                 /// \brief randomly shuffle the samples associated for the given fold
                 ///
-                virtual void shuffle(const fold_t&) const override final;
+                virtual void shuffle(const fold_t&) const final;
 
                 ///
                 /// \brief retrieve the 3D input tensor for a given sample
                 ///
-                virtual tensor3d_t input(const fold_t&, const size_t index) const override final;
+                virtual tensor3d_t input(const fold_t&, const size_t index) const final;
 
                 ///
                 /// \brief retrieve the target for a given sample
                 ///
-                virtual vector_t target(const fold_t&, const size_t index) const override final;
+                virtual vector_t target(const fold_t&, const size_t index) const final;
 
                 ///
                 /// \brief retrieve the associated label (if any) for a given sample
                 ///
-                virtual string_t label(const fold_t&, const size_t index) const override final;
+                virtual string_t label(const fold_t&, const size_t index) const final;
 
                 ///
                 /// \brief retrieve the hash for a given sample
                 ///
-                virtual size_t hash(const fold_t&, const size_t index) const override final;
+                virtual size_t hash(const fold_t&, const size_t index) const final;
 
         protected:
 
