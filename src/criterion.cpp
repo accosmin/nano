@@ -12,6 +12,17 @@ namespace nano
         {
         }
 
+        criterion_t::criterion_t(const criterion_t& other) :
+                clonable_t<criterion_t>(other),
+                m_model(other.m_model ? other.m_model->clone() : nullptr),
+                m_params(other.m_params),
+                m_lambda(other.m_lambda),
+                m_type(other.m_type),
+                m_vstats(other.m_vstats),
+                m_estats(other.m_estats)
+        {
+        }
+
         criterion_t& criterion_t::reset(const model_t& model)
         {
                 m_model = model.clone();

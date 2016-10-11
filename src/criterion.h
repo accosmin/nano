@@ -40,6 +40,11 @@ namespace nano
                 explicit criterion_t(const string_t& configuration);
 
                 ///
+                /// \brief enable copying
+                ///
+                criterion_t(const criterion_t&);
+
+                ///
                 /// \brief enable moving
                 ///
                 criterion_t(criterion_t&&) = default;

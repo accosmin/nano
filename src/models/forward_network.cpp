@@ -10,6 +10,20 @@
 
 namespace nano
 {
+        forward_network_t::layer_info_t::layer_info_t(const string_t& name, rlayer_t layer) :
+                m_name(name), m_layer(std::move(layer))
+        {
+        }
+
+        forward_network_t::layer_info_t::layer_info_t(const layer_info_t& other) :
+                m_name(other.m_name),
+                m_layer(other.m_layer->clone()),
+                m_output_timings(other.m_output_timings),
+                m_ginput_timings(other.m_ginput_timings),
+                m_gparam_timings(other.m_gparam_timings)
+        {
+        }
+
         const tensor3d_t& forward_network_t::layer_info_t::output(const tensor3d_t& input)
         {
                 const timer_t timer;

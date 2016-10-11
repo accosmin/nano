@@ -32,19 +32,19 @@ namespace nano
                 virtual ~clonable_t() {}
 
                 ///
-                /// \brief create an object of the same type with the given configuration
+                /// \brief create an object of the same type with the given configuration.
                 ///
                 virtual trobject clone(const string_t& configuration) const = 0;
 
-                trobject clone() const
-                {
-                        return clone(config());
-                }
+                ///
+                /// \brief create a copy of the current object.
+                ///
+                virtual trobject clone() const = 0;
 
                 ///
-                /// \brief current configuration (aka parameters)
+                /// \brief current configuration (aka parameters).
                 ///
-                string_t config() const
+                const string_t& config() const
                 {
                         return m_configuration;
                 }
@@ -59,5 +59,9 @@ namespace nano
                 virtual trobject clone(const string_t& configuration) const override \
                 { \
                         return std::make_unique<base_class>(configuration); \
+                } \
+                virtual trobject clone() const override \
+                { \
+                        return std::make_unique<base_class>(*this); \
                 }
 }
