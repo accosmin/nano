@@ -14,7 +14,7 @@ namespace nano
                 ///
                 /// \brief constructor
                 ///
-                stoch_sgm_t(const string_t& configuration = string_t());
+                explicit stoch_sgm_t(const string_t& configuration = string_t());
 
                 ///
                 /// \brief minimize starting from the initial guess x0.

@@ -24,7 +24,7 @@ namespace nano
                 ///
                 /// \brief constructor
                 ///
-                stoch_optimizer_t(const string_t& configuration = string_t()) :
+                explicit stoch_optimizer_t(const string_t& configuration = string_t()) :
                         clonable_t<stoch_optimizer_t>(configuration)
                 {
                 }

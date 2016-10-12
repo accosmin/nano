@@ -24,7 +24,7 @@ namespace nano
                 ///
                 /// \brief constructor
                 ///
-                batch_optimizer_t(const string_t& configuration = string_t()) :
+                explicit batch_optimizer_t(const string_t& configuration = string_t()) :
                         clonable_t<batch_optimizer_t>(configuration)
                 {
                 }

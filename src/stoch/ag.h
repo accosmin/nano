@@ -27,7 +27,7 @@ namespace nano
                 ///
                 /// \brief constructor
                 ///
-                stoch_ag_base_t(const string_t& configuration = string_t());
+                explicit stoch_ag_base_t(const string_t& configuration = string_t());
 
                 ///
                 /// \brief create an object of the same type with the given configuration

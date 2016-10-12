@@ -22,7 +22,7 @@ namespace nano
         {
                 assert(targets.size() == scores.size());
 
-                return std::log(1 + std::exp((-targets.array() * scores.array()).sum()));
+                return std::log1p(std::exp((-targets.array() * scores.array()).sum()));
         }
 
         vector_t logistic_loss_t::vgrad(const vector_t& targets, const vector_t& scores) const
