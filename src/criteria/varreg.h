@@ -20,38 +20,48 @@ namespace nano
                 ///
                 explicit var_criterion_t(const string_t& configuration = string_t());
 
+                /// \brief clone
+                virtual rcriterion_t clone(const string_t& parameters) const final
+                {
+                        return std::make_unique<var_criterion_t<tcriterion>>(parameters);
+                }
+                virtual rcriterion_t clone() const final
+                {
+                        return std::make_unique<var_criterion_t<tcriterion>>(*this);
+                }
+
                 ///
                 /// \brief cumulated loss value
                 ///
-                virtual scalar_t value() const override;
+                virtual scalar_t value() const final;
 
                 ///
                 /// \brief cumulated gradient
                 ///
-                virtual vector_t vgrad() const override;
+                virtual vector_t vgrad() const final;
 
                 ///
                 /// \brief check if the criterion has a regularization term to tune
                 ///
-                virtual bool can_regularize() const override;
+                virtual bool can_regularize() const final;
 
         protected:
 
                 ///
                 /// \brief reset statistics
                 ///
-                virtual void clear() override;
+                virtual void clear() final;
 
                 ///
                 /// \brief update statistics with the loss value/error/gradient for a sample
                 ///
-                virtual void accumulate(scalar_t value) override;
-                virtual void accumulate(const vector_t& vgrad, scalar_t value) override;
+                virtual void accumulate(scalar_t value) final;
+                virtual void accumulate(const vector_t& vgrad, scalar_t value) final;
 
                 ///
                 /// \brief update statistics with cumulated samples
                 ///
-                virtual void accumulate(const criterion_t& other) override;
+                virtual void accumulate(const criterion_t& other) final;
 
         private:
 
@@ -130,24 +140,7 @@ namespace nano
                 return true;
         }
 
-        struct average_var_criterion_t : public var_criterion_t<average_criterion_t>
-        {
-                NANO_MAKE_CLONABLE(average_var_criterion_t)
-
-                explicit average_var_criterion_t(const string_t& configuration = string_t()) :
-                        var_criterion_t<average_criterion_t>(configuration)
-                {
-                }
-        };
-
-        struct softmax_var_criterion_t : public var_criterion_t<softmax_criterion_t>
-        {
-                NANO_MAKE_CLONABLE(softmax_var_criterion_t)
-
-                explicit softmax_var_criterion_t(const string_t& configuration = string_t()) :
-                        var_criterion_t<softmax_criterion_t>(configuration)
-                {
-                }
-        };
+        using average_var_criterion_t = var_criterion_t<average_criterion_t>;
+        using softmax_var_criterion_t = var_criterion_t<softmax_criterion_t>;
 }
 
