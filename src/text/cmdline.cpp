@@ -1,5 +1,5 @@
+#include "align.h"
 #include "cmdline.h"
-#include "align.hpp"
 #include "algorithm.h"
 #include <cassert>
 #include <fstream>

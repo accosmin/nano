@@ -1,5 +1,5 @@
+#include "util.h"
 #include "styblinski_tang.h"
-#include "util.hpp"
 
 namespace nano
 {

@@ -1,5 +1,4 @@
-#include "util.hpp"
-#include "math/numeric.hpp"
+#include "util.h"
 #include "schumer_steiglitz.h"
 
 namespace nano

@@ -1,7 +1,7 @@
 #include "softmax.h"
-#include "math/numeric.hpp"
-#include "text/to_params.hpp"
-#include "text/from_params.hpp"
+#include "math/numeric.h"
+#include "text/to_params.h"
+#include "text/from_params.h"
 
 namespace nano
 {

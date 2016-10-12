@@ -1,14 +1,14 @@
 #include "tensor.h"
 #include "logger.h"
-#include "measure.hpp"
+#include "measure.h"
 #include "text/table.h"
 #include "text/cmdline.h"
-#include "math/random.hpp"
-#include "tensor/numeric.hpp"
+#include "math/random.h"
+#include "tensor/numeric.h"
 #include "text/table_row_mark.h"
 #ifdef NANO_WITH_OPENCL
 #include "opencl/ocl.h"
-#include "math/epsilon.hpp"
+#include "math/epsilon.h"
 #endif
 #include <iostream>
 

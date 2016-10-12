@@ -2,7 +2,7 @@
 
 #include "arch.h"
 #include "tensor.h"
-#include "manager.hpp"
+#include "manager.h"
 
 namespace nano
 {

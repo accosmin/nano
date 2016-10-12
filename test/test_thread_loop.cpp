@@ -1,6 +1,6 @@
-#include "utest.hpp"
-#include "thread/loopi.hpp"
-#include "math/epsilon.hpp"
+#include "utest.h"
+#include "thread/loopi.h"
+#include "math/epsilon.h"
 #include <numeric>
 
 namespace

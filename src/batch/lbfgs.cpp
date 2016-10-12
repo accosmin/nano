@@ -1,9 +1,9 @@
+#include "loop.h"
 #include "lbfgs.h"
-#include "loop.hpp"
 #include "ls_init.h"
 #include "ls_strategy.h"
-#include "text/to_params.hpp"
-#include "text/from_params.hpp"
+#include "text/to_params.h"
+#include "text/from_params.h"
 #include <deque>
 
 namespace nano

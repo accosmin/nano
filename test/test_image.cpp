@@ -1,7 +1,7 @@
-#include "utest.hpp"
+#include "utest.h"
+#include "math/random.h"
+#include "math/epsilon.h"
 #include "vision/image.h"
-#include "math/random.hpp"
-#include "math/epsilon.hpp"
 #include <cstdio>
 
 NANO_BEGIN_MODULE(test_image)

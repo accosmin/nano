@@ -1,8 +1,8 @@
 #include "logger.h"
 #include "text/cmdline.h"
-#include "math/random.hpp"
-#include "math/epsilon.hpp"
-#include "math/numeric.hpp"
+#include "math/random.h"
+#include "math/epsilon.h"
+#include "math/numeric.h"
 #include "stoch_optimizer.h"
 #include "benchmark_optimizers.h"
 #include <tuple>

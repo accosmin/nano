@@ -1,6 +1,6 @@
-#include "utest.hpp"
-#include "math/stats.hpp"
-#include "math/random.hpp"
+#include "utest.h"
+#include "math/stats.h"
+#include "math/random.h"
 
 namespace test
 {

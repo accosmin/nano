@@ -1,7 +1,7 @@
-#include "utest.hpp"
-#include "math/numeric.hpp"
-#include "math/average.hpp"
-#include "math/epsilon.hpp"
+#include "utest.h"
+#include "math/numeric.h"
+#include "math/average.h"
+#include "math/epsilon.h"
 
 namespace test
 {

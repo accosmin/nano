@@ -1,7 +1,7 @@
 #include "task.h"
 #include "accumulator.h"
-#include "math/numeric.hpp"
-#include "thread/loopit.hpp"
+#include "math/numeric.h"
+#include "thread/loopit.h"
 #include <cassert>
 
 namespace nano

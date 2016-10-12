@@ -2,8 +2,8 @@
 
 #include "scalar.h"
 #include "table_row.h"
+#include "from_string.h"
 #include "table_header.h"
-#include "from_string.hpp"
 #include <algorithm>
 
 namespace nano

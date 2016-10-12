@@ -1,6 +1,6 @@
+#include "loop.h"
 #include "adadelta.h"
-#include "loop.hpp"
-#include "math/momentum.hpp"
+#include "math/momentum.h"
 
 namespace nano
 {

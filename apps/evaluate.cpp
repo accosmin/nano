@@ -2,8 +2,8 @@
 #include "task_util.h"
 #include "accumulator.h"
 #include "text/cmdline.h"
-#include "measure_and_log.hpp"
-#include "text/concatenate.hpp"
+#include "measure_and_log.h"
+#include "text/concatenate.h"
 
 int main(int argc, const char *argv[])
 {

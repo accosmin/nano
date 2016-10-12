@@ -1,8 +1,8 @@
 #include <set>
 #include "nano.h"
-#include "utest.hpp"
+#include "utest.h"
 #include "task_util.h"
-#include "math/epsilon.hpp"
+#include "math/epsilon.h"
 
 NANO_BEGIN_MODULE(test_stl10)
 

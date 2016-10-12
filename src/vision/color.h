@@ -2,8 +2,8 @@
 
 #include "arch.h"
 #include "tensor.h"
-#include "text/to_string.hpp"
-#include "text/enum_string.hpp"
+#include "text/to_string.h"
+#include "text/enum_string.h"
 #include <ostream>
 #include <cstdint>
 

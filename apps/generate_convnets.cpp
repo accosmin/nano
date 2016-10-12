@@ -1,7 +1,7 @@
 #include <set>
 #include <iostream>
 #include "text/cmdline.h"
-#include "math/numeric.hpp"
+#include "math/numeric.h"
 
 namespace
 {

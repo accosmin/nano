@@ -1,8 +1,8 @@
 #include "nano.h"
 #include "class.h"
-#include "utest.hpp"
-#include "math/random.hpp"
-#include "math/epsilon.hpp"
+#include "utest.h"
+#include "math/random.h"
+#include "math/epsilon.h"
 
 using namespace nano;
 

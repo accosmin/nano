@@ -1,11 +1,11 @@
 #include "warp.h"
-#include "convolve.hpp"
-#include "gradient.hpp"
-#include "math/gauss.hpp"
-#include "math/random.hpp"
-#include "math/numeric.hpp"
-#include "tensor/numeric.hpp"
-#include "tensor/algorithm.hpp"
+#include "convolve.h"
+#include "gradient.h"
+#include "math/gauss.h"
+#include "math/random.h"
+#include "math/numeric.h"
+#include "tensor/numeric.h"
+#include "tensor/algorithm.h"
 
 namespace nano
 {

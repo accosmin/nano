@@ -3,8 +3,8 @@
 #include "task_mnist.h"
 #include "io/archive.h"
 #include "io/imstream.h"
-#include "text/to_params.hpp"
-#include "text/from_params.hpp"
+#include "text/to_params.h"
+#include "text/from_params.h"
 
 namespace nano
 {

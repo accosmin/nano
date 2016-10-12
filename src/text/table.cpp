@@ -1,5 +1,5 @@
+#include "align.h"
 #include "table.h"
-#include "align.hpp"
 #include <cassert>
 #include <numeric>
 #include <ostream>

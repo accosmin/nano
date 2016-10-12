@@ -1,7 +1,7 @@
 #pragma once
 
 #include "task.h"
-#include "math/random.hpp"
+#include "math/random.h"
 
 namespace nano
 {

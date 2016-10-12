@@ -1,5 +1,5 @@
+#include "util.h"
 #include "matyas.h"
-#include "util.hpp"
 
 namespace nano
 {

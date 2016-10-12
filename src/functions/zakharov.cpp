@@ -1,5 +1,5 @@
+#include "util.h"
 #include "zakharov.h"
-#include "util.hpp"
 
 namespace nano
 {

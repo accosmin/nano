@@ -1,7 +1,7 @@
-#include "utest.hpp"
+#include "utest.h"
 #include "tensor.h"
-#include "math/softmax.hpp"
-#include "math/epsilon.hpp"
+#include "math/softmax.h"
+#include "math/epsilon.h"
 
 using scalar_t = double;//nano::scalar_t;
 using vector_t = tensor::vector_t<scalar_t>;

@@ -1,11 +1,9 @@
+#include "math/stats.h"
+#include "text/align.h"
+#include "math/epsilon.h"
 #include "trainer_state.h"
-#include "math/stats.hpp"
-#include "text/align.hpp"
-#include "math/epsilon.hpp"
-#include "text/to_string.hpp"
+#include "text/to_string.h"
 #include <fstream>
-#include <limits>
-#include <cmath>
 
 namespace nano
 {

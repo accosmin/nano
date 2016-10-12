@@ -1,6 +1,6 @@
 #pragma once
 
-#include "from_string.hpp"
+#include "from_string.h"
 
 namespace nano
 {

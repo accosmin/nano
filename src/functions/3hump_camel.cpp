@@ -1,6 +1,5 @@
+#include "util.h"
 #include "3hump_camel.h"
-#include "util.hpp"
-#include <cmath>
 
 namespace nano
 {

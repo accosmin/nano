@@ -1,5 +1,5 @@
-#include "utest.hpp"
-#include "tensor/tensor.hpp"
+#include "utest.h"
+#include "tensor/tensor.h"
 #include <vector>
 
 NANO_BEGIN_MODULE(test_tensor)

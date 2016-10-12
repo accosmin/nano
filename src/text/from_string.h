@@ -4,7 +4,7 @@
 #include <stdexcept>
 #include <algorithm>
 #include "algorithm.h"
-#include "enum_string.hpp"
+#include "enum_string.h"
 
 namespace nano
 {

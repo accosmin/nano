@@ -1,5 +1,5 @@
+#include "util.h"
 #include "booth.h"
-#include "util.hpp"
 
 namespace nano
 {

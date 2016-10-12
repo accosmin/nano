@@ -1,8 +1,8 @@
 #pragma once
 
 #include <cassert>
-#include "math/numeric.hpp"
-#include "tensor/vector.hpp"
+#include "math/numeric.h"
+#include "tensor/vector.h"
 
 namespace nano
 {

@@ -3,7 +3,7 @@
 #include "arch.h"
 #include <string>
 #include <iostream>
-#include "math/numeric.hpp"
+#include "math/numeric.h"
 #include <eigen3/Eigen/Core>
 
 std::string module_name;

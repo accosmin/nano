@@ -1,7 +1,7 @@
-#include "utest.hpp"
-#include "math/random.hpp"
-#include "math/epsilon.hpp"
-#include "math/quadratic.hpp"
+#include "utest.h"
+#include "math/random.h"
+#include "math/epsilon.h"
+#include "math/quadratic.h"
 
 NANO_BEGIN_MODULE(test_quadratic)
 

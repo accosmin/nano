@@ -1,5 +1,5 @@
-#include "math/stats.hpp"
-#include "text/from_string.hpp"
+#include "math/stats.h"
+#include "text/from_string.h"
 #include <iostream>
 #include <iomanip>
 

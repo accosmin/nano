@@ -1,6 +1,6 @@
 #pragma once
 
-#include "vector.hpp"
+#include "vector.h"
 
 namespace tensor
 {

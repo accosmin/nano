@@ -1,5 +1,5 @@
 #include <fstream>
-#include "utest.hpp"
+#include "utest.h"
 #include "text/cmdline.h"
 
 NANO_BEGIN_MODULE(test_cmdline)

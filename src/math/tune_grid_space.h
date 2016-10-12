@@ -3,7 +3,7 @@
 #include <vector>
 #include <cassert>
 #include <type_traits>
-#include "math/numeric.hpp"
+#include "math/numeric.h"
 
 namespace nano
 {

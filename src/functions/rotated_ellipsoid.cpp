@@ -1,5 +1,4 @@
-#include "util.hpp"
-#include "math/numeric.hpp"
+#include "util.h"
 #include "rotated_ellipsoid.h"
 
 namespace nano

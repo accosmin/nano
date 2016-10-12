@@ -1,5 +1,5 @@
+#include "util.h"
 #include "goldstein_price.h"
-#include "util.hpp"
 
 namespace nano
 {

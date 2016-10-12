@@ -3,8 +3,8 @@
 #include "arch.h"
 #include "tensor.h"
 #include "stringi.h"
-#include "manager.hpp"
-#include "math/stats.hpp"
+#include "manager.h"
+#include "math/stats.h"
 
 namespace nano
 {

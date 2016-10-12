@@ -1,5 +1,5 @@
+#include "util.h"
 #include "chung_reynolds.h"
-#include "util.hpp"
 
 namespace nano
 {

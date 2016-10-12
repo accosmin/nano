@@ -1,6 +1,6 @@
 #pragma once
 
-#include "tensor_storage.hpp"
+#include "tensor_storage.h"
 
 namespace tensor
 {

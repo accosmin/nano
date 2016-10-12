@@ -1,6 +1,6 @@
-#include "criterion.h"
 #include "task.h"
 #include "loss.h"
+#include "criterion.h"
 #include <cassert>
 
 namespace nano

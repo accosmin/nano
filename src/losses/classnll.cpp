@@ -1,6 +1,6 @@
-#include "classnll.h"
 #include "class.h"
-#include "math/numeric.hpp"
+#include "classnll.h"
+#include "math/numeric.h"
 #include <cassert>
 
 namespace nano

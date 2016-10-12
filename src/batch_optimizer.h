@@ -1,7 +1,7 @@
 #pragma once
 
 #include "problem.h"
-#include "manager.hpp"
+#include "manager.h"
 #include "batch/params.h"
 
 namespace nano

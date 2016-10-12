@@ -1,10 +1,10 @@
-#include "utest.hpp"
-#include "math/random.hpp"
-#include "math/numeric.hpp"
-#include "math/epsilon.hpp"
+#include "utest.h"
+#include "math/random.h"
+#include "math/numeric.h"
+#include "math/epsilon.h"
+#include "text/to_string.h"
 #include "functions/test.h"
 #include "batch_optimizer.h"
-#include "text/to_string.hpp"
 #include <iomanip>
 
 using namespace nano;

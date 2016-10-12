@@ -1,7 +1,7 @@
 #pragma once
 
 #include "scalar.h"
-#include "tensor/tensor.hpp"
+#include "tensor/tensor.h"
 
 namespace nano
 {

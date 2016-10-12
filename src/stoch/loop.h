@@ -1,8 +1,8 @@
 #pragma once
 
 #include "params.h"
-#include "math/tune.hpp"
-#include "math/momentum.hpp"
+#include "math/tune.h"
+#include "math/momentum.h"
 
 namespace nano
 {

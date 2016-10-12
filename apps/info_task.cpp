@@ -1,9 +1,9 @@
 #include "nano.h"
 #include "task_util.h"
 #include "text/cmdline.h"
-#include "math/numeric.hpp"
-#include "measure_and_log.hpp"
-#include "text/concatenate.hpp"
+#include "math/numeric.h"
+#include "measure_and_log.h"
+#include "text/concatenate.h"
 
 int main(int argc, const char *argv[])
 {

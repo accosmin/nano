@@ -1,5 +1,5 @@
+#include "util.h"
 #include "rosenbrock.h"
-#include "util.hpp"
 
 namespace nano
 {

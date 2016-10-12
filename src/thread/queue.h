@@ -4,7 +4,7 @@
 #include <mutex>
 #include <future>
 #include <cstddef>
-#include "section.hpp"
+#include "section.h"
 #include <condition_variable>
 
 namespace nano

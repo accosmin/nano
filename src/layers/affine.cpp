@@ -1,10 +1,10 @@
 #include "affine.h"
-#include "math/random.hpp"
-#include "math/numeric.hpp"
-#include "tensor/numeric.hpp"
-#include "text/to_params.hpp"
-#include "text/from_params.hpp"
-#include "tensor/serialize.hpp"
+#include "math/random.h"
+#include "math/numeric.h"
+#include "tensor/numeric.h"
+#include "text/to_params.h"
+#include "text/from_params.h"
+#include "tensor/serialize.h"
 
 namespace nano
 {

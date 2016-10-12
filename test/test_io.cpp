@@ -1,9 +1,9 @@
-#include "utest.hpp"
+#include "utest.h"
 #include "io/buffer.h"
 #include "io/imstream.h"
 #include "io/ibstream.h"
 #include "io/obstream.h"
-#include "math/random.hpp"
+#include "math/random.h"
 #include <cstdio>
 #include <fstream>
 

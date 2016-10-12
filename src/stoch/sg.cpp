@@ -1,6 +1,6 @@
 #include "sg.h"
+#include "loop.h"
 #include "lrate.h"
-#include "loop.hpp"
 
 namespace nano
 {

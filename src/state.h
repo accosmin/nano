@@ -3,7 +3,7 @@
 #include <limits>
 #include "arch.h"
 #include "tensor.h"
-#include "text/enum_string.hpp"
+#include "text/enum_string.h"
 
 namespace nano
 {

@@ -1,5 +1,5 @@
 #include "version.h"
-#include "text/to_string.hpp"
+#include "text/to_string.h"
 
 std::string nano::version()
 {

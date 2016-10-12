@@ -1,8 +1,8 @@
 #pragma once
 
-#include "tune_result.hpp"
-#include "tune_grid_space.hpp"
-#include "tune_finite_space.hpp"
+#include "tune_result.h"
+#include "tune_grid_space.h"
+#include "tune_finite_space.h"
 
 namespace nano
 {

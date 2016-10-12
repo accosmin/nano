@@ -1,5 +1,5 @@
 #include "ngd.h"
-#include "loop.hpp"
+#include "loop.h"
 
 namespace nano
 {

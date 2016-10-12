@@ -1,8 +1,8 @@
+#include "utest.h"
 #include "scalar.h"
-#include "utest.hpp"
-#include "math/tune.hpp"
-#include "math/random.hpp"
-#include "math/epsilon.hpp"
+#include "math/tune.h"
+#include "math/random.h"
+#include "math/epsilon.h"
 
 using namespace nano;
 

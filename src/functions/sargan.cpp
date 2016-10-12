@@ -1,6 +1,5 @@
+#include "util.h"
 #include "sargan.h"
-#include "util.hpp"
-#include "math/numeric.hpp"
 
 namespace nano
 {

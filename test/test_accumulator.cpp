@@ -1,8 +1,8 @@
 #include "nano.h"
-#include "utest.hpp"
+#include "utest.h"
 #include "accumulator.h"
-#include "math/numeric.hpp"
-#include "math/epsilon.hpp"
+#include "math/numeric.h"
+#include "math/epsilon.h"
 #include "layers/make_layers.h"
 
 NANO_BEGIN_MODULE(test_accumulator)

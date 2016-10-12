@@ -2,7 +2,7 @@
 
 #include <map>
 #include <stdexcept>
-#include "clonable.hpp"
+#include "clonable.h"
 
 namespace nano
 {

@@ -1,11 +1,11 @@
+#include "loop.h"
 #include "batch.h"
 #include "model.h"
-#include "loop.hpp"
-#include "math/numeric.hpp"
-#include "math/epsilon.hpp"
+#include "math/numeric.h"
+#include "math/epsilon.h"
+#include "text/to_params.h"
 #include "batch_optimizer.h"
-#include "text/to_params.hpp"
-#include "text/from_params.hpp"
+#include "text/from_params.h"
 
 namespace nano
 {

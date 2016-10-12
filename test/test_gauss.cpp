@@ -1,5 +1,5 @@
-#include "utest.hpp"
-#include "math/gauss.hpp"
+#include "utest.h"
+#include "math/gauss.h"
 
 NANO_BEGIN_MODULE(test_gauss)
 

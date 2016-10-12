@@ -3,8 +3,8 @@
 #include "vision/warp.h"
 #include "vision/image.h"
 #include "text/filesystem.h"
-#include "text/to_string.hpp"
-#include "measure_and_log.hpp"
+#include "text/to_string.h"
+#include "measure_and_log.h"
 
 int main(int argc, const char *argv[])
 {

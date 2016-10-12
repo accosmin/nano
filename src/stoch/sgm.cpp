@@ -1,6 +1,6 @@
 #include "sgm.h"
-#include "loop.hpp"
-#include "math/momentum.hpp"
+#include "loop.h"
+#include "math/momentum.h"
 
 namespace nano
 {

@@ -1,5 +1,5 @@
-#include "utest.hpp"
-#include "math/random.hpp"
+#include "utest.h"
+#include "math/random.h"
 
 NANO_BEGIN_MODULE(test_random)
 

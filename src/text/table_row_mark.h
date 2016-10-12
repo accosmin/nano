@@ -2,7 +2,7 @@
 
 #include "scalar.h"
 #include "table_row.h"
-#include "from_string.hpp"
+#include "from_string.h"
 #include <algorithm>
 #include <cassert>
 

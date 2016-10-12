@@ -2,11 +2,11 @@
 
 #include "state.h"
 #include "problem.h"
-#include "math/tune.hpp"
+#include "math/tune.h"
 #include "accumulator.h"
 #include "task_iterator.h"
 #include "trainer_result.h"
-#include "text/to_string.hpp"
+#include "text/to_string.h"
 
 #include "logger.h"
 

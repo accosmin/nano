@@ -1,7 +1,7 @@
 #pragma once
 
-#include "task_mem.hpp"
-#include "math/hash.hpp"
+#include "task_mem.h"
+#include "math/hash.h"
 #include "vision/image.h"
 
 namespace nano

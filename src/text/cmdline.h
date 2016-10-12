@@ -1,7 +1,7 @@
 #pragma once
 
-#include "to_string.hpp"
-#include "from_string.hpp"
+#include "to_string.h"
+#include "from_string.h"
 #include <memory>
 
 namespace nano

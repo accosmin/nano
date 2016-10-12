@@ -2,7 +2,7 @@
 
 #include "tensor.h"
 #include "trainer_state.h"
-#include "text/enum_string.hpp"
+#include "text/enum_string.h"
 
 namespace nano
 {

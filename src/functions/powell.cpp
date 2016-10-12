@@ -1,5 +1,5 @@
+#include "util.h"
 #include "powell.h"
-#include "util.hpp"
 
 namespace nano
 {

@@ -1,5 +1,5 @@
+#include "util.h"
 #include "mccormick.h"
-#include "util.hpp"
 #include <cmath>
 
 namespace nano

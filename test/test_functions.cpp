@@ -1,8 +1,8 @@
-#include "utest.hpp"
-#include "math/random.hpp"
-#include "math/epsilon.hpp"
+#include "utest.h"
+#include "math/random.h"
+#include "math/epsilon.h"
 #include "functions/test.h"
-#include "tensor/numeric.hpp"
+#include "tensor/numeric.h"
 
 using namespace nano;
 

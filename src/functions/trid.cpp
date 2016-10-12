@@ -1,5 +1,5 @@
 #include "trid.h"
-#include "util.hpp"
+#include "util.h"
 
 namespace nano
 {

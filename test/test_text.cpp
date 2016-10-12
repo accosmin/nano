@@ -1,9 +1,9 @@
-#include "utest.hpp"
-#include "text/align.hpp"
+#include "utest.h"
+#include "text/align.h"
 #include "text/algorithm.h"
-#include "text/to_params.hpp"
-#include "text/from_params.hpp"
-#include "text/concatenate.hpp"
+#include "text/to_params.h"
+#include "text/from_params.h"
+#include "text/concatenate.h"
 #include <list>
 #include <set>
 

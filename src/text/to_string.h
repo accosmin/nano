@@ -1,6 +1,6 @@
 #pragma once
 
-#include "enum_string.hpp"
+#include "enum_string.h"
 
 namespace nano
 {

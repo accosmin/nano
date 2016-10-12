@@ -1,7 +1,7 @@
 #pragma once
 
 #include "problem.h"
-#include "math/numeric.hpp"
+#include "math/numeric.h"
 
 namespace nano
 {

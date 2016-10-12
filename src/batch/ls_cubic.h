@@ -1,7 +1,7 @@
 #pragma once
 
 #include "ls_step.h"
-#include "math/cubic.hpp"
+#include "math/cubic.h"
 #include <utility>
 
 namespace nano

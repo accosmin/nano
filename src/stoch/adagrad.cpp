@@ -1,6 +1,6 @@
+#include "loop.h"
 #include "adagrad.h"
-#include "loop.hpp"
-#include "math/average.hpp"
+#include "math/average.h"
 
 namespace nano
 {

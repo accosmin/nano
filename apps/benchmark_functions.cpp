@@ -1,9 +1,9 @@
 #include "timer.h"
 #include "logger.h"
-#include "measure.hpp"
+#include "measure.h"
 #include "text/table.h"
 #include "text/cmdline.h"
-#include "math/stats.hpp"
+#include "math/stats.h"
 #include "functions/test.h"
 #include <iostream>
 

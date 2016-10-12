@@ -1,8 +1,8 @@
 #pragma once
 
 #include "arch.h"
+#include "manager.h"
 #include "protocol.h"
-#include "manager.hpp"
 
 namespace nano
 {
