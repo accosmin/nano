@@ -1,9 +1,9 @@
 list(APPEND libnano_sources
-        ${CMAKE_CURRENT_SOURCE_DIR}/bilinear.hpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/bilinear.h
         ${CMAKE_CURRENT_SOURCE_DIR}/color.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/convolve.hpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/convolve.h
         ${CMAKE_CURRENT_SOURCE_DIR}/geom.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/gradient.hpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/gradient.h
         ${CMAKE_CURRENT_SOURCE_DIR}/image.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/image_grid.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/image_grid.h

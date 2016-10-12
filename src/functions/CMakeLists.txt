@@ -24,7 +24,7 @@ list(APPEND libnano_sources
         ${CMAKE_CURRENT_SOURCE_DIR}/styblinski_tang.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/trid.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/zakharov.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/util.hpp)
+        ${CMAKE_CURRENT_SOURCE_DIR}/util.h)
 
 set(libnano_sources "${libnano_sources}" PARENT_SCOPE)
 

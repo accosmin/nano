@@ -1,10 +1,10 @@
 list(APPEND libnano_sources
-        ${CMAKE_CURRENT_SOURCE_DIR}/loopi.hpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/loopit.hpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/loopi.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/loopit.h
         ${CMAKE_CURRENT_SOURCE_DIR}/pool.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/pool.h
         ${CMAKE_CURRENT_SOURCE_DIR}/queue.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/section.hpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/section.h
         ${CMAKE_CURRENT_SOURCE_DIR}/worker.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/worker.h)
 
