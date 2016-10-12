@@ -20,14 +20,26 @@ namespace nano
         {
         public:
 
+                using tactivation = activation_layer_t<teval_op, tgrad_op>;
+
                 // constructor
-                explicit activation_layer_t(const string_t& parameters) :
+                explicit activation_layer_t(const string_t& parameters = string_t()) :
                         layer_t(parameters)
                 {
                 }
 
                 // destructor
                 virtual ~activation_layer_t() {}
+
+                // clone
+                virtual rlayer_t clone(const string_t& parameters) const final
+                {
+                        return std::make_unique<tactivation>(parameters);
+                }
+                virtual rlayer_t clone() const final
+                {
+                        return std::make_unique<tactivation>(*this);
+                }
 
                 // resize to process new tensors of the given type
                 virtual tensor_size_t resize(const tensor3d_t& tensor) final

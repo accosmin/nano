@@ -28,18 +28,9 @@ namespace nano
         ///
         /// \brief identity activation function
         ///
-        struct unit_activation_layer_t : public activation_layer_t
+        using unit_activation_layer_t = activation_layer_t
         <
                 detail::unit_activation_layer_eval_t,
                 detail::unit_activation_layer_grad_t
-        >
-        {
-                NANO_MAKE_CLONABLE(unit_activation_layer_t)
-
-                // constructor
-                explicit unit_activation_layer_t(const string_t& parameters = string_t()) :
-                        activation_layer_t(parameters)
-                {
-                }
-        };
+        >;
 }
