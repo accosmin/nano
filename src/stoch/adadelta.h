@@ -20,7 +20,7 @@ namespace nano
                 ///
                 /// \brief minimize starting from the initial guess x0.
                 ///
-                virtual state_t minimize(const stoch_params_t&, const problem_t&, const vector_t& x0) const final;
+                virtual state_t minimize(const stoch_params_t&, const problem_t&, const vector_t& x0) const override final;
 
                 ///
                 /// \brief minimize starting from the initial guess x0 using the given hyper-parameters.

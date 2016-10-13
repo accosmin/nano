@@ -20,7 +20,7 @@ namespace nano
 
         private:
 
-                virtual bool populate() final;
+                virtual bool populate() override final;
 
         private:
 

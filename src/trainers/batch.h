@@ -21,6 +21,6 @@ namespace nano
                 // train the model
                 virtual trainer_result_t train(
                         const task_t&, const size_t fold, const size_t nthreads, const loss_t&, const criterion_t&,
-                        model_t&) const final;
+                        model_t&) const override final;
         };
 }

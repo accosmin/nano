@@ -22,17 +22,17 @@ namespace nano
                 ///
                 /// \brief create an object of the same type with the given configuration
                 ///
-                virtual std::unique_ptr<batch_optimizer_t> clone(const string_t& configuration) const final;
+                virtual std::unique_ptr<batch_optimizer_t> clone(const string_t& configuration) const override final;
 
                 ///
                 /// \brief create an object clone
                 ///
-                virtual std::unique_ptr<batch_optimizer_t> clone() const final;
+                virtual std::unique_ptr<batch_optimizer_t> clone() const override final;
 
                 ///
                 /// \brief minimize starting from the initial guess x0.
                 ///
-                virtual state_t minimize(const batch_params_t&, const problem_t&, const vector_t& x0) const final;
+                virtual state_t minimize(const batch_params_t&, const problem_t&, const vector_t& x0) const override final;
         };
 
         // create various CGD algorithms

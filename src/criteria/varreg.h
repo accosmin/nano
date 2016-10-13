@@ -33,35 +33,35 @@ namespace nano
                 ///
                 /// \brief cumulated loss value
                 ///
-                virtual scalar_t value() const final;
+                virtual scalar_t value() const override final;
 
                 ///
                 /// \brief cumulated gradient
                 ///
-                virtual vector_t vgrad() const final;
+                virtual vector_t vgrad() const override final;
 
                 ///
                 /// \brief check if the criterion has a regularization term to tune
                 ///
-                virtual bool can_regularize() const final;
+                virtual bool can_regularize() const override final;
 
         protected:
 
                 ///
                 /// \brief reset statistics
                 ///
-                virtual void clear() final;
+                virtual void clear() override final;
 
                 ///
                 /// \brief update statistics with the loss value/error/gradient for a sample
                 ///
-                virtual void accumulate(scalar_t value) final;
-                virtual void accumulate(const vector_t& vgrad, scalar_t value) final;
+                virtual void accumulate(scalar_t value) override final;
+                virtual void accumulate(const vector_t& vgrad, scalar_t value) override final;
 
                 ///
                 /// \brief update statistics with cumulated samples
                 ///
-                virtual void accumulate(const criterion_t& other) final;
+                virtual void accumulate(const criterion_t& other) override final;
 
         private:
 

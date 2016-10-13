@@ -25,20 +25,20 @@ namespace nano
                 explicit convolution_layer_t(const string_t& parameters = string_t());
 
                 // resize to process new tensors of the given type
-                virtual tensor_size_t resize(const tensor3d_t& tensor) final;
+                virtual tensor_size_t resize(const tensor3d_t& tensor) override final;
 
                 // reset parameters
-                virtual void zero_params() final;
-                virtual void random_params(scalar_t min, scalar_t max) final;
+                virtual void zero_params() override final;
+                virtual void random_params(scalar_t min, scalar_t max) override final;
 
                 // serialize parameters
-                virtual scalar_t* save_params(scalar_t* params) const final;
-                virtual const scalar_t* load_params(const scalar_t* params) final;
+                virtual scalar_t* save_params(scalar_t* params) const override final;
+                virtual const scalar_t* load_params(const scalar_t* params) override final;
 
                 // process inputs (compute outputs & gradients)
-                virtual const tensor3d_t& output(const tensor3d_t& input) final;
-                virtual const tensor3d_t& ginput(const tensor3d_t& output) final;
-                virtual void gparam(const tensor3d_t& output, scalar_t* gradient) final;
+                virtual const tensor3d_t& output(const tensor3d_t& input) override final;
+                virtual const tensor3d_t& ginput(const tensor3d_t& output) override final;
+                virtual void gparam(const tensor3d_t& output, scalar_t* gradient) override final;
 
                 // access functions
                 virtual tensor_size_t idims() const final { return m_idata.size<0>(); }

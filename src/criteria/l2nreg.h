@@ -31,17 +31,17 @@ namespace nano
                 ///
                 /// \brief cumulated loss value
                 ///
-                virtual scalar_t value() const final;
+                virtual scalar_t value() const override final;
 
                 ///
                 /// \brief cumulated gradient
                 ///
-                virtual vector_t vgrad() const final;
+                virtual vector_t vgrad() const override final;
 
                 ///
                 /// \brief check if the criterion has a regularization term to tune
                 ///
-                virtual bool can_regularize() const final;
+                virtual bool can_regularize() const override final;
         };
 
         template <typename tcriterion>

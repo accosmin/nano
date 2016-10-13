@@ -22,7 +22,7 @@ namespace nano
 
         private:
 
-                virtual bool populate(const string_t& dir) override;
+                virtual bool populate(const string_t& dir) override final;
 
         private:
 

@@ -35,37 +35,37 @@ namespace nano
                 ///
                 /// \brief compute the model's output
                 ///
-                virtual const tensor3d_t& output(const tensor3d_t& input) final;
+                virtual const tensor3d_t& output(const tensor3d_t& input) override final;
 
                 ///
                 /// \brief compute the model's gradient wrt parameters
                 ///
-                virtual const vector_t& gparam(const vector_t& output) final;
+                virtual const vector_t& gparam(const vector_t& output) override final;
                 const vector_t& gparam(const tensor3d_t& output);
 
                 ///
                 /// \brief compute the model's gradient wrt inputs
                 ///
-                virtual const tensor3d_t& ginput(const vector_t& output) final;
+                virtual const tensor3d_t& ginput(const vector_t& output) override final;
                 const tensor3d_t& ginput(const tensor3d_t& output);
 
                 ///
                 /// \brief retrieve timing information regarding various components
                 ///
-                virtual timings_t timings() const final;
+                virtual timings_t timings() const override final;
 
                 ///
                 /// \brief save/load/initialize parameters
                 ///
-                virtual bool load_params(const vector_t& x) final;
-                virtual bool save_params(vector_t& x) const final;
-                virtual void zero_params() final;
-                virtual void random_params() final;
+                virtual bool load_params(const vector_t& x) override final;
+                virtual bool save_params(vector_t& x) const override final;
+                virtual void zero_params() override final;
+                virtual void random_params() override final;
 
                 ///
                 /// \brief number of parameters
                 ///
-                virtual tensor_size_t psize() const final;
+                virtual tensor_size_t psize() const override final;
 
                 ///
                 /// \brief manage layers
@@ -75,7 +75,7 @@ namespace nano
         protected:
 
                 // resize to new inputs/outputs, returns the number of parameters
-                virtual tensor_size_t resize(bool verbose) final;
+                virtual tensor_size_t resize(bool verbose) override final;
 
         private:
 
