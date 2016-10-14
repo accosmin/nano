@@ -40,22 +40,23 @@ NANO_CASE(enqueue)
 
                 std::mutex mutex;
 
-                section_t<future_t> futures;
-                for (size_t j = 0; j < n_tasks; ++ j)
                 {
-                        futures.push_back(pool.enqueue([=, &mutex, &tasks_done]()
+                        section_t<future_t> futures;
+                        for (size_t j = 0; j < n_tasks; ++ j)
                         {
-                                const size_t sleep1 = nano::random_t<size_t>(1, 5)();
-                                std::this_thread::sleep_for(std::chrono::milliseconds(sleep1));
-
+                                futures.push_back(pool.enqueue([=, &mutex, &tasks_done]()
                                 {
-                                        const std::lock_guard<std::mutex> lock(mutex);
+                                        const size_t sleep1 = nano::random_t<size_t>(1, 5)();
+                                        std::this_thread::sleep_for(std::chrono::milliseconds(sleep1));
 
-                                        tasks_done.push_back(j + 1);
-                                }
-                        }));
+                                        {
+                                                const std::lock_guard<std::mutex> lock(mutex);
+
+                                                tasks_done.push_back(j + 1);
+                                        }
+                                }));
+                        }
                 }
-                futures.wait();
 
                 NANO_CHECK_EQUAL(pool.n_workers(), n_threads);
                 NANO_CHECK_EQUAL(pool.n_active_workers(), n_active_workers);

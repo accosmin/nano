@@ -5,10 +5,10 @@
 namespace nano
 {
         ///
-        /// \brief RAII object to wait for a given set of futures.
+        /// \brief RAII object to wait for a given set of futures (aka barrier).
         ///
         template <typename tfuture>
-        class section_t : public std::vector<tfuture>
+        class section_t
         {
         public:
 
@@ -17,18 +17,31 @@ namespace nano
                 ///
                 ~section_t()
                 {
+                        // block until all futures are done
                         wait();
                 }
 
                 ///
-                /// \brief block until all futures are done
+                /// \brief add a new future to wait for.
                 ///
+                void push_back(tfuture future)
+                {
+                        m_futures.emplace_back(std::move(future));
+                }
+
+        private:
+
                 void wait() const
                 {
-                        for (auto it = this->cbegin(), end = this->cend(); it != end; ++ it)
+                        for (const auto& future : m_futures)
                         {
-                                it->wait();
+                                future.wait();
                         }
                 }
+
+        private:
+
+                // attributes
+                std::vector<tfuture>    m_futures;
         };
 }
