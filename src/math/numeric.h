@@ -6,7 +6,7 @@
 namespace nano
 {
         ///
-        /// \brief square
+        /// \brief square: x^2
         ///
         template <typename tscalar>
         tscalar square(const tscalar value)
@@ -15,7 +15,7 @@ namespace nano
         }
 
         ///
-        /// \brief cube
+        /// \brief cube: x^3
         ///
         template <typename tscalar>
         tscalar cube(const tscalar value)
@@ -24,7 +24,7 @@ namespace nano
         }
 
         ///
-        /// \brief quartic
+        /// \brief quartic: x^4
         ///
         template <typename tscalar>
         tscalar quartic(const tscalar value)

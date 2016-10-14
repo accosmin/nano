@@ -50,8 +50,8 @@ static void check_function(const function_t& function)
                         const auto g = state.convergence_criteria();
 
                         const auto can_eps = id != "ngd";
-                        const auto g_thres = can_eps ? epsilon3<scalar_t>() : std::cbrt(epsilon3<scalar_t>());
-                        const auto x_thres = std::cbrt(epsilon3<scalar_t>());
+                        const auto g_thres = (can_eps ? scalar_t(1) : scalar_t(1e+3)) * epsilon3<scalar_t>();
+                        const auto x_thres = (can_eps ? scalar_t(1) : scalar_t(1e+2)) * std::cbrt(epsilon3<scalar_t>());
 
                         // ignore out-of-domain solutions
                         if (!function.is_valid(x))
