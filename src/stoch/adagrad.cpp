@@ -1,6 +1,5 @@
 #include "loop.h"
 #include "adagrad.h"
-#include "math/average.h"
 
 namespace nano
 {
@@ -20,7 +19,7 @@ namespace nano
                 assert(problem.size() == x0.size());
 
                 // second-order gradient momentum
-                average_vector_t<vector_t> gavg(x0.size());
+                vector_t gsum2 = vector_t::Zero(x0.size());
 
                 const auto op_iter = [&] (state_t& cstate)
                 {
@@ -28,10 +27,9 @@ namespace nano
                         const scalar_t alpha = alpha0;
 
                         // descent direction
-                        gavg.update(cstate.g.array().square());
+                        gsum2.array() += cstate.g.array().square();
 
-                        cstate.d = -cstate.g.array() /
-                                   (epsilon + gavg.value().array()).sqrt();
+                        cstate.d = -cstate.g.array() / (epsilon + gsum2.array()).sqrt();
 
                         // update solution
                         cstate.update(problem, alpha);
