@@ -65,6 +65,10 @@ namespace nano
 
         private:
 
+                void params_changed();
+
+        private:
+
                 // attributes
                 tensor3d_t      m_idata;        ///< input buffer:              idims x irows x icols
                 tensor3d_t      m_odata;        ///< output buffer:             odims x orows x ocols
@@ -74,10 +78,12 @@ namespace nano
                 tensor4d_t      m_kdata;        ///< convolution kernels:       odims x (idims/kconn) x krows x kcols
                 vector_t        m_bdata;        ///< convolution bias:          odims
 
-                tensor3d_t      m_idata_toe;    ///< toeplitz-like matrices:    idims x (krows x kcols) x (orows x ocols)
+                tensor3d_t      m_idata_toe;    ///< toeplitz-like matrices:    idims x (krows*kcols) x (orows*ocols)
+                tensor4d_t      m_kdata_inv;    ///< convolution kernels:       idims x (odims/kconn) x krows x kcols
 
-                matrix_t        m_toe_oidata, m_toe_oodata, m_toe_okdata;
-                matrix_t        m_toe_iidata, m_toe_iodata, m_toe_ikdata;
-                matrix_t        m_toe_kidata, m_toe_kkdata, m_toe_kodata;
+                // todo: these should be removed! use directly Eigen calls to map the output buffers!
+                matrix_t        m_toe_oodata;
+                matrix_t        m_toe_iidata, m_toe_iodata;
+                matrix_t        m_toe_kkdata, m_toe_kodata;
         };
 }
