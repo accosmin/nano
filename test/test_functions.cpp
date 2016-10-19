@@ -17,7 +17,7 @@ static void test_function(const function_t& function)
         NANO_CHECK_GREATER_EQUAL(dims, function.min_dims());
         NANO_CHECK_GREATER_EQUAL(function.max_dims(), dims);
 
-        auto rgen = make_rng(scalar_t(-1), scalar_t(+1));
+        auto rgen = make_rng(scalar_t(-0.5), scalar_t(+0.5));
 
         bool is_convex = function.is_convex();
         for (size_t t = 0; t < trials; ++ t)
