@@ -65,7 +65,7 @@ namespace benchmark
                 }
 
                 table.sort<scalar_t>(table_t::sorting::asc, {2, 0});
-                table.print(std::cout);
+                std::cout << table;
         }
 
         template

@@ -250,7 +250,7 @@ int main(int argc, const char* argv[])
                          basename, basepath, table);
 
                 // show results
-                table.print(std::cout);
+                std::cout << table;
         }
 
         // OK

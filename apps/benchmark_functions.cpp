@@ -60,7 +60,7 @@ int main(int argc, const char* argv[])
                 eval_func(function, table);
         });
 
-        table.print(std::cout);
+        std::cout << table;
 
         // OK
         log_info() << done;

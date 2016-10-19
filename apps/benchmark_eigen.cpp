@@ -411,7 +411,7 @@ int main(int argc, const char* argv[])
                         });
                 }
 #endif
-                table.print(std::cout);
+                std::cout << table;
         }
         if (level2)
         {
@@ -440,7 +440,7 @@ int main(int argc, const char* argv[])
                         });
                 }
 #endif
-                table.print(std::cout);
+                std::cout << table;
         }
         if (level3)
         {
@@ -465,7 +465,7 @@ int main(int argc, const char* argv[])
                         });
                 }
 #endif
-                table.print(std::cout);
+                std::cout << table;
         }
 
 #ifdef NANO_WITH_OPENCL

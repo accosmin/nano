@@ -1,6 +1,5 @@
 #include "align.h"
 #include "table.h"
-#include <cassert>
 #include <numeric>
 #include <ostream>
 
@@ -10,6 +9,11 @@ namespace nano
                 m_title(title)
         {
                 m_rows.reserve(1024);
+        }
+
+        const string_t& table_t::title() const
+        {
+                return m_title;
         }
 
         table_header_t& table_t::header()
@@ -42,92 +46,88 @@ namespace nano
                 m_rows.clear();
         }
 
-        size_t table_t::name_colsize() const
+        std::ostream& operator<<(std::ostream& os, const table_t& table)
         {
-                size_t colsize = m_title.size();
-                for (const auto& row : m_rows)
+                const bool use_row_delim = false;
+
+                // size of the name column (in characters)
+                const size_t namesize = [&] ()
                 {
-                        colsize = std::max(colsize, row.name().size());
-                }
-
-                return colsize;
-        }
-
-        sizes_t table_t::value_colsizes() const
-        {
-                sizes_t colsizes(cols(), 0);
-
-                for (size_t c = 0; c < cols(); ++ c)
-                {
-                        colsizes[c] = std::max(colsizes[c], m_header[c].size());
-                }
-
-                for (const auto& row : m_rows)
-                {
-                        assert(cols() == row.size());
-                        for (size_t c = 0; c < cols(); ++ c)
+                        size_t colsize = table.title().size();
+                        for (size_t r = 0; r < table.rows(); ++ r)
                         {
-                                colsizes[c] = std::max(colsizes[c], row.value(c).size() + row.marking(c).size());
+                                colsize = std::max(colsize, table.row(r).name().size());
                         }
-                }
 
-                return colsizes;
-        }
+                        return colsize;
+                }();
 
-        void table_t::print_row_delim(std::ostream& os) const
-        {
-                const auto namesize = name_colsize();
-                const auto colsizes = value_colsizes();
-
-                os << "|" << string_t(namesize + 2, '-');
-                for (size_t c = 0; c < cols(); ++ c)
+                // size of the value columns (in characters)
+                const sizes_t colsizes = [&] ()
                 {
-                        os << "+" << string_t(colsizes[c] + 2, '-');
-                }
-                os << "|" << std::endl;
-        }
+                        sizes_t colsizes(table.cols(), 0);
+                        for (size_t c = 0; c < table.cols(); ++ c)
+                        {
+                                colsizes[c] = std::max(colsizes[c], table.header()[c].size());
+                        }
+                        for (size_t r = 0; r < table.rows(); ++ r)
+                        {
+                                const auto& row = table.row(r);
+                                for (size_t c = 0; c < std::min(table.cols(), row.size()); ++ c)
+                                {
+                                        colsizes[c] = std::max(colsizes[c], row.value(c).size() + row.marking(c).size());
+                                }
+                        }
 
-        void table_t::print(std::ostream& os, const bool use_row_delim) const
-        {
-                // size of name & value columns (in characters)
-                const auto namesize = name_colsize();
-                const auto colsizes = value_colsizes();
+                        return colsizes;
+                }();
 
+                // size of the row (in characters)
                 const auto rowsize =
                         namesize + 2 +
-                        cols() * 3 +
+                        table.cols() * 3 +
                         std::accumulate(colsizes.begin(), colsizes.end(), size_t(0));
 
-                // display header
-                print_row_delim(os);
-
-                os << nano::align("| " + m_title, namesize + 3);
-                for (size_t c = 0; c < cols(); ++ c)
+                //
+                const auto print_row_delim = [&] ()
                 {
-                        os << nano::align("| " + m_header[c], colsizes[c] + 3);
+                        os << "|" << string_t(namesize + 2, '-');
+                        for (size_t c = 0; c < table.cols(); ++ c)
+                        {
+                                os << "+" << string_t(colsizes[c] + 2, '-');
+                        }
+                        os << "|" << std::endl;
+                };
+
+                // display header
+                print_row_delim();
+                os << nano::align("| " + table.title(), namesize + 3);
+                for (size_t c = 0; c < table.cols(); ++ c)
+                {
+                        os << nano::align("| " + table.header()[c], colsizes[c] + 3);
                 }
                 os << "|" << std::endl;
-
-                print_row_delim(os);
+                print_row_delim();
 
                 // display rows
-                for (size_t r = 0; r < m_rows.size(); ++ r)
+                for (size_t r = 0; r < table.rows(); ++ r)
                 {
-                        const auto& row = m_rows[r];
+                        const auto& row = table.row(r);
 
-                        if (r > 0 && r < m_rows.size() && use_row_delim)
+                        if (r > 0 && r < table.rows() && use_row_delim)
                         {
                                 os << string_t(rowsize, '-') << std::endl;
                         }
 
                         os << nano::align("| " + row.name(), namesize + 3);
-                        for (size_t c = 0; c < cols(); ++ c)
+                        for (size_t c = 0; c < std::min(table.cols(), row.size()); ++ c)
                         {
                                 os << nano::align("| " + row.value(c) + row.marking(c), colsizes[c] + 3);
                         }
                         os << "|" << std::endl;
                 }
+                print_row_delim();
 
-                print_row_delim(os);
+                return os;
         }
 }

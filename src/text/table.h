@@ -8,8 +8,15 @@
 
 namespace nano
 {
+        class table_t;
+
         ///
-        /// \brief collects & formats for ASCII display tabular data
+        /// \brief streaming operator.
+        ///
+        NANO_PUBLIC std::ostream& operator<<(std::ostream&, const table_t&);
+
+        ///
+        /// \brief collects & formats for ASCII display tabular data.
         ///
         class NANO_PUBLIC table_t
         {
@@ -67,34 +74,13 @@ namespace nano
                 void mark(const tmarker& marker, const char* marker_string = " (*)");
 
                 ///
-                /// \brief pretty-print its content
-                ///
-                void print(std::ostream& os, const bool use_row_delim = false) const;
-
-                ///
                 /// \brief access functions
                 ///
-                std::size_t cols() const;
-                std::size_t rows() const;
+                size_t cols() const;
+                size_t rows() const;
+                const string_t& title() const;
                 const table_header_t& header() const;
                 const table_row_t& row(const std::size_t index) const;
-
-        private:
-
-                ///
-                /// \brief compute the size of each value column
-                ///
-                sizes_t value_colsizes() const;
-
-                ///
-                /// \brief compute the size of the name column
-                ///
-                size_t name_colsize() const;
-
-                ///
-                /// \brief print a row delimiter
-                ///
-                void print_row_delim(std::ostream& os) const;
 
         private:
 

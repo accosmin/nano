@@ -76,7 +76,7 @@ int main(int argc, const char *argv[])
                 }
         }
 
-        table.print(std::cout);
+        std::cout << table;
 
         // OK
         log_info() << done;

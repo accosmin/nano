@@ -205,12 +205,12 @@ int main(int argc, const char *argv[])
         if (cmd_forward)
         {
                 ftable.mark(nano::make_table_mark_minimum_percentage_cols<size_t>(5));
-                ftable.print(std::cout);
+                std::cout << ftable;
         }
         if (cmd_backward)
         {
                 btable.mark(nano::make_table_mark_minimum_percentage_cols<size_t>(5));
-                btable.print(std::cout);
+                std::cout << btable;
         }
 
         // OK

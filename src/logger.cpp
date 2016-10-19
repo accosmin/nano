@@ -12,7 +12,7 @@ namespace nano
         {
                 log_time();
                 m_stream << std::fixed << std::setprecision(6);
-                m_stream << "[" << header << "] ";
+                m_stream << "|" << header << "] ";
         }
 
         logger_t::~logger_t()
@@ -71,7 +71,7 @@ namespace nano
                 {
                         char buffer[128];
                         strftime(buffer, 128, "%Y:%m:%d %H:%M:%S", localtime(&t));
-                        m_stream << "[" << buffer << "]";
+                        m_stream << "[" << buffer << "|";
                 }
         }
 }
