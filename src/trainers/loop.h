@@ -76,7 +76,7 @@ namespace nano
                                 << ",test=" << test
                                 << "," << config << ",batch=" << (it.end() - it.begin())
                                 << ",g=" << state.g.lpNorm<Eigen::Infinity>()
-                                << "]" << timer.elapsed() << ".";
+                                << "] " << timer.elapsed() << ".";
 
                         return !nano::is_done(ret, policy);
                 };

@@ -56,7 +56,7 @@ namespace nano
                                 const auto config = nano::append(sconfig, "lambda", lacc.lambda());
 
                                 log_info()
-                                        << "tune:train=" << train
+                                        << "[tune:train=" << train
                                         << "," << config << ",batch=" << (it.end() - it.begin())
                                         << "] " << timer.elapsed() << ".";
 
