@@ -45,13 +45,6 @@ namespace nano
 
         private:
 
-                ///
-                /// \brief log the current time
-                ///
-                void log_time();
-
-        private:
-
                 // attributes
                 std::ostream&   m_stream;       ///< stream to write into
                 std::streamsize m_precision;    ///< original precision to restore

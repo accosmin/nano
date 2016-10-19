@@ -10,9 +10,9 @@ namespace nano
                 m_precision(stream.precision()),
                 m_flush(flush)
         {
-                log_time();
+                const std::time_t t = std::time(nullptr);
+                m_stream << std::put_time(std::localtime(&t), "%c") << "|" << header << ": ";
                 m_stream << std::fixed << std::setprecision(6);
-                m_stream << "|" << header << "] ";
         }
 
         logger_t::~logger_t()
@@ -60,18 +60,5 @@ namespace nano
         {
                 m_stream.flush();
                 return *this;
-        }
-
-        void logger_t::log_time()
-        {
-                std::time_t t = std::time(nullptr);
-                {
-                        //m_stream << "[" << std::put_time(std::localtime(&t), "%c %Z") << "] ";
-                }
-                {
-                        char buffer[128];
-                        strftime(buffer, 128, "%Y:%m:%d %H:%M:%S", localtime(&t));
-                        m_stream << "[" << buffer << "|";
-                }
         }
 }
