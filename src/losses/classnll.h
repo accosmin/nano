@@ -1,31 +1,30 @@
 #pragma once
 
-#include "loss.h"
+#include "classification_single.h"
 
 namespace nano
 {
         ///
-        /// \brief class negative log-likelihood loss (single-class classification)
-        /// NB: also called cross-entropy loss
+        /// \brief class negative log-likelihood loss (also called cross-entropy loss).
         ///
-        class classnll_loss_t : public loss_t
+        namespace detail
         {
-        public:
+                struct classnll_t
+                {
+                        static scalar_t value(const vector_t& targets, const vector_t& scores)
+                        {
+                                return  std::log(scores.array().exp().sum()) -
+                                        scalar_t(0.5) * ((1 + targets.array()) * scores.array()).sum();
+                        }
 
-                NANO_MAKE_CLONABLE(classnll_loss_t)
+                        static vector_t vgrad(const vector_t& targets, const vector_t& scores)
+                        {
+                                return  scores.array().exp() / (scores.array().exp().sum()) -
+                                        scalar_t(0.5) * (1 + targets.array());
+                        }
+                };
+        }
 
-                // constructor
-                explicit classnll_loss_t(const string_t& = string_t());
-
-                // compute the error value
-                virtual scalar_t error(const vector_t& targets, const vector_t& scores) const override final;
-
-                // compute the loss value & derivatives
-                virtual scalar_t value(const vector_t& targets, const vector_t& scores) const override final;
-                virtual vector_t vgrad(const vector_t& targets, const vector_t& scores) const override final;
-
-                // predict label indices
-                virtual indices_t labels(const vector_t& scores) const override final;
-        };
+        using classnll_loss_t = classification_single_t<detail::classnll_t>;
 }
 

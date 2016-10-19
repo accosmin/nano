@@ -4,32 +4,25 @@
 
 namespace nano
 {
+        ///
+        /// \brief robust-to-noise Cauchy loss: log(1 + (target - score)^2).
+        ///
         namespace detail
         {
-                struct cauchy_value_t
+                struct cauchy_t
                 {
-                        scalar_t operator()(const vector_t& targets, const vector_t& scores) const
+                        static scalar_t value(const vector_t& targets, const vector_t& scores)
                         {
                                 return ((targets - scores).array().square() + 1).log().sum();
                         }
-                };
 
-                struct cauchy_vgrad_t
-                {
-                        vector_t operator()(const vector_t& targets, const vector_t& scores) const
+                        static vector_t vgrad(const vector_t& targets, const vector_t& scores)
                         {
                                 return 2 * (scores - targets).array() / (1 + (scores - targets).array().square());
                         }
                 };
         }
 
-        ///
-        /// \brief robust-to-noise Cauchy loss: log(1 + (t - y)^2).
-        ///
-        using cauchy_loss_t = regression_loss_t
-        <
-                detail::cauchy_value_t,
-                detail::cauchy_vgrad_t
-        >;
+        using cauchy_loss_t = regression_t<detail::cauchy_t>;
 }
 

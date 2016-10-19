@@ -1,29 +1,28 @@
 #pragma once
 
-#include "loss.h"
+#include "classification_multi.h"
 
 namespace nano
 {
         ///
-        /// \brief multi-class logistic loss: log(1 + exp(sum(-targets_k * scores_k, k)))
+        /// \brief multi-class logistic loss: log(1 + exp(sum(-targets_k * scores_k, k))).
         ///
-        class logistic_loss_t : public loss_t
+        namespace detail
         {
-        public:
+                struct logistic_t
+                {
+                        static scalar_t value(const vector_t& targets, const vector_t& scores)
+                        {
+                                return std::log1p(std::exp((-targets.array() * scores.array()).sum()));
+                        }
 
-                NANO_MAKE_CLONABLE(logistic_loss_t)
+                        static vector_t vgrad(const vector_t& targets, const vector_t& scores)
+                        {
+                                return  -targets.array() * std::exp((-targets.array() * scores.array()).sum()) /
+                                        (1 + std::exp((-targets.array() * scores.array()).sum()));
+                        }
+                };
+        }
 
-                // constructor
-                explicit logistic_loss_t(const string_t& = string_t());
-
-                // compute the error value
-                virtual scalar_t error(const vector_t& targets, const vector_t& scores) const override final;
-
-                // compute the loss value & derivatives
-                virtual scalar_t value(const vector_t& targets, const vector_t& scores) const override final;
-                virtual vector_t vgrad(const vector_t& targets, const vector_t& scores) const override final;
-
-                // predict label indices
-                virtual indices_t labels(const vector_t& scores) const override final;
-        };
+        using logistic_loss_t = classification_multi_t<detail::logistic_t>;
 }

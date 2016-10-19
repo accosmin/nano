@@ -1,18 +1,19 @@
 #pragma once
 
 #include "loss.h"
+#include "class.h"
 #include <cassert>
 
 namespace nano
 {
         ///
-        /// \brief (multivariate) regression loss that upper-bounds the L1-distance between target and score/output.
+        /// \brief (multiclass) classification loss that predicts the labels with positive scores.
         ///
         template <typename top>
-        struct regression_t : public loss_t
+        struct classification_multi_t : public loss_t
         {
-                explicit regression_t(const string_t& parameters = string_t()) : loss_t(parameters) {}
-                virtual ~regression_t() {}
+                explicit classification_multi_t(const string_t& parameters = string_t()) : loss_t(parameters) {}
+                virtual ~classification_multi_t() {}
 
                 virtual rloss_t clone(const string_t& parameters) const override final;
                 virtual rloss_t clone() const override final;
@@ -25,27 +26,29 @@ namespace nano
         };
 
         template <typename top>
-        rloss_t regression_t<top>::clone(const string_t& parameters) const
+        rloss_t classification_multi_t<top>::clone(const string_t& parameters) const
         {
-                return std::make_unique<regression_t<top>>(parameters);
+                return std::make_unique<classification_multi_t<top>>(parameters);
         }
 
         template <typename top>
-        rloss_t regression_t<top>::clone() const
+        rloss_t classification_multi_t<top>::clone() const
         {
-                return std::make_unique<regression_t<top>>(*this);
+                return std::make_unique<classification_multi_t<top>>(*this);
         }
 
         template <typename top>
-        scalar_t regression_t<top>::error(const vector_t& targets, const vector_t& scores) const
+        scalar_t classification_multi_t<top>::error(const vector_t& targets, const vector_t& scores) const
         {
                 assert(targets.size() == scores.size());
 
-                return (targets - scores).array().abs().sum();
+                const auto edges = targets.array() * scores.array();
+
+                return static_cast<scalar_t>((edges < std::numeric_limits<scalar_t>::epsilon()).count());
         }
 
         template <typename top>
-        scalar_t regression_t<top>::value(const vector_t& targets, const vector_t& scores) const
+        scalar_t classification_multi_t<top>::value(const vector_t& targets, const vector_t& scores) const
         {
                 assert(targets.size() == scores.size());
 
@@ -53,7 +56,7 @@ namespace nano
         }
 
         template <typename top>
-        vector_t regression_t<top>::vgrad(const vector_t& targets, const vector_t& scores) const
+        vector_t classification_multi_t<top>::vgrad(const vector_t& targets, const vector_t& scores) const
         {
                 assert(targets.size() == scores.size());
 
@@ -61,9 +64,9 @@ namespace nano
         }
 
         template <typename top>
-        indices_t regression_t<top>::labels(const vector_t&) const
+        indices_t classification_multi_t<top>::labels(const vector_t& scores) const
         {
-                return indices_t();
+                return class_labels(scores);
         }
 }
 
