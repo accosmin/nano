@@ -4,21 +4,21 @@
 
 namespace nano
 {
+        ///
+        /// \brief x/sqrt(1+x^2) activation function.
+        ///
         namespace detail
         {
-                struct snorm_activation_layer_eval_t
+                struct snorm_activation_t
                 {
                         template <typename tivector, typename tovector>
-                        void operator()(const tivector& idata, tovector&& odata) const
+                        static void output(const tivector& idata, tovector&& odata)
                         {
                                 odata = idata.array() / (1 + idata.array().square()).sqrt();
                         }
-                };
 
-                struct snorm_activation_layer_grad_t
-                {
                         template <typename tgvector, typename tiovector>
-                        void operator()(const tgvector& gdata, tiovector&& iodata) const
+                        static void ginput(const tgvector& gdata, tiovector&& iodata)
                         {
                                 iodata.array() = gdata.array() *
                                         (1 - iodata.array().square()) *
@@ -27,12 +27,5 @@ namespace nano
                 };
         }
 
-        ///
-        /// \brief x/sqrt(1+x^2) activation function
-        ///
-        using snorm_activation_layer_t = activation_layer_t
-        <
-                detail::snorm_activation_layer_eval_t,
-                detail::snorm_activation_layer_grad_t
-        >;
+        using snorm_activation_layer_t = activation_layer_t<detail::snorm_activation_t>;
 }

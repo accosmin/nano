@@ -4,33 +4,26 @@
 
 namespace nano
 {
+        ///
+        /// \brief hyperbolic tangent activation function.
+        ///
         namespace detail
         {
-                struct tanh_activation_layer_eval_t
+                struct tanh_activation_t
                 {
                         template <typename tivector, typename tovector>
-                        void operator()(const tivector& idata, tovector&& odata) const
+                        static void output(const tivector& idata, tovector&& odata)
                         {
                                 odata.array() = idata.array().tanh();
                         }
-                };
 
-                struct tanh_activation_layer_grad_t
-                {
                         template <typename tgvector, typename tiovector>
-                        void operator()(const tgvector& gdata, tiovector&& iodata) const
+                        static void ginput(const tgvector& gdata, tiovector&& iodata)
                         {
                                 iodata.array() = gdata.array() * (1 - iodata.array().square());
                         }
                 };
         }
 
-        ///
-        /// \brief hyperbolic tangent activation function
-        ///
-        using tanh_activation_layer_t = activation_layer_t
-        <
-                detail::tanh_activation_layer_eval_t,
-                detail::tanh_activation_layer_grad_t
-        >;
+        using tanh_activation_layer_t = activation_layer_t<detail::tanh_activation_t>;
 }

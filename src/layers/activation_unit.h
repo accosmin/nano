@@ -4,33 +4,26 @@
 
 namespace nano
 {
+        ///
+        /// \brief identity activation function.
+        ///
         namespace detail
         {
-                struct unit_activation_layer_eval_t
+                struct unit_activation_t
                 {
                         template <typename tivector, typename tovector>
-                        void operator()(const tivector& idata, tovector&& odata) const
+                        static void output(const tivector& idata, tovector&& odata)
                         {
                                 odata = idata;
                         }
-                };
 
-                struct unit_activation_layer_grad_t
-                {
                         template <typename tgvector, typename tiovector>
-                        void operator()(const tgvector& gdata, tiovector&& iodata) const
+                        static void ginput(const tgvector& gdata, tiovector&& iodata)
                         {
                                 iodata = gdata;
                         }
                 };
         }
 
-        ///
-        /// \brief identity activation function
-        ///
-        using unit_activation_layer_t = activation_layer_t
-        <
-                detail::unit_activation_layer_eval_t,
-                detail::unit_activation_layer_grad_t
-        >;
+        using unit_activation_layer_t = activation_layer_t<detail::unit_activation_t>;
 }

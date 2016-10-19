@@ -4,33 +4,26 @@
 
 namespace nano
 {
+        ///
+        /// \brief soft-plus (max approximation) activation function.
+        ///
         namespace detail
         {
-                struct softplus_activation_layer_eval_t
+                struct softplus_activation_t
                 {
                         template <typename tivector, typename tovector>
-                        void operator()(const tivector& idata, tovector&& odata) const
+                        static void output(const tivector& idata, tovector&& odata)
                         {
                                 odata.array() = (1 + idata.array().exp()).log();
                         }
-                };
 
-                struct softplus_activation_layer_grad_t
-                {
                         template <typename tgvector, typename tiovector>
-                        void operator()(const tgvector& gdata, tiovector&& iodata) const
+                        static void ginput(const tgvector& gdata, tiovector&& iodata)
                         {
                                 iodata.array() = gdata.array() * (1 - (- iodata.array()).exp());
                         }
                 };
         }
 
-        ///
-        /// \brief soft-plus (max approximation) activation function
-        ///
-        using softplus_activation_layer_t = activation_layer_t
-        <
-                detail::softplus_activation_layer_eval_t,
-                detail::softplus_activation_layer_grad_t
-        >;
+        using softplus_activation_layer_t = activation_layer_t<detail::softplus_activation_t>;
 }
