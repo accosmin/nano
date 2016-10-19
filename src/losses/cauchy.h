@@ -1,32 +1,35 @@
 #pragma once
 
-#include "loss.h"
+#include "regression.h"
 
 namespace nano
 {
-        ///
-        /// \brief Cauchy loss (single & multivariate regression)
-        ///
-        /// NB: robust to noise
-        ///
-        class cauchy_loss_t : public loss_t
+        namespace detail
         {
-        public:
+                struct cauchy_value_t
+                {
+                        scalar_t operator()(const vector_t& targets, const vector_t& scores) const
+                        {
+                                return ((targets - scores).array().square() + 1).log().sum();
+                        }
+                };
 
-                NANO_MAKE_CLONABLE(cauchy_loss_t)
+                struct cauchy_vgrad_t
+                {
+                        vector_t operator()(const vector_t& targets, const vector_t& scores) const
+                        {
+                                return 2 * (scores - targets).array() / (1 + (scores - targets).array().square());
+                        }
+                };
+        }
 
-                // constructor
-                explicit cauchy_loss_t(const string_t& = string_t());
-
-                // compute the error value
-                virtual scalar_t error(const vector_t& targets, const vector_t& scores) const override final;
-
-                // compute the loss value & derivatives
-                virtual scalar_t value(const vector_t& targets, const vector_t& scores) const override final;
-                virtual vector_t vgrad(const vector_t& targets, const vector_t& scores) const override final;
-
-                // predict label indices
-                virtual indices_t labels(const vector_t& scores) const override final;
-        };
+        ///
+        /// \brief robust-to-noise Cauchy loss: log(1 + (t - y)^2).
+        ///
+        using cauchy_loss_t = regression_loss_t
+        <
+                detail::cauchy_value_t,
+                detail::cauchy_vgrad_t
+        >;
 }
 

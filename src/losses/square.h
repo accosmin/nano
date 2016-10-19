@@ -1,32 +1,35 @@
 #pragma once
 
-#include "loss.h"
+#include "regression.h"
 
 namespace nano
 {
+        namespace detail
+        {
+                struct square_value_t
+                {
+                        scalar_t operator()(const vector_t& targets, const vector_t& scores) const
+                        {
+                                return scalar_t(0.5) * (scores - targets).array().square().sum();
+                        }
+                };
+
+                struct square_vgrad_t
+                {
+                        vector_t operator()(const vector_t& targets, const vector_t& scores) const
+                        {
+                                return scores - targets;
+                        }
+                };
+        }
+
         ///
-        /// \brief square loss (single & multivariate regression)
+        /// \brief square loss: (t - y)^2.
         ///
-        /// NB: sensitive to noise
-        ///
-        class square_loss_t : public loss_t
-	{
-	public:
-
-                NANO_MAKE_CLONABLE(square_loss_t)
-
-                // constructor
-                explicit square_loss_t(const string_t& = string_t());
-
-                // compute the error value
-                virtual scalar_t error(const vector_t& targets, const vector_t& scores) const override final;
-
-                // compute the loss value & derivatives
-                virtual scalar_t value(const vector_t& targets, const vector_t& scores) const override final;
-                virtual vector_t vgrad(const vector_t& targets, const vector_t& scores) const override final;
-
-                // predict label indices
-                virtual indices_t labels(const vector_t& scores) const override final;
-	};
+        using square_loss_t = regression_loss_t
+        <
+                detail::square_value_t,
+                detail::square_vgrad_t
+        >;
 }
 
