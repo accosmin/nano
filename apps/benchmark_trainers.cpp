@@ -8,6 +8,7 @@
 #include "text/concatenate.h"
 #include "tasks/task_charset.h"
 #include "layers/make_layers.h"
+#include <iostream>
 
 using namespace nano;
 

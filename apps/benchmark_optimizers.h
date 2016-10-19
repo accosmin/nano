@@ -6,6 +6,7 @@
 #include "math/numeric.h"
 #include "thread/loopi.h"
 #include "functions/test.h"
+#include <iostream>
 
 namespace benchmark
 {

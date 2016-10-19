@@ -1,17 +1,41 @@
 #include "logger.h"
 #include <ctime>
 #include <string>
+#include <cassert>
 #include <iomanip>
+#include <iostream>
 
 namespace nano
 {
-        logger_t::logger_t(std::ostream& stream, const char* header, bool flush) :
-                m_stream(stream),
-                m_precision(stream.precision()),
+        static std::ostream& get_stream(const logger_t::type type)
+        {
+                switch (type)
+                {
+                case logger_t::type::info:      return std::cout;
+                case logger_t::type::warn:      return std::cout;
+                case logger_t::type::error:     return std::cerr;
+                default:                        assert(false); return std::cout;
+                }
+        }
+
+        static char get_header(const logger_t::type type)
+        {
+                switch (type)
+                {
+                case logger_t::type::info:      return 'i';
+                case logger_t::type::warn:      return 'w';
+                case logger_t::type::error:     return 'e';
+                default:                        assert(false); return 'x';
+                }
+        }
+
+        logger_t::logger_t(const logger_t::type type, bool flush) :
+                m_stream(get_stream(type)),
+                m_precision(m_stream.precision()),
                 m_flush(flush)
         {
                 const std::time_t t = std::time(nullptr);
-                m_stream << std::put_time(std::localtime(&t), "%c") << "|" << header << ": ";
+                m_stream << std::put_time(std::localtime(&t), "%c") << "|" << get_header(type) << ": ";
                 m_stream << std::fixed << std::setprecision(6);
         }
 

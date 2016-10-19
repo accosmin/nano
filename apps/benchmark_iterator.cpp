@@ -7,6 +7,7 @@
 #include "measure_and_log.h"
 #include "tasks/task_charset.h"
 #include "text/table_row_mark.h"
+#include <iostream>
 
 int main(int argc, const char *argv[])
 {

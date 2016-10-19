@@ -1,7 +1,7 @@
 #pragma once
 
 #include "arch.h"
-#include <iostream>
+#include <ostream>
 
 namespace nano
 {
@@ -12,10 +12,17 @@ namespace nano
         {
         public:
 
+                enum class type
+                {
+                        info,
+                        warn,
+                        error
+                };
+
                 ///
                 /// \brief constructor
                 ///
-                logger_t(std::ostream& stream, const char* header, bool flush = true);
+                logger_t(const type, bool flush = true);
 
                 ///
                 /// \brief destructor
@@ -54,24 +61,24 @@ namespace nano
         ///
         /// \brief stream particular tags
         ///
-        inline logger_t& newl(logger_t& logger_t)               { return logger_t.newl(); }
-        inline logger_t& endl(logger_t& logger_t)               { return logger_t.endl(); }
-        inline logger_t& done(logger_t& logger_t)               { return logger_t.done(); }
-        inline logger_t& flush(logger_t& logger_t)              { return logger_t.flush(); }
+        inline logger_t& newl(logger_t& logger)         { return logger.newl(); }
+        inline logger_t& endl(logger_t& logger)         { return logger.endl(); }
+        inline logger_t& done(logger_t& logger)         { return logger.done(); }
+        inline logger_t& flush(logger_t& logger)        { return logger.flush(); }
 
         ///
         /// \brief specific [information, warning, error] line loggers
         ///
-        inline logger_t log_info(std::ostream& os = std::cout, bool flush_at_destruction = true)
+        inline logger_t log_info(const bool flush_at_destruction = true)
         {
-                return logger_t(os, "i", flush_at_destruction);
+                return logger_t(logger_t::type::info, flush_at_destruction);
         }
-        inline logger_t log_warning(std::ostream& os = std::cout, bool flush_at_destruction = true)
+        inline logger_t log_warning(const bool flush_at_destruction = true)
         {
-                return logger_t(os, "w", flush_at_destruction);
+                return logger_t(logger_t::type::warn, flush_at_destruction);
         }
-        inline logger_t log_error(std::ostream& os = std::cerr, bool flush_at_destruction = true)
+        inline logger_t log_error(const bool flush_at_destruction = true)
         {
-                return logger_t(os, "e", flush_at_destruction);
+                return logger_t(logger_t::type::error, flush_at_destruction);
         }
 }
