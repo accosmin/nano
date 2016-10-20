@@ -19,8 +19,7 @@ namespace nano
 
                 explicit svhn_task_t(const string_t& configuration = string_t());
 
-                virtual rtask_t clone(const string_t& configuration) const;
-                virtual rtask_t clone() const;
+                virtual rtask_t clone() const override;
 
         private:
 
