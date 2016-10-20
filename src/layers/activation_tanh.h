@@ -14,7 +14,10 @@ namespace nano
                         template <typename tivector, typename tovector>
                         static void output(const tivector& idata, tovector&& odata)
                         {
-                                odata.array() = idata.array().tanh();
+                                odata.array() =
+                                (idata.array().exp() - (-idata.array()).exp()) /
+                                (idata.array().exp() + (-idata.array()).exp());
+                                //idata.array().tanh();
                         }
 
                         template <typename tgvector, typename tiovector>

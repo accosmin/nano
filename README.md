@@ -20,7 +20,7 @@ A **trainer** optimizes the parameters of a given model to produce the correct o
 
 #### Compilation
 
-Use a C++14 compiler and install Eigen3.3+, LibArchive, Zlib, BZip2 and DevIL.
+Use a C++14 compiler and install Eigen3.2+, LibArchive, Zlib, BZip2 and DevIL.
 
 Nano is tested on Linux ([gcc 4.9.3+ | gcc 5.3+ | clang 3.5+], CMake 3.1+, Ninja or Make) and OSX (clang, homebrew, CMake 3.1+, Ninja or Make). The code is written to be cross-platform, so it may work (with minor fixes) on other platforms as well (e.g. Windows/MSVC).
 
