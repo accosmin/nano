@@ -43,11 +43,6 @@ namespace nano
                 }
 
                 ///
-                /// \brief destructor
-                ///
-                virtual ~mem_task_t() {}
-
-                ///
                 /// \brief short name of this task
                 ///
                 virtual string_t name() const final { return m_name; }

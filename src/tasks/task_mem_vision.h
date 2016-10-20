@@ -48,10 +48,8 @@ namespace nano
         /// \brief in-memory generic computer vision task consisting of images and
         ///     fixed-size rectangular samples from these images.
         ///
-        class NANO_PUBLIC mem_vision_task_t : public mem_task_t<image_t, mem_vision_sample_t>
+        struct NANO_PUBLIC mem_vision_task_t : public mem_task_t<image_t, mem_vision_sample_t>
         {
-        public:
-
                 ///
                 /// \brief constructor
                 ///
@@ -75,11 +73,6 @@ namespace nano
                         mem_vision_task_t(name,
                         (color == color_mode::rgba ? 4 : (color == color_mode::rgb ? 3 : 1)),
                         irows, icols, osize, fsize, config) {}
-
-                ///
-                /// \brief destructor
-                ///
-                virtual ~mem_vision_task_t() {}
 
                 ///
                 /// \brief retrieve the number of images

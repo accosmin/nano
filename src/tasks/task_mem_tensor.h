@@ -29,13 +29,8 @@ namespace nano
         ///
         /// \brief in-memory generic task consisting of generic 3D input tensors.
         ///
-        class NANO_PUBLIC mem_tensor_task_t : public mem_task_t<tensor3d_t, mem_tensor_sample_t>
+        struct NANO_PUBLIC mem_tensor_task_t : public mem_task_t<tensor3d_t, mem_tensor_sample_t>
         {
-        public:
-
-                ///
-                /// \brief constructor
-                ///
                 mem_tensor_task_t(
                         const string_t& name,
                         const tensor_size_t idims, const tensor_size_t irows, const tensor_size_t icols,
@@ -43,10 +38,5 @@ namespace nano
                         const size_t fsize,
                         const string_t& config = string_t()) :
                         mem_task_t<tensor3d_t, mem_tensor_sample_t>(name, idims, irows, icols, osize, fsize, config) {}
-
-                ///
-                /// \brief destructor
-                ///
-                virtual ~mem_tensor_task_t() {}
         };
 }
