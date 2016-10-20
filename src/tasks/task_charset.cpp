@@ -163,11 +163,6 @@ namespace nano
         {
         }
 
-        rtask_t charset_task_t::clone(const string_t& configuration) const
-        {
-                return std::make_unique<charset_task_t>(configuration);
-        }
-
         rtask_t charset_task_t::clone() const
         {
                 return std::make_unique<charset_task_t>(*this);
