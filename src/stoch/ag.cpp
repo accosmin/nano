@@ -10,12 +10,6 @@ namespace nano
         }
 
         template <ag_restart trestart>
-        rstoch_optimizer_t stoch_ag_base_t<trestart>::clone(const string_t& configuration) const
-        {
-                return std::make_unique<stoch_ag_base_t<trestart>>(configuration);
-        }
-
-        template <ag_restart trestart>
         rstoch_optimizer_t stoch_ag_base_t<trestart>::clone() const
         {
                 return std::make_unique<stoch_ag_base_t<trestart>>(*this);

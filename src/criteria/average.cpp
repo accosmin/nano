@@ -8,11 +8,6 @@ namespace nano
         {
         }
 
-        rcriterion_t average_criterion_t::clone(const string_t& configuration) const
-        {
-                return std::make_unique<average_criterion_t>(configuration);
-        }
-
         rcriterion_t average_criterion_t::clone() const
         {
                 return std::make_unique<average_criterion_t>(*this);

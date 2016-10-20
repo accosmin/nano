@@ -13,7 +13,6 @@ namespace nano
         {
                 explicit stochastic_trainer_t(const string_t& parameters = string_t());
 
-                virtual rtrainer_t clone(const string_t& configuration) const override;
                 virtual rtrainer_t clone() const override;
 
                 virtual trainer_result_t train(

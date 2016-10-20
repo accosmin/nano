@@ -14,12 +14,6 @@ namespace nano
         }
 
         template <typename tcgd_update>
-        rbatch_optimizer_t batch_cgd_t<tcgd_update>::clone(const string_t& configuration) const
-        {
-                return std::make_unique<batch_cgd_t<tcgd_update>>(configuration);
-        }
-
-        template <typename tcgd_update>
         rbatch_optimizer_t batch_cgd_t<tcgd_update>::clone() const
         {
                 return std::make_unique<batch_cgd_t<tcgd_update>>(*this);

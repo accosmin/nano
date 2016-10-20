@@ -17,11 +17,6 @@ namespace nano
         {
         }
 
-        rlayer_t convolution_layer_t::clone(const string_t& configuration) const
-        {
-                return std::make_unique<convolution_layer_t>(configuration);
-        }
-
         rlayer_t convolution_layer_t::clone() const
         {
                 return std::make_unique<convolution_layer_t>(*this);

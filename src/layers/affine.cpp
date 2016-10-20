@@ -13,11 +13,6 @@ namespace nano
         {
         }
 
-        rlayer_t affine_layer_t::clone(const string_t& configuration) const
-        {
-                return std::make_unique<affine_layer_t>(configuration);
-        }
-
         rlayer_t affine_layer_t::clone() const
         {
                 return std::make_unique<affine_layer_t>(*this);

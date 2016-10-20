@@ -15,11 +15,6 @@ namespace nano
         {
         }
 
-        rtrainer_t batch_trainer_t::clone(const string_t& configuration) const
-        {
-                return std::make_unique<batch_trainer_t>(configuration);
-        }
-
         rtrainer_t batch_trainer_t::clone() const
         {
                 return std::make_unique<batch_trainer_t>(*this);

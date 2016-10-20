@@ -14,11 +14,6 @@ namespace nano
         {
         }
 
-        rtrainer_t stochastic_trainer_t::clone(const string_t& configuration) const
-        {
-                return std::make_unique<stochastic_trainer_t>(configuration);
-        }
-
         rtrainer_t stochastic_trainer_t::clone() const
         {
                 return std::make_unique<stochastic_trainer_t>(*this);

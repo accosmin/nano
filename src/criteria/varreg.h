@@ -17,7 +17,6 @@ namespace nano
 
                 explicit var_criterion_t(const string_t& configuration = string_t());
 
-                virtual rcriterion_t clone(const string_t& configuration) const override;
                 virtual rcriterion_t clone() const override;
 
                 virtual scalar_t value() const override;
@@ -43,12 +42,6 @@ namespace nano
                 tcriterion(configuration),
                 m_value2(0)
         {
-        }
-
-        template <typename tcriterion>
-        rcriterion_t var_criterion_t<tcriterion>::clone(const string_t& configuration) const
-        {
-                return std::make_unique<var_criterion_t<tcriterion>>(configuration);
         }
 
         template <typename tcriterion>

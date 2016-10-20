@@ -12,7 +12,6 @@ namespace nano
         {
                 explicit activation_layer_t(const string_t& parameters = string_t()) : layer_t(parameters) {}
 
-                virtual rlayer_t clone(const string_t& parameters) const override;
                 virtual rlayer_t clone() const override;
 
                 virtual tensor_size_t resize(const tensor3d_t& tensor) override;
@@ -41,12 +40,6 @@ namespace nano
                 // attributes
                 tensor3d_t      m_data;         ///< input-output buffer
         };
-
-        template <typename top>
-        rlayer_t activation_layer_t<top>::clone(const string_t& parameters) const
-        {
-                return std::make_unique<activation_layer_t<top>>(parameters);
-        }
 
         template <typename top>
         rlayer_t activation_layer_t<top>::clone() const

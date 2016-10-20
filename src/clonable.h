@@ -32,11 +32,6 @@ namespace nano
                 virtual ~clonable_t() {}
 
                 ///
-                /// \brief create an object of the same type with the given configuration.
-                ///
-                virtual trobject clone(const string_t& configuration) const = 0;
-
-                ///
                 /// \brief create a copy of the current object.
                 ///
                 virtual trobject clone() const = 0;

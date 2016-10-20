@@ -11,7 +11,6 @@ namespace nano
         {
                 explicit stoch_sgm_t(const string_t& configuration = string_t());
 
-                virtual rstoch_optimizer_t clone(const string_t& configuration) const override;
                 virtual rstoch_optimizer_t clone() const override;
 
                 virtual state_t minimize(const stoch_params_t&, const problem_t&, const vector_t& x0) const override;

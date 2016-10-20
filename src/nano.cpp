@@ -93,92 +93,98 @@ namespace nano
                 return manager;
         }
 
+        template <typename tobject>
+        static auto maker()
+        {
+                return [] (const string_t& config) { return std::make_unique<tobject>(config); };
+        }
+
         static void init_batch_optimizers()
         {
                 auto& f = nano::get_batch_optimizers();
-                f.add("gd", "gradient descent", batch_gd_t());
-                f.add("cgd", "nonlinear conjugate gradient descent (default)", batch_cgd_prp_t());
-                f.add("cgd-n", "nonlinear conjugate gradient descent (N)", batch_cgd_n_t());
-                f.add("cgd-hs", "nonlinear conjugate gradient descent (HS)", batch_cgd_hs_t());
-                f.add("cgd-fr", "nonlinear conjugate gradient descent (FR)", batch_cgd_fr_t());
-                f.add("cgd-prp", "nonlinear conjugate gradient descent (PRP+)", batch_cgd_prp_t());
-                f.add("cgd-cd", "nonlinear conjugate gradient descent (CD)", batch_cgd_cd_t());
-                f.add("cgd-ls", "nonlinear conjugate gradient descent (LS)", batch_cgd_ls_t());
-                f.add("cgd-dy", "nonlinear conjugate gradient descent (DY)", batch_cgd_dy_t());
-                f.add("cgd-dycd", "nonlinear conjugate gradient descent (DYCD)", batch_cgd_dycd_t());
-                f.add("cgd-dyhs", "nonlinear conjugate gradient descent (DYHS)", batch_cgd_dyhs_t());
-                f.add("lbfgs", "limited-memory BFGS", batch_lbfgs_t());
+                f.add("gd", "gradient descent", maker<batch_gd_t>());
+                f.add("cgd", "nonlinear conjugate gradient descent (default)", maker<batch_cgd_prp_t>());
+                f.add("cgd-n", "nonlinear conjugate gradient descent (N)", maker<batch_cgd_n_t>());
+                f.add("cgd-hs", "nonlinear conjugate gradient descent (HS)", maker<batch_cgd_hs_t>());
+                f.add("cgd-fr", "nonlinear conjugate gradient descent (FR)", maker<batch_cgd_fr_t>());
+                f.add("cgd-prp", "nonlinear conjugate gradient descent (PRP+)", maker<batch_cgd_prp_t>());
+                f.add("cgd-cd", "nonlinear conjugate gradient descent (CD)", maker<batch_cgd_cd_t>());
+                f.add("cgd-ls", "nonlinear conjugate gradient descent (LS)", maker<batch_cgd_ls_t>());
+                f.add("cgd-dy", "nonlinear conjugate gradient descent (DY)", maker<batch_cgd_dy_t>());
+                f.add("cgd-dycd", "nonlinear conjugate gradient descent (DYCD)", maker<batch_cgd_dycd_t>());
+                f.add("cgd-dyhs", "nonlinear conjugate gradient descent (DYHS)", maker<batch_cgd_dyhs_t>());
+                f.add("lbfgs", "limited-memory BFGS", maker<batch_lbfgs_t>());
         }
 
         static void init_stoch_optimizers()
         {
                 auto& f = nano::get_stoch_optimizers();
-                f.add("sg", "stochastic gradient (descent)", stoch_sg_t());
-                f.add("sgm", "stochastic gradient (descent) with momentum", stoch_sgm_t());
-                f.add("ngd", "stochastic normalized gradient descent", stoch_ngd_t());
-                f.add("ag", "Nesterov's accelerated gradient", stoch_ag_t());
-                f.add("agfr", "Nesterov's accelerated gradient with function value restarts", stoch_agfr_t());
-                f.add("aggr", "Nesterov's accelerated gradient with gradient restarts", stoch_aggr_t());
-                f.add("adam", "Adam (see citation)", stoch_adam_t());
-                f.add("adagrad", "AdaGrad (see citation)", stoch_adagrad_t());
-                f.add("adadelta", "AdaDelta (see citation)", stoch_adadelta_t());
+                f.add("sg", "stochastic gradient (descent)", maker<stoch_sg_t>());
+                f.add("sgm", "stochastic gradient (descent) with momentum", maker<stoch_sgm_t>());
+                f.add("ngd", "stochastic normalized gradient descent", maker<stoch_ngd_t>());
+                f.add("ag", "Nesterov's accelerated gradient", maker<stoch_ag_t>());
+                f.add("agfr", "Nesterov's accelerated gradient with function value restarts", maker<stoch_agfr_t>());
+                f.add("aggr", "Nesterov's accelerated gradient with gradient restarts", maker<stoch_aggr_t>());
+                f.add("adam", "Adam (see citation)", maker<stoch_adam_t>());
+                f.add("adagrad", "AdaGrad (see citation)", maker<stoch_adagrad_t>());
+                f.add("adadelta", "AdaDelta (see citation)", maker<stoch_adadelta_t>());
         }
 
         static void init_trainers()
         {
                 auto& f = nano::get_trainers();
-                f.add("batch", "batch trainer", batch_trainer_t());
-                f.add("stoch", "stochastic trainer", stochastic_trainer_t());
+                f.add("batch", "batch trainer", maker<batch_trainer_t>());
+                f.add("stoch", "stochastic trainer", maker<stochastic_trainer_t>());
         }
 
         static void init_criteria()
         {
                 auto& f = nano::get_criteria();
-                f.add("avg", "average loss", average_criterion_t());
-                f.add("avg-l2n", "L2-norm regularized average loss", average_l2n_criterion_t());
-                f.add("avg-var", "variance-regularized average loss", average_var_criterion_t());
-                f.add("max", "softmax loss", softmax_criterion_t());
-                f.add("max-l2n", "L2-norm regularized softmax loss", softmax_l2n_criterion_t());
-                f.add("max-var", "variance-regularized softmax loss", softmax_var_criterion_t());
+                f.add("avg", "average loss", maker<average_criterion_t>());
+                f.add("avg-l2n", "L2-norm regularized average loss", maker<average_l2n_criterion_t>());
+                f.add("avg-var", "variance-regularized average loss", maker<average_var_criterion_t>());
+                f.add("max", "softmax loss", maker<softmax_criterion_t>());
+                f.add("max-l2n", "L2-norm regularized softmax loss", maker<softmax_l2n_criterion_t>());
+                f.add("max-var", "variance-regularized softmax loss", maker<softmax_var_criterion_t>());
         }
 
         static void init_losses()
         {
                 auto& f = nano::get_losses();
-                f.add("square", "square loss (regression)", square_loss_t());
-                f.add("cauchy", "Cauchy loss (regression)", cauchy_loss_t());
-                f.add("logistic", "logistic loss (multi-class classification)", logistic_loss_t());
-                f.add("classnll", "negative log-likelihood loss (multi-class classification)", classnll_loss_t());
-                f.add("exponential", "exponential loss (multi-class classification)", exponential_loss_t());
+                f.add("square", "square loss (regression)", maker<square_loss_t>());
+                f.add("cauchy", "Cauchy loss (regression)", maker<cauchy_loss_t>());
+                f.add("logistic", "logistic loss (multi-class classification)", maker<logistic_loss_t>());
+                f.add("classnll", "negative log-likelihood loss (multi-class classification)", maker<classnll_loss_t>());
+                f.add("exponential", "exponential loss (multi-class classification)", maker<exponential_loss_t>());
         }
 
         static void init_tasks()
         {
                 auto& f = nano::get_tasks();
-                f.add("mnist", "MNIST (1x28x28 digit classification)", mnist_task_t());
-                f.add("cifar10", "CIFAR-10 (3x32x32 object classification)", cifar10_task_t());
-                f.add("cifar100", "CIFAR-100 (3x32x32 object classification)", cifar100_task_t());
-                f.add("stl10", "STL-10 (3x96x96 semi-supervised object classification)", stl10_task_t());
-                f.add("svhn", "SVHN (3x32x32 digit classification in the wild)", svhn_task_t());
-                f.add("charset", "synthetic character classification", charset_task_t());
-                f.add("affine", "synthetic affine regression", affine_task_t());
+                f.add("mnist", "MNIST (1x28x28 digit classification)", maker<mnist_task_t>());
+                f.add("cifar10", "CIFAR-10 (3x32x32 object classification)", maker<cifar10_task_t>());
+                f.add("cifar100", "CIFAR-100 (3x32x32 object classification)", maker<cifar100_task_t>());
+                f.add("stl10", "STL-10 (3x96x96 semi-supervised object classification)", maker<stl10_task_t>());
+                f.add("svhn", "SVHN (3x32x32 digit classification in the wild)", maker<svhn_task_t>());
+                f.add("charset", "synthetic character classification", maker<charset_task_t>());
+                f.add("affine", "synthetic affine regression", maker<affine_task_t>());
         }
 
         static void init_layers()
         {
                 auto& f = nano::get_layers();
-                f.add("act-unit", "identity activation layer (for testing purposes)", unit_activation_layer_t());
-                f.add("act-tanh", "hyperbolic tangent activation layer", tanh_activation_layer_t());
-                f.add("act-snorm", "x/sqrt(1+x^2) activation layer", snorm_activation_layer_t());
-                f.add("act-splus", "soft-plus activation layer", softplus_activation_layer_t());
-                f.add("affine", "fully-connected affine layer", affine_layer_t());
-                f.add("conv", "convolution layer", convolution_layer_t());
+                f.add("act-unit", "identity activation layer (for testing purposes)", maker<unit_activation_layer_t>());
+                f.add("act-tanh", "hyperbolic tangent activation layer", maker<tanh_activation_layer_t>());
+                f.add("act-snorm", "x/sqrt(1+x^2) activation layer", maker<snorm_activation_layer_t>());
+                f.add("act-splus", "soft-plus activation layer", maker<softplus_activation_layer_t>());
+                f.add("affine", "fully-connected affine layer", maker<affine_layer_t>());
+                f.add("conv", "convolution layer", maker<convolution_layer_t>());
         }
 
         static void init_models()
         {
                 auto& f = nano::get_models();
-                f.add("forward-network", "feed-forward network", forward_network_t());
+                f.add("forward-network", "feed-forward network", maker<forward_network_t>());
         }
 
         struct init_t

@@ -16,7 +16,6 @@ namespace nano
 
                 explicit affine_layer_t(const string_t& parameters = string_t());
 
-                virtual rlayer_t clone(const string_t& configuration) const override;
                 virtual rlayer_t clone() const override;
 
                 virtual tensor_size_t resize(const tensor3d_t& tensor) override;

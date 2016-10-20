@@ -33,7 +33,6 @@ namespace nano
                 ///
                 /// \brief clone
                 ///
-                virtual rmodel_t clone(const string_t& configuration) const override;
                 virtual rmodel_t clone() const override;
 
                 ///

@@ -13,11 +13,6 @@ namespace nano
         {
         }
 
-        rbatch_optimizer_t batch_lbfgs_t::clone(const string_t& configuration) const
-        {
-                return std::make_unique<batch_lbfgs_t>(configuration);
-        }
-
         rbatch_optimizer_t batch_lbfgs_t::clone() const
         {
                 return std::make_unique<batch_lbfgs_t>(*this);

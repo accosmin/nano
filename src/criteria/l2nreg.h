@@ -13,7 +13,6 @@ namespace nano
         {
                 explicit l2n_criterion_t(const string_t& configuration = string_t());
 
-                virtual rcriterion_t clone(const string_t& configuration) const override;
                 virtual rcriterion_t clone() const override;
 
                 virtual scalar_t value() const override;
@@ -25,12 +24,6 @@ namespace nano
         l2n_criterion_t<tcriterion>::l2n_criterion_t(const string_t& configuration) :
                 tcriterion(configuration)
         {
-        }
-
-        template <typename tcriterion>
-        rcriterion_t l2n_criterion_t<tcriterion>::clone(const string_t& configuration) const
-        {
-                return std::make_unique<l2n_criterion_t<tcriterion>>(configuration);
         }
 
         template <typename tcriterion>

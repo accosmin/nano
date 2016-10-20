@@ -3,16 +3,6 @@
 
 using namespace nano;
 
-#define NANO_MAKE_CLONABLE(base_class) \
-        virtual trobject clone(const string_t& configuration) const override \
-        { \
-                return std::make_unique<base_class>(configuration); \
-        } \
-        virtual trobject clone() const override \
-        { \
-                return std::make_unique<base_class>(*this); \
-        }
-
 struct test_clonable_t : public nano::clonable_t<test_clonable_t>
 {
         explicit test_clonable_t(const string_t& configuration = string_t()) :
@@ -21,33 +11,42 @@ struct test_clonable_t : public nano::clonable_t<test_clonable_t>
         }
 };
 
-struct test_obj1_clonable_t : public test_clonable_t
+struct object1_clonable_t : public test_clonable_t
 {
-        NANO_MAKE_CLONABLE(test_obj1_clonable_t)
-
-        explicit test_obj1_clonable_t(const string_t& configuration = string_t()) :
+        explicit object1_clonable_t(const string_t& configuration = string_t()) :
                 test_clonable_t(configuration + ",p1=def1")
         {
         }
-};
 
-struct test_obj2_clonable_t : public test_clonable_t
-{
-        NANO_MAKE_CLONABLE(test_obj2_clonable_t)
-
-        explicit test_obj2_clonable_t(const string_t& configuration = string_t()) :
-                test_clonable_t(configuration + ",p2=def2")
+        virtual trobject clone() const override
         {
+                return std::make_unique<object1_clonable_t>(*this);
         }
 };
 
-struct test_obj3_clonable_t : public test_clonable_t
+struct object2_clonable_t : public test_clonable_t
 {
-        NANO_MAKE_CLONABLE(test_obj3_clonable_t)
+        explicit object2_clonable_t(const string_t& configuration = string_t()) :
+                test_clonable_t(configuration + ",p2=def2")
+        {
+        }
 
-        explicit test_obj3_clonable_t(const string_t& configuration = string_t()) :
+        virtual trobject clone() const override
+        {
+                return std::make_unique<object2_clonable_t>(*this);
+        }
+};
+
+struct object3_clonable_t : public test_clonable_t
+{
+        explicit object3_clonable_t(const string_t& configuration = string_t()) :
                 test_clonable_t(configuration + ",p3=def3")
         {
+        }
+
+        virtual trobject clone() const override
+        {
+                return std::make_unique<object3_clonable_t>(*this);
         }
 };
 
@@ -70,31 +69,35 @@ NANO_CASE(retrieval)
 {
         nano::manager_t<test_clonable_t> manager;
 
-        const test_obj1_clonable_t obj1;
-        const test_obj2_clonable_t obj2;
-        const test_obj3_clonable_t obj3;
+        const object1_clonable_t obj1;
+        const object2_clonable_t obj2;
+        const object3_clonable_t obj3;
+
+        const auto maker1 = [] (const string_t& config) { return std::make_unique<object1_clonable_t>(config); };
+        const auto maker2 = [] (const string_t& config) { return std::make_unique<object2_clonable_t>(config); };
+        const auto maker3 = [] (const string_t& config) { return std::make_unique<object3_clonable_t>(config); };
 
         const string_t id1 = "obj1";
         const string_t id2 = "obj2";
         const string_t id3 = "obj3";
 
         // register objects
-        NANO_CHECK(manager.add(id1, "test obj1", obj1));
-        NANO_CHECK(manager.add(id2, "test obj2", obj2));
-        NANO_CHECK(manager.add(id3, "test obj3", obj3));
+        NANO_CHECK(manager.add(id1, "test obj1", maker1));
+        NANO_CHECK(manager.add(id2, "test obj2", maker2));
+        NANO_CHECK(manager.add(id3, "test obj3", maker3));
 
         // should not be able to register with the same id anymore
-        NANO_CHECK(!manager.add(id1, "", obj1));
-        NANO_CHECK(!manager.add(id1, "", obj2));
-        NANO_CHECK(!manager.add(id1, "", obj3));
+        NANO_CHECK(!manager.add(id1, "", maker1));
+        NANO_CHECK(!manager.add(id1, "", maker2));
+        NANO_CHECK(!manager.add(id1, "", maker3));
 
-        NANO_CHECK(!manager.add(id2, "", obj1));
-        NANO_CHECK(!manager.add(id2, "", obj2));
-        NANO_CHECK(!manager.add(id2, "", obj3));
+        NANO_CHECK(!manager.add(id2, "", maker1));
+        NANO_CHECK(!manager.add(id2, "", maker2));
+        NANO_CHECK(!manager.add(id2, "", maker3));
 
-        NANO_CHECK(!manager.add(id3, "", obj1));
-        NANO_CHECK(!manager.add(id3, "", obj2));
-        NANO_CHECK(!manager.add(id3, "", obj3));
+        NANO_CHECK(!manager.add(id3, "", maker1));
+        NANO_CHECK(!manager.add(id3, "", maker2));
+        NANO_CHECK(!manager.add(id3, "", maker3));
 
         // check retrieval
         NANO_REQUIRE(manager.has(id1));

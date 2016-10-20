@@ -54,11 +54,6 @@ namespace nano
         {
         }
 
-        rmodel_t forward_network_t::clone(const string_t& configuration) const
-        {
-                return std::make_unique<forward_network_t>(configuration);
-        }
-
         rmodel_t forward_network_t::clone() const
         {
                 return std::make_unique<forward_network_t>(*this);

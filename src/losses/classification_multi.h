@@ -14,7 +14,6 @@ namespace nano
         {
                 explicit classification_multi_t(const string_t& parameters = string_t()) : loss_t(parameters) {}
 
-                virtual rloss_t clone(const string_t& parameters) const override;
                 virtual rloss_t clone() const override;
 
                 virtual scalar_t error(const vector_t& targets, const vector_t& scores) const override;
@@ -23,12 +22,6 @@ namespace nano
 
                 virtual indices_t labels(const vector_t& scores) const override;
         };
-
-        template <typename top>
-        rloss_t classification_multi_t<top>::clone(const string_t& parameters) const
-        {
-                return std::make_unique<classification_multi_t<top>>(parameters);
-        }
 
         template <typename top>
         rloss_t classification_multi_t<top>::clone() const

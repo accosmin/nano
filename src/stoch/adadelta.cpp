@@ -9,11 +9,6 @@ namespace nano
         {
         }
 
-        rstoch_optimizer_t stoch_adadelta_t::clone(const string_t& configuration) const
-        {
-                return std::make_unique<stoch_adadelta_t>(configuration);
-        }
-
         rstoch_optimizer_t stoch_adadelta_t::clone() const
         {
                 return std::make_unique<stoch_adadelta_t>(*this);
