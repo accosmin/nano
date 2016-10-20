@@ -10,8 +10,19 @@
 namespace nano
 {
         batch_trainer_t::batch_trainer_t(const string_t& parameters) :
-                trainer_t(concat_params(parameters, "opt=lbfgs[...],epochs=1024[4,4096],policy=stop_early[,all_epochs]"))
+                trainer_t(concat_params(parameters,
+                "opt=lbfgs[...],epochs=1024[4,4096],policy=stop_early[,all_epochs]"))
         {
+        }
+
+        rtrainer_t batch_trainer_t::clone(const string_t& configuration) const
+        {
+                return std::make_unique<batch_trainer_t>(configuration);
+        }
+
+        rtrainer_t batch_trainer_t::clone() const
+        {
+                return std::make_unique<batch_trainer_t>(*this);
         }
 
         trainer_result_t batch_trainer_t::train(

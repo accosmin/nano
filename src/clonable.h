@@ -54,14 +54,4 @@ namespace nano
                 // attributes
                 string_t         m_configuration;
         };
-
-        #define NANO_MAKE_CLONABLE(base_class) \
-                virtual trobject clone(const string_t& configuration) const override \
-                { \
-                        return std::make_unique<base_class>(configuration); \
-                } \
-                virtual trobject clone() const override \
-                { \
-                        return std::make_unique<base_class>(*this); \
-                }
 }

@@ -12,27 +12,14 @@ namespace nano
         <
                 typename tcgd_update                    ///< CGD step update
         >
-        struct batch_cgd_t : public batch_optimizer_t
+        struct batch_cgd_t final : public batch_optimizer_t
         {
-                ///
-                /// \brief constructor
-                ///
                 batch_cgd_t(const string_t& configuration = string_t());
 
-                ///
-                /// \brief create an object of the same type with the given configuration
-                ///
-                virtual std::unique_ptr<batch_optimizer_t> clone(const string_t& configuration) const override final;
+                virtual rbatch_optimizer_t clone(const string_t& configuration) const override;
+                virtual rbatch_optimizer_t clone() const override;
 
-                ///
-                /// \brief create an object clone
-                ///
-                virtual std::unique_ptr<batch_optimizer_t> clone() const override final;
-
-                ///
-                /// \brief minimize starting from the initial guess x0.
-                ///
-                virtual state_t minimize(const batch_params_t&, const problem_t&, const vector_t& x0) const override final;
+                virtual state_t minimize(const batch_params_t&, const problem_t&, const vector_t& x0) const override;
         };
 
         // create various CGD algorithms

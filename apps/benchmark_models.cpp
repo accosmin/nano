@@ -57,7 +57,8 @@ int main(int argc, const char *argv[])
         const size_t cmd_max_nthreads = nano::logical_cpus();
 
         // generate synthetic task
-        charset_task_t task(charset::digit, cmd_color, cmd_rows, cmd_cols, cmd_samples);
+        charset_task_t task(to_params(
+                "type", charset_mode::digit, "color", cmd_color, "irows", cmd_rows, "icols", cmd_cols, "count", cmd_samples));
         task.load();
 
         // construct models

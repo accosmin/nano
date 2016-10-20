@@ -10,40 +10,35 @@ namespace nano
         /// parameters:
         ///     dims    - number of output dimensions
         ///
-        class affine_layer_t : public layer_t
+        class affine_layer_t final : public layer_t
         {
         public:
 
-                NANO_MAKE_CLONABLE(affine_layer_t)
-
-                // constructor
                 explicit affine_layer_t(const string_t& parameters = string_t());
 
-                // resize to process new tensors of the given type
-                virtual tensor_size_t resize(const tensor3d_t& tensor) override final;
+                virtual rlayer_t clone(const string_t& configuration) const override;
+                virtual rlayer_t clone() const override;
 
-                // reset parameters
-                virtual void zero_params() override final;
-                virtual void random_params(scalar_t min, scalar_t max) override final;
+                virtual tensor_size_t resize(const tensor3d_t& tensor) override;
 
-                // serialize parameters
-                virtual scalar_t* save_params(scalar_t* params) const override final;
-                virtual const scalar_t* load_params(const scalar_t* params) override final;
+                virtual void zero_params() override;
+                virtual void random_params(scalar_t min, scalar_t max) override;
 
-                // process inputs (compute outputs & gradients)
-                virtual const tensor3d_t& output(const tensor3d_t& input) override final;
-                virtual const tensor3d_t& ginput(const tensor3d_t& output) override final;
-                virtual void gparam(const tensor3d_t& output, scalar_t* gradient) override final;
+                virtual scalar_t* save_params(scalar_t* params) const override;
+                virtual const scalar_t* load_params(const scalar_t* params) override;
 
-                // access functions
-                virtual tensor_size_t idims() const final { return m_idata.size<0>(); }
-                virtual tensor_size_t irows() const final { return m_idata.size<1>(); }
-                virtual tensor_size_t icols() const final { return m_idata.size<2>(); }
-                virtual tensor_size_t odims() const final { return m_odata.size<0>(); }
-                virtual tensor_size_t orows() const final { return m_odata.size<1>(); }
-                virtual tensor_size_t ocols() const final { return m_odata.size<2>(); }
-                virtual tensor_size_t psize() const final { return m_wdata.size() + m_bdata.size(); }
-                virtual tensor_size_t flops() const final { return psize(); }
+                virtual const tensor3d_t& output(const tensor3d_t& input) override;
+                virtual const tensor3d_t& ginput(const tensor3d_t& output) override;
+                virtual void gparam(const tensor3d_t& output, scalar_t* gradient) override;
+
+                virtual tensor_size_t idims() const override { return m_idata.size<0>(); }
+                virtual tensor_size_t irows() const override { return m_idata.size<1>(); }
+                virtual tensor_size_t icols() const override { return m_idata.size<2>(); }
+                virtual tensor_size_t odims() const override { return m_odata.size<0>(); }
+                virtual tensor_size_t orows() const override { return m_odata.size<1>(); }
+                virtual tensor_size_t ocols() const override { return m_odata.size<2>(); }
+                virtual tensor_size_t psize() const override { return m_wdata.size() + m_bdata.size(); }
+                virtual tensor_size_t flops() const override { return psize(); }
 
         private:
 

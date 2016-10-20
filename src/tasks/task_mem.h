@@ -55,7 +55,7 @@ namespace nano
                 ///
                 /// \brief populate the task with samples
                 ///
-                virtual bool load() override final;
+                virtual bool load() override;
 
                 ///
                 /// \brief input size
@@ -77,37 +77,37 @@ namespace nano
                 ///
                 /// \brief total number of samples
                 ///
-                virtual size_t n_samples() const override final;
+                virtual size_t n_samples() const override;
 
                 ///
                 /// \brief number of samples for the given fold
                 ///
-                virtual size_t n_samples(const fold_t&) const override final;
+                virtual size_t n_samples(const fold_t&) const override;
 
                 ///
                 /// \brief randomly shuffle the samples associated for the given fold
                 ///
-                virtual void shuffle(const fold_t&) const override final;
+                virtual void shuffle(const fold_t&) const override;
 
                 ///
                 /// \brief retrieve the 3D input tensor for a given sample
                 ///
-                virtual tensor3d_t input(const fold_t&, const size_t index) const override final;
+                virtual tensor3d_t input(const fold_t&, const size_t index) const override;
 
                 ///
                 /// \brief retrieve the target for a given sample
                 ///
-                virtual vector_t target(const fold_t&, const size_t index) const override final;
+                virtual vector_t target(const fold_t&, const size_t index) const override;
 
                 ///
                 /// \brief retrieve the associated label (if any) for a given sample
                 ///
-                virtual string_t label(const fold_t&, const size_t index) const override final;
+                virtual string_t label(const fold_t&, const size_t index) const override;
 
                 ///
                 /// \brief retrieve the hash for a given sample
                 ///
-                virtual size_t hash(const fold_t&, const size_t index) const override final;
+                virtual size_t hash(const fold_t&, const size_t index) const override;
 
         protected:
 

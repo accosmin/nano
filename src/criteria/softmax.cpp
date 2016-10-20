@@ -12,6 +12,16 @@ namespace nano
         {
         }
 
+        rcriterion_t softmax_criterion_t::clone(const string_t& configuration) const
+        {
+                return std::make_unique<softmax_criterion_t>(configuration);
+        }
+
+        rcriterion_t softmax_criterion_t::clone() const
+        {
+                return std::make_unique<softmax_criterion_t>(*this);
+        }
+
         void softmax_criterion_t::clear()
         {
                 m_value = 0;

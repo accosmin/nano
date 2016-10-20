@@ -11,6 +11,7 @@ namespace nano
         ///
         class stoch_optimizer_t;
         using stoch_optimizer_manager_t = manager_t<stoch_optimizer_t>;
+        using rstoch_optimizer_t = stoch_optimizer_manager_t::trobject;
 
         NANO_PUBLIC stoch_optimizer_manager_t& get_stoch_optimizers();
 

@@ -12,16 +12,15 @@ namespace nano
         struct regression_t : public loss_t
         {
                 explicit regression_t(const string_t& parameters = string_t()) : loss_t(parameters) {}
-                virtual ~regression_t() {}
 
-                virtual rloss_t clone(const string_t& parameters) const override final;
-                virtual rloss_t clone() const override final;
+                virtual rloss_t clone(const string_t& parameters) const override;
+                virtual rloss_t clone() const override;
 
-                virtual scalar_t error(const vector_t& targets, const vector_t& scores) const override final;
-                virtual scalar_t value(const vector_t& targets, const vector_t& scores) const override final;
-                virtual vector_t vgrad(const vector_t& targets, const vector_t& scores) const override final;
+                virtual scalar_t error(const vector_t& targets, const vector_t& scores) const override;
+                virtual scalar_t value(const vector_t& targets, const vector_t& scores) const override;
+                virtual vector_t vgrad(const vector_t& targets, const vector_t& scores) const override;
 
-                virtual indices_t labels(const vector_t& scores) const override final;
+                virtual indices_t labels(const vector_t& scores) const override;
         };
 
         template <typename top>

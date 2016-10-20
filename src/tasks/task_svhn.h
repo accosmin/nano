@@ -13,20 +13,18 @@ namespace nano
         ///
         /// http://ufldl.stanford.edu/housenumbers/
         ///
-        class svhn_task_t : public mem_vision_task_t
+        class svhn_task_t final : public mem_vision_task_t
         {
         public:
 
-                NANO_MAKE_CLONABLE(svhn_task_t)
-
-                ///
-                /// \brief constructor
-                ///
                 explicit svhn_task_t(const string_t& configuration = string_t());
+
+                virtual rtask_t clone(const string_t& configuration) const;
+                virtual rtask_t clone() const;
 
         private:
 
-                virtual bool populate() override final;
+                virtual bool populate() override;
 
                 // load binary file
                 size_t load_binary(const string_t& bfile, const protocol p);

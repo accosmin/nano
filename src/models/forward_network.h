@@ -12,8 +12,6 @@ namespace nano
         {
         public:
 
-                NANO_MAKE_CLONABLE(forward_network_t)
-
                 using model_t::resize;
 
                 ///
@@ -33,39 +31,45 @@ namespace nano
                 forward_network_t& operator=(forward_network_t&& other) = default;
 
                 ///
+                /// \brief clone
+                ///
+                virtual rmodel_t clone(const string_t& configuration) const override;
+                virtual rmodel_t clone() const override;
+
+                ///
                 /// \brief compute the model's output
                 ///
-                virtual const tensor3d_t& output(const tensor3d_t& input) override final;
+                virtual const tensor3d_t& output(const tensor3d_t& input) override;
 
                 ///
                 /// \brief compute the model's gradient wrt parameters
                 ///
-                virtual const vector_t& gparam(const vector_t& output) override final;
+                virtual const vector_t& gparam(const vector_t& output) override;
                 const vector_t& gparam(const tensor3d_t& output);
 
                 ///
                 /// \brief compute the model's gradient wrt inputs
                 ///
-                virtual const tensor3d_t& ginput(const vector_t& output) override final;
+                virtual const tensor3d_t& ginput(const vector_t& output) override;
                 const tensor3d_t& ginput(const tensor3d_t& output);
 
                 ///
                 /// \brief retrieve timing information regarding various components
                 ///
-                virtual timings_t timings() const override final;
+                virtual timings_t timings() const override;
 
                 ///
                 /// \brief save/load/initialize parameters
                 ///
-                virtual bool load_params(const vector_t& x) override final;
-                virtual bool save_params(vector_t& x) const override final;
-                virtual void zero_params() override final;
-                virtual void random_params() override final;
+                virtual bool load_params(const vector_t& x) override;
+                virtual bool save_params(vector_t& x) const override;
+                virtual void zero_params() override;
+                virtual void random_params() override;
 
                 ///
                 /// \brief number of parameters
                 ///
-                virtual tensor_size_t psize() const override final;
+                virtual tensor_size_t psize() const override;
 
                 ///
                 /// \brief manage layers
@@ -75,7 +79,7 @@ namespace nano
         protected:
 
                 // resize to new inputs/outputs, returns the number of parameters
-                virtual tensor_size_t resize(bool verbose) override final;
+                virtual tensor_size_t resize(bool verbose) override;
 
         private:
 

@@ -11,57 +11,25 @@ namespace nano
         ///     like in EBBoost/VadaBoost: http://www.cs.columbia.edu/~jebara/papers/vadaboost.pdf
         ///
         template <typename tcriterion>
-        class var_criterion_t : public tcriterion
+        class var_criterion_t final : public tcriterion
         {
         public:
 
-                ///
-                /// \brief constructor
-                ///
                 explicit var_criterion_t(const string_t& configuration = string_t());
 
-                /// \brief clone
-                virtual rcriterion_t clone(const string_t& parameters) const final
-                {
-                        return std::make_unique<var_criterion_t<tcriterion>>(parameters);
-                }
-                virtual rcriterion_t clone() const final
-                {
-                        return std::make_unique<var_criterion_t<tcriterion>>(*this);
-                }
+                virtual rcriterion_t clone(const string_t& configuration) const override;
+                virtual rcriterion_t clone() const override;
 
-                ///
-                /// \brief cumulated loss value
-                ///
-                virtual scalar_t value() const override final;
-
-                ///
-                /// \brief cumulated gradient
-                ///
-                virtual vector_t vgrad() const override final;
-
-                ///
-                /// \brief check if the criterion has a regularization term to tune
-                ///
-                virtual bool can_regularize() const override final;
+                virtual scalar_t value() const override;
+                virtual vector_t vgrad() const override;
+                virtual bool can_regularize() const override;
 
         protected:
 
-                ///
-                /// \brief reset statistics
-                ///
-                virtual void clear() override final;
-
-                ///
-                /// \brief update statistics with the loss value/error/gradient for a sample
-                ///
-                virtual void accumulate(scalar_t value) override final;
-                virtual void accumulate(const vector_t& vgrad, scalar_t value) override final;
-
-                ///
-                /// \brief update statistics with cumulated samples
-                ///
-                virtual void accumulate(const criterion_t& other) override final;
+                virtual void clear() override;
+                virtual void accumulate(scalar_t value) override;
+                virtual void accumulate(const vector_t& vgrad, scalar_t value) override;
+                virtual void accumulate(const criterion_t& other) override;
 
         private:
 
@@ -75,6 +43,18 @@ namespace nano
                 tcriterion(configuration),
                 m_value2(0)
         {
+        }
+
+        template <typename tcriterion>
+        rcriterion_t var_criterion_t<tcriterion>::clone(const string_t& configuration) const
+        {
+                return std::make_unique<var_criterion_t<tcriterion>>(configuration);
+        }
+
+        template <typename tcriterion>
+        rcriterion_t var_criterion_t<tcriterion>::clone() const
+        {
+                return std::make_unique<var_criterion_t<tcriterion>>(*this);
         }
 
         template <typename tcriterion>

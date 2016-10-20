@@ -3,6 +3,7 @@
 #include "text/cmdline.h"
 #include "task_iterator.h"
 #include "math/numeric.h"
+#include "text/to_params.h"
 #include "tensor/numeric.h"
 #include "measure_and_log.h"
 #include "tasks/task_charset.h"
@@ -40,7 +41,9 @@ int main(int argc, const char *argv[])
                 auto& row = table.append(task_size);
 
                 // measure task generation
-                charset_task_t task(charset::digit, cmd_color, cmd_rows, cmd_cols, task_size);
+                charset_task_t task(to_params(
+                        "type", charset_mode::digit, "color", cmd_color,
+                        "irows", cmd_rows, "icols", cmd_cols, "count", task_size));
                 {
                         const auto duration = nano::measure_robustly_msec([&] ()
                         {

@@ -44,46 +44,33 @@ namespace nano
                 };
         }
 
-        template <>
-        inline std::map<nano::charset, std::string> enum_string<nano::charset>()
-        {
-                return
-                {
-                        { nano::charset::digit,         "digit" },
-                        { nano::charset::lalpha,        "lalpha" },
-                        { nano::charset::ualpha,        "ualpha" },
-                        { nano::charset::alpha,         "alpha" },
-                        { nano::charset::alphanum,      "alphanum" }
-                };
-        }
-
-        static tensor_size_t obegin(const charset cs)
+        static tensor_size_t obegin(const charset_mode cs)
         {
                 switch (cs)
                 {
-                case charset::digit:            return 0;
-                case charset::lalpha:           return 0 + 10;
-                case charset::ualpha:           return 0 + 10 + 26;
-                case charset::alpha:            return 10;
-                case charset::alphanum:         return 0;
+                case charset_mode::digit:       return 0;
+                case charset_mode::lalpha:      return 0 + 10;
+                case charset_mode::ualpha:      return 0 + 10 + 26;
+                case charset_mode::alpha:       return 10;
+                case charset_mode::alphanum:    return 0;
                 default:                        assert(false); return 0;
                 }
         }
 
-        static tensor_size_t oend(const charset cs)
+        static tensor_size_t oend(const charset_mode cs)
         {
                 switch (cs)
                 {
-                case charset::digit:            return 10;
-                case charset::lalpha:           return 10 + 26;
-                case charset::ualpha:           return 10 + 26 + 26;
-                case charset::alpha:            return 10 + 26 + 26;
-                case charset::alphanum:         return 10 + 26 + 26;
+                case charset_mode::digit:       return 10;
+                case charset_mode::lalpha:      return 10 + 26;
+                case charset_mode::ualpha:      return 10 + 26 + 26;
+                case charset_mode::alpha:       return 10 + 26 + 26;
+                case charset_mode::alphanum:    return 10 + 26 + 26;
                 default:                        assert(false); return 0;
                 }
         }
 
-        static tensor_size_t osize(const charset cs)
+        static tensor_size_t osize(const charset_mode cs)
         {
                 return oend(cs) - obegin(cs);
         }
@@ -168,25 +155,30 @@ namespace nano
 
         charset_task_t::charset_task_t(const string_t& configuration) : mem_vision_task_t(
                 "charset",
-                nano::from_params<color_mode>(append_config(configuration), "color", color_mode::rgb),
-                nano::clamp(from_params<tensor_size_t>(append_config(configuration), "irows", 32), 12, 128),
-                nano::clamp(from_params<tensor_size_t>(append_config(configuration), "icols", 32), 12, 128),
-                nano::osize(from_params<charset>(append_config(configuration), "type", charset::digit)),
-                1, append_config(configuration)),
-                m_charset(nano::from_params<charset>(config(), "type")),
-                m_color(nano::from_params<color_mode>(config(), "color")),
-                m_count(nano::clamp(nano::from_params<size_t>(config(), "count"), 100, 1024 * 1024))
+                from_params<color_mode>(append_config(configuration), "color"),
+                clamp(from_params<tensor_size_t>(append_config(configuration), "irows", 32), 12, 128),
+                clamp(from_params<tensor_size_t>(append_config(configuration), "icols", 32), 12, 128),
+                nano::osize(from_params<charset_mode>(append_config(configuration), "type")),
+                1, append_config(configuration))
         {
         }
 
-        charset_task_t::charset_task_t(const charset type, const color_mode mode,
-                const tensor_size_t irows, const tensor_size_t icols, const size_t count) :
-                charset_task_t(to_params("color", mode, "irows", irows, "icols", icols, "type", type, "count", count))
+        rtask_t charset_task_t::clone(const string_t& configuration) const
         {
+                return std::make_unique<charset_task_t>(configuration);
+        }
+
+        rtask_t charset_task_t::clone() const
+        {
+                return std::make_unique<charset_task_t>(*this);
         }
 
         bool charset_task_t::populate()
         {
+                const auto charset = from_params<charset_mode>(config(), "type");
+                const auto color = from_params<color_mode>(config(), "color");
+                const auto count = clamp(from_params<size_t>(config(), "count"), 100, 1024 * 1024);
+
                 const string_t characters =
                         "0123456789" \
                         "abcdefghijklmnopqrstuvwxyz" \
@@ -216,12 +208,12 @@ namespace nano
 
                 const size_t n_fonts = char_patches.size();
 
-                nano::random_t<tensor_size_t> rng_output(obegin(m_charset), oend(m_charset) - 1);
+                nano::random_t<tensor_size_t> rng_output(obegin(charset), oend(charset) - 1);
                 nano::random_t<size_t> rng_font(1, n_fonts);
                 nano::random_t<scalar_t> rng_gauss(0, 2);
 
                 // generate samples
-                for (size_t i = 0; i < m_count; ++ i)
+                for (size_t i = 0; i < count; ++ i)
                 {
                         // random target: character
                         const tensor_index_t o = rng_output();
@@ -258,7 +250,7 @@ namespace nano
 
                         image_t image;
                         image.from_tensor(patch);
-                        switch (m_color)
+                        switch (color)
                         {
                         case color_mode::luma:  image.make_luma(); break;
                         case color_mode::rgba:  image.make_rgba(); break;
@@ -270,7 +262,7 @@ namespace nano
 
                         // generate sample
                         const auto fold = make_fold(0);
-                        const auto target = class_target(o - nano::obegin(m_charset), nano::osize(m_charset));
+                        const auto target = class_target(o - nano::obegin(charset), nano::osize(charset));
                         const auto label = string_t("char") + characters[static_cast<size_t>(o)];
                         add_sample(fold, n_chunks() - 1, target, label);
                 }

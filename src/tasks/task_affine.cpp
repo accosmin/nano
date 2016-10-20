@@ -20,16 +20,27 @@ namespace nano
                 clamp(from_params<tensor_size_t>(append_config(configuration), "irows", 32), 1, 100),
                 clamp(from_params<tensor_size_t>(append_config(configuration), "icols", 32), 1, 100),
                 clamp(from_params<tensor_size_t>(append_config(configuration), "osize", 10), 1, 1000),
-                1, append_config(configuration)),
-                m_count(clamp(from_params<size_t>(config(), "count", 1000), 10, 100000)),
-                m_noise(clamp(from_params<scalar_t>(config(), "noise", scalar_t(0.1)), scalar_t(0.001), scalar_t(0.5)))
+                1, append_config(configuration))
         {
+        }
+
+        rtask_t affine_task_t::clone(const string_t& configuration) const
+        {
+                return std::make_unique<affine_task_t>(configuration);
+        }
+
+        rtask_t affine_task_t::clone() const
+        {
+                return std::make_unique<affine_task_t>(*this);
         }
 
         bool affine_task_t::populate()
         {
+                const auto count = clamp(from_params<size_t>(config(), "count", 1000), 10, 100000);
+                const auto noise = clamp(from_params<scalar_t>(config(), "noise", scalar_t(0.1)), scalar_t(0.001), scalar_t(0.5));
+
                 random_t<scalar_t> rng_input(-scalar_t(1.0), +scalar_t(1.0));
-                random_t<scalar_t> rng_noise(-m_noise, +m_noise);
+                random_t<scalar_t> rng_noise(-noise, +noise);
 
                 // random affine transformation
                 const auto isize = idims() * irows() * icols();
@@ -41,7 +52,7 @@ namespace nano
                 A /= static_cast<scalar_t>(isize);
 
                 // generate samples
-                for (size_t i = 0; i < m_count; ++ i)
+                for (size_t i = 0; i < count; ++ i)
                 {
                         // random input
                         tensor3d_t input(idims(), irows(), icols());

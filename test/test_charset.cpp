@@ -1,6 +1,7 @@
 #include "utest.h"
 #include "task_util.h"
 #include "task_iterator.h"
+#include "text/to_params.h"
 #include "tasks/task_charset.h"
 
 using namespace nano;
@@ -10,12 +11,12 @@ NANO_BEGIN_MODULE(test_charset)
 NANO_CASE(construction)
 {
         // <charset, color mode, number of outputs/classes/characters>
-        std::vector<std::tuple<charset, color_mode, tensor_size_t>> configs;
-        configs.emplace_back(charset::digit,            color_mode::luma,       tensor_size_t(10));
-        configs.emplace_back(charset::lalpha,           color_mode::rgba,       tensor_size_t(26));
-        configs.emplace_back(charset::ualpha,           color_mode::luma,       tensor_size_t(26));
-        configs.emplace_back(charset::alpha,            color_mode::luma,       tensor_size_t(52));
-        configs.emplace_back(charset::alphanum,         color_mode::rgba,       tensor_size_t(62));
+        std::vector<std::tuple<charset_mode, color_mode, tensor_size_t>> configs;
+        configs.emplace_back(charset_mode::digit,            color_mode::luma,       tensor_size_t(10));
+        configs.emplace_back(charset_mode::lalpha,           color_mode::rgba,       tensor_size_t(26));
+        configs.emplace_back(charset_mode::ualpha,           color_mode::luma,       tensor_size_t(26));
+        configs.emplace_back(charset_mode::alpha,            color_mode::luma,       tensor_size_t(52));
+        configs.emplace_back(charset_mode::alphanum,         color_mode::rgba,       tensor_size_t(62));
 
         for (const auto& config : configs)
         {
@@ -27,7 +28,8 @@ NANO_CASE(construction)
                 const auto count = size_t(10 * osize);
                 const auto fsize = size_t(1);   // folds
 
-                charset_task_t task(type, mode, irows, icols, count);
+                charset_task_t task(to_params(
+                        "type", type, "color", mode, "irows", irows, "icols", icols, "count", count));
 
                 NANO_CHECK_EQUAL(task.load(), true);
                 NANO_CHECK_EQUAL(task.irows(), irows);
@@ -49,7 +51,8 @@ NANO_CASE(construction)
 
 NANO_CASE(fixed_batch_iterator)
 {
-        charset_task_t task(charset::digit, color_mode::rgba, 16, 16, 10000);
+        charset_task_t task(to_params(
+                "type", charset_mode::digit, "color", color_mode::rgba, "irows", 16, "icols", 16, "count", 10000));
 
         NANO_CHECK_EQUAL(task.load(), true);
 
@@ -81,7 +84,8 @@ NANO_CASE(fixed_batch_iterator)
 
 NANO_CASE(increasing_batch_iterator)
 {
-        charset_task_t task(charset::digit, color_mode::rgba, 16, 16, 10000);
+        charset_task_t task(to_params(
+                "type", charset_mode::digit, "color", color_mode::rgba, "irows", 16, "icols", 16, "count", 10000));
 
         NANO_CHECK_EQUAL(task.load(), true);
 

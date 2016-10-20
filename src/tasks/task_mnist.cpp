@@ -13,6 +13,16 @@ namespace nano
         {
         }
 
+        rtask_t mnist_task_t::clone(const string_t& configuration) const
+        {
+                return std::make_unique<mnist_task_t>(configuration);
+        }
+
+        rtask_t mnist_task_t::clone() const
+        {
+                return std::make_unique<mnist_task_t>(*this);
+        }
+
         bool mnist_task_t::populate()
         {
                 const string_t dir = nano::from_params<string_t>(config(), "dir");

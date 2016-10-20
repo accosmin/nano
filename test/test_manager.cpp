@@ -3,24 +3,26 @@
 
 using namespace nano;
 
-class test_clonable_t : public nano::clonable_t<test_clonable_t>
-{
-public:
+#define NANO_MAKE_CLONABLE(base_class) \
+        virtual trobject clone(const string_t& configuration) const override \
+        { \
+                return std::make_unique<base_class>(configuration); \
+        } \
+        virtual trobject clone() const override \
+        { \
+                return std::make_unique<base_class>(*this); \
+        }
 
+struct test_clonable_t : public nano::clonable_t<test_clonable_t>
+{
         explicit test_clonable_t(const string_t& configuration = string_t()) :
                 nano::clonable_t<test_clonable_t>(configuration)
         {
         }
-
-        virtual ~test_clonable_t()
-        {
-        }
 };
 
-class test_obj1_clonable_t : public test_clonable_t
+struct test_obj1_clonable_t : public test_clonable_t
 {
-public:
-
         NANO_MAKE_CLONABLE(test_obj1_clonable_t)
 
         explicit test_obj1_clonable_t(const string_t& configuration = string_t()) :
@@ -29,10 +31,8 @@ public:
         }
 };
 
-class test_obj2_clonable_t : public test_clonable_t
+struct test_obj2_clonable_t : public test_clonable_t
 {
-public:
-
         NANO_MAKE_CLONABLE(test_obj2_clonable_t)
 
         explicit test_obj2_clonable_t(const string_t& configuration = string_t()) :
@@ -41,10 +41,8 @@ public:
         }
 };
 
-class test_obj3_clonable_t : public test_clonable_t
+struct test_obj3_clonable_t : public test_clonable_t
 {
-public:
-
         NANO_MAKE_CLONABLE(test_obj3_clonable_t)
 
         explicit test_obj3_clonable_t(const string_t& configuration = string_t()) :

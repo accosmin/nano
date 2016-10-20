@@ -185,7 +185,8 @@ int main(int argc, const char* argv[])
         const size_t count = 20000;
         const color_mode color = color_mode::rgb;
 
-        charset_task_t task(charset::digit, color, rows, cols, count);
+        charset_task_t task(to_params(
+                "type", charset_mode::digit, "color", color, "irows", rows, "icols", cols, "count", count));
         task.load();
 
         const size_t fold = 0;

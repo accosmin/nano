@@ -12,6 +12,16 @@ namespace nano
         {
         }
 
+        rbatch_optimizer_t batch_gd_t::clone(const string_t& configuration) const
+        {
+                return std::make_unique<batch_gd_t>(configuration);
+        }
+
+        rbatch_optimizer_t batch_gd_t::clone() const
+        {
+                return std::make_unique<batch_gd_t>(*this);
+        }
+
         state_t batch_gd_t::minimize(const batch_params_t& param, const problem_t& problem, const vector_t& x0) const
         {
                 assert(problem.size() == x0.size());

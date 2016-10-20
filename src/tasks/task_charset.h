@@ -4,7 +4,7 @@
 
 namespace nano
 {
-        enum class charset
+        enum class charset_mode
         {
                 digit,          ///< 0-9
                 lalpha,         ///< a-z
@@ -13,47 +13,40 @@ namespace nano
                 alphanum,       ///< A-Za-z0-9
         };
 
+        template <>
+        inline std::map<charset_mode, std::string> enum_string<charset_mode>()
+        {
+                return
+                {
+                        { charset_mode::digit,          "digit" },
+                        { charset_mode::lalpha,         "lalpha" },
+                        { charset_mode::ualpha,         "ualpha" },
+                        { charset_mode::alpha,          "alpha" },
+                        { charset_mode::alphanum,       "alphanum" }
+                };
+        }
+
         ///
         /// \brief synthetic task to classify characters
         ///
         /// parameters:
-        ///     type            - character set
-        ///     rows            - sample size in pixels (rows)
-        ///     cols            - sample size in pixels (columns)
-        ///     color           - color mode
-        ///     size            - number of samples (training + validation)
+        ///     type    - character set
+        ///     irows   - sample size in pixels (rows)
+        ///     icols   - sample size in pixels (columns)
+        ///     color   - color mode
+        ///     count   - number of samples (training + validation)
         ///
-        class NANO_PUBLIC charset_task_t : public mem_vision_task_t
+        class NANO_PUBLIC charset_task_t final : public mem_vision_task_t
         {
         public:
 
-                NANO_MAKE_CLONABLE(charset_task_t)
-
-                ///
-                /// \brief constructor
-                ///
                 explicit charset_task_t(const string_t& configuration = string_t());
 
-                ///
-                /// \brief constructor
-                ///
-                charset_task_t(const charset, const color_mode,
-                        const tensor_size_t irows, const tensor_size_t icols, const size_t count);
-
-                ///
-                /// \brief retrieve the color mdoe
-                ///
-                color_mode color() const { return m_color; }
+                virtual rtask_t clone(const string_t& configuration) const;
+                virtual rtask_t clone() const;
 
         private:
 
-                virtual bool populate() override final;
-
-        private:
-
-                // attributes
-                charset         m_charset;
-                color_mode      m_color;
-                size_t          m_count;
+                virtual bool populate() override;
         };
 }

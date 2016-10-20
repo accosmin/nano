@@ -90,5 +90,19 @@ namespace nano
                 /// \brief retrieve the given image
                 ///
                 const image_t& image(const size_t index) const { return chunk(index); }
+
+                ///
+                /// \brief retrieve the color mode
+                ///
+                color_mode color() const
+                {
+                        switch (idims())
+                        {
+                        case 1:         return color_mode::luma;
+                        case 3:         return color_mode::rgb;
+                        case 4:         return color_mode::rgba;
+                        default:        return color_mode::luma;
+                        }
+                }
         };
 }

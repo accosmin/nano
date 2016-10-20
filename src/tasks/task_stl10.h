@@ -13,20 +13,18 @@ namespace nano
         ///
         /// http://www.stanford.edu/~acoates/stl10/
         ///
-        class stl10_task_t : public mem_vision_task_t
+        class stl10_task_t final : public mem_vision_task_t
         {
         public:
 
-                NANO_MAKE_CLONABLE(stl10_task_t)
-
-                ///
-                /// \brief constructor
-                ///
                 explicit stl10_task_t(const string_t& configuration = string_t());
+
+                virtual rtask_t clone(const string_t& configuration) const;
+                virtual rtask_t clone() const;
 
         private:
 
-                virtual bool populate() override final;
+                virtual bool populate() override;
 
                 // load binary files
                 bool load_ifile(const string_t&, const buffer_t&, const bool unlabed, const size_t count);

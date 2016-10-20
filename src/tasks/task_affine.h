@@ -7,25 +7,17 @@ namespace nano
         ///
         /// \brief task containing affine-mapped 3D input tensors: f(x) = A * x + b + noise.
         ///
-        class NANO_PUBLIC affine_task_t : public mem_tensor_task_t
+        class NANO_PUBLIC affine_task_t final : public mem_tensor_task_t
         {
         public:
 
-                NANO_MAKE_CLONABLE(affine_task_t)
-
-                ///
-                /// \brief constructor
-                ///
                 explicit affine_task_t(const string_t& configuration = string_t());
 
+                virtual rtask_t clone(const string_t& configuration) const;
+                virtual rtask_t clone() const;
+
         private:
 
-                virtual bool populate() override final;
-
-        private:
-
-                // attributes
-                size_t          m_count;
-                scalar_t        m_noise;
+                virtual bool populate() override;
         };
 }

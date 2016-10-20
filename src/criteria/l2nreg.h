@@ -9,45 +9,34 @@ namespace nano
         /// \brief L2-norm regularized loss.
         ///
         template <typename tcriterion>
-        class l2n_criterion_t : public tcriterion
+        struct l2n_criterion_t final : public tcriterion
         {
-        public:
-
-                ///
-                /// \brief constructor
-                ///
                 explicit l2n_criterion_t(const string_t& configuration = string_t());
 
-                /// \brief clone
-                virtual rcriterion_t clone(const string_t& parameters) const final
-                {
-                        return std::make_unique<l2n_criterion_t<tcriterion>>(parameters);
-                }
-                virtual rcriterion_t clone() const final
-                {
-                        return std::make_unique<l2n_criterion_t<tcriterion>>(*this);
-                }
+                virtual rcriterion_t clone(const string_t& configuration) const override;
+                virtual rcriterion_t clone() const override;
 
-                ///
-                /// \brief cumulated loss value
-                ///
-                virtual scalar_t value() const override final;
-
-                ///
-                /// \brief cumulated gradient
-                ///
-                virtual vector_t vgrad() const override final;
-
-                ///
-                /// \brief check if the criterion has a regularization term to tune
-                ///
-                virtual bool can_regularize() const override final;
+                virtual scalar_t value() const override;
+                virtual vector_t vgrad() const override;
+                virtual bool can_regularize() const override;
         };
 
         template <typename tcriterion>
         l2n_criterion_t<tcriterion>::l2n_criterion_t(const string_t& configuration) :
                 tcriterion(configuration)
         {
+        }
+
+        template <typename tcriterion>
+        rcriterion_t l2n_criterion_t<tcriterion>::clone(const string_t& configuration) const
+        {
+                return std::make_unique<l2n_criterion_t<tcriterion>>(configuration);
+        }
+
+        template <typename tcriterion>
+        rcriterion_t l2n_criterion_t<tcriterion>::clone() const
+        {
+                return std::make_unique<l2n_criterion_t<tcriterion>>(*this);
         }
 
         template <typename tcriterion>

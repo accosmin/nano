@@ -16,6 +16,7 @@ namespace nano
         ///
         class trainer_t;
         using trainer_manager_t = manager_t<trainer_t>;
+        using rtrainer_t = trainer_manager_t::trobject;
 
         NANO_PUBLIC trainer_manager_t& get_trainers();
 
@@ -29,10 +30,7 @@ namespace nano
                 ///
                 /// \brief constructor
                 ///
-                explicit trainer_t(const string_t& configuration) :
-                        clonable_t<trainer_t>(configuration)
-                {
-                }
+                explicit trainer_t(const string_t& configuration) : clonable_t<trainer_t>(configuration) {}
 
                 ///
                 /// \brief train the given model starting from the current model parameters

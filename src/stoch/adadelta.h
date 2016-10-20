@@ -8,19 +8,14 @@ namespace nano
         /// \brief stochastic AdaDelta,
         ///     see "ADADELTA: An Adaptive Learning Rate Method", by Matthew D. Zeiler
         ///
-        struct stoch_adadelta_t : public stoch_optimizer_t
+        struct stoch_adadelta_t final : public stoch_optimizer_t
         {
-                NANO_MAKE_CLONABLE(stoch_adadelta_t)
-
-                ///
-                /// \brief constructor
-                ///
                 explicit stoch_adadelta_t(const string_t& configuration = string_t());
 
-                ///
-                /// \brief minimize starting from the initial guess x0.
-                ///
-                virtual state_t minimize(const stoch_params_t&, const problem_t&, const vector_t& x0) const override final;
+                virtual rstoch_optimizer_t clone(const string_t& configuration) const override;
+                virtual rstoch_optimizer_t clone() const override;
+
+                virtual state_t minimize(const stoch_params_t&, const problem_t&, const vector_t& x0) const override;
 
                 ///
                 /// \brief minimize starting from the initial guess x0 using the given hyper-parameters.

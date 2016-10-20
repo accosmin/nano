@@ -11,6 +11,7 @@ namespace nano
         ///
         class task_t;
         using task_manager_t = manager_t<task_t>;
+        using rtask_t = task_manager_t::trobject;
 
         NANO_PUBLIC task_manager_t& get_tasks();
 
@@ -26,17 +27,12 @@ namespace nano
                 ///
                 /// \brief constructor
                 ///
-                explicit task_t(const string_t& configuration = string_t()) :
-                        clonable_t<task_t>(configuration)
-                {
-                }
+                explicit task_t(const string_t& configuration = string_t()) : clonable_t<task_t>(configuration) {}
 
                 ///
                 /// \brief destructor
                 ///
-                virtual ~task_t()
-                {
-                }
+                virtual ~task_t() {}
 
                 ///
                 /// \brief short name of this task

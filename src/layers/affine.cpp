@@ -13,6 +13,16 @@ namespace nano
         {
         }
 
+        rlayer_t affine_layer_t::clone(const string_t& configuration) const
+        {
+                return std::make_unique<affine_layer_t>(configuration);
+        }
+
+        rlayer_t affine_layer_t::clone() const
+        {
+                return std::make_unique<affine_layer_t>(*this);
+        }
+
         tensor_size_t affine_layer_t::resize(const tensor3d_t& tensor)
         {
                 const auto idims = tensor.size();

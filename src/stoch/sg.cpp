@@ -9,6 +9,16 @@ namespace nano
         {
         }
 
+        rstoch_optimizer_t stoch_sg_t::clone(const string_t& configuration) const
+        {
+                return std::make_unique<stoch_sg_t>(configuration);
+        }
+
+        rstoch_optimizer_t stoch_sg_t::clone() const
+        {
+                return std::make_unique<stoch_sg_t>(*this);
+        }
+
         state_t stoch_sg_t::minimize(const stoch_params_t& param, const problem_t& problem, const vector_t& x0) const
         {
                 return stoch_tune(this, param, problem, x0, make_alpha0s(), make_decays());

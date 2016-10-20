@@ -12,20 +12,18 @@ namespace nano
         ///
         /// http://yann.lecun.com/exdb/mnist/
         ///
-        class mnist_task_t : public mem_vision_task_t
+        class mnist_task_t final : public mem_vision_task_t
         {
         public:
 
-                NANO_MAKE_CLONABLE(mnist_task_t)
-
-                ///
-                /// \brief constructor
-                ///
                 explicit mnist_task_t(const string_t& configuration = string_t());
+
+                virtual rtask_t clone(const string_t& configuration) const;
+                virtual rtask_t clone() const;
 
        private:
 
-                virtual bool populate() override final;
+                virtual bool populate() override;
 
                 // load binary file
                 bool load_binary(const string_t& ifile, const string_t& gfile, const protocol, const size_t count);

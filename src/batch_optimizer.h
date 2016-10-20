@@ -11,6 +11,7 @@ namespace nano
         ///
         class batch_optimizer_t;
         using batch_optimizer_manager_t = manager_t<batch_optimizer_t>;
+        using rbatch_optimizer_t = batch_optimizer_manager_t::trobject;
 
         NANO_PUBLIC batch_optimizer_manager_t& get_batch_optimizers();
 
