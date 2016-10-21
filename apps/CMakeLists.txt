@@ -24,7 +24,6 @@ build_app(evaluate.cpp nano)
 build_app(warp.cpp nano)
 build_app(embed.cpp nano)
 build_app(stats.cpp nano)
-build_app(generate_convnets.cpp nano)
 
 # install (some) programs
 set(programs
@@ -32,7 +31,9 @@ set(programs
         info_task
         train
         evaluate
-        generate_convnets)
+        warp
+        embed
+        stats)
 
 install(TARGETS ${programs} DESTINATION bin)
 
