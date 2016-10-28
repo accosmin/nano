@@ -97,6 +97,7 @@ int main(int argc, const char* argv[])
 
         // parse the command line
         cmdline_t cmdline("benchmark trainers");
+        cmdline.add("s", "samples",             "number of samples to use [100, 100000]", "10000");
         cmdline.add("", "mlps",                 "use MLPs with varying number of hidden layers");
         cmdline.add("", "mlp0",                 "use MLPs with 0 hidden layers");
         cmdline.add("", "mlp1",                 "use MLPs with 1 hidden layer");
@@ -129,6 +130,7 @@ int main(int argc, const char* argv[])
         cmdline.process(argc, argv);
 
         // check arguments and options
+        const auto count = nano::clamp(cmdline.get<size_t>("samples"), 100, 100 * 1000);
         const bool use_mlps = cmdline.has("mlps");
         const bool use_mlp0 = cmdline.has("mlp0");
         const bool use_mlp1 = cmdline.has("mlp1");
@@ -182,7 +184,6 @@ int main(int argc, const char* argv[])
         // create task
         const size_t rows = 16;
         const size_t cols = 16;
-        const size_t count = 20000;
         const color_mode color = color_mode::rgb;
 
         charset_task_t task(to_params(
