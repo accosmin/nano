@@ -49,7 +49,7 @@ namespace nano
                 size_t& epoch, const size_t epochs, trainer_result_t& result, const trainer_policy policy,
                 const timer_t& timer)
         {
-                auto fn_ulog = [&] (const state_t& state, const trainer_config_t& sconfig = trainer_config_t())
+                return [&] (const state_t& state, const trainer_config_t& sconfig = trainer_config_t())
                 {
                         // evaluate the current state
                         lacc.set_params(state.x);
@@ -80,8 +80,6 @@ namespace nano
 
                         return !nano::is_done(ret, policy);
                 };
-
-                return fn_ulog;
         }
 
         ///
