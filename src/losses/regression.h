@@ -9,7 +9,7 @@ namespace nano
         /// \brief (multivariate) regression loss that upper-bounds the L1-distance between target and score/output.
         ///
         template <typename top>
-        struct regression_t : public loss_t
+        struct regression_t final : public loss_t
         {
                 explicit regression_t(const string_t& parameters = string_t()) : loss_t(parameters) {}
 

@@ -10,7 +10,7 @@ namespace nano
         /// \brief (multiclass) classification loss that predicts the label with the highest score.
         ///
         template <typename top>
-        struct classification_single_t : public loss_t
+        struct classification_single_t final : public loss_t
         {
                 explicit classification_single_t(const string_t& parameters = string_t()) : loss_t(parameters) {}
 

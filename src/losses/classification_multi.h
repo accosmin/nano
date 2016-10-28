@@ -10,7 +10,7 @@ namespace nano
         /// \brief (multiclass) classification loss that predicts the labels with positive scores.
         ///
         template <typename top>
-        struct classification_multi_t : public loss_t
+        struct classification_multi_t final : public loss_t
         {
                 explicit classification_multi_t(const string_t& parameters = string_t()) : loss_t(parameters) {}
 
