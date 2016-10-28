@@ -63,7 +63,7 @@ static void make_random_config(tensor3d_t& inputs, vector_t& target)
 }
 
 static void test_model(const string_t& model_description, const tensor_size_t expected_psize,
-        const scalar_t epsilon = epsilon2<scalar_t>())
+        const scalar_t epsilon = epsilon3<scalar_t>())
 {
         const auto model = get_model(model_description);
         const auto loss = get_loss();
