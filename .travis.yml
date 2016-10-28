@@ -47,4 +47,4 @@ before_script:
 
 script:
   - time bash build.sh --build-type Release --generator ninja --float
-  - cd build-release/test && time ctest -j 3 -E "test_mnist|test_cifar10|test_cifar100|test_svhn|test_stl10|test_stoch"
+  - cd build-release/test && time ctest -j 3 -E "test_mnist|test_cifar10|test_cifar100|test_svhn|test_stl10"
