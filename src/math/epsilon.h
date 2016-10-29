@@ -23,7 +23,7 @@ namespace nano
         >
         tscalar epsilon1()
         {
-                return std::pow(std::cbrt(epsilon0<tscalar>()), tscalar(2));
+                return 10 * std::pow(std::cbrt(std::numeric_limits<tscalar>::epsilon()), tscalar(2));
         }
 
         template
@@ -32,7 +32,7 @@ namespace nano
         >
         tscalar epsilon2()
         {
-                return std::sqrt(epsilon0<tscalar>());
+                return 10 * std::sqrt(std::numeric_limits<tscalar>::epsilon());
         }
 
         template
@@ -41,7 +41,7 @@ namespace nano
         >
         tscalar epsilon3()
         {
-                return std::cbrt(epsilon0<tscalar>());
+                return 10 * std::cbrt(std::numeric_limits<tscalar>::epsilon());
         }
 }
 
