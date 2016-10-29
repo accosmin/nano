@@ -9,7 +9,7 @@ namespace nano
         ///
         struct batch_lbfgs_t final : public batch_optimizer_t
         {
-                batch_lbfgs_t(const string_t& configuration = string_t());
+                explicit batch_lbfgs_t(const string_t& configuration = string_t());
 
                 virtual rbatch_optimizer_t clone() const override;
 

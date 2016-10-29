@@ -9,7 +9,7 @@ namespace nano
         ///
         struct batch_gd_t final : public batch_optimizer_t
         {
-                batch_gd_t(const string_t& configuration = string_t());
+                explicit batch_gd_t(const string_t& configuration = string_t());
 
                 virtual rbatch_optimizer_t clone() const override;
 

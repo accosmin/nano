@@ -14,7 +14,7 @@ namespace nano
         >
         struct batch_cgd_t final : public batch_optimizer_t
         {
-                batch_cgd_t(const string_t& configuration = string_t());
+                explicit batch_cgd_t(const string_t& configuration = string_t());
 
                 virtual rbatch_optimizer_t clone() const override;
 
