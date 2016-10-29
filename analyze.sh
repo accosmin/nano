@@ -64,7 +64,7 @@ do
 
                 crtdir=$(pwd)
                 cd ${basedir}/build-debug-${config}/test
-                for test in test_*
+                for test in $(ls test_* | grep -v test_mnist | grep -v test_cifar10 | grep -v test_stl10 | grep -v test_svhn)
                 do
                         printf "  -%-21s" "${test}..."
 
