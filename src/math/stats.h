@@ -69,8 +69,8 @@ namespace nano
                         m_count = 0;
                         m_sum = 0;
                         m_sumsq = 0;
-                        m_min = +std::numeric_limits<tscalar>::max();
-                        m_max = -std::numeric_limits<tscalar>::max();
+                        m_min = std::numeric_limits<tscalar>::max();
+                        m_max = std::numeric_limits<tscalar>::lowest();
                 }
 
                 // access functions
