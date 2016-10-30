@@ -10,8 +10,8 @@ using namespace nano;
 
 static void check_function(const function_t& function)
 {
-        const auto epochs = size_t(100);
-        const auto epoch_size = size_t(100);
+        const auto epochs = size_t(1000);
+        const auto epoch_size = size_t(1000);
         const auto trials = size_t(20);
 
         const auto dims = function.problem().size();
@@ -30,6 +30,9 @@ static void check_function(const function_t& function)
         const auto ids = get_stoch_optimizers().ids();
         for (const auto id : ids)
         {
+                const auto is_ngd = id == "ngd";
+                const auto is_adadelta = id == "adadelta";
+
                 const auto optimizer = get_stoch_optimizers().get(id);
 
                 size_t out_of_domain = 0;
@@ -40,18 +43,22 @@ static void check_function(const function_t& function)
 
                         const auto& x0 = x0s[t];
                         const auto f0 = problem(x0);
+                        const auto eps = epsilon3<scalar_t>();
+                        const auto g_thres = is_ngd ? scalar_t(1) : (is_adadelta ? std::sqrt(eps) : eps);
+                        const auto x_thres = std::cbrt(g_thres);
+
+                        const auto op_ulog = [g_thres = g_thres] (const state_t& state, const stoch_params_t::config_t&)
+                        {
+                                return state.convergence_criteria() > g_thres / 2;
+                        };
 
                         // optimize
-                        const auto params = stoch_params_t(epochs, epoch_size);
+                        const auto params = stoch_params_t(epochs, epoch_size, op_ulog);
                         const auto state = optimizer->minimize(params, problem, x0);
 
                         const auto x = state.x;
                         const auto f = state.f;
                         const auto g = state.convergence_criteria();
-
-                        const auto can_eps = id != "ngd";
-                        const auto g_thres = (can_eps ? scalar_t(1) : scalar_t(1e+3)) * epsilon3<scalar_t>();
-                        const auto x_thres = (can_eps ? scalar_t(1) : scalar_t(1e+2)) * std::cbrt(epsilon3<scalar_t>());
 
                         // ignore out-of-domain solutions
                         if (!function.is_valid(x))
