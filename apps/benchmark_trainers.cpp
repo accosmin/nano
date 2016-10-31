@@ -26,6 +26,7 @@ template <typename ttrainer>
 static void evaluate_trainer(model_t& model, const string_t& name, const string_t& basepath,
         table_t& table, const vectors_t& x0s, const ttrainer& trainer)
 {
+        stats_t<scalar_t> values;
         stats_t<scalar_t> errors;
         stats_t<scalar_t> speeds;
         stats_t<scalar_t> timings;
@@ -42,7 +43,8 @@ static void evaluate_trainer(model_t& model, const string_t& name, const string_
                 const auto opt_state = result.optimum_state();
                 const auto opt_speed = convergence_speed(result.optimum_states());
 
-                errors(opt_state.m_train.m_value);
+                values(opt_state.m_train.m_value);
+                errors(opt_state.m_train.m_error_avg);
                 speeds(opt_speed);
                 timings(static_cast<scalar_t>(timer.seconds().count()));
 
@@ -53,6 +55,7 @@ static void evaluate_trainer(model_t& model, const string_t& name, const string_
         }
 
         table.append(name)
+                << stats_to_string(values)
                 << stats_to_string(errors)
                 << stats_to_string(speeds)
                 << stats_to_string(timings);
@@ -239,9 +242,11 @@ int main(int argc, const char* argv[])
                 const auto loss = get_losses().get(cmd_loss);
 
                 table_t table(netname + "-" + cmd_loss);
-                table.header() << "train criteria"
-                               << "convergence speed"
-                               << "time [sec]";
+                table.header()
+                        << "train criteria (opt)"
+                        << "train error (opt)"
+                        << "convergence speed"
+                        << "time [sec]";
 
                 // vary the criteria
                 const auto criterion = get_criteria().get(cmd_criterion);

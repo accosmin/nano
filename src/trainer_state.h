@@ -41,7 +41,7 @@ namespace nano
                 operator bool() const;
 
                 // attributes
-                scalar_t        m_value;                                ///< loss value
+                scalar_t        m_value;                                ///< criterion value
                 scalar_t        m_value_avg, m_value_var, m_value_max;  ///< loss value (average, variance, maximum)
                 scalar_t        m_error_avg, m_error_var, m_error_max;  ///< error (average, variance, maximum)
         };
