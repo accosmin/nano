@@ -43,8 +43,8 @@ static void evaluate_trainer(model_t& model, const string_t& name, const string_
                 const auto opt_state = result.optimum_state();
                 const auto opt_speed = convergence_speed(result.optimum_states());
 
-                values(opt_state.m_train.m_value);
-                errors(opt_state.m_train.m_error_avg);
+                values(opt_state.m_test.m_value);
+                errors(opt_state.m_test.m_error_avg);
                 speeds(opt_speed);
                 timings(static_cast<scalar_t>(timer.seconds().count()));
 
@@ -243,8 +243,8 @@ int main(int argc, const char* argv[])
 
                 table_t table(netname + "-" + cmd_loss);
                 table.header()
-                        << "train criteria (opt)"
-                        << "train error (opt)"
+                        << "test criteria"
+                        << "test error"
                         << "convergence speed"
                         << "time [sec]";
 
