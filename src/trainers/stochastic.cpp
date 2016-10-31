@@ -53,7 +53,7 @@ namespace nano
                         task_iterator_t it(task, train_fold, batch0, factor);
 
                         // tuning operator
-                        auto fn_tlog = [&] (const state_t& state, const trainer_config_t& sconfig)
+                        const auto fn_tlog = [&] (const state_t& state, const trainer_config_t& sconfig)
                         {
                                 lacc.set_params(state.x);
                                 lacc.update(task, train_fold);
@@ -73,7 +73,10 @@ namespace nano
                         };
 
                         // logging operator
-                        auto fn_ulog = make_trainer_logger(lacc, it, epoch, epochs, result, policy, timer);
+                        const auto fn_ulog = [&] (const state_t& state, const trainer_config_t& sconfig)
+                        {
+                                return ulog(lacc, it, epoch, epochs, result, policy, timer, state, sconfig);
+                        };
 
                         // assembly optimization problem & optimize the model
                         const auto problem = make_trainer_problem(lacc, gacc, it);

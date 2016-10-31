@@ -48,7 +48,10 @@ namespace nano
                         task_iterator_t it(task, train_fold);
 
                         // logging operator
-                        auto fn_ulog = make_trainer_logger(lacc, it, epoch, epochs, result, policy, timer);
+                        const auto fn_ulog = [&] (const state_t& state)
+                        {
+                                return ulog(lacc, it, epoch, epochs, result, policy, timer, state);
+                        };
 
                         // assembly optimization problem & optimize the model
                         const auto problem = make_trainer_problem(lacc, gacc, it);

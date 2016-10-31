@@ -43,43 +43,41 @@ namespace nano
         }
 
         ///
-        /// \brief construct optimization problem for a particular trainer.
+        /// \brief log the current optimization state & check stopping criteria.
         ///
-        inline auto make_trainer_logger(const accumulator_t& lacc, task_iterator_t& it,
+        inline bool ulog(const accumulator_t& lacc, task_iterator_t& it,
                 size_t& epoch, const size_t epochs, trainer_result_t& result, const trainer_policy policy,
-                const timer_t& timer)
+                const timer_t& timer,
+                const state_t& state, const trainer_config_t& sconfig = trainer_config_t())
         {
-                return [&] (const state_t& state, const trainer_config_t& sconfig = trainer_config_t())
-                {
-                        // evaluate the current state
-                        lacc.set_params(state.x);
-                        lacc.update(it.task(), it.train_fold());
-                        const auto train = trainer_measurement_t{lacc.value(), lacc.vstats(), lacc.estats()};
+                // evaluate the current state
+                lacc.set_params(state.x);
+                lacc.update(it.task(), it.train_fold());
+                const auto train = trainer_measurement_t{lacc.value(), lacc.vstats(), lacc.estats()};
 
-                        lacc.set_params(state.x);
-                        lacc.update(it.task(), it.valid_fold());
-                        const auto valid = trainer_measurement_t{lacc.value(), lacc.vstats(), lacc.estats()};
+                lacc.set_params(state.x);
+                lacc.update(it.task(), it.valid_fold());
+                const auto valid = trainer_measurement_t{lacc.value(), lacc.vstats(), lacc.estats()};
 
-                        lacc.set_params(state.x);
-                        lacc.update(it.task(), it.test_fold());
-                        const auto test = trainer_measurement_t{lacc.value(), lacc.vstats(), lacc.estats()};
+                lacc.set_params(state.x);
+                lacc.update(it.task(), it.test_fold());
+                const auto test = trainer_measurement_t{lacc.value(), lacc.vstats(), lacc.estats()};
 
-                        // OK, update the optimum solution
-                        const auto milis = timer.milliseconds();
-                        const auto config = nano::append(sconfig, "lambda", lacc.lambda());
-                        const auto ret = result.update(state, {milis, ++epoch, train, valid, test}, config);
+                // OK, update the optimum solution
+                const auto milis = timer.milliseconds();
+                const auto config = nano::append(sconfig, "lambda", lacc.lambda());
+                const auto ret = result.update(state, {milis, ++epoch, train, valid, test}, config);
 
-                        log_info()
-                                << "[" << epoch << "/" << epochs
-                                << ":train=" << train
-                                << ",valid=" << valid << "|" << nano::to_string(ret)
-                                << ",test=" << test
-                                << "," << config << ",batch=" << (it.end() - it.begin())
-                                << ",g=" << state.g.lpNorm<Eigen::Infinity>()
-                                << "] " << timer.elapsed() << ".";
+                log_info()
+                        << "[" << epoch << "/" << epochs
+                        << ":train=" << train
+                        << ",valid=" << valid << "|" << nano::to_string(ret)
+                        << ",test=" << test
+                        << "," << config << ",batch=" << (it.end() - it.begin())
+                        << ",g=" << state.g.lpNorm<Eigen::Infinity>()
+                        << "] " << timer.elapsed() << ".";
 
-                        return !nano::is_done(ret, policy);
-                };
+                return !nano::is_done(ret, policy);
         }
 
         ///
