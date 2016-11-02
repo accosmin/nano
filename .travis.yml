@@ -56,7 +56,7 @@ matrix:
 install:
   - echo $TRAVIS_OS_NAME
   - if [ "$TRAVIS_OS_NAME" = "osx" ]; then brew update; brew install cmake eigen ninja devil libarchive; brew link libarchive --force; fi
-  - if [ "$TRAVIS_OS_NAME" = "linux" ]; then sudo apt-get update -qq && sudo apt-get install -y cmake cmake-data ninja-build libdevil-dev libeigen3-dev libarchive-dev && export CXX="$COMPILER"; fi
+  - if [ "$TRAVIS_OS_NAME" = "linux" ]; then sudo apt-get update -qq && sudo apt-get install -y cmake cmake-data ninja-build libbz2-dev mercurial libdevil-dev libeigen3-dev libarchive-dev && export CXX="$COMPILER"; fi
   - mkdir build
 
 before_script:
@@ -65,8 +65,8 @@ before_script:
 script:
   - time bash build.sh --build-type Release --generator ninja --float
   - ./build-release/apps/info --system
-  - cd build-release/test && time ctest -j 1 -E "test_mnist|test_cifar10|test_cifar100|test_svhn|test_stl10"
+  - cd build-release/test && time ctest -j 3 -E "test_mnist|test_cifar10|test_cifar100|test_svhn|test_stl10"
   - cd ../../
   - ./build-release/apps/info --system
   - time bash build.sh --build-type Release --generator ninja --double
-  - cd build-release/test && time ctest -j 1 -E "test_mnist|test_cifar10|test_cifar100|test_svhn|test_stl10"
+  - cd build-release/test && time ctest -j 3 -E "test_mnist|test_cifar10|test_cifar100|test_svhn|test_stl10"
