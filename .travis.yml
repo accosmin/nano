@@ -52,6 +52,8 @@ matrix:
       env: COMPILER=clang++-3.7
     - os: osx
       osx_image: xcode7.2
+    - os: osx
+      osx_image: xcode8
 
 install:
   - echo $TRAVIS_OS_NAME
