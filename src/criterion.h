@@ -51,6 +51,11 @@ namespace nano
                 criterion_t& operator=(criterion_t&&) = default;
 
                 ///
+                /// \brief create a copy of the current object
+                ///
+                virtual rcriterion_t clone() const = 0;
+
+                ///
                 /// \brief reset statistics and settings
                 ///
                 criterion_t& reset(const model_t& model);

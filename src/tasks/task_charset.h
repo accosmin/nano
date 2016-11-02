@@ -42,8 +42,6 @@ namespace nano
 
                 explicit charset_task_t(const string_t& configuration = string_t());
 
-                virtual rtask_t clone() const override;
-
         private:
 
                 virtual bool populate() override;

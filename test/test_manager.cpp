@@ -6,48 +6,25 @@ using namespace nano;
 struct test_clonable_t : public nano::clonable_t<test_clonable_t>
 {
         explicit test_clonable_t(const string_t& configuration = string_t()) :
-                nano::clonable_t<test_clonable_t>(configuration)
-        {
-        }
+                nano::clonable_t<test_clonable_t>(configuration) {}
 };
 
 struct object1_clonable_t : public test_clonable_t
 {
         explicit object1_clonable_t(const string_t& configuration = string_t()) :
-                test_clonable_t(configuration + ",p1=def1")
-        {
-        }
-
-        virtual trobject clone() const override
-        {
-                return std::make_unique<object1_clonable_t>(*this);
-        }
+                test_clonable_t(configuration + ",p1=def1") {}
 };
 
 struct object2_clonable_t : public test_clonable_t
 {
         explicit object2_clonable_t(const string_t& configuration = string_t()) :
-                test_clonable_t(configuration + ",p2=def2")
-        {
-        }
-
-        virtual trobject clone() const override
-        {
-                return std::make_unique<object2_clonable_t>(*this);
-        }
+                test_clonable_t(configuration + ",p2=def2") {}
 };
 
 struct object3_clonable_t : public test_clonable_t
 {
         explicit object3_clonable_t(const string_t& configuration = string_t()) :
-                test_clonable_t(configuration + ",p3=def3")
-        {
-        }
-
-        virtual trobject clone() const override
-        {
-                return std::make_unique<object3_clonable_t>(*this);
-        }
+                test_clonable_t(configuration + ",p3=def3") {}
 };
 
 NANO_BEGIN_MODULE(test_manager)

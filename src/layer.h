@@ -32,6 +32,11 @@ namespace nano
                 }
 
                 ///
+                /// \brief create a copy of the current object
+                ///
+                virtual rlayer_t clone() const = 0;
+
+                ///
                 /// \brief resize to process new tensors of the given type
                 ///
                 virtual tensor_size_t resize(const tensor3d_t& tensor) = 0;

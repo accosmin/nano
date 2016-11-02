@@ -18,13 +18,10 @@ namespace nano
 
                 explicit mnist_task_t(const string_t& configuration = string_t());
 
-                virtual rtask_t clone() const override;
-
        private:
 
                 virtual bool populate() override;
 
-                // load binary file
                 bool load_binary(const string_t& ifile, const string_t& gfile, const protocol, const size_t count);
         };
 }

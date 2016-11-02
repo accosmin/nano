@@ -1,7 +1,6 @@
 #pragma once
 
 #include "stringi.h"
-#include <memory>
 
 namespace nano
 {
@@ -16,8 +15,6 @@ namespace nano
         {
         public:
 
-                using trobject = std::unique_ptr<tobject>;
-
                 ///
                 /// \brief constructor
                 ///
@@ -30,11 +27,6 @@ namespace nano
                 /// \brief destructor
                 ///
                 virtual ~clonable_t() {}
-
-                ///
-                /// \brief create a copy of the current object.
-                ///
-                virtual trobject clone() const = 0;
 
                 ///
                 /// \brief current configuration (aka parameters).

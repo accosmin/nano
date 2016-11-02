@@ -10,12 +10,6 @@ namespace nano
         }
 
         template <ag_restart trestart>
-        rstoch_optimizer_t stoch_ag_base_t<trestart>::clone() const
-        {
-                return std::make_unique<stoch_ag_base_t<trestart>>(*this);
-        }
-
-        template <ag_restart trestart>
         state_t stoch_ag_base_t<trestart>::minimize(const stoch_params_t& param,
                 const problem_t& problem, const vector_t& x0) const
         {

@@ -36,6 +36,11 @@ namespace nano
                 explicit model_t(const string_t& parameters);
 
                 ///
+                /// \brief create a copy of the current object
+                ///
+                virtual rmodel_t clone() const = 0;
+
+                ///
                 /// \brief resize to process new inputs
                 ///
                 bool resize(const tensor_size_t idims, const tensor_size_t irows, const tensor_size_t icols,

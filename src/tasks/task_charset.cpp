@@ -163,11 +163,6 @@ namespace nano
         {
         }
 
-        rtask_t charset_task_t::clone() const
-        {
-                return std::make_unique<charset_task_t>(*this);
-        }
-
         bool charset_task_t::populate()
         {
                 const auto charset = from_params<charset_mode>(config(), "type");

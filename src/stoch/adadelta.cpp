@@ -9,11 +9,6 @@ namespace nano
         {
         }
 
-        rstoch_optimizer_t stoch_adadelta_t::clone() const
-        {
-                return std::make_unique<stoch_adadelta_t>(*this);
-        }
-
         state_t stoch_adadelta_t::minimize(const stoch_params_t& param, const problem_t& problem, const vector_t& x0) const
         {
                 return stoch_tune(this, param, problem, x0, make_momenta(), make_epsilons());

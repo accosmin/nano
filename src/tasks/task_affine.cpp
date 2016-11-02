@@ -24,11 +24,6 @@ namespace nano
         {
         }
 
-        rtask_t affine_task_t::clone() const
-        {
-                return std::make_unique<affine_task_t>(*this);
-        }
-
         bool affine_task_t::populate()
         {
                 const auto count = clamp(from_params<size_t>(config(), "count", 1000), 10, 100000);

@@ -14,12 +14,6 @@ namespace nano
         }
 
         template <typename tcgd_update>
-        rbatch_optimizer_t batch_cgd_t<tcgd_update>::clone() const
-        {
-                return std::make_unique<batch_cgd_t<tcgd_update>>(*this);
-        }
-
-        template <typename tcgd_update>
         state_t batch_cgd_t<tcgd_update>::minimize(const batch_params_t& param, const problem_t& problem, const vector_t& x0) const
         {
                 assert(problem.size() == x0.size());

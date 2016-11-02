@@ -17,11 +17,6 @@ namespace nano
         {
         }
 
-        rtask_t svhn_task_t::clone() const
-        {
-                return std::make_unique<svhn_task_t>(*this);
-        }
-
         bool svhn_task_t::populate()
         {
                 const string_t dir = nano::from_params<string_t>(config(), "dir");

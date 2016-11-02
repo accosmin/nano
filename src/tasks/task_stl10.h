@@ -19,17 +19,12 @@ namespace nano
 
                 explicit stl10_task_t(const string_t& configuration = string_t());
 
-                virtual rtask_t clone() const override;
-
         private:
 
                 virtual bool populate() override;
 
-                // load binary files
                 bool load_ifile(const string_t&, const buffer_t&, const bool unlabed, const size_t count);
                 bool load_gfile(const string_t&, const buffer_t&, const size_t count);
-
-                // build folds
                 bool load_folds(const string_t&, const buffer_t&, const size_t, const size_t, const size_t);
 
         private:
