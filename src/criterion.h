@@ -21,7 +21,7 @@ namespace nano
         /// \brief accumulate sample evaluations (loss value, error and gradient),
         ///     this is the base case without regularization
         ///
-        class NANO_PUBLIC criterion_t : public clonable_t<criterion_t>
+        class NANO_PUBLIC criterion_t : public clonable_t
         {
         public:
 
@@ -43,6 +43,7 @@ namespace nano
                 /// \brief enable copying
                 ///
                 criterion_t(const criterion_t&);
+                criterion_t& operator=(const criterion_t&) = delete;
 
                 ///
                 /// \brief enable moving

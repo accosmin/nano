@@ -19,17 +19,14 @@ namespace nano
         ///
         /// \brief process a set of inputs of size (irows, icols) and produces a set of outputs of size (orows, ocols)
         ///
-        class NANO_PUBLIC layer_t : public clonable_t<layer_t>
+        class NANO_PUBLIC layer_t : public clonable_t
         {
         public:
 
                 ///
                 /// \brief constructor
                 ///
-                explicit layer_t(const string_t& parameters) :
-                        clonable_t<layer_t>(parameters)
-                {
-                }
+                explicit layer_t(const string_t& parameters) : clonable_t(parameters) {}
 
                 ///
                 /// \brief create a copy of the current object

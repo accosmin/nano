@@ -23,14 +23,14 @@ namespace nano
         ///
         /// \brief generic trainer: optimizes a model on a given compatible task.
         ///
-        class NANO_PUBLIC trainer_t : public clonable_t<trainer_t>
+        class NANO_PUBLIC trainer_t : public clonable_t
         {
         public:
 
                 ///
                 /// \brief constructor
                 ///
-                explicit trainer_t(const string_t& configuration) : clonable_t<trainer_t>(configuration) {}
+                explicit trainer_t(const string_t& configuration) : clonable_t(configuration) {}
 
                 ///
                 /// \brief train the given model starting from the current model parameters

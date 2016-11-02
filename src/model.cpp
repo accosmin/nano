@@ -8,7 +8,7 @@
 namespace nano
 {
         model_t::model_t(const string_t& parameters) :
-                clonable_t<model_t>(parameters),
+                clonable_t(parameters),
                 m_idims(0),
                 m_irows(0),
                 m_icols(0),

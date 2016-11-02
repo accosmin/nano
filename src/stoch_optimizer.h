@@ -18,17 +18,14 @@ namespace nano
         ///
         /// \brief generic stochastic optimizer
         ///
-        class NANO_PUBLIC stoch_optimizer_t : public clonable_t<stoch_optimizer_t>
+        class NANO_PUBLIC stoch_optimizer_t : public clonable_t
         {
         public:
 
                 ///
                 /// \brief constructor
                 ///
-                explicit stoch_optimizer_t(const string_t& configuration = string_t()) :
-                        clonable_t<stoch_optimizer_t>(configuration)
-                {
-                }
+                explicit stoch_optimizer_t(const string_t& configuration = string_t()) : clonable_t(configuration) {}
 
                 ///
                 /// \brief minimize starting from the initial point x0.

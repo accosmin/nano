@@ -20,14 +20,14 @@ namespace nano
         ///     split into training, validation and testing datasets.
         /// NB: the samples may be organized in folds depending on the established protocol.
         ///
-        class NANO_PUBLIC task_t : public clonable_t<task_t>
+        class NANO_PUBLIC task_t : public clonable_t
         {
         public:
 
                 ///
                 /// \brief constructor
                 ///
-                explicit task_t(const string_t& configuration = string_t()) : clonable_t<task_t>(configuration) {}
+                explicit task_t(const string_t& configuration = string_t()) : clonable_t(configuration) {}
 
                 ///
                 /// \brief short name of this task

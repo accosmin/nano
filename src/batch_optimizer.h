@@ -18,17 +18,14 @@ namespace nano
         ///
         /// \brief generic batchastic optimizer
         ///
-        class NANO_PUBLIC batch_optimizer_t : public clonable_t<batch_optimizer_t>
+        class NANO_PUBLIC batch_optimizer_t : public clonable_t
         {
         public:
 
                 ///
                 /// \brief constructor
                 ///
-                explicit batch_optimizer_t(const string_t& configuration = string_t()) :
-                        clonable_t<batch_optimizer_t>(configuration)
-                {
-                }
+                explicit batch_optimizer_t(const string_t& configuration = string_t()) : clonable_t(configuration) {}
 
                 ///
                 /// \brief minimize starting from the initial point x0.

@@ -3,10 +3,10 @@
 
 using namespace nano;
 
-struct test_clonable_t : public nano::clonable_t<test_clonable_t>
+struct test_clonable_t : public nano::clonable_t
 {
         explicit test_clonable_t(const string_t& configuration = string_t()) :
-                nano::clonable_t<test_clonable_t>(configuration) {}
+                nano::clonable_t(configuration) {}
 };
 
 struct object1_clonable_t : public test_clonable_t

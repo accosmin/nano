@@ -22,7 +22,7 @@ namespace nano
         ///
         /// \brief generic model to process fixed-size 3D tensors.
         ///
-        class NANO_PUBLIC model_t : public clonable_t<model_t>
+        class NANO_PUBLIC model_t : public clonable_t
         {
         public:
 

@@ -23,17 +23,14 @@ namespace nano
         /// the loss function upper-bounds/approximates
         /// the true (usually non-smooth) error function to minimize.
         ///
-        class NANO_PUBLIC loss_t : public clonable_t<loss_t>
+        class NANO_PUBLIC loss_t : public clonable_t
         {
         public:
 
                 ///
                 /// \brief constructor
                 ///
-                explicit loss_t(const string_t& configuration = string_t()) :
-                        clonable_t<loss_t>(configuration)
-                {
-                }
+                explicit loss_t(const string_t& configuration = string_t()) : clonable_t(configuration) {}
 
                 ///
                 /// \brief compute the error value

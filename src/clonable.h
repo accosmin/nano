@@ -6,11 +6,8 @@ namespace nano
 {
         ///
         /// \brief the clonable interface to be used with a manager:
-        ///      ::clone()                      - clone the current object
-        ///      ::clone(const string_t&)       - create a new object (with the given configuration)
-        ///      ::configuration()              - parametrization
+        ///      ::config()     - current parameters
         ///
-        template <typename tobject>
         class clonable_t
         {
         public:
