@@ -15,12 +15,6 @@ matrix:
             - ubuntu-toolchain-r-test
           packages:
             - g++-4.9
-            - cmake
-            - cmake-data
-            - ninja-build
-            - libdevil-dev
-            - libeigen3-dev
-            - libarchive-dev
       env: COMPILER=g++-4.9
     - compiler: gcc
       addons:
@@ -29,12 +23,6 @@ matrix:
             - ubuntu-toolchain-r-test
           packages:
             - g++-5
-            - cmake
-            - cmake-data
-            - ninja-build
-            - libdevil-dev
-            - libeigen3-dev
-            - libarchive-dev
       env: COMPILER=g++-5
     - compiler: gcc
       addons:
@@ -43,12 +31,6 @@ matrix:
             - ubuntu-toolchain-r-test
           packages:
             - g++-6
-            - cmake
-            - cmake-data
-            - ninja-build
-            - libdevil-dev
-            - libeigen3-dev
-            - libarchive-dev
       env: COMPILER=g++-6
     - compiler: clang
       addons:
@@ -58,12 +40,6 @@ matrix:
             - llvm-toolchain-precise-3.6
           packages:
             - clang-3.6
-            - cmake
-            - cmake-data
-            - ninja-build
-            - libdevil-dev
-            - libeigen3-dev
-            - libarchive-dev
       env: COMPILER=clang++-3.6
     - compiler: clang
       addons:
@@ -73,15 +49,13 @@ matrix:
             - llvm-toolchain-precise-3.7
           packages:
             - clang-3.7
-            - cmake
-            - cmake-data
-            - ninja-build
-            - libdevil-dev
-            - libeigen3-dev
-            - libarchive-dev
       env: COMPILER=clang++-3.7
     - os: osx
       osx_image: xcode7.2
+
+before_install:
+  - sudo apt-get update -qq
+  - sudo apt-get install -y cmake cmake-data ninja-build libdevil-dev libeigen3-dev libarchive-dev
 
 install:
   - echo $TRAVIS_OS_NAME
