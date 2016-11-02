@@ -2,44 +2,71 @@ branches:
   only:
     - 0.3
 
+sudo: required
+dist: xenial
 language: cpp
 
 matrix:
   include:
-    - os: linux
-      dist: xenial
-      sudo: required
-      compiler: gcc
-    - os: linux
-      dist: xenial
-      sudo: required
-      compiler: clang
+    - compiler: gcc
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+          packages:
+            - g++-4.9
+      env: COMPILER=g++-4.9
+    - compiler: gcc
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+          packages:
+            - g++-5
+      env: COMPILER=g++-5
+    - compiler: gcc
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+          packages:
+            - g++-6
+      env: COMPILER=g++-6
+    - compiler: clang
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+            - llvm-toolchain-precise-3.6
+          packages:
+            - clang-3.6
+      env: COMPILER=clang++-3.6
+    - compiler: clang
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+            - llvm-toolchain-precise-3.7
+          packages:
+            - clang-3.7
+      env: COMPILER=clang++-3.7
     - os: osx
       osx_image: xcode7.2
 
 addons:
   apt:
-    sources:
-      - llvm-toolchain-precise-3.7
-      - ubuntu-toolchain-r-test
-      - george-edison55-precise-backports
     packages:
-      - clang-3.8
-      - g++-6
-      - gcc-6
       - cmake
       - cmake-data
       - ninja-build
       - libdevil-dev
       - libarchive-dev
       - libeigen3-dev
-      - binutils-gold
 
 install:
   - echo $TRAVIS_OS_NAME
   - if [ "$TRAVIS_OS_NAME" = "osx" ]; then brew update; brew install cmake eigen ninja devil libarchive; brew link libarchive --force; fi
-  - if [ "$TRAVIS_OS_NAME" = "linux" -a "$CXX" = "g++" ]; then export CXX="g++-6" CC="gcc-6"; fi
-  - if [ "$TRAVIS_OS_NAME" = "linux" -a "$CXX" = "clang++" ]; then export CXX="clang++-3.8" CC="clang-3.8"; fi
+  - if [ "$TRAVIS_OS_NAME" = "linux" ]; then export CXX="$COMPILER"; fi
   - mkdir build
 
 before_script:
