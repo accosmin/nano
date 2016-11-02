@@ -19,6 +19,7 @@ matrix:
             - cmake-data
             - ninja-build
             - libdevil-dev
+            - libeigen3-dev
             - libarchive-dev
       env: COMPILER=g++-4.9
     - compiler: gcc
@@ -32,6 +33,7 @@ matrix:
             - cmake-data
             - ninja-build
             - libdevil-dev
+            - libeigen3-dev
             - libarchive-dev
       env: COMPILER=g++-5
     - compiler: gcc
@@ -45,6 +47,7 @@ matrix:
             - cmake-data
             - ninja-build
             - libdevil-dev
+            - libeigen3-dev
             - libarchive-dev
       env: COMPILER=g++-6
     - compiler: clang
@@ -59,6 +62,7 @@ matrix:
             - cmake-data
             - ninja-build
             - libdevil-dev
+            - libeigen3-dev
             - libarchive-dev
       env: COMPILER=clang++-3.6
     - compiler: clang
@@ -73,6 +77,7 @@ matrix:
             - cmake-data
             - ninja-build
             - libdevil-dev
+            - libeigen3-dev
             - libarchive-dev
       env: COMPILER=clang++-3.7
     - os: osx
