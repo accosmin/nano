@@ -35,7 +35,14 @@ namespace nano
                 m_flush(flush)
         {
                 const std::time_t t = std::time(nullptr);
-                m_stream << "[" << std::put_time(std::localtime(&t), "%F|%T") << "|" << get_header(type) << "]: ";
+                m_stream << "[";
+//                m_stream << std::put_time(std::localtime(&t), "%F|%T");
+                char mbstr[100];
+                if (std::strftime(mbstr, sizeof(mbstr), "%F|%T", std::localtime(&t)))
+                {
+                        m_stream << mbstr;
+                }
+                m_stream << "|" << get_header(type) << "]: ";
                 m_stream << std::fixed << std::setprecision(6);
         }
 
