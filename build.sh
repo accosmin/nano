@@ -144,13 +144,13 @@ then
 elif [ "${generator}" == "make" ]
 then
         generator="Unix Makefiles"
-        maker="make -j"
+        maker="make -j6"
         installer="make install"
 
 elif [ "${generator}" == "codelite-make" ]
 then
         generator="CodeLite - Unix Makefiles"
-        maker="make -j"
+        maker="make -j6"
         installer="make install"
 
 else
