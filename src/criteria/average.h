@@ -5,7 +5,9 @@
 namespace nano
 {
         ///
-        /// \brief average loss
+        /// \brief averages the loss value across samples:
+        ///     C(X) = E(L(x_i), x_i \in X),
+        //      C(X) = sum(L(x_i), x_i \in X) / |X|.
         ///
         class average_criterion_t : public criterion_t
         {

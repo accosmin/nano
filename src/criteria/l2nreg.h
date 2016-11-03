@@ -6,7 +6,8 @@
 namespace nano
 {
         ///
-        /// \brief L2-norm regularized loss.
+        /// \brief L2-norm regularized criterion:
+        ///     R(X) = C(X) + L2-norm(parameters) / 2
         ///
         template <typename tcriterion>
         struct l2n_criterion_t final : public tcriterion

@@ -5,7 +5,9 @@
 namespace nano
 {
         ///
-        /// \brief softmax loss.
+        /// \brief softmax the loss value across samples:
+        ///     C(X) = softmax(L(x_i), x_i \in X; beta),
+        //      C(X) = log(sum(exp(beta * L(x_i)), x_i \in X)) / beta.
         ///
         class softmax_criterion_t : public criterion_t
         {

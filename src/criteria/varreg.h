@@ -6,9 +6,9 @@
 namespace nano
 {
         ///
-        /// \brief variance- regularized loss.
-        /// (e.g. penalize high variance across training samples),
-        ///     like in EBBoost/VadaBoost: http://www.cs.columbia.edu/~jebara/papers/vadaboost.pdf
+        /// \brief variance-regularized criterion (e.g. penalize high variance across training samples),
+        ///     like in EBBoost/VadaBoost: http://www.cs.columbia.edu/~jebara/papers/vadaboost.pdf:
+        ///     R(X) = C(X) + VAR(L(x_i), x_i \in X)
         ///
         template <typename tcriterion>
         class var_criterion_t final : public tcriterion
