@@ -7,7 +7,7 @@ namespace nano
         ///
         /// \brief minibatch iterator over a task.
         ///     by default it produces fixed-size minibatches,
-        //      but it can generate geometrically increasing minibatches.
+        //      but it can also generate geometrically increasing minibatches.
         ///
         class NANO_PUBLIC task_iterator_t
         {

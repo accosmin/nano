@@ -17,11 +17,7 @@ namespace nano
         ///     ::target()                      - target vector
         ///     ::label()                       - associated label (if any)
         ///
-        template
-        <
-                typename tchunk,
-                typename tsample
-        >
+        template <typename tchunk, typename tsample>
         class mem_task_t : public task_t
         {
         public:
