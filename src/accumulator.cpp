@@ -82,7 +82,7 @@ namespace nano
 
         void accumulator_t::update(const task_t& task, const fold_t& fold) const
         {
-                return update(task, fold, 0, task.n_samples(fold));
+                update(task, fold, 0, task.n_samples(fold));
         }
 
         void accumulator_t::update(const task_t& task, const fold_t& fold, const size_t begin, const size_t end) const

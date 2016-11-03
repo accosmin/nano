@@ -52,7 +52,7 @@ namespace nano
                 virtual tensor_size_t osize() const = 0;
 
                 ///
-                /// \brief number of folds (not considering the protocol!)
+                /// \brief number of folds
                 ///
                 virtual size_t n_folds() const = 0;
 
