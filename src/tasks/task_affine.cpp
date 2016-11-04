@@ -35,11 +35,11 @@ namespace nano
                 // random affine transformation
                 const auto isize = idims() * irows() * icols();
 
-                matrix_t A(osize(), isize);
-                vector_t b(osize());
+                m_A.resize(osize(), isize);
+                m_b.resize(osize());
 
-                tensor::set_random(rng_input, A, b);
-                A /= static_cast<scalar_t>(isize);
+                tensor::set_random(rng_input, m_A, m_b);
+                m_A /= static_cast<scalar_t>(isize);
 
                 // generate samples
                 for (size_t i = 0; i < count; ++ i)
@@ -51,7 +51,7 @@ namespace nano
                         add_chunk(input, i);
 
                         // affine target
-                        vector_t target = A * input.vector() + b;
+                        vector_t target = m_A * input.vector() + m_b;
                         tensor::add_random(rng_noise, target);
 
                         add_sample(make_fold(0), i, target);
