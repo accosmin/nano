@@ -2,6 +2,7 @@
 #include "utest.h"
 #include "trainer.h"
 #include "criterion.h"
+#include "math/epsilon.h"
 #include "tasks/task_affine.h"
 #include "layers/make_layers.h"
 
@@ -41,6 +42,7 @@ NANO_CASE(training)
         const auto model_config = make_output_layer(task.osize());
         const auto model = nano::get_models().get("forward-network", model_config);
         NANO_CHECK_EQUAL(model->resize(task, true), true);
+        NANO_REQUIRE(*model == task);
 
         // create loss
         const auto losses =
@@ -53,8 +55,8 @@ NANO_CASE(training)
         const auto criterion = nano::get_criteria().get("avg");
 
         // create trainers
-        const auto epochs = 100;
-        const auto policy = trainer_policy::all_epochs;
+        const auto epochs = 1000;
+        const auto policy = trainer_policy::stop_early;
         const auto trainers =
         {
                 nano::get_trainers().get("batch", to_params("opt", "gd", "epochs", epochs, "policy", policy)),
@@ -82,7 +84,10 @@ NANO_CASE(training)
                         const auto threads = size_t(1);
                         const auto result = trainer->train(task, fold, threads, *loss, *criterion, *model);
 
-                        // todo
+                        // the average training loss value & error should be "small"
+                        const auto opt_state = result.optimum_state();
+                        NANO_CHECK_LESS(opt_state.m_train.m_value_avg, epsilon3<scalar_t>());
+                        NANO_CHECK_LESS(opt_state.m_train.m_error_avg, epsilon3<scalar_t>());
                 }
         }
 }
