@@ -13,7 +13,7 @@ const auto irows = tensor_size_t(10);
 const auto icols = tensor_size_t(10);
 const auto osize = tensor_size_t(10);
 const auto count = tensor_size_t(1000);
-const auto noise = scalar_t(0.001);
+const auto noise = epsilon2<scalar_t>();
 
 NANO_BEGIN_MODULE(test_affine)
 
