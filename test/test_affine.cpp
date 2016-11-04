@@ -40,44 +40,47 @@ NANO_CASE(training)
 
         // create model
         const auto model_config = make_output_layer(task.osize());
-        const auto model = nano::get_models().get("forward-network", model_config);
+        const auto model = get_models().get("forward-network", model_config);
         NANO_CHECK_EQUAL(model->resize(task, true), true);
         NANO_REQUIRE(*model == task);
 
         // create loss
-        const auto losses =
+        const std::map<string_t, string_t> lconfigs =
         {
-                nano::get_losses().get("square"),
-                nano::get_losses().get("cauchy")
+                {"square", ""},
+                {"cauchy", ""}
         };
 
         // create criteria
-        const auto criterion = nano::get_criteria().get("avg");
+        const auto criterion = get_criteria().get("avg");
 
         // create trainers
         const auto epochs = 1000;
         const auto policy = trainer_policy::stop_early;
-        const auto trainers =
+        const std::map<string_t, string_t> tconfigs =
         {
-                nano::get_trainers().get("batch", to_params("opt", "gd", "epochs", epochs, "policy", policy)),
-                nano::get_trainers().get("batch", to_params("opt", "cgd", "epochs", epochs, "policy", policy)),
-                nano::get_trainers().get("batch", to_params("opt", "lbfgs", "epochs", epochs, "policy", policy)),
-                nano::get_trainers().get("stoch", to_params("opt", "sg", "epochs", epochs, "policy", policy)),
-                nano::get_trainers().get("stoch", to_params("opt", "sgm", "epochs", epochs, "policy", policy)),
-                nano::get_trainers().get("stoch", to_params("opt", "ngd", "epochs", epochs, "policy", policy)),
-                nano::get_trainers().get("stoch", to_params("opt", "adam", "epochs", epochs, "policy", policy)),
-                nano::get_trainers().get("stoch", to_params("opt", "adagrad", "epochs", epochs, "policy", policy)),
-                nano::get_trainers().get("stoch", to_params("opt", "adadelta", "epochs", epochs, "policy", policy)),
-                nano::get_trainers().get("stoch", to_params("opt", "ag", "epochs", epochs, "policy", policy)),
-                nano::get_trainers().get("stoch", to_params("opt", "agfr", "epochs", epochs, "policy", policy)),
-                nano::get_trainers().get("stoch", to_params("opt", "aggr", "epochs", epochs, "policy", policy))
+                {"batch", to_params("opt", "gd", "epochs", epochs, "policy", policy)},
+                {"batch", to_params("opt", "cgd", "epochs", epochs, "policy", policy)},
+                {"batch", to_params("opt", "lbfgs", "epochs", epochs, "policy", policy)},
+                {"stoch", to_params("opt", "sg", "epochs", epochs, "policy", policy)},
+                {"stoch", to_params("opt", "sgm", "epochs", epochs, "policy", policy)},
+                {"stoch", to_params("opt", "ngd", "epochs", epochs, "policy", policy)},
+                {"stoch", to_params("opt", "adam", "epochs", epochs, "policy", policy)},
+                {"stoch", to_params("opt", "adagrad", "epochs", epochs, "policy", policy)},
+                {"stoch", to_params("opt", "adadelta", "epochs", epochs, "policy", policy)},
+                {"stoch", to_params("opt", "ag", "epochs", epochs, "policy", policy)},
+                {"stoch", to_params("opt", "agfr", "epochs", epochs, "policy", policy)},
+                {"stoch", to_params("opt", "aggr", "epochs", epochs, "policy", policy)}
         };
 
         // check training
-        for (const auto& loss : losses)
+        for (const auto& lconfig : lconfigs)
         {
-                for (const auto& trainer : trainers)
+                const auto loss = get_losses().get(lconfig.first, lconfig.second);
+                for (const auto& tconfig : tconfigs)
                 {
+                        const auto trainer = get_trainers().get(tconfig.first, tconfig.second);
+
                         model->random_params();
 
                         const auto fold = size_t(0);
