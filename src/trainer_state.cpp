@@ -44,8 +44,8 @@ namespace nano
 
         bool operator<(const trainer_measurement_t& one, const trainer_measurement_t& two)
         {
-                const auto v1 = (one) ? one.m_error_avg : std::numeric_limits<scalar_t>::max();
-                const auto v2 = (two) ? two.m_error_avg : std::numeric_limits<scalar_t>::max();
+                const auto v1 = (one) ? one.m_value_avg : std::numeric_limits<scalar_t>::max();
+                const auto v2 = (two) ? two.m_value_avg : std::numeric_limits<scalar_t>::max();
                 return v1 < v2;
         }
 
