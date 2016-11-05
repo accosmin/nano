@@ -28,15 +28,19 @@ namespace nano
                 const auto epochs = clamp(from_params<size_t>(config(), "epochs"), 1, 1024);
                 const auto policy = from_params<trainer_policy>(config(), "policy");
                 const auto batch0 = clamp(from_params<size_t>(config(), "min_batch"), 32, 1024);
-                const auto batchK = clamp(from_params<size_t>(config(), "max_batch"), 32, 1024);
+                const auto batchK = clamp(from_params<size_t>(config(), "max_batch"), batch0, 4096);
                 const auto optimizer = from_params<string_t>(config(), "opt");
 
                 const auto train_fold = fold_t{fold, protocol::train};
                 const auto train_size = task.n_samples(train_fold);
                 const auto samples = epochs * train_size;
 
-                const auto factor = clamp(scalar_t(samples - batch0) / scalar_t(samples - batchK), scalar_t(1), scalar_t(2));
-                const auto epoch_size = idiv(static_cast<size_t>(std::log(batchK / batch0) / std::log(factor)), epochs);
+                const auto factor = (batch0 == batchK) ?
+                        scalar_t(1) :
+                        clamp(scalar_t(samples - batch0) / scalar_t(samples - batchK), scalar_t(1), scalar_t(2));
+                const auto epoch_size = (batch0 == batchK) ?
+                        batch0 :
+                        idiv(static_cast<size_t>(std::log(batchK / batch0) / std::log(factor)), epochs);
 
                 // train the model
                 const timer_t timer;
