@@ -29,6 +29,22 @@ NANO_CASE(construction)
         NANO_CHECK_EQUAL(task.icols(), icols);
         NANO_CHECK_EQUAL(task.osize(), osize);
         NANO_CHECK_EQUAL(task.n_samples(), count);
+        NANO_REQUIRE_EQUAL(task.n_folds(), size_t(1));
+
+        const auto& weights = task.weights();
+        const auto& bias = task.bias();
+
+        for (const auto proto : {protocol::train, protocol::valid, protocol::test})
+        {
+                const auto fold = fold_t{0, proto};
+                const auto size = task.n_samples(fold);
+                for (size_t i = 0; i < size; ++ i)
+                {
+                        const auto input = task.input(fold, i);
+                        const auto target = task.target(fold, i);
+                        NANO_CHECK_EIGEN_CLOSE(weights * input.vector() + bias, target, noise);
+                }
+        }
 }
 
 NANO_CASE(training)
