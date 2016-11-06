@@ -3,13 +3,32 @@
 # check arguments
 if [[ ($# -lt 1) || ("$1" == "help") || ("$1" == "--help") || ("$1" == "-h") ]]
 then
-        printf "analyze.sh <compilers to evaluate>\n"
+        printf "analyze.sh [--asan] [--msan] [--tsan] <compilers to evaluate>\n"
+        printf " --asan: run unit tests with address-compatible sanitizers\n"
+        printf " --msan: run unit tests with memory sanitizer\n"
+        printf " --tsan: run unit tests with thread sanitizer\n"
         exit 1
 fi
 
-compilers="$@"
-configs="asan msan" # tsan"
+# read arguments
+compilers=""
+configs=""
 builds="release debug"
+
+while [ "$1" != "" ]
+do
+        case $1 in
+                --asan) configs=${configs}" asan"
+                        ;;
+                --msan) configs=${configs}" msan"
+                        ;;
+                --tsan) configs=${configs}" tsan"
+                        ;;
+                * )     compilers=${compilers}" "$1
+                        ;;
+        esac
+        shift
+done
 
 basedir=$(dirname $0)
 
