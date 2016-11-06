@@ -22,7 +22,7 @@ A **trainer** optimizes the parameters of a given model to produce the correct o
 
 Use a C++14 compiler and install Eigen3.2+, LibArchive, Zlib, BZip2 and DevIL.
 
-Nano is tested on Linux ([gcc 4.9+ | clang 3.5+], CMake 3.1+, Ninja or Make) and OSX (AppleClang7+, homebrew, CMake 3.1+, Ninja or Make). The code is written to be cross-platform, so it may work (with minor fixes) on other platforms as well (e.g. Windows/MSVC).
+Nano is tested on Linux ([gcc 4.9+ | clang 3.5+], CMake 3.1+, Ninja or Make) and OSX (AppleClang7+, homebrew, CMake 3.1+, Ninja or Make). It is recommended to use libc++ with clang by issuing the following command `build_release.sh clang++-3.5 --libc++`. The code is written to be cross-platform, so it may work (with minor fixes) on other platforms as well (e.g. Windows/MSVC).
 
 The easiest way to compile (and install) is to run `bash build.sh --build-type release`. The test programs and utilities will be found in the `build-release` directory. To build the debugging version with or without address, memory and thread sanitizers (if available) run `bash build.sh --build-type debug [--asan|--msan|--tsan]`. Invoking the build script with `--help` will display the list of available commands.
 
