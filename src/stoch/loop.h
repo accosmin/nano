@@ -114,6 +114,9 @@ namespace nano
                 const scalar_t momentum = scalar_t(0.95);
                 momentum_vector_t<vector_t> xavg(momentum, istate.x.size());
 
+                // best state
+                auto bstate = istate;
+
                 // for each epoch ...
                 for (std::size_t e = 0; e < params.m_epochs; ++ e)
                 {
@@ -124,18 +127,28 @@ namespace nano
                                 xavg.update(cstate.x);
                         }
 
+                        // check divergence
+                        if (!astate || !cstate)
+                        {
+                                break;
+                        }
+
                         // log the current state & check the stopping criteria
                         astate.update(problem, xavg.value());
                         astate.f = params.tlog(astate, config);
                         if (!params.ulog(astate, config))
                         {
+                                bstate.update(astate);
                                 astate.m_status = opt_status::stopped;
                                 break;
                         }
+
+                        // update the best state
+                        bstate.update(astate);
                 }
 
                 // OK
-                return astate;
+                return bstate;
         }
 }
 

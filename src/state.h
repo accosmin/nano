@@ -80,6 +80,14 @@ namespace nano
                         return (g.lpNorm<Eigen::Infinity>()) / (1 + std::fabs(f));
                 }
 
+                ///
+                /// \brief check divergence
+                ///
+                operator bool() const
+                {
+                        return std::isfinite(f);
+                }
+
                 // attributes
                 vector_t        x, g, d;                ///< parameter, gradient, descent direction
                 scalar_t        f;                      ///< function value, step size
