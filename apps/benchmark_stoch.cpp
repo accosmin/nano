@@ -35,8 +35,13 @@ void check_function(
         // evaluate all optimizers
         for (const auto id : ids)
         {
+                const auto op_ulog = [epsilon = epsilon] (const state_t& state, const stoch_params_t::config_t&)
+                {
+                        return state.convergence_criteria() > epsilon / 2;
+                };
+
                 const auto optimizer = get_stoch_optimizers().get(id);
-                const auto params = stoch_params_t(epochs, epoch_size);
+                const auto params = stoch_params_t(epochs, epoch_size, op_ulog);
                 const auto op = [&] (const problem_t& problem, const vector_t& x0)
                 {
                         auto state = optimizer->minimize(params, problem, x0);
@@ -60,10 +65,10 @@ int main(int argc, const char* argv[])
 {
         // parse the command line
         cmdline_t cmdline("benchmark stochastic optimizers");
-        cmdline.add("", "min-dims",     "minimum number of dimensions for each test function (if feasible)", "100");
-        cmdline.add("", "max-dims",     "maximum number of dimensions for each test function (if feasible)", "1000");
+        cmdline.add("", "min-dims",     "minimum number of dimensions for each test function (if feasible)", "10");
+        cmdline.add("", "max-dims",     "maximum number of dimensions for each test function (if feasible)", "100");
         cmdline.add("", "trials",       "number of random trials for each test function", "100");
-        cmdline.add("", "epochs",       "optimization: number of epochs", "100");
+        cmdline.add("", "epochs",       "optimization: number of epochs", "1000");
         cmdline.add("", "epoch-size",   "optimization: number of iterations per epoch", "100");
         cmdline.add("", "epsilon",      "convergence criteria", nano::epsilon3<scalar_t>());
         cmdline.add("", "convex",       "use only convex test functions");
