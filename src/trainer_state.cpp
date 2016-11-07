@@ -39,7 +39,9 @@ namespace nano
 
         trainer_measurement_t::operator bool() const
         {
-                return std::isfinite(m_value) && std::isfinite(m_error_avg) && std::isfinite(m_error_var);
+                return  std::isfinite(m_value) &&
+                        std::isfinite(m_value_avg) && std::isfinite(m_value_var) &&
+                        std::isfinite(m_error_avg) && std::isfinite(m_error_var);
         }
 
         bool operator<(const trainer_measurement_t& one, const trainer_measurement_t& two)

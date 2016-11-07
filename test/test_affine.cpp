@@ -86,7 +86,7 @@ NANO_CASE(training)
         //add_trainer("stoch", to_params("opt", "adam", "epochs", epochs, "min_batch", batch, "max_batch", batch, "policy", policy));
         //add_trainer("stoch", to_params("opt", "adagrad", "epochs", epochs, "min_batch", batch, "max_batch", batch, "policy", policy));
         //add_trainer("stoch", to_params("opt", "adadelta", "epochs", epochs, "min_batch", batch, "max_batch", batch, "policy", policy));
-        add_trainer("stoch", to_params("opt", "ag", "epochs", epochs, "min_batch", batch, "max_batch", batch, "policy", policy));
+        //add_trainer("stoch", to_params("opt", "ag", "epochs", epochs, "min_batch", batch, "max_batch", batch, "policy", policy));
         //add_trainer("stoch", to_params("opt", "agfr", "epochs", epochs, "min_batch", batch, "max_batch", batch, "policy", policy));
         add_trainer("stoch", to_params("opt", "aggr", "epochs", epochs, "min_batch", batch, "max_batch", batch, "policy", policy));
 
@@ -103,7 +103,7 @@ NANO_CASE(training)
 
                         // the average training loss value & error should be "small"
                         const auto opt_state = result.optimum_state();
-                        NANO_CHECK_LESS(opt_state.m_train.m_value_avg, epsilon3<scalar_t>());
+                        NANO_CHECK_LESS(opt_state.m_train.m_value_avg, epsilon2<scalar_t>());
                         NANO_CHECK_LESS(opt_state.m_train.m_error_avg, epsilon3<scalar_t>());
                 }
         }
