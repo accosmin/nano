@@ -24,7 +24,7 @@ Use a C++14 compiler and install Eigen3.2+, LibArchive, Zlib, BZip2 and DevIL.
 
 Nano is tested on Linux ([gcc 4.9+ | clang 3.5+], CMake 3.1+, Ninja or Make) and OSX (AppleClang7+, homebrew, CMake 3.1+, Ninja or Make). The code is written to be cross-platform, so it may work (with minor fixes) on other platforms as well (e.g. Windows/MSVC).
 
-The easiest way to compile (and install) is to run the `build_release.sh` bash script. The test programs and utilities will be found in the `build-release` directory. The `build_debug.sh` bash script will build the debugging version with and without address, leak and thread sanitizers (if available).
+The easiest way to compile (and install) is to run `bash build.sh --build-type release`. The test programs and utilities will be found in the `build-release` directory. To build the debugging version with or without address, memory and thread sanitizers (if available) run `bash build.sh --build-type debug [--asan|--msan|--tsan]`. Invoking the build script with `--help` will display the list of available commands.
 
 
 #### Examples

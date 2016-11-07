@@ -1,7 +1,7 @@
 #!/bin/bash
 
 compiler=$CXX
-build_type="Release"
+build_type="release"
 generator="ninja"
 install_dir="/usr/local/"
 install="OFF"
@@ -23,16 +23,16 @@ cuda_flag="OFF"
 function usage
 {
         echo "Usage: "
-        echo -e "\t--build-type         <build type [Release/Debug/...]>                default=${build_type}"
-        echo -e "\t--generator          <build system [codelite-][ninja/make]>          default=${generator}"
+        echo -e "\t--build-type         <build type [release|debug|relwithdebinfo]>     default=${build_type}"
+        echo -e "\t--generator          <build system [codelite-][ninja|make]>          default=${generator}"
         echo -e "\t--install-dir        <installation directory>                        default=${install_dir}"
         echo -e "\t--install            <install [ON/OFF] Release only>                 default=${install}"
-        echo -e "\t--asan               <address sanitizer [ON/OFF]>                    default=${asan_flag}"
-        echo -e "\t--msan               <memory sanitizer [ON/OFF]>                     default=${msan_flag}"
-        echo -e "\t--tsan               <thread sanitizer [ON/OFF]>                     default=${tsan_flag}"
-        echo -e "\t--compiler           <c++ compiler (g++, clang++)>                   optional"
-        echo -e "\t--opencl             <use OpenCL [ON/OFF]>                           default=${opencl_flag}"
-        echo -e "\t--cuda               <use CUDA [ON/OFF]>                             default=${cuda_flag}"
+        echo -e "\t--asan               <with address sanitizer>                        optional"
+        echo -e "\t--msan               <with memory sanitizer>                         optional"
+        echo -e "\t--tsan               <with thread sanitizer>                         optional"
+        echo -e "\t--compiler           <c++ compiler [g++|clang++|...]>                optional"
+        echo -e "\t--opencl             <use OpenCL>                                    optional"
+        echo -e "\t--cuda               <use CUDA>                                      optional"
         echo -e "\t--libc++             <use libc++ instead of default libstdc++>       optional"
         echo -e "\t--gold               <use gold linker instead of default linker>     optional"
         echo -e "\t--lto                <use link time optimization>                    optional"
@@ -58,14 +58,11 @@ do
                 --install)      shift
                                 install=$1
                                 ;;
-                --asan)         shift
-                                asan_flag=$1
+                --asan)         asan_flag="ON"
                                 ;;
-                --msan)         shift
-                                msan_flag=$1
+                --msan)         msan_flag="ON"
                                 ;;
-                --tsan)         shift
-                                tsan_flag=$1
+                --tsan)         tsan_flag="ON"
                                 ;;
                 --compiler)     shift
                                 compiler=$1
