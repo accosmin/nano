@@ -62,8 +62,12 @@ NANO_CASE(training)
 
         // create loss
         std::vector<rloss_t> losses;
-        losses.push_back(std::move(get_losses().get("square")));
-        losses.push_back(std::move(get_losses().get("cauchy")));
+        const auto add_loss = [&] (const auto& id, const auto& params)
+        {
+                losses.push_back(std::move(get_losses().get(id, params)));
+        };
+        add_loss("square", "");
+        add_loss("cauchy", "");
 
         // create criteria
         const auto criterion = get_criteria().get("avg");
