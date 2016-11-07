@@ -61,11 +61,9 @@ NANO_CASE(training)
         NANO_REQUIRE(*model == task);
 
         // create loss
-        const std::vector<std::pair<string_t, string_t>> lconfigs =
-        {
-                {"square", ""},
-                {"cauchy", ""}
-        };
+        std::vector<rloss_t> losses;
+        losses.push_back(std::move(get_losses().get("square")));
+        losses.push_back(std::move(get_losses().get("cauchy")));
 
         // create criteria
         const auto criterion = get_criteria().get("avg");
@@ -74,30 +72,29 @@ NANO_CASE(training)
         const auto batch = 32;
         const auto epochs = 1000;
         const auto policy = trainer_policy::stop_early;
-        const std::vector<std::pair<string_t, string_t>> tconfigs =
+        std::vector<rtrainer_t> trainers;
+        const auto add_trainer = [&] (const auto& id, const auto& params)
         {
-                {"batch", to_params("opt", "gd", "epochs", epochs, "policy", policy)},
-                {"batch", to_params("opt", "cgd", "epochs", epochs, "policy", policy)},
-                {"batch", to_params("opt", "lbfgs", "epochs", epochs, "policy", policy)},
-                {"stoch", to_params("opt", "sg", "epochs", epochs, "min_batch", batch, "max_batch", batch, "policy", policy)},
-                {"stoch", to_params("opt", "sgm", "epochs", epochs, "min_batch", batch, "max_batch", batch, "policy", policy)},
-                //{"stoch", to_params("opt", "ngd", "epochs", epochs, "min_batch", batch, "max_batch", batch, "policy", policy)},
-                //{"stoch", to_params("opt", "adam", "epochs", epochs, "min_batch", batch, "max_batch", batch, "policy", policy)},
-                //{"stoch", to_params("opt", "adagrad", "epochs", epochs, "min_batch", batch, "max_batch", batch, "policy", policy)},
-                //{"stoch", to_params("opt", "adadelta", "epochs", epochs, "min_batch", batch, "max_batch", batch, "policy", policy)},
-                {"stoch", to_params("opt", "ag", "epochs", epochs, "min_batch", batch, "max_batch", batch, "policy", policy)},
-                //{"stoch", to_params("opt", "agfr", "epochs", epochs, "min_batch", batch, "max_batch", batch, "policy", policy)},
-                {"stoch", to_params("opt", "aggr", "epochs", epochs, "min_batch", batch, "max_batch", batch, "policy", policy)},
+                trainers.push_back(std::move(get_trainers().get(id, params)));
         };
+        add_trainer("batch", to_params("opt", "gd", "epochs", epochs, "policy", policy));
+        add_trainer("batch", to_params("opt", "cgd", "epochs", epochs, "policy", policy));
+        add_trainer("batch", to_params("opt", "lbfgs", "epochs", epochs, "policy", policy));
+        add_trainer("stoch", to_params("opt", "sg", "epochs", epochs, "min_batch", batch, "max_batch", batch, "policy", policy));
+        add_trainer("stoch", to_params("opt", "sgm", "epochs", epochs, "min_batch", batch, "max_batch", batch, "policy", policy));
+        //add_trainer("stoch", to_params("opt", "ngd", "epochs", epochs, "min_batch", batch, "max_batch", batch, "policy", policy));
+        //add_trainer("stoch", to_params("opt", "adam", "epochs", epochs, "min_batch", batch, "max_batch", batch, "policy", policy));
+        //add_trainer("stoch", to_params("opt", "adagrad", "epochs", epochs, "min_batch", batch, "max_batch", batch, "policy", policy));
+        //add_trainer("stoch", to_params("opt", "adadelta", "epochs", epochs, "min_batch", batch, "max_batch", batch, "policy", policy));
+        add_trainer("stoch", to_params("opt", "ag", "epochs", epochs, "min_batch", batch, "max_batch", batch, "policy", policy));
+        //add_trainer("stoch", to_params("opt", "agfr", "epochs", epochs, "min_batch", batch, "max_batch", batch, "policy", policy));
+        add_trainer("stoch", to_params("opt", "aggr", "epochs", epochs, "min_batch", batch, "max_batch", batch, "policy", policy));
 
         // check training
-        for (const auto& lconfig : lconfigs)
+        for (const auto& loss : losses)
         {
-                const auto loss = get_losses().get(lconfig.first, lconfig.second);
-                for (const auto& tconfig : tconfigs)
+                for (const auto& trainer : trainers)
                 {
-                        const auto trainer = get_trainers().get(tconfig.first, tconfig.second);
-
                         model->random_params();
 
                         const auto fold = size_t(0);
