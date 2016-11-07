@@ -12,17 +12,17 @@ fi
 
 # read arguments
 compilers=""
-configs=""
-builds="release debug"
+configs="${configs} --build-type;release"
+configs="${configs} --build-type;debug"
 
 while [ "$1" != "" ]
 do
         case $1 in
-                --asan) configs=${configs}" asan"
+                --asan) configs="${configs} --build-type;debug;--asan"
                         ;;
-                --msan) configs=${configs}" msan"
+                --msan) configs="${configs} --build-type;debug;--msan"
                         ;;
-                --tsan) configs=${configs}" tsan"
+                --tsan) configs="${configs} --build-type;debug;--tsan"
                         ;;
                 * )     compilers=${compilers}" "$1
                         ;;
@@ -62,13 +62,19 @@ printf "\terrors: %3d\n\n" \
 # check available compilers
 for compiler in ${compilers}
 do
-        # check compilation on release and debug
-        for build in ${builds}
+        # check compilation for all configurations
+        for xconfig in ${configs}
         do
-                printf "%-24s" "${compiler} (${build})..."
+                pconfig=${xconfig//;/ }
+                nconfig=${xconfig//;/_}
+                nconfig=${nconfig//--/}
+                nconfig=${nconfig//-/_}
+                nconfig=${nconfig/build_type_/}
 
-                log="${compiler}_${build}.log"
-                bash ${basedir}/build_${build}.sh --compiler ${compiler} > ${log} 2>&1
+                printf "%-24s" "${compiler} (${nconfig})..."
+
+                log="${compiler}_${nconfig}.log"
+                bash ${basedir}/build.sh --compiler ${compiler} --float ${pconfig} > ${log} 2>&1
 
                 printf "\tfatals: %3d\terrors: %3d\twarnings: %3d\n" \
                         $(grep -i fatal: ${log} | wc -l) \
@@ -76,18 +82,28 @@ do
                         $(grep -i warning: ${log} | wc -l)
         done
 
-        # run unit tests with sanitizers
-        for config in ${configs}
+        # run unit tests for all configurations
+        for xconfig in ${configs}
         do
-                printf "%-24s\n" "${compiler} (${config})"
+                pconfig=${xconfig//;/ }
+                nconfig=${xconfig//;/_}
+                nconfig=${nconfig//--/}
+                nconfig=${nconfig//-/_}
+                nconfig=${nconfig/build_type_/}
+                tconfig=${xconfig//;/-}
+                tconfig=${tconfig// /}
+                tconfig=${tconfig//--/}
+                tconfig=${tconfig//build-type-/}
+
+                printf "%-24s\n" "${compiler} (${nconfig}) ${tconfig}"
 
                 crtdir=$(pwd)
-                cd ${basedir}/build-debug-${config}/test
+                cd ${basedir}/build-${tconfig}/test
                 for test in $(ls test_* | grep -v test_mnist | grep -v test_cifar10 | grep -v test_stl10 | grep -v test_svhn)
                 do
                         printf "  -%-21s" "${test}..."
 
-                        log="${crtdir}/${compiler}_${config}_${test}.log"
+                        log="${crtdir}/${compiler}_${nconfig}_${test}.log"
                         ./${test} > $log 2>&1
 
                         ret=$(grep -E "failed with|no errors detected" ${log} | wc -l)
