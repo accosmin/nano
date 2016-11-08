@@ -4,6 +4,22 @@
 
 namespace nano
 {
+        enum class affine_mode
+        {
+                regression,     ///< regression task: predict an affine transformation
+                sign_class,     ///< multi-class classification task: classify the sign of an affine transformation
+        };
+
+        template <>
+        inline std::map<affine_mode, string_t> enum_string<affine_mode>()
+        {
+                return
+                {
+                        { affine_mode::regression,      "regression" },
+                        { affine_mode::sign_class,      "sign_class" }
+                };
+        }
+
         ///
         /// \brief task containing affine-mapped 3D input tensors: f(x) = A * x + b + noise.
         ///

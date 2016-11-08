@@ -75,11 +75,7 @@ namespace nano
                 return oend(cs) - obegin(cs);
         }
 
-        template
-        <
-                typename tindex,
-                typename tsize
-        >
+        template <typename tindex, typename tsize>
         static tensor3d_t get_object_patch(const image_tensor_t& image,
                 const tindex object_index, const tsize objects, const scalar_t max_offset)
         {

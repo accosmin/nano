@@ -50,7 +50,15 @@ namespace nano
         template <typename top>
         indices_t classification_multi_t<top>::labels(const vector_t& scores) const
         {
-                return class_labels(scores);
+                indices_t labels;
+                for (auto i = 0; i < scores.size(); ++ i)
+                {
+                        if (is_pos_target(scores(i)))
+                        {
+                                labels.push_back(static_cast<size_t>(i));
+                        }
+                }
+                return labels;
         }
 }
 

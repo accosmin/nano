@@ -26,8 +26,8 @@ namespace nano
         NANO_PUBLIC vector_t class_target(const tensor_index_t ilabel, const tensor_size_t n_labels);
 
         ///
-        /// \brief map the given scores to class labels indexed in the range [0, scores.size())
+        /// \brief target value for multi-class multi-label classification problems based on the sign of the target
         ///
-        indices_t class_labels(const vector_t& scores);
+        NANO_PUBLIC vector_t class_target(const vector_t& scores);
 }
 
