@@ -24,7 +24,7 @@ namespace nano
                 auto cstate = istate;
 
                 // for each iteration ...
-                for (std::size_t i = 0; i < params.m_max_iterations; i ++)
+                for (size_t i = 0; i < params.m_max_iterations; i ++)
                 {
                         // check convergence
                         if (cstate.converged(params.m_epsilon))

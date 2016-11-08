@@ -118,10 +118,10 @@ namespace nano
                 auto bstate = istate;
 
                 // for each epoch ...
-                for (std::size_t e = 0; e < params.m_epochs; ++ e)
+                for (size_t e = 0; e < params.m_epochs; ++ e)
                 {
                         // for each iteration ...
-                        for (std::size_t i = 0; i < params.m_epoch_size; ++ i)
+                        for (size_t i = 0; i < params.m_epoch_size; ++ i)
                         {
                                 optimizer(cstate);
                                 xavg.update(cstate.x);
@@ -138,8 +138,8 @@ namespace nano
                         astate.f = params.tlog(astate, config);
                         if (!params.ulog(astate, config))
                         {
-                                bstate.update(astate);
                                 astate.m_status = opt_status::stopped;
+                                bstate.update(astate);
                                 break;
                         }
 
