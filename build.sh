@@ -1,6 +1,7 @@
 #!/bin/bash
 
 compiler=$CXX
+build_dir=""
 build_type="release"
 generator="ninja"
 install_dir="/usr/local/"
@@ -22,8 +23,9 @@ cuda_flag="OFF"
 # usage
 function usage
 {
-        echo "Usage: "
+        echo "usage: "
         echo -e "\t--build-type         <build type [release|debug|relwithdebinfo]>     default=${build_type}"
+        echo -e "\t--build-dir          <build directory>                               defaut=${build_dir}"
         echo -e "\t--generator          <build system [codelite-][ninja|make]>          default=${generator}"
         echo -e "\t--install-dir        <installation directory>                        default=${install_dir}"
         echo -e "\t--install            <install [ON/OFF] Release only>                 default=${install}"
@@ -48,6 +50,9 @@ do
         case $1 in
                 --build-type)   shift
                                 build_type=$1
+                                ;;
+                --build-dir)    shift
+                                build_dir=$1
                                 ;;
                 --generator)    shift
                                 generator=$1
@@ -105,20 +110,23 @@ export CXX=${compiler}
 current_dir=`pwd`
 
 # create build directory
-build_dir=build-$(echo ${build_type} | tr '[:upper:]' '[:lower:]')
-#build_dir=build-${build_type,,}
-if [ "${lto_flag}" == "ON" ]
+if [[ -z "${build_dir}" ]]
 then
-        build_dir+=-lto
-elif [ "${asan_flag}" == "ON" ]
-then
-        build_dir+=-asan
-elif [ "${msan_flag}" == "ON" ]
-then
-        build_dir+=-msan
-elif [ "${tsan_flag}" == "ON" ]
-then
-        build_dir+=-tsan
+        build_dir=build-$(echo ${build_type} | tr '[:upper:]' '[:lower:]')
+        #build_dir=build-${build_type,,}
+        if [ "${lto_flag}" == "ON" ]
+        then
+                build_dir+=-lto
+        elif [ "${asan_flag}" == "ON" ]
+        then
+                build_dir+=-asan
+        elif [ "${msan_flag}" == "ON" ]
+        then
+                build_dir+=-msan
+        elif [ "${tsan_flag}" == "ON" ]
+        then
+                build_dir+=-tsan
+        fi
 fi
 
 mkdir -p ${build_dir}

@@ -1,34 +1,21 @@
 #!/bin/bash
 
-# check arguments
-if [[ ($# -lt 1) || ("$1" == "help") || ("$1" == "--help") || ("$1" == "-h") ]]
-then
-        printf "analyze.sh [--asan] [--msan] [--tsan] <compilers to evaluate>\n"
-        printf " --asan: run unit tests with address-compatible sanitizers\n"
-        printf " --msan: run unit tests with memory sanitizer\n"
-        printf " --tsan: run unit tests with thread sanitizer\n"
-        exit 1
-fi
+compilers="${compilers} --compiler;g++-4.9"
+compilers="${compilers} --compiler;g++-5"
+compilers="${compilers} --compiler;g++-6"
+compilers="${compilers} --compiler;clang++-3.5;--libc++"
+compilers="${compilers} --compiler;clang++-3.6;--libc++"
+compilers="${compilers} --compiler;clang++-3.7;--libc++"
+compilers="${compilers} --compiler;clang++-3.8;--libc++"
+compilers="${compilers} --compiler;clang++-3.9;--libc++"
 
-# read arguments
-compilers=""
-configs="${configs} --build-type;release"
-configs="${configs} --build-type;debug"
+builds="${builds} --build-type;debug"
+builds="${builds} --build-type;release"
+builds="${builds} --build-type;debug;--asan"
+#builds="${builds} --build-type;debug;--msan"
+#builds="${builds} --build-type;debug;--tsan"
 
-while [ "$1" != "" ]
-do
-        case $1 in
-                --asan) configs="${configs} --build-type;debug;--asan"
-                        ;;
-                --msan) configs="${configs} --build-type;debug;--msan"
-                        ;;
-                --tsan) configs="${configs} --build-type;debug;--tsan"
-                        ;;
-                * )     compilers=${compilers}" "$1
-                        ;;
-        esac
-        shift
-done
+scalars="--float --double"
 
 basedir=$(dirname $0)
 
@@ -62,63 +49,64 @@ printf "\terrors: %3d\n\n" \
 # check available compilers
 for compiler in ${compilers}
 do
-        # check compilation for all configurations
-        for xconfig in ${configs}
+        # check build types
+        for build in ${builds}
         do
-                pconfig=${xconfig//;/ }
-                nconfig=${xconfig//;/_}
-                nconfig=${nconfig//--/}
-                nconfig=${nconfig//-/_}
-                nconfig=${nconfig/build_type_/}
-
-                printf "%-24s" "${compiler} (${nconfig})..."
-
-                log="${compiler}_${nconfig}.log"
-                bash ${basedir}/build.sh --compiler ${compiler} --float ${pconfig} > ${log} 2>&1
-
-                printf "\tfatals: %3d\terrors: %3d\twarnings: %3d\n" \
-                        $(grep -i fatal: ${log} | wc -l) \
-                        $(grep -i error: ${log} | wc -l) \
-                        $(grep -i warning: ${log} | wc -l)
-        done
-
-        # run unit tests for all configurations
-        for xconfig in ${configs}
-        do
-                pconfig=${xconfig//;/ }
-                nconfig=${xconfig//;/_}
-                nconfig=${nconfig//--/}
-                nconfig=${nconfig//-/_}
-                nconfig=${nconfig/build_type_/}
-                tconfig=${xconfig//;/-}
-                tconfig=${tconfig// /}
-                tconfig=${tconfig//--/}
-                tconfig=${tconfig//build-type-/}
-
-                printf "%-24s\n" "${compiler} (${nconfig}) ${tconfig}"
-
-                crtdir=$(pwd)
-                cd ${basedir}/build-${tconfig}/test
-                for test in $(ls test_* | grep -v test_mnist | grep -v test_cifar10 | grep -v test_stl10 | grep -v test_svhn)
+                # check scalar types
+                for scalar in ${scalars}
                 do
-                        printf "  -%-21s" "${test}..."
+                        bdir="build-temp"
+                        cdir=$(pwd)
 
-                        log="${crtdir}/${compiler}_${nconfig}_${test}.log"
-                        ./${test} > $log 2>&1
+                        params="${compiler} ${build} ${scalar} --build-dir ${bdir}"
+                        params=${params//;/ }
 
-                        ret=$(grep -E "failed with|no errors detected" ${log} | wc -l)
-                        if [ "$ret" == "0" ]
-                        then
-                                crashed="yes"
-                        else
-                                crashed="no"
-                        fi
-                        printf "\tunit test errors: %3d\tsanitizer errors: %3d\tcrashed: %3s\n" \
-                                $(grep -E ".+\:.+\: \[.+/.+\]: check \{.+\} failed" ${log} | wc -l) \
-                                $(grep error: ${log} | wc -l) \
-                                ${crashed}
+                        name=${params}
+                        name=${name//;/_}
+                        name=${name//-/_}
+                        name=${name//__/_}
+                        name=${name// /}
+                        name=${name//compiler/}
+                        name=${name//build_dir/}
+                        name=${name//build_temp/}
+                        name=${name//build_type/}
+
+                        # check compilation
+                        printf "%s\n" "${params}"
+
+                        /usr/bin/time -f "%E" bash ${basedir}/build.sh ${params} > ${name}.log 2>&1
+
+                        printf "  -%-21s\t%-6s\n" "compilation time:" "$(tail -n 1 ${name}.log)"
+                        printf "  -%-21s\t%-6s\n" "compilation fatals:" "$(grep -i fatal: ${name}.log | wc -l)"
+                        printf "  -%-21s\t%-6s\n" "compilation errors:" "$(grep -i error: ${name}.log | wc -l)"
+                        printf "  -%-21s\t%-6s\n" "compilation warnings:" "$(grep -i warning: ${name}.log | wc -l)"
+
+                        # check unit tests
+                        cd ${basedir}/${bdir}/test
+                        for test in $(ls test_* | grep -v test_mnist | grep -v test_cifar10 | grep -v test_stl10 | grep -v test_svhn)
+                        do
+                                printf "  -%-21s" "${test}..."
+
+                                log="${cdir}/${name}_${test}.log"
+                                ./${test} > $log 2>&1
+
+                                ret=$(grep -E "failed with|no errors detected" ${log} | wc -l)
+                                if [ "$ret" == "0" ]
+                                then
+                                        crashed="yes"
+                                else
+                                        crashed="no"
+                                fi
+                                printf "\tunit test errors: %3d\tsanitizer errors: %3d\tcrashed: %3s\n" \
+                                        $(grep -E ".+\:.+\: \[.+/.+\]: check \{.+\} failed" ${log} | wc -l) \
+                                        $(grep error: ${log} | wc -l) \
+                                        ${crashed}
+                        done
+                        cd ${cdir}
+
+                        # cleanup
+                        rm -rf ${bdir}
                 done
-                cd ${crtdir}
         done
 done
 
