@@ -92,9 +92,9 @@ namespace nano
                 vector_t        x, g, d;                ///< parameter, gradient, descent direction
                 scalar_t        f;                      ///< function value, step size
 
-                std::size_t     m_iterations;
-                std::size_t     m_fcalls;               ///< #function value evaluations
-                std::size_t     m_gcalls;               ///< #function gradient evaluations
+                size_t          m_iterations;
+                size_t          m_fcalls;               ///< #function value evaluations
+                size_t          m_gcalls;               ///< #function gradient evaluations
                 opt_status      m_status;               ///<
         };
 

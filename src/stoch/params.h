@@ -24,8 +24,8 @@ namespace nano
                 /// \brief constructor
                 ///
                 stoch_params_t(
-                        const std::size_t epochs,
-                        const std::size_t epoch_size,
+                        const size_t epochs,
+                        const size_t epoch_size,
                         const opulog_t& ulog = opulog_t(),
                         const optlog_t& tlog = optlog_t()) :
                         m_epochs(epochs),
@@ -68,8 +68,8 @@ namespace nano
                 }
 
                 // attributes
-                std::size_t     m_epochs;               ///< number of epochs
-                std::size_t     m_epoch_size;           ///< epoch size in number of iterations
+                size_t          m_epochs;               ///< number of epochs
+                size_t          m_epoch_size;           ///< epoch size in number of iterations
                 opulog_t        m_ulog;                 ///< update log: (the current_state_after_each_epoch)
                 optlog_t        m_tlog;                 ///< tuning log: (the current_state_after_each_epoch)
         };

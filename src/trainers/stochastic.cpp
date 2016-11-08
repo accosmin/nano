@@ -74,7 +74,7 @@ namespace nano
                         // logging operator
                         const auto fn_ulog = [&] (const state_t& state, const trainer_config_t& sconfig)
                         {
-                                 ulog(lacc, it, epoch, epochs, result, policy, timer, state, sconfig);
+                                 return ulog(lacc, it, epoch, epochs, result, policy, timer, state, sconfig);
                         };
 
                         // assembly optimization problem & optimize the model
