@@ -2,6 +2,7 @@
 #include "model.h"
 #include "stochastic.h"
 #include "math/numeric.h"
+#include "math/epsilon.h"
 #include "text/to_params.h"
 #include "stoch_optimizer.h"
 #include "text/from_params.h"
@@ -29,6 +30,7 @@ namespace nano
                 const auto policy = from_params<trainer_policy>(config(), "policy");
                 const auto batch0 = clamp(from_params<size_t>(config(), "min_batch"), 32, 1024);
                 const auto batchK = clamp(from_params<size_t>(config(), "max_batch"), batch0, 4096);
+                const auto epsilon = epsilon0<scalar_t>();
                 const auto optimizer = from_params<string_t>(config(), "opt");
 
                 const auto train_fold = fold_t{fold, protocol::train};
@@ -79,7 +81,7 @@ namespace nano
 
                         // assembly optimization problem & optimize the model
                         const auto problem = make_trainer_problem(lacc, gacc, it);
-                        const auto params = stoch_params_t{epochs, epoch_size, fn_ulog, fn_tlog};
+                        const auto params = stoch_params_t{epochs, epoch_size, epsilon, fn_ulog, fn_tlog};
 
                         get_stoch_optimizers().get(optimizer)->minimize(params, problem, x0);
 

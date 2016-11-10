@@ -24,12 +24,14 @@ namespace nano
                 /// \brief constructor
                 ///
                 stoch_params_t(
-                        const size_t epochs,
+                        const size_t max_epochs,
                         const size_t epoch_size,
+                        const scalar_t epsilon,
                         const opulog_t& ulog = opulog_t(),
                         const optlog_t& tlog = optlog_t()) :
-                        m_epochs(epochs),
+                        m_max_epochs(max_epochs),
                         m_epoch_size(epoch_size),
+                        m_epsilon(epsilon),
                         m_ulog(ulog),
                         m_tlog(tlog)
                 {
@@ -40,7 +42,7 @@ namespace nano
                 ///
                 auto tunable() const
                 {
-                        return stoch_params_t{1, m_epoch_size, nullptr, m_tlog};
+                        return stoch_params_t{1, m_epoch_size, m_epsilon, nullptr, m_tlog};
                 }
 
                 ///
@@ -48,7 +50,7 @@ namespace nano
                 ///
                 auto tuned() const
                 {
-                        return stoch_params_t{m_epochs, m_epoch_size, m_ulog, nullptr};
+                        return stoch_params_t{m_max_epochs, m_epoch_size, m_epsilon, m_ulog, nullptr};
                 }
 
                 ///
@@ -68,8 +70,9 @@ namespace nano
                 }
 
                 // attributes
-                size_t          m_epochs;               ///< number of epochs
+                size_t          m_max_epochs;           ///< number of epochs
                 size_t          m_epoch_size;           ///< epoch size in number of iterations
+                scalar_t        m_epsilon;              ///< convergence precision
                 opulog_t        m_ulog;                 ///< update log: (the current_state_after_each_epoch)
                 optlog_t        m_tlog;                 ///< tuning log: (the current_state_after_each_epoch)
         };

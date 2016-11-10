@@ -52,13 +52,8 @@ static void check_function(const function_t& function)
                         const auto g_thres = is_adadelta ? std::sqrt(eps) : eps;
                         const auto x_thres = std::cbrt(g_thres);
 
-                        const auto op_ulog = [g_thres = g_thres] (const state_t& state, const stoch_params_t::config_t&)
-                        {
-                                return state.convergence_criteria() > g_thres / 2;
-                        };
-
                         // optimize
-                        const auto params = stoch_params_t(epochs, epoch_size, op_ulog);
+                        const auto params = stoch_params_t(epochs, epoch_size, g_thres);
                         const auto state = optimizer->minimize(params, problem, x0);
 
                         const auto x = state.x;

@@ -35,13 +35,8 @@ void check_function(
         // evaluate all optimizers
         for (const auto id : ids)
         {
-                const auto op_ulog = [epsilon = epsilon] (const state_t& state, const stoch_params_t::config_t&)
-                {
-                        return state.convergence_criteria() > epsilon / 2;
-                };
-
                 const auto optimizer = get_stoch_optimizers().get(id);
-                const auto params = stoch_params_t(epochs, epoch_size, op_ulog);
+                const auto params = stoch_params_t(epochs, epoch_size, epsilon);
                 const auto op = [&] (const problem_t& problem, const vector_t& x0)
                 {
                         auto state = optimizer->minimize(params, problem, x0);

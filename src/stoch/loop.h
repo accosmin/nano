@@ -118,7 +118,7 @@ namespace nano
                 auto bstate = istate;
 
                 // for each epoch ...
-                for (size_t e = 0; e < params.m_epochs; ++ e)
+                for (size_t e = 0; e < params.m_max_epochs; ++ e)
                 {
                         // for each iteration ...
                         for (size_t i = 0; i < params.m_epoch_size; ++ i)

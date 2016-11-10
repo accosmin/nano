@@ -22,9 +22,9 @@ namespace nano
                                 const opulog_t& ulog = opulog_t(),
                                 const size_t lbfgs_hsize = 6,
                                 const scalar_t cgd_orthotest = scalar_t(0.1)) :
-                        m_ulog(ulog),
                         m_max_iterations(max_iterations),
                         m_epsilon(epsilon),
+                        m_ulog(ulog),
                         m_lbfgs_hsize(lbfgs_hsize),
                         m_cgd_orthotest(cgd_orthotest)
                 {
@@ -39,9 +39,9 @@ namespace nano
                 }
 
                 // attributes
-                opulog_t        m_ulog;                 ///< logging
                 size_t          m_max_iterations;       ///< maximum number of iterations
                 scalar_t        m_epsilon;              ///< convergence precision
+                opulog_t        m_ulog;                 ///< logging
                 size_t          m_lbfgs_hsize;          ///< history size (for LBFGS)
                 scalar_t        m_cgd_orthotest;        ///< orthogonality test (for CGD)
         };
