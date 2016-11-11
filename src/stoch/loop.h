@@ -2,7 +2,6 @@
 
 #include "params.h"
 #include "math/tune.h"
-#include "math/momentum.h"
 
 namespace nano
 {
@@ -89,7 +88,8 @@ namespace nano
 
         ///
         /// \brief stochastic optimization loop until:
-        ///     - the maximum number of iterations/epochs is reached or
+        ///     - convergence is achieved (critical point, possiblly a local/global minima) or
+        ///     - the maximum number of epochs is reached or
         ///     - the user canceled the optimization (using the logging function)
         /// NB: convergence to a critical point is not guaranteed in general.
         ///
@@ -98,7 +98,6 @@ namespace nano
                 typename toptimizer     ///< optimization method
         >
         auto stoch_loop(
-                const problem_t& problem,
                 const stoch_params_t& params,
                 const state_t& istate,
                 const toptimizer& optimizer,
@@ -106,13 +105,6 @@ namespace nano
         {
                 // current state
                 auto cstate = istate;
-
-                // average state
-                // - similar to average stochastic gradient descent, but using an exponential moving average
-                auto astate = istate;
-
-                const scalar_t momentum = scalar_t(0.95);
-                momentum_vector_t<vector_t> xavg(momentum, istate.x.size());
 
                 // best state
                 auto bstate = istate;
@@ -124,27 +116,33 @@ namespace nano
                         for (size_t i = 0; i < params.m_epoch_size; ++ i)
                         {
                                 optimizer(cstate);
-                                xavg.update(cstate.x);
                         }
 
                         // check divergence
-                        if (!astate || !cstate)
+                        if (!cstate)
                         {
                                 break;
                         }
 
                         // log the current state & check the stopping criteria
-                        astate.update(problem, xavg.value());
-                        astate.f = params.tlog(astate, config);
-                        if (!params.ulog(astate, config))
+                        params.tlog(cstate, config);
+                        if (!params.ulog(cstate, config))
                         {
-                                astate.m_status = opt_status::stopped;
-                                bstate.update(astate);
+                                cstate.m_status = opt_status::stopped;
+                                bstate.update(cstate);
+                                break;
+                        }
+
+                        // check convergence
+                        if (cstate.converged(params.m_epsilon))
+                        {
+                                cstate.m_status = opt_status::converged;
+                                bstate.update(cstate);
                                 break;
                         }
 
                         // update the best state
-                        bstate.update(astate);
+                        bstate.update(cstate);
                 }
 
                 // OK

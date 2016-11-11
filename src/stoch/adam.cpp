@@ -1,5 +1,6 @@
 #include "adam.h"
 #include "loop.h"
+#include "math/momentum.h"
 
 namespace nano
 {
@@ -43,7 +44,7 @@ namespace nano
                 };
 
                 // OK, assembly the optimizer
-                return  stoch_loop(problem, param, state_t(problem, x0), op_iter,
+                return  stoch_loop(param, state_t(problem, x0), op_iter,
                         {{"alpha0", alpha0}, {"epsilon", epsilon}, {"beta1", beta1}, {"beta2", beta2}});
         }
 }

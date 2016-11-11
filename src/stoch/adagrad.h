@@ -15,11 +15,8 @@ namespace nano
         {
                 explicit stoch_adagrad_t(const string_t& configuration = string_t());
 
-                virtual state_t minimize(const stoch_params_t&, const problem_t&, const vector_t& x0) const override;
+                state_t minimize(const stoch_params_t&, const problem_t&, const vector_t& x0) const override;
 
-                ///
-                /// \brief minimize starting from the initial guess x0 using the given hyper-parameters.
-                ///
                 state_t minimize(const stoch_params_t&, const problem_t&, const vector_t& x0,
                         const scalar_t alpha0, const scalar_t epsilon) const;
         };

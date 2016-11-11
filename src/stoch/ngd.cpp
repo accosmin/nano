@@ -32,7 +32,7 @@ namespace nano
                 };
 
                 // OK, assembly the optimizer
-                return  stoch_loop(problem, param, state_t(problem, x0), op_iter,
+                return  stoch_loop(param, state_t(problem, x0), op_iter,
                         {{"alpha0", alpha0}});
         }
 }
