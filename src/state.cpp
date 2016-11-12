@@ -60,6 +60,7 @@ namespace nano
                         g = state.g;
                         d = state.d;
                         f = state.f;
+                        m_status = state.m_status;
                 }
 
                 m_iterations = state.m_iterations;
