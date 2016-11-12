@@ -21,7 +21,7 @@ namespace nano
                 assert(problem.size() == x0.size());
 
                 // learning rate schedule
-                lrate_t lrate(alpha0, decay);
+                lrate_t lrate(alpha0, decay, param.m_epoch_size);
 
                 // first-order momentum of the update
                 momentum_vector_t<vector_t> davg(momentum, x0.size());

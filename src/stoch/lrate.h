@@ -7,21 +7,23 @@
 namespace nano
 {
         ///
-        /// \brief compute the current learning rate as a function of:
+        /// \brief learning rate as an exponential decay function of:
         ///     - alpha0        - the initial learning rate
-        ///     - iter          - iteration
         ///     - decay         - the decay rate mode
+        ///     - iter          - current iteration
+	///	- epoch_size	- epoch size in iterations
         ///
-        /// learning rate = alpha0 / (iter + 1)^decay
+        /// learning rate = alpha0 * decay^{iter/epoch_size}
         ///
         struct lrate_t
         {
                 ///
                 /// \brief constructor
                 ///
-                lrate_t(const scalar_t alpha0, const scalar_t decay) :
+                lrate_t(const scalar_t alpha0, const scalar_t decay, const size_t epoch_size) :
                         m_alpha0(alpha0),
                         m_decay(decay),
+			m_epoch_size(epoch_size),
                         m_iteration(0)
                 {
                         assert(decay >= scalar_t(0));
@@ -34,13 +36,14 @@ namespace nano
                 ///
                 scalar_t get()
                 {
-                        return m_alpha0 / std::pow(++ m_iteration, m_decay);
+                        return m_alpha0 * std::pow(m_decay, static_cast<scalar_t>(m_iteration ++ / m_epoch_size));
                 }
 
                 // attributes
                 scalar_t        m_alpha0;
                 scalar_t        m_decay;
-                scalar_t        m_iteration;
+		size_t		m_epoch_size;
+		size_t		m_iteration;
         };
 
 }

@@ -125,7 +125,7 @@ namespace nano
                         }
 
                         // log the current state & check the stopping criteria
-                        params.tlog(cstate, config);
+                        cstate.f = params.tlog(cstate, config);
                         if (!params.ulog(cstate, config))
                         {
                                 cstate.m_status = opt_status::stopped;

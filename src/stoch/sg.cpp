@@ -20,7 +20,7 @@ namespace nano
                 assert(problem.size() == x0.size());
 
                 // learning rate schedule
-                lrate_t lrate(alpha0, decay);
+                lrate_t lrate(alpha0, decay, param.m_epoch_size);
 
                 const auto op_iter = [&] (state_t& cstate)
                 {
