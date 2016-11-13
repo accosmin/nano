@@ -60,11 +60,6 @@ namespace nano
                 void update(const problem_t& problem, const scalar_t t, const scalar_t ft, const vector_t& gt);
 
                 ///
-                /// \brief update the current state (if an improvement)
-                ///
-                bool update(const state_t& state);
-
-                ///
                 /// \brief check convergence: the gradient is relatively small
                 ///
                 bool converged(const scalar_t epsilon) const
