@@ -26,7 +26,7 @@ namespace nano
 			m_epoch_size(epoch_size),
                         m_iteration(0)
                 {
-                        assert(decay >= scalar_t(0));
+                        assert(decay > scalar_t(0));
                         assert(decay <= scalar_t(1));
                         assert(alpha0 > scalar_t(0));
                 }

@@ -39,12 +39,7 @@ void check_function(
                 const auto params = stoch_params_t(epochs, epoch_size, epsilon);
                 const auto op = [&] (const problem_t& problem, const vector_t& x0)
                 {
-                        auto state = optimizer->minimize(params, problem, x0);
-                        if (state.converged(epsilon))
-                        {
-                                state.m_status = opt_status::converged;
-                        }
-                        return state;
+                        return optimizer->minimize(params, problem, x0);
                 };
 
                 const auto name = id;

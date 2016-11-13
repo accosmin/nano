@@ -1,5 +1,6 @@
 #include "ngd.h"
 #include "loop.h"
+#include "lrate.h"
 
 namespace nano
 {
@@ -10,18 +11,21 @@ namespace nano
 
         state_t stoch_ngd_t::minimize(const stoch_params_t& param, const problem_t& problem, const vector_t& x0) const
         {
-                return stoch_tune(this, param, problem, x0, make_alpha0s());
+                return stoch_tune(this, param, problem, x0, make_alpha0s(), make_decays());
         }
 
         state_t stoch_ngd_t::minimize(const stoch_params_t& param, const problem_t& problem, const vector_t& x0,
-                const scalar_t alpha0) const
+                const scalar_t alpha0, const scalar_t decay) const
         {
                 assert(problem.size() == x0.size());
+
+                // learning rate schedule
+                lrate_t lrate(alpha0, decay, param.m_epoch_size);
 
                 const auto op_iter = [&] (state_t& cstate)
                 {
                         // learning rate
-                        const scalar_t alpha = alpha0;
+                        const scalar_t alpha = lrate.get();
 
                         // descent direction
                         const scalar_t norm = 1 / cstate.g.template lpNorm<2>();
@@ -33,7 +37,7 @@ namespace nano
 
                 // OK, assembly the optimizer
                 return  stoch_loop(param, state_t(problem, x0), op_iter,
-                        {{"alpha0", alpha0}});
+                        {{"alpha0", alpha0}, {"decay", decay}});
         }
 }
 

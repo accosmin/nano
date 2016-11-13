@@ -15,7 +15,7 @@ namespace nano
 
         inline auto make_decays()
         {
-                return make_finite_space(scalar_t(0.01), scalar_t(0.1), scalar_t(0.2), scalar_t(0.5), scalar_t(0.75), scalar_t(1.0));
+                return make_finite_space(scalar_t(0.1), scalar_t(0.2), scalar_t(0.5), scalar_t(0.75), scalar_t(1.0));
         }
 
         inline auto make_momenta()
@@ -106,9 +106,6 @@ namespace nano
                 // current state
                 auto cstate = istate;
 
-                // best state
-                auto bstate = istate;
-
                 // for each epoch ...
                 for (size_t e = 0; e < params.m_max_epochs; ++ e)
                 {
@@ -129,7 +126,6 @@ namespace nano
                         if (!params.ulog(cstate, config))
                         {
                                 cstate.m_status = opt_status::stopped;
-                                bstate.update(cstate);
                                 break;
                         }
 
@@ -137,16 +133,12 @@ namespace nano
                         if (cstate.converged(params.m_epsilon))
                         {
                                 cstate.m_status = opt_status::converged;
-                                bstate.update(cstate);
                                 break;
                         }
-
-                        // update the best state
-                        bstate.update(cstate);
                 }
 
                 // OK
-                return bstate;
+                return cstate;
         }
 }
 
