@@ -74,7 +74,7 @@ namespace nano
                                 break;
 
                         case ag_restart::function:
-                                if ((cfx = problem(cx)) > pfx)
+                                if ((cfx = problem.value(cx)) > pfx)
                                 {
                                         ctheta = 1;
                                 }

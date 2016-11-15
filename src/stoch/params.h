@@ -11,7 +11,7 @@ namespace nano
         ///
         struct stoch_params_t
         {
-                /// configuration: { hyper-parameter name, hyper-parameter value }+
+                /// configuration: {hyper-parameter name, hyper-parameter value}+
                 using config_t = std::vector<std::pair<const char*, scalar_t>>;
 
                 /// logging operator: op(state, configuration), returns true if the optimization should stop

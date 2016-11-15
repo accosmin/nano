@@ -39,7 +39,7 @@ static void check_function(const function_t& function)
                         const auto problem = function.problem();
 
                         const auto& x0 = x0s[t];
-                        const auto f0 = problem(x0);
+                        const auto f0 = problem.value(x0);
                         const auto g_thres = epsilon2<scalar_t>();
                         const auto x_thres = std::cbrt(g_thres);
 

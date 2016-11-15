@@ -47,7 +47,7 @@ static void check_grad(const string_t& loss_id, tensor_size_t n_dims, size_t n_t
                 vector_t x(n_dims);
                 rgen(x.data(), x.data() + n_dims);
 
-                NANO_CHECK_GREATER(problem(x), 0.0);
+                NANO_CHECK_GREATER(problem.value(x), 0.0);
                 NANO_CHECK_LESS(problem.grad_accuracy(x), epsilon2<scalar_t>());
         }
 }

@@ -6,7 +6,8 @@
 namespace nano
 {
         ///
-        /// \brief line-search (scalar) step
+        /// \brief line-search (scalar) step.
+        /// NB: using the notation from CG_DESCENT papers
         ///
         class ls_step_t
         {
@@ -15,139 +16,88 @@ namespace nano
                 ///
                 /// \brief constructor
                 ///
-                ls_step_t(const problem_t& problem, const state_t& state) :
-                        m_problem(problem),
-                        m_state(state),
-                        m_gphi0(state.d.dot(state.g)),
-                        m_alpha(0),
-                        m_func(state.f),
-                        m_grad(state.g),
-                        m_gphi(m_gphi0)
-                {
-                }
+                ls_step_t(const problem_t& problem, const state_t& state);
 
                 ///
                 /// \brief minimum allowed line-search step
                 ///
-                static scalar_t minimum()
-                {
-                        return scalar_t(10) * std::numeric_limits<scalar_t>::epsilon();
-                }
+                static scalar_t minimum();
 
                 ///
                 /// \brief maximum allowed line-search step
                 ///
-                static scalar_t maximum()
-                {
-                        return scalar_t(1) / minimum();
-                }
+                static scalar_t maximum();
 
                 ///
                 /// \brief change the line-search step
                 ///
-                bool update(const scalar_t alpha)
-                {
-                        if (!std::isfinite(alpha))
-                        {
-                                return false;
-                        }
-                        else
-                        {
-                                m_alpha = alpha;
-                                m_func = m_problem.get()(m_state.get().x + m_alpha * m_state.get().d, m_grad);
-                                m_gphi = m_grad.dot(m_state.get().d);
-                                return operator bool();
-                        }
-                }
+                bool update(const scalar_t alpha);
 
                 ///
                 /// \brief check if the current step satisfies the Armijo condition (sufficient decrease)
                 ///
-                bool has_armijo(const scalar_t c1) const
-                {
-                        return phi() <= phi0() + alpha() * c1 * gphi0();
-                }
+                bool has_armijo(const scalar_t c1) const;
 
                 ///
                 /// \brief check if the current step satisfies the Wolfe condition (sufficient curvature)
                 ///
-                bool has_wolfe(const scalar_t c2) const
-                {
-                        return gphi() >= +c2 * gphi0();
-                }
+                bool has_wolfe(const scalar_t c2) const;
 
                 ///
                 /// \brief check if the current step satisfies the strong Wolfe condition (sufficient curvature)
                 ///
-                bool has_strong_wolfe(const scalar_t c2) const
-                {
-                        return  gphi() >= +c2 * gphi0() &&
-                                gphi() <= -c2 * gphi0();
-                }
+                bool has_strong_wolfe(const scalar_t c2) const;
 
                 ///
                 /// \brief check if the current step satisfies the approximate Wolfe condition (sufficient curvature)
                 ///     see CG_DESCENT
                 ///
-                bool has_approx_wolfe(const scalar_t c1, const scalar_t c2, const scalar_t epsilon) const
-                {
-                        return  (2 * c1 - 1) * gphi0() >= gphi() &&
-                                gphi() >= +c2 * gphi0() &&
-                                phi() <= approx_phi(epsilon);
-                }
+                bool has_approx_wolfe(const scalar_t c1, const scalar_t c2, const scalar_t epsilon) const;
 
                 ///
                 /// \brief current step
                 ///
-                scalar_t alpha() const { return m_alpha; }
+                scalar_t alpha() const;
 
                 ///
                 /// \brief current function value
                 ///
-                scalar_t phi() const { return m_func; }
+                scalar_t phi() const;
 
                 ///
                 /// \brief approximate function value (see CG_DESCENT)
                 ///
-                scalar_t approx_phi(const scalar_t epsilon) const
-                {
-                        return phi0() + epsilon;
-                }
+                scalar_t approx_phi(const scalar_t epsilon) const;
 
                 ///
                 /// \brief initial function value
                 ///
-                scalar_t phi0() const { return m_state.get().f; }
+                scalar_t phi0() const;
 
                 ///
                 /// \brief current line-search function gradient
                 ///
-                scalar_t gphi() const { return m_gphi; }
+                scalar_t gphi() const;
 
                 ///
                 /// \brief initial line-search function gradient
                 ///
-                scalar_t gphi0() const { return m_gphi0; }
+                scalar_t gphi0() const;
 
                 ///
                 /// \brief currrent function value
                 ///
-                scalar_t func() const { return phi(); }
+                scalar_t func() const;
 
                 ///
                 /// \brief current gradient
                 ///
-                const vector_t& grad() const { return m_grad; }
+                const vector_t& grad() const;
 
                 ///
                 /// \brief check if valid step
                 ///
-                operator bool() const
-                {
-                        return  std::isfinite(alpha()) &&
-                                std::isfinite(phi()) &&
-                                std::isfinite(gphi());
-                }
+                operator bool() const;
 
         private:
 
@@ -169,5 +119,6 @@ namespace nano
         {
                 return step1.phi() < step2.phi();
         }
+
 }
 

@@ -60,7 +60,7 @@ namespace nano
         {
                 const auto p = problem();
 
-                return std::fabs(p(x)) < epsilon;
+                return std::fabs(p.value(x)) < epsilon;
 
                 // NB: there are quite a few local minima that are not easy to compute!
                 return true;

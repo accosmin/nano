@@ -7,7 +7,10 @@
 namespace nano
 {
         ///
-        /// \brief describes a multivariate optimization problem
+        /// \brief describes a multivariate optimization problem.
+        ///     - the function value and gradient are computed using the provided operators
+        ///     - stochastic approximation operators can be provided (useful for stochastic optimization),
+        ///             otherwise the batch operators will be instead
         ///
         class NANO_PUBLIC problem_t
         {
@@ -31,11 +34,22 @@ namespace nano
                         const opgrad_t& opgrad);
 
                 ///
-                /// \brief constructor (no analytic gradient, can be estimated)
+                /// \brief constructor (no analytic gradient, but can be inefficiently estimated)
                 ///
                 problem_t(
                         const opsize_t& opsize,
                         const opfval_t& opfval);
+
+                ///
+                /// \brief constructor (analytic gradient with stochastic approximations)
+                ///
+                problem_t(
+                        const opsize_t& opsize,
+                        const opfval_t& opfval,
+                        const opgrad_t& opgrad,
+                        const opfval_t& stoch_opfval,
+                        const opgrad_t& stoch_opgrad,
+                        const size_t stoch_ratio);
 
                 ///
                 /// \brief reset statistics (e.g. number of function value and gradient calls)
@@ -43,29 +57,39 @@ namespace nano
                 void clear() const;
 
                 ///
-                /// \brief compute dimensionality
+                /// \brief number of dimensions
                 ///
                 tensor_size_t size() const;
 
                 ///
                 /// \brief compute function value
                 ///
-                scalar_t operator()(const vector_t& x) const;
+                scalar_t value(const vector_t& x) const;
 
                 ///
-                /// \brief compute function gradient
+                /// \brief compute function value (using the stochastic approximation, if provided)
                 ///
-                scalar_t operator()(const vector_t& x, vector_t& g) const;
+                scalar_t stoch_value(const vector_t& x) const;
+
+                ///
+                /// \brief compute function value and gradient
+                ///
+                scalar_t vgrad(const vector_t& x, vector_t& g) const;
+
+                ///
+                /// \brief compute function value and gradient (using the stochastic approximation, if provided)
+                ///
+                scalar_t stoch_vgrad(const vector_t& x, vector_t& g) const;
 
                 ///
                 /// \brief number of function evalution calls
                 ///
-                std::size_t fcalls() const { return m_fcalls; }
+                size_t fcalls() const;
 
                 ///
                 /// \brief number of function gradient calls
                 ///
-                std::size_t gcalls() const { return m_gcalls; }
+                size_t gcalls() const;
 
                 ///
                 /// \brief compute the gradient accuracy (given vs. finite difference approximation)
@@ -87,8 +111,11 @@ namespace nano
                 opsize_t                m_opsize;
                 opfval_t                m_opfval;
                 opgrad_t                m_opgrad;
-                mutable std::size_t     m_fcalls;               ///< #function value evaluations
-                mutable std::size_t     m_gcalls;               ///< #function gradient evaluations
+                size_t                  m_stoch_ratio;                  ///< #stochastic calls per batch call
+                opfval_t                m_stoch_opfval;                 ///< stochastic approx of function value
+                opgrad_t                m_stoch_opgrad;                 ///< stochastic approx of function gradient
+                mutable size_t          m_fcalls, m_stoch_fcalls;       ///< #function value evaluations
+                mutable size_t          m_gcalls, m_stoch_gcalls;       ///< #function gradient evaluations
         };
 }
 

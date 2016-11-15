@@ -22,16 +22,16 @@ static void eval_func(const function_t& function, table_t& table)
 
         const size_t trials = 16;
 
-        scalar_t fx = 0;
+        volatile scalar_t fx = 0;
         const auto fval_time = measure_robustly_nsec([&] ()
         {
-                fx += problem(x);
+                fx += problem.value(x);
         }, trials).count();
 
-        scalar_t gx = 0;
+        volatile scalar_t gx = 0;
         const auto grad_time = measure_robustly_nsec([&] ()
         {
-                problem(x, g);
+                problem.vgrad(x, g);
                 gx += g.template lpNorm<Eigen::Infinity>();
         }, trials).count();
 

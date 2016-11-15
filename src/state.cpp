@@ -17,13 +17,13 @@ namespace nano
                 state_t(problem.size())
         {
                 x = x0;
-                f = problem(x, g);
+                f = problem.vgrad(x, g);
         }
 
         void state_t::update(const problem_t& problem, const vector_t& xx)
         {
                 x = xx;
-                f = problem(x, g);
+                f = problem.vgrad(x, g);
 
                 m_iterations ++;
                 m_fcalls = problem.fcalls();
@@ -33,7 +33,7 @@ namespace nano
         void state_t::update(const problem_t& problem, const scalar_t t)
         {
                 x.noalias() += t * d;
-                f = problem(x, g);
+                f = problem.vgrad(x, g);
 
                 m_iterations ++;
                 m_fcalls = problem.fcalls();
