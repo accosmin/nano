@@ -1,9 +1,9 @@
 #!/bin/bash
 
-compilers="${compilers} --compiler;g++-4.9"
+#compilers="${compilers} --compiler;g++-4.9"
 compilers="${compilers} --compiler;g++-5"
 compilers="${compilers} --compiler;g++-6"
-compilers="${compilers} --compiler;clang++-3.5;--libc++"
+#compilers="${compilers} --compiler;clang++-3.5;--libc++"
 compilers="${compilers} --compiler;clang++-3.6;--libc++"
 compilers="${compilers} --compiler;clang++-3.7;--libc++"
 compilers="${compilers} --compiler;clang++-3.8;--libc++"
