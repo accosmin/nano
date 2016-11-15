@@ -2,6 +2,7 @@
 
 #include "params.h"
 #include "math/tune.h"
+#include <experimental/tuple>
 
 namespace nano
 {
@@ -28,62 +29,25 @@ namespace nano
                 return make_finite_space(scalar_t(1e-4), scalar_t(1e-6));
         }
 
-        namespace detail
-        {
-                // tuple unpacking for calling void function
-                // http://stackoverflow.com/questions/10766112/c11-i-can-go-from-multiple-args-to-tuple-but-can-i-go-from-tuple-to-multiple
-
-                template <typename F, typename Tuple, bool Done, int Total, int... N>
-                struct call_impl
-                {
-                        static void call(F f, Tuple && t)
-                        {
-                                call_impl<F, Tuple, Total == 1 + sizeof...(N), Total, N..., sizeof...(N)
-                                >::call(f, std::forward<Tuple>(t));
-                        }
-                };
-
-                template <typename F, typename Tuple, int Total, int... N>
-                struct call_impl<F, Tuple, true, Total, N...>
-                {
-                        static void call(F f, Tuple && t)
-                        {
-                                f(std::get<N>(std::forward<Tuple>(t))...);
-                        }
-                };
-
-                template <typename F, typename Tuple>
-                void call(F f, Tuple && t)
-                {
-                        typedef typename std::decay<Tuple>::type ttype;
-                        detail::call_impl<F, Tuple, 0 == std::tuple_size<ttype>::value, std::tuple_size<ttype>::value
-                        >::call(f, std::forward<Tuple>(t));
-                }
-        }
-
         ///
         /// \brief tune the given stochastic optimizer.
         ///
         template <typename toptimizer, typename... tspaces>
         auto stoch_tune(const toptimizer* optimizer,
-                const stoch_params_t& param, const problem_t& problem, vector_t x0,
+                const stoch_params_t& param, const problem_t& problem, const vector_t& x0,
                 tspaces... spaces)
         {
                 const auto tune_op = [&] (const auto... hypers)
                 {
                         return optimizer->minimize(param.tunable(), problem, x0, hypers...);
                 };
+                const auto config = nano::tune(tune_op, spaces...);
 
-                state_t state;
                 const auto done_op = [&] (const auto... hypers)
                 {
-                        state = optimizer->minimize(param.tuned(), problem, x0, hypers...);
+                        return optimizer->minimize(param.tuned(), problem, config.optimum().x, hypers...);
                 };
-
-                const auto config = nano::tune(tune_op, spaces...);
-                x0 = config.optimum().x;
-                detail::call(done_op, config.params());
-                return state;
+                return std::experimental::apply(done_op, config.params());
         }
 
         ///
@@ -121,18 +85,19 @@ namespace nano
                                 break;
                         }
 
-                        // log the current state & check the stopping criteria
-                        cstate.f = params.tlog(cstate, config);
-                        if (!params.ulog(cstate, config))
-                        {
-                                cstate.m_status = opt_status::stopped;
-                                break;
-                        }
-
-                        // check convergence
+                        /*// check convergence (using the full gradient)
+                        cstate.update(problem, cstate.x);
                         if (cstate.converged(params.m_epsilon))
                         {
                                 cstate.m_status = opt_status::converged;
+                                break;
+                        }*/
+
+                        // log the current state & check the stopping criteria
+                        params.tlog(cstate, config);
+                        if (!params.ulog(cstate, config))
+                        {
+                                cstate.m_status = opt_status::stopped;
                                 break;
                         }
                 }
