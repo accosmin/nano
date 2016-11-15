@@ -19,6 +19,10 @@ namespace nano
         {
                 assert(problem.size() == x0.size());
 
+                // initial state
+                state_t istate(problem.size());
+                istate.stoch_update(problem, x0);
+
                 // learning rate schedule
                 lrate_t lrate(alpha0, decay, param.m_epoch_size);
 
@@ -32,11 +36,11 @@ namespace nano
                         cstate.d = -cstate.g * norm;
 
                         // update solution
-                        cstate.update(problem, alpha);
+                        cstate.stoch_update(problem, alpha);
                 };
 
                 // OK, assembly the optimizer
-                return  stoch_loop(param, state_t(problem, x0), op_iter,
+                return  stoch_loop(param, istate, op_iter,
                         {{"alpha0", alpha0}, {"decay", decay}});
         }
 }

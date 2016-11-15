@@ -93,7 +93,8 @@ namespace benchmark
                         const auto& x0 = x0s[t];
 
                         const auto problem = func.problem();
-                        const auto state0 = state_t(problem, x0);
+                        auto state0 = state_t(problem.size());
+                        state0.update(problem, x0);
                         const auto g0 = state0.convergence_criteria();
 
                         // optimize

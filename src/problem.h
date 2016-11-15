@@ -6,6 +6,9 @@
 
 namespace nano
 {
+        class problem_t;
+        using ref_problem_t = std::reference_wrapper<const problem_t>;
+
         ///
         /// \brief describes a multivariate optimization problem.
         ///     - the function value and gradient are computed using the provided operators

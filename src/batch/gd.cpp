@@ -16,6 +16,10 @@ namespace nano
         {
                 assert(problem.size() == x0.size());
 
+                // initial state
+                state_t istate(problem.size());
+                istate.update(problem, x0);
+
                 // line-search initial step length
                 ls_init_t ls_init(from_params<ls_initializer>(config(), "ls_init"));
 
@@ -35,7 +39,7 @@ namespace nano
                 };
 
                 // OK, assembly the optimizer
-                return batch_loop(param, state_t(problem, x0), op);
+                return batch_loop(param, istate, op);
         }
 }
 

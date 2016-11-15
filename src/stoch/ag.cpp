@@ -25,7 +25,8 @@ namespace nano
                 assert(problem.size() == x0.size());
 
                 // initial state
-                state_t istate(problem, x0);
+                state_t istate(problem.size());
+                istate.stoch_update(problem, x0);
 
                 // current & previous iterations
                 vector_t cx = istate.x;
@@ -63,7 +64,7 @@ namespace nano
                         const scalar_t beta = get_beta(ptheta, ctheta);
 
                         // update solution
-                        cstate.update(problem, py);
+                        cstate.stoch_update(problem, py);
                         cx = py - alpha * cstate.g;
                         cy = cx + beta * (cx - px);
                         cstate.x = cx; // NB: to propagate the current parameters!
@@ -74,7 +75,7 @@ namespace nano
                                 break;
 
                         case ag_restart::function:
-                                if ((cfx = problem.value(cx)) > pfx)
+                                if ((cfx = problem.stoch_value(cx)) > pfx)
                                 {
                                         ctheta = 1;
                                 }

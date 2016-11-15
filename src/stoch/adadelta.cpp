@@ -19,6 +19,10 @@ namespace nano
         {
                 assert(problem.size() == x0.size());
 
+                // initial state
+                state_t istate(problem.size());
+                istate.stoch_update(problem, x0);
+
                 // second-order momentum of the gradient
                 momentum_vector_t<vector_t> gavg(momentum, x0.size());
 
@@ -40,11 +44,11 @@ namespace nano
                         davg.update(cstate.d.array().square());
 
                         // update solution
-                        cstate.update(problem, alpha);
+                        cstate.stoch_update(problem, alpha);
                 };
 
                 // OK, assembly the optimizer
-                return  stoch_loop(param, state_t(problem, x0), op_iter,
+                return  stoch_loop(param, istate, op_iter,
                         {{"momentum", momentum}, {"epsilon", epsilon}});
         }
 }

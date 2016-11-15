@@ -102,14 +102,14 @@ namespace nano
         private:
 
                 // attributes
-                std::reference_wrapper<const problem_t>  m_problem;
-                std::reference_wrapper<const state_t>    m_state;        ///< starting state for line-search
-                scalar_t         m_gphi0;
+                ref_problem_t   m_problem;
+                ref_state_t     m_state;        ///< starting state for line-search
+                scalar_t        m_gphi0;
 
-                scalar_t         m_alpha;       ///< line-search step (current estimate)
-                scalar_t         m_func;        ///< function value at alpha
-                vector_t         m_grad;        ///< function gradient at alpha
-                scalar_t         m_gphi;        ///< line-search function gradient at alpha
+                scalar_t        m_alpha;       ///< line-search step (current estimate)
+                scalar_t        m_func;        ///< function value at alpha
+                vector_t        m_grad;        ///< function gradient at alpha
+                scalar_t        m_gphi;        ///< line-search function gradient at alpha
         };
 
         ///

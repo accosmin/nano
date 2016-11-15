@@ -18,8 +18,12 @@ namespace nano
         {
                 assert(problem.size() == x0.size());
 
-                state_t istate(problem, x0);    // initial state
-                state_t pstate = istate;        // previous state
+                // initial state
+                state_t istate(problem.size());
+                istate.update(problem, x0);
+
+                // previous state
+                state_t pstate = istate;
 
                 // line-search initial step length
                 ls_init_t ls_init(from_params<ls_initializer>(config(), "ls_init"));

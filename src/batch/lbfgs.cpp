@@ -17,10 +17,14 @@ namespace nano
         {
                 assert(problem.size() == x0.size());
 
-                std::deque<vector_t> ss, ys;
-                state_t istate(problem, x0);             // initial state
-                state_t pstate = istate;                 // previous state
+                // initial state
+                state_t istate(problem.size());
+                istate.update(problem, x0);
 
+                // previous state
+                state_t pstate = istate;
+
+                std::deque<vector_t> ss, ys;
                 vector_t q, r;
 
                 // line-search initial step length

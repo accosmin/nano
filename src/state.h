@@ -8,6 +8,8 @@
 namespace nano
 {
         struct state_t;
+        using ref_state_t = std::reference_wrapper<const state_t>;
+
         class problem_t;
 
         bool operator<(const state_t& one, const state_t& two);
@@ -49,15 +51,30 @@ namespace nano
                 void update(const problem_t& problem, const vector_t& xx);
 
                 ///
+                /// \brief update current state (move to another position) using the stochastic approximation
+                ///
+                void stoch_update(const problem_t& problem, const vector_t& xx);
+
+                ///
                 /// \brief update current state (move t along the chosen direction)
                 ///
                 void update(const problem_t& problem, const scalar_t t);
+
+                ///
+                /// \brief update current state (move t along the chosen direction) using the stochastic approximation
+                ///
+                void stoch_update(const problem_t& problem, const scalar_t t);
 
                 ///
                 /// \brief update current state (move t along the chosen direction,
                 /// but the function value & gradient are already computed)
                 ///
                 void update(const problem_t& problem, const scalar_t t, const scalar_t ft, const vector_t& gt);
+
+                ///
+                /// \brief update statistics
+                ///
+                void update(const problem_t& problem);
 
                 ///
                 /// \brief check convergence: the gradient is relatively small
