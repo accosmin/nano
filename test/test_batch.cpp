@@ -64,7 +64,6 @@ static void check_function(const function_t& function)
                                   << ": x = [" << x0.transpose() << "]/[" << x.transpose() << "]"
                                   << ", f = " << f0 << "/" << f
                                   << ", g = " << g
-                                  << ", i = " << state.m_iterations
                                   << ", status = " << to_string(state.m_status) << ".\n";
 
                         // check function value decrease

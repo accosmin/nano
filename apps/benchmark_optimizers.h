@@ -16,7 +16,6 @@ namespace benchmark
         {
                 stats_t<scalar_t> m_crits;      ///< convergence criteria
                 stats_t<scalar_t> m_fails;      ///< #convergence failures
-                stats_t<scalar_t> m_iters;      ///< #iterations
                 stats_t<scalar_t> m_fcalls;     ///< #function value calls
                 stats_t<scalar_t> m_gcalls;     ///< #gradient calls
                 stats_t<scalar_t> m_speeds;     ///< convergence speed (actually the average decrease ratio of the convergence criteria)
@@ -46,7 +45,6 @@ namespace benchmark
                 table.header() << "cost"
                                << "|g|/(1+|f|)"
                                << "#fails"
-                               << "#iters"
                                << "#fcalls"
                                << "#gcalls"
                                << "speed";
@@ -59,7 +57,6 @@ namespace benchmark
                         table.append(name) << static_cast<size_t>(stat.m_fcalls.avg() + 2 * stat.m_gcalls.avg())
                                            << stat.m_crits.avg()
                                            << static_cast<size_t>(stat.m_fails.sum())
-                                           << static_cast<size_t>(stat.m_iters.avg())
                                            << static_cast<size_t>(stat.m_fcalls.avg())
                                            << static_cast<size_t>(stat.m_gcalls.avg())
                                            << stat.m_speeds.avg();
@@ -82,7 +79,6 @@ namespace benchmark
                 const auto trials = x0s.size();
 
                 scalars_t crits(trials);
-                scalars_t iters(trials);
                 scalars_t fails(trials);
                 scalars_t fcalls(trials);
                 scalars_t gcalls(trials);
@@ -101,7 +97,7 @@ namespace benchmark
                         const auto state = op(problem, x0);
 
                         const auto g = state.convergence_criteria();
-                        const auto cost = state.m_fcalls + 2 * state.m_gcalls;
+                        const auto cost = problem.fcalls() + 2 * problem.gcalls();
                         const auto speed = std::pow(g / g0, 1 / (1 + static_cast<scalar_t>(cost)));
 
                         // ignore out-of-domain solutions
@@ -109,10 +105,9 @@ namespace benchmark
                         {
                                 // update stats
                                 crits[t] = g;
-                                iters[t] = static_cast<scalar_t>(state.m_iterations);
                                 fails[t] = (state.m_status != opt_status::converged) ? 1 : 0;
-                                fcalls[t] = static_cast<scalar_t>(state.m_fcalls);
-                                gcalls[t] = static_cast<scalar_t>(state.m_gcalls);
+                                fcalls[t] = static_cast<scalar_t>(problem.fcalls());
+                                gcalls[t] = static_cast<scalar_t>(problem.gcalls());
                                 speeds[t] = speed;
                         }
                         else
@@ -125,7 +120,6 @@ namespace benchmark
                 // update per-problem statistics
                 optimizer_stat_t& stat = stats[name];
                 stat.m_crits(make_stats(crits, crits));
-                stat.m_iters(make_stats(iters, crits));
                 stat.m_fails(make_stats(fails, crits));
                 stat.m_speeds(make_stats(speeds, crits));
                 stat.m_fcalls(make_stats(fcalls, crits));
@@ -134,7 +128,6 @@ namespace benchmark
                 // update global statistics
                 optimizer_stat_t& gstat = gstats[name];
                 gstat.m_crits(stat.m_crits);
-                gstat.m_iters(stat.m_iters);
                 gstat.m_fails(stat.m_fails);
                 gstat.m_speeds(stat.m_speeds);
                 gstat.m_fcalls(stat.m_fcalls);

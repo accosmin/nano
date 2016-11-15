@@ -101,13 +101,9 @@ namespace nano
                 }
 
                 // attributes
-                vector_t        x, g, d;                ///< parameter, gradient, descent direction
-                scalar_t        f;                      ///< function value, step size
-
-                size_t          m_iterations;
-                size_t          m_fcalls;               ///< #function value evaluations
-                size_t          m_gcalls;               ///< #function gradient evaluations
-                opt_status      m_status;               ///<
+                vector_t        x, g, d;        ///< parameter, gradient, descent direction
+                scalar_t        f;              ///< function value, step size
+                opt_status      m_status;       ///< optimization status (todo: does it make sense to have it here?!)
         };
 
         ///
