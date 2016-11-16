@@ -38,6 +38,7 @@ namespace nano
                 ///
                 size_t begin() const { return m_begin; }
                 size_t end() const { return m_end; }
+                size_t size() const { return end() - begin(); }
 
                 const task_t& task() const { return m_task; }
                 const fold_t& fold() const { return m_fold; }
