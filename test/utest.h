@@ -26,7 +26,8 @@ int main(int, char* []) \
 #define NANO_END_MODULE() \
         if (n_failures > 0) \
         { \
-                std::cout << "  failed with " << n_failures << " errors!" << std::endl; \
+                std::cout << "  failed with " << n_failures << " errors in " << n_checks \
+                          << " check" << (n_checks > 0 ? "s" : "") << "!" << std::endl; \
                 exit(EXIT_FAILURE); \
         } \
         else \
