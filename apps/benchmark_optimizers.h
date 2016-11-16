@@ -41,7 +41,7 @@ namespace benchmark
                 assert(!ostats.empty());
 
                 // show global statistics
-                nano::table_t table(nano::align(table_name.empty() ? "optimizer" : table_name, 24));
+                nano::table_t table(nano::align(table_name.empty() ? "optimizer" : table_name, 32));
                 table.header() << "cost"
                                << "|g|/(1+|f|)"
                                << "#fails"
@@ -54,23 +54,23 @@ namespace benchmark
                         const auto& name = it.first;
                         const auto& stat = it.second;
 
-                        table.append(name) << static_cast<size_t>(stat.m_fcalls.avg() + 2 * stat.m_gcalls.avg())
-                                           << stat.m_crits.avg()
-                                           << static_cast<size_t>(stat.m_fails.sum())
-                                           << static_cast<size_t>(stat.m_fcalls.avg())
-                                           << static_cast<size_t>(stat.m_gcalls.avg())
-                                           << stat.m_speeds.avg();
+                        if (stat.m_fcalls)
+                        {
+                                table.append(nano::align(name, 36))
+                                        << static_cast<size_t>(stat.m_fcalls.avg() + 2 * stat.m_gcalls.avg())
+                                        << stat.m_crits.avg()
+                                        << static_cast<size_t>(stat.m_fails.sum())
+                                        << static_cast<size_t>(stat.m_fcalls.avg())
+                                        << static_cast<size_t>(stat.m_gcalls.avg())
+                                        << stat.m_speeds.avg();
+                        }
                 }
 
                 table.sort<scalar_t>(table_t::sorting::asc, {2, 0});
                 std::cout << table;
         }
 
-        template
-        <
-                typename toptimizer,
-                typename tostats
-        >
+        template <typename toptimizer, typename tostats>
         void benchmark_function(
                 const function_t& func, const std::vector<vector_t>& x0s,
                 const toptimizer& op, const std::string& name,
