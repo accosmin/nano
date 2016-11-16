@@ -17,7 +17,7 @@ static void test_function(const function_t& function)
         NANO_CHECK_GREATER_EQUAL(dims, function.min_dims());
         NANO_CHECK_GREATER_EQUAL(function.max_dims(), dims);
 
-        auto rgen = make_rng(scalar_t(-0.5), scalar_t(+0.5));
+        auto rgen = make_rng(scalar_t(-10.0), scalar_t(+10.0));
 
         bool is_convex = function.is_convex();
         for (size_t t = 0; t < trials; ++ t)
@@ -25,10 +25,13 @@ static void test_function(const function_t& function)
                 vector_t x0(dims), x1(dims);
                 tensor::set_random(rgen, x0, x1);
 
-                const auto problem = function.problem();
-                NANO_REQUIRE_EQUAL(problem.size(), dims);
-                NANO_CHECK_LESS(problem.grad_accuracy(x0), epsilon3<scalar_t>());
-                is_convex = is_convex && problem.is_convex(x0, x1, 10);
+                if (function.is_valid(x0) && function.is_valid(x1))
+                {
+                        const auto problem = function.problem();
+                        NANO_REQUIRE_EQUAL(problem.size(), dims);
+                        NANO_CHECK_LESS(problem.grad_accuracy(x0), epsilon3<scalar_t>());
+                        is_convex = is_convex && problem.is_convex(x0, x1, 100);
+                }
         }
 
         NANO_CHECK_EQUAL(is_convex, function.is_convex());
