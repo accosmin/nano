@@ -19,15 +19,17 @@ static void test_function(const function_t& function)
 
         auto rgen = make_rng(scalar_t(-10.0), scalar_t(+10.0));
 
+        const auto problem = function.problem();
+
         bool is_convex = function.is_convex();
         for (size_t t = 0; t < trials; ++ t)
         {
                 vector_t x0(dims), x1(dims);
                 tensor::set_random(rgen, x0, x1);
 
-                if (function.is_valid(x0) && function.is_valid(x1))
+                if (    function.is_valid(x0) && std::isfinite(problem.value(x0)) &&
+                        function.is_valid(x1) && std::isfinite(problem.value(x1)))
                 {
-                        const auto problem = function.problem();
                         NANO_REQUIRE_EQUAL(problem.size(), dims);
                         NANO_CHECK_LESS(problem.grad_accuracy(x0), epsilon3<scalar_t>());
                         is_convex = is_convex && problem.is_convex(x0, x1, 100);

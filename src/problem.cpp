@@ -153,9 +153,7 @@ namespace nano
                         const auto t2 = scalar_t(1) - t1;
 
                         const auto ft = value(t1 * x1 + t2 * x2);
-                        assert(std::isfinite(ft));
-
-                        if (ft > (t1 * f1 + t2 * f2) + epsilon0<scalar_t>())
+                        if (std::isfinite(ft) && ft > (1 + epsilon0<scalar_t>()) * (t1 * f1 + t2 * f2))
                         {
                                 return false;
                         }
