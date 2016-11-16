@@ -9,7 +9,10 @@ namespace nano
 {
         template <typename tcgd_update>
         batch_cgd_t<tcgd_update>::batch_cgd_t(const string_t& configuration) :
-                batch_optimizer_t(concat_params(configuration, "ls_init=init-quadratic,ls_strat=interpolation,c1=1e-4,c2=0.1"))
+                batch_optimizer_t(concat_params(configuration, to_params(
+                "ls_init", ls_initializer::quadratic,
+                "ls_strat", ls_strategy::interpolation,
+                "c1", 1e-4, "c2", 0.1)))
         {
         }
 
