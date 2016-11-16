@@ -26,7 +26,8 @@ namespace nano
                 // learning rate schedule
                 lrate_t lrate(alpha0, decay, param.m_epoch_size);
 
-                const auto op_iter = [&] (state_t& cstate)
+                // optimizer
+                const auto optimizer = [&] (state_t& cstate)
                 {
                         // learning rate
                         const scalar_t alpha = lrate.get();
@@ -40,7 +41,7 @@ namespace nano
                 };
 
                 // OK, assembly the optimizer
-                return  stoch_loop(param, istate, op_iter,
+                return  stoch_loop(param, problem, istate, optimizer,
                         {{"alpha0", alpha0}, {"decay", decay}});
         }
 }

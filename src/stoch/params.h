@@ -17,8 +17,8 @@ namespace nano
                 /// logging operator: op(state, configuration), returns true if the optimization should stop
                 using opulog_t = std::function<bool(const state_t&, const config_t&)>;
 
-                /// tunning operator: op(state, configuration), returns the evaluation for a configuration
-                using optlog_t = std::function<scalar_t(const state_t&, const config_t&)>;
+                /// tunning operator: op(state, configuration)
+                using optlog_t = std::function<void(const state_t&, const config_t&)>;
 
                 ///
                 /// \brief constructor
@@ -64,9 +64,12 @@ namespace nano
                 ///
                 /// \brief evaluate the current optimization state for tuning
                 ///
-                scalar_t tlog(const state_t& state, const config_t& config) const
+                void tlog(const state_t& state, const config_t& config) const
                 {
-                        return m_tlog ? m_tlog(state, config) : state.f;
+                        if (m_tlog)
+                        {
+                                m_tlog(state, config);
+                        }
                 }
 
                 // attributes

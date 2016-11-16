@@ -30,7 +30,8 @@ namespace nano
                 // first-order momentum of the update
                 momentum_vector_t<vector_t> davg(momentum, x0.size());
 
-                const auto op_iter = [&] (state_t& cstate)
+                // optimizer
+                const auto optimizer = [&] (state_t& cstate)
                 {
                         // learning rate
                         const scalar_t alpha = lrate.get();
@@ -44,8 +45,8 @@ namespace nano
                 };
 
                 // OK, assembly the optimizer
-                return  stoch_loop(param, istate, op_iter,
-                        {{"alpha0", alpha0}, {"momentum", momentum}});
+                return  stoch_loop(param, problem, istate, optimizer,
+                        {{"alpha0", alpha0}, {"decay", decay}, {"momentum", momentum}});
         }
 }
 

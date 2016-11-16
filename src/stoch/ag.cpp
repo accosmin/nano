@@ -18,8 +18,7 @@ namespace nano
         }
 
         template <ag_restart trestart>
-        state_t stoch_ag_base_t<trestart>::minimize(const stoch_params_t& param,
-                const problem_t& problem, const vector_t& x0,
+        state_t stoch_ag_base_t<trestart>::minimize(const stoch_params_t& param, const problem_t& problem, const vector_t& x0,
                 const scalar_t alpha0, const scalar_t q) const
         {
                 assert(problem.size() == x0.size());
@@ -54,7 +53,8 @@ namespace nano
                         return ptheta * (1 - ptheta) / (ptheta * ptheta + ctheta);
                 };
 
-                const auto op_iter = [&] (state_t& cstate)
+                // optimizer
+                const auto optimizer = [&] (state_t& cstate)
                 {
                         // learning rate
                         const scalar_t alpha = alpha0;
@@ -97,7 +97,7 @@ namespace nano
                 };
 
                 // OK, assembly the optimizer
-                return  stoch_loop(param, istate, op_iter,
+                return  stoch_loop(param, problem, istate, optimizer,
                         {{"alpha0", alpha0}, {"q", q}});
         }
 

@@ -63,18 +63,22 @@ namespace nano
         >
         auto stoch_loop(
                 const stoch_params_t& params,
+                const problem_t& problem,
                 const state_t& istate,
                 const toptimizer& optimizer,
                 const stoch_params_t::config_t& config)
         {
                 // current state
-                auto cstate = istate;
+                state_t cstate = istate;
+
+                // final state
+                state_t fstate = istate;
 
                 // for each epoch ...
                 for (size_t e = 0; e < params.m_max_epochs; ++ e)
                 {
                         // for each iteration ...
-                        for (size_t i = 0; i < params.m_epoch_size; ++ i)
+                        for (size_t i = 0; i < params.m_epoch_size && cstate; ++ i)
                         {
                                 optimizer(cstate);
                         }
@@ -82,28 +86,29 @@ namespace nano
                         // check divergence
                         if (!cstate)
                         {
+                                fstate.m_status = opt_status::failed;
                                 break;
                         }
 
-                        /*// check convergence (using the full gradient)
-                        cstate.update(problem, cstate.x);
-                        if (cstate.converged(params.m_epsilon))
+                        // check convergence (using the full gradient)
+                        fstate.update(problem, cstate.x);
+                        if (fstate.converged(params.m_epsilon))
                         {
-                                cstate.m_status = opt_status::converged;
+                                fstate.m_status = opt_status::converged;
                                 break;
-                        }*/
+                        }
 
                         // log the current state & check the stopping criteria
-                        params.tlog(cstate, config);
-                        if (!params.ulog(cstate, config))
+                        params.tlog(fstate, config);
+                        if (!params.ulog(fstate, config))
                         {
-                                cstate.m_status = opt_status::stopped;
+                                fstate.m_status = opt_status::stopped;
                                 break;
                         }
                 }
 
                 // OK
-                return cstate;
+                return fstate;
         }
 }
 

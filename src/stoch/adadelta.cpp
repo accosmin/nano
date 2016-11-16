@@ -29,7 +29,8 @@ namespace nano
                 // second-order momentum of the step updates
                 momentum_vector_t<vector_t> davg(momentum, x0.size());
 
-                const auto op_iter = [&] (state_t& cstate)
+                // optimizer
+                const auto optimizer = [&] (state_t& cstate)
                 {
                         // learning rate
                         const scalar_t alpha = 1;
@@ -48,7 +49,7 @@ namespace nano
                 };
 
                 // OK, assembly the optimizer
-                return  stoch_loop(param, istate, op_iter,
+                return  stoch_loop(param, problem, istate, optimizer,
                         {{"momentum", momentum}, {"epsilon", epsilon}});
         }
 }

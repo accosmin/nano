@@ -41,11 +41,6 @@ namespace nano
                 explicit state_t(const tensor_size_t size = 0);
 
                 ///
-                /// \brief constructor
-                ///
-                state_t(const problem_t& problem, const vector_t& x0);
-
-                ///
                 /// \brief update current state (move to another position)
                 ///
                 void update(const problem_t& problem, const vector_t& xx);

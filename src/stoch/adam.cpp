@@ -32,7 +32,8 @@ namespace nano
                 // second-order momentum of the gradient
                 momentum_vector_t<vector_t> v(beta2, x0.size());
 
-                const auto op_iter = [&] (state_t& cstate)
+                // optimizer
+                const auto optimizer = [&] (state_t& cstate)
                 {
                         // learning rate
                         const scalar_t alpha = alpha0;
@@ -48,7 +49,7 @@ namespace nano
                 };
 
                 // OK, assembly the optimizer
-                return  stoch_loop(param, istate, op_iter,
+                return  stoch_loop(param, problem, istate, optimizer,
                         {{"alpha0", alpha0}, {"epsilon", epsilon}, {"beta1", beta1}, {"beta2", beta2}});
         }
 }

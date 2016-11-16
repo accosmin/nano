@@ -10,13 +10,6 @@ namespace nano
         {
         }
 
-        state_t::state_t(const problem_t& problem, const vector_t& x0) :
-                state_t(problem.size())
-        {
-                x = x0;
-                f = problem.vgrad(x, g);
-        }
-
         void state_t::update(const problem_t& problem, const vector_t& xx)
         {
                 x = xx;

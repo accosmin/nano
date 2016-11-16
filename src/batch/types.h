@@ -36,9 +36,9 @@ namespace nano
         {
                 return
                 {
-                        { ls_initializer::unit,          "init-unit" },
-                        { ls_initializer::quadratic,     "init-quadratic" },
-                        { ls_initializer::consistent,    "init-consistent" }
+                        { ls_initializer::unit,          "unit" },
+                        { ls_initializer::quadratic,     "quadratic" },
+                        { ls_initializer::consistent,    "consistent" }
                 };
         }
 
@@ -47,9 +47,9 @@ namespace nano
         {
                 return
                 {
-                        { ls_strategy::backtrack_armijo,         "backtrack-Armijo" },
-                        { ls_strategy::backtrack_wolfe,          "backtrack-Wolfe" },
-                        { ls_strategy::backtrack_strong_wolfe,   "backtrack-strong-Wolfe" },
+                        { ls_strategy::backtrack_armijo,         "back-Armijo" },
+                        { ls_strategy::backtrack_wolfe,          "back-Wolfe" },
+                        { ls_strategy::backtrack_strong_wolfe,   "back-sWolfe" },
                         { ls_strategy::interpolation,            "interpolation" },
                         { ls_strategy::cg_descent,               "cgdescent" }
                 };
