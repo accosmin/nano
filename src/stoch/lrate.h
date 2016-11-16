@@ -36,7 +36,8 @@ namespace nano
                 ///
                 scalar_t get()
                 {
-                        return m_alpha0 * std::pow(m_decay, static_cast<scalar_t>(m_iteration ++ / m_epoch_size));
+                        const auto power = static_cast<scalar_t>(m_iteration ++) / static_cast<scalar_t>(m_epoch_size);
+                        return m_alpha0 * std::pow(m_decay, power);
                 }
 
                 // attributes
