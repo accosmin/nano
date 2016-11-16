@@ -30,6 +30,7 @@ namespace nano
                         if (cstate.converged(params.m_epsilon))
                         {
                                 cstate.m_status = opt_status::converged;
+                                params.ulog(cstate);
                                 break;
                         }
 

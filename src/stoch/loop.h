@@ -95,6 +95,8 @@ namespace nano
                         if (fstate.converged(params.m_epsilon))
                         {
                                 fstate.m_status = opt_status::converged;
+                                params.tlog(fstate, config);
+                                params.ulog(fstate, config);
                                 break;
                         }
 
