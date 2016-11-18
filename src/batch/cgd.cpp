@@ -17,7 +17,20 @@ namespace nano
         }
 
         template <typename tcgd_update>
-        state_t batch_cgd_t<tcgd_update>::minimize(const batch_params_t& param, const problem_t& problem, const vector_t& x0) const
+        state_t batch_cgd_t<tcgd_update>::minimize(const batch_params_t& param,
+                const problem_t& problem, const vector_t& x0) const
+        {
+                return  minimize(param, problem, x0,
+                        from_params<ls_initializer>(config(), "ls_init"),
+                        from_params<ls_strategy>(config(), "ls_strat"),
+                        from_params<scalar_t>(config(), "c1"),
+                        from_params<scalar_t>(config(), "c2"));
+        }
+
+        template <typename tcgd_update>
+        state_t batch_cgd_t<tcgd_update>::minimize(const batch_params_t& param,
+                const problem_t& problem, const vector_t& x0,
+                const ls_initializer linit, const ls_strategy lstrat, const scalar_t c1, const scalar_t c2) const
         {
                 assert(problem.size() == x0.size());
 
@@ -29,12 +42,10 @@ namespace nano
                 state_t pstate = istate;
 
                 // line-search initial step length
-                ls_init_t ls_init(from_params<ls_initializer>(config(), "ls_init"));
+                ls_init_t ls_init(linit);
 
                 // line-search step
-                const auto c1 = from_params<scalar_t>(config(), "c1");
-                const auto c2 = from_params<scalar_t>(config(), "c2");
-                ls_strategy_t ls_step(from_params<ls_strategy>(config(), "ls_strat"), c1, c2);
+                ls_strategy_t ls_step(lstrat, c1, c2);
 
                 // CGD direction strategy
                 const tcgd_update op_update{};

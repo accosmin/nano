@@ -16,7 +16,10 @@ namespace nano
         {
                 explicit batch_cgd_t(const string_t& configuration = string_t());
 
-                virtual state_t minimize(const batch_params_t&, const problem_t&, const vector_t& x0) const override;
+                state_t minimize(const batch_params_t&, const problem_t&, const vector_t& x0) const override;
+
+                state_t minimize(const batch_params_t&, const problem_t&, const vector_t& x0,
+                        const ls_initializer, const ls_strategy, const scalar_t c1, const scalar_t c2) const;
         };
 
         // create various CGD algorithms
