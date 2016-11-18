@@ -5,7 +5,6 @@
 #include "text/to_string.h"
 #include "functions/test.h"
 #include "batch_optimizer.h"
-#include <iomanip>
 
 using namespace nano;
 
@@ -41,10 +40,10 @@ static void check_function(const function_t& function)
                         const auto& x0 = x0s[t];
                         const auto f0 = problem.value(x0);
                         const auto g_thres = epsilon2<scalar_t>();
-                        const auto x_thres = std::cbrt(g_thres);
+                        const auto x_thres = std::sqrt(epsilon3<scalar_t>());
 
                         // optimize
-                        const auto params = batch_params_t(iterations, g_thres / 2);
+                        const auto params = batch_params_t(iterations, epsilon0<scalar_t>());
                         const auto state = optimizer->minimize(params, problem, x0);
 
                         const auto x = state.x;
@@ -60,17 +59,14 @@ static void check_function(const function_t& function)
 
                         std::cout << function.name() << ", " << id
                                   << " [" << (t + 1) << "/" << trials << "]"
-                                  << std::setprecision(12)
                                   << ": x = [" << x0.transpose() << "]/[" << x.transpose() << "]"
                                   << ", f = " << f0 << "/" << f
-                                  << ", g = " << g
-                                  << ", status = " << to_string(state.m_status) << ".\n";
+                                  << ", g = " << g << ".\n";
 
                         // check function value decrease
                         NANO_CHECK_LESS_EQUAL(f, f0);
 
                         // check convergence
-                        NANO_CHECK(state.m_status == opt_status::converged || g < g_thres);
                         NANO_CHECK_LESS(g, g_thres);
 
                         // check local minimas (if any known)

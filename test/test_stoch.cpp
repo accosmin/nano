@@ -36,8 +36,6 @@ static void check_function(const function_t& function)
                         continue;
                 }
 
-                const auto is_adadelta = id == "adadelta";
-
                 const auto optimizer = get_stoch_optimizers().get(id);
 
                 size_t out_of_domain = 0;
@@ -48,12 +46,11 @@ static void check_function(const function_t& function)
 
                         const auto& x0 = x0s[t];
                         const auto f0 = problem.value(x0);
-                        const auto eps = epsilon3<scalar_t>();
-                        const auto g_thres = is_adadelta ? std::sqrt(eps) : eps;
-                        const auto x_thres = std::cbrt(g_thres);
+                        const auto g_thres = epsilon2<scalar_t>();
+                        const auto x_thres = epsilon3<scalar_t>();
 
                         // optimize
-                        const auto params = stoch_params_t(epochs, epoch_size, g_thres);
+                        const auto params = stoch_params_t(epochs, epoch_size, epsilon0<scalar_t>());
                         const auto state = optimizer->minimize(params, problem, x0);
 
                         const auto x = state.x;
@@ -74,7 +71,7 @@ static void check_function(const function_t& function)
                                   << ", g = " << g << ".\n";
 
                         // check function value decrease
-                        NANO_CHECK_LESS_EQUAL(f, f0 + epsilon0<scalar_t>());
+                        NANO_CHECK_LESS_EQUAL(f, f0);
 
                         // check convergence
                         NANO_CHECK_LESS_EQUAL(g, g_thres);
