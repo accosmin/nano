@@ -35,10 +35,17 @@ do
         shift
 done
 
+# check arguments
+if [ "${do_tests}" == "ON" ] && [ "${do_compile}" == "OFF" ]
+then
+        echo "enabling compilation checks (needed by unit tests)..."
+        echo
+        do_compile="ON"
+fi
+
 compilers="${compilers} --compiler;g++-4.9"
 compilers="${compilers} --compiler;g++-5"
 compilers="${compilers} --compiler;g++-6"
-compilers="${compilers} --compiler;clang++-3.5;--libc++"
 compilers="${compilers} --compiler;clang++-3.6;--libc++"
 compilers="${compilers} --compiler;clang++-3.7;--libc++"
 compilers="${compilers} --compiler;clang++-3.8;--libc++"
