@@ -79,6 +79,7 @@ namespace nano
 
         ///
         /// \brief clamp value in the [min_value, max_value] range
+        /// \todo replace this with std::clamp when moving to C++17
         ///
         template
         <

@@ -2,7 +2,6 @@
 
 #include "params.h"
 #include "math/tune.h"
-#include <experimental/tuple>
 
 namespace nano
 {
@@ -29,6 +28,24 @@ namespace nano
                 return make_finite_space(scalar_t(1e-4), scalar_t(1e-6));
         }
 
+        namespace detail
+        {
+                /// reference: http://www.cppsamples.com/common-tasks/apply-tuple-to-function.html
+                /// \todo replace this with std::apply when moving to C++17
+                template<typename F, typename Tuple, size_t ...S >
+                decltype(auto) apply_tuple_impl(F&& fn, Tuple&& t, std::index_sequence<S...>)
+                {
+                        return std::forward<F>(fn)(std::get<S>(std::forward<Tuple>(t))...);
+                }
+
+                template<typename F, typename Tuple>
+                decltype(auto) apply_from_tuple(F&& fn, Tuple&& t)
+                {
+                        std::size_t constexpr tSize             = std::tuple_size<typename std::remove_reference<Tuple>::type>::value;
+                        return apply_tuple_impl(std::forward<F>(fn), std::forward<Tuple>(t), std::make_index_sequence<tSize>());
+                }
+        }
+
         ///
         /// \brief tune the given stochastic optimizer.
         ///
@@ -47,7 +64,7 @@ namespace nano
                 {
                         return optimizer->minimize(param.tuned(), problem, config.optimum().x, hypers...);
                 };
-                return std::experimental::apply(done_op, config.params());
+                return detail::apply_from_tuple(done_op, config.params());
         }
 
         ///
