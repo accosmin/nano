@@ -88,13 +88,13 @@ NANO_CASE(regression)
         add_trainer("batch", to_params("opt", "lbfgs", "epochs", epochs, "policy", policy));
         add_trainer("stoch", to_params("opt", "sg", "epochs", epochs, "min_batch", batch, "max_batch", batch, "policy", policy));
         add_trainer("stoch", to_params("opt", "sgm", "epochs", epochs, "min_batch", batch, "max_batch", batch, "policy", policy));
-        //add_trainer("stoch", to_params("opt", "ngd", "epochs", epochs, "min_batch", batch, "max_batch", batch, "policy", policy));
+        add_trainer("stoch", to_params("opt", "ngd", "epochs", epochs, "min_batch", batch, "max_batch", batch, "policy", policy));
         //add_trainer("stoch", to_params("opt", "adam", "epochs", epochs, "min_batch", batch, "max_batch", batch, "policy", policy));
         //add_trainer("stoch", to_params("opt", "adagrad", "epochs", epochs, "min_batch", batch, "max_batch", batch, "policy", policy));
         //add_trainer("stoch", to_params("opt", "adadelta", "epochs", epochs, "min_batch", batch, "max_batch", batch, "policy", policy));
         //add_trainer("stoch", to_params("opt", "ag", "epochs", epochs, "min_batch", batch, "max_batch", batch, "policy", policy));
         //add_trainer("stoch", to_params("opt", "agfr", "epochs", epochs, "min_batch", batch, "max_batch", batch, "policy", policy));
-        add_trainer("stoch", to_params("opt", "aggr", "epochs", epochs, "min_batch", batch, "max_batch", batch, "policy", policy));
+        //add_trainer("stoch", to_params("opt", "aggr", "epochs", epochs, "min_batch", batch, "max_batch", batch, "policy", policy));
 
         // check training
         for (const auto& loss : losses)
@@ -155,13 +155,13 @@ NANO_CASE(classification)
         add_trainer("batch", to_params("opt", "lbfgs", "epochs", epochs, "policy", policy));
         add_trainer("stoch", to_params("opt", "sg", "epochs", epochs, "min_batch", batch, "max_batch", batch, "policy", policy));
         add_trainer("stoch", to_params("opt", "sgm", "epochs", epochs, "min_batch", batch, "max_batch", batch, "policy", policy));
-        //add_trainer("stoch", to_params("opt", "ngd", "epochs", epochs, "min_batch", batch, "max_batch", batch, "policy", policy));
+        add_trainer("stoch", to_params("opt", "ngd", "epochs", epochs, "min_batch", batch, "max_batch", batch, "policy", policy));
         //add_trainer("stoch", to_params("opt", "adam", "epochs", epochs, "min_batch", batch, "max_batch", batch, "policy", policy));
         //add_trainer("stoch", to_params("opt", "adagrad", "epochs", epochs, "min_batch", batch, "max_batch", batch, "policy", policy));
         //add_trainer("stoch", to_params("opt", "adadelta", "epochs", epochs, "min_batch", batch, "max_batch", batch, "policy", policy));
         //add_trainer("stoch", to_params("opt", "ag", "epochs", epochs, "min_batch", batch, "max_batch", batch, "policy", policy));
         //add_trainer("stoch", to_params("opt", "agfr", "epochs", epochs, "min_batch", batch, "max_batch", batch, "policy", policy));
-        add_trainer("stoch", to_params("opt", "aggr", "epochs", epochs, "min_batch", batch, "max_batch", batch, "policy", policy));
+        //add_trainer("stoch", to_params("opt", "aggr", "epochs", epochs, "min_batch", batch, "max_batch", batch, "policy", policy));
 
         // check training
         for (const auto& loss : losses)
