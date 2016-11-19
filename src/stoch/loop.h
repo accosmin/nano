@@ -15,7 +15,7 @@ namespace nano
 
         inline auto make_decays()
         {
-                return make_finite_space(scalar_t(0.1), scalar_t(0.2), scalar_t(0.5), scalar_t(0.75), scalar_t(1.0));
+                return make_finite_space(scalar_t(0.75), scalar_t(0.90), scalar_t(1.0));
         }
 
         inline auto make_momenta()
@@ -41,7 +41,7 @@ namespace nano
                 template<typename F, typename Tuple>
                 decltype(auto) apply_from_tuple(F&& fn, Tuple&& t)
                 {
-                        std::size_t constexpr tSize             = std::tuple_size<typename std::remove_reference<Tuple>::type>::value;
+                        std::size_t constexpr tSize = std::tuple_size<typename std::remove_reference<Tuple>::type>::value;
                         return apply_tuple_impl(std::forward<F>(fn), std::forward<Tuple>(t), std::make_index_sequence<tSize>());
                 }
         }
