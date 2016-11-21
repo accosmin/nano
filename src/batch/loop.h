@@ -1,6 +1,7 @@
 #pragma once
 
 #include "params.h"
+#include "problem.h"
 
 namespace nano
 {
@@ -17,11 +18,13 @@ namespace nano
         >
         auto batch_loop(
                 const batch_params_t& params,
-                const state_t& istate,
+                const problem_t& problem,
+                const vector_t& x0,
                 const toptimizer& optimizer)
         {
                 // current state
-                auto cstate = istate;
+                state_t cstate(problem.size());
+                cstate.update(problem, x0);
 
                 // for each iteration ...
                 for (size_t i = 0; i < params.m_max_iterations; i ++)

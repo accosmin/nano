@@ -30,12 +30,8 @@ namespace nano
         {
                 assert(problem.size() == x0.size());
 
-                // initial state
-                state_t istate(problem.size());
-                istate.update(problem, x0);
-
                 // previous state
-                state_t pstate = istate;
+                state_t pstate(problem.size());
 
                 std::deque<vector_t> ss, ys;
                 vector_t q, r;
@@ -112,7 +108,7 @@ namespace nano
                 };
 
                 // OK, assembly the optimizer
-                return batch_loop(param, istate, op);
+                return batch_loop(param, problem, x0, op);
         }
 }
 
