@@ -8,7 +8,6 @@ list(APPEND libnano_sources
         ${CMAKE_CURRENT_SOURCE_DIR}/quadratic.h
         ${CMAKE_CURRENT_SOURCE_DIR}/random.h
         ${CMAKE_CURRENT_SOURCE_DIR}/stats.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/softmax.h
         ${CMAKE_CURRENT_SOURCE_DIR}/tune.h
         ${CMAKE_CURRENT_SOURCE_DIR}/tune_result.h
         ${CMAKE_CURRENT_SOURCE_DIR}/tune_grid_space.h
