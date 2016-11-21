@@ -23,18 +23,14 @@ namespace nano
         {
                 assert(problem.size() == x0.size());
 
-                // initial state
-                state_t istate(problem.size());
-                istate.stoch_update(problem, x0);
-
                 // current & previous iterations
-                vector_t cx = istate.x;
-                vector_t px = istate.x;
-                vector_t cy = istate.x;
-                vector_t py = istate.x;
+                vector_t cx = x0;
+                vector_t px = x0;
+                vector_t cy = x0;
+                vector_t py = x0;
 
-                scalar_t cfx = istate.f;
-                scalar_t pfx = istate.f;
+                scalar_t cfx = 0;
+                scalar_t pfx = std::numeric_limits<scalar_t>::max();
 
                 scalar_t ptheta = 1;
                 scalar_t ctheta = 1;
@@ -97,7 +93,7 @@ namespace nano
                 };
 
                 // OK, assembly the optimizer
-                return  stoch_loop(param, problem, istate, optimizer,
+                return  stoch_loop(param, problem, x0, optimizer,
                         {{"alpha0", alpha0}, {"q", q}});
         }
 

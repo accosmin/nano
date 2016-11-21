@@ -19,10 +19,6 @@ namespace nano
         {
                 assert(problem.size() == x0.size());
 
-                // initial state
-                state_t istate(problem.size());
-                istate.stoch_update(problem, x0);
-
                 const scalar_t beta1 = scalar_t(0.900);
                 const scalar_t beta2 = scalar_t(0.999);
 
@@ -49,7 +45,7 @@ namespace nano
                 };
 
                 // OK, assembly the optimizer
-                return  stoch_loop(param, problem, istate, optimizer,
+                return  stoch_loop(param, problem, x0, optimizer,
                         {{"alpha0", alpha0}, {"epsilon", epsilon}, {"beta1", beta1}, {"beta2", beta2}});
         }
 }

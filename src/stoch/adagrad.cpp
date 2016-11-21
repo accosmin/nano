@@ -18,10 +18,6 @@ namespace nano
         {
                 assert(problem.size() == x0.size());
 
-                // initial state
-                state_t istate(problem.size());
-                istate.stoch_update(problem, x0);
-
                 // second-order gradient momentum
                 vector_t gsum2 = vector_t::Zero(x0.size());
 
@@ -41,7 +37,7 @@ namespace nano
                 };
 
                 // OK, assembly the optimizer
-                return  stoch_loop(param, problem, istate, optimizer,
+                return  stoch_loop(param, problem, x0, optimizer,
                         {{"alpha0", alpha0}, {"epsilon", epsilon}});
         }
 }

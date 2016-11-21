@@ -1,6 +1,7 @@
 #pragma once
 
 #include "params.h"
+#include "problem.h"
 #include "math/tune.h"
 
 namespace nano
@@ -74,22 +75,20 @@ namespace nano
         ///     - the user canceled the optimization (using the logging function)
         /// NB: convergence to a critical point is not guaranteed in general.
         ///
-        template
-        <
-                typename toptimizer     ///< optimization method
-        >
+        template <typename toptimizer>
         auto stoch_loop(
                 const stoch_params_t& params,
                 const problem_t& problem,
-                const state_t& istate,
+                const vector_t& x0,
                 const toptimizer& optimizer,
                 const stoch_params_t::config_t& config)
         {
                 // current state
-                state_t cstate = istate;
+                state_t cstate(problem.size());
+                cstate.stoch_update(problem, x0);
 
                 // final state
-                state_t fstate = istate;
+                state_t fstate = cstate;
 
                 // for each epoch ...
                 for (size_t e = 0; e < params.m_max_epochs; ++ e)
