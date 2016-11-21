@@ -21,7 +21,6 @@ static void test_function(const function_t& function)
 
         const auto problem = function.problem();
 
-        bool is_convex = function.is_convex();
         for (size_t t = 0; t < trials; ++ t)
         {
                 vector_t x0(dims), x1(dims);
@@ -32,11 +31,12 @@ static void test_function(const function_t& function)
                 {
                         NANO_REQUIRE_EQUAL(problem.size(), dims);
                         NANO_CHECK_LESS(problem.grad_accuracy(x0), epsilon3<scalar_t>());
-                        is_convex = is_convex && problem.is_convex(x0, x1, 100);
+                        if (function.is_convex())
+                        {
+                                NANO_CHECK(problem.is_convex(x0, x1, 100));
+                        }
                 }
         }
-
-        NANO_CHECK_EQUAL(is_convex, function.is_convex());
 }
 
 NANO_BEGIN_MODULE(test_functions)
