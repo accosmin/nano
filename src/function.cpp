@@ -1,24 +1,24 @@
-#include "problem.h"
+#include "function.h"
 #include "math/epsilon.h"
 
 namespace nano
 {
-        problem_t::problem_t(
+        function_t::function_t(
                 const opsize_t& opsize,
                 const opfval_t& opfval,
                 const opgrad_t& opgrad) :
-                problem_t(opsize, opfval, opgrad, opfval, opgrad, 1)
+                function_t(opsize, opfval, opgrad, opfval, opgrad, 1)
         {
         }
 
-        problem_t::problem_t(
+        function_t::function_t(
                 const opsize_t& opsize,
                 const opfval_t& opfval) :
-                problem_t(opsize, opfval, opgrad_t(), opfval, opgrad_t(), 1)
+                function_t(opsize, opfval, opgrad_t(), opfval, opgrad_t(), 1)
         {
         }
 
-        problem_t::problem_t(
+        function_t::function_t(
                 const opsize_t& opsize,
                 const opfval_t& opfval,
                 const opgrad_t& opgrad,
@@ -36,20 +36,20 @@ namespace nano
         {
         }
 
-        void problem_t::clear() const
+        void function_t::clear() const
         {
                 m_fcalls = m_stoch_fcalls = 0;
                 m_gcalls = m_stoch_gcalls = 0;
         }
 
-        tensor_size_t problem_t::size() const
+        tensor_size_t function_t::size() const
         {
                 assert(m_opsize);
 
                 return m_opsize();
         }
 
-        scalar_t problem_t::value(const vector_t& x) const
+        scalar_t function_t::value(const vector_t& x) const
         {
                 assert(m_opfval);
 
@@ -57,7 +57,7 @@ namespace nano
                 return m_opfval(x);
         }
 
-        scalar_t problem_t::stoch_value(const vector_t& x) const
+        scalar_t function_t::stoch_value(const vector_t& x) const
         {
                 assert(m_stoch_opfval);
                 assert(x.size() == size());
@@ -66,7 +66,7 @@ namespace nano
                 return m_stoch_opfval(x);
         }
 
-        scalar_t problem_t::vgrad(const vector_t& x, vector_t& g) const
+        scalar_t function_t::vgrad(const vector_t& x, vector_t& g) const
         {
                 assert(x.size() == size());
 
@@ -83,7 +83,7 @@ namespace nano
                 }
         }
 
-        scalar_t problem_t::stoch_vgrad(const vector_t& x, vector_t& g) const
+        scalar_t function_t::stoch_vgrad(const vector_t& x, vector_t& g) const
         {
                 assert(m_stoch_opgrad);
                 assert(x.size() == size());
@@ -93,7 +93,7 @@ namespace nano
                 return m_stoch_opgrad(x, g);
         }
 
-        scalar_t problem_t::grad_accuracy(const vector_t& x) const
+        scalar_t function_t::grad_accuracy(const vector_t& x) const
         {
                 assert(m_stoch_opgrad);
                 assert(x.size() == size());
@@ -108,7 +108,7 @@ namespace nano
                         (scalar_t(1) + std::fabs(fx));
         }
 
-        void problem_t::eval_grad(const vector_t& x, vector_t& g) const
+        void function_t::eval_grad(const vector_t& x, vector_t& g) const
         {
                 // accuracy epsilon as defined in:
                 //      see "Numerical optimization", Nocedal & Wright, 2nd edition, p.197
@@ -137,7 +137,7 @@ namespace nano
                 }
         }
 
-        bool problem_t::is_convex(const vector_t& x1, const vector_t& x2, const int steps) const
+        bool function_t::is_convex(const vector_t& x1, const vector_t& x2, const int steps) const
         {
                 assert(steps > 2);
 
@@ -162,14 +162,14 @@ namespace nano
                 return true;
         }
 
-        size_t problem_t::fcalls() const
+        size_t function_t::fcalls() const
         {
-                return m_fcalls + m_stoch_fcalls / m_stoch_ratio;
+                return m_fcalls + m_stoch_fcalls / stoch_ratio();
         }
 
-        size_t problem_t::gcalls() const
+        size_t function_t::gcalls() const
         {
-                return m_gcalls + m_stoch_gcalls / m_stoch_ratio;
+                return m_gcalls + m_stoch_gcalls / stoch_ratio();
         }
 }
 
