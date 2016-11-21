@@ -3,7 +3,7 @@
 compiler=$CXX
 build_dir=""
 build_type="release"
-generator="ninja"
+generator="make"
 install_dir="/usr/local/"
 install="OFF"
 
