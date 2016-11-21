@@ -25,7 +25,7 @@ namespace nano
                 istate.stoch_update(problem, x0);
 
                 // learning rate schedule
-                lrate_t lrate(alpha0, decay, param.m_epoch_size);
+                lrate_t lrate(alpha0, decay);
 
                 // first-order momentum of the update
                 momentum_vector_t<vector_t> davg(momentum, x0.size());

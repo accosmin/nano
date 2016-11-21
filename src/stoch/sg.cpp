@@ -24,7 +24,7 @@ namespace nano
                 istate.stoch_update(problem, x0);
 
                 // learning rate schedule
-                lrate_t lrate(alpha0, decay, param.m_epoch_size);
+                lrate_t lrate(alpha0, decay);
 
                 // optimizer
                 const auto optimizer = [&] (state_t& cstate)
