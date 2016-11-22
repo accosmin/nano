@@ -29,19 +29,19 @@ namespace nano
 {
         static void append(rfunction_t&& func, const tensor_size_t dims, rfunctions_t& funcs)
         {
-                if (func->min_dims() <= dims && dims <= func->max_dims())
+                if (func->min_size() <= dims && dims <= func->max_size())
                 {
                         funcs.push_back(std::move(func));
                 }
         }
 
-        rfunctions_t make_functions(const tensor_size_t min_dims, const tensor_size_t max_dims)
+        rfunctions_t make_functions(const tensor_size_t min_size, const tensor_size_t max_size)
         {
-                assert(min_dims >= 1);
-                assert(min_dims <= max_dims);
+                assert(min_size >= 1);
+                assert(min_size <= max_size);
 
                 rfunctions_t funcs;
-                for (tensor_size_t dims = min_dims; dims <= max_dims; )
+                for (tensor_size_t dims = min_size; dims <= max_size; )
                 {
                         append(std::make_unique<function_beale_t>(), dims, funcs);
                         append(std::make_unique<function_booth_t>(), dims, funcs);
@@ -51,9 +51,9 @@ namespace nano
                         append(std::make_unique<function_3hump_camel_t>(), dims, funcs);
                         append(std::make_unique<function_goldstein_price_t>(), dims, funcs);
                         append(std::make_unique<function_himmelblau_t>(), dims, funcs);
-                        append(std::make_unique<function_bohachevsky_t>(function_bohachevsky_t::btype::one), dims, funcs);
-                        append(std::make_unique<function_bohachevsky_t>(function_bohachevsky_t::btype::two), dims, funcs);
-                        append(std::make_unique<function_bohachevsky_t>(function_bohachevsky_t::btype::three), dims, funcs);
+                        append(std::make_unique<function_bohachevsky1_t>(), dims, funcs);
+                        append(std::make_unique<function_bohachevsky2_t>(), dims, funcs);
+                        append(std::make_unique<function_bohachevsky3_t>(), dims, funcs);
 
                         append(std::make_unique<function_trid_t>(dims), dims, funcs);
                         append(std::make_unique<function_qing_t>(dims), dims, funcs);
@@ -87,9 +87,9 @@ namespace nano
                 return funcs;
         }
 
-        rfunctions_t make_convex_functions(const tensor_size_t min_dims, const tensor_size_t max_dims)
+        rfunctions_t make_convex_functions(const tensor_size_t min_size, const tensor_size_t max_size)
         {
-                auto funcs = make_functions(min_dims, max_dims);
+                auto funcs = make_functions(min_size, max_size);
 
                 funcs.erase(
                         std::remove_if(funcs.begin(), funcs.end(), [] (const auto& func) { return !func->is_convex(); }),

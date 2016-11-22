@@ -1,7 +1,7 @@
 #pragma once
 
-#include "problem.h"
 #include "manager.h"
+#include "function.h"
 #include "batch/params.h"
 
 namespace nano
@@ -28,8 +28,8 @@ namespace nano
                 explicit batch_optimizer_t(const string_t& configuration = string_t()) : clonable_t(configuration) {}
 
                 ///
-                /// \brief minimize starting from the initial point x0.
+                /// \brief minimize starting from the initial point x0
                 ///
-                virtual state_t minimize(const batch_params_t&, const problem_t&, const vector_t& x0) const = 0;
+                virtual state_t minimize(const batch_params_t&, const function_t&, const vector_t& x0) const = 0;
         };
 }

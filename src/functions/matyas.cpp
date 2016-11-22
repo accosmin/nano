@@ -1,63 +1,22 @@
-#include "util.h"
 #include "matyas.h"
 
 namespace nano
 {
-        std::string function_matyas_t::name() const
+        function_matyas_t::function_matyas_t() :
+                test_function_t("Matyas", 2, 2, 2, convexity::yes, 10)
         {
-                return "Matyas";
         }
 
-        problem_t function_matyas_t::problem() const
+        scalar_t function_matyas_t::vgrad(const vector_t& x, vector_t* gx) const
         {
-                const auto fn_size = [=] ()
+                const auto a = x(0), b = x(1);
+
+                if (gx)
                 {
-                        return 2;
-                };
+                        (*gx)(0) = scalar_t(0.26) * 2 * a - scalar_t(0.48) * b;
+                        (*gx)(1) = scalar_t(0.26) * 2 * b - scalar_t(0.48) * a;
+                }
 
-                const auto fn_fval = [=] (const vector_t& x)
-                {
-                        const auto a = x(0), b = x(1);
-
-                        return scalar_t(0.26) * (a * a + b * b) - scalar_t(0.48) * a * b;
-                };
-
-                const auto fn_grad = [=] (const vector_t& x, vector_t& gx)
-                {
-                        const auto a = x(0), b = x(1);
-
-                        gx.resize(2);
-                        gx(0) = scalar_t(0.26) * 2 * a - scalar_t(0.48) * b;
-                        gx(1) = scalar_t(0.26) * 2 * b - scalar_t(0.48) * a;
-
-                        return fn_fval(x);
-                };
-
-                return {fn_size, fn_fval, fn_grad};
-        }
-
-        bool function_matyas_t::is_valid(const vector_t& x) const
-        {
-                return util::norm(x) < scalar_t(10);
-        }
-
-        bool function_matyas_t::is_minima(const vector_t& x, const scalar_t epsilon) const
-        {
-                return util::distance(x, vector_t::Zero(2)) < epsilon;
-        }
-
-        bool function_matyas_t::is_convex() const
-        {
-                return true;
-        }
-
-        tensor_size_t function_matyas_t::min_dims() const
-        {
-                return 2;
-        }
-
-        tensor_size_t function_matyas_t::max_dims() const
-        {
-                return 2;
+                return scalar_t(0.26) * (a * a + b * b) - scalar_t(0.48) * a * b;
         }
 }

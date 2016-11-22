@@ -1,31 +1,30 @@
 #pragma once
 
-#include "function.h"
+#include "test_function.h"
 
 namespace nano
 {
         ///
-        /// \brief create Bohachevsky test functions
+        /// \brief create Bohachevsky test functions.
         ///
-        struct function_bohachevsky_t final : public function_t
+        struct function_bohachevsky1_t final : public test_function_t
         {
-                enum btype
-                {
-                        one,
-                        two,
-                        three
-                };
+                explicit function_bohachevsky1_t();
 
-                explicit function_bohachevsky_t(const btype type);
+                scalar_t vgrad(const vector_t& x, vector_t* gx) const override;
+        };
 
-                virtual std::string name() const override;
-                virtual problem_t problem() const override;
-                virtual bool is_valid(const vector_t& x) const override;
-                virtual bool is_minima(const vector_t&, const scalar_t) const override;
-                virtual bool is_convex() const override;
-                virtual tensor_size_t min_dims() const override;
-                virtual tensor_size_t max_dims() const override;
+        struct function_bohachevsky2_t final : public test_function_t
+        {
+                explicit function_bohachevsky2_t();
 
-                btype   m_type;
+                scalar_t vgrad(const vector_t& x, vector_t* gx) const override;
+        };
+
+        struct function_bohachevsky3_t final : public test_function_t
+        {
+                explicit function_bohachevsky3_t();
+
+                scalar_t vgrad(const vector_t& x, vector_t* gx) const override;
         };
 }

@@ -14,7 +14,7 @@ namespace nano
                 assert(m_c2 > scalar_t(0) && m_c2 < scalar_t(1));
         }
 
-        bool ls_strategy_t::operator()(const problem_t& problem, const scalar_t t0, state_t& state) const
+        bool ls_strategy_t::operator()(const function_t& problem, const scalar_t t0, state_t& state) const
         {
                 // check descent direction
                 const scalar_t dg0 = state.d.dot(state.g);
@@ -59,12 +59,12 @@ namespace nano
                 }
         }
 
-        bool ls_strategy_t::setup(const problem_t& problem, const ls_step_t& step0, const ls_step_t& step, state_t& state) const
+        bool ls_strategy_t::setup(const function_t& problem, const ls_step_t& step0, const ls_step_t& step, state_t& state) const
         {
                 return step && step < step0 && setup(problem, step, state);
         }
 
-        bool ls_strategy_t::setup(const problem_t& problem, const ls_step_t& step, state_t& state) const
+        bool ls_strategy_t::setup(const function_t& problem, const ls_step_t& step, state_t& state) const
         {
                 state.update(problem, step.alpha(), step.func(), step.grad());
                 return true;

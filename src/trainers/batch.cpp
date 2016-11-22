@@ -6,6 +6,7 @@
 #include "text/to_params.h"
 #include "batch_optimizer.h"
 #include "text/from_params.h"
+#include "trainer_function.h"
 
 namespace nano
 {
@@ -48,11 +49,11 @@ namespace nano
                                 return ulog(lacc, it, epoch, epochs, result, policy, timer, state);
                         };
 
-                        // assembly optimization problem & optimize the model
-                        const auto problem = make_trainer_problem(lacc, gacc, it);
+                        // assembly optimization function & optimize the model
+                        const auto function = trainer_function_t(lacc, gacc, it);
                         const auto params = batch_params_t{epochs, epsilon, fn_ulog};
 
-                        get_batch_optimizers().get(optimizer)->minimize(params, problem, x0);
+                        get_batch_optimizers().get(optimizer)->minimize(params, function, x0);
 
                         return result;
                 };

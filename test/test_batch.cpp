@@ -13,7 +13,7 @@ static void check_function(const function_t& function)
         const auto iterations = size_t(100000);
         const auto trials = size_t(100);
 
-        const auto dims = function.problem().size();
+        const auto dims = function.size();
 
         auto rgen = make_rng(scalar_t(-1), scalar_t(+1));
 
@@ -35,16 +35,14 @@ static void check_function(const function_t& function)
 
                 for (size_t t = 0; t < trials; ++ t)
                 {
-                        const auto problem = function.problem();
-
                         const auto& x0 = x0s[t];
-                        const auto f0 = problem.value(x0);
+                        const auto f0 = function.eval(x0);
                         const auto g_thres = epsilon2<scalar_t>();
                         const auto x_thres = std::sqrt(epsilon3<scalar_t>());
 
                         // optimize
                         const auto params = batch_params_t(iterations, epsilon0<scalar_t>());
-                        const auto state = optimizer->minimize(params, problem, x0);
+                        const auto state = optimizer->minimize(params, function, x0);
 
                         const auto x = state.x;
                         const auto f = state.f;

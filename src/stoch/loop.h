@@ -1,7 +1,7 @@
 #pragma once
 
 #include "params.h"
-#include "problem.h"
+#include "function.h"
 #include "math/tune.h"
 
 namespace nano
@@ -52,18 +52,18 @@ namespace nano
         ///
         template <typename toptimizer, typename... tspaces>
         auto stoch_tune(const toptimizer* optimizer,
-                const stoch_params_t& param, const problem_t& problem, const vector_t& x0,
+                const stoch_params_t& param, const function_t& function, const vector_t& x0,
                 tspaces... spaces)
         {
                 const auto tune_op = [&] (const auto... hypers)
                 {
-                        return optimizer->minimize(param.tunable(), problem, x0, hypers...);
+                        return optimizer->minimize(param.tunable(), function, x0, hypers...);
                 };
                 const auto config = nano::tune(tune_op, spaces...);
 
                 const auto done_op = [&] (const auto... hypers)
                 {
-                        return optimizer->minimize(param.tuned(), problem, config.optimum().x, hypers...);
+                        return optimizer->minimize(param.tuned(), function, config.optimum().x, hypers...);
                 };
                 return detail::apply_from_tuple(done_op, config.params());
         }
@@ -78,14 +78,14 @@ namespace nano
         template <typename toptimizer>
         auto stoch_loop(
                 const stoch_params_t& params,
-                const problem_t& problem,
+                const function_t& function,
                 const vector_t& x0,
                 const toptimizer& optimizer,
                 const stoch_params_t::config_t& config)
         {
                 // current state
-                state_t cstate(problem.size());
-                cstate.stoch_update(problem, x0);
+                state_t cstate(function.size());
+                cstate.stoch_update(function, x0);
 
                 // final state
                 state_t fstate = cstate;
@@ -107,7 +107,7 @@ namespace nano
                         }
 
                         // check convergence (using the full gradient)
-                        fstate.update(problem, cstate.x);
+                        fstate.update(function, cstate.x);
                         if (fstate.converged(params.m_epsilon))
                         {
                                 fstate.m_status = opt_status::converged;

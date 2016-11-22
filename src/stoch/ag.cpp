@@ -11,17 +11,17 @@ namespace nano
 
         template <ag_restart trestart>
         state_t stoch_ag_base_t<trestart>::minimize(const stoch_params_t& param,
-                const problem_t& problem, const vector_t& x0) const
+                const function_t& function, const vector_t& x0) const
         {
                 const auto qs = make_finite_space(scalar_t(0.0));
-                return stoch_tune(this, param, problem, x0, make_alpha0s(), qs);
+                return stoch_tune(this, param, function, x0, make_alpha0s(), qs);
         }
 
         template <ag_restart trestart>
-        state_t stoch_ag_base_t<trestart>::minimize(const stoch_params_t& param, const problem_t& problem, const vector_t& x0,
+        state_t stoch_ag_base_t<trestart>::minimize(const stoch_params_t& param, const function_t& function, const vector_t& x0,
                 const scalar_t alpha0, const scalar_t q) const
         {
-                assert(problem.size() == x0.size());
+                assert(function.size() == x0.size());
 
                 // current & previous iterations
                 vector_t cx = x0;
@@ -60,7 +60,7 @@ namespace nano
                         const scalar_t beta = get_beta(ptheta, ctheta);
 
                         // update solution
-                        cstate.stoch_update(problem, py);
+                        cstate.stoch_update(function, py);
                         cx = py - alpha * cstate.g;
                         cy = cx + beta * (cx - px);
                         cstate.x = cx; // NB: to propagate the current parameters!
@@ -71,7 +71,7 @@ namespace nano
                                 break;
 
                         case ag_restart::function:
-                                if ((cfx = problem.stoch_value(cx)) > pfx)
+                                if ((cfx = function.stoch_eval(cx)) > pfx)
                                 {
                                         ctheta = 1;
                                 }
@@ -93,7 +93,7 @@ namespace nano
                 };
 
                 // OK, assembly the optimizer
-                return  stoch_loop(param, problem, x0, optimizer,
+                return  stoch_loop(param, function, x0, optimizer,
                         {{"alpha0", alpha0}, {"q", q}});
         }
 

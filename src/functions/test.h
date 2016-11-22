@@ -21,10 +21,7 @@ namespace nano
         ///
         /// \brief run the given operator for each test function.
         ///
-        template
-        <
-                typename toperator
-        >
+        template <typename toperator>
         void foreach_test_function(const rfunctions_t& functions, const toperator& op)
         {
                 for (const auto& func : functions)

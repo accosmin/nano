@@ -1,5 +1,5 @@
 #include "state.h"
-#include "problem.h"
+#include "function.h"
 
 namespace nano
 {
@@ -10,31 +10,31 @@ namespace nano
         {
         }
 
-        void state_t::update(const problem_t& problem, const vector_t& xx)
+        void state_t::update(const function_t& function, const vector_t& xx)
         {
                 x = xx;
-                f = problem.vgrad(x, g);
+                f = function.eval(x, &g);
         }
 
-        void state_t::stoch_update(const problem_t& problem, const vector_t& xx)
+        void state_t::stoch_update(const function_t& function, const vector_t& xx)
         {
                 x = xx;
-                f = problem.stoch_vgrad(x, g);
+                f = function.stoch_eval(x, &g);
         }
 
-        void state_t::update(const problem_t& problem, const scalar_t t)
+        void state_t::update(const function_t& function, const scalar_t t)
         {
                 x.noalias() += t * d;
-                f = problem.vgrad(x, g);
+                f = function.eval(x, &g);
         }
 
-        void state_t::stoch_update(const problem_t& problem, const scalar_t t)
+        void state_t::stoch_update(const function_t& function, const scalar_t t)
         {
                 x.noalias() += t * d;
-                f = problem.stoch_vgrad(x, g);
+                f = function.stoch_eval(x, &g);
         }
 
-        void state_t::update(const problem_t&, const scalar_t t, const scalar_t ft, const vector_t& gt)
+        void state_t::update(const function_t&, const scalar_t t, const scalar_t ft, const vector_t& gt)
         {
                 x.noalias() += t * d;
                 f = ft;

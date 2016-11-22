@@ -2,8 +2,8 @@
 
 namespace nano
 {
-        ls_step_t::ls_step_t(const problem_t& problem, const state_t& state) :
-                m_problem(problem),
+        ls_step_t::ls_step_t(const function_t& function, const state_t& state) :
+                m_function(function),
                 m_state(state),
                 m_gphi0(state.d.dot(state.g)),
                 m_alpha(0),
@@ -32,7 +32,7 @@ namespace nano
                 else
                 {
                         m_alpha = alpha;
-                        m_func = m_problem.get().vgrad(m_state.get().x + m_alpha * m_state.get().d, m_grad);
+                        m_func = m_function.get().eval(m_state.get().x + m_alpha * m_state.get().d, &m_grad);
                         m_gphi = m_grad.dot(m_state.get().d);
                         return operator bool();
                 }

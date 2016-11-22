@@ -6,6 +6,7 @@
 #include "text/to_params.h"
 #include "stoch_optimizer.h"
 #include "text/from_params.h"
+#include "trainer_function.h"
 
 namespace nano
 {
@@ -79,11 +80,11 @@ namespace nano
                                  return ulog(lacc, it, epoch, epochs, result, policy, timer, state, sconfig);
                         };
 
-                        // assembly optimization problem & optimize the model
-                        const auto problem = make_trainer_problem(lacc, gacc, it);
+                        // assembly optimization function & optimize the model
+                        const auto function = trainer_function_t(lacc, gacc, it);
                         const auto params = stoch_params_t{epochs, epoch_size, epsilon, fn_ulog, fn_tlog};
 
-                        get_stoch_optimizers().get(optimizer)->minimize(params, problem, x0);
+                        get_stoch_optimizers().get(optimizer)->minimize(params, function, x0);
 
                         return result;
                 };

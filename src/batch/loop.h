@@ -1,7 +1,7 @@
 #pragma once
 
 #include "params.h"
-#include "problem.h"
+#include "function.h"
 
 namespace nano
 {
@@ -12,19 +12,16 @@ namespace nano
         ///     - the user canceled the optimization (using the logging function) or
         ///     - the optimizer failed (e.g. line-search failed)
         ///
-        template
-        <
-                typename toptimizer     ///< optimization algorithm
-        >
+        template <typename toptimizer>
         auto batch_loop(
                 const batch_params_t& params,
-                const problem_t& problem,
+                const function_t& function,
                 const vector_t& x0,
                 const toptimizer& optimizer)
         {
                 // current state
-                state_t cstate(problem.size());
-                cstate.update(problem, x0);
+                state_t cstate(function.size());
+                cstate.update(function, x0);
 
                 // for each iteration ...
                 for (size_t i = 0; i < params.m_max_iterations; i ++)

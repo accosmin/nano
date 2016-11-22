@@ -11,12 +11,10 @@ using namespace nano;
 
 static void eval_func(const function_t& function, table_t& table)
 {
-        const auto problem = function.problem();
-
         stats_t<scalar_t> fval_times;
         stats_t<scalar_t> grad_times;
 
-        const auto dims = function.problem().size();
+        const auto dims = function.size();
         const vector_t x = vector_t::Zero(dims);
         vector_t g = vector_t::Zero(dims);
 
@@ -25,13 +23,13 @@ static void eval_func(const function_t& function, table_t& table)
         volatile scalar_t fx = 0;
         const auto fval_time = measure_robustly_nsec([&] ()
         {
-                fx += problem.value(x);
+                fx += function.eval(x);
         }, trials).count();
 
         volatile scalar_t gx = 0;
         const auto grad_time = measure_robustly_nsec([&] ()
         {
-                problem.vgrad(x, g);
+                function.eval(x, &g);
                 gx += g.template lpNorm<Eigen::Infinity>();
         }, trials).count();
 

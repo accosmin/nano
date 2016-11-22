@@ -1,7 +1,6 @@
 #pragma once
 
 #include "state.h"
-#include "problem.h"
 #include "math/tune.h"
 #include "accumulator.h"
 #include "task_iterator.h"
@@ -12,58 +11,6 @@
 
 namespace nano
 {
-        ///
-        /// \brief construct optimization problem for a particular trainer.
-        ///
-        inline auto make_trainer_problem(const accumulator_t& lacc, const accumulator_t& gacc, task_iterator_t& it)
-        {
-                const auto batch_size = it.task().n_samples(it.fold());
-                const auto stoch_size = it.size();
-                assert(stoch_size > 0);
-                const auto stoch_ratio = nano::idiv(batch_size, stoch_size);
-
-                const auto fn_size = [&] ()
-                {
-                        return lacc.psize();
-                };
-
-                // batch value & gradient
-                const auto fn_fval = [&] (const vector_t& x)
-                {
-                        lacc.set_params(x);
-                        lacc.update(it.task(), it.fold());
-                        return lacc.value();
-                };
-
-                const auto fn_grad = [&] (const vector_t& x, vector_t& gx)
-                {
-                        gacc.set_params(x);
-                        gacc.update(it.task(), it.fold());
-                        gx = gacc.vgrad();
-                        return gacc.value();
-                };
-
-                // stochastic value & gradient
-                const auto fn_stoch_fval = [&] (const vector_t& x)
-                {
-                        it.next();
-                        lacc.set_params(x);
-                        lacc.update(it.task(), it.fold(), it.begin(), it.end());
-                        return lacc.value();
-                };
-
-                const auto fn_stoch_grad = [&] (const vector_t& x, vector_t& gx)
-                {
-                        it.next();
-                        gacc.set_params(x);
-                        gacc.update(it.task(), it.fold(), it.begin(), it.end());
-                        gx = gacc.vgrad();
-                        return gacc.value();
-                };
-
-                return problem_t(fn_size, fn_fval, fn_grad, fn_stoch_fval, fn_stoch_grad, stoch_ratio);
-        }
-
         ///
         /// \brief log the current optimization state & check stopping criteria.
         ///

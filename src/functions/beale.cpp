@@ -1,78 +1,27 @@
-#include "util.h"
 #include "beale.h"
 
 namespace nano
 {
-        std::string function_beale_t::name() const
+        function_beale_t::function_beale_t() :
+                test_function_t("Beale", 2, 2, 2, convexity::no, scalar_t(4.5))
         {
-                return "Beale";
         }
 
-        problem_t function_beale_t::problem() const
+        scalar_t function_beale_t::vgrad(const vector_t& x, vector_t* gx) const
         {
-                const auto fn_size = [=] ()
+                const auto a = x(0);
+                const auto b = x(1), b2 = b * b, b3 = b2 * b;
+
+                const auto z0 = scalar_t(1.5) - a + a * b;
+                const auto z1 = scalar_t(2.25) - a + a * b2;
+                const auto z2 = scalar_t(2.625) - a + a * b3;
+
+                if (gx)
                 {
-                        return 2;
-                };
+                        (*gx)(0) = 2 * (z0 * (-1 + b) + z1 * (-1 + b2) + z2 * (-1 + b3));
+                        (*gx)(1) = 2 * (z0 * (a) + z1 * (2 * a * b) + z2 * (3 * a * b2));
+                }
 
-                const auto fn_fval = [=] (const vector_t& x)
-                {
-                        const auto a = x(0);
-                        const auto b = x(1), b2 = b * b, b3 = b2 * b;
-
-                        const auto z0 = scalar_t(1.5) - a + a * b;
-                        const auto z1 = scalar_t(2.25) - a + a * b2;
-                        const auto z2 = scalar_t(2.625) - a + a * b3;
-
-                        return z0 * z0 + z1 * z1 + z2 * z2;
-                };
-
-                const auto fn_grad = [=] (const vector_t& x, vector_t& gx)
-                {
-                        const auto a = x(0);
-                        const auto b = x(1), b2 = b * b, b3 = b2 * b;
-
-                        const auto z0 = scalar_t(1.5) - a + a * b;
-                        const auto z1 = scalar_t(2.25) - a + a * b2;
-                        const auto z2 = scalar_t(2.625) - a + a * b3;
-
-                        gx.resize(2);
-                        gx(0) = 2 * (z0 * (-1 + b) + z1 * (-1 + b2) + z2 * (-1 + b3));
-                        gx(1) = 2 * (z0 * (a) + z1 * (2 * a * b) + z2 * (3 * a * b2));
-
-                        return fn_fval(x);
-                };
-
-                return {fn_size, fn_fval, fn_grad};
-        }
-
-        bool function_beale_t::is_valid(const vector_t& x) const
-        {
-                return util::norm(x) < scalar_t(4.5);
-        }
-
-        bool function_beale_t::is_minima(const vector_t& x, const scalar_t epsilon) const
-        {
-                const auto xmins =
-                {
-                        std::vector<scalar_t>{ scalar_t(3.0), scalar_t(0.5) }
-                };
-
-                return util::check_close(x, xmins, epsilon);
-        }
-
-        bool function_beale_t::is_convex() const
-        {
-                return false;
-        }
-
-        tensor_size_t function_beale_t::min_dims() const
-        {
-                return 2;
-        }
-
-        tensor_size_t function_beale_t::max_dims() const
-        {
-                return 2;
+                return z0 * z0 + z1 * z1 + z2 * z2;
         }
 }

@@ -3,125 +3,59 @@
 
 namespace nano
 {
-        function_t::function_t(
-                const opsize_t& opsize,
-                const opfval_t& opfval,
-                const opgrad_t& opgrad) :
-                function_t(opsize, opfval, opgrad, opfval, opgrad, 1)
-        {
-        }
-
-        function_t::function_t(
-                const opsize_t& opsize,
-                const opfval_t& opfval) :
-                function_t(opsize, opfval, opgrad_t(), opfval, opgrad_t(), 1)
-        {
-        }
-
-        function_t::function_t(
-                const opsize_t& opsize,
-                const opfval_t& opfval,
-                const opgrad_t& opgrad,
-                const opfval_t& stoch_opfval,
-                const opgrad_t& stoch_opgrad,
-                const size_t stoch_ratio) :
-                m_opsize(opsize),
-                m_opfval(opfval),
-                m_opgrad(opgrad),
-                m_stoch_ratio(std::max(size_t(1), stoch_ratio)),
-                m_stoch_opfval(stoch_opfval),
-                m_stoch_opgrad(stoch_opgrad),
+        function_t::function_t():
                 m_fcalls(0), m_stoch_fcalls(0),
                 m_gcalls(0), m_stoch_gcalls(0)
         {
         }
 
-        void function_t::clear() const
+        scalar_t function_t::eval(const vector_t& x, vector_t* gx) const
         {
-                m_fcalls = m_stoch_fcalls = 0;
-                m_gcalls = m_stoch_gcalls = 0;
-        }
-
-        tensor_size_t function_t::size() const
-        {
-                assert(m_opsize);
-
-                return m_opsize();
-        }
-
-        scalar_t function_t::value(const vector_t& x) const
-        {
-                assert(m_opfval);
+                assert(x.size() == size());
 
                 m_fcalls ++;
-                return m_opfval(x);
-        }
-
-        scalar_t function_t::stoch_value(const vector_t& x) const
-        {
-                assert(m_stoch_opfval);
-                assert(x.size() == size());
-
-                m_stoch_fcalls ++;
-                return m_stoch_opfval(x);
-        }
-
-        scalar_t function_t::vgrad(const vector_t& x, vector_t& g) const
-        {
-                assert(x.size() == size());
-
-                if (m_opgrad)
+                if (gx)
                 {
-                        m_fcalls ++;
                         m_gcalls ++;
-                        return m_opgrad(x, g);
+                        gx->resize(size());
                 }
-                else
-                {
-                        eval_grad(x, g);
-                        return value(x);
-                }
+
+                return vgrad(x, gx);
         }
 
-        scalar_t function_t::stoch_vgrad(const vector_t& x, vector_t& g) const
+        scalar_t function_t::stoch_eval(const vector_t& x, vector_t* gx) const
         {
-                assert(m_stoch_opgrad);
                 assert(x.size() == size());
 
                 m_stoch_fcalls ++;
-                m_stoch_gcalls ++;
-                return m_stoch_opgrad(x, g);
+                if (gx)
+                {
+                        m_stoch_gcalls ++;
+                        gx->resize(size());
+                }
+
+                return stoch_vgrad(x, gx);
         }
 
         scalar_t function_t::grad_accuracy(const vector_t& x) const
         {
-                assert(m_stoch_opgrad);
                 assert(x.size() == size());
 
-                vector_t gx;
-                const scalar_t fx = m_opgrad(x, gx);
+                const auto n = size();
 
-                vector_t gx_approx;
-                eval_grad(x, gx_approx);
+                // analytical gradient
+                vector_t gx(n);
+                const auto fx = vgrad(x, &gx);
 
-                return  (gx - gx_approx).lpNorm<Eigen::Infinity>() /
-                        (scalar_t(1) + std::fabs(fx));
-        }
-
-        void function_t::eval_grad(const vector_t& x, vector_t& g) const
-        {
-                // accuracy epsilon as defined in:
+                // finite-difference approximated gradient
                 //      see "Numerical optimization", Nocedal & Wright, 2nd edition, p.197
                 const auto dx =
                         std::sqrt(std::numeric_limits<scalar_t>::epsilon()) *
                         (1 + x.lpNorm<Eigen::Infinity>());
 
-                const auto n = size();
-
+                vector_t gx_approx(n);
                 vector_t xp = x, xn = x;
-
-                g.resize(n);
-                for (vector_t::Index i = 0; i < n; i ++)
+                for (auto i = 0; i < n; i ++)
                 {
                         if (i > 0)
                         {
@@ -131,20 +65,26 @@ namespace nano
                         xp(i) += dx;
                         xn(i) -= dx;
 
-                        const auto dfi = m_opfval(xp) - m_opfval(xn);
+                        const auto dfi = vgrad(xp, nullptr) - vgrad(xn, nullptr);
                         const auto dxi = xp(i) - xn(i);
-                        g(i) = static_cast<scalar_t>(dfi / dxi);
+                        gx_approx(i) = static_cast<scalar_t>(dfi / dxi);
                 }
+
+                // return the relative difference between gradients
+                return  (gx - gx_approx).lpNorm<Eigen::Infinity>() /
+                        (scalar_t(1) + std::fabs(fx));
         }
 
         bool function_t::is_convex(const vector_t& x1, const vector_t& x2, const int steps) const
         {
                 assert(steps > 2);
+                assert(x1.size() == size());
+                assert(x2.size() == size());
 
-                const auto f1 = value(x1);
+                const auto f1 = vgrad(x1, nullptr);
                 assert(std::isfinite(f1));
 
-                const auto f2 = value(x2);
+                const auto f2 = vgrad(x2, nullptr);
                 assert(std::isfinite(f2));
 
                 for (int step = 1; step < steps; step ++)
@@ -152,7 +92,7 @@ namespace nano
                         const auto t1 = scalar_t(step) / scalar_t(steps);
                         const auto t2 = scalar_t(1) - t1;
 
-                        const auto ft = value(t1 * x1 + t2 * x2);
+                        const auto ft = vgrad(t1 * x1 + t2 * x2, nullptr);
                         if (std::isfinite(ft) && ft > (1 + epsilon0<scalar_t>()) * (t1 * f1 + t2 * f2))
                         {
                                 return false;

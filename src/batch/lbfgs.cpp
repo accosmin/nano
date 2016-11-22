@@ -16,7 +16,7 @@ namespace nano
         {
         }
 
-        state_t batch_lbfgs_t::minimize(const batch_params_t& param, const problem_t& problem, const vector_t& x0) const
+        state_t batch_lbfgs_t::minimize(const batch_params_t& param, const function_t& problem, const vector_t& x0) const
         {
                 return  minimize(param, problem, x0,
                         from_params<ls_initializer>(config(), "ls_init"),
@@ -25,7 +25,7 @@ namespace nano
                         from_params<scalar_t>(config(), "c2"));
         }
 
-        state_t batch_lbfgs_t::minimize(const batch_params_t& param, const problem_t& problem, const vector_t& x0,
+        state_t batch_lbfgs_t::minimize(const batch_params_t& param, const function_t& problem, const vector_t& x0,
                 const ls_initializer linit, const ls_strategy lstrat, const scalar_t c1, const scalar_t c2) const
         {
                 assert(problem.size() == x0.size());

@@ -19,12 +19,12 @@ namespace nano
                 ///
                 /// \brief update the current state
                 ///
-                bool operator()(const problem_t& problem, const scalar_t t0, state_t& state) const;
+                bool operator()(const function_t& problem, const scalar_t t0, state_t& state) const;
 
         private:
 
-                bool setup(const problem_t&, const ls_step_t& step0, const ls_step_t& step, state_t& state) const;
-                bool setup(const problem_t&, const ls_step_t& step, state_t& state) const;
+                bool setup(const function_t&, const ls_step_t& step0, const ls_step_t& step, state_t& state) const;
+                bool setup(const function_t&, const ls_step_t& step, state_t& state) const;
 
         private:
 

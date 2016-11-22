@@ -18,7 +18,7 @@ namespace nano
 
         template <typename tcgd_update>
         state_t batch_cgd_t<tcgd_update>::minimize(const batch_params_t& param,
-                const problem_t& problem, const vector_t& x0) const
+                const function_t& problem, const vector_t& x0) const
         {
                 return  minimize(param, problem, x0,
                         from_params<ls_initializer>(config(), "ls_init"),
@@ -29,7 +29,7 @@ namespace nano
 
         template <typename tcgd_update>
         state_t batch_cgd_t<tcgd_update>::minimize(const batch_params_t& param,
-                const problem_t& problem, const vector_t& x0,
+                const function_t& problem, const vector_t& x0,
                 const ls_initializer linit, const ls_strategy lstrat, const scalar_t c1, const scalar_t c2) const
         {
                 assert(problem.size() == x0.size());

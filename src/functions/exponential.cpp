@@ -1,66 +1,21 @@
-#include "util.h"
 #include "exponential.h"
 
 namespace nano
 {
         function_exponential_t::function_exponential_t(const tensor_size_t dims) :
-                m_dims(dims)
+                test_function_t("Exponential", dims, 1, 100 * 1000, convexity::yes, 1)
         {
         }
 
-        std::string function_exponential_t::name() const
+        scalar_t function_exponential_t::vgrad(const vector_t& x, vector_t* gx) const
         {
-                return "Exponential" + std::to_string(m_dims) + "D";
-        }
+                const auto fx = std::exp(scalar_t(0.5) / scalar_t(size()) * x.array().square().sum());
 
-        problem_t function_exponential_t::problem() const
-        {
-                const auto scale = scalar_t(1) / scalar_t(m_dims);
-
-                const auto fn_size = [=] ()
+                if (gx)
                 {
-                        return m_dims;
+                        *gx = fx * x / scalar_t(size());
                 };
 
-                const auto fn_fval = [=] (const vector_t& x)
-                {
-                        return std::exp(scalar_t(0.5) * scale * x.array().square().sum());
-                };
-
-                const auto fn_grad = [=] (const vector_t& x, vector_t& gx)
-                {
-                        const auto fx = fn_fval(x);
-
-                        gx = fx * x * scale;
-
-                        return fx;
-                };
-
-                return {fn_size, fn_fval, fn_grad};
-        }
-
-        bool function_exponential_t::is_valid(const vector_t& x) const
-        {
-                return util::norm(x) < scalar_t(1);
-        }
-
-        bool function_exponential_t::is_minima(const vector_t& x, const scalar_t epsilon) const
-        {
-                return util::distance(x, vector_t::Zero(m_dims)) < epsilon;
-        }
-
-        bool function_exponential_t::is_convex() const
-        {
-                return true;
-        }
-
-        tensor_size_t function_exponential_t::min_dims() const
-        {
-                return 1;
-        }
-
-        tensor_size_t function_exponential_t::max_dims() const
-        {
-                return 100 * 1000;
+                return fx;
         }
 }

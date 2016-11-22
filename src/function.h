@@ -8,7 +8,13 @@ namespace nano
 {
         class function_t;
         using ref_function_t = std::reference_wrapper<const function_t>;
-        using rfunction_t = std::unique_ptr<function_t>;
+
+        enum class convexity
+        {
+                yes,
+                no,
+                unknown,
+        };
 
         ///
         /// \brief generic multi-dimensional optimization problem that
@@ -38,23 +44,18 @@ namespace nano
                 ///
                 /// \brief range of valid dimensions
                 ///
-                virtual tensor_size_t min_dims() const = 0;
-                virtual tensor_size_t max_dims() const = 0;
+                virtual tensor_size_t min_size() const = 0;
+                virtual tensor_size_t max_size() const = 0;
 
                 ///
                 /// \brief number of dimensions
                 ///
-                virtual tensor_size_t dims() const = 0;
+                virtual tensor_size_t size() const = 0;
 
                 ///
-                /// \brief check if a point is contained in the function's domain
+                /// \brief check if a point is within the function's domain
                 ///
                 virtual bool is_valid(const vector_t& x) const = 0;
-
-                ///
-                /// \brief check if a point is epsilon-close to a local minimum (if known)
-                ///
-                virtual bool is_minima(const vector_t& x, const scalar_t epsilon) const = 0;
 
                 ///
                 /// \brief check if function is convex
@@ -69,12 +70,17 @@ namespace nano
                 ///
                 /// \brief compute function value (and gradient if provided)
                 ///
-                scalar_t vgrad(const vector_t& x, vector_t* gx = nullptr) const;
+                scalar_t eval(const vector_t& x, vector_t* gx = nullptr) const;
 
                 ///
                 /// \brief compute function value (and gradient if provided) using the stochastic approximation
                 ///
-                scalar_t stoch_vgrad(const vector_t& x, vector_t* gx = nullptr) const;
+                scalar_t stoch_eval(const vector_t& x, vector_t* gx = nullptr) const;
+
+                ///
+                /// \brief number of stochastic calls per batch call (e.g. ~ minibatch size)
+                ///
+                virtual size_t stoch_ratio() const = 0;
 
                 ///
                 /// \brief select another random minibatch
@@ -82,7 +88,7 @@ namespace nano
                 virtual void stoch_next() const = 0;
 
                 ///
-                /// \brief number of function evalution calls
+                /// \brief number of function evaluation calls
                 ///
                 size_t fcalls() const;
 
@@ -99,13 +105,7 @@ namespace nano
         protected:
 
                 virtual scalar_t vgrad(const vector_t& x, vector_t* gx) const = 0;
-
-                virtual size_t stoch_ratio() const = 0;
                 virtual scalar_t stoch_vgrad(const vector_t& x, vector_t* gx) const = 0;
-
-        private:
-
-                void eval_grad(const vector_t& x, vector_t& g) const;
 
         private:
 

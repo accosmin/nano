@@ -6,7 +6,7 @@
 
 using namespace nano;
 
-static void check_grad(const string_t& loss_id, tensor_size_t n_dims, size_t n_tests)
+static void check_grad(const string_t& loss_id, const tensor_size_t n_dims, const size_t n_tests)
 {
         const auto loss = get_losses().get(loss_id);
 

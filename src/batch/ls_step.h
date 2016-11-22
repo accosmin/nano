@@ -1,7 +1,7 @@
 #pragma once
 
 #include "state.h"
-#include "problem.h"
+#include "function.h"
 
 namespace nano
 {
@@ -16,7 +16,7 @@ namespace nano
                 ///
                 /// \brief constructor
                 ///
-                ls_step_t(const problem_t& problem, const state_t& state);
+                ls_step_t(const function_t& function, const state_t& state);
 
                 ///
                 /// \brief minimum allowed line-search step
@@ -102,7 +102,7 @@ namespace nano
         private:
 
                 // attributes
-                ref_problem_t   m_problem;
+                ref_function_t  m_function;
                 ref_state_t     m_state;        ///< starting state for line-search
                 scalar_t        m_gphi0;
 

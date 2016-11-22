@@ -12,28 +12,25 @@ static void test_function(const function_t& function)
 
         const auto trials = size_t(10000);
 
-        const auto dims = function.problem().size();
+        const auto dims = function.size();
         NANO_CHECK_GREATER(dims, 0);
-        NANO_CHECK_GREATER_EQUAL(dims, function.min_dims());
-        NANO_CHECK_GREATER_EQUAL(function.max_dims(), dims);
+        NANO_CHECK_GREATER_EQUAL(dims, function.min_size());
+        NANO_CHECK_GREATER_EQUAL(function.max_size(), dims);
 
         auto rgen = make_rng(scalar_t(-10.0), scalar_t(+10.0));
-
-        const auto problem = function.problem();
 
         for (size_t t = 0; t < trials; ++ t)
         {
                 vector_t x0(dims), x1(dims);
                 tensor::set_random(rgen, x0, x1);
 
-                if (    function.is_valid(x0) && std::isfinite(problem.value(x0)) &&
-                        function.is_valid(x1) && std::isfinite(problem.value(x1)))
+                if (    function.is_valid(x0) && std::isfinite(function.eval(x0)) &&
+                        function.is_valid(x1) && std::isfinite(function.eval(x1)))
                 {
-                        NANO_REQUIRE_EQUAL(problem.size(), dims);
-                        NANO_CHECK_LESS(problem.grad_accuracy(x0), epsilon3<scalar_t>());
+                        NANO_CHECK_LESS(function.grad_accuracy(x0), epsilon3<scalar_t>());
                         if (function.is_convex())
                         {
-                                NANO_CHECK(problem.is_convex(x0, x1, 100));
+                                NANO_CHECK(function.is_convex(x0, x1, 100));
                         }
                 }
         }
