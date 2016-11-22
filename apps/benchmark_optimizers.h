@@ -72,7 +72,7 @@ namespace benchmark
 
         template <typename toptimizer, typename tostats>
         void benchmark_function(
-                const function_t& func, const std::vector<vector_t>& x0s,
+                const function_t& function, const std::vector<vector_t>& x0s,
                 const toptimizer& op, const std::string& name,
                 tostats& stats, tostats& gstats)
         {
@@ -88,26 +88,25 @@ namespace benchmark
                 {
                         const auto& x0 = x0s[t];
 
-                        const auto problem = func.problem();
-                        auto state0 = state_t(problem.size());
-                        state0.update(problem, x0);
+                        auto state0 = state_t(function.size());
+                        state0.update(function, x0);
                         const auto g0 = state0.convergence_criteria();
 
                         // optimize
-                        const auto state = op(problem, x0);
+                        const auto state = op(x0);
 
                         const auto g = state.convergence_criteria();
-                        const auto cost = problem.fcalls() + 2 * problem.gcalls();
+                        const auto cost = function.fcalls() + 2 * function.gcalls();
                         const auto speed = std::pow(g / g0, 1 / (1 + static_cast<scalar_t>(cost)));
 
                         // ignore out-of-domain solutions
-                        if (func.is_valid(state.x))
+                        if (function.is_valid(state.x))
                         {
                                 // update stats
                                 crits[t] = g;
                                 fails[t] = (state.m_status != opt_status::converged) ? 1 : 0;
-                                fcalls[t] = static_cast<scalar_t>(problem.fcalls());
-                                gcalls[t] = static_cast<scalar_t>(problem.gcalls());
+                                fcalls[t] = static_cast<scalar_t>(function.fcalls());
+                                gcalls[t] = static_cast<scalar_t>(function.gcalls());
                                 speeds[t] = speed;
                         }
                         else
@@ -117,7 +116,7 @@ namespace benchmark
                         }
                 });
 
-                // update per-problem statistics
+                // update per-function statistics
                 optimizer_stat_t& stat = stats[name];
                 stat.m_crits(make_stats(crits, crits));
                 stat.m_fails(make_stats(fails, crits));

@@ -22,7 +22,7 @@ namespace nano
         ///     - call function_t::vgrad() for the batch case
         ///     - call function_t::stoch_vgrad() and then function_t::stoch_next() for the stochastic case
         ///
-        class function_t
+        class NANO_PUBLIC function_t
         {
         public:
 

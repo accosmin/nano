@@ -12,6 +12,81 @@
 
 using namespace nano;
 
+struct model_wrt_params_function_t final : public function_t
+{
+        model_wrt_params_function_t(const rmodel_t& model, const rloss_t& loss, const tensor3d_t& inputs, const vector_t& target) :
+                m_model(model), m_loss(loss), m_inputs(inputs), m_target(target)
+        {
+        }
+
+        string_t name() const override { return "model"; }
+        bool is_convex() const override { return false; }
+        bool is_valid(const vector_t&) const override { return true; }
+        tensor_size_t size() const override { return m_model->psize(); }
+        tensor_size_t min_size() const override { return size(); }
+        tensor_size_t max_size() const override { return size(); }
+        size_t stoch_ratio() const override { return 1; }
+        void stoch_next() const override {}
+
+        scalar_t vgrad(const vector_t& x, vector_t* gx) const override
+        {
+                m_model->load_params(x);
+                const vector_t output = m_model->output(m_inputs).vector();
+                if (gx)
+                {
+                        *gx = m_model->gparam(m_loss->vgrad(m_target, output));
+                }
+                return m_loss->value(m_target, output);
+        }
+        scalar_t stoch_vgrad(const vector_t& x, vector_t* gx) const override
+        {
+                return vgrad(x, gx);
+        }
+
+        const rmodel_t&         m_model;
+        const rloss_t&          m_loss;
+        const tensor3d_t&       m_inputs;
+        const vector_t&         m_target;
+};
+
+struct model_wrt_inputs_function_t final : public function_t
+{
+        model_wrt_inputs_function_t(const rmodel_t& model, const rloss_t& loss, const vector_t& params, const vector_t& target) :
+                m_model(model), m_loss(loss), m_params(params), m_target(target)
+        {
+        }
+
+        string_t name() const override { return "model"; }
+        bool is_convex() const override { return false; }
+        bool is_valid(const vector_t&) const override { return true; }
+        tensor_size_t size() const override { return m_model->isize(); }
+        tensor_size_t min_size() const override { return size(); }
+        tensor_size_t max_size() const override { return size(); }
+        size_t stoch_ratio() const override { return 1; }
+        void stoch_next() const override {}
+
+        scalar_t vgrad(const vector_t& x, vector_t* gx) const override
+        {
+                m_model->load_params(m_params);
+                const auto inputs = tensor::map_tensor(x.data(), m_model->idims(), m_model->irows(), m_model->icols());
+                const auto output = m_model->output(inputs).vector();
+                if (gx)
+                {
+                        *gx = m_model->ginput(m_loss->vgrad(m_target, output)).vector();
+                }
+                return m_loss->value(m_target, output);
+        }
+        scalar_t stoch_vgrad(const vector_t& x, vector_t* gx) const override
+        {
+                return vgrad(x, gx);
+        }
+
+        const rmodel_t&         m_model;
+        const rloss_t&          m_loss;
+        const vector_t&         m_params;
+        const vector_t&         m_target;
+};
+
 const tensor_size_t cmd_idims = 3;
 const tensor_size_t cmd_irows = 8;
 const tensor_size_t cmd_icols = 8;
@@ -76,55 +151,8 @@ static void test_model(const string_t& model_description, const tensor_size_t ex
 
         NANO_CHECK_EQUAL(model->osize(), cmd_osize);
 
-        // optimization problem (wrt parameters & inputs): size
-        auto fn_params_size = [&] ()
-        {
-                return model->psize();
-        };
-
-        // optimization problem (wrt parameters & inputs): function value
-        auto fn_params_fval = [&] (const vector_t& x)
-        {
-                model->load_params(x);
-                const vector_t output = model->output(inputs).vector();
-
-                return loss->value(target, output);
-        };
-
-        // optimization problem (wrt parameters & inputs): function value & gradient
-        auto fn_params_grad = [&] (const vector_t& x, vector_t& gx)
-        {
-                model->load_params(x);
-                const vector_t output = model->output(inputs).vector();
-
-                gx = model->gparam(loss->vgrad(target, output));
-                return loss->value(target, output);
-        };
-
-        // optimization problem (wrt parameters & inputs): size
-        auto fn_inputs_size = [&] ()
-        {
-                return model->isize();
-        };
-
-        // optimization problem (wrt parameters & inputs): function value
-        auto fn_inputs_fval = [&] (const vector_t& x)
-        {
-                model->load_params(params);
-                const auto output = model->output(tensor::map_tensor(x.data(), cmd_idims, cmd_irows, cmd_icols)).vector();
-
-                return loss->value(target, output);
-        };
-
-        // optimization problem (wrt parameters & inputs): function value & gradient
-        auto fn_inputs_grad = [&] (const vector_t& x, vector_t& gx)
-        {
-                model->load_params(params);
-                const auto output = model->output(tensor::map_tensor(x.data(), cmd_idims, cmd_irows, cmd_icols)).vector();
-
-                gx = model->ginput(loss->vgrad(target, output)).vector();
-                return loss->value(target, output);
-        };
+        const model_wrt_params_function_t pfunction(model, loss, inputs, target);
+        const model_wrt_inputs_function_t ifunction(model, loss, params, target);
 
         // construct optimization problem: analytic gradient vs finite difference approximation
         for (size_t t = 0; t < cmd_tests; ++ t)
@@ -133,14 +161,8 @@ static void test_model(const string_t& model_description, const tensor_size_t ex
                 model->random_params();
                 NANO_CHECK(model->save_params(params));
 
-                {
-                        const problem_t problem(fn_params_size, fn_params_fval, fn_params_grad);
-                        NANO_CHECK_LESS(problem.grad_accuracy(params), epsilon);
-                }
-                {
-                        const problem_t problem(fn_inputs_size, fn_inputs_fval, fn_inputs_grad);
-                        NANO_CHECK_LESS(problem.grad_accuracy(inputs.vector()), epsilon);
-                }
+                NANO_CHECK_LESS(pfunction.grad_accuracy(params), epsilon);
+                NANO_CHECK_LESS(ifunction.grad_accuracy(inputs.vector()), epsilon);
         }
 }
 

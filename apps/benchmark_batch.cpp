@@ -17,7 +17,7 @@ static void check_function(
         const function_t& function, const size_t trials, const size_t iterations, const scalar_t epsilon,
         tostats& gstats)
 {
-        const auto dims = function.problem().size();
+        const auto dims = function.size();
 
         auto rgen = make_rng(scalar_t(-1), scalar_t(+1));
 
@@ -40,9 +40,9 @@ static void check_function(
         {
                 const auto optimizer = get_batch_optimizers().get(id, to_params("ls_init", ls_init, "ls_strat", ls_strat));
                 const auto params = batch_params_t(iterations, epsilon);
-                const auto op = [&] (const problem_t& problem, const vector_t& x0)
+                const auto op = [&] (const vector_t& x0)
                 {
-                        return optimizer->minimize(params, problem, x0);
+                        return optimizer->minimize(params, function, x0);
                 };
 
                 const auto name =

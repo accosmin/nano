@@ -3,7 +3,7 @@
 namespace nano
 {
         function_qing_t::function_qing_t(const tensor_size_t dims) :
-                test_function_t("Qing", dims, 2, 100 * 1000, convexity::no, dims)
+                test_function_t("Qing", dims, 2, 100 * 1000, convexity::no, static_cast<scalar_t>(dims))
         {
         }
 

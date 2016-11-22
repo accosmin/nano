@@ -6,7 +6,7 @@ set(libnano_sources
         criterion.cpp
         model.cpp
         nano.cpp
-        function.cpp
+        "function.cpp"
         state.cpp
         task_util.cpp
         task_iterator.cpp

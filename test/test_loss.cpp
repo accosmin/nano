@@ -1,43 +1,50 @@
 #include "nano.h"
 #include "class.h"
 #include "utest.h"
+#include "function.h"
 #include "math/random.h"
 #include "math/epsilon.h"
 
 using namespace nano;
 
+struct loss_function_t final : public function_t
+{
+        loss_function_t(const rloss_t& loss, const vector_t& target) :
+                m_loss(loss), m_target(target)
+        {
+        }
+
+        string_t name() const override { return "loss"; }
+        bool is_convex() const override { return false; }
+        bool is_valid(const vector_t&) const override { return true; }
+        tensor_size_t size() const override { return m_target.size(); }
+        tensor_size_t min_size() const override { return size(); }
+        tensor_size_t max_size() const override { return size(); }
+        size_t stoch_ratio() const override { return 1; }
+        void stoch_next() const override {}
+
+        scalar_t vgrad(const vector_t& x, vector_t* gx) const override
+        {
+                if (gx)
+                {
+                        *gx = m_loss->vgrad(m_target, x);
+                }
+                return m_loss->value(m_target, x);
+        }
+        scalar_t stoch_vgrad(const vector_t& x, vector_t* gx) const override
+        {
+                return vgrad(x, gx);
+        }
+
+        const rloss_t&          m_loss;
+        const vector_t&         m_target;
+};
+
 static void check_grad(const string_t& loss_id, const tensor_size_t n_dims, const size_t n_tests)
 {
         const auto loss = get_losses().get(loss_id);
-
-        const vector_t target = class_target(n_dims / 2, n_dims);
-
-        // optimization problem: size
-        auto opt_fn_size = [&] ()
-        {
-                return n_dims;
-        };
-
-        // optimization problem: function value
-        auto opt_fn_fval = [&] (const vector_t& x)
-        {
-                const vector_t& output = x;
-
-                return loss->value(target, output);
-        };
-
-        // optimization problem: function value & gradient
-        auto opt_fn_grad = [&] (const vector_t& x, vector_t& gx)
-        {
-                const vector_t& output = x;
-
-                gx = loss->vgrad(target, output);
-
-                return loss->value(target, output);
-        };
-
-        // construct optimization problem
-        const problem_t problem(opt_fn_size, opt_fn_fval, opt_fn_grad);
+        const auto target = class_target(n_dims / 2, n_dims);
+        const auto function = loss_function_t(loss, target);
 
         // check the gradient using random parameters
         for (size_t t = 0; t < n_tests; ++ t)
@@ -47,8 +54,8 @@ static void check_grad(const string_t& loss_id, const tensor_size_t n_dims, cons
                 vector_t x(n_dims);
                 rgen(x.data(), x.data() + n_dims);
 
-                NANO_CHECK_GREATER(problem.value(x), 0.0);
-                NANO_CHECK_LESS(problem.grad_accuracy(x), epsilon2<scalar_t>());
+                NANO_CHECK_GREATER(function.eval(x), 0.0);
+                NANO_CHECK_LESS(function.grad_accuracy(x), epsilon2<scalar_t>());
         }
 }
 

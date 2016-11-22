@@ -1,8 +1,8 @@
 #include "nano.h"
 #include "utest.h"
-#include "accumulator.h"
 #include "math/epsilon.h"
 #include "math/numeric.h"
+#include "trainer_function.h"
 #include "layers/make_layers.h"
 
 NANO_BEGIN_MODULE(test_criteria)
@@ -32,7 +32,7 @@ NANO_CASE(evaluate)
                 accumulator_t lacc(*model, *loss, *criterion, criterion_t::type::value, lambda); lacc.set_threads(1);
                 accumulator_t gacc(*model, *loss, *criterion, criterion_t::type::vgrad, lambda); gacc.set_threads(1);
 
-                task_iterator_t it(task, fold);
+                task_iterator_t it(*task, fold);
 
                 // construct optimization function
                 const auto function = trainer_function_t(lacc, gacc, it);

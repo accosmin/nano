@@ -14,7 +14,7 @@ void check_function(
         const function_t& function, const size_t trials, const size_t epochs, const size_t epoch_size, const scalar_t epsilon,
         tostats& gstats)
 {
-        const auto dims = function.problem().size();
+        const auto dims = function.size();
 
         auto rgen = make_rng(scalar_t(-1), scalar_t(+1));
 
@@ -37,9 +37,9 @@ void check_function(
         {
                 const auto optimizer = get_stoch_optimizers().get(id);
                 const auto params = stoch_params_t(epochs, epoch_size, epsilon);
-                const auto op = [&] (const problem_t& problem, const vector_t& x0)
+                const auto op = [&] (const vector_t& x0)
                 {
-                        return optimizer->minimize(params, problem, x0);
+                        return optimizer->minimize(params, function, x0);
                 };
 
                 const auto name = id;

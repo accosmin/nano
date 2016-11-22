@@ -38,7 +38,6 @@ static void check_function(const function_t& function)
                         const auto& x0 = x0s[t];
                         const auto f0 = function.eval(x0);
                         const auto g_thres = epsilon2<scalar_t>();
-                        const auto x_thres = std::sqrt(epsilon3<scalar_t>());
 
                         // optimize
                         const auto params = batch_params_t(iterations, epsilon0<scalar_t>());
@@ -66,9 +65,6 @@ static void check_function(const function_t& function)
 
                         // check convergence
                         NANO_CHECK_LESS(g, g_thres);
-
-                        // check local minimas (if any known)
-                        NANO_CHECK(function.is_minima(x, x_thres));
                 }
 
                 std::cout << function.name() << ", " << id
