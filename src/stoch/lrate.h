@@ -14,6 +14,8 @@ namespace nano
         ///
         /// learning rate = alpha0 * (1 + iteration)^decay
         ///
+        /// see "Online Learning and Stochastic Approximations", by Leon Bottou
+        ///
         struct lrate_t
         {
                 ///
