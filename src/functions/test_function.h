@@ -49,7 +49,7 @@ namespace nano
 
                 tensor_size_t max_size() const override
                 {
-                        return m_min_size;
+                        return m_max_size;
                 }
 
                 size_t stoch_ratio() const override
@@ -65,7 +65,7 @@ namespace nano
 
         protected:
 
-                scalar_t stoch_vgrad(const vector_t& x, vector_t* gx) const
+                scalar_t stoch_vgrad(const vector_t& x, vector_t* gx) const override
                 {
                         // no stochastic approximation
                         return vgrad(x, gx);

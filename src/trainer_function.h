@@ -60,7 +60,7 @@ namespace nano
                         return nano::idiv(batch_size, stoch_size);
                 }
 
-                void stoch_next() const
+                void stoch_next() const override
                 {
                         // next minibatch
                         m_iterator.next();
