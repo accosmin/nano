@@ -1,6 +1,6 @@
 #pragma once
 
-#include "test_function.h"
+#include "function.h"
 
 namespace nano
 {
@@ -9,7 +9,7 @@ namespace nano
         ///
         /// https://en.wikipedia.org/wiki/Test_functions_for_optimization
         ///
-        struct function_goldstein_price_t final : public test_function_t
+        struct function_goldstein_price_t final : public function_t
         {
                 function_goldstein_price_t();
 

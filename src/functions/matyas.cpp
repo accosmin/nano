@@ -3,7 +3,7 @@
 namespace nano
 {
         function_matyas_t::function_matyas_t() :
-                test_function_t("Matyas", 2, 2, 2, convexity::yes, 10)
+                function_t("Matyas", 2, 2, 2, convexity::yes, 10)
         {
         }
 

@@ -3,7 +3,7 @@
 namespace nano
 {
         function_cauchy_t::function_cauchy_t(const tensor_size_t dims) :
-                test_function_t("Cauchy", dims, 1, 100 * 1000, convexity::yes, 1)
+                function_t("Cauchy", dims, 1, 100 * 1000, convexity::yes, 1)
         {
         }
 

@@ -3,7 +3,7 @@
 namespace nano
 {
         function_exponential_t::function_exponential_t(const tensor_size_t dims) :
-                test_function_t("Exponential", dims, 1, 100 * 1000, convexity::yes, 1)
+                function_t("Exponential", dims, 1, 100 * 1000, convexity::yes, 1)
         {
         }
 

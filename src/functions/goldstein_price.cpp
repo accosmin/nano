@@ -3,7 +3,7 @@
 namespace nano
 {
         function_goldstein_price_t::function_goldstein_price_t() :
-                test_function_t("Goldstein-Price", 2, 2, 2, convexity::no, 2)
+                function_t("Goldstein-Price", 2, 2, 2, convexity::no, 2)
         {
         }
 

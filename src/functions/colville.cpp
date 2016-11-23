@@ -4,7 +4,7 @@
 namespace nano
 {
         function_colville_t::function_colville_t() :
-                test_function_t("Colville", 4, 4, 4, convexity::no, 10)
+                function_t("Colville", 4, 4, 4, convexity::no, 10)
         {
         }
 

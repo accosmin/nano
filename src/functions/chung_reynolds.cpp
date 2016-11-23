@@ -3,7 +3,7 @@
 namespace nano
 {
         function_chung_reynolds_t::function_chung_reynolds_t(const tensor_size_t dims) :
-                test_function_t("Chung-Reynolds", dims, 1, 100 * 1000, convexity::yes, 1)
+                function_t("Chung-Reynolds", dims, 1, 100 * 1000, convexity::yes, 1)
         {
         }
 

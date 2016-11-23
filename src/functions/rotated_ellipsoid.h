@@ -1,13 +1,13 @@
 #pragma once
 
-#include "test_function.h"
+#include "function.h"
 
 namespace nano
 {
         ///
         /// \brief create rotated hyper-ellipsoid test functions
         ///
-        struct function_rotated_ellipsoid_t final : public test_function_t
+        struct function_rotated_ellipsoid_t final : public function_t
         {
                 explicit function_rotated_ellipsoid_t(const tensor_size_t dims);
 

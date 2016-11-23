@@ -3,7 +3,14 @@
 
 namespace nano
 {
-        function_t::function_t():
+        function_t::function_t(const char* name,
+                const tensor_size_t size, const tensor_size_t min_size, const tensor_size_t max_size,
+                const convexity convex,
+                const scalar_t domain) :
+                m_name(name),
+                m_size(size), m_min_size(min_size), m_max_size(max_size),
+                m_convex(convex),
+                m_domain(domain),
                 m_fcalls(0), m_stoch_fcalls(0),
                 m_gcalls(0), m_stoch_gcalls(0)
         {
@@ -110,6 +117,16 @@ namespace nano
         size_t function_t::gcalls() const
         {
                 return m_gcalls + m_stoch_gcalls / stoch_ratio();
+        }
+
+        string_t function_t::name() const
+        {
+                return string_t(m_name) + "[" + std::to_string(size()) + "D]";
+        }
+
+        bool function_t::is_valid(const vector_t& x) const
+        {
+                return x.lpNorm<Eigen::Infinity>() < m_domain;
         }
 }
 

@@ -3,7 +3,7 @@
 namespace nano
 {
         function_3hump_camel_t::function_3hump_camel_t() :
-                test_function_t("3hump camel", 2, 2, 2, convexity::no, 5)
+                function_t("3hump camel", 2, 2, 2, convexity::no, 5)
         {
         }
 

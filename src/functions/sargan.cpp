@@ -4,7 +4,7 @@
 namespace nano
 {
         function_sargan_t::function_sargan_t(const tensor_size_t dims) :
-                test_function_t("Sargan", dims, 1, 100 * 1000, convexity::yes, 1e+6)
+                function_t("Sargan", dims, 1, 100 * 1000, convexity::yes, 1e+6)
         {
         }
 

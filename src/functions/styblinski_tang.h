@@ -1,13 +1,13 @@
 #pragma once
 
-#include "test_function.h"
+#include "function.h"
 
 namespace nano
 {
         ///
         /// \brief create Styblinski-Tang test functions
         ///
-        struct function_styblinski_tang_t final : public test_function_t
+        struct function_styblinski_tang_t final : public function_t
         {
                 explicit function_styblinski_tang_t(const tensor_size_t dims);
 

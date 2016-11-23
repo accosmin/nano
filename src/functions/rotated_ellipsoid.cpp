@@ -4,7 +4,7 @@
 namespace nano
 {
         function_rotated_ellipsoid_t::function_rotated_ellipsoid_t(const tensor_size_t dims) :
-                test_function_t("Rotated Hyper-Ellipsoid", dims, 1, 100 * 1000, convexity::yes, 100)
+                function_t("Rotated Hyper-Ellipsoid", dims, 1, 100 * 1000, convexity::yes, 100)
         {
         }
 

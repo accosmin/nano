@@ -3,7 +3,7 @@
 namespace nano
 {
         function_beale_t::function_beale_t() :
-                test_function_t("Beale", 2, 2, 2, convexity::no, scalar_t(4.5))
+                function_t("Beale", 2, 2, 2, convexity::no, scalar_t(4.5))
         {
         }
 

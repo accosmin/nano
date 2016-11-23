@@ -15,18 +15,10 @@ using namespace nano;
 struct model_wrt_params_function_t final : public function_t
 {
         model_wrt_params_function_t(const rmodel_t& model, const rloss_t& loss, const tensor3d_t& inputs, const vector_t& target) :
+                function_t("model", model->psize(), model->psize(), model->psize(), convexity::no, 1e+6),
                 m_model(model), m_loss(loss), m_inputs(inputs), m_target(target)
         {
         }
-
-        string_t name() const override { return "model"; }
-        bool is_convex() const override { return false; }
-        bool is_valid(const vector_t&) const override { return true; }
-        tensor_size_t size() const override { return m_model->psize(); }
-        tensor_size_t min_size() const override { return size(); }
-        tensor_size_t max_size() const override { return size(); }
-        size_t stoch_ratio() const override { return 1; }
-        void stoch_next() const override {}
 
         scalar_t vgrad(const vector_t& x, vector_t* gx) const override
         {
@@ -38,10 +30,6 @@ struct model_wrt_params_function_t final : public function_t
                 }
                 return m_loss->value(m_target, output);
         }
-        scalar_t stoch_vgrad(const vector_t& x, vector_t* gx) const override
-        {
-                return vgrad(x, gx);
-        }
 
         const rmodel_t&         m_model;
         const rloss_t&          m_loss;
@@ -52,18 +40,10 @@ struct model_wrt_params_function_t final : public function_t
 struct model_wrt_inputs_function_t final : public function_t
 {
         model_wrt_inputs_function_t(const rmodel_t& model, const rloss_t& loss, const vector_t& params, const vector_t& target) :
+                function_t("model", model->isize(), model->isize(), model->isize(), convexity::no, 1e+6),
                 m_model(model), m_loss(loss), m_params(params), m_target(target)
         {
         }
-
-        string_t name() const override { return "model"; }
-        bool is_convex() const override { return false; }
-        bool is_valid(const vector_t&) const override { return true; }
-        tensor_size_t size() const override { return m_model->isize(); }
-        tensor_size_t min_size() const override { return size(); }
-        tensor_size_t max_size() const override { return size(); }
-        size_t stoch_ratio() const override { return 1; }
-        void stoch_next() const override {}
 
         scalar_t vgrad(const vector_t& x, vector_t* gx) const override
         {
@@ -75,10 +55,6 @@ struct model_wrt_inputs_function_t final : public function_t
                         *gx = m_model->ginput(m_loss->vgrad(m_target, output)).vector();
                 }
                 return m_loss->value(m_target, output);
-        }
-        scalar_t stoch_vgrad(const vector_t& x, vector_t* gx) const override
-        {
-                return vgrad(x, gx);
         }
 
         const rmodel_t&         m_model;

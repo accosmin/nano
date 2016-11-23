@@ -3,7 +3,7 @@
 namespace nano
 {
         function_booth_t::function_booth_t() :
-                test_function_t("Booth", 2, 2, 2, convexity::no, 10)
+                function_t("Booth", 2, 2, 2, convexity::no, 10)
         {
         }
 

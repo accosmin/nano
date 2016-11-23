@@ -4,7 +4,7 @@
 namespace nano
 {
         function_rosenbrock_t::function_rosenbrock_t(const tensor_size_t dims) :
-                test_function_t("Rosenbrock", dims, 2, 100 * 1000, convexity::no, scalar_t(2.4))
+                function_t("Rosenbrock", dims, 2, 100 * 1000, convexity::no, scalar_t(2.4))
         {
         }
 

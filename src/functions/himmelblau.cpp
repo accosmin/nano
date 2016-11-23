@@ -3,7 +3,7 @@
 namespace nano
 {
         function_himmelblau_t::function_himmelblau_t() :
-                test_function_t("Himmelblau", 2, 2, 2, convexity::no, 1e+6)
+                function_t("Himmelblau", 2, 2, 2, convexity::no, 1e+6)
         {
         }
 

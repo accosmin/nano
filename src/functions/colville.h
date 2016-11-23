@@ -1,13 +1,13 @@
 #pragma once
 
-#include "test_function.h"
+#include "function.h"
 
 namespace nano
 {
         ///
         /// \brief create Colville test functions
         ///
-        struct function_colville_t final : public test_function_t
+        struct function_colville_t final : public function_t
         {
                 function_colville_t();
 

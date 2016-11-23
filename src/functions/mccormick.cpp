@@ -4,7 +4,7 @@
 namespace nano
 {
         function_mccormick_t::function_mccormick_t() :
-                test_function_t("McCormick", 2, 2, 2, convexity::no, 4)
+                function_t("McCormick", 2, 2, 2, convexity::no, 4)
         {
         }
 

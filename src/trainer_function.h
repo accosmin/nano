@@ -12,44 +12,11 @@ namespace nano
         struct trainer_function_t final : public function_t
         {
                 trainer_function_t(const accumulator_t& lacc, const accumulator_t& gacc, task_iterator_t& iterator) :
+                        function_t("ml optimization function", lacc.psize(), lacc.psize(), lacc.psize(), convexity::no, 1e+6),
                         m_lacc(lacc), m_gacc(gacc),
                         m_iterator(iterator)
                 {
                         assert(lacc.psize() == gacc.psize());
-                }
-
-                string_t name() const override
-                {
-                        return "ml optimization function";
-                }
-
-                tensor_size_t size() const override
-                {
-                        return m_lacc.psize();
-                }
-
-                tensor_size_t min_size() const override
-                {
-                        // cannot vary the number of parameters
-                        return size();
-                }
-
-                tensor_size_t max_size() const override
-                {
-                        // cannot vary the number of parameters
-                        return size();
-                }
-
-                bool is_valid(const vector_t&) const override
-                {
-                        // cannot restrict parameters
-                        return true;
-                }
-
-                bool is_convex() const override
-                {
-                        // most likely it is not convex
-                        return false;
                 }
 
                 size_t stoch_ratio() const override

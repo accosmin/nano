@@ -10,18 +10,10 @@ using namespace nano;
 struct loss_function_t final : public function_t
 {
         loss_function_t(const rloss_t& loss, const vector_t& target) :
+                function_t("loss", target.size(), target.size(), target.size(), convexity::no, 1e+6),
                 m_loss(loss), m_target(target)
         {
         }
-
-        string_t name() const override { return "loss"; }
-        bool is_convex() const override { return false; }
-        bool is_valid(const vector_t&) const override { return true; }
-        tensor_size_t size() const override { return m_target.size(); }
-        tensor_size_t min_size() const override { return size(); }
-        tensor_size_t max_size() const override { return size(); }
-        size_t stoch_ratio() const override { return 1; }
-        void stoch_next() const override {}
 
         scalar_t vgrad(const vector_t& x, vector_t* gx) const override
         {
@@ -30,10 +22,6 @@ struct loss_function_t final : public function_t
                         *gx = m_loss->vgrad(m_target, x);
                 }
                 return m_loss->value(m_target, x);
-        }
-        scalar_t stoch_vgrad(const vector_t& x, vector_t* gx) const override
-        {
-                return vgrad(x, gx);
         }
 
         const rloss_t&          m_loss;

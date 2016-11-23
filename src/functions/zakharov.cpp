@@ -4,7 +4,7 @@
 namespace nano
 {
         function_zakharov_t::function_zakharov_t(const tensor_size_t dims) :
-                test_function_t("Zakharov", dims, 2, 100 * 1000, convexity::yes, 5)
+                function_t("Zakharov", dims, 2, 100 * 1000, convexity::yes, 5)
         {
         }
 

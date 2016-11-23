@@ -4,7 +4,7 @@
 namespace nano
 {
         function_dixon_price_t::function_dixon_price_t(const tensor_size_t dims) :
-                test_function_t("Dixon-Price", dims, 2, 100 * 1000, convexity::no, 10)
+                function_t("Dixon-Price", dims, 2, 100 * 1000, convexity::no, 10)
         {
         }
 

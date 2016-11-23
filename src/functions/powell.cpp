@@ -4,7 +4,7 @@
 namespace nano
 {
         function_powell_t::function_powell_t(const tensor_size_t dims) :
-                test_function_t("Powell", std::max(tensor_size_t(4), dims - dims % 4), 4, 100 * 1000, convexity::yes, 4)
+                function_t("Powell", std::max(tensor_size_t(4), dims - dims % 4), 4, 100 * 1000, convexity::yes, 4)
         {
         }
 

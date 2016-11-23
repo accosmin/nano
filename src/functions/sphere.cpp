@@ -3,7 +3,7 @@
 namespace nano
 {
         function_sphere_t::function_sphere_t(const tensor_size_t dims) :
-                test_function_t("Sphere", dims, 1, 100 * 1000, convexity::yes, 5)
+                function_t("Sphere", dims, 1, 100 * 1000, convexity::yes, 5)
         {
         }
 

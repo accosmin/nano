@@ -4,7 +4,7 @@
 namespace nano
 {
         function_bohachevsky1_t::function_bohachevsky1_t() :
-                test_function_t("Bohachevsky1", 2, 2, 2, convexity::no, 100)
+                function_t("Bohachevsky1", 2, 2, 2, convexity::no, 100)
         {
         }
 
@@ -29,7 +29,7 @@ namespace nano
         }
 
         function_bohachevsky2_t::function_bohachevsky2_t() :
-                test_function_t("Bohachevsky2", 2, 2, 2, convexity::no, 100)
+                function_t("Bohachevsky2", 2, 2, 2, convexity::no, 100)
         {
         }
 
@@ -54,7 +54,7 @@ namespace nano
         }
 
         function_bohachevsky3_t::function_bohachevsky3_t() :
-                test_function_t("Bohachevsky3", 2, 2, 2, convexity::no, 100)
+                function_t("Bohachevsky3", 2, 2, 2, convexity::no, 100)
         {
         }
 

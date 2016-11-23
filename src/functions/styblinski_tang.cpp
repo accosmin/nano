@@ -3,7 +3,7 @@
 namespace nano
 {
         function_styblinski_tang_t::function_styblinski_tang_t(const tensor_size_t dims) :
-                test_function_t("Styblinski-Tang", dims, 1, 100 * 1000, convexity::no, 5)
+                function_t("Styblinski-Tang", dims, 1, 100 * 1000, convexity::no, 5)
         {
         }
 
