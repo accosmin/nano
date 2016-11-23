@@ -9,15 +9,15 @@ namespace nano
         {
         }
 
-        state_t stoch_sg_t::minimize(const stoch_params_t& param, const function_t& problem, const vector_t& x0) const
+        state_t stoch_sg_t::minimize(const stoch_params_t& param, const function_t& function, const vector_t& x0) const
         {
-                return stoch_tune(this, param, problem, x0, make_alpha0s(), make_decays());
+                return stoch_tune(this, param, function, x0, make_alpha0s(), make_decays());
         }
 
-        state_t stoch_sg_t::minimize(const stoch_params_t& param, const function_t& problem, const vector_t& x0,
+        state_t stoch_sg_t::minimize(const stoch_params_t& param, const function_t& function, const vector_t& x0,
                 const scalar_t alpha0, const scalar_t decay) const
         {
-                assert(problem.size() == x0.size());
+                assert(function.size() == x0.size());
 
                 // learning rate schedule
                 lrate_t lrate(alpha0, decay);
@@ -32,11 +32,11 @@ namespace nano
                         cstate.d = -cstate.g;
 
                         // update solution
-                        cstate.stoch_update(problem, alpha);
+                        cstate.stoch_update(function, alpha);
                 };
 
                 // OK, assembly the optimizer
-                return  stoch_loop(param, problem, x0, optimizer,
+                return  stoch_loop(param, function, x0, optimizer,
                         {{"alpha0", alpha0}, {"decay", decay}});
         }
 }

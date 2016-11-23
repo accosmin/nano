@@ -82,6 +82,7 @@ function fn_make_trainers
         stoch_sg="--trainer stoch --trainer-params opt=sg,epochs=${epochs},policy=${policy}"
         stoch_sgm="--trainer stoch --trainer-params opt=sgm,epochs=${epochs},policy=${policy}"
         stoch_ngd="--trainer stoch --trainer-params opt=ngd,epochs=${epochs},policy=${policy}"
+        stoch_svrg="--trainer stoch --trainer-params opt=svrg,epochs=${epochs},policy=${policy}"
         stoch_adagrad="--trainer stoch --trainer-params opt=adagrad,epochs=${epochs},policy=${policy}"
         stoch_adadelta="--trainer stoch --trainer-params opt=adadelta,epochs=${epochs},policy=${policy}"
         stoch_adam="--trainer stoch --trainer-params opt=adam,epochs=${epochs},policy=${policy}"

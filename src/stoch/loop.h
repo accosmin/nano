@@ -77,7 +77,7 @@ namespace nano
         ///
         template <typename toptimizer>
         auto stoch_loop(
-                const stoch_params_t& params,
+                const stoch_params_t& param,
                 const function_t& function,
                 const vector_t& x0,
                 const toptimizer& optimizer,
@@ -91,11 +91,12 @@ namespace nano
                 state_t fstate = cstate;
 
                 // for each epoch ...
-                for (size_t e = 0; e < params.m_max_epochs; ++ e)
+                for (size_t e = 0; e < param.m_max_epochs; ++ e)
                 {
                         // for each iteration ...
-                        for (size_t i = 0; i < params.m_epoch_size && cstate; ++ i)
+                        for (size_t i = 0; i < param.m_epoch_size && cstate; ++ i)
                         {
+                                function.stoch_next();
                                 optimizer(cstate);
                         }
 
@@ -108,17 +109,17 @@ namespace nano
 
                         // check convergence (using the full gradient)
                         fstate.update(function, cstate.x);
-                        if (fstate.converged(params.m_epsilon))
+                        if (fstate.converged(param.m_epsilon))
                         {
                                 fstate.m_status = opt_status::converged;
-                                params.tlog(fstate, config);
-                                params.ulog(fstate, config);
+                                param.tlog(fstate, config);
+                                param.ulog(fstate, config);
                                 break;
                         }
 
                         // log the current state & check the stopping criteria
-                        params.tlog(fstate, config);
-                        if (!params.ulog(fstate, config))
+                        param.tlog(fstate, config);
+                        if (!param.ulog(fstate, config))
                         {
                                 fstate.m_status = opt_status::stopped;
                                 break;

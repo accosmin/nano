@@ -36,6 +36,7 @@
 #include "stoch/ngd.h"
 #include "stoch/sg.h"
 #include "stoch/sgm.h"
+#include "stoch/svrg.h"
 
 #include "batch/gd.h"
 #include "batch/cgd.h"
@@ -121,7 +122,8 @@ namespace nano
                 auto& f = nano::get_stoch_optimizers();
                 f.add("sg", "stochastic gradient (descent)", maker<stoch_sg_t>());
                 f.add("sgm", "stochastic gradient (descent) with momentum", maker<stoch_sgm_t>());
-                f.add("ngd", "stochastic normalized gradient descent", maker<stoch_ngd_t>());
+                f.add("ngd", "stochastic normalized gradient", maker<stoch_ngd_t>());
+                f.add("svrg", "stochastic variance reduced gradient", maker<stoch_svrg_t>());
                 f.add("ag", "Nesterov's accelerated gradient", maker<stoch_ag_t>());
                 f.add("agfr", "Nesterov's accelerated gradient with function value restarts", maker<stoch_agfr_t>());
                 f.add("aggr", "Nesterov's accelerated gradient with gradient restarts", maker<stoch_aggr_t>());

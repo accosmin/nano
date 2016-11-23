@@ -5,7 +5,8 @@ list(APPEND libnano_sources
         ${CMAKE_CURRENT_SOURCE_DIR}/ag.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/sg.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/sgm.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/ngd.cpp)
+        ${CMAKE_CURRENT_SOURCE_DIR}/ngd.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/svrg.cpp)
 
 set(libnano_sources "${libnano_sources}" PARENT_SCOPE)
 

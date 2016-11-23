@@ -2,7 +2,6 @@
 #include "model.h"
 #include "stochastic.h"
 #include "math/numeric.h"
-#include "math/epsilon.h"
 #include "text/to_params.h"
 #include "stoch_optimizer.h"
 #include "text/from_params.h"
@@ -12,7 +11,7 @@ namespace nano
 {
         stochastic_trainer_t::stochastic_trainer_t(const string_t& parameters) :
                 trainer_t(concat_params(parameters,
-                "opt=sg[...],epochs=16[1,1024],policy=stop_early[,all_epochs],min_batch=32[32,1024],max_batch=256[32,4096]"))
+                "opt=sg[...],epochs=16[1,1024],policy=stop_early[,all_epochs],min_batch=32[32,1024],max_batch=256[32,4096],eps=1e-6"))
         {
         }
 
@@ -31,7 +30,7 @@ namespace nano
                 const auto policy = from_params<trainer_policy>(config(), "policy");
                 const auto batch0 = clamp(from_params<size_t>(config(), "min_batch"), 32, 1024);
                 const auto batchK = clamp(from_params<size_t>(config(), "max_batch"), batch0, 4096);
-                const auto epsilon = epsilon0<scalar_t>();
+                const auto epsilon = from_params<scalar_t>(config(), "eps");
                 const auto optimizer = from_params<string_t>(config(), "opt");
 
                 const auto train_fold = fold_t{fold, protocol::train};

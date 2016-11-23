@@ -16,22 +16,22 @@ namespace nano
         {
         }
 
-        state_t batch_lbfgs_t::minimize(const batch_params_t& param, const function_t& problem, const vector_t& x0) const
+        state_t batch_lbfgs_t::minimize(const batch_params_t& param, const function_t& function, const vector_t& x0) const
         {
-                return  minimize(param, problem, x0,
+                return  minimize(param, function, x0,
                         from_params<ls_initializer>(config(), "ls_init"),
                         from_params<ls_strategy>(config(), "ls_strat"),
                         from_params<scalar_t>(config(), "c1"),
                         from_params<scalar_t>(config(), "c2"));
         }
 
-        state_t batch_lbfgs_t::minimize(const batch_params_t& param, const function_t& problem, const vector_t& x0,
+        state_t batch_lbfgs_t::minimize(const batch_params_t& param, const function_t& function, const vector_t& x0,
                 const ls_initializer linit, const ls_strategy lstrat, const scalar_t c1, const scalar_t c2) const
         {
-                assert(problem.size() == x0.size());
+                assert(function.size() == x0.size());
 
                 // previous state
-                state_t pstate(problem.size());
+                state_t pstate(function.size());
 
                 std::deque<vector_t> ss, ys;
                 vector_t q, r;
@@ -91,7 +91,7 @@ namespace nano
                         pstate = cstate;
 
                         const scalar_t t0 = ls_init(cstate);
-                        if (!ls_step(problem, t0, cstate))
+                        if (!ls_step(function, t0, cstate))
                         {
                                 return false;
                         }
@@ -108,7 +108,7 @@ namespace nano
                 };
 
                 // OK, assembly the optimizer
-                return batch_loop(param, problem, x0, op);
+                return batch_loop(param, function, x0, op);
         }
 }
 

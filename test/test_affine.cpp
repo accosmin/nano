@@ -15,6 +15,41 @@ const auto osize = tensor_size_t(4);
 const auto count = tensor_size_t(1000);
 const auto noise = epsilon2<scalar_t>();
 
+template <typename... tparams>
+void add_trainer(std::vector<rtrainer_t>& trainers, const string_t& id, const tparams&... params)
+{
+        const auto batch = 32;
+        const auto epochs = 1000;
+        const auto policy = trainer_policy::stop_early;
+        const auto eps = epsilon2<scalar_t>();
+
+        trainers.push_back(std::move(get_trainers().get(id, to_params(
+                "batch", batch, "min_batch", batch, "max_batch", batch, "epochs", epochs,
+                "policy", policy, "eps", eps,
+                params...))));
+}
+
+auto make_trainers()
+{
+        std::vector<rtrainer_t> trainers;
+
+        add_trainer(trainers, "batch", "opt", "gd");
+        add_trainer(trainers, "batch", "opt", "cgd");
+        add_trainer(trainers, "batch", "opt", "lbfgs");
+        add_trainer(trainers, "stoch", "opt", "sg");
+        add_trainer(trainers, "stoch", "opt", "sgm");
+        add_trainer(trainers, "stoch", "opt", "ngd");
+        add_trainer(trainers, "stoch", "opt", "svrg");
+        add_trainer(trainers, "stoch", "opt", "adam");
+        add_trainer(trainers, "stoch", "opt", "adagrad");
+        add_trainer(trainers, "stoch", "opt", "adadelta");
+        add_trainer(trainers, "stoch", "opt", "ag");
+        add_trainer(trainers, "stoch", "opt", "agfr");
+        add_trainer(trainers, "stoch", "opt", "aggr");
+
+        return trainers;
+}
+
 NANO_BEGIN_MODULE(test_affine)
 
 NANO_CASE(construction)
@@ -75,26 +110,7 @@ NANO_CASE(regression)
         const auto criterion = get_criteria().get("avg");
 
         // create trainers
-        const auto batch = 32;
-        const auto epochs = 1000;
-        const auto policy = trainer_policy::stop_early;
-        std::vector<rtrainer_t> trainers;
-        const auto add_trainer = [&] (const auto& id, const auto& params)
-        {
-                trainers.push_back(std::move(get_trainers().get(id, params)));
-        };
-        add_trainer("batch", to_params("opt", "gd", "epochs", epochs, "policy", policy));
-        add_trainer("batch", to_params("opt", "cgd", "epochs", epochs, "policy", policy));
-        add_trainer("batch", to_params("opt", "lbfgs", "epochs", epochs, "policy", policy));
-        add_trainer("stoch", to_params("opt", "sg", "epochs", epochs, "min_batch", batch, "max_batch", batch, "policy", policy));
-        add_trainer("stoch", to_params("opt", "sgm", "epochs", epochs, "min_batch", batch, "max_batch", batch, "policy", policy));
-        add_trainer("stoch", to_params("opt", "ngd", "epochs", epochs, "min_batch", batch, "max_batch", batch, "policy", policy));
-        //add_trainer("stoch", to_params("opt", "adam", "epochs", epochs, "min_batch", batch, "max_batch", batch, "policy", policy));
-        //add_trainer("stoch", to_params("opt", "adagrad", "epochs", epochs, "min_batch", batch, "max_batch", batch, "policy", policy));
-        //add_trainer("stoch", to_params("opt", "adadelta", "epochs", epochs, "min_batch", batch, "max_batch", batch, "policy", policy));
-        //add_trainer("stoch", to_params("opt", "ag", "epochs", epochs, "min_batch", batch, "max_batch", batch, "policy", policy));
-        //add_trainer("stoch", to_params("opt", "agfr", "epochs", epochs, "min_batch", batch, "max_batch", batch, "policy", policy));
-        //add_trainer("stoch", to_params("opt", "aggr", "epochs", epochs, "min_batch", batch, "max_batch", batch, "policy", policy));
+        const auto trainers = make_trainers();
 
         // check training
         for (const auto& loss : losses)
@@ -142,26 +158,7 @@ NANO_CASE(classification)
         const auto criterion = get_criteria().get("avg");
 
         // create trainers
-        const auto batch = 32;
-        const auto epochs = 1000;
-        const auto policy = trainer_policy::stop_early;
-        std::vector<rtrainer_t> trainers;
-        const auto add_trainer = [&] (const auto& id, const auto& params)
-        {
-                trainers.push_back(std::move(get_trainers().get(id, params)));
-        };
-        add_trainer("batch", to_params("opt", "gd", "epochs", epochs, "policy", policy));
-        add_trainer("batch", to_params("opt", "cgd", "epochs", epochs, "policy", policy));
-        add_trainer("batch", to_params("opt", "lbfgs", "epochs", epochs, "policy", policy));
-        add_trainer("stoch", to_params("opt", "sg", "epochs", epochs, "min_batch", batch, "max_batch", batch, "policy", policy));
-        add_trainer("stoch", to_params("opt", "sgm", "epochs", epochs, "min_batch", batch, "max_batch", batch, "policy", policy));
-        add_trainer("stoch", to_params("opt", "ngd", "epochs", epochs, "min_batch", batch, "max_batch", batch, "policy", policy));
-        //add_trainer("stoch", to_params("opt", "adam", "epochs", epochs, "min_batch", batch, "max_batch", batch, "policy", policy));
-        //add_trainer("stoch", to_params("opt", "adagrad", "epochs", epochs, "min_batch", batch, "max_batch", batch, "policy", policy));
-        //add_trainer("stoch", to_params("opt", "adadelta", "epochs", epochs, "min_batch", batch, "max_batch", batch, "policy", policy));
-        //add_trainer("stoch", to_params("opt", "ag", "epochs", epochs, "min_batch", batch, "max_batch", batch, "policy", policy));
-        //add_trainer("stoch", to_params("opt", "agfr", "epochs", epochs, "min_batch", batch, "max_batch", batch, "policy", policy));
-        //add_trainer("stoch", to_params("opt", "aggr", "epochs", epochs, "min_batch", batch, "max_batch", batch, "policy", policy));
+        const auto trainers = make_trainers();
 
         // check training
         for (const auto& loss : losses)

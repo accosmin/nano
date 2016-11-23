@@ -2,7 +2,6 @@
 #include "batch.h"
 #include "model.h"
 #include "math/numeric.h"
-#include "math/epsilon.h"
 #include "text/to_params.h"
 #include "batch_optimizer.h"
 #include "text/from_params.h"
@@ -12,7 +11,7 @@ namespace nano
 {
         batch_trainer_t::batch_trainer_t(const string_t& parameters) :
                 trainer_t(concat_params(parameters,
-                "opt=lbfgs[...],epochs=1024[4,4096],policy=stop_early[,all_epochs]"))
+                "opt=lbfgs[...],epochs=1024[4,4096],policy=stop_early[,all_epochs],eps=1e-6"))
         {
         }
 
@@ -29,7 +28,7 @@ namespace nano
                 // parameters
                 const auto epochs = clamp(from_params<size_t>(config(), "epochs"), 4, 4096);
                 const auto policy = from_params<trainer_policy>(config(), "policy");
-                const auto epsilon = epsilon0<scalar_t>();
+                const auto epsilon = from_params<scalar_t>(config(), "eps");
                 const auto optimizer = from_params<string_t>(config(), "opt");
 
                 const auto train_fold = fold_t{fold, protocol::train};

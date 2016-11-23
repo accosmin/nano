@@ -61,7 +61,7 @@ namespace nano
                 ///
                 criterion_t& reset(const model_t& model);
                 criterion_t& reset(const vector_t& params);
-                criterion_t& reset(const type t);
+                criterion_t& reset(const type);
                 criterion_t& reset(const scalar_t lambda);
                 criterion_t& reset();
 

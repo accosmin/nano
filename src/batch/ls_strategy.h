@@ -19,7 +19,7 @@ namespace nano
                 ///
                 /// \brief update the current state
                 ///
-                bool operator()(const function_t& problem, const scalar_t t0, state_t& state) const;
+                bool operator()(const function_t& function, const scalar_t t0, state_t& state) const;
 
         private:
 
