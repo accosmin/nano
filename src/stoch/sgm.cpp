@@ -2,6 +2,7 @@
 #include "loop.h"
 #include "lrate.h"
 #include "math/momentum.h"
+#include "text/to_params.h"
 
 namespace nano
 {
@@ -42,7 +43,7 @@ namespace nano
 
                 // OK, assembly the optimizer
                 return  stoch_loop(param, function, x0, optimizer,
-                        {{"alpha0", alpha0}, {"decay", decay}, {"momentum", momentum}});
+                        to_params("alpha0", alpha0, "decay", decay, "momentum", momentum));
         }
 }
 

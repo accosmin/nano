@@ -19,9 +19,10 @@ namespace nano
                 return to_params(name, value) + "," + to_params(values...);
         }
 
-        inline string_t concat_params(const string_t& params1, const string_t& params2)
+        template <typename tvalue, typename... tvalues>
+        string_t to_params(const string_t& params, const char* name, const tvalue& value, const tvalues&... values)
         {
-                return params1.empty() ? params2 : (params1 + "," + params2);
+                return params + (params.empty() ? "" : ",") + to_params(name, value, values...);
         }
 }
 

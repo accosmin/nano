@@ -10,8 +10,8 @@
 namespace nano
 {
         batch_trainer_t::batch_trainer_t(const string_t& parameters) :
-                trainer_t(concat_params(parameters,
-                "opt=lbfgs[...],epochs=1024[4,4096],policy=stop_early[,all_epochs],eps=1e-6"))
+                trainer_t(to_params(parameters, "opt", "lbfgs[...]", "epochs", "1024[4,4096]",
+                "policy", "stop_early[,all_epochs]", "eps", 1e-6))
         {
         }
 

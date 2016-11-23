@@ -3,25 +3,8 @@
 
 namespace nano
 {
-        trainer_config_t append(const trainer_config_t& config, const char* const name, const scalar_t value)
-        {
-                auto ret = config;
-                ret.emplace_back(name, value);
-                return ret;
-        }
-
-        std::ostream& operator<<(std::ostream& os, const trainer_config_t& config)
-        {
-                for (size_t i = 0; i < config.size(); ++ i)
-                {
-                        const auto& param = config[i];
-                        os << param.first << "=" << param.second << ((i + 1 == config.size()) ? "" : ",");
-                }
-                return os;
-        }
-
         trainer_status trainer_result_t::update(const state_t& opt_state,
-                const trainer_state_t& state, const trainer_config_t& config)
+                const trainer_state_t& state, const string_t& config)
         {
                 // out-of-bounds values (e.g. caused by invalid line-search steps)
                 if (!state)
@@ -121,7 +104,7 @@ namespace nano
                 return m_opt_params;
         }
 
-        trainer_config_t trainer_result_t::optimum_config() const
+        string_t trainer_result_t::optimum_config() const
         {
                 return m_opt_config;
         }

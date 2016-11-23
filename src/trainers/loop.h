@@ -6,6 +6,7 @@
 #include "task_iterator.h"
 #include "trainer_result.h"
 #include "text/to_string.h"
+#include "text/to_params.h"
 
 #include "logger.h"
 
@@ -17,7 +18,7 @@ namespace nano
         inline bool ulog(const accumulator_t& lacc, task_iterator_t& it,
                 size_t& epoch, const size_t epochs, trainer_result_t& result, const trainer_policy policy,
                 const timer_t& timer,
-                const state_t& state, const trainer_config_t& sconfig = trainer_config_t())
+                const state_t& state, const string_t& sconfig = string_t())
         {
                 // evaluate the current state
                 lacc.set_params(state.x);
@@ -34,7 +35,7 @@ namespace nano
 
                 // OK, update the optimum solution
                 const auto milis = timer.milliseconds();
-                const auto config = nano::append(sconfig, "lambda", lacc.lambda());
+                const auto config = to_params(sconfig, "lambda", lacc.lambda());
                 const auto ret = result.update(state, {milis, ++epoch, train, valid, test}, config);
 
                 log_info()

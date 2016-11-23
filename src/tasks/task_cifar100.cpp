@@ -113,7 +113,7 @@ namespace nano
         };
 
         cifar100_task_t::cifar100_task_t(const string_t& config) :
-                mem_vision_task_t("cifar-100", 3, 32, 32, 100, 1, concat_params(config, "dir=."))
+                mem_vision_task_t("cifar-100", 3, 32, 32, 100, 1, to_params(config, "dir", "."))
         {
         }
 

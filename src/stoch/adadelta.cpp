@@ -1,6 +1,7 @@
 #include "loop.h"
 #include "adadelta.h"
 #include "math/momentum.h"
+#include "text/to_params.h"
 
 namespace nano
 {
@@ -46,7 +47,7 @@ namespace nano
 
                 // OK, assembly the optimizer
                 return  stoch_loop(param, function, x0, optimizer,
-                        {{"momentum", momentum}, {"epsilon", epsilon}});
+                        to_params("momentum", momentum, "epsilon", epsilon));
         }
 }
 

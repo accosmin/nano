@@ -1,5 +1,6 @@
 #include "loop.h"
 #include "adagrad.h"
+#include "text/to_params.h"
 
 namespace nano
 {
@@ -38,7 +39,7 @@ namespace nano
 
                 // OK, assembly the optimizer
                 return  stoch_loop(param, function, x0, optimizer,
-                        {{"alpha0", alpha0}, {"epsilon", epsilon}});
+                        to_params("alpha0", alpha0, "epsilon", epsilon));
         }
 }
 

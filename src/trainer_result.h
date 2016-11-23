@@ -9,28 +9,9 @@ namespace nano
         struct state_t;
 
         ///
-        /// \brief training configuration (e.g. {name, value:learning rate, regularization weight}+)
-        ///
-        using trainer_config_t = std::vector<std::pair<const char*, scalar_t>>;
-
-        ///
-        /// \brief append hyper-parameter to configuration
-        ///
-        NANO_PUBLIC trainer_config_t append(const trainer_config_t&, const char* const name, const scalar_t value);
-
-        ///
-        /// \brief streaming training configurations
-        ///
-        NANO_PUBLIC std::ostream& operator<<(std::ostream&, const trainer_config_t&);
-
-        ///
         /// \brief training history (configuration, optimization states)
         ///
-        using trainer_history_t = std::map
-        <
-                trainer_config_t,
-                trainer_states_t
-        >;
+        using trainer_history_t = std::map<string_t, trainer_states_t>;
 
         ///
         /// \brief
@@ -69,7 +50,7 @@ namespace nano
                 ///
                 /// \brief update the current/optimum state with a possible better state
                 ///
-                trainer_status update(const state_t&, const trainer_state_t&, const trainer_config_t&);
+                trainer_status update(const state_t&, const trainer_state_t&, const string_t& config);
 
                 ///
                 /// \brief update the current/optimum state with a possible better state
@@ -102,7 +83,7 @@ namespace nano
                 ///
                 /// \brief optimum hyper-parameter configuration
                 ///
-                trainer_config_t optimum_config() const;
+                string_t optimum_config() const;
 
                 ///
                 /// \brief optimum epoch
@@ -119,7 +100,7 @@ namespace nano
                 // attributes
                 vector_t                m_opt_params;           ///< optimum model parameters
                 trainer_state_t         m_opt_state;            ///< optimum training state
-                trainer_config_t        m_opt_config;           ///< optimum configuration
+                string_t                m_opt_config;           ///< optimum configuration
                 trainer_history_t       m_history;              ///< optimization history
         };
 

@@ -81,7 +81,7 @@ namespace nano
                 const function_t& function,
                 const vector_t& x0,
                 const toptimizer& optimizer,
-                const stoch_params_t::config_t& config)
+                const string_t& config)
         {
                 // current state
                 state_t cstate(function.size());

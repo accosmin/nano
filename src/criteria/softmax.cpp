@@ -6,7 +6,7 @@
 namespace nano
 {
         softmax_criterion_t::softmax_criterion_t(const string_t& configuration) :
-                criterion_t(concat_params(configuration, "beta=5[1,10]")),
+                criterion_t(to_params(configuration, "beta", "5[1,10]")),
                 m_beta(clamp(from_params(config(), "beta", scalar_t(5)), scalar_t(1), scalar_t(10))),
                 m_value(0)
         {

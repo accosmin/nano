@@ -1,5 +1,6 @@
 #include "ag.h"
 #include "loop.h"
+#include "text/to_params.h"
 
 namespace nano
 {
@@ -94,7 +95,7 @@ namespace nano
 
                 // OK, assembly the optimizer
                 return  stoch_loop(param, function, x0, optimizer,
-                        {{"alpha0", alpha0}, {"q", q}});
+                        to_params("alpha0", alpha0, "q", q));
         }
 
         template struct stoch_ag_base_t<ag_restart::none>;

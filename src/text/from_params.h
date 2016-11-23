@@ -27,10 +27,7 @@ namespace nano
         /// \brief decode parameter by name: [name1=value1[\[description\]][,name2=value2[...]]
         /// the default value is returned if the parameter cannot be found or is invalid.
         ///
-        template
-        <
-                class tvalue
-        >
+        template <typename tvalue>
         tvalue from_params(const string_t& params, const string_t& param_name, tvalue default_value)
         {
                 size_t begin, size;
@@ -55,10 +52,7 @@ namespace nano
         /// \brief decode parameter by name: [name1=value1[\[description\]][,name2=value2[...]]
         /// an exception is thrown if the parameter cannot be found or is invalid.
         ///
-        template
-        <
-                class tvalue
-        >
+        template <typename tvalue>
         tvalue from_params(const string_t& params, const string_t& param_name)
         {
                 size_t begin, size;

@@ -1,6 +1,7 @@
 #include "svrg.h"
 #include "loop.h"
 #include "lrate.h"
+#include "text/to_params.h"
 
 namespace nano
 {
@@ -19,7 +20,7 @@ namespace nano
         {
                 assert(function.size() == x0.size());
 
-                const auto config = stoch_params_t::config_t{{"alpha0", alpha0}, {"decay", decay}};
+                const auto config = to_params("alpha0", alpha0, "decay", decay);
 
                 // learning rate schedule
                 lrate_t lrate(alpha0, decay);

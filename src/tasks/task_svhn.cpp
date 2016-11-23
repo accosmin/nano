@@ -13,7 +13,7 @@
 namespace nano
 {
         svhn_task_t::svhn_task_t(const string_t& config) :
-                mem_vision_task_t("svhn", 3, 32, 32, 10, 1, concat_params(config, "dir=."))
+                mem_vision_task_t("svhn", 3, 32, 32, 10, 1, to_params(config, "dir", "."))
         {
         }
 

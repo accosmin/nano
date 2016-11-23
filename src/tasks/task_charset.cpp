@@ -144,9 +144,9 @@ namespace nano
 
         static string_t append_config(const string_t& configuration)
         {
-                return  concat_params(configuration,
-                        "type=digit[lalpha,ualpha,alpha,alphanum],"\
-                        "color=rgb[,luma,rgba],irows=32[12,128],icols=32[12,128],count=1000[100,1M]");
+                return  to_params(configuration,
+                        "type", "digit[lalpha,ualpha,alpha,alphanum]", "color", "rgb[,luma,rgba]",
+                        "irows", "32[12,128]", "icols", "32[12,128]", "count", "1000[100,1M]");
         }
 
         charset_task_t::charset_task_t(const string_t& configuration) : mem_vision_task_t(

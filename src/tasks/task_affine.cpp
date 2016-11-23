@@ -11,9 +11,9 @@ namespace nano
 {
         static string_t append_config(const string_t& configuration)
         {
-                return  concat_params(configuration,
-                        "idims=10[1,100],irows=32[1,100],icols=32[1,100],osize=10[1,1000],"\
-                        "count=1000[10,1M],noise=0.1[0,0.5],mode=regression[,sign_class]");
+                return  to_params(configuration,
+                        "idims", "10[1,100]", "irows", "32[1,100]", "icols", "32[1,100]", "osize", "10[1,1000]",
+                        "count", "1000[10,1M]", "noise", "0.1[0,0.5]", "mode", "regression[,sign_class]");
         }
 
         affine_task_t::affine_task_t(const string_t& configuration) : mem_tensor_task_t(

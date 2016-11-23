@@ -21,7 +21,7 @@ void add_trainer(std::vector<rtrainer_t>& trainers, const string_t& id, const tp
         const auto batch = 32;
         const auto epochs = 1000;
         const auto policy = trainer_policy::stop_early;
-        const auto eps = epsilon2<scalar_t>();
+        const auto eps = epsilon1<scalar_t>();
 
         trainers.push_back(std::move(get_trainers().get(id, to_params(
                 "batch", batch, "min_batch", batch, "max_batch", batch, "epochs", epochs,
