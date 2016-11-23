@@ -9,7 +9,7 @@
 namespace nano
 {
         affine_layer_t::affine_layer_t(const string_t& parameters) :
-                layer_t(concat_params(parameters, "dims=10[1,4096]"))
+                layer_t(to_params(parameters, "dims", "10[1,4096]"))
         {
         }
 

@@ -54,13 +54,13 @@ namespace nano
                         task_iterator_t it(task, train_fold, batch0, factor);
 
                         // tuning operator
-                        const auto fn_tlog = [&] (const state_t& state, const trainer_config_t& sconfig)
+                        const auto fn_tlog = [&] (const state_t& state, const string_t& sconfig)
                         {
                                 lacc.set_params(state.x);
                                 lacc.update(task, train_fold);
                                 const auto train = trainer_measurement_t{lacc.value(), lacc.vstats(), lacc.estats()};
 
-                                const auto config = nano::append(sconfig, "lambda", lacc.lambda());
+                                const auto config = to_params(sconfig, "lambda", lacc.lambda());
 
                                 log_info()
                                         << "[tune:train=" << train
@@ -74,7 +74,7 @@ namespace nano
                         };
 
                         // logging operator
-                        const auto fn_ulog = [&] (const state_t& state, const trainer_config_t& sconfig)
+                        const auto fn_ulog = [&] (const state_t& state, const string_t& sconfig)
                         {
                                  return ulog(lacc, it, epoch, epochs, result, policy, timer, state, sconfig);
                         };

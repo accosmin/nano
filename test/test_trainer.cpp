@@ -2,6 +2,7 @@
 #include "utest.h"
 #include "trainer_result.h"
 #include "text/to_string.h"
+#include "text/to_params.h"
 
 using namespace nano;
 
@@ -24,7 +25,7 @@ static auto update_result(trainer_result_t& result, const opt_status status, con
         state_t opt_state;
         opt_state.m_status = status;
 
-        const auto config = trainer_config_t(1, {"param", scalar_t(0)});
+        const auto config = to_params("param", 0);
 
         return result.update(opt_state, make_trainer_state(value, 0, static_cast<size_t>(epoch)), config);
 }
