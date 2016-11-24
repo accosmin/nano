@@ -18,7 +18,7 @@ namespace benchmark
                 stats_t<scalar_t> m_fails;      ///< #convergence failures
                 stats_t<scalar_t> m_fcalls;     ///< #function value calls
                 stats_t<scalar_t> m_gcalls;     ///< #gradient calls
-                stats_t<scalar_t> m_speeds;     ///< convergence speed (actually the average decrease ratio of the convergence criteria)
+                stats_t<scalar_t> m_speeds;     ///< #convergence speeds
         };
 
         stats_t<scalar_t> make_stats(const scalars_t& values, const scalars_t& flags)
@@ -57,12 +57,12 @@ namespace benchmark
                         if (stat.m_fcalls)
                         {
                                 table.append(nano::align(name, 36))
-                                        << static_cast<size_t>(stat.m_fcalls.avg() + 2 * stat.m_gcalls.avg())
-                                        << stat.m_crits.avg()
-                                        << static_cast<size_t>(stat.m_fails.sum())
-                                        << static_cast<size_t>(stat.m_fcalls.avg())
-                                        << static_cast<size_t>(stat.m_gcalls.avg())
-                                        << stat.m_speeds.avg();
+                                << align(to_string(static_cast<size_t>(stat.m_fcalls.avg() + 2 * stat.m_gcalls.avg())), 12)
+                                << align(to_string(stat.m_crits.avg()), 12)
+                                << align(to_string(static_cast<size_t>(stat.m_fails.sum())), 12)
+                                << align(to_string(static_cast<size_t>(stat.m_fcalls.avg())), 12)
+                                << align(to_string(static_cast<size_t>(stat.m_gcalls.avg())), 12)
+                                << align(to_string(stat.m_speeds.avg()), 12);
                         }
                 }
 
@@ -84,20 +84,21 @@ namespace benchmark
                 scalars_t gcalls(trials);
                 scalars_t speeds(trials);
 
-                nano::loopi(trials, [&] (size_t t)
+                nano::loopi(trials, [&] (const size_t t)
                 {
                         const auto& x0 = x0s[t];
 
-                        auto state0 = state_t(function.size());
+                        state_t state0(function.size());
                         state0.update(function, x0);
                         const auto g0 = state0.convergence_criteria();
 
                         // optimize
                         const auto state = optimizer->minimize(params, function, x0);
-
                         const auto g = state.convergence_criteria();
-                        const auto cost = function.fcalls() + 2 * function.gcalls();
-                        const auto speed = std::pow(g / g0, 1 / (1 + static_cast<scalar_t>(cost)));
+                        const auto speed = std::pow(
+                                static_cast<double>(epsilon0<scalar_t>() + g) /
+                                static_cast<double>(epsilon0<scalar_t>() + g0),
+                                double(1) / double(function.gcalls()));
 
                         // ignore out-of-domain solutions
                         if (function.is_valid(state.x))
@@ -107,7 +108,7 @@ namespace benchmark
                                 fails[t] = (state.m_status != opt_status::converged) ? 1 : 0;
                                 fcalls[t] = static_cast<scalar_t>(function.fcalls());
                                 gcalls[t] = static_cast<scalar_t>(function.gcalls());
-                                speeds[t] = speed;
+                                speeds[t] = static_cast<scalar_t>(speed);
                         }
                         else
                         {
@@ -120,16 +121,16 @@ namespace benchmark
                 optimizer_stat_t& stat = stats[name];
                 stat.m_crits(make_stats(crits, crits));
                 stat.m_fails(make_stats(fails, crits));
-                stat.m_speeds(make_stats(speeds, crits));
                 stat.m_fcalls(make_stats(fcalls, crits));
                 stat.m_gcalls(make_stats(gcalls, crits));
+                stat.m_speeds(make_stats(speeds, crits));
 
                 // update global statistics
                 optimizer_stat_t& gstat = gstats[name];
                 gstat.m_crits(stat.m_crits);
                 gstat.m_fails(stat.m_fails);
-                gstat.m_speeds(stat.m_speeds);
                 gstat.m_fcalls(stat.m_fcalls);
                 gstat.m_gcalls(stat.m_gcalls);
+                gstat.m_speeds(stat.m_speeds);
         }
 }

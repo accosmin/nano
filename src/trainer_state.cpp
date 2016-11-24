@@ -79,12 +79,12 @@ namespace nano
                         assert(prv.m_train.m_value >= scalar_t(0));
                         assert(crt.m_milis >= prv.m_milis);
 
-                        const scalar_t epsilon = nano::epsilon0<scalar_t>();
+                        const auto epsilon = nano::epsilon0<scalar_t>();
                         const auto ratio = (epsilon + crt.m_train.m_value) / (epsilon + prv.m_train.m_value);
                         const auto delta = 1 + crt.m_milis.count() - prv.m_milis.count();
 
                         // convergence speed ~ loss decrease ratio / second
-                        return scalar_t(1000) / static_cast<scalar_t>(delta) * std::log(ratio);
+                        return std::pow(ratio, scalar_t(1000) / static_cast<scalar_t>(delta));
                 };
 
                 nano::stats_t<scalar_t> speeds;
