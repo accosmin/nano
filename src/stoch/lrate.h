@@ -26,7 +26,7 @@ namespace nano
                         m_decay(decay),
                         m_iteration(0)
                 {
-                        assert(decay > scalar_t(0.5));
+                        assert(decay >= scalar_t(0));
                         assert(decay <= scalar_t(1));
                         assert(alpha0 > scalar_t(0));
                 }
