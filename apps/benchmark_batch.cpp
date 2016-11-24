@@ -40,17 +40,9 @@ static void check_function(
         {
                 const auto optimizer = get_batch_optimizers().get(id, to_params("ls_init", ls_init, "ls_strat", ls_strat));
                 const auto params = batch_params_t(iterations, epsilon);
-                const auto op = [&] (const vector_t& x0)
-                {
-                        return optimizer->minimize(params, function, x0);
-                };
+                const auto name = id + "[" + to_string(ls_init) + "][" + to_string(ls_strat) + "]";
 
-                const auto name =
-                        id + "[" +
-                        to_string(ls_init) + "][" +
-                        to_string(ls_strat) + "]";
-
-                benchmark::benchmark_function(function, x0s, op, name, stats, gstats);
+                benchmark::benchmark_function(optimizer, params, function, x0s, name, stats, gstats);
         }
 
         // show per-problem statistics

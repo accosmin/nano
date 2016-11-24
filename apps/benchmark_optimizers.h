@@ -36,7 +36,7 @@ namespace benchmark
                 return stats;
         }
 
-        void show_table(const std::string& table_name, const std::map<std::string, optimizer_stat_t>& ostats)
+        void show_table(const string_t& table_name, const std::map<string_t, optimizer_stat_t>& ostats)
         {
                 assert(!ostats.empty());
 
@@ -70,10 +70,10 @@ namespace benchmark
                 std::cout << table;
         }
 
-        template <typename toptimizer, typename tostats>
+        template <typename toptimizer, typename tparams, typename tostats>
         void benchmark_function(
-                const function_t& function, const std::vector<vector_t>& x0s,
-                const toptimizer& op, const std::string& name,
+                const toptimizer& optimizer,
+                const tparams& params, const function_t& function, const std::vector<vector_t>& x0s, const string_t& name,
                 tostats& stats, tostats& gstats)
         {
                 const auto trials = x0s.size();
@@ -93,7 +93,7 @@ namespace benchmark
                         const auto g0 = state0.convergence_criteria();
 
                         // optimize
-                        const auto state = op(x0);
+                        const auto state = optimizer->minimize(params, function, x0);
 
                         const auto g = state.convergence_criteria();
                         const auto cost = function.fcalls() + 2 * function.gcalls();
