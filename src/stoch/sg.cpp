@@ -24,7 +24,7 @@ namespace nano
                 lrate_t lrate(alpha0, decay);
 
                 // optimizer
-                const auto optimizer = [&] (state_t& cstate)
+                const auto optimizer = [&] (state_t& cstate, const state_t&)
                 {
                         // learning rate
                         const scalar_t alpha = lrate.get();
@@ -33,6 +33,7 @@ namespace nano
                         cstate.d = -cstate.g;
 
                         // update solution
+                        function.stoch_next();
                         cstate.stoch_update(function, alpha);
                 };
 

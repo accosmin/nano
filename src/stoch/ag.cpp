@@ -51,7 +51,7 @@ namespace nano
                 };
 
                 // optimizer
-                const auto optimizer = [&] (state_t& cstate)
+                const auto optimizer = [&] (state_t& cstate, const state_t&)
                 {
                         // learning rate
                         const scalar_t alpha = alpha0;
@@ -61,6 +61,7 @@ namespace nano
                         const scalar_t beta = get_beta(ptheta, ctheta);
 
                         // update solution
+                        function.stoch_next();
                         cstate.stoch_update(function, py);
                         cx = py - alpha * cstate.g;
                         cy = cx + beta * (cx - px);

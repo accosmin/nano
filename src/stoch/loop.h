@@ -88,7 +88,8 @@ namespace nano
                 cstate.stoch_update(function, x0);
 
                 // final state
-                state_t fstate = cstate;
+                state_t fstate(function.size());
+                fstate.update(function, x0);
 
                 // for each epoch ...
                 for (size_t e = 0; e < param.m_max_epochs; ++ e)
@@ -96,8 +97,7 @@ namespace nano
                         // for each iteration ...
                         for (size_t i = 0; i < param.m_epoch_size && cstate; ++ i)
                         {
-                                function.stoch_next();
-                                optimizer(cstate);
+                                optimizer(cstate, fstate);
                         }
 
                         // check divergence

@@ -23,7 +23,7 @@ namespace nano
                 vector_t gsum2 = vector_t::Zero(x0.size());
 
                 // optimizer
-                const auto optimizer = [&] (state_t& cstate)
+                const auto optimizer = [&] (state_t& cstate, const state_t&)
                 {
                         // learning rate
                         const scalar_t alpha = alpha0;
@@ -34,6 +34,7 @@ namespace nano
                         cstate.d = -cstate.g.array() / (epsilon + gsum2.array()).sqrt();
 
                         // update solution
+                        function.stoch_next();
                         cstate.stoch_update(function, alpha);
                 };
 

@@ -27,7 +27,7 @@ namespace nano
                 momentum_vector_t<vector_t> davg(momentum, x0.size());
 
                 // optimizer
-                const auto optimizer = [&] (state_t& cstate)
+                const auto optimizer = [&] (state_t& cstate, const state_t&)
                 {
                         // learning rate
                         const scalar_t alpha = 1;
@@ -42,6 +42,7 @@ namespace nano
                         davg.update(cstate.d.array().square());
 
                         // update solution
+                        function.stoch_next();
                         cstate.stoch_update(function, alpha);
                 };
 
