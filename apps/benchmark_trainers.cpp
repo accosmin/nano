@@ -116,8 +116,9 @@ int main(int argc, const char* argv[])
         cmdline.add("", "batch-lbfgs",          "evaluate batch optimizer LBFGS");
         cmdline.add("", "stoch",                "evaluate stoch optimizers");
         cmdline.add("", "stoch-sg",             "evaluate stoch optimizer SG (stoch gradient)");
-        cmdline.add("", "stoch-ngd",            "evaluate stoch optimizer NGS (normalized gradient descent)");
+        cmdline.add("", "stoch-ngd",            "evaluate stoch optimizer NGD (normalized gradient descent)");
         cmdline.add("", "stoch-sgm",            "evaluate stoch optimizer SGM (stoch gradient with momentum)");
+        cmdline.add("", "stoch-svrg",           "evaluate stoch optimizer SVRG (stoch variance reduced gradient)");
         cmdline.add("", "stoch-ag",             "evaluate stoch optimizer AG (Nesterov's accelerated gradient)");
         cmdline.add("", "stoch-agfr",           "evaluate stoch optimizer AG (AG + function value restarts)");
         cmdline.add("", "stoch-aggr",           "evaluate stoch optimizer AG (AG + gradient restarts)");
@@ -171,6 +172,7 @@ int main(int argc, const char* argv[])
         if (cmdline.has("stoch") || cmdline.has("stoch-sg")) stoch_optimizers.push_back("sg");
         if (cmdline.has("stoch") || cmdline.has("stoch-ngd")) stoch_optimizers.push_back("ngd");
         if (cmdline.has("stoch") || cmdline.has("stoch-sgm")) stoch_optimizers.push_back("sgm");
+        if (cmdline.has("stoch") || cmdline.has("stoch-svrg")) stoch_optimizers.push_back("svrg");
         if (cmdline.has("stoch") || cmdline.has("stoch-ag")) stoch_optimizers.push_back("ag");
         if (cmdline.has("stoch") || cmdline.has("stoch-agfr")) stoch_optimizers.push_back("agfr");
         if (cmdline.has("stoch") || cmdline.has("stoch-aggr")) stoch_optimizers.push_back("aggr");
