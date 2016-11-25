@@ -26,17 +26,18 @@ namespace nano
                 // for each iteration ...
                 for (size_t i = 0; i < params.m_max_iterations; i ++)
                 {
+                        //
+                        if (!optimizer(cstate, i))
+                        {
+                                cstate.m_status = opt_status::failed;
+                                break;
+                        }
+
                         // check convergence
                         if (cstate.converged(params.m_epsilon))
                         {
                                 cstate.m_status = opt_status::converged;
                                 params.ulog(cstate);
-                                break;
-                        }
-
-                        if (!optimizer(cstate, i))
-                        {
-                                cstate.m_status = opt_status::failed;
                                 break;
                         }
 
