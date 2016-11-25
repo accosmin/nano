@@ -136,42 +136,40 @@ int main(int argc, const char *argv[])
                 // process the samples
                 for (size_t nthreads = cmd_min_nthreads; nthreads <= cmd_max_nthreads; ++ nthreads)
                 {
+                        accumulator_t acc(*model, *loss, *criterion);
+                        acc.lambda(scalar_t(0.1));
+                        acc.threads(nthreads);
+
                         if (cmd_forward)
                         {
-                                accumulator_t lacc(*model, *loss, *criterion, criterion_t::type::value, scalar_t(0.1));
-                                lacc.set_threads(nthreads);
-
                                 const auto duration = nano::measure_robustly_usec([&] ()
                                 {
-                                        lacc.reset();
-                                        lacc.update(task, fold);
+                                        acc.mode(criterion_t::type::value);
+                                        acc.update(task, fold);
                                 }, 1);
 
-                                log_info() << "<<< processed [" << lacc.count()
+                                log_info() << "<<< processed [" << acc.count()
                                            << "] forward samples in " << duration.count() << " us.";
 
-                                frow << idiv(static_cast<size_t>(duration.count()), lacc.count());
+                                frow << idiv(static_cast<size_t>(duration.count()), acc.count());
 
-                                ftimings[nthreads] = lacc.timings();
+                                ftimings[nthreads] = acc.timings();
                         }
 
                         if (cmd_backward)
                         {
-                                accumulator_t gacc(*model, *loss, *criterion, criterion_t::type::vgrad, scalar_t(0.1));
-                                gacc.set_threads(nthreads);
-
                                 const auto duration = nano::measure_robustly_usec([&] ()
                                 {
-                                        gacc.reset();
-                                        gacc.update(task, fold);
+                                        acc.mode(criterion_t::type::vgrad);
+                                        acc.update(task, fold);
                                 }, 1);
 
-                                log_info() << "<<< processed [" << gacc.count()
+                                log_info() << "<<< processed [" << acc.count()
                                            << "] backward samples in " << duration.count() << " us.";
 
-                                brow << idiv(static_cast<size_t>(duration.count()), gacc.count());
+                                brow << idiv(static_cast<size_t>(duration.count()), acc.count());
 
-                                btimings[nthreads] = gacc.timings();
+                                btimings[nthreads] = acc.timings();
                         }
                 }
 

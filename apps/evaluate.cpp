@@ -63,11 +63,12 @@ int main(int argc, const char *argv[])
         // test model
         const auto tfold = fold_t{cmd_task_fold, protocol::test};
 
-        accumulator_t lacc(*model, *loss, *criterion, criterion_t::type::value);
-        lacc.set_threads(cmd_threads);
+        accumulator_t lacc(*model, *loss, *criterion);
+        lacc.mode(criterion_t::type::value);
+        lacc.threads(cmd_threads);
 
         nano::measure_and_log(
-                [&] () { lacc.reset(); lacc.update(*task, tfold); },
+                [&] () { lacc.clear(); lacc.update(*task, tfold); },
                 "evaluate model");
 
         log_info() << "test=" << lacc.value() << "|" << lacc.estats().avg() << "+/-" << lacc.estats().var() << ".";

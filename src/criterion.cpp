@@ -23,46 +23,42 @@ namespace nano
         {
         }
 
-        criterion_t& criterion_t::reset(const model_t& model)
+        void criterion_t::model(const model_t& model)
         {
                 m_model = model.clone();
                 m_model->save_params(m_params);
 
-                return reset();
+                clear();
         }
 
-        criterion_t& criterion_t::reset(const vector_t& params)
+        void criterion_t::params(const vector_t& params)
         {
                 assert(m_model->psize() == params.size());
 
                 m_model->load_params(params);
                 m_params = params;
 
-                return reset();
+                clear();
         }
 
-        criterion_t& criterion_t::reset(const type t)
+        void criterion_t::mode(const type t)
         {
                 m_type = t;
 
-                return reset();
+                clear();
         }
 
-        criterion_t& criterion_t::reset(const scalar_t lambda)
+        void criterion_t::lambda(const scalar_t lambda)
         {
                 m_lambda = lambda;
 
-                return reset();
+                clear();
         }
 
-        criterion_t& criterion_t::reset()
+        void criterion_t::clear()
         {
                 m_vstats.clear();
                 m_estats.clear();
-
-                clear();
-
-                return *this;
         }
 
         void criterion_t::update(const task_t& task, const fold_t& fold, const loss_t& loss)

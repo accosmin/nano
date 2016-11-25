@@ -15,27 +15,30 @@ namespace nano
         ///
         /// \brief log the current optimization state & check stopping criteria.
         ///
-        inline bool ulog(const accumulator_t& lacc, task_iterator_t& it,
+        inline bool ulog(const accumulator_t& acc, task_iterator_t& it,
                 size_t& epoch, const size_t epochs, trainer_result_t& result, const trainer_policy policy,
                 const timer_t& timer,
                 const state_t& state, const string_t& sconfig = string_t())
         {
                 // evaluate the current state
-                lacc.set_params(state.x);
-                lacc.update(it.task(), it.train_fold());
-                const auto train = trainer_measurement_t{lacc.value(), lacc.vstats(), lacc.estats()};
+                acc.params(state.x);
+                acc.mode(criterion_t::type::value);
+                acc.update(it.task(), it.train_fold());
+                const auto train = trainer_measurement_t{acc.value(), acc.vstats(), acc.estats()};
 
-                lacc.set_params(state.x);
-                lacc.update(it.task(), it.valid_fold());
-                const auto valid = trainer_measurement_t{lacc.value(), lacc.vstats(), lacc.estats()};
+                acc.params(state.x);
+                acc.mode(criterion_t::type::value);
+                acc.update(it.task(), it.valid_fold());
+                const auto valid = trainer_measurement_t{acc.value(), acc.vstats(), acc.estats()};
 
-                lacc.set_params(state.x);
-                lacc.update(it.task(), it.test_fold());
-                const auto test = trainer_measurement_t{lacc.value(), lacc.vstats(), lacc.estats()};
+                acc.params(state.x);
+                acc.mode(criterion_t::type::value);
+                acc.update(it.task(), it.test_fold());
+                const auto test = trainer_measurement_t{acc.value(), acc.vstats(), acc.estats()};
 
                 // OK, update the optimum solution
                 const auto milis = timer.milliseconds();
-                const auto config = to_params(sconfig, "lambda", lacc.lambda());
+                const auto config = to_params(sconfig, "lambda", acc.lambda());
                 const auto ret = result.update(state, {milis, ++epoch, train, valid, test}, config);
 
                 log_info()
@@ -53,10 +56,7 @@ namespace nano
         ///
         /// \brief generic training loop given a suitable optimization operator.
         ///
-        template
-        <
-                typename toperator      ///< (value_accumulator, gradient_accumulator, starting_point)
-        >
+        template <typename toperator>      ///< (accumulator, starting_point)
         trainer_result_t trainer_loop(
                 const model_t& model, const size_t nthreads,
                 const loss_t& loss, const criterion_t& criterion,
@@ -65,29 +65,25 @@ namespace nano
                 vector_t x0;
                 model.save_params(x0);
 
-                // setup accumulators
-                accumulator_t lacc(model, loss, criterion, criterion_t::type::value);
-                accumulator_t gacc(model, loss, criterion, criterion_t::type::vgrad);
-
-                lacc.set_threads(nthreads);
-                gacc.set_threads(nthreads);
+                // setup accumulator
+                accumulator_t acc(model, loss, criterion);
+                acc.threads(nthreads);
 
                 // tune the regularization factor (if needed)
                 const auto op = [&] (const scalar_t lambda)
                 {
-                        lacc.set_lambda(lambda);
-                        gacc.set_lambda(lambda);
-                        return trainer(lacc, gacc, x0);
+                        acc.lambda(lambda);
+                        return trainer(acc, x0);
                 };
 
-                if (lacc.can_regularize())
+                if (acc.can_regularize())
                 {
                         const auto space = nano::make_log10_space(scalar_t(-5.0), scalar_t(-1.0), scalar_t(0.5), 4);
                         return nano::tune(op, space).optimum();
                 }
                 else
                 {
-                        return op(0.0);
+                        return op(0);
                 }
         }
 }

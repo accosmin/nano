@@ -57,13 +57,17 @@ namespace nano
                 virtual rcriterion_t clone() const = 0;
 
                 ///
-                /// \brief reset statistics and settings
+                /// \brief reset statistics (but keeps parameters)
                 ///
-                criterion_t& reset(const model_t& model);
-                criterion_t& reset(const vector_t& params);
-                criterion_t& reset(const type);
-                criterion_t& reset(const scalar_t lambda);
-                criterion_t& reset();
+                virtual void clear();
+
+                ///
+                /// \brief change settins (and reset statistics)
+                ///
+                void model(const model_t& model);
+                void params(const vector_t& params);
+                void lambda(const scalar_t lambda);
+                void mode(const type);
 
                 ///
                 /// \brief update statistics with a new sample
@@ -134,11 +138,6 @@ namespace nano
         protected:
 
                 ///
-                /// \brief reset statistics, keep parameters
-                ///
-                virtual void clear() = 0;
-
-                ///
                 /// \brief update statistics with the loss value/error/gradient for a sample
                 ///
                 virtual void accumulate(const scalar_t value) = 0;
@@ -171,10 +170,8 @@ namespace nano
                 // attributes
                 rmodel_t                m_model;        ///< current model
                 vector_t                m_params;       ///< current model parameters
-
                 scalar_t                m_lambda;       ///< regularization weight (if any)
-                type                    m_type;         ///<
-
+                criterion_t::type       m_type;         ///<
                 stats_t<scalar_t>       m_vstats;       ///< statistics for the loss function values
                 stats_t<scalar_t>       m_estats;       ///< statistics for the error function values
         };

@@ -63,7 +63,8 @@ NANO_CASE(evaluate)
                         const string_t path = "./test_model.test";
 
                         // test error & parameters before saving
-                        accumulator_t bacc(*model, *loss, *criterion, criterion_t::type::value);
+                        accumulator_t bacc(*model, *loss, *criterion);
+                        bacc.mode(criterion_t::type::value);
                         bacc.update(*task, fold);
                         const auto lvalue_before = bacc.value();
                         const auto lerror_before = bacc.estats().avg();
@@ -79,7 +80,8 @@ NANO_CASE(evaluate)
                         //
 
                         // test error & parameters after loading
-                        accumulator_t aacc(*model, *loss, *criterion, criterion_t::type::value);
+                        accumulator_t aacc(*model, *loss, *criterion);
+                        aacc.mode(criterion_t::type::value);
                         aacc.update(*task, fold);
                         const auto lvalue_after = aacc.value();
                         const auto lerror_after = aacc.estats().avg();

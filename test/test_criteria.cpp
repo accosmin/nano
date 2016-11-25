@@ -29,13 +29,15 @@ NANO_CASE(evaluate)
         {
                 const auto criterion = get_criteria().get(id, "beta=1.0");
 
-                accumulator_t lacc(*model, *loss, *criterion, criterion_t::type::value, lambda); lacc.set_threads(1);
-                accumulator_t gacc(*model, *loss, *criterion, criterion_t::type::vgrad, lambda); gacc.set_threads(1);
+                accumulator_t acc(*model, *loss, *criterion);
+                acc.mode(criterion_t::type::value);
+                acc.lambda(lambda);
+                acc.threads(1);
 
                 task_iterator_t it(*task, fold);
 
                 // construct optimization function
-                const auto function = trainer_function_t(lacc, gacc, it);
+                const auto function = trainer_function_t(acc, it);
 
                 // check the gradient using random parameters
                 vector_t x;

@@ -35,7 +35,7 @@ namespace nano
 
                 // train the model
                 const timer_t timer;
-                const auto op = [&] (const accumulator_t& lacc, const accumulator_t& gacc, const vector_t& x0)
+                const auto op = [&] (const accumulator_t& acc, const vector_t& x0)
                 {
                         size_t epoch = 0;
                         trainer_result_t result;
@@ -45,11 +45,11 @@ namespace nano
                         // logging operator
                         const auto fn_ulog = [&] (const state_t& state)
                         {
-                                return ulog(lacc, it, epoch, epochs, result, policy, timer, state);
+                                return ulog(acc, it, epoch, epochs, result, policy, timer, state);
                         };
 
                         // assembly optimization function & optimize the model
-                        const auto function = trainer_function_t(lacc, gacc, it);
+                        const auto function = trainer_function_t(acc, it);
                         const auto params = batch_params_t{epochs, epsilon, fn_ulog};
 
                         get_batch_optimizers().get(optimizer)->minimize(params, function, x0);

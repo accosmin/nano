@@ -15,8 +15,7 @@ namespace nano
                 ///
                 /// \brief constructor
                 ///
-                accumulator_t(const model_t&, const loss_t& loss,
-                        const criterion_t&, const criterion_t::type, const scalar_t lambda = 0.0);
+                accumulator_t(const model_t&, const loss_t& loss, const criterion_t&);
 
                 ///
                 /// \brief disable copying
@@ -25,29 +24,28 @@ namespace nano
                 accumulator_t& operator=(const accumulator_t&) = delete;
 
                 ///
+                /// \brief enable moving
+                ///
+                accumulator_t(accumulator_t&&) = default;
+                accumulator_t& operator=(accumulator_t&&) = default;
+
+                ///
                 /// \brief destructor
                 ///
                 ~accumulator_t();
 
                 ///
-                /// \brief reset accumulator (keeps parameters)
+                /// \brief resets accumulator (but keeps settings)
                 ///
-                void reset() const;
+                void clear() const;
 
                 ///
-                /// \brief change the model's parameters (and resets statistics)
+                /// \brief change settings (and resets accumulator)
                 ///
-                void set_params(const vector_t& params) const;
-
-                ///
-                /// \brief change the regularization weight (keeps parameters)
-                ///
-                void set_lambda(const scalar_t lambda) const;
-
-                ///
-                /// \brief change the number of active threads
-                ///
-                void set_threads(const size_t nthreads) const;
+                void threads(const size_t nthreads) const;
+                void params(const vector_t& params) const;
+                void lambda(const scalar_t lambda) const;
+                void mode(const criterion_t::type) const;
 
                 ///
                 /// \brief cumulate statistics with a set of samples

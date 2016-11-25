@@ -19,6 +19,8 @@ namespace nano
 
         void softmax_criterion_t::clear()
         {
+                criterion_t::clear();
+
                 m_value = 0;
                 m_vgrad.resize(psize());
                 m_vgrad.setZero();

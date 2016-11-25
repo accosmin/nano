@@ -46,7 +46,7 @@ namespace nano
 
                 // train the model
                 const timer_t timer;
-                const auto op = [&] (const accumulator_t& lacc, const accumulator_t& gacc, const vector_t& x0)
+                const auto op = [&] (const accumulator_t& acc, const vector_t& x0)
                 {
                         size_t epoch = 0;
                         trainer_result_t result;
@@ -56,11 +56,12 @@ namespace nano
                         // tuning operator
                         const auto fn_tlog = [&] (const state_t& state, const string_t& sconfig)
                         {
-                                lacc.set_params(state.x);
-                                lacc.update(task, train_fold);
-                                const auto train = trainer_measurement_t{lacc.value(), lacc.vstats(), lacc.estats()};
+                                acc.params(state.x);
+                                acc.mode(criterion_t::type::value);
+                                acc.update(task, train_fold);
+                                const auto train = trainer_measurement_t{acc.value(), acc.vstats(), acc.estats()};
 
-                                const auto config = to_params(sconfig, "lambda", lacc.lambda());
+                                const auto config = to_params(sconfig, "lambda", acc.lambda());
 
                                 log_info()
                                         << "[tune:train=" << train
@@ -76,11 +77,11 @@ namespace nano
                         // logging operator
                         const auto fn_ulog = [&] (const state_t& state, const string_t& sconfig)
                         {
-                                 return ulog(lacc, it, epoch, epochs, result, policy, timer, state, sconfig);
+                                 return ulog(acc, it, epoch, epochs, result, policy, timer, state, sconfig);
                         };
 
                         // assembly optimization function & optimize the model
-                        const auto function = trainer_function_t(lacc, gacc, it);
+                        const auto function = trainer_function_t(acc, it);
                         const auto params = stoch_params_t{epochs, epoch_size, epsilon, fn_ulog, fn_tlog};
 
                         get_stoch_optimizers().get(optimizer)->minimize(params, function, x0);

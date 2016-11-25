@@ -11,12 +11,11 @@ namespace nano
         ///
         struct trainer_function_t final : public function_t
         {
-                trainer_function_t(const accumulator_t& lacc, const accumulator_t& gacc, task_iterator_t& iterator) :
-                        function_t("ml optimization function", lacc.psize(), lacc.psize(), lacc.psize(), convexity::no, 1e+6),
-                        m_lacc(lacc), m_gacc(gacc),
+                trainer_function_t(const accumulator_t& acc, task_iterator_t& iterator) :
+                        function_t("ml optimization function", acc.psize(), acc.psize(), acc.psize(), convexity::no, 1e+6),
+                        m_acc(acc),
                         m_iterator(iterator)
                 {
-                        assert(lacc.psize() == gacc.psize());
                 }
 
                 size_t stoch_ratio() const override
@@ -37,33 +36,39 @@ namespace nano
 
                 scalar_t vgrad(const vector_t& x, vector_t* gx) const override
                 {
-                        const auto& acc = gx ? m_gacc : m_lacc;
-                        acc.set_params(x);
-                        acc.update(m_iterator.task(), m_iterator.fold());
-                        if (gx)
-                        {
-                                *gx = acc.vgrad();
-                        }
-                        return acc.value();
+                        setup(x, gx);
+                        m_acc.update(m_iterator.task(), m_iterator.fold());
+                        return get(gx);
                 }
 
                 scalar_t stoch_vgrad(const vector_t& x, vector_t* gx) const override
                 {
-                        const auto& acc = gx ? m_gacc : m_lacc;
-                        acc.set_params(x);
-                        acc.update(m_iterator.task(), m_iterator.fold(), m_iterator.begin(), m_iterator.end());
+                        setup(x, gx);
+                        m_acc.update(m_iterator.task(), m_iterator.fold(), m_iterator.begin(), m_iterator.end());
+                        return get(gx);
+                }
+
+        private:
+
+                void setup(const vector_t& x, vector_t* gx) const
+                {
+                        m_acc.params(x);
+                        m_acc.mode(gx ? criterion_t::type::vgrad : criterion_t::type::value);
+                }
+
+                scalar_t get(vector_t* gx) const
+                {
                         if (gx)
                         {
-                                *gx = acc.vgrad();
+                                *gx = m_acc.vgrad();
                         }
-                        return acc.value();
+                        return m_acc.value();
                 }
 
         private:
 
                 // attributes
-                const accumulator_t&    m_lacc;         ///< function value accumulator
-                const accumulator_t&    m_gacc;         ///< function value and gradient accumulator
+                const accumulator_t&    m_acc;          ///< function value and gradient accumulator
                 task_iterator_t&        m_iterator;
         };
 }

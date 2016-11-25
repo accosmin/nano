@@ -8,17 +8,14 @@ namespace nano
 {
         struct accumulator_t::impl_t
         {
-                impl_t( const model_t& model, const loss_t& loss,
-                        const criterion_t& criterion, const criterion_t::type type, const scalar_t lambda) :
+                impl_t(const model_t& model, const loss_t& loss, const criterion_t& criterion) :
                         m_loss(loss)
                 {
                         const auto size = thread_pool_t::instance().n_workers();
                         for (size_t i = 0; i < size; ++ i)
                         {
                                 auto cache = criterion.clone();
-                                cache->reset(model);
-                                cache->reset(lambda);
-                                cache->reset(type);
+                                cache->model(model);
                                 m_criteria.emplace_back(std::move(cache));
                         }
                 }
@@ -41,41 +38,46 @@ namespace nano
                 std::vector<rcriterion_t>       m_criteria;     ///< cached criterion / thread
         };
 
-        accumulator_t::accumulator_t(
-                const model_t& model, const loss_t& loss,
-                const criterion_t& criterion, const criterion_t::type type, const scalar_t lambda) :
-                m_impl(std::make_unique<impl_t>(model, loss, criterion, type, lambda))
+        accumulator_t::accumulator_t(const model_t& model, const loss_t& loss, const criterion_t& criterion) :
+                m_impl(std::make_unique<impl_t>(model, loss, criterion))
         {
         }
 
         accumulator_t::~accumulator_t() = default;
 
-        void accumulator_t::reset() const
+        void accumulator_t::clear() const
         {
                 for (const auto& cache : m_impl->m_criteria)
                 {
-                        cache->reset();
+                        cache->clear();
                 }
         }
 
-        void accumulator_t::set_lambda(const scalar_t ilambda) const
-        {
-                const auto lambda = nano::clamp(ilambda, 0.0, 1.0);
-                for (const auto& cache : m_impl->m_criteria)
-                {
-                        cache->reset(lambda);
-                }
-        }
-
-        void accumulator_t::set_params(const vector_t& params) const
+        void accumulator_t::lambda(const scalar_t lambda) const
         {
                 for (const auto& cache : m_impl->m_criteria)
                 {
-                        cache->reset(params);
+                        cache->lambda(clamp(lambda, scalar_t(0), scalar_t(1)));
                 }
         }
 
-        void accumulator_t::set_threads(const size_t nthreads) const
+        void accumulator_t::params(const vector_t& params) const
+        {
+                for (const auto& cache : m_impl->m_criteria)
+                {
+                        cache->params(params);
+                }
+        }
+
+        void accumulator_t::mode(const criterion_t::type type) const
+        {
+                for (const auto& cache : m_impl->m_criteria)
+                {
+                        cache->mode(type);
+                }
+        }
+
+        void accumulator_t::threads(const size_t nthreads) const
         {
                 thread_pool_t::instance().activate(nthreads);
         }
