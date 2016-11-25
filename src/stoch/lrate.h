@@ -1,18 +1,18 @@
 #pragma once
 
-#include <cmath>
 #include <cassert>
 #include "scalar.h"
 
 namespace nano
 {
         ///
-        /// \brief learning rate as an exponential decay function of:
+        /// \brief learning rate as a t-inverse function of:
         ///     - alpha0        - the initial learning rate
         ///     - decay         - the decay rate factor
         ///     - iter          - current iteration
+        ///     - size          - batch size (e.g. #samples in the sum)
         ///
-        /// learning rate = alpha0 * (1 + iteration)^decay
+        /// learning rate = alpha0 / (1 + decay * floor(iter/size))
         ///
         /// see "Online Learning and Stochastic Approximations", by Leon Bottou
         ///
@@ -21,10 +21,11 @@ namespace nano
                 ///
                 /// \brief constructor
                 ///
-                lrate_t(const scalar_t alpha0, const scalar_t decay) :
+                lrate_t(const scalar_t alpha0, const scalar_t decay, const size_t size) :
                         m_alpha0(alpha0),
                         m_decay(decay),
-                        m_iteration(0)
+                        m_iter(0),
+                        m_size(size)
                 {
                         assert(decay >= scalar_t(0));
                         assert(decay <= scalar_t(1));
@@ -36,13 +37,14 @@ namespace nano
                 ///
                 scalar_t get()
                 {
-                        return m_alpha0 / std::pow(static_cast<scalar_t>(++ m_iteration), m_decay);
+                        return m_alpha0 / (1 + m_decay * static_cast<scalar_t>(m_iter ++) / static_cast<scalar_t>(m_size));
                 }
 
                 // attributes
                 scalar_t        m_alpha0;
                 scalar_t        m_decay;
-		size_t		m_iteration;
+		size_t		m_iter;
+                size_t          m_size;
         };
 
 }

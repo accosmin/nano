@@ -21,7 +21,7 @@ namespace nano
                 assert(function.size() == x0.size());
 
                 // learning rate schedule
-                lrate_t lrate(alpha0, decay);
+                lrate_t lrate(alpha0, decay, param.m_epoch_size);
 
                 // optimizer
                 const auto optimizer = [&] (state_t& cstate, const state_t&)
