@@ -56,16 +56,13 @@ namespace nano
                         // tuning operator
                         const auto fn_tlog = [&] (const state_t& state, const string_t& sconfig)
                         {
-                                acc.params(state.x);
-                                acc.mode(criterion_t::type::value);
-                                acc.update(task, train_fold);
+                                // NB: the training state is already computed
                                 const auto train = trainer_measurement_t{acc.value(), acc.vstats(), acc.estats()};
-
-                                const auto config = to_params(sconfig, "lambda", acc.lambda());
+                                const auto config = to_params(sconfig, "lambda", acc.lambda(), "batch", it.size());
 
                                 log_info()
                                         << "[tune:train=" << train
-                                        << "," << config << ",batch=" << (it.end() - it.begin())
+                                        << "," << config << ",g=" << state.convergence_criteria()
                                         << "] " << timer.elapsed() << ".";
 
                                 // NB: need to reset the minibatch size (changed during tuning)!

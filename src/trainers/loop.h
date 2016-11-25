@@ -21,9 +21,7 @@ namespace nano
                 const state_t& state, const string_t& sconfig = string_t())
         {
                 // evaluate the current state
-                acc.params(state.x);
-                acc.mode(criterion_t::type::value);
-                acc.update(it.task(), it.train_fold());
+                // NB: the training state is already estimated!
                 const auto train = trainer_measurement_t{acc.value(), acc.vstats(), acc.estats()};
 
                 acc.params(state.x);
@@ -38,7 +36,7 @@ namespace nano
 
                 // OK, update the optimum solution
                 const auto milis = timer.milliseconds();
-                const auto config = to_params(sconfig, "lambda", acc.lambda());
+                const auto config = to_params(sconfig, "lambda", acc.lambda(), "batch", it.size());
                 const auto ret = result.update(state, {milis, ++epoch, train, valid, test}, config);
 
                 log_info()
@@ -46,8 +44,7 @@ namespace nano
                         << ":train=" << train
                         << ",valid=" << valid << "|" << nano::to_string(ret)
                         << ",test=" << test
-                        << "," << config << ",batch=" << (it.end() - it.begin())
-                        << ",g=" << state.g.lpNorm<Eigen::Infinity>()
+                        << "," << config << ",g=" << state.convergence_criteria()
                         << "] " << timer.elapsed() << ".";
 
                 return !nano::is_done(ret, policy);
