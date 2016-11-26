@@ -58,11 +58,11 @@ namespace nano
                         {
                                 // NB: the training state is already computed
                                 const auto train = trainer_measurement_t{acc.value(), acc.vstats(), acc.estats()};
-                                const auto config = to_params(sconfig, "lambda", acc.lambda(), "batch", it.size());
+                                const auto config = to_params(sconfig, "lambda", acc.lambda());
 
                                 log_info()
                                         << "[tune:train=" << train
-                                        << "," << config << ",g=" << state.convergence_criteria()
+                                        << "," << config << ",batch=" << it.size() << ",g=" << state.convergence_criteria()
                                         << "] " << timer.elapsed() << ".";
 
                                 // NB: need to reset the minibatch size (changed during tuning)!

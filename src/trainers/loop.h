@@ -36,7 +36,7 @@ namespace nano
 
                 // OK, update the optimum solution
                 const auto milis = timer.milliseconds();
-                const auto config = to_params(sconfig, "lambda", acc.lambda(), "batch", it.size());
+                const auto config = to_params(sconfig, "lambda", acc.lambda());
                 const auto ret = result.update(state, {milis, ++epoch, train, valid, test}, config);
 
                 log_info()
@@ -44,7 +44,7 @@ namespace nano
                         << ":train=" << train
                         << ",valid=" << valid << "|" << nano::to_string(ret)
                         << ",test=" << test
-                        << "," << config << ",g=" << state.convergence_criteria()
+                        << "," << config << ",batch=" << it.size() << ",g=" << state.convergence_criteria()
                         << "] " << timer.elapsed() << ".";
 
                 return !nano::is_done(ret, policy);
