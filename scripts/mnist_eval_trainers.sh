@@ -23,7 +23,7 @@ models=${models}" conv1"
 # trainers
 fn_make_trainers "stop_early"
 trainers=${trainers}" batch_gd batch_cgd batch_lbfgs"
-trainers=${trainers}" stoch_sg stoch_sgm stoch_ngd"
+trainers=${trainers}" stoch_sg stoch_sgm stoch_ngd stoch_svrg"
 trainers=${trainers}" stoch_ag stoch_agfr stoch_aggr"
 trainers=${trainers}" stoch_adam stoch_adadelta stoch_adagrad"
 
