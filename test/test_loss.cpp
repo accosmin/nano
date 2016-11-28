@@ -28,25 +28,6 @@ struct loss_function_t final : public function_t
         const vector_t&         m_target;
 };
 
-static void check_grad(const string_t& loss_id, const tensor_size_t n_dims, const size_t n_tests)
-{
-        const auto loss = get_losses().get(loss_id);
-        const auto target = class_target(n_dims / 2, n_dims);
-        const auto function = loss_function_t(loss, target);
-
-        // check the gradient using random parameters
-        for (size_t t = 0; t < n_tests; ++ t)
-        {
-                random_t<scalar_t> rgen(scalar_t(-0.1), scalar_t(+0.1));
-
-                vector_t x(n_dims);
-                rgen(x.data(), x.data() + n_dims);
-
-                NANO_CHECK_GREATER(function.eval(x), 0.0);
-                NANO_CHECK_LESS(function.grad_accuracy(x), epsilon2<scalar_t>());
-        }
-}
-
 NANO_BEGIN_MODULE(test_loss)
 
 NANO_CASE(evaluate)
@@ -62,7 +43,25 @@ NANO_CASE(evaluate)
         {
                 for (tensor_size_t cmd_dims = cmd_min_dims; cmd_dims <= cmd_max_dims; ++ cmd_dims)
                 {
-                        check_grad(loss_id, cmd_dims, cmd_tests);
+                        const auto loss = get_losses().get(loss_id);
+                        const auto target = class_target(cmd_dims / 2, cmd_dims);
+                        const auto function = loss_function_t(loss, target);
+
+                        random_t<scalar_t> rgen(scalar_t(-0.1), scalar_t(+0.1));
+
+                        vector_t x(cmd_dims);
+
+                        // check the gradient using random parameters
+                        for (size_t t = 0; t < cmd_tests; ++ t)
+                        {
+                                rgen(x.data(), x.data() + x.size());
+
+                                NANO_CHECK_GREATER(function.eval(x), 0.0);
+                                NANO_CHECK_LESS(function.grad_accuracy(x), epsilon2<scalar_t>());
+
+                                // loss value should upper-bound the error function
+                                NANO_CHECK_GREATER(loss->value(x, target), loss->error(x, target) + epsilon0<scalar_t>());
+                        }
                 }
         }
 }
