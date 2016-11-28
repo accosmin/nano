@@ -3,9 +3,11 @@
 #include "measure.h"
 #include "text/table.h"
 #include "batch/types.h"
+#include "math/epsilon.h"
 #include "text/cmdline.h"
 #include "text/to_params.h"
 #include "text/concatenate.h"
+#include "tasks/task_affine.h"
 #include "tasks/task_charset.h"
 #include "layers/make_layers.h"
 #include <iostream>
@@ -94,6 +96,70 @@ static void evaluate(model_t& model,
         }
 }
 
+static rtask_t make_charset_task(const size_t count)
+{
+        auto task = get_tasks().get("charset", to_params(
+                "type", charset_mode::digit, "color", color_mode::rgb, "irows", 16, "icols", 16, "count", count));
+        task->load();
+        return task;
+}
+
+static auto make_charset_models(const task_t& task, const string_t& activation)
+{
+        const auto outputs = task.osize();
+
+        const auto mlp0 = string_t();
+        const auto mlp1 = mlp0 + make_affine_layer(64, activation);
+        const auto mlp2 = mlp1 + make_affine_layer(64, activation);
+        const auto mlp3 = mlp2 + make_affine_layer(64, activation);
+
+        const auto convnet0 = string_t();
+        const auto convnet1 = convnet0 + make_conv_layer(32, 5, 5, 1, activation);
+        const auto convnet2 = convnet1 + make_conv_layer(32, 5, 5, 4, activation);
+        const auto convnet3 = convnet2 + make_conv_layer(32, 3, 3, 4, activation);
+
+        const auto outlayer = make_output_layer(outputs, activation);
+
+        std::vector<std::pair<string_t, string_t>> networks;
+        networks.emplace_back(mlp0 + outlayer, "mlp0");
+        networks.emplace_back(mlp1 + outlayer, "mlp1");
+        networks.emplace_back(mlp2 + outlayer, "mlp2");
+        networks.emplace_back(mlp3 + outlayer, "mlp3");
+        networks.emplace_back(convnet1 + outlayer, "convnet1");
+        networks.emplace_back(convnet2 + outlayer, "convnet2");
+        networks.emplace_back(convnet3 + outlayer, "convnet3");
+
+        return networks;
+}
+
+static rtask_t make_affine_task(const size_t count)
+{
+        auto task = get_tasks().get("affine", to_params(
+                "idims", 3, "irows", 5, "icols", 7, "osize", 4, "count", count, "noise", epsilon1<scalar_t>(),
+                "mode", affine_mode::regression));
+        task->load();
+        return task;
+}
+
+static auto make_affine_models(const task_t& task, const string_t& activation)
+{
+        const auto outputs = task.osize();
+
+        const auto mlp0 = string_t();
+        const auto mlp1 = mlp0 + make_affine_layer(64, activation);
+        const auto mlp2 = mlp1 + make_affine_layer(64, activation);
+        const auto mlp3 = mlp2 + make_affine_layer(64, activation);
+
+        const auto outlayer = make_output_layer(outputs, activation);
+
+        std::vector<std::pair<string_t, string_t>> networks;
+        networks.emplace_back(mlp0 + outlayer, "mlp0");
+        networks.emplace_back(mlp1 + outlayer, "mlp1");
+        networks.emplace_back(mlp2 + outlayer, "mlp2");
+        networks.emplace_back(mlp3 + outlayer, "mlp3");
+
+        return networks;
+}
 int main(int argc, const char* argv[])
 {
         using namespace nano;
@@ -101,15 +167,6 @@ int main(int argc, const char* argv[])
         // parse the command line
         cmdline_t cmdline("benchmark trainers");
         cmdline.add("s", "samples",             "number of samples to use [100, 100000]", "10000");
-        cmdline.add("", "mlps",                 "use MLPs with varying number of hidden layers");
-        cmdline.add("", "mlp0",                 "use MLPs with 0 hidden layers");
-        cmdline.add("", "mlp1",                 "use MLPs with 1 hidden layer");
-        cmdline.add("", "mlp2",                 "use MLPs with 2 hidden layers");
-        cmdline.add("", "mlp3",                 "use MLPs with 3 hidden layers");
-        cmdline.add("", "convnets",             "use convolution networks with varying number of convolution layers");
-        cmdline.add("", "convnet1",             "use convolution networks with 1 convolution layer");
-        cmdline.add("", "convnet2",             "use convolution networks with 2 convolution layers");
-        cmdline.add("", "convnet3",             "use convolution networks with 3 convolution layers");
         cmdline.add("", "batch",                "evaluate batch optimizers");
         cmdline.add("", "batch-gd",             "evaluate batch optimizer GD (gradient descent)");
         cmdline.add("", "batch-cgd",            "evaluate batch optimizer CGD (conjugate gradient descent)");
@@ -125,6 +182,8 @@ int main(int argc, const char* argv[])
         cmdline.add("", "stoch-adam",           "evaluate stoch optimizer ADAM");
         cmdline.add("", "stoch-adagrad",        "evaluate stoch optimizer ADAGRAD");
         cmdline.add("", "stoch-adadelta",       "evaluate stoch optimizer ADADELTA");
+        cmdline.add("", "charset",              "use the synthetic charset task (classify digits)");
+        cmdline.add("", "affine",               "use the synthetic affine task (regression of affine transformation)");
         cmdline.add("", "loss",                 "loss function (" + nano::concatenate(get_losses().ids()) + ")", "classnll");
         cmdline.add("", "criterion",            "training criterion (" + nano::concatenate(get_criteria().ids()) + ")", "avg");
         cmdline.add("", "activation",           "activation layer (act-unit, act-tanh, act-splus, act-snorm)", "act-snorm");
@@ -135,30 +194,16 @@ int main(int argc, const char* argv[])
 
         // check arguments and options
         const auto count = nano::clamp(cmdline.get<size_t>("samples"), 100, 100 * 1000);
-        const bool use_mlps = cmdline.has("mlps");
-        const bool use_mlp0 = cmdline.has("mlp0");
-        const bool use_mlp1 = cmdline.has("mlp1");
-        const bool use_mlp2 = cmdline.has("mlp2");
-        const bool use_mlp3 = cmdline.has("mlp3");
-        const bool use_convnets = cmdline.has("convnets");
-        const bool use_convnet1 = cmdline.has("convnet1");
-        const bool use_convnet2 = cmdline.has("convnet2");
-        const bool use_convnet3 = cmdline.has("convnet3");
         const auto cmd_loss = cmdline.get("loss");
         const auto cmd_criterion = cmdline.get("criterion");
         const auto activation = cmdline.get("activation");
         const auto trials = cmdline.get<size_t>("trials");
         const auto epochs = cmdline.get<size_t>("epochs");
+        const auto charset = cmdline.has("charset");
+        const auto affine = cmdline.has("affine");
 
-        if (    !use_mlps &&
-                !use_mlp0 &&
-                !use_mlp1 &&
-                !use_mlp2 &&
-                !use_mlp3 &&
-                !use_convnets &&
-                !use_convnet1 &&
-                !use_convnet2 &&
-                !use_convnet3)
+        if (    (!charset && !affine) ||
+                (charset && affine))
         {
                 cmdline.usage();
         }
@@ -187,38 +232,16 @@ int main(int argc, const char* argv[])
         }
 
         // create task
-        const size_t rows = 16;
-        const size_t cols = 16;
-        const color_mode color = color_mode::rgb;
-
-        charset_task_t task(to_params(
-                "type", charset_mode::digit, "color", color, "irows", rows, "icols", cols, "count", count));
-        task.load();
+        const auto task = charset ?
+                make_charset_task(count) :
+                make_affine_task(count);
 
         const size_t fold = 0;
-        const auto outputs = task.osize();
 
         // construct models
-        const auto mlp0 = string_t();
-        const auto mlp1 = mlp0 + make_affine_layer(64, activation);
-        const auto mlp2 = mlp1 + make_affine_layer(64, activation);
-        const auto mlp3 = mlp2 + make_affine_layer(64, activation);
-
-        const auto convnet0 = string_t();
-        const auto convnet1 = convnet0 + make_conv_layer(32, 5, 5, 1, activation);
-        const auto convnet2 = convnet1 + make_conv_layer(32, 5, 5, 4, activation);
-        const auto convnet3 = convnet2 + make_conv_layer(32, 3, 3, 4, activation);
-
-        const string_t outlayer = make_output_layer(outputs, activation);
-
-        std::vector<std::pair<string_t, string_t>> networks;
-        if (use_mlps || use_mlp0) networks.emplace_back(mlp0 + outlayer, "mlp0");
-        if (use_mlps || use_mlp1) networks.emplace_back(mlp1 + outlayer, "mlp1");
-        if (use_mlps || use_mlp2) networks.emplace_back(mlp2 + outlayer, "mlp2");
-        if (use_mlps || use_mlp3) networks.emplace_back(mlp3 + outlayer, "mlp3");
-        if (use_convnets || use_convnet1) networks.emplace_back(convnet1 + outlayer, "convnet1");
-        if (use_convnets || use_convnet2) networks.emplace_back(convnet2 + outlayer, "convnet2");
-        if (use_convnets || use_convnet3) networks.emplace_back(convnet3 + outlayer, "convnet3");
+        const auto networks = charset ?
+                make_charset_models(*task, activation) :
+                make_affine_models(*task, activation);
 
         // vary the model
         for (const auto& net : networks)
@@ -229,7 +252,7 @@ int main(int argc, const char* argv[])
                 log_info() << "<<< running network [" << network << "] ...";
 
                 const auto model = get_models().get("forward-network", network);
-                model->resize(task, true);
+                model->resize(*task, true);
 
                 // generate fixed random starting points
                 vectors_t x0s(trials);
@@ -255,7 +278,7 @@ int main(int argc, const char* argv[])
                 const auto basename = "[" + cmd_criterion + "] ";
                 const auto basepath = netname + "-" + cmd_loss + "-" + cmd_criterion + "-";
 
-                evaluate(*model, task, fold, *loss, *criterion, x0s, epochs,
+                evaluate(*model, *task, fold, *loss, *criterion, x0s, epochs,
                          batch_optimizers, stoch_optimizers,
                          basename, basepath, table);
 
