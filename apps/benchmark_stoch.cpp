@@ -2,38 +2,31 @@
 #include "text/cmdline.h"
 #include "math/random.h"
 #include "math/epsilon.h"
-#include "math/numeric.h"
+#include "functions/test.h"
 #include "stoch_optimizer.h"
 #include "benchmark_optimizers.h"
-#include <tuple>
 
 using namespace nano;
 
 template <typename tostats>
-void check_function(
-        const function_t& function, const size_t trials, const size_t epochs, const size_t epoch_size, const scalar_t epsilon,
-        tostats& gstats)
+static void check_function(const function_t& function,
+        const size_t trials, const size_t epochs, const size_t epoch_size, const scalar_t epsilon, tostats& gstats)
 {
-        const auto dims = function.size();
-
         auto rgen = make_rng(scalar_t(-1), scalar_t(+1));
 
         // generate fixed random trials
         vectors_t x0s(trials);
         for (auto& x0 : x0s)
         {
-                x0.resize(dims);
+                x0.resize(function.size());
                 rgen(x0.data(), x0.data() + x0.size());
         }
-
-        // optimizers to try
-        const auto ids = get_stoch_optimizers().ids();
 
         // per-problem statistics
         tostats stats;
 
         // evaluate all optimizers
-        for (const auto id : ids)
+        for (const auto id : get_stoch_optimizers().ids())
         {
                 const auto optimizer = get_stoch_optimizers().get(id);
                 const auto params = stoch_params_t(epochs, epoch_size, epsilon);

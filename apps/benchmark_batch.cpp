@@ -2,30 +2,24 @@
 #include "text/cmdline.h"
 #include "math/random.h"
 #include "math/epsilon.h"
-#include "math/numeric.h"
-#include "text/algorithm.h"
 #include "text/to_params.h"
+#include "functions/test.h"
 #include "batch_optimizer.h"
 #include "benchmark_optimizers.h"
-#include <map>
-#include <tuple>
 
 using namespace nano;
 
 template <typename tostats>
-static void check_function(
-        const function_t& function, const size_t trials, const size_t iterations, const scalar_t epsilon,
-        tostats& gstats)
+static void check_function(const function_t& function,
+        const size_t trials, const size_t iterations, const scalar_t epsilon, tostats& gstats)
 {
-        const auto dims = function.size();
-
         auto rgen = make_rng(scalar_t(-1), scalar_t(+1));
 
         // generate fixed random trials
         std::vector<vector_t> x0s(trials);
         for (auto& x0 : x0s)
         {
-                x0.resize(dims);
+                x0.resize(function.size());
                 rgen(x0.data(), x0.data() + x0.size());
         }
 
@@ -33,8 +27,7 @@ static void check_function(
         tostats stats;
 
         // evaluate all possible combinations (optimizer & line-search)
-        const auto ids = get_batch_optimizers().ids();
-        for (const auto id : ids)
+        for (const auto id : get_batch_optimizers().ids())
                 for (const ls_initializer ls_init : enum_values<ls_initializer>())
                         for (const ls_strategy ls_strat : enum_values<ls_strategy>())
         {

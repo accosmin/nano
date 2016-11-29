@@ -1,11 +1,9 @@
 #include "state.h"
-#include "tensor.h"
 #include "text/table.h"
 #include "text/align.h"
 #include "math/stats.h"
 #include "math/numeric.h"
 #include "thread/loopi.h"
-#include "functions/test.h"
 #include <iostream>
 
 namespace benchmark
