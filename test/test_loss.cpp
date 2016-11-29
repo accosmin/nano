@@ -48,19 +48,14 @@ NANO_CASE(evaluate)
                         const auto function = loss_function_t(loss, target);
 
                         random_t<scalar_t> rgen(scalar_t(-0.1), scalar_t(+0.1));
-
                         vector_t x(cmd_dims);
 
-                        // check the gradient using random parameters
                         for (size_t t = 0; t < cmd_tests; ++ t)
                         {
                                 rgen(x.data(), x.data() + x.size());
 
                                 NANO_CHECK_GREATER(function.eval(x), 0.0);
                                 NANO_CHECK_LESS(function.grad_accuracy(x), epsilon2<scalar_t>());
-
-                                // loss value should upper-bound the error function
-                                NANO_CHECK_GREATER(loss->value(x, target), loss->error(x, target) + epsilon0<scalar_t>());
                         }
                 }
         }
