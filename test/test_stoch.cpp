@@ -30,9 +30,11 @@ static void check_function(const function_t& function)
         const auto ids = get_stoch_optimizers().ids();
         for (const auto id : ids)
         {
-                if (id == "ngd")
+                if (    id == "ngd" ||
+                        id == "adadelta")
                 {
                         // NGD may not decrease the function to epsilon!
+                        // AdaDelta is not even guaranteed to decrease the function!
                         continue;
                 }
 
