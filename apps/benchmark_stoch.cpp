@@ -48,7 +48,7 @@ int main(int argc, const char* argv[])
         cmdline.add("", "trials",       "number of random trials for each test function", "100");
         cmdline.add("", "epochs",       "optimization: number of epochs", "1000");
         cmdline.add("", "epoch-size",   "optimization: number of iterations per epoch", "100");
-        cmdline.add("", "epsilon",      "convergence criteria", nano::epsilon2<scalar_t>());
+        cmdline.add("", "epsilon",      "convergence criteria", 1e-4);
         cmdline.add("", "convex",       "use only convex test functions");
 
         cmdline.process(argc, argv);
