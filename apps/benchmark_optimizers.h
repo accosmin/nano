@@ -19,21 +19,6 @@ namespace benchmark
                 stats_t<scalar_t> m_speeds;     ///< #convergence speeds
         };
 
-        stats_t<scalar_t> make_stats(const scalars_t& values, const scalars_t& flags)
-        {
-                assert(values.size() == flags.size());
-
-                nano::stats_t<scalar_t> stats;
-                for (size_t i = 0; i < values.size(); i ++)
-                {
-                        if (flags[i] >= 0)
-                        {
-                                stats(values[i]);
-                        }
-                }
-                return stats;
-        }
-
         void show_table(const string_t& table_name, const std::map<string_t, optimizer_stat_t>& ostats)
         {
                 assert(!ostats.empty());
@@ -74,61 +59,46 @@ namespace benchmark
                 const tparams& params, const function_t& function, const std::vector<vector_t>& x0s, const string_t& name,
                 tostats& stats, tostats& gstats)
         {
-                const auto trials = x0s.size();
-
-                scalars_t crits(trials);
-                scalars_t fails(trials);
-                scalars_t fcalls(trials);
-                scalars_t gcalls(trials);
-                scalars_t speeds(trials);
-
-                nano::loopi(trials, [&] (const size_t t)
+                for (const auto& x0 : x0s)
                 {
-                        const auto& x0 = x0s[t];
-
                         state_t state0(function.size());
                         state0.update(function, x0);
                         const auto g0 = state0.convergence_criteria();
 
                         // optimize
+                        const auto old_fcalls = function.fcalls();
+                        const auto old_gcalls = function.gcalls();
+
                         const auto state = optimizer->minimize(params, function, x0);
+
+                        const auto fcalls = function.fcalls() - old_fcalls;
+                        const auto gcalls = function.gcalls() - old_gcalls;
+
                         const auto g = state.convergence_criteria();
                         const auto speed = std::pow(
                                 static_cast<double>(epsilon0<scalar_t>() + g) /
                                 static_cast<double>(epsilon0<scalar_t>() + g0),
-                                double(1) / double(function.gcalls()));
+                                double(1) / double(gcalls));
 
                         // ignore out-of-domain solutions
                         if (function.is_valid(state.x))
                         {
-                                // update stats
-                                crits[t] = g;
-                                fails[t] = (state.m_status != opt_status::converged) ? 1 : 0;
-                                fcalls[t] = static_cast<scalar_t>(function.fcalls());
-                                gcalls[t] = static_cast<scalar_t>(function.gcalls());
-                                speeds[t] = static_cast<scalar_t>(speed);
-                        }
-                        else
-                        {
-                                // skip this from statistics!
-                                crits[t] = -1;
-                        }
-                });
+                                // update per-function statistics
+                                optimizer_stat_t& stat = stats[name];
+                                stat.m_crits(g);
+                                stat.m_fails(state.m_status != opt_status::converged ? 1 : 0);
+                                stat.m_fcalls(static_cast<scalar_t>(fcalls));
+                                stat.m_gcalls(static_cast<scalar_t>(gcalls));
+                                stat.m_speeds(static_cast<scalar_t>(speed));
 
-                // update per-function statistics
-                optimizer_stat_t& stat = stats[name];
-                stat.m_crits(make_stats(crits, crits));
-                stat.m_fails(make_stats(fails, crits));
-                stat.m_fcalls(make_stats(fcalls, crits));
-                stat.m_gcalls(make_stats(gcalls, crits));
-                stat.m_speeds(make_stats(speeds, crits));
-
-                // update global statistics
-                optimizer_stat_t& gstat = gstats[name];
-                gstat.m_crits(stat.m_crits);
-                gstat.m_fails(stat.m_fails);
-                gstat.m_fcalls(stat.m_fcalls);
-                gstat.m_gcalls(stat.m_gcalls);
-                gstat.m_speeds(stat.m_speeds);
+                                // update global statistics
+                                optimizer_stat_t& gstat = gstats[name];
+                                gstat.m_crits(g);
+                                gstat.m_fails(state.m_status != opt_status::converged ? 1 : 0);
+                                gstat.m_fcalls(static_cast<scalar_t>(fcalls));
+                                gstat.m_gcalls(static_cast<scalar_t>(gcalls));
+                                gstat.m_speeds(static_cast<scalar_t>(speed));
+                        }
+                }
         }
 }
