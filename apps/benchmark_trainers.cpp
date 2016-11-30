@@ -7,7 +7,6 @@
 #include "text/cmdline.h"
 #include "text/to_params.h"
 #include "text/concatenate.h"
-#include "tasks/task_affine.h"
 #include "tasks/task_charset.h"
 #include "layers/make_layers.h"
 #include <iostream>
@@ -72,6 +71,7 @@ static void evaluate(model_t& model,
 {
         const auto nthreads = nano::logical_cpus();
         const auto policy = trainer_policy::stop_early;//all_epochs;
+        const auto batch = 32;
 
         for (auto optimizer : batch_optimizers)
         {
@@ -87,7 +87,7 @@ static void evaluate(model_t& model,
         for (auto optimizer : stoch_optimizers)
         {
                 const auto optname = "stoch-" + optimizer;
-                const auto params = to_params("opt", optimizer, "epochs", epochs, "policy", policy);
+                const auto params = to_params("opt", optimizer, "epochs", epochs, "policy", policy, "min_batch", batch, "max_batch", batch);
                 evaluate_trainer(model, basename + optname, basepath + optname, table, x0s, [&] ()
                 {
                         const auto trainer = get_trainers().get("stoch", params);
@@ -96,7 +96,7 @@ static void evaluate(model_t& model,
         }
 }
 
-static rtask_t make_charset_task(const size_t count)
+static rtask_t make_task(const size_t count)
 {
         auto task = get_tasks().get("charset", to_params(
                 "type", charset_mode::digit, "color", color_mode::rgb, "irows", 16, "icols", 16, "count", count));
@@ -104,7 +104,7 @@ static rtask_t make_charset_task(const size_t count)
         return task;
 }
 
-static auto make_charset_models(const task_t& task, const string_t& activation)
+static auto make_models(const task_t& task, const string_t& activation)
 {
         const auto outputs = task.osize();
 
@@ -132,34 +132,6 @@ static auto make_charset_models(const task_t& task, const string_t& activation)
         return networks;
 }
 
-static rtask_t make_affine_task(const size_t count)
-{
-        auto task = get_tasks().get("affine", to_params(
-                "idims", 3, "irows", 5, "icols", 7, "osize", 4, "count", count, "noise", epsilon1<scalar_t>(),
-                "mode", affine_mode::regression));
-        task->load();
-        return task;
-}
-
-static auto make_affine_models(const task_t& task, const string_t& activation)
-{
-        const auto outputs = task.osize();
-
-        const auto mlp0 = string_t();
-        const auto mlp1 = mlp0 + make_affine_layer(64, activation);
-        const auto mlp2 = mlp1 + make_affine_layer(64, activation);
-        const auto mlp3 = mlp2 + make_affine_layer(64, activation);
-
-        const auto outlayer = make_output_layer(outputs, activation);
-
-        std::vector<std::pair<string_t, string_t>> networks;
-        networks.emplace_back(mlp0 + outlayer, "mlp0");
-        networks.emplace_back(mlp1 + outlayer, "mlp1");
-        networks.emplace_back(mlp2 + outlayer, "mlp2");
-        networks.emplace_back(mlp3 + outlayer, "mlp3");
-
-        return networks;
-}
 int main(int argc, const char* argv[])
 {
         using namespace nano;
@@ -182,13 +154,11 @@ int main(int argc, const char* argv[])
         cmdline.add("", "stoch-adam",           "evaluate stoch optimizer ADAM");
         cmdline.add("", "stoch-adagrad",        "evaluate stoch optimizer ADAGRAD");
         cmdline.add("", "stoch-adadelta",       "evaluate stoch optimizer ADADELTA");
-        cmdline.add("", "charset",              "use the synthetic charset task (classify digits)");
-        cmdline.add("", "affine",               "use the synthetic affine task (regression of affine transformation)");
         cmdline.add("", "loss",                 "loss function (" + nano::concatenate(get_losses().ids()) + ")", "classnll");
         cmdline.add("", "criterion",            "training criterion (" + nano::concatenate(get_criteria().ids()) + ")", "avg");
         cmdline.add("", "activation",           "activation layer (act-unit, act-tanh, act-splus, act-snorm)", "act-snorm");
         cmdline.add("", "trials",               "number of models to train & evaluate", "10");
-        cmdline.add("", "epochs",               "number of epochs", "1000");
+        cmdline.add("", "epochs",               "number of epochs", "100");
 
         cmdline.process(argc, argv);
 
@@ -199,14 +169,6 @@ int main(int argc, const char* argv[])
         const auto activation = cmdline.get("activation");
         const auto trials = cmdline.get<size_t>("trials");
         const auto epochs = cmdline.get<size_t>("epochs");
-        const auto charset = cmdline.has("charset");
-        const auto affine = cmdline.has("affine");
-
-        if (    (!charset && !affine) ||
-                (charset && affine))
-        {
-                cmdline.usage();
-        }
 
         strings_t batch_optimizers;
         if (cmdline.has("batch") || cmdline.has("batch-gd")) batch_optimizers.push_back("gd");
@@ -231,17 +193,11 @@ int main(int argc, const char* argv[])
                 cmdline.usage();
         }
 
-        // create task
-        const auto task = charset ?
-                make_charset_task(count) :
-                make_affine_task(count);
+        // create task & models
+        const auto task = make_task(count);
+        const auto networks = make_models(*task, activation);
 
         const size_t fold = 0;
-
-        // construct models
-        const auto networks = charset ?
-                make_charset_models(*task, activation) :
-                make_affine_models(*task, activation);
 
         // vary the model
         for (const auto& net : networks)
