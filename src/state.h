@@ -67,11 +67,6 @@ namespace nano
                 void update(const function_t& problem, const scalar_t t, const scalar_t ft, const vector_t& gt);
 
                 ///
-                /// \brief update statistics
-                ///
-                void update(const function_t& problem);
-
-                ///
                 /// \brief check convergence: the gradient is relatively small
                 ///
                 bool converged(const scalar_t epsilon) const

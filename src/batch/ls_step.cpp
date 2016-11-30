@@ -2,13 +2,12 @@
 
 namespace nano
 {
-        ls_step_t::ls_step_t(const function_t& function, const state_t& state) :
+        ls_step_t::ls_step_t(const function_t& function, const state_t& state0) :
                 m_function(function),
-                m_state(state),
-                m_gphi0(state.d.dot(state.g)),
+                m_state0(state0),
+                m_gphi0(state0.d.dot(state0.g)),
                 m_alpha(0),
-                m_func(state.f),
-                m_grad(state.g),
+                m_state(state0),
                 m_gphi(m_gphi0)
         {
         }
@@ -31,9 +30,9 @@ namespace nano
                 }
                 else
                 {
+                        m_state.update(m_function.get(), alpha - m_alpha);
                         m_alpha = alpha;
-                        m_func = m_function.get().eval(m_state.get().x + m_alpha * m_state.get().d, &m_grad);
-                        m_gphi = m_grad.dot(m_state.get().d);
+                        m_gphi = m_state.g.dot(m_state0.get().d);
                         return operator bool();
                 }
         }
@@ -68,7 +67,7 @@ namespace nano
 
         scalar_t ls_step_t::phi() const
         {
-                return m_func;
+                return m_state.f;
         }
 
         scalar_t ls_step_t::approx_phi(const scalar_t epsilon) const
@@ -78,7 +77,7 @@ namespace nano
 
         scalar_t ls_step_t::phi0() const
         {
-                return m_state.get().f;
+                return m_state0.get().f;
         }
 
         scalar_t ls_step_t::gphi() const
@@ -98,7 +97,7 @@ namespace nano
 
         const vector_t& ls_step_t::grad() const
         {
-                return m_grad;
+                return m_state.g;
         }
 
         ls_step_t::operator bool() const

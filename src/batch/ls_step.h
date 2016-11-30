@@ -16,7 +16,7 @@ namespace nano
                 ///
                 /// \brief constructor
                 ///
-                ls_step_t(const function_t& function, const state_t& state);
+                ls_step_t(const function_t& function, const state_t& state0);
 
                 ///
                 /// \brief minimum allowed line-search step
@@ -103,13 +103,12 @@ namespace nano
 
                 // attributes
                 ref_function_t  m_function;
-                ref_state_t     m_state;        ///< starting state for line-search
+                ref_state_t     m_state0;       ///< starting state for line-search
                 scalar_t        m_gphi0;
 
-                scalar_t        m_alpha;       ///< line-search step (current estimate)
-                scalar_t        m_func;        ///< function value at alpha
-                vector_t        m_grad;        ///< function gradient at alpha
-                scalar_t        m_gphi;        ///< line-search function gradient at alpha
+                scalar_t        m_alpha;        ///< line-search step (current estimate)
+                state_t         m_state;        ///< state at alpha
+                scalar_t        m_gphi;         ///< line-search function gradient at alpha
         };
 
         ///
