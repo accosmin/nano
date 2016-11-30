@@ -71,7 +71,7 @@ static void evaluate(model_t& model,
         const string_t& basename, const string_t& basepath, table_t& table)
 {
         const auto nthreads = nano::logical_cpus();
-        const auto policy = trainer_policy::all_epochs;
+        const auto policy = trainer_policy::stop_early;//all_epochs;
 
         for (auto optimizer : batch_optimizers)
         {
@@ -188,7 +188,7 @@ int main(int argc, const char* argv[])
         cmdline.add("", "criterion",            "training criterion (" + nano::concatenate(get_criteria().ids()) + ")", "avg");
         cmdline.add("", "activation",           "activation layer (act-unit, act-tanh, act-splus, act-snorm)", "act-snorm");
         cmdline.add("", "trials",               "number of models to train & evaluate", "10");
-        cmdline.add("", "epochs",               "number of epochs", "100");
+        cmdline.add("", "epochs",               "number of epochs", "1000");
 
         cmdline.process(argc, argv);
 

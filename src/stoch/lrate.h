@@ -6,15 +6,13 @@
 namespace nano
 {
         ///
-        /// \brief learning rate as a t-inverse function of:
+        /// \brief learning rate as a polynomial function of:
         ///     - alpha0        - the initial learning rate
         ///     - decay         - the decay rate factor
         ///     - iter          - current iteration
         ///     - size          - batch size (e.g. #samples in the sum)
         ///
-        /// learning rate = alpha0 / (1 + decay * floor(iter/size))
-        ///
-        /// see "Online Learning and Stochastic Approximations", by Leon Bottou
+        /// learning rate = alpha0 * (1 + iter/size)^decay
         ///
         struct lrate_t
         {
@@ -37,14 +35,15 @@ namespace nano
                 ///
                 scalar_t get()
                 {
-                        return m_alpha0 / (1 + m_decay * static_cast<scalar_t>(m_iter ++) / static_cast<scalar_t>(m_size));
+                        const auto base = scalar_t(1) + static_cast<scalar_t>(m_iter ++) / static_cast<scalar_t>(m_size);
+                        return m_alpha0 * std::pow(base, m_decay);
                 }
 
                 // attributes
-                scalar_t        m_alpha0;
-                scalar_t        m_decay;
-		size_t		m_iter;
-                size_t          m_size;
+                scalar_t        m_alpha0;       ///<
+                scalar_t        m_decay;        ///<
+		size_t		m_iter;         ///< current iteration
+                size_t          m_size;         ///< #epoch size
         };
 
 }
