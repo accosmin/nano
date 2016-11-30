@@ -12,7 +12,7 @@ namespace nano
         ///     - iter          - current iteration
         ///     - size          - batch size (e.g. #samples in the sum)
         ///
-        /// learning rate = alpha0 * (1 + iter/size)^decay
+        /// learning rate = alpha0 / (1 + iter/size)^decay
         ///
         struct lrate_t
         {
@@ -36,7 +36,7 @@ namespace nano
                 scalar_t get()
                 {
                         const auto base = scalar_t(1) + static_cast<scalar_t>(m_iter ++) / static_cast<scalar_t>(m_size);
-                        return m_alpha0 * std::pow(base, m_decay);
+                        return m_alpha0 / std::pow(base, m_decay);
                 }
 
                 // attributes

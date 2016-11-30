@@ -21,7 +21,7 @@ namespace nano
 
         inline auto make_momenta()
         {
-                return make_finite_space(scalar_t(0.5), scalar_t(0.9), scalar_t(0.95));
+                return make_finite_space(scalar_t(0.9), scalar_t(0.95), scalar_t(0.99));
         }
 
         inline auto make_epsilons()
