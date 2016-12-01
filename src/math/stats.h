@@ -30,11 +30,14 @@ namespace nano
                 ///
                 void operator()(const tscalar value)
                 {
-                        m_count ++;
-                        m_sum += value;
-                        m_sumsq += value * value;
-                        m_min = std::min(m_min, value);
-                        m_max = std::max(m_max, value);
+                        if (std::isfinite(value))
+                        {
+                                m_count ++;
+                                m_sum += value;
+                                m_sumsq += value * value;
+                                m_min = std::min(m_min, value);
+                                m_max = std::max(m_max, value);
+                        }
                 }
 
                 ///
