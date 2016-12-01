@@ -32,7 +32,7 @@ models=${models}" conv1 conv2 conv3 conv4 conv5 conv6"
 
 # trainers
 fn_make_trainers "stop_early"
-trainers="stoch_adam"
+trainers="stoch_svrg"
 
 # criteria
 criteria="crit_avg"

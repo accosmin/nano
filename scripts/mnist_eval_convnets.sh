@@ -44,7 +44,7 @@ models=${models}" convc8d1 convc8d2 convc4d1 convc4d2"
 
 # trainers
 fn_make_trainers "stop_early"
-trainers="stoch_adam"
+trainers="stoch_svrg"
 
 # criteria
 criteria="crit_avg"
