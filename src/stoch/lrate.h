@@ -6,7 +6,7 @@
 namespace nano
 {
         ///
-        /// \brief learning rate as a polynomial function of:
+        /// \brief learning rate as a function of:
         ///     - alpha0        - the initial learning rate
         ///     - decay         - the decay rate factor
         ///     - iter          - current iteration

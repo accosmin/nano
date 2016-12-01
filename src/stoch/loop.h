@@ -11,7 +11,7 @@ namespace nano
         ///
         inline auto make_alpha0s()
         {
-                return make_finite_space(scalar_t(1e-3), scalar_t(1e-2), scalar_t(1e-1));
+                return make_log10_space(scalar_t(-3), scalar_t(0), scalar_t(0.5));
         }
 
         inline auto make_decays()
