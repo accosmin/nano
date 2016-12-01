@@ -76,6 +76,11 @@ Nano has built-in support for the following tasks:
 * charset - synthetic character recognition task
 * affine - synthetic affine transformation task
 
+The standard benchmark datasets can be download to $HOME/experiments/databases using:
+```
+bash scripts/download_tasks.sh
+```
+
 The image samples can be saved to disk using for example:
 ```
 ./apps/info_task --task mnist --task-params dir=$HOME/experiments/databases/mnist --save-dir ./ 
