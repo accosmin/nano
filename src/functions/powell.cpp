@@ -23,15 +23,15 @@ namespace nano
                 {
                         for (tensor_size_t i = 0, i4 = 0; i < size() / 4; i ++, i4 += 4)
                         {
-                                const auto gfx1 = (x(i4 + 0) + x(i4 + 1) * 10) * 2;
-                                const auto gfx2 = (x(i4 + 2) - x(i4 + 3)) * 5 * 2;
-                                const auto gfx3 = nano::cube(x(i4 + 1) - x(i4 + 2) * 2) * 4;
-                                const auto gfx4 = nano::cube(x(i4 + 0) - x(i4 + 3)) * 10 * 4;
+                                const auto gfx0 = (x(i4 + 0) + x(i4 + 1) * 10) * 2;
+                                const auto gfx1 = (x(i4 + 2) - x(i4 + 3)) * 5 * 2;
+                                const auto gfx2 = nano::cube(x(i4 + 1) - x(i4 + 2) * 2) * 4;
+                                const auto gfx3 = nano::cube(x(i4 + 0) - x(i4 + 3)) * 10 * 4;
 
-                                (*gx)(i4 + 0) = gfx1 + gfx4;
-                                (*gx)(i4 + 1) = gfx1 * 10 + gfx3;
-                                (*gx)(i4 + 2) = gfx2 - 2 * gfx3;
-                                (*gx)(i4 + 3) = - gfx2 - gfx4;
+                                (*gx)(i4 + 0) = gfx0 + gfx3;
+                                (*gx)(i4 + 1) = gfx0 * 10 + gfx2;
+                                (*gx)(i4 + 2) = gfx1 - 2 * gfx2;
+                                (*gx)(i4 + 3) = - gfx1 - gfx3;
                         }
                 }
 
