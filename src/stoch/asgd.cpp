@@ -19,68 +19,34 @@ namespace nano
         state_t stoch_asgd_t::minimize(const stoch_params_t& param, const function_t& function, const vector_t& x0,
                 const scalar_t alpha0, const scalar_t decay) const
         {
-                assert(function.size() == x0.size());
-
-                const auto config = to_params("alpha0", alpha0, "decay", decay);
-
                 // learning rate schedule
                 lrate_t lrate(alpha0, decay, param.m_epoch_size);
 
                 // average state
                 average_vector_t<vector_t> xavg(x0.size());
 
-                // current state
-                state_t cstate = make_stoch_state(function, x0);
-
-                // final state
-                state_t fstate = make_state(function, x0);
-
-                // for each epoch ...
-                for (size_t e = 0; e < param.m_max_epochs; ++ e)
+                // assembly the optimizer
+                const auto optimizer = [&] (state_t& cstate, const state_t&)
                 {
-                        // for each iteration ...
-                        for (size_t i = 0; i < param.m_epoch_size && cstate; ++ i)
-                        {
-                                // learning rate
-                                const scalar_t alpha = lrate.get();
+                        // learning rate
+                        const scalar_t alpha = lrate.get();
 
-                                // descent direction
-                                xavg.update(cstate.x);
-                                cstate.d = -cstate.g;
+                        // descent direction
+                        xavg.update(cstate.x);
+                        cstate.d = -cstate.g;
 
-                                // update solution
-                                function.stoch_next();
-                                cstate.stoch_update(function, alpha);
-                        }
+                        // update solution
+                        function.stoch_next();
+                        cstate.stoch_update(function, alpha);
+                };
 
-                        // check divergence
-                        if (!cstate)
-                        {
-                                fstate.m_status = opt_status::failed;
-                                break;
-                        }
+                const auto snapshot = [&] (const state_t&, state_t& sstate)
+                {
+                        sstate.update(function, xavg.value());
+                };
 
-                        // check convergence (using the full gradient)
-                        fstate.update(function, xavg.value());
-                        if (fstate.converged(param.m_epsilon))
-                        {
-                                fstate.m_status = opt_status::converged;
-                                param.tlog(fstate, config);
-                                param.ulog(fstate, config);
-                                break;
-                        }
-
-                        // log the current state & check the stopping criteria
-                        param.tlog(fstate, config);
-                        if (!param.ulog(fstate, config))
-                        {
-                                fstate.m_status = opt_status::stopped;
-                                break;
-                        }
-                }
-
-                // OK
-                return fstate;
+                return  stoch_loop(param, function, x0, optimizer, snapshot,
+                        to_params("alpha0", alpha0, "decay", decay));
         }
 }
 

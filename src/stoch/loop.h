@@ -75,12 +75,17 @@ namespace nano
         ///     - the user canceled the optimization (using the logging function)
         /// NB: convergence to a critical point is not guaranteed in general.
         ///
-        template <typename toptimizer>
+        template
+        <
+                typename toptimizer,            ///< optimization algorithm: update the current state
+                typename tsnapshot              ///< snapshot at the end of an epoch: update the final state
+        >
         auto stoch_loop(
                 const stoch_params_t& param,
                 const function_t& function,
                 const vector_t& x0,
                 const toptimizer& optimizer,
+                const tsnapshot& snapshot,
                 const string_t& config)
         {
                 assert(function.size() == x0.size());
@@ -108,7 +113,7 @@ namespace nano
                         }
 
                         // check convergence (using the full gradient)
-                        fstate.update(function, cstate.x);
+                        snapshot(cstate, fstate);
                         if (fstate.converged(param.m_epsilon))
                         {
                                 fstate.m_status = opt_status::converged;

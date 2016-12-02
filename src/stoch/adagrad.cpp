@@ -20,7 +20,7 @@ namespace nano
                 // second-order gradient momentum
                 vector_t gsum2 = vector_t::Zero(x0.size());
 
-                // optimizer
+                // assembly the optimizer
                 const auto optimizer = [&] (state_t& cstate, const state_t&)
                 {
                         // learning rate
@@ -36,8 +36,12 @@ namespace nano
                         cstate.stoch_update(function, alpha);
                 };
 
-                // OK, assembly the optimizer
-                return  stoch_loop(param, function, x0, optimizer,
+                const auto snapshot = [&] (const state_t& cstate, state_t& sstate)
+                {
+                        sstate.update(function, cstate.x);
+                };
+
+                return  stoch_loop(param, function, x0, optimizer, snapshot,
                         to_params("alpha0", alpha0, "epsilon", epsilon));
         }
 }
