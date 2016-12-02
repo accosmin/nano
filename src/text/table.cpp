@@ -94,7 +94,7 @@ namespace nano
                         os << "|" << string_t(namesize + 2, '-');
                         for (size_t c = 0; c < table.cols(); ++ c)
                         {
-                                os << "+" << string_t(colsizes[c] + 2, '-');
+                                os << "|" << string_t(colsizes[c] + 2, '-');
                         }
                         os << "|" << std::endl;
                 };
