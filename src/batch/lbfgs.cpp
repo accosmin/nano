@@ -28,8 +28,6 @@ namespace nano
         state_t batch_lbfgs_t::minimize(const batch_params_t& param, const function_t& function, const vector_t& x0,
                 const ls_initializer linit, const ls_strategy lstrat, const scalar_t c1, const scalar_t c2) const
         {
-                assert(function.size() == x0.size());
-
                 // previous state
                 state_t pstate(function.size());
 

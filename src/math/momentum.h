@@ -8,11 +8,7 @@ namespace nano
         /// \brief running exponential average (aka momentum) with zero-bias correction
         ///     see "Adam: A method for stochastic optimization", by Diederik P. Kingma & Jimmy Lei Ba
         ///
-        template
-        <
-                typename tscalar,
-                typename tvalue
-        >
+        template <typename tscalar, typename tvalue>
         class momentum_t
         {
         public:
@@ -49,11 +45,7 @@ namespace nano
         ///
         /// \brief running exponential average for scalars using a fixed momentum
         ///
-        template
-        <
-                typename tscalar,
-                typename tbase = momentum_t<tscalar, tscalar>
-        >
+        template <typename tscalar, typename tbase = momentum_t<tscalar, tscalar>>
         struct momentum_scalar_t : public tbase
         {
                 explicit momentum_scalar_t(const tscalar momentum) :
@@ -65,19 +57,11 @@ namespace nano
         ///
         /// \brief running exponential average for Eigen vectors using a fixed momentum
         ///
-        template
-        <
-                typename tvector,
-                typename tscalar = typename tvector::Scalar,
-                typename tbase = momentum_t<tscalar, tvector>
-        >
+        template <typename tvector, typename tbase = momentum_t<typename tvector::Scalar, tvector>>
         struct momentum_vector_t : public tbase
         {
-                template
-                <
-                        typename tsize
-                >
-                momentum_vector_t(const tscalar momentum, const tsize dimensions) :
+                template <typename tsize>
+                momentum_vector_t(const typename tvector::Scalar momentum, const tsize dimensions) :
                         tbase(momentum, tvector::Zero(dimensions))
                 {
                 }

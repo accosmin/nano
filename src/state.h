@@ -12,7 +12,20 @@ namespace nano
 
         class function_t;
 
+        ///
+        /// \brief compare two optimization states
+        ///
         bool operator<(const state_t& one, const state_t& two);
+
+        ///
+        /// \brief create an optimization state at the given point
+        ///
+        state_t make_state(const function_t&, const vector_t& x);
+
+        ///
+        /// \brief create an optimization state at the given point, using the stochastic approximation
+        ///
+        state_t make_stoch_state(const function_t&, const vector_t& x);
 
         ///
         /// \brief optimization status
@@ -87,7 +100,7 @@ namespace nano
                 ///
                 operator bool() const
                 {
-                        return std::isfinite(f);
+                        return std::isfinite(f) && std::isfinite(convergence_criteria());
                 }
 
                 // attributes

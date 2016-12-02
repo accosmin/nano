@@ -19,15 +19,15 @@ namespace nano
                 const vector_t& x0,
                 const toptimizer& optimizer)
         {
+                assert(function.size() == x0.size());
+
                 // current state
-                state_t cstate(function.size());
-                cstate.update(function, x0);
+                state_t cstate = make_state(function, x0);
 
                 // for each iteration ...
                 for (size_t i = 0; i < params.m_max_iterations; i ++)
                 {
-                        //
-                        if (!optimizer(cstate, i))
+                        if (!optimizer(cstate, i) || !cstate)
                         {
                                 cstate.m_status = opt_status::failed;
                                 break;

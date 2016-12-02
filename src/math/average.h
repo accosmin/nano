@@ -2,11 +2,7 @@
 
 namespace nano
 {
-        template
-        <
-                typename tscalar,
-                typename tvalue
-        >
+        template <typename tscalar, typename tvalue>
         class average_t
         {
         public:
@@ -36,11 +32,7 @@ namespace nano
         ///
         /// \brief running average for scalars
         ///
-        template
-        <
-                typename tscalar,
-                typename tbase = average_t<tscalar, tscalar>
-        >
+        template <typename tscalar, typename tbase = average_t<tscalar, tscalar>>
         struct average_scalar_t : public tbase
         {
                 average_scalar_t() :
@@ -52,18 +44,10 @@ namespace nano
         ///
         /// \brief running average for Eigen vectors
         ///
-        template
-        <
-                typename tvector,
-                typename tscalar = typename tvector::Scalar,
-                typename tbase = average_t<tscalar, tvector>
-        >
+        template <typename tvector, typename tbase = average_t<typename tvector::Scalar, tvector>>
         struct average_vector_t : public tbase
         {
-                template
-                <
-                        typename tsize
-                >
+                template <typename tsize>
                 explicit average_vector_t(const tsize dimensions) :
                         tbase(tvector::Zero(dimensions))
                 {

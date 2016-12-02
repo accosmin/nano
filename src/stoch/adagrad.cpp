@@ -17,8 +17,6 @@ namespace nano
         state_t stoch_adagrad_t::minimize(const stoch_params_t& param, const function_t& function, const vector_t& x0,
                 const scalar_t alpha0, const scalar_t epsilon) const
         {
-                assert(function.size() == x0.size());
-
                 // second-order gradient momentum
                 vector_t gsum2 = vector_t::Zero(x0.size());
 

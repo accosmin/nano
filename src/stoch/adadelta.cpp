@@ -18,8 +18,6 @@ namespace nano
         state_t stoch_adadelta_t::minimize(const stoch_params_t& param, const function_t& function, const vector_t& x0,
                 const scalar_t momentum, const scalar_t epsilon) const
         {
-                assert(function.size() == x0.size());
-
                 // second-order momentum of the gradient
                 momentum_vector_t<vector_t> gavg(momentum, x0.size());
 

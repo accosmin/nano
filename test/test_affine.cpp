@@ -39,7 +39,8 @@ auto make_trainers()
         add_trainer(trainers, "stoch", "opt", "sg");
         add_trainer(trainers, "stoch", "opt", "sgm");
         //add_trainer(trainers, "stoch", "opt", "ngd");
-        add_trainer(trainers, "stoch", "opt", "svrg");
+        //add_trainer(trainers, "stoch", "opt", "svrg");
+        //add_trainer(trainers, "stoch", "opt", "asgd");
         //add_trainer(trainers, "stoch", "opt", "adam");
         //add_trainer(trainers, "stoch", "opt", "adagrad");
         //add_trainer(trainers, "stoch", "opt", "adadelta");

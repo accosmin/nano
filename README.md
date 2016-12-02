@@ -13,7 +13,7 @@ The easiest way to compile (and install) is to run:
 ```
 bash build.sh --build-type release --generator ninja
 ```
-The test programs and utilities will be found in the `build-release` directory. 
+The test programs and utilities will be found in the `build-release` directory.
 
 To build the debugging version with or without address, memory and thread sanitizers (if available) run:
 ```
@@ -39,9 +39,9 @@ The list of all supported objects and their parameters is available using:
 ./apps/info --help
 ```
 
-##### Numerical optimization 
+##### Numerical optimization
 
-The **batch optimizer** and the **stochastic optimizer** are gradient-based methods used for minimizing generic multi-dimensional functions. They are suitable for large-scale numerical optimization which are often the product of machine learning problems. 
+The **batch optimizer** and the **stochastic optimizer** are gradient-based methods used for minimizing generic multi-dimensional functions. They are suitable for large-scale numerical optimization which are often the product of machine learning problems.
 
 Additionally, Nano provides a large set of unconstrained problems to benchmark the optimization algorithms using for example the following commands:
 ```
@@ -49,18 +49,19 @@ Additionally, Nano provides a large set of unconstrained problems to benchmark t
 ./apps/benchmark_stoch --min-dims 1 --max-dims 4 --convex --epsilon 1e-4 --epoch-size 100 --epochs 1000
 ```
 
-Nano has built-in support for the following batch (line-search based) optimization methods: 
+Nano has built-in support for the following batch (line-search based) optimization methods:
 * gradient descent (gd)
 * various non-linear conjugate gradient descent (cgd)
 * limited-memory BFGS (lbfgs)
 
-Nano has built-in support for the following stochastic optimization methods: 
+Nano has built-in support for the following stochastic optimization methods:
 * stochastic gradient (sg)
 * stochastic gradient descent with momentum (sgm)
 * normalized gradient descent (ngd)
 * Nesterov's accelerated gradient (ag) with or without function value (agfr) or gradient (aggr) restarts
 * adaptive methods (adadelta, adagrad, adam)
 * stochastic variance reduced gradient (svrg)
+* averaged stochastic gradient descent (asgd)
 
 
 ##### Machine learning
@@ -83,17 +84,17 @@ bash scripts/download_tasks.sh
 
 The image samples can be saved to disk using for example:
 ```
-./apps/info_task --task mnist --task-params dir=$HOME/experiments/databases/mnist --save-dir ./ 
+./apps/info_task --task mnist --task-params dir=$HOME/experiments/databases/mnist --save-dir ./
 ```
 
-A **model** predicts the correct output for a given image patch, either its label (if a classification task) or a score (if a regression task). The feed-forward models can be constructed by combining various layers like: 
+A **model** predicts the correct output for a given image patch, either its label (if a classification task) or a score (if a regression task). The feed-forward models can be constructed by combining various layers like:
 * convolution
 * activation (hyperbolic tangent, unit, signed normalization, soft plus)
 * affine
 
 A **loss** function assigns a scalar score to the prediction of a model by comparing it with the ground truth target (if provided): the lower the score, the better the prediction. The loss functions are combined into training **criteria** to account for all training samples and to regularize the model.
 
-A **trainer** optimizes the parameters of a given model to produce the correct outputs for a given task using the cumulated values of a given loss over the training samples as a numerical optimization criteria. All the available trainers tune all their required hyper parameters on a separate validation dataset. 
+A **trainer** optimizes the parameters of a given model to produce the correct outputs for a given task using the cumulated values of a given loss over the training samples as a numerical optimization criteria. All the available trainers tune all their required hyper parameters on a separate validation dataset.
 
 These configurations can be evaluated on the synthetic *charset* task using for example:
 ```

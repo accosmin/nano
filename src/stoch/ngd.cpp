@@ -18,8 +18,6 @@ namespace nano
         state_t stoch_ngd_t::minimize(const stoch_params_t& param, const function_t& function, const vector_t& x0,
                 const scalar_t alpha0, const scalar_t decay) const
         {
-                assert(function.size() == x0.size());
-
                 // learning rate schedule
                 lrate_t lrate(alpha0, decay, param.m_epoch_size);
 

@@ -22,8 +22,6 @@ namespace nano
         state_t stoch_ag_base_t<trestart>::minimize(const stoch_params_t& param, const function_t& function, const vector_t& x0,
                 const scalar_t alpha0, const scalar_t q) const
         {
-                assert(function.size() == x0.size());
-
                 // current & previous iterations
                 vector_t cx = x0;
                 vector_t px = x0;

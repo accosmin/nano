@@ -16,7 +16,7 @@ namespace nano
 
         inline auto make_decays()
         {
-                return make_finite_space(scalar_t(0.5), scalar_t(0.75));
+                return make_finite_space(scalar_t(0.5), scalar_t(0.75), scalar_t(1.0));
         }
 
         inline auto make_momenta()
@@ -83,13 +83,13 @@ namespace nano
                 const toptimizer& optimizer,
                 const string_t& config)
         {
+                assert(function.size() == x0.size());
+
                 // current state
-                state_t cstate(function.size());
-                cstate.stoch_update(function, x0);
+                state_t cstate = make_stoch_state(function, x0);
 
                 // final state
                 state_t fstate(function.size());
-                fstate.update(function, x0);
 
                 // for each epoch ...
                 for (size_t e = 0; e < param.m_max_epochs; ++ e)

@@ -18,10 +18,8 @@ namespace nano
         state_t stoch_adam_t::minimize(const stoch_params_t& param, const function_t& function, const vector_t& x0,
                 const scalar_t alpha0, const scalar_t epsilon) const
         {
-                assert(function.size() == x0.size());
-
-                const scalar_t beta1 = scalar_t(0.900);
-                const scalar_t beta2 = scalar_t(0.999);
+                const auto beta1 = scalar_t(0.900);
+                const auto beta2 = scalar_t(0.999);
 
                 // first-order momentum of the gradient
                 momentum_vector_t<vector_t> m(beta1, x0.size());

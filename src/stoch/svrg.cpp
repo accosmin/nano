@@ -17,8 +17,6 @@ namespace nano
         state_t stoch_svrg_t::minimize(const stoch_params_t& param, const function_t& function, const vector_t& x0,
                 const scalar_t alpha0) const
         {
-                assert(function.size() == x0.size());
-
                 // optimizer
                 const auto optimizer = [&] (state_t& cstate, const state_t& sstate)
                 {

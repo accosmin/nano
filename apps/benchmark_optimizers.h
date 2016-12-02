@@ -81,7 +81,7 @@ namespace benchmark
                                 double(1) / double(gcalls));
 
                         // ignore out-of-domain solutions
-                        if (function.is_valid(state.x))
+                        if (state && function.is_valid(state.x))
                         {
                                 // update per-function statistics
                                 optimizer_stat_t& stat = stats[name];

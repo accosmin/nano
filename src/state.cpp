@@ -40,4 +40,22 @@ namespace nano
                 f = ft;
                 g = gt;
         }
+
+        state_t make_state(const function_t& function, const vector_t& x)
+        {
+                assert(function.size() == x.size());
+
+                state_t state(function.size());
+                state.update(function, x);
+                return state;
+        }
+
+        state_t make_stoch_state(const function_t& function, const vector_t& x)
+        {
+                assert(function.size() == x.size());
+
+                state_t state(function.size());
+                state.stoch_update(function, x);
+                return state;
+        }
 }
