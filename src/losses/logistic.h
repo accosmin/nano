@@ -13,13 +13,13 @@ namespace nano
                 {
                         static scalar_t value(const vector_t& targets, const vector_t& scores)
                         {
-                                return std::log1p(std::exp((-targets.array() * scores.array()).sum()));
+                                return std::log1p(std::exp(-targets.dot(scores)));
                         }
 
                         static vector_t vgrad(const vector_t& targets, const vector_t& scores)
                         {
-                                return  -targets.array() * std::exp((-targets.array() * scores.array()).sum()) /
-                                        (1 + std::exp((-targets.array() * scores.array()).sum()));
+                                return  -targets.array() * std::exp(-targets.dot(scores)) /
+                                        (1 + std::exp((-targets.dot(scores))));
                         }
                 };
         }
