@@ -5,9 +5,7 @@ Nano provides numerical optimization and machine learning utilities. For example
 
 #### Compilation
 
-Use a C++14 compiler and install Eigen3.3+, LibArchive, Zlib, BZip2 and DevIL.
-
-Nano is tested on Linux ([gcc 4.9+ | clang 3.6+], CMake 3.1+, Ninja or Make) and OSX (AppleClang7+, homebrew, CMake 3.1+, Ninja or Make). The code is written to be cross-platform, so it may work (with minor fixes) on other platforms as well (e.g. Windows/MSVC).
+Use a C++14 compiler and install Eigen3.3+, LibArchive, Zlib, BZip2 and DevIL. Nano is tested on Linux ([gcc 4.9+ | clang 3.6+], CMake 3.1+, Ninja or Make) and OSX (AppleClang7+, homebrew, CMake 3.1+, Ninja or Make). The code is written to be cross-platform, so it may work (with minor fixes) on other platforms as well (e.g. Windows/MSVC).
 
 The easiest way to compile (and install) is to run:
 ```
@@ -32,9 +30,7 @@ bash build.sh --help
 
 #### Structure
 
-This library is built around several key concepts mapped to C++ object interfaces. Each object type is registered with an **ID** and thus it can be selected from command line arguments. Also new objects can be easily registered and then they are automatically visible across the library and its associated programs.
-
-The list of all supported objects and their parameters is available using:
+This library is built around several key concepts mapped to C++ object interfaces. Each object type is registered with an **ID** and thus it can be selected from command line arguments. Also new objects can be easily registered and then they are automatically visible across the library and its associated programs. The list of all supported objects and their parameters is available using:
 ```
 ./apps/info --help
 ```
@@ -92,7 +88,6 @@ The following stochastic optimization methods are built-in:
 ##### Machine learning
 
 A **task** describes a classification or regression problem consisting of separate training and test samples (e.g. image patches) with associated target outputs if any. The library has built-in support for various standard benchmark datasets which are loaded directly from the original (compressed) files.
-
 ```
 ./apps/info --task
 |----------|--------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------|
@@ -107,15 +102,6 @@ A **task** describes a classification or regression problem consisting of separa
 | svhn     | SVHN (3x32x32 digit classification in the wild)        | dir=.                                                                                                                            |
 |----------|--------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------|
 ```
-
-Nano has built-in support for the following tasks:
-* MNIST - digit recognition
-* CIFAR-10 - 10-class image classification
-* CIFAR-100 - 100-class image classification
-* STL-10 - 10-class image classification with additional unsupervised data
-* SVHN - digit recognition in the wild
-* charset - synthetic character recognition task
-* affine - synthetic affine transformation task
 
 The standard benchmark datasets can be download to $HOME/experiments/databases using:
 ```
@@ -143,7 +129,6 @@ bash ./apps/info --layer
 ```
 
 A **loss** function assigns a scalar score to the prediction of a model `y` by comparing it with the ground truth target `t` (if provided): the lower the score, the better the prediction. The library uses the {-1, +1} codification of class labels.
-
 ```
 ./apps/info --loss
 |-------------|----------------------------------------------------------------------------------|---------------|
@@ -158,7 +143,6 @@ A **loss** function assigns a scalar score to the prediction of a model `y` by c
 ```
 
 The loss functions are combined into training **criteria** to account for all training samples and to regularize the model.
-
 ```
 ./apps/info --criterion
 |-----------|-----------------------------------|---------------|
@@ -174,7 +158,6 @@ The loss functions are combined into training **criteria** to account for all tr
 ```
 
 A **trainer** optimizes the parameters of a given model to produce the correct outputs for a given task using the cumulated values of a given loss over the training samples as a numerical optimization criteria. All the available trainers tune all their required hyper parameters on a separate validation dataset.
-
 ```
 ./apps/info --trainer
 |---------|--------------------|------------------------------------------------------------------------------------------------------------------------|
