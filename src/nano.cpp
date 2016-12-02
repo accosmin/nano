@@ -155,11 +155,11 @@ namespace nano
         static void init_losses()
         {
                 auto& f = nano::get_losses();
-                f.add("square", "square loss (regression)", maker<square_loss_t>());
-                f.add("cauchy", "Cauchy loss (regression)", maker<cauchy_loss_t>());
-                f.add("logistic", "logistic loss (multi-class classification)", maker<logistic_loss_t>());
-                f.add("classnll", "negative log-likelihood loss (multi-class classification)", maker<classnll_loss_t>());
-                f.add("exponential", "exponential loss (multi-class classification)", maker<exponential_loss_t>());
+                f.add("square",      "multivariate regression:     l(y, t) = 1/2 * L2(y, t)", maker<square_loss_t>());
+                f.add("cauchy",      "multivariate regression:     l(y, t) = log(1 + L2(y, t))", maker<cauchy_loss_t>());
+                f.add("logistic",    "multi-class classification:  l(y, t) = log(1 + exp(-t.dot(y)))", maker<logistic_loss_t>());
+                f.add("classnll",    "single-class classification: l(y, t) = log(y.exp().sum()) + 1/2 * (1 + t).dot(y)", maker<classnll_loss_t>());
+                f.add("exponential", "multi-class classification:  l(y, t) = exp(-t.dot(y))", maker<exponential_loss_t>());
         }
 
         static void init_tasks()
@@ -177,12 +177,12 @@ namespace nano
         static void init_layers()
         {
                 auto& f = nano::get_layers();
-                f.add("act-unit", "identity activation layer (for testing purposes)", maker<unit_activation_layer_t>());
-                f.add("act-tanh", "hyperbolic tangent activation layer", maker<tanh_activation_layer_t>());
-                f.add("act-snorm", "x/sqrt(1+x^2) activation layer", maker<snorm_activation_layer_t>());
-                f.add("act-splus", "soft-plus activation layer", maker<softplus_activation_layer_t>());
-                f.add("affine", "fully-connected affine layer", maker<affine_layer_t>());
-                f.add("conv", "convolution layer", maker<convolution_layer_t>());
+                f.add("act-unit",  "activation: a(x) = x", maker<unit_activation_layer_t>());
+                f.add("act-tanh",  "activation: a(x) = tanh(x)", maker<tanh_activation_layer_t>());
+                f.add("act-snorm", "activation: a(x) = x / sqrt(1 + x^2)", maker<snorm_activation_layer_t>());
+                f.add("act-splus", "activation: a(x) = log(1 + e^x)", maker<softplus_activation_layer_t>());
+                f.add("affine",    "transform:  L(x) = A * x + b", maker<affine_layer_t>());
+                f.add("conv",      "transform:  L(x) = conv3D(x, kernel) + b", maker<convolution_layer_t>());
         }
 
         static void init_models()
