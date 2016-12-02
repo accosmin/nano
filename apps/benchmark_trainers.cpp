@@ -70,7 +70,7 @@ static void evaluate(model_t& model,
         const string_t& basename, const string_t& basepath, table_t& table)
 {
         const auto nthreads = nano::logical_cpus();
-        const auto policy = trainer_policy::stop_early;//all_epochs;
+        const auto policy = trainer_policy::all_epochs;
         const auto batch = 32;
 
         for (auto optimizer : batch_optimizers)
@@ -144,10 +144,11 @@ int main(int argc, const char* argv[])
         cmdline.add("", "batch-cgd",            "evaluate batch optimizer CGD (conjugate gradient descent)");
         cmdline.add("", "batch-lbfgs",          "evaluate batch optimizer LBFGS");
         cmdline.add("", "stoch",                "evaluate stoch optimizers");
-        cmdline.add("", "stoch-sg",             "evaluate stoch optimizer SG (stoch gradient)");
+        cmdline.add("", "stoch-sg",             "evaluate stoch optimizer SG (stochastic gradient)");
         cmdline.add("", "stoch-ngd",            "evaluate stoch optimizer NGD (normalized gradient descent)");
-        cmdline.add("", "stoch-sgm",            "evaluate stoch optimizer SGM (stoch gradient with momentum)");
-        cmdline.add("", "stoch-svrg",           "evaluate stoch optimizer SVRG (stoch variance reduced gradient)");
+        cmdline.add("", "stoch-sgm",            "evaluate stoch optimizer SGM (stochastic gradient with momentum)");
+        cmdline.add("", "stoch-svrg",           "evaluate stoch optimizer SVRG (stochastic variance reduced gradient)");
+        cmdline.add("", "stoch-asgd",           "evaluate stoch optimizer ASGD (averaged stochastic gradient descent)");
         cmdline.add("", "stoch-ag",             "evaluate stoch optimizer AG (Nesterov's accelerated gradient)");
         cmdline.add("", "stoch-agfr",           "evaluate stoch optimizer AG (AG + function value restarts)");
         cmdline.add("", "stoch-aggr",           "evaluate stoch optimizer AG (AG + gradient restarts)");
@@ -180,6 +181,7 @@ int main(int argc, const char* argv[])
         if (cmdline.has("stoch") || cmdline.has("stoch-ngd")) stoch_optimizers.push_back("ngd");
         if (cmdline.has("stoch") || cmdline.has("stoch-sgm")) stoch_optimizers.push_back("sgm");
         if (cmdline.has("stoch") || cmdline.has("stoch-svrg")) stoch_optimizers.push_back("svrg");
+        if (cmdline.has("stoch") || cmdline.has("stoch-asgd")) stoch_optimizers.push_back("asgd");
         if (cmdline.has("stoch") || cmdline.has("stoch-ag")) stoch_optimizers.push_back("ag");
         if (cmdline.has("stoch") || cmdline.has("stoch-agfr")) stoch_optimizers.push_back("agfr");
         if (cmdline.has("stoch") || cmdline.has("stoch-aggr")) stoch_optimizers.push_back("aggr");

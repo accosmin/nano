@@ -26,14 +26,14 @@ namespace nano
                 // learning rate schedule
                 lrate_t lrate(alpha0, decay, param.m_epoch_size);
 
-                // average
+                // average state
                 average_vector_t<vector_t> xavg(x0.size());
 
                 // current state
                 state_t cstate = make_stoch_state(function, x0);
 
                 // final state
-                state_t fstate(function.size());
+                state_t fstate = make_state(function, x0);
 
                 // for each epoch ...
                 for (size_t e = 0; e < param.m_max_epochs; ++ e)

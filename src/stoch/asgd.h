@@ -7,7 +7,7 @@ namespace nano
         ///
         /// \brief averaged stochastic gradient (descent)
         ///     see "Acceleration of stochastic approximation by averaging",
-        ///     by POLYAK, B. T. and JUDITSKY, A. B.
+        ///     by Polyak, B. T. and Juditsky, A. B.
         ///
         struct stoch_asgd_t final : public stoch_optimizer_t
         {

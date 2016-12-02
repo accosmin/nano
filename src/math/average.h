@@ -18,7 +18,7 @@ namespace nano
                         m_value = (m_value * (m_count - 1) + value) * (1 / m_count);
                 }
 
-                auto value() const
+                const auto& value() const
                 {
                         return m_value;
                 }
