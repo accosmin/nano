@@ -41,32 +41,72 @@ The list of all supported objects and their parameters is available using:
 
 ##### Numerical optimization
 
-The **batch optimizer** and the **stochastic optimizer** are gradient-based methods used for minimizing generic multi-dimensional functions. They are suitable for large-scale numerical optimization which are often the product of machine learning problems.
-
-Additionally, Nano provides a large set of unconstrained problems to benchmark the optimization algorithms using for example the following commands:
+The **batch optimizer** and the **stochastic optimizer** are gradient-based methods used for minimizing generic multi-dimensional functions. They are suitable for large-scale numerical optimization which are often the product of machine learning problems. Additionally the library provides a large set of unconstrained problems to benchmark the optimization algorithms using for example the following commands:
 ```
 ./apps/benchmark_batch --min-dims 10 --max-dims 100 --convex --epsilon 1e-6 --iterations 1000
 ./apps/benchmark_stoch --min-dims 1 --max-dims 4 --convex --epsilon 1e-4 --epoch-size 100 --epochs 1000
 ```
 
-Nano has built-in support for the following batch (line-search based) optimization methods:
-* gradient descent (gd)
-* various non-linear conjugate gradient descent (cgd)
-* limited-memory BFGS (lbfgs)
+The following batch (line-search based) optimization methods are built-in:
+```
+./apps/info --batch
+|------------------|------------------------------------------------|------------------------------------------------------------------|
+| batch optimizers | description                                    | configuration                                                    |
+|------------------|------------------------------------------------|------------------------------------------------------------------|
+| cgd              | nonlinear conjugate gradient descent (default) | ls_init=quadratic,ls_strat=interpolation,c1=0.000100,c2=0.100000 |
+| cgd-cd           | nonlinear conjugate gradient descent (CD)      | ls_init=quadratic,ls_strat=interpolation,c1=0.000100,c2=0.100000 |
+| cgd-dy           | nonlinear conjugate gradient descent (DY)      | ls_init=quadratic,ls_strat=interpolation,c1=0.000100,c2=0.100000 |
+| cgd-dycd         | nonlinear conjugate gradient descent (DYCD)    | ls_init=quadratic,ls_strat=interpolation,c1=0.000100,c2=0.100000 |
+| cgd-dyhs         | nonlinear conjugate gradient descent (DYHS)    | ls_init=quadratic,ls_strat=interpolation,c1=0.000100,c2=0.100000 |
+| cgd-fr           | nonlinear conjugate gradient descent (FR)      | ls_init=quadratic,ls_strat=interpolation,c1=0.000100,c2=0.100000 |
+| cgd-hs           | nonlinear conjugate gradient descent (HS)      | ls_init=quadratic,ls_strat=interpolation,c1=0.000100,c2=0.100000 |
+| cgd-ls           | nonlinear conjugate gradient descent (LS)      | ls_init=quadratic,ls_strat=interpolation,c1=0.000100,c2=0.100000 |
+| cgd-n            | nonlinear conjugate gradient descent (N)       | ls_init=quadratic,ls_strat=interpolation,c1=0.000100,c2=0.100000 |
+| cgd-prp          | nonlinear conjugate gradient descent (PRP+)    | ls_init=quadratic,ls_strat=interpolation,c1=0.000100,c2=0.100000 |
+| gd               | gradient descent                               | ls_init=quadratic,ls_strat=back-sWolfe,c1=0.000100,c2=0.100000   |
+| lbfgs            | limited-memory BFGS                            | ls_init=quadratic,ls_strat=interpolation,c1=0.000100,c2=0.900000 |
+|------------------|------------------------------------------------|------------------------------------------------------------------|
+```
 
-Nano has built-in support for the following stochastic optimization methods:
-* stochastic gradient (sg)
-* stochastic gradient descent with momentum (sgm)
-* normalized gradient descent (ngd)
-* Nesterov's accelerated gradient (ag) with or without function value (agfr) or gradient (aggr) restarts
-* adaptive methods (adadelta, adagrad, adam)
-* stochastic variance reduced gradient (svrg)
-* averaged stochastic gradient descent (asgd)
+The following stochastic optimization methods are built-in:
+```
+./apps/info --stoch
+|-----------------------|--------------------------------------------------------------|---------------|
+| stochastic optimizers | description                                                  | configuration |
+|-----------------------|--------------------------------------------------------------|---------------|
+| adadelta              | AdaDelta (see citation)                                      |               |
+| adagrad               | AdaGrad (see citation)                                       |               |
+| adam                  | Adam (see citation)                                          |               |
+| ag                    | Nesterov's accelerated gradient                              |               |
+| agfr                  | Nesterov's accelerated gradient with function value restarts |               |
+| aggr                  | Nesterov's accelerated gradient with gradient restarts       |               |
+| asgd                  | averaged stochastic gradient (descent)                       |               |
+| ngd                   | stochastic normalized gradient                               |               |
+| sg                    | stochastic gradient (descent)                                |               |
+| sgm                   | stochastic gradient (descent) with momentum                  |               |
+| svrg                  | stochastic variance reduced gradient                         |               |
+|-----------------------|--------------------------------------------------------------|---------------|
+```
 
 
 ##### Machine learning
 
 A **task** describes a classification or regression problem consisting of separate training and test samples (e.g. image patches) with associated target outputs if any. The library has built-in support for various standard benchmark datasets which are loaded directly from the original (compressed) files.
+
+```
+./apps/info --task
+|----------|--------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------|
+| task     | description                                            | configuration                                                                                                                    |
+|----------|--------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------|
+| affine   | synthetic affine regression                            | idims=10[1,100],irows=32[1,100],icols=32[1,100],osize=10[1,1000],count=1000[10,1M],noise=0.1[0,0.5],mode=regression[,sign_class] |
+| charset  | synthetic character classification                     | type=digit[lalpha,ualpha,alpha,alphanum],color=rgb[,luma,rgba],irows=32[12,128],icols=32[12,128],count=1000[100,1M]              |
+| cifar10  | CIFAR-10 (3x32x32 object classification)               | dir=.                                                                                                                            |
+| cifar100 | CIFAR-100 (3x32x32 object classification)              | dir=.                                                                                                                            |
+| mnist    | MNIST (1x28x28 digit classification)                   | dir=.                                                                                                                            |
+| stl10    | STL-10 (3x96x96 semi-supervised object classification) | dir=.                                                                                                                            |
+| svhn     | SVHN (3x32x32 digit classification in the wild)        | dir=.                                                                                                                            |
+|----------|--------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------|
+```
 
 Nano has built-in support for the following tasks:
 * MNIST - digit recognition
@@ -87,14 +127,63 @@ The image samples can be saved to disk using for example:
 ./apps/info_task --task mnist --task-params dir=$HOME/experiments/databases/mnist --save-dir ./
 ```
 
-A **model** predicts the correct output for a given image patch, either its label (if a classification task) or a score (if a regression task). The feed-forward models can be constructed by combining various layers like:
-* convolution
-* activation (hyperbolic tangent, unit, signed normalization, soft plus)
-* affine
+A **model** predicts the correct output for a given image patch, either its label (if a classification task) or a score (if a regression task). The feed-forward models can be constructed using a pattern like `[layer_id[:layer_parameters];]+` with the following layers:
+```
+bash ./apps/info --layer
+|-----------|------------------------------------------|-------------------------------------------------------------------------------|
+| layer     | description                              | configuration                                                                 |
+|-----------|------------------------------------------|-------------------------------------------------------------------------------|
+| act-snorm | activation: a(x) = x / sqrt(1 + x^2)     |                                                                               |
+| act-splus | activation: a(x) = log(1 + e^x)          |                                                                               |
+| act-tanh  | activation: a(x) = tanh(x)               |                                                                               |
+| act-unit  | activation: a(x) = x                     |                                                                               |
+| affine    | transform:  L(x) = A * x + b             | dims=10[1,4096]                                                               |
+| conv      | transform:  L(x) = conv3D(x, kernel) + b | dims=16[1,256],rows=8[1,32],cols=8[1,32],conn=1[1,16],drow=1[1,8],dcol=1[1,8] |
+|-----------|------------------------------------------|-------------------------------------------------------------------------------|
+```
 
-A **loss** function assigns a scalar score to the prediction of a model by comparing it with the ground truth target (if provided): the lower the score, the better the prediction. The loss functions are combined into training **criteria** to account for all training samples and to regularize the model.
+A **loss** function assigns a scalar score to the prediction of a model `y` by comparing it with the ground truth target `t` (if provided): the lower the score, the better the prediction. The library uses the {-1, +1} codification of class labels.
+
+```
+./apps/info --loss
+|-------------|----------------------------------------------------------------------------------|---------------|
+| loss        | description                                                                      | configuration |
+|-------------|----------------------------------------------------------------------------------|---------------|
+| cauchy      | multivariate regression:     l(y, t) = log(1 + L2(y, t))                         |               |
+| classnll    | single-class classification: l(y, t) = log(y.exp().sum()) + 1/2 * (1 + t).dot(y) |               |
+| exponential | multi-class classification:  l(y, t) = exp(-t.dot(y))                            |               |
+| logistic    | multi-class classification:  l(y, t) = log(1 + exp(-t.dot(y)))                   |               |
+| square      | multivariate regression:     l(y, t) = 1/2 * L2(y, t)                            |               |
+|-------------|----------------------------------------------------------------------------------|---------------|
+```
+
+The loss functions are combined into training **criteria** to account for all training samples and to regularize the model.
+
+```
+./apps/info --criterion
+|-----------|-----------------------------------|---------------|
+| criterion | description                       | configuration |
+|-----------|-----------------------------------|---------------|
+| avg       | average loss                      |               |
+| avg-l2n   | L2-norm regularized average loss  |               |
+| avg-var   | variance-regularized average loss |               |
+| max       | softmax loss                      | beta=5[1,10]  |
+| max-l2n   | L2-norm regularized softmax loss  | beta=5[1,10]  |
+| max-var   | variance-regularized softmax loss | beta=5[1,10]  |
+|-----------|-----------------------------------|---------------|
+```
 
 A **trainer** optimizes the parameters of a given model to produce the correct outputs for a given task using the cumulated values of a given loss over the training samples as a numerical optimization criteria. All the available trainers tune all their required hyper parameters on a separate validation dataset.
+
+```
+./apps/info --trainer
+|---------|--------------------|------------------------------------------------------------------------------------------------------------------------|
+| trainer | description        | configuration                                                                                                          |
+|---------|--------------------|------------------------------------------------------------------------------------------------------------------------|
+| batch   | batch trainer      | opt=lbfgs[...],epochs=1024[4,4096],policy=stop_early[,all_epochs],eps=0.000001                                         |
+| stoch   | stochastic trainer | opt=sg[...],epochs=16[1,1024],policy=stop_early[,all_epochs],min_batch=32[32,1024],max_batch=256[32,4096],eps=0.000001 |
+|---------|--------------------|------------------------------------------------------------------------------------------------------------------------|
+```
 
 These configurations can be evaluated on the synthetic *charset* task using for example:
 ```
