@@ -53,7 +53,7 @@ auto make_trainers()
 
 NANO_BEGIN_MODULE(test_affine)
 
-NANO_CASE(construction)
+NANO_CASE(construction_regression)
 {
         affine_task_t task(to_params(
                 "idims", idims, "irows", irows, "icols", icols, "osize", osize, "count", count, "noise", noise,
@@ -79,7 +79,42 @@ NANO_CASE(construction)
                 {
                         const auto input = task.input(fold, i);
                         const auto target = task.target(fold, i);
+
+                        // check affine transformation
                         NANO_CHECK_EIGEN_CLOSE(weights * input.vector() + bias, target, 2 * noise);
+                }
+        }
+}
+
+NANO_CASE(construction_classification)
+{
+        affine_task_t task(to_params(
+                "idims", idims, "irows", irows, "icols", icols, "osize", osize, "count", count, "noise", 0,
+                "mode", affine_mode::sign_class));
+
+        task.load();
+
+        NANO_CHECK_EQUAL(task.idims(), idims);
+        NANO_CHECK_EQUAL(task.irows(), irows);
+        NANO_CHECK_EQUAL(task.icols(), icols);
+        NANO_CHECK_EQUAL(task.osize(), osize);
+        NANO_CHECK_EQUAL(task.n_samples(), count);
+        NANO_REQUIRE_EQUAL(task.n_folds(), size_t(1));
+
+        const auto& weights = task.weights();
+        const auto& bias = task.bias();
+
+        for (const auto proto : {protocol::train, protocol::valid, protocol::test})
+        {
+                const auto fold = fold_t{0, proto};
+                const auto size = task.n_samples(fold);
+                for (size_t i = 0; i < size; ++ i)
+                {
+                        const auto input = task.input(fold, i);
+                        const auto target = task.target(fold, i);
+
+                        // check classification based on the sign of the affine transformation
+                        NANO_CHECK_GREATER(((weights * input.vector() + bias).array() * target.array()).minCoeff(), 0);
                 }
         }
 }
