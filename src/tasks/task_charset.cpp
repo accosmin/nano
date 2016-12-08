@@ -26,15 +26,15 @@
 
 namespace nano
 {
-        static rgba_t make_random_rgba()
+        template <typename trng>
+        static rgba_t make_random_rgba(trng& rng)
         {
-                random_t<luma_t> rng(0, 255);
                 return rgba_t{rng(), rng(), rng(), rng()};
         }
 
-        static rgba_t make_random_opposite_rgba(const rgba_t& rgba)
+        template <typename trng>
+        static rgba_t make_random_opposite_rgba(const rgba_t& rgba, trng& rng)
         {
-                random_t<int> rng(-55, +55);
                 return  rgba_t
                 {
                         static_cast<luma_t>(clamp(255 - static_cast<int>(rgba(0)) + rng(), 0, 255)),
@@ -75,12 +75,10 @@ namespace nano
                 return oend(cs) - obegin(cs);
         }
 
-        template <typename tindex, typename tsize>
+        template <typename tindex, typename tsize, typename trng>
         static tensor3d_t get_object_patch(const image_tensor_t& image,
-                const tindex object_index, const tsize objects, const scalar_t max_offset)
+                const tindex object_index, const tsize objects, trng& rng)
         {
-                nano::random_t<scalar_t> rng(-max_offset, max_offset);
-
                 const auto icols = static_cast<int>(image.cols());
                 const auto irows = static_cast<int>(image.rows());
 
@@ -103,9 +101,9 @@ namespace nano
                 return ret;
         }
 
-        tensor3d_t make_random_rgba_image(const tensor_size_t rows, const tensor_size_t cols,
-                const rgba_t back_color,
-                const scalar_t max_noise, const scalar_t sigma)
+        template <typename trng>
+        static tensor3d_t make_random_rgba_image(const tensor_size_t rows, const tensor_size_t cols,
+                const rgba_t back_color, const scalar_t sigma, trng& rng_noise)
         {
                 // noisy background
                 tensor3d_t image(4, rows, cols);
@@ -114,8 +112,7 @@ namespace nano
                 image.matrix(2).setConstant(back_color(2) / scalar_t(255));
                 image.matrix(3).setConstant(1);
 
-                tensor::add_random(nano::make_rng<scalar_t>(-max_noise, +max_noise),
-                        image.matrix(0), image.matrix(1), image.matrix(2));
+                tensor::add_random(rng_noise, image.matrix(0), image.matrix(1), image.matrix(2));
 
                 // smooth background
                 const nano::gauss_kernel_t<scalar_t> back_gauss(sigma);
@@ -194,9 +191,18 @@ namespace nano
 
                 const size_t n_fonts = char_patches.size();
 
-                nano::random_t<tensor_size_t> rng_output(obegin(charset), oend(charset) - 1);
-                nano::random_t<size_t> rng_font(1, n_fonts);
-                nano::random_t<scalar_t> rng_gauss(0, 2);
+                auto rng_output = make_rng<tensor_size_t>(obegin(charset), oend(charset) - 1);
+                auto rng_font = make_rng<size_t>(1, n_fonts);
+                auto rng_gauss = make_rng<scalar_t>(0, 2);
+                auto rng_rgba = make_rng<luma_t>(0, 255);
+                auto rng_opposite_rgba = make_rng<int>(-55, +55);
+                auto rng_offset = make_rng<scalar_t>(-1, +1);
+
+                const auto bnoise = scalar_t(0.1);
+                const auto fnoise = scalar_t(0.1);
+
+                auto rng_bnoise = make_rng<scalar_t>(-bnoise, +bnoise);
+                auto rng_fnoise = make_rng<scalar_t>(-fnoise, +fnoise);
 
                 // generate samples
                 for (size_t i = 0; i < count; ++ i)
@@ -205,7 +211,7 @@ namespace nano
                         const tensor_index_t o = rng_output();
 
                         // image: original object patch
-                        const tensor3d_t opatch = get_object_patch(char_patches[rng_font() - 1], o, n_chars, 0.0);
+                        const tensor3d_t opatch = get_object_patch(char_patches[rng_font() - 1], o, n_chars, rng_offset);
 
                         // image: resize to the input size
                         tensor3d_t mpatch(4, irows(), icols());
@@ -219,17 +225,14 @@ namespace nano
                                 warp_params_t(field_type::random, scalar_t(0.1), scalar_t(4.0), scalar_t(16.0), scalar_t(2.0)));
 
                         // image: background & foreground layer
-                        const auto bcolor = make_random_rgba();
-                        const auto fcolor = make_random_opposite_rgba(bcolor);
-
-                        const auto bnoise = scalar_t(0.1);
-                        const auto fnoise = scalar_t(0.1);
+                        const auto bcolor = make_random_rgba(rng_rgba);
+                        const auto fcolor = make_random_opposite_rgba(bcolor, rng_opposite_rgba);
 
                         const auto bsigma = rng_gauss();
                         const auto fsigma = rng_gauss();
 
-                        const auto bpatch = make_random_rgba_image(irows(), icols(), bcolor, bnoise, bsigma);
-                        const auto fpatch = make_random_rgba_image(irows(), icols(), fcolor, fnoise, fsigma);
+                        const auto bpatch = make_random_rgba_image(irows(), icols(), bcolor, bsigma, rng_bnoise);
+                        const auto fpatch = make_random_rgba_image(irows(), icols(), fcolor, fsigma, rng_fnoise);
 
                         // image: alpha-blend the background & foreground layer
                         const tensor3d_t patch = alpha_blend(mpatch, bpatch, fpatch);
