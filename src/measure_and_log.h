@@ -9,11 +9,7 @@ namespace nano
         ///
         /// \brief measure function call
         ///
-        template
-        <
-                typename toperator,
-                typename tstring
-        >
+        template <typename toperator, typename tstring>
         void measure_and_log(const toperator& op, const tstring& message)
         {
                 const timer_t timer;
@@ -24,11 +20,7 @@ namespace nano
         ///
         /// \brief measure function call (and exit if any error)
         ///
-        template
-        <
-                typename toperator,
-                typename tstring
-        >
+        template <typename toperator, typename tstring>
         void measure_critical_and_log(const toperator& op, const tstring& message)
         {
                 const timer_t timer;
