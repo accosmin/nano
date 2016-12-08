@@ -32,8 +32,8 @@ namespace nano
                 const auto noise = clamp(from_params<scalar_t>(config(), "noise", scalar_t(0.1)), epsilon0<scalar_t>(), scalar_t(0.5));
                 const auto mode = from_params<affine_mode>(config(), "mode");
 
-                random_t<scalar_t> rng_input(-scalar_t(1.0), +scalar_t(1.0));
-                random_t<scalar_t> rng_noise(-noise, +noise);
+                auto rng_input = make_rng<scalar_t>(-scalar_t(1.0), +scalar_t(1.0));
+                auto rng_noise = make_rng<scalar_t>(-noise, +noise);
 
                 // random affine transformation
                 const auto isize = idims() * irows() * icols();

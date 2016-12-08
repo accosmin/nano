@@ -18,22 +18,3 @@ include_directories(SYSTEM ${LibArchive_INCLUDE_DIRS})
 find_package(Eigen3 3.3 REQUIRED)
 include_directories(${EIGEN3_INCLUDE_DIR})
 add_definitions(-DEIGEN_DONT_PARALLELIZE)
-
-# OpenCL
-if(NANO_WITH_OPENCL)
-        if(NOT NANO_WITH_FLOAT_SCALAR)
-                message(FATAL_ERROR "++ OpenCL support is available only for float scalar!")
-        endif()
-        find_package(OpenCL REQUIRED)
-        include_directories(SYSTEM ${OpenCL_INCLUDE_DIRS})
-        add_definitions(-DNANO_WITH_OPENCL)
-endif()
-
-# CUDA
-if(NANO_WITH_CUDA)
-        find_package(CUDA REQUIRED)
-        set(CUDA_PROPAGATE_HOST_FLAGS OFF)
-        set(CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS};-O3 -gencode arch=compute_20,code=sm_20)
-        add_definitions(-DNANO_WITH_CUDA -D_FORCE_INLINES)
-endif()
-

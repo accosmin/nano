@@ -17,8 +17,6 @@ lto_flag="OFF"
 float_flag="OFF"
 double_flag="ON"
 long_double_flag="OFF"
-opencl_flag="OFF"
-cuda_flag="OFF"
 
 # usage
 function usage
@@ -33,8 +31,6 @@ function usage
         echo -e "\t--msan               <with memory sanitizer>                         optional"
         echo -e "\t--tsan               <with thread sanitizer>                         optional"
         echo -e "\t--compiler           <c++ compiler [g++|clang++|...]>                optional"
-        echo -e "\t--opencl             <use OpenCL>                                    optional"
-        echo -e "\t--cuda               <use CUDA>                                      optional"
         echo -e "\t--libc++             <use libc++ instead of default libstdc++>       optional"
         echo -e "\t--gold               <use gold linker instead of default linker>     optional"
         echo -e "\t--lto                <use link time optimization>                    optional"
@@ -71,10 +67,6 @@ do
                                 ;;
                 --compiler)     shift
                                 compiler=$1
-                                ;;
-                --opencl)       opencl_flag="ON"
-                                ;;
-                --cuda)         cuda_flag="ON"
                                 ;;
                 --libc++)       libcpp_flag="ON"
                                 ;;
@@ -178,8 +170,6 @@ cmake \
         -DNANO_WITH_FLOAT_SCALAR=${float_flag} \
         -DNANO_WITH_DOUBLE_SCALAR=${double_flag} \
         -DNANO_WITH_LONG_DOUBLE_SCALAR=${long_double_flag} \
-        -DNANO_WITH_OPENCL=${opencl_flag} \
-        -DNANO_WITH_CUDA=${cuda_flag} \
         -G "${generator}" \
         -DCMAKE_INSTALL_PREFIX=${install_dir} \
         ${current_dir}/
