@@ -12,7 +12,6 @@ set(libnano_sources
         task_iterator.cpp
         trainer_result.cpp
         trainer_state.cpp
-        version.cpp
         logger.cpp
         timer.cpp)
 
