@@ -13,6 +13,7 @@
 #include "tasks/task_svhn.h"
 #include "tasks/task_charset.h"
 #include "tasks/task_affine.h"
+#include "tasks/task_matmul.h"
 
 #include "layers/activation_unit.h"
 #include "layers/activation_tanh.h"
@@ -171,7 +172,8 @@ namespace nano
                 f.add("stl10", "STL-10 (3x96x96 semi-supervised object classification)", maker<stl10_task_t>());
                 f.add("svhn", "SVHN (3x32x32 digit classification in the wild)", maker<svhn_task_t>());
                 f.add("charset", "synthetic character classification", maker<charset_task_t>());
-                f.add("affine", "synthetic affine regression", maker<affine_task_t>());
+                f.add("affine", "synthetic affine transformation", maker<affine_task_t>());
+                f.add("matmul", "synthetic matrix multiplication", maker<matmul_task_t>());
         }
 
         static void init_layers()

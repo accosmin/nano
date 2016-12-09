@@ -128,17 +128,19 @@ namespace nano
                 scalar_t noise,
                 scalar_t sigma,
                 scalar_t alpha,
-                scalar_t beta)
-                :       m_ftype(ftype),
-                        m_noise(noise),
-                        m_sigma(sigma),
-                        m_alpha(alpha),
-                        m_beta(beta)
+                scalar_t beta) :
+                m_ftype(ftype),
+                m_noise(noise),
+                m_sigma(sigma),
+                m_alpha(alpha),
+                m_beta(beta)
         {
         }
 
         tensor3d_t warp(const tensor3d_t& image, const warp_params_t& params, tensor3d_t* fimage)
         {
+                assert(image.size<0>() == 4);
+
                 tensor3d_t patch = image;
 
                 // x gradient (directional gradient)
