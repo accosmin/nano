@@ -14,6 +14,7 @@
 #include "tasks/task_charset.h"
 #include "tasks/task_affine.h"
 #include "tasks/task_matmul.h"
+#include "tasks/task_sign.h"
 
 #include "layers/activation_unit.h"
 #include "layers/activation_tanh.h"
@@ -174,6 +175,7 @@ namespace nano
                 f.add("charset", "synthetic character classification", maker<charset_task_t>());
                 f.add("affine", "synthetic affine transformation", maker<affine_task_t>());
                 f.add("matmul", "synthetic matrix multiplication", maker<matmul_task_t>());
+                f.add("sign", "synthetic sign-based classification", maker<sign_task_t>());
         }
 
         static void init_layers()

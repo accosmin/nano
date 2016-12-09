@@ -7,7 +7,7 @@ namespace nano
         ///
         /// \brief print a short description of a task.
         ///
-        NANO_PUBLIC void describe(const task_t& task);
+        NANO_PUBLIC void describe(const task_t& task, const string_t& name);
 
         ///
         /// \brief check task for consistency per fold index:

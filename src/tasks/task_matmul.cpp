@@ -12,21 +12,20 @@ namespace nano
         static string_t append_config(const string_t& configuration)
         {
                 return  to_params(configuration,
-                        "irows", "32[1,100]", "icols", "32[1,100]", "count", "1000[10,1M]", "noise", "0.1[0,0.5]");
+                        "irows", "32[1,100]", "icols", "32[1,100]", "count", "1000[10,1M]", "noise", "0.01[0,0.5]");
         }
 
         static tensor_size_t get_irows(const string_t& configuration)
         {
-                return clamp(from_params<tensor_size_t>(append_config(configuration), "irows", 32), 1, 100);
+                return clamp(from_params<tensor_size_t>(append_config(configuration), "irows"), 1, 100);
         }
 
         static tensor_size_t get_icols(const string_t& configuration)
         {
-                return clamp(from_params<tensor_size_t>(append_config(configuration), "icols", 32), 1, 100);
+                return clamp(from_params<tensor_size_t>(append_config(configuration), "icols"), 1, 100);
         }
 
         matmul_task_t::matmul_task_t(const string_t& configuration) : mem_tensor_task_t(
-                "affine",
                 2, get_irows(configuration), get_icols(configuration),
                 get_irows(configuration) * get_icols(configuration),
                 1, append_config(configuration))
@@ -35,8 +34,8 @@ namespace nano
 
         bool matmul_task_t::populate()
         {
-                const auto count = clamp(from_params<size_t>(config(), "count", 1000), 10, 100000);
-                const auto noise = clamp(from_params<scalar_t>(config(), "noise", scalar_t(0.1)), epsilon0<scalar_t>(), scalar_t(0.5));
+                const auto count = clamp(from_params<size_t>(config(), "count"), 10, 1000000);
+                const auto noise = clamp(from_params<scalar_t>(config(), "noise"), epsilon0<scalar_t>(), scalar_t(0.5));
 
                 auto rng_input = make_rng<scalar_t>(-scalar_t(1.0), +scalar_t(1.0));
                 auto rng_noise = make_rng<scalar_t>(-noise, +noise);

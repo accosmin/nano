@@ -26,22 +26,15 @@ namespace nano
                 /// \brief constructor
                 ///
                 mem_task_t(
-                        const string_t& name,
                         const tensor_size_t idims, const tensor_size_t irows, const tensor_size_t icols,
                         const tensor_size_t osize,
                         const size_t fsize,
                         const string_t& configuration = string_t()) :
                         task_t(configuration),
-                        m_name(name),
                         m_idims(idims), m_irows(irows), m_icols(icols), m_osize(osize),
                         m_fsize(fsize), m_frand(1, 10)
                 {
                 }
-
-                ///
-                /// \brief short name of this task
-                ///
-                virtual string_t name() const final { return m_name; }
 
                 ///
                 /// \brief populate the task with samples
@@ -175,7 +168,6 @@ namespace nano
         private:
 
                 // attributes
-                string_t                        m_name;
                 tensor_size_t                   m_idims;        ///< input size
                 tensor_size_t                   m_irows;
                 tensor_size_t                   m_icols;

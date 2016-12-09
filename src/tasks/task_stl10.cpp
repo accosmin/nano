@@ -23,7 +23,7 @@ namespace nano
         };
 
         stl10_task_t::stl10_task_t(const string_t& config) :
-                mem_vision_task_t("stl-10", 3, 96, 96, 10, 10, to_params(config, "dir", "."))
+                mem_vision_task_t(3, 96, 96, 10, 10, to_params(config, "dir", "."))
         {
         }
 

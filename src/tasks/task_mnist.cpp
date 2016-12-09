@@ -9,7 +9,7 @@
 namespace nano
 {
         mnist_task_t::mnist_task_t(const string_t& config) :
-                mem_vision_task_t("mnist", 1, 28, 28, 10, 1, to_params(config, "dir", "."))
+                mem_vision_task_t(1, 28, 28, 10, 1, to_params(config, "dir", "."))
         {
         }
 

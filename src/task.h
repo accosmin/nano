@@ -30,11 +30,6 @@ namespace nano
                 explicit task_t(const string_t& configuration = string_t()) : clonable_t(configuration) {}
 
                 ///
-                /// \brief short name of this task
-                ///
-                virtual string_t name() const = 0;
-
-                ///
                 /// \brief populate task with samples
                 ///
                 virtual bool load() = 0;

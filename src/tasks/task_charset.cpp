@@ -147,7 +147,6 @@ namespace nano
         }
 
         charset_task_t::charset_task_t(const string_t& configuration) : mem_vision_task_t(
-                "charset",
                 from_params<color_mode>(append_config(configuration), "color"),
                 clamp(from_params<tensor_size_t>(append_config(configuration), "irows", 32), 12, 128),
                 clamp(from_params<tensor_size_t>(append_config(configuration), "icols", 32), 12, 128),

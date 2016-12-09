@@ -44,7 +44,7 @@ int main(int argc, const char *argv[])
                 "load task <" + cmd_task + ">");
 
         // describe task
-        nano::describe(*task);
+        nano::describe(*task, cmd_task);
 
         // create loss
         const auto loss = nano::get_losses().get(cmd_loss);

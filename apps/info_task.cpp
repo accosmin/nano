@@ -41,7 +41,7 @@ int main(int argc, const char *argv[])
                 "load task <" + cmd_task + ">");
 
         // describe task
-        nano::describe(*task);
+        nano::describe(*task, cmd_task);
 
         // save samples as images
         if (cmdline.has("save-dir"))

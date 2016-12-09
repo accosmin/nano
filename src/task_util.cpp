@@ -6,10 +6,10 @@
 
 namespace nano
 {
-        void describe(const task_t& task)
+        void describe(const task_t& task, const string_t& name)
         {
                 log_info()
-                << "task [" << task.name()
+                << "task [" << name
                 << "]: input = " << task.idims() << "x" << task.irows() << "x" << task.icols()
                 << ", output = " << task.osize()
                 << ", count = " << task.n_samples() << ".";

@@ -54,23 +54,21 @@ namespace nano
                 /// \brief constructor
                 ///
                 mem_vision_task_t(
-                        const string_t& name,
                         const tensor_size_t idims, const tensor_size_t irows, const tensor_size_t icols,
                         const tensor_size_t osize,
                         const size_t fsize,
                         const string_t& config = string_t()) :
-                        mem_task_t<image_t, mem_vision_sample_t>(name, idims, irows, icols, osize, fsize, config) {}
+                        mem_task_t<image_t, mem_vision_sample_t>(idims, irows, icols, osize, fsize, config) {}
 
                 ///
                 /// \brief constructor
                 ///
                 mem_vision_task_t(
-                        const string_t& name,
                         const color_mode color, const tensor_size_t irows, const tensor_size_t icols,
                         const tensor_size_t osize,
                         const size_t fsize,
                         const string_t& config = string_t()) :
-                        mem_vision_task_t(name,
+                        mem_vision_task_t(
                         (color == color_mode::rgba ? 4 : (color == color_mode::rgb ? 3 : 1)),
                         irows, icols, osize, fsize, config) {}
 
