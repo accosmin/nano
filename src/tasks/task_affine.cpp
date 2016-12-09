@@ -44,7 +44,6 @@ namespace nano
                         // random input
                         tensor3d_t input(idims(), irows(), icols());
                         tensor::set_random(rng_input, input);
-
                         add_chunk(input, i);
 
                         // target

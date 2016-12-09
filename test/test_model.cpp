@@ -12,8 +12,8 @@ NANO_CASE(evaluate)
 {
         using namespace nano;
 
-        const auto task = get_tasks().get("affine", to_params("idims", 1, "irows", 16, "icols", 16, "osize", 2, "count", 128));
-        NANO_CHECK_EQUAL(task->load(), true);
+        const auto task = get_tasks().get("charset", to_params("type", "digit", "color", "luma", "irows", 16, "icols", 16, "count", 128));
+        NANO_CHECK(task->load());
 
         const string_t mlp0;
         const string_t mlp1 = mlp0 + make_affine_layer(10);
