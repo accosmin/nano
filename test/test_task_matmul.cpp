@@ -35,8 +35,8 @@ NANO_CASE(construction)
                 {
                         const auto input = task.input(fold, i);
                         const auto target = task.target(fold, i);
-                        const auto output = weights * (input.matrix(0) * input.matrix(1).transpose()) + bias;
-                        NANO_CHECK_EIGEN_CLOSE(output, target, 2 * noise);
+                        const auto output = matrix_t(weights * (input.matrix(0) * input.matrix(1).transpose()) + bias);
+                        NANO_CHECK_EIGEN_CLOSE(tensor::map_vector(output.data(), target.size()), target, 2 * noise);
                 }
         }
 }

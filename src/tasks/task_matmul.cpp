@@ -58,7 +58,7 @@ namespace nano
                         // target
                         matrix_t target = m_A * (input.matrix(0) * input.matrix(1).transpose()) + m_B;
                         tensor::add_random(rng_noise, target);
-                        add_sample(make_fold(0), i, target.array());
+                        add_sample(make_fold(0), i, tensor::map_vector(target.data(), target.size()));
                 }
 
                 return true;
