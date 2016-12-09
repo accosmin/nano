@@ -27,7 +27,7 @@ namespace nano
 
         matmul_task_t::matmul_task_t(const string_t& configuration) : mem_tensor_task_t(
                 2, get_irows(configuration), get_icols(configuration),
-                get_irows(configuration) * get_icols(configuration),
+                get_irows(configuration) * get_irows(configuration),
                 1, append_config(configuration))
         {
         }
@@ -41,8 +41,8 @@ namespace nano
                 auto rng_noise = make_rng<scalar_t>(-noise, +noise);
 
                 // random affine transformation
-                m_A.resize(irows(), icols());
-                m_B.resize(irows(), icols());
+                m_A.resize(irows(), irows());
+                m_B.resize(irows(), irows());
 
                 tensor::set_random(rng_input, m_A, m_B);
                 m_A /= static_cast<scalar_t>(m_A.size());
@@ -56,11 +56,9 @@ namespace nano
                         add_chunk(input, i);
 
                         // target
-                        matrix_t target = input.matrix(0) * input.matrix(1);
-                        target *= m_A;
-                        target += m_B;
+                        matrix_t target = m_A * (input.matrix(0) * input.matrix(1).transpose()) + m_B;
                         tensor::add_random(rng_noise, target);
-                        add_sample(make_fold(0), i, target);
+                        add_sample(make_fold(0), i, target.array());
                 }
 
                 return true;

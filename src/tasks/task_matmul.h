@@ -5,7 +5,7 @@
 namespace nano
 {
         ///
-        /// \brief task to predict the matrix multiplication: f(X1, X2) = A * X1 * X2  + B + noise.
+        /// \brief task to predict the matrix multiplication: f(X1, X2) = A * X1 * X2^t  + B + noise.
         /// NB: the input tensors are of size [2, rows, cols] where each plane contains one of the matrices to multiply.
         ///
         class NANO_PUBLIC matmul_task_t final : public mem_tensor_task_t

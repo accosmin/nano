@@ -35,7 +35,8 @@ NANO_CASE(construction)
                 {
                         const auto input = task.input(fold, i);
                         const auto target = task.target(fold, i);
-                        NANO_CHECK_EIGEN_CLOSE(weights * input.vector() + bias, target, 2 * noise);
+                        const auto output = weights * input.vector() + bias;
+                        NANO_CHECK_EIGEN_CLOSE(output, target, 2 * noise);
                 }
         }
 }
