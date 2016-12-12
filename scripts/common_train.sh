@@ -93,12 +93,38 @@ function fn_make_trainers
         batch_gd="--trainer batch --trainer-params opt=gd,epochs=${epochs},policy=${policy}"
 }
 
+# train for a configuration
+function fn_train_one
+{
+        local trial=$1
+        local model=$2
+        local trainer=$3
+        local criterion=$4
+        local loss=$5
+
+        mfile=${outdir}/trial${trial}_${trainer}_${model}_${criterion}_${loss}.model
+        sfile=${outdir}/trial${trial}_${trainer}_${model}_${criterion}_${loss}.state
+        lfile=${outdir}/trial${trial}_${trainer}_${model}_${criterion}_${loss}.log
+
+        params="${common} ${!model} ${!trainer} ${!criterion} ${!loss} --model-file ${mfile}"
+
+        printf "running <%s> ...\n" "${params}"
+        printf "running <%s> ...\n" "${params}" > ${lfile}
+        time ${exe_trainer} ${params} >> ${lfile}
+        printf "\tlog saved to <%s>\n" "${lfile}"
+        printf "\n"
+        printf "\tplotting training evolution ...\n"
+        bash $(dirname $0)/plot_model.sh ${sfile}
+        printf "\n"
+}
+
 # train models for all the given configurations
 function fn_train
 {
         local models=$1
         local trainers=$2
         local criteria=$3
+        local losses=$4
 
         for ((trial=0;trial<${trials};trial++))
         do
@@ -108,20 +134,10 @@ function fn_train
                         do
                                 for criterion in ${criteria}
                                 do
-                                        mfile=${outdir}/trial${trial}_${trainer}_${model}_${criterion}.model
-                                        sfile=${outdir}/trial${trial}_${trainer}_${model}_${criterion}.state
-                                        lfile=${outdir}/trial${trial}_${trainer}_${model}_${criterion}.log
-
-                                        params="${common} ${!model}${outlayer} ${!trainer} ${!criterion} --model-file ${mfile}"
-
-                                        printf "running <%s> ...\n" "${params}"
-                                        printf "running <%s> ...\n" "${params}" > ${lfile}
-                                        time ${exe_trainer} ${params} >> ${lfile}
-                                        printf "\tlog saved to <%s>\n" "${lfile}"
-                                        printf "\n"
-                                        printf "\tplotting training evolution ...\n"
-                                        bash $(dirname $0)/plot_model.sh ${sfile}
-                                        printf "\n"
+                                        for loss in ${losses}
+                                        do
+                                                fn_train_one ${trial} ${model} ${trainer} ${criterion} ${loss}
+                                        done
                                 done
                         done
                 done
@@ -135,10 +151,11 @@ function fn_sumarize
         local models=$2
         local trainers=$3
         local criteria=$4
+        local losses=$5
 
         log=${outdir}/result.log
 
-        printf "%-16s %-16s %-16s %-48s %-48s\n" "model" "trainer" "criterion" "test error" "epochs" > ${log}
+        printf "%-16s %-16s %-16s %-16s %-48s %-48s\n" "model" "trainer" "criterion" "loss" "test error" "epochs" > ${log}
         printf "%0.s-" {1..140} >> ${log}
         printf "\n" >> ${log}
 
@@ -148,13 +165,18 @@ function fn_sumarize
                 do
                         for criterion in ${criteria}
                         do
-                                src=${outdir}/trial*_${trainer}_${model}_${criterion}.log
-                                errors=$(grep "<<<" ${src} | grep "test=" | sed 's/^.*test=//g' | cut -d'|' -f2 | cut -d'+' -f1)
-                                epochs=$(grep "<<<" ${src} | grep "test=" | sed 's/^.*epoch=//g' | cut -d',' -f1)
-                                error_stats=$(${exe_stats} ${errors})
-                                epoch_stats=$(${exe_stats} ${epochs})
+                                for loss in ${losses}
+                                do
+                                        src=${outdir}/trial*_${trainer}_${model}_${criterion}_${loss}.log
+                                        errors=$(grep "<<<" ${src} | grep "test=" | sed 's/^.*test=//g' | cut -d'|' -f2 | cut -d'+' -f1)
+                                        epochs=$(grep "<<<" ${src} | grep "test=" | sed 's/^.*epoch=//g' | cut -d',' -f1)
+                                        error_stats=$(${exe_stats} ${errors})
+                                        epoch_stats=$(${exe_stats} ${epochs})
 
-                                printf "%-16s %-16s %-16s %-48s %-48s\n" "${model}" "${trainer}" "${criterion}" "${error_stats}" "${epoch_stats}" >> ${log}
+                                        printf "%-16s %-16s %-16s %-16s %-48s %-48s\n" \
+                                                "${model}" "${trainer}" "${criterion}" "${loss}" \
+                                                "${error_stats}" "${epoch_stats}" >> ${log}
+                                done
                         done
                 done
         done
