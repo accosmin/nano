@@ -34,6 +34,22 @@ mkdir -p ${dir_exp_stl10}
 mkdir -p ${dir_exp_cifar10}
 mkdir -p ${dir_exp_cifar100}
 
+# available losses
+loss_cauchy="--loss cauchy"
+loss_classnll="--loss classnll"
+loss_exponential="--loss exponential"
+loss_logistic="--loss logistic"
+loss_square="--loss square"
+
+# available criteria
+crit_avg="--criterion avg"
+crit_avg_l2n="--criterion avg-l2n"
+crit_avg_var="--criterion avg-var"
+
+crit_max="--criterion max"
+crit_max_l2n="--criterion max-l2n"
+crit_max_var="--criterion max-var"
+
 # default parameters
 trials=10
 epochs=1000
@@ -96,17 +112,19 @@ function fn_make_trainers
 # train for a configuration
 function fn_train_one
 {
-        local trial=$1
-        local model=$2
-        local trainer=$3
-        local criterion=$4
-        local loss=$5
+        local outdir=$1
+        local trial=$2
+        local task=$3
+        local model=$4
+        local trainer=$5
+        local criterion=$6
+        local loss=$7
 
         mfile=${outdir}/trial${trial}_${trainer}_${model}_${criterion}_${loss}.model
         sfile=${outdir}/trial${trial}_${trainer}_${model}_${criterion}_${loss}.state
         lfile=${outdir}/trial${trial}_${trainer}_${model}_${criterion}_${loss}.log
 
-        params="${common} ${!model} ${!trainer} ${!criterion} ${!loss} --model-file ${mfile}"
+        params="${task} ${!model} ${!trainer} ${!criterion} ${!loss} --model-file ${mfile}"
 
         printf "running <%s> ...\n" "${params}"
         printf "running <%s> ...\n" "${params}" > ${lfile}
@@ -121,10 +139,12 @@ function fn_train_one
 # train models for all the given configurations
 function fn_train
 {
-        local models=$1
-        local trainers=$2
-        local criteria=$3
-        local losses=$4
+        local outdir=$1
+        local task=$2
+        local models=$3
+        local trainers=$4
+        local criteria=$5
+        local losses=$6
 
         for ((trial=0;trial<${trials};trial++))
         do
@@ -136,12 +156,34 @@ function fn_train
                                 do
                                         for loss in ${losses}
                                         do
-                                                fn_train_one ${trial} ${model} ${trainer} ${criterion} ${loss}
+                                                fn_train_one "${outdir}" ${trial} "${task}" ${model} ${trainer} ${criterion} ${loss}
                                         done
                                 done
                         done
                 done
         done
+}
+
+# sumarize experimentation results for a configuration
+function fn_sumarize_one
+{
+        local outdir=$1
+        local model=$2
+        local trainer=$3
+        local criterion=$4
+        local loss=$5
+
+        log=${outdir}/result.log
+
+        src=${outdir}/trial*_${trainer}_${model}_${criterion}_${loss}.log
+        errors=$(grep "<<<" ${src} | grep "test=" | sed 's/^.*test=//g' | cut -d'|' -f2 | cut -d'+' -f1)
+        epochs=$(grep "<<<" ${src} | grep "test=" | sed 's/^.*epoch=//g' | cut -d',' -f1)
+        error_stats=$(${exe_stats} ${errors})
+        epoch_stats=$(${exe_stats} ${epochs})
+
+        printf "%-16s %-16s %-16s %-16s %-48s %-48s\n" \
+                "${model}" "${trainer}" "${criterion}" "${loss}" \
+                "${error_stats}" "${epoch_stats}" >> ${log}
 }
 
 # sumarize experimentation results
@@ -167,15 +209,7 @@ function fn_sumarize
                         do
                                 for loss in ${losses}
                                 do
-                                        src=${outdir}/trial*_${trainer}_${model}_${criterion}_${loss}.log
-                                        errors=$(grep "<<<" ${src} | grep "test=" | sed 's/^.*test=//g' | cut -d'|' -f2 | cut -d'+' -f1)
-                                        epochs=$(grep "<<<" ${src} | grep "test=" | sed 's/^.*epoch=//g' | cut -d',' -f1)
-                                        error_stats=$(${exe_stats} ${errors})
-                                        epoch_stats=$(${exe_stats} ${epochs})
-
-                                        printf "%-16s %-16s %-16s %-16s %-48s %-48s\n" \
-                                                "${model}" "${trainer}" "${criterion}" "${loss}" \
-                                                "${error_stats}" "${epoch_stats}" >> ${log}
+                                        fn_sumarize_one "${outdir}" "${model}" "${trainer}" "${criterion}" "${loss}"
                                 done
                         done
                 done
@@ -183,20 +217,3 @@ function fn_sumarize
 
         head -n 100 ${log}
 }
-
-# available loss
-loss_cauchy="--loss cauchy"
-loss_classnll="--loss classnll"
-loss_exponential="--loss exponential"
-loss_logistic="--loss logistic"
-loss_square="--loss square"
-
-# available criteria
-crit_avg="--criterion avg"
-crit_avg_l2n="--criterion avg-l2n"
-crit_avg_var="--criterion avg-var"
-
-crit_max="--criterion max"
-crit_max_l2n="--criterion max-l2n"
-crit_max_var="--criterion max-var"
-

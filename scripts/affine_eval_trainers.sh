@@ -4,19 +4,19 @@ source $(dirname $0)/common_train.sh
 
 fn_cmdline $*
 
-# common parameters
-common="--task affine --task-params isize=100,osize=10,count=10000,noise=1e-4"
-
 # experimentation directory
 outdir="${dir_exp}/affine/eval_trainers"
 mkdir -p ${outdir}
 
+# task
+task="--task affine --task-params isize=100,osize=10,count=10000,noise=1e-4"
+
 # models
+outlayer="affine:dims=10;act-snorm;"
+
 mlp0="--model forward-network --model-params "
 #mlp1=${mlp0}"affine:dims=100;act-snorm;"
 #mlp2=${mlp1}"affine:dims=100;act-snorm;"
-
-outlayer="affine:dims=10;act-snorm;"
 
 mlp0=${mlp0}${outlayer}
 #mlp1=${mlp1}${outlayer}
@@ -37,8 +37,8 @@ trainers=${trainers}" stoch_adam stoch_adadelta stoch_adagrad"
 # criteria
 criteria="crit_avg crit_max"
 
-# train models
-fn_train "${models}" "${trainers}" "${criteria}" "${losses}"
+# train all configurations
+fn_train "${outdir}" "${task}" "${models}" "${trainers}" "${criteria}" "${losses}"
 
 # compare models
 for ((trial=0;trial<${trials};trial++))
