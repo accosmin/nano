@@ -31,17 +31,17 @@ class experiment:
                 mpath = self.make_path(trial, mname, tname, cname, lname, ".model")
                 spath = self.make_path(trial, mname, tname, cname, lname, ".state")
                 lpath = self.make_path(trial, mname, tname, cname, lname, ".log")
+                ppath = self.make_path(trial, mname, tname, cname, lname, ".pdf")
 
                 lfile = open(lpath, "wt")
 
                 param = self.task + " " + mparam + " " + tparam + " " + cparam + " " + lparam + " --model-file " + mpath
                 print("running <", param, ">...")
                 print("running <", param, ">...", file = lfile)
-                subprocess.call(list(self.trainer + " " + param), stdout = lfile)
-                print("  log saved to <", lpath, ">")
-                print()
-                print("  plotting training evolution ...")
+                subprocess.call((self.trainer + " " + param).split(), stdout = lfile)
+                print("  training done, see <", lpath, ">")
                 #bash $(dirname $0)/plot_model.sh ${sfile}
+                print("  plotting done, see <", ppath, ">")
                 print()
 
         def run_trial(self, trial, epochs, policy):
