@@ -11,3 +11,4 @@ doxygen/html
 *.log
 *.swp
 *.swo
+scripts/__pycache__
