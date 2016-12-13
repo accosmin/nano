@@ -182,8 +182,7 @@ function fn_sumarize_one
         epoch_stats=$(${exe_stats} ${epochs})
 
         printf "%-16s %-16s %-16s %-16s %-48s %-48s\n" \
-                "${model}" "${trainer}" "${criterion}" "${loss}" \
-                "${error_stats}" "${epoch_stats}" >> ${log}
+               "${model}" "${trainer}" "${criterion}" "${loss}" "${error_stats}" "${epoch_stats}" >> ${log}
 }
 
 # sumarize experimentation results
@@ -197,17 +196,18 @@ function fn_sumarize
 
         log=${outdir}/result.log
 
-        printf "%-16s %-16s %-16s %-16s %-48s %-48s\n" "model" "trainer" "criterion" "loss" "test error" "epochs" > ${log}
+        printf "%-16s %-16s %-16s %-16s %-48s %-48s\n" \
+               "model" "trainer" "criterion" "loss" "test error" "epochs" > ${log}
         printf "%0.s-" {1..140} >> ${log}
         printf "\n" >> ${log}
 
-        for model in ${models}
+        for criterion in ${criteria}
         do
-                for trainer in ${trainers}
+                for loss in ${losses}
                 do
-                        for criterion in ${criteria}
+                        for model in ${models}
                         do
-                                for loss in ${losses}
+                                for trainer in ${trainers}
                                 do
                                         fn_sumarize_one "${outdir}" "${model}" "${trainer}" "${criterion}" "${loss}"
                                 done
