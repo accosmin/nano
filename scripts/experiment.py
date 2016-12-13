@@ -1,65 +1,11 @@
 import os
-
-class config:
-        def __init__(self):
-                # useful paths
-                homedir = os.path.expanduser('~')
-                self.expdir = homedir + "/experiments/results"
-                self.dbdir = homedir + "/experiments/databases"
-
-                crtpath = os.path.dirname(os.path.realpath(__file__))
-                self.app_trainer = crtpath + "/../build-release/apps/trainer"
-                self.app_stats = crtpath + "/../build-release/apps/stats"
-                self.app_info = crtpath + "/../build-release/apps/info"
-
-                # available losses: {name, command line parameters}+
-                self.losses = {
-                        "loss_cauchy" : "--loss cauchy",
-                        "loss_classnll" : "--loss classnll",
-                        "loss_exponential" : "--loss exponential",
-                        "loss_logistic" : "--loss logistic",
-                        "loss_square" : "--loss square"
-                }
-
-                # available criteria: {name, command line parameters}+
-                self.criteria = {
-                        "crit_avg" : "--criterion avg",
-                        "crit_avg_l2n" : "--criterion avg-l2n",
-                        "crit_avg_var" : "--criterion avg-var",
-                        "crit_max" : "--criterion max",
-                        "crit_max_l2n" : "--criterion max-l2n",
-                        "crit_max_var" : "--criterion max-var"
-                }
-
-                # training policies
-                self.policies = {
-                        "stop_early" : ",policy=stop_early",
-                        "all_epochs" : ",policy=all_epochs"
-                }
-
-                # training methods
-                self.trainers = {
-                        stoch_ag="--trainer stoch --trainer-params opt=ag,epochs=${epochs},policy=${policy}"
-                        stoch_agfr="--trainer stoch --trainer-params opt=agfr,epochs=${epochs},policy=${policy}"
-                        stoch_aggr="--trainer stoch --trainer-params opt=aggr,epochs=${epochs},policy=${policy}"
-                        stoch_sg="--trainer stoch --trainer-params opt=sg,epochs=${epochs},policy=${policy}"
-                        stoch_sgm="--trainer stoch --trainer-params opt=sgm,epochs=${epochs},policy=${policy}"
-                        stoch_ngd="--trainer stoch --trainer-params opt=ngd,epochs=${epochs},policy=${policy}"
-                        stoch_svrg="--trainer stoch --trainer-params opt=svrg,epochs=${epochs},policy=${policy}"
-                        stoch_asgd="--trainer stoch --trainer-params opt=asgd,epochs=${epochs},policy=${policy}"
-                        stoch_adagrad="--trainer stoch --trainer-params opt=adagrad,epochs=${epochs},policy=${policy}"
-                        stoch_adadelta="--trainer stoch --trainer-params opt=adadelta,epochs=${epochs},policy=${policy}"
-                        stoch_adam="--trainer stoch --trainer-params opt=adam,epochs=${epochs},policy=${policy}"
-
-                        batch_lbfgs="--trainer batch --trainer-params opt=lbfgs,epochs=${epochs},policy=${policy}"
-                        batch_cgd="--trainer batch --trainer-params opt=cgd,epochs=${epochs},policy=${policy}"
-                        batch_gd="--trainer batch --trainer-params opt=gd,epochs=${epochs},policy=${policy}"
-
+import subprocess
 
 class experiment:
-        def __init__(self, task_params, outdir):
-                self.task_params = task_params
-                self.outdir = outdir
+        def __init__(self, trainer, task, outdir):
+                self.trainer = trainer
+                self.task = task
+                self.dir = outdir
                 self.models = {}
                 self.trainers = {}
                 self.criteria = {}
@@ -77,15 +23,35 @@ class experiment:
         def add_criterion(self, name, params):
                 self.criteria[name] = params
 
-        def run(self, mname, mparams, tname, tparams, cname, cparams, lname, lparams):
-                print("model: ", mname, "trainer:", tname, "criterion:", cname, "loss:", lname)
-                print("todo")
+        def make_path(self, trial, mname, tname, cname, lname, extension):
+                return self.dir + "/trial" + str(trial) + "_" + tname + "_" + mname + "_" + cname + "_" + lname + extension
 
-        def run(self, trials, epochs):
-                os.mkdirs(self.output_dir, exist_ok = True)
-                for mname, mparams in self.models:
-                        for tname, tparams in self.trainers:
-                                for cname, cparams in self.criteria:
-                                        for lname, lparams in self.losses:
-                                                self.run(mname, mparams, tname, tparams, cname, cparams, lname, lparams)
+        def run_one(self, trial, mname, mparam, tname, tparam, cname, cparam, lname, lparam):
+                os.makedirs(self.dir, exist_ok = True)
+                mpath = self.make_path(trial, mname, tname, cname, lname, ".model")
+                spath = self.make_path(trial, mname, tname, cname, lname, ".state")
+                lpath = self.make_path(trial, mname, tname, cname, lname, ".log")
 
+                lfile = open(lpath, "wt")
+
+                param = self.task + " " + mparam + " " + tparam + " " + cparam + " " + lparam + " --model-file " + mpath
+                print("running <", param, ">...")
+                print("running <", param, ">...", file = lfile)
+                subprocess.call(list(self.trainer + " " + param), stdout = lfile)
+                print("  log saved to <", lpath, ">")
+                print()
+                print("  plotting training evolution ...")
+                #bash $(dirname $0)/plot_model.sh ${sfile}
+                print()
+
+        def run_trial(self, trial, epochs, policy):
+                for mname, mparam in self.models.items():
+                        for tname, tparam in self.trainers.items():
+                                tparam += ",epochs=" + str(epochs) + str(policy)
+                                for cname, cparam in self.criteria.items():
+                                        for lname, lparam in self.losses.items():
+                                                self.run_one(trial, mname, mparam, tname, tparam, cname, cparam, lname, lparam)
+
+        def run_all(self, trials, epochs, policy):
+                for trial in range(trials):
+                        self.run_trial(trial, epochs, policy)
