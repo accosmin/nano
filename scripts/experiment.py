@@ -49,6 +49,7 @@ class experiment:
                                 # plot
                                 plt.xlabel(xname)
                                 plt.ylabel(yname0.strip("train_"))
+                                plt.title(os.path.basename(spath).strip(".state"))
                                 plt.plot(data[xname], data[yname0], "r--", label = yname0)
                                 plt.plot(data[xname], data[yname1], "g-.", label = yname1)
                                 plt.plot(data[xname], data[yname2], "b-o", label = yname2)
