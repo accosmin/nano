@@ -118,24 +118,27 @@ namespace nano
                 const size_t colsize = 24;
 
                 // header
+                ofs << nano::align("epoch", colsize) << delim;
                 for (const string_t& proto : {"train", "valid", "test"})
                 {
                         ofs
-                        << nano::align(proto + "-criterion", colsize) << delim
-                        << nano::align(proto + "-loss-avg", colsize) << delim
-                        << nano::align(proto + "-loss-var", colsize) << delim
-                        << nano::align(proto + "-loss-max", colsize) << delim
-                        << nano::align(proto + "-error-avg", colsize) << delim
-                        << nano::align(proto + "-error-var", colsize) << delim
-                        << nano::align(proto + "-error-max", colsize) << delim;
+                        << nano::align(proto + "_criterion", colsize) << delim
+                        << nano::align(proto + "_loss_avg", colsize) << delim
+                        << nano::align(proto + "_loss_var", colsize) << delim
+                        << nano::align(proto + "_loss_max", colsize) << delim
+                        << nano::align(proto + "_error_avg", colsize) << delim
+                        << nano::align(proto + "_error_var", colsize) << delim
+                        << nano::align(proto + "_error_max", colsize) << delim;
                 }
                 ofs
-                << nano::align("time-seconds", colsize) << delim
+                << nano::align("time_seconds", colsize) << delim
                 << std::endl;
 
                 // optimization states
+                size_t index = 0;
                 for (const trainer_state_t& state : states)
                 {
+                        ofs << nano::align(nano::to_string(index ++), colsize) << delim;
                         for (const auto& measurement : {state.m_train, state.m_valid, state.m_test})
                         {
                                 ofs
