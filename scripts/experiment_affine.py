@@ -5,7 +5,7 @@ import experiment
 task = "--task affine --task-params isize=100,osize=10,count=10000,noise=1e-4"
 
 cfg = config.config()
-exp = experiment.experiment(cfg.app_train, task, cfg.expdir + "/affine/eval_trainers")
+exp = experiment.experiment(cfg.app_train, cfg.app_stats, task, cfg.expdir + "/affine/eval_trainers")
 
 # loss functions
 losses = "loss_cauchy loss_square"
@@ -37,7 +37,33 @@ for name in trainers.split():
 
 # train all configurations
 trials = 10
-epochs = 10
+epochs = 100
 exp.run_all(trials, epochs, cfg.policies.get("stop_early"))
 
-# compare models
+# compare configurations
+for trial in range(trials):
+        for mname in exp.models:
+                for cname in exp.criteria:
+                        for lname in exp.losses:
+                                stoch_spaths = []
+                                batch_spaths = []
+                                all_spaths = []
+                                for tname in exp.trainers:
+                                        spath = exp.get_path(trial, mname, tname, cname, lname, ".state")
+                                        if tname.find("stoch") < 0:
+                                                batch_spaths.append(spath)
+                                        else:
+                                                stoch_spaths.append(spath)
+                                        all_spaths.append(spath)
+
+                                # compare stochastic trainers
+                                exp.plot_many(stoch_spaths, exp.get_path(trial, mname, "stoch", cname, lname, ".pdf"))
+
+                                # compare batch trainers
+                                exp.plot_many(batch_spaths, exp.get_path(trial, mname, "batch", cname, lname, ".pdf"))
+
+                                # compare all trainers
+                                exp.plot_many(all_spaths, exp.get_path(trial, mname, "all", cname, lname, ".pdf"))
+
+# summarize each configuration
+exp.summarize(trials)
