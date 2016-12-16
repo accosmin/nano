@@ -2,15 +2,15 @@ import config
 import experiment
 
 # initialize experiment:
-# - regression problem using a synthetic task
-# - the model should predict an affine mapping of the input vector
-task = "--task affine --task-params isize=100,osize=10,count=10000,noise=1e-4"
+# - multi-class classification problem using a synthetic task
+# - the model should predict the sign of the affine mapping of the input vector
+task = "--task sign --task-params isize=100,osize=10,count=10000,noise=1e-4"
 
 cfg = config.config()
-exp = experiment.experiment(cfg.app_train, cfg.app_stats, task, cfg.expdir + "/affine/eval_trainers")
+exp = experiment.experiment(cfg.app_train, cfg.app_stats, task, cfg.expdir + "/sign/eval_trainers")
 
 # loss functions
-losses = "loss_cauchy loss_square"
+losses = "loss_exponential loss_logistic"
 for name in losses.split():
         exp.add_loss(name, cfg.losses.get(name))
 
@@ -20,11 +20,15 @@ for name in criteria.split():
         exp.add_criterion(name, cfg.criteria.get(name))
 
 # models
-outlayer = "affine:dims=10;"
+outlayer = "affine:dims=10;act-snorm;"
 
 mlp0 = "--model forward-network --model-params "
+mlp1 = mlp0 + "affine:dims=10;act-snorm;"
+mlp2 = mlp1 + "affine:dims=10;act-snorm;"
 
 exp.add_model("mlp0", mlp0 + outlayer)
+exp.add_model("mlp1", mlp1 + outlayer)
+exp.add_model("mlp2", mlp2 + outlayer)
 
 # trainers
 trainers = ""

@@ -2,15 +2,15 @@ import config
 import experiment
 
 # initialize experiment:
-# - regression problem using a synthetic task
-# - the model should predict an affine mapping of the input vector
-task = "--task affine --task-params isize=100,osize=10,count=10000,noise=1e-4"
+# - single-class classification problem using a synthetic task
+# - the model should predict the digit of a synthetic image
+task = "--task charset --task-params type=digit,color=rgb,irows=16,icols=16,count=10000"
 
 cfg = config.config()
-exp = experiment.experiment(cfg.app_train, cfg.app_stats, task, cfg.expdir + "/affine/eval_trainers")
+exp = experiment.experiment(cfg.app_train, cfg.app_stats, task, cfg.expdir + "/charset/eval_trainers")
 
 # loss functions
-losses = "loss_cauchy loss_square"
+losses = "loss_classnll"
 for name in losses.split():
         exp.add_loss(name, cfg.losses.get(name))
 
@@ -20,11 +20,23 @@ for name in criteria.split():
         exp.add_criterion(name, cfg.criteria.get(name))
 
 # models
-outlayer = "affine:dims=10;"
+outlayer = "affine:dims=10;act-snorm;"
 
 mlp0 = "--model forward-network --model-params "
+mlp1 = mlp0 + "affine:dims=10;act-snorm;"
+mlp2 = mlp1 + "affine:dims=10;act-snorm;"
+
+convnet0 = "--model forward-network --model-params "
+convnet1 = convnet0 + "conv:dims=32,rows=5,cols=5,conn=1,drow=1,dcol=1;act-snorm;"
+convnet2 = convnet1 + "conv:dims=32,rows=5,cols=5,conn=4,drow=1,dcol=1;act-snorm;"
+convnet3 = convnet2 + "conv:dims=32,rows=3,cols=3,conn=4,drow=1,dcol=1;act-snorm;"
 
 exp.add_model("mlp0", mlp0 + outlayer)
+exp.add_model("mlp1", mlp1 + outlayer)
+exp.add_model("mlp2", mlp2 + outlayer)
+exp.add_model("convnet1", convnet1 + outlayer)
+exp.add_model("convnet2", convnet2 + outlayer)
+exp.add_model("convnet3", convnet3 + outlayer)
 
 # trainers
 trainers = ""

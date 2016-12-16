@@ -62,7 +62,7 @@ class experiment:
         def plot_one(self, spath, ppath):
                 title, data = self.get_csv(spath)
                 with PdfPages(ppath) as pdf:
-                        for col in range(7):
+                        for col in (0, 1, 4):
                                 # x axis - epoch/iteration index
                                 xname = data.dtype.names[0]
                                 xlabel = xname
@@ -105,7 +105,7 @@ class experiment:
         def plot_many(self, spaths, ppath):
                 names, datas = self.get_csvs(spaths)
                 with PdfPages(ppath) as pdf:
-                        for col in range(21):
+                        for col in (0, 1, 4, 7, 8, 11, 14, 15, 18):
                                 # plot wrt epoch/iteration number
                                 self.plot_many_wrt(spaths, names, datas, pdf, 0, col + 1)
                                 # plot wrt time
