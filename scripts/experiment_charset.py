@@ -53,20 +53,14 @@ epochs = 100
 exp.run_all(trials, epochs, cfg.policies.get("stop_early"))
 
 # compare configurations
+# compare configurations
 for trial in range(trials):
         for mname in exp.models:
                 for cname in exp.criteria:
                         for lname in exp.losses:
-                                stoch_spaths = []
-                                batch_spaths = []
-                                all_spaths = []
-                                for tname in exp.trainers:
-                                        spath = exp.get_path(trial, mname, tname, cname, lname, ".state")
-                                        if tname.find("stoch") < 0:
-                                                batch_spaths.append(spath)
-                                        else:
-                                                stoch_spaths.append(spath)
-                                        all_spaths.append(spath)
+                                stoch_spaths = exp.filter(trial, mname, "stoch*", cname, lname, ".state")
+                                batch_spaths = exp.filter(trial, mname, "batch*", cname, lname, ".state")
+                                all_spaths = exp.filter(trial, mname, ".*", cname, lname, ".state")
 
                                 # compare stochastic trainers
                                 exp.plot_many(stoch_spaths, exp.get_path(trial, mname, "stoch", cname, lname, ".pdf"))

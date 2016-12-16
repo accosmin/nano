@@ -1,4 +1,5 @@
 import os
+import re
 import time
 import subprocess
 import matplotlib.mlab as mlab
@@ -33,6 +34,23 @@ class experiment:
 
         def get_path(self, trial, mname, tname, cname, lname, extension):
                 return self.dir + "/trial" + str(trial) + "_" + tname + "_" + mname + "_" + cname + "_" + lname + extension
+
+        def filter(self, trial, mname_reg, tname_reg, cname_reg, lname_reg, extension):
+                paths = []
+                for mname in self.models:
+                        if not re.match(mname_reg, mname):
+                                continue
+                        for tname in self.trainers:
+                                if not re.match(tname_reg, tname):
+                                        continue
+                                for cname in self.criteria:
+                                        if not re.match(cname_reg, cname):
+                                                continue
+                                        for lname in self.losses:
+                                                if not re.match(lname_reg, lname):
+                                                        continue
+                                                paths.append(self.get_path(trial, mname, tname, cname, lname, extension))
+                return paths
 
         def train_one(self, param, lpath):
                 lfile = open(lpath, "w")
