@@ -136,7 +136,7 @@ class experiment:
                 for trial in range(trials):
                         self.run_trial(trial, epochs, policy)
 
-        def get_value(self, line, begin_delim, end_delim, start = 0):
+        def get_token(self, line, begin_delim, end_delim, start = 0):
                 begin = line.find(begin_delim, start)
                 if begin < 0:
                         return "", 0
@@ -149,53 +149,58 @@ class experiment:
         def get_log(self, lpath):
                 lfile = open(lpath, "r")
                 for line in lfile:
+                        if line.find("speed=") < 0:
+                                continue
                         # search for the test value (aka criterion)
-                        value, index = self.get_value(line, "test=", "|", 0)
-                        if value:
-                                # search for the test error
-                                error, index = self.get_value(line, "|", "+/-", index)
-                                if error:
-                                        # search for the optimum number of epochs
-                                        epoch, index = self.get_value(line, "epoch=", ",", index)
-                                        if epoch:
-                                                return value, error, epoch
+                        value, index = self.get_token(line, "test=", "|", 0)
+                        # search for the test error
+                        error, index = self.get_token(line, "|", "+/-", index)
+                        # search for the optimum number of epochs
+                        epoch, index = self.get_token(line, "epoch=", ",", index)
+                        # search for the convergence speed
+                        speed, index = self.get_token(line, "speed=", ",", index)
+                        return value, error, epoch, speed
                 lfile.close()
-                return 0, 0, 0
+                return 0, 0, 0, 0
 
         def summarize_one(self, trials, mname, tname, cname, lname, lfile):
                 values = []
                 errors = []
                 epochs = []
+                speeds = []
                 for trial in range(trials):
                         lpath = self.get_path(trial, mname, tname, cname, lname, ".log")
-                        value, error, epoch = self.get_log(lpath)
+                        value, error, epoch, speed = self.get_log(lpath)
                         values.append(value)
                         errors.append(error)
                         epochs.append(epoch)
+                        speeds.append(speed)
                 value_stats = subprocess.check_output(self.app_stats.split() + values).decode('utf-8').strip()
                 error_stats = subprocess.check_output(self.app_stats.split() + errors).decode('utf-8').strip()
                 epoch_stats = subprocess.check_output(self.app_stats.split() + epochs).decode('utf-8').strip()
-                print("%-16s %-16s %-16s %-16s %-48s %-48s %-48s" % \
-                        (mname, tname, cname, lname, value_stats, error_stats, epoch_stats), file = lfile)
+                speed_stats = subprocess.check_output(self.app_stats.split() + speeds).decode('utf-8').strip()
+                print("%-12s | %-16s | %-12s | %-12s | %-42s | %-42s | %-48s | %-48s" % \
+                        (mname, tname, cname, lname, value_stats, error_stats, epoch_stats, speed_stats), file = lfile)
 
         def summarize(self, trials):
                 lpath = self.dir + "/result.log"
                 lfile = open(lpath, "w")
 
-                print("%-16s %-16s %-16s %-16s %-48s %-48s %-48s" % \
-                        ("model", "trainer", "criterion", "loss", "test value", "test error", "epochs"), file = lfile)
-                print("-" * 220, file = lfile)
-                print(file = lfile)
-
+                # header
+                print("%-12s | %-16s | %-12s | %-12s | %-42s | %-42s | %-48s | %-48s" % \
+                        ("model", "trainer", "criterion", "loss", "test value", "test error", "epochs", "convergence speed"),
+                        file = lfile)
+                print("-" * 250, file = lfile)
+                # content
                 for mname in self.models:
                         for tname in self.trainers:
                                 for cname in self.criteria:
                                         for lname in self.losses:
                                                 self.summarize_one(trials, mname, tname, cname, lname, lfile)
-
                 lfile.close()
 
                 # print file to screen
                 lfile = open(lpath, "r")
-                self.log(lfile.read())
+                self.log()
+                print(lfile.read())
                 lfile.close()
