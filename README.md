@@ -186,6 +186,5 @@ Most notably:
 * **apps/benchmark_batch** - benchmark all batch optimization methods with varying the line-search parameters on standard test functions.
 * **apps/benchmark_stoch** - benchmark all stochastic optimization methods on standard test functions.
 * **apps/benchmark_models** - bechmark speed-wise some typical models on a synthetic task.
-* **apps/benchmark_trainers** - benchmark all training methods on a synthetic task.
 
 The `scripts` directory contains examples on how to train various models on different tasks.

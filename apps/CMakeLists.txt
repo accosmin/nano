@@ -11,7 +11,6 @@ build_app(benchmark_batch.cpp nano)
 build_app(benchmark_stoch.cpp nano)
 build_app(benchmark_models.cpp nano)
 build_app(benchmark_iterator.cpp nano)
-build_app(benchmark_trainers.cpp nano)
 build_app(benchmark_functions.cpp nano)
 
 build_app(info.cpp nano)
