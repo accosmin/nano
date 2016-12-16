@@ -1,5 +1,6 @@
 #include "math/stats.h"
 #include "text/align.h"
+#include "math/numeric.h"
 #include "math/epsilon.h"
 #include "trainer_state.h"
 #include "text/to_string.h"
@@ -81,14 +82,13 @@ namespace nano
 
                         const auto ratio_eps = nano::epsilon0<scalar_t>();
                         const auto ratio = (ratio_eps + crt.m_train.m_value) / (ratio_eps + prv.m_train.m_value);
-
-                        const auto delta_eps = 100;
-                        const auto delta = delta_eps + crt.m_milis.count() - prv.m_milis.count();
+                        const auto delta = 1 + crt.m_milis.count() - prv.m_milis.count();
 
                         // convergence speed ~ loss decrease ratio / second
-                        return  static_cast<scalar_t>(std::pow(
+                        const auto ret = static_cast<scalar_t>(std::pow(
                                 static_cast<double>(ratio),
                                 static_cast<double>(1000) / static_cast<double>(delta)));
+                        return std::isfinite(ret) ? nano::clamp(ret, scalar_t(0), scalar_t(1)) : scalar_t(1);
                 };
 
                 nano::stats_t<scalar_t> speeds;

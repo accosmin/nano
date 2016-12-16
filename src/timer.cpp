@@ -15,10 +15,10 @@ namespace nano
 
                 std::string miliseconds_to_string(std::size_t miliseconds)
                 {
-                        static const std::size_t size_second = 1000;
-                        static const std::size_t size_minute = 60 * size_second;
-                        static const std::size_t size_hour = 60 * size_minute;
-                        static const std::size_t size_day = 24 * size_hour;
+                        static constexpr std::size_t size_second = 1000;
+                        static constexpr std::size_t size_minute = 60 * size_second;
+                        static constexpr std::size_t size_hour = 60 * size_minute;
+                        static constexpr std::size_t size_day = 24 * size_hour;
 
                         const std::size_t days = miliseconds / size_day; miliseconds -= days * size_day;
                         const std::size_t hours = miliseconds / size_hour; miliseconds -= hours * size_hour;
