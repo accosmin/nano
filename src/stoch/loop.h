@@ -21,12 +21,12 @@ namespace nano
 
         inline auto make_momenta()
         {
-                return make_finite_space(scalar_t(0.9), scalar_t(0.95), scalar_t(0.99));
+                return make_log10_space(scalar_t(-3), scalar_t(-0.01), scalar_t(0.5));
         }
 
         inline auto make_epsilons()
         {
-                return make_log10_space(scalar_t(-6), scalar_t(-3), scalar_t(0.2));
+                return make_log10_space(scalar_t(-6), scalar_t(-3), scalar_t(0.5));
         }
 
         namespace detail
