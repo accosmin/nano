@@ -148,6 +148,10 @@ namespace nano
                 {
                         os << ",speed=" << convergence_speed(result.optimum_states()) << "/s";
                 }
+                else
+                {
+                        os << ",speed=" << "0.0/s";
+                }
 
                 return os;
         }

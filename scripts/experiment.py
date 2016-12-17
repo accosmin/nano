@@ -189,7 +189,7 @@ class experiment:
                         delta, index = self.get_token(line, "time=", ".", index)
                         return value, error, epoch, speed, self.get_seconds(delta)
                 lfile.close()
-                return 0, 0, 0, 0, 0
+                print("invalid log file <", lpath, ">")
 
         def summarize_one(self, trials, mname, tname, cname, lname, lfile):
                 values = []
