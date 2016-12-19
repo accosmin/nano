@@ -11,7 +11,7 @@ namespace nano
                 log_info()
                 << "task [" << name
                 << "]: input = " << task.idims() << "x" << task.irows() << "x" << task.icols()
-                << ", output = " << task.osize()
+                << ", output = " << task.odims() << "x" << task.orows() << "x" << task.ocols()
                 << ", count = " << task.n_samples() << ".";
 
                 for (size_t f = 0; f < task.n_folds(); ++ f)

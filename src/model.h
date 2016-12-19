@@ -44,7 +44,7 @@ namespace nano
                 /// \brief resize to process new inputs
                 ///
                 bool resize(const tensor_size_t idims, const tensor_size_t irows, const tensor_size_t icols,
-                            const tensor_size_t osize,
+                            const tensor_size_t odims, const tensor_size_t orows, const tensor_size_t ocols,
                             const bool verbose);
 
                 ///
@@ -108,7 +108,10 @@ namespace nano
                 tensor_size_t irows() const { return m_irows; }
                 tensor_size_t icols() const { return m_icols; }
                 tensor_size_t isize() const { return idims() * irows() * icols(); }
-                tensor_size_t osize() const { return m_osize; }
+                tensor_size_t odims() const { return m_odims; }
+                tensor_size_t orows() const { return m_orows; }
+                tensor_size_t ocols() const { return m_ocols; }
+                tensor_size_t osize() const { return odims() * orows() * ocols(); }
                 virtual tensor_size_t psize() const = 0;
 
         protected:
@@ -116,15 +119,11 @@ namespace nano
                 // resize to new inputs/outputs, returns the number of parameters
                 virtual tensor_size_t resize(bool verbose) = 0;
 
-
-
         private:
 
                 // attributes
-                tensor_size_t   m_idims;        ///< input size
-                tensor_size_t   m_irows;        ///< input size
-                tensor_size_t   m_icols;        ///< input size
-                tensor_size_t   m_osize;        ///< output size
+                tensor_size_t   m_idims, m_irows, m_icols;      ///< input size
+                tensor_size_t   m_odims, m_orows, m_ocols;      ///< output size
         };
 
         ///

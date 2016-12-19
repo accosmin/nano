@@ -12,9 +12,9 @@ namespace nano
         ///
         /// tsample is a sample associated to a chunk (e.g. can map to the whole or a part of the chunk):
         ///     ::index()                       - index of the associated chunk
-        ///     ::input(const tchunk&)          - 3D input tensor
+        ///     ::input(const tchunk&)          - input 3D tensor
         ///     ::input(const size_t chunk_hash)- hash of the input tensor given the hash of the associated chunk
-        ///     ::target()                      - target vector
+        ///     ::target()                      - target 3D tensor
         ///     ::label()                       - associated label (if any)
         ///
         template <typename tchunk, typename tsample>
@@ -27,11 +27,12 @@ namespace nano
                 ///
                 mem_task_t(
                         const tensor_size_t idims, const tensor_size_t irows, const tensor_size_t icols,
-                        const tensor_size_t osize,
+                        const tensor_size_t odims, const tensor_size_t orows, const tensor_size_t ocols,
                         const size_t fsize,
                         const string_t& configuration = string_t()) :
                         task_t(configuration),
-                        m_idims(idims), m_irows(irows), m_icols(icols), m_osize(osize),
+                        m_idims(idims), m_irows(irows), m_icols(icols),
+                        m_odims(odims), m_orows(orows), m_ocols(ocols),
                         m_fsize(fsize), m_frand(1, 10)
                 {
                 }
@@ -51,7 +52,9 @@ namespace nano
                 ///
                 /// \brief output size
                 ///
-                virtual tensor_size_t osize() const final { return m_osize; }
+                virtual tensor_size_t odims() const final { return m_odims; }
+                virtual tensor_size_t orows() const final { return m_orows; }
+                virtual tensor_size_t ocols() const final { return m_ocols; }
 
                 ///
                 /// \brief number of folds (not considering the protocol!)
@@ -81,7 +84,7 @@ namespace nano
                 ///
                 /// \brief retrieve the target for a given sample
                 ///
-                virtual vector_t target(const fold_t&, const size_t index) const override;
+                virtual tensor3d_t target(const fold_t&, const size_t index) const override;
 
                 ///
                 /// \brief retrieve the associated label (if any) for a given sample
@@ -171,7 +174,9 @@ namespace nano
                 tensor_size_t                   m_idims;        ///< input size
                 tensor_size_t                   m_irows;
                 tensor_size_t                   m_icols;
-                tensor_size_t                   m_osize;        ///< output size
+                tensor_size_t                   m_odims;        ///< output size
+                tensor_size_t                   m_orows;
+                tensor_size_t                   m_ocols;
                 size_t                          m_fsize;        ///< number of folds
                 mutable random_t<size_t>        m_frand;        ///< rng for training-validation fold assignment
                 std::vector<tchunk>             m_chunks;       ///<
@@ -246,7 +251,7 @@ namespace nano
         }
 
         template <typename tchunk, typename tsample>
-        vector_t mem_task_t<tchunk, tsample>::target(const fold_t& fold, const size_t index) const
+        tensor3d_t mem_task_t<tchunk, tsample>::target(const fold_t& fold, const size_t index) const
         {
                 const auto& sample = get_sample(fold, index);
                 return sample.target();

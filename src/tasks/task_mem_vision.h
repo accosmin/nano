@@ -10,7 +10,7 @@ namespace nano
         {
                 explicit mem_vision_sample_t(
                         const size_t index = 0,
-                        const vector_t& target = vector_t(),
+                        const tensor3d_t& target = tensor3d_t(),
                         const string_t& label = string_t(),
                         const rect_t& region = rect_t()) :
                         m_index(index), m_region(region), m_target(target), m_label(label)
@@ -25,7 +25,7 @@ namespace nano
 
                 size_t          m_index;
                 rect_t          m_region;
-                vector_t        m_target;
+                tensor3d_t      m_target;
                 string_t        m_label;
         };
 
@@ -55,22 +55,22 @@ namespace nano
                 ///
                 mem_vision_task_t(
                         const tensor_size_t idims, const tensor_size_t irows, const tensor_size_t icols,
-                        const tensor_size_t osize,
+                        const tensor_size_t odims, const tensor_size_t orows, const tensor_size_t ocols,
                         const size_t fsize,
                         const string_t& config = string_t()) :
-                        mem_task_t<image_t, mem_vision_sample_t>(idims, irows, icols, osize, fsize, config) {}
+                        mem_task_t<image_t, mem_vision_sample_t>(idims, irows, icols, odims, orows, ocols, fsize, config) {}
 
                 ///
                 /// \brief constructor
                 ///
                 mem_vision_task_t(
                         const color_mode color, const tensor_size_t irows, const tensor_size_t icols,
-                        const tensor_size_t osize,
+                        const tensor_size_t odims, const tensor_size_t orows, const tensor_size_t ocols,
                         const size_t fsize,
                         const string_t& config = string_t()) :
                         mem_vision_task_t(
                         (color == color_mode::rgba ? 4 : (color == color_mode::rgb ? 3 : 1)),
-                        irows, icols, osize, fsize, config) {}
+                        irows, icols, odims, orows, ocols, fsize, config) {}
 
                 ///
                 /// \brief retrieve the number of images

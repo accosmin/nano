@@ -9,10 +9,8 @@ namespace nano
 {
         model_t::model_t(const string_t& parameters) :
                 clonable_t(parameters),
-                m_idims(0),
-                m_irows(0),
-                m_icols(0),
-                m_osize(0)
+                m_idims(0), m_irows(0), m_icols(0),
+                m_odims(0), m_orows(0), m_ocols(0)
         {
         }
 
@@ -30,7 +28,9 @@ namespace nano
                 ob.write(m_idims);
                 ob.write(m_irows);
                 ob.write(m_icols);
-                ob.write(m_osize);
+                ob.write(m_odims);
+                ob.write(m_orows);
+                ob.write(m_ocols);
                 ob.write(m_configuration);
 
                 // save parameters
@@ -55,7 +55,9 @@ namespace nano
                 ib.read(m_idims);
                 ib.read(m_irows);
                 ib.read(m_icols);
-                ib.read(m_osize);
+                ib.read(m_odims);
+                ib.read(m_orows);
+                ib.read(m_ocols);
                 ib.read(m_configuration);
 
                 // apply configuration
@@ -71,16 +73,19 @@ namespace nano
 
         bool model_t::resize(const task_t& task, bool verbose)
         {
-                return resize(task.idims(), task.irows(), task.icols(), task.osize(), verbose);
+                return  resize(task.idims(), task.irows(), task.icols(), task.odims(), task.orows(), task.ocols(),
+                        verbose);
         }
 
         bool model_t::resize(const tensor_size_t idims, const tensor_size_t irows, const tensor_size_t icols,
-                const tensor_size_t osize, const bool verbose)
+                const tensor_size_t odims, const tensor_size_t orows, const tensor_size_t ocols, const bool verbose)
         {
                 m_idims = idims;
                 m_irows = irows;
                 m_icols = icols;
-                m_osize = osize;
+                m_odims = odims;
+                m_orows = orows;
+                m_ocols = ocols;
                 resize(verbose);
 
                 if (verbose)
@@ -96,7 +101,9 @@ namespace nano
                 return  model.idims() == task.idims() &&
                         model.irows() == task.irows() &&
                         model.icols() == task.icols() &&
-                        model.osize() == task.osize();
+                        model.odims() == task.odims() &&
+                        model.orows() == task.orows() &&
+                        model.ocols() == task.ocols();
         }
 
         bool operator!=(const model_t& model, const task_t& task)

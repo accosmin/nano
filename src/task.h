@@ -44,7 +44,9 @@ namespace nano
                 ///
                 /// \brief output size
                 ///
-                virtual tensor_size_t osize() const = 0;
+                virtual tensor_size_t odims() const = 0;
+                virtual tensor_size_t orows() const = 0;
+                virtual tensor_size_t ocols() const = 0;
 
                 ///
                 /// \brief number of folds
@@ -72,9 +74,9 @@ namespace nano
                 virtual tensor3d_t input(const fold_t&, const size_t index) const = 0;
 
                 ///
-                /// \brief retrieve the target for a given sample
+                /// \brief retrieve the output target for a given sample
                 ///
-                virtual vector_t target(const fold_t&, const size_t index) const = 0;
+                virtual tensor3d_t target(const fold_t&, const size_t index) const = 0;
 
                 ///
                 /// \brief retrieve the associated label (if any) for a given sample

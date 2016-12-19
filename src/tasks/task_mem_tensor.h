@@ -8,7 +8,7 @@ namespace nano
         {
                 explicit mem_tensor_sample_t(
                         const size_t index = 0,
-                        const vector_t& target = vector_t(),
+                        const tensor3d_t& target = tensor3d_t(),
                         const string_t& label = string_t()) :
                         m_index(index), m_target(target), m_label(label)
                 {
@@ -21,7 +21,7 @@ namespace nano
                 auto label() const { return m_label; }
 
                 size_t          m_index;
-                vector_t        m_target;
+                tensor3d_t      m_target;
                 string_t        m_label;
         };
 

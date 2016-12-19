@@ -72,7 +72,7 @@ namespace nano
                 ///
                 /// \brief update statistics with a new sample
                 ///
-                void update(const tensor3d_t& input, const vector_t& target, const loss_t& loss);
+                void update(const tensor3d_t& input, const tensor3d_t& target, const loss_t& loss);
 
                 ///
                 /// \brief update statistics with a set of new samples
