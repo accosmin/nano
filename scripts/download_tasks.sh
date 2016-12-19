@@ -1,6 +1,13 @@
 #!/bin/bash
 
-source common_train.sh
+dir_exp=$HOME/experiments/results
+dir_db=$HOME/experiments/databases
+
+dir_db_svhn=${dir_db}/svhn/
+dir_db_mnist=${dir_db}/mnist/
+dir_db_stl10=${dir_db}/stl10/
+dir_db_cifar10=${dir_db}/cifar10/
+dir_db_cifar100=${dir_db}/cifar100/
 
 # SVHN dataset
 mkdir -p ${dir_db_svhn}
