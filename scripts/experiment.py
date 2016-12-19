@@ -210,7 +210,7 @@ class experiment:
                 epoch_stats = subprocess.check_output(self.app_stats.split() + epochs).decode('utf-8').strip()
                 speed_stats = subprocess.check_output(self.app_stats.split() + speeds).decode('utf-8').strip()
                 delta_stats = subprocess.check_output(self.app_stats.split() + deltas).decode('utf-8').strip()
-                print("%-12s | %-16s | %-12s | %-12s | %-42s | %-42s | %-48s | %-48s | %-48s" % \
+                print("%-12s | %-16s | %-16s | %-16s | %-42s | %-42s | %-48s | %-48s | %-48s" % \
                         (mname, tname, cname, lname, value_stats, error_stats, epoch_stats, speed_stats, delta_stats),
                         file = lfile)
 
@@ -219,7 +219,7 @@ class experiment:
                 lfile = open(lpath, "w")
 
                 # header
-                print("%-12s | %-16s | %-12s | %-12s | %-42s | %-42s | %-48s | %-48s | %-48s" % \
+                print("%-12s | %-16s | %-16s | %-16s | %-42s | %-42s | %-48s | %-48s | %-48s" % \
                         ("model", "trainer", "criterion", "loss", "test value", "test error", "epochs", "convergence speed", "duration (sec)"),
                         file = lfile)
                 print("-" * 280, file = lfile)
