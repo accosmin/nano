@@ -34,7 +34,7 @@ NANO_CASE(construction)
                 NANO_CHECK_EQUAL(task.load(), true);
                 NANO_CHECK_EQUAL(task.irows(), irows);
                 NANO_CHECK_EQUAL(task.icols(), icols);
-                NANO_CHECK_EQUAL(task.osize(), osize);
+                NANO_CHECK_EQUAL(task.odims(), osize);
                 NANO_CHECK_EQUAL(task.n_folds(), fsize);
                 NANO_CHECK_EQUAL(task.color(), mode);
                 NANO_CHECK_EQUAL(task.n_images(), count);
@@ -120,7 +120,9 @@ NANO_CASE(from_params)
         NANO_CHECK_EQUAL(task.irows(), 23);
         NANO_CHECK_EQUAL(task.icols(), 29);
         NANO_CHECK_EQUAL(task.idims(), 3);
-        NANO_CHECK_EQUAL(task.osize(), 52);
+        NANO_CHECK_EQUAL(task.odims(), 52);
+        NANO_CHECK_EQUAL(task.orows(), 1);
+        NANO_CHECK_EQUAL(task.ocols(), 1);
         NANO_CHECK_EQUAL(task.n_folds(), size_t(1));
         NANO_CHECK_EQUAL(task.n_samples(), size_t(102));
 

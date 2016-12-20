@@ -26,7 +26,7 @@ NANO_CASE(evaluate)
                 make_conv_layer(8, 7, 7, 1) +
                 make_conv_layer(8, 5, 5, 1);
 
-        const string_t outlayer = make_output_layer(task->osize());
+        const string_t outlayer = make_output_layer(task->odims());
 
         strings_t cmd_networks =
         {
@@ -51,7 +51,9 @@ NANO_CASE(evaluate)
                 NANO_CHECK_EQUAL(model->idims(), 1);
                 NANO_CHECK_EQUAL(model->irows(), task->irows());
                 NANO_CHECK_EQUAL(model->icols(), task->icols());
-                NANO_CHECK_EQUAL(model->osize(), task->osize());
+                NANO_CHECK_EQUAL(model->odims(), task->odims());
+                NANO_CHECK_EQUAL(model->orows(), task->orows());
+                NANO_CHECK_EQUAL(model->ocols(), task->ocols());
 
                 // test random networks
                 for (size_t t = 0; t < 5; ++ t)

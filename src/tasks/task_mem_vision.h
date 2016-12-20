@@ -17,6 +17,15 @@ namespace nano
                 {
                 }
 
+                mem_vision_sample_t(
+                        const size_t index,
+                        const vector_t& target,
+                        const string_t& label = string_t(),
+                        const rect_t& region = rect_t()) :
+                        mem_vision_sample_t(index, tensor::map_tensor(target.data(), target.size(), 1, 1), label, region)
+                {
+                }
+
                 auto index() const { return m_index; }
                 tensor3d_t input(const image_t& image) const;
                 size_t hash(size_t seed) const;

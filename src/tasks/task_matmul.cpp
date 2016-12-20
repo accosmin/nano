@@ -27,7 +27,7 @@ namespace nano
 
         matmul_task_t::matmul_task_t(const string_t& configuration) : mem_tensor_task_t(
                 2, get_irows(configuration), get_icols(configuration),
-                get_irows(configuration) * get_irows(configuration),
+                1, get_irows(configuration), get_irows(configuration),
                 1, append_config(configuration))
         {
         }
@@ -45,7 +45,7 @@ namespace nano
                 m_B.resize(irows(), irows());
 
                 tensor::set_random(rng_input, m_A, m_B);
-                m_A /= static_cast<scalar_t>(m_A.size());
+                tensor::normalize(m_A);
 
                 // generate samples
                 for (size_t i = 0; i < count; ++ i)
@@ -58,7 +58,7 @@ namespace nano
                         // target
                         matrix_t target = m_A * (input.matrix(0) * input.matrix(1).transpose()) + m_B;
                         tensor::add_random(rng_noise, target);
-                        add_sample(make_fold(0), i, tensor::map_vector(target.data(), target.size()));
+                        add_sample(make_fold(0), i, tensor::map_tensor(target.data(), odims(), orows(), ocols()));
                 }
 
                 return true;

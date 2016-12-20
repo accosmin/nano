@@ -13,7 +13,7 @@
 namespace nano
 {
         svhn_task_t::svhn_task_t(const string_t& config) :
-                mem_vision_task_t(3, 32, 32, 10, 1, to_params(config, "dir", "."))
+                mem_vision_task_t(3, 32, 32, 10, 1, 1, 1, to_params(config, "dir", "."))
         {
         }
 
@@ -184,7 +184,7 @@ namespace nano
 
                         // target ...
                         const auto fold = make_fold(0, p);
-                        add_sample(fold, n_chunks() - 1, class_target(ilabel, osize()), "digit" + to_string(ilabel));
+                        add_sample(fold, n_chunks() - 1, class_target(ilabel, odims()), "digit" + to_string(ilabel));
 
                         ++ cnt;
                 }

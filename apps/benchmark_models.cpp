@@ -76,7 +76,7 @@ int main(int argc, const char *argv[])
         const string_t convnet4 = convnet3 + make_conv_layer(64, 5, 5, conn, activation);
         const string_t convnet5 = convnet4 + make_conv_layer(64, 3, 3, conn, activation);
 
-        const string_t outlayer = make_output_layer(task.osize());
+        const string_t outlayer = make_output_layer(task.odims());
 
         std::vector<std::pair<string_t, string_t>> networks;
         #define DEFINE(config) networks.emplace_back(config + outlayer, NANO_STRINGIFY(config))

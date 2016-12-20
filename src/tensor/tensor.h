@@ -74,10 +74,7 @@ namespace tensor
                 ///
                 /// \brief constructor
                 ///
-                template
-                <
-                        typename tmap
-                >
+                template <typename tmap>
                 tensor_t(const tensor_map_t<tmap, tdimensions>& other) :
                         tensor_t(other.dims())
                 {
@@ -111,11 +108,7 @@ namespace tensor
         ///
         /// \brief map non-constant data to tensors
         ///
-        template
-        <
-                typename tvalue_,
-                typename... tsizes
-        >
+        template <typename tvalue_, typename... tsizes>
         auto map_tensor(tvalue_* data, const tsizes... dims)
         {
                 using tvalue = typename std::remove_const<tvalue_>::type;
@@ -128,11 +121,7 @@ namespace tensor
         ///
         /// \brief map constant data to tensors
         ///
-        template
-        <
-                typename tvalue_,
-                typename... tsizes
-        >
+        template <typename tvalue_, typename... tsizes>
         auto map_tensor(const tvalue_* data, const tsizes... dims)
         {
                 using tvalue = typename std::remove_const<tvalue_>::type;

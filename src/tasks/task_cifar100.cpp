@@ -113,7 +113,7 @@ namespace nano
         };
 
         cifar100_task_t::cifar100_task_t(const string_t& config) :
-                mem_vision_task_t(3, 32, 32, 100, 1, to_params(config, "dir", "."))
+                mem_vision_task_t(3, 32, 32, 100, 1, 1, 1, to_params(config, "dir", "."))
         {
         }
 
@@ -170,17 +170,13 @@ namespace nano
                         stream.read(buffer.data(), buffer_size))
                 {
                         const tensor_index_t ilabel = label[1];
-                        if (ilabel >= osize())
-                        {
-                                continue;
-                        }
 
                         image_t image;
                         image.load_rgb(buffer.data(), irows(), icols(), irows() * icols());
                         add_chunk(image, image.hash());
 
                         const auto fold = make_fold(0, p);
-                        add_sample(fold, n_chunks() - 1, class_target(ilabel, osize()), tlabels[ilabel]);
+                        add_sample(fold, n_chunks() - 1, class_target(ilabel, odims()), tlabels[ilabel]);
 
                         icount ++;
                 }

@@ -67,7 +67,10 @@ const tensor_size_t cmd_idims = 3;
 const tensor_size_t cmd_irows = 8;
 const tensor_size_t cmd_icols = 8;
 const tensor_size_t cmd_isize = cmd_idims * cmd_irows * cmd_icols;
-const tensor_size_t cmd_osize = 3;
+const tensor_size_t cmd_odims = 3;
+const tensor_size_t cmd_orows = 1;
+const tensor_size_t cmd_ocols = 1;
+const tensor_size_t cmd_osize = cmd_odims * cmd_orows * cmd_ocols;
 const size_t cmd_tests = 27;
 
 const string_t cmd_layer_output = make_output_layer(cmd_osize);
@@ -96,11 +99,13 @@ static auto get_loss()
 static auto get_model(const string_t& description)
 {
         auto model = get_models().get("forward-network", description + ";" + cmd_layer_output);
-        model->resize(cmd_idims, cmd_irows, cmd_icols, cmd_osize, false);
+        model->resize(cmd_idims, cmd_irows, cmd_icols, cmd_odims, cmd_orows, cmd_ocols, false);
         NANO_CHECK_EQUAL(model->idims(), cmd_idims);
         NANO_CHECK_EQUAL(model->irows(), cmd_irows);
         NANO_CHECK_EQUAL(model->icols(), cmd_icols);
-        NANO_CHECK_EQUAL(model->osize(), cmd_osize);
+        NANO_CHECK_EQUAL(model->odims(), cmd_odims);
+        NANO_CHECK_EQUAL(model->orows(), cmd_orows);
+        NANO_CHECK_EQUAL(model->ocols(), cmd_ocols);
         return model;
 }
 

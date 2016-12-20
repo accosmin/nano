@@ -9,7 +9,7 @@
 namespace nano
 {
         mnist_task_t::mnist_task_t(const string_t& config) :
-                mem_vision_task_t(1, 28, 28, 10, 1, to_params(config, "dir", "."))
+                mem_vision_task_t(1, 28, 28, 10, 1, 1, 1, to_params(config, "dir", "."))
         {
         }
 
@@ -79,13 +79,10 @@ namespace nano
                         while (stream.read(label, 1) && stream.gcount() == 1)
                         {
                                 const tensor_index_t ilabel = static_cast<tensor_index_t>(label[0]);
-                                if (ilabel >= osize())
-                                {
-                                        continue;
-                                }
+                                assert(ilabel < odims());
 
                                 const auto fold = make_fold(0, p);
-                                add_sample(fold, iindex, class_target(ilabel, osize()), "digit" + to_string(ilabel));
+                                add_sample(fold, iindex, class_target(ilabel, odims()), "digit" + to_string(ilabel));
 
                                 ++ gcount;
                                 ++ iindex;

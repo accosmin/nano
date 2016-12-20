@@ -15,8 +15,10 @@ NANO_CASE(construction)
         const auto idims = 3;
         const auto irows = 96;
         const auto icols = 96;
-        const auto osize = 10;
-        const auto target_sum = scalar_t(2) - static_cast<scalar_t>(osize);
+        const auto odims = 10;
+        const auto orows = 1;
+        const auto ocols = 1;
+        const auto target_sum = scalar_t(2) - static_cast<scalar_t>(odims);
 
         const auto folds = size_t(10);
         const auto train_samples = size_t(100000 + 1000);
@@ -30,7 +32,9 @@ NANO_CASE(construction)
         NANO_CHECK_EQUAL(task->idims(), idims);
         NANO_CHECK_EQUAL(task->irows(), irows);
         NANO_CHECK_EQUAL(task->icols(), icols);
-        NANO_CHECK_EQUAL(task->osize(), osize);
+        NANO_CHECK_EQUAL(task->odims(), odims);
+        NANO_CHECK_EQUAL(task->orows(), orows);
+        NANO_CHECK_EQUAL(task->ocols(), ocols);
 
         // check folds
         NANO_CHECK_EQUAL(task->n_folds(), folds);
@@ -76,8 +80,10 @@ NANO_CASE(construction)
                                         continue;
                                 }
 
-                                NANO_CHECK_EQUAL(target.size(), osize);
-                                NANO_CHECK_CLOSE(target.array().sum(), target_sum, epsilon0<scalar_t>());
+                                NANO_CHECK_EQUAL(target.size<0>(), odims);
+                                NANO_CHECK_EQUAL(target.size<1>(), orows);
+                                NANO_CHECK_EQUAL(target.size<2>(), ocols);
+                                NANO_CHECK_CLOSE(target.vector().sum(), target_sum, epsilon0<scalar_t>());
 
                                 labels.insert(label);
                         }
@@ -86,7 +92,7 @@ NANO_CASE(construction)
 
         //NANO_CHECK(nano::check_duplicates(*task)); NB: same samples are duplicated!
         //NANO_CHECK(nano::check_intersection(*task)); NB: same samples are duplicated!
-        NANO_CHECK_EQUAL(labels.size(), osize);
+        NANO_CHECK_EQUAL(labels.size(), odims);
 }
 
 NANO_END_MODULE()

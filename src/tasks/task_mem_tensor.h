@@ -14,6 +14,14 @@ namespace nano
                 {
                 }
 
+                mem_tensor_sample_t(
+                        const size_t index,
+                        const vector_t& target,
+                        const string_t& label = string_t()) :
+                        mem_tensor_sample_t(index, tensor::map_tensor(target.data(), target.size(), 1, 1), label)
+                {
+                }
+
                 auto index() const { return m_index; }
                 auto input(const tensor3d_t& tensor) const { return tensor; }
                 auto hash(const size_t seed) const { return seed; }

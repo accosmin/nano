@@ -35,7 +35,7 @@ namespace nano
                 m_b.resize(odims());
 
                 tensor::set_random(rng_input, m_A, m_b);
-                m_A /= static_cast<scalar_t>(m_A.size());
+                tensor::normalize(m_A);
 
                 // generate samples
                 for (size_t i = 0; i < count; ++ i)

@@ -71,7 +71,7 @@ int main(int argc, const char *argv[])
                                         for (size_t index = it.begin(), end = it.end(); index < end; ++ index)
                                         {
                                                 const auto target = task.target(fold, index);
-                                                sum += target.sum();
+                                                sum += target.vector().sum();
                                         }
                                         it.next();
                                 }

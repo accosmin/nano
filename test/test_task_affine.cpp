@@ -20,7 +20,9 @@ NANO_CASE(construction)
         NANO_CHECK_EQUAL(task.idims(), isize);
         NANO_CHECK_EQUAL(task.irows(), 1);
         NANO_CHECK_EQUAL(task.icols(), 1);
-        NANO_CHECK_EQUAL(task.osize(), osize);
+        NANO_CHECK_EQUAL(task.odims(), osize);
+        NANO_CHECK_EQUAL(task.orows(), 1);
+        NANO_CHECK_EQUAL(task.ocols(), 1);
         NANO_CHECK_EQUAL(task.n_samples(), count);
         NANO_REQUIRE_EQUAL(task.n_folds(), size_t(1));
 
@@ -36,7 +38,7 @@ NANO_CASE(construction)
                         const auto input = task.input(fold, i);
                         const auto target = task.target(fold, i);
                         const auto output = weights * input.vector() + bias;
-                        NANO_CHECK_EIGEN_CLOSE(output, target, 2 * noise);
+                        NANO_CHECK_EIGEN_CLOSE(output, target.vector(), 2 * noise);
                 }
         }
 }

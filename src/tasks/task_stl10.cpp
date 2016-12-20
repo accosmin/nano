@@ -23,7 +23,7 @@ namespace nano
         };
 
         stl10_task_t::stl10_task_t(const string_t& config) :
-                mem_vision_task_t(3, 96, 96, 10, 10, to_params(config, "dir", "."))
+                mem_vision_task_t(3, 96, 96, 10, 1, 1, 10, to_params(config, "dir", "."))
         {
         }
 
@@ -114,7 +114,7 @@ namespace nano
 
                         if (unlabeled)
                         {
-                                m_samples.emplace_back(n_chunks() - 1, osize());
+                                m_samples.emplace_back(n_chunks() - 1, odims());
                         }
 
                         ++ icount;
@@ -142,13 +142,13 @@ namespace nano
                 {
                         const tensor_index_t ilabel = static_cast<tensor_index_t>(label) - 1;
 
-                        if (ilabel < osize())
+                        if (ilabel < odims())
                         {
                                 m_samples.emplace_back(iindex, ilabel);
                         }
                         else
                         {
-                                m_samples.emplace_back(iindex, osize());
+                                m_samples.emplace_back(iindex, odims());
                         }
 
                         ++ gcount;
@@ -172,10 +172,10 @@ namespace nano
 
                 const auto op_sample = [&] (const fold_t& fold, const sample_t& sample)
                 {
-                        if (sample.m_label < osize())
+                        if (sample.m_label < odims())
                         {
                                 add_sample(fold, sample.m_image,
-                                           class_target(sample.m_label, osize()),
+                                           class_target(sample.m_label, odims()),
                                            tlabels[sample.m_label]);
                         }
                         else
