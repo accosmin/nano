@@ -58,7 +58,7 @@ namespace tensor
         template <typename ttensor>
         void normalize(ttensor&& tensor)
         {
-                tensor /= tensor.size();
+                tensor /= static_cast<typename std::remove_reference<ttensor>::type::Scalar>(tensor.size());
         }
 
         template <typename ttensor, typename... tothers>
