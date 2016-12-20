@@ -36,9 +36,13 @@ NANO_CASE(construction)
                 for (size_t i = 0; i < size; ++ i)
                 {
                         const auto input = task.input(fold, i);
-                        const auto target = task.target(fold, i).matrix(0);
+                        const auto target = task.target(fold, i);
+
+                        NANO_CHECK_EQUAL(target.size<0>(), task.odims());
+                        NANO_CHECK_EQUAL(target.size<1>(), task.orows());
+                        NANO_CHECK_EQUAL(target.size<2>(), task.ocols());
                         const auto output = weights * (input.matrix(0) * input.matrix(1).transpose()) + bias;
-                        NANO_CHECK_EIGEN_CLOSE(output, target, 2 * noise);
+                        NANO_CHECK_EIGEN_CLOSE(output, target.matrix(0), 2 * noise);
                 }
         }
 }
