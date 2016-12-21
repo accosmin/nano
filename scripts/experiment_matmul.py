@@ -3,11 +3,11 @@ import experiment
 
 # initialize experiment:
 # - regression problem using a synthetic task
-# - the model should predict an affine mapping of the input vector
-task = "--task affine --task-params isize=100,osize=10,count=10000,noise=1e-4"
+# - the model should predict the affine transformation of the multiplication of two input matrices
+task = "--task matmul --task-params irows=23,icols=27,count=10000,noise=1e-4"
 
 cfg = config.config()
-exp = experiment.experiment(cfg.app_train, cfg.app_stats, task, cfg.expdir + "/affine/eval_trainers")
+exp = experiment.experiment(cfg.app_train, cfg.app_stats, task, cfg.expdir + "/matmul/eval_trainers")
 
 # loss functions
 losses = "loss_cauchy"
@@ -20,11 +20,16 @@ for name in criteria.split():
         exp.add_criterion(name, cfg.criteria.get(name))
 
 # models
-outlayer = "affine:dims=10;"
+outlayer = "affine:dims=" + str(23 * 23) + ";act-snorm;"
 
 mlp0 = "--model forward-network --model-params "
+mlp1 = mlp0 + "affine:dims=100;act-snorm;"
+mlp2 = mlp1 + "affine:dims=100;act-snorm;"
+mlp3 = mlp2 + "affine:dims=100;act-snorm;"
 
-exp.add_model("mlp0", mlp0 + outlayer)
+exp.add_model("mlp1", mlp1 + outlayer)
+exp.add_model("mlp2", mlp2 + outlayer)
+exp.add_model("mlp3", mlp3 + outlayer)
 
 # trainers
 trainers = ""

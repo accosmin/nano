@@ -12,3 +12,4 @@ doxygen/html
 *.swp
 *.swo
 scripts/__pycache__
+scripts/*.pyc
