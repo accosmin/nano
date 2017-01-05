@@ -49,7 +49,7 @@ static void check_function(const function_t& function)
                         const auto g_thres = epsilon2<scalar_t>();
 
                         // optimize
-                        const auto params = stoch_params_t(epochs, epoch_size, epsilon1<scalar_t>());
+                        const auto params = stoch_params_t(epochs, epoch_size, epsilon2<scalar_t>());
                         const auto state = optimizer->minimize(params, function, x0);
 
                         const auto x = state.x;
