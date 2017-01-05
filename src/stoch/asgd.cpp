@@ -1,8 +1,8 @@
 #include "asgd.h"
 #include "loop.h"
 #include "lrate.h"
-#include "math/momentum.h"
 #include "text/to_params.h"
+#include "tensor/momentum.h"
 
 namespace nano
 {
@@ -23,7 +23,7 @@ namespace nano
                 lrate_t lrate(alpha0, decay, param.m_epoch_size);
 
                 // average state
-                momentum_vector_t<vector_t> xavg(momentum, x0.size());
+                tensor::momentum_t<vector_t> xavg(momentum, x0.size());
 
                 // assembly the optimizer
                 const auto optimizer = [&] (state_t& cstate, const state_t&)

@@ -1,9 +1,7 @@
 list(APPEND libnano_sources
-        ${CMAKE_CURRENT_SOURCE_DIR}/average.h
         ${CMAKE_CURRENT_SOURCE_DIR}/cubic.h
         ${CMAKE_CURRENT_SOURCE_DIR}/epsilon.h
         ${CMAKE_CURRENT_SOURCE_DIR}/gauss.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/momentum.h
         ${CMAKE_CURRENT_SOURCE_DIR}/numeric.h
         ${CMAKE_CURRENT_SOURCE_DIR}/quadratic.h
         ${CMAKE_CURRENT_SOURCE_DIR}/random.h

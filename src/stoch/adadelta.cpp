@@ -1,7 +1,7 @@
 #include "loop.h"
 #include "adadelta.h"
-#include "math/momentum.h"
 #include "text/to_params.h"
+#include "tensor/momentum.h"
 
 namespace nano
 {
@@ -19,10 +19,10 @@ namespace nano
                 const scalar_t momentum, const scalar_t epsilon) const
         {
                 // second-order momentum of the gradient
-                momentum_vector_t<vector_t> gavg(momentum, x0.size());
+                tensor::momentum_t<vector_t> gavg(momentum, x0.size());
 
                 // second-order momentum of the step updates
-                momentum_vector_t<vector_t> davg(momentum, x0.size());
+                tensor::momentum_t<vector_t> davg(momentum, x0.size());
 
                 // assembly the optimizer
                 const auto optimizer = [&] (state_t& cstate, const state_t&)

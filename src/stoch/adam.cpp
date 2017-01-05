@@ -1,7 +1,7 @@
 #include "adam.h"
 #include "loop.h"
-#include "math/momentum.h"
 #include "text/to_params.h"
+#include "tensor/momentum.h"
 
 namespace nano
 {
@@ -22,10 +22,10 @@ namespace nano
                 const auto beta2 = scalar_t(0.999);
 
                 // first-order momentum of the gradient
-                momentum_vector_t<vector_t> m(beta1, x0.size());
+                tensor::momentum_t<vector_t> m(beta1, x0.size());
 
                 // second-order momentum of the gradient
-                momentum_vector_t<vector_t> v(beta2, x0.size());
+                tensor::momentum_t<vector_t> v(beta2, x0.size());
 
                 // assembly the optimizer
                 const auto optimizer = [&] (state_t& cstate, const state_t&)

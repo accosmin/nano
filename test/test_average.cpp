@@ -1,7 +1,7 @@
 #include "utest.h"
 #include "math/numeric.h"
-#include "math/average.h"
 #include "math/epsilon.h"
+#include "tensor/average.h"
 
 namespace test
 {
@@ -36,35 +36,13 @@ namespace test
 
         template
         <
-                typename tscalar,
-                typename tsize
-        >
-        void check_average(const tsize range)
-        {
-                nano::average_scalar_t<tscalar> avg1, avg2;
-                for (tsize i = 1; i <= range; ++ i)
-                {
-                        avg1.update(tscalar(i));
-                        avg2.update(tscalar(sign(i + 1) * i) * tscalar(i));
-                }
-
-                const auto epsilon = nano::epsilon1<tscalar>();
-                const auto base1 = average1<tscalar>(range);
-                const auto base2 = average2<tscalar>(range);
-
-                NANO_CHECK_CLOSE(avg1.value(), base1, epsilon);
-                NANO_CHECK_CLOSE(avg2.value(), base2, epsilon);
-        }
-
-        template
-        <
                 typename tvector,
                 typename tscalar = typename tvector::Scalar,
                 typename tsize = typename tvector::Index
         >
         void check_average(const tsize dims, const tsize range)
         {
-                nano::average_vector_t<tvector> avg1(dims), avg2(dims);
+                tensor::average_t<tvector> avg1(dims), avg2(dims);
                 for (tsize i = 1; i <= range; ++ i)
                 {
                         avg1.update(tvector::Constant(dims, tscalar(i)));
@@ -81,18 +59,6 @@ namespace test
 }
 
 NANO_BEGIN_MODULE(test_average)
-
-NANO_CASE(scalar)
-{
-        test::check_average<double>(1);
-        test::check_average<double>(5);
-        test::check_average<double>(17);
-        test::check_average<double>(85);
-        test::check_average<double>(187);
-        test::check_average<double>(1561);
-        test::check_average<double>(14332);
-        test::check_average<double>(123434);
-}
 
 NANO_CASE(vector)
 {
