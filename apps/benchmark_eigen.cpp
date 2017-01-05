@@ -119,16 +119,17 @@ namespace
         }
 
         auto measure_level3(const tensor_size_t dims,
-                table_row_t& row_mm)
+                table_row_t& row_mmpc)
         {
                 auto A = make_matrix(dims, dims);
                 auto B = make_matrix(dims, dims);
+                auto C = make_matrix(dims, dims);
                 auto Z = make_matrix(dims, dims);
 
                 {
-                        store(row_mm, 2 * dims * dims * dims, nano::measure_robustly_psec([&] ()
+                        store(row_mmpc, 2 * dims * dims * dims, nano::measure_robustly_psec([&] ()
                         {
-                                Z = A * B;
+                                Z = A * B + C;
                         }, trials));
                 }
         }
@@ -169,7 +170,6 @@ int main(int argc, const char* argv[])
         };
         const auto fillheader = [&] (const auto min, const auto max, table_t& table)
         {
-                table.header() << "device";
                 foreach_dims(min, max, [&] (const tensor_size_t dims)
                 {
                         const auto kilo = tensor_size_t(1) << 10;
@@ -189,12 +189,12 @@ int main(int argc, const char* argv[])
                 table_t table("operation");
                 fillheader(min, max, table);
                 {
-                        auto& row_vpc = table.append("z = x + c") << "CPU";
-                        auto& row_vpv = table.append("z = x + y") << "CPU";
-                        auto& row_vcpc = table.append("z = ax + c") << "CPU";
-                        auto& row_vcpv = table.append("z = ax + y") << "CPU";
-                        auto& row_vcpvc = table.append("z = ax + by") << "CPU";
-                        auto& row_vcpvcpc = table.append("z = ax + by + c") << "CPU";
+                        auto& row_vpc = table.append("z = x + c");
+                        auto& row_vpv = table.append("z = x + y");
+                        auto& row_vcpc = table.append("z = ax + c");
+                        auto& row_vcpv = table.append("z = ax + y");
+                        auto& row_vcpvc = table.append("z = ax + by");
+                        auto& row_vcpvcpc = table.append("z = ax + by + c");
                         foreach_dims(min, max, [&] (const auto dims)
                         {
                                 measure_level1(dims, row_vpc, row_vpv, row_vcpc, row_vcpv, row_vcpvc, row_vcpvcpc);
@@ -210,9 +210,9 @@ int main(int argc, const char* argv[])
                 table_t table("operation");
                 fillheader(min, max, table);
                 {
-                        auto& row_mv = table.append("z = Ax") << "CPU";
-                        auto& row_mvpc = table.append("z = Ax + c") << "CPU";
-                        auto& row_mvpv = table.append("z = Ax + y") << "CPU";
+                        auto& row_mv = table.append("z = Ax");
+                        auto& row_mvpc = table.append("z = Ax + c");
+                        auto& row_mvpv = table.append("z = Ax + y");
                         foreach_dims(min, max, [&] (const auto dims)
                         {
                                 measure_level2(dims, row_mv, row_mvpc, row_mvpv);
@@ -228,10 +228,10 @@ int main(int argc, const char* argv[])
                 table_t table("operation");
                 fillheader(min, max, table);
                 {
-                        auto& row_mm = table.append("Z = AB") << "CPU";
+                        auto& row_mmpc = table.append("Z = AB + C");
                         foreach_dims(min, max, [&] (const auto dims)
                         {
-                                measure_level3(dims, row_mm);
+                                measure_level3(dims, row_mmpc);
                         });
                 }
                 std::cout << table;
