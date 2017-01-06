@@ -13,7 +13,6 @@ namespace
         using namespace nano;
 
         auto rng_value = nano::make_rng(scalar_t(-1e-3), scalar_t(+1e-3));
-        const size_t trials = 16;
 
         scalar_t make_scalar()
         {
@@ -34,15 +33,18 @@ namespace
                 return x;
         }
 
-        void store(table_row_t& row, const tensor_size_t flops, const picoseconds_t duration)
+        template <typename toperator>
+        void store(table_row_t& row, const tensor_size_t flops, const toperator& op)
         {
+                const auto trials = size_t(16);
+                const auto duration = nano::measure_robustly_psec([&] () { op(); }, trials);
                 row << std::chrono::duration_cast<microseconds_t>(duration).count() << nano::gflops(flops, duration);
         }
 
         void measure_level1(const tensor_size_t dims,
-                table_row_t& row_vpc, table_row_t& row_vpv,
-                table_row_t& row_vcpc, table_row_t& row_vcpv,
-                table_row_t& row_vcpvc, table_row_t& row_vcpvcpc)
+                table_row_t& row1, table_row_t& row2,
+                table_row_t& row3, table_row_t& row4,
+                table_row_t& row5, table_row_t& row6)
         {
                 auto a = make_scalar();
                 auto b = make_scalar();
@@ -51,87 +53,41 @@ namespace
                 auto y = make_vector(dims);
                 auto z = make_vector(dims);
 
-                {
-                        store(row_vpc, dims, nano::measure_robustly_psec([&] ()
-                        {
-                                z = x.array() + c;
-                        }, trials));
-                }
-                {
-                        store(row_vpv, dims, nano::measure_robustly_psec([&] ()
-                        {
-                                z = x.array() + y.array();
-                        }, trials));
-                }
-                {
-                        store(row_vcpc, 2 * dims, nano::measure_robustly_psec([&] ()
-                        {
-                                z = x.array() * a + c;
-                        }, trials));
-                }
-                {
-                        store(row_vcpv, 2 * dims, nano::measure_robustly_psec([&] ()
-                        {
-                                z = x.array() * a + y.array();
-                        }, trials));
-                }
-                {
-                        store(row_vcpvc, 3 * dims, nano::measure_robustly_psec([&] ()
-                        {
-                                z = x.array() * a + y.array() * b;
-                        }, trials));
-                }
-                {
-                        store(row_vcpvcpc, 4 * dims, nano::measure_robustly_psec([&] ()
-                        {
-                                z = x.array() * a + y.array() * b + c;
-                        }, trials));
-                }
+                store(row1, dims, [&] () { z = x.array() + c; });
+                store(row2, dims, [&] () { z = x.array() + y.array(); });
+                store(row3, 2 * dims, [&] () { z = x.array() * a + c; });
+                store(row4, 2 * dims, [&] () { z = x.array() * a + y.array(); });
+                store(row5, 3 * dims, [&] () { z = x.array() * a + y.array() * b; });
+                store(row6, 4 * dims, [&] () { z = x.array() * a + y.array() * b + c; });
         }
 
         void measure_level2(const tensor_size_t dims,
-                table_row_t& row_mv, table_row_t& row_mvpc, table_row_t& row_mvpv)
+                table_row_t& row1, table_row_t& row2, table_row_t& row3, table_row_t& row4)
         {
                 auto A = make_matrix(dims, dims);
+                auto Z = make_matrix(dims, dims);
+                auto C = make_matrix(dims, dims);
                 auto x = make_vector(dims);
                 auto y = make_vector(dims);
                 auto z = make_vector(dims);
                 auto c = make_scalar();
 
-                {
-                        store(row_mv, 2 * dims * dims, nano::measure_robustly_psec([&] ()
-                        {
-                                z = A * x;
-                        }, trials));
-                }
-                {
-                        store(row_mvpc, 2 * dims * dims + dims, nano::measure_robustly_psec([&] ()
-                        {
-                                z = (A * x).array() + c;
-                        }, trials));
-                }
-                {
-                        store(row_mvpv, 2 * dims * dims + dims, nano::measure_robustly_psec([&] ()
-                        {
-                                z = A * x + y;
-                        }, trials));
-                }
+                store(row1, 2 * dims * dims, [&] () { z = A * x; });
+                store(row2, 2 * dims * dims + dims, [&] () { z = (A * x).array() + c; });
+                store(row3, 2 * dims * dims + dims, [&] () { z = A * x + y; });
+                store(row4, 2 * dims * dims + dims, [&] () { Z = x * y.transpose() + C; });
         }
 
         auto measure_level3(const tensor_size_t dims,
-                table_row_t& row_mmpc)
+                table_row_t& row1, table_row_t& row2)
         {
                 auto A = make_matrix(dims, dims);
                 auto B = make_matrix(dims, dims);
                 auto C = make_matrix(dims, dims);
                 auto Z = make_matrix(dims, dims);
 
-                {
-                        store(row_mmpc, 2 * dims * dims * dims, nano::measure_robustly_psec([&] ()
-                        {
-                                Z = A * B + C;
-                        }, trials));
-                }
+                store(row1, 2 * dims * dims * dims, [&] () { Z = A * B + C; });
+                store(row2, 2 * dims * dims * dims, [&] () { Z = A * B.transpose() + C; });
         }
 }
 
@@ -189,15 +145,15 @@ int main(int argc, const char* argv[])
                 table_t table("operation");
                 fillheader(min, max, table);
                 {
-                        auto& row_vpc = table.append("z = x + c");
-                        auto& row_vpv = table.append("z = x + y");
-                        auto& row_vcpc = table.append("z = ax + c");
-                        auto& row_vcpv = table.append("z = ax + y");
-                        auto& row_vcpvc = table.append("z = ax + by");
-                        auto& row_vcpvcpc = table.append("z = ax + by + c");
+                        auto& row1 = table.append("z = x + c");
+                        auto& row2 = table.append("z = x + y");
+                        auto& row3 = table.append("z = ax + c");
+                        auto& row4 = table.append("z = ax + y");
+                        auto& row5 = table.append("z = ax + by");
+                        auto& row6 = table.append("z = ax + by + c");
                         foreach_dims(min, max, [&] (const auto dims)
                         {
-                                measure_level1(dims, row_vpc, row_vpv, row_vcpc, row_vcpv, row_vcpvc, row_vcpvcpc);
+                                measure_level1(dims, row1, row2, row3, row4, row5, row6);
                         });
                 }
                 std::cout << table;
@@ -210,12 +166,13 @@ int main(int argc, const char* argv[])
                 table_t table("operation");
                 fillheader(min, max, table);
                 {
-                        auto& row_mv = table.append("z = Ax");
-                        auto& row_mvpc = table.append("z = Ax + c");
-                        auto& row_mvpv = table.append("z = Ax + y");
+                        auto& row1 = table.append("z = Ax");
+                        auto& row2 = table.append("z = Ax + c");
+                        auto& row3 = table.append("z = Ax + y");
+                        auto& row4 = table.append("Z = xy^t + C");
                         foreach_dims(min, max, [&] (const auto dims)
                         {
-                                measure_level2(dims, row_mv, row_mvpc, row_mvpv);
+                                measure_level2(dims, row1, row2, row3, row4);
                         });
                 }
                 std::cout << table;
@@ -228,10 +185,11 @@ int main(int argc, const char* argv[])
                 table_t table("operation");
                 fillheader(min, max, table);
                 {
-                        auto& row_mmpc = table.append("Z = AB + C");
+                        auto& row1 = table.append("Z = AB + C");
+                        auto& row2 = table.append("Z = AB^t + C");
                         foreach_dims(min, max, [&] (const auto dims)
                         {
-                                measure_level3(dims, row_mmpc);
+                                measure_level3(dims, row1, row2);
                         });
                 }
                 std::cout << table;
