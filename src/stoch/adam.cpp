@@ -12,15 +12,14 @@ namespace nano
 
         state_t stoch_adam_t::minimize(const stoch_params_t& param, const function_t& function, const vector_t& x0) const
         {
-                return stoch_tune(this, param, function, x0, make_alpha0s(), make_epsilons());
+                const auto beta1s = make_finite_space(scalar_t(0.900));
+                const auto beta2s = make_finite_space(scalar_t(0.99), scalar_t(0.999), scalar_t(0.9999), scalar_t(0.99999));
+                return stoch_tune(this, param, function, x0, make_alpha0s(), make_epsilons(), beta1s, beta2s);
         }
 
         state_t stoch_adam_t::minimize(const stoch_params_t& param, const function_t& function, const vector_t& x0,
-                const scalar_t alpha0, const scalar_t epsilon) const
+                const scalar_t alpha0, const scalar_t epsilon, const scalar_t beta1, const scalar_t beta2) const
         {
-                const auto beta1 = scalar_t(0.900);
-                const auto beta2 = scalar_t(0.999);
-
                 // first-order momentum of the gradient
                 tensor::momentum_t<vector_t> m(beta1, x0.size());
 

@@ -22,5 +22,3 @@ namespace nano
         using tensor_size_t = tensor3d_t::Index;
         using tensor_index_t = tensor3d_t::Index;
 }
-
-

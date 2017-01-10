@@ -15,7 +15,7 @@ namespace nano
                 state_t minimize(const stoch_params_t&, const function_t&, const vector_t& x0) const override;
 
                 state_t minimize(const stoch_params_t&, const function_t&, const vector_t& x0,
-                        const scalar_t alpha0, const scalar_t epsilon) const;
+                        const scalar_t alpha0, const scalar_t epsilon, const scalar_t beta1, const scalar_t beta2) const;
         };
 }
 
