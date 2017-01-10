@@ -10,13 +10,13 @@ cfg = config.config()
 exp = experiment.experiment(cfg.app_train, cfg.app_stats, task, cfg.expdir + "/affine/eval_trainers")
 
 # loss functions
-losses = "loss_cauchy"
-for name in losses.split():
+losses = ["loss_cauchy"]
+for name in losses:
         exp.add_loss(name, cfg.losses.get(name))
 
 # criteria
-criteria = "crit_avg"
-for name in criteria.split():
+criteria = ["crit_avg"]
+for name in criteria:
         exp.add_criterion(name, cfg.criteria.get(name))
 
 # models
@@ -27,12 +27,12 @@ mlp0 = "--model forward-network --model-params "
 exp.add_model("mlp0", mlp0 + outlayer)
 
 # trainers
-trainers = ""
-trainers += "batch_gd batch_cgd batch_lbfgs "
-trainers += "stoch_sg stoch_sgm stoch_ngd stoch_svrg stoch_asgd "
-trainers += "stoch_ag stoch_agfr stoch_aggr "
-trainers += "stoch_adam stoch_adadelta stoch_adagrad "
-for name in trainers.split():
+trainers = []
+trainers += ["batch_gd", "batch_cgd", "batch_lbfgs"]
+trainers += ["stoch_sg", "stoch_sgm", "stoch_ngd", "stoch_svrg", "stoch_asgd"]
+trainers += ["stoch_ag", "stoch_agfr", "stoch_aggr"]
+trainers += ["stoch_adam", "stoch_adadelta", "stoch_adagrad"]
+for name in trainers:
         exp.add_trainer(name, cfg.trainers.get(name))
 
 # train all configurations
