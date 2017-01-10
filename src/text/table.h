@@ -16,7 +16,7 @@ namespace nano
         NANO_PUBLIC std::ostream& operator<<(std::ostream&, const table_t&);
 
         ///
-        /// \brief collects & formats for ASCII display tabular data.
+        /// \brief collects & formats tabular data for ASCII display.
         ///
         class NANO_PUBLIC table_t
         {

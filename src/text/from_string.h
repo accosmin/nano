@@ -109,10 +109,7 @@ namespace nano
                 ///
                 /// \brief cast strings to enums
                 ///
-                template
-                <
-                        typename tvalue
-                >
+                template <typename tvalue>
                 struct from_string_t<tvalue, typename std::enable_if<std::is_enum<tvalue>::value>::type>
                 {
                         static tvalue dispatch(const string_t& str)
@@ -133,10 +130,7 @@ namespace nano
                 };
         }
 
-        template
-        <
-                typename tvalue
-        >
+        template <typename tvalue>
         tvalue from_string(const string_t& str)
         {
                 return detail::from_string_t<tvalue>::dispatch(str);
@@ -145,10 +139,7 @@ namespace nano
         ///
         /// \brief construct an operator to compare two strings numerically
         ///
-        template
-        <
-                typename tscalar
-        >
+        template <typename tscalar>
         auto make_less_from_string()
         {
                 return [] (const string_t& v1, const string_t& v2)
@@ -160,10 +151,7 @@ namespace nano
         ///
         /// \brief construct an operator to compare two strings numerically
         ///
-        template
-        <
-                typename tscalar
-        >
+        template <typename tscalar>
         auto make_greater_from_string()
         {
                 return [] (const string_t& v1, const string_t& v2)

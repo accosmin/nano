@@ -22,10 +22,7 @@ namespace nano
                 ///
                 /// \brief append a column value
                 ///
-                template
-                <
-                        typename tvalue
-                >
+                template <typename tvalue>
                 table_row_t& operator<<(tvalue value)
                 {
                         m_values.emplace_back(nano::to_string(value));

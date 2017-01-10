@@ -45,8 +45,8 @@ namespace nano
                 ///
                 /// \brief enqueue a new task to execute
                 ///
-                template<class F>
-                auto enqueue(F f)
+                template <typename tfunction>
+                auto enqueue(tfunction f)
                 {
                         return m_queue.enqueue(f);
                 }

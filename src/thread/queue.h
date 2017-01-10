@@ -27,8 +27,8 @@ namespace nano
                 ///
                 /// \brief enqueue a new task to execute
                 ///
-                template <typename tfunc>
-                future_t enqueue(tfunc f)
+                template <typename tfunction>
+                future_t enqueue(tfunction f)
                 {
                         auto task = worker_task_t(f);
                         auto fut = task.get_future();

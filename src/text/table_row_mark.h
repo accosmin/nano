@@ -3,18 +3,13 @@
 #include "scalar.h"
 #include "table_row.h"
 #include "from_string.h"
-#include <algorithm>
 #include <cassert>
 
 namespace nano
 {
         namespace detail
         {
-                template
-                <
-                        typename tscalar,
-                        typename toperator
-                >
+                template <typename tscalar, typename toperator>
                 auto select_cols(const table_row_t& row, const toperator& op)
                 {
                         indices_t indices;
@@ -28,10 +23,7 @@ namespace nano
                         return indices;
                 }
 
-                template
-                <
-                        typename tscalar
-                >
+                template <typename tscalar>
                 auto min_element(const table_row_t& row)
                 {
                         const auto op = nano::make_less_from_string<tscalar>();
@@ -40,10 +32,7 @@ namespace nano
                         return it;
                 }
 
-                template
-                <
-                        typename tscalar
-                >
+                template <typename tscalar>
                 auto max_element(const table_row_t& row)
                 {
                         const auto op = nano::make_less_from_string<tscalar>();
@@ -56,10 +45,7 @@ namespace nano
         ///
         /// \brief select the column with the minimum value
         ///
-        template
-        <
-                typename tscalar
-        >
+        template <typename tscalar>
         auto make_table_mark_minimum_col()
         {
                 return [=] (const table_row_t& row) -> indices_t
@@ -72,10 +58,7 @@ namespace nano
         ///
         /// \brief select the column with the maximum value
         ///
-        template
-        <
-                typename tscalar
-        >
+        template <typename tscalar>
         auto make_table_mark_maximum_col()
         {
                 return [=] (const table_row_t& row) -> indices_t
@@ -88,10 +71,7 @@ namespace nano
         ///
         /// \brief select the columns within [0, epsilon] from the maximum value
         ///
-        template
-        <
-                typename tscalar
-        >
+        template <typename tscalar>
         auto make_table_mark_maximum_epsilon_cols(const tscalar epsilon)
         {
                 return [=] (const table_row_t& row)
@@ -107,10 +87,7 @@ namespace nano
         ///
         /// \brief select the columns within [0, epsilon] from the minimum value
         ///
-        template
-        <
-                typename tscalar
-        >
+        template <typename tscalar>
         auto make_table_mark_minimum_epsilon_cols(const tscalar epsilon)
         {
                 return [=] (const table_row_t& row)
@@ -126,10 +103,7 @@ namespace nano
         ///
         /// \brief select the columns within [0, percentage]% from the maximum value
         ///
-        template
-        <
-                typename tscalar
-        >
+        template <typename tscalar>
         auto make_table_mark_maximum_percentage_cols(const tscalar percentage)
         {
                 return [=] (const table_row_t& row)
@@ -148,10 +122,7 @@ namespace nano
         ///
         /// \brief select the columns within [0, percentage]% from the minimum value
         ///
-        template
-        <
-                typename tscalar
-        >
+        template <typename tscalar>
         auto make_table_mark_minimum_percentage_cols(const tscalar percentage)
         {
                 return [=] (const table_row_t& row)

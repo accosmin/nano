@@ -14,10 +14,7 @@ namespace nano
                 ///
                 /// \brief append a column value
                 ///
-                template
-                <
-                        typename tvalue
-                >
+                template <typename tvalue>
                 table_header_t& operator<<(const tvalue value)
                 {
                         m_values.emplace_back(nano::to_string(value));
