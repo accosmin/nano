@@ -32,7 +32,6 @@ trainers += ["batch_gd", "batch_cgd", "batch_lbfgs"]
 trainers += ["stoch_sg", "stoch_sgm", "stoch_ngd", "stoch_svrg", "stoch_asgd"]
 trainers += ["stoch_ag", "stoch_agfr", "stoch_aggr"]
 trainers += ["stoch_adam", "stoch_adadelta", "stoch_adagrad"]
-trainers = ["stoch_adam"]
 for name in trainers:
         exp.add_trainer(name, cfg.trainers.get(name))
 
