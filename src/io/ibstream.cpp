@@ -1,11 +1,10 @@
 #include "ibstream.h"
-#include <vector>
 #include <istream>
 
 namespace nano
 {
-        ibstream_t::ibstream_t(std::istream& stream)
-                :       m_stream(stream)
+        ibstream_t::ibstream_t(std::istream& stream) :
+                m_stream(stream)
         {
                 m_stream.exceptions(std::ios_base::badbit | std::ios_base::failbit);
         }

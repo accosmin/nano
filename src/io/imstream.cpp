@@ -40,7 +40,7 @@ namespace nano
                 return *this;
         }
 
-        imstream_t& imstream_t::seekg(std::streampos pos)
+        imstream_t& imstream_t::seekg(const std::streampos pos)
         {
                 m_tellg = pos;
                 m_gcount = 0;
@@ -55,7 +55,7 @@ namespace nano
 
         std::streamsize imstream_t::tellg() const
         {
-                return m_tellg;        
+                return m_tellg;
         }
 
         std::streamsize imstream_t::size() const

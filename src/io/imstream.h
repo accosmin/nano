@@ -59,7 +59,7 @@ namespace nano
                 ///
                 /// \brief move to the given position in the buffer
                 ///
-                imstream_t& seekg(std::streampos pos);
+                imstream_t& seekg(const std::streampos pos);
 
                 ///
                 /// \brief number of bytes read at the last operation
