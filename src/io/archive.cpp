@@ -68,11 +68,11 @@ namespace nano
                 return true;
         }
 
-        bool decode(const buffer_t& buffer,
+        static bool decode(const buffer_t& buffer,
                 const archive_callback_t&,
                 const archive_error_callback_t&);
 
-        bool decode(archive* ar,
+        static bool decode(archive* ar,
                 const archive_callback_t& callback,
                 const archive_error_callback_t& error_callback)
         {
@@ -128,7 +128,7 @@ namespace nano
                 return ok;
         }
 
-        bool decode(const buffer_t& buffer,
+        static bool decode(const buffer_t& buffer,
                 const archive_callback_t& callback,
                 const archive_error_callback_t& error_callback)
         {

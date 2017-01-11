@@ -5,10 +5,7 @@
 
 namespace nano
 {
-        template
-        <
-                typename tstream
-        >
+        template <typename tstream>
         bool io_uncompress_gzip(tstream& istream, const std::streamsize orig_num_bytes, buffer_t& buffer)
         {
                 // zlib decompression buffers

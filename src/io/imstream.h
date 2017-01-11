@@ -4,6 +4,7 @@
 #include <ios>
 #include <string>
 #include <cstddef>
+#include <type_traits>
 
 namespace nano
 {
@@ -17,15 +18,12 @@ namespace nano
                 ///
                 /// \brief constructor
                 ///
-                template
-                <
-                        typename tsize
-                >
-                imstream_t(const char* data, const tsize size)
-                        :       m_data(data),
-                                m_size(static_cast<std::streamsize>(size)),
-                                m_tellg(0),
-                                m_gcount(0)
+                template <typename tsize>
+                imstream_t(const char* data, const tsize size) :
+                        m_data(data),
+                        m_size(static_cast<std::streamsize>(size)),
+                        m_tellg(0),
+                        m_gcount(0)
                 {
                 }
 
@@ -45,7 +43,8 @@ namespace nano
                 ///
                 template
                 <
-                        typename tstruct
+                        typename tstruct,
+                        typename = typename std::enable_if<std::is_pod<tstruct>::value>::type
                 >
                 imstream_t& read(tstruct& pod)
                 {

@@ -5,10 +5,7 @@
 
 namespace nano
 {
-        template
-        <
-                typename tstream
-        >
+        template <typename tstream>
         bool io_uncompress_bzip2(tstream& istream, const std::streamsize orig_num_bytes, buffer_t& buffer)
         {
                 // bzip2 decompression buffers
