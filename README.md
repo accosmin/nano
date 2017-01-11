@@ -168,11 +168,6 @@ A **trainer** optimizes the parameters of a given model to produce the correct o
 |---------|--------------------|------------------------------------------------------------------------------------------------------------------------|
 ```
 
-These configurations can be evaluated on the synthetic *charset* task using for example:
-```
-./apps/benchmark_trainers --batch --stoch --loss classnll --criterion avg \
-  --activation act-snorm --trials 10 --epochs 100 --samples 3000
-```
 
 #### Examples
 
