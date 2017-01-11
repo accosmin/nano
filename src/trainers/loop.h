@@ -5,7 +5,6 @@
 #include "accumulator.h"
 #include "task_iterator.h"
 #include "trainer_result.h"
-#include "text/to_string.h"
 #include "text/to_params.h"
 
 #include "logger.h"

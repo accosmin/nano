@@ -1,11 +1,12 @@
 #pragma once
 
-#include "task.h"
+#include "manager.h"
 #include "trainer_result.h"
 
 namespace nano
 {
         class loss_t;
+        class task_t;
         class model_t;
         class sampler_t;
         class criterion_t;

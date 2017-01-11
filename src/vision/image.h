@@ -2,7 +2,6 @@
 
 #include "rect.h"
 #include "color.h"
-#include "stringi.h"
 
 namespace nano
 {

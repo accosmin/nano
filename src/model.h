@@ -2,7 +2,6 @@
 
 #include "arch.h"
 #include "tensor.h"
-#include "stringi.h"
 #include "manager.h"
 #include "math/stats.h"
 

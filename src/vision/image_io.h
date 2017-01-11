@@ -1,7 +1,6 @@
 #pragma once
 
 #include "color.h"
-#include "stringi.h"
 
 namespace nano
 {

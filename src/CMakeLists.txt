@@ -10,8 +10,8 @@ set(libnano_sources
         state.cpp
         task_util.cpp
         task_iterator.cpp
-        trainer_result.cpp
         trainer_state.cpp
+        trainer_result.cpp
         logger.cpp
         timer.cpp)
 
