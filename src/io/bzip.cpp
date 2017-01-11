@@ -11,7 +11,7 @@ namespace nano
         >
         bool io_uncompress_bzip2(tstream& istream, const std::streamsize orig_num_bytes, buffer_t& buffer)
         {
-                // zlib decompression buffers
+                // bzip2 decompression buffers
                 static const std::streamsize chunk_size = 64 * 1024;
                 static const auto out_chunk_size = 3 * chunk_size;
 

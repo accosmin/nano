@@ -15,10 +15,7 @@ namespace nano
         ///
         /// \brief allocates a buffer of the given size
         ///
-        template
-        <
-                typename tsize
-        >
+        template <typename tsize>
         buffer_t make_buffer(const tsize size)
         {
                 return buffer_t(static_cast<std::size_t>(size));
