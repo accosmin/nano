@@ -158,7 +158,7 @@ namespace nano
                 log_info() << "CIFAR-100: loading file <" << filename << "> ...";
 
                 const auto buffer_size = irows() * icols() * 3;
-                std::vector<char> buffer = nano::make_buffer(buffer_size);
+                std::vector<char> buffer(static_cast<size_t>(buffer_size));
                 char label[2];
 
                 size_t icount = 0;

@@ -1,6 +1,9 @@
 #pragma once
 
-#include "buffer.h"
+#include <ios>
+#include "arch.h"
+#include <vector>
+#include <string>
 #include <functional>
 
 struct archive;
@@ -19,14 +22,19 @@ namespace nano
                 archive_stream_t(const archive_stream_t&) = delete;
                 archive_stream_t& operator=(const archive_stream_t&) = delete;
 
-                bool read(char* data, const size_t num_bytes);
+                bool read(char* data, const std::streamsize num_bytes);
+                bool getline(std::string& line);
+
+        private:
+
+                bool advance(const std::streamsize num_bytes);
 
         private:
 
                 // attributes
-                archive*        m_archive;      ///< libarchive specific
-                buffer_t        m_buffer;       ///< buffer
-                size_t          m_index;        ///< index in the buffer
+                archive*                m_archive;      ///< libarchive specific
+                std::vector<char>       m_buffer;       ///< buffer
+                std::streamsize         m_index;        ///< index in the buffer
         };
 
         ///

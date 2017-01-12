@@ -36,7 +36,7 @@ namespace nano
                 size_t gcount = 0;
 
                 const auto buffer_size = irows() * icols();
-                std::vector<char> buffer = nano::make_buffer(buffer_size);
+                std::vector<char> buffer(static_cast<size_t>(buffer_size));
                 char label[2];
 
                 const auto error_op = [&] (const string_t& message)

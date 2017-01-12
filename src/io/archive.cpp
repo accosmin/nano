@@ -10,24 +10,9 @@ namespace nano
         {
         }
 
-        bool archive_stream_t::read(char* data, const size_t num_bytes)
+        bool archive_stream_t::read(char* data, const std::streamsize num_bytes)
         {
-                while (m_index + num_bytes > m_buffer.size())
-                {
-                        const void* buff = nullptr;
-                        size_t size;
-                        off_t offset;
-
-                        const int r = archive_read_data_block(m_archive, &buff, &size, &offset);
-                        if (r == ARCHIVE_EOF)
-                                return false;
-                        if (r != ARCHIVE_OK && r != ARCHIVE_EOF)
-                                return false;
-
-                        m_buffer.insert(m_buffer.end(), (const char*)buff, (const char*)buff + size);
-                }
-
-                if (m_index + num_bytes <= m_buffer.size())
+                if (advance(num_bytes))
                 {
                         std::copy(m_buffer.data() + m_index, m_buffer.data() + (m_index + num_bytes), data);
                         m_index += num_bytes;
@@ -45,6 +30,42 @@ namespace nano
                 {
                         return false;
                 }
+        }
+
+        static bool isendl(char c)
+        {
+                return (c == '\n') || (c == '\r');
+        }
+
+        bool archive_stream_t::getline(std::string& line)
+        {
+                char c;
+                while (read(&c, 1) && isendl(c)) {}
+
+                line.clear();
+                while (read(&c, 1) && !isendl(c)) { line.push_back(c); }
+
+                return !line.empty();
+        }
+
+        bool archive_stream_t::advance(const std::streamsize num_bytes)
+        {
+                while (m_index + num_bytes > static_cast<std::streamsize>(m_buffer.size()))
+                {
+                        const void* buff = nullptr;
+                        size_t size;
+                        off_t offset;
+
+                        const int r = archive_read_data_block(m_archive, &buff, &size, &offset);
+                        if (r == ARCHIVE_EOF)
+                                return false;
+                        if (r != ARCHIVE_OK)
+                                return false;
+
+                        m_buffer.insert(m_buffer.end(), (const char*)buff, (const char*)buff + size);
+                }
+
+                return true;
         }
 
         static bool decode(archive* ar,

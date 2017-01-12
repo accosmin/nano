@@ -2,7 +2,6 @@
 #include "logger.h"
 #include "task_stl10.h"
 #include "io/archive.h"
-#include "io/imstream.h"
 #include "text/to_params.h"
 #include "text/from_params.h"
 
@@ -47,31 +46,31 @@ namespace nano
 
                 const string_t fold_file = "fold_indices.txt";
 
-                const auto op = [&] (const string_t& filename, const nano::buffer_t& data)
+                const auto op = [&] (const string_t& filename, archive_stream_t& stream)
                 {
                         if (nano::iends_with(filename, train_ifile))
                         {
-                                return load_ifile(filename, data, false, n_train);
+                                return load_ifile(filename, stream, false, n_train);
                         }
                         else if (nano::iends_with(filename, train_gfile))
                         {
-                                return load_gfile(filename, data, n_train);
+                                return load_gfile(filename, stream, n_train);
                         }
                         else if (nano::iends_with(filename, test_ifile))
                         {
-                                return load_ifile(filename, data, false, n_test);
+                                return load_ifile(filename, stream, false, n_test);
                         }
                         else if (nano::iends_with(filename, test_gfile))
                         {
-                                return load_gfile(filename, data, n_test);
+                                return load_gfile(filename, stream, n_test);
                         }
                         else if (nano::iends_with(filename, train_uifile))
                         {
-                                return load_ifile(filename, data, true, n_unlabeled);
+                                return load_ifile(filename, stream, true, n_unlabeled);
                         }
                         else if (nano::iends_with(filename, fold_file))
                         {
-                                return load_folds(filename, data, n_test, n_train, n_unlabeled);
+                                return load_folds(filename, stream, n_test, n_train, n_unlabeled);
                         }
                         else
                         {
@@ -85,20 +84,18 @@ namespace nano
 
                 log_info() << "STL-10: loading file <" << bfile << "> ...";
 
-                return false;//nano::unarchive(bfile, op, error_op);
+                return nano::unarchive(bfile, op, error_op);
         }
 
-        bool stl10_task_t::load_ifile(const string_t& ifile, const buffer_t& data,
+        bool stl10_task_t::load_ifile(const string_t& ifile, archive_stream_t& stream,
                 const bool unlabeled, const size_t count)
         {
                 log_info() << "STL-10: loading file <" << ifile << "> ...";
 
-                nano::imstream_t stream(data.data(), data.size());
-
                 const auto px = irows() * icols();
                 const auto ix = 3 * px;
 
-                std::vector<char> buffer = nano::make_buffer(ix);
+                std::vector<char> buffer(static_cast<size_t>(ix));
                 auto iptr = buffer.data();
 
                 size_t icount = 0;
@@ -125,12 +122,10 @@ namespace nano
                 return count == icount;
         }
 
-        bool stl10_task_t::load_gfile(const string_t& gfile, const buffer_t& data,
+        bool stl10_task_t::load_gfile(const string_t& gfile, archive_stream_t& stream,
                 const size_t count)
         {
                 log_info() << "STL-10: loading file <" << gfile << "> ...";
-
-                nano::imstream_t stream(data.data(), data.size());
 
                 char label;
 
@@ -160,15 +155,13 @@ namespace nano
                 return count == gcount;
         }
 
-        bool stl10_task_t::load_folds(const string_t& ifile, const buffer_t& data,
+        bool stl10_task_t::load_folds(const string_t& ifile, archive_stream_t& stream,
                 const size_t n_test, const size_t n_train, const size_t n_unlabeled)
         {
                 log_info() << "STL-10: loading file <" << ifile << "> ...";
 
                 // NB: samples arranged like [n_test][n_train][n_unlabeled]
                 const auto orig_samples = m_samples;
-
-                nano::imstream_t stream(data.data(), data.size());
 
                 const auto op_sample = [&] (const fold_t& fold, const sample_t& sample)
                 {
