@@ -85,7 +85,7 @@ namespace nano
 
                 log_info() << "STL-10: loading file <" << bfile << "> ...";
 
-                return nano::unarchive(bfile, op, error_op);
+                return false;//nano::unarchive(bfile, op, error_op);
         }
 
         bool stl10_task_t::load_ifile(const string_t& ifile, const buffer_t& data,

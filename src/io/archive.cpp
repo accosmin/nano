@@ -1,76 +1,51 @@
 #include "archive.h"
-#include "text/algorithm.h"
-#include <istream>
 #include <archive.h>
 #include <archive_entry.h>
 
 namespace nano
 {
-        enum class archive_type : int
+        archive_stream_t::archive_stream_t(archive* ar) :
+                m_archive(ar),
+                m_index(0)
         {
-                tar,
-                tar_gz,
-                tar_bz2,
-                gz,
-                bz2,
-                unknown
-        };
-
-        static archive_type decode_archive_type(const std::string& path)
-        {
-                if (    nano::iends_with(path, ".tar.gz") ||
-                        nano::iends_with(path, ".tgz"))
-                {
-                        return archive_type::tar_gz;
-                }
-
-                else if (nano::iends_with(path, ".tar.bz2") ||
-                         nano::iends_with(path, ".tbz") ||
-                         nano::iends_with(path, ".tbz2") ||
-                         nano::iends_with(path, ".tb2"))
-                {
-                        return archive_type::tar_bz2;
-                }
-
-                else if (nano::iends_with(path, ".tar"))
-                {
-                        return archive_type::tar;
-                }
-
-                else if (nano::iends_with(path, ".gz"))
-                {
-                        return archive_type::gz;
-                }
-
-                else
-                {
-                        return archive_type::unknown;
-                }
         }
 
-        static bool copy(archive* ar, buffer_t& data)
+        bool archive_stream_t::read(char* data, const size_t num_bytes)
         {
-                while (true)
+                while (m_index + num_bytes > m_buffer.size())
                 {
-                        const void* buff;
+                        const void* buff = nullptr;
                         size_t size;
                         off_t offset;
 
-                        const int r = archive_read_data_block(ar, &buff, &size, &offset);
+                        const int r = archive_read_data_block(m_archive, &buff, &size, &offset);
                         if (r == ARCHIVE_EOF)
-                                return true;
-                        if (r != ARCHIVE_OK)
+                                return false;
+                        if (r != ARCHIVE_OK && r != ARCHIVE_EOF)
                                 return false;
 
-                        data.insert(data.end(), (const char*)buff, (const char*)buff + size);
+                        m_buffer.insert(m_buffer.end(), (const char*)buff, (const char*)buff + size);
                 }
 
-                return true;
-        }
+                if (m_index + num_bytes <= m_buffer.size())
+                {
+                        std::copy(m_buffer.data() + m_index, m_buffer.data() + (m_index + num_bytes), data);
+                        m_index += num_bytes;
 
-        static bool decode(const buffer_t& buffer,
-                const archive_callback_t&,
-                const archive_error_callback_t&);
+                        // keep the buffer small enough
+                        const auto max_buffer_size = size_t(1024) * size_t(1024);
+                        if (m_buffer.size() > max_buffer_size)
+                        {
+                                m_buffer.erase(m_buffer.begin(), m_buffer.begin() + m_index);
+                                m_index = 0;
+                        }
+                        return true;
+                }
+                else
+                {
+                        return false;
+                }
+        }
 
         static bool decode(archive* ar,
                 const archive_callback_t& callback,
@@ -93,32 +68,9 @@ namespace nano
                         }
 
                         const std::string filename = archive_entry_pathname(entry);
-                        const archive_type filetype = decode_archive_type(filename);
-//                        const int64_t filesize = archive_entry_size(entry);
 
-                        buffer_t data;
-                        if (!copy(ar, data))
-                        {
-                                error_callback("failed to read archive!");
-                                error_callback(std::string("error <") + archive_error_string(ar) + ">!");
-                                ok = false;
-                                break;
-                        }
-
-                        switch (filetype)
-                        {
-                        case archive_type::tar:
-                        case archive_type::tar_gz:
-                        case archive_type::tar_bz2:
-                        case archive_type::gz:
-                        case archive_type::bz2:
-                                ok = decode(data, callback, error_callback);
-                                break;
-
-                        default:
-                                ok = callback(filename, data);
-                                break;
-                        }
+                        archive_stream_t stream(ar);
+                        ok = callback(filename, stream);
                 }
 
                 archive_read_close(ar);
@@ -126,26 +78,6 @@ namespace nano
 
                 // OK
                 return ok;
-        }
-
-        static bool decode(const buffer_t& buffer,
-                const archive_callback_t& callback,
-                const archive_error_callback_t& error_callback)
-        {
-                archive* ar = archive_read_new();
-
-                archive_read_support_filter_all(ar);
-                archive_read_support_format_all(ar);
-                archive_read_support_format_raw(ar);
-
-                if (archive_read_open_memory(ar, (void*)buffer.data(), buffer.size()))
-                {
-                        error_callback("failed to open archive!");
-                        error_callback(std::string("error <") + archive_error_string(ar) + ">!");
-                        return false;
-                }
-
-                return decode(ar, callback, error_callback);
         }
 
         bool unarchive(const std::string& path,

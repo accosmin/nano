@@ -1,7 +1,6 @@
 #include "class.h"
 #include "logger.h"
 #include "io/archive.h"
-#include "io/imstream.h"
 #include "task_cifar10.h"
 #include "text/to_params.h"
 #include "text/from_params.h"
@@ -43,7 +42,7 @@ namespace nano
                 const string_t test_bfile = "test_batch.bin";
                 const size_t n_test_samples = 10000;
 
-                const auto op = [&] (const string_t& filename, const nano::buffer_t& data)
+                const auto op = [&] (const string_t& filename, archive_stream_t& stream)
                 {
                         if (    nano::iends_with(filename, train_bfile1) ||
                                 nano::iends_with(filename, train_bfile2) ||
@@ -51,11 +50,11 @@ namespace nano
                                 nano::iends_with(filename, train_bfile4) ||
                                 nano::iends_with(filename, train_bfile5))
                         {
-                                return load_binary(filename, data.data(), data.size(), protocol::train, n_train_samples);
+                                return load_binary(filename, stream, protocol::train, n_train_samples);
                         }
                         else if (nano::iends_with(filename, test_bfile))
                         {
-                                return load_binary(filename, data.data(), data.size(), protocol::test, n_test_samples);
+                                return load_binary(filename, stream, protocol::test, n_test_samples);
                         }
                         else
                         {
@@ -72,16 +71,13 @@ namespace nano
                 return nano::unarchive(bfile, op, error_op);
         }
 
-        bool cifar10_task_t::load_binary(const string_t& filename,
-                const char* bdata, const size_t bdata_size, const protocol p, const size_t count)
+        bool cifar10_task_t::load_binary(const string_t& filename, archive_stream_t& stream, const protocol p, const size_t count)
         {
                 log_info() << "CIFAR-10: loading file <" << filename << "> ...";
 
                 const auto buffer_size = irows() * icols() * 3;
                 std::vector<char> buffer = nano::make_buffer(buffer_size);
                 char label[1];
-
-                nano::imstream_t stream(bdata, bdata_size);
 
                 size_t icount = 0;
                 while ( stream.read(label, 1) &&

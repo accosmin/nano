@@ -3,14 +3,38 @@
 #include "buffer.h"
 #include <functional>
 
+struct archive;
+
 namespace nano
 {
         ///
+        /// \brief wrapper over libarchive to stream binary data.
+        ///
+        class archive_stream_t
+        {
+        public:
+
+                archive_stream_t(archive* ar);
+
+                archive_stream_t(const archive_stream_t&) = delete;
+                archive_stream_t& operator=(const archive_stream_t&) = delete;
+
+                bool read(char* data, const size_t num_bytes);
+
+        private:
+
+                // attributes
+                archive*        m_archive;      ///< libarchive specific
+                buffer_t        m_buffer;       ///< buffer
+                size_t          m_index;        ///< index in the buffer
+        };
+
+        ///
         /// \brief callback to execute when a file was decompressed from an archive
-        ///     - (filename, uncompressed file content loaded in memory)
+        ///     - (filename, binary streaming)
         ///     - returns true if it should continue
         ///
-        using archive_callback_t = std::function<bool(const std::string&, const buffer_t&)>;
+        using archive_callback_t = std::function<bool(const std::string&, archive_stream_t&)>;
 
         ///
         /// \brief callback to execute when an error was detected at decompression

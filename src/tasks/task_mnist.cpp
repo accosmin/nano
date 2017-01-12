@@ -2,7 +2,6 @@
 #include "logger.h"
 #include "task_mnist.h"
 #include "io/archive.h"
-#include "io/imstream.h"
 #include "text/to_params.h"
 #include "text/from_params.h"
 
@@ -46,11 +45,13 @@ namespace nano
                 };
 
                 // load images
-                const auto iop = [&] (const string_t&, const nano::buffer_t& data)
+                const auto iop = [&] (const string_t&, archive_stream_t& stream)
                 {
-                        nano::imstream_t stream(data.data(), data.size());
+                        if (!stream.read(buffer.data(), 16))
+                        {
+                                return false;
+                        }
 
-                        stream.read(buffer.data(), 16);
                         while (stream.read(buffer.data(), buffer_size))
                         {
                                 image_t image;
@@ -71,12 +72,14 @@ namespace nano
                 }
 
                 // load ground truth
-                const auto gop = [&] (const string_t&, const nano::buffer_t& data)
+                const auto gop = [&] (const string_t&, archive_stream_t& stream)
                 {
-                        nano::imstream_t stream(data.data(), data.size());
+                        if (!stream.read(buffer.data(), 8))
+                        {
+                                return false;
+                        }
 
-                        stream.read(buffer.data(), 8);
-                        while (stream.read(label, 1) && stream.gcount() == 1)
+                        while (stream.read(label, 1))
                         {
                                 const tensor_index_t ilabel = static_cast<tensor_index_t>(label[0]);
                                 assert(ilabel < odims());

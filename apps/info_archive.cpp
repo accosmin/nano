@@ -18,9 +18,9 @@ int main(int argc, const char *argv[])
         const string_t cmd_input = cmdline.get("input");
 
         // callback
-        const auto callback = [] (const string_t& filename, const std::vector<char>& data)
+        const auto callback = [] (const string_t& filename, archive_stream_t&)
         {
-                log_info() << "decode: callback(" << filename << ", " << data.size() << " bytes)";
+                log_info() << "decode: callback(" << filename << ")";//, " << data.size() << " bytes)";
                 return true;
         };
         const auto error_callback = [] (const string_t& message)
