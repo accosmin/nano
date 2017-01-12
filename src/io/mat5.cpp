@@ -87,14 +87,14 @@ namespace nano
                 }
         }
 
-        mat5_section_t::mat5_section_t(std::streamsize begin)
-                :       m_begin(begin), m_end(begin),
-                        m_dbegin(begin), m_dend(begin),
-                        m_dtype(mat5_buffer_type::miUNKNOWN)
+        mat5_section_t::mat5_section_t(const std::streamsize begin) :
+                m_begin(begin), m_end(begin),
+                m_dbegin(begin), m_dend(begin),
+                m_dtype(mat5_buffer_type::miUNKNOWN)
         {
         }
 
-        bool mat5_section_t::load(std::streamsize offset, uint32_t dtype, uint32_t bytes)
+        bool mat5_section_t::load(const std::streamsize offset, uint32_t dtype, uint32_t bytes)
         {
                 // small data format
                 if ((dtype >> 16) != 0)

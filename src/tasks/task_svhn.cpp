@@ -1,12 +1,11 @@
 #include "class.h"
 #include "logger.h"
 #include "io/mat5.h"
-#include "io/gzip.h"
 #include "task_svhn.h"
 #include "math/random.h"
-#include "io/imstream.h"
 #include "vision/color.h"
 #include "text/to_params.h"
+#include "io/istream_zlib.h"
 #include "text/from_params.h"
 #include <fstream>
 
@@ -64,8 +63,7 @@ namespace nano
                 }
 
                 // data sections (image rgb + labels)
-                nano::buffer_t image_data;
-                nano::buffer_t label_data;
+                size_t image_index = n_chunks();
                 for (int isection = 0; isection < 2; ++ isection)
                 {
                         // section header
@@ -86,107 +84,125 @@ namespace nano
                         // section data
                         log_info() << "SVHN: uncompressing " << section.dsize() << " bytes ...";
 
-                        auto& data = (isection == 0) ? image_data : label_data;
-                        if (!nano::uncompress_gzip(istream, section.dsize(), data))
+                        zlib_istream_t dstream(istream, section.dsize());
+                        switch (isection)
                         {
-                                log_error() << "SVHN: invalid gzip archive!";
-                                return 0;
+                        case 0: load_images(dstream, p); break;
+                        case 1: load_labels(dstream, image_index, p); break;
                         }
-
-                        log_info() << "SVHN: uncompressed " << data.size() << " bytes.";
                 }
-
-                // decode the uncompressed bytes
-                return decode(image_data, label_data, p);
         }
 
-        size_t svhn_task_t::decode(const nano::buffer_t& idata, const nano::buffer_t& ldata, const protocol p)
+        size_t svhn_task_t::load_images(zlib_istream_t& stream, const protocol p)
         {
-                nano::imstream_t istream(idata.data(), idata.size());
-                nano::imstream_t lstream(ldata.data(), ldata.size());
-
-                // decode image & label arrays
-                nano::mat5_array_t iarray, larray;
-                if (    !iarray.load_header(istream) ||
-                        !iarray.load_body(istream))
+                // decode image array
+                nano::mat5_array_t array;
+                if (    !array.load_header(stream) ||
+                        !array.load_body(stream))
                 {
                         log_error() << "SVHN: invalid image array!";
                         return 0;
                 }
-                if (    !larray.load_header(lstream) ||
-                        !larray.load_body(lstream))
+
+                log_info() << "SVHN: image array: " << array;
+
+                const auto& section = array.m_sections[3];
+                const auto& dims = array.m_dims;
+
+                // check array size
+                if (    dims.size() != 4 ||
+                        static_cast<tensor_size_t>(dims[0]) != irows() ||
+                        static_cast<tensor_size_t>(dims[1]) != icols() ||
+                        dims[2] != 3)
+                {
+                        log_error() << "SVHN: invalid image array size!";
+                        return 0;
+                }
+
+                // check data type
+                if (section.m_dtype != nano::mat5_buffer_type::miUINT8)
+                {
+                        log_error() << "SVHN: expecting UINT8 image array!";
+                        return 0;
+                }
+
+                // load images
+                const size_t n_samples = dims[3];
+
+                const auto px = irows() * icols();
+                buffer_t idata(static_cast<size_t>(irows() * icols() * 3));
+                const auto* iptr = idata.data();
+
+                size_t cnt = 0;
+                for ( ; cnt < n_samples && stream.read(idata.data(), idata.size()); ++ cnt)
+                {
+                        image_t image(irows(), icols(), color_mode::rgb);
+                        image.plane(0) = tensor::map_matrix(iptr + 0 * px, icols(), irows()).cast<luma_t>().transpose();
+                        image.plane(1) = tensor::map_matrix(iptr + 1 * px, icols(), irows()).cast<luma_t>().transpose();
+                        image.plane(2) = tensor::map_matrix(iptr + 2 * px, icols(), irows()).cast<luma_t>().transpose();
+                        add_chunk(image, image.hash());
+                }
+
+                return cnt;
+        }
+
+        size_t svhn_task_t::load_labels(zlib_istream_t& stream, size_t image_index, const protocol p)
+        {
+                // decode label array
+                nano::mat5_array_t array;
+                if (    !array.load_header(stream) ||
+                        !array.load_body(stream))
                 {
                         log_error() << "SVHN: invalid label array!";
                         return 0;
                 }
 
-                log_info() << "SVHN: image array: " << iarray;
-                log_info() << "SVHN: label array: " << larray;
+                log_info() << "SVHN: label array: " << array;
 
-                const auto& isection = iarray.m_sections[3];
-                const auto& lsection = larray.m_sections[3];
-
-                const auto& idims = iarray.m_dims;
-                const auto& ldims = larray.m_dims;
+                const auto& section = array.m_sections[3];
+                const auto& dims = array.m_dims;
 
                 // check array size
-                if (    idims.size() != 4 ||
-                        static_cast<tensor_size_t>(idims[0]) != irows() ||
-                        static_cast<tensor_size_t>(idims[1]) != icols() ||
-                        idims[2] != 3 ||
-
-                        ldims.size() != 2 ||
-                        ldims[1] != 1 ||
-
-                        idims[3] != ldims[0])
+                if (    dims.size() != 2 ||
+                        dims[1] != 1)
                 {
-                        log_error() << "SVHN: invalid or mis-matching image & label array size!";
+                        log_error() << "SVHN: invalid label array size!";
                         return 0;
                 }
 
                 // check data type
-                if (    isection.m_dtype != nano::mat5_buffer_type::miUINT8 ||
-                        lsection.m_dtype != nano::mat5_buffer_type::miUINT8)
+                if (section.m_dtype != nano::mat5_buffer_type::miUINT8)
                 {
-                        log_error() << "SVHN: expecting UINT8 image & label arrays!";
+                        log_error() << "SVHN: expecting UINT8 label array!";
                         return 0;
                 }
 
-                // load images & labels
-                const size_t n_samples = idims[3];
+                // load labels
+                const size_t n_samples = dims[3];
 
-                const auto px = irows() * icols();
-                const auto ix = static_cast<size_t>(irows() * icols() * 3);
-                auto iptr = idata.data();
+                uint8_t ldata;
 
                 size_t cnt = 0;
-                for (size_t i = 0; i < n_samples; ++ i, iptr += ix)
+                for ( ; cnt < n_samples && stream.read(&ldata, 1); ++ cnt, ++ image_index)
                 {
-                        const auto lbeg = static_cast<size_t>(lsection.dbegin()) + i;
+                        if (image_index >= n_chunks())
+                        {
+                                log_error() << "SVHN: mis-matching number of images and labels!";
+                                return 0;
+                        }
 
-                        // label ...
-                        tensor_size_t ilabel = ldata[lbeg + 0];
+                        tensor_size_t ilabel = ldata;
                         if (ilabel == 10)
                         {
                                 ilabel = 0;
                         }
                         else if (ilabel < 1 || ilabel > 9)
                         {
-                                continue;
+                                return 0;
                         }
 
-                        // image ...
-                        image_t image(irows(), icols(), color_mode::rgb);
-                        image.plane(0) = tensor::map_matrix(iptr + 0 * px, icols(), irows()).cast<luma_t>().transpose();
-                        image.plane(1) = tensor::map_matrix(iptr + 1 * px, icols(), irows()).cast<luma_t>().transpose();
-                        image.plane(2) = tensor::map_matrix(iptr + 2 * px, icols(), irows()).cast<luma_t>().transpose();
-                        add_chunk(image, image.hash());
-
-                        // target ...
                         const auto fold = make_fold(0, p);
-                        add_sample(fold, n_chunks() - 1, class_target(ilabel, odims()), "digit" + to_string(ilabel));
-
-                        ++ cnt;
+                        add_sample(fold, image_index, class_target(ilabel, odims()), "digit" + to_string(ilabel));
                 }
 
                 return cnt;

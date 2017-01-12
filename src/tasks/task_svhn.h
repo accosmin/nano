@@ -5,6 +5,8 @@
 
 namespace nano
 {
+        class zlib_istream_t;
+
         ///
         /// SVHN task:
         ///      - digit classification
@@ -24,7 +26,8 @@ namespace nano
                 virtual bool populate() override;
 
                 size_t load_binary(const string_t& bfile, const protocol p);
-                size_t decode(const buffer_t& image_data, const buffer_t& label_data, const protocol p);
+                size_t load_images(zlib_istream_t&, const protocol p);
+                size_t load_labels(zlib_istream_t&, size_t image_index, const protocol p);
         };
 }
 

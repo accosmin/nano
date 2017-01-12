@@ -58,10 +58,7 @@ namespace nano
                 ///
                 /// \brief load from the input stream
                 ///
-                template
-                <
-                        typename tstream
-                >
+                template <typename tstream>
                 bool load(tstream& istream)
                 {
                         const auto offset = istream.tellg();
