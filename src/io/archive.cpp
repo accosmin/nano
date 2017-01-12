@@ -68,6 +68,27 @@ namespace nano
                 return true;
         }
 
+        std::streamsize archive_stream_t::size()
+        {
+                std::streamsize num_bytes = 0;
+                while (true)
+                {
+                        const void* buff = nullptr;
+                        size_t size;
+                        off_t offset;
+
+                        const int r = archive_read_data_block(m_archive, &buff, &size, &offset);
+                        if (r == ARCHIVE_EOF)
+                                break;
+                        if (r != ARCHIVE_OK)
+                                break;
+
+                        num_bytes += size;
+                }
+
+                return num_bytes;
+        }
+
         static bool decode(archive* ar,
                 const archive_callback_t& callback,
                 const archive_error_callback_t& error_callback)

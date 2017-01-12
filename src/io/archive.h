@@ -13,7 +13,7 @@ namespace nano
         ///
         /// \brief wrapper over libarchive to stream binary data.
         ///
-        class archive_stream_t
+        class NANO_PUBLIC archive_stream_t
         {
         public:
 
@@ -24,6 +24,7 @@ namespace nano
 
                 bool read(char* data, const std::streamsize num_bytes);
                 bool getline(std::string& line);
+                std::streamsize size();
 
         private:
 
