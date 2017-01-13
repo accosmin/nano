@@ -48,6 +48,7 @@ namespace nano
 
         bool archive_stream_t::getline(std::string& line)
         {
+                /// \todo not very efficient: should buffer larger chunks (1K ?!) and check for endline there!
                 char c;
                 while (read(&c, 1) && isendl(c)) {}
 
