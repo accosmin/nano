@@ -84,38 +84,31 @@ namespace nano
                 }
         }
 
-        mat5_section_t::mat5_section_t(const std::streamsize begin) :
-                m_begin(begin), m_end(begin),
-                m_dbegin(begin), m_dend(begin),
+        mat5_section_t::mat5_section_t() :
+                m_size(0),
+                m_dsize(0),
                 m_dtype(mat5_buffer_type::miUNKNOWN)
         {
         }
 
-        bool mat5_section_t::load(const std::streamsize offset, uint32_t dtype, uint32_t bytes)
+        bool mat5_section_t::load(const uint32_t dtype, const uint32_t bytes)
         {
                 // small data format
                 if ((dtype >> 16) != 0)
                 {
-                        m_begin = offset;
-                        m_end = offset + 8;
-
-                        m_dbegin = offset + 4;
-                        m_dend = offset + 8;
-
+                        m_size = 8;
+                        m_dsize = 4;
                         m_dtype = make_buffer_type((dtype << 16) >> 16);
                 }
 
                 // regular format
                 else
                 {
-                        m_begin = offset;
-                        m_end = offset + ((make_buffer_type(dtype) == mat5_buffer_type::miCOMPRESSED) ?
+                        const auto compressed = make_buffer_type(dtype) == mat5_buffer_type::miCOMPRESSED;
+                        m_size = compressed ?
                                 (8 + bytes) :
-                                (8 + bytes + static_cast<uint32_t>((7 * static_cast<uint64_t>(bytes)) % 8)));
-
-                        m_dbegin = offset + 8;
-                        m_dend = offset + 8 + bytes;
-
+                                (8 + bytes + static_cast<uint32_t>((7 * static_cast<uint64_t>(bytes)) % 8));
+                        m_dsize = bytes;
                         m_dtype = make_buffer_type(dtype);
                 }
 
@@ -125,8 +118,8 @@ namespace nano
         std::ostream& operator<<(std::ostream& ostream, const mat5_section_t& sect)
         {
                 ostream << "type = " << to_string(sect.m_dtype)
-                        << ", range = [" << sect.begin() << ", " << sect.end() << "] = " << sect.size() << "B"
-                        << ", data range = [" << sect.dbegin() << ", " << sect.dend() << "] = " << sect.dsize() << "B";
+                        << ", size = " << sect.m_size << "B"
+                        << ", data size = " << sect.m_dsize << "B";
                 return ostream;
         }
 
@@ -134,8 +127,7 @@ namespace nano
         {
                 mat5_section_t header;
                 return  header.load(istream) &&
-                        header.m_dtype == mat5_buffer_type::miMATRIX &&
-                        header.end() == istream.size();
+                        header.m_dtype == mat5_buffer_type::miMATRIX;
         }
 
         bool mat5_array_t::load_body(imstream_t& istream)

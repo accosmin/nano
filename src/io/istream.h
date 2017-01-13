@@ -37,7 +37,7 @@ namespace nano
                 ///
                 /// \brief read given number of bytes
                 ///
-                bool read(char* bytes, const std::streamsize max_num_bytes);
+                bool read(char* bytes, const std::streamsize num_bytes);
 
                 ///
                 /// \brief read POD structure
@@ -51,6 +51,16 @@ namespace nano
                 {
                         return read(reinterpret_cast<char*>(&pod), sizeof(pod));
                 }
+
+                ///
+                /// \brief skip the given number of bytes
+                ///
+                bool skip(const std::streamsize num_bytes);
+
+                ///
+                /// \brief skip till the end and return the number of bytes till the end
+                ///
+                std::streamsize skip();
 
                 ///
                 /// \brief read next line
