@@ -24,11 +24,11 @@ namespace nano
 
                 bool read(char* data, const std::streamsize num_bytes);
                 bool getline(std::string& line);
-                std::streamsize size();
+                std::streamsize size() const;
 
         private:
 
-                bool advance(const std::streamsize num_bytes);
+                bool advance(const void*& buffer, size_t& size) const;
 
         private:
 

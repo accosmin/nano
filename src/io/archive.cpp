@@ -12,24 +12,33 @@ namespace nano
 
         bool archive_stream_t::read(char* data, const std::streamsize num_bytes)
         {
-                if (advance(num_bytes))
+                // buffer data
+                const void* buff = nullptr;
+                size_t size = 0;
+                while (m_index + num_bytes > static_cast<std::streamsize>(m_buffer.size()))
                 {
-                        std::copy(m_buffer.data() + m_index, m_buffer.data() + (m_index + num_bytes), data);
-                        m_index += num_bytes;
-
-                        // keep the buffer small enough
-                        const auto max_buffer_size = size_t(1024) * size_t(1024);
-                        if (m_buffer.size() > max_buffer_size)
+                        if (!advance(buff, size))
                         {
-                                m_buffer.erase(m_buffer.begin(), m_buffer.begin() + m_index);
-                                m_index = 0;
+                                return false;
                         }
-                        return true;
+                        else
+                        {
+                                m_buffer.insert(m_buffer.end(), (const char*)buff, (const char*)buff + size);
+                        }
                 }
-                else
+
+                // retrive
+                std::copy(m_buffer.data() + m_index, m_buffer.data() + (m_index + num_bytes), data);
+                m_index += num_bytes;
+
+                // keep the buffer small enough
+                const auto max_buffer_size = size_t(1024) * size_t(1024);
+                if (m_buffer.size() > max_buffer_size)
                 {
-                        return false;
+                        m_buffer.erase(m_buffer.begin(), m_buffer.begin() + m_index);
+                        m_index = 0;
                 }
+                return true;
         }
 
         static bool isendl(char c)
@@ -48,45 +57,25 @@ namespace nano
                 return !line.empty();
         }
 
-        bool archive_stream_t::advance(const std::streamsize num_bytes)
+        std::streamsize archive_stream_t::size() const
         {
-                while (m_index + num_bytes > static_cast<std::streamsize>(m_buffer.size()))
-                {
-                        const void* buff = nullptr;
-                        size_t size;
-                        off_t offset;
+                const void* buff = nullptr;
+                size_t size = 0;
 
-                        const int r = archive_read_data_block(m_archive, &buff, &size, &offset);
-                        if (r == ARCHIVE_EOF)
-                                return false;
-                        if (r != ARCHIVE_OK)
-                                return false;
-
-                        m_buffer.insert(m_buffer.end(), (const char*)buff, (const char*)buff + size);
-                }
-
-                return true;
-        }
-
-        std::streamsize archive_stream_t::size()
-        {
                 std::streamsize num_bytes = 0;
-                while (true)
+                while (advance(buff, size))
                 {
-                        const void* buff = nullptr;
-                        size_t size;
-                        off_t offset;
-
-                        const int r = archive_read_data_block(m_archive, &buff, &size, &offset);
-                        if (r == ARCHIVE_EOF)
-                                break;
-                        if (r != ARCHIVE_OK)
-                                break;
-
                         num_bytes += size;
                 }
 
                 return num_bytes;
+        }
+
+        bool archive_stream_t::advance(const void*& buffer, size_t& size) const
+        {
+                off_t offset;
+                const int r = archive_read_data_block(m_archive, &buffer, &size, &offset);
+                return r == ARCHIVE_OK;
         }
 
         static bool decode(archive* ar,
