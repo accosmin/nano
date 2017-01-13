@@ -41,7 +41,31 @@ namespace nano
         NANO_PUBLIC std::string to_string(const mat5_buffer_type& type);
 
         ///
-        /// \brief section
+        /// \brief matlab5 header.
+        ///
+        struct mat5_header_t
+        {
+                template <typename tstream>
+                bool load(tstream& stream)
+                {
+                        return  stream.read(m_description, sizeof(m_description)) &&
+                                stream.read(m_offset, sizeof(m_offset)) &&
+                                stream.read(m_endian, sizeof(m_endian));
+                }
+
+                std::string description() const
+                {
+                        return std::string(m_description, m_description + sizeof(m_description));
+                }
+
+                // attributes
+                char            m_description[116];
+                char            m_offset[8];
+                char            m_endian[4];
+        };
+
+        ///
+        /// \brief matlab5 section.
         ///
         struct NANO_PUBLIC mat5_section_t
         {

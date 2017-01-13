@@ -13,11 +13,8 @@ namespace nano
                         return *reinterpret_cast<const uint32_t*>(data);
                 }
 
-                template
-                <
-                        typename tint
-                >
-                mat5_buffer_type make_buffer_type(tint code)
+                template <typename tinteger>
+                mat5_buffer_type make_buffer_type(const tinteger code)
                 {
                         switch (code)
                         {

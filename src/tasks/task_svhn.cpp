@@ -47,21 +47,13 @@ namespace nano
                 }
 
                 // header section
-                char header[116];
-                if (!istream.read(header, 116))
+                mat5_header_t header;
+                if (!header.load(istream))
                 {
                         log_error() << "SVHN: failed to read header!";
                         return 0;
                 }
-                log_info() << "SVHN: read header <" << string_t(header, header + 116) << ">.";
-
-                char byte[8];
-                if (    !istream.read(byte, 8) ||       // offset
-                        !istream.read(byte, 4))         // version + endian
-                {
-                        log_error() << "SVHN: failed to read offset & version!";
-                        return 0;
-                }
+                log_info() << "SVHN: read header <" << header.description() << ">.";
 
                 // data sections (image rgb + labels)
                 nano::buffer_t image_data;
