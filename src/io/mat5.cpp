@@ -1,5 +1,4 @@
 #include "mat5.h"
-#include "imstream.h"
 #include <fstream>
 
 namespace nano
@@ -122,7 +121,7 @@ namespace nano
                         << ", data size = " << sect.m_dsize << "B";
                 return ostream;
         }
-
+/*
         bool mat5_array_t::load_header(imstream_t& istream)
         {
                 mat5_section_t header;
@@ -181,5 +180,5 @@ namespace nano
                         ostream << array.m_dims[i] << ((i + 1 == array.m_dims.size()) ? "" : "x");
                 }
                 return ostream;
-        }
+        }*/
 }

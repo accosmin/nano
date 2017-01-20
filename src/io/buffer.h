@@ -1,7 +1,6 @@
 #pragma once
 
 #include "arch.h"
-#include <ios>
 #include <iosfwd>
 #include <string>
 #include <vector>
@@ -10,7 +9,12 @@ namespace nano
 {
         using buffer_t = std::vector<char>;
 
-        class imstream_t;
+        enum class io_status
+        {
+                ok,
+                eof,
+                error
+        };
 
         ///
         /// \brief allocates a buffer of the given size
@@ -25,13 +29,6 @@ namespace nano
         /// \brief maximum file/stream size in bytes (useful for indicating a read-until-EOF condition)
         ///
         NANO_PUBLIC std::streamsize max_streamsize();
-
-        ///
-        /// \brief load a stream of bytes
-        ///
-        NANO_PUBLIC bool load_buffer_from_stream(std::istream& istream, std::streamsize num_bytes, buffer_t&);
-        NANO_PUBLIC bool load_buffer_from_stream(std::istream& istream, buffer_t&);
-        NANO_PUBLIC bool load_buffer_from_stream(imstream_t& istream, buffer_t&);
 
         ///
         /// \brief save buffer to file

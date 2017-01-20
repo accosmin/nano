@@ -1,10 +1,8 @@
 #include "class.h"
 #include "logger.h"
 #include "io/mat5.h"
-#include "io/gzip.h"
 #include "task_svhn.h"
 #include "math/random.h"
-#include "io/imstream.h"
 #include "vision/color.h"
 #include "text/to_params.h"
 #include "text/from_params.h"
@@ -55,6 +53,9 @@ namespace nano
                 }
                 log_info() << "SVHN: read header <" << header.description() << ">.";
 
+                return 0;
+
+                /*
                 // data sections (image rgb + labels)
                 nano::buffer_t image_data;
                 nano::buffer_t label_data;
@@ -90,10 +91,13 @@ namespace nano
 
                 // decode the uncompressed bytes
                 return decode(image_data, label_data, p);
+*/
         }
 
         size_t svhn_task_t::decode(const nano::buffer_t& idata, const nano::buffer_t& ldata, const protocol p)
         {
+                return 0;
+                /*
                 nano::imstream_t istream(idata.data(), idata.size());
                 nano::imstream_t lstream(ldata.data(), ldata.size());
 
@@ -182,5 +186,6 @@ namespace nano
                 }
 
                 return cnt;
+                */
         }
 }

@@ -1,42 +1,15 @@
 #pragma once
 
-#include <ios>
-#include "arch.h"
-#include <vector>
-#include <string>
+#include "istream.h"
+#include "archive_reader.h"
 #include <functional>
-
-struct archive;
 
 namespace nano
 {
         ///
         /// \brief wrapper over libarchive to stream binary data.
         ///
-        class NANO_PUBLIC archive_stream_t
-        {
-        public:
-
-                archive_stream_t(archive* ar);
-
-                archive_stream_t(const archive_stream_t&) = delete;
-                archive_stream_t& operator=(const archive_stream_t&) = delete;
-
-                bool read(char* data, const std::streamsize num_bytes);
-                bool getline(std::string& line);
-                std::streamsize size() const;
-
-        private:
-
-                bool advance(const void*& buffer, size_t& size) const;
-
-        private:
-
-                // attributes
-                archive*                m_archive;      ///< libarchive specific
-                std::vector<char>       m_buffer;       ///< buffer
-                std::streamsize         m_index;        ///< index in the buffer
-        };
+        using archive_stream_t = istream_t<archive_reader_t>;
 
         ///
         /// \brief callback to execute when a file was decompressed from an archive

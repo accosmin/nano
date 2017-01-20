@@ -4,81 +4,6 @@
 
 namespace nano
 {
-        archive_stream_t::archive_stream_t(archive* ar) :
-                m_archive(ar),
-                m_index(0)
-        {
-        }
-
-        bool archive_stream_t::read(char* data, const std::streamsize num_bytes)
-        {
-                // buffer data
-                const void* buff = nullptr;
-                size_t size = 0;
-                while (m_index + num_bytes > static_cast<std::streamsize>(m_buffer.size()))
-                {
-                        if (!advance(buff, size))
-                        {
-                                return false;
-                        }
-                        else
-                        {
-                                m_buffer.insert(m_buffer.end(), (const char*)buff, (const char*)buff + size);
-                        }
-                }
-
-                // retrive
-                std::copy(m_buffer.data() + m_index, m_buffer.data() + (m_index + num_bytes), data);
-                m_index += num_bytes;
-
-                // keep the buffer small enough
-                const auto max_buffer_size = size_t(1024) * size_t(1024);
-                if (m_buffer.size() > max_buffer_size)
-                {
-                        m_buffer.erase(m_buffer.begin(), m_buffer.begin() + m_index);
-                        m_index = 0;
-                }
-                return true;
-        }
-
-        static bool isendl(char c)
-        {
-                return (c == '\n') || (c == '\r');
-        }
-
-        bool archive_stream_t::getline(std::string& line)
-        {
-                /// \todo not very efficient: should buffer larger chunks (1K ?!) and check for endline there!
-                char c;
-                while (read(&c, 1) && isendl(c)) {}
-
-                line.clear();
-                while (read(&c, 1) && !isendl(c)) { line.push_back(c); }
-
-                return !line.empty();
-        }
-
-        std::streamsize archive_stream_t::size() const
-        {
-                const void* buff = nullptr;
-                size_t size = 0;
-
-                std::streamsize num_bytes = 0;
-                while (advance(buff, size))
-                {
-                        num_bytes += size;
-                }
-
-                return num_bytes;
-        }
-
-        bool archive_stream_t::advance(const void*& buffer, size_t& size) const
-        {
-                off_t offset;
-                const int r = archive_read_data_block(m_archive, &buffer, &size, &offset);
-                return r == ARCHIVE_OK;
-        }
-
         static bool decode(archive* ar,
                 const archive_callback_t& callback,
                 const archive_error_callback_t& error_callback)
@@ -101,7 +26,8 @@ namespace nano
 
                         const std::string filename = archive_entry_pathname(entry);
 
-                        archive_stream_t stream(ar);
+                        archive_reader_t reader(ar);
+                        archive_stream_t stream(reader);
                         ok = callback(filename, stream);
                 }
 

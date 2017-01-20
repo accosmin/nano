@@ -9,8 +9,6 @@
 
 namespace nano
 {
-        class imstream_t;
-
         ///
         /// \brief data type
         ///
@@ -105,6 +103,7 @@ namespace nano
 
         NANO_PUBLIC std::ostream& operator<<(std::ostream&, const mat5_section_t&);
 
+        /*
         ///
         /// \brief matlab5 multi-dimensional array consisting of multiple sections.
         ///
@@ -114,16 +113,64 @@ namespace nano
                 /// \brief load from the input stream
                 ///
                 template <typename tstream>
-                bool load(tstream& istream, const callback_t&, const error_callback_t&);
+                bool load(tstream& istream)
+                {
+                        mat5_section_t header;
+                        if (    !header.load(istream) ||
+                                header.m_dtype != mat5_buffer_type::miMATRIX)
+                        {
+                        }
+
+                        // read & check sections
+                        m_sections.clear();
+
+                        mat5_section_t section;
+                        while (istream && m_sections.size() < 5 && section.load(istream))
+                        {
+                                m_sections.push_back(section);
+                                istream.seekg(section.end());   // move past the data section to read the next section
+                        }
+
+                        if (m_sections.size() != 4)
+                        {
+                                return false;
+                        }
+
+                        // decode sections:
+                        //      first:  flags + class
+                        //      second: dimensions
+                        //      third:  name
+                        //      fourth: data matrix/tensor
+        //                const mat5_section_t& sect1 = m_sections[0];
+                        const mat5_section_t& sect2 = m_sections[1];
+                        const mat5_section_t& sect3 = m_sections[2];
+                        const mat5_section_t& sect4 = m_sections[3];
+
+                        m_name = std::string(istream.data() + sect3.dbegin(),
+                                             istream.data() + sect3.dend());
+
+                        m_dims.clear();
+                        std::streamsize values = 1;
+                        for (std::streamsize i = sect2.dbegin(); i < sect2.dend(); i += 4)
+                        {
+                                const auto dim = make_uint32(&istream.data()[i]);
+                                m_dims.push_back(dim);
+                                values *= dim;
+                        }
+
+                        // check bytes
+                        return values * to_bytes(sect4.m_dtype) == sect4.dsize();
+                }
 
                 // attributes
-                std::vector<std::size_t>        m_dims;                 ///< dimensions of the array
-                std::string                     m_name;                 ///< generic (Matlab) name
-                mat5_section_t                  m_meta_section;         ///<
-                mat5_section_t                  m_dims_section;         ///<
-                mat5_section_t                  m_name_section;         ///<
-                mat5_section_t                  m_data_section;         ///<
+                mat5_section_t          m_header;
+                std::vector<size_t>     m_dims;                 ///< dimensions of the array
+                std::string             m_name;                 ///< generic (Matlab) name
+                mat5_section_t          m_meta_section;         ///<
+                mat5_section_t          m_dims_section;         ///<
+                mat5_section_t          m_name_section;         ///<
+                mat5_section_t          m_data_section;         ///<
         };
 
-        NANO_PUBLIC std::ostream& operator<<(std::ostream&, const mat5_array_t&);
+        NANO_PUBLIC std::ostream& operator<<(std::ostream&, const mat5_array_t&);*/
 }

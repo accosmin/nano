@@ -1,6 +1,5 @@
 #include "class.h"
 #include "logger.h"
-#include "io/archive.h"
 #include "task_cifar100.h"
 #include "text/to_params.h"
 #include "text/from_params.h"

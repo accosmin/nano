@@ -20,7 +20,7 @@ int main(int argc, const char *argv[])
         // callback
         const auto callback = [] (const string_t& filename, archive_stream_t& stream)
         {
-                log_info() << "decode: callback(" << filename << ", " << stream.size() << " bytes)";
+                log_info() << "decode: callback(" << filename << ", " << stream.skip() << " bytes)";
                 return true;
         };
         const auto error_callback = [] (const string_t& message)

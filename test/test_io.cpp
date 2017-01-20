@@ -1,9 +1,9 @@
 #include "utest.h"
-#include "io/buffer.h"
-#include "io/imstream.h"
+#include "io/istream.h"
 #include "io/ibstream.h"
 #include "io/obstream.h"
 #include "math/random.h"
+#include "io/mem_reader.h"
 #include <cstdio>
 #include <fstream>
 
@@ -49,23 +49,29 @@ NANO_CASE(mstream)
 
                 // check buffer loading from mstream (by block)
                 {
-                        imstream_t stream(ref_buffer.data(), size);
+                        mem_reader_t reader(ref_buffer.data(), size);
+                        istream_t<mem_reader_t> stream(reader);
 
                         NANO_CHECK_EQUAL(stream.tellg(), std::streamsize(0));
-                        NANO_CHECK_EQUAL(stream.size(), static_cast<std::streamsize>(size));
 
                         buffer_t buffer;
-                        NANO_CHECK(nano::load_buffer_from_stream(stream, buffer));
+                        char buff[min_size];
+                        while (stream.read(buff, sizeof(buff)))
+                        {
+                                buffer.insert(buffer.end(), buff, buff + min_size);
+                        }
+
+                        NANO_CHECK_EQUAL(stream.tellg(), static_cast<std::streamsize>(size));
 
                         op_check_buffers(ref_buffer, buffer);
                 }
 
                 // check buffer loading from mstream (one character at a time)
                 {
-                        imstream_t stream(ref_buffer.data(), size);
+                        mem_reader_t reader(ref_buffer.data(), size);
+                        istream_t<mem_reader_t> stream(reader);
 
                         NANO_CHECK_EQUAL(stream.tellg(), std::streamsize(0));
-                        NANO_CHECK_EQUAL(stream.size(), static_cast<std::streamsize>(size));
 
                         buffer_t buffer;
                         char ch;
@@ -73,6 +79,8 @@ NANO_CASE(mstream)
                         {
                                 buffer.push_back(ch);
                         }
+
+                        NANO_CHECK_EQUAL(stream.tellg(), static_cast<std::streamsize>(size));
 
                         op_check_buffers(ref_buffer, buffer);
                 }

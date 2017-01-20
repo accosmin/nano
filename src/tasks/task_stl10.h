@@ -1,11 +1,10 @@
 #pragma once
 
+#include "io/archive.h"
 #include "task_mem_vision.h"
 
 namespace nano
 {
-        class archive_stream_t;
-
         ///
         /// STL10 task:
         ///     - object classification
