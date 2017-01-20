@@ -176,6 +176,7 @@ The library provides various command line programs and utilities. Each program d
 Most notably:
 * **apps/info** - prints all registered objects with the associated ID and a short description.
 * **apps/info_task** - loads a task and prints its detailed description.
+* **apps/info_archive** - loads an archive (e.g. .tar, .tgz, .zip) and prints its description (e.g. file names and sizes in bytes).
 * **apps/train** - train a model on a given task.
 * **apps/evaluate** - test a model on a given task.
 * **apps/benchmark_batch** - benchmark all batch optimization methods with varying the line-search parameters on standard test functions.
