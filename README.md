@@ -5,7 +5,7 @@ Nano provides numerical optimization and machine learning utilities. For example
 
 #### Compilation
 
-Use a C++14 compiler and install Eigen3.3+, LibArchive, Zlib, BZip2 and DevIL. Nano is tested on Linux ([gcc 4.9+ | clang 3.6+], CMake 3.1+, Ninja or Make) and OSX (AppleClang7+, homebrew, CMake 3.1+, Ninja or Make). The code is written to be cross-platform, so it may work (with minor fixes) on other platforms as well (e.g. Windows/MSVC).
+Use a C++14 compiler and install Eigen3.3+, LibArchive, Zlib and DevIL. Nano is tested on Linux ([gcc 4.9+ | clang 3.6+], CMake 3.1+, Ninja or Make) and OSX (AppleClang7+, homebrew, CMake 3.1+, Ninja or Make). The code is written to be cross-platform, so it may work (with minor fixes) on other platforms as well (e.g. Windows/MSVC).
 
 The easiest way to compile (and install) is to run:
 ```
@@ -115,7 +115,7 @@ The image samples can be saved to disk using for example:
 
 A **model** predicts the correct output for a given image patch, either its label (if a classification task) or a score (if a regression task). The feed-forward models can be constructed using a pattern like `[layer_id[:layer_parameters];]+` with the following layers:
 ```
-bash ./apps/info --layer
+./apps/info --layer
 |-----------|------------------------------------------|-------------------------------------------------------------------------------|
 | layer     | description                              | configuration                                                                 |
 |-----------|------------------------------------------|-------------------------------------------------------------------------------|
