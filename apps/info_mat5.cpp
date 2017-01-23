@@ -1,0 +1,45 @@
+#include "timer.h"
+#include "logger.h"
+#include "stringi.h"
+#include "io/archive.h"
+#include "text/cmdline.h"
+
+int main(int argc, const char *argv[])
+{
+        using namespace nano;
+
+        // parse the command line
+        nano::cmdline_t cmdline("display the structure of the given matlab5 file");
+        cmdline.add("i", "input",       "input matlab5 path (.mat)");
+
+        cmdline.process(argc, argv);
+
+        // check arguments and options
+        const string_t cmd_input = cmdline.get("input");
+
+        // callback
+        const auto callback = [] (const string_t& filename, istream_t& stream)
+        {
+                log_info() << "decode: callback(" << filename << ", " << stream.skip() << " bytes)";
+                return true;
+        };
+        const auto error_callback = [] (const string_t& message)
+        {
+                log_error() << "decode: " << message;
+        };
+
+        // decode archive
+        nano::timer_t timer;
+        if (!nano::unarchive(cmd_input, callback, error_callback))
+        {
+                return EXIT_FAILURE;
+        }
+        else
+        {
+                log_info() << "<" << cmd_input << "> loaded in " << timer.elapsed() << ".";
+
+                // OK
+                log_info() << nano::done;
+                return EXIT_SUCCESS;
+        }
+}
