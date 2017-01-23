@@ -45,7 +45,7 @@ namespace nano
                 };
 
                 // load images
-                const auto iop = [&] (const string_t&, archive_istream_t& stream)
+                const auto iop = [&] (const string_t&, istream_t& stream)
                 {
                         if (stream.read(buffer.data(), 16) != 16)
                         {
@@ -72,7 +72,7 @@ namespace nano
                 }
 
                 // load ground truth
-                const auto gop = [&] (const string_t&, archive_istream_t& stream)
+                const auto gop = [&] (const string_t&, istream_t& stream)
                 {
                         if (stream.read(buffer.data(), 8) != 8)
                         {

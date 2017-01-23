@@ -18,7 +18,7 @@ int main(int argc, const char *argv[])
         const string_t cmd_input = cmdline.get("input");
 
         // callback
-        const auto callback = [] (const string_t& filename, archive_istream_t& stream)
+        const auto callback = [] (const string_t& filename, istream_t& stream)
         {
                 log_info() << "decode: callback(" << filename << ", " << stream.skip() << " bytes)";
                 return true;

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "istream_archive.h"
+#include "istream.h"
 #include <functional>
 
 namespace nano
@@ -10,7 +10,7 @@ namespace nano
         ///     - (filename, binary streaming)
         ///     - returns true if it should continue
         ///
-        using archive_callback_t = std::function<bool(const std::string&, archive_istream_t&)>;
+        using archive_callback_t = std::function<bool(const std::string&, istream_t&)>;
 
         ///
         /// \brief callback to execute when an error was detected at decompression

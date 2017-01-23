@@ -1,4 +1,5 @@
 #include "archive.h"
+#include "istream_archive.h"
 #include <archive.h>
 #include <archive_entry.h>
 

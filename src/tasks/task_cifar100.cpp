@@ -127,7 +127,7 @@ namespace nano
                 const string_t test_bfile = "test.bin";
                 const size_t n_test_samples = 10000;
 
-                const auto op = [&] (const string_t& filename, archive_istream_t& stream)
+                const auto op = [&] (const string_t& filename, istream_t& stream)
                 {
                         if (nano::ends_with(filename, train_bfile))
                         {
@@ -152,7 +152,7 @@ namespace nano
                 return nano::unarchive(bfile, op, error_op);
         }
 
-        bool cifar100_task_t::load_binary(const string_t& filename, archive_istream_t& stream, const protocol p, const size_t count)
+        bool cifar100_task_t::load_binary(const string_t& filename, istream_t& stream, const protocol p, const size_t count)
         {
                 log_info() << "CIFAR-100: loading file <" << filename << "> ...";
 

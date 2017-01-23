@@ -45,7 +45,7 @@ namespace nano
 
                 const string_t fold_file = "fold_indices.txt";
 
-                const auto op = [&] (const string_t& filename, archive_istream_t& stream)
+                const auto op = [&] (const string_t& filename, istream_t& stream)
                 {
                         if (nano::iends_with(filename, train_ifile))
                         {
@@ -86,7 +86,7 @@ namespace nano
                 return nano::unarchive(bfile, op, error_op);
         }
 
-        bool stl10_task_t::load_ifile(const string_t& ifile, archive_istream_t& stream,
+        bool stl10_task_t::load_ifile(const string_t& ifile, istream_t& stream,
                 const bool unlabeled, const size_t count)
         {
                 log_info() << "STL-10: loading file <" << ifile << "> ...";
@@ -121,7 +121,7 @@ namespace nano
                 return count == icount;
         }
 
-        bool stl10_task_t::load_gfile(const string_t& gfile, archive_istream_t& stream,
+        bool stl10_task_t::load_gfile(const string_t& gfile, istream_t& stream,
                 const size_t count)
         {
                 log_info() << "STL-10: loading file <" << gfile << "> ...";
@@ -154,7 +154,7 @@ namespace nano
                 return count == gcount;
         }
 
-        bool stl10_task_t::load_folds(const string_t& ifile, archive_istream_t& stream,
+        bool stl10_task_t::load_folds(const string_t& ifile, istream_t& stream,
                 const size_t n_test, const size_t n_train, const size_t n_unlabeled)
         {
                 log_info() << "STL-10: loading file <" << ifile << "> ...";
