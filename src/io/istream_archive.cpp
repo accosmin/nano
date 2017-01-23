@@ -5,8 +5,7 @@
 namespace nano
 {
         archive_istream_t::archive_istream_t(archive* ar) :
-                m_archive(ar),
-                m_index(0)
+                m_archive(ar)
         {
         }
 

@@ -24,6 +24,5 @@ namespace nano
                 // attributes
                 archive*                m_archive;      ///< libarchive specific
                 std::vector<char>       m_buffer;       ///< buffer
-                std::streamsize         m_index;        ///< index in the buffer
         };
 }
