@@ -1,9 +1,8 @@
 #include "istream_zlib.h"
-#include <istream>
 
 namespace nano
 {
-        zlib_istream_t::zlib_istream_t(std::istream& istream, const std::streamsize max_num_bytes) :
+        zlib_istream_t::zlib_istream_t(istream_t& istream, const std::streamsize max_num_bytes) :
                 m_istream(istream),
                 m_max_num_bytes(max_num_bytes)
         {
