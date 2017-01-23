@@ -1,25 +1,23 @@
 #pragma once
 
-#include "buffer.h"
 #include <zlib.h>
+#include <iosfwd>
+#include "istream.h"
 
 namespace nano
 {
         ///
         /// \brief zlib-based streaming of gzip-compressed binary data.
         ///
-        class NANO_PUBLIC zlib_reader_t
+        class NANO_PUBLIC zlib_istream_t final : public istream_t
         {
         public:
 
-                zlib_reader_t(std::istream& istream, const std::streamsize max_num_bytes = max_streamsize());
+                zlib_istream_t(std::istream& istream, const std::streamsize max_num_bytes = max_streamsize());
 
-                zlib_reader_t(const zlib_reader_t&) = delete;
-                zlib_reader_t& operator=(const zlib_reader_t&) = delete;
+                ~zlib_istream_t();
 
-                ~zlib_reader_t();
-
-                io_status advance(const std::streamsize num_bytes, buffer_t& buffer);
+                virtual io_status advance(const std::streamsize num_bytes, buffer_t& buffer) override;
 
         private:
 

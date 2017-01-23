@@ -127,7 +127,7 @@ namespace nano
                 const string_t test_bfile = "test.bin";
                 const size_t n_test_samples = 10000;
 
-                const auto op = [&] (const string_t& filename, archive_stream_t& stream)
+                const auto op = [&] (const string_t& filename, archive_istream_t& stream)
                 {
                         if (nano::ends_with(filename, train_bfile))
                         {
@@ -152,7 +152,7 @@ namespace nano
                 return nano::unarchive(bfile, op, error_op);
         }
 
-        bool cifar100_task_t::load_binary(const string_t& filename, archive_stream_t& stream, const protocol p, const size_t count)
+        bool cifar100_task_t::load_binary(const string_t& filename, archive_istream_t& stream, const protocol p, const size_t count)
         {
                 log_info() << "CIFAR-100: loading file <" << filename << "> ...";
 
@@ -161,8 +161,8 @@ namespace nano
                 char label[2];
 
                 size_t icount = 0;
-                while ( stream.read(label, 2) &&       // coarse & fine labels!
-                        stream.read(buffer.data(), buffer_size))
+                while ( stream.read(label, 2) == 2 &&       // coarse & fine labels!
+                        stream.read(buffer.data(), buffer_size) == buffer_size)
                 {
                         const tensor_index_t ilabel = label[1];
 

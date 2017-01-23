@@ -45,14 +45,14 @@ namespace nano
                 };
 
                 // load images
-                const auto iop = [&] (const string_t&, archive_stream_t& stream)
+                const auto iop = [&] (const string_t&, archive_istream_t& stream)
                 {
-                        if (!stream.read(buffer.data(), 16))
+                        if (stream.read(buffer.data(), 16) != 16)
                         {
                                 return false;
                         }
 
-                        while (stream.read(buffer.data(), buffer_size))
+                        while (stream.read(buffer.data(), buffer_size) == buffer_size)
                         {
                                 image_t image;
                                 image.load_luma(buffer.data(), irows(), icols());
@@ -72,14 +72,14 @@ namespace nano
                 }
 
                 // load ground truth
-                const auto gop = [&] (const string_t&, archive_stream_t& stream)
+                const auto gop = [&] (const string_t&, archive_istream_t& stream)
                 {
-                        if (!stream.read(buffer.data(), 8))
+                        if (stream.read(buffer.data(), 8) != 8)
                         {
                                 return false;
                         }
 
-                        while (stream.read(label, 1))
+                        while (stream.read(label, 1) == 1)
                         {
                                 const tensor_index_t ilabel = static_cast<tensor_index_t>(label[0]);
                                 assert(ilabel < odims());

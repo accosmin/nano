@@ -3,7 +3,7 @@
 #include "io/ibstream.h"
 #include "io/obstream.h"
 #include "math/random.h"
-#include "io/mem_reader.h"
+#include "io/istream_mem.h"
 #include <cstdio>
 #include <fstream>
 
@@ -49,8 +49,7 @@ NANO_CASE(mstream)
 
                 // check buffer loading from mstream (by block)
                 {
-                        mem_reader_t reader(ref_buffer.data(), size);
-                        istream_t<mem_reader_t> stream(reader);
+                        mem_istream_t stream(ref_buffer.data(), size);
 
                         NANO_CHECK_EQUAL(stream.tellg(), std::streamsize(0));
 
@@ -68,8 +67,7 @@ NANO_CASE(mstream)
 
                 // check buffer loading from mstream (one character at a time)
                 {
-                        mem_reader_t reader(ref_buffer.data(), size);
-                        istream_t<mem_reader_t> stream(reader);
+                        mem_istream_t stream(ref_buffer.data(), size);
 
                         NANO_CHECK_EQUAL(stream.tellg(), std::streamsize(0));
 

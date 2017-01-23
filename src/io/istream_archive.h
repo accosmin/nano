@@ -1,6 +1,6 @@
 #pragma once
 
-#include "buffer.h"
+#include "istream.h"
 
 struct archive;
 
@@ -9,18 +9,15 @@ namespace nano
         ///
         /// \brief libarchive-based streaming of binary data.
         ///
-        class NANO_PUBLIC archive_reader_t
+        class NANO_PUBLIC archive_istream_t final : public istream_t
         {
         public:
 
-                archive_reader_t(archive* ar);
+                archive_istream_t(archive* ar);
 
-                archive_reader_t(const archive_reader_t&) = delete;
-                archive_reader_t& operator=(const archive_reader_t&) = delete;
+                ~archive_istream_t() = default;
 
-                ~archive_reader_t() = default;
-
-                io_status advance(const std::streamsize num_bytes, buffer_t& buffer);
+                virtual io_status advance(const std::streamsize num_bytes, buffer_t& buffer) override;
 
         private:
 

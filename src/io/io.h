@@ -1,9 +1,10 @@
 #pragma once
 
+#include <ios>
 #include "arch.h"
-#include <iosfwd>
-#include <string>
+#include <limits>
 #include <vector>
+#include <string>
 
 namespace nano
 {
@@ -11,7 +12,7 @@ namespace nano
 
         enum class io_status
         {
-                ok,
+                good,
                 eof,
                 error
         };
@@ -28,7 +29,10 @@ namespace nano
         ///
         /// \brief maximum file/stream size in bytes (useful for indicating a read-until-EOF condition)
         ///
-        NANO_PUBLIC std::streamsize max_streamsize();
+        inline std::streamsize max_streamsize()
+        {
+                return std::numeric_limits<std::streamsize>::max();
+        }
 
         ///
         /// \brief save buffer to file

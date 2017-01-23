@@ -24,7 +24,7 @@ namespace nano
                 virtual bool populate() override;
 
                 // load binary file
-                bool load_binary(const string_t& filename, archive_stream_t&, const protocol, const size_t);
+                bool load_binary(const string_t& filename, archive_istream_t&, const protocol, const size_t);
         };
 }
 

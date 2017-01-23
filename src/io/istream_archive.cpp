@@ -1,16 +1,16 @@
-#include "archive_reader.h"
+#include "istream_archive.h"
 #include <archive.h>
 #include <archive_entry.h>
 
 namespace nano
 {
-        archive_reader_t::archive_reader_t(archive* ar) :
+        archive_istream_t::archive_istream_t(archive* ar) :
                 m_archive(ar),
                 m_index(0)
         {
         }
 
-        io_status archive_reader_t::advance(const std::streamsize num_bytes, buffer_t& buffer)
+        io_status archive_istream_t::advance(const std::streamsize num_bytes, buffer_t& buffer)
         {
                 while (static_cast<std::streamsize>(buffer.size()) < num_bytes)
                 {
@@ -28,6 +28,6 @@ namespace nano
                         buffer.insert(buffer.end(), (const char*)buff, (const char*)buff + size);
                 }
 
-                return io_status::ok;
+                return io_status::good;
         }
 }

@@ -23,9 +23,9 @@ namespace nano
 
                 virtual bool populate() override;
 
-                bool load_ifile(const string_t&, archive_stream_t&, const bool unlabed, const size_t count);
-                bool load_gfile(const string_t&, archive_stream_t&, const size_t count);
-                bool load_folds(const string_t&, archive_stream_t&, const size_t, const size_t, const size_t);
+                bool load_ifile(const string_t&, archive_istream_t&, const bool unlabed, const size_t count);
+                bool load_gfile(const string_t&, archive_istream_t&, const size_t count);
+                bool load_folds(const string_t&, archive_istream_t&, const size_t, const size_t, const size_t);
 
         private:
 

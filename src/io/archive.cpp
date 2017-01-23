@@ -26,8 +26,7 @@ namespace nano
 
                         const std::string filename = archive_entry_pathname(entry);
 
-                        archive_reader_t reader(ar);
-                        archive_stream_t stream(reader);
+                        archive_istream_t stream(ar);
                         ok = callback(filename, stream);
                 }
 

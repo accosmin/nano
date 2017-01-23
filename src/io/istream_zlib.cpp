@@ -1,9 +1,9 @@
-#include "zlib_reader.h"
+#include "istream_zlib.h"
 #include <istream>
 
 namespace nano
 {
-        zlib_reader_t::zlib_reader_t(std::istream& istream, const std::streamsize max_num_bytes) :
+        zlib_istream_t::zlib_istream_t(std::istream& istream, const std::streamsize max_num_bytes) :
                 m_istream(istream),
                 m_max_num_bytes(max_num_bytes)
         {
@@ -15,12 +15,12 @@ namespace nano
                 inflateInit(&m_zstream);
         }
 
-        zlib_reader_t::~zlib_reader_t()
+        zlib_istream_t::~zlib_istream_t()
         {
                 inflateEnd(&m_zstream);
         }
 
-        io_status zlib_reader_t::advance(const std::streamsize num_bytes, buffer_t& buffer)
+        io_status zlib_istream_t::advance(const std::streamsize num_bytes, buffer_t& buffer)
         {
                 // zlib decompression buffers
                 static const std::streamsize chunk_size = 64 * 1024;
@@ -35,7 +35,7 @@ namespace nano
                         const auto to_read = (m_max_num_bytes >= chunk_size) ? chunk_size : m_max_num_bytes;
                         m_max_num_bytes -= to_read;
 
-                        if (!m_istream.read(reinterpret_cast<char*>(in), to_read))
+                        if (!m_istream.read(reinterpret_cast<char*>(in), static_cast<std::streamsize>(to_read)))
                         {
                                 inflateEnd(&m_zstream);
                                 return io_status::error;
@@ -56,13 +56,13 @@ namespace nano
                                 default:                return io_status::error;
                                 }
 
-                                const std::streamsize have = out_chunk_size - m_zstream.avail_out;
+                                const auto have = out_chunk_size - m_zstream.avail_out;
                                 buffer.insert(buffer.end(), out, out + have);
                         }
                         while (m_zstream.avail_out == 0);
                 }
 
                 // OK
-                return io_status::ok;
+                return io_status::good;
         }
 }
