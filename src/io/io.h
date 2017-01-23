@@ -2,7 +2,6 @@
 
 #include <ios>
 #include "arch.h"
-#include <limits>
 #include <vector>
 #include <string>
 
@@ -29,10 +28,7 @@ namespace nano
         ///
         /// \brief maximum file/stream size in bytes (useful for indicating a read-until-EOF condition)
         ///
-        inline std::streamsize max_streamsize()
-        {
-                return std::numeric_limits<std::streamsize>::max();
-        }
+        NANO_PUBLIC std::streamsize max_streamsize();
 
         ///
         /// \brief save buffer to file

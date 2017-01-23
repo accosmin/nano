@@ -1,8 +1,14 @@
 #include "io.h"
+#include <limits>
 #include <fstream>
 
 namespace nano
 {
+        std::streamsize max_streamsize()
+        {
+                return std::numeric_limits<std::streamsize>::max();
+        }
+
         bool save_buffer(const std::string& path, const buffer_t& buffer)
         {
                 std::ofstream stream(path.c_str(), std::ios::binary | std::ios::out);

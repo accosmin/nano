@@ -85,6 +85,11 @@ namespace nano
                 ///
                 std::streamsize gcount() const;
 
+                ///
+                /// \brief check state
+                ///
+                operator bool() const;
+
         private:
 
                 void trim();
