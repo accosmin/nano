@@ -1,10 +1,7 @@
 #pragma once
 
-#include <ios>
-#include "arch.h"
-#include <vector>
-#include <string>
 #include <cstdint>
+#include "istream.h"
 #include <functional>
 
 namespace nano
@@ -12,7 +9,7 @@ namespace nano
         ///
         /// \brief data type
         ///
-        enum class mat5_buffer_type : int
+        enum class mat5_data_type
         {
                 miINT8 = 1,
                 miUINT8 = 2,
@@ -33,10 +30,14 @@ namespace nano
                 miUNKNOWN
         };
 
-        ///
-        /// \brief map a data type to string (logging purposes)
-        ///
-        NANO_PUBLIC std::string to_string(const mat5_buffer_type& type);
+        enum class mat5_format_type
+        {
+                small,
+                regular
+        };
+
+        NANO_PUBLIC std::string to_string(const mat5_data_type&);
+        NANO_PUBLIC std::string to_string(const mat5_format_type&);
 
         ///
         /// \brief matlab5 header.
@@ -46,21 +47,12 @@ namespace nano
                 ///
                 /// \brief load from the input stream
                 ///
-                template <typename tstream>
-                bool load(tstream& stream)
-                {
-                        return  stream.read(m_description, sizeof(m_description)) &&
-                                stream.read(m_offset, sizeof(m_offset)) &&
-                                stream.read(m_endian, sizeof(m_endian));
-                }
+                bool load(istream_t&);
 
                 ///
                 /// \brief header description as a string
                 ///
-                std::string description() const
-                {
-                        return std::string(m_description, m_description + sizeof(m_description));
-                }
+                std::string description() const;
 
                 // attributes
                 char            m_description[116];
@@ -86,24 +78,17 @@ namespace nano
                 ///
                 /// \brief load from the input stream
                 ///
-                template <typename tstream>
-                bool load(tstream& istream)
-                {
-                        std::uint32_t dtype, bytes;
-                        return  istream.read(reinterpret_cast<char*>(&dtype), sizeof(uint32_t)) &&
-                                istream.read(reinterpret_cast<char*>(&bytes), sizeof(uint32_t)) &&
-                                load(dtype, bytes);
-                }
+                bool load(istream_t&);
 
                 // attributes
                 std::streamsize         m_size;         ///< byte range of the whole section
                 std::streamsize         m_dsize;        ///< byte range of the data section
-                mat5_buffer_type        m_dtype;        ///< data type
+                mat5_data_type          m_dtype;        ///<
+                mat5_format_type        m_ftype;        ///<
         };
 
         NANO_PUBLIC std::ostream& operator<<(std::ostream&, const mat5_section_t&);
 
-        /*
         ///
         /// \brief matlab5 multi-dimensional array consisting of multiple sections.
         ///
@@ -112,55 +97,7 @@ namespace nano
                 ///
                 /// \brief load from the input stream
                 ///
-                template <typename tstream>
-                bool load(tstream& istream)
-                {
-                        mat5_section_t header;
-                        if (    !header.load(istream) ||
-                                header.m_dtype != mat5_buffer_type::miMATRIX)
-                        {
-                        }
-
-                        // read & check sections
-                        m_sections.clear();
-
-                        mat5_section_t section;
-                        while (istream && m_sections.size() < 5 && section.load(istream))
-                        {
-                                m_sections.push_back(section);
-                                istream.seekg(section.end());   // move past the data section to read the next section
-                        }
-
-                        if (m_sections.size() != 4)
-                        {
-                                return false;
-                        }
-
-                        // decode sections:
-                        //      first:  flags + class
-                        //      second: dimensions
-                        //      third:  name
-                        //      fourth: data matrix/tensor
-        //                const mat5_section_t& sect1 = m_sections[0];
-                        const mat5_section_t& sect2 = m_sections[1];
-                        const mat5_section_t& sect3 = m_sections[2];
-                        const mat5_section_t& sect4 = m_sections[3];
-
-                        m_name = std::string(istream.data() + sect3.dbegin(),
-                                             istream.data() + sect3.dend());
-
-                        m_dims.clear();
-                        std::streamsize values = 1;
-                        for (std::streamsize i = sect2.dbegin(); i < sect2.dend(); i += 4)
-                        {
-                                const auto dim = make_uint32(&istream.data()[i]);
-                                m_dims.push_back(dim);
-                                values *= dim;
-                        }
-
-                        // check bytes
-                        return values * to_bytes(sect4.m_dtype) == sect4.dsize();
-                }
+                bool load(istream_t& istream);
 
                 // attributes
                 mat5_section_t          m_header;
@@ -172,5 +109,24 @@ namespace nano
                 mat5_section_t          m_data_section;         ///<
         };
 
-        NANO_PUBLIC std::ostream& operator<<(std::ostream&, const mat5_array_t&);*/
+        NANO_PUBLIC std::ostream& operator<<(std::ostream&, const mat5_array_t&);
+
+        ///
+        /// \brief callback to execute when an N-dimensional array was decoded
+        ///     - (array description, binary streaming)
+        ///     - returns true if it should continue
+        ///
+        using mat5_callback_t = std::function<bool(const mat5_array_t&, istream_t&)>;
+
+        ///
+        /// \brief callback to execute when an error was detected
+        ///     - (error message)
+        ///
+        using mat5_error_callback_t = std::function<void(const std::string&)>;
+
+        ///
+        /// \brief decode a matlab5 file (.mat)
+        ///
+        NANO_PUBLIC bool load_mat5(const std::string& path,
+                const mat5_callback_t&, const mat5_error_callback_t&);
 }

@@ -52,7 +52,8 @@ namespace nano
                 >
                 bool read(tstruct& pod)
                 {
-                        return read(reinterpret_cast<char*>(&pod), sizeof(pod)) == sizeof(pod);
+                        const auto size = static_cast<std::streamsize>(sizeof(pod));
+                        return read(reinterpret_cast<char*>(&pod), size) == size;
                 }
 
                 ///

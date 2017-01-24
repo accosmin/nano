@@ -37,6 +37,9 @@ namespace nano
         {
                 log_info() << "SVHN: processing file <" << bfile << "> ...";
 
+                return 0;
+
+                /*
                 std::ifstream istream(bfile.c_str(), std::ios::in | std::ios::binary);
                 if (!istream.is_open())
                 {
@@ -53,9 +56,6 @@ namespace nano
                 }
                 log_info() << "SVHN: read header <" << header.description() << ">.";
 
-                return 0;
-
-                /*
                 // data sections (image rgb + labels)
                 nano::buffer_t image_data;
                 nano::buffer_t label_data;
