@@ -13,6 +13,11 @@ namespace nano
                 return size_t(1024) * size_t(1024);
         }
 
+        static std::streamsize chunk_size()
+        {
+                return 1024 * 1024;
+        }
+
         istream_t::istream_t() :
                 m_index(0),
                 m_status(io_status::good),
@@ -57,7 +62,10 @@ namespace nano
         std::streamsize istream_t::read(char* bytes, const std::streamsize num_bytes)
         {
                 m_gcount = std::min(buffer(num_bytes), num_bytes);
-                std::copy(m_buffer.data() + m_index, m_buffer.data() + (m_index + m_gcount), bytes);
+                if (bytes)
+                {
+                       std::copy(m_buffer.data() + m_index, m_buffer.data() + (m_index + m_gcount), bytes);
+                }
                 advance(m_gcount);
                 trim();
                 return gcount();
@@ -65,19 +73,21 @@ namespace nano
 
         std::streamsize istream_t::skip()
         {
-                const auto num_bytes = std::streamsize(64 * 1024);
-                auto read_bytes = std::streamsize(0);
-                while ((read_bytes = buffer(num_bytes)) > 0 && m_status == io_status::good)
+                while (m_status == io_status::good)
                 {
-                        advance(read_bytes);
-                        trim();
+                        read(nullptr, chunk_size());
                 }
                 return tellg();
         }
 
-        bool istream_t::skip(const std::streamsize num_bytes)
+        bool istream_t::skip(std::streamsize num_bytes)
         {
-                return false;
+                while (num_bytes > 0 && m_status == io_status::good)
+                {
+                        const auto read_bytes = read(nullptr, std::min(num_bytes, chunk_size()));
+                        num_bytes -= read_bytes;
+                }
+                return num_bytes == 0;
         }
 
         bool istream_t::getline(std::string& line)

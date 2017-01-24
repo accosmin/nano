@@ -31,7 +31,7 @@ namespace nano
                 while ( static_cast<std::streamsize>(buffer.size()) < num_bytes &&
                         m_max_num_bytes > 0 && m_istream)
                 {
-                        const auto to_read = (m_max_num_bytes >= chunk_size) ? chunk_size : m_max_num_bytes;
+                        const auto to_read = std::min(chunk_size, m_max_num_bytes);
                         m_max_num_bytes -= to_read;
 
                         if (!m_istream.read(reinterpret_cast<char*>(in), static_cast<std::streamsize>(to_read)))
@@ -62,6 +62,6 @@ namespace nano
                 }
 
                 // OK
-                return io_status::good;
+                return (m_max_num_bytes == 0) ? io_status::eof : io_status::good;
         }
 }
