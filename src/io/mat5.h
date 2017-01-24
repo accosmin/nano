@@ -36,13 +36,13 @@ namespace nano
                 regular
         };
 
-        NANO_PUBLIC std::string to_string(const mat5_data_type&);
-        NANO_PUBLIC std::string to_string(const mat5_format_type&);
+        NANO_PUBLIC std::string to_string(const mat5_data_type);
+        NANO_PUBLIC std::string to_string(const mat5_format_type);
 
         ///
         /// \brief matlab5 header.
         ///
-        struct mat5_header_t
+        struct NANO_PUBLIC mat5_header_t
         {
                 ///
                 /// \brief load from the input stream
@@ -59,6 +59,8 @@ namespace nano
                 char            m_offset[8];
                 char            m_endian[4];
         };
+
+        NANO_PUBLIC std::ostream& operator<<(std::ostream&, const mat5_header_t&);
 
         ///
         /// \brief matlab5 section.
@@ -109,14 +111,18 @@ namespace nano
                 mat5_section_t          m_data_section;         ///<
         };
 
-        NANO_PUBLIC std::ostream& operator<<(std::ostream&, const mat5_array_t&);
-
         ///
-        /// \brief callback to execute when an N-dimensional array was decoded
-        ///     - (array description, binary streaming)
+        /// \brief callback to execute when the header is decoded
         ///     - returns true if it should continue
         ///
-        using mat5_callback_t = std::function<bool(const mat5_array_t&, istream_t&)>;
+        using mat5_header_callback_t = std::function<bool(const mat5_header_t&)>;
+
+        ///
+        /// \brief callback to execute when a section is decoded
+        ///     (section description, stream to read the data)
+        ///     - returns true if it should continue
+        ///
+        using mat5_section_callback_t = std::function<bool(const mat5_section_t&, istream_t&)>;
 
         ///
         /// \brief callback to execute when an error was detected
@@ -128,5 +134,5 @@ namespace nano
         /// \brief decode a matlab5 file (.mat)
         ///
         NANO_PUBLIC bool load_mat5(const std::string& path,
-                const mat5_callback_t&, const mat5_error_callback_t&);
+                const mat5_header_callback_t&, const mat5_section_callback_t&, const mat5_error_callback_t&);
 }

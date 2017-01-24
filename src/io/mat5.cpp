@@ -1,5 +1,8 @@
 #include "mat5.h"
+#include <ostream>
 #include <fstream>
+#include "istream_std.h"
+#include "istream_zlib.h"
 
 namespace nano
 {
@@ -57,7 +60,7 @@ namespace nano
                 }
         }
 
-        std::string to_string(const mat5_data_type& type)
+        std::string to_string(const mat5_data_type type)
         {
                 switch (type)
                 {
@@ -80,7 +83,7 @@ namespace nano
                 }
         }
 
-        std::string to_string(const mat5_format_type& type)
+        std::string to_string(const mat5_format_type type)
         {
                 switch (type)
                 {
@@ -136,31 +139,41 @@ namespace nano
                 return true;
         }
 
-        bool mat5_section_t::load(istream_t& istream)
+        bool mat5_section_t::load(istream_t& stream)
         {
                 std::uint32_t dtype, bytes;
-                return  istream.read(dtype) &&
-                        istream.read(bytes) &&
+                return  stream.read(dtype) &&
+                        stream.read(bytes) &&
                         load(dtype, bytes);
         }
 
         std::ostream& operator<<(std::ostream& ostream, const mat5_section_t& sect)
         {
                 ostream << "type = " << to_string(sect.m_dtype)
+                        << ", format = " << to_string(sect.m_ftype)
                         << ", size = " << sect.m_size << "B"
                         << ", data size = " << sect.m_dsize << "B";
                 return ostream;
         }
-/*
-        bool mat5_array_t::load_header(imstream_t& istream)
-        {
-                mat5_section_t header;
-                return  header.load(istream) &&
-                        header.m_dtype == mat5_data_type::miMATRIX;
-        }
 
-        bool mat5_array_t::load_body(imstream_t& istream)
+        bool mat5_array_t::load(istream_t& stream)
         {
+                if (    !m_header.load(stream) ||
+                        m_header.m_dtype != mat5_data_type::miMATRIX)
+                {
+                        return false;
+                }
+
+                //
+                if (!m_meta_section.load(stream))
+                {
+                        return false;
+                }
+
+                return true;
+
+                /*
+
                 // read & check sections
                 m_sections.clear();
 
@@ -200,15 +213,79 @@ namespace nano
 
                 // check bytes
                 return values * to_bytes(sect4.m_dtype) == sect4.dsize();
+                */
         }
 
         std::ostream& operator<<(std::ostream& ostream, const mat5_array_t& array)
         {
-                ostream << "sections = " << array.m_sections.size() << ", name = " << array.m_name << ", dims = ";
+                ostream << "name = " << array.m_name << ", dims = ";
                 for (std::size_t i = 0; i < array.m_dims.size(); ++ i)
                 {
                         ostream << array.m_dims[i] << ((i + 1 == array.m_dims.size()) ? "" : "x");
                 }
                 return ostream;
-        }*/
+        }
+
+        static bool load_mat5(istream_t& stream,
+                const mat5_section_callback_t& scallback,
+                const mat5_error_callback_t& ecallback)
+        {
+                while (stream)
+                {
+                        mat5_section_t section;
+                        if (!section.load(stream))
+                        {
+                                ecallback("failed to load section!");
+                                return false;
+                        }
+
+                        if (section.m_dtype == mat5_data_type::miCOMPRESSED)
+                        {
+                                zlib_istream_t zstream(stream, section.m_dsize);
+                                if (!load_mat5(zstream, scallback, ecallback))
+                                {
+                                        return false;
+                                }
+                        }
+                        else
+                        {
+                                if (!scallback(section, stream))
+                                {
+                                        return false;
+                                }
+                        }
+                }
+
+                return true;
+        }
+
+        bool load_mat5(const std::string& path,
+                const mat5_header_callback_t& hcallback,
+                const mat5_section_callback_t& scallback,
+                const mat5_error_callback_t& ecallback)
+        {
+                std::ifstream istream(path.c_str(), std::ios::binary | std::ios::in);
+                if (!istream.is_open())
+                {
+                        ecallback("failed to open file <" + path + ">!");
+                        return false;
+                }
+
+                std_istream_t stream(istream);
+
+                // load header
+                mat5_header_t header;
+                if (!header.load(stream))
+                {
+                        ecallback("failed to load header!");
+                        return false;
+                }
+                if (!hcallback(header))
+                {
+                        return false;
+                }
+
+                // load sections
+                return load_mat5(stream, scallback, ecallback);
+        }
 }

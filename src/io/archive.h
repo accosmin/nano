@@ -21,6 +21,6 @@ namespace nano
         ///
         /// \brief decode an archive file (.tar, .gz, .tar.gz, .tar.bz2 etc.)
         ///
-        NANO_PUBLIC bool unarchive(const std::string& path,
+        NANO_PUBLIC bool load_archive(const std::string& path,
                 const archive_callback_t&, const archive_error_callback_t&);
 }

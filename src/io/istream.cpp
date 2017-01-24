@@ -75,6 +75,11 @@ namespace nano
                 return tellg();
         }
 
+        bool istream_t::skip(const std::streamsize num_bytes)
+        {
+                return false;
+        }
+
         bool istream_t::getline(std::string& line)
         {
                 /// \todo not very efficient: should buffer larger chunks (1K ?!) and check for endline there!

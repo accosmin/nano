@@ -17,7 +17,7 @@ int main(int argc, const char *argv[])
         // check arguments and options
         const string_t cmd_input = cmdline.get("input");
 
-        // callback
+        // callbacks
         const auto callback = [] (const string_t& filename, istream_t& stream)
         {
                 log_info() << "decode: callback(" << filename << ", " << stream.skip() << " bytes)";
@@ -28,17 +28,15 @@ int main(int argc, const char *argv[])
                 log_error() << "decode: " << message;
         };
 
-        // decode archive
+        // load file
         nano::timer_t timer;
-        if (!nano::unarchive(cmd_input, callback, error_callback))
+        if (!nano::load_archive(cmd_input, callback, error_callback))
         {
                 return EXIT_FAILURE;
         }
         else
         {
                 log_info() << "<" << cmd_input << "> loaded in " << timer.elapsed() << ".";
-
-                // OK
                 log_info() << nano::done;
                 return EXIT_SUCCESS;
         }

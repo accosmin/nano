@@ -1,7 +1,7 @@
 #include "timer.h"
 #include "logger.h"
 #include "stringi.h"
-#include "io/archive.h"
+#include "io/mat5.h"
 #include "text/cmdline.h"
 
 int main(int argc, const char *argv[])
@@ -17,28 +17,35 @@ int main(int argc, const char *argv[])
         // check arguments and options
         const string_t cmd_input = cmdline.get("input");
 
-        // callback
-        const auto callback = [] (const string_t& filename, istream_t& stream)
+        // callbacks
+        const auto hcallback = [] (const mat5_header_t& header)
         {
-                log_info() << "decode: callback(" << filename << ", " << stream.skip() << " bytes)";
+                log_info() << "decode: [" << header.description() << "]";
                 return true;
         };
-        const auto error_callback = [] (const string_t& message)
+        const auto scallback = [] (const mat5_section_t& section, istream_t& stream)
+        {
+                log_info() << "decode: " << section;
+                if (section.m_ftype == mat5_format_type::regular)
+                {
+                        return stream.skip(section.m_dsize);
+                }
+                return true;
+        };
+        const auto ecallback = [] (const string_t& message)
         {
                 log_error() << "decode: " << message;
         };
 
-        // decode archive
+        // load file
         nano::timer_t timer;
-        if (!nano::unarchive(cmd_input, callback, error_callback))
+        if (!nano::load_mat5(cmd_input, hcallback, scallback, ecallback))
         {
                 return EXIT_FAILURE;
         }
         else
         {
                 log_info() << "<" << cmd_input << "> loaded in " << timer.elapsed() << ".";
-
-                // OK
                 log_info() << nano::done;
                 return EXIT_SUCCESS;
         }

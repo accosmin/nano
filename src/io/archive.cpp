@@ -38,7 +38,7 @@ namespace nano
                 return ok;
         }
 
-        bool unarchive(const std::string& path,
+        bool load_archive(const std::string& path,
                 const archive_callback_t& callback,
                 const archive_error_callback_t& error_callback)
         {

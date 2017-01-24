@@ -65,7 +65,7 @@ namespace nano
                 };
 
                 log_info() << "MNIST: loading file <" << ifile << "> ...";
-                if (!nano::unarchive(ifile, iop, error_op))
+                if (!nano::load_archive(ifile, iop, error_op))
                 {
                         log_error() << "MNIST: failed to load file <" << ifile << ">!";
                         return false;
@@ -95,7 +95,7 @@ namespace nano
                 };
 
                 log_info() << "MNIST: loading file <" << gfile << "> ...";
-                if (!nano::unarchive(gfile, gop, error_op))
+                if (!nano::load_archive(gfile, gop, error_op))
                 {
                         log_error() << "MNIST: failed to load file <" << gfile << ">!";
                         return false;

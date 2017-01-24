@@ -149,7 +149,7 @@ namespace nano
 
                 log_info() << "CIFAR-100: loading file <" << bfile << "> ...";
 
-                return nano::unarchive(bfile, op, error_op);
+                return nano::load_archive(bfile, op, error_op);
         }
 
         bool cifar100_task_t::load_binary(const string_t& filename, istream_t& stream, const protocol p, const size_t count)
