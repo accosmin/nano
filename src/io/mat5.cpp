@@ -239,16 +239,30 @@ namespace nano
                                 return false;
                         }
 
-                        if (section.m_dtype == mat5_data_type::miCOMPRESSED)
+                        switch (section.m_dtype)
                         {
-                                zlib_istream_t zstream(stream, section.m_dsize);
-                                if (!load_mat5(zstream, scallback, ecallback))
+                        case mat5_data_type::miCOMPRESSED:
                                 {
-                                        return false;
+                                        // gzip compressed section
+                                        zlib_istream_t zstream(stream, section.m_dsize);
+                                        if (!load_mat5(zstream, scallback, ecallback))
+                                        {
+                                                return false;
+                                        }
                                 }
-                        }
-                        else
-                        {
+                                break;
+
+                        case mat5_data_type::miMATRIX:
+                                {
+                                        // array/matrix section, so read the sub-elements
+                                        if (!load_mat5(stream, scallback, ecallback))
+                                        {
+                                                return false;
+                                        }
+                                }
+                                break;
+
+                        default:
                                 if (!scallback(section, stream))
                                 {
                                         return false;

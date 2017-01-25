@@ -37,6 +37,30 @@ namespace nano
         {
                 log_info() << "SVHN: processing file <" << bfile << "> ...";
 
+                const auto ecallback = [&] (const string_t& message)
+                {
+                        log_error() << "SVHN: " << message;
+                };
+
+                // load header
+                const auto hcallback = [&] (const mat5_header_t& header)
+                {
+                        log_info() << "SVHN: header <" << header.description() << ">.";
+                        return true;
+                };
+
+                // load section
+                const auto scallback = [&] (const mat5_section_t& section, istream_t& stream)
+                {
+                        log_info() << "SVHN: section <" << section << ">.";
+                        return true;
+                };
+
+                if (!load_mat5(bfile, hcallback, scallback, ecallback))
+                {
+                        return 0;
+                }
+
                 return 0;
 
                 /*
