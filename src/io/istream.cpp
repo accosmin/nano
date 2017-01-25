@@ -33,10 +33,6 @@ namespace nano
                         available() < num_bytes)
                 {
                         m_status = advance(m_index + num_bytes, m_buffer);
-                        if (m_status == io_status::eof && available() > 0)
-                        {
-                                m_status = io_status::good;
-                        }
                 }
 
                 // return the number of bytes available
@@ -119,6 +115,6 @@ namespace nano
 
         istream_t::operator bool() const
         {
-                return m_status == io_status::good;
+                return (m_status == io_status::good) || (m_status == io_status::eof && available() > 0);
         }
 }

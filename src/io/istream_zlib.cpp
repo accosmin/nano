@@ -50,7 +50,7 @@ namespace nano
 
                                 switch (inflate(&m_zstream, Z_NO_FLUSH))
                                 {
-                                case Z_STREAM_END:      return io_status::eof;
+                                case Z_STREAM_END:      break;
                                 case Z_OK:              break;
                                 default:                return io_status::error;
                                 }
