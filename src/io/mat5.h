@@ -93,9 +93,9 @@ namespace nano
                 bool string(istream_t&, std::string&) const;
 
                 ///
-                /// \brief load the data section as a vector of dimensions (e.g. for matrices)
+                /// \brief load the data section as a vector of scalars (e.g. for matrices)
                 ///
-                bool dimensions(istream_t&, std::vector<int>&) const;
+                bool values(istream_t&, std::vector<int>&) const;
 
                 // attributes
                 std::streamsize         m_size;         ///< byte range of the whole section
@@ -103,6 +103,7 @@ namespace nano
                 mat5_data_type          m_dtype;        ///<
                 mat5_format_type        m_ftype;        ///<
                 mat5_parent_type        m_ptype;        ///< parent type (e.g. if a sub-section of a miMATRIX section)
+                std::uint32_t           m_bytes;        ///< data section for small sections
         };
 
         NANO_PUBLIC std::ostream& operator<<(std::ostream&, const mat5_header_t&);

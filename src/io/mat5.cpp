@@ -120,7 +120,8 @@ namespace nano
                 m_dsize(0),
                 m_dtype(mat5_data_type::miUNKNOWN),
                 m_ftype(mat5_format_type::small),
-                m_ptype(ptype)
+                m_ptype(ptype),
+                m_bytes(0)
         {
         }
 
@@ -140,6 +141,7 @@ namespace nano
                         m_dsize = 4;
                         m_dtype = make_data_type((dtype << 16) >> 16);
                         m_ftype = mat5_format_type::small;
+                        m_bytes = bytes;
                 }
 
                 // regular format
@@ -160,8 +162,68 @@ namespace nano
         {
                 switch (m_ftype)
                 {
-                case mat5_format_type::regular:         return stream.skip(m_dsize);
-                default:                                return true;
+                case mat5_format_type::regular:
+                        return stream.skip(m_dsize);
+
+                case mat5_format_type::small:
+                default:
+                        return true;
+                }
+        }
+
+        bool mat5_section_t::string(istream_t& stream, std::string& str) const
+        {
+                buffer_t buffer = make_buffer(m_dsize);
+                switch (m_ftype)
+                {
+                case mat5_format_type::regular:
+                        // todo: in C++17 can write directly in std::string (std::string::data can be non-const)
+                        if (stream.read(buffer.data(), m_dsize) != m_dsize)
+                        {
+                                return false;
+                        }
+                        str.assign(buffer.data(), buffer.size());
+                        return true;
+
+                case mat5_format_type::small:
+                default:
+                        str.assign(reinterpret_cast<const char*>(&m_bytes), sizeof(m_bytes));
+                        return true;
+                }
+        }
+
+        template <typename tstorage, typename tvalue>
+        static bool read_values(istream_t& stream, std::streamsize bytes, std::vector<tvalue>& values)
+        {
+                const auto value_size = static_cast<std::streamsize>(sizeof(tstorage));
+                values.clear();
+                while (bytes >= value_size)
+                {
+                        tstorage value;
+                        if (!stream.read(value))
+                        {
+                                return false;
+                        }
+                        values.push_back(static_cast<tvalue>(value));
+                        bytes -= value_size;
+                }
+                return bytes == 0;
+        }
+
+        bool mat5_section_t::values(istream_t& stream, std::vector<int>& values) const
+        {
+                switch (m_ftype)
+                {
+                case mat5_format_type::regular:
+                        switch (m_dtype)
+                        {
+                        case mat5_data_type::miINT32:   return read_values<int32_t>(stream, m_dsize, values);
+                        default:                        return false;
+                        }
+
+                case mat5_format_type::small:
+                default:
+                        return false;
                 }
         }
 
@@ -173,49 +235,6 @@ namespace nano
                         << ", data size = " << sect.m_dsize << "B";
                 return ostream;
         }
-
-                /*
-
-                // read & check sections
-                m_sections.clear();
-
-                mat5_section_t section;
-                while (istream && m_sections.size() < 5 && section.load(istream))
-                {
-                        m_sections.push_back(section);
-                        istream.seekg(section.end());   // move past the data section to read the next section
-                }
-
-                if (m_sections.size() != 4)
-                {
-                        return false;
-                }
-
-                // decode sections:
-                //      first:  flags + class
-                //      second: dimensions
-                //      third:  name
-                //      fourth: data matrix/tensor
-//                const mat5_section_t& sect1 = m_sections[0];
-                const mat5_section_t& sect2 = m_sections[1];
-                const mat5_section_t& sect3 = m_sections[2];
-                const mat5_section_t& sect4 = m_sections[3];
-
-                m_name = std::string(istream.data() + sect3.dbegin(),
-                                     istream.data() + sect3.dend());
-
-                m_dims.clear();
-                std::streamsize values = 1;
-                for (std::streamsize i = sect2.dbegin(); i < sect2.dend(); i += 4)
-                {
-                        const auto dim = make_uint32(&istream.data()[i]);
-                        m_dims.push_back(dim);
-                        values *= dim;
-                }
-
-                // check bytes
-                return values * to_bytes(sect4.m_dtype) == sect4.dsize();
-                */
 
         static bool load_mat5(istream_t& stream,
                 const mat5_section_callback_t& scallback,

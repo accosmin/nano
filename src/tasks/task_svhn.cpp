@@ -50,10 +50,23 @@ namespace nano
                 };
 
                 // load section
+                int section_index = 0;
                 const auto scallback = [&] (const mat5_section_t& section, istream_t& stream)
                 {
                         log_info() << "SVHN: section <" << section << ">.";
-                        return section.skip(stream);;
+                        // matrix: meta + dimensions + name + data
+                        switch (section_index ++)
+                        {
+                        case 0:         return section.skip(stream);
+                        case 1:         return section.skip(stream);
+                        case 2:         { string_t str; if (!section.string(stream, str)) return false; log_info() << "SVHN: name = " << str; return true; }
+                        case 3:         return section.skip(stream);
+                        case 4:         return section.skip(stream);
+                        case 5:         return section.skip(stream);
+                        case 6:         { string_t str; if (!section.string(stream, str)) return false; log_info() << "SVHN: name = " << str; return true; }
+                        case 7:         return section.skip(stream);
+                        default:        return false;
+                        }
                 };
 
                 if (!load_mat5(bfile, hcallback, scallback, ecallback))
