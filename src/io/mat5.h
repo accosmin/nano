@@ -36,8 +36,15 @@ namespace nano
                 regular
         };
 
+        enum class mat5_parent_type
+        {
+                none,
+                miMATRIX
+        };
+
         NANO_PUBLIC std::string to_string(const mat5_data_type);
         NANO_PUBLIC std::string to_string(const mat5_format_type);
+        NANO_PUBLIC std::string to_string(const mat5_parent_type);
 
         ///
         /// \brief matlab5 header.
@@ -70,7 +77,7 @@ namespace nano
                 ///
                 /// \brief constructor
                 ///
-                mat5_section_t();
+                mat5_section_t(const mat5_parent_type ptype = mat5_parent_type::none);
 
                 ///
                 /// \brief load from the constants
@@ -87,6 +94,7 @@ namespace nano
                 std::streamsize         m_dsize;        ///< byte range of the data section
                 mat5_data_type          m_dtype;        ///<
                 mat5_format_type        m_ftype;        ///<
+                mat5_parent_type        m_ptype;        ///< parent type (e.g. if a sub-section of a miMATRIX section)
         };
 
         NANO_PUBLIC std::ostream& operator<<(std::ostream&, const mat5_section_t&);

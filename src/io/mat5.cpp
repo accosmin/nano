@@ -93,6 +93,16 @@ namespace nano
                 }
         }
 
+        std::string to_string(const mat5_parent_type type)
+        {
+                switch (type)
+                {
+                case mat5_parent_type::none:            return ".";
+                case mat5_parent_type::miMATRIX:        return "miMATRIX";
+                default:                                return "unknown";
+                }
+        }
+
         bool mat5_header_t::load(istream_t& stream)
         {
                 return  stream.read(m_description) &&
@@ -105,11 +115,12 @@ namespace nano
                 return std::string(m_description, m_description + sizeof(m_description));
         }
 
-        mat5_section_t::mat5_section_t() :
+        mat5_section_t::mat5_section_t(const mat5_parent_type ptype) :
                 m_size(0),
                 m_dsize(0),
                 m_dtype(mat5_data_type::miUNKNOWN),
-                m_ftype(mat5_format_type::small)
+                m_ftype(mat5_format_type::small),
+                m_ptype(ptype)
         {
         }
 
@@ -148,7 +159,7 @@ namespace nano
 
         std::ostream& operator<<(std::ostream& ostream, const mat5_section_t& sect)
         {
-                ostream << "type = " << to_string(sect.m_dtype)
+                ostream << "type = " << to_string(sect.m_ptype) << "/" << to_string(sect.m_dtype)
                         << ", format = " << to_string(sect.m_ftype)
                         << ", size = " << sect.m_size << "B"
                         << ", data size = " << sect.m_dsize << "B";
@@ -227,11 +238,12 @@ namespace nano
 
         static bool load_mat5(istream_t& stream,
                 const mat5_section_callback_t& scallback,
-                const mat5_error_callback_t& ecallback)
+                const mat5_error_callback_t& ecallback,
+                const mat5_parent_type ptype = mat5_parent_type::none)
         {
                 while (stream)
                 {
-                        mat5_section_t section;
+                        mat5_section_t section(ptype);
                         if (!section.load(stream))
                         {
                                 ecallback("failed to load section!");
@@ -254,7 +266,7 @@ namespace nano
                         case mat5_data_type::miMATRIX:
                                 {
                                         // array/matrix section, so read the sub-elements
-                                        if (!load_mat5(stream, scallback, ecallback))
+                                        if (!load_mat5(stream, scallback, ecallback, mat5_parent_type::miMATRIX))
                                         {
                                                 return false;
                                         }
