@@ -124,8 +124,15 @@ namespace nano
         {
         }
 
-        bool mat5_section_t::load(const uint32_t dtype, const uint32_t bytes)
+        bool mat5_section_t::load(istream_t& stream)
         {
+                uint32_t dtype, bytes;
+                if (    !stream.read(dtype) ||
+                        !stream.read(bytes))
+                {
+                        return false;
+                }
+
                 // small data format
                 if ((dtype >> 16) != 0)
                 {
@@ -149,12 +156,13 @@ namespace nano
                 return true;
         }
 
-        bool mat5_section_t::load(istream_t& stream)
+        bool mat5_section_t::skip(istream_t& stream) const
         {
-                std::uint32_t dtype, bytes;
-                return  stream.read(dtype) &&
-                        stream.read(bytes) &&
-                        load(dtype, bytes);
+                switch (m_ftype)
+                {
+                case mat5_format_type::regular:         return stream.skip(m_dsize);
+                default:                                return true;
+                }
         }
 
         std::ostream& operator<<(std::ostream& ostream, const mat5_section_t& sect)
@@ -165,22 +173,6 @@ namespace nano
                         << ", data size = " << sect.m_dsize << "B";
                 return ostream;
         }
-
-        bool mat5_array_t::load(istream_t& stream)
-        {
-                if (    !m_header.load(stream) ||
-                        m_header.m_dtype != mat5_data_type::miMATRIX)
-                {
-                        return false;
-                }
-
-                //
-                if (!m_meta_section.load(stream))
-                {
-                        return false;
-                }
-
-                return true;
 
                 /*
 
@@ -224,17 +216,6 @@ namespace nano
                 // check bytes
                 return values * to_bytes(sect4.m_dtype) == sect4.dsize();
                 */
-        }
-
-        std::ostream& operator<<(std::ostream& ostream, const mat5_array_t& array)
-        {
-                ostream << "name = " << array.m_name << ", dims = ";
-                for (std::size_t i = 0; i < array.m_dims.size(); ++ i)
-                {
-                        ostream << array.m_dims[i] << ((i + 1 == array.m_dims.size()) ? "" : "x");
-                }
-                return ostream;
-        }
 
         static bool load_mat5(istream_t& stream,
                 const mat5_section_callback_t& scallback,

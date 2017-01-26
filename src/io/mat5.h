@@ -67,8 +67,6 @@ namespace nano
                 char            m_endian[4];
         };
 
-        NANO_PUBLIC std::ostream& operator<<(std::ostream&, const mat5_header_t&);
-
         ///
         /// \brief matlab5 section.
         ///
@@ -80,14 +78,24 @@ namespace nano
                 mat5_section_t(const mat5_parent_type ptype = mat5_parent_type::none);
 
                 ///
-                /// \brief load from the constants
-                ///
-                bool load(const uint32_t dtype, const uint32_t bytes);
-
-                ///
                 /// \brief load from the input stream
                 ///
                 bool load(istream_t&);
+
+                ///
+                /// \brief skip past the data section
+                ///
+                bool skip(istream_t&) const;
+
+                ///
+                /// \brief load the data section as a string
+                ///
+                bool string(istream_t&, std::string&) const;
+
+                ///
+                /// \brief load the data section as a vector of dimensions (e.g. for matrices)
+                ///
+                bool dimensions(istream_t&, std::vector<int>&) const;
 
                 // attributes
                 std::streamsize         m_size;         ///< byte range of the whole section
@@ -97,27 +105,8 @@ namespace nano
                 mat5_parent_type        m_ptype;        ///< parent type (e.g. if a sub-section of a miMATRIX section)
         };
 
+        NANO_PUBLIC std::ostream& operator<<(std::ostream&, const mat5_header_t&);
         NANO_PUBLIC std::ostream& operator<<(std::ostream&, const mat5_section_t&);
-
-        ///
-        /// \brief matlab5 multi-dimensional array consisting of multiple sections.
-        ///
-        struct NANO_PUBLIC mat5_array_t
-        {
-                ///
-                /// \brief load from the input stream
-                ///
-                bool load(istream_t& istream);
-
-                // attributes
-                mat5_section_t          m_header;
-                std::vector<size_t>     m_dims;                 ///< dimensions of the array
-                std::string             m_name;                 ///< generic (Matlab) name
-                mat5_section_t          m_meta_section;         ///<
-                mat5_section_t          m_dims_section;         ///<
-                mat5_section_t          m_name_section;         ///<
-                mat5_section_t          m_data_section;         ///<
-        };
 
         ///
         /// \brief callback to execute when the header is decoded

@@ -53,7 +53,7 @@ namespace nano
                 const auto scallback = [&] (const mat5_section_t& section, istream_t& stream)
                 {
                         log_info() << "SVHN: section <" << section << ">.";
-                        return true;
+                        return section.skip(stream);;
                 };
 
                 if (!load_mat5(bfile, hcallback, scallback, ecallback))

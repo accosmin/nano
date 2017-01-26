@@ -26,11 +26,7 @@ int main(int argc, const char *argv[])
         const auto scallback = [] (const mat5_section_t& section, istream_t& stream)
         {
                 log_info() << "decode: " << section;
-                if (section.m_ftype == mat5_format_type::regular)
-                {
-                        return stream.skip(section.m_dsize);
-                }
-                return true;
+                return section.skip(stream);
         };
         const auto ecallback = [] (const string_t& message)
         {
