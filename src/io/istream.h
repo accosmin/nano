@@ -94,7 +94,7 @@ namespace nano
         private:
 
                 void trim();
-                void advance(const std::streamsize num_bytes);
+                void advance();
                 std::streamsize buffer(const std::streamsize num_bytes);
 
                 virtual io_status advance(const std::streamsize num_bytes, buffer_t& buffer) = 0;

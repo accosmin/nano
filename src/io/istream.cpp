@@ -1,4 +1,5 @@
 #include "istream.h"
+#include <cassert>
 #include <algorithm>
 
 namespace nano
@@ -39,10 +40,10 @@ namespace nano
                 return available();
         }
 
-        void istream_t::advance(const std::streamsize num_bytes)
+        void istream_t::advance()
         {
-                m_index += num_bytes;
-                m_tellg += num_bytes;
+                m_index += m_gcount;
+                m_tellg += m_gcount;
         }
 
         void istream_t::trim()
@@ -62,14 +63,14 @@ namespace nano
                 {
                        std::copy(m_buffer.data() + m_index, m_buffer.data() + (m_index + m_gcount), bytes);
                 }
-                advance(m_gcount);
+                advance();
                 trim();
                 return gcount();
         }
 
         std::streamsize istream_t::skip()
         {
-                while (m_status == io_status::good)
+                while (*this)
                 {
                         read(nullptr, chunk_size());
                 }
@@ -78,7 +79,7 @@ namespace nano
 
         bool istream_t::skip(std::streamsize num_bytes)
         {
-                while (num_bytes > 0 && m_status == io_status::good)
+                while (num_bytes > 0 && (*this))
                 {
                         const auto read_bytes = read(nullptr, std::min(num_bytes, chunk_size()));
                         num_bytes -= read_bytes;
@@ -105,6 +106,7 @@ namespace nano
 
         std::streamsize istream_t::available() const
         {
+                assert(m_index <= static_cast<std::streamsize>(m_buffer.size()));
                 return static_cast<std::streamsize>(m_buffer.size()) - m_index;
         }
 

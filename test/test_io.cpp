@@ -29,16 +29,18 @@ NANO_CASE(istream)
         const size_t min_size = 3;
         const size_t max_size = 679 * 1024;
 
+        nano::random_t<char> rng_value;
+        nano::random_t<std::streamsize> rng_skip(1, 1024);
+
         for (size_t size = min_size; size <= max_size; size *= 2)
         {
                 // generate reference buffer
                 buffer_t ref_buffer = nano::make_buffer(size);
                 NANO_CHECK_EQUAL(ref_buffer.size(), size);
 
-                nano::random_t<char> rng;
                 for (auto& value : ref_buffer)
                 {
-                        value = rng();
+                        value = rng_value();
                 }
 
                 // check saving to file
@@ -75,6 +77,22 @@ NANO_CASE(istream)
                         const buffer_t buffer = load_buffer(stream, size % 17);
                         NANO_REQUIRE_EQUAL(buffer.size(), ref_buffer.size());
                         NANO_CHECK(std::equal(buffer.begin(), buffer.end(), ref_buffer.begin()));
+                        NANO_CHECK_EQUAL(stream.tellg(), static_cast<std::streamsize>(size));
+                }
+
+                // check random skip ranges
+                {
+                        mem_istream_t stream(ref_buffer.data(), size);
+
+                        NANO_CHECK_EQUAL(stream.tellg(), std::streamsize(0));
+                        std::streamsize remaining = static_cast<std::streamsize>(size);
+                        while (stream)
+                        {
+                                NANO_REQUIRE_GREATER(remaining, 0);
+                                const std::streamsize skip_size = std::min(remaining, rng_skip());
+                                NANO_CHECK(stream.skip(skip_size));
+                                remaining -= skip_size;
+                        }
                         NANO_CHECK_EQUAL(stream.tellg(), static_cast<std::streamsize>(size));
                 }
 
