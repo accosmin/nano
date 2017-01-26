@@ -1,6 +1,7 @@
 #include "mat5.h"
 #include <ostream>
 #include <fstream>
+#include "istream_mem.h"
 #include "istream_std.h"
 #include "istream_zlib.h"
 
@@ -171,60 +172,62 @@ namespace nano
                 }
         }
 
-        bool mat5_section_t::string(istream_t& stream, std::string& str) const
+        template <typename tdata, typename tstream, typename tvalue>
+        static bool read_values(tstream&& stream, std::streamsize bytes,
+                std::vector<tvalue>& values)
         {
-                buffer_t buffer = make_buffer(m_dsize);
-                switch (m_ftype)
-                {
-                case mat5_format_type::regular:
-                        // todo: in C++17 can write directly in std::string (std::string::data can be non-const)
-                        if (stream.read(buffer.data(), m_dsize) != m_dsize)
-                        {
-                                return false;
-                        }
-                        str.assign(buffer.data(), buffer.size());
-                        return true;
+                const auto value_size = static_cast<std::streamsize>(sizeof(tvalue));
+                values.resize(static_cast<size_t>(bytes / value_size));
+                return  sizeof(tdata) == sizeof(tvalue) &&
+                        (bytes % value_size == 0) &&
+                        stream.read(reinterpret_cast<char*>(values.data()), bytes) == bytes;
+        }
 
-                case mat5_format_type::small:
-                default:
-                        str.assign(reinterpret_cast<const char*>(&m_bytes), sizeof(m_bytes));
-                        return true;
+        template <typename tstream, typename tvalue>
+        static bool read_values(tstream&& stream, const mat5_data_type dtype, const std::streamsize dsize,
+                std::vector<tvalue>& values)
+        {
+                switch (dtype)
+                {
+                case mat5_data_type::miINT8:    return read_values<int8_t>(stream, dsize, values);
+                case mat5_data_type::miINT32:   return read_values<int32_t>(stream, dsize, values);
+                default:                        return false;
                 }
         }
 
-        template <typename tstorage, typename tvalue>
-        static bool read_values(istream_t& stream, std::streamsize bytes, std::vector<tvalue>& values)
+        template <typename tstream, typename tvalue>
+        static bool read_values(tstream&& stream, const mat5_format_type ftype, const uint32_t bytes, const mat5_data_type dtype, const std::streamsize dsize,
+                std::vector<tvalue>& values)
         {
-                const auto value_size = static_cast<std::streamsize>(sizeof(tstorage));
-                values.clear();
-                while (bytes >= value_size)
+                switch (ftype)
                 {
-                        tstorage value;
-                        if (!stream.read(value))
-                        {
-                                return false;
-                        }
-                        values.push_back(static_cast<tvalue>(value));
-                        bytes -= value_size;
+                case mat5_format_type::regular:
+                        return read_values(stream, dtype, dsize, values);
+
+                case mat5_format_type::small:
+                default:
+                        return read_values(mem_istream_t(reinterpret_cast<const char*>(&bytes), sizeof(bytes)), dtype, dsize, values);
                 }
-                return bytes == 0;
+        }
+
+        bool mat5_section_t::string(istream_t& stream, std::string& str) const
+        {
+                //
+                std::vector<char> cstr;
+                if (!read_values(stream, m_ftype, m_bytes, m_dtype, m_dsize, cstr))
+                {
+                        return false;
+                }
+                else
+                {
+                        str.assign(cstr.data(), cstr.size());
+                        return true;
+                }
         }
 
         bool mat5_section_t::values(istream_t& stream, std::vector<int>& values) const
         {
-                switch (m_ftype)
-                {
-                case mat5_format_type::regular:
-                        switch (m_dtype)
-                        {
-                        case mat5_data_type::miINT32:   return read_values<int32_t>(stream, m_dsize, values);
-                        default:                        return false;
-                        }
-
-                case mat5_format_type::small:
-                default:
-                        return false;
-                }
+                return read_values(stream, m_ftype, m_bytes, m_dtype, m_dsize, values);
         }
 
         std::ostream& operator<<(std::ostream& ostream, const mat5_section_t& sect)
