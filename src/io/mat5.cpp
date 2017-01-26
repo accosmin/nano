@@ -128,10 +128,9 @@ namespace nano
                 else
                 {
                         const auto compressed = make_data_type(dtype) == mat5_data_type::miCOMPRESSED;
-                        m_size = compressed ?
-                                (8 + bytes) :
-                                (8 + bytes + static_cast<uint32_t>((7 * static_cast<uint64_t>(bytes)) % 8));
-                        m_dsize = bytes;
+                        const auto modulo8 = bytes % 8;
+                        m_size = compressed ? (8 + bytes) : (8 + bytes + (modulo8 ? 8 - modulo8 : 0));
+                        m_dsize = m_size - 8;
                         m_dtype = make_data_type(dtype);
                         m_ftype = mat5_format_type::regular;
                 }
