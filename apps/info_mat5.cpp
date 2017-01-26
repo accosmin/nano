@@ -41,6 +41,7 @@ int main(int argc, const char *argv[])
         nano::timer_t timer;
         if (!nano::load_mat5(cmd_input, hcallback, scallback, ecallback))
         {
+                log_error() << "failed to load <" << cmd_input << ">!";
                 return EXIT_FAILURE;
         }
         else

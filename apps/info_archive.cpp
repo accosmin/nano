@@ -32,6 +32,7 @@ int main(int argc, const char *argv[])
         nano::timer_t timer;
         if (!nano::load_archive(cmd_input, callback, error_callback))
         {
+                log_error() << "failed to load <" << cmd_input << ">!";
                 return EXIT_FAILURE;
         }
         else
