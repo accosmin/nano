@@ -1,10 +1,12 @@
 #pragma once
 
-#include "io/io.h"
 #include "task_mem_vision.h"
 
 namespace nano
 {
+        class istream_t;
+        class mat5_section_t;
+
         ///
         /// SVHN task:
         ///      - digit classification
@@ -23,8 +25,9 @@ namespace nano
 
                 virtual bool populate() override;
 
-                size_t load_binary(const string_t& bfile, const protocol p);
-                size_t decode(const buffer_t& image_data, const buffer_t& label_data, const protocol p);
+                size_t load_binary(const string_t& path, const protocol);
+                size_t load_pixels(const mat5_section_t&, const string_t&, const std::vector<int32_t>&, istream_t&);
+                size_t load_labels(const mat5_section_t&, const string_t&, const std::vector<int32_t>&, size_t, const protocol, istream_t&);
         };
 }
 

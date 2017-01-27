@@ -88,14 +88,12 @@ namespace nano
                 bool skip(istream_t&) const;
 
                 ///
-                /// \brief load the data section as a string
+                /// \brief check if the section is a corect sub-element of a matrix
                 ///
-                bool string(istream_t&, std::string&) const;
-
-                ///
-                /// \brief load the data section as a vector of scalars (e.g. for matrices)
-                ///
-                bool values(istream_t&, std::vector<int>&) const;
+                bool matrix_meta(istream_t&) const;
+                bool matrix_name(istream_t&, std::string& name) const;
+                bool matrix_dims(istream_t&, std::vector<int32_t>& dims) const;
+                bool matrix_data(istream_t&) const;
 
                 // attributes
                 std::streamsize         m_size;         ///< byte range of the whole section

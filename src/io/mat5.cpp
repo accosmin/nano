@@ -116,6 +116,49 @@ namespace nano
                 return std::string(m_description, m_description + sizeof(m_description));
         }
 
+        template <typename tdata, typename tstream, typename tvalue>
+        static bool read_vector(tstream&& stream,
+                std::streamsize bytes,
+                std::vector<tvalue>& values)
+        {
+                const auto value_size = static_cast<std::streamsize>(sizeof(tvalue));
+                values.resize(static_cast<size_t>(bytes / value_size));
+                return  sizeof(tdata) == sizeof(tvalue) &&
+                        (bytes % value_size == 0) &&
+                        stream.read(reinterpret_cast<char*>(values.data()), bytes) == bytes;
+        }
+
+        template <typename tstream, typename tvalue>
+        static bool read_vector(tstream&& stream,
+                const mat5_data_type dtype, const std::streamsize dsize,
+                std::vector<tvalue>& values)
+        {
+                switch (dtype)
+                {
+                case mat5_data_type::miINT8:    return read_vector<int8_t>(stream, dsize, values);
+                case mat5_data_type::miINT32:   return read_vector<int32_t>(stream, dsize, values);
+                default:                        return false;
+                }
+        }
+
+        template <typename tstream, typename tvalue>
+        static bool read_vector(tstream&& stream,
+                const mat5_format_type ftype, const uint32_t bytes, const mat5_data_type dtype, const std::streamsize dsize,
+                std::vector<tvalue>& values)
+        {
+                switch (ftype)
+                {
+                case mat5_format_type::regular:
+                        return  read_vector(stream,
+                                dtype, dsize, values);
+
+                case mat5_format_type::small:
+                default:
+                        return  read_vector(mem_istream_t(reinterpret_cast<const char*>(&bytes), sizeof(bytes)),
+                                dtype, dsize, values);
+                }
+        }
+
         mat5_section_t::mat5_section_t(const mat5_parent_type ptype) :
                 m_size(0),
                 m_dsize(0),
@@ -172,62 +215,58 @@ namespace nano
                 }
         }
 
-        template <typename tdata, typename tstream, typename tvalue>
-        static bool read_values(tstream&& stream, std::streamsize bytes,
-                std::vector<tvalue>& values)
+        bool mat5_section_t::matrix_meta(istream_t& stream) const
         {
-                const auto value_size = static_cast<std::streamsize>(sizeof(tvalue));
-                values.resize(static_cast<size_t>(bytes / value_size));
-                return  sizeof(tdata) == sizeof(tvalue) &&
-                        (bytes % value_size == 0) &&
-                        stream.read(reinterpret_cast<char*>(values.data()), bytes) == bytes;
-        }
-
-        template <typename tstream, typename tvalue>
-        static bool read_values(tstream&& stream, const mat5_data_type dtype, const std::streamsize dsize,
-                std::vector<tvalue>& values)
-        {
-                switch (dtype)
+                switch (m_ptype)
                 {
-                case mat5_data_type::miINT8:    return read_values<int8_t>(stream, dsize, values);
-                case mat5_data_type::miINT32:   return read_values<int32_t>(stream, dsize, values);
-                default:                        return false;
-                }
-        }
+                case mat5_parent_type::miMATRIX:
+                        return skip(stream);
 
-        template <typename tstream, typename tvalue>
-        static bool read_values(tstream&& stream, const mat5_format_type ftype, const uint32_t bytes, const mat5_data_type dtype, const std::streamsize dsize,
-                std::vector<tvalue>& values)
-        {
-                switch (ftype)
-                {
-                case mat5_format_type::regular:
-                        return read_values(stream, dtype, dsize, values);
-
-                case mat5_format_type::small:
                 default:
-                        return read_values(mem_istream_t(reinterpret_cast<const char*>(&bytes), sizeof(bytes)), dtype, dsize, values);
-                }
-        }
-
-        bool mat5_section_t::string(istream_t& stream, std::string& str) const
-        {
-                //
-                std::vector<char> cstr;
-                if (!read_values(stream, m_ftype, m_bytes, m_dtype, m_dsize, cstr))
-                {
                         return false;
                 }
-                else
+        }
+
+        bool mat5_section_t::matrix_data(istream_t& stream) const
+        {
+                switch (m_ptype)
                 {
-                        str.assign(cstr.data(), cstr.size());
-                        return true;
+                case mat5_parent_type::miMATRIX:
+                        return stream;
+
+                default:
+                        return false;
                 }
         }
 
-        bool mat5_section_t::values(istream_t& stream, std::vector<int>& values) const
+        bool mat5_section_t::matrix_name(istream_t& stream, std::string& name) const
         {
-                return read_values(stream, m_ftype, m_bytes, m_dtype, m_dsize, values);
+                std::vector<char> buffer;
+                switch (m_ptype)
+                {
+                case mat5_parent_type::miMATRIX:
+                        if (!read_vector(stream, m_ftype, m_bytes, m_dtype, m_dsize, buffer))
+                        {
+                                return false;
+                        }
+                        name.assign(buffer.data(), buffer.size());
+                        return true;
+
+                default:
+                        return false;
+                }
+        }
+
+        bool mat5_section_t::matrix_dims(istream_t& stream, std::vector<int32_t>& dims) const
+        {
+                switch (m_ptype)
+                {
+                case mat5_parent_type::miMATRIX:
+                        return read_vector(stream, m_ftype, m_bytes, m_dtype, m_dsize, dims);
+
+                default:
+                        return false;
+                }
         }
 
         std::ostream& operator<<(std::ostream& ostream, const mat5_section_t& sect)
