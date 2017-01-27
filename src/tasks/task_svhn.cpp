@@ -22,10 +22,10 @@ namespace nano
 
                 const string_t train_file = dir + "/train_32x32.mat";
                 const string_t extra_file = dir + "/extra_32x32.mat";
-                const size_t n_train_samples = 73257 + 531131;
+                const tensor_size_t n_train_samples = 73257 + 531131;
 
                 const string_t test_file = dir + "/test_32x32.mat";
-                const size_t n_test_samples = 26032;
+                const tensor_size_t n_test_samples = 26032;
 
                 reserve_chunks(n_train_samples + n_test_samples);
 
@@ -34,7 +34,7 @@ namespace nano
                         load_binary(test_file, protocol::test) == n_test_samples;
         }
 
-        size_t svhn_task_t::load_binary(const string_t& path, const protocol p)
+        tensor_size_t svhn_task_t::load_binary(const string_t& path, const protocol p)
         {
                 log_info() << "SVHN: processing file <" << path << "> ...";
 
@@ -53,8 +53,8 @@ namespace nano
                 // load section
                 string_t name;
                 std::vector<int32_t> dims;
-                size_t icount = 0;
-                size_t lcount = 0;
+                tensor_size_t icount = 0;
+                tensor_size_t lcount = 0;
                 size_t chunk_index = n_chunks();
 
                 int section_index = 0;
@@ -81,11 +81,10 @@ namespace nano
                         }
                 };
 
-                return  (load_mat5(path, hcallback, scallback, ecallback) && icount == lcount) ?
-                        icount : size_t(0);
+                return (load_mat5(path, hcallback, scallback, ecallback) && icount == lcount) ? icount : 0;
         }
 
-        size_t svhn_task_t::load_pixels(const mat5_section_t& section,
+        tensor_size_t svhn_task_t::load_pixels(const mat5_section_t& section,
                 const string_t& name, const std::vector<int32_t>& dims,
                 istream_t& stream)
         {
@@ -111,11 +110,11 @@ namespace nano
                         return 0;
                 }
 
-                const auto n_samples = static_cast<size_t>(dims[3]);
+                const auto n_samples = dims[3];
 
                 // load images
                 auto idata = make_buffer(ix);
-                for (size_t i = 0; i < n_samples; ++ i)
+                for (tensor_size_t i = 0; i < n_samples; ++ i)
                 {
                         if (stream.read(idata.data(), ix) != ix)
                         {
@@ -133,7 +132,7 @@ namespace nano
                 return stream.skip(section.m_dsize - n_samples * ix) ? n_samples : 0;
         }
 
-        size_t svhn_task_t::load_labels(const mat5_section_t& section,
+        tensor_size_t svhn_task_t::load_labels(const mat5_section_t& section,
                 const string_t& name, const std::vector<int32_t>& dims, size_t chunk_index, const protocol p,
                 istream_t& stream)
         {
@@ -154,11 +153,11 @@ namespace nano
                         return 0;
                 }
 
-                const auto n_samples = static_cast<size_t>(dims[0]);
+                const auto n_samples = dims[0];
 
                 // load labels
                 char ldata;
-                for (size_t i = 0; i < n_samples; ++ i)
+                for (tensor_size_t i = 0; i < n_samples; ++ i)
                 {
                         if (stream.read(&ldata, 1) != 1)
                         {

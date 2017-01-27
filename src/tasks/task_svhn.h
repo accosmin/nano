@@ -5,7 +5,7 @@
 namespace nano
 {
         class istream_t;
-        class mat5_section_t;
+        struct mat5_section_t;
 
         ///
         /// SVHN task:
@@ -25,9 +25,9 @@ namespace nano
 
                 virtual bool populate() override;
 
-                size_t load_binary(const string_t& path, const protocol);
-                size_t load_pixels(const mat5_section_t&, const string_t&, const std::vector<int32_t>&, istream_t&);
-                size_t load_labels(const mat5_section_t&, const string_t&, const std::vector<int32_t>&, size_t, const protocol, istream_t&);
+                tensor_size_t load_binary(const string_t& path, const protocol);
+                tensor_size_t load_pixels(const mat5_section_t&, const string_t&, const std::vector<int32_t>&, istream_t&);
+                tensor_size_t load_labels(const mat5_section_t&, const string_t&, const std::vector<int32_t>&, size_t, const protocol, istream_t&);
         };
 }
 
