@@ -22,15 +22,16 @@ namespace nano
 
                 const string_t train_file = dir + "/train_32x32.mat";
                 const string_t extra_file = dir + "/extra_32x32.mat";
-                const tensor_size_t n_train_samples = 73257 + 531131;
-
                 const string_t test_file = dir + "/test_32x32.mat";
+
+                const tensor_size_t n_train_samples = 73257;
+                const tensor_size_t n_extra_samples = 531131;
                 const tensor_size_t n_test_samples = 26032;
 
                 reserve_chunks(n_train_samples + n_test_samples);
 
-                return  load_binary(train_file, protocol::train) +
-                        load_binary(extra_file, protocol::train) == n_train_samples &&
+                return  load_binary(train_file, protocol::train) == n_train_samples &&
+                        load_binary(extra_file, protocol::train) == n_extra_samples &&
                         load_binary(test_file, protocol::test) == n_test_samples;
         }
 
@@ -55,7 +56,6 @@ namespace nano
                 std::vector<int32_t> dims;
                 tensor_size_t icount = 0;
                 tensor_size_t lcount = 0;
-                const size_t chunk_index = n_chunks();
 
                 int section_index = 0;
                 const auto scallback = [&] (const mat5_section_t& section, istream_t& stream)
@@ -75,7 +75,7 @@ namespace nano
                         case 5:         return section.matrix_dims(stream, dims);
                         case 6:         return section.matrix_name(stream, name);
                         case 7:         return section.matrix_data(stream) &&
-                                               (lcount = load_labels(section, name, dims, chunk_index, p, stream)) > 0;
+                                               (lcount = load_labels(section, name, dims, p, stream)) > 0;
 
                         default:        log_error() << "SVHN: unexpected section!"; return false;
                         }
@@ -133,7 +133,7 @@ namespace nano
         }
 
         tensor_size_t svhn_task_t::load_labels(const mat5_section_t& section,
-                const string_t& name, const std::vector<int32_t>& dims, size_t chunk_index, const protocol p,
+                const string_t& name, const std::vector<int32_t>& dims, const protocol p,
                 istream_t& stream)
         {
                 log_info() << "SVHN: loading labels: name = " << name << ", size = " << concatenate(dims, "x") << "...";
@@ -154,12 +154,13 @@ namespace nano
                 }
 
                 const auto n_samples = dims[0];
+                auto chunk_index = n_chunks() - static_cast<size_t>(n_samples);
 
                 // load labels
                 char ldata;
                 for (tensor_size_t i = 0; i < n_samples; ++ i)
                 {
-                        if (stream.read(&ldata, 1) != 1)
+                        if (!stream.read(ldata))
                         {
                                 log_error() << "SVHN: failed to load label!";
                                 return 0;
