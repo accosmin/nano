@@ -55,7 +55,7 @@ namespace nano
                 std::vector<int32_t> dims;
                 tensor_size_t icount = 0;
                 tensor_size_t lcount = 0;
-                size_t chunk_index = n_chunks();
+                const size_t chunk_index = n_chunks();
 
                 int section_index = 0;
                 const auto scallback = [&] (const mat5_section_t& section, istream_t& stream)
@@ -176,7 +176,6 @@ namespace nano
                                 return 0;
                         }
 
-                        // target ...
                         const auto fold = make_fold(0, p);
                         add_sample(fold, chunk_index ++, class_target(ilabel, odims()), "digit" + to_string(ilabel));
                 }
