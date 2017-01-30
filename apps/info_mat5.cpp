@@ -1,7 +1,7 @@
 #include "timer.h"
 #include "logger.h"
 #include "stringi.h"
-#include "io/archive.h"
+#include "io/mat5.h"
 #include "text/cmdline.h"
 
 int main(int argc, const char *argv[])
@@ -9,8 +9,8 @@ int main(int argc, const char *argv[])
         using namespace nano;
 
         // parse the command line
-        nano::cmdline_t cmdline("display the structure of the given archive");
-        cmdline.add("i", "input",       "input archive path (.tar, .gz, .bz2, .tar.gz, .tar.bz2)");
+        nano::cmdline_t cmdline("display the structure of the given matlab5 file");
+        cmdline.add("i", "input",       "input matlab5 path (.mat)");
 
         cmdline.process(argc, argv);
 
@@ -18,19 +18,24 @@ int main(int argc, const char *argv[])
         const string_t cmd_input = cmdline.get("input");
 
         // callbacks
-        const auto callback = [] (const string_t& filename, istream_t& stream)
+        const auto hcallback = [] (const mat5_header_t& header)
         {
-                log_info() << "decode: callback(" << filename << ", " << stream.skip() << " bytes)";
+                log_info() << "decode: [" << header.description() << "]";
                 return true;
         };
-        const auto error_callback = [] (const string_t& message)
+        const auto scallback = [] (const mat5_section_t& section, istream_t& stream)
+        {
+                log_info() << "decode: " << section;
+                return section.skip(stream);
+        };
+        const auto ecallback = [] (const string_t& message)
         {
                 log_error() << "decode: " << message;
         };
 
         // load file
         nano::timer_t timer;
-        if (!nano::load_archive(cmd_input, callback, error_callback))
+        if (!nano::load_mat5(cmd_input, hcallback, scallback, ecallback))
         {
                 log_error() << "failed to load <" << cmd_input << ">!";
                 return EXIT_FAILURE;

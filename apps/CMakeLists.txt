@@ -14,6 +14,7 @@ build_app(benchmark_iterator.cpp nano)
 build_app(benchmark_functions.cpp nano)
 
 build_app(info.cpp nano)
+build_app(info_mat5.cpp nano)
 build_app(info_task.cpp nano)
 build_app(info_archive.cpp nano)
 

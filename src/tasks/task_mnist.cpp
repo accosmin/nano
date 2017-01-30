@@ -7,6 +7,20 @@
 
 namespace nano
 {
+        static const string_t tlabels[] =
+        {
+                "digit0",
+                "digit1",
+                "digit2",
+                "digit3",
+                "digit4",
+                "digit5",
+                "digit6",
+                "digit7",
+                "digit8",
+                "digit9"
+        };
+
         mnist_task_t::mnist_task_t(const string_t& config) :
                 mem_vision_task_t(1, 28, 28, 10, 1, 1, 1, to_params(config, "dir", "."))
         {
@@ -45,14 +59,14 @@ namespace nano
                 };
 
                 // load images
-                const auto iop = [&] (const string_t&, archive_stream_t& stream)
+                const auto iop = [&] (const string_t&, istream_t& stream)
                 {
-                        if (!stream.read(buffer.data(), 16))
+                        if (stream.read(buffer.data(), 16) != 16)
                         {
                                 return false;
                         }
 
-                        while (stream.read(buffer.data(), buffer_size))
+                        while (stream.read(buffer.data(), buffer_size) == buffer_size)
                         {
                                 image_t image;
                                 image.load_luma(buffer.data(), irows(), icols());
@@ -65,27 +79,31 @@ namespace nano
                 };
 
                 log_info() << "MNIST: loading file <" << ifile << "> ...";
-                if (!nano::unarchive(ifile, iop, error_op))
+                if (!nano::load_archive(ifile, iop, error_op))
                 {
                         log_error() << "MNIST: failed to load file <" << ifile << ">!";
                         return false;
                 }
 
                 // load ground truth
-                const auto gop = [&] (const string_t&, archive_stream_t& stream)
+                const auto gop = [&] (const string_t&, istream_t& stream)
                 {
-                        if (!stream.read(buffer.data(), 8))
+                        if (stream.read(buffer.data(), 8) != 8)
                         {
                                 return false;
                         }
 
-                        while (stream.read(label, 1))
+                        while (stream.read(label, 1) == 1)
                         {
                                 const tensor_index_t ilabel = static_cast<tensor_index_t>(label[0]);
-                                assert(ilabel < odims());
+                                if (ilabel < 0 || ilabel >= odims())
+                                {
+                                        log_error() << "MNIST: invalid label!";
+                                        return false;
+                                }
 
                                 const auto fold = make_fold(0, p);
-                                add_sample(fold, iindex, class_target(ilabel, odims()), "digit" + to_string(ilabel));
+                                add_sample(fold, iindex, class_target(ilabel, odims()), tlabels[ilabel]);
 
                                 ++ gcount;
                                 ++ iindex;
@@ -95,7 +113,7 @@ namespace nano
                 };
 
                 log_info() << "MNIST: loading file <" << gfile << "> ...";
-                if (!nano::unarchive(gfile, gop, error_op))
+                if (!nano::load_archive(gfile, gop, error_op))
                 {
                         log_error() << "MNIST: failed to load file <" << gfile << ">!";
                         return false;

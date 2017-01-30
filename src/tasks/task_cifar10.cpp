@@ -1,6 +1,5 @@
 #include "class.h"
 #include "logger.h"
-#include "io/archive.h"
 #include "task_cifar10.h"
 #include "text/to_params.h"
 #include "text/from_params.h"
@@ -42,7 +41,7 @@ namespace nano
                 const string_t test_bfile = "test_batch.bin";
                 const size_t n_test_samples = 10000;
 
-                const auto op = [&] (const string_t& filename, archive_stream_t& stream)
+                const auto op = [&] (const string_t& filename, istream_t& stream)
                 {
                         if (    nano::iends_with(filename, train_bfile1) ||
                                 nano::iends_with(filename, train_bfile2) ||
@@ -68,10 +67,10 @@ namespace nano
 
                 log_info() << "CIFAR-10: loading file <" << bfile << "> ...";
 
-                return nano::unarchive(bfile, op, error_op);
+                return nano::load_archive(bfile, op, error_op);
         }
 
-        bool cifar10_task_t::load_binary(const string_t& filename, archive_stream_t& stream, const protocol p, const size_t count)
+        bool cifar10_task_t::load_binary(const string_t& filename, istream_t& stream, const protocol p, const size_t count)
         {
                 log_info() << "CIFAR-10: loading file <" << filename << "> ...";
 
@@ -80,8 +79,8 @@ namespace nano
                 char label[1];
 
                 size_t icount = 0;
-                while ( stream.read(label, 1) &&
-                        stream.read(buffer.data(), buffer_size))
+                while ( stream.read(label, 1) == 1 &&
+                        stream.read(buffer.data(), buffer_size) == buffer_size)
                 {
                         const tensor_index_t ilabel = label[0];
                         assert(ilabel < odims());

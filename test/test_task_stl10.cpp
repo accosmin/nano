@@ -90,8 +90,9 @@ NANO_CASE(construction)
                 }
         }
 
-        //NANO_CHECK(nano::check_duplicates(*task)); NB: same samples are duplicated!
-        //NANO_CHECK(nano::check_intersection(*task)); NB: same samples are duplicated!
+        const size_t max_duplicates = 8826;
+        NANO_CHECK_LESS_EQUAL(nano::check_duplicates(*task), max_duplicates);
+        NANO_CHECK_LESS_EQUAL(nano::check_intersection(*task), max_duplicates);
         NANO_CHECK_EQUAL(labels.size(), odims);
 }
 

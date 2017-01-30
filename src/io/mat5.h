@@ -1,20 +1,15 @@
 #pragma once
 
-#include <ios>
-#include "arch.h"
-#include <vector>
-#include <string>
 #include <cstdint>
+#include "istream.h"
 #include <functional>
 
 namespace nano
 {
-        class imstream_t;
-
         ///
         /// \brief data type
         ///
-        enum class mat5_buffer_type : int
+        enum class mat5_data_type
         {
                 miINT8 = 1,
                 miUINT8 = 2,
@@ -35,78 +30,105 @@ namespace nano
                 miUNKNOWN
         };
 
-        ///
-        /// \brief map a data type to string (logging purposes)
-        ///
-        NANO_PUBLIC std::string to_string(const mat5_buffer_type& type);
+        enum class mat5_format_type
+        {
+                small,
+                regular
+        };
+
+        enum class mat5_parent_type
+        {
+                none,
+                miMATRIX
+        };
+
+        NANO_PUBLIC std::string to_string(const mat5_data_type);
+        NANO_PUBLIC std::string to_string(const mat5_format_type);
+        NANO_PUBLIC std::string to_string(const mat5_parent_type);
 
         ///
-        /// \brief section
+        /// \brief matlab5 header.
+        ///
+        struct NANO_PUBLIC mat5_header_t
+        {
+                ///
+                /// \brief load from the input stream
+                ///
+                bool load(istream_t&);
+
+                ///
+                /// \brief header description as a string
+                ///
+                std::string description() const;
+
+                // attributes
+                char            m_description[116];
+                char            m_offset[8];
+                char            m_endian[4];
+        };
+
+        ///
+        /// \brief matlab5 section.
         ///
         struct NANO_PUBLIC mat5_section_t
         {
                 ///
                 /// \brief constructor
                 ///
-                explicit mat5_section_t(std::streamsize begin = 0);
-
-                ///
-                /// \brief load from the constants
-                ///
-                bool load(std::streamsize offset, uint32_t dtype, uint32_t bytes);
+                mat5_section_t(const mat5_parent_type ptype = mat5_parent_type::none);
 
                 ///
                 /// \brief load from the input stream
                 ///
-                template <typename tstream>
-                bool load(tstream& istream)
-                {
-                        const auto offset = istream.tellg();
+                bool load(istream_t&);
 
-                        std::uint32_t dtype, bytes;
-                        return  istream.read(reinterpret_cast<char*>(&dtype), sizeof(uint32_t)) &&
-                                istream.read(reinterpret_cast<char*>(&bytes), sizeof(uint32_t)) &&
-                                load(offset, dtype, bytes);
-                }
+                ///
+                /// \brief skip past the data section
+                ///
+                bool skip(istream_t&) const;
 
-                /// full section range
-                std::streamsize begin() const { return m_begin; }
-                std::streamsize end() const { return m_end; }
-                std::streamsize size() const { return end() - begin(); }
-
-                /// section data range
-                std::streamsize dbegin() const { return m_dbegin; }
-                std::streamsize dend() const { return m_dend; }
-                std::streamsize dsize() const { return dend() - dbegin(); }
+                ///
+                /// \brief check if the section is a corect sub-element of a matrix
+                ///
+                bool matrix_meta(istream_t&) const;
+                bool matrix_name(istream_t&, std::string& name) const;
+                bool matrix_dims(istream_t&, std::vector<int32_t>& dims) const;
+                bool matrix_data(istream_t&) const;
 
                 // attributes
-                std::streamsize         m_begin, m_end;         ///< byte range of the whole section
-                std::streamsize         m_dbegin, m_dend;       ///< byte range of the data section
-                mat5_buffer_type        m_dtype;
+                std::streamsize         m_size;         ///< byte range of the whole section
+                std::streamsize         m_dsize;        ///< byte range of the data section
+                mat5_data_type          m_dtype;        ///<
+                mat5_format_type        m_ftype;        ///<
+                mat5_parent_type        m_ptype;        ///< parent type (e.g. if a sub-section of a miMATRIX section)
+                std::uint32_t           m_bytes;        ///< data section for small sections
         };
 
+        NANO_PUBLIC std::ostream& operator<<(std::ostream&, const mat5_header_t&);
         NANO_PUBLIC std::ostream& operator<<(std::ostream&, const mat5_section_t&);
 
         ///
-        /// \brief multi-dimensional array consisting of multiple sections
+        /// \brief callback to execute when the header is decoded
+        ///     - returns true if it should continue
         ///
-        struct NANO_PUBLIC mat5_array_t
-        {
-                ///
-                /// \brief load header section from the input stream
-                ///
-                static bool load_header(imstream_t& istream);
+        using mat5_header_callback_t = std::function<bool(const mat5_header_t&)>;
 
-                ///
-                /// \brief load body sections from the input stream
-                ///
-                bool load_body(imstream_t& istream);
+        ///
+        /// \brief callback to execute when a section is decoded
+        ///     (section description, stream to read the data)
+        ///     - returns true if it should continue
+        ///
+        using mat5_section_callback_t = std::function<bool(const mat5_section_t&, istream_t&)>;
 
-                // attributes
-                std::vector<std::size_t>        m_dims;         ///< dimensions of the array
-                std::string                     m_name;         ///< generic (Matlab) name
-                std::vector<mat5_section_t>     m_sections;     ///< sections (dimensions, name, type, data)
-        };
+        ///
+        /// \brief callback to execute when an error was detected
+        ///     - (error message)
+        ///
+        using mat5_error_callback_t = std::function<void(const std::string&)>;
 
-        NANO_PUBLIC std::ostream& operator<<(std::ostream&, const mat5_array_t&);
+        ///
+        /// \brief decode a matlab5 file (.mat)
+        ///
+        NANO_PUBLIC bool load_mat5(const std::string& path,
+                const mat5_header_callback_t&, const mat5_section_callback_t&, const mat5_error_callback_t&);
 }

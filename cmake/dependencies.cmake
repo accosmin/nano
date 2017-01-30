@@ -2,10 +2,6 @@
 find_package(ZLIB REQUIRED)
 include_directories(SYSTEM ${ZLIB_INCLUDE_DIR})
 
-# BZip2
-find_package(BZip2 REQUIRED)
-include_directories(SYSTEM ${BZIP2_INCLUDE_DIR})
-
 # DevIL
 find_package(DevIL REQUIRED)
 include_directories(SYSTEM ${IL_INCLUDE_DIR})

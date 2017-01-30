@@ -1,7 +1,6 @@
 #include "class.h"
 #include "logger.h"
 #include "task_stl10.h"
-#include "io/archive.h"
 #include "text/to_params.h"
 #include "text/from_params.h"
 
@@ -46,7 +45,7 @@ namespace nano
 
                 const string_t fold_file = "fold_indices.txt";
 
-                const auto op = [&] (const string_t& filename, archive_stream_t& stream)
+                const auto op = [&] (const string_t& filename, istream_t& stream)
                 {
                         if (nano::iends_with(filename, train_ifile))
                         {
@@ -84,10 +83,10 @@ namespace nano
 
                 log_info() << "STL-10: loading file <" << bfile << "> ...";
 
-                return nano::unarchive(bfile, op, error_op);
+                return nano::load_archive(bfile, op, error_op);
         }
 
-        bool stl10_task_t::load_ifile(const string_t& ifile, archive_stream_t& stream,
+        bool stl10_task_t::load_ifile(const string_t& ifile, istream_t& stream,
                 const bool unlabeled, const size_t count)
         {
                 log_info() << "STL-10: loading file <" << ifile << "> ...";
@@ -101,7 +100,7 @@ namespace nano
                 size_t icount = 0;
 
                 // load images
-                while (stream.read(buffer.data(), ix))
+                while (stream.read(buffer.data(), ix) == ix)
                 {
                         image_t image(irows(), icols(), color_mode::rgb);
                         image.plane(0) = tensor::map_matrix(iptr + 0 * px, icols(), irows()).cast<luma_t>().transpose();
@@ -122,7 +121,7 @@ namespace nano
                 return count == icount;
         }
 
-        bool stl10_task_t::load_gfile(const string_t& gfile, archive_stream_t& stream,
+        bool stl10_task_t::load_gfile(const string_t& gfile, istream_t& stream,
                 const size_t count)
         {
                 log_info() << "STL-10: loading file <" << gfile << "> ...";
@@ -133,7 +132,7 @@ namespace nano
                 size_t gcount = 0;
 
                 // load annotations
-                while (stream.read(&label, 1))
+                while (stream.read(&label, 1) == 1)
                 {
                         const tensor_index_t ilabel = static_cast<tensor_index_t>(label) - 1;
 
@@ -155,7 +154,7 @@ namespace nano
                 return count == gcount;
         }
 
-        bool stl10_task_t::load_folds(const string_t& ifile, archive_stream_t& stream,
+        bool stl10_task_t::load_folds(const string_t& ifile, istream_t& stream,
                 const size_t n_test, const size_t n_train, const size_t n_unlabeled)
         {
                 log_info() << "STL-10: loading file <" << ifile << "> ...";

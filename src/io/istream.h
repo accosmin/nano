@@ -1,12 +1,14 @@
 #pragma once
 
-#include "buffer.h"
+#include "io.h"
+#include "arch.h"
 #include <type_traits>
 
 namespace nano
 {
         ///
         /// \brief input streaming interface for binary data.
+        /// NB: assuming that streaming if uni-directional (e.g. cannot move cursor to specific positions).
         ///
         class NANO_PUBLIC istream_t
         {
@@ -36,8 +38,9 @@ namespace nano
 
                 ///
                 /// \brief read given number of bytes
+                /// \return the number of bytes actually read
                 ///
-                bool read(char* bytes, const std::streamsize max_num_bytes);
+                std::streamsize read(char* bytes, const std::streamsize num_bytes);
 
                 ///
                 /// \brief read POD structure
@@ -49,8 +52,19 @@ namespace nano
                 >
                 bool read(tstruct& pod)
                 {
-                        return read(reinterpret_cast<char*>(&pod), sizeof(pod));
+                        const auto size = static_cast<std::streamsize>(sizeof(pod));
+                        return read(reinterpret_cast<char*>(&pod), size) == size;
                 }
+
+                ///
+                /// \brief skip the given number of bytes
+                ///
+                bool skip(const std::streamsize num_bytes);
+
+                ///
+                /// \brief skip till the end and returns tellg()
+                ///
+                std::streamsize skip();
 
                 ///
                 /// \brief read next line
@@ -58,26 +72,40 @@ namespace nano
                 bool getline(std::string& line);
 
                 ///
-                /// \brief current position in the buffer
+                /// \brief current position in the (uncompressed/decoded) stream
                 ///
                 std::streamsize tellg() const;
 
-        protected:
+                ///
+                /// \brief number of bytes available in the buffer
+                ///
+                std::streamsize available() const;
 
-                enum class status
-                {
-                        ok,
-                        eof,
-                        error
-                };
+                ///
+                /// \brief number of bytes read at the last operation
+                ///
+                std::streamsize gcount() const;
 
-                virtual status advance(const std::streamsize num_bytes, buffer_t& buffer) = 0;
+                ///
+                /// \brief check state
+                ///
+                operator bool() const;
 
         private:
 
-                buffer_t        m_buffer;       ///< current buffer
-                std::streamsize m_index;        ///< position in the current buffer
-                status          m_status;       ///<
-                std::streamsize m_tellg;
+                void trim();
+                void advance();
+                std::streamsize buffer(const std::streamsize num_bytes);
+
+                virtual io_status advance(const std::streamsize num_bytes, buffer_t& buffer) = 0;
+
+        private:
+
+                // attributes
+                buffer_t                m_buffer;       ///< buffer
+                std::streamsize         m_index;        ///< position in the buffer
+                io_status               m_status;       ///<
+                std::streamsize         m_tellg;        ///< position since begining
+                std::streamsize         m_gcount;
         };
 }

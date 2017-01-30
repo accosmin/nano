@@ -1,26 +1,36 @@
 #include "utest.h"
-#include "io/buffer.h"
-#include "io/imstream.h"
+#include "io/istream.h"
 #include "io/ibstream.h"
 #include "io/obstream.h"
 #include "math/random.h"
+#include "io/istream_mem.h"
+#include "io/istream_std.h"
 #include <cstdio>
 #include <fstream>
 
+nano::buffer_t load_buffer(nano::istream_t& stream, const std::size_t buff_size)
+{
+        nano::buffer_t buff, data;
+        buff.resize(buff_size);
+        while (stream)
+        {
+                stream.read(buff.data(), static_cast<std::streamsize>(buff_size));
+                data.insert(data.end(), buff.data(), buff.data() + stream.gcount());
+        }
+        return data;
+}
+
 NANO_BEGIN_MODULE(test_io)
 
-NANO_CASE(mstream)
+NANO_CASE(istream)
 {
         using namespace nano;
 
         const size_t min_size = 3;
         const size_t max_size = 679 * 1024;
 
-        const auto op_check_buffers = [] (const buffer_t& ref_buffer, const buffer_t& buffer)
-        {
-                NANO_REQUIRE_EQUAL(buffer.size(), ref_buffer.size());
-                NANO_CHECK(std::equal(buffer.begin(), buffer.end(), ref_buffer.begin()));
-        };
+        nano::random_t<char> rng_value;
+        nano::random_t<std::streamsize> rng_skip(1, 1024);
 
         for (size_t size = min_size; size <= max_size; size *= 2)
         {
@@ -28,53 +38,62 @@ NANO_CASE(mstream)
                 buffer_t ref_buffer = nano::make_buffer(size);
                 NANO_CHECK_EQUAL(ref_buffer.size(), size);
 
-                nano::random_t<char> rng;
                 for (auto& value : ref_buffer)
                 {
-                        value = rng();
+                        value = rng_value();
                 }
 
-                // check buffer saving to file
+                // check saving to file
                 const std::string path = "mstream.test";
 
                 NANO_CHECK(nano::save_buffer(path, ref_buffer));
 
-                // check buffer loading from file
+                // check loading from file
                 {
                         buffer_t buffer;
                         NANO_CHECK(nano::load_buffer(path, buffer));
-
-                        op_check_buffers(ref_buffer, buffer);
+                        NANO_REQUIRE_EQUAL(buffer.size(), ref_buffer.size());
+                        NANO_CHECK(std::equal(buffer.begin(), buffer.end(), ref_buffer.begin()));
                 }
 
-                // check buffer loading from mstream (by block)
+                // check loading from memory stream (by block)
                 {
-                        imstream_t stream(ref_buffer.data(), size);
+                        mem_istream_t stream(ref_buffer.data(), size);
 
                         NANO_CHECK_EQUAL(stream.tellg(), std::streamsize(0));
-                        NANO_CHECK_EQUAL(stream.size(), static_cast<std::streamsize>(size));
-
-                        buffer_t buffer;
-                        NANO_CHECK(nano::load_buffer_from_stream(stream, buffer));
-
-                        op_check_buffers(ref_buffer, buffer);
+                        const buffer_t buffer = load_buffer(stream, size % 43);
+                        NANO_REQUIRE_EQUAL(buffer.size(), ref_buffer.size());
+                        NANO_CHECK(std::equal(buffer.begin(), buffer.end(), ref_buffer.begin()));
+                        NANO_CHECK_EQUAL(stream.tellg(), static_cast<std::streamsize>(size));
                 }
 
-                // check buffer loading from mstream (one character at a time)
+                // check loading from std::istream wrapper (by block)
                 {
-                        imstream_t stream(ref_buffer.data(), size);
+                        std::ifstream istream(path.c_str(), std::ios::binary | std::ios::in);
+                        NANO_REQUIRE(istream.is_open());
+                        std_istream_t stream(istream);
 
                         NANO_CHECK_EQUAL(stream.tellg(), std::streamsize(0));
-                        NANO_CHECK_EQUAL(stream.size(), static_cast<std::streamsize>(size));
+                        const buffer_t buffer = load_buffer(stream, size % 17);
+                        NANO_REQUIRE_EQUAL(buffer.size(), ref_buffer.size());
+                        NANO_CHECK(std::equal(buffer.begin(), buffer.end(), ref_buffer.begin()));
+                        NANO_CHECK_EQUAL(stream.tellg(), static_cast<std::streamsize>(size));
+                }
 
-                        buffer_t buffer;
-                        char ch;
-                        while (stream.read(&ch, 1))
+                // check random skip ranges
+                {
+                        mem_istream_t stream(ref_buffer.data(), size);
+
+                        NANO_CHECK_EQUAL(stream.tellg(), std::streamsize(0));
+                        std::streamsize remaining = static_cast<std::streamsize>(size);
+                        while (stream)
                         {
-                                buffer.push_back(ch);
+                                NANO_REQUIRE_GREATER(remaining, 0);
+                                const std::streamsize skip_size = std::min(remaining, rng_skip());
+                                NANO_CHECK(stream.skip(skip_size));
+                                remaining -= skip_size;
                         }
-
-                        op_check_buffers(ref_buffer, buffer);
+                        NANO_CHECK_EQUAL(stream.tellg(), static_cast<std::streamsize>(size));
                 }
 
                 // cleanup
