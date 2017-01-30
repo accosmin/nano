@@ -11,15 +11,17 @@ namespace nano
 
         ///
         /// \brief check task for consistency per fold index:
-        ///     there should be no duplications per fold index.
+        ///     ideally there should be no duplications per fold index.
+        /// \return maximum number of duplicates
         ///
-        NANO_PUBLIC bool check_duplicates(const task_t& task);
+        NANO_PUBLIC size_t check_duplicates(const task_t& task);
 
         ///
         /// \brief check task for consistency per fold index:
-        ///     there should be no intersection between training, validation and tests datasets.
+        ///     ideally there should be no intersection between training, validation and tests datasets.
+        /// \return maximum number of duplicates between folds
         ///
-        NANO_PUBLIC bool check_intersection(const task_t& task);
+        NANO_PUBLIC size_t check_intersection(const task_t& task);
 
         ///
         /// \brief save the samples of the given fold as images (if possible) to the given path.

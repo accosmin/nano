@@ -40,28 +40,26 @@ namespace nano
         }
 
         template <typename tvalues>
-        static bool has_duplicates(const tvalues& values)
+        static size_t count_duplicates(const tvalues& values)
         {
                 size_t count = 0;
                 auto it = values.begin();
                 while ((it = std::adjacent_find(it, values.end())) != values.end())
                 {
                         ++ count;
-                        log_info() << "duplicates: pos = " << (it - values.begin()) << ", hash = " << *it;
                         ++ it;
                 }
-                log_info() << "duplicates: " << count << "/" << values.size();
-                return count > 0;
+                return count;
         }
 
         template <typename tvalues>
-        static bool intersects(const tvalues& values1, const tvalues& values2)
+        static size_t count_intersects(const tvalues& values1, const tvalues& values2)
         {
                 tvalues intersection;
                 std::set_intersection(
                         values1.begin(), values1.end(), values2.begin(), values2.end(),
                         std::back_inserter(intersection));
-                return !intersection.empty();
+                return intersection.size();
         }
 
         template <typename thashes>
@@ -74,8 +72,9 @@ namespace nano
                 }
         }
 
-        bool check_duplicates(const task_t& task)
+        size_t check_duplicates(const task_t& task)
         {
+                size_t max_duplicates = 0;
                 for (size_t f = 0; f < task.n_folds(); ++ f)
                 {
                         std::vector<size_t> hashes;
@@ -85,17 +84,15 @@ namespace nano
                         add_hashes(task, fold_t{f, protocol::test}, hashes);
 
                         std::sort(hashes.begin(), hashes.end());
-                        if (has_duplicates(hashes))
-                        {
-                                return false;
-                        }
+                        max_duplicates = std::max(max_duplicates, count_duplicates(hashes));
                 }
 
-                return true;
+                return max_duplicates;
         }
 
-        bool check_intersection(const task_t& task)
+        size_t check_intersection(const task_t& task)
         {
+                size_t max_duplicates = 0;
                 for (size_t f = 0; f < task.n_folds(); ++ f)
                 {
                         std::vector<size_t> train_hashes;
@@ -106,15 +103,12 @@ namespace nano
                         add_hashes(task, fold_t{f, protocol::valid}, valid_hashes);
                         add_hashes(task, fold_t{f, protocol::test}, test_hashes);
 
-                        if (    intersects(train_hashes, valid_hashes) ||
-                                intersects(valid_hashes, test_hashes) ||
-                                intersects(test_hashes, train_hashes))
-                        {
-                                return false;
-                        }
+                        max_duplicates = std::max(max_duplicates, count_intersects(train_hashes, valid_hashes));
+                        max_duplicates = std::max(max_duplicates, count_intersects(valid_hashes, test_hashes));
+                        max_duplicates = std::max(max_duplicates, count_intersects(test_hashes, train_hashes));
                 }
 
-                return true;
+                return max_duplicates;
         }
 
         void save_as_images(const task_t& task, const fold_t& fold, const string_t& basepath,

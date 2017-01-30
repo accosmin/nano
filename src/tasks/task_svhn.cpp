@@ -126,8 +126,6 @@ namespace nano
 
                 const auto n_samples = dims[3];
 
-                static size_t hash = 0;
-
                 // load images
                 auto idata = make_buffer(ix);
                 for (tensor_size_t i = 0; i < n_samples; ++ i)
@@ -142,10 +140,8 @@ namespace nano
                         image.plane(0) = tensor::map_matrix(idata.data() + 0 * px, icols(), irows()).cast<luma_t>().transpose();
                         image.plane(1) = tensor::map_matrix(idata.data() + 1 * px, icols(), irows()).cast<luma_t>().transpose();
                         image.plane(2) = tensor::map_matrix(idata.data() + 2 * px, icols(), irows()).cast<luma_t>().transpose();
-                        add_chunk(image, ++ hash);// image.hash());
+                        add_chunk(image, image.hash());
                 }
-
-                log_info() << "hash = " << hash;
 
                 return stream.skip(section.m_dsize - n_samples * ix) ? n_samples : 0;
         }
