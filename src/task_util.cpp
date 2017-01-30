@@ -42,7 +42,16 @@ namespace nano
         template <typename tvalues>
         static bool has_duplicates(const tvalues& values)
         {
-                return std::adjacent_find(values.begin(), values.end()) != values.end();
+                size_t count = 0;
+                auto it = values.begin();
+                while ((it = std::adjacent_find(it, values.end())) != values.end())
+                {
+                        ++ count;
+                        log_info() << "duplicates: pos = " << (it - values.begin()) << ", hash = " << *it;
+                        ++ it;
+                }
+                log_info() << "duplicates: " << count << "/" << values.size();
+                return count > 0;
         }
 
         template <typename tvalues>

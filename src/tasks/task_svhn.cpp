@@ -11,6 +11,20 @@
 
 namespace nano
 {
+        static const string_t tlabels[] =
+        {
+                "digit0",
+                "digit1",
+                "digit2",
+                "digit3",
+                "digit4",
+                "digit5",
+                "digit6",
+                "digit7",
+                "digit8",
+                "digit9"
+        };
+
         svhn_task_t::svhn_task_t(const string_t& config) :
                 mem_vision_task_t(3, 32, 32, 10, 1, 1, 1, to_params(config, "dir", "."))
         {
@@ -28,7 +42,7 @@ namespace nano
                 const tensor_size_t n_extra_samples = 531131;
                 const tensor_size_t n_test_samples = 26032;
 
-                reserve_chunks(n_train_samples + n_test_samples);
+                reserve_chunks(n_train_samples + n_extra_samples + n_test_samples);
 
                 return  load_binary(train_file, protocol::train) == n_train_samples &&
                         load_binary(extra_file, protocol::train) == n_extra_samples &&
@@ -112,6 +126,8 @@ namespace nano
 
                 const auto n_samples = dims[3];
 
+                static size_t hash = 0;
+
                 // load images
                 auto idata = make_buffer(ix);
                 for (tensor_size_t i = 0; i < n_samples; ++ i)
@@ -126,8 +142,10 @@ namespace nano
                         image.plane(0) = tensor::map_matrix(idata.data() + 0 * px, icols(), irows()).cast<luma_t>().transpose();
                         image.plane(1) = tensor::map_matrix(idata.data() + 1 * px, icols(), irows()).cast<luma_t>().transpose();
                         image.plane(2) = tensor::map_matrix(idata.data() + 2 * px, icols(), irows()).cast<luma_t>().transpose();
-                        add_chunk(image, image.hash());
+                        add_chunk(image, ++ hash);// image.hash());
                 }
+
+                log_info() << "hash = " << hash;
 
                 return stream.skip(section.m_dsize - n_samples * ix) ? n_samples : 0;
         }
@@ -156,6 +174,8 @@ namespace nano
                 const auto n_samples = dims[0];
                 auto chunk_index = n_chunks() - static_cast<size_t>(n_samples);
 
+                log_info() << "chunk_index = " << chunk_index;
+
                 // load labels
                 char ldata;
                 for (tensor_size_t i = 0; i < n_samples; ++ i)
@@ -176,10 +196,17 @@ namespace nano
                                 log_error() << "SVHN: invalid label <" << ilabel << ">!";
                                 return 0;
                         }
+                        else if (chunk_index >= n_chunks())
+                        {
+                                log_error() << "SVHN: too many labels!";
+                                return 0;
+                        }
 
                         const auto fold = make_fold(0, p);
-                        add_sample(fold, chunk_index ++, class_target(ilabel, odims()), "digit" + to_string(ilabel));
+                        add_sample(fold, chunk_index ++, class_target(ilabel, odims()), tlabels[ilabel]);
                 }
+
+                log_info() << "chunk_index = " << chunk_index << "/" << n_chunks();
 
                 return stream.skip(section.m_dsize - n_samples) ? n_samples : 0;
        }

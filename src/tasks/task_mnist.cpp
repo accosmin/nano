@@ -7,6 +7,20 @@
 
 namespace nano
 {
+        static const string_t tlabels[] =
+        {
+                "digit0",
+                "digit1",
+                "digit2",
+                "digit3",
+                "digit4",
+                "digit5",
+                "digit6",
+                "digit7",
+                "digit8",
+                "digit9"
+        };
+
         mnist_task_t::mnist_task_t(const string_t& config) :
                 mem_vision_task_t(1, 28, 28, 10, 1, 1, 1, to_params(config, "dir", "."))
         {
@@ -82,10 +96,14 @@ namespace nano
                         while (stream.read(label, 1) == 1)
                         {
                                 const tensor_index_t ilabel = static_cast<tensor_index_t>(label[0]);
-                                assert(ilabel < odims());
+                                if (ilabel < 0 || ilabel >= odims())
+                                {
+                                        log_error() << "MNIST: invalid label!";
+                                        return false;
+                                }
 
                                 const auto fold = make_fold(0, p);
-                                add_sample(fold, iindex, class_target(ilabel, odims()), "digit" + to_string(ilabel));
+                                add_sample(fold, iindex, class_target(ilabel, odims()), tlabels[ilabel]);
 
                                 ++ gcount;
                                 ++ iindex;
