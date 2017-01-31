@@ -105,7 +105,7 @@ A **task** describes a classification or regression problem consisting of separa
 
 The standard benchmark datasets can be download to $HOME/experiments/databases using:
 ```
-bash scripts/download_tasks.sh
+python3 scripts/download_tasks.py
 ```
 
 The image samples can be saved to disk using for example:
