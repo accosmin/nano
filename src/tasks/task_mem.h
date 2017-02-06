@@ -26,13 +26,12 @@ namespace nano
                 /// \brief constructor
                 ///
                 mem_task_t(
-                        const tensor_size_t idims, const tensor_size_t irows, const tensor_size_t icols,
-                        const tensor_size_t odims, const tensor_size_t orows, const tensor_size_t ocols,
+                        const tensor3d_dims_t& idims,
+                        const tensor3d_dims_t& odims,
                         const size_t fsize,
                         const string_t& configuration = string_t()) :
                         task_t(configuration),
-                        m_idims(idims), m_irows(irows), m_icols(icols),
-                        m_odims(odims), m_orows(orows), m_ocols(ocols),
+                        m_idims(idims), m_odims(odims),
                         m_fsize(fsize), m_frand(1, 10)
                 {
                 }
@@ -45,16 +44,12 @@ namespace nano
                 ///
                 /// \brief input size
                 ///
-                virtual tensor_size_t idims() const final { return m_idims; }
-                virtual tensor_size_t irows() const final { return m_irows; }
-                virtual tensor_size_t icols() const final { return m_icols; }
+                virtual tensor3d_dims_t idims() const final { return m_idims; }
 
                 ///
                 /// \brief output size
                 ///
-                virtual tensor_size_t odims() const final { return m_odims; }
-                virtual tensor_size_t orows() const final { return m_orows; }
-                virtual tensor_size_t ocols() const final { return m_ocols; }
+                virtual tensor3d_dims_t odims() const final { return m_odims; }
 
                 ///
                 /// \brief number of folds (not considering the protocol!)
@@ -171,12 +166,8 @@ namespace nano
         private:
 
                 // attributes
-                tensor_size_t                   m_idims;        ///< input size
-                tensor_size_t                   m_irows;
-                tensor_size_t                   m_icols;
-                tensor_size_t                   m_odims;        ///< output size
-                tensor_size_t                   m_orows;
-                tensor_size_t                   m_ocols;
+                tensor3d_dims_t                 m_idims;        ///< input size
+                tensor3d_dims_t                 m_odims;        ///< output size
                 size_t                          m_fsize;        ///< number of folds
                 mutable random_t<size_t>        m_frand;        ///< rng for training-validation fold assignment
                 std::vector<tchunk>             m_chunks;       ///<

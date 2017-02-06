@@ -8,9 +8,7 @@
 namespace nano
 {
         model_t::model_t(const string_t& parameters) :
-                clonable_t(parameters),
-                m_idims(0), m_irows(0), m_icols(0),
-                m_odims(0), m_orows(0), m_ocols(0)
+                clonable_t(parameters)
         {
         }
 
@@ -73,19 +71,13 @@ namespace nano
 
         bool model_t::resize(const task_t& task, bool verbose)
         {
-                return  resize(task.idims(), task.irows(), task.icols(), task.odims(), task.orows(), task.ocols(),
-                        verbose);
+                return resize(task.idims(), task.odims(), verbose);
         }
 
-        bool model_t::resize(const tensor_size_t idims, const tensor_size_t irows, const tensor_size_t icols,
-                const tensor_size_t odims, const tensor_size_t orows, const tensor_size_t ocols, const bool verbose)
+        bool model_t::resize(const tensor3d_dims_t& idims, const tensor3d_dims_t& odims, const bool verbose)
         {
                 m_idims = idims;
-                m_irows = irows;
-                m_icols = icols;
                 m_odims = odims;
-                m_orows = orows;
-                m_ocols = ocols;
                 resize(verbose);
 
                 if (verbose)
@@ -99,11 +91,7 @@ namespace nano
         bool operator==(const model_t& model, const task_t& task)
         {
                 return  model.idims() == task.idims() &&
-                        model.irows() == task.irows() &&
-                        model.icols() == task.icols() &&
-                        model.odims() == task.odims() &&
-                        model.orows() == task.orows() &&
-                        model.ocols() == task.ocols();
+                        model.odims() == task.odims();
         }
 
         bool operator!=(const model_t& model, const task_t& task)

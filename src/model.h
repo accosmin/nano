@@ -42,9 +42,7 @@ namespace nano
                 ///
                 /// \brief resize to process new inputs
                 ///
-                bool resize(const tensor_size_t idims, const tensor_size_t irows, const tensor_size_t icols,
-                            const tensor_size_t odims, const tensor_size_t orows, const tensor_size_t ocols,
-                            const bool verbose);
+                bool resize(const tensor3d_dims_t& idims, const tensor3d_dims_t& odims, const bool verbose);
 
                 ///
                 /// \brief resize to process new inputs compatible with the given task
@@ -60,6 +58,11 @@ namespace nano
                 /// \brief load its parameters from file
                 ///
                 bool load(const string_t& path);
+
+                ///
+                /// \brief number of parameters (to optimize)
+                ///
+                virtual tensor_size_t psize() const = 0;
 
                 ///
                 /// \brief load its parameters from vector
@@ -103,15 +106,8 @@ namespace nano
                 virtual timings_t timings() const = 0;
 
                 // access functions
-                tensor_size_t idims() const { return m_idims; }
-                tensor_size_t irows() const { return m_irows; }
-                tensor_size_t icols() const { return m_icols; }
-                tensor_size_t isize() const { return idims() * irows() * icols(); }
-                tensor_size_t odims() const { return m_odims; }
-                tensor_size_t orows() const { return m_orows; }
-                tensor_size_t ocols() const { return m_ocols; }
-                tensor_size_t osize() const { return odims() * orows() * ocols(); }
-                virtual tensor_size_t psize() const = 0;
+                tensor3d_dims_t idims() const { return m_idims; }
+                tensor3d_dims_t odims() const { return m_odims; }
 
         protected:
 
@@ -121,8 +117,8 @@ namespace nano
         private:
 
                 // attributes
-                tensor_size_t   m_idims, m_irows, m_icols;      ///< input size
-                tensor_size_t   m_odims, m_orows, m_ocols;      ///< output size
+                tensor3d_dims_t m_idims;
+                tensor3d_dims_t m_odims;
         };
 
         ///

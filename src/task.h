@@ -37,16 +37,12 @@ namespace nano
                 ///
                 /// \brief input size
                 ///
-                virtual tensor_size_t idims() const = 0;
-                virtual tensor_size_t irows() const = 0;
-                virtual tensor_size_t icols() const = 0;
+                virtual tensor3d_dims_t idims() const = 0;
 
                 ///
                 /// \brief output size
                 ///
-                virtual tensor_size_t odims() const = 0;
-                virtual tensor_size_t orows() const = 0;
-                virtual tensor_size_t ocols() const = 0;
+                virtual tensor3d_dims_t odims() const = 0;
 
                 ///
                 /// \brief number of folds

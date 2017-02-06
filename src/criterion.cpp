@@ -80,19 +80,12 @@ namespace nano
 
         void criterion_t::update(const tensor3d_t& input, const tensor3d_t& target, const loss_t& loss)
         {
-                assert(input.size<0>() == m_model->idims());
-                assert(input.size<1>() == m_model->irows());
-                assert(input.size<2>() == m_model->icols());
+                assert(input.dims() == m_model->idims());
 
                 const tensor3d_t& output = m_model->output(input);
 
-                assert(output.size<0>() == m_model->odims());
-                assert(output.size<1>() == m_model->orows());
-                assert(output.size<2>() == m_model->ocols());
-
-                assert(target.size<0>() == m_model->odims());
-                assert(target.size<1>() == m_model->orows());
-                assert(target.size<2>() == m_model->ocols());
+                assert(output.dims() == m_model->odims());
+                assert(target.dims() == m_model->odims());
 
                 accumulate(output.vector(), target.vector(), loss);
         }
