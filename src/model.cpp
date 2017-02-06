@@ -23,12 +23,8 @@ namespace nano
                 nano::obstream_t ob(os);
 
                 // save configuration
-                ob.write(m_idims);
-                ob.write(m_irows);
-                ob.write(m_icols);
-                ob.write(m_odims);
-                ob.write(m_orows);
-                ob.write(m_ocols);
+                ob.write(m_idims.dims());
+                ob.write(m_odims.dims());
                 ob.write(m_configuration);
 
                 // save parameters
@@ -50,13 +46,14 @@ namespace nano
                 nano::ibstream_t ib(is);
 
                 // read configuration
-                ib.read(m_idims);
-                ib.read(m_irows);
-                ib.read(m_icols);
-                ib.read(m_odims);
-                ib.read(m_orows);
-                ib.read(m_ocols);
+                tensor3d_dims_t::tindices idims;
+                tensor3d_dims_t::tindices odims;
+                ib.read(idims);
+                ib.read(odims);
                 ib.read(m_configuration);
+
+                m_idims = tensor3d_dims_t(idims[0], idims[1], idims[2]);
+                m_odims = tensor3d_dims_t(odims[0], odims[1], odims[2]);
 
                 // apply configuration
                 resize(true);

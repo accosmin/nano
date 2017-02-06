@@ -152,13 +152,23 @@ namespace tensor
         ///
         /// \brief compare two tensor dimensions.
         ///
-        template
-        <
-                typename tindex,
-                std::size_t tdimensions
-        >
+        template <typename tindex, std::size_t tdimensions>
         bool operator==(const tensor_index_t<tindex, tdimensions>& ti1, const tensor_index_t<tindex, tdimensions>& ti2)
         {
                 return std::operator==(ti1.dims(), ti2.dims());
+        }
+
+        ///
+        /// \brief stream tensor dimensions.
+        ///
+        template <typename tostream, typename tindex, std::size_t tdimensions>
+        tostream& operator<<(tostream& os, const tensor_index_t<tindex, tdimensions>& ti)
+        {
+                const auto& dims = ti.dims();
+                for (auto d = 0; d < dims.size(); ++ d)
+                {
+                        os << dims[d] << (d + 1 == dims.size() ? "" : "x");
+                }
+                return os;
         }
 }
