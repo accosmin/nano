@@ -155,7 +155,7 @@ namespace tensor
         template
         <
                 typename tindex,
-                int tdimensions
+                std::size_t tdimensions
         >
         bool operator==(const tensor_index_t<tindex, tdimensions>& ti1, const tensor_index_t<tindex, tdimensions>& ti2)
         {
