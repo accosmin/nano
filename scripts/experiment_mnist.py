@@ -23,10 +23,10 @@ for name in criteria:
 outlayer = "affine:dims=10;act-snorm;"
 
 convnet0 = "--model forward-network --model-params "
-convnet1 = convnet0 + "conv:dims=32,rows=5,cols=5,conn=1,drow=1,dcol=1;act-splus;"
-convnet2 = convnet1 + "conv:dims=32,rows=5,cols=5,conn=4,drow=1,dcol=1;act-splus;"
-convnet3 = convnet2 + "conv:dims=32,rows=3,cols=3,conn=4,drow=1,dcol=1;act-splus;"
-convnet4 = convnet3 + "conv:dims=32,rows=3,cols=3,conn=4,drow=1,dcol=1;act-splus;"
+convnet1 = convnet0 + "conv:dims=32,rows=5,cols=5,conn=1,drow=1,dcol=1;act-snorm;"
+convnet2 = convnet1 + "conv:dims=32,rows=5,cols=5,conn=4,drow=1,dcol=1;act-snorm;"
+convnet3 = convnet2 + "conv:dims=32,rows=3,cols=3,conn=4,drow=1,dcol=1;act-snorm;"
+convnet4 = convnet3 + "conv:dims=32,rows=3,cols=3,conn=4,drow=1,dcol=1;act-snorm;"
 
 exp.add_model("convnet1", convnet1 + outlayer)
 exp.add_model("convnet2", convnet2 + outlayer)
@@ -44,7 +44,7 @@ for name in trainers:
 
 # train all configurations
 trials = 10
-epochs = 20
+epochs = 100
 exp.run_all(trials, epochs, cfg.policies.get("stop_early"))
 
 # compare configurations
