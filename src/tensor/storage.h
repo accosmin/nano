@@ -14,7 +14,7 @@ namespace tensor
                 typename tstorage,      ///< data storage type (e.g. Eigen::Vector or mapped C-array)
                 int tdimensions
         >
-        class tensor_storage_t
+        class storage_t
         {
         public:
 
@@ -24,7 +24,7 @@ namespace tensor
                 using tsize = typename tstorage::Index;
                 using tindex = typename tstorage::Index;
                 using tscalar = typename tstorage::Scalar;
-                using tdims = tensor_index_t<tindex, tdimensions>;
+                using tdims = index_t<tindex, tdimensions>;
 
                 // Eigen compatible
                 using Index = tindex;
@@ -33,12 +33,12 @@ namespace tensor
                 ///
                 /// \brief constructor
                 ///
-                tensor_storage_t() = default;
+                storage_t() = default;
 
                 ///
                 /// \brief constructor
                 ///
-                explicit tensor_storage_t(const tdims& dims) :
+                explicit storage_t(const tdims& dims) :
                         m_dims(dims)
                 {
                 }
@@ -47,7 +47,7 @@ namespace tensor
                 /// \brief constructor
                 ///
                 template <typename... tsizes>
-                explicit tensor_storage_t(const tsizes... dims) :
+                explicit storage_t(const tsizes... dims) :
                         m_dims(dims...)
                 {
                 }
@@ -56,7 +56,7 @@ namespace tensor
                 /// \brief constructor
                 ///
                 template <typename... tsizes>
-                tensor_storage_t(const tstorage& data, const tsizes... dims) :
+                storage_t(const tstorage& data, const tsizes... dims) :
                         m_dims(dims...),
                         m_data(data)
                 {

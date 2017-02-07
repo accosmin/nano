@@ -26,8 +26,8 @@ namespace nano
                 /// \brief constructor
                 ///
                 mem_task_t(
-                        const tensor3d_dims_t& idims,
-                        const tensor3d_dims_t& odims,
+                        const dim3d_t& idims,
+                        const dim3d_t& odims,
                         const size_t fsize,
                         const string_t& configuration = string_t()) :
                         task_t(configuration),
@@ -44,12 +44,12 @@ namespace nano
                 ///
                 /// \brief input size
                 ///
-                virtual tensor3d_dims_t idims() const final { return m_idims; }
+                virtual dim3d_t idims() const final { return m_idims; }
 
                 ///
                 /// \brief output size
                 ///
-                virtual tensor3d_dims_t odims() const final { return m_odims; }
+                virtual dim3d_t odims() const final { return m_odims; }
 
                 ///
                 /// \brief number of folds (not considering the protocol!)
@@ -166,8 +166,8 @@ namespace nano
         private:
 
                 // attributes
-                tensor3d_dims_t                 m_idims;        ///< input size
-                tensor3d_dims_t                 m_odims;        ///< output size
+                dim3d_t                         m_idims;        ///< input size
+                dim3d_t                         m_odims;        ///< output size
                 size_t                          m_fsize;        ///< number of folds
                 mutable random_t<size_t>        m_frand;        ///< rng for training-validation fold assignment
                 std::vector<tchunk>             m_chunks;       ///<

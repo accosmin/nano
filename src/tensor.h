@@ -13,11 +13,11 @@ namespace nano
 
         using tensor3d_t = tensor::tensor_t<scalar_t, 3>;
         using tensor3ds_t = std::vector<tensor3d_t>;
-        using tensor3d_dims_t = tensor3d_t::tdims;
+        using dim3d_t = tensor3d_t::tdims;
 
         using tensor4d_t = tensor::tensor_t<scalar_t, 4>;
         using tensor4ds_t = std::vector<tensor4d_t>;
-        using tensor4d_dims_t = tensor4d_t::tdims;
+        using dim4d_t = tensor4d_t::tdims;
 
         using tensor_size_t = tensor3d_t::Index;
         using tensor_index_t = tensor3d_t::Index;

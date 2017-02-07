@@ -22,6 +22,8 @@ namespace nano
 
                 nano::obstream_t ob(os);
 
+                // todo: transform tensor::index_t to POD so that serializing works
+
                 // save configuration
                 ob.write(m_idims.dims());
                 ob.write(m_odims.dims());
@@ -46,14 +48,14 @@ namespace nano
                 nano::ibstream_t ib(is);
 
                 // read configuration
-                tensor3d_dims_t::tindices idims;
-                tensor3d_dims_t::tindices odims;
+                dim3d_t::tindices idims;
+                dim3d_t::tindices odims;
                 ib.read(idims);
                 ib.read(odims);
                 ib.read(m_configuration);
 
-                m_idims = tensor3d_dims_t(idims[0], idims[1], idims[2]);
-                m_odims = tensor3d_dims_t(odims[0], odims[1], odims[2]);
+                m_idims = dim3d_t(idims[0], idims[1], idims[2]);
+                m_odims = dim3d_t(odims[0], odims[1], odims[2]);
 
                 // apply configuration
                 resize(true);
@@ -71,7 +73,7 @@ namespace nano
                 return resize(task.idims(), task.odims(), verbose);
         }
 
-        bool model_t::resize(const tensor3d_dims_t& idims, const tensor3d_dims_t& odims, const bool verbose)
+        bool model_t::resize(const dim3d_t& idims, const dim3d_t& odims, const bool verbose)
         {
                 m_idims = idims;
                 m_odims = odims;

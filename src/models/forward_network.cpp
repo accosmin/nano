@@ -93,10 +93,10 @@ namespace nano
 
         const vector_t& forward_network_t::gparam(const vector_t& _output)
         {
-                assert(_output.size() == osize());
+                assert(_output.size() == odims().size());
                 assert(!m_layers.empty());
 
-                m_odata = tensor::map_tensor(_output.data(), osize(), tensor_size_t(1), tensor_size_t(1));
+                m_odata = tensor::map_tensor(_output.data(), odims());
 
                 return gparam(m_odata);
         }
@@ -176,7 +176,7 @@ namespace nano
 
         tensor_size_t forward_network_t::resize(bool verbose)
         {
-                tensor3d_t input(idims(), irows(), icols());
+                tensor3d_t input(idims());
                 tensor_size_t n_params = 0;
 
                 m_layers.clear();
@@ -217,11 +217,9 @@ namespace nano
                 }
 
                 // check output size to match the target
-                if (    input.size<0>() != osize() ||
-                        input.size<1>() != 1 ||
-                        input.size<2>() != 1)
+                if (input.dims() != odims())
                 {
-                        log_error() << "forward network: miss-matching output size! expecting " << osize() << "!";
+                        log_error() << "forward network: miss-matching output size! expecting " << odims() << "!";
                         throw std::invalid_argument("invalid output layer description");
                 }
 

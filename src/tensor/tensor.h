@@ -12,11 +12,11 @@ namespace tensor
                 typename tmap,
                 int tdimensions
         >
-        class tensor_map_t : public tensor_storage_t<tmap, tdimensions>
+        class tensor_map_t : public storage_t<tmap, tdimensions>
         {
         public:
 
-                using tbase = tensor_storage_t<tmap, tdimensions>;
+                using tbase = storage_t<tmap, tdimensions>;
                 using tdims = typename tbase::tdims;
                 using tsize = typename tbase::tsize;
                 using tscalar = typename tbase::tscalar;
@@ -44,11 +44,11 @@ namespace tensor
                 int tdimensions,
                 typename tvector = vector_t<tscalar>
         >
-        class tensor_t : public tensor_storage_t<tvector, tdimensions>
+        class tensor_t : public storage_t<tvector, tdimensions>
         {
         public:
 
-                using tbase = tensor_storage_t<tvector, tdimensions>;
+                using tbase = storage_t<tvector, tdimensions>;
                 using tdims = typename tbase::tdims;
                 using tsize = typename tbase::tsize;
 
@@ -107,6 +107,28 @@ namespace tensor
         ///
         /// \brief map non-constant data to tensors
         ///
+        template <typename tvalue_, typename tindex, std::size_t tdimensions>
+        auto map_tensor(tvalue_* data, const index_t<tindex, tdimensions>& index)
+        {
+                using tvalue = typename std::remove_const<tvalue_>::type;
+                using tstorage = Eigen::Map<vector_t<tvalue>>;
+                return tensor_map_t<tstorage, tdimensions>(tensor::map_vector(data, index.size()), index);
+        }
+
+        ///
+        /// \brief map constant data to tensors
+        ///
+        template <typename tvalue_, typename tindex, std::size_t tdimensions>
+        auto map_tensor(const tvalue_* data, const index_t<tindex, tdimensions>& index)
+        {
+                using tvalue = typename std::remove_const<tvalue_>::type;
+                using tstorage = Eigen::Map<const vector_t<tvalue>>;
+                return tensor_map_t<tstorage, tdimensions>(tensor::map_vector(data, index.size()), index);
+        }
+
+        ///
+        /// \brief map non-constant data to tensors
+        ///
         template <typename tvalue_, typename... tsizes>
         auto map_tensor(tvalue_* data, const tsizes... dims)
         {
@@ -128,27 +150,5 @@ namespace tensor
                 return  tensor_map_t<tstorage, sizeof...(dims)>(
                         tensor::map_vector(data, detail::product_variadic<typename tstorage::Index>(dims...)),
                         dims...);
-        }
-
-        ///
-        /// \brief map non-constant data to tensors
-        ///
-        template <typename tvalue_, typename tindex, std::size_t tdimensions>
-        auto map_tensor(tvalue_* data, const tensor_index_t<tindex, tdimensions>& index)
-        {
-                using tvalue = typename std::remove_const<tvalue_>::type;
-                using tstorage = Eigen::Map<vector_t<tvalue>>;
-                return tensor_map_t<tstorage, tdimensions>(tensor::map_vector(data, index.size()), index);
-        }
-
-        ///
-        /// \brief map constant data to tensors
-        ///
-        template <typename tvalue_, typename tindex, std::size_t tdimensions>
-        auto map_tensor(const tvalue_* data, const tensor_index_t<tindex, tdimensions>& index)
-        {
-                using tvalue = typename std::remove_const<tvalue_>::type;
-                using tstorage = Eigen::Map<const vector_t<tvalue>>;
-                return tensor_map_t<tstorage, tdimensions>(tensor::map_vector(data, index.size()), index);
         }
 }

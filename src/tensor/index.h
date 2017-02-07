@@ -2,6 +2,7 @@
 
 #include <array>
 #include <cassert>
+#include <ostream>
 
 namespace tensor
 {
@@ -27,14 +28,10 @@ namespace tensor
         }
 
         ///
-        /// \brief tensor index
+        /// \brief index a multi-dimensional tensor.
         ///
-        template
-        <
-                typename tindex,
-                std::size_t tdimensions
-        >
-        class tensor_index_t
+        template <typename tindex, std::size_t tdimensions>
+        struct index_t
         {
         public:
 
@@ -45,7 +42,7 @@ namespace tensor
                 ///
                 /// \brief constructor
                 ///
-                tensor_index_t()
+                index_t()
                 {
                         m_sizes.fill(0);
                         m_strides.fill(0);
@@ -55,7 +52,7 @@ namespace tensor
                 /// \brief constructor
                 ///
                 template <typename... tindices>
-                explicit tensor_index_t(const tindices... sizes) :
+                explicit index_t(const tindices... sizes) :
                         m_sizes({{sizes...}})
                 {
                         static_assert(sizeof...(sizes) == tdimensions, "wrong number of tensor dimensions");
@@ -154,16 +151,22 @@ namespace tensor
         /// \brief compare two tensor dimensions.
         ///
         template <typename tindex, std::size_t tdimensions>
-        bool operator==(const tensor_index_t<tindex, tdimensions>& ti1, const tensor_index_t<tindex, tdimensions>& ti2)
+        bool operator==(const index_t<tindex, tdimensions>& ti1, const index_t<tindex, tdimensions>& ti2)
         {
                 return std::operator==(ti1.dims(), ti2.dims());
+        }
+
+        template <typename tindex, std::size_t tdimensions>
+        bool operator!=(const index_t<tindex, tdimensions>& ti1, const index_t<tindex, tdimensions>& ti2)
+        {
+                return !operator==(ti1, ti2);
         }
 
         ///
         /// \brief stream tensor dimensions.
         ///
-        template <typename tostream, typename tindex, std::size_t tdimensions>
-        tostream& operator<<(tostream& os, const tensor_index_t<tindex, tdimensions>& ti)
+        template <typename tindex, std::size_t tdimensions>
+        std::ostream& operator<<(std::ostream& os, const index_t<tindex, tdimensions>& ti)
         {
                 const auto& dims = ti.dims();
                 for (std::size_t d = 0; d < dims.size(); ++ d)

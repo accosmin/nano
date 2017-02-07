@@ -63,8 +63,8 @@ namespace nano
                 /// \brief constructor
                 ///
                 mem_vision_task_t(
-                        const tensor3d_dims_t& idims,
-                        const tensor3d_dims_t& odims,
+                        const dim3d_t& idims,
+                        const dim3d_t& odims,
                         const size_t fsize,
                         const string_t& config = string_t()) :
                         mem_task_t<image_t, mem_vision_sample_t>(idims, odims, fsize, config) {}
@@ -74,11 +74,11 @@ namespace nano
                 ///
                 mem_vision_task_t(
                         const color_mode color, const tensor_size_t irows, const tensor_size_t icols,
-                        const tensor3d_dims_t& odims,
+                        const dim3d_t& odims,
                         const size_t fsize,
                         const string_t& config = string_t()) :
                         mem_vision_task_t(
-                        {(color == color_mode::rgba ? 4 : (color == color_mode::rgb ? 3 : 1)), irows, icols},
+                        dim3d_t{(color == color_mode::rgba ? 4 : (color == color_mode::rgb ? 3 : 1)), irows, icols},
                         odims, fsize, config) {}
 
                 ///

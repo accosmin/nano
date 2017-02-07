@@ -42,7 +42,7 @@ namespace nano
                 ///
                 /// \brief resize to process new inputs
                 ///
-                bool resize(const tensor3d_dims_t& idims, const tensor3d_dims_t& odims, const bool verbose);
+                bool resize(const dim3d_t& idims, const dim3d_t& odims, const bool verbose);
 
                 ///
                 /// \brief resize to process new inputs compatible with the given task
@@ -106,8 +106,8 @@ namespace nano
                 virtual timings_t timings() const = 0;
 
                 // access functions
-                tensor3d_dims_t idims() const { return m_idims; }
-                tensor3d_dims_t odims() const { return m_odims; }
+                dim3d_t idims() const { return m_idims; }
+                dim3d_t odims() const { return m_odims; }
 
         protected:
 
@@ -117,8 +117,8 @@ namespace nano
         private:
 
                 // attributes
-                tensor3d_dims_t m_idims;
-                tensor3d_dims_t m_odims;
+                dim3d_t         m_idims;
+                dim3d_t         m_odims;
         };
 
         ///
