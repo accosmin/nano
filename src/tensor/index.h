@@ -1,6 +1,7 @@
 #pragma once
 
 #include <array>
+#include <cassert>
 
 namespace tensor
 {
@@ -165,7 +166,7 @@ namespace tensor
         tostream& operator<<(tostream& os, const tensor_index_t<tindex, tdimensions>& ti)
         {
                 const auto& dims = ti.dims();
-                for (auto d = 0; d < dims.size(); ++ d)
+                for (std::size_t d = 0; d < dims.size(); ++ d)
                 {
                         os << dims[d] << (d + 1 == dims.size() ? "" : "x");
                 }

@@ -1,8 +1,8 @@
 #pragma once
 
+#include "index.h"
 #include "vector.h"
 #include "matrix.h"
-#include "tensor_index.h"
 
 namespace tensor
 {

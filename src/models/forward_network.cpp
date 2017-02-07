@@ -72,10 +72,10 @@ namespace nano
 
         const tensor3d_t& forward_network_t::ginput(const vector_t& _output)
         {
-                assert(_output.size() == osize());
+                assert(_output.size() == odims().size());
                 assert(!m_layers.empty());
 
-                m_odata = tensor::map_tensor(_output.data(), osize(), tensor_size_t(1), tensor_size_t(1));
+                m_odata = tensor::map_tensor(_output.data(), odims());
 
                 return ginput(m_odata);
         }

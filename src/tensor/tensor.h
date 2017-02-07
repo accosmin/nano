@@ -1,6 +1,6 @@
 #pragma once
 
-#include "tensor_storage.h"
+#include "storage.h"
 
 namespace tensor
 {
@@ -102,7 +102,6 @@ namespace tensor
                         this->m_data.resize(this->m_dims.size());
                         return this->size();
                 }
-
         };
 
         ///
@@ -129,5 +128,27 @@ namespace tensor
                 return  tensor_map_t<tstorage, sizeof...(dims)>(
                         tensor::map_vector(data, detail::product_variadic<typename tstorage::Index>(dims...)),
                         dims...);
+        }
+
+        ///
+        /// \brief map non-constant data to tensors
+        ///
+        template <typename tvalue_, typename tindex, std::size_t tdimensions>
+        auto map_tensor(tvalue_* data, const tensor_index_t<tindex, tdimensions>& index)
+        {
+                using tvalue = typename std::remove_const<tvalue_>::type;
+                using tstorage = Eigen::Map<vector_t<tvalue>>;
+                return tensor_map_t<tstorage, tdimensions>(tensor::map_vector(data, index.size()), index);
+        }
+
+        ///
+        /// \brief map constant data to tensors
+        ///
+        template <typename tvalue_, typename tindex, std::size_t tdimensions>
+        auto map_tensor(const tvalue_* data, const tensor_index_t<tindex, tdimensions>& index)
+        {
+                using tvalue = typename std::remove_const<tvalue_>::type;
+                using tstorage = Eigen::Map<const vector_t<tvalue>>;
+                return tensor_map_t<tstorage, tdimensions>(tensor::map_vector(data, index.size()), index);
         }
 }

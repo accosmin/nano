@@ -120,6 +120,8 @@ namespace nano
                 const auto bkcolor = rgba_t{225, 225, 0, 255};
 
                 const auto size = task.n_samples(fold);
+                const auto rows = task.idims().size<1>();
+                const auto cols = task.idims().size<2>();
 
                 std::set<string_t> labels;
                 for (size_t i = 0; i < size; ++ i)
@@ -132,7 +134,7 @@ namespace nano
                 {
                         for (size_t i = 0, g = 1; i < size; ++ g)
                         {
-                                image_grid_t grid_image(task.irows(), task.icols(), grows, gcols, border, bkcolor);
+                                image_grid_t grid_image(rows, cols, grows, gcols, border, bkcolor);
 
                                 // compose the image block
                                 for (coord_t r = 0; r < grows; ++ r)

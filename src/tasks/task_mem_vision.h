@@ -63,23 +63,23 @@ namespace nano
                 /// \brief constructor
                 ///
                 mem_vision_task_t(
-                        const tensor_size_t idims, const tensor_size_t irows, const tensor_size_t icols,
-                        const tensor_size_t odims, const tensor_size_t orows, const tensor_size_t ocols,
+                        const tensor3d_dims_t& idims,
+                        const tensor3d_dims_t& odims,
                         const size_t fsize,
                         const string_t& config = string_t()) :
-                        mem_task_t<image_t, mem_vision_sample_t>(idims, irows, icols, odims, orows, ocols, fsize, config) {}
+                        mem_task_t<image_t, mem_vision_sample_t>(idims, odims, fsize, config) {}
 
                 ///
                 /// \brief constructor
                 ///
                 mem_vision_task_t(
                         const color_mode color, const tensor_size_t irows, const tensor_size_t icols,
-                        const tensor_size_t odims, const tensor_size_t orows, const tensor_size_t ocols,
+                        const tensor3d_dims_t& odims,
                         const size_t fsize,
                         const string_t& config = string_t()) :
                         mem_vision_task_t(
-                        (color == color_mode::rgba ? 4 : (color == color_mode::rgb ? 3 : 1)),
-                        irows, icols, odims, orows, ocols, fsize, config) {}
+                        {(color == color_mode::rgba ? 4 : (color == color_mode::rgb ? 3 : 1)), irows, icols},
+                        odims, fsize, config) {}
 
                 ///
                 /// \brief retrieve the number of images
@@ -96,7 +96,7 @@ namespace nano
                 ///
                 color_mode color() const
                 {
-                        switch (idims())
+                        switch (idims().size<0>())
                         {
                         case 1:         return color_mode::luma;
                         case 3:         return color_mode::rgb;
