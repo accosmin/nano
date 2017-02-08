@@ -8,7 +8,7 @@ namespace tensor
 {
         namespace detail
         {
-                template<typename tvalue, std::size_t tsize>
+                template <typename tvalue, std::size_t tsize>
                 constexpr tvalue product_array(const std::array<tvalue, tsize>& a, const std::size_t i = 0)
                 {
                         return (i < tsize)? a[i] * product_array(a, i + 1) : tvalue(1);
@@ -130,14 +130,7 @@ namespace tensor
                 tindex get_index(const tindex index, const tindices... indices) const
                 {
                         assert(index >= 0 && index < size<idim>());
-                        if (idim + 1 == tdimensions)
-                        {
-                                return index;
-                        }
-                        else
-                        {
-                                return index * m_strides[idim] + get_index<idim + 1>(indices...);
-                        }
+                        return index * m_strides[idim] + get_index<idim + 1>(indices...);
                 }
 
         private:
