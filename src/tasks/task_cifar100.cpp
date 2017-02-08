@@ -111,7 +111,7 @@ namespace nano
         };
 
         cifar100_task_t::cifar100_task_t(const string_t& config) :
-                mem_vision_task_t(3, 32, 32, 100, 1, 1, 1, to_params(config, "dir", "."))
+                mem_vision_task_t(dim3d_t{3, 32, 32}, dim3d_t{100, 1, 1}, 1, to_params(config, "dir", "."))
         {
         }
 
@@ -156,7 +156,10 @@ namespace nano
         {
                 log_info() << "CIFAR-100: loading file <" << filename << "> ...";
 
-                const auto buffer_size = irows() * icols() * 3;
+                const auto irows = idims().size<1>();
+                const auto icols = idims().size<2>();
+                const auto buffer_size = irows * icols * 3;
+
                 std::vector<char> buffer(static_cast<size_t>(buffer_size));
                 char label[2];
 
@@ -165,13 +168,18 @@ namespace nano
                         stream.read(buffer.data(), buffer_size) == buffer_size)
                 {
                         const tensor_index_t ilabel = label[1];
+                        if (ilabel < 0 || ilabel >= odims().size())
+                        {
+                                log_error() << "CIFAR-100: invalid label!";
+                                return false;
+                        }
 
                         image_t image;
-                        image.load_rgb(buffer.data(), irows(), icols(), irows() * icols());
+                        image.load_rgb(buffer.data(), irows, icols, irows * icols);
                         add_chunk(image, image.hash());
 
                         const auto fold = make_fold(0, p);
-                        add_sample(fold, n_chunks() - 1, class_target(ilabel, odims()), tlabels[ilabel]);
+                        add_sample(fold, n_chunks() - 1, class_target(ilabel, odims().size()), tlabels[ilabel]);
 
                         icount ++;
                 }

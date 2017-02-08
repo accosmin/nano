@@ -15,8 +15,8 @@ namespace nano
         }
 
         affine_task_t::affine_task_t(const string_t& configuration) : mem_tensor_task_t(
-                clamp(from_params<tensor_size_t>(append_config(configuration), "isize"), 1, 1000), 1, 1,
-                clamp(from_params<tensor_size_t>(append_config(configuration), "osize"), 1, 1000), 1, 1,
+                dim3d_t{clamp(from_params<tensor_size_t>(append_config(configuration), "isize"), 1, 1000), 1, 1},
+                dim3d_t{clamp(from_params<tensor_size_t>(append_config(configuration), "osize"), 1, 1000), 1, 1},
                 1, append_config(configuration))
         {
         }
@@ -30,8 +30,8 @@ namespace nano
                 auto rng_noise = make_rng<scalar_t>(-noise, +noise);
 
                 // random affine transformation
-                m_A.resize(odims(), idims());
-                m_b.resize(odims());
+                m_A.resize(odims().size(), idims().size());
+                m_b.resize(odims().size());
 
                 tensor::set_random(rng_input, m_A, m_b);
                 tensor::normalize(m_A);
@@ -40,12 +40,12 @@ namespace nano
                 for (size_t i = 0; i < count; ++ i)
                 {
                         // random input
-                        tensor3d_t input(idims(), irows(), icols());
+                        tensor3d_t input(idims());
                         tensor::set_random(rng_input, input);
                         add_chunk(input, i);
 
                         // target
-                        tensor3d_t target(odims(), orows(), ocols());
+                        tensor3d_t target(odims());
                         tensor::map_vector(target.data(), target.size()) = m_A * input.vector() + m_b;
                         tensor::add_random(rng_noise, target);
                         add_sample(make_fold(0), i, target);

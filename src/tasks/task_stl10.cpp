@@ -91,7 +91,9 @@ namespace nano
         {
                 log_info() << "STL-10: loading file <" << ifile << "> ...";
 
-                const auto px = irows() * icols();
+                const auto irows = idims().size<1>();
+                const auto icols = idims().size<2>();
+                const auto px = irows * icols;
                 const auto ix = 3 * px;
 
                 std::vector<char> buffer(static_cast<size_t>(ix));
@@ -102,15 +104,15 @@ namespace nano
                 // load images
                 while (stream.read(buffer.data(), ix) == ix)
                 {
-                        image_t image(irows(), icols(), color_mode::rgb);
-                        image.plane(0) = tensor::map_matrix(iptr + 0 * px, icols(), irows()).cast<luma_t>().transpose();
-                        image.plane(1) = tensor::map_matrix(iptr + 1 * px, icols(), irows()).cast<luma_t>().transpose();
-                        image.plane(2) = tensor::map_matrix(iptr + 2 * px, icols(), irows()).cast<luma_t>().transpose();
+                        image_t image(irows, icols, color_mode::rgb);
+                        image.plane(0) = tensor::map_matrix(iptr + 0 * px, icols, irows).cast<luma_t>().transpose();
+                        image.plane(1) = tensor::map_matrix(iptr + 1 * px, icols, irows).cast<luma_t>().transpose();
+                        image.plane(2) = tensor::map_matrix(iptr + 2 * px, icols, irows).cast<luma_t>().transpose();
                         add_chunk(image, image.hash());
 
                         if (unlabeled)
                         {
-                                m_samples.emplace_back(n_chunks() - 1, odims());
+                                m_samples.emplace_back(n_chunks() - 1, odims().size());
                         }
 
                         ++ icount;
@@ -136,13 +138,13 @@ namespace nano
                 {
                         const tensor_index_t ilabel = static_cast<tensor_index_t>(label) - 1;
 
-                        if (ilabel < odims())
+                        if (ilabel >= 0 && ilabel < odims().size())
                         {
                                 m_samples.emplace_back(iindex, ilabel);
                         }
                         else
                         {
-                                m_samples.emplace_back(iindex, odims());
+                                m_samples.emplace_back(iindex, odims().size());
                         }
 
                         ++ gcount;
@@ -164,10 +166,10 @@ namespace nano
 
                 const auto op_sample = [&] (const fold_t& fold, const sample_t& sample)
                 {
-                        if (sample.m_label < odims())
+                        if (sample.m_label < odims().size())
                         {
                                 add_sample(fold, sample.m_image,
-                                           class_target(sample.m_label, odims()),
+                                           class_target(sample.m_label, odims().size()),
                                            tlabels[sample.m_label]);
                         }
                         else

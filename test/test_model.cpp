@@ -48,12 +48,8 @@ NANO_CASE(evaluate)
                 // create feed-forward network
                 const auto model = nano::get_models().get("forward-network", cmd_network);
                 NANO_CHECK_EQUAL(model->resize(*task, false), true);
-                NANO_CHECK_EQUAL(model->idims(), 1);
-                NANO_CHECK_EQUAL(model->irows(), task->irows());
-                NANO_CHECK_EQUAL(model->icols(), task->icols());
+                NANO_CHECK_EQUAL(model->idims(), task->idims());
                 NANO_CHECK_EQUAL(model->odims(), task->odims());
-                NANO_CHECK_EQUAL(model->orows(), task->orows());
-                NANO_CHECK_EQUAL(model->ocols(), task->ocols());
 
                 // test random networks
                 for (size_t t = 0; t < 5; ++ t)

@@ -22,7 +22,7 @@ namespace nano
         };
 
         mnist_task_t::mnist_task_t(const string_t& config) :
-                mem_vision_task_t(1, 28, 28, 10, 1, 1, 1, to_params(config, "dir", "."))
+                mem_vision_task_t(dim3d_t{1, 28, 28}, dim3d_t{10, 1, 1}, 1, to_params(config, "dir", "."))
         {
         }
 
@@ -49,7 +49,10 @@ namespace nano
                 size_t icount = 0;
                 size_t gcount = 0;
 
-                const auto buffer_size = irows() * icols();
+                const auto irows = idims().size<1>();
+                const auto icols = idims().size<2>();
+                const auto buffer_size = irows * icols;
+
                 std::vector<char> buffer(static_cast<size_t>(buffer_size));
                 char label[2];
 
@@ -69,7 +72,7 @@ namespace nano
                         while (stream.read(buffer.data(), buffer_size) == buffer_size)
                         {
                                 image_t image;
-                                image.load_luma(buffer.data(), irows(), icols());
+                                image.load_luma(buffer.data(), irows, icols);
                                 add_chunk(image, image.hash());
 
                                 ++ icount;
@@ -96,14 +99,14 @@ namespace nano
                         while (stream.read(label, 1) == 1)
                         {
                                 const tensor_index_t ilabel = static_cast<tensor_index_t>(label[0]);
-                                if (ilabel < 0 || ilabel >= odims())
+                                if (ilabel < 0 || ilabel >= odims().size())
                                 {
                                         log_error() << "MNIST: invalid label!";
                                         return false;
                                 }
 
                                 const auto fold = make_fold(0, p);
-                                add_sample(fold, iindex, class_target(ilabel, odims()), tlabels[ilabel]);
+                                add_sample(fold, iindex, class_target(ilabel, odims().size()), tlabels[ilabel]);
 
                                 ++ gcount;
                                 ++ iindex;

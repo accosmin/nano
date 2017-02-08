@@ -40,7 +40,7 @@ struct model_wrt_params_function_t final : public function_t
 struct model_wrt_inputs_function_t final : public function_t
 {
         model_wrt_inputs_function_t(const rmodel_t& model, const rloss_t& loss, const vector_t& params, const vector_t& target) :
-                function_t("model", model->isize(), model->isize(), model->isize(), convexity::no, 1e+6),
+                function_t("model", model->idims().size(), model->idims().size(), model->idims().size(), convexity::no, 1e+6),
                 m_model(model), m_loss(loss), m_params(params), m_target(target)
         {
         }
@@ -48,7 +48,7 @@ struct model_wrt_inputs_function_t final : public function_t
         scalar_t vgrad(const vector_t& x, vector_t* gx) const override
         {
                 m_model->load_params(m_params);
-                const auto inputs = tensor::map_tensor(x.data(), m_model->idims(), m_model->irows(), m_model->icols());
+                const auto inputs = tensor::map_tensor(x.data(), m_model->idims());
                 const auto output = m_model->output(inputs).vector();
                 if (gx)
                 {
@@ -63,21 +63,29 @@ struct model_wrt_inputs_function_t final : public function_t
         const vector_t&         m_target;
 };
 
-const tensor_size_t cmd_idims = 3;
-const tensor_size_t cmd_irows = 8;
-const tensor_size_t cmd_icols = 8;
-const tensor_size_t cmd_isize = cmd_idims * cmd_irows * cmd_icols;
-const tensor_size_t cmd_odims = 3;
-const tensor_size_t cmd_orows = 1;
-const tensor_size_t cmd_ocols = 1;
-const tensor_size_t cmd_osize = cmd_odims * cmd_orows * cmd_ocols;
-const size_t cmd_tests = 27;
-
-const string_t cmd_layer_output = make_output_layer(cmd_osize);
+const auto cmd_idims = dim3d_t{3, 8, 8};
+const auto cmd_odims = dim3d_t{3, 1, 1};
+const auto cmd_tests = size_t{27};
+const auto cmd_layer_output = make_output_layer(cmd_odims);
 
 static tensor_size_t apsize(const tensor_size_t isize, const tensor_size_t osize)
 {
         return isize * osize + osize;
+}
+
+static tensor_size_t apsize(const dim3d_t& idims, const tensor_size_t osize)
+{
+        return apsize(idims.size(), osize);
+}
+
+static tensor_size_t apsize(const dim3d_t& idims, const dim3d_t& odims)
+{
+        return apsize(idims.size(), odims.size());
+}
+
+static tensor_size_t apsize(const tensor_size_t isize, const dim3d_t& odims)
+{
+        return apsize(isize, odims.size());
 }
 
 static tensor_size_t cpsize(const tensor_size_t idims,
@@ -86,12 +94,17 @@ static tensor_size_t cpsize(const tensor_size_t idims,
         return idims * odims * krows * kcols / kconn + odims;
 }
 
+static tensor_size_t cpsize(const dim3d_t& idims,
+        const tensor_size_t odims, const tensor_size_t krows, const tensor_size_t kcols, const tensor_size_t kconn)
+{
+        return cpsize(idims.size<0>(), odims, krows, kcols, kconn);
+}
+
 static auto get_loss()
 {
-        const strings_t loss_ids = get_losses().ids();
-
-        const auto iloss = random_t<size_t>()();
-        const auto loss_id = loss_ids[iloss % loss_ids.size()];
+        static auto iloss = make_rng<size_t>();
+        const auto loss_ids = get_losses().ids();
+        const auto loss_id = loss_ids[iloss() % loss_ids.size()];
 
         return get_losses().get(loss_id);
 }
@@ -99,13 +112,9 @@ static auto get_loss()
 static auto get_model(const string_t& description)
 {
         auto model = get_models().get("forward-network", description + ";" + cmd_layer_output);
-        model->resize(cmd_idims, cmd_irows, cmd_icols, cmd_odims, cmd_orows, cmd_ocols, false);
+        model->resize(cmd_idims, cmd_odims, false);
         NANO_CHECK_EQUAL(model->idims(), cmd_idims);
-        NANO_CHECK_EQUAL(model->irows(), cmd_irows);
-        NANO_CHECK_EQUAL(model->icols(), cmd_icols);
         NANO_CHECK_EQUAL(model->odims(), cmd_odims);
-        NANO_CHECK_EQUAL(model->orows(), cmd_orows);
-        NANO_CHECK_EQUAL(model->ocols(), cmd_ocols);
         return model;
 }
 
@@ -127,10 +136,10 @@ static void test_model(const string_t& model_description, const tensor_size_t ex
         NANO_CHECK_EQUAL(model->psize(), expected_psize);
 
         vector_t params(model->psize());
-        vector_t target(model->osize());
-        tensor3d_t inputs(model->idims(), model->irows(), model->icols());
+        vector_t target(model->odims().size());
+        tensor3d_t inputs(model->idims());
 
-        NANO_CHECK_EQUAL(model->osize(), cmd_osize);
+        NANO_CHECK_EQUAL(model->odims(), cmd_odims);
 
         const model_wrt_params_function_t pfunction(model, loss, inputs, target);
         const model_wrt_inputs_function_t ifunction(model, loss, params, target);
@@ -153,7 +162,7 @@ static void test_conv_layer(const tensor_size_t dims, const tensor_size_t krows,
         convolution_layer_t layer(to_params(
                 "dims", dims, "rows", krows, "cols", kcols, "conn", conn, "drow", drow, "dcol", dcol));
 
-        tensor3d_t input(cmd_idims, cmd_irows, cmd_icols);
+        tensor3d_t input(cmd_idims);
         layer.resize(input);
 
         tensor3d_t output(layer.odims(), layer.orows(), layer.ocols());
@@ -206,7 +215,7 @@ NANO_CASE(activation)
         {
                 test_model(
                         activation_id,
-                        apsize(cmd_isize, cmd_osize));
+                        apsize(cmd_idims, cmd_odims));
         }
 }
 
@@ -214,26 +223,26 @@ NANO_CASE(affine)
 {
         test_model(
                 make_affine_layer(7),
-                apsize(cmd_isize, 7) + apsize(7, cmd_osize));
+                apsize(cmd_idims, 7) + apsize(7, cmd_odims));
 }
 
 NANO_CASE(conv)
 {
         test_model(
                 make_conv_layer(3, 3, 3, 3, "act-unit"),
-                cpsize(cmd_idims, 3, 3, 3, 3) + apsize(3 * 6 * 6, cmd_osize));
+                cpsize(cmd_idims, 3, 3, 3, 3) + apsize(3 * 6 * 6, cmd_odims));
 
         test_model(
                 make_conv_layer(4, 3, 3, 1, "act-snorm"),
-                cpsize(cmd_idims, 4, 3, 3, 1) + apsize(4 * 6 * 6, cmd_osize));
+                cpsize(cmd_idims, 4, 3, 3, 1) + apsize(4 * 6 * 6, cmd_odims));
 
         test_model(
                 make_conv_layer(5, 3, 3, 1, "act-splus"),
-                cpsize(cmd_idims, 5, 3, 3, 1) + apsize(5 * 6 * 6, cmd_osize));
+                cpsize(cmd_idims, 5, 3, 3, 1) + apsize(5 * 6 * 6, cmd_odims));
 
         test_model
                 (make_conv_layer(6, 3, 3, 3, "act-tanh"),
-                cpsize(cmd_idims, 6, 3, 3, 3) + apsize(6 * 6 * 6, cmd_osize));
+                cpsize(cmd_idims, 6, 3, 3, 3) + apsize(6 * 6 * 6, cmd_odims));
 
         test_conv_layer(3, 3, 3, 3, 1, 1);
         test_conv_layer(4, 3, 3, 1, 1, 1);
@@ -245,15 +254,15 @@ NANO_CASE(conv_stride)
 {
         test_model(
                 make_conv_layer(3, 5, 3, 3, "act-unit", 2, 1),
-                cpsize(cmd_idims, 3, 5, 3, 3) + apsize(3 * 2 * 6, cmd_osize));
+                cpsize(cmd_idims, 3, 5, 3, 3) + apsize(3 * 2 * 6, cmd_odims));
 
         test_model(
                 make_conv_layer(3, 3, 5, 3, "act-snorm", 1, 2),
-                cpsize(cmd_idims, 3, 3, 5, 3) + apsize(3 * 6 * 2, cmd_osize));
+                cpsize(cmd_idims, 3, 3, 5, 3) + apsize(3 * 6 * 2, cmd_odims));
 
         test_model(
                 make_conv_layer(3, 5, 5, 3, "act-splus", 2, 2),
-                cpsize(cmd_idims, 3, 5, 5, 3) + apsize(3 * 2 * 2, cmd_osize));
+                cpsize(cmd_idims, 3, 5, 5, 3) + apsize(3 * 2 * 2, cmd_odims));
 
         test_conv_layer(3, 5, 3, 3, 2, 1);
         test_conv_layer(3, 3, 5, 1, 1, 2);
@@ -265,36 +274,36 @@ NANO_CASE(multi_layer)
         test_model(
                 make_affine_layer(7, "act-snorm") +
                 make_affine_layer(5, "act-splus"),
-                apsize(cmd_isize, 7) + apsize(7, 5) + apsize(5, cmd_osize));
+                apsize(cmd_idims, 7) + apsize(7, 5) + apsize(5, cmd_odims));
 
         test_model(
                 make_conv_layer(7, 3, 3, 1, "act-snorm") +
                 make_conv_layer(4, 3, 3, 1, "act-splus"),
-                cpsize(cmd_idims, 7, 3, 3, 1) + cpsize(7, 4, 3, 3, 1) + apsize(4 * 4 * 4, cmd_osize));
+                cpsize(cmd_idims, 7, 3, 3, 1) + cpsize(7, 4, 3, 3, 1) + apsize(4 * 4 * 4, cmd_odims));
 
         test_model(
                 make_conv_layer(7, 3, 3, 1, "act-snorm") +
                 make_conv_layer(5, 3, 3, 1, "act-splus") +
                 make_affine_layer(5, "act-splus"),
-                cpsize(cmd_idims, 7, 3, 3, 1) + cpsize(7, 5, 3, 3, 1) + apsize(5 * 4 * 4, 5) + apsize(5, cmd_osize));
+                cpsize(cmd_idims, 7, 3, 3, 1) + cpsize(7, 5, 3, 3, 1) + apsize(5 * 4 * 4, 5) + apsize(5, cmd_odims));
 
         test_model(
                 make_conv_layer(8, 3, 3, 1, "act-snorm") +
                 make_conv_layer(6, 3, 3, 2, "act-splus") +
                 make_affine_layer(5, "act-splus"),
-                cpsize(cmd_idims, 8, 3, 3, 1) + cpsize(8, 6, 3, 3, 2) + apsize(6 * 4 * 4, 5) + apsize(5, cmd_osize));
+                cpsize(cmd_idims, 8, 3, 3, 1) + cpsize(8, 6, 3, 3, 2) + apsize(6 * 4 * 4, 5) + apsize(5, cmd_odims));
 
         test_model(
                 make_conv_layer(8, 3, 3, 1, "act-snorm") +
                 make_conv_layer(6, 3, 3, 2, "act-splus") +
                 make_affine_layer(5, "act-splus"),
-                cpsize(cmd_idims, 8, 3, 3, 1) + cpsize(8, 6, 3, 3, 2) + apsize(6 * 4 * 4, 5) + apsize(5, cmd_osize));
+                cpsize(cmd_idims, 8, 3, 3, 1) + cpsize(8, 6, 3, 3, 2) + apsize(6 * 4 * 4, 5) + apsize(5, cmd_odims));
 
         test_model(
                 make_conv_layer(9, 3, 3, 1, "act-snorm") +
                 make_conv_layer(6, 3, 3, 3, "act-splus") +
                 make_affine_layer(5, "act-splus"),
-                cpsize(cmd_idims, 9, 3, 3, 1) + cpsize(9, 6, 3, 3, 3) + apsize(6 * 4 * 4, 5) + apsize(5, cmd_osize));
+                cpsize(cmd_idims, 9, 3, 3, 1) + cpsize(9, 6, 3, 3, 3) + apsize(6 * 4 * 4, 5) + apsize(5, cmd_odims));
 }
 
 NANO_END_MODULE()

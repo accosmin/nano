@@ -12,13 +12,9 @@ NANO_CASE(construction)
 
         const auto path = string_t(std::getenv("HOME")) + "/experiments/databases/stl10";
 
-        const auto idims = 3;
-        const auto irows = 96;
-        const auto icols = 96;
-        const auto odims = 10;
-        const auto orows = 1;
-        const auto ocols = 1;
-        const auto target_sum = scalar_t(2) - static_cast<scalar_t>(odims);
+        const auto idims = dim3d_t{3, 96, 96};
+        const auto odims = dim3d_t{10, 1, 1};
+        const auto target_sum = scalar_t(2) - static_cast<scalar_t>(odims.size());
 
         const auto folds = size_t(10);
         const auto train_samples = size_t(100000 + 1000);
@@ -30,11 +26,7 @@ NANO_CASE(construction)
 
         // check dimensions
         NANO_CHECK_EQUAL(task->idims(), idims);
-        NANO_CHECK_EQUAL(task->irows(), irows);
-        NANO_CHECK_EQUAL(task->icols(), icols);
         NANO_CHECK_EQUAL(task->odims(), odims);
-        NANO_CHECK_EQUAL(task->orows(), orows);
-        NANO_CHECK_EQUAL(task->ocols(), ocols);
 
         // check folds
         NANO_CHECK_EQUAL(task->n_folds(), folds);
@@ -70,9 +62,7 @@ NANO_CASE(construction)
                                 const auto label = task->label(fold, i);
                                 const auto target = task->target(fold, i);
 
-                                NANO_CHECK_EQUAL(input.size<0>(), idims);
-                                NANO_CHECK_EQUAL(input.size<1>(), irows);
-                                NANO_CHECK_EQUAL(input.size<2>(), icols);
+                                NANO_CHECK_EQUAL(input.dims(), idims);
 
                                 if (label.empty())
                                 {
@@ -80,9 +70,7 @@ NANO_CASE(construction)
                                         continue;
                                 }
 
-                                NANO_CHECK_EQUAL(target.size<0>(), odims);
-                                NANO_CHECK_EQUAL(target.size<1>(), orows);
-                                NANO_CHECK_EQUAL(target.size<2>(), ocols);
+                                NANO_CHECK_EQUAL(target.dims(), odims);
                                 NANO_CHECK_CLOSE(target.vector().sum(), target_sum, epsilon0<scalar_t>());
 
                                 labels.insert(label);
@@ -93,7 +81,7 @@ NANO_CASE(construction)
         const size_t max_duplicates = 8826;
         NANO_CHECK_LESS_EQUAL(nano::check_duplicates(*task), max_duplicates);
         NANO_CHECK_LESS_EQUAL(nano::check_intersection(*task), max_duplicates);
-        NANO_CHECK_EQUAL(labels.size(), odims);
+        NANO_CHECK_EQUAL(labels.size(), odims.size());
 }
 
 NANO_END_MODULE()

@@ -104,13 +104,15 @@ namespace nano
         {
                 log_info() << "SVHN: loading images: name = " << name << ", size = " << concatenate(dims, "x") << "...";
 
-                const auto px = irows() * icols();
-                const auto ix = irows() * icols() * 3;
+                const auto irows = idims().size<1>();
+                const auto icols = idims().size<2>();
+                const auto px = irows * icols;
+                const auto ix = irows * icols * 3;
 
                 // check input
                 if (    dims.size() != 4 ||
-                        static_cast<tensor_size_t>(dims[0]) != irows() ||
-                        static_cast<tensor_size_t>(dims[1]) != icols() ||
+                        static_cast<tensor_size_t>(dims[0]) != irows ||
+                        static_cast<tensor_size_t>(dims[1]) != icols ||
                         dims[2] != 3 ||
                         dims[3] * ix > section.m_dsize)
                 {
@@ -136,10 +138,10 @@ namespace nano
                                 return 0;
                         }
 
-                        image_t image(irows(), icols(), color_mode::rgb);
-                        image.plane(0) = tensor::map_matrix(idata.data() + 0 * px, icols(), irows()).cast<luma_t>().transpose();
-                        image.plane(1) = tensor::map_matrix(idata.data() + 1 * px, icols(), irows()).cast<luma_t>().transpose();
-                        image.plane(2) = tensor::map_matrix(idata.data() + 2 * px, icols(), irows()).cast<luma_t>().transpose();
+                        image_t image(irows, icols, color_mode::rgb);
+                        image.plane(0) = tensor::map_matrix(idata.data() + 0 * px, icols, irows).cast<luma_t>().transpose();
+                        image.plane(1) = tensor::map_matrix(idata.data() + 1 * px, icols, irows).cast<luma_t>().transpose();
+                        image.plane(2) = tensor::map_matrix(idata.data() + 2 * px, icols, irows).cast<luma_t>().transpose();
                         add_chunk(image, image.hash());
                 }
 
@@ -199,7 +201,7 @@ namespace nano
                         }
 
                         const auto fold = make_fold(0, p);
-                        add_sample(fold, chunk_index ++, class_target(ilabel, odims()), tlabels[ilabel]);
+                        add_sample(fold, chunk_index ++, class_target(ilabel, odims().size()), tlabels[ilabel]);
                 }
 
                 log_info() << "chunk_index = " << chunk_index << "/" << n_chunks();

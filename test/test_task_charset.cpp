@@ -28,13 +28,15 @@ NANO_CASE(construction)
                 const auto count = size_t(10 * osize);
                 const auto fsize = size_t(1);   // folds
 
+                const auto idims = dim3d_t{(mode == color_mode::rgba) ? 4 : 1, irows, icols};
+                const auto odims = dim3d_t{osize, 1, 1};
+
                 charset_task_t task(to_params(
                         "type", type, "color", mode, "irows", irows, "icols", icols, "count", count));
 
                 NANO_CHECK_EQUAL(task.load(), true);
-                NANO_CHECK_EQUAL(task.irows(), irows);
-                NANO_CHECK_EQUAL(task.icols(), icols);
-                NANO_CHECK_EQUAL(task.odims(), osize);
+                NANO_CHECK_EQUAL(task.idims(), idims);
+                NANO_CHECK_EQUAL(task.odims(), odims);
                 NANO_CHECK_EQUAL(task.n_folds(), fsize);
                 NANO_CHECK_EQUAL(task.color(), mode);
                 NANO_CHECK_EQUAL(task.n_images(), count);
@@ -117,12 +119,11 @@ NANO_CASE(from_params)
         charset_task_t task("type=alpha,color=rgb,irows=23,icols=29,count=102");
         NANO_CHECK(task.load());
 
-        NANO_CHECK_EQUAL(task.irows(), 23);
-        NANO_CHECK_EQUAL(task.icols(), 29);
-        NANO_CHECK_EQUAL(task.idims(), 3);
-        NANO_CHECK_EQUAL(task.odims(), 52);
-        NANO_CHECK_EQUAL(task.orows(), 1);
-        NANO_CHECK_EQUAL(task.ocols(), 1);
+        const auto idims = dim3d_t{3, 23, 29};
+        const auto odims = dim3d_t{52, 1, 1};
+
+        NANO_CHECK_EQUAL(task.idims(), idims);
+        NANO_CHECK_EQUAL(task.odims(), odims);
         NANO_CHECK_EQUAL(task.n_folds(), size_t(1));
         NANO_CHECK_EQUAL(task.n_samples(), size_t(102));
 
@@ -140,10 +141,8 @@ NANO_CASE(from_params)
                         const auto input = task.input({0, p}, i);
                         const auto target = task.target({0, p}, i);
 
-                        NANO_CHECK_EQUAL(input.size<0>(), 3);
-                        NANO_CHECK_EQUAL(input.size<1>(), 23);
-                        NANO_CHECK_EQUAL(input.size<2>(), 29);
-                        NANO_CHECK_EQUAL(target.size(), 52);
+                        NANO_CHECK_EQUAL(input.dims(), idims);
+                        NANO_CHECK_EQUAL(target.dims(), odims);
                 }
         }
 

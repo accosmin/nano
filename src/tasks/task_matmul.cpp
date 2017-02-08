@@ -26,8 +26,8 @@ namespace nano
         }
 
         matmul_task_t::matmul_task_t(const string_t& configuration) : mem_tensor_task_t(
-                2, get_irows(configuration), get_icols(configuration),
-                1, get_irows(configuration), get_irows(configuration),
+                dim3d_t{2, get_irows(configuration), get_icols(configuration)},
+                dim3d_t{1, get_irows(configuration), get_irows(configuration)},
                 1, append_config(configuration))
         {
         }
@@ -40,9 +40,11 @@ namespace nano
                 auto rng_input = make_rng<scalar_t>(-scalar_t(1.0), +scalar_t(1.0));
                 auto rng_noise = make_rng<scalar_t>(-noise, +noise);
 
+                const auto irows = idims().size<1>();
+
                 // random affine transformation
-                m_A.resize(irows(), irows());
-                m_B.resize(irows(), irows());
+                m_A.resize(irows, irows);
+                m_B.resize(irows, irows);
 
                 tensor::set_random(rng_input, m_A, m_B);
                 tensor::normalize(m_A);
@@ -51,14 +53,14 @@ namespace nano
                 for (size_t i = 0; i < count; ++ i)
                 {
                         // random input
-                        tensor3d_t input(idims(), irows(), icols());
+                        tensor3d_t input(idims());
                         tensor::set_random(rng_input, input);
                         add_chunk(input, i);
 
                         // target
                         matrix_t target = m_A * (input.matrix(0) * input.matrix(1).transpose()) + m_B;
                         tensor::add_random(rng_noise, target);
-                        add_sample(make_fold(0), i, tensor::map_tensor(target.data(), odims(), orows(), ocols()));
+                        add_sample(make_fold(0), i, tensor::map_tensor(target.data(), odims()));
                 }
 
                 return true;

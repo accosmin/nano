@@ -27,6 +27,11 @@ namespace nano
                 return  make_affine_layer(dims, activation);
         }
 
+        string_t make_output_layer(const dim3d_t& dims, const string_t& activation = "")
+        {
+                return make_output_layer(dims.size(), activation);
+        }
+
         template <typename tsize>
         string_t make_conv_layer(
                 const tsize dims, const tsize rows, const tsize cols, const tsize conn,

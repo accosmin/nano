@@ -147,13 +147,10 @@ namespace nano
         }
 
         charset_task_t::charset_task_t(const string_t& configuration) : mem_vision_task_t(
-                tensor3d_dims_t
-                {
-                        from_params<color_mode>(append_config(configuration), "color"),
-                        clamp(from_params<tensor_size_t>(append_config(configuration), "irows", 32), 12, 128),
-                        clamp(from_params<tensor_size_t>(append_config(configuration), "icols", 32), 12, 128)
-                },
-                tensor3d_dims_t
+                from_params<color_mode>(append_config(configuration), "color"),
+                clamp(from_params<tensor_size_t>(append_config(configuration), "irows", 32), 12, 128),
+                clamp(from_params<tensor_size_t>(append_config(configuration), "icols", 32), 12, 128),
+                dim3d_t
                 {
                         nano::osize(from_params<charset_mode>(append_config(configuration), "type")),
                         1, 1
@@ -210,6 +207,9 @@ namespace nano
                 auto rng_bnoise = make_rng<scalar_t>(-bnoise, +bnoise);
                 auto rng_fnoise = make_rng<scalar_t>(-fnoise, +fnoise);
 
+                const auto irows = idims().size<1>();
+                const auto icols = idims().size<2>();
+
                 // generate samples
                 for (size_t i = 0; i < count; ++ i)
                 {
@@ -220,7 +220,7 @@ namespace nano
                         const tensor3d_t opatch = get_object_patch(char_patches[rng_font() - 1], o, n_chars, rng_offset);
 
                         // image: resize to the input size
-                        tensor3d_t mpatch(4, irows(), icols());
+                        tensor3d_t mpatch(4, irows, icols);
                         nano::bilinear(opatch.matrix(0), mpatch.matrix(0));
                         nano::bilinear(opatch.matrix(1), mpatch.matrix(1));
                         nano::bilinear(opatch.matrix(2), mpatch.matrix(2));
@@ -237,8 +237,8 @@ namespace nano
                         const auto bsigma = rng_gauss();
                         const auto fsigma = rng_gauss();
 
-                        const auto bpatch = make_random_rgba_image(irows(), icols(), bcolor, bsigma, rng_bnoise);
-                        const auto fpatch = make_random_rgba_image(irows(), icols(), fcolor, fsigma, rng_fnoise);
+                        const auto bpatch = make_random_rgba_image(irows, icols, bcolor, bsigma, rng_bnoise);
+                        const auto fpatch = make_random_rgba_image(irows, icols, fcolor, fsigma, rng_fnoise);
 
                         // image: alpha-blend the background & foreground layer
                         const tensor3d_t patch = alpha_blend(mpatch, bpatch, fpatch);

@@ -14,15 +14,14 @@ NANO_CASE(construction)
         const auto count = tensor_size_t(1001);
         const auto noise = 0;
 
+        const auto idims = dim3d_t{isize, 1, 1};
+        const auto odims = dim3d_t{osize, 1, 1};
+
         sign_task_t task(to_params("isize", isize, "osize", osize, "count", count, "noise", noise));
         NANO_CHECK(task.load());
 
-        NANO_CHECK_EQUAL(task.idims(), isize);
-        NANO_CHECK_EQUAL(task.irows(), 1);
-        NANO_CHECK_EQUAL(task.icols(), 1);
-        NANO_CHECK_EQUAL(task.odims(), osize);
-        NANO_CHECK_EQUAL(task.orows(), 1);
-        NANO_CHECK_EQUAL(task.ocols(), 1);
+        NANO_CHECK_EQUAL(task.idims(), idims);
+        NANO_CHECK_EQUAL(task.odims(), odims);
         NANO_CHECK_EQUAL(task.n_samples(), count);
         NANO_REQUIRE_EQUAL(task.n_folds(), size_t(1));
 
@@ -37,6 +36,9 @@ NANO_CASE(construction)
                 {
                         const auto input = task.input(fold, i);
                         const auto target = task.target(fold, i);
+
+                        NANO_CHECK_EQUAL(input.dims(), idims);
+                        NANO_CHECK_EQUAL(target.dims(), odims);
                         NANO_CHECK_GREATER(((weights * input.vector() + bias).array() * target.vector().array()).minCoeff(), 0);
                 }
         }

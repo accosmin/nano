@@ -14,15 +14,14 @@ NANO_CASE(construction)
         const auto count = tensor_size_t(1003);
         const auto noise = epsilon2<scalar_t>();
 
+        const auto idims = dim3d_t{2, irows, icols};
+        const auto odims = dim3d_t{1, irows, irows};
+
         matmul_task_t task(to_params("irows", irows, "icols", icols, "count", count, "noise", noise));
         NANO_CHECK(task.load());
 
-        NANO_CHECK_EQUAL(task.idims(), 2);
-        NANO_CHECK_EQUAL(task.irows(), irows);
-        NANO_CHECK_EQUAL(task.icols(), icols);
-        NANO_CHECK_EQUAL(task.odims(), 1);
-        NANO_CHECK_EQUAL(task.orows(), irows);
-        NANO_CHECK_EQUAL(task.ocols(), irows);
+        NANO_CHECK_EQUAL(task.idims(), idims);
+        NANO_CHECK_EQUAL(task.odims(), odims);
         NANO_CHECK_EQUAL(task.n_samples(), count);
         NANO_REQUIRE_EQUAL(task.n_folds(), size_t(1));
 
@@ -38,9 +37,8 @@ NANO_CASE(construction)
                         const auto input = task.input(fold, i);
                         const auto target = task.target(fold, i);
 
-                        NANO_CHECK_EQUAL(target.size<0>(), task.odims());
-                        NANO_CHECK_EQUAL(target.size<1>(), task.orows());
-                        NANO_CHECK_EQUAL(target.size<2>(), task.ocols());
+                        NANO_CHECK_EQUAL(input.dims(), idims);
+                        NANO_CHECK_EQUAL(target.dims(), odims);
                         const auto output = weights * (input.matrix(0) * input.matrix(1).transpose()) + bias;
                         NANO_CHECK_EIGEN_CLOSE(output, target.matrix(0), 2 * noise);
                 }
