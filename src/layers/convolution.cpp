@@ -109,9 +109,9 @@ namespace nano
 
         void convolution_layer_t::params_changed()
         {
-                for (tensor_size_t i = 0; i < idims(); ++ i)
+                for (tensor_size_t i = 0; i < imaps(); ++ i)
                 {
-                        for (tensor_size_t o = (i % kconn()), ok = 0; o < odims(); ++ ok, o += kconn())
+                        for (tensor_size_t o = (i % kconn()), ok = 0; o < omaps(); ++ ok, o += kconn())
                         {
                                 m_kdata_inv.vector(i, ok) = m_kdata.vector(o, i / kconn());
                         }
@@ -120,30 +120,28 @@ namespace nano
 
         const tensor3d_t& convolution_layer_t::output(const tensor3d_t& input)
         {
-                assert(idims() == input.size<0>());
-                assert(irows() == input.size<1>());
-                assert(icols() == input.size<2>());
+                assert(idims() == input.dims());
 
                 m_idata = input;
 
                 // bias
-                for (tensor_size_t o = 0; o < odims(); ++ o)
+                for (tensor_size_t o = 0; o < omaps(); ++ o)
                 {
                         m_odata.vector(o).setConstant(m_bdata(o));
                 }
 
                 // +convolution
-                for (tensor_size_t i = 0; i < idims(); ++ i)
+                for (tensor_size_t i = 0; i < imaps(); ++ i)
                 {
                         make_toeplitz_output(
                                 m_idata.matrix(i), orows(), ocols(), krows(), kcols(), drows(), dcols(),
                                 m_idata_toe.matrix(i));
 
                         m_toe_oodata.noalias() =
-                                tensor::map_matrix(m_kdata_inv.planeData(i, 0), odims() / kconn(), krows() * kcols()) *
+                                tensor::map_matrix(m_kdata_inv.planeData(i, 0), omaps() / kconn(), krows() * kcols()) *
                                 m_idata_toe.matrix(i);
 
-                        for (tensor_size_t o = (i % kconn()), ok = 0; o < odims(); ++ ok, o += kconn())
+                        for (tensor_size_t o = (i % kconn()), ok = 0; o < omaps(); ++ ok, o += kconn())
                         {
                                 m_odata.vector(o) += m_toe_oodata.row(ok);
                         }
@@ -154,26 +152,24 @@ namespace nano
 
         const tensor3d_t& convolution_layer_t::ginput(const tensor3d_t& output)
         {
-                assert(odims() == output.size<0>());
-                assert(orows() == output.size<1>());
-                assert(ocols() == output.size<2>());
+                assert(odims() == output.dims());
 
                 m_odata = output;
 
                 // correlation
                 m_idata.setZero();
 
-                for (tensor_size_t o = 0; o < odims(); ++ o)
+                for (tensor_size_t o = 0; o < omaps(); ++ o)
                 {
                         make_toeplitz_ginput(
                                 m_odata.matrix(o), orows(), ocols(), krows(), kcols(), drows(), dcols(), irows(), icols(),
                                 m_toe_iodata);
 
                         m_toe_iidata.noalias() =
-                                tensor::map_matrix(m_kdata.planeData(o, 0), idims() / kconn(), krows() * kcols()) *
+                                tensor::map_matrix(m_kdata.planeData(o, 0), imaps() / kconn(), krows() * kcols()) *
                                 m_toe_iodata;
 
-                        for (tensor_size_t i = (o % kconn()), ik = 0; i < idims(); ++ ik, i += kconn())
+                        for (tensor_size_t i = (o % kconn()), ik = 0; i < imaps(); ++ ik, i += kconn())
                         {
                                 m_idata.vector(i) += m_toe_iidata.row(ik);
                         }
@@ -184,19 +180,17 @@ namespace nano
 
         void convolution_layer_t::gparam(const tensor3d_t& output, scalar_t* gradient)
         {
-                assert(odims() == output.size<0>());
-                assert(orows() == output.size<1>());
-                assert(ocols() == output.size<2>());
+                assert(odims() == output.dims());
 
                 m_odata = output;
 
-                auto gkdata = tensor::map_tensor(gradient, m_kdata.size<0>(), m_kdata.size<1>(), krows(), kcols());
-                auto gbdata = tensor::map_vector(gradient + gkdata.size(), odims());
+                auto gkdata = tensor::map_tensor(gradient, m_kdata.dims());
+                auto gbdata = tensor::map_vector(gradient + gkdata.size(), omaps());
 
                 // wrt convolution
-                for (tensor_size_t i = 0; i < idims(); ++ i)
+                for (tensor_size_t i = 0; i < imaps(); ++ i)
                 {
-                        for (tensor_size_t o = (i % kconn()), ok = 0; o < odims(); ++ ok, o += kconn())
+                        for (tensor_size_t o = (i % kconn()), ok = 0; o < omaps(); ++ ok, o += kconn())
                         {
                                 m_toe_kodata.row(ok) = m_odata.vector(o);
                         }
@@ -205,14 +199,14 @@ namespace nano
                                 m_toe_kodata *
                                 m_idata_toe.matrix(i).transpose();
 
-                        for (tensor_size_t o = (i % kconn()), ok = 0; o < odims(); ++ ok, o += kconn())
+                        for (tensor_size_t o = (i % kconn()), ok = 0; o < omaps(); ++ ok, o += kconn())
                         {
                                 gkdata.vector(o, i / kconn()) = m_toe_kkdata.row(ok);
                         }
                 }
 
                 // wrt bias
-                for (tensor_size_t o = 0; o < odims(); ++ o)
+                for (tensor_size_t o = 0; o < omaps(); ++ o)
                 {
                         gbdata(o) = m_odata.vector(o).sum();
                 }

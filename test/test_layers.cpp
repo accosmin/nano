@@ -165,8 +165,8 @@ static void test_conv_layer(const tensor_size_t dims, const tensor_size_t krows,
         tensor3d_t input(cmd_idims);
         layer.resize(input);
 
-        tensor3d_t output(layer.odims(), layer.orows(), layer.ocols());
-        NANO_CHECK_EQUAL(layer.odims(), dims);
+        tensor3d_t output(layer.odims());
+        NANO_CHECK_EQUAL(layer.omaps(), dims);
         NANO_CHECK_EQUAL(layer.psize(), layer.kdata().size() + layer.bdata().size());
         vector_t param(layer.psize());
 

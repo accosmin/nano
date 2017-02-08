@@ -71,13 +71,8 @@ namespace nano
                 ///
                 /// \brief returns the input/output dimensions
                 ///
-                virtual tensor_size_t idims() const = 0;
-                virtual tensor_size_t irows() const = 0;
-                virtual tensor_size_t icols() const = 0;
-
-                virtual tensor_size_t odims() const = 0;
-                virtual tensor_size_t orows() const = 0;
-                virtual tensor_size_t ocols() const = 0;
+                virtual dim3d_t idims() const = 0;
+                virtual dim3d_t odims() const = 0;
 
                 ///
                 /// \brief returns the number of (optimization) parameters

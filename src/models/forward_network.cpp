@@ -163,8 +163,8 @@ namespace nano
         {
                 for (const auto& layer : m_layers)
                 {
-                        const auto fanin = layer.m_layer->idims() * layer.m_layer->irows() * layer.m_layer->icols();
-                        const auto fanout = layer.m_layer->odims() * layer.m_layer->orows() * layer.m_layer->ocols();
+                        const auto fanin = layer.m_layer->idims().size();
+                        const auto fanout = layer.m_layer->odims().size();
 
                         const auto div = static_cast<scalar_t>(fanin + fanout);
                         const auto min = -std::sqrt(6 / (1 + div));
@@ -211,7 +211,7 @@ namespace nano
                         const string_t layer_name =
                                 "[" + align(to_string(l + 1), 2, alignment::right, '0') + ":" +
                                 align(layer_id, 10, alignment::left, '.') + "]";
-                        input.resize(layer->odims(), layer->orows(), layer->ocols());
+                        input.resize(layer->odims());
 
                         m_layers.emplace_back(layer_name, std::move(layer));
                 }
@@ -240,9 +240,8 @@ namespace nano
 
                         log_info()
                                 << "forward network " << name
-                                << ": in(" << layer->idims() << "x" << layer->irows() << "x" << layer->icols() << ") -> "
-                                << "out(" << layer->odims() << "x" << layer->orows() << "x" << layer->ocols()
-                                << "), parameters = " << layer->psize() << ", FLOPs = " << layer->flops() << ".";
+                                << ": in(" << layer->idims() << ") -> " << "out(" << layer->odims() << ")"
+                                << ", parameters = " << layer->psize() << ", FLOPs = " << layer->flops() << ".";
                 }
         }
 

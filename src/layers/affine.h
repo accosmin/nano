@@ -30,12 +30,8 @@ namespace nano
                 virtual const tensor3d_t& ginput(const tensor3d_t& output) override;
                 virtual void gparam(const tensor3d_t& output, scalar_t* gradient) override;
 
-                virtual tensor_size_t idims() const override { return m_idata.size<0>(); }
-                virtual tensor_size_t irows() const override { return m_idata.size<1>(); }
-                virtual tensor_size_t icols() const override { return m_idata.size<2>(); }
-                virtual tensor_size_t odims() const override { return m_odata.size<0>(); }
-                virtual tensor_size_t orows() const override { return m_odata.size<1>(); }
-                virtual tensor_size_t ocols() const override { return m_odata.size<2>(); }
+                virtual dim3d_t idims() const override { return m_idata.dims(); }
+                virtual dim3d_t odims() const override { return m_odata.dims(); }
                 virtual tensor_size_t psize() const override { return m_wdata.size() + m_bdata.size(); }
                 virtual tensor_size_t flops() const override { return psize(); }
 

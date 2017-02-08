@@ -55,9 +55,7 @@ namespace nano
 
         const tensor3d_t& affine_layer_t::output(const tensor3d_t& input)
         {
-                assert(idims() == input.size<0>());
-                assert(irows() == input.size<1>());
-                assert(icols() == input.size<2>());
+                assert(idims() == input.dims());
 
                 m_idata = input;
 
@@ -68,9 +66,7 @@ namespace nano
 
         const tensor3d_t& affine_layer_t::ginput(const tensor3d_t& output)
         {
-                assert(output.size<0>() == odims());
-                assert(output.size<1>() == orows());
-                assert(output.size<2>() == ocols());
+                assert(odims() == output.dims());
 
                 m_odata = output;
 
@@ -81,9 +77,7 @@ namespace nano
 
         void affine_layer_t::gparam(const tensor3d_t& output, scalar_t* gradient)
         {
-                assert(output.size<0>() == odims());
-                assert(output.size<1>() == orows());
-                assert(output.size<2>() == ocols());
+                assert(odims() == output.dims());
 
                 m_odata = output;
 
