@@ -6,6 +6,40 @@
 
 namespace tensor
 {
+        ///
+        /// \brief dimenions of a multi-dimensional tensor.
+        ///
+        template <typename tindex, std::size_t tdims>
+        using dims_t = std::array<tindex, tdims>;
+
+        namespace detail
+        {
+                template <typename tindex, std::size_t tdims>
+                tindex get_index(const dims_t<tindex, tdims>&, const std::size_t)
+                {
+                        return 1;
+                }
+
+                template <typename tindex, std::size_t tdims, typename... tindices>
+                tindex get_index(const dims_t<tindex, tdims>& dims, const std::size_t idim, const tindices... indices, const tindex index)
+                {
+                        assert(index >= 0 && index < dims[idim]);
+                        assert(idim >= 1);
+                        return index + dims[idim] * get_index(dims, idim - 1, indices...);
+                }
+        }
+
+        ///
+        /// \brief index a multi-dimensional tensor.
+        ///
+        template <typename tindex, std::size_t tdims, typename... tindices>
+        tindex get_index(const dims_t<tindex, tdims>& dims, const tindices... indices)
+        {
+                static_assert(tdims > 1, "invalid number of tensor dimensions");
+                static_assert(sizeof...(indices) == tdims, "invalid number of tensor indices");
+                return detail::get_index(dims, dims.size() - 1, indices...);
+        }
+
         namespace detail
         {
                 template <typename tvalue, std::size_t tsize>
@@ -30,14 +64,14 @@ namespace tensor
         ///
         /// \brief index a multi-dimensional tensor.
         ///
-        template <typename tindex, std::size_t tdimensions>
+        template <typename tindex, std::size_t tdims>
         struct index_t
         {
         public:
 
-                static_assert(tdimensions > 0, "tensors cannot have negative number of dimensions");
+                static_assert(tdims > 0, "tensors cannot have negative number of dimensions");
 
-                using tindices = std::array<tindex, tdimensions>;
+                using tindices = std::array<tindex, tdims>;
 
                 ///
                 /// \brief constructor
@@ -55,7 +89,7 @@ namespace tensor
                 explicit index_t(const tindices... sizes) :
                         m_sizes({{sizes...}})
                 {
-                        static_assert(sizeof...(sizes) == tdimensions, "wrong number of tensor dimensions");
+                        static_assert(sizeof...(sizes) == tdims, "wrong number of tensor dimensions");
                         tindex stride = 1;
                         for (auto itstride = m_strides.rbegin(), itsize = m_sizes.rbegin();
                                 itstride != m_strides.rend(); ++ itstride, ++ itsize)
@@ -80,7 +114,7 @@ namespace tensor
                 template <typename... tindices>
                 tindex operator()(const tindex index, const tindices... indices) const
                 {
-                        static_assert(sizeof...(indices) + 1 == tdimensions, "missing dimensions when indexing tensor");
+                        static_assert(sizeof...(indices) + 1 == tdims, "missing dimensions when indexing tensor");
                         return get_index<0>(index, indices...);
                 }
 
@@ -90,7 +124,7 @@ namespace tensor
                 template <std::size_t idim>
                 tindex size() const
                 {
-                        static_assert(idim < tdimensions, "wrong tensor dimension");
+                        static_assert(idim < tdims, "wrong tensor dimension");
                         return m_sizes[idim];
                 }
 
@@ -107,7 +141,7 @@ namespace tensor
                 ///
                 static constexpr std::size_t dimensionality()
                 {
-                        return tdimensions;
+                        return tdims;
                 }
 
                 ///
@@ -143,14 +177,14 @@ namespace tensor
         ///
         /// \brief compare two tensor dimensions.
         ///
-        template <typename tindex, std::size_t tdimensions>
-        bool operator==(const index_t<tindex, tdimensions>& ti1, const index_t<tindex, tdimensions>& ti2)
+        template <typename tindex, std::size_t tdims>
+        bool operator==(const index_t<tindex, tdims>& ti1, const index_t<tindex, tdims>& ti2)
         {
                 return std::operator==(ti1.dims(), ti2.dims());
         }
 
-        template <typename tindex, std::size_t tdimensions>
-        bool operator!=(const index_t<tindex, tdimensions>& ti1, const index_t<tindex, tdimensions>& ti2)
+        template <typename tindex, std::size_t tdims>
+        bool operator!=(const index_t<tindex, tdims>& ti1, const index_t<tindex, tdims>& ti2)
         {
                 return !operator==(ti1, ti2);
         }
@@ -158,8 +192,8 @@ namespace tensor
         ///
         /// \brief stream tensor dimensions.
         ///
-        template <typename tindex, std::size_t tdimensions>
-        std::ostream& operator<<(std::ostream& os, const index_t<tindex, tdimensions>& ti)
+        template <typename tindex, std::size_t tdims>
+        std::ostream& operator<<(std::ostream& os, const index_t<tindex, tdims>& ti)
         {
                 const auto& dims = ti.dims();
                 for (std::size_t d = 0; d < dims.size(); ++ d)
