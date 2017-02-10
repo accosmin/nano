@@ -96,7 +96,7 @@ namespace nano
                 ///
                 color_mode color() const
                 {
-                        switch (idims().size<0>())
+                        switch (std::get<0>(idims()))
                         {
                         case 1:         return color_mode::luma;
                         case 3:         return color_mode::rgb;

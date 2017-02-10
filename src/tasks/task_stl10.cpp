@@ -91,8 +91,8 @@ namespace nano
         {
                 log_info() << "STL-10: loading file <" << ifile << "> ...";
 
-                const auto irows = idims().size<1>();
-                const auto icols = idims().size<2>();
+                const auto irows = std::get<1>(idims());
+                const auto icols = std::get<2>(idims());
                 const auto px = irows * icols;
                 const auto ix = 3 * px;
 
@@ -112,7 +112,7 @@ namespace nano
 
                         if (unlabeled)
                         {
-                                m_samples.emplace_back(n_chunks() - 1, odims().size());
+                                m_samples.emplace_back(n_chunks() - 1, tensor::size(odims()));
                         }
 
                         ++ icount;
@@ -138,13 +138,13 @@ namespace nano
                 {
                         const tensor_index_t ilabel = static_cast<tensor_index_t>(label) - 1;
 
-                        if (ilabel >= 0 && ilabel < odims().size())
+                        if (ilabel >= 0 && ilabel < tensor::size(odims()))
                         {
                                 m_samples.emplace_back(iindex, ilabel);
                         }
                         else
                         {
-                                m_samples.emplace_back(iindex, odims().size());
+                                m_samples.emplace_back(iindex, tensor::size(odims()));
                         }
 
                         ++ gcount;
@@ -166,10 +166,10 @@ namespace nano
 
                 const auto op_sample = [&] (const fold_t& fold, const sample_t& sample)
                 {
-                        if (sample.m_label < odims().size())
+                        if (sample.m_label < tensor::size(odims()))
                         {
                                 add_sample(fold, sample.m_image,
-                                           class_target(sample.m_label, odims().size()),
+                                           class_target(sample.m_label, tensor::size(odims())),
                                            tlabels[sample.m_label]);
                         }
                         else

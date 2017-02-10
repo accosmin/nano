@@ -207,8 +207,8 @@ namespace nano
                 auto rng_bnoise = make_rng<scalar_t>(-bnoise, +bnoise);
                 auto rng_fnoise = make_rng<scalar_t>(-fnoise, +fnoise);
 
-                const auto irows = idims().size<1>();
-                const auto icols = idims().size<2>();
+                const auto irows = std::get<1>(idims());
+                const auto icols = std::get<2>(idims());
 
                 // generate samples
                 for (size_t i = 0; i < count; ++ i)

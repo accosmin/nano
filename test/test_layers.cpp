@@ -40,7 +40,7 @@ struct model_wrt_params_function_t final : public function_t
 struct model_wrt_inputs_function_t final : public function_t
 {
         model_wrt_inputs_function_t(const rmodel_t& model, const rloss_t& loss, const vector_t& params, const vector_t& target) :
-                function_t("model", model->idims().size(), model->idims().size(), model->idims().size(), convexity::no, 1e+6),
+                function_t("model", tensor::size(model->idims()), tensor::size(model->idims()), tensor::size(model->idims()), convexity::no, 1e+6),
                 m_model(model), m_loss(loss), m_params(params), m_target(target)
         {
         }
@@ -136,7 +136,7 @@ static void test_model(const string_t& model_description, const tensor_size_t ex
         NANO_CHECK_EQUAL(model->psize(), expected_psize);
 
         vector_t params(model->psize());
-        vector_t target(model->odims().size());
+        vector_t target(model->tensor::size(odims()));
         tensor3d_t inputs(model->idims());
 
         NANO_CHECK_EQUAL(model->odims(), cmd_odims);

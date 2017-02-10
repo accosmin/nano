@@ -31,8 +31,8 @@ namespace nano
                 auto rng_noise = make_rng<scalar_t>(-noise, +noise);
 
                 // random affine transformation
-                m_A.resize(odims().size(), idims().size());
-                m_b.resize(odims().size());
+                m_A.resize(tensor::size(odims()), tensor::size(idims()));
+                m_b.resize(tensor::size(odims()));
 
                 tensor::set_random(rng_input, m_A, m_b);
                 tensor::normalize(m_A);

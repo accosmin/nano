@@ -40,7 +40,7 @@ namespace nano
                 auto rng_input = make_rng<scalar_t>(-scalar_t(1.0), +scalar_t(1.0));
                 auto rng_noise = make_rng<scalar_t>(-noise, +noise);
 
-                const auto irows = idims().size<1>();
+                const auto irows = std::get<1>(idims());
 
                 // random affine transformation
                 m_A.resize(irows, irows);

@@ -74,8 +74,8 @@ namespace nano
         {
                 log_info() << "CIFAR-10: loading file <" << filename << "> ...";
 
-                const auto irows = idims().size<1>();
-                const auto icols = idims().size<2>();
+                const auto irows = std::get<1>(idims());
+                const auto icols = std::get<2>(idims());
                 const auto buffer_size = irows * icols * 3;
 
                 std::vector<char> buffer(static_cast<size_t>(buffer_size));
@@ -86,7 +86,7 @@ namespace nano
                         stream.read(buffer.data(), buffer_size) == buffer_size)
                 {
                         const tensor_index_t ilabel = label[0];
-                        if (ilabel < 0 || ilabel >= odims().size())
+                        if (ilabel < 0 || ilabel >= tensor::size(odims()))
                         {
                                 log_error() << "CIFAR-10: invalid label!";
                                 return false;
@@ -97,7 +97,7 @@ namespace nano
                         add_chunk(image, image.hash());
 
                         const auto fold = make_fold(0, p);
-                        add_sample(fold, n_chunks() - 1, class_target(ilabel, odims().size()), tlabels[ilabel]);
+                        add_sample(fold, n_chunks() - 1, class_target(ilabel, tensor::size(odims())), tlabels[ilabel]);
 
                         ++ icount;
                 }

@@ -104,8 +104,8 @@ namespace nano
         {
                 log_info() << "SVHN: loading images: name = " << name << ", size = " << concatenate(dims, "x") << "...";
 
-                const auto irows = idims().size<1>();
-                const auto icols = idims().size<2>();
+                const auto irows = std::get<1>(idims());
+                const auto icols = std::get<2>(idims());
                 const auto px = irows * icols;
                 const auto ix = irows * icols * 3;
 
@@ -201,7 +201,7 @@ namespace nano
                         }
 
                         const auto fold = make_fold(0, p);
-                        add_sample(fold, chunk_index ++, class_target(ilabel, odims().size()), tlabels[ilabel]);
+                        add_sample(fold, chunk_index ++, class_target(ilabel, tensor::size(odims())), tlabels[ilabel]);
                 }
 
                 log_info() << "chunk_index = " << chunk_index << "/" << n_chunks();

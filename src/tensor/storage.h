@@ -24,7 +24,7 @@ namespace tensor
                 using tsize = typename tstorage::Index;
                 using tindex = typename tstorage::Index;
                 using tscalar = typename tstorage::Scalar;
-                using tdims = index_t<tindex, tdimensions>;
+                using tdims = dims_t<tindex, tdimensions>;
 
                 // Eigen compatible
                 using Index = tindex;
@@ -60,7 +60,7 @@ namespace tensor
                         m_dims(dims...),
                         m_data(data)
                 {
-                        assert(m_data.size() == m_dims.size());
+                        assert(m_data.size() == tensor::size(m_dims));
                 }
 
                 ///
@@ -82,9 +82,9 @@ namespace tensor
                 ///
                 /// \brief dimensions
                 ///
-                tsize size() const { return m_data.size(); }
+                tsize size() const { assert(m_data.size() == tensor::size(m_dims)); return m_data.size(); }
                 template <int idim>
-                tsize size() const { return m_dims.template size<idim>(); }
+                tsize size() const { return std::get<idim>(m_dims); }
                 tsize rows() const { return size<tdimensions - 2>(); }
                 tsize cols() const { return size<tdimensions - 1>(); }
                 tsize planeSize() const { return rows() * cols(); }
@@ -151,14 +151,14 @@ namespace tensor
                 {
                         static_assert(sizeof...(indices) == tdimensions - 2,
                                 "wrong number of tensor dimensions to access a 2D plane");
-                        return data() + m_dims(indices..., 0, 0);
+                        return data() + tensor::index(m_dims, indices..., 0, 0);
                 }
                 template <typename... tindices>
                 tscalar* planeData(const tindices... indices)
                 {
                         static_assert(sizeof...(indices) == tdimensions - 2,
                                 "wrong number of tensor dimensions to access a 2D plane");
-                        return data() + m_dims(indices..., 0, 0);
+                        return data() + tensor::index(m_dims, indices..., 0, 0);
                 }
 
                 ///
@@ -167,12 +167,12 @@ namespace tensor
                 template <typename... tindices>
                 tscalar operator()(const tindices... indices) const
                 {
-                        return m_data(m_dims(indices...));
+                        return m_data(tensor::index(m_dims, indices...));
                 }
                 template <typename... tindices>
                 tscalar& operator()(const tindices... indices)
                 {
-                        return m_data(m_dims(indices...));
+                        return m_data(tensor::index(m_dims, indices...));
                 }
 
         protected:

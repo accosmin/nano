@@ -72,7 +72,7 @@ namespace nano
 
         const tensor3d_t& forward_network_t::ginput(const vector_t& _output)
         {
-                assert(_output.size() == odims().size());
+                assert(_output.size() == tensor::size(odims()));
                 assert(!m_layers.empty());
 
                 m_odata = tensor::map_tensor(_output.data(), odims());
@@ -93,7 +93,7 @@ namespace nano
 
         const vector_t& forward_network_t::gparam(const vector_t& _output)
         {
-                assert(_output.size() == odims().size());
+                assert(_output.size() == tensor::size(odims()));
                 assert(!m_layers.empty());
 
                 m_odata = tensor::map_tensor(_output.data(), odims());
@@ -163,8 +163,8 @@ namespace nano
         {
                 for (const auto& layer : m_layers)
                 {
-                        const auto fanin = layer.m_layer->idims().size();
-                        const auto fanout = layer.m_layer->odims().size();
+                        const auto fanin = tensor::size(layer.m_layer->idims());
+                        const auto fanout = tensor::size(layer.m_layer->odims());
 
                         const auto div = static_cast<scalar_t>(fanin + fanout);
                         const auto min = -std::sqrt(6 / (1 + div));

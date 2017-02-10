@@ -22,11 +22,9 @@ namespace nano
 
                 nano::obstream_t ob(os);
 
-                // todo: transform tensor::index_t to POD so that serializing works
-
                 // save configuration
-                ob.write(m_idims.dims());
-                ob.write(m_odims.dims());
+                ob.write(m_idims);
+                ob.write(m_odims);
                 ob.write(m_configuration);
 
                 // save parameters
@@ -48,14 +46,9 @@ namespace nano
                 nano::ibstream_t ib(is);
 
                 // read configuration
-                dim3d_t::tindices idims;
-                dim3d_t::tindices odims;
-                ib.read(idims);
-                ib.read(odims);
+                ib.read(m_idims);
+                ib.read(m_odims);
                 ib.read(m_configuration);
-
-                m_idims = dim3d_t(idims[0], idims[1], idims[2]);
-                m_odims = dim3d_t(odims[0], odims[1], odims[2]);
 
                 // apply configuration
                 resize(true);

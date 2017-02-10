@@ -49,8 +49,8 @@ namespace nano
                 size_t icount = 0;
                 size_t gcount = 0;
 
-                const auto irows = idims().size<1>();
-                const auto icols = idims().size<2>();
+                const auto irows = std::get<1>(idims());
+                const auto icols = std::get<2>(idims());
                 const auto buffer_size = irows * icols;
 
                 std::vector<char> buffer(static_cast<size_t>(buffer_size));
@@ -99,14 +99,14 @@ namespace nano
                         while (stream.read(label, 1) == 1)
                         {
                                 const tensor_index_t ilabel = static_cast<tensor_index_t>(label[0]);
-                                if (ilabel < 0 || ilabel >= odims().size())
+                                if (ilabel < 0 || ilabel >= tensor::size(odims()))
                                 {
                                         log_error() << "MNIST: invalid label!";
                                         return false;
                                 }
 
                                 const auto fold = make_fold(0, p);
-                                add_sample(fold, iindex, class_target(ilabel, odims().size()), tlabels[ilabel]);
+                                add_sample(fold, iindex, class_target(ilabel, tensor::size(odims())), tlabels[ilabel]);
 
                                 ++ gcount;
                                 ++ iindex;
