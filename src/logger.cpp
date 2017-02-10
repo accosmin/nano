@@ -29,10 +29,10 @@ namespace nano
                 }
         }
 
-        logger_t::logger_t(const logger_t::type type, bool flush) :
-                m_stream(get_stream(type)),
+        logger_t::logger_t(const logger_t::type ltype, const bool flush_at_endl) :
+                m_stream(get_stream(ltype)),
                 m_precision(m_stream.precision()),
-                m_flush(flush)
+                m_flush(flush_at_endl)
         {
                 const std::time_t t = std::time(nullptr);
                 m_stream << "[";
@@ -42,7 +42,7 @@ namespace nano
                 {
                         m_stream << mbstr;
                 }
-                m_stream << "|" << get_header(type) << "]: ";
+                m_stream << "|" << get_header(ltype) << "]: ";
                 m_stream << std::fixed << std::setprecision(6);
         }
 

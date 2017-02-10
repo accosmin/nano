@@ -17,21 +17,21 @@ namespace nano
         >
         struct mapping_t
         {
-                mapping_t(const tto_param& to_param, const tfrom_param& from_param) :
-                        m_to_param(to_param), m_from_param(from_param)
+                mapping_t(const tto_param& to, const tfrom_param& from) :
+                        m_to_param(to), m_from_param(from)
                 {
                 }
 
                 template <typename tscalar>
-                tscalar to_param(const tscalar x) const
+                tscalar to_param(const tscalar v) const
                 {
-                        return m_to_param(x);
+                        return m_to_param(v);
                 }
 
                 template <typename tscalar>
-                tscalar from_param(const tscalar x) const
+                tscalar from_param(const tscalar v) const
                 {
-                        return m_from_param(x);
+                        return m_from_param(v);
                 }
 
                 tto_param       m_to_param;

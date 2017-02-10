@@ -89,6 +89,28 @@ namespace
                 store(row1, 2 * dims * dims * dims, [&] () { Z = A * B + C; });
                 store(row2, 2 * dims * dims * dims, [&] () { Z = A * B.transpose() + C; });
         }
+
+        template <typename top>
+        void foreach_dims(const tensor_size_t min, const tensor_size_t max, const top& op)
+        {
+                for (tensor_size_t dim = min; dim <= max; dim *= 2)
+                {
+                        op(dim);
+                }
+        }
+
+        void fillheader(const tensor_size_t min, const tensor_size_t max, table_t& table)
+        {
+                foreach_dims(min, max, [&] (const tensor_size_t dims)
+                {
+                        const auto kilo = tensor_size_t(1) << 10;
+                        const auto mega = tensor_size_t(1) << 20;
+                        const auto value = (dims < kilo) ? dims : (dims < mega ? (dims / kilo) : (dims / mega));
+                        const auto units = (dims < kilo) ? string_t("") : (dims < mega ? string_t("K") : string_t("M"));
+                        const auto header = to_string(value) + units;
+                        table.header() << (header + "[us]") << "GFLOPS";
+                });
+        }
 }
 
 int main(int argc, const char* argv[])
@@ -116,26 +138,6 @@ int main(int argc, const char* argv[])
         {
                 cmdline.usage();
         }
-
-        const auto foreach_dims = [&] (const auto min, const auto max, const auto& op)
-        {
-                for (tensor_size_t dims = min; dims <= max; dims *= 2)
-                {
-                        op(dims);
-                }
-        };
-        const auto fillheader = [&] (const auto min, const auto max, table_t& table)
-        {
-                foreach_dims(min, max, [&] (const tensor_size_t dims)
-                {
-                        const auto kilo = tensor_size_t(1) << 10;
-                        const auto mega = tensor_size_t(1) << 20;
-                        const auto value = (dims < kilo) ? dims : (dims < mega ? (dims / kilo) : (dims / mega));
-                        const auto units = (dims < kilo) ? string_t("") : (dims < mega ? string_t("K") : string_t("M"));
-                        const auto header = to_string(value) + units;
-                        table.header() << (header + "[us]") << "GFLOPS";
-                });
-        };
 
         if (level1)
         {

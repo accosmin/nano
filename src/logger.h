@@ -22,7 +22,7 @@ namespace nano
                 ///
                 /// \brief constructor
                 ///
-                logger_t(const type, bool flush = true);
+                logger_t(const type, const bool flush_at_endl = true);
 
                 ///
                 /// \brief destructor

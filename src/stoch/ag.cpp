@@ -18,6 +18,20 @@ namespace nano
                 return stoch_tune(this, param, function, x0, make_alpha0s(), qs);
         }
 
+        const auto get_theta = [] (const auto ptheta, const auto q)
+        {
+                const auto a = scalar_t(1);
+                const auto b = ptheta * ptheta - q;
+                const auto c = - ptheta * ptheta;
+
+                return (-b + std::sqrt(b * b - 4 * a * c)) / (2 * a);
+        };
+
+        const auto get_beta = [] (const auto ptheta, const auto ctheta)
+        {
+                return ptheta * (1 - ptheta) / (ptheta * ptheta + ctheta);
+        };
+
         template <ag_restart trestart>
         state_t stoch_ag_base_t<trestart>::minimize(const stoch_params_t& param, const function_t& function, const vector_t& x0,
                 const scalar_t alpha0, const scalar_t q) const
@@ -33,20 +47,6 @@ namespace nano
 
                 scalar_t ptheta = 1;
                 scalar_t ctheta = 1;
-
-                const auto get_theta = [] (const auto ptheta, const auto q)
-                {
-                        const auto a = scalar_t(1);
-                        const auto b = ptheta * ptheta - q;
-                        const auto c = - ptheta * ptheta;
-
-                        return (-b + std::sqrt(b * b - 4 * a * c)) / (2 * a);
-                };
-
-                const auto get_beta = [] (const auto ptheta, const auto ctheta)
-                {
-                        return ptheta * (1 - ptheta) / (ptheta * ptheta + ctheta);
-                };
 
                 // assembly the optimizer
                 const auto optimizer = [&] (state_t& cstate, const state_t&)

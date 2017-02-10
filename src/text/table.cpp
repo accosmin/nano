@@ -53,33 +53,33 @@ namespace nano
                 // size of the name column (in characters)
                 const size_t namesize = [&] ()
                 {
-                        size_t colsize = table.title().size();
+                        size_t size = table.title().size();
                         for (size_t r = 0; r < table.rows(); ++ r)
                         {
-                                colsize = std::max(colsize, table.row(r).name().size());
+                                size = std::max(size, table.row(r).name().size());
                         }
 
-                        return colsize;
+                        return size;
                 }();
 
                 // size of the value columns (in characters)
                 const sizes_t colsizes = [&] ()
                 {
-                        sizes_t colsizes(table.cols(), 0);
+                        sizes_t sizes(table.cols(), 0);
                         for (size_t c = 0; c < table.cols(); ++ c)
                         {
-                                colsizes[c] = std::max(colsizes[c], table.header()[c].size());
+                                sizes[c] = std::max(sizes[c], table.header()[c].size());
                         }
                         for (size_t r = 0; r < table.rows(); ++ r)
                         {
                                 const auto& row = table.row(r);
                                 for (size_t c = 0; c < std::min(table.cols(), row.size()); ++ c)
                                 {
-                                        colsizes[c] = std::max(colsizes[c], row.value(c).size() + row.marking(c).size());
+                                        sizes[c] = std::max(sizes[c], row.value(c).size() + row.marking(c).size());
                                 }
                         }
 
-                        return colsizes;
+                        return sizes;
                 }();
 
                 // size of the row (in characters)
