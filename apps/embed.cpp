@@ -97,7 +97,7 @@ int main(int argc, const char *argv[])
 
         os_source << "const char* nano::get_" << name << "_data()\n";
         os_source << "{\n";
-        os_source << tab << "return (const char*)data;\n";
+        os_source << tab << "return reinterpret_cast<const char*>(data);\n";
         os_source << "}\n\n";
 
         os_source << "std::size_t nano::get_" << name << "_size()\n";

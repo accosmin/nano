@@ -21,7 +21,8 @@ namespace tensor
                 }
 
                 template <typename tindex, std::size_t tdims, typename... tindices>
-                tindex get_index(const dims_t<tindex, tdims>& dims, const std::size_t idim, const tindices... indices, const tindex index)
+                tindex get_index(const dims_t<tindex, tdims>& dims, const std::size_t idim,
+                        const tindices... indices, const tindex index)
                 {
                         assert(index >= 0 && index < dims[idim]);
                         assert(idim >= 1);
@@ -34,6 +35,17 @@ namespace tensor
         ///
         template <typename tindex, std::size_t tdims, typename... tindices>
         tindex get_index(const dims_t<tindex, tdims>& dims, const tindices... indices)
+        {
+                static_assert(tdims > 1, "invalid number of tensor dimensions");
+                static_assert(sizeof...(indices) == tdims, "invalid number of tensor indices");
+                return detail::get_index(dims, dims.size() - 1, indices...);
+        }
+
+        ///
+        /// \brief size of multi-dimensional tensor (#elements).
+        ///
+        template <typename tindex, std::size_t tdims, typename... tindices>
+        tindex size(const dims_t<tindex, tdims>& dims, const tindices... indices)
         {
                 static_assert(tdims > 1, "invalid number of tensor dimensions");
                 static_assert(sizeof...(indices) == tdims, "invalid number of tensor indices");

@@ -76,7 +76,7 @@ namespace nano
                 ilBindImage(id);
 
                 const bool ret =
-                        ilLoadImage((const ILstring)path.c_str()) &&
+                        ilLoadImage(static_cast<const ILstring>(path.c_str())) &&
                         load_image(mode, image);
 
                 ilDeleteImage(id);
@@ -149,7 +149,7 @@ namespace nano
                                         }
                                 }
                                 ret = ilTexImage(static_cast<ILuint>(cols), static_cast<ILuint>(rows),
-                                                 1, 1, IL_LUMINANCE, IL_UNSIGNED_BYTE, (void*)temp.data());
+                                                 1, 1, IL_LUMINANCE, IL_UNSIGNED_BYTE, reinterpret_cast<void*>(temp.data()));
                         }
                         break;
 
@@ -170,7 +170,7 @@ namespace nano
                                         }
                                 }
                                 ret = ilTexImage(static_cast<ILuint>(cols), static_cast<ILuint>(rows),
-                                                 1, 3, IL_RGB, IL_UNSIGNED_BYTE, (void*)temp.data());
+                                                 1, 3, IL_RGB, IL_UNSIGNED_BYTE, reinterpret_cast<void*>(temp.data()));
                         }
                         break;
 
@@ -193,7 +193,7 @@ namespace nano
                                         }
                                 }
                                 ret = ilTexImage(static_cast<ILuint>(cols), static_cast<ILuint>(rows),
-                                                 1, 4, IL_RGBA, IL_UNSIGNED_BYTE, (void*)temp.data());
+                                                 1, 4, IL_RGBA, IL_UNSIGNED_BYTE, reinterpret_cast<void*>(temp.data()));
                         }
                         break;
 
@@ -201,7 +201,7 @@ namespace nano
 
                 ret =   ret &&
                         ilEnable(IL_FILE_OVERWRITE) &&
-                        ilSaveImage((const ILstring)path.c_str());
+                        ilSaveImage(static_cast<const ILstring>(path.c_str()));
 
                 ilDeleteImage(id);
 

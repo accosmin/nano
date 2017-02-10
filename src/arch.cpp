@@ -38,7 +38,7 @@ namespace nano
 #elif defined(__linux__)
         unsigned int logical_cpus()
         {
-                return (unsigned int)sysconf(_SC_NPROCESSORS_ONLN);
+                return static_cast<unsigned int>(sysconf(_SC_NPROCESSORS_ONLN));
         }
 
         unsigned int physical_cpus()
@@ -59,7 +59,8 @@ namespace nano
         {
                 struct sysinfo info;
                 sysinfo(&info);
-                return (unsigned long long int)info.totalram * (unsigned long long int)info.mem_unit;
+                return  static_cast<unsigned long long int>(info.totalram) *
+                        static_cast<unsigned long long int>(info.mem_unit);
         }
 #endif
 }

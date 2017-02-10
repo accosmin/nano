@@ -24,7 +24,9 @@ namespace nano
                         default:                return io_status::error;
                         }
 
-                        buffer.insert(buffer.end(), (const char*)buff, (const char*)buff + size);
+                        buffer.insert(buffer.end(),
+                                reinterpret_cast<const char*>(buff),
+                                reinterpret_cast<const char*>(buff) + size);
                 }
 
                 return io_status::good;
