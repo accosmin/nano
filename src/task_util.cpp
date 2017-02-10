@@ -120,8 +120,8 @@ namespace nano
                 const auto bkcolor = rgba_t{225, 225, 0, 255};
 
                 const auto size = task.n_samples(fold);
-                const auto rows = task.idims()[1];
-                const auto cols = task.idims()[2];
+                const auto rows = std::get<1>(task.idims());
+                const auto cols = std::get<2>(task.idims());
 
                 std::set<string_t> labels;
                 for (size_t i = 0; i < size; ++ i)
