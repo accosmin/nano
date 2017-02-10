@@ -16,12 +16,11 @@ namespace tensor
         {
                 using tbase = storage_t<tmap, tdimensions>;
                 using tdims = typename tbase::tdims;
-                using tsize = typename tbase::tsize;
                 using tscalar = typename tbase::tscalar;
 
                 // Eigen compatible
-                using Index = typename tbase::Index;
-                using Scalar = typename tbase::Scalar;
+                using Index = index_t;
+                using Scalar = tscalar;
 
                 ///
                 /// \brief constructor
@@ -46,11 +45,10 @@ namespace tensor
         {
                 using tbase = storage_t<tvector, tdimensions>;
                 using tdims = typename tbase::tdims;
-                using tsize = typename tbase::tsize;
 
                 // Eigen compatible
-                using Index = typename tbase::Index;
-                using Scalar = typename tbase::Scalar;
+                using Index = index_t;
+                using Scalar = tscalar;
 
                 ///
                 /// \brief constructor
@@ -82,17 +80,15 @@ namespace tensor
                 /// \brief resize to new dimensions
                 ///
                 template <typename... tsizes>
-                tsize resize(const tsizes... dims)
+                index_t resize(const tsizes... dims)
                 {
-                        this->m_dims = tdims(dims...);
-                        this->m_data.resize(tensor::size(this->m_dims));
-                        return this->size();
+                        return resize({{dims...}});
                 }
 
                 ///
                 /// \brief resize to new dimensions
                 ///
-                tsize resize(const tdims& dims)
+                index_t resize(const tdims& dims)
                 {
                         this->m_dims = dims;
                         this->m_data.resize(tensor::size(this->m_dims));
@@ -103,8 +99,8 @@ namespace tensor
         ///
         /// \brief map non-constant data to tensors
         ///
-        template <typename tvalue_, typename tindex, std::size_t tdimensions>
-        auto map_tensor(tvalue_* data, const dims_t<tindex, tdimensions>& dims)
+        template <typename tvalue_, std::size_t tdimensions>
+        auto map_tensor(tvalue_* data, const dims_t<tdimensions>& dims)
         {
                 using tvalue = typename std::remove_const<tvalue_>::type;
                 using tstorage = Eigen::Map<vector_t<tvalue>>;
@@ -114,8 +110,8 @@ namespace tensor
         ///
         /// \brief map constant data to tensors
         ///
-        template <typename tvalue_, typename tindex, std::size_t tdimensions>
-        auto map_tensor(const tvalue_* data, const dims_t<tindex, tdimensions>& dims)
+        template <typename tvalue_, std::size_t tdimensions>
+        auto map_tensor(const tvalue_* data, const dims_t<tdimensions>& dims)
         {
                 using tvalue = typename std::remove_const<tvalue_>::type;
                 using tstorage = Eigen::Map<const vector_t<tvalue>>;
@@ -128,8 +124,7 @@ namespace tensor
         template <typename tvalue_, typename... tsizes>
         auto map_tensor(tvalue_* data, const tsizes... dims)
         {
-                const auto tdimensions = sizeof...(dims);
-                return map_tensor(data, dims_t<Eigen::Index, tdimensions>());
+                return map_tensor(data, make_dims(dims...));
         }
 
         ///
@@ -138,7 +133,6 @@ namespace tensor
         template <typename tvalue_, typename... tsizes>
         auto map_tensor(const tvalue_* data, const tsizes... dims)
         {
-                const auto tdimensions = sizeof...(dims);
-                return map_tensor(data, dims_t<Eigen::Index, tdimensions>());
+                return map_tensor(data, make_dims(dims...));
         }
 }

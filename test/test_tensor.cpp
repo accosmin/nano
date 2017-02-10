@@ -6,56 +6,48 @@ NANO_BEGIN_MODULE(test_tensor)
 
 NANO_CASE(index1d)
 {
-        tensor::index_t<std::int64_t, 1> index(7);
+        const auto dims = tensor::make_dims(7);
 
-        NANO_CHECK_EQUAL(index.size(), 7);
-        NANO_CHECK_EQUAL(index.size<0>(), 7);
+        NANO_CHECK_EQUAL(std::get<0>(dims), 7);
+        NANO_CHECK_EQUAL(tensor::size(dims), 7);
 
-        NANO_CHECK_EQUAL(index(0), 0);
-        NANO_CHECK_EQUAL(index(1), 1);
-        NANO_CHECK_EQUAL(index(6), 6);
+        NANO_CHECK_EQUAL(tensor::index(dims, 0), 0);
+        NANO_CHECK_EQUAL(tensor::index(dims, 1), 1);
+        NANO_CHECK_EQUAL(tensor::index(dims, 6), 6);
 }
 
 NANO_CASE(index2d)
 {
-        tensor::index_t<std::int64_t, 2> index(7, 5);
+        const auto dims = tensor::make_dims(7, 5);
 
-        NANO_CHECK_EQUAL(index.size(), 35);
-        NANO_CHECK_EQUAL(index.size<0>(), 7);
-        NANO_CHECK_EQUAL(index.size<1>(), 5);
+        NANO_CHECK_EQUAL(std::get<0>(dims), 7);
+        NANO_CHECK_EQUAL(std::get<1>(dims), 5);
+        NANO_CHECK_EQUAL(tensor::size(dims), 35);
 
-        NANO_CHECK_EQUAL(index(0), 0);
-        NANO_CHECK_EQUAL(index(13), 13);
-        NANO_CHECK_EQUAL(index(34), 34);
-
-        NANO_CHECK_EQUAL(index(0, 1), 1);
-        NANO_CHECK_EQUAL(index(0, 4), 4);
-        NANO_CHECK_EQUAL(index(1, 0), 5);
-        NANO_CHECK_EQUAL(index(3, 2), 17);
-        NANO_CHECK_EQUAL(index(6, 4), 34);
+        NANO_CHECK_EQUAL(tensor::index(dims, 0, 1), 1);
+        NANO_CHECK_EQUAL(tensor::index(dims, 0, 4), 4);
+        NANO_CHECK_EQUAL(tensor::index(dims, 1, 0), 5);
+        NANO_CHECK_EQUAL(tensor::index(dims, 3, 2), 17);
+        NANO_CHECK_EQUAL(tensor::index(dims, 6, 4), 34);
 }
 
 NANO_CASE(index3d)
 {
-        tensor::index_t<std::int64_t, 3> index(3, 7, 5);
+        const auto dims = tensor::make_dims(3, 7, 5);
 
-        NANO_CHECK_EQUAL(index.size(), 105);
-        NANO_CHECK_EQUAL(index.size<0>(), 3);
-        NANO_CHECK_EQUAL(index.size<1>(), 7);
-        NANO_CHECK_EQUAL(index.size<2>(), 5);
+        NANO_CHECK_EQUAL(std::get<0>(dims), 3);
+        NANO_CHECK_EQUAL(std::get<1>(dims), 7);
+        NANO_CHECK_EQUAL(std::get<2>(dims), 5);
+        NANO_CHECK_EQUAL(tensor::size(dims), 105);
 
-        NANO_CHECK_EQUAL(index(0), 0);
-        NANO_CHECK_EQUAL(index(13), 13);
-        NANO_CHECK_EQUAL(index(34), 34);
-
-        NANO_CHECK_EQUAL(index(0, 0, 1), 1);
-        NANO_CHECK_EQUAL(index(0, 0, 4), 4);
-        NANO_CHECK_EQUAL(index(0, 1, 0), 5);
-        NANO_CHECK_EQUAL(index(0, 2, 1), 11);
-        NANO_CHECK_EQUAL(index(1, 2, 1), 46);
-        NANO_CHECK_EQUAL(index(1, 0, 3), 38);
-        NANO_CHECK_EQUAL(index(2, 4, 1), 91);
-        NANO_CHECK_EQUAL(index(2, 6, 4), 104);
+        NANO_CHECK_EQUAL(tensor::index(dims, 0, 0, 1), 1);
+        NANO_CHECK_EQUAL(tensor::index(dims, 0, 0, 4), 4);
+        NANO_CHECK_EQUAL(tensor::index(dims, 0, 1, 0), 5);
+        NANO_CHECK_EQUAL(tensor::index(dims, 0, 2, 1), 11);
+        NANO_CHECK_EQUAL(tensor::index(dims, 1, 2, 1), 46);
+        NANO_CHECK_EQUAL(tensor::index(dims, 1, 0, 3), 38);
+        NANO_CHECK_EQUAL(tensor::index(dims, 2, 4, 1), 91);
+        NANO_CHECK_EQUAL(tensor::index(dims, 2, 6, 4), 104);
 }
 
 NANO_CASE(tensor3d)
@@ -126,9 +118,15 @@ NANO_CASE(tensor3d_map)
         NANO_CHECK_EQUAL(tmap.rows(), rows);
         NANO_CHECK_EQUAL(tmap.cols(), cols);
 
-        for (int i = 0; i < tmap.size(); ++ i)
+        for (int d = 0, i = 0; d < dims; ++ d)
         {
-                NANO_CHECK_EQUAL(tmap(i), -35 + i);
+                for (int r = 0; r < rows; ++ r)
+                {
+                        for (int c = 0; c < cols; ++ c, ++ i)
+                        {
+                                NANO_CHECK_EQUAL(tmap(d, r, c), -35 + i);
+                        }
+                }
         }
 
         tensor = tmap;
@@ -136,9 +134,15 @@ NANO_CASE(tensor3d_map)
         NANO_CHECK_EQUAL(tensor.size<1>(), rows);
         NANO_CHECK_EQUAL(tensor.size<2>(), cols);
 
-        for (int i = 0; i < tensor.size(); ++ i)
+        for (int d = 0, i = 0; d < dims; ++ d)
         {
-                NANO_CHECK_EQUAL(tensor(i), -35 + i);
+                for (int r = 0; r < rows; ++ r)
+                {
+                        for (int c = 0; c < cols; ++ c, ++ i)
+                        {
+                                NANO_CHECK_EQUAL(tensor(d, r, c), -35 + i);
+                        }
+                }
         }
 }
 
@@ -214,9 +218,18 @@ NANO_CASE(tensor4d_map)
         NANO_CHECK_EQUAL(tmap.rows(), rows);
         NANO_CHECK_EQUAL(tmap.cols(), cols);
 
-        for (int i = 0; i < tmap.size(); ++ i)
+        for (int d1 = 0, i = 0; d1 < dim1; ++ d1)
         {
-                NANO_CHECK_EQUAL(tmap(i), -35 + i);
+                for (int d2 = 0; d2 < dim2; ++ d2)
+                {
+                        for (int r = 0; r < rows; ++ r)
+                        {
+                                for (int c = 0; c < cols; ++ c, ++ i)
+                                {
+                                        NANO_CHECK_EQUAL(tmap(d1, d2, r, c), -35 + i);
+                                }
+                        }
+                }
         }
 
         tensor = tmap;
@@ -225,9 +238,18 @@ NANO_CASE(tensor4d_map)
         NANO_CHECK_EQUAL(tensor.size<2>(), rows);
         NANO_CHECK_EQUAL(tensor.size<3>(), cols);
 
-        for (int i = 0; i < tensor.size(); ++ i)
+        for (int d1 = 0, i = 0; d1 < dim1; ++ d1)
         {
-                NANO_CHECK_EQUAL(tensor(i), -35 + i);
+                for (int d2 = 0; d2 < dim2; ++ d2)
+                {
+                        for (int r = 0; r < rows; ++ r)
+                        {
+                                for (int c = 0; c < cols; ++ c, ++ i)
+                                {
+                                        NANO_CHECK_EQUAL(tensor(d1, d2, r, c), -35 + i);
+                                }
+                        }
+                }
         }
 }
 

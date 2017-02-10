@@ -21,13 +21,11 @@ namespace tensor
                 static_assert(tdimensions >= 3,
                         "cannot create tensors with fewer than 3 dimensions, use a vector or a matrix instead");
 
-                using tsize = typename tstorage::Index;
-                using tindex = typename tstorage::Index;
                 using tscalar = typename tstorage::Scalar;
-                using tdims = dims_t<tindex, tdimensions>;
+                using tdims = dims_t<tdimensions>;
 
                 // Eigen compatible
-                using Index = tindex;
+                using Index = index_t;
                 using Scalar = tscalar;
 
                 ///
@@ -46,18 +44,18 @@ namespace tensor
                 ///
                 /// \brief constructor
                 ///
-                template <typename... tsizes>
-                explicit storage_t(const tsizes... dims) :
-                        m_dims(dims...)
+                template <typename... index_ts>
+                explicit storage_t(const index_ts... dims) :
+                        m_dims({{dims...}})
                 {
                 }
 
                 ///
                 /// \brief constructor
                 ///
-                template <typename... tsizes>
-                storage_t(const tstorage& data, const tsizes... dims) :
-                        m_dims(dims...),
+                template <typename... index_ts>
+                storage_t(const tstorage& data, const index_ts... dims) :
+                        m_dims({{dims...}}),
                         m_data(data)
                 {
                         assert(m_data.size() == tensor::size(m_dims));
@@ -82,12 +80,12 @@ namespace tensor
                 ///
                 /// \brief dimensions
                 ///
-                tsize size() const { assert(m_data.size() == tensor::size(m_dims)); return m_data.size(); }
+                index_t size() const { assert(m_data.size() == tensor::size(m_dims)); return m_data.size(); }
                 template <int idim>
-                tsize size() const { return std::get<idim>(m_dims); }
-                tsize rows() const { return size<tdimensions - 2>(); }
-                tsize cols() const { return size<tdimensions - 1>(); }
-                tsize planeSize() const { return rows() * cols(); }
+                index_t size() const { return std::get<idim>(m_dims); }
+                index_t rows() const { return size<tdimensions - 2>(); }
+                index_t cols() const { return size<tdimensions - 1>(); }
+                index_t planeSize() const { return rows() * cols(); }
                 const tdims& dims() const { return m_dims; }
                 auto dimensionality() const { return tdimensions; }
 
@@ -159,6 +157,18 @@ namespace tensor
                         static_assert(sizeof...(indices) == tdimensions - 2,
                                 "wrong number of tensor dimensions to access a 2D plane");
                         return data() + tensor::index(m_dims, indices..., 0, 0);
+                }
+
+                ///
+                /// \brief access an element of the tensor
+                ///
+                tscalar operator()(const index_t index) const
+                {
+                        return m_data(index);
+                }
+                tscalar& operator()(const index_t index)
+                {
+                        return m_data(index);
                 }
 
                 ///
