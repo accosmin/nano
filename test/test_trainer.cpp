@@ -6,8 +6,9 @@
 
 using namespace nano;
 
-const int epochs = 200;
-const int best_epoch = 50;
+const auto epochs = 200;
+const auto best_epoch = 50;
+const auto patience = size_t(32);
 
 template <typename tvalue>
 static auto make_trainer_state(const tvalue valid_value, const size_t ms = 0, const size_t epoch = 0)
@@ -27,7 +28,7 @@ static auto update_result(trainer_result_t& result, const opt_status status, con
 
         const auto config = to_params("param", 0);
 
-        return result.update(opt_state, make_trainer_state(value, 0, static_cast<size_t>(epoch)), config);
+        return result.update(opt_state, make_trainer_state(value, 0, static_cast<size_t>(epoch)), config, patience);
 }
 
 NANO_BEGIN_MODULE(test_trainer)
@@ -105,7 +106,7 @@ NANO_CASE(result_overfitting)
                         NANO_CHECK(false == nano::is_done(status, trainer_policy::stop_early));
                         NANO_CHECK(false == nano::is_done(status, trainer_policy::all_epochs));
                 }
-                else if (epoch < best_epoch + static_cast<int>(trainer_result_t::overfitting_slack()))
+                else if (epoch < best_epoch + static_cast<int>(patience))
                 {
                         NANO_CHECK(trainer_status::worse == status);
                         NANO_CHECK(false == nano::is_done(status, trainer_policy::stop_early));

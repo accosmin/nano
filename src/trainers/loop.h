@@ -15,7 +15,7 @@ namespace nano
         /// \brief log the current optimization state & check stopping criteria.
         ///
         inline bool ulog(const accumulator_t& acc, task_iterator_t& it,
-                size_t& epoch, const size_t epochs, trainer_result_t& result, const trainer_policy policy,
+                size_t& epoch, const size_t epochs, trainer_result_t& result, const trainer_policy policy, const size_t patience,
                 const timer_t& timer,
                 const state_t& state, const string_t& sconfig = string_t())
         {
@@ -36,7 +36,7 @@ namespace nano
                 // OK, update the optimum solution
                 const auto milis = timer.milliseconds();
                 const auto config = to_params(sconfig, "lambda", acc.lambda());
-                const auto ret = result.update(state, {milis, ++epoch, train, valid, test}, config);
+                const auto ret = result.update(state, {milis, ++epoch, train, valid, test}, config, patience);
 
                 log_info()
                         << "[" << epoch << "/" << epochs

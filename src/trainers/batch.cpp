@@ -11,7 +11,7 @@ namespace nano
 {
         batch_trainer_t::batch_trainer_t(const string_t& parameters) :
                 trainer_t(to_params(parameters, "opt", "lbfgs[...]", "epochs", "1024[4,4096]",
-                "policy", "stop_early[,all_epochs]", "eps", 1e-6))
+                "policy", "stop_early[,all_epochs]", "eps", 1e-6, "patience", 32))
         {
         }
 
@@ -30,6 +30,7 @@ namespace nano
                 const auto policy = from_params<trainer_policy>(config(), "policy");
                 const auto epsilon = from_params<scalar_t>(config(), "eps");
                 const auto optimizer = from_params<string_t>(config(), "opt");
+                const auto patience = from_params<size_t>(config(), "patience");
 
                 const auto train_fold = fold_t{fold, protocol::train};
 
@@ -45,7 +46,7 @@ namespace nano
                         // logging operator
                         const auto fn_ulog = [&] (const state_t& state)
                         {
-                                return ulog(acc, it, epoch, epochs, result, policy, timer, state);
+                                return ulog(acc, it, epoch, epochs, result, policy, patience, timer, state);
                         };
 
                         // assembly optimization function & optimize the model

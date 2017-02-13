@@ -40,7 +40,7 @@ trainers += ["stoch_sg", "stoch_sgm", "stoch_ngd", "stoch_svrg", "stoch_asgd"]
 trainers += ["stoch_ag", "stoch_agfr", "stoch_aggr"]
 trainers += ["stoch_adam", "stoch_adadelta", "stoch_adagrad"]
 for name in trainers:
-        exp.add_trainer(name, cfg.trainers.get(name))
+        exp.add_trainer(name, cfg.trainers.get(name) + cfg.policies.get("stop_early") + ",patience=32")
 
 # train all configurations
 trials = 10

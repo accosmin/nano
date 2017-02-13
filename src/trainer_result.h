@@ -50,7 +50,7 @@ namespace nano
                 ///
                 /// \brief update the current/optimum state with a possible better state
                 ///
-                trainer_status update(const state_t&, const trainer_state_t&, const string_t& config);
+                trainer_status update(const state_t&, const trainer_state_t&, const string_t& config, const size_t patience);
 
                 ///
                 /// \brief update the current/optimum state with a possible better state
@@ -89,11 +89,6 @@ namespace nano
                 /// \brief optimum epoch
                 ///
                 size_t optimum_epoch() const;
-
-                ///
-                /// \brief the number of epochs to wait for overfitting detection
-                ///
-                static size_t overfitting_slack();
 
         private:
 

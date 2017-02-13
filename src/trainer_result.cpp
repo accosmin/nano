@@ -4,7 +4,7 @@
 namespace nano
 {
         trainer_status trainer_result_t::update(const state_t& opt_state,
-                const trainer_state_t& state, const string_t& config)
+                const trainer_state_t& state, const string_t& config, const size_t patience)
         {
                 // out-of-bounds values (e.g. caused by invalid line-search steps)
                 if (!state)
@@ -48,14 +48,14 @@ namespace nano
                 else
                 {
                         // not enough epochs, keep training
-                        if (state.m_epoch < overfitting_slack())
+                        if (state.m_epoch < patience)
                         {
                                 return trainer_status::worse;
                         }
                         else
                         {
                                 // last improvement not far in the past, keep training
-                                if (state.m_epoch < m_opt_state.m_epoch + overfitting_slack())
+                                if (state.m_epoch < m_opt_state.m_epoch + patience)
                                 {
                                         return trainer_status::worse;
                                 }
@@ -67,11 +67,6 @@ namespace nano
                                 }
                         }
                 }
-        }
-
-        size_t trainer_result_t::overfitting_slack()
-        {
-                return 32;
         }
 
         trainer_status trainer_result_t::update(const trainer_result_t& other)
