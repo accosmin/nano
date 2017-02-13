@@ -105,14 +105,14 @@ namespace nano
                 while (stream.read(buffer.data(), ix) == ix)
                 {
                         image_t image(irows, icols, color_mode::rgb);
-                        image.plane(0) = tensor::map_matrix(iptr + 0 * px, icols, irows).cast<luma_t>().transpose();
-                        image.plane(1) = tensor::map_matrix(iptr + 1 * px, icols, irows).cast<luma_t>().transpose();
-                        image.plane(2) = tensor::map_matrix(iptr + 2 * px, icols, irows).cast<luma_t>().transpose();
+                        image.plane(0) = nano::map_matrix(iptr + 0 * px, icols, irows).cast<luma_t>().transpose();
+                        image.plane(1) = nano::map_matrix(iptr + 1 * px, icols, irows).cast<luma_t>().transpose();
+                        image.plane(2) = nano::map_matrix(iptr + 2 * px, icols, irows).cast<luma_t>().transpose();
                         add_chunk(image, image.hash());
 
                         if (unlabeled)
                         {
-                                m_samples.emplace_back(n_chunks() - 1, tensor::size(odims()));
+                                m_samples.emplace_back(n_chunks() - 1, nano::size(odims()));
                         }
 
                         ++ icount;
@@ -138,13 +138,13 @@ namespace nano
                 {
                         const tensor_index_t ilabel = static_cast<tensor_index_t>(label) - 1;
 
-                        if (ilabel >= 0 && ilabel < tensor::size(odims()))
+                        if (ilabel >= 0 && ilabel < nano::size(odims()))
                         {
                                 m_samples.emplace_back(iindex, ilabel);
                         }
                         else
                         {
-                                m_samples.emplace_back(iindex, tensor::size(odims()));
+                                m_samples.emplace_back(iindex, nano::size(odims()));
                         }
 
                         ++ gcount;
@@ -166,10 +166,10 @@ namespace nano
 
                 const auto op_sample = [&] (const fold_t& fold, const sample_t& sample)
                 {
-                        if (sample.m_label < tensor::size(odims()))
+                        if (sample.m_label < nano::size(odims()))
                         {
                                 add_sample(fold, sample.m_image,
-                                           class_target(sample.m_label, tensor::size(odims())),
+                                           class_target(sample.m_label, nano::size(odims())),
                                            tlabels[sample.m_label]);
                         }
                         else

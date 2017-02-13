@@ -27,7 +27,7 @@ namespace nano
 
                 assert(ksize == 2 * krad + 1);
 
-                tensor::vector_t<tscalar> buff(std::max(rows, cols));
+                tensor_vector_t<tscalar> buff(std::max(rows, cols));
 
                 // horizontal filter
                 for (int r = 0; r < rows; ++ r)

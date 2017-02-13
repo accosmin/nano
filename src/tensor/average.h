@@ -1,6 +1,6 @@
 #pragma once
 
-namespace tensor
+namespace nano
 {
         ///
         /// \brief running average for Eigen vectors.

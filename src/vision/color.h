@@ -9,11 +9,11 @@
 namespace nano
 {
         using luma_t = uint8_t;
-        using rgb_t  = tensor::vector_t<uint8_t, 3>;
-        using rgba_t = tensor::vector_t<uint8_t, 4>;
+        using rgb_t  = tensor_vector_t<uint8_t, 3>;
+        using rgba_t = tensor_vector_t<uint8_t, 4>;
 
         /// 3D buffer to store image patches (number of dimensions is equal to color channels)
-        using image_tensor_t = tensor::tensor_t<luma_t, 3>;
+        using image_tensor_t = tensor_mem_t<tensor_vector_t<uint8_t>, 3>;
 
         ///
         /// \brief color storage & processing modes
@@ -50,10 +50,7 @@ namespace nano
                         static_cast<uint32_t>(g) * 16 +
                         static_cast<uint32_t>(b) * 5) / 32;
         }
-}
 
-namespace nano
-{
         template <>
         inline std::map<nano::color_mode, std::string> enum_string<nano::color_mode>()
         {

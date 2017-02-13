@@ -23,7 +23,7 @@ namespace nano
                 lrate_t lrate(alpha0, decay, param.m_epoch_size);
 
                 // first-order momentum of the update
-                tensor::momentum_t<vector_t> davg(momentum, x0.size());
+                nano::momentum_t<vector_t> davg(momentum, x0.size());
 
                 // assembly the optimizer
                 const auto optimizer = [&] (state_t& cstate, const state_t&)

@@ -3,7 +3,7 @@
 #include <type_traits>
 #include <eigen3/Eigen/Core>
 
-namespace tensor
+namespace nano
 {
         ///
         /// \brief vector types
@@ -14,7 +14,7 @@ namespace tensor
                 int trows = Eigen::Dynamic,
                 typename tvalue = typename std::remove_const<tvalue_>::type
         >
-        using vector_t = Eigen::Matrix<tvalue, trows, 1, Eigen::ColMajor>;
+        using tensor_vector_t = Eigen::Matrix<tvalue, trows, 1, Eigen::ColMajor>;
 
         ///
         /// \brief map non-constant data to vectors
@@ -25,7 +25,7 @@ namespace tensor
                 typename tvalue_,
                 typename tsize,
                 typename tvalue = typename std::remove_const<tvalue_>::type,
-                typename tresult = Eigen::Map<vector_t<tvalue>, alignment>
+                typename tresult = Eigen::Map<tensor_vector_t<tvalue>, alignment>
         >
         tresult map_vector(tvalue_* data, const tsize rows)
         {
@@ -41,7 +41,7 @@ namespace tensor
                 typename tvalue_,
                 typename tsize,
                 typename tvalue = typename std::remove_const<tvalue_>::type,
-                typename tresult = Eigen::Map<const vector_t<tvalue>, alignment>
+                typename tresult = Eigen::Map<const tensor_vector_t<tvalue>, alignment>
         >
         tresult map_vector(const tvalue_* data, const tsize rows)
         {

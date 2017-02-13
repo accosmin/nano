@@ -14,7 +14,7 @@ NANO_CASE(construction)
 
         const auto idims = dim3d_t{3, 32, 32};
         const auto odims = dim3d_t{10, 1, 1};
-        const auto target_sum = scalar_t(2) - static_cast<scalar_t>(tensor::size(odims));
+        const auto target_sum = scalar_t(2) - static_cast<scalar_t>(nano::size(odims));
 
         const auto folds = size_t(1);
         const auto train_samples = size_t(73257 + 531131);
@@ -63,7 +63,7 @@ NANO_CASE(construction)
         const size_t max_duplicates = 2;
         NANO_CHECK_LESS_EQUAL(nano::check_duplicates(*task), max_duplicates);
         NANO_CHECK_LESS_EQUAL(nano::check_intersection(*task), max_duplicates);
-        NANO_CHECK_EQUAL(labels.size(), static_cast<size_t>(tensor::size(odims)));
+        NANO_CHECK_EQUAL(labels.size(), static_cast<size_t>(nano::size(odims)));
 }
 
 NANO_END_MODULE()

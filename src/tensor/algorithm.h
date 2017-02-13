@@ -3,7 +3,7 @@
 #include <cassert>
 #include <algorithm>
 
-namespace tensor
+namespace nano
 {
         ///
         /// \brief transform coefficient-wise a tensor: out = op(in)

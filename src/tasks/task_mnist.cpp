@@ -99,14 +99,14 @@ namespace nano
                         while (stream.read(label, 1) == 1)
                         {
                                 const tensor_index_t ilabel = static_cast<tensor_index_t>(label[0]);
-                                if (ilabel < 0 || ilabel >= tensor::size(odims()))
+                                if (ilabel < 0 || ilabel >= nano::size(odims()))
                                 {
                                         log_error() << "MNIST: invalid label!";
                                         return false;
                                 }
 
                                 const auto fold = make_fold(0, p);
-                                add_sample(fold, iindex, class_target(ilabel, tensor::size(odims())), tlabels[ilabel]);
+                                add_sample(fold, iindex, class_target(ilabel, nano::size(odims())), tlabels[ilabel]);
 
                                 ++ gcount;
                                 ++ iindex;

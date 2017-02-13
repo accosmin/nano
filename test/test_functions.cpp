@@ -22,7 +22,7 @@ static void test_function(const function_t& function)
         for (size_t t = 0; t < trials; ++ t)
         {
                 vector_t x0(dims), x1(dims);
-                tensor::set_random(rgen, x0, x1);
+                nano::set_random(rgen, x0, x1);
 
                 if (    function.is_valid(x0) && std::isfinite(function.eval(x0)) &&
                         function.is_valid(x1) && std::isfinite(function.eval(x1)))

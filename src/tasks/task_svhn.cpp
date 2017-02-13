@@ -139,9 +139,9 @@ namespace nano
                         }
 
                         image_t image(irows, icols, color_mode::rgb);
-                        image.plane(0) = tensor::map_matrix(idata.data() + 0 * px, icols, irows).cast<luma_t>().transpose();
-                        image.plane(1) = tensor::map_matrix(idata.data() + 1 * px, icols, irows).cast<luma_t>().transpose();
-                        image.plane(2) = tensor::map_matrix(idata.data() + 2 * px, icols, irows).cast<luma_t>().transpose();
+                        image.plane(0) = nano::map_matrix(idata.data() + 0 * px, icols, irows).cast<luma_t>().transpose();
+                        image.plane(1) = nano::map_matrix(idata.data() + 1 * px, icols, irows).cast<luma_t>().transpose();
+                        image.plane(2) = nano::map_matrix(idata.data() + 2 * px, icols, irows).cast<luma_t>().transpose();
                         add_chunk(image, image.hash());
                 }
 
@@ -201,7 +201,7 @@ namespace nano
                         }
 
                         const auto fold = make_fold(0, p);
-                        add_sample(fold, chunk_index ++, class_target(ilabel, tensor::size(odims())), tlabels[ilabel]);
+                        add_sample(fold, chunk_index ++, class_target(ilabel, nano::size(odims())), tlabels[ilabel]);
                 }
 
                 log_info() << "chunk_index = " << chunk_index << "/" << n_chunks();

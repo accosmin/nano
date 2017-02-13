@@ -112,7 +112,7 @@ namespace nano
                 image.matrix(2).setConstant(back_color(2) / scalar_t(255));
                 image.matrix(3).setConstant(1);
 
-                tensor::add_random(rng_noise, image.matrix(0), image.matrix(1), image.matrix(2));
+                nano::add_random(rng_noise, image.matrix(0), image.matrix(1), image.matrix(2));
 
                 // smooth background
                 const nano::gauss_kernel_t<scalar_t> back_gauss(sigma);
@@ -131,9 +131,9 @@ namespace nano
                 };
 
                 tensor3d_t imgb(4, mask.rows(), mask.cols());
-                tensor::transform(mask.matrix(3), img1.matrix(0), img2.matrix(0), imgb.matrix(0), op);
-                tensor::transform(mask.matrix(3), img1.matrix(1), img2.matrix(1), imgb.matrix(1), op);
-                tensor::transform(mask.matrix(3), img1.matrix(2), img2.matrix(2), imgb.matrix(2), op);
+                nano::transform(mask.matrix(3), img1.matrix(0), img2.matrix(0), imgb.matrix(0), op);
+                nano::transform(mask.matrix(3), img1.matrix(1), img2.matrix(1), imgb.matrix(1), op);
+                nano::transform(mask.matrix(3), img1.matrix(2), img2.matrix(2), imgb.matrix(2), op);
                 imgb.matrix(3).setConstant(1);
 
                 return imgb;

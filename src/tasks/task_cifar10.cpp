@@ -86,7 +86,7 @@ namespace nano
                         stream.read(buffer.data(), buffer_size) == buffer_size)
                 {
                         const tensor_index_t ilabel = label[0];
-                        if (ilabel < 0 || ilabel >= tensor::size(odims()))
+                        if (ilabel < 0 || ilabel >= nano::size(odims()))
                         {
                                 log_error() << "CIFAR-10: invalid label!";
                                 return false;
@@ -97,7 +97,7 @@ namespace nano
                         add_chunk(image, image.hash());
 
                         const auto fold = make_fold(0, p);
-                        add_sample(fold, n_chunks() - 1, class_target(ilabel, tensor::size(odims())), tlabels[ilabel]);
+                        add_sample(fold, n_chunks() - 1, class_target(ilabel, nano::size(odims())), tlabels[ilabel]);
 
                         ++ icount;
                 }

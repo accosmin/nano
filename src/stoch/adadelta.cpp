@@ -19,10 +19,10 @@ namespace nano
                 const scalar_t momentum, const scalar_t epsilon) const
         {
                 // second-order momentum of the gradient
-                tensor::momentum_t<vector_t> gavg(momentum, x0.size());
+                nano::momentum_t<vector_t> gavg(momentum, x0.size());
 
                 // second-order momentum of the step updates
-                tensor::momentum_t<vector_t> davg(momentum, x0.size());
+                nano::momentum_t<vector_t> davg(momentum, x0.size());
 
                 // assembly the optimizer
                 const auto optimizer = [&] (state_t& cstate, const state_t&)

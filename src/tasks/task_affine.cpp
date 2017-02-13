@@ -30,24 +30,24 @@ namespace nano
                 auto rng_noise = make_rng<scalar_t>(-noise, +noise);
 
                 // random affine transformation
-                m_A.resize(tensor::size(odims()), tensor::size(idims()));
-                m_b.resize(tensor::size(odims()));
+                m_A.resize(nano::size(odims()), nano::size(idims()));
+                m_b.resize(nano::size(odims()));
 
-                tensor::set_random(rng_input, m_A, m_b);
-                tensor::normalize(m_A);
+                nano::set_random(rng_input, m_A, m_b);
+                nano::normalize(m_A);
 
                 // generate samples
                 for (size_t i = 0; i < count; ++ i)
                 {
                         // random input
                         tensor3d_t input(idims());
-                        tensor::set_random(rng_input, input);
+                        nano::set_random(rng_input, input);
                         add_chunk(input, i);
 
                         // target
                         tensor3d_t target(odims());
-                        tensor::map_vector(target.data(), target.size()) = m_A * input.vector() + m_b;
-                        tensor::add_random(rng_noise, target);
+                        nano::map_vector(target.data(), target.size()) = m_A * input.vector() + m_b;
+                        nano::add_random(rng_noise, target);
                         add_sample(make_fold(0), i, target);
                 }
 

@@ -46,21 +46,21 @@ namespace nano
                 m_A.resize(irows, irows);
                 m_B.resize(irows, irows);
 
-                tensor::set_random(rng_input, m_A, m_B);
-                tensor::normalize(m_A);
+                nano::set_random(rng_input, m_A, m_B);
+                nano::normalize(m_A);
 
                 // generate samples
                 for (size_t i = 0; i < count; ++ i)
                 {
                         // random input
                         tensor3d_t input(idims());
-                        tensor::set_random(rng_input, input);
+                        nano::set_random(rng_input, input);
                         add_chunk(input, i);
 
                         // target
                         matrix_t target = m_A * (input.matrix(0) * input.matrix(1).transpose()) + m_B;
-                        tensor::add_random(rng_noise, target);
-                        add_sample(make_fold(0), i, tensor::map_tensor(target.data(), odims()));
+                        nano::add_random(rng_noise, target);
+                        add_sample(make_fold(0), i, nano::map_tensor(target.data(), odims()));
                 }
 
                 return true;

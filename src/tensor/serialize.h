@@ -2,7 +2,7 @@
 
 #include "vector.h"
 
-namespace tensor
+namespace nano
 {
         ///
         /// \brief serialize a tensor (vector, matrix, 3D tensor) to an 1D array
@@ -14,7 +14,7 @@ namespace tensor
         >
         tscalar* to_array(tscalar* data, const ttensor& t)
         {
-                tensor::map_vector(data, t.size()) = tensor::map_vector(t.data(), t.size());
+                nano::map_vector(data, t.size()) = nano::map_vector(t.data(), t.size());
                 return data + t.size();
         }
 
@@ -39,7 +39,7 @@ namespace tensor
         >
         const tscalar* from_array(const tscalar* data, ttensor& t)
         {
-                tensor::map_vector(t.data(), t.size()) = tensor::map_vector(data, t.size());
+                nano::map_vector(t.data(), t.size()) = nano::map_vector(data, t.size());
                 return data + t.size();
         }
 

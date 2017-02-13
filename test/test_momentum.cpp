@@ -12,10 +12,10 @@ namespace test
         >
         void check_momentum(const tsize dims, const tscalar momentum, const tsize range)
         {
-                tensor::momentum_t<tvector> mom00(momentum, dims);
-                tensor::momentum_t<tvector> mom01(momentum, dims);
-                tensor::momentum_t<tvector> mom10(1 - momentum, dims);
-                tensor::momentum_t<tvector> mom11(1 - momentum, dims);
+                nano::momentum_t<tvector> mom00(momentum, dims);
+                nano::momentum_t<tvector> mom01(momentum, dims);
+                nano::momentum_t<tvector> mom10(1 - momentum, dims);
+                nano::momentum_t<tvector> mom11(1 - momentum, dims);
 
                 const auto epsilon = nano::epsilon1<tscalar>();
                 for (tsize i = 1; i <= range; ++ i)

@@ -140,7 +140,7 @@ namespace nano
                         {
                                 const auto band0 = image.matrix(0);
 
-                                tensor::vector_t<luma_t> temp(rows * cols);
+                                tensor_vector_t<luma_t> temp(rows * cols);
                                 for (auto r = 0, i = 0; r < rows; ++ r)
                                 {
                                         for (auto c = 0; c < cols; ++ c, ++ i)
@@ -159,7 +159,7 @@ namespace nano
                                 const auto band1 = image.matrix(1);
                                 const auto band2 = image.matrix(2);
 
-                                tensor::vector_t<luma_t> temp(rows * cols * 3);
+                                tensor_vector_t<luma_t> temp(rows * cols * 3);
                                 for (auto r = 0, i = 0; r < rows; ++ r)
                                 {
                                         for (auto c = 0; c < cols; ++ c, i += 3)
@@ -181,7 +181,7 @@ namespace nano
                                 const auto band2 = image.matrix(2);
                                 const auto band3 = image.matrix(3);
 
-                                tensor::vector_t<luma_t> temp(rows * cols * 4);
+                                tensor_vector_t<luma_t> temp(rows * cols * 4);
                                 for (auto r = 0, i = 0; r < rows; ++ r)
                                 {
                                         for (auto c = 0; c < cols; ++ c, i += 4)

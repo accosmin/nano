@@ -23,7 +23,7 @@ namespace nano
                 lrate_t lrate(alpha0, decay, param.m_epoch_size);
 
                 // average state
-                tensor::momentum_t<vector_t> xavg(momentum, x0.size());
+                nano::momentum_t<vector_t> xavg(momentum, x0.size());
 
                 // assembly the optimizer
                 const auto optimizer = [&] (state_t& cstate, const state_t&)

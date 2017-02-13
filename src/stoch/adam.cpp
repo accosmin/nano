@@ -21,10 +21,10 @@ namespace nano
                 const scalar_t alpha0, const scalar_t epsilon, const scalar_t beta1, const scalar_t beta2) const
         {
                 // first-order momentum of the gradient
-                tensor::momentum_t<vector_t> m(beta1, x0.size());
+                nano::momentum_t<vector_t> m(beta1, x0.size());
 
                 // second-order momentum of the gradient
-                tensor::momentum_t<vector_t> v(beta2, x0.size());
+                nano::momentum_t<vector_t> v(beta2, x0.size());
 
                 // assembly the optimizer
                 const auto optimizer = [&] (state_t& cstate, const state_t&)

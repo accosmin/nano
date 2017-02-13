@@ -63,26 +63,26 @@ namespace nano
         bool image_t::load_luma(const char* buffer, const coord_t rows, const coord_t cols)
         {
                 resize(rows, cols, color_mode::luma);
-                plane(0) = tensor::map_matrix(buffer, rows, cols).cast<luma_t>();
+                plane(0) = nano::map_matrix(buffer, rows, cols).cast<luma_t>();
                 return true;
         }
 
         bool image_t::load_rgba(const char* buffer, const coord_t rows, const coord_t cols, const coord_t stride)
         {
                 resize(rows, cols, color_mode::rgba);
-                plane(0) = tensor::map_matrix(buffer + 0 * stride, rows, cols).cast<luma_t>();
-                plane(1) = tensor::map_matrix(buffer + 1 * stride, rows, cols).cast<luma_t>();
-                plane(2) = tensor::map_matrix(buffer + 2 * stride, rows, cols).cast<luma_t>();
-                plane(3) = tensor::map_matrix(buffer + 3 * stride, rows, cols).cast<luma_t>();
+                plane(0) = nano::map_matrix(buffer + 0 * stride, rows, cols).cast<luma_t>();
+                plane(1) = nano::map_matrix(buffer + 1 * stride, rows, cols).cast<luma_t>();
+                plane(2) = nano::map_matrix(buffer + 2 * stride, rows, cols).cast<luma_t>();
+                plane(3) = nano::map_matrix(buffer + 3 * stride, rows, cols).cast<luma_t>();
                 return true;
         }
 
         bool image_t::load_rgb(const char* buffer, const coord_t rows, const coord_t cols, const coord_t stride)
         {
                 resize(rows, cols, color_mode::rgb);
-                plane(0) = tensor::map_matrix(buffer + 0 * stride, rows, cols).cast<luma_t>();
-                plane(1) = tensor::map_matrix(buffer + 1 * stride, rows, cols).cast<luma_t>();
-                plane(2) = tensor::map_matrix(buffer + 2 * stride, rows, cols).cast<luma_t>();
+                plane(0) = nano::map_matrix(buffer + 0 * stride, rows, cols).cast<luma_t>();
+                plane(1) = nano::map_matrix(buffer + 1 * stride, rows, cols).cast<luma_t>();
+                plane(2) = nano::map_matrix(buffer + 2 * stride, rows, cols).cast<luma_t>();
                 return true;
         }
 

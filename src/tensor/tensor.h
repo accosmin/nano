@@ -2,24 +2,20 @@
 
 #include "storage.h"
 
-namespace tensor
+namespace nano
 {
         ///
         /// \brief 3+D tensor mapping an array of 2D planes.
         ///
-        template
-        <
-                typename tmap,
-                int tdimensions
-        >
-        struct tensor_map_t : public storage_t<tmap, tdimensions>
+        template <typename tmap, std::size_t tdimensions>
+        struct tensor_map_t : public tensor_storage_t<tmap, tdimensions>
         {
-                using tbase = storage_t<tmap, tdimensions>;
+                using tbase = tensor_storage_t<tmap, tdimensions>;
                 using tdims = typename tbase::tdims;
                 using tscalar = typename tbase::tscalar;
 
                 // Eigen compatible
-                using Index = index_t;
+                using Index = tensor_index_t;
                 using Scalar = tscalar;
 
                 ///
@@ -33,46 +29,41 @@ namespace tensor
         };
 
         ///
-        /// \brief 3+D tensor stored as 2D planes.
+        /// \brief 3+D tensor stored as 2D planes that owns the allocated memory.
         ///
-        template
-        <
-                typename tscalar,
-                int tdimensions,
-                typename tvector = vector_t<tscalar>
-        >
-        struct tensor_t : public storage_t<tvector, tdimensions>
+        template <typename tvector, std::size_t tdimensions>
+        struct tensor_mem_t : public tensor_storage_t<tvector, tdimensions>
         {
-                using tbase = storage_t<tvector, tdimensions>;
+                using tbase = tensor_storage_t<tvector, tdimensions>;
                 using tdims = typename tbase::tdims;
+                using tscalar = typename tbase::tscalar;
 
                 // Eigen compatible
-                using Index = index_t;
+                using Index = tensor_index_t;
                 using Scalar = tscalar;
 
                 ///
                 /// \brief constructor
                 ///
-                tensor_t() = default;
+                tensor_mem_t() = default;
 
                 ///
                 /// \brief constructor
                 ///
                 template <typename... tsizes>
-                explicit tensor_t(const tsizes... dims) :
+                explicit tensor_mem_t(const tsizes... dims) :
                         tbase(dims...)
                 {
-                        this->m_data.resize(tensor::size(this->m_dims));
+                        this->m_data.resize(nano::size(this->m_dims));
                 }
 
                 ///
                 /// \brief constructor
                 ///
                 template <typename tmap>
-                tensor_t(const tensor_map_t<tmap, tdimensions>& other) :
-                        tensor_t(other.dims())
+                tensor_mem_t(const tensor_map_t<tmap, tdimensions>& other) :
+                        tensor_mem_t(other.dims())
                 {
-                        this->m_data.resize(tensor::size(this->m_dims));
                         this->vector() = other.vector().template cast<tscalar>();
                 }
 
@@ -80,7 +71,7 @@ namespace tensor
                 /// \brief resize to new dimensions
                 ///
                 template <typename... tsizes>
-                index_t resize(const tsizes... dims)
+                tensor_index_t resize(const tsizes... dims)
                 {
                         return resize({{dims...}});
                 }
@@ -88,10 +79,10 @@ namespace tensor
                 ///
                 /// \brief resize to new dimensions
                 ///
-                index_t resize(const tdims& dims)
+                tensor_index_t resize(const tdims& dims)
                 {
                         this->m_dims = dims;
-                        this->m_data.resize(tensor::size(this->m_dims));
+                        this->m_data.resize(nano::size(this->m_dims));
                         return this->size();
                 }
         };
@@ -100,22 +91,22 @@ namespace tensor
         /// \brief map non-constant data to tensors
         ///
         template <typename tvalue_, std::size_t tdimensions>
-        auto map_tensor(tvalue_* data, const dims_t<tdimensions>& dims)
+        auto map_tensor(tvalue_* data, const tensor_dims_t<tdimensions>& dims)
         {
                 using tvalue = typename std::remove_const<tvalue_>::type;
-                using tstorage = Eigen::Map<vector_t<tvalue>>;
-                return tensor_map_t<tstorage, tdimensions>(tensor::map_vector(data, tensor::size(dims)), dims);
+                using tstorage = Eigen::Map<tensor_vector_t<tvalue>>;
+                return tensor_map_t<tstorage, tdimensions>(nano::map_vector(data, nano::size(dims)), dims);
         }
 
         ///
         /// \brief map constant data to tensors
         ///
         template <typename tvalue_, std::size_t tdimensions>
-        auto map_tensor(const tvalue_* data, const dims_t<tdimensions>& dims)
+        auto map_tensor(const tvalue_* data, const tensor_dims_t<tdimensions>& dims)
         {
                 using tvalue = typename std::remove_const<tvalue_>::type;
-                using tstorage = Eigen::Map<const vector_t<tvalue>>;
-                return tensor_map_t<tstorage, tdimensions>(tensor::map_vector(data, tensor::size(dims)), dims);
+                using tstorage = Eigen::Map<const tensor_vector_t<tvalue>>;
+                return tensor_map_t<tstorage, tdimensions>(nano::map_vector(data, nano::size(dims)), dims);
         }
 
         ///

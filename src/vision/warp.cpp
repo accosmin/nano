@@ -23,19 +23,19 @@ namespace nano
 
                 tensor3d_t image(4, fieldx.rows(), fieldx.cols());
 
-                tensor::transform(fieldx, fieldy, image.matrix(0), [=] (const scalar_t fx, const scalar_t fy)
+                nano::transform(fieldx, fieldy, image.matrix(0), [=] (const scalar_t fx, const scalar_t fy)
                 {
                         return nano::clamp(std::sqrt(half * (fx * fx + fy * fy)), zero, one);
                 });
-                tensor::transform(fieldx, fieldy, image.matrix(1), [=] (const scalar_t, const scalar_t)
+                nano::transform(fieldx, fieldy, image.matrix(1), [=] (const scalar_t, const scalar_t)
                 {
                         return zero;
                 });
-                tensor::transform(fieldx, fieldy, image.matrix(2), [=] (const scalar_t fx, const scalar_t fy)
+                nano::transform(fieldx, fieldy, image.matrix(2), [=] (const scalar_t fx, const scalar_t fy)
                 {
                         return half * nano::clamp(half * (ipi * atan2(fy, fx) + one), zero, one);
                 });
-                tensor::transform(fieldx, fieldy, image.matrix(3), [] (const scalar_t, const scalar_t)
+                nano::transform(fieldx, fieldy, image.matrix(3), [] (const scalar_t, const scalar_t)
                 {
                         return one;
                 });
@@ -55,7 +55,7 @@ namespace nano
         {
                 matrix_t fieldx(rows, cols), fieldy(rows, cols);
 
-                tensor::set_random(nano::make_rng<scalar_t>(-noise, +noise), fieldx, fieldy);
+                nano::set_random(nano::make_rng<scalar_t>(-noise, +noise), fieldx, fieldy);
 
                 smooth_field(fieldx, sigma);
                 smooth_field(fieldy, sigma);
@@ -69,7 +69,7 @@ namespace nano
         {
                 matrix_t fieldx(rows, cols), fieldy(rows, cols);
 
-                tensor::set_random(nano::make_rng<scalar_t>(delta - noise, delta + noise), fieldx, fieldy);
+                nano::set_random(nano::make_rng<scalar_t>(delta - noise, delta + noise), fieldx, fieldy);
 
                 smooth_field(fieldx, sigma);
                 smooth_field(fieldy, sigma);

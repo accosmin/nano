@@ -40,7 +40,7 @@ struct model_wrt_params_function_t final : public function_t
 struct model_wrt_inputs_function_t final : public function_t
 {
         model_wrt_inputs_function_t(const rmodel_t& model, const rloss_t& loss, const vector_t& params, const vector_t& target) :
-                function_t("model", tensor::size(model->idims()), tensor::size(model->idims()), tensor::size(model->idims()), convexity::no, 1e+6),
+                function_t("model", nano::size(model->idims()), nano::size(model->idims()), nano::size(model->idims()), convexity::no, 1e+6),
                 m_model(model), m_loss(loss), m_params(params), m_target(target)
         {
         }
@@ -48,7 +48,7 @@ struct model_wrt_inputs_function_t final : public function_t
         scalar_t vgrad(const vector_t& x, vector_t* gx) const override
         {
                 m_model->load_params(m_params);
-                const auto inputs = tensor::map_tensor(x.data(), m_model->idims());
+                const auto inputs = nano::map_tensor(x.data(), m_model->idims());
                 const auto output = m_model->output(inputs).vector();
                 if (gx)
                 {
@@ -75,17 +75,17 @@ static tensor_size_t apsize(const tensor_size_t isize, const tensor_size_t osize
 
 static tensor_size_t apsize(const dim3d_t& idims, const tensor_size_t osize)
 {
-        return apsize(tensor::size(idims), osize);
+        return apsize(nano::size(idims), osize);
 }
 
 static tensor_size_t apsize(const dim3d_t& idims, const dim3d_t& odims)
 {
-        return apsize(tensor::size(idims), tensor::size(odims));
+        return apsize(nano::size(idims), nano::size(odims));
 }
 
 static tensor_size_t apsize(const tensor_size_t isize, const dim3d_t& odims)
 {
-        return apsize(isize, tensor::size(odims));
+        return apsize(isize, nano::size(odims));
 }
 
 static tensor_size_t cpsize(const tensor_size_t idims,
@@ -123,7 +123,7 @@ static void make_random_config(tensor3d_t& inputs, vector_t& target)
         random_t<scalar_t> irgen(-scalar_t(1.0), +scalar_t(1.0));
         random_t<tensor_size_t> trgen(0, target.size() - 1);
 
-        tensor::set_random(irgen, inputs);
+        nano::set_random(irgen, inputs);
         target = class_target(trgen(), target.size());
 }
 
@@ -136,7 +136,7 @@ static void test_model(const string_t& model_description, const tensor_size_t ex
         NANO_CHECK_EQUAL(model->psize(), expected_psize);
 
         vector_t params(model->psize());
-        vector_t target(tensor::size(model->odims()));
+        vector_t target(nano::size(model->odims()));
         tensor3d_t inputs(model->idims());
 
         NANO_CHECK_EQUAL(model->odims(), cmd_odims);
@@ -176,17 +176,17 @@ static void test_conv_layer(const tensor_size_t dims, const tensor_size_t krows,
 
         const auto kdims1 = layer.kdata().size<0>();
         const auto kdims2 = layer.kdata().size<1>();
-        auto ngkdata = tensor::map_tensor(ngparam.data(), kdims1, kdims2, layer.krows(), layer.kcols());
-        auto ngbdata = tensor::map_vector(ngparam.data() + ngkdata.size(), layer.bdata().size());
-        auto lgkdata = tensor::map_tensor(lgparam.data(), kdims1, kdims2, layer.krows(), layer.kcols());
-        auto lgbdata = tensor::map_vector(lgparam.data() + lgkdata.size(), layer.bdata().size());
+        auto ngkdata = nano::map_tensor(ngparam.data(), kdims1, kdims2, layer.krows(), layer.kcols());
+        auto ngbdata = nano::map_vector(ngparam.data() + ngkdata.size(), layer.bdata().size());
+        auto lgkdata = nano::map_tensor(lgparam.data(), kdims1, kdims2, layer.krows(), layer.kcols());
+        auto lgbdata = nano::map_vector(lgparam.data() + lgkdata.size(), layer.bdata().size());
 
         random_t<scalar_t> rgen(-scalar_t(0.1), +scalar_t(0.1));
         for (size_t t = 0; t < cmd_tests; ++ t)
         {
                 // generate random parameters and buffers
                 layer.random_params(rgen.min(), rgen.max());
-                tensor::set_random(rgen, input, output);
+                nano::set_random(rgen, input, output);
 
                 // compute using the convolution layer
                 loutput = layer.output(input);

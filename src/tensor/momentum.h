@@ -2,7 +2,7 @@
 
 #include <cassert>
 
-namespace tensor
+namespace nano
 {
         ///
         /// \brief running exponential average (aka momentum) for Eigen vectors with zero-bias correction

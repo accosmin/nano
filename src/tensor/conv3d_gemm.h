@@ -3,7 +3,7 @@
 #include "tensor.h"
 #include <cassert>
 
-namespace tensor
+namespace nano
 {
         template <typename tscalar>
         struct conv3d_traits_t

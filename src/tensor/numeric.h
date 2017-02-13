@@ -2,7 +2,7 @@
 
 #include <algorithm>
 
-namespace tensor
+namespace nano
 {
         ///
         /// \brief set the elements of the given tensors to random values.

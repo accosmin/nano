@@ -22,7 +22,7 @@ namespace nano
                         const vector_t& target,
                         const string_t& label = string_t(),
                         const rect_t& region = rect_t()) :
-                        mem_vision_sample_t(index, tensor::map_tensor(target.data(), target.size(), 1, 1), label, region)
+                        mem_vision_sample_t(index, nano::map_tensor(target.data(), target.size(), 1, 1), label, region)
                 {
                 }
 

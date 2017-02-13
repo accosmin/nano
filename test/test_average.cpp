@@ -42,7 +42,7 @@ namespace test
         >
         void check_average(const tsize dims, const tsize range)
         {
-                tensor::average_t<tvector> avg1(dims), avg2(dims);
+                nano::average_t<tvector> avg1(dims), avg2(dims);
                 for (tsize i = 1; i <= range; ++ i)
                 {
                         avg1.update(tvector::Constant(dims, tscalar(i)));

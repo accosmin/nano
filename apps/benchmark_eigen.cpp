@@ -22,14 +22,14 @@ namespace
         vector_t make_vector(const tensor_size_t dims)
         {
                 vector_t x(dims);
-                tensor::set_random(rng_value, x);
+                nano::set_random(rng_value, x);
                 return x;
         }
 
         matrix_t make_matrix(const tensor_size_t rows, const tensor_size_t cols)
         {
                 matrix_t x(rows, cols);
-                tensor::set_random(rng_value, x);
+                nano::set_random(rng_value, x);
                 return x;
         }
 

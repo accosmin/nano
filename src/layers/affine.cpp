@@ -35,22 +35,22 @@ namespace nano
 
         void affine_layer_t::zero_params()
         {
-                tensor::set_zero(m_wdata, m_bdata);
+                nano::set_zero(m_wdata, m_bdata);
         }
 
         void affine_layer_t::random_params(scalar_t min, scalar_t max)
         {
-                tensor::set_random(nano::random_t<scalar_t>(min, max), m_wdata, m_bdata);
+                nano::set_random(nano::random_t<scalar_t>(min, max), m_wdata, m_bdata);
         }
 
         scalar_t* affine_layer_t::save_params(scalar_t* params) const
         {
-                return tensor::to_array(params, m_wdata, m_bdata);
+                return nano::to_array(params, m_wdata, m_bdata);
         }
 
         const scalar_t* affine_layer_t::load_params(const scalar_t* params)
         {
-                return tensor::from_array(params, m_wdata, m_bdata);
+                return nano::from_array(params, m_wdata, m_bdata);
         }
 
         const tensor3d_t& affine_layer_t::output(const tensor3d_t& input)
@@ -81,8 +81,8 @@ namespace nano
 
                 m_odata = output;
 
-                auto gwdata = tensor::map_matrix(gradient, m_wdata.rows(), m_wdata.cols());
-                auto gbdata = tensor::map_vector(gradient + m_wdata.size(), m_bdata.rows());
+                auto gwdata = nano::map_matrix(gradient, m_wdata.rows(), m_wdata.cols());
+                auto gbdata = nano::map_vector(gradient + m_wdata.size(), m_bdata.rows());
 
                 gbdata = m_odata.vector();
                 gwdata.noalias() = m_odata.vector() * m_idata.vector().transpose();

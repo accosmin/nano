@@ -85,24 +85,24 @@ namespace nano
 
         void convolution_layer_t::zero_params()
         {
-                tensor::set_zero(m_kdata, m_bdata);
+                nano::set_zero(m_kdata, m_bdata);
                 params_changed();
         }
 
         void convolution_layer_t::random_params(scalar_t min, scalar_t max)
         {
-                tensor::set_random(random_t<scalar_t>(min, max), m_kdata, m_bdata);
+                nano::set_random(random_t<scalar_t>(min, max), m_kdata, m_bdata);
                 params_changed();
         }
 
         scalar_t* convolution_layer_t::save_params(scalar_t* params) const
         {
-                return tensor::to_array(params, m_kdata, m_bdata);
+                return nano::to_array(params, m_kdata, m_bdata);
         }
 
         const scalar_t* convolution_layer_t::load_params(const scalar_t* params)
         {
-                auto ret = tensor::from_array(params, m_kdata, m_bdata);
+                auto ret = nano::from_array(params, m_kdata, m_bdata);
                 params_changed();
                 return ret;
         }
@@ -138,7 +138,7 @@ namespace nano
                                 m_idata_toe.matrix(i));
 
                         m_toe_oodata.noalias() =
-                                tensor::map_matrix(m_kdata_inv.planeData(i, 0), omaps() / kconn(), krows() * kcols()) *
+                                nano::map_matrix(m_kdata_inv.planeData(i, 0), omaps() / kconn(), krows() * kcols()) *
                                 m_idata_toe.matrix(i);
 
                         for (tensor_size_t o = (i % kconn()), ok = 0; o < omaps(); ++ ok, o += kconn())
@@ -166,7 +166,7 @@ namespace nano
                                 m_toe_iodata);
 
                         m_toe_iidata.noalias() =
-                                tensor::map_matrix(m_kdata.planeData(o, 0), imaps() / kconn(), krows() * kcols()) *
+                                nano::map_matrix(m_kdata.planeData(o, 0), imaps() / kconn(), krows() * kcols()) *
                                 m_toe_iodata;
 
                         for (tensor_size_t i = (o % kconn()), ik = 0; i < imaps(); ++ ik, i += kconn())
@@ -184,8 +184,8 @@ namespace nano
 
                 m_odata = output;
 
-                auto gkdata = tensor::map_tensor(gradient, m_kdata.dims());
-                auto gbdata = tensor::map_vector(gradient + gkdata.size(), omaps());
+                auto gkdata = nano::map_tensor(gradient, m_kdata.dims());
+                auto gbdata = nano::map_vector(gradient + gkdata.size(), omaps());
 
                 // wrt convolution
                 for (tensor_size_t i = 0; i < imaps(); ++ i)

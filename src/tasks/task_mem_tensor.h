@@ -18,7 +18,7 @@ namespace nano
                         const size_t index,
                         const vector_t& target,
                         const string_t& label = string_t()) :
-                        mem_tensor_sample_t(index, tensor::map_tensor(target.data(), target.size(), 1, 1), label)
+                        mem_tensor_sample_t(index, nano::map_tensor(target.data(), target.size(), 1, 1), label)
                 {
                 }
 
