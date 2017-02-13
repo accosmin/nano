@@ -29,7 +29,7 @@ namespace nano
 
         string_t make_output_layer(const dim3d_t& dims, const string_t& activation = "")
         {
-                return make_output_layer(dims.size(), activation);
+                return make_output_layer(tensor::size(dims), activation);
         }
 
         template <typename tsize>

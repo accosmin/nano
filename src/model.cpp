@@ -61,7 +61,7 @@ namespace nano
                 return load_params(params) && is;
         }
 
-        bool model_t::resize(const task_t& task, bool verbose)
+        bool model_t::resize(const task_t& task, const bool verbose)
         {
                 return resize(task.idims(), task.odims(), verbose);
         }

@@ -174,7 +174,7 @@ namespace nano
                 }
         }
 
-        tensor_size_t forward_network_t::resize(bool verbose)
+        tensor_size_t forward_network_t::resize(const bool verbose)
         {
                 tensor3d_t input(idims());
                 tensor_size_t n_params = 0;
@@ -185,6 +185,10 @@ namespace nano
 
                 // create layers
                 const string_t config = this->config();
+                if (verbose)
+                {
+                        log_info() << "forward network: using configuration [" << config << "]";
+                }
 
                 const strings_t net_params = nano::split(config, ";");
                 for (size_t l = 0; l < net_params.size(); ++ l)
@@ -219,7 +223,7 @@ namespace nano
                 // check output size to match the target
                 if (input.dims() != odims())
                 {
-                        log_error() << "forward network: miss-matching output size! expecting " << odims() << "!";
+                        log_error() << "forward network: miss-matching output size " << input.dims() << ", expecting " << odims() << "!";
                         throw std::invalid_argument("invalid output layer description");
                 }
 

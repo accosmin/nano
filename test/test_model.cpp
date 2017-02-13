@@ -4,7 +4,6 @@
 #include "math/epsilon.h"
 #include "math/numeric.h"
 #include "layers/make_layers.h"
-#include <cstdio>
 
 NANO_BEGIN_MODULE(test_model)
 
@@ -47,7 +46,7 @@ NANO_CASE(evaluate)
         {
                 // create feed-forward network
                 const auto model = nano::get_models().get("forward-network", cmd_network);
-                NANO_CHECK_EQUAL(model->resize(*task, false), true);
+                NANO_CHECK_EQUAL(model->resize(*task, true), true);
                 NANO_CHECK_EQUAL(model->idims(), task->idims());
                 NANO_CHECK_EQUAL(model->odims(), task->odims());
 

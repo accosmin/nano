@@ -75,17 +75,17 @@ static tensor_size_t apsize(const tensor_size_t isize, const tensor_size_t osize
 
 static tensor_size_t apsize(const dim3d_t& idims, const tensor_size_t osize)
 {
-        return apsize(idims.size(), osize);
+        return apsize(tensor::size(idims), osize);
 }
 
 static tensor_size_t apsize(const dim3d_t& idims, const dim3d_t& odims)
 {
-        return apsize(idims.size(), odims.size());
+        return apsize(tensor::size(idims), tensor::size(odims));
 }
 
 static tensor_size_t apsize(const tensor_size_t isize, const dim3d_t& odims)
 {
-        return apsize(isize, odims.size());
+        return apsize(isize, tensor::size(odims));
 }
 
 static tensor_size_t cpsize(const tensor_size_t idims,
@@ -97,7 +97,7 @@ static tensor_size_t cpsize(const tensor_size_t idims,
 static tensor_size_t cpsize(const dim3d_t& idims,
         const tensor_size_t odims, const tensor_size_t krows, const tensor_size_t kcols, const tensor_size_t kconn)
 {
-        return cpsize(idims.size<0>(), odims, krows, kcols, kconn);
+        return cpsize(std::get<0>(idims), odims, krows, kcols, kconn);
 }
 
 static auto get_loss()
@@ -136,7 +136,7 @@ static void test_model(const string_t& model_description, const tensor_size_t ex
         NANO_CHECK_EQUAL(model->psize(), expected_psize);
 
         vector_t params(model->psize());
-        vector_t target(model->tensor::size(odims()));
+        vector_t target(tensor::size(model->odims()));
         tensor3d_t inputs(model->idims());
 
         NANO_CHECK_EQUAL(model->odims(), cmd_odims);

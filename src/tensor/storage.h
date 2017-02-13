@@ -46,7 +46,7 @@ namespace tensor
                 ///
                 template <typename... index_ts>
                 explicit storage_t(const index_ts... dims) :
-                        m_dims({{dims...}})
+                        m_dims({dims...})
                 {
                 }
 
@@ -55,7 +55,7 @@ namespace tensor
                 ///
                 template <typename... index_ts>
                 storage_t(const tstorage& data, const index_ts... dims) :
-                        m_dims({{dims...}}),
+                        m_dims({dims...}),
                         m_data(data)
                 {
                         assert(m_data.size() == tensor::size(m_dims));
@@ -175,14 +175,14 @@ namespace tensor
                 /// \brief access an element of the tensor
                 ///
                 template <typename... tindices>
-                tscalar operator()(const tindices... indices) const
+                tscalar operator()(const index_t index, const tindices... indices) const
                 {
-                        return m_data(tensor::index(m_dims, indices...));
+                        return m_data(tensor::index(m_dims, index, indices...));
                 }
                 template <typename... tindices>
-                tscalar& operator()(const tindices... indices)
+                tscalar& operator()(const index_t index, const tindices... indices)
                 {
-                        return m_data(tensor::index(m_dims, indices...));
+                        return m_data(tensor::index(m_dims, index, indices...));
                 }
 
         protected:

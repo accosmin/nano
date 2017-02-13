@@ -129,6 +129,11 @@ NANO_CASE(tensor3d_map)
                 }
         }
 
+        for (int i = 0; i < tmap.size(); ++ i)
+        {
+                NANO_CHECK_EQUAL(tmap(i), -35 + i);
+        }
+
         tensor = tmap;
         NANO_CHECK_EQUAL(tensor.size<0>(), dims);
         NANO_CHECK_EQUAL(tensor.size<1>(), rows);
@@ -143,6 +148,11 @@ NANO_CASE(tensor3d_map)
                                 NANO_CHECK_EQUAL(tensor(d, r, c), -35 + i);
                         }
                 }
+        }
+
+        for (int i = 0; i < tensor.size(); ++ i)
+        {
+                NANO_CHECK_EQUAL(tensor(i), -35 + i);
         }
 }
 
@@ -232,6 +242,11 @@ NANO_CASE(tensor4d_map)
                 }
         }
 
+        for (int i = 0; i < tmap.size(); ++ i)
+        {
+                NANO_CHECK_EQUAL(tmap(i), -35 + i);
+        }
+
         tensor = tmap;
         NANO_CHECK_EQUAL(tensor.size<0>(), dim1);
         NANO_CHECK_EQUAL(tensor.size<1>(), dim2);
@@ -250,6 +265,11 @@ NANO_CASE(tensor4d_map)
                                 }
                         }
                 }
+        }
+
+        for (int i = 0; i < tensor.size(); ++ i)
+        {
+                NANO_CHECK_EQUAL(tensor(i), -35 + i);
         }
 }
 

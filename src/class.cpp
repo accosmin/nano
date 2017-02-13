@@ -19,11 +19,10 @@ namespace nano
 
         vector_t class_target(const tensor_index_t ilabel, const tensor_size_t n_labels)
         {
-                vector_t target(n_labels);
-                target.setConstant(neg_target());
+                vector_t target = vector_t::Constant(n_labels, neg_target());
                 if (ilabel < n_labels)
                 {
-                        target[ilabel] = pos_target();
+                        target(ilabel) = pos_target();
                 }
                 return target;
         }
@@ -38,4 +37,3 @@ namespace nano
                 return target;
         }
 }
-

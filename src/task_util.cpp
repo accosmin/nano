@@ -8,10 +8,8 @@ namespace nano
 {
         void describe(const task_t& task, const string_t& name)
         {
-                log_info() << "task [" << name
-                        << "]: input = " << task.idims()
-                        << ", output = " << task.odims()
-                        << ", count = " << task.n_samples() << ".";
+                log_info() << "task [" << name << "]: in(" << task.idims() << ") -> out(" << task.odims()
+                        << "), count = " << task.n_samples() << ".";
 
                 for (size_t f = 0; f < task.n_folds(); ++ f)
                 {
