@@ -1,12 +1,11 @@
 #include "timer.h"
-#include "logger.h"
 #include "text/align.h"
 #include "math/numeric.h"
 #include "text/to_string.h"
 #include "text/algorithm.h"
 #include "forward_network.h"
 #include "tensor/serialize.h"
-#include <iomanip>
+#include "logger.h"
 
 namespace nano
 {

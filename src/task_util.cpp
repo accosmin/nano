@@ -1,8 +1,8 @@
 #include <set>
-#include "logger.h"
 #include "task_util.h"
 #include "text/to_string.h"
 #include "vision/image_grid.h"
+#include "logger.h"
 
 namespace nano
 {

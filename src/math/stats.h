@@ -3,6 +3,7 @@
 #include <cmath>
 #include <limits>
 #include <cassert>
+#include <ostream>
 #include <algorithm>
 
 namespace nano
@@ -117,8 +118,8 @@ namespace nano
                 tscalar         m_min, m_max;
         };
 
-        template <typename tostream, typename tscalar>
-        tostream& operator<<(tostream& os, const stats_t<tscalar>& stats)
+        template <typename tscalar>
+        std::ostream& operator<<(std::ostream& os, const stats_t<tscalar>& stats)
         {
                 return os << stats.avg() << " +/- " << stats.stdev() << " [" << stats.min() << ", " << stats.max() << "]";
         }

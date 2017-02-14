@@ -2,6 +2,7 @@
 
 #include <array>
 #include <cassert>
+#include <ostream>
 #include <eigen3/Eigen/Core>
 
 namespace nano
@@ -86,8 +87,8 @@ namespace nano
         ///
         /// \brief stream tensor dimensions.
         ///
-        template <typename tostream, std::size_t tdims>
-        tostream& operator<<(tostream& os, const tensor_dims_t<tdims>& dims)
+        template <std::size_t tdims>
+        std::ostream& operator<<(std::ostream& os, const tensor_dims_t<tdims>& dims)
         {
                 for (std::size_t d = 0; d < dims.size(); ++ d)
                 {

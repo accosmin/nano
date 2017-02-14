@@ -6,7 +6,6 @@
 #include "task_iterator.h"
 #include "trainer_result.h"
 #include "text/to_params.h"
-
 #include "logger.h"
 
 namespace nano
