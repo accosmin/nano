@@ -1,5 +1,6 @@
 #pragma once
 
+#include <iosfwd>
 #include "arch.h"
 #include "tensor.h"
 #include "manager.h"
@@ -52,6 +53,12 @@ namespace nano
                 ///
                 virtual scalar_t* save_params(scalar_t* params) const = 0;
                 virtual const scalar_t* load_params(const scalar_t* params) = 0;
+
+                ///
+                /// \brief serialize to disk
+                ///
+                virtual bool save(std::ostream&) const = 0;
+                virtual bool load(std::istream&) = 0;
 
                 ///
                 /// \brief compute the output

@@ -53,6 +53,16 @@ namespace nano
                 return nano::from_array(params, m_wdata, m_bdata);
         }
 
+        bool affine_layer_t::save(std::ostream&) const
+        {
+                return false;
+        }
+
+        bool affine_layer_t::load(std::istream&)
+        {
+                return false;
+        }
+
         const tensor3d_t& affine_layer_t::output(const tensor3d_t& input)
         {
                 assert(idims() == input.dims());

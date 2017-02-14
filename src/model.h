@@ -50,13 +50,9 @@ namespace nano
                 bool resize(const task_t& task, bool verbose);
 
                 ///
-                /// \brief save its parameters to file
+                /// \brief serialize to disk
                 ///
                 bool save(const string_t& path) const;
-
-                ///
-                /// \brief load its parameters from file
-                ///
                 bool load(const string_t& path);
 
                 ///
@@ -105,7 +101,9 @@ namespace nano
                 ///
                 virtual timings_t timings() const = 0;
 
-                // access functions
+                ///
+                /// \brief returns the input/output dimensions
+                ///
                 dim3d_t idims() const { return m_idims; }
                 dim3d_t odims() const { return m_odims; }
 

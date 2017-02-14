@@ -107,6 +107,16 @@ namespace nano
                 return ret;
         }
 
+        bool convolution_layer_t::save(std::ostream&) const
+        {
+                return false;
+        }
+
+        bool convolution_layer_t::load(std::istream&)
+        {
+                return false;
+        }
+
         void convolution_layer_t::params_changed()
         {
                 for (tensor_size_t i = 0; i < imaps(); ++ i)
