@@ -14,8 +14,8 @@ test_flag="ON"
 libcpp_flag="OFF"
 gold_flag="OFF"
 lto_flag="OFF"
-float_flag="OFF"
-double_flag="ON"
+float_flag="ON"
+double_flag="OFF"
 long_double_flag="OFF"
 
 # usage
