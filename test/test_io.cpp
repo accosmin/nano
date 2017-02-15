@@ -1,16 +1,21 @@
 #include "utest.h"
+#include "tensor.h"
 #include "io/istream.h"
 #include "io/ibstream.h"
 #include "io/obstream.h"
 #include "math/random.h"
+#include "math/epsilon.h"
 #include "io/istream_mem.h"
 #include "io/istream_std.h"
+#include "tensor/numeric.h"
 #include <cstdio>
 #include <fstream>
 
-nano::buffer_t load_buffer(nano::istream_t& stream, const std::size_t buff_size)
+using namespace nano;
+
+buffer_t load_buffer(istream_t& stream, const std::size_t buff_size)
 {
-        nano::buffer_t buff, data;
+        buffer_t buff, data;
         buff.resize(buff_size);
         while (stream)
         {
@@ -24,18 +29,16 @@ NANO_BEGIN_MODULE(test_io)
 
 NANO_CASE(istream)
 {
-        using namespace nano;
-
         const size_t min_size = 3;
         const size_t max_size = 679 * 1024;
 
-        nano::random_t<char> rng_value;
-        nano::random_t<std::streamsize> rng_skip(1, 1024);
+        random_t<char> rng_value;
+        random_t<std::streamsize> rng_skip(1, 1024);
 
         for (size_t size = min_size; size <= max_size; size *= 2)
         {
                 // generate reference buffer
-                buffer_t ref_buffer = nano::make_buffer(size);
+                buffer_t ref_buffer = make_buffer(size);
                 NANO_CHECK_EQUAL(ref_buffer.size(), size);
 
                 for (auto& value : ref_buffer)
@@ -46,12 +49,12 @@ NANO_CASE(istream)
                 // check saving to file
                 const std::string path = "mstream.test";
 
-                NANO_CHECK(nano::save_buffer(path, ref_buffer));
+                NANO_CHECK(save_buffer(path, ref_buffer));
 
                 // check loading from file
                 {
                         buffer_t buffer;
-                        NANO_CHECK(nano::load_buffer(path, buffer));
+                        NANO_CHECK(load_buffer(path, buffer));
                         NANO_REQUIRE_EQUAL(buffer.size(), ref_buffer.size());
                         NANO_CHECK(std::equal(buffer.begin(), buffer.end(), ref_buffer.begin()));
                 }
@@ -115,62 +118,73 @@ NANO_CASE(bstream)
         const float var_float = 45.7f;
         const int var_int = 393440;
         const std::size_t var_size_t = 323203023;
-        const pod_t var_pod = { 45, 23.6f, -4.389384934 };
-        const std::vector<short> var_shorts = { 13, -26, 39, -52 };
+        const auto var_struct = pod_t{ 45, 23.6f, -4.389384934 };
+
+        auto var_vector = vector_t(13);
+        auto var_matrix = matrix_t(17, 5);
+        auto var_tensor = tensor3d_t(3, 4, 5);
+
+        auto rng = make_rng<scalar_t>(-1, +1);
+        nano::set_random(rng, var_vector, var_matrix, var_tensor);
 
         const std::string path = "bstream.test";
 
         // check writing
         {
-                std::ofstream os(path.c_str(), std::ios::binary | std::ios::trunc);
+                obstream_t ob(path);
 
-                nano::obstream_t ob(os);
-
-                ob.write(var_double);
-                ob.write(var_string);
-                ob.write(var_float);
-                ob.write(var_int);
-                ob.write(var_size_t);
-                ob.write(var_pod);
-                ob.write(var_shorts);
-
-                NANO_REQUIRE(os.good());
+                NANO_CHECK(ob.write(var_double));
+                NANO_CHECK(ob.write(var_string));
+                NANO_CHECK(ob.write(var_float));
+                NANO_CHECK(ob.write(var_int));
+                NANO_CHECK(ob.write(var_size_t));
+                NANO_CHECK(ob.write(var_struct));
+                NANO_CHECK(ob.write_vector(var_vector));
+                NANO_CHECK(ob.write_matrix(var_matrix));
+                NANO_CHECK(ob.write_tensor(var_tensor));
         }
 
         // check reading
         {
-                std::ifstream is(path.c_str(), std::ios::binary);
-
-                nano::ibstream_t ib(is);
+                ibstream_t ib(path);
 
                 double var_double_ex;
                 std::string var_string_ex;
                 float var_float_ex;
                 int var_int_ex;
                 std::size_t var_size_t_ex;
-                pod_t var_pod_ex;
-                std::vector<short> var_shorts_ex;
+                pod_t var_struct_ex;
+                vector_t var_vector_ex;
+                matrix_t var_matrix_ex;
+                tensor3d_t var_tensor_ex;
 
-                ib.read(var_double_ex);
-                ib.read(var_string_ex);
-                ib.read(var_float_ex);
-                ib.read(var_int_ex);
-                ib.read(var_size_t_ex);
-                ib.read(var_pod_ex);
-                ib.read(var_shorts_ex);
+                NANO_CHECK(ib.read(var_double_ex));
+                NANO_CHECK(ib.read(var_string_ex));
+                NANO_CHECK(ib.read(var_float_ex));
+                NANO_CHECK(ib.read(var_int_ex));
+                NANO_CHECK(ib.read(var_size_t_ex));
+                NANO_CHECK(ib.read(var_struct_ex));
+                NANO_CHECK(ib.read_vector(var_vector_ex));
+                NANO_CHECK(ib.read_matrix(var_matrix_ex));
+                NANO_CHECK(ib.read_tensor(var_tensor_ex));
 
                 NANO_CHECK_EQUAL(var_double, var_double_ex);
                 NANO_CHECK_EQUAL(var_string, var_string_ex);
                 NANO_CHECK_EQUAL(var_float, var_float_ex);
                 NANO_CHECK_EQUAL(var_int, var_int_ex);
                 NANO_CHECK_EQUAL(var_size_t, var_size_t_ex);
-                NANO_CHECK_EQUAL(var_pod.d, var_pod_ex.d);
-                NANO_CHECK_EQUAL(var_pod.f, var_pod_ex.f);
-                NANO_CHECK_EQUAL(var_pod.i, var_pod_ex.i);
-                NANO_REQUIRE_EQUAL(var_shorts.size(), var_shorts_ex.size());
-                NANO_CHECK(std::equal(var_shorts.begin(), var_shorts.end(), var_shorts_ex.begin()));
+                NANO_CHECK_EQUAL(var_struct.d, var_struct_ex.d);
+                NANO_CHECK_EQUAL(var_struct.f, var_struct_ex.f);
+                NANO_CHECK_EQUAL(var_struct.i, var_struct_ex.i);
 
-                NANO_CHECK(is);
+                NANO_REQUIRE_EQUAL(var_vector.size(), var_vector_ex.size());
+                NANO_REQUIRE_EQUAL(var_matrix.rows(), var_matrix_ex.rows());
+                NANO_REQUIRE_EQUAL(var_matrix.cols(), var_matrix_ex.cols());
+                NANO_REQUIRE_EQUAL(var_tensor.dims(), var_tensor_ex.dims());
+
+                NANO_CHECK_EIGEN_CLOSE(var_vector, var_vector_ex, epsilon0<scalar_t>());
+                NANO_CHECK_EIGEN_CLOSE(var_matrix, var_matrix_ex, epsilon0<scalar_t>());
+                NANO_CHECK_EIGEN_CLOSE(var_tensor.vector(), var_tensor_ex.vector(), epsilon0<scalar_t>());
         }
 
         // cleanup

@@ -1,15 +1,15 @@
 #pragma once
 
 #include "arch.h"
-#include <iosfwd>
-#include <vector>
+#include <string>
+#include <fstream>
 #include <type_traits>
-#include <eigen3/Eigen/Core>
 
 namespace nano
 {
         ///
-        /// \brief wrapper over binary std::istream
+        /// \brief wrapper over binary std::ifstream to serialize particular entities:
+        ///     e.g. vectors, matrices, strings, tensors, PODs.
         ///
         class NANO_PUBLIC ibstream_t
         {
@@ -18,69 +18,96 @@ namespace nano
                 ///
                 /// \brief constructor
                 ///
-                explicit ibstream_t(std::istream& os);
+                explicit ibstream_t(const std::string& path);
 
                 ///
                 /// \brief read a POD structure
                 ///
-                template
-                <
-                        typename tstruct,
-                        typename = typename std::enable_if<std::is_pod<tstruct>::value>::type
-                >
-                ibstream_t& read(tstruct& pod)
-                {
-                        return read_blob(reinterpret_cast<char*>(&pod), sizeof(pod));
-                }
+                template <typename tstruct, typename = typename std::enable_if<std::is_pod<tstruct>::value>::type>
+                bool read(tstruct& pod);
 
                 ///
                 /// \brief read a string
                 ///
-                ibstream_t& read(std::string& str);
+                bool read(std::string& str);
 
                 ///
-                /// \brief read a std::vector
+                /// \brief read given number of bytes
+                /// \return the number of bytes actually read
                 ///
-                template
-                <
-                        typename tscalar
-                >
-                ibstream_t& read(std::vector<tscalar>& vector)
-                {
-                        std::size_t size;
-                        read(size);
-                        vector.resize(size);
-                        return read_blob(reinterpret_cast<char*>(vector.data()),
-                                          static_cast<std::size_t>(vector.size()) * sizeof(tscalar));
-                }
+                std::streamsize read(char* bytes, const std::streamsize num_bytes);
 
                 ///
-                /// \brief read an Eigen vector or matrix
+                /// \brief read a 1D vector
                 ///
-                template
-                <
-                        typename tscalar,
-                        int trows,
-                        int tcols,
-                        int toptions
-                >
-                ibstream_t& read(Eigen::Matrix<tscalar, trows, tcols, toptions>& matrix)
-                {
-                        typename Eigen::Matrix<tscalar, trows, tcols, toptions>::Index rows, cols;
-                        read(rows);
-                        read(cols);
-                        matrix.resize(rows, cols);
-                        return read_blob(reinterpret_cast<char*>(matrix.data()),
-                                         static_cast<std::size_t>(matrix.size()) * sizeof(tscalar));
-                }
+                template <typename tvector>
+                bool read_vector(tvector&);
+
+                ///
+                /// \brief read a 2D matrix
+                ///
+                template <typename tmatrix>
+                bool read_matrix(tmatrix&);
+
+                ///
+                /// \brief read a ND tensor
+                ///
+                template <typename ttensor>
+                bool read_tensor(ttensor&);
 
         private:
 
-                ibstream_t& read_blob(char* data, const std::size_t count);
+                template <typename ttensor, typename... tdims>
+                static bool resize(ttensor& t, const tdims... dims)
+                {
+                        t.resize(dims...);
+                        return true;
+                }
+
+                template <typename ttensor>
+                static std::streamsize tsize(const ttensor& t)
+                {
+                        return t.size() * static_cast<std::streamsize>(sizeof(typename ttensor::Scalar));
+                }
 
         private:
 
                 // attributes
-                std::istream&   m_stream;
+                std::ifstream   m_stream;
         };
+
+        template <typename tstruct, typename>
+        bool ibstream_t::read(tstruct& pod)
+        {
+                const auto size = static_cast<std::streamsize>(sizeof(pod));
+                return read(reinterpret_cast<char*>(&pod), size) == size;
+        }
+
+        template <typename tvector>
+        bool ibstream_t::read_vector(tvector& v)
+        {
+                typename tvector::Index size = 0;
+                return  read(size) &&
+                        resize(v, size) &&
+                        read(reinterpret_cast<char*>(v.data()), tsize(v)) == tsize(v);
+        }
+
+        template <typename tmatrix>
+        bool ibstream_t::read_matrix(tmatrix& m)
+        {
+                typename tmatrix::Index rows = 0, cols = 0;
+                return  read(rows) &&
+                        read(cols) &&
+                        resize(m, rows, cols) &&
+                        read(reinterpret_cast<char*>(m.data()), tsize(m)) == tsize(m);
+        }
+
+        template <typename ttensor>
+        bool ibstream_t::read_tensor(ttensor& t)
+        {
+                typename ttensor::tdims dims;
+                return  read(dims) &&
+                        resize(t, dims) &&
+                        read(reinterpret_cast<char*>(t.data()), tsize(t)) == tsize(t);
+        }
 }

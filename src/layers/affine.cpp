@@ -1,4 +1,6 @@
 #include "affine.h"
+#include "io/ibstream.h"
+#include "io/obstream.h"
 #include "math/random.h"
 #include "math/numeric.h"
 #include "tensor/numeric.h"
@@ -53,14 +55,16 @@ namespace nano
                 return nano::from_array(params, m_wdata, m_bdata);
         }
 
-        bool affine_layer_t::save(std::ostream&) const
+        bool affine_layer_t::save(obstream_t& ob) const
         {
-                return false;
+                return  ob.write_matrix(m_wdata) &&
+                        ob.write_vector(m_bdata);
         }
 
-        bool affine_layer_t::load(std::istream&)
+        bool affine_layer_t::load(ibstream_t& ib)
         {
-                return false;
+                return  ib.read_matrix(m_wdata) &&
+                        ib.read_vector(m_bdata);
         }
 
         const tensor3d_t& affine_layer_t::output(const tensor3d_t& input)

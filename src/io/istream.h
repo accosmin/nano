@@ -45,16 +45,8 @@ namespace nano
                 ///
                 /// \brief read POD structure
                 ///
-                template
-                <
-                        typename tstruct,
-                        typename = typename std::enable_if<std::is_pod<tstruct>::value>::type
-                >
-                bool read(tstruct& pod)
-                {
-                        const auto size = static_cast<std::streamsize>(sizeof(pod));
-                        return read(reinterpret_cast<char*>(&pod), size) == size;
-                }
+                template <typename tstruct, typename = typename std::enable_if<std::is_pod<tstruct>::value>::type>
+                bool read(tstruct& pod);
 
                 ///
                 /// \brief skip the given number of bytes
@@ -108,4 +100,11 @@ namespace nano
                 std::streamsize         m_tellg;        ///< position since begining
                 std::streamsize         m_gcount;
         };
+
+        template <typename tstruct, typename>
+        bool istream_t::read(tstruct& pod)
+        {
+                const auto size = static_cast<std::streamsize>(sizeof(pod));
+                return read(reinterpret_cast<char*>(&pod), size) == size;
+        }
 }

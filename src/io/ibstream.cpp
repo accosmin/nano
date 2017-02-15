@@ -1,28 +1,31 @@
 #include "ibstream.h"
-#include <istream>
+#include <vector>
 
 namespace nano
 {
-        ibstream_t::ibstream_t(std::istream& stream) :
-                m_stream(stream)
+        ibstream_t::ibstream_t(const std::string& path) :
+                m_stream(path, std::ios::binary | std::ios::in)
         {
-                m_stream.exceptions(std::ios_base::badbit | std::ios_base::failbit);
         }
 
-        ibstream_t& ibstream_t::read(std::string& str)
+        std::streamsize ibstream_t::read(char* bytes, const std::streamsize num_bytes)
         {
-                std::vector<char> buffer;
-                read(buffer);
-
-                str.resize(buffer.size());
-                str.assign(buffer.data(), buffer.size());
-
-                return *this;
+                m_stream.read(bytes, num_bytes);
+                return m_stream.gcount();
         }
 
-        ibstream_t& ibstream_t::read_blob(char* data, const std::size_t count)
+        bool ibstream_t::read(std::string& str)
         {
-                m_stream.read(data, static_cast<std::streamsize>(count));
-                return *this;
+                std::streamsize size = 0;
+                if (read(size))
+                {
+                        std::vector<char> buffer(static_cast<std::size_t>(size));
+                        if (read(buffer.data(), size) == size)
+                        {
+                                str.assign(buffer.data(), static_cast<std::size_t>(size));
+                                return true;
+                        }
+                }
+                return false;
         }
 }

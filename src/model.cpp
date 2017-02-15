@@ -3,7 +3,6 @@
 #include "logger.h"
 #include "io/ibstream.h"
 #include "io/obstream.h"
-#include <fstream>
 
 namespace nano
 {
@@ -14,51 +13,20 @@ namespace nano
 
         bool model_t::save(const string_t& path) const
         {
-                std::ofstream os(path, std::ios::binary | std::ios::out | std::ios::trunc);
-                if (!os.is_open())
-                {
-                        return false;
-                }
-
-                nano::obstream_t ob(os);
-
-                // save configuration
-                ob.write(m_idims);
-                ob.write(m_odims);
-                ob.write(m_configuration);
-
-                // save parameters
-                vector_t params(psize());
-                save_params(params);
-                ob.write(params);
-
-                return os.good();
+                obstream_t ob(path);
+                return  ob.write(m_idims) &&
+                        ob.write(m_odims) &&
+                        ob.write(m_configuration) &&
+                        save(ob);
         }
 
         bool model_t::load(const string_t& path)
         {
-                std::ifstream is(path, std::ios::binary | std::ios::in);
-                if (!is.is_open())
-                {
-                        return false;
-                }
-
-                nano::ibstream_t ib(is);
-
-                // read configuration
-                ib.read(m_idims);
-                ib.read(m_odims);
-                ib.read(m_configuration);
-
-                // apply configuration
-                resize(true);
-
-                // read parameters
-                vector_t params;
-                ib.read(params);
-
-                // apply parameters
-                return load_params(params) && is;
+                ibstream_t ib(path);
+                return  ib.read(m_idims) &&
+                        ib.read(m_odims) &&
+                        ib.read(m_configuration) &&
+                        load(ib);
         }
 
         bool model_t::resize(const task_t& task, const bool verbose)

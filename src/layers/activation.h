@@ -22,8 +22,8 @@ namespace nano
                 virtual scalar_t* save_params(scalar_t* params) const override { return params; }
                 virtual const scalar_t* load_params(const scalar_t* params) override { return params; }
 
-                virtual bool save(std::ostream&) const override { return true; }
-                virtual bool load(std::istream&) override { return true; }
+                virtual bool save(obstream_t&) const override { return true; }
+                virtual bool load(ibstream_t&) override { return true; }
 
                 virtual const tensor3d_t& output(const tensor3d_t& input) override;
                 virtual const tensor3d_t& ginput(const tensor3d_t& output) override;
@@ -87,4 +87,3 @@ namespace nano
                 assert(m_data.size<2>() == output.size<2>());
         }
 }
-

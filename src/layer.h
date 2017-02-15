@@ -1,12 +1,14 @@
 #pragma once
 
-#include <iosfwd>
 #include "arch.h"
 #include "tensor.h"
 #include "manager.h"
 
 namespace nano
 {
+        class ibstream_t;
+        class obstream_t;
+
         ///
         /// \brief stores registered prototypes
         ///
@@ -57,8 +59,8 @@ namespace nano
                 ///
                 /// \brief serialize to disk
                 ///
-                virtual bool save(std::ostream&) const = 0;
-                virtual bool load(std::istream&) = 0;
+                virtual bool save(obstream_t&) const = 0;
+                virtual bool load(ibstream_t&) = 0;
 
                 ///
                 /// \brief compute the output

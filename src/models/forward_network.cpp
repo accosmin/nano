@@ -58,6 +58,16 @@ namespace nano
                 return std::make_unique<forward_network_t>(*this);
         }
 
+        bool forward_network_t::save(obstream_t& ob) const
+        {
+                return std::all_of(m_layers.begin(), m_layers.end(), [&] (const auto& l) { return l.m_layer->save(ob); });
+        }
+
+        bool forward_network_t::load(ibstream_t& ib)
+        {
+                return std::all_of(m_layers.begin(), m_layers.end(), [&] (const auto& l) { return l.m_layer->load(ib); });
+        }
+
         const tensor3d_t& forward_network_t::output(const tensor3d_t& _input)
         {
                 const tensor3d_t* input = &_input;
@@ -173,11 +183,9 @@ namespace nano
                 }
         }
 
-        tensor_size_t forward_network_t::resize(const bool verbose)
+        bool forward_network_t::resize(const bool verbose)
         {
                 tensor3d_t input(idims());
-                tensor_size_t n_params = 0;
-
                 m_layers.clear();
 
                 strings_t layer_ids;
@@ -209,7 +217,7 @@ namespace nano
                         const string_t layer_params = layer_tokens.size() == 2 ? layer_tokens[1] : string_t();
 
                         auto layer = nano::get_layers().get(layer_id, layer_params);
-                        n_params += layer->resize(input);
+                        layer->resize(input);
 
                         const string_t layer_name =
                                 "[" + align(to_string(l + 1), 2, alignment::right, '0') + ":" +
@@ -231,7 +239,7 @@ namespace nano
                         print();
                 }
 
-                return n_params;
+                return true;
         }
 
         void forward_network_t::print() const

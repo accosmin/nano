@@ -77,8 +77,9 @@ namespace nano
 
         protected:
 
-                // resize to new inputs/outputs, returns the number of parameters
-                virtual tensor_size_t resize(bool verbose) override;
+                virtual bool resize(const bool verbose) override;
+                virtual bool save(obstream_t&) const override;
+                virtual bool load(ibstream_t&) override;
 
         private:
 

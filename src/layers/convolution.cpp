@@ -1,6 +1,8 @@
 #include "logger.h"
 #include "toeplitz.h"
 #include "convolution.h"
+#include "io/ibstream.h"
+#include "io/obstream.h"
 #include "math/random.h"
 #include "math/numeric.h"
 #include "tensor/numeric.h"
@@ -107,17 +109,20 @@ namespace nano
                 return ret;
         }
 
-        bool convolution_layer_t::save(std::ostream&) const
+        bool convolution_layer_t::save(obstream_t& ob) const
         {
-                return false;
+                return  ob.write_tensor(m_kdata) &&
+                        ob.write_vector(m_bdata);
         }
 
-        bool convolution_layer_t::load(std::istream&)
+        bool convolution_layer_t::load(ibstream_t& ib)
         {
-                return false;
+                return  ib.read_tensor(m_kdata) &&
+                        ib.read_vector(m_bdata) &&
+                        params_changed();
         }
 
-        void convolution_layer_t::params_changed()
+        bool convolution_layer_t::params_changed()
         {
                 for (tensor_size_t i = 0; i < imaps(); ++ i)
                 {
@@ -126,6 +131,7 @@ namespace nano
                                 m_kdata_inv.vector(i, ok) = m_kdata.vector(o, i / kconn());
                         }
                 }
+                return true;
         }
 
         const tensor3d_t& convolution_layer_t::output(const tensor3d_t& input)

@@ -8,6 +8,8 @@
 namespace nano
 {
         class task_t;
+        class ibstream_t;
+        class obstream_t;
 
         ///
         /// \brief stores registered prototypes
@@ -109,8 +111,9 @@ namespace nano
 
         protected:
 
-                // resize to new inputs/outputs, returns the number of parameters
-                virtual tensor_size_t resize(bool verbose) = 0;
+                virtual bool resize(const bool verbose) = 0;
+                virtual bool save(obstream_t&) const = 0;
+                virtual bool load(ibstream_t&) = 0;
 
         private:
 

@@ -1,23 +1,20 @@
 #include "obstream.h"
-#include <ostream>
 
 namespace nano
 {
-        obstream_t::obstream_t(std::ostream& stream)
-                :       m_stream(stream)
+        obstream_t::obstream_t(const std::string& path) :
+                m_stream(path, std::ios::binary | std::ios::out | std::ios::trunc)
         {
-                m_stream.exceptions(std::ios_base::badbit | std::ios_base::failbit);
         }
 
-        obstream_t& obstream_t::write(const std::string& str)
+        bool obstream_t::write(const char* bytes, const std::streamsize num_bytes)
         {
-                write(str.size());
-                return write_blob(str.data(), str.size());
+                return m_stream.write(bytes, num_bytes).good();
         }
 
-        obstream_t& obstream_t::write_blob(const char* data, const std::size_t count)
+        bool obstream_t::write(const std::string& str)
         {
-                m_stream.write(data, static_cast<std::streamsize>(count));
-                return *this;
+                return  write(static_cast<std::streamsize>(str.size())) &&
+                        write(str.data(), static_cast<std::streamsize>(str.size()));
         }
 }
