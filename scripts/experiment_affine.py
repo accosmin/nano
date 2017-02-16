@@ -4,10 +4,12 @@ import experiment
 # initialize experiment:
 # - regression problem using a synthetic task
 # - the model should predict an affine mapping of the input vector
-task = "--task affine --task-params isize=100,osize=10,count=10000,noise=1e-4"
-
 cfg = config.config()
-exp = experiment.experiment(cfg.app_train, cfg.app_stats, task, cfg.expdir + "/affine/eval_trainers")
+exp = experiment.experiment(
+        cfg.app_train,
+        cfg.app_stats,
+        cfg.get_task_synth_affine(isize = 100, osize = 10, count = 10000, noise = 1e-4),
+        cfg.expdir + "/affine/eval_trainers")
 
 # loss functions
 losses = ["loss_cauchy"]

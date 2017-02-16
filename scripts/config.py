@@ -55,3 +55,24 @@ class config:
                         "batch_cgd" : "--trainer batch --trainer-params opt=cgd",
                         "batch_gd" : "--trainer batch --trainer-params opt=gd"
                 }
+
+        def get_task_synth(self, name, params):
+                return "--task synth-{0} --task-params {1}".format(name, params)
+
+        def get_task(self, name):
+                return "--task {0} --task-params dir=".format(name, self.dbdir + "/" + name)
+
+        def get_task_synth_sign(self, isize = 100, osize = 10, count = 10000, noise = 1e-4):
+                return get_task_synth("sign", "isize={0},osize={1},count={2},noise={3}".format(isize, osize, count, noise))
+
+        def get_task_synth_affine(self, isize = 100, osize = 10, count = 10000, noise = 1e-4):
+                return get_task_synth("affine", "isize={0},osize={1},count={2},noise={3}".format(isize, osize, count, noise))
+
+        def get_task_synth_matmul(self, irows = 23, icols = 27, count = 10000, noise = 1e-4):
+                return get_task_synth("matmul", "irows={0},icols={1},count={2},noise={3}".format(irows, icols, count, noise))
+
+        def get_task_synth_charset(self, ctype = "digit", color = "rgb", irows = 16, icols = 16, count = 10000):
+                return get_task_synth("charset", "type={0},color={1},irows={2},icols={3},count={4}".format(ctype, color, irows, icols, count))
+
+        def get_task_mnist(self):
+                return get_task("mnist")

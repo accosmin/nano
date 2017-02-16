@@ -11,7 +11,9 @@ NANO_CASE(evaluate)
 {
         using namespace nano;
 
-        const auto task = get_tasks().get("charset", to_params("type", "digit", "color", "luma", "irows", 16, "icols", 16, "count", 128));
+        const auto task = get_tasks().get("synth-charset",
+                to_params("type", "digit", "color", "luma", "irows", 16, "icols", 16, "count", 128));
+
         NANO_CHECK(task->load());
 
         const string_t mlp0;

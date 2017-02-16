@@ -90,17 +90,19 @@ The following stochastic optimization methods are built-in:
 A **task** describes a classification or regression problem consisting of separate training and test samples (e.g. image patches) with associated target outputs if any. The library has built-in support for various standard benchmark datasets which are loaded directly from the original (compressed) files.
 ```
 ./apps/info --task
-|----------|--------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------|
-| task     | description                                            | configuration                                                                                                                    |
-|----------|--------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------|
-| affine   | synthetic affine regression                            | idims=10[1,100],irows=32[1,100],icols=32[1,100],osize=10[1,1000],count=1000[10,1M],noise=0.1[0,0.5],mode=regression[,sign_class] |
-| charset  | synthetic character classification                     | type=digit[lalpha,ualpha,alpha,alphanum],color=rgb[,luma,rgba],irows=32[12,128],icols=32[12,128],count=1000[100,1M]              |
-| cifar10  | CIFAR-10 (3x32x32 object classification)               | dir=.                                                                                                                            |
-| cifar100 | CIFAR-100 (3x32x32 object classification)              | dir=.                                                                                                                            |
-| mnist    | MNIST (1x28x28 digit classification)                   | dir=.                                                                                                                            |
-| stl10    | STL-10 (3x96x96 semi-supervised object classification) | dir=.                                                                                                                            |
-| svhn     | SVHN (3x32x32 digit classification in the wild)        | dir=.                                                                                                                            |
-|----------|--------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------|
+|---------------|--------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------|
+| task          | description                                            | configuration                                                                                                       |
+|---------------|--------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------|
+| cifar10       | CIFAR-10 (3x32x32 object classification)               | dir=.                                                                                                               |
+| cifar100      | CIFAR-100 (3x32x32 object classification)              | dir=.                                                                                                               |
+| mnist         | MNIST (1x28x28 digit classification)                   | dir=.                                                                                                               |
+| stl10         | STL-10 (3x96x96 semi-supervised object classification) | dir=.                                                                                                               |
+| svhn          | SVHN (3x32x32 digit classification in the wild)        | dir=.                                                                                                               |
+| synth-affine  | synthetic affine transformation                        | isize=100[1,1000],osize=10[1,1000],count=1000[10,1M],noise=0.01[0,0.5]                                              |
+| synth-charset | synthetic character classification                     | type=digit[lalpha,ualpha,alpha,alphanum],color=rgb[,luma,rgba],irows=32[12,128],icols=32[12,128],count=1000[100,1M] |
+| synth-matmul  | synthetic matrix multiplication                        | irows=32[1,100],icols=32[1,100],count=1000[10,1M],noise=0.01[0,0.5]                                                 |
+| synth-sign    | synthetic sign-based classification                    | isize=100[1,1000],osize=10[1,1000],count=1000[10,1M],noise=0.01[0,0.5]                                              |
+|---------------|--------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------|
 ```
 
 The standard benchmark datasets can be download to $HOME/experiments/databases using:

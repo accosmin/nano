@@ -11,7 +11,9 @@ NANO_CASE(evaluate)
 {
         using namespace nano;
 
-        const auto task = get_tasks().get("affine", to_params("idims", 1, "irows", 8, "icols", 8, "osize", 2, "count", 64));
+        const auto task = get_tasks().get("synth-affine",
+                to_params("idims", 1, "irows", 8, "icols", 8, "osize", 2, "count", 64));
+
         NANO_CHECK_EQUAL(task->load(), true);
 
         const auto cmd_model = make_affine_layer(4) + make_output_layer(task->odims());

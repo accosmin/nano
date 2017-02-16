@@ -2,12 +2,14 @@ import config
 import experiment
 
 # initialize experiment:
-# - single-class classification problem using a synthetic task
+# - single-class classification problem using the MNIST dataset
 # - the model should predict the digit of a grayscale image
 cfg = config.config()
-
-task = "--task mnist --task-params dir=" + cfg.dbdir + "/mnist"
-exp = experiment.experiment(cfg.app_train, cfg.app_stats, task, cfg.expdir + "/mnist/eval_trainers")
+exp = experiment.experiment(
+        cfg.app_train,
+        cfg.app_stats,
+        cfg.get_task_mnist(),
+        cfg.expdir + "/mnist/eval_trainers")
 
 # loss functions
 losses = ["loss_classnll"]

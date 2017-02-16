@@ -4,10 +4,12 @@ import experiment
 # initialize experiment:
 # - single-class classification problem using a synthetic task
 # - the model should predict the digit of a synthetic image
-task = "--task charset --task-params type=digit,color=rgb,irows=16,icols=16,count=10000"
-
 cfg = config.config()
-exp = experiment.experiment(cfg.app_train, cfg.app_stats, task, cfg.expdir + "/charset/eval_trainers")
+exp = experiment.experiment(
+        cfg.app_train,
+        cfg.app_stats,
+        cfg.get_task_synth_charset(ctype = "digit", color = "rgb", irows = 16, icols = 16, count = 10000),
+        cfg.expdir + "/charset/eval_trainers")
 
 # loss functions
 losses = ["loss_classnll"]

@@ -4,10 +4,12 @@ import experiment
 # initialize experiment:
 # - multi-class classification problem using a synthetic task
 # - the model should predict the sign of the affine mapping of the input vector
-task = "--task sign --task-params isize=100,osize=10,count=10000,noise=1e-4"
-
 cfg = config.config()
-exp = experiment.experiment(cfg.app_train, cfg.app_stats, task, cfg.expdir + "/sign/eval_trainers")
+exp = experiment.experiment(
+        cfg.app_train,
+        cfg.app_stats,
+        cfg.get_task_synth_sign(isize = 100, osize = 10, count = 10000, noise = 1e-4),
+        cfg.expdir + "/sign/eval_trainers")
 
 # loss functions
 losses = ["loss_logistic"]

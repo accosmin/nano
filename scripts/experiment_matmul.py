@@ -4,10 +4,12 @@ import experiment
 # initialize experiment:
 # - regression problem using a synthetic task
 # - the model should predict the affine transformation of the multiplication of two input matrices
-task = "--task matmul --task-params irows=23,icols=27,count=10000,noise=1e-4"
-
 cfg = config.config()
-exp = experiment.experiment(cfg.app_train, cfg.app_stats, task, cfg.expdir + "/matmul/eval_trainers")
+exp = experiment.experiment(
+        cfg.app_train,
+        cfg.app_stats,
+        cfg.get_task_synth_matmul(irows = 23, icols = 27, count = 10000, noise = 1e-4),
+        cfg.expdir + "/matmul/eval_trainers")
 
 # loss functions
 losses = ["loss_cauchy"]
