@@ -8,7 +8,7 @@ cfg = config.config()
 exp = experiment.experiment(
         cfg.app_train,
         cfg.app_stats,
-        cfg.get_task_synth_charset(ctype = "digit", color = "rgb", irows = 16, icols = 16, count = 10000),
+        cfg.task_synth_charset(ctype = "digit", color = "rgb", irows = 16, icols = 16, count = 10000),
         cfg.expdir + "/charset/eval_trainers")
 
 # loss functions

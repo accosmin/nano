@@ -8,7 +8,7 @@ cfg = config.config()
 exp = experiment.experiment(
         cfg.app_train,
         cfg.app_stats,
-        cfg.get_task_synth_matmul(irows = 23, icols = 27, count = 10000, noise = 1e-4),
+        cfg.task_synth_matmul(irows = 23, icols = 27, count = 10000, noise = 1e-4),
         cfg.expdir + "/matmul/eval_trainers")
 
 # loss functions

@@ -8,7 +8,7 @@ cfg = config.config()
 exp = experiment.experiment(
         cfg.app_train,
         cfg.app_stats,
-        cfg.get_task_synth_sign(isize = 100, osize = 10, count = 10000, noise = 1e-4),
+        cfg.task_synth_sign(isize = 100, osize = 10, count = 10000, noise = 1e-4),
         cfg.expdir + "/sign/eval_trainers")
 
 # loss functions

@@ -8,7 +8,7 @@ cfg = config.config()
 exp = experiment.experiment(
         cfg.app_train,
         cfg.app_stats,
-        cfg.get_task_mnist(),
+        cfg.task_mnist(),
         cfg.expdir + "/mnist/eval_trainers")
 
 # loss functions
