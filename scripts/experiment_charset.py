@@ -12,18 +12,21 @@ exp = experiment.experiment(
         cfg.expdir + "/charset/eval_trainers")
 
 # loss functions
-losses = ["loss_classnll"]
-for name in losses:
-        exp.add_loss(name, cfg.losses.get(name))
+exp.add_losses(cfg.losses(), [
+        "loss_classnll"])
 
 # criteria
-criteria = ["crit_avg"]
-for name in criteria:
-        exp.add_criterion(name, cfg.criteria.get(name))
+exp.add_criteria(cfg.criteria(), [
+        "crit_avg"])
+
+# trainers
+exp.add_trainers(cfg.trainers(), [
+        "batch_gd", "batch_cgd", "batch_lbfgs",
+        "stoch_sg", "stoch_sgm", "stoch_ngd", "stoch_svrg", "stoch_asgd",
+        "stoch_ag", "stoch_agfr", "stoch_aggr",
+        "stoch_adam", "stoch_adadelta", "stoch_adagrad"])
 
 # models
-outlayer = "affine:dims=10;act-snorm;"
-
 mlp0 = "--model forward-network --model-params "
 mlp1 = mlp0 + "affine:dims=10;act-snorm;"
 mlp2 = mlp1 + "affine:dims=10;act-snorm;"
@@ -33,6 +36,8 @@ convnet1 = convnet0 + "conv:dims=32,rows=5,cols=5,conn=1,drow=1,dcol=1;act-snorm
 convnet2 = convnet1 + "conv:dims=32,rows=5,cols=5,conn=4,drow=1,dcol=1;act-snorm;"
 convnet3 = convnet2 + "conv:dims=32,rows=3,cols=3,conn=4,drow=1,dcol=1;act-snorm;"
 
+outlayer = "affine:dims=10;act-snorm;"
+
 exp.add_model("mlp0", mlp0 + outlayer)
 exp.add_model("mlp1", mlp1 + outlayer)
 exp.add_model("mlp2", mlp2 + outlayer)
@@ -40,21 +45,10 @@ exp.add_model("convnet1", convnet1 + outlayer)
 exp.add_model("convnet2", convnet2 + outlayer)
 exp.add_model("convnet3", convnet3 + outlayer)
 
-# trainers
-trainers = []
-trainers += ["batch_gd", "batch_cgd", "batch_lbfgs"]
-trainers += ["stoch_sg", "stoch_sgm", "stoch_ngd", "stoch_svrg", "stoch_asgd"]
-trainers += ["stoch_ag", "stoch_agfr", "stoch_aggr"]
-trainers += ["stoch_adam", "stoch_adadelta", "stoch_adagrad"]
-for name in trainers:
-        exp.add_trainer(name, cfg.trainers.get(name))
-
 # train all configurations
 trials = 10
-epochs = 100
-exp.run_all(trials, epochs, cfg.policies.get("stop_early"))
+exp.run_all(trials = trials, epochs = 100, policy = cfg.policies().get("stop_early"))
 
-# compare configurations
 # compare configurations
 for trial in range(trials):
         for mname in exp.models:

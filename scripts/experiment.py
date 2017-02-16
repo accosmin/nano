@@ -23,14 +23,17 @@ class experiment:
         def add_model(self, name, params):
                 self.models[name] = params
 
-        def add_trainer(self, name, params):
-                self.trainers[name] = params
+        def add_trainers(self, pool, names):
+                for name in names:
+                        self.trainers[name] = pool.get(name)
 
-        def add_loss(self, name, params):
-                self.losses[name] = params
+        def add_losses(self, pool, names):
+                for name in names:
+                        self.losses[name] = pool.get(name)
 
-        def add_criterion(self, name, params):
-                self.criteria[name] = params
+        def add_criteria(self, pool, names):
+                for name in names:
+                        self.criteria[name] = pool.get(name)
 
         def get_path(self, trial, mname, tname, cname, lname, extension):
                 return self.dir + "/trial" + str(trial) + "_" + tname + "_" + mname + "_" + cname + "_" + lname + extension
@@ -150,7 +153,7 @@ class experiment:
                                         for lname, lparam in self.losses.items():
                                                 self.run_one(trial, mname, mparam, tname, tparam, cname, cparam, lname, lparam)
 
-        def run_all(self, trials, epochs, policy):
+        def run_all(self, trials = 10, epochs = 1000, policy = ""):
                 for trial in range(trials):
                         self.run_trial(trial, epochs, policy)
 

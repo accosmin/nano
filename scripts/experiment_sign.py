@@ -12,14 +12,19 @@ exp = experiment.experiment(
         cfg.expdir + "/sign/eval_trainers")
 
 # loss functions
-losses = ["loss_logistic"]
-for name in losses:
-        exp.add_loss(name, cfg.losses.get(name))
+exp.add_losses(cfg.losses(), [
+        "loss_logistic"])
 
 # criteria
-criteria = ["crit_avg"]
-for name in criteria:
-        exp.add_criterion(name, cfg.criteria.get(name))
+exp.add_criteria(cfg.criteria(), [
+        "crit_avg"])
+
+# trainers
+exp.add_trainers(cfg.trainers(), [
+        "batch_gd", "batch_cgd", "batch_lbfgs",
+        "stoch_sg", "stoch_sgm", "stoch_ngd", "stoch_svrg", "stoch_asgd",
+        "stoch_ag", "stoch_agfr", "stoch_aggr",
+        "stoch_adam", "stoch_adadelta", "stoch_adagrad"])
 
 # models
 outlayer = "affine:dims=10;act-snorm;"
@@ -30,19 +35,9 @@ mlp1 = mlp0 + "affine:dims=10;act-snorm;"
 exp.add_model("mlp0", mlp0 + outlayer)
 exp.add_model("mlp1", mlp1 + outlayer)
 
-# trainers
-trainers = []
-trainers += ["batch_gd", "batch_cgd", "batch_lbfgs"]
-trainers += ["stoch_sg", "stoch_sgm", "stoch_ngd", "stoch_svrg", "stoch_asgd"]
-trainers += ["stoch_ag", "stoch_agfr", "stoch_aggr"]
-trainers += ["stoch_adam", "stoch_adadelta", "stoch_adagrad"]
-for name in trainers:
-        exp.add_trainer(name, cfg.trainers.get(name))
-
 # train all configurations
 trials = 10
-epochs = 100
-exp.run_all(trials, epochs, cfg.policies.get("stop_early"))
+exp.run_all(trials = trials, epochs = 100, cfg.policies().get("stop_early"))
 
 # compare configurations
 for trial in range(trials):
