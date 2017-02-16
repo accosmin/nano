@@ -11,16 +11,16 @@ namespace nano
         {
                 struct softplus_activation_t
                 {
-                        template <typename tivector, typename tovector>
-                        static void output(const tivector& idata, tovector&& odata)
+                        template <typename tivector>
+                        static auto output(const tivector& idata)
                         {
-                                odata.array() = (1 + idata.array().exp()).log();
+                                return (1 + idata.array().exp()).log();
                         }
 
-                        template <typename tgvector, typename tiovector>
-                        static void ginput(const tgvector& gdata, tiovector&& iodata)
+                        template <typename tivector, typename tovector>
+                        static auto ginput(const tivector&, const tovector& odata)
                         {
-                                iodata.array() = gdata.array() * (1 - (- iodata.array()).exp());
+                                return (1 - (-odata.array()).exp());
                         }
                 };
         }

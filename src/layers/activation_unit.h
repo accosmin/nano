@@ -11,16 +11,16 @@ namespace nano
         {
                 struct unit_activation_t
                 {
-                        template <typename tivector, typename tovector>
-                        static void output(const tivector& idata, tovector&& odata)
+                        template <typename tivector>
+                        static auto output(const tivector& idata)
                         {
-                                odata = idata;
+                                return idata.array();
                         }
 
-                        template <typename tgvector, typename tiovector>
-                        static void ginput(const tgvector& gdata, tiovector&& iodata)
+                        template <typename tivector, typename tovector>
+                        static auto ginput(const tivector&, const tovector&)
                         {
-                                iodata = gdata;
+                                return 1;
                         }
                 };
         }

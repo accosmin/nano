@@ -16,10 +16,12 @@
 #include "tasks/task_matmul.h"
 #include "tasks/task_sign.h"
 
+#include "layers/activation_sin.h"
 #include "layers/activation_unit.h"
 #include "layers/activation_tanh.h"
 #include "layers/activation_snorm.h"
 #include "layers/activation_splus.h"
+#include "layers/activation_swave.h"
 #include "layers/convolution.h"
 #include "layers/affine.h"
 
@@ -182,8 +184,10 @@ namespace nano
         {
                 auto& f = nano::get_layers();
                 f.add("act-unit",  "activation: a(x) = x", maker<unit_activation_layer_t>());
+                f.add("act-sin",   "activation: a(x) = sin(x)", maker<sin_activation_layer_t>());
                 f.add("act-tanh",  "activation: a(x) = tanh(x)", maker<tanh_activation_layer_t>());
                 f.add("act-snorm", "activation: a(x) = x / sqrt(1 + x^2)", maker<snorm_activation_layer_t>());
+                f.add("act-swave", "activation: a(x) = x / (1 + x^2)", maker<swave_activation_layer_t>());
                 f.add("act-splus", "activation: a(x) = log(1 + e^x)", maker<softplus_activation_layer_t>());
                 f.add("affine",    "transform:  L(x) = A * x + b", maker<affine_layer_t>());
                 f.add("conv",      "transform:  L(x) = conv3D(x, kernel) + b", maker<convolution_layer_t>());

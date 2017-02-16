@@ -29,15 +29,16 @@ namespace nano
                 virtual const tensor3d_t& ginput(const tensor3d_t& output) override;
                 virtual void gparam(const tensor3d_t& output, scalar_t*) override;
 
-                virtual dim3d_t idims() const override { return m_data.dims(); }
-                virtual dim3d_t odims() const override { return m_data.dims(); }
+                virtual dim3d_t idims() const override { return m_idata.dims(); }
+                virtual dim3d_t odims() const override { return m_odata.dims(); }
                 virtual tensor_size_t psize() const override { return 0; }
-                virtual tensor_size_t flops() const override { return 10 * m_data.size(); }
+                virtual tensor_size_t flops() const override { return 10 * m_idata.size(); }
 
         private:
 
                 // attributes
-                tensor3d_t      m_data;         ///< input-output buffer
+                tensor3d_t      m_idata;
+                tensor3d_t      m_odata;
         };
 
         template <typename top>
@@ -49,41 +50,37 @@ namespace nano
         template <typename top>
         tensor_size_t activation_layer_t<top>::resize(const tensor3d_t& tensor)
         {
-                m_data.resize(tensor.dims());
+                m_idata.resize(tensor.dims());
+                m_odata.resize(tensor.dims());
                 return 0;
         }
 
         template <typename top>
         const tensor3d_t& activation_layer_t<top>::output(const tensor3d_t& input)
         {
-                assert(m_data.size<0>() == input.size<0>());
-                assert(m_data.size<1>() == input.size<1>());
-                assert(m_data.size<2>() == input.size<2>());
+                assert(m_idata.dims() == input.dims());
 
-                top::output(input.vector(), m_data.vector());
+                m_idata.vector() = input.vector();
+                m_odata.vector() = top::output(m_idata.vector());
 
-                return m_data;
+                return m_odata;
         }
 
         template <typename top>
         const tensor3d_t& activation_layer_t<top>::ginput(const tensor3d_t& output)
         {
-                assert(m_data.size<0>() == output.size<0>());
-                assert(m_data.size<1>() == output.size<1>());
-                assert(m_data.size<2>() == output.size<2>());
+                assert(m_odata.dims() == output.dims());
 
-                top::ginput(output.vector(), m_data.vector());
+                m_idata.vector() = output.vector().array() * top::ginput(m_idata.vector(), m_odata.vector());
 
-                return m_data;
+                return m_idata;
         }
 
         template <typename top>
         void activation_layer_t<top>::gparam(const tensor3d_t& output, scalar_t*)
         {
-                NANO_UNUSED1_RELEASE(output);
+                assert(m_odata.dims() == output.dims());
 
-                assert(m_data.size<0>() == output.size<0>());
-                assert(m_data.size<1>() == output.size<1>());
-                assert(m_data.size<2>() == output.size<2>());
+                NANO_UNUSED1_RELEASE(output);
         }
 }

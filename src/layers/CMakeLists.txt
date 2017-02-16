@@ -1,6 +1,8 @@
 list(APPEND libnano_sources
         ${CMAKE_CURRENT_SOURCE_DIR}/activation.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/activation_sin.h
         ${CMAKE_CURRENT_SOURCE_DIR}/activation_snorm.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/activation_swave.h
         ${CMAKE_CURRENT_SOURCE_DIR}/activation_splus.h
         ${CMAKE_CURRENT_SOURCE_DIR}/activation_tanh.h
         ${CMAKE_CURRENT_SOURCE_DIR}/activation_unit.h

@@ -211,7 +211,7 @@ NANO_BEGIN_MODULE(test_layers)
 
 NANO_CASE(activation)
 {
-        for (const auto& activation_id : { "act-unit", "act-tanh", "act-snorm", "act-splus" })
+        for (const auto& activation_id : { "act-unit", "act-tanh", "act-snorm", "act-splus", "act-swave", "act-sin" })
         {
                 test_model(
                         activation_id,
