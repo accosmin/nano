@@ -33,13 +33,6 @@ class config:
                         "crit_max_var" : "--criterion max-var"
                 }
 
-        # training policies: {name, command line parameters}+
-        def policies(self):
-                return {
-                        "stop_early" : ",policy=stop_early",
-                        "all_epochs" : ",policy=all_epochs"
-                }
-
         # training methods: {name, command line parameters}+
         def trainers(self):
                 return {

@@ -30,6 +30,7 @@ exp.add_trainers(cfg.trainers(), [
 mlp0 = "--model forward-network --model-params "
 mlp1 = mlp0 + "affine:dims=10;act-snorm;"
 mlp2 = mlp1 + "affine:dims=10;act-snorm;"
+mlp3 = mlp2 + "affine:dims=10;act-snorm;"
 
 convnet0 = "--model forward-network --model-params "
 convnet1 = convnet0 + "conv:dims=32,rows=5,cols=5,conn=1,drow=1,dcol=1;act-snorm;"
@@ -41,13 +42,14 @@ outlayer = "affine:dims=10;act-snorm;"
 exp.add_model("mlp0", mlp0 + outlayer)
 exp.add_model("mlp1", mlp1 + outlayer)
 exp.add_model("mlp2", mlp2 + outlayer)
+exp.add_model("mlp3", mlp3 + outlayer)
 exp.add_model("convnet1", convnet1 + outlayer)
 exp.add_model("convnet2", convnet2 + outlayer)
 exp.add_model("convnet3", convnet3 + outlayer)
 
 # train all configurations
 trials = 10
-exp.run_all(trials = trials, epochs = 100, policy = cfg.policies().get("stop_early"))
+exp.run_all(trials = trials, epochs = 100, policy = "stop_early")
 
 # compare configurations
 for trial in range(trials):

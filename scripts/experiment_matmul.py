@@ -40,7 +40,7 @@ exp.add_model("mlp3", mlp3 + outlayer)
 
 # train all configurations
 trials = 10
-exp.run_all(trials = trials, epochs = 100, policy = cfg.policies().get("stop_early"))
+exp.run_all(trials = trials, epochs = 100, policy = "stop_early")
 
 # compare configurations
 for trial in range(trials):

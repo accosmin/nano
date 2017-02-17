@@ -145,17 +145,17 @@ class experiment:
                 self.plot_one(spath, ppath)
                 self.log()
 
-        def run_trial(self, trial, epochs, policy):
+        def run_trial(self, trial, epochs, policy, min_batch, max_batch):
                 for mname, mparam in self.models.items():
                         for tname, tparam in self.trainers.items():
-                                tparam += ",epochs=" + str(epochs) + str(policy)
+                                tparam += ",epochs={0},policy={1},min_batch={2},max_batch={3}".format(epochs, policy, min_batch, max_batch)
                                 for cname, cparam in self.criteria.items():
                                         for lname, lparam in self.losses.items():
                                                 self.run_one(trial, mname, mparam, tname, tparam, cname, cparam, lname, lparam)
 
-        def run_all(self, trials = 10, epochs = 1000, policy = ""):
+        def run_all(self, trials = 10, epochs = 1000, policy = "", min_batch = 32, max_batch = 256):
                 for trial in range(trials):
-                        self.run_trial(trial, epochs, policy)
+                        self.run_trial(trial, epochs, policy, min_batch, max_batch)
 
         def get_token(self, line, begin_delim, end_delim, start = 0):
                 begin = line.find(begin_delim, start) + len(begin_delim)
