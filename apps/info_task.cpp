@@ -9,7 +9,7 @@ int main(int argc, const char *argv[])
 {
         using namespace nano;
 
-        const strings_t task_ids = nano::get_tasks().ids();
+        const auto task_ids = nano::get_tasks().ids();
 
         // parse the command line
         nano::cmdline_t cmdline("describe a task");
@@ -32,15 +32,13 @@ int main(int argc, const char *argv[])
         const auto cmd_save_grows = nano::clamp(cmdline.get<tensor_size_t>("save-group-rows"), 1, 128);
         const auto cmd_save_gcols = nano::clamp(cmdline.get<tensor_size_t>("save-group-cols"), 1, 128);
 
-        // create task
+        // create & load task
         const auto task = nano::get_tasks().get(cmd_task, cmd_task_params);
 
-        // load task data
         nano::measure_critical_and_log(
                 [&] () { return task->load(); },
                 "load task <" + cmd_task + ">");
 
-        // describe task
         nano::describe(*task, cmd_task);
 
         // save samples as images

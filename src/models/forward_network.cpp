@@ -151,7 +151,6 @@ namespace nano
                         {
                                 px = layer.m_layer->load_params(px);
                         }
-
                         return true;
                 }
                 else
@@ -183,7 +182,7 @@ namespace nano
                 }
         }
 
-        bool forward_network_t::resize(const bool verbose)
+        bool forward_network_t::resize()
         {
                 tensor3d_t input(idims());
                 m_layers.clear();
@@ -191,13 +190,7 @@ namespace nano
                 strings_t layer_ids;
 
                 // create layers
-                const string_t config = this->config();
-                if (verbose)
-                {
-                        log_info() << "forward network: using configuration [" << config << "]";
-                }
-
-                const strings_t net_params = nano::split(config, ";");
+                const auto net_params = nano::split(config(), ";");
                 for (size_t l = 0; l < net_params.size(); ++ l)
                 {
                         if (net_params[l].size() <= 1)
@@ -234,26 +227,33 @@ namespace nano
                         throw std::invalid_argument("invalid output layer description");
                 }
 
-                if (verbose)
-                {
-                        print();
-                }
-
                 return true;
         }
 
-        void forward_network_t::print() const
+        void forward_network_t::describe() const
         {
+                vector_t x(psize());
+                scalar_t* px = x.data();
+
+                log_info() << "forward network: using configuration [" << config() << "]";
                 for (size_t l = 0; l < n_layers(); ++ l)
                 {
                         const auto& name = m_layers[l].m_name;
                         const auto& layer = m_layers[l].m_layer;
 
+                        // collect & print statistics for its parameters / layer
+                        const auto old_px = px;
+                        px = layer->save_params(px);
+                        stats_t<> stats;
+                        stats(old_px, px);
+
                         log_info()
                                 << "forward network " << name
                                 << ": in(" << layer->idims() << ") -> " << "out(" << layer->odims() << ")"
-                                << ", parameters = " << layer->psize() << ", FLOPs = " << layer->flops() << ".";
+                                << ", params = " << layer->psize() << "{" << stats << "}"
+                                << ", kFLOPs = " << nano::idiv(layer->flops(), 1024) << ".";
                 }
+                log_info() << "forward network: parameters = " << psize() << ".";
         }
 
         tensor_size_t forward_network_t::psize() const

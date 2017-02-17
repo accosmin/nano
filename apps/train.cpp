@@ -65,8 +65,9 @@ int main(int argc, const char *argv[])
 
         // create model
         const auto model = nano::get_models().get(cmd_model, cmd_model_params);
-        model->resize(*task, true);
+        model->resize(*task);
         model->random_params();
+        model->describe();
 
         // create trainer
         const auto trainer = nano::get_trainers().get(cmd_trainer, cmd_trainer_params);

@@ -48,7 +48,7 @@ NANO_CASE(evaluate)
         {
                 // create feed-forward network
                 const auto model = nano::get_models().get("forward-network", cmd_network);
-                NANO_CHECK_EQUAL(model->resize(*task, true), true);
+                NANO_CHECK_EQUAL(model->resize(*task), true);
                 NANO_CHECK_EQUAL(model->idims(), task->idims());
                 NANO_CHECK_EQUAL(model->odims(), task->odims());
 

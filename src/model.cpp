@@ -26,26 +26,20 @@ namespace nano
                 return  ib.read(m_idims) &&
                         ib.read(m_odims) &&
                         ib.read(m_configuration) &&
+                        resize() &&
                         load(ib);
         }
 
-        bool model_t::resize(const task_t& task, const bool verbose)
+        bool model_t::resize(const task_t& task)
         {
-                return resize(task.idims(), task.odims(), verbose);
+                return resize(task.idims(), task.odims());
         }
 
-        bool model_t::resize(const dim3d_t& idims, const dim3d_t& odims, const bool verbose)
+        bool model_t::resize(const dim3d_t& idims, const dim3d_t& odims)
         {
                 m_idims = idims;
                 m_odims = odims;
-                resize(verbose);
-
-                if (verbose)
-                {
-                        log_info() << "model: parameters = " << psize() << ".";
-                }
-
-                return true;
+                return resize();
         }
 
         bool operator==(const model_t& model, const task_t& task)

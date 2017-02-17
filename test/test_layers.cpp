@@ -112,7 +112,7 @@ static auto get_loss()
 static auto get_model(const string_t& description)
 {
         auto model = get_models().get("forward-network", description + ";" + cmd_layer_output);
-        model->resize(cmd_idims, cmd_odims, false);
+        model->resize(cmd_idims, cmd_odims);
         NANO_CHECK_EQUAL(model->idims(), cmd_idims);
         NANO_CHECK_EQUAL(model->odims(), cmd_odims);
         return model;

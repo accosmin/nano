@@ -44,12 +44,12 @@ namespace nano
                 ///
                 /// \brief resize to process new inputs
                 ///
-                bool resize(const dim3d_t& idims, const dim3d_t& odims, const bool verbose);
+                bool resize(const dim3d_t& idims, const dim3d_t& odims);
 
                 ///
                 /// \brief resize to process new inputs compatible with the given task
                 ///
-                bool resize(const task_t& task, bool verbose);
+                bool resize(const task_t& task);
 
                 ///
                 /// \brief serialize to disk
@@ -104,6 +104,11 @@ namespace nano
                 virtual timings_t timings() const = 0;
 
                 ///
+                /// \brief print a short description of the model
+                ///
+                virtual void describe() const = 0;
+
+                ///
                 /// \brief returns the input/output dimensions
                 ///
                 dim3d_t idims() const { return m_idims; }
@@ -111,7 +116,7 @@ namespace nano
 
         protected:
 
-                virtual bool resize(const bool verbose) = 0;
+                virtual bool resize() = 0;
                 virtual bool save(obstream_t&) const = 0;
                 virtual bool load(ibstream_t&) = 0;
 

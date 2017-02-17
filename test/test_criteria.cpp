@@ -23,7 +23,7 @@ NANO_CASE(evaluate)
 
         // create model
         const auto model = get_models().get("forward-network", cmd_model);
-        NANO_CHECK_EQUAL(model->resize(*task, true), true);
+        NANO_CHECK_EQUAL(model->resize(*task), true);
 
         // vary criteria
         const strings_t ids = get_criteria().ids();

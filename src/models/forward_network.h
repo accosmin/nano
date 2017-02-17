@@ -58,6 +58,11 @@ namespace nano
                 virtual timings_t timings() const override;
 
                 ///
+                /// \brief
+                ///
+                virtual void describe() const override;
+
+                ///
                 /// \brief save/load/initialize parameters
                 ///
                 virtual bool load_params(const vector_t& x) override;
@@ -71,22 +76,17 @@ namespace nano
                 virtual tensor_size_t psize() const override;
 
                 ///
-                /// \brief manage layers
+                /// \brief number of layers
                 ///
                 size_t n_layers() const { return m_layers.size(); }
 
         protected:
 
-                virtual bool resize(const bool verbose) override;
+                virtual bool resize() override;
                 virtual bool save(obstream_t&) const override;
                 virtual bool load(ibstream_t&) override;
 
         private:
-
-                ///
-                /// \brief display the model structure
-                ///
-                void print() const;
 
                 ///
                 /// \brief
