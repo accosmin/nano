@@ -65,7 +65,7 @@ class config:
                 return "--task synth-{0} --task-params {1}".format(name, params)
 
         def task(self, name):
-                return "--task {0} --task-params dir=".format(name, self.dbdir + "/" + name)
+                return "--task {0} --task-params dir={1}".format(name, self.dbdir + "/" + name)
 
         def task_synth_sign(self, isize = 100, osize = 10, count = 10000, noise = 1e-4):
                 return self.task_synth("sign", "isize={0},osize={1},count={2},noise={3}".format(isize, osize, count, noise))
