@@ -121,6 +121,8 @@ namespace nano
         template <typename tscalar>
         std::ostream& operator<<(std::ostream& os, const stats_t<tscalar>& stats)
         {
-                return os << stats.avg() << " +/- " << stats.stdev() << " [" << stats.min() << ", " << stats.max() << "]";
+                return  !stats ?
+                        os :
+                        (os << stats.avg() << " +/- " << stats.stdev() << " [" << stats.min() << ", " << stats.max() << "]");
         }
 }
