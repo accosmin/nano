@@ -29,7 +29,7 @@ namespace nano
                         // descent direction
                         gsum2.array() += cstate.g.array().square();
 
-                        cstate.d = -cstate.g.array() / (epsilon + gsum2.array()).sqrt();
+                        cstate.d = -cstate.g.array() / (epsilon + gsum2.array().sqrt());
 
                         // update solution
                         function.stoch_next();
