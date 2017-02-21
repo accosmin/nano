@@ -47,6 +47,7 @@ class config:
                         "stoch_adagrad" : "--trainer stoch --trainer-params opt=adagrad",
                         "stoch_adadelta" : "--trainer stoch --trainer-params opt=adadelta",
                         "stoch_adam" : "--trainer stoch --trainer-params opt=adam",
+                        "stoch_rmsprop" : "--trainer stoch --trainer-params opt=rmsprop",
 
                         "batch_lbfgs" : "--trainer batch --trainer-params opt=lbfgs",
                         "batch_cgd" : "--trainer batch --trainer-params opt=cgd",

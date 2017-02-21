@@ -24,7 +24,7 @@ exp.add_trainers(cfg.trainers(), [
         "batch_gd", "batch_cgd", "batch_lbfgs",
         "stoch_sg", "stoch_sgm", "stoch_ngd", "stoch_svrg", "stoch_asgd",
         "stoch_ag", "stoch_agfr", "stoch_aggr",
-        "stoch_adam", "stoch_adadelta", "stoch_adagrad"])
+        "stoch_adam", "stoch_adadelta", "stoch_adagrad", "stoch_rmsprop"])
 
 # models
 outlayer = "affine:dims=10;act-snorm;"

@@ -50,7 +50,6 @@ namespace nano
                 };
 
                 return  stoch_loop(param, function, x0, optimizer, snapshot,
-                        to_params("momentum", momentum, "epsilon", epsilon));
+                        to_params("alpha0", alpha0, "momentum", momentum, "epsilon", epsilon));
         }
 }
-

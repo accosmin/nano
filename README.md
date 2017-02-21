@@ -78,6 +78,7 @@ The following stochastic optimization methods are built-in:
 | aggr                  | Nesterov's accelerated gradient with gradient restarts       |               |
 | asgd                  | averaged stochastic gradient (descent)                       |               |
 | ngd                   | stochastic normalized gradient                               |               |
+| rmsprop               | RMSProp (see citation)                                       |               |
 | sg                    | stochastic gradient (descent)                                |               |
 | sgm                   | stochastic gradient (descent) with momentum                  |               |
 | svrg                  | stochastic variance reduced gradient                         |               |

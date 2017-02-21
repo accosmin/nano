@@ -42,6 +42,7 @@
 #include "stoch/sgm.h"
 #include "stoch/svrg.h"
 #include "stoch/asgd.h"
+#include "stoch/rmsprop.h"
 
 #include "batch/gd.h"
 #include "batch/cgd.h"
@@ -136,6 +137,7 @@ namespace nano
                 f.add("adam", "Adam (see citation)", maker<stoch_adam_t>());
                 f.add("adagrad", "AdaGrad (see citation)", maker<stoch_adagrad_t>());
                 f.add("adadelta", "AdaDelta (see citation)", maker<stoch_adadelta_t>());
+                f.add("rmsprop", "RMSProp (see citation)", maker<stoch_rmsprop_t>());
         }
 
         static void init_trainers()
