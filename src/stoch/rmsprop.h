@@ -7,7 +7,7 @@ namespace nano
         ///
         /// \brief stochastic RMSProp (AdaGrad with an exponentially weighted running average of the gradients)
         ///     see Lecture 6.5 - rmsprop, COURSERA: Neural Networks for Machine Learning
-        //      by Tieleman, T. and Hinton, G. (2012)
+        ///      by Tieleman, T. and Hinton, G. (2012)
         ///
         struct stoch_rmsprop_t final : public stoch_optimizer_t
         {
