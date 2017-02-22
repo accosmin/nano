@@ -30,14 +30,11 @@ exp.add_trainers(cfg.trainers(), [
 outlayer = "affine:dims=10;act-snorm;"
 
 convnet0 = "--model forward-network --model-params "
-convnet1 = convnet0 + "conv:dims=32,rows=5,cols=5,conn=1,drow=1,dcol=1;act-snorm;"
+convnet1 = convnet0 + "conv:dims=32,rows=7,cols=7,conn=1,drow=2,dcol=2;act-snorm;"
 convnet2 = convnet1 + "conv:dims=32,rows=5,cols=5,conn=4,drow=1,dcol=1;act-snorm;"
 convnet3 = convnet2 + "conv:dims=32,rows=3,cols=3,conn=4,drow=1,dcol=1;act-snorm;"
 convnet4 = convnet3 + "conv:dims=32,rows=3,cols=3,conn=4,drow=1,dcol=1;act-snorm;"
 
-exp.add_model("convnet1", convnet1 + outlayer)
-exp.add_model("convnet2", convnet2 + outlayer)
-exp.add_model("convnet3", convnet3 + outlayer)
 exp.add_model("convnet4", convnet4 + outlayer)
 
 # train all configurations
