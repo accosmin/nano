@@ -32,7 +32,7 @@ convnet2 = convnet1 + "conv:dims=32,rows=5,cols=5,conn=4,drow=1,dcol=1;act-snorm
 convnet3 = convnet2 + "conv:dims=32,rows=3,cols=3,conn=4,drow=1,dcol=1;act-snorm;"
 convnet4 = convnet3 + "conv:dims=32,rows=3,cols=3,conn=4,drow=1,dcol=1;act-snorm;"
 
-for activation in ["act-snorm", "act-splus", "act-swave"]:
+for activation in ["act-snorm", "act-splus", "act-swave", "act-unit", "act-tanh", "act-sin"]:
         name = ("convnet4-" + activation).replace("-", "_")
         params = (convnet4 + outlayer).replace("act-snorm", activation)
         exp.add_model(name, params)
