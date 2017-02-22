@@ -46,18 +46,20 @@ for trial in range(trials):
         for mname in exp.models:
                 for cname in exp.criteria:
                         for lname in exp.losses:
-                                stoch_spaths = exp.filter(trial, mname, "stoch*", cname, lname, ".state")
-                                batch_spaths = exp.filter(trial, mname, "batch*", cname, lname, ".state")
-                                all_spaths = exp.filter(trial, mname, ".*", cname, lname, ".state")
+                                # compare stochastic optimizers
+                                exp.plot_many(
+                                        exp.filter(trial, mname, "stoch*", cname, lname, ".state"),
+                                        exp.get_path(trial, mname, "stoch", cname, lname, ".pdf"))
 
-                                # compare stochastic trainers
-                                exp.plot_many(stoch_spaths, exp.get_path(trial, mname, "stoch", cname, lname, ".pdf"))
+                                # compare batch optimizers
+                                exp.plot_many(
+                                        exp.filter(trial, mname, "batch*", cname, lname, ".state"),
+                                        exp.get_path(trial, mname, "batch", cname, lname, ".pdf"))
 
-                                # compare batch trainers
-                                exp.plot_many(batch_spaths, exp.get_path(trial, mname, "batch", cname, lname, ".pdf"))
-
-                                # compare all trainers
-                                exp.plot_many(all_spaths, exp.get_path(trial, mname, "all", cname, lname, ".pdf"))
+                                # compare all optimizers
+                                exp.plot_many(
+                                        exp.filter(trial, mname, ".*", cname, lname, ".state"),
+                                        exp.get_path(trial, mname, "all", cname, lname, ".pdf"))
 
 # summarize configurations
 exp.summarize(trials)

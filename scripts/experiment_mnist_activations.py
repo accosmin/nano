@@ -32,13 +32,24 @@ convnet2 = convnet1 + "conv:dims=32,rows=5,cols=5,conn=4,drow=1,dcol=1;act-snorm
 convnet3 = convnet2 + "conv:dims=32,rows=3,cols=3,conn=4,drow=1,dcol=1;act-snorm;"
 convnet4 = convnet3 + "conv:dims=32,rows=3,cols=3,conn=4,drow=1,dcol=1;act-snorm;"
 
-activations=["act-snorm", "act-splus", "act-swave"]
-for activation in activations:
-        exp.add_model(("convnet4-" + activation).replace("-", "_"), (convnet4 + outlayer).replace("act-snorm", activation))
+for activation in ["act-snorm", "act-splus", "act-swave"]:
+        name = ("convnet4-" + activation).replace("-", "_")
+        params = (convnet4 + outlayer).replace("act-snorm", activation)
+        exp.add_model(name, params)
 
 # train all configurations
 trials = 10
 exp.run_all(trials = trials, epochs = 100, policy = "stop_early")
+
+# compare configurations
+for trial in range(trials):
+        for mname in exp.models:
+                for cname in exp.criteria:
+                        for lname in exp.losses:
+                                # compare all activation functions
+                                exp.plot_many(
+                                        exp.filter(trial, mname, ".*", cname, lname, ".state"),
+                                        exp.get_path(trial, mname, "", cname, lname, ".pdf"))
 
 # summarize configurations
 exp.summarize(trials)
