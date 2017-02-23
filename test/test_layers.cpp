@@ -7,6 +7,7 @@
 #include "layers/conv3d.h"
 #include "tensor/numeric.h"
 #include "text/to_string.h"
+#include "text/algorithm.h"
 #include "layers/convolution.h"
 #include "layers/make_layers.h"
 
@@ -211,11 +212,14 @@ NANO_BEGIN_MODULE(test_layers)
 
 NANO_CASE(activation)
 {
-        for (const auto& activation_id : { "act-unit", "act-tanh", "act-snorm", "act-splus", "act-swave", "act-sin" })
+        for (const auto& activation_id : get_layers().ids())
         {
-                test_model(
-                        activation_id,
-                        apsize(cmd_idims, cmd_odims));
+                if (nano::starts_with(activation_id, "act-"))
+                {
+                        test_model(
+                                activation_id,
+                                apsize(cmd_idims, cmd_odims));
+                }
         }
 }
 

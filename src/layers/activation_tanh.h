@@ -7,23 +7,20 @@ namespace nano
         ///
         /// \brief hyperbolic tangent activation function.
         ///
-        namespace detail
+        struct tanh_activation_t
         {
-                struct tanh_activation_t
+                template <typename tivector>
+                static auto output(const tivector& idata)
                 {
-                        template <typename tivector>
-                        static auto output(const tivector& idata)
-                        {
-                                return idata.array().tanh();
-                        }
+                        return idata.array().tanh();
+                }
 
-                        template <typename tivector, typename tovector>
-                        static auto ginput(const tivector&, const tovector& odata)
-                        {
-                                return (1 - odata.array().square());
-                        }
-                };
-        }
+                template <typename tivector, typename tovector>
+                static auto ginput(const tivector&, const tovector& odata)
+                {
+                        return (1 - odata.array().square());
+                }
+        };
 
-        using tanh_activation_layer_t = activation_layer_t<detail::tanh_activation_t>;
+        using tanh_activation_layer_t = activation_layer_t<tanh_activation_t>;
 }

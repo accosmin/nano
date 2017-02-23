@@ -125,9 +125,10 @@ A **model** predicts the correct output for a given image patch, either its labe
 | act-sin   | activation: a(x) = sin(x)                |                                                                               |
 | act-snorm | activation: a(x) = x / sqrt(1 + x^2)     |                                                                               |
 | act-splus | activation: a(x) = log(1 + e^x)          |                                                                               |
-| act-swave | activation: a(x) = x / (1 + x^2)         |                                                                               |
 | act-tanh  | activation: a(x) = tanh(x)               |                                                                               |
 | act-unit  | activation: a(x) = x                     |                                                                               |
+| act-wave1 | activation: a(x) = x / (1 + x^2)         |                                                                               |
+| act-wave2 | activation: a(x) = x / (1 + x^4)         |                                                                               |
 | affine    | transform:  L(x) = A * x + b             | dims=10[1,4096]                                                               |
 | conv      | transform:  L(x) = conv3D(x, kernel) + b | dims=16[1,256],rows=8[1,32],cols=8[1,32],conn=1[1,16],drow=1[1,8],dcol=1[1,8] |
 |-----------|------------------------------------------|-------------------------------------------------------------------------------|
