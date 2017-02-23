@@ -188,6 +188,7 @@ namespace nano
                 f.add("act-unit",  "activation: a(x) = x", maker<unit_activation_layer_t>());
                 f.add("act-sin",   "activation: a(x) = sin(x)", maker<sin_activation_layer_t>());
                 f.add("act-tanh",  "activation: a(x) = tanh(x)", maker<tanh_activation_layer_t>());
+                f.add("act-sigm",  "activation: a(x) = exp(x) / (1 + exp(x))", maker<sigm_activation_layer_t>());
                 f.add("act-snorm", "activation: a(x) = x / sqrt(1 + x^2)", maker<snorm_activation_layer_t>());
                 f.add("act-wave1", "activation: a(x) = x / (1 + x^2)", maker<wave1_activation_layer_t>());
                 f.add("act-wave2", "activation: a(x) = x / (1 + x^4)", maker<wave2_activation_layer_t>());

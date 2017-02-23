@@ -123,6 +123,6 @@ namespace nano
         {
                 return  !stats ?
                         os :
-                        (os << stats.avg() << " +/- " << stats.stdev() << " [" << stats.min() << ", " << stats.max() << "]");
+                        (os << stats.avg() << "+/-" << stats.stdev() << "[" << stats.min() << "," << stats.max() << "]");
         }
 }
