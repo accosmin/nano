@@ -32,9 +32,9 @@ convnet2 = convnet1 + "conv:dims=32,rows=5,cols=5,conn=4,drow=1,dcol=1;act-snorm
 convnet3 = convnet2 + "conv:dims=32,rows=3,cols=3,conn=4,drow=1,dcol=1;act-snorm;"
 convnet4 = convnet3 + "conv:dims=32,rows=3,cols=3,conn=4,drow=1,dcol=1;act-snorm;"
 
-for activation in ["act-snorm", "act-splus", "act-swave", "act-tanh", "act-sin"]:
+for activation in ["act-snorm", "act-swave", "act-tanh", "act-sin"]:
         name = ("convnet4-" + activation).replace("-", "_")
-        params = (convnet4 + outlayer).replace("act-snorm", activation)
+        params = convnet4.replace("act-snorm", activation) + outlayer
         exp.add_model(name, params)
 
 # train all configurations
