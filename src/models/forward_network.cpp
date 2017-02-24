@@ -244,14 +244,25 @@ namespace nano
                         // collect & print statistics for its parameters / layer
                         const auto old_px = px;
                         px = layer->save_params(px);
-                        stats_t<> stats;
-                        stats(old_px, px);
 
-                        log_info()
-                                << "forward network " << name
-                                << ": in(" << layer->idims() << ") -> " << "out(" << layer->odims() << ")"
-                                << ", params = " << layer->psize() << "{" << stats << "}"
-                                << ", kFLOPs = " << nano::idiv(layer->flops(), 1024) << ".";
+                        if (layer->psize())
+                        {
+                                const auto l2 = nano::map_vector(old_px, px - old_px).lpNorm<2>();
+                                const auto li = nano::map_vector(old_px, px - old_px).lpNorm<Eigen::Infinity>();
+
+                                log_info()
+                                        << "forward network " << name
+                                        << ": in(" << layer->idims() << ") -> " << "out(" << layer->odims() << ")"
+                                        << ", params = " << layer->psize() << " [L2 = " << l2 << ", Linf = " << li << "]"
+                                        << ", kFLOPs = " << nano::idiv(layer->flops(), 1024) << ".";
+                        }
+                        else
+                        {
+                                log_info()
+                                        << "forward network " << name
+                                        << ": in(" << layer->idims() << ") -> " << "out(" << layer->odims() << ")"
+                                        << ", kFLOPs = " << nano::idiv(layer->flops(), 1024) << ".";
+                        }
                 }
                 log_info() << "forward network: parameters = " << psize() << ".";
         }
