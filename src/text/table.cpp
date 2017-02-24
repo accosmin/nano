@@ -1,7 +1,7 @@
 #include "align.h"
 #include "table.h"
 #include <numeric>
-#include <ostream>
+#include <fstream>
 
 namespace nano
 {
@@ -44,6 +44,82 @@ namespace nano
         void table_t::clear()
         {
                 m_rows.clear();
+        }
+
+        bool table_t::save(const string_t& path, const string_t& delim) const
+        {
+                std::ofstream os(path.c_str(), std::ios::trunc);
+                if (!os.is_open())
+                {
+                        return false;
+                }
+
+                os << m_title;
+                for (const auto& hname : m_header.values())
+                {
+                        os << delim << hname;
+                }
+                os << std::endl;
+
+                for (const auto& row : m_rows)
+                {
+                        os << row.name();
+                        for (const auto& value : row.values())
+                        {
+                                os << delim << value;
+                        }
+                        os << std::endl;
+                }
+
+                return true;
+        }
+
+        bool table_t::load(const string_t& path, const string_t& delim)
+        {
+                std::ifstream is(path.c_str());
+                if (!is.is_open())
+                {
+                        return false;
+                }
+
+                m_header = table_header_t();
+                clear();
+
+                const auto op_header = [=] (const auto& tokens)
+                {
+                        m_title = tokens[0];
+                        for (size_t i = 1; i < tokens.size(); ++ i)
+                        {
+                                header() << tokens[i];
+                        }
+                };
+
+                const auto op_append = [=] (const auto& tokens)
+                {
+                        auto& row = append(tokens[0]);
+                        for (size_t i = 1; i < tokens.size(); ++ i)
+                        {
+                                row << tokens[i];
+                        }
+                };
+
+                size_t count = 0;
+                for (string_t line; std::getline(is, line); ++ count)
+                {
+                        const auto tokens = nano::split(line, delim.c_str());
+                        if (tokens.empty())
+                        {
+                                return false;
+                        }
+
+                        switch (count)
+                        {
+                        case 0:         op_header(tokens); break;
+                        default:        op_append(tokens); break;
+                        }
+                }
+
+                return is.eof();
         }
 
         std::ostream& operator<<(std::ostream& os, const table_t& table)
@@ -129,5 +205,25 @@ namespace nano
                 print_row_delim();
 
                 return os;
+        }
+
+        bool operator==(const table_t& t1, const table_t& t2)
+        {
+                const auto rows_equal = [&] ()
+                {
+                        for (std::size_t i = 0; i < t1.rows(); ++ i)
+                        {
+                                if (t1.row(i) != t2.row(i))
+                                {
+                                        return false;
+                                }
+                        }
+                        return true;
+                };
+
+                return  t1.title() == t2.title() &&
+                        t1.header() == t2.header() &&
+                        t1.rows() == t2.rows() &&
+                        rows_equal();
         }
 }

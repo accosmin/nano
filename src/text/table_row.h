@@ -38,17 +38,15 @@ namespace nano
                 ///
                 /// \brief retrieve the column values & markings
                 ///
+                const auto& values() const { return m_values; }
                 const auto& value(const size_t i) const { return m_values.at(i); }
                 auto& value(const size_t i) { return m_values.at(i); }
 
-                const auto& marking(const size_t i) const { return m_markings.at(i); }
-                auto& marking(const size_t i) { return m_markings.at(i); }
-
-                ///
-                /// \brief retrieve the column value range
-                ///
                 auto begin() const { return m_values.cbegin(); }
                 auto end() const { return m_values.cend(); }
+
+                const auto& marking(const size_t i) const { return m_markings.at(i); }
+                auto& marking(const size_t i) { return m_markings.at(i); }
 
                 ///
                 /// \brief retrieve the number of columns
@@ -62,5 +60,17 @@ namespace nano
                 strings_t               m_values;       ///< column values
                 strings_t               m_markings;     ///< column marking (e.g. min|max decoration)
         };
-}
 
+        ///
+        /// \brief comparison operator
+        ///
+        inline bool operator==(const table_row_t& r1, const table_row_t& r2)
+        {
+                return  r1.name() == r2.name() &&
+                        r1.values() == r2.values();
+        }
+        inline bool operator!=(const table_row_t& r1, const table_row_t& r2)
+        {
+                return !(r1 == r2);
+        }
+}

@@ -5,7 +5,7 @@
 namespace nano
 {
         ///
-        /// \brief a header in the table
+        /// \brief a header in the table.
         ///
         class table_header_t
         {
@@ -25,7 +25,7 @@ namespace nano
                 /// \brief retrieve the column values
                 ///
                 const auto& values() const { return m_values; }
-                const auto& operator[](size_t i) const { return m_values.at(i); }
+                const auto& operator[](const size_t i) const { return m_values.at(i); }
 
                 ///
                 /// \brief retrieve the number of columns
@@ -37,5 +37,12 @@ namespace nano
                 // attributes
                 strings_t       m_values;       ///< column values
         };
-}
 
+        ///
+        /// \brief comparison operator.
+        ///
+        inline bool operator==(const table_header_t& h1, const table_header_t& h2)
+        {
+                return h1.values() == h2.values();
+        }
+}

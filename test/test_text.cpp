@@ -1,5 +1,6 @@
 #include "utest.h"
 #include "text/align.h"
+#include "text/table.h"
 #include "text/algorithm.h"
 #include "text/to_params.h"
 #include "text/from_params.h"
@@ -213,6 +214,30 @@ NANO_CASE(to_params)
 
         NANO_CHECK_EQUAL(nano::from_params(config, "param1", 34243), param1);
         NANO_CHECK_EQUAL(nano::from_params(config, "param2", 32322), param2);
+}
+
+NANO_CASE(table)
+{
+        nano::table_t t1("title");
+        t1.header() << "col1" << "col2";
+        t1.append("row1") << "v11" << "v12";
+        t1.append("row2") << "v21" << "v22";
+        t1.append("row3") << "v31" << "v32";
+
+        NANO_CHECK_EQUAL(t1.rows(), 3);
+        NANO_CHECK_EQUAL(t1.cols(), 2);
+
+        const auto path = "table.csv";
+        const auto delim = ";";
+
+        NANO_CHECK(t1.save(path, delim));
+
+        nano::table_t t2("xxx");
+        NANO_CHECK(t2.load(path, delim));
+
+        NANO_CHECK_EQUAL(t1, t2);
+
+        std::remove(path);
 }
 
 NANO_END_MODULE()

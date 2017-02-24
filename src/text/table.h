@@ -15,6 +15,11 @@ namespace nano
         NANO_PUBLIC std::ostream& operator<<(std::ostream&, const table_t&);
 
         ///
+        /// \brief comparison operator.
+        ///
+        NANO_PUBLIC bool operator==(const table_t& t1, const table_t& t2);
+
+        ///
         /// \brief collects & formats tabular data for ASCII display.
         ///
         class NANO_PUBLIC table_t
@@ -71,6 +76,13 @@ namespace nano
                 ///
                 template <typename tmarker>
                 void mark(const tmarker& marker, const char* marker_string = " (*)");
+
+                ///
+                /// \brief save/load to/from CSV files using the given separator
+                /// the header is always written/read
+                ///
+                bool save(const string_t& path, const string_t& delim = ";") const;
+                bool load(const string_t& path, const string_t& delim = ";");
 
                 ///
                 /// \brief access functions
