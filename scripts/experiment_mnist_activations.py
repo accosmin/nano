@@ -43,13 +43,13 @@ exp.run_all(trials = trials, epochs = 100, policy = "stop_early")
 
 # compare configurations
 for trial in range(trials):
-        for mname in exp.models:
+        for tname in exp.trainers:
                 for cname in exp.criteria:
                         for lname in exp.losses:
                                 # compare all activation functions
                                 exp.plot_many(
-                                        exp.filter(trial, mname, ".*", cname, lname, ".state"),
-                                        exp.get_path(trial, mname, "", cname, lname, ".pdf"))
+                                        exp.filter(trial, ".*", tname, cname, lname, ".state"),
+                                        exp.get_path(trial, "", tname, cname, lname, ".pdf"))
 
 # summarize configurations
 exp.summarize(trials)

@@ -65,7 +65,7 @@ class experiment:
 
         def get_csv(self, spath):
                 # state file with the following format:
-                #  ({train, valid, test} x {criterion, loss{average, variance, maximum}, error{average, variance, maximum}}, time)+
+                #  (epoch, {train, valid, test} x {criterion, loss{average, variance, maximum}, error{average, variance, maximum}}, time)+
                 name = os.path.basename(spath).replace(".state", "")
                 name = name.replace(name[0 : name.find("_") + 1], "")
                 data = mlab.csv2rec(spath, delimiter = ' ', names = None)
@@ -128,9 +128,9 @@ class experiment:
                 with PdfPages(ppath) as pdf:
                         for col in (0, 1, 4, 7, 8, 11, 14, 15, 18):
                                 # plot wrt epoch/iteration number
-                                self.plot_many_wrt(spaths, names, datas, pdf, 0, col + 1)
+                                self.plot_many_wrt(spaths, names, datas, pdf, 0, col)
                                 # plot wrt time
-                                self.plot_many_wrt(spaths, names, datas, pdf, 22, col + 1)
+                                self.plot_many_wrt(spaths, names, datas, pdf, 22, col)
                 self.log("|--->plotting done, see <", ppath, ">")
 
         def run_one(self, trial, mname, mparam, tname, tparam, cname, cparam, lname, lparam):
