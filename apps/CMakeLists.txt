@@ -25,6 +25,7 @@ build_app(evaluate.cpp nano)
 build_app(warp.cpp nano)
 build_app(embed.cpp nano)
 build_app(stats.cpp nano)
+build_app(tabulate.cpp nano)
 
 # install (some) programs
 set(programs
