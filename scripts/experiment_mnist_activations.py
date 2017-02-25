@@ -8,6 +8,7 @@ cfg = config.config()
 exp = experiment.experiment(
         cfg.app_train,
         cfg.app_stats,
+        cfg.app_tabulate,
         cfg.task_mnist(),
         cfg.expdir + "/mnist/eval_activations")
 

@@ -8,9 +8,10 @@ class config:
                 self.dbdir = homedir + "/experiments/databases"
 
                 crtpath = os.path.dirname(os.path.realpath(__file__))
+                self.app_info = crtpath + "/../build-release/apps/info"
                 self.app_train = crtpath + "/../build-release/apps/train"
                 self.app_stats = crtpath + "/../build-release/apps/stats"
-                self.app_info = crtpath + "/../build-release/apps/info"
+                self.app_tabulate = crtpath + "/../build-release/apps/tabulate"
 
         # available losses: {name, command line parameters}+
         def losses(self):

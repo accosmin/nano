@@ -7,9 +7,10 @@ import matplotlib.pyplot as plt
 from matplotlib.backends.backend_pdf import PdfPages
 
 class experiment:
-        def __init__(self, app_train, app_stats, task, outdir):
+        def __init__(self, app_train, app_stats, app_tabulate, task, outdir):
                 self.app_train = app_train
                 self.app_stats = app_stats
+                self.app_tabulate = app_tabulate
                 self.task = task
                 self.dir = outdir
                 self.models = {}
@@ -214,25 +215,30 @@ class experiment:
                 epoch_stats = subprocess.check_output(cmdline.split() + epochs).decode('utf-8').strip()
                 speed_stats = subprocess.check_output(cmdline.split() + speeds).decode('utf-8').strip()
                 delta_stats = subprocess.check_output(cmdline.split() + deltas).decode('utf-8').strip()
-                print("%-12s | %-14s | %-16s | %-16s | %-34s | %-34s | %-48s | %-34s | %-48s" % \
-                        (mname, tname, cname, lname, value_stats, error_stats, epoch_stats, speed_stats, delta_stats),
+                print("{0};{1};{2};{3};{4};{5};{6};{7};{8}".format(
+                        mname, tname, cname, lname, value_stats, error_stats, epoch_stats, speed_stats, delta_stats),
                         file = lfile)
 
         def summarize(self, trials):
                 lpath = self.dir + "/result.log"
-                lfile = open(lpath, "w")
+                cpath = self.dir + "/result.csv"
 
+                cfile = open(cpath, "w")
                 # header
-                print("%-12s | %-14s | %-16s | %-16s | %-34s | %-34s | %-48s | %-34s | %-48s" % \
-                        ("model", "trainer", "criterion", "loss", "test value", "test error", "epochs", "convergence speed", "duration (sec)"),
-                        file = lfile)
-                print("-" * 280, file = lfile)
+                print("{0};{1};{2};{3};{4};{5};{6};{7};{8}".format(
+                        "model", "trainer", "criterion", "loss", "test value", "test error", "epochs", "convergence speed", "duration (sec)"),
+                        file = cfile)
                 # content
                 for mname in self.models:
                         for tname in self.trainers:
                                 for cname in self.criteria:
                                         for lname in self.losses:
-                                                self.summarize_one(trials, mname, tname, cname, lname, lfile)
+                                                self.summarize_one(trials, mname, tname, cname, lname, cfile)
+                cfile.close()
+
+                # tabulate
+                lfile = open(lpath, "w")
+                subprocess.check_call((self.app_tabulate + " -i " + cpath + " -d \";\"").split(), stdout = lfile)
                 lfile.close()
 
                 # print file to screen
