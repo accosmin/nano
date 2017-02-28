@@ -82,7 +82,7 @@ namespace nano
                 /// the header is always written/read
                 ///
                 bool save(const string_t& path, const string_t& delim = ";") const;
-                bool load(const string_t& path, const string_t& delim = ";");
+                bool load(const string_t& path, const string_t& delim = ";", const bool load_header = true);
 
                 ///
                 /// \brief access functions

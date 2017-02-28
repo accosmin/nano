@@ -15,6 +15,7 @@
 #include "tasks/task_affine.h"
 #include "tasks/task_matmul.h"
 #include "tasks/task_sign.h"
+#include "tasks/task_iris.h"
 
 #include "layers/activation_sin.h"
 #include "layers/activation_unit.h"
@@ -176,6 +177,7 @@ namespace nano
                 f.add("cifar100", "CIFAR-100 (3x32x32 object classification)", maker<cifar100_task_t>());
                 f.add("stl10", "STL-10 (3x96x96 semi-supervised object classification)", maker<stl10_task_t>());
                 f.add("svhn", "SVHN (3x32x32 digit classification in the wild)", maker<svhn_task_t>());
+                f.add("iris", "IRIS (iris flower classification)", maker<iris_task_t>());
                 f.add("synth-charset", "synthetic character classification", maker<charset_task_t>());
                 f.add("synth-affine", "synthetic affine transformation", maker<affine_task_t>());
                 f.add("synth-matmul", "synthetic matrix multiplication", maker<matmul_task_t>());

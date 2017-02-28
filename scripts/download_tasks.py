@@ -52,3 +52,9 @@ dbdir = cfg.dbdir + "/cifar100/"
 os.makedirs(dbdir, exist_ok = True)
 
 download("http://www.cs.toronto.edu/~kriz/cifar-100-binary.tar.gz", dbdir)
+
+# IRIS dataset
+dbdir = cfg.dbdir + "/iris/"
+os.makedirs(dbdir, exist_ok = True)
+
+download("http://archive.ics.uci.edu/ml/machine-learning-databases/iris/iris.data", dbdir)

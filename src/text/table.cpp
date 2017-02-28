@@ -74,7 +74,7 @@ namespace nano
                 return true;
         }
 
-        bool table_t::load(const string_t& path, const string_t& delim)
+        bool table_t::load(const string_t& path, const string_t& delim, const bool load_header)
         {
                 std::ifstream is(path.c_str());
                 if (!is.is_open())
@@ -82,7 +82,10 @@ namespace nano
                         return false;
                 }
 
-                m_header = table_header_t();
+                if (load_header)
+                {
+                        m_header = table_header_t();
+                }
                 clear();
 
                 const auto op_header = [=] (const auto& tokens)
@@ -96,26 +99,39 @@ namespace nano
 
                 const auto op_append = [=] (const auto& tokens)
                 {
+                        if (tokens.size() != cols() + 1)
+                        {
+                                return false;
+                        }
+
                         auto& row = append(tokens[0]);
                         for (size_t i = 1; i < tokens.size(); ++ i)
                         {
                                 row << tokens[i];
                         }
+
+                        return true;
                 };
 
                 size_t count = 0;
                 for (string_t line; std::getline(is, line); ++ count)
                 {
                         const auto tokens = nano::split(line, delim.c_str());
-                        if (tokens.empty())
+                        if (tokens.empty() || line.empty())
                         {
-                                return false;
+                                continue;
                         }
 
-                        switch (count)
+                        if (!count && load_header)
                         {
-                        case 0:         op_header(tokens); break;
-                        default:        op_append(tokens); break;
+                                op_header(tokens);
+                        }
+                        else
+                        {
+                                if (!op_append(tokens))
+                                {
+                                        return false;
+                                }
                         }
                 }
 

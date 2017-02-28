@@ -76,3 +76,6 @@ class config:
 
         def task_mnist(self):
                 return self.task("mnist")
+
+        def task_iris(self):
+                return self.task("iris")

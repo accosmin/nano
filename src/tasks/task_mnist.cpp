@@ -7,7 +7,7 @@
 
 namespace nano
 {
-        static const string_t tlabels[] =
+        static const strings_t tlabels =
         {
                 "digit0",
                 "digit1",
@@ -28,7 +28,7 @@ namespace nano
 
         bool mnist_task_t::populate()
         {
-                const string_t dir = nano::from_params<string_t>(config(), "dir");
+                const string_t dir = from_params<string_t>(config(), "dir");
 
                 const string_t test_ifile = dir + "/t10k-images-idx3-ubyte.gz";
                 const string_t test_gfile = dir + "/t10k-labels-idx1-ubyte.gz";
