@@ -15,7 +15,8 @@ namespace nano
         };
 
         iris_task_t::iris_task_t(const string_t& config) :
-                mem_tensor_task_t(dim3d_t{4, 1, 1}, dim3d_t{3, 1, 1}, 1, to_params(config, "dir", "."))
+                mem_tensor_task_t(dim3d_t{4, 1, 1}, dim3d_t{3, 1, 1}, 1,
+                to_params(config, "dir", string_t(std::getenv("HOME")) + "/experiments/databases/iris"))
         {
         }
 

@@ -10,8 +10,6 @@ NANO_CASE(construction)
 {
         using namespace nano;
 
-        const auto path = string_t(std::getenv("HOME")) + "/experiments/databases/stl10";
-
         const auto idims = dim3d_t{3, 96, 96};
         const auto odims = dim3d_t{10, 1, 1};
         const auto target_sum = scalar_t(2) - static_cast<scalar_t>(nano::size(odims));
@@ -20,7 +18,7 @@ NANO_CASE(construction)
         const auto train_samples = size_t(100000 + 1000);
         const auto test_samples = size_t(8000);
 
-        const auto task = nano::get_tasks().get("stl10", "dir=" + path);
+        const auto task = nano::get_tasks().get("stl10");
         NANO_REQUIRE(task);
         NANO_REQUIRE(task->load());
 

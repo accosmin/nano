@@ -26,7 +26,8 @@ namespace nano
         };
 
         svhn_task_t::svhn_task_t(const string_t& config) :
-                mem_vision_task_t(dim3d_t{3, 32, 32}, dim3d_t{10, 1, 1}, 1, to_params(config, "dir", "."))
+                mem_vision_task_t(dim3d_t{3, 32, 32}, dim3d_t{10, 1, 1}, 1,
+                to_params(config, "dir", string_t(std::getenv("HOME")) + "/experiments/databases/svhn"))
         {
         }
 

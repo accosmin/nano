@@ -10,8 +10,6 @@ NANO_CASE(construction)
 {
         using namespace nano;
 
-        const auto path = string_t(std::getenv("HOME")) + "/experiments/databases/iris";
-
         const auto idims = dim3d_t{4, 1, 1};
         const auto odims = dim3d_t{3, 1, 1};
         const auto target_sum = scalar_t(2) - static_cast<scalar_t>(nano::size(odims));
@@ -22,7 +20,7 @@ NANO_CASE(construction)
         const auto valid_fold = fold_t{0, protocol::valid};
         const auto test_fold = fold_t{0, protocol::test};
 
-        const auto task = nano::get_tasks().get("iris", "dir=" + path);
+        const auto task = nano::get_tasks().get("iris");
         NANO_REQUIRE(task);
         NANO_REQUIRE(task->load());
 

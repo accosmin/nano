@@ -14,7 +14,7 @@ int main(int argc, const char *argv[])
         // parse the command line
         nano::cmdline_t cmdline("describe a task");
         cmdline.add("", "task",                 ("tasks to choose from: " + nano::concatenate(task_ids, ", ")).c_str());
-        cmdline.add("", "task-params",          "task parameters (if any)", "dir=.");
+        cmdline.add("", "task-params",          "task parameters (if any)", "-");
         cmdline.add("", "save-dir",             "directory to save task samples to");
         cmdline.add("", "save-group-rows",      "number of task samples to group in a row", "32");
         cmdline.add("", "save-group-cols",      "number of task samples to group in a column", "32");

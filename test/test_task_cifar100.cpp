@@ -10,8 +10,6 @@ NANO_CASE(construction)
 {
         using namespace nano;
 
-        const auto path = string_t(std::getenv("HOME")) + "/experiments/databases/cifar100";
-
         const auto idims = dim3d_t{3, 32, 32};
         const auto odims = dim3d_t{100, 1, 1};
         const auto target_sum = scalar_t(2) - static_cast<scalar_t>(nano::size(odims));
@@ -23,7 +21,7 @@ NANO_CASE(construction)
         const auto valid_fold = fold_t{0, protocol::valid};
         const auto test_fold = fold_t{0, protocol::test};
 
-        const auto task = nano::get_tasks().get("cifar100", "dir=" + path);
+        const auto task = nano::get_tasks().get("cifar100");
         NANO_REQUIRE(task);
         NANO_REQUIRE(task->load());
 

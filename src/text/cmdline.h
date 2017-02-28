@@ -46,10 +46,7 @@ namespace nano
                 ///
                 /// \brief add new option with default value by name and short name (without dash)
                 ///
-                template
-                <
-                        typename tvalue
-                >
+                template <typename tvalue>
                 void add(const string_t& short_name, const string_t& name, const string_t& description,
                          const tvalue default_value) const
                 {
@@ -84,10 +81,7 @@ namespace nano
                 ///
                 /// \brief get the value of an option as a given type
                 ///
-                template
-                <
-                        typename tvalue
-                >
+                template <typename tvalue>
                 tvalue get(const string_t& name_or_short_name) const
                 {
                         return nano::from_string<tvalue>(get(name_or_short_name));
