@@ -107,7 +107,7 @@ class experiment:
                 delta = delta.replace("m:", "*60*60+")
                 delta = delta.replace("h:", "*60*60*60+")
                 delta = delta.replace("d:", "*24*60*60*60+")
-                if delta[0] == '0':
+                while (len(delta) > 0) and (delta[0] == '0'):
                         delta = delta[1:]
                 delta = delta.replace("+00*", "1*")
                 delta = delta.replace("+00", "")
