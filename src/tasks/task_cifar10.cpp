@@ -6,7 +6,7 @@
 
 namespace nano
 {
-        static const strings_t tlabels =
+        static const string_t tlabels[] =
         {
                 "airplane",
                 "automobile",

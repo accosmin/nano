@@ -7,7 +7,7 @@
 
 namespace nano
 {
-        static const strings_t tlabels =
+        static const string_t tlabels[] =
         {
                 "digit0",
                 "digit1",
