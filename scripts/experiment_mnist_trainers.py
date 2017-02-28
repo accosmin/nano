@@ -6,21 +6,19 @@ import experiment
 # - the model should predict the digit of a grayscale image
 cfg = config.config()
 exp = experiment.experiment(
-        cfg.app_train,
-        cfg.app_stats,
         cfg.task_mnist(),
         cfg.expdir + "/mnist/eval_trainers")
 
 # loss functions
-exp.add_losses(cfg.losses(), [
+exp.add_losses([
         "loss_classnll"])
 
 # criteria
-exp.add_criteria(cfg.criteria(), [
+exp.add_criteria([
         "crit_avg"])
 
 # trainers
-exp.add_trainers(cfg.trainers(), [
+exp.add_trainers([
         "batch_gd", "batch_cgd", "batch_lbfgs",
         "stoch_sg", "stoch_sgm", "stoch_ngd", "stoch_svrg", "stoch_asgd",
         "stoch_ag", "stoch_agfr", "stoch_aggr",

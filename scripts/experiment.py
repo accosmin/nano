@@ -1,6 +1,7 @@
 import os
 import re
 import time
+import config
 import plotter
 import subprocess
 import matplotlib.mlab as mlab
@@ -8,10 +9,8 @@ import matplotlib.pyplot as plt
 from matplotlib.backends.backend_pdf import PdfPages
 
 class experiment:
-        def __init__(self, app_train, app_stats, app_tabulate, task, outdir):
-                self.app_train = app_train
-                self.app_stats = app_stats
-                self.app_tabulate = app_tabulate
+        def __init__(self, task, outdir):
+                self.cfg = config.config()
                 self.task = task
                 self.dir = outdir
                 self.models = {}
@@ -25,17 +24,17 @@ class experiment:
         def add_model(self, name, params):
                 self.models[name] = params
 
-        def add_trainers(self, pool, names):
+        def add_trainers(self, names):
                 for name in names:
-                        self.trainers[name] = pool.get(name)
+                        self.trainers[name] = self.cfg.trainers().get(name)
 
-        def add_losses(self, pool, names):
+        def add_losses(self, names):
                 for name in names:
-                        self.losses[name] = pool.get(name)
+                        self.losses[name] = self.cfg.losses().get(name)
 
-        def add_criteria(self, pool, names):
+        def add_criteria(self, names):
                 for name in names:
-                        self.criteria[name] = pool.get(name)
+                        self.criteria[name] = self.cfg.criteria().get(name)
 
         def get_path(self, trial, mname, tname, cname, lname, extension):
                 return self.dir + "/trial" + str(trial) + "_" + tname + "_" + mname + "_" + cname + "_" + lname + extension
@@ -61,7 +60,7 @@ class experiment:
                 lfile = open(lpath, "w")
                 self.log("running <", param, ">...")
                 print("running <", param, ">...", file = lfile)
-                subprocess.check_call((self.app_train + " " + param).split(), stdout = lfile)
+                subprocess.check_call((self.cfg.app_train + " " + param).split(), stdout = lfile)
                 lfile.close()
                 self.log("|--->training done, see <", lpath, ">")
 
@@ -135,7 +134,7 @@ class experiment:
                 print("invalid log file <", lpath, ">")
 
         def summarize_one(self, trials, mname, tname, cname, lname, lfile):
-                cmdline = self.app_stats + " -p 4"
+                cmdline = self.cfg.app_stats + " -p 4"
                 values = []
                 errors = []
                 epochs = []
@@ -177,7 +176,7 @@ class experiment:
 
                 # tabulate
                 lfile = open(lpath, "w")
-                subprocess.check_call((self.app_tabulate + " -i " + cpath + " -d \";\"").split(), stdout = lfile)
+                subprocess.check_call((self.cfg.app_tabulate + " -i " + cpath + " -d \";\"").split(), stdout = lfile)
                 lfile.close()
 
                 # print file to screen
