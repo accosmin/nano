@@ -28,7 +28,7 @@ namespace nano
                 // parameters
                 const auto epochs = clamp(from_params<size_t>(config(), "epochs"), 1, 1024);
                 const auto policy = from_params<trainer_policy>(config(), "policy");
-                const auto batch0 = clamp(from_params<size_t>(config(), "min_batch"), 32, 1024);
+                const auto batch0 = clamp(from_params<size_t>(config(), "min_batch"), 1, 1024);
                 const auto batchK = clamp(from_params<size_t>(config(), "max_batch"), batch0, 4096);
                 const auto epsilon = from_params<scalar_t>(config(), "eps");
                 const auto optimizer = from_params<string_t>(config(), "opt");

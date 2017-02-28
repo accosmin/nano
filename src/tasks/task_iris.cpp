@@ -69,8 +69,12 @@ namespace nano
 
                         const auto make_sample = [=] ()
                         {
-                                const scalar_t fs[] = {f0, f1, f2, f3};
-                                return nano::map_tensor(fs, 4, 1, 1);
+                                tensor3d_t sample(4, 1, 1);
+                                sample(0, 0, 0) = f0;
+                                sample(1, 0, 0) = f1;
+                                sample(2, 0, 0) = f2;
+                                sample(3, 0, 0) = f3;
+                                return sample;
                         };
 
                         const auto hash = i;

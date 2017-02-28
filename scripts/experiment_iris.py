@@ -19,7 +19,7 @@ exp.add_criteria([
 
 # trainers
 exp.add_trainers([
-        "stoch_svrg"])
+        "batch_cgd"])
 
 # models
 outlayer = "affine:dims=3;act-snorm;"
@@ -38,7 +38,7 @@ exp.add_model("mlp4", mlp4 + outlayer)
 
 # train all configurations
 trials = 10
-exp.run_all(trials = trials, epochs = 100, policy = "stop_early", min_batch = 32, max_batch = 32)
+exp.run_all(trials = trials, epochs = 100, policy = "stop_early", min_batch = 4, max_batch = 8)
 
 # compare configurations
 for trial in range(trials):
