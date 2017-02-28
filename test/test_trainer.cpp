@@ -14,7 +14,7 @@ template <typename tvalue>
 static auto make_trainer_state(const tvalue valid_value, const size_t ms = 0, const size_t epoch = 0)
 {
         const auto v = static_cast<scalar_t>(valid_value);
-        return  trainer_state_t(milliseconds_t(ms), epoch,
+        return  trainer_state_t(milliseconds_t(ms), epoch, 0,
                 trainer_measurement_t{0, 0, 0, 0, 0, 0, 0},
                 trainer_measurement_t{0, v, 0, 0, 0, 0, 0},
                 trainer_measurement_t{0, 0, 0, 0, 0, 0, 0});

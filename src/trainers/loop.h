@@ -35,14 +35,16 @@ namespace nano
                 // OK, update the optimum solution
                 const auto milis = timer.milliseconds();
                 const auto config = to_params(sconfig, "lambda", acc.lambda());
-                const auto ret = result.update(state, {milis, ++epoch, train, valid, test}, config, patience);
+                const auto xnorm = state.x.lpNorm<2>();
+                const auto ret = result.update(state, {milis, ++epoch, xnorm, train, valid, test}, config, patience);
 
                 log_info()
                         << "[" << epoch << "/" << epochs
                         << ":train=" << train
                         << ",valid=" << valid << "|" << nano::to_string(ret)
                         << ",test=" << test
-                        << "," << config << ",batch=" << it.size() << ",g=" << state.convergence_criteria()
+                        << "," << config << ",batch=" << it.size()
+                        << ",g=" << state.convergence_criteria() << ",x=" << xnorm
                         << "] " << timer.elapsed() << ".";
 
                 return !nano::is_done(ret, policy);

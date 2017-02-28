@@ -72,7 +72,7 @@ namespace nano
                 ///
                 /// \brief constructor
                 ///
-                trainer_state_t(const milliseconds_t milis, const size_t epoch,
+                trainer_state_t(const milliseconds_t milis, const size_t epoch, const scalar_t xnorm,
                                 const trainer_measurement_t& train,
                                 const trainer_measurement_t& valid,
                                 const trainer_measurement_t& test);
@@ -88,6 +88,7 @@ namespace nano
                 // attributes
                 milliseconds_t          m_milis;        ///< (cumulated) elapsed time since the optimization started
                 size_t                  m_epoch;        ///<
+                scalar_t                m_xnorm;        ///< L2-norm of the parameters
                 trainer_measurement_t   m_train;        ///< measurement on the training dataset
                 trainer_measurement_t   m_valid;        ///< measurement on the validation dataset
                 trainer_measurement_t   m_test;         ///< measurement on the test dataset

@@ -54,18 +54,21 @@ namespace nano
 
         trainer_state_t::trainer_state_t() :
                 m_milis(0),
-                m_epoch(0)
+                m_epoch(0),
+                m_xnorm(0)
         {
         }
 
         trainer_state_t::trainer_state_t(
                 const milliseconds_t milis,
                 const size_t epoch,
+                const scalar_t xnorm,
                 const trainer_measurement_t& train,
                 const trainer_measurement_t& valid,
                 const trainer_measurement_t& test) :
                 m_milis(milis),
                 m_epoch(epoch),
+                m_xnorm(xnorm),
                 m_train(train),
                 m_valid(valid),
                 m_test(test)
@@ -132,6 +135,7 @@ namespace nano
                 }
                 ofs
                 << nano::align("time_seconds", colsize) << delim
+                << nano::align("xnorm", colsize) << delim
                 << std::endl;
 
                 // optimization states
@@ -152,6 +156,7 @@ namespace nano
                         }
                         ofs
                         << nano::align(nano::to_string((state.m_milis.count() + 500) / 1000), colsize) << delim
+                        << nano::align(nano::to_string(state.m_xnorm), colsize) << delim
                         << std::endl;
                 }
 

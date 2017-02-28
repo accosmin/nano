@@ -65,7 +65,7 @@ def plot_many_wrt(spaths, names, datas, pdf, xcol, ycol):
 def plot_many(spaths, ppath):
         names, datas = get_csvs(spaths)
         with PdfPages(ppath) as pdf:
-                for col in (0, 1, 4, 7, 8, 11, 14, 15, 18):
+                for col in (0, 1, 4, 7, 8, 11, 14, 15, 18, 22):
                         # plot wrt epoch/iteration number
                         plot_many_wrt(spaths, names, datas, pdf, 0, col)
                         # plot wrt time
