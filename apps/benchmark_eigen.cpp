@@ -144,15 +144,16 @@ int main(int argc, const char* argv[])
                 const auto min = 1024 * min_dims;
                 const auto max = 1024 * max_dims;
 
-                table_t table("operation");
+                table_t table;
+                table.header() << "operation";
                 fillheader(min, max, table);
                 {
-                        auto& row1 = table.append("z = x + c");
-                        auto& row2 = table.append("z = x + y");
-                        auto& row3 = table.append("z = ax + c");
-                        auto& row4 = table.append("z = ax + y");
-                        auto& row5 = table.append("z = ax + by");
-                        auto& row6 = table.append("z = ax + by + c");
+                        auto& row1 = table.append() << "z = x + c";
+                        auto& row2 = table.append() << "z = x + y";
+                        auto& row3 = table.append() << "z = ax + c";
+                        auto& row4 = table.append() << "z = ax + y";
+                        auto& row5 = table.append() << "z = ax + by";
+                        auto& row6 = table.append() << "z = ax + by + c";
                         foreach_dims(min, max, [&] (const auto dims)
                         {
                                 measure_level1(dims, row1, row2, row3, row4, row5, row6);
@@ -165,13 +166,14 @@ int main(int argc, const char* argv[])
                 const auto min = min_dims;
                 const auto max = max_dims;
 
-                table_t table("operation");
+                table_t table;
+                table.header() << "operation";
                 fillheader(min, max, table);
                 {
-                        auto& row1 = table.append("z = Ax");
-                        auto& row2 = table.append("z = Ax + c");
-                        auto& row3 = table.append("z = Ax + y");
-                        auto& row4 = table.append("Z = xy^t + C");
+                        auto& row1 = table.append() << "z = Ax";
+                        auto& row2 = table.append() << "z = Ax + c";
+                        auto& row3 = table.append() << "z = Ax + y";
+                        auto& row4 = table.append() << "Z = xy^t + C";
                         foreach_dims(min, max, [&] (const auto dims)
                         {
                                 measure_level2(dims, row1, row2, row3, row4);
@@ -184,11 +186,12 @@ int main(int argc, const char* argv[])
                 const auto min = min_dims;
                 const auto max = max_dims;
 
-                table_t table("operation");
+                table_t table;
+                table.header() << "operation";
                 fillheader(min, max, table);
                 {
-                        auto& row1 = table.append("Z = AB + C");
-                        auto& row2 = table.append("Z = AB^t + C");
+                        auto& row1 = table.append() << "Z = AB + C";
+                        auto& row2 = table.append() << "Z = AB^t + C";
                         foreach_dims(min, max, [&] (const auto dims)
                         {
                                 measure_level3(dims, row1, row2);

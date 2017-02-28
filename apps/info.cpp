@@ -14,12 +14,12 @@ namespace
                 const auto descriptions = manager.descriptions();
                 const auto configurations = manager.configs();
 
-                table_t table(name);
-                table.header() << "description" << "configuration";
+                table_t table;
+                table.header() << name << "description" << "configuration";
 
                 for (size_t i = 0; i < ids.size(); ++ i)
                 {
-                        table.append(ids[i]) << descriptions[i] << configurations[i];
+                        table.append() << ids[i] << descriptions[i] << configurations[i];
                 }
                 std::cout << table << std::endl;
         }

@@ -218,21 +218,20 @@ NANO_CASE(to_params)
 
 NANO_CASE(table)
 {
-        nano::table_t t1("title");
-        t1.header() << "col1" << "col2";
-        t1.append("row1") << "v11" << "v12";
-        t1.append("row2") << "v21" << "v22";
-        t1.append("row3") << "v31" << "v32";
+        nano::table_t t1;
+        t1.header() << "row" << "col1" << "col2";
+        t1.append() << "row1" << "v11" << "v12";
+        t1.append() << "row2" << "v21" << "v22";
 
-        NANO_CHECK_EQUAL(t1.rows(), 3);
-        NANO_CHECK_EQUAL(t1.cols(), 2);
+        NANO_CHECK_EQUAL(t1.rows(), 2);
+        NANO_CHECK_EQUAL(t1.cols(), 3);
 
         const auto path = "table.csv";
         const auto delim = ";";
 
         NANO_CHECK(t1.save(path, delim));
 
-        nano::table_t t2("xxx");
+        nano::table_t t2;
         NANO_CHECK(t2.load(path, delim));
 
         NANO_CHECK_EQUAL(t1, t2);

@@ -35,7 +35,7 @@ namespace nano
                 ///
                 /// \brief constructor
                 ///
-                explicit table_t(const string_t& title);
+                explicit table_t();
 
                 ///
                 /// \brief remove all rows, but keeps the header
@@ -50,8 +50,7 @@ namespace nano
                 ///
                 /// \brief append a new row
                 ///
-                template <typename tname>
-                table_row_t& append(const tname& name);
+                table_row_t& append();
 
                 ///
                 /// \brief (stable) sort the table using the given row-based comparison operator
@@ -89,24 +88,15 @@ namespace nano
                 ///
                 size_t cols() const;
                 size_t rows() const;
-                const string_t& title() const;
                 const table_header_t& header() const;
                 const table_row_t& row(const std::size_t index) const;
 
         private:
 
                 // attributes
-                string_t                        m_title;        ///<
                 table_header_t                  m_header;       ///<
                 std::vector<table_row_t>        m_rows;         ///<
         };
-
-        template <typename tname>
-        table_row_t& table_t::append(const tname& name)
-        {
-                m_rows.emplace_back(to_string(name));
-                return *m_rows.rbegin();
-        }
 
         template <typename toperator>
         void table_t::sort(const toperator& comp)

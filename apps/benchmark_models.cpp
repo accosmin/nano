@@ -103,8 +103,8 @@ int main(int argc, const char *argv[])
         const auto criterion = nano::get_criteria().get("avg");
 
         // construct tables to compare models
-        nano::table_t ftable("model-forward [us] / sample");
-        nano::table_t btable("model-backward [us] / sample");
+        nano::table_t ftable; ftable.header() << "model-forward [us] / sample";
+        nano::table_t btable; btable.header() << "model-backward [us] / sample";
 
         for (size_t nthreads = cmd_min_nthreads; nthreads <= cmd_max_nthreads; ++ nthreads)
         {
@@ -126,8 +126,8 @@ int main(int argc, const char *argv[])
                 model->random_params();
                 model->describe();
 
-                auto& frow = ftable.append(cmd_name + " (" + nano::to_string(model->psize()) + ")");
-                auto& brow = btable.append(cmd_name + " (" + nano::to_string(model->psize()) + ")");
+                auto& frow = ftable.append() << (cmd_name + " (" + nano::to_string(model->psize()) + ")");
+                auto& brow = btable.append() << (cmd_name + " (" + nano::to_string(model->psize()) + ")");
 
                 const auto fold = fold_t{0, protocol::train};
 
@@ -180,7 +180,8 @@ int main(int argc, const char *argv[])
                 {
                         for (const auto& timing0 : timings[cmd_min_nthreads])
                         {
-                                auto& row = table.append(basename + timing0.first);
+                                auto& row = table.append();
+                                row << (basename + timing0.first);
 
                                 for (size_t nthreads = cmd_min_nthreads; nthreads <= cmd_max_nthreads; ++ nthreads)
                                 {

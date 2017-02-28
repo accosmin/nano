@@ -29,8 +29,8 @@ namespace nano
                 const auto csv_delim = ",";
                 const auto csv_header = false;
 
-                table_t table("f0");
-                table.header() << "f1" << "f2" << "f3" << "class";
+                table_t table;
+                table.header() << "f0" << "f1" << "f2" << "f3" << "class";
 
                 log_info() << "IRIS: loading file <" << file << "> ...";
                 if (!table.load(file, csv_delim, csv_header))
@@ -43,7 +43,7 @@ namespace nano
                         log_error() << "IRIS: invalid number of samples!";
                         return false;
                 }
-                if (table.cols() != 4)
+                if (table.cols() != 5)
                 {
                         log_error() << "IRIS: invalid number of columns!";
                         return false;
@@ -54,11 +54,11 @@ namespace nano
                 {
                         const auto& row = table.row(i);
 
-                        const auto f0 = from_string<scalar_t>(row.name());
-                        const auto f1 = from_string<scalar_t>(row.value(0));
-                        const auto f2 = from_string<scalar_t>(row.value(1));
-                        const auto f3 = from_string<scalar_t>(row.value(2));
-                        const auto cc = row.value(3);
+                        const auto f0 = from_string<scalar_t>(row.value(0));
+                        const auto f1 = from_string<scalar_t>(row.value(1));
+                        const auto f2 = from_string<scalar_t>(row.value(2));
+                        const auto f3 = from_string<scalar_t>(row.value(3));
+                        const auto cc = row.value(4);
 
                         const auto itc = std::find(tlabels.begin(), tlabels.end(), cc);
                         if (itc == tlabels.end())

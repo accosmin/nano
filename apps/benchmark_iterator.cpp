@@ -28,8 +28,8 @@ int main(int argc, const char *argv[])
         const sizes_t batch_sizes = { 8 * threads, 16 * threads, 32 * threads, 64 * threads, 128 * threads, 256 * threads };
 
         // prepare table
-        nano::table_t table("#samples");
-        table.header() << "init [ms]";
+        nano::table_t table;
+        table.header() << "#samples" << "init [ms]";
         for (const size_t batch_size : batch_sizes)
         {
                 table.header() << ("batch " + to_string(batch_size) + " [ms]");
@@ -38,7 +38,8 @@ int main(int argc, const char *argv[])
         // vary the task size
         for (const size_t task_size : task_sizes)
         {
-                auto& row = table.append(task_size);
+                auto& row = table.append();
+                row << task_size;
 
                 // measure task generation
                 charset_task_t task(to_params(

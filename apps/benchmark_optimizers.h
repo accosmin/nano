@@ -24,13 +24,15 @@ namespace benchmark
                 assert(!ostats.empty());
 
                 // show global statistics
-                nano::table_t table(nano::align(table_name.empty() ? "optimizer" : table_name, 32));
-                table.header() << "cost"
-                               << "|g|/(1+|f|)"
-                               << "#fails"
-                               << "#fcalls"
-                               << "#gcalls"
-                               << "speed";
+                nano::table_t table;
+                table.header()
+                        << nano::align(table_name.empty() ? "optimizer" : table_name, 32)
+                        << "cost"
+                        << "|g|/(1+|f|)"
+                        << "#fails"
+                        << "#fcalls"
+                        << "#gcalls"
+                        << "speed";
 
                 for (const auto& it : ostats)
                 {
@@ -39,7 +41,8 @@ namespace benchmark
 
                         if (stat.m_fcalls)
                         {
-                                table.append(nano::align(name, 36))
+                                table.append()
+                                << align(name, 36)
                                 << align(to_string(static_cast<size_t>(stat.m_fcalls.avg() + 2 * stat.m_gcalls.avg())), 12)
                                 << align(to_string(stat.m_crits.avg()), 12)
                                 << align(to_string(static_cast<size_t>(stat.m_fails.sum())), 12)

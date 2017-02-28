@@ -18,7 +18,7 @@ int main(int argc, const char *argv[])
         const auto cmd_delim = cmdline.get("delim");
 
         // tabulate
-        table_t table("");
+        table_t table;
         if (!table.load(cmd_input, cmd_delim))
         {
                 std::cerr << "failed to load <" << cmd_input << ">!\n";

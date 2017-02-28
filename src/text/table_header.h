@@ -25,7 +25,8 @@ namespace nano
                 /// \brief retrieve the column values
                 ///
                 const auto& values() const { return m_values; }
-                const auto& operator[](const size_t i) const { return m_values.at(i); }
+                const auto& value(const size_t i) const { return m_values.at(i); }
+                auto& value(const size_t i) { return m_values.at(i); }
 
                 ///
                 /// \brief retrieve the number of columns

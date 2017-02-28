@@ -33,8 +33,8 @@ static void eval_func(const function_t& function, table_t& table)
                 gx += g.template lpNorm<Eigen::Infinity>();
         }, trials).count();
 
-        auto& row = table.append(function.name());
-        row << fval_time << grad_time;
+        auto& row = table.append();
+        row << function.name() << fval_time << grad_time;
 }
 
 int main(int argc, const char* argv[])
@@ -50,8 +50,8 @@ int main(int argc, const char* argv[])
         const auto min_dims = cmdline.get<tensor_size_t>("min-dims");
         const auto max_dims = cmdline.get<tensor_size_t>("max-dims");
 
-        table_t table("function");
-        table.header() << "f(x) [ns]" << "f(x, g) [ns]";
+        table_t table;
+        table.header() << "function" << "f(x) [ns]" << "f(x, g) [ns]";
 
         foreach_test_function(make_functions(min_dims, max_dims), [&] (const function_t& function)
         {

@@ -12,14 +12,6 @@ namespace nano
         public:
 
                 ///
-                /// \brief constructor
-                ///
-                explicit table_row_t(const string_t& name) :
-                        m_name(name)
-                {
-                }
-
-                ///
                 /// \brief append a column value
                 ///
                 template <typename tvalue>
@@ -29,11 +21,6 @@ namespace nano
                         m_markings.push_back(string_t());
                         return *this;
                 }
-
-                ///
-                /// \brief retrieve the row name
-                ///
-                const auto& name() const { return m_name; }
 
                 ///
                 /// \brief retrieve the column values & markings
@@ -56,7 +43,6 @@ namespace nano
         private:
 
                 // attributes
-                string_t                m_name;         ///< row name
                 strings_t               m_values;       ///< column values
                 strings_t               m_markings;     ///< column marking (e.g. min|max decoration)
         };
@@ -66,8 +52,7 @@ namespace nano
         ///
         inline bool operator==(const table_row_t& r1, const table_row_t& r2)
         {
-                return  r1.name() == r2.name() &&
-                        r1.values() == r2.values();
+                return r1.values() == r2.values();
         }
         inline bool operator!=(const table_row_t& r1, const table_row_t& r2)
         {
