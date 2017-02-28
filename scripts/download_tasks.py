@@ -18,43 +18,44 @@ def download(url, dbdir):
                         out.write(data)
         r.release_conn()
 
-# SVHN dataset
-dbdir = cfg.dbdir + "/svhn/"
-os.makedirs(dbdir, exist_ok = True)
+def download_iris():
+        dbdir = cfg.dbdir + "/iris/"
+        os.makedirs(dbdir, exist_ok = True)
+        download("http://archive.ics.uci.edu/ml/machine-learning-databases/iris/iris.data", dbdir)
 
-download("http://ufldl.stanford.edu/housenumbers/train_32x32.mat", dbdir)
-download("http://ufldl.stanford.edu/housenumbers/extra_32x32.mat", dbdir)
-download("http://ufldl.stanford.edu/housenumbers/test_32x32.mat", dbdir)
+def download_svhn():
+        dbdir = cfg.dbdir + "/svhn/"
+        os.makedirs(dbdir, exist_ok = True)
+        download("http://ufldl.stanford.edu/housenumbers/train_32x32.mat", dbdir)
+        download("http://ufldl.stanford.edu/housenumbers/extra_32x32.mat", dbdir)
+        download("http://ufldl.stanford.edu/housenumbers/test_32x32.mat", dbdir)
 
-# MNIST dataset
-dbdir = cfg.dbdir + "/mnist/"
-os.makedirs(dbdir, exist_ok = True)
+def download_mnist():
+        dbdir = cfg.dbdir + "/mnist/"
+        os.makedirs(dbdir, exist_ok = True)
+        download("http://yann.lecun.com/exdb/mnist/train-images-idx3-ubyte.gz", dbdir)
+        download("http://yann.lecun.com/exdb/mnist/train-labels-idx1-ubyte.gz", dbdir)
+        download("http://yann.lecun.com/exdb/mnist/t10k-images-idx3-ubyte.gz", dbdir)
+        download("http://yann.lecun.com/exdb/mnist/t10k-labels-idx1-ubyte.gz", dbdir)
 
-download("http://yann.lecun.com/exdb/mnist/train-images-idx3-ubyte.gz", dbdir)
-download("http://yann.lecun.com/exdb/mnist/train-labels-idx1-ubyte.gz", dbdir)
-download("http://yann.lecun.com/exdb/mnist/t10k-images-idx3-ubyte.gz", dbdir)
-download("http://yann.lecun.com/exdb/mnist/t10k-labels-idx1-ubyte.gz", dbdir)
+def download_stl10():
+        dbdir = cfg.dbdir + "/stl10/"
+        os.makedirs(dbdir, exist_ok = True)
+        download("http://ai.stanford.edu/~acoates/stl10/stl10_binary.tar.gz", dbdir)
 
-# STL10 dataset
-dbdir = cfg.dbdir + "/stl10/"
-os.makedirs(dbdir, exist_ok = True)
+def download_cifar10():
+        dbdir = cfg.dbdir + "/cifar10/"
+        os.makedirs(dbdir, exist_ok = True)
+        download("http://www.cs.toronto.edu/~kriz/cifar-10-binary.tar.gz", dbdir)
 
-download("http://ai.stanford.edu/~acoates/stl10/stl10_binary.tar.gz", dbdir)
+def download_cifar100():
+        dbdir = cfg.dbdir + "/cifar100/"
+        os.makedirs(dbdir, exist_ok = True)
+        download("http://www.cs.toronto.edu/~kriz/cifar-100-binary.tar.gz", dbdir)
 
-# CIFAR10 dataset
-dbdir = cfg.dbdir + "/cifar10/"
-os.makedirs(dbdir, exist_ok = True)
-
-download("http://www.cs.toronto.edu/~kriz/cifar-10-binary.tar.gz", dbdir)
-
-# CIFAR100 dataset
-dbdir = cfg.dbdir + "/cifar100/"
-os.makedirs(dbdir, exist_ok = True)
-
-download("http://www.cs.toronto.edu/~kriz/cifar-100-binary.tar.gz", dbdir)
-
-# IRIS dataset
-dbdir = cfg.dbdir + "/iris/"
-os.makedirs(dbdir, exist_ok = True)
-
-download("http://archive.ics.uci.edu/ml/machine-learning-databases/iris/iris.data", dbdir)
+download_iris()
+download_svhn()
+download_mnist()
+download_stl10()
+download_cifar10()
+download_cifar100()
