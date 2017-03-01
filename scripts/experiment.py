@@ -85,17 +85,17 @@ class experiment:
                 self.plot_one(spath, ppath)
                 self.log()
 
-        def run_trial(self, trial, epochs, policy, min_batch, max_batch):
+        def run_trial(self, trial, epochs, policy, min_batch, max_batch, patience, epsilon):
                 for mname, mparam in self.models.items():
                         for tname, tparam in self.trainers.items():
-                                tparam += ",epochs={0},policy={1},min_batch={2},max_batch={3}".format(epochs, policy, min_batch, max_batch)
+                                tparam += ",epochs={0},policy={1},min_batch={2},max_batch={3},patience={4},eps={5}".format(epochs, policy, min_batch, max_batch, patience, epsilon)
                                 for cname, cparam in self.criteria.items():
                                         for lname, lparam in self.losses.items():
                                                 self.run_one(trial, mname, mparam, tname, tparam, cname, cparam, lname, lparam)
 
-        def run_all(self, trials = 10, epochs = 1000, policy = "", min_batch = 32, max_batch = 256):
+        def run_all(self, trials = 10, epochs = 1000, policy = "stop_early", min_batch = 32, max_batch = 256, patience = 32, epsilon = 1e-4):
                 for trial in range(trials):
-                        self.run_trial(trial, epochs, policy, min_batch, max_batch)
+                        self.run_trial(trial, epochs, policy, min_batch, max_batch, patience, epsilon)
 
         def get_token(self, line, begin_delim, end_delim, start = 0):
                 begin = line.find(begin_delim, start) + len(begin_delim)
