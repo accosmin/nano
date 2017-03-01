@@ -6,6 +6,7 @@ import plotter
 import subprocess
 import matplotlib.mlab as mlab
 import matplotlib.pyplot as plt
+from sortedcontainers import SortedDict
 from matplotlib.backends.backend_pdf import PdfPages
 
 class experiment:
@@ -13,10 +14,10 @@ class experiment:
                 self.cfg = config.config()
                 self.task = task
                 self.dir = outdir
-                self.models = {}
-                self.trainers = {}
-                self.criteria = {}
-                self.losses = {}
+                self.models = SortedDict({})
+                self.trainers = SortedDict({})
+                self.criteria = SortedDict({})
+                self.losses = SortedDict({})
 
         def log(self, *messages):
                 print(time.strftime("[%Y-%m-%d %H:%M:%S]"), ' '.join(messages))
