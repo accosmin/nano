@@ -52,7 +52,7 @@ namespace nano
                 ls_step_t stept(step0);
 
                 scalar_t t;
-                while (std::fabs(steplo.alpha() - stephi.alpha()) > ls_step_t::minimum())
+                for (int i = 0; i < 100 && std::fabs(steplo.alpha() - stephi.alpha()) > ls_step_t::minimum(); i ++)
                 {
                         // try various interpolation methods
                         const auto tb = ls_bisection(steplo, stephi);
