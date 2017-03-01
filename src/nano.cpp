@@ -12,9 +12,6 @@
 #include "tasks/task_stl10.h"
 #include "tasks/task_svhn.h"
 #include "tasks/task_charset.h"
-#include "tasks/task_affine.h"
-#include "tasks/task_matmul.h"
-#include "tasks/task_sign.h"
 #include "tasks/task_iris.h"
 #include "tasks/task_wine.h"
 
@@ -181,9 +178,6 @@ namespace nano
                 f.add("iris", "IRIS (iris flower classification)", maker<iris_task_t>());
                 f.add("wine", "WINE (wine classification)", maker<wine_task_t>());
                 f.add("synth-charset", "synthetic character classification", maker<charset_task_t>());
-                f.add("synth-affine", "synthetic affine transformation", maker<affine_task_t>());
-                f.add("synth-matmul", "synthetic matrix multiplication", maker<matmul_task_t>());
-                f.add("synth-sign", "synthetic sign-based classification", maker<sign_task_t>());
         }
 
         static void init_layers()

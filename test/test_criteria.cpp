@@ -11,8 +11,7 @@ NANO_CASE(evaluate)
 {
         using namespace nano;
 
-        const auto task = get_tasks().get("synth-affine",
-                to_params("idims", 2, "irows", 5, "icols", 5, "osize", 2, "count", 20));
+        const auto task = get_tasks().get("synth-charset", to_params("count", 32));
 
         NANO_CHECK_EQUAL(task->load(), true);
 

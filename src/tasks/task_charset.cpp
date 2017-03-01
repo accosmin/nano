@@ -143,7 +143,7 @@ namespace nano
         {
                 return  to_params(configuration,
                         "type", "digit[lalpha,ualpha,alpha,alphanum]", "color", "rgb[,luma,rgba]",
-                        "irows", "32[12,128]", "icols", "32[12,128]", "count", "1000[100,1M]");
+                        "irows", "32[12,128]", "icols", "32[12,128]", "count", "1000[32,1M]");
         }
 
         charset_task_t::charset_task_t(const string_t& configuration) : mem_vision_task_t(
@@ -163,7 +163,7 @@ namespace nano
         {
                 const auto charset = from_params<charset_mode>(config(), "type");
                 const auto color = from_params<color_mode>(config(), "color");
-                const auto count = clamp(from_params<size_t>(config(), "count"), 100, 1024 * 1024);
+                const auto count = clamp(from_params<size_t>(config(), "count"), 32, 1024 * 1024);
 
                 const string_t characters =
                         "0123456789" \
