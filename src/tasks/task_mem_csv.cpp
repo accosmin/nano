@@ -86,8 +86,6 @@ namespace nano
                         const auto sample = make_sample();
                         const auto target = class_target(itc - labels.begin(), nano::size(odims()));
 
-                        log_info() << "sample = " << sample.vector().transpose();
-
                         add_chunk(sample, hash);
                         add_sample(fold, i, target, cc);
                 }

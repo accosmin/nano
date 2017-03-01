@@ -2,12 +2,12 @@ import config
 import experiment
 
 # initialize experiment:
-# - single-class classification problem using the IRIS flower dataset
-# - the model should predict the iris species
+# - single-class classification problem using the WINE dataset
+# - the model should predict the wine quality class
 cfg = config.config()
 exp = experiment.experiment(
-        cfg.task_iris(),
-        cfg.expdir + "/iris/eval_models")
+        cfg.task_wine(),
+        cfg.expdir + "/wine/eval_models")
 
 # loss functions
 exp.add_losses([

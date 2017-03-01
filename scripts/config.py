@@ -59,14 +59,17 @@ class config:
         def task_synth(self, name, params):
                 return "--task synth-{0} --task-params {1}".format(name, params)
 
-        def task(self, name):
-                return "--task {0} --task-params dir={1}".format(name, self.dbdir + "/" + name)
-
         def task_synth_charset(self, ctype = "digit", color = "rgb", irows = 16, icols = 16, count = 10000):
                 return self.task_synth("charset", "type={0},color={1},irows={2},icols={3},count={4}".format(ctype, color, irows, icols, count))
+
+        def task(self, name):
+                return "--task {0} --task-params dir={1}".format(name, self.dbdir + "/" + name)
 
         def task_mnist(self):
                 return self.task("mnist")
 
         def task_iris(self):
                 return self.task("iris")
+
+        def task_wine(self):
+                return self.task("wine")
