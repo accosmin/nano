@@ -86,46 +86,42 @@ namespace nano
                 }
                 clear();
 
-                const auto op_header = [=] (const auto& tokens)
+                const auto op_header = [=] (const auto& values)
                 {
-                        for (const auto& token : tokens)
+                        for (const auto& value : values)
                         {
-                                header() << token;
+                                header() << value;
                         }
                 };
 
-                const auto op_append = [=] (const auto& tokens)
+                const auto op_append = [=] (const auto& values)
                 {
-                        if (tokens.size() != cols())
+                        if (values.size() != cols())
                         {
                                 return false;
                         }
-
-                        auto& row = append();
-                        for (const auto& token : tokens)
+                        else
                         {
-                                row << token;
+                                auto& row = append();
+                                for (const auto& value : values)
+                                {
+                                        row << value;
+                                }
+                                return true;
                         }
-
-                        return true;
                 };
 
                 size_t count = 0;
                 for (string_t line; std::getline(is, line); ++ count)
                 {
                         const auto tokens = nano::split(line, delim.c_str());
-                        if (tokens.empty() || line.empty())
+                        if (!tokens.empty() && !line.empty())
                         {
-                                continue;
-                        }
-
-                        if (!count && load_header)
-                        {
-                                op_header(tokens);
-                        }
-                        else
-                        {
-                                if (!op_append(tokens))
+                                if (!count && load_header)
+                                {
+                                        op_header(tokens);
+                                }
+                                else if (!op_append(tokens))
                                 {
                                         return false;
                                 }
