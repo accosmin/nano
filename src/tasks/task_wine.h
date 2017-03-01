@@ -1,6 +1,6 @@
 #pragma once
 
-#include "task_mem_tensor.h"
+#include "task_mem_csv.h"
 
 namespace nano
 {
@@ -12,7 +12,7 @@ namespace nano
         ///
         /// http://archive.ics.uci.edu/ml/datasets/Wine
         ///
-        struct wine_task_t final : public mem_tensor_task_t
+        struct wine_task_t final : public mem_csv_task_t
         {
                 explicit wine_task_t(const string_t& configuration = string_t());
 

@@ -18,6 +18,7 @@ list(APPEND libnano_sources
         ${CMAKE_CURRENT_SOURCE_DIR}/task_svhn.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/task_iris.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/task_wine.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/task_mem_csv.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/task_sign.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/task_matmul.cpp)
 
