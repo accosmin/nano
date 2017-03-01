@@ -1,8 +1,8 @@
 #include "math/stats.h"
-#include "text/align.h"
 #include "math/numeric.h"
 #include "math/epsilon.h"
 #include "trainer_state.h"
+#include "text/algorithm.h"
 #include "text/to_string.h"
 #include <fstream>
 

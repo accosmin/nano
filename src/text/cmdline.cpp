@@ -1,4 +1,3 @@
-#include "align.h"
 #include "cmdline.h"
 #include "algorithm.h"
 #include <cassert>

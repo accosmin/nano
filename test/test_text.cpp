@@ -1,5 +1,4 @@
 #include "utest.h"
-#include "text/align.h"
 #include "text/table.h"
 #include "text/algorithm.h"
 #include "text/to_params.h"

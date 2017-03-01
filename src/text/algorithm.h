@@ -64,5 +64,20 @@ namespace nano
         /// \brief tokenize a string using the given delimeters
         ///
         NANO_PUBLIC strings_t split(const string_t& str, const char* delimeters);
-}
 
+        ///
+        /// \brief text alignment options
+        ///
+        enum class alignment : int
+        {
+                left,
+                center,
+                right
+        };
+
+        ///
+        /// \brief align a string to fill the given size (if possible)
+        ///
+        NANO_PUBLIC string_t align(const string_t& str, const std::size_t str_size,
+                const alignment mode = alignment::left, const char fill_char = ' ');
+}

@@ -1,5 +1,5 @@
-#include "align.h"
 #include "table.h"
+#include "algorithm.h"
 #include <numeric>
 #include <fstream>
 

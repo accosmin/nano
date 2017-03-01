@@ -17,8 +17,8 @@ namespace nano
                 template <typename tvalue>
                 table_row_t& operator<<(tvalue value)
                 {
-                        m_values.emplace_back(nano::to_string(value));
-                        m_markings.push_back(string_t());
+                        m_values.emplace_back(to_string(value));
+                        m_markings.emplace_back();
                         return *this;
                 }
 

@@ -17,7 +17,7 @@ namespace nano
                 template <typename tvalue>
                 table_header_t& operator<<(const tvalue value)
                 {
-                        m_values.emplace_back(nano::to_string(value));
+                        m_values.emplace_back(to_string(value));
                         return *this;
                 }
 

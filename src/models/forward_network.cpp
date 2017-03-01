@@ -1,5 +1,4 @@
 #include "timer.h"
-#include "text/align.h"
 #include "math/numeric.h"
 #include "text/to_string.h"
 #include "text/algorithm.h"
