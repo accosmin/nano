@@ -44,7 +44,7 @@ namespace nano
                         log_error() << "IRIS: invalid number of samples!";
                         return false;
                 }
-                if (table.cols() != 5)
+                if (table.cols() != static_cast<size_t>(nano::size(idims()) + 1))
                 {
                         log_error() << "IRIS: invalid number of columns!";
                         return false;
@@ -55,12 +55,7 @@ namespace nano
                 {
                         const auto& row = table.row(i);
 
-                        const auto f0 = from_string<scalar_t>(row.value(0));
-                        const auto f1 = from_string<scalar_t>(row.value(1));
-                        const auto f2 = from_string<scalar_t>(row.value(2));
-                        const auto f3 = from_string<scalar_t>(row.value(3));
-                        const auto cc = row.value(4);
-
+                        const auto cc = row.value(table.cols() - 1);
                         const auto itc = std::find(tlabels.begin(), tlabels.end(), cc);
                         if (itc == tlabels.end())
                         {
@@ -68,19 +63,19 @@ namespace nano
                                 return false;
                         }
 
-                        const auto make_sample = [=] ()
+                        const auto make_sample = [this, row = std::ref(row)] (const size_t offset)
                         {
-                                tensor3d_t sample(4, 1, 1);
-                                sample(0, 0, 0) = f0;
-                                sample(1, 0, 0) = f1;
-                                sample(2, 0, 0) = f2;
-                                sample(3, 0, 0) = f3;
+                                tensor3d_t sample(idims());
+                                for (auto k = 0; k < sample.size(); ++ k)
+                                {
+                                        sample(k, 0, 0) = from_string<scalar_t>(row.get().value(offset + static_cast<size_t>(k)));
+                                }
                                 return sample;
                         };
 
                         const auto hash = i;
                         const auto fold = make_fold(0);
-                        const auto sample = make_sample();
+                        const auto sample = make_sample(0);
                         const auto target = class_target(itc - tlabels.begin(), nano::size(odims()));
 
                         add_chunk(sample, hash);

@@ -18,42 +18,46 @@ def download(url, dbdir):
                         out.write(data)
         r.release_conn()
 
-def download_iris():
-        dbdir = cfg.dbdir + "/iris/"
+def mkdir(dbname):
+        dbdir = cfg.dbdir + "/" + dbname + "/"
         os.makedirs(dbdir, exist_ok = True)
+        return dbdir
+
+def download_iris():
+        dbdir = mkdir("iris")
         download("http://archive.ics.uci.edu/ml/machine-learning-databases/iris/iris.data", dbdir)
 
+def download_wine():
+        dbdir = mkdir("wine")
+        download("http://archive.ics.uci.edu/ml/machine-learning-databases/wine/wine.data", dbdir)
+
 def download_svhn():
-        dbdir = cfg.dbdir + "/svhn/"
-        os.makedirs(dbdir, exist_ok = True)
+        dbdir = mkdir("svhn")
         download("http://ufldl.stanford.edu/housenumbers/train_32x32.mat", dbdir)
         download("http://ufldl.stanford.edu/housenumbers/extra_32x32.mat", dbdir)
         download("http://ufldl.stanford.edu/housenumbers/test_32x32.mat", dbdir)
 
 def download_mnist():
-        dbdir = cfg.dbdir + "/mnist/"
-        os.makedirs(dbdir, exist_ok = True)
+        dbdir = mkdir("mnist")
         download("http://yann.lecun.com/exdb/mnist/train-images-idx3-ubyte.gz", dbdir)
         download("http://yann.lecun.com/exdb/mnist/train-labels-idx1-ubyte.gz", dbdir)
         download("http://yann.lecun.com/exdb/mnist/t10k-images-idx3-ubyte.gz", dbdir)
         download("http://yann.lecun.com/exdb/mnist/t10k-labels-idx1-ubyte.gz", dbdir)
 
 def download_stl10():
-        dbdir = cfg.dbdir + "/stl10/"
-        os.makedirs(dbdir, exist_ok = True)
+        dbdir = mkdir("stl10")
         download("http://ai.stanford.edu/~acoates/stl10/stl10_binary.tar.gz", dbdir)
 
 def download_cifar10():
-        dbdir = cfg.dbdir + "/cifar10/"
-        os.makedirs(dbdir, exist_ok = True)
+        dbdir = mkdir("cifar10")
         download("http://www.cs.toronto.edu/~kriz/cifar-10-binary.tar.gz", dbdir)
 
 def download_cifar100():
-        dbdir = cfg.dbdir + "/cifar100/"
-        os.makedirs(dbdir, exist_ok = True)
+        dbdir = mkdir("cifar100")
         download("http://www.cs.toronto.edu/~kriz/cifar-100-binary.tar.gz", dbdir)
 
 download_iris()
+download_wine()
 download_svhn()
 download_mnist()
 download_stl10()
