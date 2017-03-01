@@ -173,8 +173,6 @@ namespace nano
                 const auto n_samples = dims[0];
                 auto chunk_index = n_chunks() - static_cast<size_t>(n_samples);
 
-                log_info() << "chunk_index = " << chunk_index;
-
                 // load labels
                 char ldata;
                 for (tensor_size_t i = 0; i < n_samples; ++ i)
@@ -204,8 +202,6 @@ namespace nano
                         const auto fold = make_fold(0, p);
                         add_sample(fold, chunk_index ++, class_target(ilabel, nano::size(odims())), tlabels[ilabel]);
                 }
-
-                log_info() << "chunk_index = " << chunk_index << "/" << n_chunks();
 
                 return stream.skip(section.m_dsize - n_samples) ? n_samples : 0;
        }

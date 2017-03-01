@@ -58,7 +58,7 @@ NANO_CASE(construction)
                 }
         }
 
-        const size_t max_duplicates = 26;
+        const size_t max_duplicates = 0;
         NANO_CHECK_LESS_EQUAL(nano::check_duplicates(*task), max_duplicates);
         NANO_CHECK_LESS_EQUAL(nano::check_intersection(*task), max_duplicates);
         NANO_CHECK_EQUAL(labels.size(), static_cast<size_t>(nano::size(odims)));

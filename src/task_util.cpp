@@ -6,37 +6,6 @@
 
 namespace nano
 {
-        void describe(const task_t& task, const string_t& name)
-        {
-                log_info() << "task [" << name << "]: in(" << task.idims() << ") -> out(" << task.odims()
-                        << "), count = " << task.n_samples() << ".";
-
-                for (size_t f = 0; f < task.n_folds(); ++ f)
-                {
-                        for (auto p : {protocol::train, protocol::valid, protocol::test})
-                        {
-                                const auto fold = fold_t{f, p};
-                                const auto size = task.n_samples(fold);
-
-                                std::map<string_t, size_t> lcounts;
-                                for (size_t i = 0; i < size; ++ i)
-                                {
-                                        lcounts[task.label(fold, i)] ++;
-                                }
-
-                                // describe each label separately
-                                for (const auto& lcount : lcounts)
-                                {
-                                        log_info()
-                                                << "fold [" << (1 + f) << "," << to_string(p)
-                                                << "]: label = " << lcount.first
-                                                << ", count = " << lcount.second
-                                                << "/" << size << "/" << task.n_samples() << ".";
-                                }
-                        }
-                }
-        }
-
         template <typename tvalues>
         static size_t count_duplicates(const tvalues& values)
         {
@@ -70,19 +39,76 @@ namespace nano
                 }
         }
 
+        static size_t count_duplicates(const task_t& task, const size_t f)
+        {
+                assert(f < task.n_folds());
+
+                std::vector<size_t> hashes;
+
+                add_hashes(task, fold_t{f, protocol::train}, hashes);
+                add_hashes(task, fold_t{f, protocol::valid}, hashes);
+                add_hashes(task, fold_t{f, protocol::test}, hashes);
+
+                return count_duplicates(hashes);
+        }
+
+        static size_t count_intersection(const task_t& task, const size_t f)
+        {
+                assert(f < task.n_folds());
+
+                std::vector<size_t> train_hashes;
+                std::vector<size_t> valid_hashes;
+                std::vector<size_t> test_hashes;
+
+                add_hashes(task, fold_t{f, protocol::train}, train_hashes);
+                add_hashes(task, fold_t{f, protocol::valid}, valid_hashes);
+                add_hashes(task, fold_t{f, protocol::test}, test_hashes);
+
+                return  std::max(std::max(
+                        count_intersects(train_hashes, valid_hashes),
+                        count_intersects(valid_hashes, test_hashes)),
+                        count_intersects(test_hashes, train_hashes));
+        }
+
+        void describe(const task_t& task, const string_t& name)
+        {
+                log_info() << "task [" << name << "]: in(" << task.idims() << ") -> out(" << task.odims()
+                        << "), count = " << task.n_samples() << ".";
+
+                for (size_t f = 0; f < task.n_folds(); ++ f)
+                {
+                        log_info() << "fold [" << (1 + f) << "]: duplicates = " << count_duplicates(task, f) << ".";
+                        log_info() << "fold [" << (1 + f) << "]: intersections = " << count_intersection(task, f) << ".";
+
+                        for (const auto p : {protocol::train, protocol::valid, protocol::test})
+                        {
+                                const auto fold = fold_t{f, p};
+                                const auto size = task.n_samples(fold);
+
+                                std::map<string_t, size_t> lcounts;
+                                for (size_t i = 0; i < size; ++ i)
+                                {
+                                        lcounts[task.label(fold, i)] ++;
+                                }
+
+                                // describe each label separately
+                                for (const auto& lcount : lcounts)
+                                {
+                                        log_info() << "fold [" << (1 + f) << "," << to_string(p)
+                                                << "]: label = " << lcount.first
+                                                << ", count = " << lcount.second
+                                                << "/" << size << "/" << task.n_samples() << ".";
+                                }
+                        }
+                }
+        }
+
         size_t check_duplicates(const task_t& task)
         {
                 size_t max_duplicates = 0;
                 for (size_t f = 0; f < task.n_folds(); ++ f)
                 {
-                        std::vector<size_t> hashes;
-
-                        add_hashes(task, fold_t{f, protocol::train}, hashes);
-                        add_hashes(task, fold_t{f, protocol::valid}, hashes);
-                        add_hashes(task, fold_t{f, protocol::test}, hashes);
-
-                        std::sort(hashes.begin(), hashes.end());
-                        max_duplicates = std::max(max_duplicates, count_duplicates(hashes));
+                        max_duplicates = std::max(max_duplicates, count_duplicates(task, f));
                 }
 
                 return max_duplicates;
@@ -93,17 +119,7 @@ namespace nano
                 size_t max_duplicates = 0;
                 for (size_t f = 0; f < task.n_folds(); ++ f)
                 {
-                        std::vector<size_t> train_hashes;
-                        std::vector<size_t> valid_hashes;
-                        std::vector<size_t> test_hashes;
-
-                        add_hashes(task, fold_t{f, protocol::train}, train_hashes);
-                        add_hashes(task, fold_t{f, protocol::valid}, valid_hashes);
-                        add_hashes(task, fold_t{f, protocol::test}, test_hashes);
-
-                        max_duplicates = std::max(max_duplicates, count_intersects(train_hashes, valid_hashes));
-                        max_duplicates = std::max(max_duplicates, count_intersects(valid_hashes, test_hashes));
-                        max_duplicates = std::max(max_duplicates, count_intersects(test_hashes, train_hashes));
+                        max_duplicates = std::max(max_duplicates, count_intersection(task, f));
                 }
 
                 return max_duplicates;
