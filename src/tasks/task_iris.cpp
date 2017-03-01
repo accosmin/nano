@@ -16,7 +16,8 @@ namespace nano
                 const auto task_name = "IRIS";
 
                 const auto expected_samples = size_t(150);
-                const auto scales = scalars_t{1, 1, 1, 1};
+                const auto scale1 = scalar_t(1e-1);
+                const auto scales = scalars_t{scale1, scale1, 1, 1};
                 const auto labels = strings_t{"Iris-setosa", "Iris-versicolor", "Iris-virginica"};
                 const auto label_column = size_t(4);
 
