@@ -9,7 +9,7 @@ namespace nano
 {
         bool mem_csv_task_t::load_classification(const string_t& path, const string_t& task_name,
                 const size_t expected_samples,
-                const strings_t& labels, const size_t label_column)
+                const scalars_t& scales, const strings_t& labels, const size_t label_col)
         {
                 const auto expected_features = static_cast<size_t>(nano::size(idims()));
 
@@ -20,7 +20,7 @@ namespace nano
                 table_t table;
                 for (size_t col = 0, f = 0; col < expected_features + 1; ++ col)
                 {
-                        if (col == label_column)
+                        if (col == label_col)
                         {
                                 table.header() << "class";
                         }
@@ -46,13 +46,18 @@ namespace nano
                         log_error() << task_name << ": invalid number of columns!";
                         return false;
                 }
+                if (scales.size() != expected_features)
+                {
+                        log_error() << task_name << ": invalid number of scaling factors";
+                        return false;
+                }
 
                 // load samples
                 for (size_t i = 0; i < table.rows(); ++ i)
                 {
                         const auto& row = table.row(i);
 
-                        const auto cc = row.value(label_column);
+                        const auto cc = row.value(label_col);
                         const auto itc = std::find(labels.begin(),labels.end(), cc);
                         if (itc == labels.end())
                         {
@@ -60,17 +65,18 @@ namespace nano
                                 return false;
                         }
 
-                        const auto make_sample = [this, row = std::ref(row), label_column = label_column] ()
+                        const auto make_sample = [this, row = std::ref(row), scales = std::ref(scales), label_col = label_col] ()
                         {
                                 tensor3d_t sample(idims());
                                 size_t col = 0;
                                 for (auto k = 0; k < sample.size(); ++ k, ++ col)
                                 {
-                                        if (col == label_column)
+                                        if (col == label_col)
                                         {
                                                 ++ col;
                                         }
-                                        sample(k, 0, 0) = from_string<scalar_t>(row.get().value(col));
+                                        const auto value = from_string<scalar_t>(row.get().value(col));
+                                        sample(k, 0, 0) = value * scales.get()[static_cast<size_t>(k)];
                                 }
                                 return sample;
                         };
@@ -79,6 +85,8 @@ namespace nano
                         const auto fold = make_fold(0);
                         const auto sample = make_sample();
                         const auto target = class_target(itc - labels.begin(), nano::size(odims()));
+
+                        log_info() << "sample = " << sample.vector().transpose();
 
                         add_chunk(sample, hash);
                         add_sample(fold, i, target, cc);

@@ -16,9 +16,10 @@ namespace nano
                 const auto task_name = "WINE";
 
                 const auto expected_samples = size_t(178);
+                const auto scales = scalars_t{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, scalar_t(1e-3)};
                 const auto labels = strings_t{"1", "2", "3"};
                 const auto label_column = size_t(0);
 
-                return mem_csv_task_t::load_classification(path, task_name, expected_samples, labels, label_column);
+                return mem_csv_task_t::load_classification(path, task_name, expected_samples, scales, labels, label_column);
         }
 }
