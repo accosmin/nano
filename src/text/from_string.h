@@ -136,6 +136,19 @@ namespace nano
                 return detail::from_string_t<tvalue>::dispatch(str);
         }
 
+        template <typename tvalue>
+        tvalue from_string(const string_t& str, const tvalue or_else)
+        {
+                try
+                {
+                        return from_string<tvalue>(str);
+                }
+                catch (std::exception&)
+                {
+                        return or_else;
+                }
+        }
+
         ///
         /// \brief construct an operator to compare two strings numerically
         ///
@@ -144,7 +157,8 @@ namespace nano
         {
                 return [] (const string_t& v1, const string_t& v2)
                 {
-                        return from_string<tscalar>(v1) < from_string<tscalar>(v2);
+                        return  from_string<tscalar>(v1, std::numeric_limits<tscalar>::lowest()) <
+                                from_string<tscalar>(v2, std::numeric_limits<tscalar>::lowest());
                 };
         }
 
@@ -156,7 +170,8 @@ namespace nano
         {
                 return [] (const string_t& v1, const string_t& v2)
                 {
-                        return from_string<tscalar>(v1) > from_string<tscalar>(v2);
+                        return  from_string<tscalar>(v1, std::numeric_limits<tscalar>::max()) >
+                                from_string<tscalar>(v2, std::numeric_limits<tscalar>::max());
                 };
         }
 }

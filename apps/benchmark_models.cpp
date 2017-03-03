@@ -49,9 +49,9 @@ int main(int argc, const char *argv[])
                 cmdline.usage();
         }
 
-        const tensor_size_t cmd_rows = 28;
-        const tensor_size_t cmd_cols = 28;
-        const color_mode cmd_color = color_mode::luma;
+        const auto cmd_rows = 28;
+        const auto cmd_cols = 28;
+        const auto cmd_color = color_mode::luma;
 
         const size_t cmd_min_nthreads = 1;
         const size_t cmd_max_nthreads = nano::logical_cpus();
