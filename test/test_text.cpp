@@ -4,6 +4,7 @@
 #include "text/to_params.h"
 #include "text/from_params.h"
 #include "text/concatenate.h"
+#include "text/table_row_mark.h"
 #include <list>
 #include <set>
 
@@ -256,6 +257,40 @@ NANO_CASE(table)
         NANO_CHECK_EQUAL(t1, t2);
 
         std::remove(path);
+}
+
+NANO_CASE(table_mark)
+{
+        nano::table_t table;
+        table.header() << "name " << "col1" << "col2" << "col3";
+        table.append() << "name1" << "1000" << "9000" << "4000";
+        table.append() << "name2" << "3200" << "2000" << "5000";
+        table.append() << "name3" << "1500" << "7000" << "6000";
+
+        for (size_t r = 0; r < table.rows(); ++ r)
+        {
+                for (size_t c = 0; c < table.cols(); ++ c)
+                {
+                        NANO_CHECK_EQUAL(table.row(r).marking(c), "");
+                }
+        }
+
+        {
+                auto tablex = table;
+                tablex.mark(nano::make_table_mark_minimum_col<int>(), "*");
+
+                NANO_CHECK_EQUAL(tablex.row(0).marking(1), "*");
+                NANO_CHECK_EQUAL(tablex.row(1).marking(2), "*");
+                NANO_CHECK_EQUAL(tablex.row(2).marking(1), "*");
+        }
+        {
+                auto tablex = table;
+                tablex.mark(nano::make_table_mark_maximum_col<int>(), "*");
+
+                NANO_CHECK_EQUAL(tablex.row(0).marking(2), "*");
+                NANO_CHECK_EQUAL(tablex.row(1).marking(3), "*");
+                NANO_CHECK_EQUAL(tablex.row(2).marking(2), "*");
+        }
 }
 
 NANO_END_MODULE()
