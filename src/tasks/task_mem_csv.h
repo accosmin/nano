@@ -25,13 +25,13 @@ namespace nano
                 ///
                 bool load_classification(const string_t& path, const string_t& task_name,
                         const size_t expected_samples,
-                        const scalars_t& scales, const strings_t& labels, const size_t label_column);
+                        const strings_t& labels, const size_t label_column);
 
                 ///
                 /// \brief load CSV for regression
                 ///
                 bool load_regression(const string_t& path, const string_t& task_name,
                         const size_t expected_samples,
-                        const scalars_t& scales, const size_t target_column);
+                        const size_t target_column);
         };
 }
