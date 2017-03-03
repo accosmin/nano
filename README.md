@@ -99,10 +99,7 @@ A **task** describes a classification or regression problem consisting of separa
 | mnist         | MNIST (1x28x28 digit classification)                   | dir=.                                                                                                               |
 | stl10         | STL-10 (3x96x96 semi-supervised object classification) | dir=.                                                                                                               |
 | svhn          | SVHN (3x32x32 digit classification in the wild)        | dir=.                                                                                                               |
-| synth-affine  | synthetic affine transformation                        | isize=100[1,1000],osize=10[1,1000],count=1000[10,1M],noise=0.01[0,0.5]                                              |
 | synth-charset | synthetic character classification                     | type=digit[lalpha,ualpha,alpha,alphanum],color=rgb[,luma,rgba],irows=32[12,128],icols=32[12,128],count=1000[100,1M] |
-| synth-matmul  | synthetic matrix multiplication                        | irows=32[1,100],icols=32[1,100],count=1000[10,1M],noise=0.01[0,0.5]                                                 |
-| synth-sign    | synthetic sign-based classification                    | isize=100[1,1000],osize=10[1,1000],count=1000[10,1M],noise=0.01[0,0.5]                                              |
 |---------------|--------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------|
 ```
 
