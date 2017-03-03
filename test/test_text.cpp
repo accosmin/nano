@@ -215,6 +215,26 @@ NANO_CASE(to_params)
         NANO_CHECK_EQUAL(nano::from_params(config, "param2", 32322), param2);
 }
 
+NANO_CASE(make_less)
+{
+        const auto less = nano::make_less_from_string<int>();
+
+        NANO_CHECK_EQUAL(less("1", "2"), true);
+        NANO_CHECK_EQUAL(less("2", "1"), false);
+        NANO_CHECK_EQUAL(less("x", "1"), true);
+        NANO_CHECK_EQUAL(less("2", "x"), true);
+}
+
+NANO_CASE(make_greater)
+{
+        const auto greater = nano::make_greater_from_string<int>();
+
+        NANO_CHECK_EQUAL(greater("1", "2"), false);
+        NANO_CHECK_EQUAL(greater("2", "1"), true);
+        NANO_CHECK_EQUAL(greater("x", "1"), true);
+        NANO_CHECK_EQUAL(greater("2", "x"), true);
+}
+
 NANO_CASE(table)
 {
         nano::table_t t1;

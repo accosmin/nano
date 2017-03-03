@@ -136,8 +136,11 @@ namespace nano
                 return detail::from_string_t<tvalue>::dispatch(str);
         }
 
+        ///
+        /// \brief
+        ///
         template <typename tvalue>
-        tvalue from_string(const string_t& str, const tvalue or_else)
+        tvalue from_string(const string_t& str, const tvalue default_value)
         {
                 try
                 {
@@ -145,7 +148,7 @@ namespace nano
                 }
                 catch (std::exception&)
                 {
-                        return or_else;
+                        return default_value;
                 }
         }
 
@@ -158,7 +161,7 @@ namespace nano
                 return [] (const string_t& v1, const string_t& v2)
                 {
                         return  from_string<tscalar>(v1, std::numeric_limits<tscalar>::lowest()) <
-                                from_string<tscalar>(v2, std::numeric_limits<tscalar>::lowest());
+                                from_string<tscalar>(v2, std::numeric_limits<tscalar>::max());
                 };
         }
 
@@ -171,8 +174,7 @@ namespace nano
                 return [] (const string_t& v1, const string_t& v2)
                 {
                         return  from_string<tscalar>(v1, std::numeric_limits<tscalar>::max()) >
-                                from_string<tscalar>(v2, std::numeric_limits<tscalar>::max());
+                                from_string<tscalar>(v2, std::numeric_limits<tscalar>::lowest());
                 };
         }
 }
-
