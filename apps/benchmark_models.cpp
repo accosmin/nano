@@ -24,7 +24,7 @@ int main(int argc, const char *argv[])
         cmdline.add("", "convnets",     "benchmark convolution networks");
         cmdline.add("", "forward",      "evaluate the \'forward\' pass (output)");
         cmdline.add("", "backward",     "evaluate the \'backward' pass (gradient)");
-        cmdline.add("", "activation",   "activation layer (act-unit, act-tanh, act-splus, act-snorm)", "act-snorm");
+        cmdline.add("", "activation",   "activation layer", "act-snorm");
         cmdline.add("", "detailed",     "print detailed measurements (e.g. per-layer)");
 
         cmdline.process(argc, argv);
