@@ -37,7 +37,7 @@ for activation in ["act-snorm", "act-wave1", "act-wave2", "act-tanh", "act-sin"]
 
 # train all configurations
 trials = 10
-exp.run_all(trials = trials, epochs = 100, policy = "stop_early")
+exp.run_all(trials = trials, epochs = 1000, policy = "stop_early")
 
 # compare configurations
 for trial in range(trials):
