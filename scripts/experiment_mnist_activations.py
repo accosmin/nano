@@ -3,7 +3,7 @@ import experiment
 
 # initialize experiment:
 # - single-class classification problem using the MNIST dataset
-# - the model should predict the digit of a grayscale image
+# - the model should predict the digit represented by an image
 cfg = config.config()
 exp = experiment.experiment(
         cfg.task_mnist(),
@@ -25,10 +25,10 @@ exp.add_trainers([
 outlayer = "affine:dims=10;act-snorm;"
 
 convnet0 = "--model forward-network --model-params "
-convnet1 = convnet0 + "conv:dims=32,rows=7,cols=7,conn=1,drow=2,dcol=2;act-snorm;"
-convnet2 = convnet1 + "conv:dims=32,rows=5,cols=5,conn=4,drow=1,dcol=1;act-snorm;"
-convnet3 = convnet2 + "conv:dims=32,rows=3,cols=3,conn=4,drow=1,dcol=1;act-snorm;"
-convnet4 = convnet3 + "conv:dims=32,rows=3,cols=3,conn=4,drow=1,dcol=1;act-snorm;"
+convnet1 = convnet0 + "conv:dims=128,rows=7,cols=7,conn=1,drow=2,dcol=2;act-snorm;"
+convnet2 = convnet1 + "conv:dims=128,rows=5,cols=5,conn=4,drow=1,dcol=1;act-snorm;"
+convnet3 = convnet2 + "conv:dims=128,rows=3,cols=3,conn=4,drow=1,dcol=1;act-snorm;"
+convnet4 = convnet3 + "conv:dims=128,rows=3,cols=3,conn=4,drow=1,dcol=1;act-snorm;"
 
 for activation in ["act-snorm", "act-wave1", "act-wave2", "act-tanh", "act-sin"]:
         name = ("convnet4-" + activation).replace("-", "_")
@@ -37,7 +37,7 @@ for activation in ["act-snorm", "act-wave1", "act-wave2", "act-tanh", "act-sin"]
 
 # train all configurations
 trials = 10
-exp.run_all(trials = trials, epochs = 1000, policy = "stop_early")
+exp.run_all(trials = trials, epochs = 100, policy = "stop_early")
 
 # compare configurations
 for trial in range(trials):
