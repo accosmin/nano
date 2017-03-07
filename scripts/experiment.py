@@ -93,7 +93,7 @@ class experiment:
                                         for lname, lparam in self.losses.items():
                                                 self.run_one(trial, mname, mparam, tname, tparam, cname, cparam, lname, lparam)
 
-        def run_all(self, trials = 10, epochs = 1000, policy = "stop_early", min_batch = 32, max_batch = 256, patience = 32, epsilon = 1e-4):
+        def run_all(self, trials = 10, epochs = 1000, policy = "stop_early", min_batch = 32, max_batch = 256, patience = 32, epsilon = 1e-6):
                 for trial in range(trials):
                         self.run_trial(trial, epochs, policy, min_batch, max_batch, patience, epsilon)
 
