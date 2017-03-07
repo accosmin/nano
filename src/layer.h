@@ -41,11 +41,6 @@ namespace nano
                 virtual tensor_size_t resize(const tensor3d_t& tensor) = 0;
 
                 ///
-                /// \brief reset parameters to zero
-                ///
-                virtual void zero_params() = 0;
-
-                ///
                 /// \brief reset parameters to random values in the [min, max] range
                 ///
                 virtual void random_params(const scalar_t min, const scalar_t max) = 0;

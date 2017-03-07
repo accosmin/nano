@@ -158,14 +158,6 @@ namespace nano
                 }
         }
 
-        void forward_network_t::zero_params()
-        {
-                for (const auto& layer : m_layers)
-                {
-                        layer.m_layer->zero_params();
-                }
-        }
-
         void forward_network_t::random_params()
         {
                 for (const auto& layer : m_layers)

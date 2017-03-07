@@ -67,7 +67,6 @@ namespace nano
                 ///
                 virtual bool load_params(const vector_t& x) override;
                 virtual bool save_params(vector_t& x) const override;
-                virtual void zero_params() override;
                 virtual void random_params() override;
 
                 ///

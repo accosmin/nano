@@ -85,12 +85,6 @@ namespace nano
                 return psize();
         }
 
-        void convolution_layer_t::zero_params()
-        {
-                nano::set_zero(m_kdata, m_bdata);
-                params_changed();
-        }
-
         void convolution_layer_t::random_params(scalar_t min, scalar_t max)
         {
                 nano::set_random(random_t<scalar_t>(min, max), m_kdata, m_bdata);

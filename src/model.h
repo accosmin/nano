@@ -73,11 +73,6 @@ namespace nano
                 virtual bool save_params(vector_t& x) const = 0;
 
                 ///
-                /// \brief set parameters to zero
-                ///
-                virtual void zero_params() = 0;
-
-                ///
                 /// \brief set parameters to random values
                 ///
                 virtual void random_params() = 0;

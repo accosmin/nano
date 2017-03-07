@@ -74,7 +74,7 @@ NANO_CASE(evaluate)
 
                         //
                         NANO_CHECK_EQUAL(model->save(path), true);
-                        model->zero_params();
+                        model->random_params();
                         NANO_CHECK_EQUAL(model->load(path), true);
                         //
 
