@@ -123,7 +123,7 @@ int main(int argc, const char *argv[])
                 // create feed-forward network
                 const auto model = nano::get_models().get("forward-network", cmd_network);
                 model->resize(task);
-                model->random_params();
+                model->random();
                 model->describe();
 
                 auto& frow = ftable.append() << (cmd_name + " (" + nano::to_string(model->psize()) + ")");

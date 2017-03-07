@@ -42,7 +42,7 @@ NANO_CASE(evaluate)
 
                 // check the gradient using random parameters
                 vector_t x;
-                model->random_params();
+                model->random();
                 model->save_params(x);
 
                 NANO_CHECK_GREATER(function.eval(x), scalar_t(0));

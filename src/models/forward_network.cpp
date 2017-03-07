@@ -158,7 +158,7 @@ namespace nano
                 }
         }
 
-        void forward_network_t::random_params()
+        void forward_network_t::random()
         {
                 for (const auto& layer : m_layers)
                 {
@@ -169,7 +169,7 @@ namespace nano
                         const auto min = -std::sqrt(6 / (1 + div));
                         const auto max = +std::sqrt(6 / (1 + div));
 
-                        layer.m_layer->random_params(min, max);
+                        layer.m_layer->random(min, max);
                 }
         }
 

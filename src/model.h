@@ -73,9 +73,9 @@ namespace nano
                 virtual bool save_params(vector_t& x) const = 0;
 
                 ///
-                /// \brief set parameters to random values
+                /// \brief set parameters to  values
                 ///
-                virtual void random_params() = 0;
+                virtual void random() = 0;
 
                 ///
                 /// \brief compute the model's output

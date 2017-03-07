@@ -20,7 +20,7 @@ namespace nano
 
                 virtual tensor_size_t resize(const tensor3d_t& tensor) override;
 
-                virtual void random_params(scalar_t min, scalar_t max) override;
+                virtual void random(scalar_t min, scalar_t max) override;
                 virtual scalar_t* save_params(scalar_t* params) const override;
                 virtual const scalar_t* load_params(const scalar_t* params) override;
 

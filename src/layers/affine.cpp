@@ -35,7 +35,7 @@ namespace nano
                 return psize();
         }
 
-        void affine_layer_t::random_params(scalar_t min, scalar_t max)
+        void affine_layer_t::random(scalar_t min, scalar_t max)
         {
                 nano::set_random(nano::random_t<scalar_t>(min, max), m_wdata, m_bdata);
         }

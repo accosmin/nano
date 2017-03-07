@@ -43,7 +43,7 @@ namespace nano
                 ///
                 /// \brief reset parameters to random values in the [min, max] range
                 ///
-                virtual void random_params(const scalar_t min, const scalar_t max) = 0;
+                virtual void random(const scalar_t min, const scalar_t max) = 0;
 
                 ///
                 /// \brief serialize parameters (to memory)

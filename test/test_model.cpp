@@ -55,7 +55,7 @@ NANO_CASE(evaluate)
                 // test random networks
                 for (size_t t = 0; t < 5; ++ t)
                 {
-                        model->random_params();
+                        model->random();
 
                         const fold_t fold = {0, protocol::test};
 
@@ -74,7 +74,7 @@ NANO_CASE(evaluate)
 
                         //
                         NANO_CHECK_EQUAL(model->save(path), true);
-                        model->random_params();
+                        model->random();
                         NANO_CHECK_EQUAL(model->load(path), true);
                         //
 

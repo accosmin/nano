@@ -149,7 +149,7 @@ static void test_model(const string_t& model_description, const tensor_size_t ex
         for (size_t t = 0; t < cmd_tests; ++ t)
         {
                 make_random_config(inputs, target);
-                model->random_params();
+                model->random();
                 NANO_CHECK(model->save_params(params));
 
                 NANO_CHECK_LESS(pfunction.grad_accuracy(params), epsilon);
@@ -186,7 +186,7 @@ static void test_conv_layer(const tensor_size_t dims, const tensor_size_t krows,
         for (size_t t = 0; t < cmd_tests; ++ t)
         {
                 // generate random parameters and buffers
-                layer.random_params(rgen.min(), rgen.max());
+                layer.random(rgen.min(), rgen.max());
                 nano::set_random(rgen, input, output);
 
                 // compute using the convolution layer

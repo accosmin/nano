@@ -26,7 +26,7 @@ NANO_CASE(evaluate)
         const auto model = nano::get_models().get("forward-network", cmd_model);
         NANO_CHECK_EQUAL(model->resize(*task), true);
 
-        model->random_params();
+        model->random();
 
         // accumulators using 1 thread
         const auto criterion = nano::get_criteria().get("avg");
