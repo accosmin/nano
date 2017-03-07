@@ -68,6 +68,9 @@ class config:
         def task_mnist(self):
                 return self.task("mnist")
 
+        def task_cifar10(self):
+                return self.task("cifar10")
+
         def task_iris(self):
                 return self.task("iris")
 
