@@ -18,7 +18,7 @@ int main(int argc, const char *argv[])
 
         // parse the command line
         nano::cmdline_t cmdline("benchmark models");
-        cmdline.add("s", "samples",     "number of samples to use [100, 100000]", "10000");
+        cmdline.add("s", "samples",     "number of samples to use [100, 10000]", "1000");
         cmdline.add("c", "conn",        "plane connectivity for convolution networks [1, 16]", "8");
         cmdline.add("", "mlps",         "benchmark MLP models");
         cmdline.add("", "convnets",     "benchmark convolution networks");
@@ -64,9 +64,9 @@ int main(int argc, const char *argv[])
         // construct models
         const string_t mlp0;
         const string_t mlp1 = mlp0 + make_affine_layer(128, activation);
-        const string_t mlp2 = mlp1 + make_affine_layer(128, activation);
+        const string_t mlp2 = mlp1 + make_affine_layer(512, activation);
         const string_t mlp3 = mlp2 + make_affine_layer(128, activation);
-        const string_t mlp4 = mlp3 + make_affine_layer(128, activation);
+        const string_t mlp4 = mlp3 + make_affine_layer(512, activation);
         const string_t mlp5 = mlp4 + make_affine_layer(128, activation);
 
         const string_t convnet0;
