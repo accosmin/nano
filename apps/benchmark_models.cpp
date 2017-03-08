@@ -118,8 +118,6 @@ int main(int argc, const char *argv[])
                 const string_t cmd_network = config.first;
                 const string_t cmd_name = config.second;
 
-                log_info() << "<<< running network [" << cmd_network << "] ...";
-
                 // create feed-forward network
                 const auto model = nano::get_models().get("forward-network", cmd_network);
                 model->resize(task);
