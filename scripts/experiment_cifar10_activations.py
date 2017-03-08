@@ -30,14 +30,14 @@ convnet2 = convnet1 + "conv:dims=128,rows=5,cols=5,conn=4,drow=1,dcol=1;act-snor
 convnet3 = convnet2 + "conv:dims=128,rows=3,cols=3,conn=4,drow=1,dcol=1;act-snorm;"
 convnet4 = convnet3 + "conv:dims=128,rows=3,cols=3,conn=4,drow=1,dcol=1;act-snorm;"
 
-for activation in ["act-snorm", "act-pwave2", "act-pwave4", "act-tanh", "act-sin"]:
+for activation in ["act-snorm", "act-ewave1", "act-ewave2", "act-ewave3", "act-ewave4", "act-tanh", "act-sin"]:
         name = ("convnet4-" + activation).replace("-", "_")
         params = (convnet4 + outlayer).replace("act-snorm", activation)
         exp.add_model(name, params)
 
 # train all configurations
 trials = 10
-exp.run_all(trials = trials, epochs = 100, policy = "stop_early")
+exp.run_all(trials = trials, epochs = 1000, policy = "stop_early")
 
 # compare configurations
 for trial in range(trials):
