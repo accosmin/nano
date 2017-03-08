@@ -226,7 +226,7 @@ namespace nano
                 vector_t x(psize());
                 scalar_t* px = x.data();
 
-                log_info() << "forward network: using configuration [" << config() << "]";
+                log_info() << "forward network [" << config() << "]";
                 for (size_t l = 0; l < n_layers(); ++ l)
                 {
                         const auto& name = m_layers[l].m_name;
@@ -244,8 +244,8 @@ namespace nano
                                 log_info()
                                         << "forward network " << name
                                         << ": in(" << layer->idims() << ") -> " << "out(" << layer->odims() << ")"
-                                        << ", params = " << layer->psize() << " [L2 = " << l2 << ", Linf = " << li << "]"
-                                        << ", kFLOPs = " << nano::idiv(layer->flops(), 1024) << ".";
+                                        << ", kFLOPs = " << nano::idiv(layer->flops(), 1024)
+                                        << ", params = " << layer->psize() << " [L2=" << l2 << ", Li=" << li << "].";
                         }
                         else
                         {
