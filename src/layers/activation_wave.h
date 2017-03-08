@@ -36,7 +36,7 @@ namespace nano
                 {
                         const auto nexp = (-alpha * idata.array()).exp();
                         const auto pexp = (+alpha * idata.array()).exp();
-                        return idata.array() / (nexp + pexp);
+                        return alpha * idata.array() / (nexp + pexp);
                 }
 
                 template <typename tivector, typename tovector>
@@ -44,7 +44,7 @@ namespace nano
                 {
                         const auto nexp = (-alpha * idata.array()).exp();
                         const auto pexp = (+alpha * idata.array()).exp();
-                        return (nexp + pexp + alpha * idata.array() * (nexp - pexp)) / (nexp + pexp).square();
+                        return alpha * (nexp + pexp + alpha * idata.array() * (nexp - pexp)) / (nexp + pexp).square();
                 }
         };
 
