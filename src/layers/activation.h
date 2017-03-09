@@ -69,7 +69,7 @@ namespace nano
         {
                 assert(m_odata.dims() == output.dims());
 
-                m_idata.vector() = output.vector().array() * top::ginput(m_idata.vector(), m_odata.vector());
+                m_idata.vector() = output.array() * top::ginput(m_idata.vector(), m_odata.vector());
 
                 return m_idata;
         }

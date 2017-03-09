@@ -122,7 +122,7 @@ namespace nano
                 case 3:
                 case 4:
                         m_data.resize(data.size<0>(), data.rows(), data.cols());
-                        m_data.vector() = (data.vector() * 255).array().max(0).min(255).cast<luma_t>();
+                        m_data.vector() = (data.array() * 255).max(0).min(255).cast<luma_t>();
                         return true;
 
                 default:

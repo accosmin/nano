@@ -14,13 +14,13 @@ namespace nano
                 vector_t maximums(dims);
                 for (const auto& sample : samples)
                 {
-                        maximums.array() = maximums.array().max(sample.vector().array().abs());
+                        maximums.array() = maximums.array().max(sample.array().abs());
                 }
 
                 const vector_t scale = 1 / maximums.array();
                 for (auto& sample : samples)
                 {
-                        sample.vector().array() *= scale.array();
+                        sample.array() *= scale.array();
                 }
 
                 log_info() << task_name << ": scaling using [" << maximums.transpose() << "]";

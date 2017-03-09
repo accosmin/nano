@@ -21,13 +21,13 @@ namespace nano
                 /// \brief output
                 ///
                 template <typename tidata, typename tkdata, typename tbdata, typename todata>
-                void output(const tidata&, const tkdata&, const tbdata&, todata&) const;
+                void output(const tidata&, const tkdata&, const tbdata&, todata&&) const;
 
                 ///
                 /// \brief gradient wrt inputs
                 ///
                 template <typename tidata, typename tkdata, typename tbdata, typename todata>
-                void ginput(tidata&, const tkdata&, const tbdata&, const todata&) const;
+                void ginput(tidata&&, const tkdata&, const tbdata&, const todata&) const;
 
                 ///
                 /// \brief gradient wrt parameters (convolution kernels and bias)
@@ -45,7 +45,7 @@ namespace nano
         };
 
         template <typename tidata, typename tkdata, typename tbdata, typename todata>
-        void conv3d_naive_t::output(const tidata& idata, const tkdata& kdata, const tbdata& bdata, todata& odata) const
+        void conv3d_naive_t::output(const tidata& idata, const tkdata& kdata, const tbdata& bdata, todata&& odata) const
         {
                 assert(m_params.valid_idata(idata));
                 assert(m_params.valid_kdata(kdata));
@@ -85,7 +85,7 @@ namespace nano
         }
 
         template <typename tidata, typename tkdata, typename tbdata, typename todata>
-        void conv3d_naive_t::ginput(tidata& idata, const tkdata& kdata, const tbdata& bdata, const todata& odata) const
+        void conv3d_naive_t::ginput(tidata&& idata, const tkdata& kdata, const tbdata& bdata, const todata& odata) const
         {
                 assert(m_params.valid_idata(idata));
                 assert(m_params.valid_kdata(kdata));

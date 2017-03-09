@@ -34,7 +34,7 @@ struct wrt_params_function_t final : public function_t
                         m_op.gparam(m_idata, map_tensor(gx->data(), m_kdata.dims()),
                                 map_vector(gx->data() + m_kdata.size(), m_bdata.size()), m_odata);
                 }
-                return m_odata.vector().sum();
+                return m_odata.array().square().sum() / 2;
         }
 
         const top&              m_op;
@@ -63,14 +63,14 @@ struct wrt_inputs_function_t final : public function_t
 
         scalar_t vgrad(const vector_t& x, vector_t* gx) const override
         {
-                m_idata = map_tensor(x.data(), m_op.params().idims());
+                m_idata = map_tensor(x.data(), m_idata.dims());
                 m_op.output(m_idata, m_kdata, m_bdata, m_odata);
                 if (gx)
                 {
                         gx->resize(x.size());
-                        m_op.ginput(m_idata, m_kdata, m_bdata, m_odata);
+                        m_op.ginput(map_tensor(gx->data(), m_idata.dims()), m_kdata, m_bdata, m_odata);
                 }
-                return m_odata.vector().sum();
+                return m_odata.array().square().sum() / 2;
         }
 
         const top&              m_op;

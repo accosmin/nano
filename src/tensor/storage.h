@@ -96,6 +96,10 @@ namespace nano
                 {
                         return nano::map_vector(data(), size());
                 }
+                auto array()
+                {
+                        return vector().array();
+                }
 
                 ///
                 /// \brief access the whole tensor as an array
@@ -121,6 +125,16 @@ namespace nano
                 auto vector(const tindices... indices)
                 {
                         return nano::map_vector(planeData(indices...), planeSize());
+                }
+                template <typename... tindices>
+                auto array(const tindices... indices) const
+                {
+                        return vector(indices...).array();
+                }
+                template <typename... tindices>
+                auto array(const tindices... indices)
+                {
+                        return vector(indices...).array();
                 }
 
                 ///
