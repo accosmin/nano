@@ -33,7 +33,7 @@ namespace nano
                 /// \brief gradient wrt parameters (convolution kernels and bias)
                 ///
                 template <typename tidata, typename tkdata, typename tbdata, typename todata>
-                void gparam(const tidata&, tkdata&, tbdata&, const todata& odata) const;
+                void gparam(const tidata&, tkdata&&, tbdata&&, const todata& odata) const;
 
                 ///
                 /// \brief parameters
@@ -126,7 +126,7 @@ namespace nano
         }
 
         template <typename tidata, typename tkdata, typename tbdata, typename todata>
-        void conv3d_naive_t::gparam(const tidata& idata, tkdata& kdata, tbdata& bdata, const todata& odata) const
+        void conv3d_naive_t::gparam(const tidata& idata, tkdata&& kdata, tbdata&& bdata, const todata& odata) const
         {
                 assert(m_params.valid_idata(idata));
                 assert(m_params.valid_kdata(kdata));

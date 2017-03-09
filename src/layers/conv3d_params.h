@@ -21,26 +21,31 @@ namespace nano
                 auto imaps() const { return m_imaps; }
                 auto irows() const { return m_irows; }
                 auto icols() const { return m_icols; }
+                auto idims() const { return dim3d_t{imaps(), irows(), icols()}; }
+                auto isize() const { return nano::size(idims()); }
 
                 auto krows() const { return m_krows; }
                 auto kcols() const { return m_kcols; }
                 auto kconn() const { return m_kconn; }
                 auto kdrow() const { return m_kdrow; }
                 auto kdcol() const { return m_kdcol; }
-                auto ksize() const { return krows() * kcols(); }
 
                 auto omaps() const { return m_omaps; }
                 auto orows() const { return (irows() - krows() + 1) / kdrow(); }
                 auto ocols() const { return (icols() - kcols() + 1) / kdcol(); }
-                auto osize() const { return omaps() * orows(); }
+                auto odims() const { return dim3d_t{omaps(), orows(), ocols()}; }
+                auto osize() const { return nano::size(odims()); }
 
-                auto idims() const { return dim3d_t{imaps(), irows(), icols()}; }
                 auto kdims() const { return dim4d_t{omaps(), imaps() / kconn(), krows(), kcols()}; }
                 auto bdims() const { return omaps(); }
-                auto odims() const { return dim3d_t{omaps(), orows(), ocols()}; }
 
-                auto psize() const { return imaps() * omaps() * ksize() / kconn() + omaps(); }
-                auto flops() const { return 2 * imaps() * omaps() * osize() * ksize() / kconn(); }
+                auto psize() const { return imaps() * omaps() * krows() * kcols() / kconn() + omaps(); }
+                auto flops() const { return 2 * imaps() * omaps() * orows() * ocols() * krows() * kcols() / kconn(); }
+
+                auto make_idata() const { return tensor3d_t(idims()); }
+                auto make_kdata() const { return tensor4d_t(kdims()); }
+                auto make_bdata() const { return vector_t(bdims()); }
+                auto make_odata() const { return tensor3d_t(odims()); }
 
                 template <typename tidata>
                 bool valid_idata(const tidata& idata) const { return idata.dims() == idims(); }

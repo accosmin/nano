@@ -83,10 +83,10 @@ int main(int argc, const char *argv[])
                                         cmd_omaps, kconn, ksize, ksize, kdelta, kdelta
                                 };
 
-                                vector_t bdata(params.bdims()); bdata.setRandom();
-                                tensor3d_t idata(params.idims()); idata.vector().setRandom();
-                                tensor4d_t kdata(params.kdims()); kdata.vector().setRandom();
-                                tensor3d_t odata(params.odims()); odata.vector().setRandom();
+                                auto bdata = params.make_bdata(); bdata.setRandom();
+                                auto idata = params.make_idata(); idata.vector().setRandom();
+                                auto kdata = params.make_kdata(); kdata.vector().setRandom();
+                                auto odata = params.make_odata(); odata.vector().setRandom();
 
                                 const auto op_naive = conv3d_naive_t{params};
                                 const auto us_naive_output = measure_output(op_naive, idata, kdata, bdata, odata);
