@@ -1,24 +1,48 @@
 #include "logger.h"
+#include "measure.h"
 #include "text/table.h"
 #include "math/numeric.h"
 #include "text/cmdline.h"
-#include "layers/conv3d_params.h"
+#include "layers/conv3d_naive.h"
 #include <iostream>
 
 namespace nano
 {
-        template <> string_t to_string<dim3d_t>(const dim3d_t dims)
+        using dim2d_t = tensor_dims_t<2>;
+
+        template <typename tvalue>
+        string_t serialize_to_string(const tvalue value)
         {
                 std::stringstream s;
-                s << dims;
+                s << value;
                 return s.str();
         }
 
-        template <> string_t to_string<dim4d_t>(const dim4d_t dims)
+        template <> string_t to_string<dim2d_t>(const dim2d_t dims) { return serialize_to_string(dims); }
+        template <> string_t to_string<dim3d_t>(const dim3d_t dims) { return serialize_to_string(dims); }
+        template <> string_t to_string<dim4d_t>(const dim4d_t dims) { return serialize_to_string(dims); }
+}
+
+namespace
+{
+        const size_t trials = 16;
+
+        template <typename top, typename tidata, typename tkdata, typename tbdata, typename todata>
+        auto measure_output(const top& op, const tidata& idata, const tkdata& kdata, const tbdata& bdata, todata& odata)
         {
-                std::stringstream s;
-                s << dims;
-                return s.str();
+                return nano::measure_robustly_usec([&] () { op.output(idata, kdata, bdata, odata); }, trials);
+        }
+
+        template <typename top, typename tidata, typename tkdata, typename tbdata, typename todata>
+        auto measure_ginput(const top& op, tidata& idata, const tkdata& kdata, const tbdata& bdata, const todata& odata)
+        {
+                return nano::measure_robustly_usec([&] () { op.ginput(idata, kdata, bdata, odata); }, trials);
+        }
+
+        template <typename top, typename tidata, typename tkdata, typename tbdata, typename todata>
+        auto measure_gparam(const top& op, const tidata& idata, tkdata& kdata, tbdata& bdata, const todata& odata)
+        {
+                return nano::measure_robustly_usec([&] () { op.gparam(idata, kdata, bdata, odata); }, trials);
         }
 }
 
@@ -43,7 +67,9 @@ int main(int argc, const char *argv[])
 
         // benchmark 3D convolutions various kernel sizes & connectivity factors
         table_t table;
-        table.header() << "isize" << "kconn" << "ksize" << "osize" << "params" << "kflops";
+        table.header()
+                << "isize" << "conn" << "kernel" << "stride" << "osize" << "params" << "kflops"
+                << "output[us]" << "ginput[us]" << "gparam[us]";
 
         for (tensor_size_t ksize = 3; ksize <= 9; ksize += 2)
         {
@@ -51,18 +77,33 @@ int main(int argc, const char *argv[])
                 {
                         for (tensor_size_t kconn = 1; kconn <= 8; kconn *= 2)
                         {
-                                const auto param = conv3d_params_t{
+                                const auto params = conv3d_params_t
+                                {
                                         cmd_imaps, cmd_irows, cmd_icols,
-                                        cmd_omaps, kconn,
-                                        ksize, ksize, kdelta, kdelta};
+                                        cmd_omaps, kconn, ksize, ksize, kdelta, kdelta
+                                };
+
+                                vector_t bdata(params.bdims()); bdata.setRandom();
+                                tensor3d_t idata(params.idims()); idata.vector().setRandom();
+                                tensor4d_t kdata(params.kdims()); kdata.vector().setRandom();
+                                tensor3d_t odata(params.odims()); odata.vector().setRandom();
+
+                                const auto op_naive = conv3d_naive_t{params};
+                                const auto us_naive_output = measure_output(op_naive, idata, kdata, bdata, odata);
+                                const auto us_naive_ginput = measure_ginput(op_naive, idata, kdata, bdata, odata);
+                                const auto us_naive_gparam = measure_gparam(op_naive, idata, kdata, bdata, odata);
 
                                 table.append()
-                                        << dim3d_t{param.imaps(), param.irows(), param.icols()}
-                                        << param.kconn()
-                                        << dim4d_t{param.krows(), param.kcols(), param.kdrow(), param.kdcol()}
-                                        << dim3d_t{param.omaps(), param.orows(), param.ocols()}
-                                        << param.psize()
-                                        << (param.flops() / 1024);
+                                        << dim3d_t{params.imaps(), params.irows(), params.icols()}
+                                        << params.kconn()
+                                        << dim2d_t{params.krows(), params.kcols()}
+                                        << dim2d_t{params.kdrow(), params.kdcol()}
+                                        << dim3d_t{params.omaps(), params.orows(), params.ocols()}
+                                        << params.psize()
+                                        << (params.flops() / 1024)
+                                        << us_naive_output.count()
+                                        << us_naive_ginput.count()
+                                        << us_naive_gparam.count();
                         }
                 }
         }
