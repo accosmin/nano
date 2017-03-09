@@ -17,7 +17,7 @@ int main(int argc, const char *argv[])
         using namespace nano;
 
         // parse the command line
-        nano::cmdline_t cmdline("benchmark models");
+        cmdline_t cmdline("benchmark models");
         cmdline.add("s", "samples",     "number of samples to use [100, 10000]", "1000");
         cmdline.add("c", "conn",        "plane connectivity for convolution networks [1, 16]", "8");
         cmdline.add("", "mlps",         "benchmark MLP models");
@@ -30,8 +30,8 @@ int main(int argc, const char *argv[])
         cmdline.process(argc, argv);
 
         // check arguments and options
-        const auto cmd_samples = nano::clamp(cmdline.get<size_t>("samples"), 100, 100 * 1000);
-        const auto conn = nano::clamp(cmdline.get<int>("conn"), 1, 16);
+        const auto cmd_samples = clamp(cmdline.get<size_t>("samples"), 100, 100 * 1000);
+        const auto conn = clamp(cmdline.get<int>("conn"), 1, 16);
         const auto cmd_forward = cmdline.has("forward");
         const auto cmd_backward = cmdline.has("backward");
         const auto cmd_mlps = cmdline.has("mlps");
@@ -54,7 +54,7 @@ int main(int argc, const char *argv[])
         const auto cmd_color = color_mode::luma;
 
         const size_t cmd_min_nthreads = 1;
-        const size_t cmd_max_nthreads = nano::logical_cpus();
+        const size_t cmd_max_nthreads = logical_cpus();
 
         // generate synthetic task
         charset_task_t task(to_params(
@@ -99,17 +99,17 @@ int main(int argc, const char *argv[])
         }
         #undef DEFINE
 
-        const auto loss = nano::get_losses().get("logistic");
-        const auto criterion = nano::get_criteria().get("avg");
+        const auto loss = get_losses().get("logistic");
+        const auto criterion = get_criteria().get("avg");
 
         // construct tables to compare models
-        nano::table_t ftable; ftable.header() << "model-forward [us] / sample";
-        nano::table_t btable; btable.header() << "model-backward [us] / sample";
+        table_t ftable; ftable.header() << "model-forward [us] / sample";
+        table_t btable; btable.header() << "model-backward [us] / sample";
 
         for (size_t nthreads = cmd_min_nthreads; nthreads <= cmd_max_nthreads; ++ nthreads)
         {
-                ftable.header() << (nano::to_string(nthreads) + "xCPU");
-                btable.header() << (nano::to_string(nthreads) + "xCPU");
+                ftable.header() << (to_string(nthreads) + "xCPU");
+                btable.header() << (to_string(nthreads) + "xCPU");
         }
 
         // evaluate models
@@ -119,13 +119,13 @@ int main(int argc, const char *argv[])
                 const string_t cmd_name = config.second;
 
                 // create feed-forward network
-                const auto model = nano::get_models().get("forward-network", cmd_network);
+                const auto model = get_models().get("forward-network", cmd_network);
                 model->resize(task);
                 model->random();
                 model->describe();
 
-                auto& frow = ftable.append() << (cmd_name + " (" + nano::to_string(model->psize()) + ")");
-                auto& brow = btable.append() << (cmd_name + " (" + nano::to_string(model->psize()) + ")");
+                auto& frow = ftable.append() << (cmd_name + " (" + to_string(model->psize()) + ")");
+                auto& brow = btable.append() << (cmd_name + " (" + to_string(model->psize()) + ")");
 
                 const auto fold = fold_t{0, protocol::train};
 
@@ -141,7 +141,7 @@ int main(int argc, const char *argv[])
 
                         if (cmd_forward)
                         {
-                                const auto duration = nano::measure_robustly_usec([&] ()
+                                const auto duration = measure_robustly_usec([&] ()
                                 {
                                         acc.mode(criterion_t::type::value);
                                         acc.update(task, fold);
@@ -157,7 +157,7 @@ int main(int argc, const char *argv[])
 
                         if (cmd_backward)
                         {
-                                const auto duration = nano::measure_robustly_usec([&] ()
+                                const auto duration = measure_robustly_usec([&] ()
                                 {
                                         acc.mode(criterion_t::type::vgrad);
                                         acc.update(task, fold);
@@ -204,12 +204,12 @@ int main(int argc, const char *argv[])
         // print results
         if (cmd_forward)
         {
-                ftable.mark(nano::make_table_mark_minimum_percentage_cols<size_t>(5));
+                ftable.mark(make_table_mark_minimum_percentage_cols<size_t>(5));
                 std::cout << ftable;
         }
         if (cmd_backward)
         {
-                btable.mark(nano::make_table_mark_minimum_percentage_cols<size_t>(5));
+                btable.mark(make_table_mark_minimum_percentage_cols<size_t>(5));
                 std::cout << btable;
         }
 
