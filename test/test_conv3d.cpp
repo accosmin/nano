@@ -9,15 +9,15 @@ NANO_BEGIN_MODULE(test_conv3d)
 
 NANO_CASE(params_valid)
 {
-        const tensor_size_t imaps = 8;
-        const tensor_size_t irows = 11;
-        const tensor_size_t icols = 15;
-        const tensor_size_t omaps = 4;
-        const tensor_size_t kconn = 2;
-        const tensor_size_t krows = 3;
-        const tensor_size_t kcols = 5;
-        const tensor_size_t kdrow = 2;
-        const tensor_size_t kdcol = 1;
+        const auto imaps = 8;
+        const auto irows = 11;
+        const auto icols = 15;
+        const auto omaps = 4;
+        const auto kconn = 2;
+        const auto krows = 3;
+        const auto kcols = 5;
+        const auto kdrow = 2;
+        const auto kdcol = 1;
 
         const auto params = conv3d_params_t{imaps, irows, icols, omaps, kconn, krows, kcols, kdrow, kdcol};
 
@@ -38,15 +38,15 @@ NANO_CASE(params_valid)
 
 NANO_CASE(params_invalid)
 {
-        const tensor_size_t imaps = 8;
-        const tensor_size_t irows = 11;
-        const tensor_size_t icols = 15;
-        const tensor_size_t omaps = 6;
-        const tensor_size_t kconn = 3;
-        const tensor_size_t krows = 13;
-        const tensor_size_t kcols = 5;
-        const tensor_size_t kdrow = 2;
-        const tensor_size_t kdcol = 7;
+        const auto imaps = 8;
+        const auto irows = 11;
+        const auto icols = 15;
+        const auto omaps = 6;
+        const auto kconn = 3;
+        const auto krows = 13;
+        const auto kcols = 5;
+        const auto kdrow = 2;
+        const auto kdcol = 7;
 
         const auto params = conv3d_params_t{imaps, irows, icols, omaps, kconn, krows, kcols, kdrow, kdcol};
 
