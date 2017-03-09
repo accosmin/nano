@@ -31,7 +31,7 @@ namespace nano
 
                 auto omaps() const { return m_omaps; }
                 auto orows() const { return (irows() - krows() + 1) / kdrow(); }
-                auto ocols() const { return (irows() - krows() + 1) / kdcol(); }
+                auto ocols() const { return (icols() - kcols() + 1) / kdcol(); }
                 auto osize() const { return omaps() * orows(); }
 
                 auto idims() const { return dim3d_t{imaps(), irows(), icols()}; }
@@ -41,9 +41,6 @@ namespace nano
 
                 auto psize() const { return imaps() * omaps() * ksize() / kconn() + omaps(); }
                 auto flops() const { return 2 * imaps() * omaps() * osize() * ksize() / kconn(); }
-
-                bool valid_kernel() const { return kdrow() > 0 && kdcol() > 0 && orows() > 0 && ocols() > 0; }
-                bool valid_connectivity() const { return (imaps() % kconn()) == 0 && (omaps() % kconn()) == 0; }
 
                 template <typename tidata>
                 bool valid_idata(const tidata& idata) const { return idata.dims() == idims(); }
@@ -57,7 +54,9 @@ namespace nano
                 template <typename todata>
                 bool valid_odata(const todata& odata) const { return odata.dims() == odims(); }
 
-                operator bool() const { return valid_kernel() && valid_connectivity(); }
+                bool valid_kernel() const { return kdrow() > 0 && kdcol() > 0 && orows() > 0 && ocols() > 0; }
+                bool valid_connectivity() const { return (imaps() % kconn()) == 0 && (omaps() % kconn()) == 0; }
+                bool valid() const { return valid_kernel() && valid_connectivity(); }
 
                 // attributes
                 tensor_size_t   m_imaps, m_irows, m_icols;      ///< input size

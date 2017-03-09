@@ -11,18 +11,36 @@ namespace nano
         ///
         struct conv3d_naive_t
         {
+                ///
+                /// \brief constructor
+                ///
                 conv3d_naive_t(const conv3d_params_t& params = conv3d_params_t()) :
                         m_params(params) {}
 
+                ///
+                /// \brief output
+                ///
                 template <typename tidata, typename tkdata, typename tbdata, typename todata>
                 void output(const tidata&, const tkdata&, const tbdata&, todata&) const;
 
+                ///
+                /// \brief gradient wrt inputs
+                ///
                 template <typename tidata, typename tkdata, typename tbdata, typename todata>
                 void ginput(tidata&, const tkdata&, const tbdata&, const todata&) const;
 
+                ///
+                /// \brief gradient wrt parameters (convolution kernels and bias)
+                ///
                 template <typename tidata, typename tkdata, typename tbdata, typename todata>
                 void gparam(const tidata&, tkdata&, tbdata&, const todata& odata) const;
 
+                ///
+                /// \brief parameters
+                ///
+                const conv3d_params_t& params() const { return m_params; }
+
+                // attributes
                 conv3d_params_t   m_params;
         };
 

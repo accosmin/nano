@@ -45,6 +45,7 @@ build_test_app(test_loss.cpp nano)
 build_test_app(test_manager.cpp nano)
 build_test_app(test_model.cpp nano)
 build_test_app(test_trainer.cpp nano)
+build_test_app(test_conv3d.cpp nano)
 
 build_test_app(test_task_charset.cpp nano)
 build_test_app(test_task_svhn.cpp nano)
