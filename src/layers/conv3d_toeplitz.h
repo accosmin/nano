@@ -118,7 +118,6 @@ namespace nano
                 assert(m_params.valid_kdata(kdata));
                 assert(m_params.valid_bdata(bdata));
                 assert(m_params.valid_odata(odata));
-                NANO_UNUSED1_RELEASE(kdata);
 
                 const auto imaps = m_params.imaps();
                 const auto kconn = m_params.kconn();
