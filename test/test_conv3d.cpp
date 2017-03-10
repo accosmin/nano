@@ -180,4 +180,48 @@ NANO_CASE(ginput_accuracy)
         }
 }
 
+NANO_CASE(naive_vs_old_to_remove)
+{
+        const auto imaps = 8;
+        const auto irows = 11;
+        const auto icols = 15;
+        const auto omaps = 4;
+        const auto kconn = tensor_size_t(2);
+        const auto krows = 3;
+        const auto kcols = 5;
+        const auto kdrow = tensor_size_t(2);
+        const auto kdcol = tensor_size_t(1);
+
+        const auto params = conv3d_params_t{imaps, irows, icols, omaps, kconn, krows, kcols, kdrow, kdcol};
+        NANO_REQUIRE(params.valid());
+
+        const auto conv3d = conv3d_naive_t{params};
+
+        for (int i = 0; i < 16; ++ i)
+        {
+                auto bdata = params.make_bdata(); bdata.setRandom();
+                auto idata = params.make_idata(); idata.vector().setRandom();
+                auto kdata = params.make_kdata(); kdata.vector().setRandom();
+                auto odata = params.make_odata(); odata.vector().setRandom();
+
+                auto bdatax = params.make_bdata(); bdatax.setRandom();
+                auto idatax = params.make_idata(); idatax.vector().setRandom();
+                auto kdatax = params.make_kdata(); kdatax.vector().setRandom();
+                auto odatax = params.make_odata(); odatax.vector().setRandom();
+
+                conv3d.output(idata, kdata, bdata, odata);
+                conv3d_output(idata, kdata, bdata, kconn, kdrow, kdcol, odatax);
+                NANO_CHECK_EIGEN_CLOSE(odata.array(), odatax.array(), epsilon0<scalar_t>());
+
+                conv3d.ginput(idata, kdata, bdata, odata);
+                conv3d_ginput(idatax, kdata, bdata, kconn, kdrow, kdcol, odata);
+                NANO_CHECK_EIGEN_CLOSE(idata.array(), idatax.array(), epsilon0<scalar_t>());
+
+                conv3d.gparam(idata, kdata, bdata, odata);
+                conv3d_gparam(idata, kdatax, bdatax, kconn, kdrow, kdcol, odata);
+                NANO_CHECK_EIGEN_CLOSE(kdata.array(), kdatax.array(), epsilon0<scalar_t>());
+                NANO_CHECK_EIGEN_CLOSE(bdata.array(), bdatax.array(), epsilon0<scalar_t>());
+        }
+}
+
 NANO_END_MODULE()
