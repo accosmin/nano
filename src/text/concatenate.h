@@ -14,7 +14,7 @@ namespace nano
                 for (const auto& value : values)
                 {
                         ret += to_string(value) + glue;
-                };
+                }
 
                 return ret.empty() ? ret : ret.substr(0, ret.size() - glue.size());
         }

@@ -20,9 +20,9 @@ namespace nano
                 return m_header;
         }
 
-        table_row_t& table_t::append()
+        table_row_t& table_t::append(const table_row_t::storage type)
         {
-                m_rows.push_back(table_row_t());
+                m_rows.emplace_back(type);
                 return *m_rows.rbegin();
         }
 
@@ -133,8 +133,6 @@ namespace nano
 
         std::ostream& operator<<(std::ostream& os, const table_t& table)
         {
-                const bool use_row_delim = false;
-
                 // size of the value columns (in characters)
                 const sizes_t colsizes = [&] ()
                 {
@@ -154,11 +152,6 @@ namespace nano
 
                         return sizes;
                 }();
-
-                // size of the row (in characters)
-                const auto rowsize =
-                        table.cols() * 3 +
-                        std::accumulate(colsizes.begin(), colsizes.end(), size_t(0));
 
                 //
                 const auto print_row_delim = [&] ()
@@ -184,16 +177,20 @@ namespace nano
                 {
                         const auto& row = table.row(r);
 
-                        if (r > 0 && r < table.rows() && use_row_delim)
+                        switch (row.type())
                         {
-                                os << string_t(rowsize, '-') << std::endl;
-                        }
+                        case table_row_t::storage::delim:
+                                print_row_delim();
+                                break;
 
-                        for (size_t c = 0; c < std::min(table.cols(), row.size()); ++ c)
-                        {
-                                os << nano::align("| " + row.value(c) + row.marking(c), colsizes[c] + 3);
+                        default:
+                                for (size_t c = 0; c < std::min(table.cols(), row.size()); ++ c)
+                                {
+                                        os << nano::align("| " + row.value(c) + row.marking(c), colsizes[c] + 3);
+                                }
+                                os << "|" << std::endl;
+                                break;
                         }
-                        os << "|" << std::endl;
                 }
                 print_row_delim();
 

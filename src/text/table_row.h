@@ -11,6 +11,20 @@ namespace nano
         {
         public:
 
+                enum class storage
+                {
+                        data,           ///< populated with data
+                        delim,          ///< used as delimiter
+                };
+
+                ///
+                /// \brief constructor
+                ///
+                table_row_t(const storage t = storage::data) :
+                        m_type(t)
+                {
+                }
+
                 ///
                 /// \brief append a column value
                 ///
@@ -40,11 +54,17 @@ namespace nano
                 ///
                 size_t size() const { return m_values.size(); }
 
+                ///
+                /// \brief storage type
+                ///
+                auto type() const { return m_type; }
+
         private:
 
                 // attributes
-                strings_t               m_values;       ///< column values
-                strings_t               m_markings;     ///< column marking (e.g. min|max decoration)
+                storage         m_type;
+                strings_t       m_values;       ///< column values
+                strings_t       m_markings;     ///< column marking (e.g. min|max decoration)
         };
 
         ///

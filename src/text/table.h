@@ -50,7 +50,7 @@ namespace nano
                 ///
                 /// \brief append a new row
                 ///
-                table_row_t& append();
+                table_row_t& append(const table_row_t::storage type = table_row_t::storage::data);
 
                 ///
                 /// \brief (stable) sort the table using the given row-based comparison operator

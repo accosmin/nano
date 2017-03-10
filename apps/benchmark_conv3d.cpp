@@ -77,6 +77,8 @@ int main(int argc, const char *argv[])
         const auto cmd_max_kconn = clamp(cmdline.get<int>("max-kconn"), cmd_min_kconn, 16);
         const auto cmd_min_ksize = clamp(cmdline.get<int>("min-ksize"), 1, 15);
         const auto cmd_max_ksize = clamp(cmdline.get<int>("max-ksize"), cmd_min_ksize, 15);
+        const auto cmd_min_kdelta = 1;
+        const auto cmd_max_kdelta = 2;
 
         table_t table;
         table.header()
@@ -87,7 +89,7 @@ int main(int argc, const char *argv[])
         // benchmark 3D convolutions various kernel sizes & connectivity factors
         for (tensor_size_t ksize = cmd_min_ksize; ksize <= cmd_max_ksize; ksize += 2)
         {
-                for (tensor_size_t kdelta = 1; kdelta <= 2; ++ kdelta)
+                for (tensor_size_t kdelta = cmd_min_kdelta; kdelta <= cmd_max_kdelta; ++ kdelta)
                 {
                         for (tensor_size_t kconn = cmd_min_kconn; kconn <= cmd_max_kconn; kconn *= 2)
                         {
@@ -132,6 +134,16 @@ int main(int argc, const char *argv[])
                                         << gf_naive_output << gf_naive_ginput << gf_naive_gparam
                                         << gf_toepl_output << gf_toepl_ginput << gf_toepl_gparam;
                         }
+
+                        if (kdelta + 1 <= cmd_max_kdelta)
+                        {
+                                table.append(table_row_t::storage::delim);
+                        }
+                }
+
+                if (ksize + 2 <= cmd_max_ksize)
+                {
+                        table.append(table_row_t::storage::delim);
                 }
         }
 
