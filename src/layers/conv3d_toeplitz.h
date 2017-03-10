@@ -1,7 +1,6 @@
 #pragma once
 
 #include <cassert>
-#include "arch.h"
 #include "conv3d_params.h"
 
 namespace nano
@@ -11,7 +10,7 @@ namespace nano
         ///     convolutions & correlations are written as matrix multiplications.
         /// NB: requires extra buffers.
         ///
-        class NANO_PUBLIC conv3d_toeplitz_t
+        class conv3d_toeplitz_t
         {
         public:
                 ///
@@ -65,6 +64,26 @@ namespace nano
                 mutable matrix_t        m_toe_kodata;
                 mutable matrix_t        m_toe_kkdata;
         };
+
+        inline conv3d_toeplitz_t::conv3d_toeplitz_t(const conv3d_params_t& params) :
+                m_params(params)
+        {
+                const auto imaps = m_params.imaps(), irows = m_params.irows(), icols = m_params.icols();
+                const auto kconn = m_params.kconn(), krows = m_params.krows(), kcols = m_params.kcols();
+                const auto omaps = m_params.omaps(), orows = m_params.orows(), ocols = m_params.ocols();
+
+                // allocate buffers
+                m_idata_toe.resize(imaps, krows * kcols, orows * ocols);
+                m_kdata_inv.resize(imaps, omaps / kconn, krows, kcols);
+
+                m_toe_oodata.resize(omaps / kconn, orows * ocols);
+
+                m_toe_iodata.resize(krows * kcols, irows * icols);
+                m_toe_iidata.resize(imaps / kconn, irows * icols);
+
+                m_toe_kodata.resize(omaps / kconn, orows * ocols);
+                m_toe_kkdata.resize(omaps / kconn, krows * kcols);
+        }
 
         template <typename timatrix, typename tomatrix>
         void conv3d_toeplitz_t::make_toeplitz_output(const timatrix& imat, tomatrix&& omat) const
