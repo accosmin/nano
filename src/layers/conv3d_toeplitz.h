@@ -61,7 +61,9 @@ namespace nano
                 // attributes
                 conv3d_params_t         m_params;
                 mutable tensor3d_t      m_idata_toe;
+                // todo: maybe it is possible to not store the kernel!
                 mutable tensor4d_t      m_kdata_inv;
+                // todo: these should be removed! use directly Eigen calls to map the output buffers!
                 mutable matrix_t        m_toe_oodata;
                 mutable matrix_t        m_toe_iodata;
                 mutable matrix_t        m_toe_iidata;
