@@ -20,11 +20,6 @@ namespace nano
                 conv3d_toeplitz_t(const conv3d_params_t& params = conv3d_params_t());
 
                 ///
-                /// \brief reset buffers to account for new convolution kernels
-                ///
-                void reset(const tensor4d_t& kdata) const;
-
-                ///
                 /// \brief output
                 ///
                 template <typename tidata, typename tkdata, typename tbdata, typename todata>
@@ -113,6 +108,14 @@ namespace nano
                 for (tensor_size_t o = 0; o < omaps; ++ o)
                 {
                         odata.vector(o).setConstant(bdata(o));
+                }
+
+                for (tensor_size_t i = 0; i < imaps; ++ i)
+                {
+                        for (tensor_size_t o = i % kconn, ok = 0; o < omaps; o += kconn, ++ ok)
+                        {
+                                m_kdata_inv.vector(i, ok) = kdata.vector(o, i / kconn);
+                        }
                 }
 
                 for (tensor_size_t i = 0; i < imaps; ++ i)

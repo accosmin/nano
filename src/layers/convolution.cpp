@@ -80,7 +80,6 @@ namespace nano
         void convolution_layer_t::random(scalar_t min, scalar_t max)
         {
                 nano::set_random(random_t<scalar_t>(min, max), m_kdata, m_bdata);
-                params_changed();
         }
 
         scalar_t* convolution_layer_t::save_params(scalar_t* params) const
@@ -90,9 +89,7 @@ namespace nano
 
         const scalar_t* convolution_layer_t::load_params(const scalar_t* params)
         {
-                auto ret = nano::from_array(params, m_kdata, m_bdata);
-                params_changed();
-                return ret;
+                return nano::from_array(params, m_kdata, m_bdata);
         }
 
         bool convolution_layer_t::save(obstream_t& ob) const
@@ -104,14 +101,7 @@ namespace nano
         bool convolution_layer_t::load(ibstream_t& ib)
         {
                 return  ib.read_tensor(m_kdata) &&
-                        ib.read_vector(m_bdata) &&
-                        params_changed();
-        }
-
-        bool convolution_layer_t::params_changed()
-        {
-                m_op.reset(m_kdata);
-                return true;
+                        ib.read_vector(m_bdata);
         }
 
         const tensor3d_t& convolution_layer_t::output(const tensor3d_t& input)

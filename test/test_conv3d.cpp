@@ -203,8 +203,6 @@ NANO_CASE(naive_vs_toeplitz)
                 auto kdatax = params.make_kdata(); kdatax.vector().setRandom();
                 auto odatax = params.make_odata(); odatax.vector().setRandom();
 
-                op_toeplitz.reset(kdata);
-
                 op_naive.output(idata, kdata, bdata, odata);
                 op_toeplitz.output(idata, kdata, bdata, odatax);
                 NANO_CHECK_EIGEN_CLOSE(odata.array(), odatax.array(), 10 * epsilon0<scalar_t>());
@@ -214,9 +212,6 @@ NANO_CASE(naive_vs_toeplitz)
                 op_toeplitz.gparam(idata, kdatax, bdatax, odata);
                 NANO_CHECK_EIGEN_CLOSE(kdata.array(), kdatax.array(), 10 * epsilon0<scalar_t>());
                 NANO_CHECK_EIGEN_CLOSE(bdata.array(), bdatax.array(), 10 * epsilon0<scalar_t>());
-
-                // NB: reset parameters because they changed by calling ::gparam() above!
-                op_toeplitz.reset(kdata);
 
                 op_naive.ginput(idata, kdata, bdata, odata);
                 op_toeplitz.ginput(idatax, kdata, bdata, odata);

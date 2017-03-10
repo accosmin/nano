@@ -21,21 +21,4 @@ namespace nano
                 m_toe_kodata.resize(omaps / kconn, orows * ocols);
                 m_toe_kkdata.resize(omaps / kconn, krows * kcols);
         }
-
-        void conv3d_toeplitz_t::reset(const tensor4d_t& kdata) const
-        {
-                assert(kdata.dims() == m_params.kdims());
-
-                const auto imaps = m_params.imaps();
-                const auto kconn = m_params.kconn();
-                const auto omaps = m_params.omaps();
-
-                for (tensor_size_t i = 0; i < imaps; ++ i)
-                {
-                        for (tensor_size_t o = i % kconn, ok = 0; o < omaps; o += kconn, ++ ok)
-                        {
-                                m_kdata_inv.vector(i, ok) = kdata.vector(o, i / kconn);
-                        }
-                }
-        }
 }

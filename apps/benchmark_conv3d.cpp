@@ -81,8 +81,8 @@ int main(int argc, const char *argv[])
         table_t table;
         table.header()
                 << "isize" << "convolution parameters" << "osize" << "params" << "kflops"
-                << "output[gflops]" << "ginput[gflops" << "gparam[gflops]"
-                << "output[gflops]" << "ginput[gflops" << "gparam[gflops]";
+                << "naive:output[gflops]" << "ginput" << "gparam"
+                << "toeplitz:output[gflops]" << "ginput" << "gparam";
 
         // benchmark 3D convolutions various kernel sizes & connectivity factors
         for (tensor_size_t ksize = cmd_min_ksize; ksize <= cmd_max_ksize; ksize += 2)
@@ -118,11 +118,10 @@ int main(int argc, const char *argv[])
                                 const auto gf_naive_gparam = measure_gparam(op_naive, idata, kdata, bdata, odata);
 
                                 // Toeplitz implementation
-                                const auto op_toeplitz = conv3d_toeplitz_t{params};
-                                op_toeplitz.reset(kdata);
-                                const auto gf_toeplitz_output = measure_output(op_toeplitz, idata, kdata, bdata, odata);
-                                const auto gf_toeplitz_ginput = measure_ginput(op_toeplitz, idata, kdata, bdata, odata);
-                                const auto gf_toeplitz_gparam = measure_gparam(op_toeplitz, idata, kdata, bdata, odata);
+                                const auto op_toepl = conv3d_toeplitz_t{params};
+                                const auto gf_toepl_output = measure_output(op_toepl, idata, kdata, bdata, odata);
+                                const auto gf_toepl_ginput = measure_ginput(op_toepl, idata, kdata, bdata, odata);
+                                const auto gf_toepl_gparam = measure_gparam(op_toepl, idata, kdata, bdata, odata);
 
                                 table.append()
                                         << dim3d_t{params.imaps(), params.irows(), params.icols()}
@@ -130,12 +129,8 @@ int main(int argc, const char *argv[])
                                         << dim3d_t{params.omaps(), params.orows(), params.ocols()}
                                         << params.psize()
                                         << (params.flops() / 1024)
-                                        << gf_naive_output
-                                        << gf_naive_ginput
-                                        << gf_naive_gparam
-                                        << gf_toeplitz_output
-                                        << gf_toeplitz_ginput
-                                        << gf_toeplitz_gparam;
+                                        << gf_naive_output << gf_naive_ginput << gf_naive_gparam
+                                        << gf_toepl_output << gf_toepl_ginput << gf_toepl_gparam;
                         }
                 }
         }
