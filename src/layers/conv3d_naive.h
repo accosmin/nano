@@ -9,8 +9,9 @@ namespace nano
         /// \brief naive implementation of the 3D convolution:
         ///     unrolled & not vectorized looping through pixels.
         ///
-        struct conv3d_naive_t
+        class conv3d_naive_t
         {
+        public:
                 ///
                 /// \brief constructor
                 ///
@@ -40,8 +41,10 @@ namespace nano
                 ///
                 const conv3d_params_t& params() const { return m_params; }
 
+        private:
+
                 // attributes
-                conv3d_params_t   m_params;
+                conv3d_params_t         m_params;
         };
 
         template <typename tidata, typename tkdata, typename tbdata, typename todata>
