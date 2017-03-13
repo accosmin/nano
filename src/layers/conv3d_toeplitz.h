@@ -54,15 +54,14 @@ namespace nano
 
                 // attributes
                 conv3d_params_t         m_params;
-                mutable tensor3d_t      m_idata_toe;
+                mutable tensor3d_t      m_idata_toe;    ///< Toeplitz-like matrices of the inputs!
                 // todo: maybe it is possible to not store the kernel!
                 mutable tensor4d_t      m_kdata_inv;
                 // todo: these should be removed! use directly Eigen calls to map the output buffers!
-                mutable matrix_t        m_toe_oodata;
-                mutable matrix_t        m_toe_iodata;
-                mutable matrix_t        m_toe_iidata;
-                mutable matrix_t        m_toe_kodata;
-                mutable matrix_t        m_toe_kkdata;
+                mutable matrix_t        m_oodata;       ///< buffer: (omaps / kconn, orows x ocols)
+                mutable matrix_t        m_okdata;       ///< buffer: (omaps / kconn, krows x kcols)
+                mutable matrix_t        m_kidata;       ///< buffer: (krows x kcols, irows x icols)
+                mutable matrix_t        m_iidata;       ///< buffer: (imaps / kconn, irows x icols)
         };
 
         inline conv3d_toeplitz_t::conv3d_toeplitz_t(const conv3d_params_t& params) :
@@ -76,13 +75,10 @@ namespace nano
                 m_idata_toe.resize(imaps, krows * kcols, orows * ocols);
                 m_kdata_inv.resize(imaps, omaps / kconn, krows, kcols);
 
-                m_toe_oodata.resize(omaps / kconn, orows * ocols);
-
-                m_toe_iodata.resize(krows * kcols, irows * icols);
-                m_toe_iidata.resize(imaps / kconn, irows * icols);
-
-                m_toe_kodata.resize(omaps / kconn, orows * ocols);
-                m_toe_kkdata.resize(omaps / kconn, krows * kcols);
+                m_oodata.resize(omaps / kconn, orows * ocols);
+                m_okdata.resize(omaps / kconn, krows * kcols);
+                m_kidata.resize(krows * kcols, irows * icols);
+                m_iidata.resize(imaps / kconn, irows * icols);
         }
 
         template <typename timatrix, typename tomatrix>
@@ -142,13 +138,12 @@ namespace nano
                 {
                         make_toeplitz_output(idata.matrix(i), m_idata_toe.matrix(i));
 
-                        m_toe_oodata.noalias() =
-                                map_matrix(m_kdata_inv.planeData(i, 0), omaps / kconn, m_kdata_inv.planeSize()) *
+                        m_oodata.noalias() =
+                                map_matrix(m_kdata_inv.planeData(i, 0), omaps / kconn, kdata.planeSize()) *
                                 m_idata_toe.matrix(i);
-
                         for (tensor_size_t o = i % kconn, ok = 0; o < omaps; o += kconn, ++ ok)
                         {
-                                odata.vector(o) += m_toe_oodata.row(ok);
+                                odata.vector(o) += m_oodata.row(ok);
                         }
                 }
         }
@@ -198,15 +193,14 @@ namespace nano
                 idata.setZero();
                 for (tensor_size_t o = 0; o < omaps; ++ o)
                 {
-                        make_toeplitz_ginput(odata.matrix(o), m_toe_iodata);
+                        make_toeplitz_ginput(odata.matrix(o), m_kidata);
 
-                        m_toe_iidata.noalias() =
+                        m_iidata.noalias() =
                                 map_matrix(kdata.planeData(o, 0), imaps / kconn, kdata.planeSize()) *
-                                m_toe_iodata;
-
+                                m_kidata;
                         for (tensor_size_t i = o % kconn, ik = 0; i < imaps; i += kconn, ++ ik)
                         {
-                                idata.vector(i) += m_toe_iidata.row(ik);
+                                idata.vector(i) += m_iidata.row(ik);
                         }
                 }
         }
@@ -261,14 +255,15 @@ namespace nano
                 {
                         for (tensor_size_t o = i % kconn, ok = 0; o < omaps; o += kconn, ++ ok)
                         {
-                                m_toe_kodata.row(ok) = odata.vector(o);
+                                m_oodata.row(ok) = odata.vector(o);
                         }
 
-                        m_toe_kkdata.noalias() = m_toe_kodata * m_idata_toe.matrix(i).transpose();
-
+                        m_okdata.noalias() =
+                                m_oodata *
+                                m_idata_toe.matrix(i).transpose();
                         for (tensor_size_t o = i % kconn, ok = 0; o < omaps; o += kconn, ++ ok)
                         {
-                                kdata.vector(o, i / kconn) = m_toe_kkdata.row(ok);
+                                kdata.vector(o, i / kconn) = m_okdata.row(ok);
                         }
                 }
         }
