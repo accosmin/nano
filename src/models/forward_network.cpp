@@ -1,4 +1,6 @@
 #include "timer.h"
+#include "io/ibstream.h"
+#include "io/obstream.h"
 #include "math/numeric.h"
 #include "text/to_string.h"
 #include "text/algorithm.h"
@@ -22,29 +24,25 @@ namespace nano
         {
         }
 
-        const tensor3d_t& forward_network_t::layer_info_t::output(const tensor3d_t& input)
+        void forward_network_t::layer_info_t::output()
         {
                 const timer_t timer;
-                const auto& ret = m_layer->output(input);
+                m_layer->output();
                 m_output_timings(static_cast<size_t>(timer.microseconds().count()));
-                return ret;
         }
 
-        const tensor3d_t& forward_network_t::layer_info_t::ginput(const tensor3d_t& output)
+        void forward_network_t::layer_info_t::ginput()
         {
                 const timer_t timer;
-                const auto& ret = m_layer->ginput(output);
+                m_layer->ginput();
                 m_ginput_timings(static_cast<size_t>(timer.microseconds().count()));
-                return ret;
         }
 
-        scalar_t* forward_network_t::layer_info_t::gparam(const tensor3d_t& output, scalar_t* gparam)
+        void forward_network_t::layer_info_t::gparam()
         {
                 const timer_t timer;
-                gparam -= m_layer->psize();
-                m_layer->gparam(output, gparam);
+                m_layer->gparam();
                 m_gparam_timings(static_cast<size_t>(timer.microseconds().count()));
-                return gparam;
         }
 
         forward_network_t::forward_network_t(const string_t& parameters) :
@@ -59,12 +57,12 @@ namespace nano
 
         bool forward_network_t::save(obstream_t& ob) const
         {
-                return std::all_of(m_layers.begin(), m_layers.end(), [&] (const auto& l) { return l.m_layer->save(ob); });
+                return ob.write_vector(m_param);
         }
 
         bool forward_network_t::load(ibstream_t& ib)
         {
-                return std::all_of(m_layers.begin(), m_layers.end(), [&] (const auto& l) { return l.m_layer->load(ib); });
+                return ob.read_vector(m_param);
         }
 
         const tensor3d_t& forward_network_t::output(const tensor3d_t& _input)

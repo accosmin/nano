@@ -13,19 +13,12 @@ namespace nano
                 explicit activation_layer_t(const string_t& parameters = string_t()) : layer_t(parameters) {}
 
                 virtual rlayer_t clone() const override;
+                virtual bool configure(const dim3d_t& idims) override;
+                virtual bool configure(const tensor3d_map_t idata, const tensor3d_map_t odata, const vector_map_t) override;
 
-                virtual tensor_size_t resize(const tensor3d_t& tensor) override;
-
-                virtual void random(const scalar_t, const scalar_t) override {}
-                virtual scalar_t* save_params(scalar_t* params) const override { return params; }
-                virtual const scalar_t* load_params(const scalar_t* params) override { return params; }
-
-                virtual bool save(obstream_t&) const override { return true; }
-                virtual bool load(ibstream_t&) override { return true; }
-
-                virtual const tensor3d_t& output(const tensor3d_t& input) override;
-                virtual const tensor3d_t& ginput(const tensor3d_t& output) override;
-                virtual void gparam(const tensor3d_t& output, scalar_t*) override;
+                virtual void output() override;
+                virtual void ginput() override;
+                virtual void gparam() override;
 
                 virtual dim3d_t idims() const override { return m_idata.dims(); }
                 virtual dim3d_t odims() const override { return m_odata.dims(); }
@@ -35,8 +28,8 @@ namespace nano
         private:
 
                 // attributes
-                tensor3d_t      m_idata;
-                tensor3d_t      m_odata;
+                tensor3d_map_t  m_idata;
+                tensor3d_map_t  m_odata;
         };
 
         template <typename top>
@@ -46,39 +39,33 @@ namespace nano
         }
 
         template <typename top>
-        tensor_size_t activation_layer_t<top>::resize(const tensor3d_t& tensor)
+        bool activation_layer_t<top>::configure(const dim3d_t& idims)
         {
-                m_idata.resize(tensor.dims());
-                m_odata.resize(tensor.dims());
-                return 0;
+                return true;
         }
 
         template <typename top>
-        const tensor3d_t& activation_layer_t<top>::output(const tensor3d_t& input)
+        bool activation_layer_t<top>::configure(const tensor3d_map_t idata, const tensor3d_map_t odata, const vector_map_t)
         {
-                assert(m_idata.dims() == input.dims());
+                m_idata = idata;
+                m_odata = odata;
+                return true;
+        }
 
-                m_idata.vector() = input.vector();
+        template <typename top>
+        void activation_layer_t<top>::output()
+        {
                 m_odata.vector() = top::output(m_idata.vector());
-
-                return m_odata;
         }
 
         template <typename top>
-        const tensor3d_t& activation_layer_t<top>::ginput(const tensor3d_t& output)
+        void activation_layer_t<top>::ginput()
         {
-                assert(m_odata.dims() == output.dims());
-
-                m_idata.vector() = output.array() * top::ginput(m_idata.vector(), m_odata.vector());
-
-                return m_idata;
+                m_idata.vector() = m_odata.array() * top::ginput(m_idata.vector(), m_odata.vector());
         }
 
         template <typename top>
-        void activation_layer_t<top>::gparam(const tensor3d_t& output, scalar_t*)
+        void activation_layer_t<top>::gparam()
         {
-                assert(m_odata.dims() == output.dims());
-
-                NANO_UNUSED1_RELEASE(output);
         }
 }

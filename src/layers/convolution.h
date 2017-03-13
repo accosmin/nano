@@ -23,39 +23,24 @@ namespace nano
                 explicit convolution_layer_t(const string_t& parameters = string_t());
 
                 virtual rlayer_t clone() const override;
+                virtual bool configure(const dim3d_t&) override;
+                virtual bool configure(const tensor3d_map_t, const tensor3d_map_t, const vector_map_t) override;
 
-                virtual tensor_size_t resize(const tensor3d_t& tensor) override;
-
-                virtual void random(const scalar_t min, const scalar_t max) override;
-                virtual scalar_t* save_params(scalar_t* params) const override;
-                virtual const scalar_t* load_params(const scalar_t* params) override;
-
-                virtual bool save(obstream_t&) const override;
-                virtual bool load(ibstream_t&) override;
-
-                virtual const tensor3d_t& output(const tensor3d_t& input) override;
-                virtual const tensor3d_t& ginput(const tensor3d_t& output) override;
-                virtual void gparam(const tensor3d_t& output, scalar_t* gradient) override;
+                virtual void output() override;
+                virtual void ginput() override;
+                virtual void gparam() override;
 
                 virtual dim3d_t idims() const override { return m_idata.dims(); }
                 virtual dim3d_t odims() const override { return m_odata.dims(); }
                 virtual tensor_size_t psize() const override { return m_op.params().psize(); }
                 virtual tensor_size_t flops() const override { return m_op.params().flops_output(); }
 
-                const tensor4d_t& kdata() const { return m_kdata; }
-                const vector_t& bdata() const { return m_bdata; }
-
         private:
 
                 // attributes
-                tensor3d_t      m_idata;        ///< input buffer:              idims x irows x icols
-                tensor3d_t      m_odata;        ///< output buffer:             odims x orows x ocols
-                tensor_size_t   m_kconn;        ///< input connectivity factor
-                tensor_size_t   m_drows;        ///< stride factor
-                tensor_size_t   m_dcols;        ///< stride factor
-                tensor4d_t      m_kdata;        ///< convolution kernels:       odims x (idims/kconn) x krows x kcols
-                vector_t        m_bdata;        ///< convolution bias:          odims
-
-                conv3d_toeplitz_t m_op;         ///< 3D operator
+                tensor3d_map_t          m_idata;
+                tensor3d_map_t          m_odata;
+                vector_map_t            m_param;
+                conv3d_toeplitz_t       m_op;           ///< 3D convolution operator
         };
 }

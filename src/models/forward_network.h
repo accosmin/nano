@@ -94,13 +94,13 @@ namespace nano
                 {
                         layer_info_t(const string_t& name = string_t(), rlayer_t layer = rlayer_t());
                         layer_info_t(const layer_info_t& other);
-
                         layer_info_t(layer_info_t&&) = default;
                         layer_info_t& operator=(layer_info_t&&) = default;
+                        layer_info_t& operator=(const layer_info_t&) = delete;
 
-                        const tensor3d_t& output(const tensor3d_t&);
-                        const tensor3d_t& ginput(const tensor3d_t&);
-                        scalar_t* gparam(const tensor3d_t&, scalar_t*);
+                        void output();
+                        void ginput();
+                        void gparam();
 
                         string_t        m_name;
                         rlayer_t        m_layer;
@@ -114,9 +114,9 @@ namespace nano
         private:
 
                 // attributes
-                layer_infos_t           m_layers;       ///< feed-forward layers
-                vector_t                m_gparam;       ///< buffer gradient wrt parameters
-                tensor3d_t              m_odata;        ///< bufer output
+                layer_infos_t   m_layers;               ///< feed-forward layers
+                tensor3d_t      m_idata, m_odata;       ///< input-output tensors
+                vector_t        m_iodata;               ///< buffer: input-output tensors for all layers
+                vector_t        m_param, m_gparam;      ///< buffer: parameters for all layers & its parameters
         };
 }
-
