@@ -77,7 +77,7 @@ namespace nano
                 return psize();
         }
 
-        void convolution_layer_t::random(scalar_t min, scalar_t max)
+        void convolution_layer_t::random(const scalar_t min, const scalar_t max)
         {
                 nano::set_random(random_t<scalar_t>(min, max), m_kdata, m_bdata);
         }
@@ -122,7 +122,7 @@ namespace nano
         {
                 m_odata = output;
                 auto gkdata = map_tensor(gradient, m_kdata.dims());
-                auto gbdata = map_vector(gradient + gkdata.size(), omaps());
+                auto gbdata = map_vector(gradient + gkdata.size(), m_bdata.size());
                 m_op.gparam(m_idata, gkdata, gbdata, m_odata);
         }
 }

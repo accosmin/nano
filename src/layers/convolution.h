@@ -26,7 +26,7 @@ namespace nano
 
                 virtual tensor_size_t resize(const tensor3d_t& tensor) override;
 
-                virtual void random(scalar_t min, scalar_t max) override;
+                virtual void random(const scalar_t min, const scalar_t max) override;
                 virtual scalar_t* save_params(scalar_t* params) const override;
                 virtual const scalar_t* load_params(const scalar_t* params) override;
 
@@ -41,21 +41,6 @@ namespace nano
                 virtual dim3d_t odims() const override { return m_odata.dims(); }
                 virtual tensor_size_t psize() const override { return m_op.params().psize(); }
                 virtual tensor_size_t flops() const override { return m_op.params().flops_output(); }
-
-                tensor_size_t imaps() const { return m_idata.size<0>(); }
-                tensor_size_t irows() const { return m_idata.size<1>(); }
-                tensor_size_t icols() const { return m_idata.size<2>(); }
-
-                tensor_size_t omaps() const { return m_odata.size<0>(); }
-                tensor_size_t orows() const { return m_odata.size<1>(); }
-                tensor_size_t ocols() const { return m_odata.size<2>(); }
-
-                tensor_size_t kconn() const { return m_kconn; }
-                tensor_size_t krows() const { return m_kdata.size<2>(); }
-                tensor_size_t kcols() const { return m_kdata.size<3>(); }
-
-                tensor_size_t drows() const { return m_drows; }
-                tensor_size_t dcols() const { return m_dcols; }
 
                 const tensor4d_t& kdata() const { return m_kdata; }
                 const vector_t& bdata() const { return m_bdata; }
