@@ -40,7 +40,7 @@ namespace nano
                 virtual dim3d_t idims() const override { return m_idata.dims(); }
                 virtual dim3d_t odims() const override { return m_odata.dims(); }
                 virtual tensor_size_t psize() const override { return m_op.params().psize(); }
-                virtual tensor_size_t flops() const override { return m_op.params().flops(); }
+                virtual tensor_size_t flops() const override { return m_op.params().flops_output(); }
 
                 tensor_size_t imaps() const { return m_idata.size<0>(); }
                 tensor_size_t irows() const { return m_idata.size<1>(); }

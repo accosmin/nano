@@ -123,11 +123,6 @@ namespace nano
                 const auto kconn = m_params.kconn();
                 const auto omaps = m_params.omaps();
 
-                for (tensor_size_t o = 0; o < omaps; ++ o)
-                {
-                        odata.vector(o).setConstant(bdata(o));
-                }
-
                 for (tensor_size_t i = 0; i < imaps; ++ i)
                 {
                         for (tensor_size_t o = i % kconn, ok = 0; o < omaps; o += kconn, ++ ok)
@@ -136,6 +131,13 @@ namespace nano
                         }
                 }
 
+                // bias
+                for (tensor_size_t o = 0; o < omaps; ++ o)
+                {
+                        odata.vector(o).setConstant(bdata(o));
+                }
+
+                // +convolution
                 for (tensor_size_t i = 0; i < imaps; ++ i)
                 {
                         make_toeplitz_output(idata.matrix(i), m_idata_toe.matrix(i));
@@ -248,11 +250,13 @@ namespace nano
                 const auto kconn = m_params.kconn();
                 const auto omaps = m_params.omaps();
 
+                // bias
                 for (tensor_size_t o = 0; o < omaps; ++ o)
                 {
                         bdata(o) = odata.vector(o).sum();
                 }
 
+                // convolution
                 for (tensor_size_t i = 0; i < imaps; ++ i)
                 {
                         for (tensor_size_t o = i % kconn, ok = 0; o < omaps; o += kconn, ++ ok)

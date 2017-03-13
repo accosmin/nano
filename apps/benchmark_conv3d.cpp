@@ -29,27 +29,30 @@ namespace nano
 
 namespace
 {
-        const size_t trials = 16;
+        template <typename top>
+        auto measure(const top& op, const tensor_size_t flops)
+        {
+                const auto trials = size_t(16);
+                const auto duration = measure_robustly_usec([&] () { op(); }, trials);
+                return nano::gflops(flops, duration);
+        }
 
         template <typename top, typename tidata, typename tkdata, typename tbdata, typename todata>
         auto measure_output(const top& op, const tidata& idata, const tkdata& kdata, const tbdata& bdata, todata& odata)
         {
-                const auto duration = measure_robustly_usec([&] () { op.output(idata, kdata, bdata, odata); }, trials);
-                return nano::gflops(op.params().flops(), duration);
+                return ::measure([&] () { op.output(idata, kdata, bdata, odata); }, op.params().flops_output());
         }
 
         template <typename top, typename tidata, typename tkdata, typename tbdata, typename todata>
         auto measure_ginput(const top& op, tidata& idata, const tkdata& kdata, const tbdata& bdata, const todata& odata)
         {
-                const auto duration = measure_robustly_usec([&] () { op.ginput(idata, kdata, bdata, odata); }, trials);
-                return nano::gflops(op.params().flops(), duration);
+                return ::measure([&] () { op.ginput(idata, kdata, bdata, odata); }, op.params().flops_ginput());
         }
 
         template <typename top, typename tidata, typename tkdata, typename tbdata, typename todata>
         auto measure_gparam(const top& op, const tidata& idata, tkdata& kdata, tbdata& bdata, const todata& odata)
         {
-                const auto duration = measure_robustly_usec([&] () { op.gparam(idata, kdata, bdata, odata); }, trials);
-                return nano::gflops(op.params().flops(), duration);
+                return ::measure([&] () { op.gparam(idata, kdata, bdata, odata); }, op.params().flops_gparam());
         }
 }
 
@@ -130,7 +133,7 @@ int main(int argc, const char *argv[])
                                         << config
                                         << dim3d_t{params.omaps(), params.orows(), params.ocols()}
                                         << params.psize()
-                                        << (params.flops() / 1024)
+                                        << (params.flops_output() / 1024)
                                         << gf_naive_output << gf_naive_ginput << gf_naive_gparam
                                         << gf_toepl_output << gf_toepl_ginput << gf_toepl_gparam;
                         }

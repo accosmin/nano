@@ -40,7 +40,9 @@ namespace nano
                 auto bdims() const { return omaps(); }
 
                 auto psize() const { return imaps() * omaps() * krows() * kcols() / kconn() + omaps(); }
-                auto flops() const { return 2 * imaps() * omaps() * orows() * ocols() * krows() * kcols() / kconn(); }
+                auto flops_output() const { return 2 * imaps() * omaps() * orows() * ocols() * krows() * kcols() / kconn(); }
+                auto flops_ginput() const { return 2 * imaps() * omaps() * irows() * icols() * krows() * kcols() / kconn(); }
+                auto flops_gparam() const { return flops_output(); }
 
                 auto make_idata() const { return tensor3d_t(idims()); }
                 auto make_kdata() const { return tensor4d_t(kdims()); }
