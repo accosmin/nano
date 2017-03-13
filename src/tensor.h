@@ -11,8 +11,10 @@ namespace nano
         using tensor4d_t = tensor_mem_t<vector_t, 4>;
 
         using vector_map_t = Eigen::Map<vector_t>;
-        using tensor3d_map_t = tensor_map_t<vector_t, 3>;
-        using tensor4d_map_t = tensor_map_t<vector_t, 4>;
+        using tensor1d_map_t = tensor_map_t<vector_map_t, 1>;
+        using tensor2d_map_t = tensor_map_t<vector_map_t, 2>;
+        using tensor3d_map_t = tensor_map_t<vector_map_t, 3>;
+        using tensor4d_map_t = tensor_map_t<vector_map_t, 4>;
 
         using vectors_t = std::vector<vector_t>;
         using matrices_t = std::vector<matrix_t>;

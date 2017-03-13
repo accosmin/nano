@@ -38,24 +38,19 @@ namespace nano
                 virtual bool configure(const dim3d_t& idims) = 0;
 
                 ///
-                /// \brief configure to use the given input-output-parameters buffers
-                ///
-                virtual bool configure(const tensor3d_map_t idata, const tensor3d_map_t odata, const vector_map_t params) = 0;
-
-                ///
                 /// \brief compute the output
                 ///
-                virtual void output() = 0;
+                virtual void output(const tensor3d_map_t& idata, const tensor1d_map_t& param, const tensor3d_map_t& odata) = 0;
 
                 ///
                 /// \brief compute the gradient wrt the inputs
                 ///
-                virtual void ginput() = 0;
+                virtual void ginput(const tensor3d_map_t& idata, const tensor1d_map_t& param, const tensor3d_map_t& odata) = 0;
 
                 ///
                 /// \brief compute the gradient wrt the parameters
                 ///
-                virtual void gparam() = 0;
+                virtual void gparam(const tensor3d_map_t& idata, const tensor1d_map_t& param, const tensor3d_map_t& odata) = 0;
 
                 ///
                 /// \brief returns the input/output dimensions

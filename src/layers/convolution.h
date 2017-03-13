@@ -24,23 +24,18 @@ namespace nano
 
                 virtual rlayer_t clone() const override;
                 virtual bool configure(const dim3d_t&) override;
-                virtual bool configure(const tensor3d_map_t, const tensor3d_map_t, const vector_map_t) override;
+                virtual void output(const tensor3d_map_t&, const tensor1d_map_t&, const tensor3d_map_t&) override;
+                virtual void ginput(const tensor3d_map_t&, const tensor1d_map_t&, const tensor3d_map_t&) override;
+                virtual void gparam(const tensor3d_map_t&, const tensor1d_map_t&, const tensor3d_map_t&) override;
 
-                virtual void output() override;
-                virtual void ginput() override;
-                virtual void gparam() override;
-
-                virtual dim3d_t idims() const override { return m_idata.dims(); }
-                virtual dim3d_t odims() const override { return m_odata.dims(); }
+                virtual dim3d_t idims() const override { return m_op.params().idims(); }
+                virtual dim3d_t odims() const override { return m_op.params().odims(); }
                 virtual tensor_size_t psize() const override { return m_op.params().psize(); }
                 virtual tensor_size_t flops() const override { return m_op.params().flops_output(); }
 
         private:
 
                 // attributes
-                tensor3d_map_t          m_idata;
-                tensor3d_map_t          m_odata;
-                vector_map_t            m_param;
                 conv3d_toeplitz_t       m_op;           ///< 3D convolution operator
         };
 }

@@ -14,8 +14,8 @@ namespace nano
         {
         public:
 
-                static_assert(tdimensions >= 3,
-                        "cannot create tensors with fewer than 3 dimensions, use a vector or a matrix instead");
+                static_assert(tdimensions >= 1,
+                        "cannot create tensors with fewer than one dimension");
 
                 using tscalar = typename tstorage::Scalar;
                 using tdims = tensor_dims_t<tdimensions>;
@@ -79,9 +79,9 @@ namespace nano
                 tensor_index_t size() const { assert(m_data.size() == nano::size(m_dims)); return m_data.size(); }
                 template <int idim>
                 tensor_index_t size() const { return std::get<idim>(m_dims); }
-                tensor_index_t rows() const { return size<tdimensions - 2>(); }
-                tensor_index_t cols() const { return size<tdimensions - 1>(); }
-                tensor_index_t planeSize() const { return rows() * cols(); }
+                tensor_index_t rows() const { static_assert(tdimensions >= 3, "method not available"); return size<tdimensions - 2>(); }
+                tensor_index_t cols() const { static_assert(tdimensions >= 3, "method not available"); return size<tdimensions - 1>(); }
+                tensor_index_t planeSize() const { static_assert(tdimensions >= 3, "method not available"); return rows() * cols(); }
                 const tdims& dims() const { return m_dims; }
                 auto dimensionality() const { return tdimensions; }
 
@@ -143,11 +143,13 @@ namespace nano
                 template <typename... tindices>
                 auto matrix(const tindices... indices) const
                 {
+                        static_assert(tdimensions >= 3, "method not available");
                         return nano::map_matrix(planeData(indices...), rows(), cols());
                 }
                 template <typename... tindices>
                 auto matrix(const tindices... indices)
                 {
+                        static_assert(tdimensions >= 3, "method not available");
                         return nano::map_matrix(planeData(indices...), rows(), cols());
                 }
 
@@ -157,15 +159,15 @@ namespace nano
                 template <typename... tindices>
                 const tscalar* planeData(const tindices... indices) const
                 {
-                        static_assert(sizeof...(indices) == tdimensions - 2,
-                                "wrong number of tensor dimensions to access a 2D plane");
+                        static_assert(tdimensions >= 3, "method not available");
+                        static_assert(sizeof...(indices) == tdimensions - 2, "method not available");
                         return data() + nano::index(m_dims, indices..., 0, 0);
                 }
                 template <typename... tindices>
                 tscalar* planeData(const tindices... indices)
                 {
-                        static_assert(sizeof...(indices) == tdimensions - 2,
-                                "wrong number of tensor dimensions to access a 2D plane");
+                        static_assert(tdimensions >= 3, "method not available");
+                        static_assert(sizeof...(indices) == tdimensions - 2, "method not available");
                         return data() + nano::index(m_dims, indices..., 0, 0);
                 }
 

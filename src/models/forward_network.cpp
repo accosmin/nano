@@ -62,7 +62,8 @@ namespace nano
 
         bool forward_network_t::load(ibstream_t& ib)
         {
-                return ob.read_vector(m_param);
+                return ib.read_vector(m_param) &&
+                       m_param.size() == psize();
         }
 
         const tensor3d_t& forward_network_t::output(const tensor3d_t& _input)

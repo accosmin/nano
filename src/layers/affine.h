@@ -18,22 +18,26 @@ namespace nano
 
                 virtual rlayer_t clone() const override;
                 virtual bool configure(const dim3d_t&) override;
-                virtual bool configure(const tensor3d_map_t, const tensor3d_map_t, const vector_map_t) override;
+                virtual void output(const tensor3d_map_t&, const tensor1d_map_t&, const tensor3d_map_t&) override;
+                virtual void ginput(const tensor3d_map_t&, const tensor1d_map_t&, const tensor3d_map_t&) override;
+                virtual void gparam(const tensor3d_map_t&, const tensor1d_map_t&, const tensor3d_map_t&) override;
 
-                virtual void output() override;
-                virtual void ginput() override;
-                virtual void gparam() override;
-
-                virtual dim3d_t idims() const override { return m_idata.dims(); }
-                virtual dim3d_t odims() const override { return m_odata.dims(); }
-                virtual tensor_size_t psize() const override { return m_param.size(); }
-                virtual tensor_size_t flops() const override { return psize(); }
+                virtual dim3d_t idims() const override { return m_idims; }
+                virtual dim3d_t odims() const override { return m_odims; }
+                virtual tensor_size_t psize() const override { return m_psize; }
+                virtual tensor_size_t flops() const override { return 2 * psize(); }
 
         private:
 
+                tensor_size_t isize() const { return nano::size(m_idims); }
+                tensor_size_t osize() const { return nano::size(m_odims); }
+
+                auto wdata(const tensor1d_map_t& param) const { return map_matrix(param.data(), osize(), isize()); }
+                auto bdata(const tensor1d_map_t& param) const { return map_vector(param.data() + osize() * isize(), osize()); }
+
                 // attributes
-                tensor3d_map_t          m_idata;
-                tensor3d_map_t          m_odata;
-                vector_map_t            m_param;
+                dim3d_t         m_idims;
+                dim3d_t         m_odims;
+                tensor_size_t   m_psize;
         };
 }

@@ -1,18 +1,14 @@
 #include "logger.h"
 #include "convolution.h"
-#include "math/random.h"
 #include "math/numeric.h"
-#include "tensor/numeric.h"
 #include "text/to_params.h"
 #include "text/from_params.h"
-#include "tensor/serialize.h"
 
 namespace nano
 {
         convolution_layer_t::convolution_layer_t(const string_t& parameters) :
                 layer_t(to_params(parameters, "dims", "16[1,256]", "rows", "8[1,32]", "cols", "8[1,32]",
-                "conn", "1[1,16]", "drow", "1[1,8]", "dcol", "1[1,8]")),
-                m_kconn(1), m_drows(1), m_dcols(1)
+                "conn", "1[1,16]", "drow", "1[1,8]", "dcol", "1[1,8]"))
         {
         }
 

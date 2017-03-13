@@ -26,8 +26,12 @@
 // fix "unused variable" warnings (only for release mode)
 #ifdef NANO_DEBUG
         #define NANO_UNUSED1_RELEASE(x)
+        #define NANO_UNUSED2_RELEASE(x, y)
+        #define NANO_UNUSED3_RELEASE(x, y, z)
 #else
         #define NANO_UNUSED1_RELEASE(x) NANO_UNUSED1(x)
+        #define NANO_UNUSED2_RELEASE(x, y) NANO_UNUSED2(x, y)
+        #define NANO_UNUSED3_RELEASE(x, y, z) NANO_UNUSED3(x, y, z)
 #endif
 
 // string a given variable
