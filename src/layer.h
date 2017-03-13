@@ -6,9 +6,6 @@
 
 namespace nano
 {
-        class ibstream_t;
-        class obstream_t;
-
         ///
         /// \brief stores registered prototypes
         ///
@@ -36,9 +33,15 @@ namespace nano
                 virtual rlayer_t clone() const = 0;
 
                 ///
-                /// \brief resize to process new tensors of the given type
+                /// \brief configure to process new tensors of the given size
+                /// \return the number of parameters
                 ///
-                virtual tensor_size_t resize(const tensor3d_t& tensor) = 0;
+                virtual tensor_size_t configure(const dim3d_t& idims, dim3d_t& odims) = 0;
+
+                ///
+                /// \brief configure to use the given input-output-parameters buffers
+                ///
+                virtual bool configure(tensor3d_t& idata, tensor3d_t& odata, vector_map_t& params) = 0;
 
                 ///
                 /// \brief reset parameters to random values in the [min, max] range
@@ -46,31 +49,19 @@ namespace nano
                 virtual void random(const scalar_t min, const scalar_t max) = 0;
 
                 ///
-                /// \brief serialize parameters (to memory)
-                ///
-                virtual scalar_t* save_params(scalar_t* params) const = 0;
-                virtual const scalar_t* load_params(const scalar_t* params) = 0;
-
-                ///
-                /// \brief serialize to disk
-                ///
-                virtual bool save(obstream_t&) const = 0;
-                virtual bool load(ibstream_t&) = 0;
-
-                ///
                 /// \brief compute the output
                 ///
-                virtual const tensor3d_t& output(const tensor3d_t& input) = 0;
+                virtual void output() = 0;
 
                 ///
                 /// \brief compute the gradient wrt the inputs
                 ///
-                virtual const tensor3d_t& ginput(const tensor3d_t& output) = 0;
+                virtual void ginput() = 0;
 
                 ///
                 /// \brief compute the gradient wrt the parameters
                 ///
-                virtual void gparam(const tensor3d_t& output, scalar_t* gradient) = 0;
+                virtual void gparam() = 0;
 
                 ///
                 /// \brief returns the input/output dimensions
