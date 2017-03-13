@@ -35,22 +35,22 @@ namespace nano
                 ///
                 /// \brief configure to process new tensors of the given size
                 ///
-                virtual bool configure(const dim3d_t& idims) = 0;
+                virtual void configure(const dim3d_t& idims) = 0;
 
                 ///
-                /// \brief compute the output
+                /// \brief compute the output: (input, parameters, output)
                 ///
-                virtual void output(const tensor3d_map_t& idata, const tensor1d_map_t& param, const tensor3d_map_t& odata) = 0;
+                virtual void output(tensor3d_map_t idata, tensor1d_map_t param, tensor3d_map_t odata) = 0;
 
                 ///
-                /// \brief compute the gradient wrt the inputs
+                /// \brief compute the gradient wrt the inputs: (input, parameters, output)
                 ///
-                virtual void ginput(const tensor3d_map_t& idata, const tensor1d_map_t& param, const tensor3d_map_t& odata) = 0;
+                virtual void ginput(tensor3d_map_t idata, tensor1d_map_t param, tensor3d_map_t odata) = 0;
 
                 ///
-                /// \brief compute the gradient wrt the parameters
+                /// \brief compute the gradient wrt the parameters: (input, parameters, output)
                 ///
-                virtual void gparam(const tensor3d_map_t& idata, const tensor1d_map_t& param, const tensor3d_map_t& odata) = 0;
+                virtual void gparam(tensor3d_map_t idata, tensor1d_map_t param, tensor3d_map_t odata) = 0;
 
                 ///
                 /// \brief returns the input/output dimensions

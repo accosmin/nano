@@ -17,10 +17,10 @@ namespace nano
                 explicit affine_layer_t(const string_t& parameters = string_t());
 
                 virtual rlayer_t clone() const override;
-                virtual bool configure(const dim3d_t&) override;
-                virtual void output(const tensor3d_map_t&, const tensor1d_map_t&, const tensor3d_map_t&) override;
-                virtual void ginput(const tensor3d_map_t&, const tensor1d_map_t&, const tensor3d_map_t&) override;
-                virtual void gparam(const tensor3d_map_t&, const tensor1d_map_t&, const tensor3d_map_t&) override;
+                virtual void configure(const dim3d_t&) override;
+                virtual void output(tensor3d_map_t, tensor1d_map_t, tensor3d_map_t) override;
+                virtual void ginput(tensor3d_map_t, tensor1d_map_t, tensor3d_map_t) override;
+                virtual void gparam(tensor3d_map_t, tensor1d_map_t, tensor3d_map_t) override;
 
                 virtual dim3d_t idims() const override { return m_idims; }
                 virtual dim3d_t odims() const override { return m_odims; }
@@ -29,11 +29,12 @@ namespace nano
 
         private:
 
-                tensor_size_t isize() const { return nano::size(m_idims); }
-                tensor_size_t osize() const { return nano::size(m_odims); }
+                auto isize() const { return nano::size(m_idims); }
+                auto osize() const { return nano::size(m_odims); }
+                auto wsize() const { return osize() * isize(); }
 
-                auto wdata(const tensor1d_map_t& param) const { return map_matrix(param.data(), osize(), isize()); }
-                auto bdata(const tensor1d_map_t& param) const { return map_vector(param.data() + osize() * isize(), osize()); }
+                auto wdata(tensor1d_map_t param) const { return map_matrix(param.data(), osize(), isize()); }
+                auto bdata(tensor1d_map_t param) const { return map_vector(param.data() + wsize(), osize()); }
 
                 // attributes
                 dim3d_t         m_idims;

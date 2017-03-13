@@ -168,6 +168,7 @@ namespace nano
                         const auto min = -std::sqrt(6 / (1 + div));
                         const auto max = +std::sqrt(6 / (1 + div));
 
+                nano::set_random(random_t<scalar_t>(min, max), m_kdata, m_bdata);
                         layer.m_layer->random(min, max);
                 }
         }

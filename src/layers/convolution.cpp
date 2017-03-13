@@ -17,11 +17,11 @@ namespace nano
                 return std::make_unique<convolution_layer_t>(*this);
         }
 
-        tensor_size_t convolution_layer_t::resize(const tensor3d_t& tensor)
+        void convolution_layer_t::configure(const dim3d_t& idims)
         {
-                const auto imaps = tensor.size<0>();
-                const auto irows = tensor.size<1>();
-                const auto icols = tensor.size<2>();
+                const auto imaps = std::get<0>(idims);
+                const auto irows = std::get<1>(idims);
+                const auto icols = std::get<2>(idims);
 
                 const auto omaps = clamp(from_params<tensor_size_t>(config(), "dims"), 1, 256);
                 const auto krows = clamp(from_params<tensor_size_t>(config(), "rows"), 1, 32);
@@ -55,68 +55,34 @@ namespace nano
                         throw std::invalid_argument("invalid configuration for the convolution layer");
                 }
 
-                // resize buffers
-                m_idata.resize(imaps, irows, icols);
-                m_odata.resize(omaps, orows, ocols);
-                m_kdata.resize(omaps, imaps / kconn, krows, kcols);
-                m_bdata.resize(omaps);
-
-                m_kconn = kconn;
-                m_drows = drows;
-                m_dcols = dcols;
-
                 const auto params = conv3d_params_t{imaps, irows, icols, omaps, kconn, krows, kcols, drows, dcols};
                 m_op = conv3d_toeplitz_t{params};
-
-                return psize();
         }
 
-        void convolution_layer_t::random(const scalar_t min, const scalar_t max)
+        void convolution_layer_t::output(tensor3d_map_t idata, tensor1d_map_t param, tensor3d_map_t odata)
         {
-                nano::set_random(random_t<scalar_t>(min, max), m_kdata, m_bdata);
+                assert(idata.dims() == idims());
+                assert(param.size() == psize());
+                assert(odata.dims() == odims());
+
+                m_op.output(idata, kdata(param), bdata(param), odata);
         }
 
-        scalar_t* convolution_layer_t::save_params(scalar_t* params) const
+        void convolution_layer_t::ginput(tensor3d_map_t idata, tensor1d_map_t param, tensor3d_map_t odata)
         {
-                return nano::to_array(params, m_kdata, m_bdata);
+                assert(idata.dims() == idims());
+                assert(param.size() == psize());
+                assert(odata.dims() == odims());
+
+                m_op.ginput(idata, kdata(param), bdata(param), odata);
         }
 
-        const scalar_t* convolution_layer_t::load_params(const scalar_t* params)
+        void convolution_layer_t::gparam(tensor3d_map_t idata, tensor1d_map_t param, tensor3d_map_t odata)
         {
-                return nano::from_array(params, m_kdata, m_bdata);
-        }
+                assert(idata.dims() == idims());
+                assert(param.size() == psize());
+                assert(odata.dims() == odims());
 
-        bool convolution_layer_t::save(obstream_t& ob) const
-        {
-                return  ob.write_tensor(m_kdata) &&
-                        ob.write_vector(m_bdata);
-        }
-
-        bool convolution_layer_t::load(ibstream_t& ib)
-        {
-                return  ib.read_tensor(m_kdata) &&
-                        ib.read_vector(m_bdata);
-        }
-
-        const tensor3d_t& convolution_layer_t::output(const tensor3d_t& input)
-        {
-                m_idata = input;
-                m_op.output(m_idata, m_kdata, m_bdata, m_odata);
-                return m_odata;
-        }
-
-        const tensor3d_t& convolution_layer_t::ginput(const tensor3d_t& output)
-        {
-                m_odata = output;
-                m_op.ginput(m_idata, m_kdata, m_bdata, m_odata);
-                return m_idata;
-        }
-
-        void convolution_layer_t::gparam(const tensor3d_t& output, scalar_t* gradient)
-        {
-                m_odata = output;
-                auto gkdata = map_tensor(gradient, m_kdata.dims());
-                auto gbdata = map_vector(gradient + gkdata.size(), m_bdata.size());
-                m_op.gparam(m_idata, gkdata, gbdata, m_odata);
+                m_op.gparam(idata, kdata(param), bdata(param), odata);
         }
 }

@@ -12,16 +12,16 @@ namespace nano
         {
                 explicit activation_layer_t(const string_t& parameters = string_t()) :
                         layer_t(parameters),
-                        m_idims(0, 0, 0),
-                        m_odims(0, 0, 0)
+                        m_idims({0, 0, 0}),
+                        m_odims({0, 0, 0})
                 {
                 }
 
                 virtual rlayer_t clone() const override;
-                virtual bool configure(const dim3d_t&) override;
-                virtual void output(const tensor3d_map_t&, const tensor1d_map_t&, const tensor3d_map_t&) override;
-                virtual void ginput(const tensor3d_map_t&, const tensor1d_map_t&, const tensor3d_map_t&) override;
-                virtual void gparam(const tensor3d_map_t&, const tensor1d_map_t&, const tensor3d_map_t&) override;
+                virtual void configure(const dim3d_t&) override;
+                virtual void output(tensor3d_map_t, tensor1d_map_t, tensor3d_map_t) override;
+                virtual void ginput(tensor3d_map_t, tensor1d_map_t, tensor3d_map_t) override;
+                virtual void gparam(tensor3d_map_t, tensor1d_map_t, tensor3d_map_t) override;
 
                 virtual dim3d_t idims() const override { return m_idims; }
                 virtual dim3d_t odims() const override { return m_odims; }
@@ -42,15 +42,14 @@ namespace nano
         }
 
         template <typename top>
-        bool activation_layer_t<top>::configure(const dim3d_t& idims)
+        void activation_layer_t<top>::configure(const dim3d_t& idims)
         {
                 m_idims = idims;
                 m_odims = idims;
-                return true;
         }
 
         template <typename top>
-        void activation_layer_t<top>::output(const tensor3d_map_t& idata, const tensor1d_map_t& param, const tensor3d_map_t& odata)
+        void activation_layer_t<top>::output(tensor3d_map_t idata, tensor1d_map_t param, tensor3d_map_t odata)
         {
                 assert(idata.dims() == idims());
                 assert(param.size() == psize());
@@ -61,7 +60,7 @@ namespace nano
         }
 
         template <typename top>
-        void activation_layer_t<top>::ginput(const tensor3d_map_t& idata, const tensor1d_map_t& param, const tensor3d_map_t& odata)
+        void activation_layer_t<top>::ginput(tensor3d_map_t idata, tensor1d_map_t param, tensor3d_map_t odata)
         {
                 assert(idata.dims() == idims());
                 assert(param.size() == psize());
@@ -72,7 +71,7 @@ namespace nano
         }
 
         template <typename top>
-        void activation_layer_t<top>::gparam(const tensor3d_map_t& idata, const tensor1d_map_t& param, const tensor3d_map_t& odata)
+        void activation_layer_t<top>::gparam(tensor3d_map_t idata, tensor1d_map_t param, tensor3d_map_t odata)
         {
                 assert(idata.dims() == idims());
                 assert(param.size() == psize());

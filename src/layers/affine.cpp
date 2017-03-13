@@ -1,4 +1,5 @@
 #include "affine.h"
+#include "math/numeric.h"
 #include "text/to_params.h"
 #include "text/from_params.h"
 
@@ -17,15 +18,14 @@ namespace nano
                 return std::make_unique<affine_layer_t>(*this);
         }
 
-        bool affine_layer_t::configure(const dim3d_t& idims)
+        void affine_layer_t::configure(const dim3d_t& idims)
         {
                 m_idims = idims;
                 m_odims = {nano::clamp(nano::from_params<tensor_size_t>(config(), "dims"), 1, 4096), 1, 1};
                 m_psize = nano::size(m_odims) * (nano::size(m_idims) + 1);
-                return true;
         }
 
-        void affine_layer_t::output(const tensor3d_map_t& idata, const tensor1d_map_t& param, const tensor3d_map_t& odata)
+        void affine_layer_t::output(tensor3d_map_t idata, tensor1d_map_t param, tensor3d_map_t odata)
         {
                 assert(idata.dims() == idims());
                 assert(param.size() == psize());
@@ -34,7 +34,7 @@ namespace nano
                 odata.vector() = wdata(param) * idata.vector() + bdata(param);
         }
 
-        void affine_layer_t::ginput(const tensor3d_map_t& idata, const tensor1d_map_t& param, const tensor3d_map_t& odata)
+        void affine_layer_t::ginput(tensor3d_map_t idata, tensor1d_map_t param, tensor3d_map_t odata)
         {
                 assert(idata.dims() == idims());
                 assert(param.size() == psize());
@@ -43,14 +43,13 @@ namespace nano
                 idata.vector() = wdata(param).transpose() * odata.vector();
         }
 
-        void affine_layer_t::gparam(const tensor3d_map_t& idata, const tensor1d_map_t& param, const tensor3d_map_t& odata)
+        void affine_layer_t::gparam(tensor3d_map_t idata, tensor1d_map_t param, tensor3d_map_t odata)
         {
                 assert(idata.dims() == idims());
                 assert(param.size() == psize());
                 assert(odata.dims() == odims());
 
                 bdata(param) = odata.vector();
-                wdata(param).noalias() = odata.vector() * idata.vector().transpose();
+                wdata(param) = odata.vector() * idata.vector().transpose();
         }
 }
-
