@@ -85,9 +85,10 @@ int main(int argc, const char *argv[])
 
         table_t table;
         table.header()
-                << "isize" << "convolution parameters" << "osize" << "params" << "kflops"
-                << "naive:output[gflops]" << "ginput" << "gparam"
-                << "toeplitz:output[gflops]" << "ginput" << "gparam";
+                << "isize" << "convolution parameters" << "osize" << "params"
+                << "output[kflops]" << "ginput" << "gparam"
+                << "naive[gflop/s]" << "ginput" << "gparam"
+                << "toepl[gflop/s]" << "ginput" << "gparam";
 
         // benchmark 3D convolutions various kernel sizes & connectivity factors
         for (tensor_size_t ksize = cmd_min_ksize; ksize <= cmd_max_ksize; ksize += 2)
@@ -101,6 +102,10 @@ int main(int argc, const char *argv[])
                                         cmd_imaps, cmd_irows, cmd_icols,
                                         cmd_omaps, kconn, ksize, ksize, kdelta, kdelta
                                 };
+
+                                const auto kflops_output = params.flops_output() / 1024;
+                                const auto kflops_ginput = params.flops_ginput() / 1024;
+                                const auto kflops_gparam = params.flops_gparam() / 1024;
 
                                 const auto config = to_params("conn", kconn,
                                         "rows", ksize, "cols", ksize, "drow", kdelta, "dcol", kdelta);
@@ -133,7 +138,7 @@ int main(int argc, const char *argv[])
                                         << config
                                         << dim3d_t{params.omaps(), params.orows(), params.ocols()}
                                         << params.psize()
-                                        << (params.flops_output() / 1024)
+                                        << kflops_output << kflops_ginput << kflops_gparam
                                         << gf_naive_output << gf_naive_ginput << gf_naive_gparam
                                         << gf_toepl_output << gf_toepl_ginput << gf_toepl_gparam;
                         }
