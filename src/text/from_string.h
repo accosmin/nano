@@ -133,6 +133,7 @@ namespace nano
         template <typename tvalue>
         tvalue from_string(const string_t& str)
         {
+                /// todo: replace this with "if constepr" in c++17
                 return detail::from_string_t<tvalue>::dispatch(str);
         }
 
