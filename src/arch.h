@@ -21,7 +21,7 @@
 // fix "unused variable" warnings
 #define NANO_UNUSED1(x) (void)(x)
 #define NANO_UNUSED2(x, y) NANO_UNUSED1(x); NANO_UNUSED1(y)
-#define NANO_UNUSED3(x, y, z) NANO_UNUSED1(x, y); NANO_UNUSED1(z)
+#define NANO_UNUSED3(x, y, z) NANO_UNUSED2(x, y); NANO_UNUSED1(z)
 
 // fix "unused variable" warnings (only for release mode)
 #ifdef NANO_DEBUG

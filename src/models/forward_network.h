@@ -98,9 +98,16 @@ namespace nano
                         layer_info_t& operator=(layer_info_t&&) = default;
                         layer_info_t& operator=(const layer_info_t&) = delete;
 
-                        void output();
-                        void ginput();
-                        void gparam();
+                        void output(tensor3d_map_t idata, tensor1d_map_t param, tensor3d_map_t odata);
+                        void ginput(tensor3d_map_t idata, tensor1d_map_t param, tensor3d_map_t odata);
+                        void gparam(tensor3d_map_t idata, tensor1d_map_t param, tensor3d_map_t odata);
+
+                        auto idims() const { return m_layer->idims(); }
+                        auto odims() const { return m_layer->odims(); }
+                        auto isize() const { return nano::size(idims()); }
+                        auto osize() const { return nano::size(odims()); }
+                        auto psize() const { return m_layer->psize(); }
+                        auto flops() const { return m_layer->flops(); }
 
                         string_t        m_name;
                         rlayer_t        m_layer;
@@ -111,12 +118,10 @@ namespace nano
 
                 using layer_infos_t = std::vector<layer_info_t>;
 
-        private:
-
                 // attributes
                 layer_infos_t   m_layers;               ///< feed-forward layers
                 tensor3d_t      m_idata, m_odata;       ///< input-output tensors
-                vector_t        m_iodata;               ///< buffer: input-output tensors for all layers
-                vector_t        m_param, m_gparam;      ///< buffer: parameters for all layers & its parameters
+                vector_t        m_xdata;                ///< buffer: input-output tensors for all layers
+                vector_t        m_pdata;                ///< buffer: parameters for all layers
         };
 }
