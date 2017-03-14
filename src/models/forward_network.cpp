@@ -88,6 +88,9 @@ namespace nano
                 }
                 m_odata = map_tensor(pxdata - nano::size(odims()), odims());
 
+                assert(pxdata == m_xdata.data() + m_xdata.size());
+                assert(ppdata == m_pdata.data() + m_pdata.size());
+
                 return m_odata;
         }
 
@@ -121,6 +124,9 @@ namespace nano
                 }
                 m_idata = map_tensor(pxdata, idims());
 
+                assert(pxdata == m_xdata.data());
+                assert(ppdata == m_pdata.data());
+
                 return m_idata;
         }
 
@@ -152,6 +158,9 @@ namespace nano
                         pxdata -= layer.isize() + layer.osize();
                         ppdata -= layer.psize();
                 }
+
+                assert(pxdata == m_xdata.data());
+                assert(ppdata == m_pdata.data());
 
                 return m_pdata;
         }
