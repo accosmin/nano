@@ -1,6 +1,5 @@
 #include "task.h"
 #include "model.h"
-#include "logger.h"
 #include "io/ibstream.h"
 #include "io/obstream.h"
 

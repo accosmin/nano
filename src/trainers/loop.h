@@ -60,7 +60,7 @@ namespace nano
                 const toperator& trainer)
         {
                 vector_t x0;
-                model.save_params(x0);
+                model.save(x0);
 
                 // setup accumulator
                 accumulator_t acc(model, loss, criterion);

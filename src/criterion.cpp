@@ -26,7 +26,7 @@ namespace nano
         void criterion_t::model(const model_t& model)
         {
                 m_model = model.clone();
-                m_model->save_params(m_params);
+                m_model->save(m_params);
 
                 clear();
         }
@@ -35,7 +35,7 @@ namespace nano
         {
                 assert(m_model->psize() == params.size());
 
-                m_model->load_params(params);
+                m_model->load(params);
                 m_params = params;
 
                 clear();

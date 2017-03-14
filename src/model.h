@@ -65,12 +65,12 @@ namespace nano
                 ///
                 /// \brief load its parameters from vector
                 ///
-                virtual bool load_params(const vector_t& x) = 0;
+                virtual bool load(const vector_t& x) = 0;
 
                 ///
                 /// \brief save its parameters to vector
                 ///
-                virtual bool save_params(vector_t& x) const = 0;
+                virtual bool save(vector_t& x) const = 0;
 
                 ///
                 /// \brief set parameters to  values

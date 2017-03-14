@@ -56,7 +56,7 @@ namespace nano
                 assert(odata.dims() == odims());
                 NANO_UNUSED1_RELEASE(param);
 
-                odata.vector() = top::output(idata.vector());
+                odata.vector() = top::output(idata);
         }
 
         template <typename top>
@@ -67,7 +67,7 @@ namespace nano
                 assert(odata.dims() == odims());
                 NANO_UNUSED1_RELEASE(param);
 
-                idata.vector() = odata.array() * top::ginput(idata.vector(), odata.vector());
+                idata.vector() = odata.array() * top::ginput(idata, odata);
         }
 
         template <typename top>

@@ -21,7 +21,7 @@ struct model_wrt_params_function_t final : public function_t
 
         scalar_t vgrad(const vector_t& x, vector_t* gx) const override
         {
-                m_model->load_params(x);
+                m_model->load(x);
                 const vector_t output = m_model->output(m_inputs).vector();
                 if (gx)
                 {
@@ -46,7 +46,7 @@ struct model_wrt_inputs_function_t final : public function_t
 
         scalar_t vgrad(const vector_t& x, vector_t* gx) const override
         {
-                m_model->load_params(m_params);
+                m_model->load(m_params);
                 const auto inputs = nano::map_tensor(x.data(), m_model->idims());
                 const auto output = m_model->output(inputs).vector();
                 if (gx)
@@ -148,7 +148,7 @@ static void test_model(const string_t& model_description, const tensor_size_t ex
         {
                 make_random_config(inputs, target);
                 model->random();
-                NANO_CHECK(model->save_params(params));
+                NANO_CHECK(model->save(params));
 
                 NANO_CHECK_LESS(pfunction.grad_accuracy(params), epsilon);
                 NANO_CHECK_LESS(ifunction.grad_accuracy(inputs.vector()), epsilon);

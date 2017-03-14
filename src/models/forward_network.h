@@ -65,8 +65,8 @@ namespace nano
                 ///
                 /// \brief save/load/initialize parameters
                 ///
-                virtual bool load_params(const vector_t& x) override;
-                virtual bool save_params(vector_t& x) const override;
+                virtual bool load(const vector_t& x) override;
+                virtual bool save(vector_t& x) const override;
                 virtual void random() override;
 
                 ///
@@ -106,6 +106,7 @@ namespace nano
                         auto odims() const { return m_layer->odims(); }
                         auto isize() const { return nano::size(idims()); }
                         auto osize() const { return nano::size(odims()); }
+                        auto xsize() const { return isize() + osize(); }
                         auto psize() const { return m_layer->psize(); }
                         auto flops() const { return m_layer->flops(); }
 
@@ -120,8 +121,10 @@ namespace nano
 
                 // attributes
                 layer_infos_t   m_layers;               ///< feed-forward layers
-                tensor3d_t      m_idata, m_odata;       ///< input-output tensors
+                tensor3d_t      m_idata;                ///< input tensors
+                tensor3d_t      m_odata;                ///< output tensors
                 vector_t        m_xdata;                ///< buffer: input-output tensors for all layers
                 vector_t        m_pdata;                ///< buffer: parameters for all layers
+                vector_t        m_gdata;                ///< buffer: parameter gradients for all layers
         };
 }

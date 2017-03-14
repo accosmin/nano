@@ -70,7 +70,7 @@ NANO_CASE(evaluate)
                         const auto lcount_before = bacc.count();
 
                         vector_t params(model->psize());
-                        NANO_CHECK(model->save_params(params));
+                        NANO_CHECK(model->save(params));
 
                         //
                         NANO_CHECK_EQUAL(model->save(path), true);
@@ -87,7 +87,7 @@ NANO_CASE(evaluate)
                         const auto lcount_after = aacc.count();
 
                         vector_t xparams(model->psize());
-                        NANO_CHECK(model->save_params(xparams));
+                        NANO_CHECK(model->save(xparams));
 
                         // check
                         NANO_CHECK_EQUAL(lcount_before, lcount_after);

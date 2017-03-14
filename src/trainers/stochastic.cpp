@@ -93,7 +93,7 @@ namespace nano
                 // OK
                 if (result.valid())
                 {
-                        model.load_params(result.optimum_params());
+                        model.load(result.optimum_params());
                 }
                 return result;
         }
