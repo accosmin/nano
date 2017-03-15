@@ -4,7 +4,7 @@
 
 namespace nano
 {
-        class stoch_optimizer_t;
+        struct stoch_optimizer_t;
 
         ///
         /// \brief stochastic trainer: each gradient update is computed for a random sub-set of samples.

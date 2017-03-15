@@ -9,7 +9,7 @@ namespace nano
         ///
         /// \brief stores registered prototypes
         ///
-        class loss_t;
+        struct loss_t;
         using loss_manager_t = manager_t<loss_t>;
         using rloss_t = loss_manager_t::trobject;
 
@@ -23,14 +23,9 @@ namespace nano
         /// the loss function upper-bounds/approximates
         /// the true (usually non-smooth) error function to minimize.
         ///
-        class NANO_PUBLIC loss_t : public clonable_t
+        struct NANO_PUBLIC loss_t : public clonable_t
         {
-        public:
-
-                ///
-                /// \brief constructor
-                ///
-                explicit loss_t(const string_t& configuration = string_t()) : clonable_t(configuration) {}
+                using clonable_t::clonable_t;
 
                 ///
                 /// \brief compute the error value

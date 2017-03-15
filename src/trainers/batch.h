@@ -4,7 +4,7 @@
 
 namespace nano
 {
-        class batch_optimizer_t;
+        struct batch_optimizer_t;
 
         ///
         /// \brief batch trainer: each gradient update is computed for all samples.

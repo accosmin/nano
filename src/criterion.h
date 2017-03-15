@@ -4,8 +4,8 @@
 
 namespace nano
 {
-        class loss_t;
-        class task_t;
+        struct loss_t;
+        struct task_t;
         struct fold_t;
 
         ///

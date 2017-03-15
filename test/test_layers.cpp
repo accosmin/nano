@@ -157,15 +157,12 @@ static void test_model(const string_t& model_description, const tensor_size_t ex
 
 NANO_BEGIN_MODULE(test_layers)
 
-NANO_CASE(affine0)
+NANO_CASE(affine)
 {
         test_model(
                 "",
                 apsize(cmd_idims, cmd_odims));
-}
 
-NANO_CASE(affine1)
-{
         test_model(
                 make_affine_layer(7),
                 apsize(cmd_idims, 7) + apsize(7, cmd_odims));

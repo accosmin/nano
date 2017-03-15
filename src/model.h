@@ -7,7 +7,7 @@
 
 namespace nano
 {
-        class task_t;
+        struct task_t;
         class ibstream_t;
         class obstream_t;
 

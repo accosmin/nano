@@ -5,8 +5,8 @@
 
 namespace nano
 {
-        class loss_t;
-        class task_t;
+        struct loss_t;
+        struct task_t;
         class model_t;
         class sampler_t;
         class criterion_t;
@@ -15,7 +15,7 @@ namespace nano
         ///
         /// \brief stores registered prototypes
         ///
-        class trainer_t;
+        struct trainer_t;
         using trainer_manager_t = manager_t<trainer_t>;
         using rtrainer_t = trainer_manager_t::trobject;
 
@@ -24,14 +24,9 @@ namespace nano
         ///
         /// \brief generic trainer: optimizes a model on a given compatible task.
         ///
-        class NANO_PUBLIC trainer_t : public clonable_t
+        struct NANO_PUBLIC trainer_t : public clonable_t
         {
-        public:
-
-                ///
-                /// \brief constructor
-                ///
-                explicit trainer_t(const string_t& configuration) : clonable_t(configuration) {}
+                using clonable_t::clonable_t;
 
                 ///
                 /// \brief train the given model starting from the current model parameters

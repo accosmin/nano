@@ -9,7 +9,7 @@ namespace nano
         ///
         /// \brief stores registered prototypes
         ///
-        class batch_optimizer_t;
+        struct batch_optimizer_t;
         using batch_optimizer_manager_t = manager_t<batch_optimizer_t>;
         using rbatch_optimizer_t = batch_optimizer_manager_t::trobject;
 
@@ -18,14 +18,9 @@ namespace nano
         ///
         /// \brief generic batchastic optimizer
         ///
-        class NANO_PUBLIC batch_optimizer_t : public clonable_t
+        struct NANO_PUBLIC batch_optimizer_t : public clonable_t
         {
-        public:
-
-                ///
-                /// \brief constructor
-                ///
-                explicit batch_optimizer_t(const string_t& configuration = string_t()) : clonable_t(configuration) {}
+                using clonable_t::clonable_t;
 
                 ///
                 /// \brief minimize starting from the initial point x0

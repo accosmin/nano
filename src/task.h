@@ -9,7 +9,7 @@ namespace nano
         ///
         /// \brief manage tasks (register new ones, query and clone them)
         ///
-        class task_t;
+        struct task_t;
         using task_manager_t = manager_t<task_t>;
         using rtask_t = task_manager_t::trobject;
 
@@ -20,14 +20,9 @@ namespace nano
         ///     split into training, validation and testing datasets.
         /// NB: the samples may be organized in folds depending on the established protocol.
         ///
-        class NANO_PUBLIC task_t : public clonable_t
+        struct NANO_PUBLIC task_t : public clonable_t
         {
-        public:
-
-                ///
-                /// \brief constructor
-                ///
-                explicit task_t(const string_t& configuration = string_t()) : clonable_t(configuration) {}
+                using clonable_t::clonable_t;
 
                 ///
                 /// \brief populate task with samples

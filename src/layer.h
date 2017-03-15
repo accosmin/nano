@@ -9,7 +9,7 @@ namespace nano
         ///
         /// \brief stores registered prototypes
         ///
-        class layer_t;
+        struct layer_t;
         using layer_manager_t = manager_t<layer_t>;
         using rlayer_t = layer_manager_t::trobject;
 
@@ -18,14 +18,9 @@ namespace nano
         ///
         /// \brief process a set of inputs of size (irows, icols) and produces a set of outputs of size (orows, ocols)
         ///
-        class NANO_PUBLIC layer_t : public clonable_t
+        struct NANO_PUBLIC layer_t : public clonable_t
         {
-        public:
-
-                ///
-                /// \brief constructor
-                ///
-                explicit layer_t(const string_t& parameters) : clonable_t(parameters) {}
+                using clonable_t::clonable_t;
 
                 ///
                 /// \brief create a copy of the current object

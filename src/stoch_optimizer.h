@@ -9,7 +9,7 @@ namespace nano
         ///
         /// \brief stores registered prototypes
         ///
-        class stoch_optimizer_t;
+        struct stoch_optimizer_t;
         using stoch_optimizer_manager_t = manager_t<stoch_optimizer_t>;
         using rstoch_optimizer_t = stoch_optimizer_manager_t::trobject;
 
@@ -18,14 +18,9 @@ namespace nano
         ///
         /// \brief generic stochastic optimizer
         ///
-        class NANO_PUBLIC stoch_optimizer_t : public clonable_t
+        struct NANO_PUBLIC stoch_optimizer_t : public clonable_t
         {
-        public:
-
-                ///
-                /// \brief constructor
-                ///
-                explicit stoch_optimizer_t(const string_t& configuration = string_t()) : clonable_t(configuration) {}
+                using clonable_t::clonable_t;
 
                 ///
                 /// \brief minimize starting from the initial point x0
