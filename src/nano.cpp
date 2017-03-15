@@ -15,14 +15,9 @@
 #include "tasks/task_iris.h"
 #include "tasks/task_wine.h"
 
-#include "layers/activation_sin.h"
-#include "layers/activation_unit.h"
-#include "layers/activation_tanh.h"
-#include "layers/activation_snorm.h"
-#include "layers/activation_splus.h"
-#include "layers/activation_wave.h"
-#include "layers/convolution.h"
 #include "layers/affine.h"
+#include "layers/activation.h"
+#include "layers/convolution.h"
 
 #include "models/forward_network.h"
 
@@ -183,16 +178,13 @@ namespace nano
         static void init_layers()
         {
                 auto& f = nano::get_layers();
-                f.add("act-unit",  "activation: a(x) = x", maker<unit_activation_layer_t>());
-                f.add("act-sin",   "activation: a(x) = sin(x)", maker<sin_activation_layer_t>());
-                f.add("act-tanh",  "activation: a(x) = tanh(x)", maker<tanh_activation_layer_t>());
-                f.add("act-sigm",  "activation: a(x) = exp(x) / (1 + exp(x))", maker<sigm_activation_layer_t>());
-                f.add("act-snorm", "activation: a(x) = x / sqrt(1 + x^2)", maker<snorm_activation_layer_t>());
-                f.add("act-ewave1","activation: a(x) = x / (exp(-1*x) + exp(+1*x))", maker<ewave1_activation_layer_t>());
-                f.add("act-ewave2","activation: a(x) = x / (exp(-2*x) + exp(+2*x))", maker<ewave2_activation_layer_t>());
-                f.add("act-ewave3","activation: a(x) = x / (exp(-3*x) + exp(+3*x))", maker<ewave3_activation_layer_t>());
-                f.add("act-ewave4","activation: a(x) = x / (exp(-4*x) + exp(+4*x))", maker<ewave4_activation_layer_t>());
-                f.add("act-splus", "activation: a(x) = log(1 + e^x)", maker<softplus_activation_layer_t>());
+                f.add("act-unit",  "activation: a(x) = x", maker<activation_layer_unit_t>());
+                f.add("act-sin",   "activation: a(x) = sin(x)", maker<activation_layer_sine_t>());
+                f.add("act-tanh",  "activation: a(x) = tanh(x)", maker<activation_layer_tanh_t>());
+                f.add("act-splus", "activation: a(x) = log(1 + e^x)", maker<activation_layer_splus_t>());
+                f.add("act-snorm", "activation: a(x) = x / sqrt(1 + x^2)", maker<activation_layer_snorm_t>());
+                f.add("act-sigm",  "activation: a(x) = exp(x) / (1 + exp(x))", maker<activation_layer_sigm_t>());
+                f.add("act-ewave", "activation: a(x) = a*x / (exp(-a*x) + exp(+a*x))", maker<activation_layer_ewave_t>());
                 f.add("affine",    "transform:  L(x) = A * x + b", maker<affine_layer_t>());
                 f.add("conv",      "transform:  L(x) = conv3D(x, kernel) + b", maker<convolution_layer_t>());
         }

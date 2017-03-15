@@ -5,19 +5,12 @@
 namespace nano
 {
         ///
-        /// \brief activation layer: applies a non-linear scalar function to the each input
+        /// \brief activation layer: applies a non-linear scalar function to the each input.
         ///
-        template <typename top>
-        struct activation_layer_t final : public layer_t
+        struct activation_layer_t : public layer_t
         {
-                explicit activation_layer_t(const string_t& parameters = string_t()) :
-                        layer_t(parameters),
-                        m_idims({0, 0, 0}),
-                        m_odims({0, 0, 0})
-                {
-                }
+                explicit activation_layer_t(const string_t& parameters = string_t());
 
-                virtual rlayer_t clone() const override;
                 virtual void configure(const dim3d_t&) override;
                 virtual void output(tensor3d_map_t, tensor1d_map_t, tensor3d_map_t) override;
                 virtual void ginput(tensor3d_map_t, tensor1d_map_t, tensor3d_map_t) override;
@@ -30,52 +23,95 @@ namespace nano
 
         private:
 
+                virtual void aoutput(tensor3d_map_t idata, tensor3d_map_t odata) const = 0;
+                virtual void aginput(tensor3d_map_t idata, tensor3d_map_t odata) const = 0;
+
                 // attributes
                 dim3d_t         m_idims;
                 dim3d_t         m_odims;
         };
 
-        template <typename top>
-        rlayer_t activation_layer_t<top>::clone() const
+        ///
+        /// \brief sin(x) activation function.
+        ///
+        struct activation_layer_sine_t final : public activation_layer_t
         {
-                return std::make_unique<activation_layer_t<top>>(*this);
-        }
+                using activation_layer_t::activation_layer_t;
 
-        template <typename top>
-        void activation_layer_t<top>::configure(const dim3d_t& idims)
+                virtual rlayer_t clone() const override;
+                virtual void aoutput(tensor3d_map_t idata, tensor3d_map_t odata) const override;
+                virtual void aginput(tensor3d_map_t idata, tensor3d_map_t odata) const override;
+        };
+
+        ///
+        /// \brief x/sqrt(1+x^2) activation function.
+        ///
+        struct activation_layer_snorm_t final : public activation_layer_t
         {
-                m_idims = idims;
-                m_odims = idims;
-        }
+                using activation_layer_t::activation_layer_t;
 
-        template <typename top>
-        void activation_layer_t<top>::output(tensor3d_map_t idata, tensor1d_map_t param, tensor3d_map_t odata)
+                virtual rlayer_t clone() const override;
+                virtual void aoutput(tensor3d_map_t idata, tensor3d_map_t odata) const override;
+                virtual void aginput(tensor3d_map_t idata, tensor3d_map_t odata) const override;
+        };
+
+        ///
+        /// \brief (e^x-e^-x)/(e^x+e^-x) hyperbolic tangent activation function.
+        ///
+        struct activation_layer_tanh_t final : public activation_layer_t
         {
-                assert(idata.dims() == idims());
-                assert(param.size() == psize());
-                assert(odata.dims() == odims());
-                NANO_UNUSED1_RELEASE(param);
+                using activation_layer_t::activation_layer_t;
 
-                odata.array() = top::output(idata.array());
-        }
+                virtual rlayer_t clone() const override;
+                virtual void aoutput(tensor3d_map_t idata, tensor3d_map_t odata) const override;
+                virtual void aginput(tensor3d_map_t idata, tensor3d_map_t odata) const override;
+        };
 
-        template <typename top>
-        void activation_layer_t<top>::ginput(tensor3d_map_t idata, tensor1d_map_t param, tensor3d_map_t odata)
+        ///
+        /// \brief e^x/(1+e^x) sigmoid activation function.
+        ///
+        struct activation_layer_sigm_t final : public activation_layer_t
         {
-                assert(idata.dims() == idims());
-                assert(param.size() == psize());
-                assert(odata.dims() == odims());
-                NANO_UNUSED1_RELEASE(param);
+                using activation_layer_t::activation_layer_t;
 
-                idata.array() = odata.array() * top::ginput(idata.array());
-        }
+                virtual rlayer_t clone() const override;
+                virtual void aoutput(tensor3d_map_t idata, tensor3d_map_t odata) const override;
+                virtual void aginput(tensor3d_map_t idata, tensor3d_map_t odata) const override;
+        };
 
-        template <typename top>
-        void activation_layer_t<top>::gparam(tensor3d_map_t idata, tensor1d_map_t param, tensor3d_map_t odata)
+        ///
+        /// \brief log(1 + exp(x)) soft-plus activation function.
+        ///
+        struct activation_layer_splus_t final : public activation_layer_t
         {
-                assert(idata.dims() == idims());
-                assert(param.size() == psize());
-                assert(odata.dims() == odims());
-                NANO_UNUSED3_RELEASE(idata, param, odata);
-        }
+                using activation_layer_t::activation_layer_t;
+
+                virtual rlayer_t clone() const override;
+                virtual void aoutput(tensor3d_map_t idata, tensor3d_map_t odata) const override;
+                virtual void aginput(tensor3d_map_t idata, tensor3d_map_t odata) const override;
+        };
+
+        ///
+        /// \brief identity activation function.
+        ///
+        struct activation_layer_unit_t final : public activation_layer_t
+        {
+                using activation_layer_t::activation_layer_t;
+
+                virtual rlayer_t clone() const override;
+                virtual void aoutput(tensor3d_map_t idata, tensor3d_map_t odata) const override;
+                virtual void aginput(tensor3d_map_t idata, tensor3d_map_t odata) const override;
+        };
+
+        ///
+        /// \brief x/(exp(-alpha*x)+exp(+alpha*x)) exponential wave activation function.
+        ///
+        struct activation_layer_ewave_t final : public activation_layer_t
+        {
+                explicit activation_layer_ewave_t(const string_t& parameters = string_t());
+
+                virtual rlayer_t clone() const override;
+                virtual void aoutput(tensor3d_map_t idata, tensor3d_map_t odata) const override;
+                virtual void aginput(tensor3d_map_t idata, tensor3d_map_t odata) const override;
+        };
 }
