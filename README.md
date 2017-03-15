@@ -116,20 +116,19 @@ The image samples can be saved to disk using for example:
 A **model** predicts the correct output for a given image patch, either its label (if a classification task) or a score (if a regression task). The feed-forward models can be constructed using a pattern like `[layer_id[:layer_parameters];]+` with the following layers:
 ```
 ./apps/info --layer
-|-----------|------------------------------------------|-------------------------------------------------------------------------------|
-| layer     | description                              | configuration                                                                 |
-|-----------|------------------------------------------|-------------------------------------------------------------------------------|
-| act-sigm  | activation: a(x) = exp(x) / (1 + exp(x)) |                                                                               |
-| act-sin   | activation: a(x) = sin(x)                |                                                                               |
-| act-snorm | activation: a(x) = x / sqrt(1 + x^2)     |                                                                               |
-| act-splus | activation: a(x) = log(1 + e^x)          |                                                                               |
-| act-tanh  | activation: a(x) = tanh(x)               |                                                                               |
-| act-unit  | activation: a(x) = x                     |                                                                               |
-| act-wave1 | activation: a(x) = x / (1 + x^2)         |                                                                               |
-| act-wave2 | activation: a(x) = x / (1 + x^4)         |                                                                               |
-| affine    | transform:  L(x) = A * x + b             | dims=10[1,4096]                                                               |
-| conv      | transform:  L(x) = conv3D(x, kernel) + b | dims=16[1,256],rows=8[1,32],cols=8[1,32],conn=1[1,16],drow=1[1,8],dcol=1[1,8] |
-|-----------|------------------------------------------|-------------------------------------------------------------------------------|
+|-----------|--------------------------------------------------|-------------------------------------------------------------------------------|
+| layer     | description                                      | configuration                                                                 |
+|-----------|--------------------------------------------------|-------------------------------------------------------------------------------|
+| act-ewave | activation: a(x) = a*x / (exp(-a*x) + exp(+a*x)) | alpha=1[1,10]                                                                 |
+| act-sigm  | activation: a(x) = exp(x) / (1 + exp(x))         |                                                                               |
+| act-sin   | activation: a(x) = sin(x)                        |                                                                               |
+| act-snorm | activation: a(x) = x / sqrt(1 + x^2)             |                                                                               |
+| act-splus | activation: a(x) = log(1 + e^x)                  |                                                                               |
+| act-tanh  | activation: a(x) = tanh(x)                       |                                                                               |
+| act-unit  | activation: a(x) = x                             |                                                                               |
+| affine    | transform:  L(x) = A * x + b                     | dims=10[1,4096]                                                               |
+| conv      | transform:  L(x) = conv3D(x, kernel) + b         | dims=16[1,256],rows=8[1,32],cols=8[1,32],conn=1[1,16],drow=1[1,8],dcol=1[1,8] |
+|-----------|--------------------------------------------------|-------------------------------------------------------------------------------|
 ```
 
 A **loss** function assigns a scalar score to the prediction of a model `y` by comparing it with the ground truth target `t` (if provided): the lower the score, the better the prediction. The library uses the {-1, +1} codification of class labels.

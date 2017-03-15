@@ -22,13 +22,13 @@ exp.add_trainers([
         "batch_cgd"])
 
 # models
-outlayer = "affine:dims=3;act-wave1;"
+outlayer = "affine:dims=3;act-ewave:alpha=1;"
 
 mlp0 = "--model forward-network --model-params "
-mlp1 = mlp0 + "affine:dims=128;act-wave1;"
-mlp2 = mlp1 + "affine:dims=128;act-wave1;"
-mlp3 = mlp2 + "affine:dims=128;act-wave1;"
-mlp4 = mlp3 + "affine:dims=128;act-wave1;"
+mlp1 = mlp0 + "affine:dims=128;act-ewave:alpha=1;"
+mlp2 = mlp1 + "affine:dims=128;act-ewave:alpha=1;"
+mlp3 = mlp2 + "affine:dims=128;act-ewave:alpha=1;"
+mlp4 = mlp3 + "affine:dims=128;act-ewave:alpha=1;"
 
 exp.add_model("mlp0", mlp0 + outlayer)
 exp.add_model("mlp1", mlp1 + outlayer)
