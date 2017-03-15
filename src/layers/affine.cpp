@@ -18,7 +18,7 @@ namespace nano
                 return std::make_unique<affine_layer_t>(*this);
         }
 
-        void affine_layer_t::configure(const dim3d_t& idims)
+        void affine_layer_t::configure(const tensor3d_dims_t& idims)
         {
                 m_idims = idims;
                 m_odims = {nano::clamp(nano::from_params<tensor_size_t>(config(), "dims"), 1, 4096), 1, 1};

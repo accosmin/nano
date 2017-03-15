@@ -11,7 +11,7 @@ namespace nano
         {
                 explicit activation_layer_t(const string_t& parameters = string_t());
 
-                virtual void configure(const dim3d_t&) override;
+                virtual void configure(const tensor3d_dims_t&) override;
                 virtual void output(tensor3d_map_t, tensor1d_map_t, tensor3d_map_t) override;
                 virtual void ginput(tensor3d_map_t, tensor1d_map_t, tensor3d_map_t) override;
                 virtual void gparam(tensor3d_map_t, tensor1d_map_t, tensor3d_map_t) override;

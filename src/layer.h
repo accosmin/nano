@@ -30,7 +30,7 @@ namespace nano
                 ///
                 /// \brief configure to process new tensors of the given size
                 ///
-                virtual void configure(const dim3d_t& idims) = 0;
+                virtual void configure(const tensor3d_dims_t& idims) = 0;
 
                 ///
                 /// \brief compute the output: (input, parameters, output)
@@ -50,8 +50,8 @@ namespace nano
                 ///
                 /// \brief returns the input/output dimensions
                 ///
-                virtual dim3d_t idims() const = 0;
-                virtual dim3d_t odims() const = 0;
+                virtual tensor3d_dims_t idims() const = 0;
+                virtual tensor3d_dims_t odims() const = 0;
 
                 ///
                 /// \brief returns the number of (optimization) parameters

@@ -46,11 +46,6 @@ namespace nano
                 m_gparam_timings(static_cast<size_t>(timer.microseconds().count()));
         }
 
-        forward_network_t::forward_network_t(const string_t& parameters) :
-                model_t(parameters)
-        {
-        }
-
         rmodel_t forward_network_t::clone() const
         {
                 return std::make_unique<forward_network_t>(*this);
@@ -177,7 +172,7 @@ namespace nano
                 assert(ppdata == m_pdata.data() + m_pdata.size());
         }
 
-        bool forward_network_t::resize()
+        bool forward_network_t::configure()
         {
                 auto idims = this->idims();
                 auto xsize = nano::size(idims);

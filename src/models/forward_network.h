@@ -12,12 +12,8 @@ namespace nano
         {
         public:
 
-                using model_t::resize;
-
-                ///
-                /// \brief constructor
-                ///
-                explicit forward_network_t(const string_t& parameters = string_t());
+                using model_t::model_t;
+                using model_t::configure;
 
                 ///
                 /// \brief enable copying
@@ -79,7 +75,7 @@ namespace nano
 
         protected:
 
-                virtual bool resize() override;
+                virtual bool configure() override;
                 virtual bool save(obstream_t&) const override;
                 virtual bool load(ibstream_t&) override;
 

@@ -5,7 +5,7 @@
 namespace nano
 {
         wine_task_t::wine_task_t(const string_t& config) :
-                mem_csv_task_t(dim3d_t{13, 1, 1}, dim3d_t{3, 1, 1}, 1,
+                mem_csv_task_t(tensor3d_dims_t{13, 1, 1}, tensor3d_dims_t{3, 1, 1}, 1,
                 to_params(config, "dir", string_t(std::getenv("HOME")) + "/experiments/databases/wine"))
         {
         }

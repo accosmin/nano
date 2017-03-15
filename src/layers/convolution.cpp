@@ -17,7 +17,7 @@ namespace nano
                 return std::make_unique<convolution_layer_t>(*this);
         }
 
-        void convolution_layer_t::configure(const dim3d_t& idims)
+        void convolution_layer_t::configure(const tensor3d_dims_t& idims)
         {
                 const auto imaps = std::get<0>(idims);
                 const auto irows = std::get<1>(idims);

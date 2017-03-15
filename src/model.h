@@ -44,12 +44,12 @@ namespace nano
                 ///
                 /// \brief resize to process new inputs
                 ///
-                bool resize(const dim3d_t& idims, const dim3d_t& odims);
+                bool configure(const tensor3d_dims_t& idims, const tensor3d_dims_t& odims);
 
                 ///
                 /// \brief resize to process new inputs compatible with the given task
                 ///
-                bool resize(const task_t& task);
+                bool configure(const task_t& task);
 
                 ///
                 /// \brief serialize to disk
@@ -106,20 +106,20 @@ namespace nano
                 ///
                 /// \brief returns the input/output dimensions
                 ///
-                dim3d_t idims() const { return m_idims; }
-                dim3d_t odims() const { return m_odims; }
+                tensor3d_dims_t idims() const { return m_idims; }
+                tensor3d_dims_t odims() const { return m_odims; }
 
         protected:
 
-                virtual bool resize() = 0;
+                virtual bool configure() = 0;
                 virtual bool save(obstream_t&) const = 0;
                 virtual bool load(ibstream_t&) = 0;
 
         private:
 
                 // attributes
-                dim3d_t         m_idims;
-                dim3d_t         m_odims;
+                tensor3d_dims_t m_idims;
+                tensor3d_dims_t m_odims;
         };
 
         ///

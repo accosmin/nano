@@ -12,8 +12,8 @@ namespace nano
         struct mem_csv_task_t : public mem_tensor_task_t
         {
                 mem_csv_task_t(
-                        const dim3d_t& idims,
-                        const dim3d_t& odims,
+                        const tensor3d_dims_t& idims,
+                        const tensor3d_dims_t& odims,
                         const size_t fsize,
                         const string_t& configuration = string_t()) :
                         mem_tensor_task_t(idims, odims, fsize, configuration)

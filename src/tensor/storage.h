@@ -14,8 +14,7 @@ namespace nano
         {
         public:
 
-                static_assert(tdimensions >= 1,
-                        "cannot create tensors with fewer than one dimension");
+                static_assert(tdimensions >= 1, "cannot create tensors with fewer than one dimension");
 
                 using tscalar = typename tstorage::Scalar;
                 using tdims = tensor_dims_t<tdimensions>;

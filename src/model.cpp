@@ -25,20 +25,20 @@ namespace nano
                 return  ib.read(m_idims) &&
                         ib.read(m_odims) &&
                         ib.read(m_configuration) &&
-                        resize() &&
+                        configure() &&
                         load(ib);
         }
 
-        bool model_t::resize(const task_t& task)
+        bool model_t::configure(const task_t& task)
         {
-                return resize(task.idims(), task.odims());
+                return configure(task.idims(), task.odims());
         }
 
-        bool model_t::resize(const dim3d_t& idims, const dim3d_t& odims)
+        bool model_t::configure(const tensor3d_dims_t& idims, const tensor3d_dims_t& odims)
         {
                 m_idims = idims;
                 m_odims = odims;
-                return resize();
+                return configure();
         }
 
         bool operator==(const model_t& model, const task_t& task)

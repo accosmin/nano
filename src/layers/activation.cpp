@@ -12,7 +12,7 @@ namespace nano
         {
         }
 
-        void activation_layer_t::configure(const dim3d_t& idims)
+        void activation_layer_t::configure(const tensor3d_dims_t& idims)
         {
                 m_idims = idims;
                 m_odims = idims;
