@@ -9,16 +9,16 @@ namespace nano
         ///
         struct snorm_activation_t
         {
-                template <typename tivector>
-                static auto output(const tivector& idata)
+                template <typename tiarray>
+                static auto output(const tiarray& idata)
                 {
-                        return idata.array() / (1 + idata.array().square()).sqrt();
+                        return idata / (1 + idata.square()).sqrt();
                 }
 
-                template <typename tivector, typename tovector>
-                static auto ginput(const tivector&, const tovector& odata)
+                template <typename tiarray>
+                static auto ginput(const tiarray& idata)
                 {
-                        return (1 - odata.array().square()) * (1 - odata.array().square()).sqrt();
+                        return 1 / (1 + idata.square()).cube().sqrt();
                 }
         };
 

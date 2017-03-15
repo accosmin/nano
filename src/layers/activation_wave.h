@@ -10,20 +10,20 @@ namespace nano
         template <int alpha>
         struct ewave_activation_t
         {
-                template <typename tivector>
-                static auto output(const tivector& idata)
+                template <typename tiarray>
+                static auto output(const tiarray& idata)
                 {
-                        const auto nexp = (-alpha * idata.array()).exp();
-                        const auto pexp = (+alpha * idata.array()).exp();
-                        return alpha * idata.array() / (nexp + pexp);
+                        const auto nexp = (-alpha * idata).exp();
+                        const auto pexp = (+alpha * idata).exp();
+                        return alpha * idata / (nexp + pexp);
                 }
 
-                template <typename tivector, typename tovector>
-                static auto ginput(const tivector& idata, const tovector&)
+                template <typename tiarray>
+                static auto ginput(const tiarray& idata)
                 {
-                        const auto nexp = (-alpha * idata.array()).exp();
-                        const auto pexp = (+alpha * idata.array()).exp();
-                        return alpha * (nexp + pexp + alpha * idata.array() * (nexp - pexp)) / (nexp + pexp).square();
+                        const auto nexp = (-alpha * idata).exp();
+                        const auto pexp = (+alpha * idata).exp();
+                        return alpha * (nexp + pexp + alpha * idata * (nexp - pexp)) / (nexp + pexp).square();
                 }
         };
 

@@ -9,16 +9,16 @@ namespace nano
         ///
         struct tanh_activation_t
         {
-                template <typename tivector>
-                static auto output(const tivector& idata)
+                template <typename tiarray>
+                static auto output(const tiarray& idata)
                 {
-                        return idata.array().tanh();
+                        return idata.tanh();
                 }
 
-                template <typename tivector, typename tovector>
-                static auto ginput(const tivector&, const tovector& odata)
+                template <typename tiarray>
+                static auto ginput(const tiarray& idata)
                 {
-                        return (1 - odata.array().square());
+                        return 4 / (idata.exp() + (-idata).exp()).square();
                 }
         };
 
@@ -27,16 +27,16 @@ namespace nano
         ///
         struct sigm_activation_t
         {
-                template <typename tivector>
-                static auto output(const tivector& idata)
+                template <typename tiarray>
+                static auto output(const tiarray& idata)
                 {
-                        return idata.array().exp() / (1 + idata.array().exp());
+                        return idata.exp() / (1 + idata.exp());
                 }
 
-                template <typename tivector, typename tovector>
-                static auto ginput(const tivector&, const tovector& odata)
+                template <typename tiarray>
+                static auto ginput(const tiarray& idata)
                 {
-                        return (1 - odata.array()) * odata.array();
+                        return idata.exp() / (1 + idata.exp()).square();
                 }
         };
 

@@ -112,7 +112,7 @@ namespace nano
 
                 // backward step
                 map_vector(pxdata - nano::size(odims()), nano::size(odims())) = output;
-                for (size_t l = n_layers(); l > 0; l --)
+                for (size_t l = n_layers(); l > 0; -- l)
                 {
                         auto& layer = m_layers[l - 1];
                         layer.ginput(pxdata - layer.xsize(), ppdata - layer.psize(), pxdata - layer.osize());
@@ -139,7 +139,7 @@ namespace nano
 
                 // backward step
                 map_vector(pxdata - nano::size(odims()), nano::size(odims())) = output;
-                for (size_t l = n_layers(); l > 0; l --)
+                for (size_t l = n_layers(); l > 0; -- l)
                 {
                         auto& layer = m_layers[l - 1];
                         layer.gparam(pxdata - layer.xsize(), pgdata - layer.psize(), pxdata - layer.osize());
@@ -230,6 +230,8 @@ namespace nano
                 m_xdata.resize(xsize);
                 m_pdata.resize(psize);
                 m_gdata.resize(psize);
+
+                m_pdata.setZero();
 
                 return true;
         }

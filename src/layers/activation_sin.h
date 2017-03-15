@@ -9,16 +9,16 @@ namespace nano
         ///
         struct sin_activation_t
         {
-                template <typename tivector>
-                static auto output(const tivector& idata)
+                template <typename tiarray>
+                static auto output(const tiarray& idata)
                 {
-                        return idata.array().sin();
+                        return idata.sin();
                 }
 
-                template <typename tivector, typename tovector>
-                static auto ginput(const tivector& idata, const tovector&)
+                template <typename tiarray>
+                static auto ginput(const tiarray& idata)
                 {
-                        return idata.array().cos();
+                        return idata.cos();
                 }
         };
 

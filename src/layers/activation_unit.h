@@ -9,14 +9,14 @@ namespace nano
         ///
         struct unit_activation_t
         {
-                template <typename tivector>
-                static auto output(const tivector& idata)
+                template <typename tiarray>
+                static auto output(const tiarray& idata)
                 {
-                        return idata.array();
+                        return idata;
                 }
 
-                template <typename tivector, typename tovector>
-                static auto ginput(const tivector&, const tovector&)
+                template <typename tiarray>
+                static auto ginput(const tiarray&)
                 {
                         return 1;
                 }
