@@ -25,7 +25,7 @@ namespace nano
                 assert(odata.dims() == odims());
                 NANO_UNUSED1_RELEASE(param);
 
-                aoutput(idata, odata);
+                aoutput(idata.array(), odata.array());
         }
 
         void activation_layer_t::ginput(tensor3d_map_t idata, tensor1d_map_t param, tensor3d_map_t odata)
@@ -35,7 +35,7 @@ namespace nano
                 assert(odata.dims() == odims());
                 NANO_UNUSED1_RELEASE(param);
 
-                aginput(idata, odata);
+                aginput(idata.array(), odata.array());
         }
 
         void activation_layer_t::gparam(tensor3d_map_t idata, tensor1d_map_t param, tensor3d_map_t odata)
@@ -51,14 +51,14 @@ namespace nano
                 return std::make_unique<activation_layer_sine_t>(*this);
         }
 
-        void activation_layer_sine_t::aoutput(tensor3d_map_t idata, tensor3d_map_t odata) const
+        void activation_layer_sine_t::aoutput(tensor3d_array_t idata, tensor3d_array_t odata) const
         {
-                odata.array() = idata.array().sin();
+                odata = idata.sin();
         }
 
-        void activation_layer_sine_t::aginput(tensor3d_map_t idata, tensor3d_map_t odata) const
+        void activation_layer_sine_t::aginput(tensor3d_array_t idata, tensor3d_array_t odata) const
         {
-                idata.array() = odata.array() * idata.array().cos();
+                idata = odata * idata.cos();
         }
 
         rlayer_t activation_layer_snorm_t::clone() const
@@ -66,14 +66,14 @@ namespace nano
                 return std::make_unique<activation_layer_snorm_t>(*this);
         }
 
-        void activation_layer_snorm_t::aoutput(tensor3d_map_t idata, tensor3d_map_t odata) const
+        void activation_layer_snorm_t::aoutput(tensor3d_array_t idata, tensor3d_array_t odata) const
         {
-                odata.array() = idata.array() / (1 + idata.array().square()).sqrt();
+                odata = idata / (1 + idata.square()).sqrt();
         }
 
-        void activation_layer_snorm_t::aginput(tensor3d_map_t idata, tensor3d_map_t odata) const
+        void activation_layer_snorm_t::aginput(tensor3d_array_t idata, tensor3d_array_t odata) const
         {
-                idata.array() = odata.array() / (1 + idata.array().square()).cube().sqrt();
+                idata = odata / (1 + idata.square()).cube().sqrt();
         }
 
         rlayer_t activation_layer_tanh_t::clone() const
@@ -81,14 +81,14 @@ namespace nano
                 return std::make_unique<activation_layer_tanh_t>(*this);
         }
 
-        void activation_layer_tanh_t::aoutput(tensor3d_map_t idata, tensor3d_map_t odata) const
+        void activation_layer_tanh_t::aoutput(tensor3d_array_t idata, tensor3d_array_t odata) const
         {
-                odata.array() = idata.array().tanh();
+                odata = idata.tanh();
         }
 
-        void activation_layer_tanh_t::aginput(tensor3d_map_t idata, tensor3d_map_t odata) const
+        void activation_layer_tanh_t::aginput(tensor3d_array_t idata, tensor3d_array_t odata) const
         {
-                idata.array() = odata.array() * 4 / (idata.array().exp() + (-idata.array()).exp()).square();
+                idata = odata * 4 / (idata.exp() + (-idata).exp()).square();
         }
 
         rlayer_t activation_layer_sigm_t::clone() const
@@ -96,14 +96,14 @@ namespace nano
                 return std::make_unique<activation_layer_sigm_t>(*this);
         }
 
-        void activation_layer_sigm_t::aoutput(tensor3d_map_t idata, tensor3d_map_t odata) const
+        void activation_layer_sigm_t::aoutput(tensor3d_array_t idata, tensor3d_array_t odata) const
         {
-                odata.array() = idata.array().exp() / (1 + idata.array().exp());
+                odata = idata.exp() / (1 + idata.exp());
         }
 
-        void activation_layer_sigm_t::aginput(tensor3d_map_t idata, tensor3d_map_t odata) const
+        void activation_layer_sigm_t::aginput(tensor3d_array_t idata, tensor3d_array_t odata) const
         {
-                idata.array() = odata.array() * idata.array().exp() / (1 + idata.array().exp()).square();
+                idata = odata * idata.exp() / (1 + idata.exp()).square();
         }
 
         rlayer_t activation_layer_splus_t::clone() const
@@ -111,14 +111,14 @@ namespace nano
                 return std::make_unique<activation_layer_splus_t>(*this);
         }
 
-        void activation_layer_splus_t::aoutput(tensor3d_map_t idata, tensor3d_map_t odata) const
+        void activation_layer_splus_t::aoutput(tensor3d_array_t idata, tensor3d_array_t odata) const
         {
-                odata.array() = (1 + idata.array().exp()).log();
+                odata = (1 + idata.exp()).log();
         }
 
-        void activation_layer_splus_t::aginput(tensor3d_map_t idata, tensor3d_map_t odata) const
+        void activation_layer_splus_t::aginput(tensor3d_array_t idata, tensor3d_array_t odata) const
         {
-                idata.array() = odata.array() * idata.array().exp() / (1 + idata.array().exp());
+                idata = odata * idata.exp() / (1 + idata.exp());
         }
 
         rlayer_t activation_layer_unit_t::clone() const
@@ -126,14 +126,14 @@ namespace nano
                 return std::make_unique<activation_layer_unit_t>(*this);
         }
 
-        void activation_layer_unit_t::aoutput(tensor3d_map_t idata, tensor3d_map_t odata) const
+        void activation_layer_unit_t::aoutput(tensor3d_array_t idata, tensor3d_array_t odata) const
         {
-                odata.array() = idata.array();
+                odata = idata;
         }
 
-        void activation_layer_unit_t::aginput(tensor3d_map_t idata, tensor3d_map_t odata) const
+        void activation_layer_unit_t::aginput(tensor3d_array_t idata, tensor3d_array_t odata) const
         {
-                idata.array() = odata.array();
+                idata = odata;
         }
 
         activation_layer_ewave_t::activation_layer_ewave_t(const string_t& parameters) :
@@ -146,19 +146,19 @@ namespace nano
                 return std::make_unique<activation_layer_ewave_t>(*this);
         }
 
-        void activation_layer_ewave_t::aoutput(tensor3d_map_t idata, tensor3d_map_t odata) const
+        void activation_layer_ewave_t::aoutput(tensor3d_array_t idata, tensor3d_array_t odata) const
         {
                 const auto alpha = nano::clamp(from_params<scalar_t>(config(), "alpha"), scalar_t(1), scalar_t(10));
-                const auto nexp = (-alpha * idata.array()).exp();
-                const auto pexp = (+alpha * idata.array()).exp();
-                odata.array() = alpha * idata.array() / (nexp + pexp);
+                const auto nexp = (-alpha * idata).exp();
+                const auto pexp = (+alpha * idata).exp();
+                odata = alpha * idata / (nexp + pexp);
         }
 
-        void activation_layer_ewave_t::aginput(tensor3d_map_t idata, tensor3d_map_t odata) const
+        void activation_layer_ewave_t::aginput(tensor3d_array_t idata, tensor3d_array_t odata) const
         {
                 const auto alpha = nano::clamp(from_params<scalar_t>(config(), "alpha"), scalar_t(1), scalar_t(10));
-                const auto nexp = (-alpha * idata.array()).exp();
-                const auto pexp = (+alpha * idata.array()).exp();
-                idata.array() = alpha * odata.array() * (nexp + pexp + alpha * idata.array() * (nexp - pexp)) / (nexp + pexp).square();
+                const auto nexp = (-alpha * idata).exp();
+                const auto pexp = (+alpha * idata).exp();
+                idata = alpha * odata * (nexp + pexp + alpha * idata * (nexp - pexp)) / (nexp + pexp).square();
         }
 }

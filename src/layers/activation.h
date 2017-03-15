@@ -21,10 +21,12 @@ namespace nano
                 virtual tensor_size_t psize() const override { return 0; }
                 virtual tensor_size_t flops() const override { return 10 * nano::size(m_idims); }
 
+                using tensor3d_array_t = decltype(tensor3d_t(0, 0, 0).array());
+
         private:
 
-                virtual void aoutput(tensor3d_map_t idata, tensor3d_map_t odata) const = 0;
-                virtual void aginput(tensor3d_map_t idata, tensor3d_map_t odata) const = 0;
+                virtual void aoutput(tensor3d_array_t idims, tensor3d_array_t odims) const = 0;
+                virtual void aginput(tensor3d_array_t idims, tensor3d_array_t odims) const = 0;
 
                 // attributes
                 dim3d_t         m_idims;
@@ -39,8 +41,8 @@ namespace nano
                 using activation_layer_t::activation_layer_t;
 
                 virtual rlayer_t clone() const override;
-                virtual void aoutput(tensor3d_map_t idata, tensor3d_map_t odata) const override;
-                virtual void aginput(tensor3d_map_t idata, tensor3d_map_t odata) const override;
+                virtual void aoutput(tensor3d_array_t, tensor3d_array_t) const override;
+                virtual void aginput(tensor3d_array_t, tensor3d_array_t) const override;
         };
 
         ///
@@ -51,8 +53,8 @@ namespace nano
                 using activation_layer_t::activation_layer_t;
 
                 virtual rlayer_t clone() const override;
-                virtual void aoutput(tensor3d_map_t idata, tensor3d_map_t odata) const override;
-                virtual void aginput(tensor3d_map_t idata, tensor3d_map_t odata) const override;
+                virtual void aoutput(tensor3d_array_t, tensor3d_array_t) const override;
+                virtual void aginput(tensor3d_array_t, tensor3d_array_t) const override;
         };
 
         ///
@@ -63,8 +65,8 @@ namespace nano
                 using activation_layer_t::activation_layer_t;
 
                 virtual rlayer_t clone() const override;
-                virtual void aoutput(tensor3d_map_t idata, tensor3d_map_t odata) const override;
-                virtual void aginput(tensor3d_map_t idata, tensor3d_map_t odata) const override;
+                virtual void aoutput(tensor3d_array_t, tensor3d_array_t) const override;
+                virtual void aginput(tensor3d_array_t, tensor3d_array_t) const override;
         };
 
         ///
@@ -75,8 +77,8 @@ namespace nano
                 using activation_layer_t::activation_layer_t;
 
                 virtual rlayer_t clone() const override;
-                virtual void aoutput(tensor3d_map_t idata, tensor3d_map_t odata) const override;
-                virtual void aginput(tensor3d_map_t idata, tensor3d_map_t odata) const override;
+                virtual void aoutput(tensor3d_array_t, tensor3d_array_t) const override;
+                virtual void aginput(tensor3d_array_t, tensor3d_array_t) const override;
         };
 
         ///
@@ -87,8 +89,8 @@ namespace nano
                 using activation_layer_t::activation_layer_t;
 
                 virtual rlayer_t clone() const override;
-                virtual void aoutput(tensor3d_map_t idata, tensor3d_map_t odata) const override;
-                virtual void aginput(tensor3d_map_t idata, tensor3d_map_t odata) const override;
+                virtual void aoutput(tensor3d_array_t, tensor3d_array_t) const override;
+                virtual void aginput(tensor3d_array_t, tensor3d_array_t) const override;
         };
 
         ///
@@ -99,8 +101,8 @@ namespace nano
                 using activation_layer_t::activation_layer_t;
 
                 virtual rlayer_t clone() const override;
-                virtual void aoutput(tensor3d_map_t idata, tensor3d_map_t odata) const override;
-                virtual void aginput(tensor3d_map_t idata, tensor3d_map_t odata) const override;
+                virtual void aoutput(tensor3d_array_t, tensor3d_array_t) const override;
+                virtual void aginput(tensor3d_array_t, tensor3d_array_t) const override;
         };
 
         ///
@@ -111,7 +113,7 @@ namespace nano
                 explicit activation_layer_ewave_t(const string_t& parameters = string_t());
 
                 virtual rlayer_t clone() const override;
-                virtual void aoutput(tensor3d_map_t idata, tensor3d_map_t odata) const override;
-                virtual void aginput(tensor3d_map_t idata, tensor3d_map_t odata) const override;
+                virtual void aoutput(tensor3d_array_t, tensor3d_array_t) const override;
+                virtual void aginput(tensor3d_array_t, tensor3d_array_t) const override;
         };
 }
