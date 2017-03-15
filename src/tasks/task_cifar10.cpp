@@ -21,7 +21,7 @@ namespace nano
         };
 
         cifar10_task_t::cifar10_task_t(const string_t& config) :
-                mem_vision_task_t(dim3d_t{3, 32, 32}, dim3d_t{10, 1, 1}, 1,
+                mem_vision_task_t(tensor3d_dims_t{3, 32, 32}, tensor3d_dims_t{10, 1, 1}, 1,
                 to_params(config, "dir", string_t(std::getenv("HOME")) + "/experiments/databases/cifar10"))
         {
         }

@@ -120,7 +120,7 @@ int main(int argc, const char *argv[])
 
                 // create feed-forward network
                 const auto model = get_models().get("forward-network", cmd_network);
-                model->resize(task);
+                model->configure(task);
                 model->random();
                 model->describe();
 

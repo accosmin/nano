@@ -62,8 +62,8 @@ struct model_wrt_inputs_function_t final : public function_t
         const vector_t&         m_target;
 };
 
-const auto cmd_idims = dim3d_t{3, 8, 8};
-const auto cmd_odims = dim3d_t{3, 1, 1};
+const auto cmd_idims = tensor3d_dims_t{3, 8, 8};
+const auto cmd_odims = tensor3d_dims_t{3, 1, 1};
 const auto cmd_tests = size_t{27};
 const auto cmd_layer_output = make_output_layer(cmd_odims);
 
@@ -72,17 +72,17 @@ static tensor_size_t apsize(const tensor_size_t isize, const tensor_size_t osize
         return isize * osize + osize;
 }
 
-static tensor_size_t apsize(const dim3d_t& idims, const tensor_size_t osize)
+static tensor_size_t apsize(const tensor3d_dims_t& idims, const tensor_size_t osize)
 {
         return apsize(nano::size(idims), osize);
 }
 
-static tensor_size_t apsize(const dim3d_t& idims, const dim3d_t& odims)
+static tensor_size_t apsize(const tensor3d_dims_t& idims, const tensor3d_dims_t& odims)
 {
         return apsize(nano::size(idims), nano::size(odims));
 }
 
-static tensor_size_t apsize(const tensor_size_t isize, const dim3d_t& odims)
+static tensor_size_t apsize(const tensor_size_t isize, const tensor3d_dims_t& odims)
 {
         return apsize(isize, nano::size(odims));
 }
@@ -93,7 +93,7 @@ static tensor_size_t cpsize(const tensor_size_t idims,
         return idims * odims * krows * kcols / kconn + odims;
 }
 
-static tensor_size_t cpsize(const dim3d_t& idims,
+static tensor_size_t cpsize(const tensor3d_dims_t& idims,
         const tensor_size_t odims, const tensor_size_t krows, const tensor_size_t kcols, const tensor_size_t kconn)
 {
         return cpsize(std::get<0>(idims), odims, krows, kcols, kconn);
@@ -111,7 +111,7 @@ static auto get_loss()
 static auto get_model(const string_t& description)
 {
         auto model = get_models().get("forward-network", description + ";" + cmd_layer_output);
-        model->resize(cmd_idims, cmd_odims);
+        model->configure(cmd_idims, cmd_odims);
         NANO_CHECK_EQUAL(model->idims(), cmd_idims);
         NANO_CHECK_EQUAL(model->odims(), cmd_odims);
         return model;

@@ -16,8 +16,8 @@ namespace nano
                 virtual void ginput(tensor3d_map_t, tensor1d_map_t, tensor3d_map_t) override;
                 virtual void gparam(tensor3d_map_t, tensor1d_map_t, tensor3d_map_t) override;
 
-                virtual dim3d_t idims() const override { return m_idims; }
-                virtual dim3d_t odims() const override { return m_odims; }
+                virtual tensor3d_dims_t idims() const override { return m_idims; }
+                virtual tensor3d_dims_t odims() const override { return m_odims; }
                 virtual tensor_size_t psize() const override { return 0; }
                 virtual tensor_size_t flops() const override { return 10 * nano::size(m_idims); }
 
@@ -29,8 +29,8 @@ namespace nano
                 virtual void aginput(tensor3d_array_t idims, tensor3d_array_t odims) const = 0;
 
                 // attributes
-                dim3d_t         m_idims;
-                dim3d_t         m_odims;
+                tensor3d_dims_t m_idims;
+                tensor3d_dims_t m_odims;
         };
 
         ///

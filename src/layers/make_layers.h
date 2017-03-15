@@ -23,7 +23,7 @@ namespace nano
                 return  make_affine_layer(dims, activation);
         }
 
-        inline string_t make_output_layer(const tensor3d_dims_tconst dim3d_t& dims, const string_t& activation = "")
+        inline string_t make_output_layer(const tensor3d_dims_t& dims, const string_t& activation = "")
         {
                 return make_output_layer(nano::size(dims), activation);
         }

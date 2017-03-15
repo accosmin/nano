@@ -12,7 +12,7 @@ using namespace nano;
 
 namespace nano
 {
-        using dim2d_t = tensor_dims_t<2>;
+        using tensor2d_dims_t = tensor_dims_t<2>;
 
         template <typename tvalue>
         string_t serialize_to_string(const tvalue value)
@@ -22,9 +22,9 @@ namespace nano
                 return s.str();
         }
 
-        template <> string_t to_string<dim2d_t>(const dim2d_t dims) { return serialize_to_string(dims); }
-        template <> string_t to_string<dim3d_t>(const dim3d_t dims) { return serialize_to_string(dims); }
-        template <> string_t to_string<dim4d_t>(const dim4d_t dims) { return serialize_to_string(dims); }
+        template <> string_t to_string<tensor2d_dims_t>(const tensor2d_dims_t dims) { return serialize_to_string(dims); }
+        template <> string_t to_string<tensor3d_dims_t>(const tensor3d_dims_t dims) { return serialize_to_string(dims); }
+        template <> string_t to_string<tensor4d_dims_t>(const tensor4d_dims_t dims) { return serialize_to_string(dims); }
 }
 
 namespace
@@ -134,9 +134,9 @@ int main(int argc, const char *argv[])
                                 const auto gf_toepl_gparam = measure_gparam(op_toepl, idata, kdata, bdata, odata);
 
                                 table.append()
-                                        << dim3d_t{params.imaps(), params.irows(), params.icols()}
+                                        << tensor3d_dims_t{params.imaps(), params.irows(), params.icols()}
                                         << config
-                                        << dim3d_t{params.omaps(), params.orows(), params.ocols()}
+                                        << tensor3d_dims_t{params.omaps(), params.orows(), params.ocols()}
                                         << params.psize()
                                         << kflops_output << kflops_ginput << kflops_gparam
                                         << gf_naive_output << gf_naive_ginput << gf_naive_gparam

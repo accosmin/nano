@@ -28,8 +28,8 @@ NANO_CASE(construction)
                 const auto count = size_t(10 * osize);
                 const auto fsize = size_t(1);   // folds
 
-                const auto idims = dim3d_t{(mode == color_mode::rgba) ? 4 : 1, irows, icols};
-                const auto odims = dim3d_t{osize, 1, 1};
+                const auto idims = tensor3d_dims_t{(mode == color_mode::rgba) ? 4 : 1, irows, icols};
+                const auto odims = tensor3d_dims_t{osize, 1, 1};
 
                 charset_task_t task(to_params(
                         "type", type, "color", mode, "irows", irows, "icols", icols, "count", count));
@@ -119,8 +119,8 @@ NANO_CASE(from_params)
         charset_task_t task("type=alpha,color=rgb,irows=23,icols=29,count=102");
         NANO_CHECK(task.load());
 
-        const auto idims = dim3d_t{3, 23, 29};
-        const auto odims = dim3d_t{52, 1, 1};
+        const auto idims = tensor3d_dims_t{3, 23, 29};
+        const auto odims = tensor3d_dims_t{52, 1, 1};
 
         NANO_CHECK_EQUAL(task.idims(), idims);
         NANO_CHECK_EQUAL(task.odims(), odims);

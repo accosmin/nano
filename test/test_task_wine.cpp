@@ -10,8 +10,8 @@ NANO_CASE(construction)
 {
         using namespace nano;
 
-        const auto idims = dim3d_t{13, 1, 1};
-        const auto odims = dim3d_t{3, 1, 1};
+        const auto idims = tensor3d_dims_t{13, 1, 1};
+        const auto odims = tensor3d_dims_t{3, 1, 1};
         const auto target_sum = scalar_t(2) - static_cast<scalar_t>(nano::size(odims));
 
         const auto folds = size_t(1);

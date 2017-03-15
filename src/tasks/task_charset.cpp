@@ -150,7 +150,7 @@ namespace nano
                 from_params<color_mode>(append_config(configuration), "color"),
                 clamp(from_params<tensor_size_t>(append_config(configuration), "irows", 32), 12, 128),
                 clamp(from_params<tensor_size_t>(append_config(configuration), "icols", 32), 12, 128),
-                dim3d_t
+                tensor3d_dims_t
                 {
                         nano::osize(from_params<charset_mode>(append_config(configuration), "type")),
                         1, 1

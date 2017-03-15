@@ -21,7 +21,7 @@ namespace nano
         };
 
         stl10_task_t::stl10_task_t(const string_t& config) :
-                mem_vision_task_t(dim3d_t{3, 96, 96}, dim3d_t{10, 1, 1}, 10,
+                mem_vision_task_t(tensor3d_dims_t{3, 96, 96}, tensor3d_dims_t{10, 1, 1}, 10,
                 to_params(config, "dir", string_t(std::getenv("HOME")) + "/experiments/databases/stl10"))
         {
         }

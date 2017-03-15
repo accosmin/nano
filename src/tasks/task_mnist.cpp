@@ -22,7 +22,7 @@ namespace nano
         };
 
         mnist_task_t::mnist_task_t(const string_t& config) :
-                mem_vision_task_t(dim3d_t{1, 28, 28}, dim3d_t{10, 1, 1}, 1,
+                mem_vision_task_t(tensor3d_dims_t{1, 28, 28}, tensor3d_dims_t{10, 1, 1}, 1,
                 to_params(config, "dir", string_t(std::getenv("HOME")) + "/experiments/databases/mnist"))
         {
         }

@@ -24,7 +24,7 @@ NANO_CASE(evaluate)
 
         // create model
         const auto model = nano::get_models().get("forward-network", cmd_model);
-        NANO_CHECK_EQUAL(model->resize(*task), true);
+        NANO_CHECK_EQUAL(model->configure(*task), true);
 
         model->random();
 
