@@ -25,24 +25,24 @@ namespace nano
         {
         }
 
-        void forward_network_t::layer_info_t::output(tensor3d_map_t idata, tensor1d_map_t param, tensor3d_map_t odata)
+        void forward_network_t::layer_info_t::output(scalar_t* idata, scalar_t* param, scalar_t* odata)
         {
                 const timer_t timer;
-                m_layer->output(idata, param, odata);
+                m_layer->output(map_tensor(idata, idims()), map_tensor(param, psize()), map_tensor(odata, odims()));
                 m_output_timings(static_cast<size_t>(timer.microseconds().count()));
         }
 
-        void forward_network_t::layer_info_t::ginput(tensor3d_map_t idata, tensor1d_map_t param, tensor3d_map_t odata)
+        void forward_network_t::layer_info_t::ginput(scalar_t* idata, scalar_t* param, scalar_t* odata)
         {
                 const timer_t timer;
-                m_layer->ginput(idata, param, odata);
+                m_layer->ginput(map_tensor(idata, idims()), map_tensor(param, psize()), map_tensor(odata, odims()));
                 m_ginput_timings(static_cast<size_t>(timer.microseconds().count()));
         }
 
-        void forward_network_t::layer_info_t::gparam(tensor3d_map_t idata, tensor1d_map_t param, tensor3d_map_t odata)
+        void forward_network_t::layer_info_t::gparam(scalar_t* idata, scalar_t* param, scalar_t* odata)
         {
                 const timer_t timer;
-                m_layer->gparam(idata, param, odata);
+                m_layer->gparam(map_tensor(idata, idims()), map_tensor(param, psize()), map_tensor(odata, odims()));
                 m_gparam_timings(static_cast<size_t>(timer.microseconds().count()));
         }
 
@@ -85,14 +85,11 @@ namespace nano
                 scalar_t* ppdata = m_pdata.data();
 
                 // forward step
-                map_tensor(pxdata, idims()).vector() = input.vector();
+                map_vector(pxdata, nano::size(idims())) = input.vector();
                 for (size_t l = 0; l < n_layers(); ++ l)
                 {
                         auto& layer = m_layers[l];
-                        layer.output(
-                                map_tensor(pxdata, layer.idims()),
-                                map_tensor(ppdata, layer.psize()),
-                                map_tensor(pxdata + layer.isize(), layer.odims()));
+                        layer.output(pxdata, ppdata, pxdata + layer.isize());
                         pxdata += layer.isize();
                         ppdata += layer.psize();
                 }
@@ -110,26 +107,15 @@ namespace nano
                 assert(output.size() == nano::size(odims()));
                 assert(!m_layers.empty());
 
-                m_odata = nano::map_tensor(output.data(), odims());
-                return ginput(m_odata);
-        }
-
-        const tensor3d_t& forward_network_t::ginput(const tensor3d_t& output)
-        {
-                assert(output.dims() == odims());
-
                 scalar_t* pxdata = m_xdata.data() + m_xdata.size();
                 scalar_t* ppdata = m_pdata.data() + m_pdata.size();
 
                 // backward step
-                map_tensor(pxdata - nano::size(odims()), odims()).vector() = output.vector();
+                map_vector(pxdata - nano::size(odims()), nano::size(odims())) = output;
                 for (size_t l = n_layers(); l > 0; l --)
                 {
                         auto& layer = m_layers[l - 1];
-                        layer.ginput(
-                                map_tensor(pxdata - layer.xsize(), layer.idims()),
-                                map_tensor(ppdata - layer.psize(), layer.psize()),
-                                map_tensor(pxdata - layer.osize(), layer.odims()));
+                        layer.ginput(pxdata - layer.xsize(), ppdata - layer.psize(), pxdata - layer.osize());
                         pxdata -= layer.osize();
                         ppdata -= layer.psize();
                 }
@@ -147,33 +133,19 @@ namespace nano
                 assert(output.size() == nano::size(odims()));
                 assert(!m_layers.empty());
 
-                m_odata = nano::map_tensor(output.data(), odims());
-                return gparam(m_odata);
-        }
-
-        const vector_t& forward_network_t::gparam(const tensor3d_t& output)
-        {
-                assert(output.dims() == odims());
-
                 scalar_t* pxdata = m_xdata.data() + m_xdata.size();
                 scalar_t* ppdata = m_pdata.data() + m_pdata.size();
                 scalar_t* pgdata = m_gdata.data() + m_gdata.size();
 
                 // backward step
-                map_tensor(pxdata - nano::size(odims()), odims()).vector() = output.vector();
+                map_vector(pxdata - nano::size(odims()), nano::size(odims())) = output;
                 for (size_t l = n_layers(); l > 0; l --)
                 {
                         auto& layer = m_layers[l - 1];
-                        layer.gparam(
-                                map_tensor(pxdata - layer.xsize(), layer.idims()),
-                                map_tensor(pgdata - layer.psize(), layer.psize()),
-                                map_tensor(pxdata - layer.osize(), layer.odims()));
+                        layer.gparam(pxdata - layer.xsize(), pgdata - layer.psize(), pxdata - layer.osize());
                         if (l > 1)
                         {
-                                layer.ginput(
-                                        map_tensor(pxdata - layer.xsize(), layer.idims()),
-                                        map_tensor(ppdata - layer.psize(), layer.psize()),
-                                        map_tensor(pxdata - layer.osize(), layer.odims()));
+                                layer.ginput(pxdata - layer.xsize(), ppdata - layer.psize(), pxdata - layer.osize());
                         }
                         pxdata -= layer.osize();
                         ppdata -= layer.psize();

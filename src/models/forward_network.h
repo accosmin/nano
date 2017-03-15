@@ -44,13 +44,11 @@ namespace nano
                 /// \brief compute the model's gradient wrt parameters
                 ///
                 virtual const vector_t& gparam(const vector_t& output) override;
-                const vector_t& gparam(const tensor3d_t& output);
 
                 ///
                 /// \brief compute the model's gradient wrt inputs
                 ///
                 virtual const tensor3d_t& ginput(const vector_t& output) override;
-                const tensor3d_t& ginput(const tensor3d_t& output);
 
                 ///
                 /// \brief retrieve timing information regarding various components
@@ -98,9 +96,9 @@ namespace nano
                         layer_info_t& operator=(layer_info_t&&) = default;
                         layer_info_t& operator=(const layer_info_t&) = delete;
 
-                        void output(tensor3d_map_t idata, tensor1d_map_t param, tensor3d_map_t odata);
-                        void ginput(tensor3d_map_t idata, tensor1d_map_t param, tensor3d_map_t odata);
-                        void gparam(tensor3d_map_t idata, tensor1d_map_t param, tensor3d_map_t odata);
+                        void output(scalar_t* idata, scalar_t* param, scalar_t* odata);
+                        void ginput(scalar_t* idata, scalar_t* param, scalar_t* odata);
+                        void gparam(scalar_t* idata, scalar_t* param, scalar_t* odata);
 
                         auto idims() const { return m_layer->idims(); }
                         auto odims() const { return m_layer->odims(); }
