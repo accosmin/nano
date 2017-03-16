@@ -12,8 +12,6 @@ using namespace nano;
 
 namespace nano
 {
-        using tensor2d_dims_t = tensor_dims_t<2>;
-
         template <typename tvalue>
         string_t serialize_to_string(const tvalue value)
         {

@@ -26,7 +26,10 @@ namespace nano
                 ///
                 /// \brief constructor
                 ///
-                tensor_storage_t() = default;
+                tensor_storage_t()
+                {
+                        m_dims.fill(0);
+                }
 
                 ///
                 /// \brief constructor
@@ -87,13 +90,17 @@ namespace nano
                 ///
                 /// \brief access the whole tensor as a vector (size() x 1)
                 ///
-                const tstorage& vector() const
+                auto vector() const
                 {
-                        return m_data;
+                        return nano::map_vector(data(), size());
                 }
                 auto vector()
                 {
                         return nano::map_vector(data(), size());
+                }
+                auto array() const
+                {
+                        return vector().array();
                 }
                 auto array()
                 {
@@ -109,6 +116,7 @@ namespace nano
                 }
                 tscalar* data()
                 {
+                        static_assert(!std::is_const<tstorage>::value, "method not available");
                         return m_data.data();
                 }
 
