@@ -7,10 +7,10 @@
 namespace nano
 {
         ///
-        /// \brief 3+D tensor stored as ::dims() 2D planes of size ::rows() x ::cols()
+        /// \brief constant storage for tensors.
         ///
         template <typename tstorage, std::size_t tdimensions>
-        class tensor_storage_t
+        class tensor_const_storage_t
         {
         public:
 
@@ -26,7 +26,7 @@ namespace nano
                 ///
                 /// \brief constructor
                 ///
-                tensor_storage_t()
+                tensor_const_storage_t()
                 {
                         m_dims.fill(0);
                 }
@@ -34,7 +34,7 @@ namespace nano
                 ///
                 /// \brief constructor
                 ///
-                explicit tensor_storage_t(const tdims& dims) :
+                explicit tensor_const_storage_t(const tdims& dims) :
                         m_dims(dims)
                 {
                 }
@@ -43,7 +43,7 @@ namespace nano
                 /// \brief constructor
                 ///
                 template <typename... tsizes>
-                explicit tensor_storage_t(const tsizes... dims) :
+                explicit tensor_const_storage_t(const tsizes... dims) :
                         m_dims({dims...})
                 {
                 }
@@ -52,27 +52,11 @@ namespace nano
                 /// \brief constructor
                 ///
                 template <typename... tsizes>
-                tensor_storage_t(const tstorage& data, const tsizes... dims) :
+                tensor_const_storage_t(const tstorage& data, const tsizes... dims) :
                         m_dims({dims...}),
                         m_data(data)
                 {
                         assert(m_data.size() == nano::size(m_dims));
-                }
-
-                ///
-                /// \brief set all elements to zero
-                ///
-                void setZero()
-                {
-                        m_data.setZero();
-                }
-
-                ///
-                /// \brief set all elements to constant
-                ///
-                void setConstant(const tscalar val)
-                {
-                        m_data.setConstant(val);
                 }
 
                 ///
@@ -94,15 +78,7 @@ namespace nano
                 {
                         return nano::map_vector(data(), size());
                 }
-                auto vector()
-                {
-                        return nano::map_vector(data(), size());
-                }
                 auto array() const
-                {
-                        return vector().array();
-                }
-                auto array()
                 {
                         return vector().array();
                 }
@@ -112,11 +88,6 @@ namespace nano
                 ///
                 const tscalar* data() const
                 {
-                        return m_data.data();
-                }
-                tscalar* data()
-                {
-                        static_assert(!std::is_const<tstorage>::value, "method not available");
                         return m_data.data();
                 }
 
@@ -129,17 +100,7 @@ namespace nano
                         return nano::map_vector(planeData(indices...), planeSize());
                 }
                 template <typename... tindices>
-                auto vector(const tindices... indices)
-                {
-                        return nano::map_vector(planeData(indices...), planeSize());
-                }
-                template <typename... tindices>
                 auto array(const tindices... indices) const
-                {
-                        return vector(indices...).array();
-                }
-                template <typename... tindices>
-                auto array(const tindices... indices)
                 {
                         return vector(indices...).array();
                 }
@@ -185,10 +146,6 @@ namespace nano
                 {
                         return m_data(index);
                 }
-                tscalar& operator()(const tensor_index_t index)
-                {
-                        return m_data(index);
-                }
 
                 ///
                 /// \brief access an element of the tensor
@@ -198,16 +155,153 @@ namespace nano
                 {
                         return m_data(nano::index(m_dims, index, indices...));
                 }
-                template <typename... tindices>
-                tscalar& operator()(const tensor_index_t index, const tindices... indices)
-                {
-                        return m_data(nano::index(m_dims, index, indices...));
-                }
 
         protected:
 
                 // attributes
                 tdims           m_dims;         ///< dimensions
                 tstorage        m_data;         ///< storage (1D vector)
+        };
+
+        ///
+        /// \brief non-constant storage for tenors.
+        ///
+        template <typename tstorage, std::size_t tdimensions>
+        class tensor_storage_t : public tensor_const_storage_t<tstorage, tdimensions>
+        {
+        public:
+
+                static_assert(tdimensions >= 1, "cannot create tensors with fewer than one dimension");
+
+                using tbase = tensor_const_storage_t<tstorage, tdimensions>;
+
+                using tscalar = typename tbase::tscalar;
+                using tdims = typename tbase::tdims;
+                using Index = typename tbase::Index;
+                using Scalar = typename tbase::Scalar;
+
+                using tbase::data;
+                using tbase::array;
+                using tbase::vector;
+                using tbase::matrix;
+                using tbase::planeData;
+
+                ///
+                /// \brief constructor
+                ///
+                tensor_storage_t() : tbase() {}
+
+                ///
+                /// \brief constructor
+                ///
+                explicit tensor_storage_t(const tdims& dims) : tbase(dims) {}
+
+                ///
+                /// \brief constructor
+                ///
+                template <typename... tsizes>
+                explicit tensor_storage_t(const tsizes... dims) : tbase(dims...) {}
+
+                ///
+                /// \brief constructor
+                ///
+                template <typename... tsizes>
+                tensor_storage_t(const tstorage& data, const tsizes... dims) : tbase(data, dims...) {}
+
+                ///
+                /// \brief set all elements to zero
+                ///
+                void setZero()
+                {
+                        this->m_data.setZero();
+                }
+
+                ///
+                /// \brief set all elements to constant
+                ///
+                void setConstant(const tscalar val)
+                {
+                        this->m_data.setConstant(val);
+                }
+
+                ///
+                /// \brief set all elements to random values in the [-1, +1] interval
+                ///
+                void setRandom()
+                {
+                        this->m_data.setRandom();
+                }
+
+                ///
+                /// \brief access the whole tensor as a vector (size() x 1)
+                ///
+                auto vector()
+                {
+                        return nano::map_vector(data(), this->size());
+                }
+                auto array()
+                {
+                        return vector().array();
+                }
+
+                ///
+                /// \brief access the whole tensor as an array
+                ///
+                tscalar* data()
+                {
+                        return this->m_data.data();
+                }
+
+                ///
+                /// \brief access the 2D plane (indices...) as vector
+                ///
+                template <typename... tindices>
+                auto vector(const tindices... indices)
+                {
+                        return nano::map_vector(planeData(indices...), this->planeSize());
+                }
+                template <typename... tindices>
+                auto array(const tindices... indices)
+                {
+                        return vector(indices...).array();
+                }
+
+                ///
+                /// \brief access the 2D plane (indices...) as matrix
+                ///
+                template <typename... tindices>
+                auto matrix(const tindices... indices)
+                {
+                        static_assert(tdimensions >= 3, "method not available");
+                        return nano::map_matrix(planeData(indices...), this->rows(), this->cols());
+                }
+
+                ///
+                /// \brief access the 2D plane (indices...) as an array
+                ///
+                template <typename... tindices>
+                tscalar* planeData(const tindices... indices)
+                {
+                        static_assert(tdimensions >= 3, "method not available");
+                        static_assert(sizeof...(indices) == tdimensions - 2, "method not available");
+                        return data() + nano::index(this->dims(), indices..., 0, 0);
+                }
+
+                ///
+                /// \brief access an element of the tensor
+                ///
+                tscalar& operator()(const tensor_index_t index)
+                {
+                        return this->m_data(index);
+                }
+
+                ///
+                /// \brief access an element of the tensor
+                ///
+                template <typename... tindices>
+                tscalar& operator()(const tensor_index_t index, const tindices... indices)
+                {
+                        return operator()(nano::index(this->dims(), index, indices...));
+                }
         };
 }

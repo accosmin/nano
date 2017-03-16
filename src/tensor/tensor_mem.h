@@ -7,16 +7,14 @@ namespace nano
         ///
         /// \brief 3+D tensor stored as 2D planes that owns the allocated memory.
         ///
-        template <typename tvector, std::size_t tdimensions>
+        template <typename tscalar, std::size_t tdimensions, typename tvector = tensor_vector_t<tscalar>>
         struct tensor_mem_t : public tensor_storage_t<tvector, tdimensions>
         {
                 using tbase = tensor_storage_t<tvector, tdimensions>;
-                using tdims = typename tbase::tdims;
-                using tscalar = typename tbase::tscalar;
 
-                // Eigen compatible
-                using Index = tensor_index_t;
-                using Scalar = tscalar;
+                using tdims = typename tbase::tdims;
+                using Index = typename tbase::Index;
+                using Scalar = typename tbase::Scalar;
 
                 ///
                 /// \brief constructor
@@ -36,11 +34,19 @@ namespace nano
                 ///
                 /// \brief constructor
                 ///
-                template <typename tmap>
-                tensor_mem_t(const tensor_map_t<tmap, tdimensions>& other) :
+                tensor_mem_t(const tensor_map_t<tscalar, tdimensions>& other) :
                         tensor_mem_t(other.dims())
                 {
-                        this->vector() = other.vector().template cast<tscalar>();
+                        this->vector() = other.vector();
+                }
+
+                ///
+                /// \brief constructor
+                ///
+                tensor_mem_t(const tensor_const_map_t<tscalar, tdimensions>& other) :
+                        tensor_mem_t(other.dims())
+                {
+                        this->vector() = other.vector();
                 }
 
                 ///
