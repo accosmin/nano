@@ -11,8 +11,6 @@ namespace nano
 
         ///
         /// \brief image area (in pixels)
-        /// 
+        ///
         using area_t = int64_t;
 }
-
-
