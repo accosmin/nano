@@ -1,20 +1,17 @@
 #pragma once
 
-#include "arch.h"
-#include "tensor.h"
-#include "manager.h"
+#include "task.h"
 #include "math/stats.h"
 
 namespace nano
 {
-        struct task_t;
         class ibstream_t;
         class obstream_t;
 
         ///
         /// \brief stores registered prototypes
         ///
-        class model_t;
+        struct model_t;
         using model_manager_t = manager_t<model_t>;
         using rmodel_t = model_manager_t::trobject;
 
@@ -23,18 +20,13 @@ namespace nano
         ///
         /// \brief generic model to process fixed-size 3D tensors.
         ///
-        class NANO_PUBLIC model_t : public clonable_t
+        struct NANO_PUBLIC model_t : public clonable_t
         {
-        public:
-
                 /// <entity, timing statistics in microseconds>
                 using timing_t = stats_t<size_t>;
                 using timings_t = std::map<string_t, timing_t>;
 
-                ///
-                /// \brief constructor
-                ///
-                explicit model_t(const string_t& parameters);
+                using clonable_t::clonable_t;
 
                 ///
                 /// \brief create a copy of the current object
@@ -44,33 +36,24 @@ namespace nano
                 ///
                 /// \brief resize to process new inputs
                 ///
-                bool configure(const tensor3d_dims_t& idims, const tensor3d_dims_t& odims);
+                virtual bool configure(const tensor3d_dims_t& idims, const tensor3d_dims_t& odims) = 0;
 
                 ///
                 /// \brief resize to process new inputs compatible with the given task
                 ///
-                bool configure(const task_t& task);
+                bool configure(const task_t& task) { return configure(task.idims(), task.odims()); }
 
                 ///
                 /// \brief serialize to disk
                 ///
-                bool save(const string_t& path) const;
-                bool load(const string_t& path);
+                virtual bool save(const string_t& path) const = 0;
+                virtual bool load(const string_t& path) = 0;
 
                 ///
-                /// \brief number of parameters (to optimize)
-                ///
-                virtual tensor_size_t psize() const = 0;
-
-                ///
-                /// \brief load its parameters from vector
-                ///
-                virtual bool load(const vector_t& x) = 0;
-
-                ///
-                /// \brief save its parameters to vector
+                /// \brief serialize parameters to memory
                 ///
                 virtual bool save(vector_t& x) const = 0;
+                virtual bool load(const vector_t& x) = 0;
 
                 ///
                 /// \brief set parameters to  values
@@ -106,26 +89,26 @@ namespace nano
                 ///
                 /// \brief returns the input/output dimensions
                 ///
-                tensor3d_dims_t idims() const { return m_idims; }
-                tensor3d_dims_t odims() const { return m_odims; }
+                virtual tensor3d_dims_t idims() const = 0;
+                virtual tensor3d_dims_t odims() const = 0;
 
-        protected:
-
-                virtual bool configure() = 0;
-                virtual bool save(obstream_t&) const = 0;
-                virtual bool load(ibstream_t&) = 0;
-
-        private:
-
-                // attributes
-                tensor3d_dims_t m_idims;
-                tensor3d_dims_t m_odims;
+                ///
+                /// \brief number of parameters (to optimize)
+                ///
+                virtual tensor_size_t psize() const = 0;
         };
 
         ///
         /// \brief check if the given model is compatible with the given task.
         ///
-        NANO_PUBLIC bool operator==(const model_t& model, const task_t& task);
-        NANO_PUBLIC bool operator!=(const model_t& model, const task_t& task);
-}
+        inline bool operator==(const model_t& model, const task_t& task)
+        {
+                return  model.idims() == task.idims() &&
+                        model.odims() == task.odims();
+        }
 
+        inline bool operator!=(const model_t& model, const task_t& task)
+        {
+                return !(model == task);
+        }
+}

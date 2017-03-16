@@ -4,7 +4,6 @@ set(libnano_sources
         accumulator.cpp
         class.cpp
         criterion.cpp
-        model.cpp
         nano.cpp
         "function.cpp"
         state.cpp

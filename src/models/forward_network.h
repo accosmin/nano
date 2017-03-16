@@ -8,10 +8,8 @@ namespace nano
         ///
         /// multi-layer feed-forward network model
         ///
-        class forward_network_t : public model_t
+        struct forward_network_t final : public model_t
         {
-        public:
-
                 using model_t::model_t;
                 using model_t::configure;
 
@@ -26,58 +24,31 @@ namespace nano
                 forward_network_t(forward_network_t&& other) = default;
                 forward_network_t& operator=(forward_network_t&& other) = default;
 
-                ///
-                /// \brief clone
-                ///
                 virtual rmodel_t clone() const override;
+                virtual bool configure(const tensor3d_dims_t& idims, const tensor3d_dims_t& odims) override;
 
-                ///
-                /// \brief compute the model's output
-                ///
+                virtual void random() override;
                 virtual const tensor3d_t& output(const tensor3d_t& input) override;
-
-                ///
-                /// \brief compute the model's gradient wrt parameters
-                ///
                 virtual const vector_t& gparam(const vector_t& output) override;
-
-                ///
-                /// \brief compute the model's gradient wrt inputs
-                ///
                 virtual const tensor3d_t& ginput(const vector_t& output) override;
 
-                ///
-                /// \brief retrieve timing information regarding various components
-                ///
+                virtual void describe() const override;
                 virtual timings_t timings() const override;
 
-                ///
-                /// \brief
-                ///
-                virtual void describe() const override;
+                virtual bool save(const string_t& path) const override;
+                virtual bool load(const string_t& path) override;
 
-                ///
-                /// \brief save/load/initialize parameters
-                ///
                 virtual bool load(const vector_t& x) override;
                 virtual bool save(vector_t& x) const override;
-                virtual void random() override;
 
-                ///
-                /// \brief number of parameters
-                ///
                 virtual tensor_size_t psize() const override;
+                virtual tensor3d_dims_t idims() const override;
+                virtual tensor3d_dims_t odims() const override;
 
                 ///
                 /// \brief number of layers
                 ///
                 size_t n_layers() const { return m_layers.size(); }
-
-        protected:
-
-                virtual bool configure() override;
-                virtual bool save(obstream_t&) const override;
-                virtual bool load(ibstream_t&) override;
 
         private:
 
@@ -114,11 +85,13 @@ namespace nano
                 using layer_infos_t = std::vector<layer_info_t>;
 
                 // attributes
-                layer_infos_t   m_layers;               ///< feed-forward layers
-                tensor3d_t      m_idata;                ///< input tensors
-                tensor3d_t      m_odata;                ///< output tensors
-                vector_t        m_xdata;                ///< buffer: input-output tensors for all layers
-                vector_t        m_pdata;                ///< buffer: parameters for all layers
-                vector_t        m_gdata;                ///< buffer: parameter gradients for all layers
+                tensor3d_dims_t m_idims;        ///<
+                tensor3d_dims_t m_odims;        ///<
+                layer_infos_t   m_layers;       ///< feed-forward layers
+                tensor3d_t      m_idata;        ///< input tensor
+                tensor3d_t      m_odata;        ///< output tensor
+                vector_t        m_xdata;        ///< buffer: concatenated input-output tensors for all layers
+                vector_t        m_pdata;        ///< buffer: parameters for all layers
+                vector_t        m_gdata;        ///< buffer: parameter gradients for all layers
         };
 }

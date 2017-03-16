@@ -51,15 +51,24 @@ namespace nano
                 return std::make_unique<forward_network_t>(*this);
         }
 
-        bool forward_network_t::save(obstream_t& ob) const
+        bool forward_network_t::save(const string_t& path) const
         {
-                return ob.write_vector(m_pdata);
+                obstream_t ob(path);
+                return  ob.write(m_idims) &&
+                        ob.write(m_odims) &&
+                        ob.write(m_configuration) &&
+                        ob.write_vector(m_pdata);
         }
 
-        bool forward_network_t::load(ibstream_t& ib)
+        bool forward_network_t::load(const string_t& path)
         {
-                return ib.read_vector(m_pdata) &&
-                       m_pdata.size() == psize();
+                ibstream_t ib(path);
+                return  ib.read(m_idims) &&
+                        ib.read(m_odims) &&
+                        ib.read(m_configuration) &&
+                        configure(m_idims, m_odims) &&
+                        ib.read_vector(m_pdata) &&
+                        m_pdata.size() == psize();
         }
 
         bool forward_network_t::save(vector_t& x) const
@@ -172,9 +181,12 @@ namespace nano
                 assert(ppdata == m_pdata.data() + m_pdata.size());
         }
 
-        bool forward_network_t::configure()
+        bool forward_network_t::configure(const tensor3d_dims_t& idims, const tensor3d_dims_t& odims)
         {
-                auto idims = this->idims();
+                m_idims = idims;
+                m_odims = odims;
+
+                auto xdims = idims;
                 auto xsize = nano::size(idims);
                 auto psize = tensor_size_t(0);
 
@@ -203,25 +215,25 @@ namespace nano
                                 align(layer_id, 10, alignment::left, '.') + "]";
 
                         auto layer = nano::get_layers().get(layer_id, layer_params);
-                        layer->configure(idims);
+                        layer->configure(xdims);
 
                         xsize += nano::size(layer->odims());
                         psize += layer->psize();
-                        idims = layer->odims();
+                        xdims = layer->odims();
 
                         m_layers.emplace_back(layer_name, std::move(layer));
                 }
 
                 // check output size to match the target
-                if (idims != odims())
+                if (xdims != odims)
                 {
-                        log_error() << "forward network: miss-matching output size " << idims << ", expecting " << odims() << "!";
+                        log_error() << "forward network: miss-matching output size " << xdims << ", expecting " << odims << "!";
                         throw std::invalid_argument("invalid output layer description");
                 }
 
                 // allocate buffers
-                m_idata.resize(this->idims());
-                m_odata.resize(this->odims());
+                m_idata.resize(idims);
+                m_odata.resize(odims);
                 m_xdata.resize(xsize);
                 m_pdata.resize(psize);
                 m_gdata.resize(psize);
@@ -229,6 +241,16 @@ namespace nano
                 m_pdata.setZero();
 
                 return true;
+        }
+
+        tensor3d_dims_t forward_network_t::idims() const
+        {
+                return m_idims;
+        }
+
+        tensor3d_dims_t forward_network_t::odims() const
+        {
+                return m_odims;
         }
 
         void forward_network_t::describe() const
