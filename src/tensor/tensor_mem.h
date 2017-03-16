@@ -5,7 +5,7 @@
 namespace nano
 {
         ///
-        /// \brief 3+D tensor stored as 2D planes that owns the allocated memory.
+        /// \brief tensor that owns the allocated memory.
         ///
         template <typename tscalar, std::size_t tdimensions, typename tvector = tensor_vector_t<tscalar>>
         struct tensor_mem_t : public tensor_storage_t<tvector, tdimensions>
@@ -20,6 +20,11 @@ namespace nano
                 /// \brief constructor
                 ///
                 tensor_mem_t() = default;
+
+                ///
+                /// \brief constructor
+                ///
+                tensor_mem_t(const tbase& other) : tbase(other) {}
 
                 ///
                 /// \brief constructor

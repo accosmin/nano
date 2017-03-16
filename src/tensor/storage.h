@@ -10,10 +10,8 @@ namespace nano
         /// \brief constant storage for tensors.
         ///
         template <typename tstorage, std::size_t tdimensions>
-        class tensor_const_storage_t
+        struct tensor_const_storage_t
         {
-        public:
-
                 static_assert(tdimensions >= 1, "cannot create tensors with fewer than one dimension");
 
                 using tscalar = typename tstorage::Scalar;
@@ -78,13 +76,17 @@ namespace nano
                 {
                         return nano::map_vector(data(), size());
                 }
+
+                ///
+                /// \brief access the whole tensor as an array (size() x 1)
+                ///
                 auto array() const
                 {
                         return vector().array();
                 }
 
                 ///
-                /// \brief access the whole tensor as an array
+                /// \brief access the whole tensor as a C-array
                 ///
                 const tscalar* data() const
                 {
@@ -92,13 +94,17 @@ namespace nano
                 }
 
                 ///
-                /// \brief access the 2D plane (indices...) as vector
+                /// \brief access the 2D plane (indices...) as a vector
                 ///
                 template <typename... tindices>
                 auto vector(const tindices... indices) const
                 {
                         return nano::map_vector(planeData(indices...), planeSize());
                 }
+
+                ///
+                /// \brief access the 2D plane (indices...) as an array
+                ///
                 template <typename... tindices>
                 auto array(const tindices... indices) const
                 {
@@ -114,15 +120,9 @@ namespace nano
                         static_assert(tdimensions >= 3, "method not available");
                         return nano::map_matrix(planeData(indices...), rows(), cols());
                 }
-                template <typename... tindices>
-                auto matrix(const tindices... indices)
-                {
-                        static_assert(tdimensions >= 3, "method not available");
-                        return nano::map_matrix(planeData(indices...), rows(), cols());
-                }
 
                 ///
-                /// \brief access the 2D plane (indices...) as an array
+                /// \brief access the 2D plane (indices...) as a C-array
                 ///
                 template <typename... tindices>
                 const tscalar* planeData(const tindices... indices) const
@@ -131,18 +131,11 @@ namespace nano
                         static_assert(sizeof...(indices) == tdimensions - 2, "method not available");
                         return data() + nano::index(m_dims, indices..., 0, 0);
                 }
-                template <typename... tindices>
-                tscalar* planeData(const tindices... indices)
-                {
-                        static_assert(tdimensions >= 3, "method not available");
-                        static_assert(sizeof...(indices) == tdimensions - 2, "method not available");
-                        return data() + nano::index(m_dims, indices..., 0, 0);
-                }
 
                 ///
                 /// \brief access an element of the tensor
                 ///
-                tscalar operator()(const tensor_index_t index) const
+                const tscalar& operator()(const tensor_index_t index) const
                 {
                         return m_data(index);
                 }
@@ -151,7 +144,7 @@ namespace nano
                 /// \brief access an element of the tensor
                 ///
                 template <typename... tindices>
-                tscalar operator()(const tensor_index_t index, const tindices... indices) const
+                const tscalar& operator()(const tensor_index_t index, const tindices... indices) const
                 {
                         return m_data(nano::index(m_dims, index, indices...));
                 }
@@ -167,10 +160,8 @@ namespace nano
         /// \brief non-constant storage for tenors.
         ///
         template <typename tstorage, std::size_t tdimensions>
-        class tensor_storage_t : public tensor_const_storage_t<tstorage, tdimensions>
+        struct tensor_storage_t : public tensor_const_storage_t<tstorage, tdimensions>
         {
-        public:
-
                 static_assert(tdimensions >= 1, "cannot create tensors with fewer than one dimension");
 
                 using tbase = tensor_const_storage_t<tstorage, tdimensions>;
@@ -185,6 +176,14 @@ namespace nano
                 using tbase::vector;
                 using tbase::matrix;
                 using tbase::planeData;
+                using tbase::operator();
+
+                using tbase::size;
+                using tbase::rows;
+                using tbase::cols;
+                using tbase::dims;
+                using tbase::planeSize;
+                using tbase::dimensionality;
 
                 ///
                 /// \brief constructor
@@ -239,13 +238,17 @@ namespace nano
                 {
                         return nano::map_vector(data(), this->size());
                 }
+
+                ///
+                /// \brief access the whole tensor as a vector (size() x 1)
+                ///
                 auto array()
                 {
                         return vector().array();
                 }
 
                 ///
-                /// \brief access the whole tensor as an array
+                /// \brief access the whole tensor as a C-array
                 ///
                 tscalar* data()
                 {
@@ -253,13 +256,17 @@ namespace nano
                 }
 
                 ///
-                /// \brief access the 2D plane (indices...) as vector
+                /// \brief access the 2D plane (indices...) as a vector
                 ///
                 template <typename... tindices>
                 auto vector(const tindices... indices)
                 {
                         return nano::map_vector(planeData(indices...), this->planeSize());
                 }
+
+                ///
+                /// \brief access the 2D plane (indices...) as an array
+                ///
                 template <typename... tindices>
                 auto array(const tindices... indices)
                 {
@@ -267,7 +274,7 @@ namespace nano
                 }
 
                 ///
-                /// \brief access the 2D plane (indices...) as matrix
+                /// \brief access the 2D plane (indices...) as a matrix
                 ///
                 template <typename... tindices>
                 auto matrix(const tindices... indices)
@@ -277,7 +284,7 @@ namespace nano
                 }
 
                 ///
-                /// \brief access the 2D plane (indices...) as an array
+                /// \brief access the 2D plane (indices...) as a C-array
                 ///
                 template <typename... tindices>
                 tscalar* planeData(const tindices... indices)
