@@ -60,13 +60,43 @@ namespace nano
         }
 
         ///
-        /// \brief size of multi-dimensional tensor (#elements).
+        /// \brief size of a multi-dimensional tensor (#elements).
         ///
         template <std::size_t tdims>
         tensor_index_t size(const tensor_dims_t<tdims>& dims)
         {
                 static_assert(tdims >= 1, "invalid number of tensor dimensions");
                 return detail::product(dims, 0);
+        }
+
+        ///
+        /// \brief number of rows of a multi-dimensional tensor.
+        ///
+        template <std::size_t tdims>
+        tensor_index_t rows(const tensor_dims_t<tdims>& dims)
+        {
+                static_assert(tdims >= 3, "plane-based indexing is available for at least 3D tensors");
+                return std::get<tdims - 2>(dims);
+        }
+
+        ///
+        /// \brief number of columns of a multi-dimensional tensor.
+        ///
+        template <std::size_t tdims>
+        tensor_index_t cols(const tensor_dims_t<tdims>& dims)
+        {
+                static_assert(tdims >= 3, "plane-based indexing is available for at least 3D tensors");
+                return std::get<tdims - 1>(dims);
+        }
+
+        ///
+        /// \brief plane size in number of elements of a multi-dimensional tensor.
+        ///
+        template <std::size_t tdims>
+        tensor_index_t planeSize(const tensor_dims_t<tdims>& dims)
+        {
+                static_assert(tdims >= 3, "plane-based indexing is available for at least 3D tensors");
+                return rows(dims) * cols(dims);
         }
 
         ///

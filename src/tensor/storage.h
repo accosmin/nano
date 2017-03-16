@@ -81,9 +81,9 @@ namespace nano
                 tensor_index_t size() const { assert(m_data.size() == nano::size(m_dims)); return m_data.size(); }
                 template <int idim>
                 tensor_index_t size() const { return std::get<idim>(m_dims); }
-                tensor_index_t rows() const { static_assert(tdimensions >= 3, "method not available"); return size<tdimensions - 2>(); }
-                tensor_index_t cols() const { static_assert(tdimensions >= 3, "method not available"); return size<tdimensions - 1>(); }
-                tensor_index_t planeSize() const { static_assert(tdimensions >= 3, "method not available"); return rows() * cols(); }
+                tensor_index_t rows() const { return nano::rows(m_dims); }
+                tensor_index_t cols() const { return nano::cols(m_dims); }
+                tensor_index_t planeSize() const { return nano::planeSize(m_dims); }
                 const tdims& dims() const { return m_dims; }
                 auto dimensionality() const { return tdimensions; }
 
