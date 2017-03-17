@@ -13,7 +13,7 @@ namespace nano
         using rgba_t = tensor_vector_t<uint8_t, 4>;
 
         /// 3D buffer to store image patches (number of dimensions is equal to color channels)
-        using image_tensor_t = tensor_mem_t<tensor_vector_t<uint8_t>, 3>;
+        using image_tensor_t = tensor_mem_t<uint8_t, 3>;
 
         ///
         /// \brief color storage & processing modes
@@ -33,10 +33,7 @@ namespace nano
         ///
         /// \brief transform RGB to luma
         ///
-        template
-        <
-                typename tmatrix
-        >
+        template <typename tmatrix>
         auto make_luma(const tmatrix& r, const tmatrix& g, const tmatrix& b)
         {
                 return (r.template cast<uint32_t>() * 11 +
@@ -62,4 +59,3 @@ namespace nano
                 };
         }
 }
-

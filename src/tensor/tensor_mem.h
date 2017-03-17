@@ -66,8 +66,34 @@ namespace nano
                 tensor_index_t resize(const tdims& dims)
                 {
                         this->m_dims = dims;
-                        m_data.resize(nano::size(this->m_dims));
+                        this->m_data.resize(nano::size(this->m_dims));
                         return this->size();
+                }
+
+                ///
+                /// \brief set all elements to zero
+                ///
+                void zero()
+                {
+                        m_data.setZero();
+                }
+
+                ///
+                /// \brief set all elements to a constant value
+                ///
+                void constant(const tscalar value)
+                {
+                        m_data.setConstant(value);
+                }
+
+                ///
+                /// \brief set all elements to random values in the [min, max] range
+                ///
+                void random(const tscalar min, const tscalar max)
+                {
+                        assert(min < max);
+                        m_data.setRandom(); // [-1, +1]
+                        array() = (array() + 1) * (max - min) / 2 + min;
                 }
 
                 ///

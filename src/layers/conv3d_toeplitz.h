@@ -190,7 +190,7 @@ namespace nano
                 const auto kconn = m_params.kconn();
                 const auto omaps = m_params.omaps();
 
-                idata.setZero();
+                idata.array().setZero();
                 for (tensor_size_t o = 0; o < omaps; ++ o)
                 {
                         make_toeplitz_ginput(odata.matrix(o), m_kidata);

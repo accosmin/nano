@@ -52,7 +52,7 @@ NANO_CASE(index3d)
 
 NANO_CASE(tensor3d)
 {
-        using tensor3d_t = nano::tensor_mem_t<nano::tensor_vector_t<int>, 3>;
+        using tensor3d_t = nano::tensor_mem_t<int, 3>;
 
         const auto dims = 7;
         const auto rows = 3;
@@ -61,7 +61,7 @@ NANO_CASE(tensor3d)
         tensor3d_t tensor;
         tensor.resize(dims, rows, cols);
 
-        tensor.setZero();
+        tensor.zero();
         NANO_CHECK_EQUAL(tensor.vector().minCoeff(), 0);
         NANO_CHECK_EQUAL(tensor.vector().maxCoeff(), 0);
 
@@ -84,7 +84,7 @@ NANO_CASE(tensor3d)
         NANO_CHECK_EQUAL(tensor(0, 0, 1), -3);
         NANO_CHECK_EQUAL(tensor(2, 2, 0), -7);
 
-        tensor.setConstant(42);
+        tensor.constant(42);
         NANO_CHECK_EQUAL(tensor.vector().minCoeff(), 42);
         NANO_CHECK_EQUAL(tensor.vector().maxCoeff(), 42);
 
@@ -95,7 +95,7 @@ NANO_CASE(tensor3d)
 
 NANO_CASE(tensor3d_map)
 {
-        using tensor3d_t = nano::tensor_mem_t<nano::tensor_vector_t<int>, 3>;
+        using tensor3d_t = nano::tensor_mem_t<int, 3>;
 
         const auto dims = 7;
         const auto rows = 3;
@@ -158,7 +158,7 @@ NANO_CASE(tensor3d_map)
 
 NANO_CASE(tensor4d)
 {
-        using tensor4d_t = nano::tensor_mem_t<nano::tensor_vector_t<int>, 4>;
+        using tensor4d_t = nano::tensor_mem_t<int, 4>;
 
         const auto dim1 = 2;
         const auto dim2 = 7;
@@ -168,7 +168,7 @@ NANO_CASE(tensor4d)
         tensor4d_t tensor;
         tensor.resize(dim1, dim2, rows, cols);
 
-        tensor.setZero();
+        tensor.zero();
         NANO_CHECK_EQUAL(tensor.vector().minCoeff(), 0);
         NANO_CHECK_EQUAL(tensor.vector().maxCoeff(), 0);
 
@@ -192,7 +192,7 @@ NANO_CASE(tensor4d)
         NANO_CHECK_EQUAL(tensor(0, 4, 0, 1), -3);
         NANO_CHECK_EQUAL(tensor(1, 2, 2, 0), -7);
 
-        tensor.setConstant(42);
+        tensor.constant(42);
         NANO_CHECK_EQUAL(tensor.vector().minCoeff(), 42);
         NANO_CHECK_EQUAL(tensor.vector().maxCoeff(), 42);
 
@@ -203,7 +203,7 @@ NANO_CASE(tensor4d)
 
 NANO_CASE(tensor4d_map)
 {
-        using tensor4d_t = nano::tensor_mem_t<nano::tensor_vector_t<int>, 4>;
+        using tensor4d_t = nano::tensor_mem_t<int, 4>;
 
         const auto dim1 = 3;
         const auto dim2 = 7;
@@ -273,5 +273,32 @@ NANO_CASE(tensor4d_map)
         }
 }
 
-NANO_END_MODULE()
+NANO_CASE(tensor3d_fill)
+{
+        using tensor3d_t = nano::tensor_mem_t<double, 3>;
 
+        const auto dims = 7;
+        const auto rows = 3;
+        const auto cols = 4;
+
+        tensor3d_t tensor;
+        tensor.resize(dims, rows, cols);
+
+        tensor.zero();
+        NANO_CHECK_EQUAL(tensor.vector().minCoeff(), 0);
+        NANO_CHECK_EQUAL(tensor.vector().maxCoeff(), 0);
+
+        tensor.constant(-4);
+        NANO_CHECK_EQUAL(tensor.vector().minCoeff(), -4);
+        NANO_CHECK_EQUAL(tensor.vector().maxCoeff(), -4);
+
+        tensor.random(-3, +5);
+        NANO_CHECK_GREATER(tensor.vector().minCoeff(), -3);
+        NANO_CHECK_LESS(tensor.vector().maxCoeff(), +5);
+
+        tensor.random(+5, +11);
+        NANO_CHECK_GREATER(tensor.vector().minCoeff(), +5);
+        NANO_CHECK_LESS(tensor.vector().maxCoeff(), +11);
+}
+
+NANO_END_MODULE()

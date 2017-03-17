@@ -42,7 +42,7 @@ namespace nano
         template <typename ttensor>
         void set_zero(ttensor&& tensor)
         {
-                tensor.setZero();
+                tensor.zero();
         }
 
         template <typename ttensor, typename... tothers>
