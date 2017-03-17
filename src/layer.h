@@ -35,17 +35,17 @@ namespace nano
                 ///
                 /// \brief compute the output: (input, parameters, output)
                 ///
-                virtual void output(tensor3d_map_t idata, tensor1d_map_t param, tensor3d_map_t odata) = 0;
+                virtual void output(tensor3d_const_map_t idata, tensor1d_const_map_t param, tensor3d_map_t odata) = 0;
 
                 ///
                 /// \brief compute the gradient wrt the inputs: (input, parameters, output)
                 ///
-                virtual void ginput(tensor3d_map_t idata, tensor1d_map_t param, tensor3d_map_t odata) = 0;
+                virtual void ginput(tensor3d_map_t idata, tensor1d_const_map_t param, tensor3d_const_map_t odata) = 0;
 
                 ///
                 /// \brief compute the gradient wrt the parameters: (input, parameters, output)
                 ///
-                virtual void gparam(tensor3d_map_t idata, tensor1d_map_t param, tensor3d_map_t odata) = 0;
+                virtual void gparam(tensor3d_const_map_t idata, tensor1d_map_t param, tensor3d_const_map_t odata) = 0;
 
                 ///
                 /// \brief returns the input/output dimensions

@@ -25,7 +25,7 @@ namespace nano
                 m_psize = nano::size(m_odims) * (nano::size(m_idims) + 1);
         }
 
-        void affine_layer_t::output(tensor3d_map_t idata, tensor1d_map_t param, tensor3d_map_t odata)
+        void affine_layer_t::output(tensor3d_const_map_t idata, tensor1d_const_map_t param, tensor3d_map_t odata)
         {
                 assert(idata.dims() == idims());
                 assert(param.size() == psize());
@@ -34,7 +34,7 @@ namespace nano
                 odata.vector() = wdata(param) * idata.vector() + bdata(param);
         }
 
-        void affine_layer_t::ginput(tensor3d_map_t idata, tensor1d_map_t param, tensor3d_map_t odata)
+        void affine_layer_t::ginput(tensor3d_map_t idata, tensor1d_const_map_t param, tensor3d_const_map_t odata)
         {
                 assert(idata.dims() == idims());
                 assert(param.size() == psize());
@@ -43,7 +43,7 @@ namespace nano
                 idata.vector() = wdata(param).transpose() * odata.vector();
         }
 
-        void affine_layer_t::gparam(tensor3d_map_t idata, tensor1d_map_t param, tensor3d_map_t odata)
+        void affine_layer_t::gparam(tensor3d_const_map_t idata, tensor1d_map_t param, tensor3d_const_map_t odata)
         {
                 assert(idata.dims() == idims());
                 assert(param.size() == psize());

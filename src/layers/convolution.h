@@ -24,9 +24,9 @@ namespace nano
 
                 virtual rlayer_t clone() const override;
                 virtual void configure(const tensor3d_dims_t&) override;
-                virtual void output(tensor3d_map_t, tensor1d_map_t, tensor3d_map_t) override;
-                virtual void ginput(tensor3d_map_t, tensor1d_map_t, tensor3d_map_t) override;
-                virtual void gparam(tensor3d_map_t, tensor1d_map_t, tensor3d_map_t) override;
+                virtual void output(tensor3d_const_map_t, tensor1d_const_map_t, tensor3d_map_t) override;
+                virtual void ginput(tensor3d_map_t, tensor1d_const_map_t, tensor3d_const_map_t) override;
+                virtual void gparam(tensor3d_const_map_t, tensor1d_map_t, tensor3d_const_map_t) override;
 
                 virtual tensor3d_dims_t idims() const override { return m_op.params().idims(); }
                 virtual tensor3d_dims_t odims() const override { return m_op.params().odims(); }
@@ -39,8 +39,10 @@ namespace nano
                 auto bdims() const { return m_op.params().bdims(); }
                 auto ksize() const { return nano::size(kdims()); }
 
-                auto kdata(tensor1d_map_t param) const { return map_tensor(param.data(), kdims()); }
-                auto bdata(tensor1d_map_t param) const { return map_vector(param.data() + ksize(), bdims()); }
+                template <typename tmap>
+                auto kdata(tmap param) const { return map_tensor(param.data(), kdims()); }
+                template <typename tmap>
+                auto bdata(tmap param) const { return map_vector(param.data() + ksize(), bdims()); }
 
                 // attributes
                 conv3d_toeplitz_t       m_op;           ///< 3D convolution operator

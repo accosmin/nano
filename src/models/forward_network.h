@@ -63,9 +63,9 @@ namespace nano
                         layer_info_t& operator=(layer_info_t&&) = default;
                         layer_info_t& operator=(const layer_info_t&) = delete;
 
-                        void output(scalar_t* idata, scalar_t* param, scalar_t* odata);
-                        void ginput(scalar_t* idata, scalar_t* param, scalar_t* odata);
-                        void gparam(scalar_t* idata, scalar_t* param, scalar_t* odata);
+                        void output(const scalar_t* idata, const scalar_t* param, scalar_t* odata);
+                        void ginput(scalar_t* idata, const scalar_t* param, const scalar_t* odata);
+                        void gparam(const scalar_t* idata, scalar_t* param, const scalar_t* odata);
 
                         auto idims() const { return m_layer->idims(); }
                         auto odims() const { return m_layer->odims(); }

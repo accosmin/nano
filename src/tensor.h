@@ -31,8 +31,8 @@ namespace nano
         using tensor3d_map_t = tensor_map_t<scalar_t, 3>;
         using tensor4d_map_t = tensor_map_t<scalar_t, 4>;
 
-        using tensor1d_cmap_t = tensor_const_map_t<scalar_t, 1>;
-        using tensor2d_cmap_t = tensor_const_map_t<scalar_t, 2>;
-        using tensor3d_cmap_t = tensor_const_map_t<scalar_t, 3>;
-        using tensor4d_cmap_t = tensor_const_map_t<scalar_t, 4>;
+        using tensor1d_const_map_t = tensor_const_map_t<scalar_t, 1>;
+        using tensor2d_const_map_t = tensor_const_map_t<scalar_t, 2>;
+        using tensor3d_const_map_t = tensor_const_map_t<scalar_t, 3>;
+        using tensor4d_const_map_t = tensor_const_map_t<scalar_t, 4>;
 }

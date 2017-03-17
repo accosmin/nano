@@ -25,21 +25,21 @@ namespace nano
         {
         }
 
-        void forward_network_t::layer_info_t::output(scalar_t* idata, scalar_t* param, scalar_t* odata)
+        void forward_network_t::layer_info_t::output(const scalar_t* idata, const scalar_t* param, scalar_t* odata)
         {
                 const timer_t timer;
                 m_layer->output(map_tensor(idata, idims()), map_tensor(param, psize()), map_tensor(odata, odims()));
                 m_output_timings(static_cast<size_t>(timer.microseconds().count()));
         }
 
-        void forward_network_t::layer_info_t::ginput(scalar_t* idata, scalar_t* param, scalar_t* odata)
+        void forward_network_t::layer_info_t::ginput(scalar_t* idata, const scalar_t* param, const scalar_t* odata)
         {
                 const timer_t timer;
                 m_layer->ginput(map_tensor(idata, idims()), map_tensor(param, psize()), map_tensor(odata, odims()));
                 m_ginput_timings(static_cast<size_t>(timer.microseconds().count()));
         }
 
-        void forward_network_t::layer_info_t::gparam(scalar_t* idata, scalar_t* param, scalar_t* odata)
+        void forward_network_t::layer_info_t::gparam(const scalar_t* idata, scalar_t* param, const scalar_t* odata)
         {
                 const timer_t timer;
                 m_layer->gparam(map_tensor(idata, idims()), map_tensor(param, psize()), map_tensor(odata, odims()));
