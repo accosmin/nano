@@ -126,4 +126,58 @@ namespace nano
                 }
                 return os;
         }
+
+        ///
+        /// \brief indexing operations for tensors.
+        ///
+        template <std::size_t tdimensions>
+        struct tensor_indexer_t
+        {
+                static_assert(tdimensions >= 1, "cannot create tensors with fewer than one dimension");
+
+                using tdims = tensor_dims_t<tdimensions>;
+                using Index = tensor_index_t;
+
+                ///
+                /// \brief constructor
+                ///
+                tensor_indexer_t()
+                {
+                        m_dims.fill(0);
+                }
+
+                ///
+                /// \brief constructor
+                ///
+                explicit tensor_indexer_t(const tdims& dims) :
+                        m_dims(dims)
+                {
+                }
+
+                ///
+                /// \brief constructor
+                ///
+                template <typename... tsizes>
+                explicit tensor_indexer_t(const tsizes... dims) :
+                        m_dims({dims...})
+                {
+                }
+
+                ///
+                /// \brief indexing
+                ///
+                const tdims& dims() const { return m_dims; }
+                auto size() const { return nano::size(m_dims); }
+                template <int idim>
+                auto size() const { return std::get<idim>(m_dims); }
+                auto rows() const { return nano::rows(m_dims); }
+                auto cols() const { return nano::cols(m_dims); }
+                auto dimensionality() const { return tdimensions; }
+                auto planeSize() const { return nano::planeSize(m_dims); }
+
+        protected:
+
+                // attributes
+                tdims           m_dims;         ///< dimensions
+        };
 }

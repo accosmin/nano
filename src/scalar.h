@@ -19,7 +19,4 @@ namespace nano
 #else
         #error Scalar type not defined! Use one of the NANO_[FLOAT|DOUBLE|LONG_DOUBLE]_SCALAR options.
 #endif
-        using scalars_t = std::vector<scalar_t>;
 }
-
-
