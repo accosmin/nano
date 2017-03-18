@@ -3,6 +3,7 @@
 do_cppcheck="OFF"
 do_compile="OFF"
 do_tests="OFF"
+is_macos=$(echo $OSTYPE | grep darwin | wc -l)
 
 # usage
 function fn_usage
@@ -43,13 +44,20 @@ then
         do_compile="ON"
 fi
 
-compilers="${compilers} --compiler;g++-4.9"
-compilers="${compilers} --compiler;g++-5"
-compilers="${compilers} --compiler;g++-6"
-compilers="${compilers} --compiler;clang++-3.6;--libc++"
-compilers="${compilers} --compiler;clang++-3.7;--libc++"
-compilers="${compilers} --compiler;clang++-3.8;--libc++"
-compilers="${compilers} --compiler;clang++-3.9;--libc++"
+if [ ${is_macos} == 1 ]
+then
+        compilers="${compilers}--compiler;clang++"
+        timer="gtime -f %E"
+else
+        compilers="${compilers} --compiler;g++-4.9"
+        compilers="${compilers} --compiler;g++-5"
+        compilers="${compilers} --compiler;g++-6"
+        compilers="${compilers} --compiler;clang++-3.6;--libc++"
+        compilers="${compilers} --compiler;clang++-3.7;--libc++"
+        compilers="${compilers} --compiler;clang++-3.8;--libc++"
+        compilers="${compilers} --compiler;clang++-3.9;--libc++"
+        timer="/usr/bin/time -f %E"
+fi
 
 builds="${builds} --build-type;debug"
 builds="${builds} --build-type;release"
@@ -121,7 +129,7 @@ do
                         then
                                 printf "%s\n" "${params}"
 
-                                /usr/bin/time -f "%E" bash ${basedir}/build.sh ${params} > ${name}.log 2>&1
+                                ${timer} bash ${basedir}/build.sh ${params} > ${name}.log 2>&1
 
                                 printf "  -%-21s\t%-6s\n" "compilation time:" "$(tail -n 1 ${name}.log)"
                                 printf "  -%-21s\t%-6s\n" "compilation fatals:" "$(grep -i fatal: ${name}.log | wc -l)"
@@ -133,7 +141,7 @@ do
                         if [ "${do_tests}" == "ON" ]
                         then
                                 cd ${basedir}/${bdir}/test
-                                for test in $(ls test_* | grep -v test_mnist | grep -v test_cifar10 | grep -v test_stl10 | grep -v test_svhn)
+                                for test in $(ls test_* | grep -v test_task_mnist | grep -v test_task_cifar10 | grep -v test_task_stl10 | grep -v test_task_svhn)
                                 do
                                         printf "  -%-21s" "${test}..."
 
