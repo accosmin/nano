@@ -172,7 +172,7 @@ namespace nano
                 auto size() const { return std::get<idim>(m_dims); }
                 auto rows() const { return nano::rows(m_dims); }
                 auto cols() const { return nano::cols(m_dims); }
-                auto dimensionality() const { return tdimensions; }
+                static auto dimensionality() { return tdimensions; }
                 auto planeSize() const { return nano::planeSize(m_dims); }
 
         protected:

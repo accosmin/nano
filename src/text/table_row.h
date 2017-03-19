@@ -20,7 +20,7 @@ namespace nano
                 ///
                 /// \brief constructor
                 ///
-                table_row_t(const storage t = storage::data) :
+                explicit table_row_t(const storage t = storage::data) :
                         m_type(t)
                 {
                 }

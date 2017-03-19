@@ -7,10 +7,8 @@ namespace nano
         ///
         /// \brief streaming of binary data using an in-memory buffer.
         ///
-        class NANO_PUBLIC mem_istream_t final : public istream_t
+        struct NANO_PUBLIC mem_istream_t final : public istream_t
         {
-        public:
-
                 template <typename tsize>
                 mem_istream_t(const char* data, const tsize size) :
                         m_data(data),

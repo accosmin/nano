@@ -9,13 +9,12 @@ namespace nano
         /// \brief naive implementation of the 3D convolution:
         ///     unrolled & not vectorized looping through pixels.
         ///
-        class conv3d_naive_t
+        struct conv3d_naive_t
         {
-        public:
                 ///
                 /// \brief constructor
                 ///
-                conv3d_naive_t(const conv3d_params_t& params = conv3d_params_t()) :
+                explicit conv3d_naive_t(const conv3d_params_t& params = conv3d_params_t()) :
                         m_params(params) {}
 
                 ///

@@ -9,11 +9,9 @@ namespace nano
         ///
         /// \brief libarchive-based streaming of binary data.
         ///
-        class NANO_PUBLIC archive_istream_t final : public istream_t
+        struct NANO_PUBLIC archive_istream_t final : public istream_t
         {
-        public:
-
-                archive_istream_t(archive* ar);
+                explicit archive_istream_t(archive* ar);
 
                 ~archive_istream_t() = default;
 

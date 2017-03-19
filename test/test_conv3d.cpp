@@ -9,7 +9,7 @@ using namespace nano;
 template <typename top>
 struct wrt_params_function_t final : public function_t
 {
-        wrt_params_function_t(const top& op) : function_t("conv3d",
+        explicit wrt_params_function_t(const top& op) : function_t("conv3d",
                 op.params().psize(), op.params().psize(), op.params().psize(), convexity::no, 1e+6),
                 m_op(op),
                 m_idata(op.params().make_idata()),
@@ -47,7 +47,7 @@ struct wrt_params_function_t final : public function_t
 template <typename top>
 struct wrt_inputs_function_t final : public function_t
 {
-        wrt_inputs_function_t(const top& op) : function_t("conv3d",
+        explicit wrt_inputs_function_t(const top& op) : function_t("conv3d",
                 op.params().isize(), op.params().isize(), op.params().isize(), convexity::no, 1e+6),
                 m_op(op),
                 m_idata(op.params().make_idata()),

@@ -10,13 +10,12 @@ namespace nano
         ///     convolutions & correlations are written as matrix multiplications.
         /// NB: requires extra buffers.
         ///
-        class conv3d_toeplitz_t
+        struct conv3d_toeplitz_t
         {
-        public:
                 ///
                 /// \brief constructor
                 ///
-                conv3d_toeplitz_t(const conv3d_params_t& params = conv3d_params_t());
+                explicit conv3d_toeplitz_t(const conv3d_params_t& params = conv3d_params_t());
 
                 ///
                 /// \brief output

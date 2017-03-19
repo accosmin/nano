@@ -13,7 +13,8 @@ using namespace nano;
 
 struct model_wrt_params_function_t final : public function_t
 {
-        model_wrt_params_function_t(const rmodel_t& model, const rloss_t& loss, const tensor3d_t& inputs, const vector_t& target) :
+        explicit model_wrt_params_function_t(const rmodel_t& model,
+                const rloss_t& loss, const tensor3d_t& inputs, const vector_t& target) :
                 function_t("model", model->psize(), model->psize(), model->psize(), convexity::no, 1e+6),
                 m_model(model), m_loss(loss), m_inputs(inputs), m_target(target)
         {
@@ -38,7 +39,8 @@ struct model_wrt_params_function_t final : public function_t
 
 struct model_wrt_inputs_function_t final : public function_t
 {
-        model_wrt_inputs_function_t(const rmodel_t& model, const rloss_t& loss, const vector_t& params, const vector_t& target) :
+        explicit model_wrt_inputs_function_t(const rmodel_t& model,
+                const rloss_t& loss, const vector_t& params, const vector_t& target) :
                 function_t("model", nano::size(model->idims()), nano::size(model->idims()), nano::size(model->idims()), convexity::no, 1e+6),
                 m_model(model), m_loss(loss), m_params(params), m_target(target)
         {

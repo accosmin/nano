@@ -75,7 +75,7 @@ namespace nano
                 ///
                 /// \brief constructor
                 ///
-                mat5_section_t(const mat5_parent_type ptype = mat5_parent_type::none);
+                explicit mat5_section_t(const mat5_parent_type ptype = mat5_parent_type::none);
 
                 ///
                 /// \brief load from the input stream
