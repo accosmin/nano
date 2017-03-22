@@ -185,6 +185,7 @@ namespace nano
                 f.add("act-snorm", "activation: a(x) = x / sqrt(1 + x^2)", maker<activation_layer_snorm_t>());
                 f.add("act-sigm",  "activation: a(x) = exp(x) / (1 + exp(x))", maker<activation_layer_sigm_t>());
                 f.add("act-ewave", "activation: a(x) = a*x / (exp(-a*x) + exp(+a*x))", maker<activation_layer_ewave_t>());
+                f.add("act-pwave", "activation: a(x) = x / (1 + x^2)", maker<activation_layer_pwave_t>());
                 f.add("affine",    "transform:  L(x) = A * x + b", maker<affine_layer_t>());
                 f.add("conv",      "transform:  L(x) = conv3D(x, kernel) + b", maker<convolution_layer_t>());
         }

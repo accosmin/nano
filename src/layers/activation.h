@@ -117,4 +117,16 @@ namespace nano
                 virtual void aoutput(tensor3d_const_array_t, tensor3d_array_t) const override;
                 virtual void aginput(tensor3d_array_t, tensor3d_const_array_t) const override;
         };
+
+        ///
+        /// \brief x/(1+x^2) polynomial wave activation function.
+        ///
+        struct activation_layer_pwave_t final : public activation_layer_t
+        {
+                using activation_layer_t::activation_layer_t;
+
+                virtual rlayer_t clone() const override;
+                virtual void aoutput(tensor3d_const_array_t, tensor3d_array_t) const override;
+                virtual void aginput(tensor3d_array_t, tensor3d_const_array_t) const override;
+        };
 }

@@ -161,4 +161,19 @@ namespace nano
                 const auto pexp = (+alpha * idata).exp();
                 idata = alpha * odata * (nexp + pexp + alpha * idata * (nexp - pexp)) / (nexp + pexp).square();
         }
+
+        rlayer_t activation_layer_pwave_t::clone() const
+        {
+                return std::make_unique<activation_layer_pwave_t>(*this);
+        }
+
+        void activation_layer_pwave_t::aoutput(tensor3d_const_array_t idata, tensor3d_array_t odata) const
+        {
+                odata = idata / (1 + idata.square());
+        }
+
+        void activation_layer_pwave_t::aginput(tensor3d_array_t idata, tensor3d_const_array_t odata) const
+        {
+                idata = odata * (1 - idata.square()) / (1 + idata.square()).square();
+        }
 }
