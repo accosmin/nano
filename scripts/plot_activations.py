@@ -37,7 +37,7 @@ def plot_pwaves(ppath, xmin = -10, xmax = 10):
         with PdfPages(ppath) as pdf:
                 plt.xlabel("x", fontsize = "smaller")
                 plt.ylabel("y", fontsize = "smaller")
-                plt.title("pwavenomial waves", weight = "bold")
+                plt.title("polynomial wave activations", weight = "bold")
                 plot_pwave(xmin, xmax, 2, "r-")
                 plot_pwave(xmin, xmax, 4, "g-")
                 plot_pwave(xmin, xmax, 6, "b-")
@@ -51,7 +51,7 @@ def plot_ewaves(ppath, xmin = -10, xmax = 10):
         with PdfPages(ppath) as pdf:
                 plt.xlabel("x", fontsize = "smaller")
                 plt.ylabel("y", fontsize = "smaller")
-                plt.title("ewaveoid waves", weight = "bold")
+                plt.title("exponential wave activations", weight = "bold")
                 plot_ewave(xmin, xmax, 1, "r-")
                 plot_ewave(xmin, xmax, 2, "g-")
                 plot_ewave(xmin, xmax, 3, "b-")
