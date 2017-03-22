@@ -41,15 +41,15 @@ convnet5 = convnet4 + "conv:dims=32,rows=3,cols=3,conn=4,drow=1,dcol=1;act-snorm
 
 outlayer = "affine:dims=10;act-snorm;"
 
-exp.add_model("mlp0", mlp0 + outlayer)
-exp.add_model("mlp1", mlp1 + outlayer)
-exp.add_model("mlp2", mlp2 + outlayer)
-exp.add_model("mlp3", mlp3 + outlayer)
-exp.add_model("mlp4", mlp4 + outlayer)
-exp.add_model("convnet1", convnet1 + outlayer)
-exp.add_model("convnet2", convnet2 + outlayer)
-exp.add_model("convnet3", convnet3 + outlayer)
-exp.add_model("convnet4", convnet4 + outlayer)
+#exp.add_model("mlp0", mlp0 + outlayer)
+#exp.add_model("mlp1", mlp1 + outlayer)
+#exp.add_model("mlp2", mlp2 + outlayer)
+#exp.add_model("mlp3", mlp3 + outlayer)
+#exp.add_model("mlp4", mlp4 + outlayer)
+#exp.add_model("convnet1", convnet1 + outlayer)
+#exp.add_model("convnet2", convnet2 + outlayer)
+#exp.add_model("convnet3", convnet3 + outlayer)
+#exp.add_model("convnet4", convnet4 + outlayer)
 exp.add_model("convnet5", convnet5 + outlayer)
 
 # train all configurations
