@@ -6,7 +6,7 @@ import experiment
 # - the model should predict the digit of a synthetic image
 cfg = config.config()
 exp = experiment.experiment(
-        cfg.task_synth_charset(ctype = "digit", color = "rgb", irows = 24, icols = 24, count = 10000),
+        cfg.task_synth_charset(ctype = "digit", color = "rgb", irows = 18, icols = 18, count = 10000),
         cfg.expdir + "/charset/eval_trainers")
 
 # loss functions
@@ -33,9 +33,9 @@ mlp4 = mlp3 + "affine:dims=32;act-snorm;"
 mlp5 = mlp4 + "affine:dims=32;act-snorm;"
 
 convnet0 = "--model forward-network --model-params "
-convnet1 = convnet0 + "conv:dims=32,rows=7,cols=7,conn=1,drow=1,dcol=1;act-snorm;"
+convnet1 = convnet0 + "conv:dims=32,rows=5,cols=5,conn=1,drow=1,dcol=1;act-snorm;"
 convnet2 = convnet1 + "conv:dims=32,rows=5,cols=5,conn=4,drow=1,dcol=1;act-snorm;"
-convnet3 = convnet2 + "conv:dims=32,rows=5,cols=5,conn=4,drow=1,dcol=1;act-snorm;"
+convnet3 = convnet2 + "conv:dims=32,rows=3,cols=3,conn=4,drow=1,dcol=1;act-snorm;"
 convnet4 = convnet3 + "conv:dims=32,rows=3,cols=3,conn=4,drow=1,dcol=1;act-snorm;"
 convnet5 = convnet4 + "conv:dims=32,rows=3,cols=3,conn=4,drow=1,dcol=1;act-snorm;"
 
@@ -46,6 +46,7 @@ outlayer = "affine:dims=10;act-snorm;"
 #exp.add_model("mlp2", mlp2 + outlayer)
 #exp.add_model("mlp3", mlp3 + outlayer)
 #exp.add_model("mlp4", mlp4 + outlayer)
+exp.add_model("mlp5", mlp5 + outlayer)
 #exp.add_model("convnet1", convnet1 + outlayer)
 #exp.add_model("convnet2", convnet2 + outlayer)
 #exp.add_model("convnet3", convnet3 + outlayer)

@@ -50,4 +50,3 @@ namespace nano
                         to_params("alpha0", alpha0, "decay", decay, "momentum", momentum, "epsilon", epsilon));
         }
 }
-
