@@ -24,14 +24,15 @@ namespace nano
 
                 virtual tensor3d_dims_t idims() const override { return m_idims; }
                 virtual tensor3d_dims_t odims() const override { return m_odims; }
+                virtual tensor_size_t fanin() const override { return isize(); }
                 virtual tensor_size_t psize() const override { return m_psize; }
                 virtual tensor_size_t flops() const override { return 2 * psize(); }
 
         private:
 
-                auto isize() const { return nano::size(m_idims); }
-                auto osize() const { return nano::size(m_odims); }
-                auto wsize() const { return osize() * isize(); }
+                tensor_size_t isize() const { return nano::size(m_idims); }
+                tensor_size_t osize() const { return nano::size(m_odims); }
+                tensor_size_t wsize() const { return osize() * isize(); }
 
                 template <typename tmap>
                 auto wdata(tmap param) const { return map_matrix(param.data(), osize(), isize()); }

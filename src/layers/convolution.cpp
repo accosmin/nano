@@ -59,6 +59,12 @@ namespace nano
                 m_op = conv3d_toeplitz_t{params};
         }
 
+        tensor_size_t convolution_layer_t::fanin() const
+        {
+                const auto& params = m_op.params();
+                return params.krows() * params.kcols() * params.imaps() / params.kconn();
+        }
+
         void convolution_layer_t::output(tensor3d_const_map_t idata, tensor1d_const_map_t param, tensor3d_map_t odata)
         {
                 assert(idata.dims() == idims());

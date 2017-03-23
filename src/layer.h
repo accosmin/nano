@@ -16,7 +16,7 @@ namespace nano
         NANO_PUBLIC layer_manager_t& get_layers();
 
         ///
-        /// \brief process a set of inputs of size (irows, icols) and produces a set of outputs of size (orows, ocols)
+        /// \brief process a set of inputs of size (irows, icols) and produces a set of outputs of size (orows, ocols).
         ///
         struct NANO_PUBLIC layer_t : public clonable_t
         {
@@ -52,6 +52,11 @@ namespace nano
                 ///
                 virtual tensor3d_dims_t idims() const = 0;
                 virtual tensor3d_dims_t odims() const = 0;
+
+                ///
+                /// \brief number of inputs per processing unit (e.g. neuron, convolution kernel)
+                ///
+                virtual tensor_size_t fanin() const = 0;
 
                 ///
                 /// \brief returns the number of (optimization) parameters

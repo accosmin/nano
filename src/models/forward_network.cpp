@@ -170,7 +170,7 @@ namespace nano
 
                 for (const auto& layer : m_layers)
                 {
-                        const auto div = static_cast<scalar_t>(layer.isize() + layer.osize());
+                        const auto div = static_cast<scalar_t>(layer.m_layer->fanin());
                         const auto min = -std::sqrt(6 / (1 + div));
                         const auto max = +std::sqrt(6 / (1 + div));
 
