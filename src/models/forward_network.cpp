@@ -1,4 +1,3 @@
-#include "timer.h"
 #include "io/ibstream.h"
 #include "io/obstream.h"
 #include "math/random.h"
@@ -11,41 +10,6 @@
 
 namespace nano
 {
-        forward_network_t::layer_info_t::layer_info_t(const string_t& name, rlayer_t layer) :
-                m_name(name), m_layer(std::move(layer))
-        {
-        }
-
-        forward_network_t::layer_info_t::layer_info_t(const layer_info_t& other) :
-                m_name(other.m_name),
-                m_layer(other.m_layer->clone()),
-                m_output_timings(other.m_output_timings),
-                m_ginput_timings(other.m_ginput_timings),
-                m_gparam_timings(other.m_gparam_timings)
-        {
-        }
-
-        void forward_network_t::layer_info_t::output(const scalar_t* idata, const scalar_t* param, scalar_t* odata)
-        {
-                const timer_t timer;
-                m_layer->output(map_tensor(idata, idims()), map_tensor(param, psize()), map_tensor(odata, odims()));
-                m_output_timings(static_cast<size_t>(timer.microseconds().count()));
-        }
-
-        void forward_network_t::layer_info_t::ginput(scalar_t* idata, const scalar_t* param, const scalar_t* odata)
-        {
-                const timer_t timer;
-                m_layer->ginput(map_tensor(idata, idims()), map_tensor(param, psize()), map_tensor(odata, odims()));
-                m_ginput_timings(static_cast<size_t>(timer.microseconds().count()));
-        }
-
-        void forward_network_t::layer_info_t::gparam(const scalar_t* idata, scalar_t* param, const scalar_t* odata)
-        {
-                const timer_t timer;
-                m_layer->gparam(map_tensor(idata, idims()), map_tensor(param, psize()), map_tensor(odata, odims()));
-                m_gparam_timings(static_cast<size_t>(timer.microseconds().count()));
-        }
-
         rmodel_t forward_network_t::clone() const
         {
                 return std::make_unique<forward_network_t>(*this);
@@ -293,9 +257,9 @@ namespace nano
                 return m_gdata.size();
         }
 
-        model_t::timings_t forward_network_t::timings() const
+        timings_t forward_network_t::timings() const
         {
-                model_t::timings_t ret;
+                timings_t ret;
                 for (const auto& layer : m_layers)
                 {
                         if (layer.m_output_timings.count() > 1) ret[layer.m_name + " (output)"] = layer.m_output_timings;

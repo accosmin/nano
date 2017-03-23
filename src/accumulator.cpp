@@ -151,9 +151,9 @@ namespace nano
                 return m_impl->criterion().can_regularize();
         }
 
-        model_t::timings_t accumulator_t::timings() const
+        timings_t accumulator_t::timings() const
         {
-                model_t::timings_t ret;
+                timings_t ret;
                 for (const auto& criterion : m_impl->m_criteria)
                 {
                         const auto timings = criterion->model().timings();
@@ -166,4 +166,3 @@ namespace nano
                 return ret;
         }
 }
-

@@ -55,7 +55,7 @@ exp.add_model("convnet5", convnet5 + outlayer)
 
 # train all configurations
 trials = 10
-exp.run_all(trials = trials, epochs = 1000, policy = "stop_early")
+exp.run_all(trials = trials, epochs = 100, policy = "stop_early")
 
 # compare configurations
 for trial in range(trials):

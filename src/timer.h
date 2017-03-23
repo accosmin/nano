@@ -14,10 +14,8 @@ namespace nano
 
         using timepoint_t = std::chrono::high_resolution_clock::time_point;
 
-        class NANO_PUBLIC timer_t
+        struct NANO_PUBLIC timer_t
         {
-        public:
-
                 ///
                 /// \brief constructor
                 ///

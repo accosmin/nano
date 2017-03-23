@@ -129,8 +129,8 @@ int main(int argc, const char *argv[])
 
                 const auto fold = fold_t{0, protocol::train};
 
-                std::vector<model_t::timings_t> ftimings(cmd_max_nthreads + 1);
-                std::vector<model_t::timings_t> btimings(cmd_max_nthreads + 1);
+                std::vector<timings_t> ftimings(cmd_max_nthreads + 1);
+                std::vector<timings_t> btimings(cmd_max_nthreads + 1);
 
                 // process the samples
                 for (size_t nthreads = cmd_min_nthreads; nthreads <= cmd_max_nthreads; ++ nthreads)
@@ -174,7 +174,7 @@ int main(int argc, const char *argv[])
 
                 // detailed per-component (e.g. per-layer) timing information
                 const auto print_timings = [&] (table_t& table, const string_t& basename,
-                        const std::vector<model_t::timings_t>& timings)
+                        const std::vector<timings_t>& timings)
                 {
                         for (const auto& timing0 : timings[cmd_min_nthreads])
                         {

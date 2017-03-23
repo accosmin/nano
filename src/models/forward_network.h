@@ -1,7 +1,7 @@
 #pragma once
 
 #include "model.h"
-#include "layer.h"
+#include "layer_info.h"
 
 namespace nano
 {
@@ -51,38 +51,6 @@ namespace nano
                 size_t n_layers() const { return m_layers.size(); }
 
         private:
-
-                ///
-                /// \brief
-                ///
-                struct layer_info_t
-                {
-                        layer_info_t(const string_t& name = string_t(), rlayer_t layer = rlayer_t());
-                        layer_info_t(const layer_info_t& other);
-                        layer_info_t(layer_info_t&&) = default;
-                        layer_info_t& operator=(layer_info_t&&) = default;
-                        layer_info_t& operator=(const layer_info_t&) = delete;
-
-                        void output(const scalar_t* idata, const scalar_t* param, scalar_t* odata);
-                        void ginput(scalar_t* idata, const scalar_t* param, const scalar_t* odata);
-                        void gparam(const scalar_t* idata, scalar_t* param, const scalar_t* odata);
-
-                        auto idims() const { return m_layer->idims(); }
-                        auto odims() const { return m_layer->odims(); }
-                        auto isize() const { return nano::size(idims()); }
-                        auto osize() const { return nano::size(odims()); }
-                        auto xsize() const { return isize() + osize(); }
-                        auto psize() const { return m_layer->psize(); }
-                        auto flops() const { return m_layer->flops(); }
-
-                        string_t        m_name;
-                        rlayer_t        m_layer;
-                        timing_t        m_output_timings;
-                        timing_t        m_ginput_timings;
-                        timing_t        m_gparam_timings;
-                };
-
-                using layer_infos_t = std::vector<layer_info_t>;
 
                 // attributes
                 tensor3d_dims_t m_idims;        ///<

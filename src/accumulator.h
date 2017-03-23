@@ -98,7 +98,7 @@ namespace nano
                 ///     for the three basic operations (output, gradient wrt parameters, gradient wrt inputs)
                 ///     by aggregating information from all cached models (if multi-threaded)
                 ///
-                model_t::timings_t timings() const;
+                timings_t timings() const;
 
         private:
 

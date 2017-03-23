@@ -1,7 +1,7 @@
 #pragma once
 
 #include "task.h"
-#include "math/stats.h"
+#include "timing.h"
 
 namespace nano
 {
@@ -22,10 +22,6 @@ namespace nano
         ///
         struct NANO_PUBLIC model_t : public clonable_t
         {
-                /// <entity, timing statistics in microseconds>
-                using timing_t = stats_t<size_t>;
-                using timings_t = std::map<string_t, timing_t>;
-
                 using clonable_t::clonable_t;
 
                 ///
