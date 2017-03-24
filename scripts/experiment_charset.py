@@ -64,17 +64,17 @@ for trial in range(trials):
                         for lname in exp.losses:
                                 # compare stochastic trainers
                                 exp.plot_many(
-                                        exp.filter(trial, mname, "stoch.*", cname, lname, "*state"),
+                                        exp.filter(trial, mname, "stoch*", cname, lname, ".state"),
                                         exp.get_path(trial, mname, "stoch", cname, lname, ".pdf"))
 
                                 # compare batch trainers
                                 exp.plot_many(
-                                        exp.filter(trial, mname, "batch.*", cname, lname, "*state"),
+                                        exp.filter(trial, mname, "batch*", cname, lname, ".state"),
                                         exp.get_path(trial, mname, "batch", cname, lname, ".pdf"))
 
                                 # compare all trainers
                                 exp.plot_many(
-                                        exp.filter(trial, mname, ".*", cname, lname, "*state"),
+                                        exp.filter(trial, mname, ".*", cname, lname, ".state"),
                                         exp.get_path(trial, mname, "all", cname, lname, ".pdf"))
 
 # summarize configurations
