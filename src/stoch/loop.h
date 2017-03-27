@@ -16,7 +16,7 @@ namespace nano
 
         inline auto make_decays()
         {
-                return make_finite_space(scalar_t(0), scalar_t(1e-6), scalar_t(1e-4), scalar_t(1e-3));
+                return make_finite_space(scalar_t(0), scalar_t(0.50), scalar_t(0.75), scalar_t(1.00));
         }
 
         inline auto make_momenta()

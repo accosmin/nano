@@ -20,7 +20,7 @@ namespace nano
                 const scalar_t alpha0, const scalar_t decay, const scalar_t momentum) const
         {
                 // learning rate schedule
-                lrate_t lrate(alpha0, decay, param.max_iterations());
+                lrate_t lrate(alpha0, decay);
 
                 // first-order momentum of the update
                 nano::momentum_t<vector_t> davg(momentum, x0.size());
@@ -49,4 +49,3 @@ namespace nano
                         to_params("alpha0", alpha0, "decay", decay, "momentum", momentum));
         }
 }
-

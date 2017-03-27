@@ -68,14 +68,6 @@ namespace nano
                         }
                 }
 
-                ///
-                /// \brief number of parameter updates (aka iterations)
-                ///
-                size_t max_iterations() const
-                {
-                        return m_epoch_size * m_max_epochs;
-                }
-
                 // attributes
                 size_t          m_max_epochs;           ///< number of epochs
                 size_t          m_epoch_size;           ///< epoch size in number of iterations

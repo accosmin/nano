@@ -23,7 +23,7 @@ namespace nano
                 const scalar_t epsilon, const scalar_t beta1, const scalar_t beta2) const
         {
                 // learning rate schedule
-                lrate_t lrate(alpha0, decay, param.max_iterations());
+                lrate_t lrate(alpha0, decay);
 
                 // first-order momentum of the gradient
                 nano::momentum_t<vector_t> m(beta1, x0.size());

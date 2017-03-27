@@ -10,20 +10,18 @@ namespace nano
         ///     - alpha0        - the initial learning rate
         ///     - decay         - the decay rate factor
         ///     - iter          - current iteration
-        ///     - size          - maximum number of iterations
         ///
-        /// learning rate = alpha0 / (1 + decay * size)^iter
+        /// learning rate = alpha0 / (1 + iter)^decay
         ///
         struct lrate_t
         {
                 ///
                 /// \brief constructor
                 ///
-                lrate_t(const scalar_t alpha0, const scalar_t decay, const size_t size) :
+                lrate_t(const scalar_t alpha0, const scalar_t decay) :
                         m_alpha0(alpha0),
                         m_decay(decay),
-                        m_iter(0),
-                        m_size(size)
+                        m_iter(0)
                 {
                         assert(decay >= scalar_t(0));
                         assert(decay <= scalar_t(1));
@@ -35,16 +33,13 @@ namespace nano
                 ///
                 scalar_t get()
                 {
-                        const auto base = scalar_t(1) + m_decay * static_cast<scalar_t>(m_size);
-                        return m_alpha0 / std::pow(base, static_cast<scalar_t>(m_iter ++));
+                        const auto base = 1 + static_cast<scalar_t>(m_iter ++);
+                        return m_alpha0 / std::pow(base, m_decay);
                 }
 
                 // attributes
                 scalar_t        m_alpha0;       ///<
                 scalar_t        m_decay;        ///<
 		size_t		m_iter;         ///< current iteration
-                size_t          m_size;         ///< #epoch size
         };
-
 }
-
