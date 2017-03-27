@@ -1,4 +1,5 @@
 #include "loop.h"
+#include "lrate.h"
 #include "adagrad.h"
 #include "text/to_params.h"
 
@@ -11,12 +12,15 @@ namespace nano
 
         state_t stoch_adagrad_t::minimize(const stoch_params_t& param, const function_t& function, const vector_t& x0) const
         {
-                return stoch_tune(this, param, function, x0, make_alpha0s(), make_epsilons());
+                return stoch_tune(this, param, function, x0, make_alpha0s(), make_decays(), make_epsilons());
         }
 
         state_t stoch_adagrad_t::minimize(const stoch_params_t& param, const function_t& function, const vector_t& x0,
-                const scalar_t alpha0, const scalar_t epsilon) const
+                const scalar_t alpha0, const scalar_t decay, const scalar_t epsilon) const
         {
+                // learning rate schedule
+                lrate_t lrate(alpha0, decay, param.max_iterations());
+
                 // second-order gradient momentum
                 vector_t gsum2 = vector_t::Zero(x0.size());
 
@@ -24,7 +28,7 @@ namespace nano
                 const auto optimizer = [&] (state_t& cstate, const state_t&)
                 {
                         // learning rate
-                        const scalar_t alpha = alpha0;
+                        const scalar_t alpha = lrate.get();
 
                         // descent direction
                         gsum2.array() += cstate.g.array().square();
@@ -42,7 +46,7 @@ namespace nano
                 };
 
                 return  stoch_loop(param, function, x0, optimizer, snapshot,
-                        to_params("alpha0", alpha0, "epsilon", epsilon));
+                        to_params("alpha0", alpha0, "decay", decay, "epsilon", epsilon));
         }
 }
 

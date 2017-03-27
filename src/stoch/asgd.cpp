@@ -20,7 +20,7 @@ namespace nano
                 const scalar_t alpha0, const scalar_t decay, const scalar_t momentum) const
         {
                 // learning rate schedule
-                lrate_t lrate(alpha0, decay, param.m_epoch_size);
+                lrate_t lrate(alpha0, decay, param.max_iterations());
 
                 // average state
                 nano::momentum_t<vector_t> xavg(momentum, x0.size());

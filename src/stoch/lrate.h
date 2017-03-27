@@ -10,9 +10,9 @@ namespace nano
         ///     - alpha0        - the initial learning rate
         ///     - decay         - the decay rate factor
         ///     - iter          - current iteration
-        ///     - size          - batch size (e.g. #samples in the sum)
+        ///     - size          - maximum number of iterations
         ///
-        /// learning rate = alpha0 / (1 + iter/size)^decay
+        /// learning rate = alpha0 / (1 + decay * size)^iter
         ///
         struct lrate_t
         {
@@ -35,8 +35,8 @@ namespace nano
                 ///
                 scalar_t get()
                 {
-                        const auto base = scalar_t(1) + static_cast<scalar_t>(m_iter ++) / static_cast<scalar_t>(m_size);
-                        return m_alpha0 / std::pow(base, m_decay);
+                        const auto base = scalar_t(1) + m_decay * static_cast<scalar_t>(m_size);
+                        return m_alpha0 / std::pow(base, static_cast<scalar_t>(m_iter ++));
                 }
 
                 // attributes

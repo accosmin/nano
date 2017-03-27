@@ -19,10 +19,11 @@ namespace nano
         }
 
         state_t stoch_adam_t::minimize(const stoch_params_t& param, const function_t& function, const vector_t& x0,
-                const scalar_t alpha0, const scalar_t decay, const scalar_t epsilon, const scalar_t beta1, const scalar_t beta2) const
+                const scalar_t alpha0, const scalar_t decay,
+                const scalar_t epsilon, const scalar_t beta1, const scalar_t beta2) const
         {
                 // learning rate schedule
-                lrate_t lrate(alpha0, decay, param.m_epoch_size);
+                lrate_t lrate(alpha0, decay, param.max_iterations());
 
                 // first-order momentum of the gradient
                 nano::momentum_t<vector_t> m(beta1, x0.size());
@@ -56,4 +57,3 @@ namespace nano
                         to_params("alpha0", alpha0, "decay", decay, "epsilon", epsilon, "beta1", beta1, "beta2", beta2));
         }
 }
-

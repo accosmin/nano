@@ -19,7 +19,7 @@ namespace nano
                 const scalar_t alpha0, const scalar_t decay) const
         {
                 // learning rate schedule
-                lrate_t lrate(alpha0, decay, param.m_epoch_size);
+                lrate_t lrate(alpha0, decay, param.max_iterations());
 
                 // assembly the optimizer
                 const auto optimizer = [&] (state_t& cstate, const state_t&)
