@@ -13,8 +13,8 @@ namespace nano
 
         state_t stoch_adam_t::minimize(const stoch_params_t& param, const function_t& function, const vector_t& x0) const
         {
-                const auto beta1s = make_finite_space(scalar_t(0.900));
-                const auto beta2s = make_finite_space(scalar_t(0.99), scalar_t(0.999), scalar_t(0.9999), scalar_t(0.99999));
+                const auto beta1s = make_finite_space(scalar_t(0.90));
+                const auto beta2s = make_finite_space(scalar_t(0.90), scalar_t(0.95), scalar_t(0.99));
                 return stoch_tune(this, param, function, x0, make_alpha0s(), make_decays(), make_epsilons(), beta1s, beta2s);
         }
 
