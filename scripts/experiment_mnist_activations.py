@@ -24,15 +24,18 @@ exp.add_trainers([
 # models
 outlayer = "affine:dims=10;act-snorm;"
 
-convnet0 = "--model forward-network --model-params "
-convnet1 = convnet0 + "conv:dims=128,rows=7,cols=7,conn=1,drow=2,dcol=2;act-snorm;"
-convnet2 = convnet1 + "conv:dims=128,rows=5,cols=5,conn=4,drow=1,dcol=1;act-snorm;"
-convnet3 = convnet2 + "conv:dims=128,rows=3,cols=3,conn=4,drow=1,dcol=1;act-snorm;"
-convnet4 = convnet3 + "conv:dims=128,rows=3,cols=3,conn=4,drow=1,dcol=1;act-snorm;"
+convnet = "--model forward-network --model-params "
+convnet = convnet + "conv:dims=128,rows=7,cols=7,conn=1,drow=1,dcol=1;act-snorm;"
+convnet = convnet + "conv:dims=128,rows=7,cols=7,conn=1,drow=1,dcol=1;act-snorm;"
+convnet = convnet + "conv:dims=128,rows=5,cols=5,conn=1,drow=1,dcol=1;act-snorm;"
+convnet = convnet + "conv:dims=128,rows=5,cols=5,conn=4,drow=1,dcol=1;act-snorm;"
+convnet = convnet + "conv:dims=128,rows=3,cols=3,conn=4,drow=1,dcol=1;act-snorm;"
+convnet = convnet + "conv:dims=128,rows=3,cols=3,conn=4,drow=1,dcol=1;act-snorm;"
+convnet = convnet + "conv:dims=128,rows=3,cols=3,conn=4,drow=1,dcol=1;act-snorm;"
 
 for activation in ["snorm", "tanh", "sin", "ewave:alpha=1", "ewave:alpha=2", "ewave:alpha=3", "ewave:alpha=4", "pwave"]:
-        name = ("convnet4-act-" + activation).replace("-", "_").replace(":alpha=", "")
-        params = (convnet4 + outlayer).replace("act-snorm", "act-" + activation)
+        name = ("convnet-act-" + activation).replace("-", "_").replace(":alpha=", "")
+        params = (convnet + outlayer).replace("act-snorm", "act-" + activation)
         exp.add_model(name, params)
 
 # train all configurations
