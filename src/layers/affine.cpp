@@ -25,6 +25,11 @@ namespace nano
                 m_psize = nano::size(m_odims) * (nano::size(m_idims) + 1);
         }
 
+        tensor_size_t affine_layer_t::fanin() const
+        {
+                return isize();
+        }
+
         void affine_layer_t::output(tensor3d_const_map_t idata, tensor1d_const_map_t param, tensor3d_map_t odata)
         {
                 assert(idata.dims() == idims());

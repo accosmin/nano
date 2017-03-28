@@ -24,7 +24,7 @@ namespace nano
 
                 virtual tensor3d_dims_t idims() const override { return m_idims; }
                 virtual tensor3d_dims_t odims() const override { return m_odims; }
-                virtual tensor_size_t fanin() const override { return isize(); }
+                virtual tensor_size_t fanin() const override;
                 virtual tensor_size_t psize() const override { return m_psize; }
                 virtual tensor_size_t flops() const override { return 2 * psize(); }
 
