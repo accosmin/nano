@@ -26,10 +26,10 @@ namespace nano
                 lrate_t lrate(alpha0, decay);
 
                 // first-order momentum of the gradient
-                nano::momentum_t<vector_t> m(beta1, x0.size());
+                momentum_t<vector_t> m(beta1, x0.size());
 
                 // second-order momentum of the gradient
-                nano::momentum_t<vector_t> v(beta2, x0.size());
+                momentum_t<vector_t> v(beta2, x0.size());
 
                 // assembly the optimizer
                 const auto optimizer = [&] (state_t& cstate, const state_t&)
