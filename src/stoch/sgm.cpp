@@ -22,8 +22,8 @@ namespace nano
                 // learning rate schedule
                 lrate_t lrate(alpha0, decay);
 
-                // first-order momentum of the update
-                nano::momentum_t<vector_t> davg(momentum, x0.size());
+                // first-order momentum of the gradient
+                nano::momentum_t<vector_t> gsum1(momentum, x0.size());
 
                 // assembly the optimizer
                 const auto optimizer = [&] (state_t& cstate, const state_t&)
@@ -32,12 +32,13 @@ namespace nano
                         const scalar_t alpha = lrate.get();
 
                         // descent direction
-                        davg.update(-alpha * cstate.g);
-                        cstate.d = davg.value();
+                        gsum1.update(cstate.g);
+
+                        cstate.d = -gsum1.value();
 
                         // update solution
                         function.stoch_next();
-                        cstate.stoch_update(function, 1);
+                        cstate.stoch_update(function, alpha);
                 };
 
                 const auto snapshot = [&] (const state_t& cstate, state_t& sstate)
