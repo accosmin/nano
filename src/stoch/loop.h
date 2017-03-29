@@ -11,12 +11,12 @@ namespace nano
         ///
         inline auto make_alpha0s()
         {
-                return make_finite_space(scalar_t(1e-2), scalar_t(1e-1), scalar_t(1e+0));
+                return make_finite_space(scalar_t(1e-3), scalar_t(1e-2), scalar_t(1e-1));
         }
 
         inline auto make_decays()
         {
-                return make_finite_space(scalar_t(0.00), scalar_t(0.10), scalar_t(0.20), scalar_t(0.50), scalar_t(0.75), scalar_t(1.00));
+                return make_finite_space(scalar_t(0.10), scalar_t(0.20), scalar_t(0.50), scalar_t(0.75), scalar_t(1.00));
         }
 
         inline auto make_momenta()
@@ -26,7 +26,7 @@ namespace nano
 
         inline auto make_epsilons()
         {
-                return make_finite_space(scalar_t(1e-6));//, scalar_t(1e-5), scalar_t(1e-4));
+                return make_finite_space(scalar_t(1e-6), scalar_t(1e-5), scalar_t(1e-4));
         }
 
         namespace detail

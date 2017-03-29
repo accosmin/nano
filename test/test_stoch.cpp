@@ -83,7 +83,7 @@ NANO_BEGIN_MODULE(test_stoch_optimizers)
 
 NANO_CASE(evaluate)
 {
-        foreach_test_function(make_convex_functions(1, 2), check_function);
+        foreach_test_function(make_convex_functions(1, 1), check_function);
 }
 
 NANO_END_MODULE()
