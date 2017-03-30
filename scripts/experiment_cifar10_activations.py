@@ -19,20 +19,20 @@ exp.add_criteria([
 
 # trainers
 exp.add_trainers([
-        "stoch_svrg"])
+        "stoch_adadelta"])
 
 # models
 outlayer = "affine:dims=10;act-snorm;"
 
 convnet = "--model forward-network --model-params "
 convnet = convnet + "conv:dims=128,rows=7,cols=7,conn=1,drow=1,dcol=1;act-snorm;"
-convnet = convnet + "conv:dims=128,rows=7,cols=7,conn=4,drow=1,dcol=1;act-snorm;"
-convnet = convnet + "conv:dims=128,rows=5,cols=5,conn=4,drow=1,dcol=1;act-snorm;"
-convnet = convnet + "conv:dims=128,rows=5,cols=5,conn=4,drow=1,dcol=1;act-snorm;"
-convnet = convnet + "conv:dims=128,rows=5,cols=5,conn=4,drow=1,dcol=1;act-snorm;"
-convnet = convnet + "conv:dims=128,rows=3,cols=3,conn=4,drow=1,dcol=1;act-snorm;"
-convnet = convnet + "conv:dims=128,rows=3,cols=3,conn=4,drow=1,dcol=1;act-snorm;"
-convnet = convnet + "conv:dims=128,rows=3,cols=3,conn=4,drow=1,dcol=1;act-snorm;"
+convnet = convnet + "conv:dims=128,rows=7,cols=7,conn=16,drow=1,dcol=1;act-snorm;"
+convnet = convnet + "conv:dims=128,rows=5,cols=5,conn=16,drow=1,dcol=1;act-snorm;"
+convnet = convnet + "conv:dims=128,rows=5,cols=5,conn=16,drow=1,dcol=1;act-snorm;"
+convnet = convnet + "conv:dims=128,rows=5,cols=5,conn=16,drow=1,dcol=1;act-snorm;"
+convnet = convnet + "conv:dims=128,rows=3,cols=3,conn=16,drow=1,dcol=1;act-snorm;"
+convnet = convnet + "conv:dims=128,rows=3,cols=3,conn=16,drow=1,dcol=1;act-snorm;"
+convnet = convnet + "conv:dims=128,rows=3,cols=3,conn=16,drow=1,dcol=1;act-snorm;"
 
 for activation in ["snorm", "tanh", "sin", "ewave:alpha=1", "ewave:alpha=2", "ewave:alpha=3", "ewave:alpha=4", "pwave"]:
         name = ("convnet-act-" + activation).replace("-", "_").replace(":alpha=", "")

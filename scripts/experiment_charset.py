@@ -47,7 +47,7 @@ outlayer = "affine:dims=10;act-snorm;"
 #exp.add_model("mlp2", mlp2 + outlayer)
 #exp.add_model("mlp3", mlp3 + outlayer)
 #exp.add_model("mlp4", mlp4 + outlayer)
-exp.add_model("mlp5", mlp5 + outlayer)
+#exp.add_model("mlp5", mlp5 + outlayer)
 exp.add_model("convnet", convnet + outlayer)
 
 # train all configurations
