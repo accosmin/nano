@@ -68,13 +68,17 @@ int main(int argc, const char *argv[])
         const string_t mlp3 = mlp2 + make_affine_layer(128, activation);
         const string_t mlp4 = mlp3 + make_affine_layer(512, activation);
         const string_t mlp5 = mlp4 + make_affine_layer(128, activation);
+        const string_t mlp6 = mlp5 + make_affine_layer(512, activation);
+        const string_t mlp7 = mlp6 + make_affine_layer(128, activation);
 
         const string_t convnet0;
-        const string_t convnet1 = convnet0 + make_conv_layer(64, 7, 7, 1, activation);
-        const string_t convnet2 = convnet1 + make_conv_layer(64, 7, 7, conn, activation);
-        const string_t convnet3 = convnet2 + make_conv_layer(64, 5, 5, conn, activation);
-        const string_t convnet4 = convnet3 + make_conv_layer(64, 5, 5, conn, activation);
-        const string_t convnet5 = convnet4 + make_conv_layer(64, 3, 3, conn, activation);
+        const string_t convnet1 = convnet0 + make_conv_layer(128, 7, 7, 1, activation);
+        const string_t convnet2 = convnet1 + make_conv_layer(128, 7, 7, conn, activation);
+        const string_t convnet3 = convnet2 + make_conv_layer(128, 5, 5, conn, activation);
+        const string_t convnet4 = convnet3 + make_conv_layer(128, 5, 5, conn, activation);
+        const string_t convnet5 = convnet4 + make_conv_layer(128, 3, 3, conn, activation);
+        const string_t convnet6 = convnet5 + make_conv_layer(128, 3, 3, conn, activation);
+        const string_t convnet7 = convnet6 + make_conv_layer(128, 3, 3, conn, activation);
 
         const string_t outlayer = make_output_layer(task.odims());
 
@@ -88,6 +92,8 @@ int main(int argc, const char *argv[])
                 DEFINE(mlp3);
                 DEFINE(mlp4);
                 DEFINE(mlp5);
+                DEFINE(mlp6);
+                DEFINE(mlp7);
         }
         if (cmd_convnets)
         {
@@ -96,6 +102,8 @@ int main(int argc, const char *argv[])
                 DEFINE(convnet3);
                 DEFINE(convnet4);
                 DEFINE(convnet5);
+                DEFINE(convnet6);
+                DEFINE(convnet7);
         }
         #undef DEFINE
 
