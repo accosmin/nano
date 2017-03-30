@@ -47,7 +47,7 @@ build_test_app(test_model.cpp nano)
 build_test_app(test_trainer.cpp nano)
 build_test_app(test_conv3d.cpp nano)
 
-build_test_app(test_task_charset.cpp nano)
+build_test_app(test_charset.cpp nano)
 build_test_app(test_task_svhn.cpp nano)
 build_test_app(test_task_iris.cpp nano)
 build_test_app(test_task_wine.cpp nano)

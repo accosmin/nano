@@ -76,8 +76,8 @@ before_script:
 script:
   - time bash build.sh --build-type Release --generator ninja --float
   - ./build-release/apps/info --system
-  - cd build-release/test && time ctest -j 3 -E "test_task_mnist|test_task_cifar10|test_task_cifar100|test_task_svhn|test_task_stl10"
+  - cd build-release/test && time ctest -j 3 -E "test_task_*"
   - cd ../../
   - ./build-release/apps/info --system
   - time bash build.sh --build-type Release --generator ninja --double
-  - cd build-release/test && time ctest -j 3 -E "test_task_mnist|test_task_cifar10|test_task_cifar100|test_task_svhn|test_task_stl10"
+  - cd build-release/test && time ctest -j 3 -E "test_task_*"
