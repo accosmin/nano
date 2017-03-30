@@ -25,7 +25,7 @@ namespace nano
 
                 virtual void clear() override;
                 virtual void accumulate(const scalar_t value) override;
-                virtual void accumulate(const vector_t& vgrad, scalar_t value) override;
+                virtual void accumulate(const vector_t& vgrad, const scalar_t value) override;
                 virtual void accumulate(const criterion_t& other) override;
 
         protected:
@@ -36,4 +36,3 @@ namespace nano
                 vector_t                m_vgrad;        ///< cumulated gradient
         };
 }
-

@@ -41,12 +41,15 @@ NANO_CASE(evaluate)
                 const auto function = trainer_function_t(acc, it);
 
                 // check the gradient using random parameters
-                vector_t x;
-                model->random();
-                model->save(x);
+                for (size_t i = 0; i < 8; ++ i)
+                {
+                        vector_t x;
+                        model->random();
+                        model->save(x);
 
-                NANO_CHECK_GREATER(function.eval(x), scalar_t(0));
-                NANO_CHECK_LESS(function.grad_accuracy(x), epsilon2<scalar_t>());
+                        NANO_CHECK_GREATER(function.eval(x), scalar_t(0));
+                        NANO_CHECK_LESS(function.grad_accuracy(x), epsilon2<scalar_t>());
+                }
         }
 }
 
