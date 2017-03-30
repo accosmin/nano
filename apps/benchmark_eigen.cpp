@@ -38,7 +38,7 @@ namespace
         {
                 const auto trials = size_t(16);
                 const auto duration = nano::measure_robustly_psec([&] () { op(); }, trials);
-                row << std::chrono::duration_cast<microseconds_t>(duration).count() << nano::gflops(flops, duration);
+                row << nano::gflops(flops, duration);
         }
 
         void measure_level1(const tensor_size_t dims,
@@ -108,7 +108,7 @@ namespace
                         const auto value = (dims < kilo) ? dims : (dims < mega ? (dims / kilo) : (dims / mega));
                         const auto units = (dims < kilo) ? string_t("") : (dims < mega ? string_t("K") : string_t("M"));
                         const auto header = to_string(value) + units;
-                        table.header() << (header + "[us]") << "gflop/s";
+                        table.header() << (header + "[gflop/s]");
                 });
         }
 }

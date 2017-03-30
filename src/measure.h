@@ -9,26 +9,38 @@ namespace nano
         /// \brief robustly measure a function call (in picoseconds)
         ///
         template <typename toperator>
-        picoseconds_t measure_robustly_psec(const toperator& op, const std::size_t trials)
+        picoseconds_t measure_robustly_psec(const toperator& op, const std::size_t trials,
+                const std::size_t min_trial_iterations = 1,
+                const microseconds_t min_trial_duration = microseconds_t(10 * 1000))
         {
-                const microseconds_t min_usecs(10 * 1000);
-
-                // calibrate the number of function calls to achieve the minimum time resolution
-                std::size_t count = std::max(std::size_t(1), trials / 2);
-                microseconds_t usecs(0);
-                while (usecs < min_usecs)
+                const auto run_trial = [&] ()
                 {
-                        count *= 2;
-
-                        const timer_t timer;
-                        for (std::size_t i = 0; i < count; ++ i)
+                        // calibrate the number of function calls to achieve the minimum time resolution
+                        std::size_t count = std::max(std::size_t(1), min_trial_iterations);
+                        microseconds_t usecs(0);
+                        while (usecs < min_trial_duration)
                         {
-                                op();
+                                count *= 2;
+
+                                const timer_t timer;
+                                for (std::size_t i = 0; i < count; ++ i)
+                                {
+                                        op();
+                                }
+                                usecs = timer.microseconds();
                         }
-                        usecs = timer.microseconds();
+
+                        return picoseconds_t(nano::idiv(usecs.count() * 1000 * 1000, count));
+                };
+
+                // measure multiple times for robustness
+                picoseconds_t duration = run_trial();
+                for (std::size_t t = 1; t < trials; ++ t)
+                {
+                        duration = std::min(duration, run_trial());
                 }
 
-                return picoseconds_t(nano::idiv(usecs.count() * 1000 * 1000, count));
+                return duration;
         }
 
         ///
