@@ -15,11 +15,11 @@ matrix:
     - compiler: gcc
       env: COMPILER=g++-6 PACKAGES=g++-6
     - compiler: clang
-      env: COMPILER=clang-3.6 PACKAGES=clang-3.6_libc++1
+      env: COMPILER=clang-3.6 PACKAGES=clang-3.6_libc++1 PARAMS=--libc++
     - compiler: clang
-      env: COMPILER=clang-3.7 PACKAGES=clang-3.7_libc++1
+      env: COMPILER=clang-3.7 PACKAGES=clang-3.7_libc++1 PARAMS=--libc++
     - compiler: clang
-      env: COMPILER=clang-3.8 PACKAGES=clang-3.8_libc++1
+      env: COMPILER=clang-3.8 PACKAGES=clang-3.8_libc++1 PARAMS=--libc++
     - os: osx
       osx_image: xcode7.3.1
       env: COMPILER=xcode7
@@ -37,7 +37,7 @@ before_script:
   - pwd
 
 script:
-  - time bash build.sh --build-type Release --generator ninja --float
+  - time bash build.sh --build-type Release --generator ninja --float ${PARAMS}
   - ./build-release/apps/info --system
   - cd build-release/test && time ctest -j 3 -E "test_task_*"
   - cd ../../
