@@ -11,32 +11,36 @@ matrix:
     - compiler: gcc
       addons:
         apt:
-          sources:
+          sources: &sources
             - ubuntu-toolchain-r-test
+            - nschloe/eigen-backports
           packages:
             - g++-4.9
       env: COMPILER=g++-4.9
     - compiler: gcc
       addons:
         apt:
-          sources:
+          sources: &sources
             - ubuntu-toolchain-r-test
+            - nschloe/eigen-backports
           packages:
             - g++-5
       env: COMPILER=g++-5
     - compiler: gcc
       addons:
         apt:
-          sources:
+          sources: &sources
             - ubuntu-toolchain-r-test
+            - nschloe/eigen-backports
           packages:
             - g++-6
       env: COMPILER=g++-6
     - compiler: clang
       addons:
         apt:
-          sources:
+          sources: &sources
             - ubuntu-toolchain-r-test
+            - nschloe/eigen-backports
             - llvm-toolchain-precise-3.6
           packages:
             - clang-3.6
@@ -44,8 +48,9 @@ matrix:
     - compiler: clang
       addons:
         apt:
-          sources:
+          sources: &sources
             - ubuntu-toolchain-r-test
+            - nschloe/eigen-backports
             - llvm-toolchain-precise-3.7
           packages:
             - clang-3.7
@@ -53,8 +58,9 @@ matrix:
     - compiler: clang
       addons:
         apt:
-          sources:
+          sources: &sources
             - ubuntu-toolchain-r-test
+            - nschloe/eigen-backports
             - llvm-toolchain-precise-3.8
           packages:
             - clang-3.8
@@ -67,7 +73,7 @@ matrix:
 install:
   - echo $TRAVIS_OS_NAME
   - if [ "$TRAVIS_OS_NAME" = "osx" ]; then brew update; brew install cmake ninja eigen devil libarchive; brew link libarchive --force; fi
-  - if [ "$TRAVIS_OS_NAME" = "linux" ]; then sudo add-apt-repository ppa:ubuntu-toolchain-r/test -y && sudo apt-add-repository ppa:nschloe/eigen-backports -y && sudo apt-get update -qq && sudo apt-get install -y clang-3.6 clang-3.7 clang-3.8 g++-4.9 g++-5 g++-6 cmake cmake-data ninja-build libbz2-dev libdevil-dev libeigen3-dev libarchive-dev && export CXX="$COMPILER"; fi
+  - if [ "$TRAVIS_OS_NAME" = "linux" ]; then sudo apt-get update -qq && sudo apt-get install -y clang-3.6 clang-3.7 clang-3.8 g++-4.9 g++-5 g++-6 cmake cmake-data ninja-build libbz2-dev libdevil-dev libeigen3-dev libarchive-dev && export CXX="$COMPILER"; fi
   - mkdir build
 
 before_script:
