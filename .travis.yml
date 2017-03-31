@@ -15,11 +15,11 @@ matrix:
     - compiler: gcc
       env: COMPILER=g++-6 SOURCES=ubuntu-toolchain-r/test_nschloe/eigen-backports
     - compiler: clang
-      env: COMPILER=clang-3.6 SOURCES=ubuntu-toolchain-r/test_nschloe/eigen-backports_llvm-toolchain-precise-3.6/main
+      env: COMPILER=clang-3.6 SOURCES=ubuntu-toolchain-r/test_nschloe/eigen-backports_https://launchpad.net/ubuntu/+source/llvm-toolchain-3.6
     - compiler: clang
-      env: COMPILER=clang-3.7 SOURCES=ubuntu-toolchain-r/test_nschloe/eigen-backports_llvm-toolchain-precise-3.7/main
+      env: COMPILER=clang-3.7 SOURCES=ubuntu-toolchain-r/test_nschloe/eigen-backports_https://launchpad.net/ubuntu/+source/llvm-toolchain-3.7
     - compiler: clang
-      env: COMPILER=clang-3.8 SOURCES=ubuntu-toolchain-r/test_nschloe/eigen-backports_llvm-toolchain-precise-3.8/main
+      env: COMPILER=clang-3.8 SOURCES=ubuntu-toolchain-r/test_nschloe/eigen-backports_https://launchpad.net/ubuntu/+source/llvm-toolchain-3.8
     - os: osx
       osx_image: xcode7.3.1
       env: COMPILER=xcode7
