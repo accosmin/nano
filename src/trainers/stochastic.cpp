@@ -68,14 +68,12 @@ namespace nano
 
                                 // NB: need to reset the minibatch size (changed during tuning)!
                                 it.reset(batch0, factor);
-
-                                return train.m_value;
                         };
 
                         // logging operator
                         const auto fn_ulog = [&] (const state_t& state, const string_t& sconfig)
                         {
-                                 return ulog(acc, it, epoch, epochs, result, policy, patience, timer, state, sconfig);
+                                return ulog(acc, it, epoch, epochs, result, policy, patience, timer, state, sconfig);
                         };
 
                         // assembly optimization function & optimize the model
