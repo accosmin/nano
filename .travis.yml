@@ -9,17 +9,17 @@ branches:
 matrix:
   include:
     - compiler: gcc
-      env: COMPILER=g++-4.9 SOURCES=ubuntu-toolchain-r-test;nschloe/eigen-backports
+      env: COMPILER=g++-4.9 SOURCES=ubuntu-toolchain-r/test;nschloe/eigen-backports
     - compiler: gcc
-      env: COMPILER=g++-5 SOURCES=ubuntu-toolchain-r-test;nschloe/eigen-backports
+      env: COMPILER=g++-5 SOURCES=ubuntu-toolchain-r/test;nschloe/eigen-backports
     - compiler: gcc
-      env: COMPILER=g++-6 SOURCES=ubuntu-toolchain-r-test;nschloe/eigen-backports
+      env: COMPILER=g++-6 SOURCES=ubuntu-toolchain-r/test;nschloe/eigen-backports
     - compiler: clang
-      env: COMPILER=clang-3.6 SOURCES=ubuntu-toolchain-r-test;nschloe/eigen-backports;llvm-toolchain-precise-3.6
+      env: COMPILER=clang-3.6 SOURCES=ubuntu-toolchain-r/test;nschloe/eigen-backports;llvm-toolchain-precise-3.6/main
     - compiler: clang
-      env: COMPILER=clang-3.7 SOURCES=ubuntu-toolchain-r-test;nschloe/eigen-backports;llvm-toolchain-precise-3.7
+      env: COMPILER=clang-3.7 SOURCES=ubuntu-toolchain-r/test;nschloe/eigen-backports;llvm-toolchain-precise-3.7/main
     - compiler: clang
-      env: COMPILER=clang-3.8 SOURCES=ubuntu-toolchain-r-test;nschloe/eigen-backports;llvm-toolchain-precise-3.8
+      env: COMPILER=clang-3.8 SOURCES=ubuntu-toolchain-r/test;nschloe/eigen-backports;llvm-toolchain-precise-3.8/main
     - os: osx
       osx_image: xcode7.3.1
       env: COMPILER=xcode7
