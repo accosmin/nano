@@ -44,7 +44,7 @@ matrix:
             - llvm-toolchain-precise-3.6
           packages:
             - clang-3.6
-      env: COMPILER=clang++-3.6
+      env: COMPILER=clang-3.6
     - compiler: clang
       addons:
         apt:
@@ -54,7 +54,7 @@ matrix:
             - llvm-toolchain-precise-3.7
           packages:
             - clang-3.7
-      env: COMPILER=clang++-3.7
+      env: COMPILER=clang-3.7
     - compiler: clang
       addons:
         apt:
@@ -64,7 +64,7 @@ matrix:
             - llvm-toolchain-precise-3.8
           packages:
             - clang-3.8
-      env: COMPILER=clang++-3.8
+      env: COMPILER=clang-3.8
     - os: osx
       osx_image: xcode7.3.1
     - os: osx
