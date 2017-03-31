@@ -17,9 +17,9 @@ matrix:
     - compiler: clang
       env: COMPILER=clang-3.6 PACKAGES=clang-3.6_libc++1
     - compiler: clang
-      env: COMPILER=clang-3.6 PACKAGES=clang-3.7_libc++1
+      env: COMPILER=clang-3.7 PACKAGES=clang-3.7_libc++1
     - compiler: clang
-      env: COMPILER=clang-3.6 PACKAGES=clang-3.8_libc++1
+      env: COMPILER=clang-3.8 PACKAGES=clang-3.8_libc++1
     - os: osx
       osx_image: xcode7.3.1
       env: COMPILER=xcode7
