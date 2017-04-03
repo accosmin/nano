@@ -1,4 +1,4 @@
-### Nano
+### Nano https://travis-ci.org/accosmin/nano.svg?branch=master
 
 Nano provides numerical optimization and machine learning utilities. For example it can be used to train models such as multi-layer perceptrons (classical neural networks) and convolution networks.
 
@@ -119,7 +119,6 @@ A **model** predicts the correct output for a given image patch, either its labe
 |-----------|--------------------------------------------------|-------------------------------------------------------------------------------|
 | layer     | description                                      | configuration                                                                 |
 |-----------|--------------------------------------------------|-------------------------------------------------------------------------------|
-| act-ewave | activation: a(x) = a*x / (exp(-a*x) + exp(+a*x)) | alpha=1[1,10]                                                                 |
 | act-sigm  | activation: a(x) = exp(x) / (1 + exp(x))         |                                                                               |
 | act-sin   | activation: a(x) = sin(x)                        |                                                                               |
 | act-snorm | activation: a(x) = x / sqrt(1 + x^2)             |                                                                               |
