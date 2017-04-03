@@ -1,4 +1,4 @@
-### Nano https://travis-ci.org/accosmin/nano.svg?branch=master
+### Nano [![Build Status](https://travis-ci.org/accosmin/nano.svg?branch=0.4)](https://travis-ci.org/accosmin/nano)
 
 Nano provides numerical optimization and machine learning utilities. For example it can be used to train models such as multi-layer perceptrons (classical neural networks) and convolution networks.
 
