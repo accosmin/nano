@@ -74,6 +74,8 @@ namespace nano
                 const auto imaps = m_params.imaps();
                 const auto kconn = m_params.kconn();
                 const auto omaps = m_params.omaps();
+                const auto kdrow = m_params.kdrow();
+                const auto kdcol = m_params.kdcol();
 
                 for (tensor_size_t o = 0; o < omaps; ++ o)
                 {
@@ -81,7 +83,7 @@ namespace nano
 
                         for (tensor_size_t i = o % kconn, ik = 0; i < imaps; i += kconn, ++ ik)
                         {
-                                conv2d(idata.matrix(i), kdata.matrix(o, ik), m_params.kdrow(), m_params.kdcol(), odata.matrix(o));
+                                conv2d(idata.matrix(i), kdata.matrix(o, ik), kdrow, kdcol, odata.matrix(o));
                         }
                 }
         }
@@ -115,6 +117,8 @@ namespace nano
                 const auto imaps = m_params.imaps();
                 const auto kconn = m_params.kconn();
                 const auto omaps = m_params.omaps();
+                const auto kdrow = m_params.kdrow();
+                const auto kdcol = m_params.kdcol();
 
                 for (tensor_size_t i = 0; i < imaps; ++ i)
                 {
@@ -122,7 +126,7 @@ namespace nano
 
                         for (tensor_size_t o = i % kconn, ok = 0; o < omaps; o += kconn, ++ ok)
                         {
-                                corr2d(idata.matrix(i), kdata.matrix(o, i / kconn), m_params.kdrow(), m_params.kdcol(), odata.matrix(o));
+                                corr2d(idata.matrix(i), kdata.matrix(o, i / kconn), kdrow, kdcol, odata.matrix(o));
                         }
                 }
         }
@@ -155,6 +159,8 @@ namespace nano
                 const auto imaps = m_params.imaps();
                 const auto kconn = m_params.kconn();
                 const auto omaps = m_params.omaps();
+                const auto kdrow = m_params.kdrow();
+                const auto kdcol = m_params.kdcol();
 
                 for (tensor_size_t o = 0; o < omaps; ++ o)
                 {
@@ -163,7 +169,7 @@ namespace nano
                         for (tensor_size_t i = o % kconn, ik = 0; i < imaps; i += kconn, ++ ik)
                         {
                                 kdata.matrix(o, ik).setZero();
-                                conv2d(idata.matrix(i), kdata.matrix(o, ik), m_params.kdrow(), m_params.kdcol(), odata.matrix(o));
+                                conv2d(idata.matrix(i), kdata.matrix(o, ik), kdrow, kdcol, odata.matrix(o));
                         }
                 }
         }
