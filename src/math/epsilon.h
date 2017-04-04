@@ -39,4 +39,3 @@ namespace nano
                 return 10 * std::cbrt(epsilon<tscalar>());
         }
 }
-

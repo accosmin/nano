@@ -10,12 +10,13 @@ namespace nano
 
         scalar_t function_sargan_t::vgrad(const vector_t& x, vector_t* gx) const
         {
+                const auto x2sum = x.array().square().sum();
+
                 if (gx)
                 {
-                        *gx = scalar_t(1.2) * x.array() + scalar_t(0.8) * x.array().sum();
+                        *gx = (scalar_t(1.2) + scalar_t(1.6) * x2sum) * x;
                 }
 
-                return  scalar_t(0.6) * x.array().square().sum() +
-                        scalar_t(0.4) * nano::square(x.array().sum());
+                return scalar_t(0.6) * x2sum + scalar_t(0.4) * nano::square(x2sum);
         }
 }

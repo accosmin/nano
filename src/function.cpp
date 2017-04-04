@@ -50,36 +50,40 @@ namespace nano
 
                 const auto n = size();
 
-                // analytical gradient
                 vector_t gx(n);
+                vector_t gx_approx(n);
+                vector_t xp = x, xn = x;
+
+                // analytical gradient
                 const auto fx = vgrad(x, &gx);
 
                 // finite-difference approximated gradient
                 //      see "Numerical optimization", Nocedal & Wright, 2nd edition, p.197
-                const auto dx =
-                        std::sqrt(std::numeric_limits<scalar_t>::epsilon()) *
-                        (1 + x.lpNorm<Eigen::Infinity>());
-
-                vector_t gx_approx(n);
-                vector_t xp = x, xn = x;
-                for (auto i = 0; i < n; i ++)
+                const auto finite_difference = [&] (const scalar_t dx)
                 {
-                        if (i > 0)
+                        for (auto i = 0; i < n; i ++)
                         {
-                                xp(i - 1) -= dx;
-                                xn(i - 1) += dx;
-                        }
-                        xp(i) += dx;
-                        xn(i) -= dx;
+                                xp = x; xp(i) += dx;
+                                xn = x; xn(i) -= dx;
 
-                        const auto dfi = vgrad(xp, nullptr) - vgrad(xn, nullptr);
-                        const auto dxi = xp(i) - xn(i);
-                        gx_approx(i) = static_cast<scalar_t>(dfi / dxi);
+                                const auto dfi = vgrad(xp, nullptr) - vgrad(xn, nullptr);
+                                const auto dxi = xp(i) - xn(i);
+                                gx_approx(i) = dfi / dxi;
+                        }
+
+                        return (gx - gx_approx).lpNorm<Eigen::Infinity>() / (1 + std::fabs(fx));
+                };
+
+                // we're trying various scaling factors of {u^(2/3), u^(1/2), u^(1/3)}
+                scalar_t best_approx = std::numeric_limits<scalar_t>::max();
+                for (const scalar_t dp : {1, 2, 4, 8})
+                {
+                        best_approx = std::min(best_approx, finite_difference(epsilon1<scalar_t>() / 10 * dp));
+                        best_approx = std::min(best_approx, finite_difference(epsilon2<scalar_t>() / 10 * dp));
+                        best_approx = std::min(best_approx, finite_difference(epsilon3<scalar_t>() / 10 * dp));
                 }
 
-                // return the relative difference between gradients
-                return  (gx - gx_approx).lpNorm<Eigen::Infinity>() /
-                        (scalar_t(1) + std::fabs(fx));
+                return best_approx;
         }
 
         bool function_t::is_convex(const vector_t& x1, const vector_t& x2, const int steps) const
@@ -129,4 +133,3 @@ namespace nano
                 return x.lpNorm<Eigen::Infinity>() < m_domain;
         }
 }
-
