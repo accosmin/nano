@@ -10,9 +10,9 @@ using namespace nano;
 
 static void check_function(const function_t& function)
 {
-        const auto epochs = size_t(100);
-        const auto epoch_size = size_t(10000);
-        const auto trials = size_t(4);
+        const auto epochs = size_t(1000);
+        const auto epoch_size = size_t(3000);
+        const auto trials = size_t(10);
 
         const auto dims = function.size();
 
@@ -44,10 +44,10 @@ static void check_function(const function_t& function)
                 {
                         const auto& x0 = x0s[t];
                         const auto f0 = function.eval(x0);
-                        const auto g_thres = epsilon2<scalar_t>();
+                        const auto g_thres = epsilon3<scalar_t>();
 
                         // optimize
-                        const auto params = stoch_params_t(epochs, epoch_size, epsilon2<scalar_t>());
+                        const auto params = stoch_params_t(epochs, epoch_size, epsilon3<scalar_t>());
                         const auto state = optimizer->minimize(params, function, x0);
 
                         const auto x = state.x;
