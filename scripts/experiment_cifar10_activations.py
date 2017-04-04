@@ -34,8 +34,8 @@ convnet = convnet + "conv:dims=128,rows=3,cols=3,conn=16,drow=1,dcol=1;act-snorm
 convnet = convnet + "conv:dims=128,rows=3,cols=3,conn=16,drow=1,dcol=1;act-snorm;"
 convnet = convnet + "conv:dims=128,rows=3,cols=3,conn=16,drow=1,dcol=1;act-snorm;"
 
-for activation in ["snorm", "tanh", "sin", "ewave:alpha=1", "ewave:alpha=2", "ewave:alpha=3", "ewave:alpha=4", "pwave"]:
-        name = ("convnet-act-" + activation).replace("-", "_").replace(":alpha=", "")
+for activation in ["snorm", "tanh", "sin", "pwave"]:
+        name = ("convnet-act-" + activation).replace("-", "_")
         params = (convnet + outlayer).replace("act-snorm", "act-" + activation)
         exp.add_model(name, params)
 

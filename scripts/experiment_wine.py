@@ -22,20 +22,20 @@ exp.add_trainers([
         "batch_cgd"])
 
 # models
-outlayer = "affine:dims=3;act-ewave:alpha=1;"
+outlayer = "affine:dims=3;act-snorm;"
 
 mlp0 = "--model forward-network --model-params "
-mlp1 = mlp0 + "affine:dims=128;act-ewave:alpha=1;"
-mlp2 = mlp1 + "affine:dims=128;act-ewave:alpha=1;"
-mlp3 = mlp2 + "affine:dims=128;act-ewave:alpha=1;"
-mlp4 = mlp3 + "affine:dims=128;act-ewave:alpha=1;"
+mlp1 = mlp0 + "affine:dims=128;act-snorm;"
+mlp2 = mlp1 + "affine:dims=128;act-snorm;"
+mlp3 = mlp2 + "affine:dims=128;act-snorm;"
+mlp4 = mlp3 + "affine:dims=128;act-snorm;"
 
 def add_model(name, params, activation):
-        name = (name + "-act-" + activation).replace("-", "_").replace(":alpha=", "")
+        name = (name + "-act-" + activation).replace("-", "_")
         params = (params + outlayer).replace("act-snorm", "act-" + activation)
         exp.add_model(name, params)
 
-for activation in ["snorm", "tanh", "sin", "ewave:alpha=1", "ewave:alpha=2", "ewave:alpha=3", "ewave:alpha=4", "pwave"]:
+for activation in ["snorm", "tanh", "sin", "pwave"]:
         add_model("mlp0", mlp0, activation)
         add_model("mlp1", mlp1, activation)
         add_model("mlp2", mlp2, activation)

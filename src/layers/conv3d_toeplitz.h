@@ -55,7 +55,7 @@ namespace nano
                 conv3d_params_t         m_params;
                 mutable tensor3d_t      m_idata_toe;    ///< Toeplitz-like matrices of the inputs!
                 // todo: maybe it is possible to not store the kernel!
-                mutable matrix_t        m_kdata_inv;
+                mutable matrix_t        m_kdata_inv;    ///< buffer: (omaps / kconn, krows x kcols)
                 // todo: these should be removed! use directly Eigen calls to map the output buffers!
                 mutable matrix_t        m_oodata;       ///< buffer: (omaps / kconn, orows x ocols)
                 mutable matrix_t        m_okdata;       ///< buffer: (omaps / kconn, krows x kcols)

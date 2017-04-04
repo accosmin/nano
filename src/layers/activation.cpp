@@ -136,32 +136,6 @@ namespace nano
                 idata = odata;
         }
 
-        activation_layer_ewave_t::activation_layer_ewave_t(const string_t& parameters) :
-                activation_layer_t(to_params(parameters, "alpha", "1[1,10]"))
-        {
-        }
-
-        rlayer_t activation_layer_ewave_t::clone() const
-        {
-                return std::make_unique<activation_layer_ewave_t>(*this);
-        }
-
-        void activation_layer_ewave_t::aoutput(tensor3d_const_array_t idata, tensor3d_array_t odata) const
-        {
-                const auto alpha = nano::clamp(from_params<scalar_t>(config(), "alpha"), scalar_t(1), scalar_t(10));
-                const auto nexp = (-alpha * idata).exp();
-                const auto pexp = (+alpha * idata).exp();
-                odata = alpha * idata / (nexp + pexp);
-        }
-
-        void activation_layer_ewave_t::aginput(tensor3d_array_t idata, tensor3d_const_array_t odata) const
-        {
-                const auto alpha = nano::clamp(from_params<scalar_t>(config(), "alpha"), scalar_t(1), scalar_t(10));
-                const auto nexp = (-alpha * idata).exp();
-                const auto pexp = (+alpha * idata).exp();
-                idata = alpha * odata * (nexp + pexp + alpha * idata * (nexp - pexp)) / (nexp + pexp).square();
-        }
-
         rlayer_t activation_layer_pwave_t::clone() const
         {
                 return std::make_unique<activation_layer_pwave_t>(*this);
