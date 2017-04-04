@@ -54,8 +54,6 @@ namespace nano
                 // attributes
                 conv3d_params_t         m_params;
                 mutable tensor3d_t      m_idata_toe;    ///< Toeplitz-like matrices of the inputs!
-                // todo: maybe it is possible to not store the kernel!
-                mutable matrix_t        m_kdata_inv;    ///< buffer: (omaps / kconn, krows x kcols)
                 // todo: these should be removed! use directly Eigen calls to map the output buffers!
                 mutable matrix_t        m_oodata;       ///< buffer: (omaps / kconn, orows x ocols)
                 mutable matrix_t        m_okdata;       ///< buffer: (omaps / kconn, krows x kcols)
@@ -72,8 +70,6 @@ namespace nano
 
                 // allocate buffers
                 m_idata_toe.resize(imaps, krows * kcols, orows * ocols);
-                m_kdata_inv.resize(omaps / kconn, krows * kcols);
-
                 m_oodata.resize(omaps / kconn, orows * ocols);
                 m_okdata.resize(omaps / kconn, krows * kcols);
                 m_kidata.resize(krows * kcols, irows * icols);
@@ -128,13 +124,12 @@ namespace nano
                 for (tensor_size_t i = 0; i < imaps; ++ i)
                 {
                         make_toeplitz_output(idata.matrix(i), m_idata_toe.matrix(i));
-
                         for (tensor_size_t o = i % kconn, ok = 0; o < omaps; o += kconn, ++ ok)
                         {
-                                m_kdata_inv.row(ok) = kdata.vector(o, i / kconn);
+                                m_okdata.row(ok) = kdata.vector(o, i / kconn);
                         }
 
-                        m_oodata.noalias() = m_kdata_inv * m_idata_toe.matrix(i);
+                        m_oodata.noalias() = m_okdata * m_idata_toe.matrix(i);
                         for (tensor_size_t o = i % kconn, ok = 0; o < omaps; o += kconn, ++ ok)
                         {
                                 odata.vector(o) += m_oodata.row(ok);
