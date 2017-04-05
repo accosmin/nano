@@ -59,6 +59,7 @@ namespace nano
                 mutable matrix_t        m_okdata;       ///< buffer: (omaps / kconn, krows x kcols)
                 mutable matrix_t        m_kidata;       ///< buffer: (krows x kcols, irows x icols)
                 mutable matrix_t        m_iidata;       ///< buffer: (imaps / kconn, irows x icols)
+                mutable matrix_t        m_ikdata;       ///< buffer: (imaps / kconn, krows x kcols)
         };
 
         inline conv3d_toeplitz_t::conv3d_toeplitz_t(const conv3d_params_t& params) :
@@ -74,6 +75,7 @@ namespace nano
                 m_okdata.resize(omaps / kconn, krows * kcols);
                 m_kidata.resize(krows * kcols, irows * icols);
                 m_iidata.resize(imaps / kconn, irows * icols);
+                m_ikdata.resize(imaps / kconn, krows * kcols);
         }
 
         template <typename timatrix, typename tomatrix>
@@ -183,10 +185,12 @@ namespace nano
                 for (tensor_size_t o = 0; o < omaps; ++ o)
                 {
                         make_toeplitz_ginput(odata.matrix(o), m_kidata);
+                        for (tensor_size_t i = o % kconn, ik = 0; i < imaps; i += kconn, ++ ik)
+                        {
+                                m_ikdata.row(ik) = kdata.vector(o, ik);
+                        }
 
-                        m_iidata.noalias() =
-                                map_matrix(kdata.planeData(o, 0), imaps / kconn, kdata.planeSize()) *
-                                m_kidata;
+                        m_iidata.noalias() = m_ikdata * m_kidata;
                         for (tensor_size_t i = o % kconn, ik = 0; i < imaps; i += kconn, ++ ik)
                         {
                                 idata.vector(i) += m_iidata.row(ik);
@@ -247,9 +251,7 @@ namespace nano
                                 m_oodata.row(ok) = odata.vector(o);
                         }
 
-                        m_okdata.noalias() =
-                                m_oodata *
-                                m_idata_toe.matrix(i).transpose();
+                        m_okdata.noalias() = m_oodata * m_idata_toe.matrix(i).transpose();
                         for (tensor_size_t o = i % kconn, ok = 0; o < omaps; o += kconn, ++ ok)
                         {
                                 kdata.vector(o, i / kconn) = m_okdata.row(ok);
