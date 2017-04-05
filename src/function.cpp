@@ -76,7 +76,7 @@ namespace nano
 
                 // we're trying various scaling factors of {u^(2/3), u^(1/2), u^(1/3)}
                 scalar_t best_approx = std::numeric_limits<scalar_t>::max();
-                for (const scalar_t dp : {1, 2, 4, 8})
+                for (const auto dp : {scalar_t(1), scalar_t(2), scalar_t(4), scalar_t(8)})
                 {
                         best_approx = std::min(best_approx, finite_difference(epsilon1<scalar_t>() / 10 * dp));
                         best_approx = std::min(best_approx, finite_difference(epsilon2<scalar_t>() / 10 * dp));
