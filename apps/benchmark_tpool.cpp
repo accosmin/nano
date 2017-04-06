@@ -30,7 +30,7 @@ namespace
 int main(int argc, const char *argv[])
 {
         // parse the command line
-        cmdline_t cmdline("benchmark models");
+        cmdline_t cmdline("benchmark thread pool");
         cmdline.add("", "min-size",     "minimum problem size (in kilo)", "1");
         cmdline.add("", "max-size",     "maximum problem size (in kilo)", "1024");
 

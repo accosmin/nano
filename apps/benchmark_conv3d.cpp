@@ -57,7 +57,7 @@ namespace
 int main(int argc, const char *argv[])
 {
         // parse the command line
-        cmdline_t cmdline("benchmark models");
+        cmdline_t cmdline("benchmark 3D convolution operators");
         cmdline.add("", "imaps",        "number of input planes [1,128]", "32");
         cmdline.add("", "irows",        "number of input rows [16, 128]", "24");
         cmdline.add("", "icols",        "number of input cols [16, 128]", "24");
