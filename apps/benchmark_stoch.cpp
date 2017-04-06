@@ -1,4 +1,3 @@
-#include "logger.h"
 #include "text/cmdline.h"
 #include "math/random.h"
 #include "math/epsilon.h"
@@ -74,7 +73,5 @@ int main(int argc, const char* argv[])
         benchmark::show_table(std::string(), gstats);
 
         // OK
-        log_info() << done;
         return EXIT_SUCCESS;
 }
-

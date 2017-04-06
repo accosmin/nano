@@ -1,6 +1,7 @@
 #pragma once
 
 #include "pool.h"
+#include <cassert>
 
 namespace nano
 {
@@ -8,11 +9,7 @@ namespace nano
         /// \brief split a loop computation of the given size using a thread pool.
         /// NB: the operator receives the index of the sample to process and the assigned thread index: op(i, t)
         ///
-        template
-        <
-                typename tsize,
-                class toperator
-        >
+        template <typename tsize, typename toperator>
         void loopit(const tsize size, const toperator op, const tsize split = 1)
         {
                 auto& pool = thread_pool_t::instance();
@@ -40,11 +37,7 @@ namespace nano
         ///
         /// \brief split a loop computation of the given size using multiple threads
         ///
-        template
-        <
-                typename tsize,
-                class toperator
-        >
+        template <typename tsize, typename toperator>
         void loopit(const tsize size, const tsize nthreads, const toperator op, const tsize split = 1)
         {
                 thread_pool_t::instance().activate(nthreads);

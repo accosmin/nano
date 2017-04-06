@@ -222,6 +222,5 @@ int main(int argc, const char *argv[])
         }
 
         // OK
-        log_info() << done;
         return EXIT_SUCCESS;
 }

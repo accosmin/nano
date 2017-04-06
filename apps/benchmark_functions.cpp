@@ -1,5 +1,4 @@
 #include "timer.h"
-#include "logger.h"
 #include "measure.h"
 #include "text/table.h"
 #include "text/cmdline.h"
@@ -61,7 +60,5 @@ int main(int argc, const char* argv[])
         std::cout << table;
 
         // OK
-        log_info() << done;
         return EXIT_SUCCESS;
 }
-

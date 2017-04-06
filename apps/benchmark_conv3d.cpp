@@ -157,6 +157,5 @@ int main(int argc, const char *argv[])
         std::cout << table;
 
         // OK
-        log_info() << done;
         return EXIT_SUCCESS;
 }
