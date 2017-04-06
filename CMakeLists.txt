@@ -10,6 +10,14 @@ include(cmake/options.cmake)
 include(cmake/dependencies.cmake)
 include(cmake/configure.cmake)
 
+set(NANO_MAJOR_VERSION 0)
+set(NANO_MINOR_VERSION 4)
+exec_program("git" ${CMAKE_CURRENT_SOURCE_DIR} ARGS "rev-parse HEAD" OUTPUT_VARIABLE NANO_GIT_COMMIT_HASH)
+
+configure_file(
+        ${CMAKE_MODULE_PATH}/version.h.in
+        ${CMAKE_SOURCE_DIR}/src/version.h)
+
 message("++ -----------------------------------------------------------------------------" "")
 message("++ SYSTEM:                        " "${CMAKE_SYSTEM_NAME}")
 message("++ PROCESSOR:                     " "${CMAKE_HOST_SYSTEM_PROCESSOR}")

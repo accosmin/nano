@@ -1,4 +1,5 @@
 #include "nano.h"
+#include "version.h"
 #include "text/table.h"
 #include "text/cmdline.h"
 #include <iostream>
@@ -37,6 +38,8 @@ int main(int argc, const char* argv[])
         cmdline.add("", "criterion",            "training criteria");
         cmdline.add("", "batch",                "batch optimization algorithms");
         cmdline.add("", "stoch",                "stochastic optimization algorithms");
+        cmdline.add("", "version",              "library version");
+        cmdline.add("", "git-hash",             "git commit hash");
         cmdline.add("", "system",               "system: all available information");
         cmdline.add("", "sys-logical-cpus",     "system: number of logical cpus");
         cmdline.add("", "sys-physical-cpus",    "system: number of physical cpus");
@@ -56,6 +59,8 @@ int main(int argc, const char* argv[])
         const bool has_sys_logical = cmdline.has("sys-logical-cpus");
         const bool has_sys_physical = cmdline.has("sys-physical-cpus");
         const bool has_sys_memsize = cmdline.has("sys-memsize");
+        const bool has_version = cmdline.has("version");
+        const bool has_git_hash = cmdline.has("git-hash");
 
         if (    !has_loss &&
                 !has_task &&
@@ -68,7 +73,9 @@ int main(int argc, const char* argv[])
                 !has_system &&
                 !has_sys_logical &&
                 !has_sys_physical &&
-                !has_sys_memsize)
+                !has_sys_memsize &&
+                !has_version &&
+                !has_git_hash)
         {
                 cmdline.usage();
                 return EXIT_FAILURE;
@@ -118,6 +125,14 @@ int main(int argc, const char* argv[])
         if (has_system || has_sys_memsize)
         {
                 std::cout << "memsize........." << nano::memsize_gb() << "GB" << std::endl;
+        }
+        if (has_version)
+        {
+                std::cout << nano::major_version << "." << nano::minor_version << std::endl;
+        }
+        if (has_git_hash)
+        {
+                std::cout << nano::git_commit_hash << std::endl;
         }
 
         // OK

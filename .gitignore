@@ -14,3 +14,4 @@ doxygen/html
 scripts/__pycache__
 scripts/*.pyc
 scripts/*.pdf
+src/version.h
