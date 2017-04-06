@@ -232,14 +232,15 @@ namespace nano
 
                         if (layer.psize())
                         {
-                                const auto l2 = param.lpNorm<2>();
-                                const auto li = param.lpNorm<Eigen::Infinity>();
+                                const auto min = param.minCoeff();
+                                const auto max = param.maxCoeff();
 
                                 log_info()
                                         << "forward network " << layer.m_name
                                         << ": in(" << layer.idims() << ") -> " << "out(" << layer.odims() << ")"
                                         << ", kFLOPs = " << nano::idiv(layer.flops(), 1024)
-                                        << ", params = " << layer.psize() << " [L2=" << l2 << ", Li=" << li << "].";
+                                        << ", params = " << layer.psize()
+                                        << ", range = [" << min << ", " << max << "].";
                         }
                         else
                         {
