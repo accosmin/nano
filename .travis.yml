@@ -40,7 +40,7 @@ script:
   - time bash build.sh --build-type Release --generator ninja --float ${PARAMS}
   - ./build-release/apps/info --system
   - cd build-release/test && time ctest -j 3 -E "test_task_*"
-  - cd ../../
-  - ./build-release/apps/info --system
-  - time bash build.sh --build-type Release --generator ninja --double ${PARAMS}
-  - cd build-release/test && time ctest -j 3 -E "test_task_*"
+#  - cd ../../
+#  - ./build-release/apps/info --system
+#  - time bash build.sh --build-type Release --generator ninja --double ${PARAMS}
+#  - cd build-release/test && time ctest -j 3 -E "test_task_*"
