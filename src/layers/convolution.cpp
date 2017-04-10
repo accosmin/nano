@@ -33,29 +33,12 @@ namespace nano
                 const auto orows = (irows - krows + 1) / drows;
                 const auto ocols = (icols - kcols + 1) / dcols;
 
-                // check convolution size
-                if (orows < 1 || ocols < 1)
-                {
-                        log_error() << "convolution layer: invalid size (" << imaps << "x" << irows << "x" << icols
-                                    << ") -> (" << omaps << "x" << krows << "x" << kcols << ")!";
-                        throw std::invalid_argument("invalid configuration for the convolution layer");
-                }
-
-                // check input connectivity factor
-                if ((imaps % kconn) || (omaps % kconn))
-                {
-                        log_error() << "convolution layer: invalid input connectivity factor!";
-                        throw std::invalid_argument("invalid configuration for the convolution layer");
-                }
-
-                // check stride
-                if (2 * drows >= krows || 2 * dcols >= kcols)
-                {
-                        log_error() << "convolution layer: invalid stride - it should be less than half the kernel size!";
-                        throw std::invalid_argument("invalid configuration for the convolution layer");
-                }
-
                 const auto params = conv3d_params_t{imaps, irows, icols, omaps, kconn, krows, kcols, drows, dcols};
+                if (!params.valid())
+                {
+                        throw std::invalid_argument("invalid configuration for the convolution layer");
+                }
+
                 m_op = conv3d_toeplitz_t{params};
         }
 

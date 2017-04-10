@@ -226,6 +226,11 @@ NANO_CASE(multi_layer)
 
         test_model(
                 make_conv_layer(7, 3, 3, 1, "act-snorm") +
+                make_conv_layer(4, 1, 1, 1, "act-splus"),
+                cpsize(cmd_idims, 7, 3, 3, 1) + cpsize(7, 4, 1, 1, 1) + apsize(4 * 6 * 6, cmd_odims));
+
+        test_model(
+                make_conv_layer(7, 3, 3, 1, "act-snorm") +
                 make_conv_layer(4, 3, 3, 1, "act-splus"),
                 cpsize(cmd_idims, 7, 3, 3, 1) + cpsize(7, 4, 3, 3, 1) + apsize(4 * 4 * 4, cmd_odims));
 
