@@ -64,8 +64,8 @@ int main(int argc, const char *argv[])
         cmdline.add("", "omaps",        "number of output planes [1, 128]", "32");
         cmdline.add("", "min-kconn",    "minimum connectivity factor [1, 16]", "1");
         cmdline.add("", "max-kconn",    "maximum connectivity factor [1, 16]", "4");
-        cmdline.add("", "min-ksize",    "minimum kernel size [3, 15]", "3");
-        cmdline.add("", "max-ksize",    "maximum kernel size [3, 15]", "9");
+        cmdline.add("", "min-ksize",    "minimum kernel size [1, 15]", "1");
+        cmdline.add("", "max-ksize",    "maximum kernel size [1, 15]", "9");
 
         cmdline.process(argc, argv);
 
