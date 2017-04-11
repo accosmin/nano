@@ -30,9 +30,6 @@ namespace nano
                 const auto drows = clamp(from_params<tensor_size_t>(config(), "drow"), 1, 8);
                 const auto dcols = clamp(from_params<tensor_size_t>(config(), "dcol"), 1, 8);
 
-                const auto orows = (irows - krows + 1) / drows;
-                const auto ocols = (icols - kcols + 1) / dcols;
-
                 const auto params = conv3d_params_t{imaps, irows, icols, omaps, kconn, krows, kcols, drows, dcols};
                 if (!params.valid())
                 {
