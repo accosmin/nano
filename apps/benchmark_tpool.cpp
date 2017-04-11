@@ -56,7 +56,7 @@ int main(int argc, const char *argv[])
                 auto& row = table.append();
                 row << ("sin+cos [" + to_string(size / kilo) + "K]");
 
-                microseconds_t duration1(0);
+                microseconds_t delta1(0);
 
                 for (size_t n_active_workers = 1; n_active_workers <= n_threads; ++ n_active_workers)
                 {
@@ -64,13 +64,13 @@ int main(int argc, const char *argv[])
                         pool.activate(n_active_workers);
 
                         std::vector<scalar_t> results(size);
-                        const auto durationx = ::measure(results);
+                        const auto deltaX = ::measure(results);
                         if (n_active_workers == 1)
                         {
-                                duration1 = durationx;
+                                delta1 = deltaX;
                         }
 
-                        const auto scaling = static_cast<scalar_t>(duration1.count()) / static_cast<scalar_t>(durationx.count());
+                        const auto scaling = static_cast<scalar_t>(delta1.count()) / static_cast<scalar_t>(deltaX.count());
                         row << scaling;
                 }
         }
