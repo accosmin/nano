@@ -99,7 +99,7 @@ namespace nano
 
                         while (stream.read(label, 1) == 1)
                         {
-                                const tensor_index_t ilabel = static_cast<tensor_index_t>(label[0]);
+                                const tensor_size_t ilabel = static_cast<tensor_size_t>(label[0]);
                                 if (ilabel < 0 || ilabel >= nano::size(odims()))
                                 {
                                         log_error() << "MNIST: invalid label!";

@@ -86,7 +86,7 @@ namespace nano
                 while ( stream.read(label, 1) == 1 &&
                         stream.read(buffer.data(), buffer_size) == buffer_size)
                 {
-                        const tensor_index_t ilabel = label[0];
+                        const tensor_size_t ilabel = label[0];
                         if (ilabel < 0 || ilabel >= nano::size(odims()))
                         {
                                 log_error() << "CIFAR-10: invalid label!";

@@ -31,11 +31,11 @@ namespace nano
 
                 struct sample_t
                 {
-                        explicit sample_t(const size_t image = 0, const tensor_index_t label = 0) :
+                        explicit sample_t(const size_t image = 0, const tensor_size_t label = 0) :
                                 m_image(image), m_label(label) {}
 
                         size_t          m_image;        ///< image index
-                        tensor_index_t  m_label;        ///< label index
+                        tensor_size_t  m_label;        ///< label index
                 };
 
                 // attributes

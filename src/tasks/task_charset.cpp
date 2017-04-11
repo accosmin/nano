@@ -214,7 +214,7 @@ namespace nano
                 for (size_t i = 0; i < count; ++ i)
                 {
                         // random target: character
-                        const tensor_index_t o = rng_output();
+                        const tensor_size_t o = rng_output();
 
                         // image: original object patch
                         const tensor3d_t opatch = get_object_patch(char_patches[rng_font() - 1], o, n_chars, rng_offset);

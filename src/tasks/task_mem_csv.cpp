@@ -73,7 +73,7 @@ namespace nano
 
                 // load samples
                 tensor3ds_t samples;
-                std::vector<tensor_index_t> class_indices;
+                std::vector<tensor_size_t> class_indices;
                 for (size_t i = 0; i < table.rows(); ++ i)
                 {
                         const auto& row = table.row(i);

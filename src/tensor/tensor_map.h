@@ -119,7 +119,7 @@ namespace nano
                 ///
                 /// \brief access an element of the tensor
                 ///
-                treference operator()(const tensor_index_t index) const
+                treference operator()(const tensor_size_t index) const
                 {
                         return m_data[index];
                 }
@@ -128,7 +128,7 @@ namespace nano
                 /// \brief access an element of the tensor
                 ///
                 template <typename... tindices>
-                treference operator()(const tensor_index_t index, const tindices... indices) const
+                treference operator()(const tensor_size_t index, const tindices... indices) const
                 {
                         return m_data[nano::index(this->dims(), index, indices...)];
                 }

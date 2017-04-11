@@ -23,7 +23,7 @@ namespace nano
         ///
         /// \brief target value for multi-class single-label classification problems with [n_labels] classes
         ///
-        NANO_PUBLIC vector_t class_target(const tensor_index_t ilabel, const tensor_size_t n_labels);
+        NANO_PUBLIC vector_t class_target(const tensor_size_t ilabel, const tensor_size_t n_labels);
 
         ///
         /// \brief target value for multi-class multi-label classification problems based on the sign of the target

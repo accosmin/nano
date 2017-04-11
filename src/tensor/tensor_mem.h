@@ -55,7 +55,7 @@ namespace nano
                 /// \brief resize to new dimensions
                 ///
                 template <typename... tsizes>
-                tensor_index_t resize(const tsizes... dims)
+                tensor_size_t resize(const tsizes... dims)
                 {
                         return resize({{dims...}});
                 }
@@ -63,7 +63,7 @@ namespace nano
                 ///
                 /// \brief resize to new dimensions
                 ///
-                tensor_index_t resize(const tdims& dims)
+                tensor_size_t resize(const tdims& dims)
                 {
                         this->m_dims = dims;
                         this->m_data.resize(nano::size(this->m_dims));
@@ -175,11 +175,11 @@ namespace nano
                 ///
                 /// \brief access an element of the tensor
                 ///
-                const tscalar& operator()(const tensor_index_t index) const
+                const tscalar& operator()(const tensor_size_t index) const
                 {
                         return m_data(index);
                 }
-                tscalar& operator()(const tensor_index_t index)
+                tscalar& operator()(const tensor_size_t index)
                 {
                         return m_data(index);
                 }
@@ -188,12 +188,12 @@ namespace nano
                 /// \brief access an element of the tensor
                 ///
                 template <typename... tindices>
-                const tscalar& operator()(const tensor_index_t index, const tindices... indices) const
+                const tscalar& operator()(const tensor_size_t index, const tindices... indices) const
                 {
                         return m_data(nano::index(this->dims(), index, indices...));
                 }
                 template <typename... tindices>
-                tscalar& operator()(const tensor_index_t index, const tindices... indices)
+                tscalar& operator()(const tensor_size_t index, const tindices... indices)
                 {
                         return m_data(nano::index(this->dims(), index, indices...));
                 }

@@ -17,7 +17,7 @@ namespace nano
                 return target > 0;
         }
 
-        vector_t class_target(const tensor_index_t ilabel, const tensor_size_t n_labels)
+        vector_t class_target(const tensor_size_t ilabel, const tensor_size_t n_labels)
         {
                 vector_t target = vector_t::Constant(n_labels, neg_target());
                 if (ilabel < n_labels)
