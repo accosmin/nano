@@ -14,10 +14,10 @@ template <typename tvalue>
 static auto make_trainer_state(const tvalue valid_value, const size_t ms = 0, const size_t epoch = 0)
 {
         const auto v = static_cast<scalar_t>(valid_value);
-        return  trainer_state_t(milliseconds_t(ms), epoch, 0,
-                trainer_measurement_t{0, 0, 0, 0, 0, 0, 0},
-                trainer_measurement_t{0, v, 0, 0, 0, 0, 0},
-                trainer_measurement_t{0, 0, 0, 0, 0, 0, 0});
+        return  trainer_state_t(milliseconds_t(ms), epoch, 0, 0,
+                trainer_measurement_t{0, 0},
+                trainer_measurement_t{v, 0},
+                trainer_measurement_t{0, 0});
 }
 
 template <typename tvalue, typename tepoch>
@@ -60,7 +60,7 @@ NANO_CASE(result_max_iters)
                 NANO_CHECK(false == nano::is_done(status, trainer_policy::all_epochs));
         }
 
-        NANO_CHECK_EQUAL(result.optimum_state().m_valid.m_value_avg, 0);
+        NANO_CHECK_EQUAL(result.optimum_state().m_valid.m_value, 0);
         NANO_CHECK_EQUAL(result.optimum_epoch(), epochs);
 }
 
@@ -86,7 +86,7 @@ NANO_CASE(result_solved)
                 }
         }
 
-        NANO_CHECK_EQUAL(result.optimum_state().m_valid.m_value_avg, epochs - best_epoch);
+        NANO_CHECK_EQUAL(result.optimum_state().m_valid.m_value, epochs - best_epoch);
         NANO_CHECK_EQUAL(result.optimum_epoch(), best_epoch);
 }
 
@@ -121,7 +121,7 @@ NANO_CASE(result_overfitting)
                 }
         }
 
-        NANO_CHECK_EQUAL(result.optimum_state().m_valid.m_value_avg, epochs - best_epoch);
+        NANO_CHECK_EQUAL(result.optimum_state().m_valid.m_value, epochs - best_epoch);
         NANO_CHECK_EQUAL(result.optimum_epoch(), best_epoch);
 }
 
@@ -150,7 +150,7 @@ NANO_CASE(result_not_finite)
                 }
         }
 
-        NANO_CHECK_EQUAL(result.optimum_state().m_valid.m_value_avg, epochs - best_epoch);
+        NANO_CHECK_EQUAL(result.optimum_state().m_valid.m_value, epochs - best_epoch);
         NANO_CHECK_EQUAL(result.optimum_epoch(), best_epoch);
 }
 

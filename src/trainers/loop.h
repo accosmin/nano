@@ -20,23 +20,24 @@ namespace nano
         {
                 // evaluate the current state
                 // NB: the training state is already estimated!
-                const auto train = trainer_measurement_t{acc.value(), acc.vstats(), acc.estats()};
+                const auto train = trainer_measurement_t{acc.vstats().avg(), acc.estats().avg()};
 
                 acc.params(state.x);
                 acc.mode(criterion_t::type::value);
                 acc.update(it.task(), it.valid_fold());
-                const auto valid = trainer_measurement_t{acc.value(), acc.vstats(), acc.estats()};
+                const auto valid = trainer_measurement_t{acc.vstats().avg(), acc.estats().avg()};
 
                 acc.params(state.x);
                 acc.mode(criterion_t::type::value);
                 acc.update(it.task(), it.test_fold());
-                const auto test = trainer_measurement_t{acc.value(), acc.vstats(), acc.estats()};
+                const auto test = trainer_measurement_t{acc.vstats().avg(), acc.estats().avg()};
 
                 // OK, update the optimum solution
                 const auto milis = timer.milliseconds();
                 const auto config = to_params(sconfig, "lambda", acc.lambda());
                 const auto xnorm = state.x.lpNorm<2>();
-                const auto ret = result.update(state, {milis, ++epoch, xnorm, train, valid, test}, config, patience);
+                const auto gnorm = state.convergence_criteria();
+                const auto ret = result.update(state, {milis, ++epoch, xnorm, gnorm, train, valid, test}, config, patience);
 
                 log_info()
                         << "[" << epoch << "/" << epochs
@@ -44,7 +45,7 @@ namespace nano
                         << ",valid=" << valid << "|" << nano::to_string(ret)
                         << ",test=" << test
                         << "," << config << ",batch=" << it.size()
-                        << ",g=" << state.convergence_criteria() << ",x=" << xnorm
+                        << ",g=" << gnorm << ",x=" << xnorm
                         << "] " << timer.elapsed() << ".";
 
                 return !nano::is_done(ret, policy);

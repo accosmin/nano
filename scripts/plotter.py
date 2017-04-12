@@ -23,14 +23,14 @@ def get_csvs(spaths):
 def plot_one(spath, ppath):
         title, data = get_csv(spath)
         with PdfPages(ppath) as pdf:
-                for col in (0, 1, 4):
+                for col in (0, 1):
                         # x axis - epoch/iteration index
                         xname = data.dtype.names[0]
                         xlabel = xname
                         # y axis - train/validation/test datasets
                         yname0 = data.dtype.names[col + 1]
-                        yname1 = data.dtype.names[col + 8]
-                        yname2 = data.dtype.names[col + 15]
+                        yname1 = data.dtype.names[col + 3]
+                        yname2 = data.dtype.names[col + 5]
                         ylabel = yname0.replace("train_", "")
                         # plot
                         plt.xlabel(xlabel, fontsize = "smaller")
@@ -39,6 +39,21 @@ def plot_one(spath, ppath):
                         plt.plot(data[xname], data[yname0], "r--", label = yname0)
                         plt.plot(data[xname], data[yname1], "g:", label = yname1)
                         plt.plot(data[xname], data[yname2], "b-", label = yname2)
+                        plt.legend(fontsize = "smaller")
+                        pdf.savefig()
+                        plt.close()
+                for col in (7, 8):
+                        # x axis - epoch/iteration index
+                        xname = data.dtype.names[0]
+                        xlabel = xname
+                        # y axis
+                        yname = data.dtype.names[col + 1]
+                        ylabel = yname
+                        # plot
+                        plt.xlabel(xlabel, fontsize = "smaller")
+                        plt.ylabel(ylabel, fontsize = "smaller")
+                        plt.title(title, weight = "bold")
+                        plt.plot(data[xname], data[yname], "k-", label = yname)
                         plt.legend(fontsize = "smaller")
                         pdf.savefig()
                         plt.close()
@@ -65,8 +80,8 @@ def plot_many_wrt(spaths, names, datas, pdf, xcol, ycol):
 def plot_many(spaths, ppath):
         names, datas = get_csvs(spaths)
         with PdfPages(ppath) as pdf:
-                for col in (0, 1, 4, 7, 8, 11, 14, 15, 18, 22):
+                for col in (0, 1, 2, 3, 4, 5, 7, 8):
                         # plot wrt epoch/iteration number
                         plot_many_wrt(spaths, names, datas, pdf, 0, col)
                         # plot wrt time
-                        plot_many_wrt(spaths, names, datas, pdf, 22, col)
+                        plot_many_wrt(spaths, names, datas, pdf, 7, col)

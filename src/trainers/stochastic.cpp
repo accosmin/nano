@@ -58,7 +58,7 @@ namespace nano
                         const auto fn_tlog = [&] (const state_t& state, const string_t& sconfig)
                         {
                                 // NB: the training state is already computed
-                                const auto train = trainer_measurement_t{acc.value(), acc.vstats(), acc.estats()};
+                                const auto train = trainer_measurement_t{acc.vstats().avg(), acc.estats().avg()};
                                 const auto config = to_params(sconfig, "lambda", acc.lambda());
 
                                 log_info()

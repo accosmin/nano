@@ -7,9 +7,6 @@
 
 namespace nano
 {
-        template <typename tscalar>
-        class stats_t;
-
         ///
         /// \brief training measurement usually after a training epoch.
         ///
@@ -23,27 +20,16 @@ namespace nano
                 ///
                 /// \brief constructor
                 ///
-                trainer_measurement_t(
-                        const scalar_t value,
-                        const scalar_t value_avg, const scalar_t value_var, const scalar_t value_max,
-                        const scalar_t error_avg, const scalar_t error_var, const scalar_t error_max);
+                trainer_measurement_t(const scalar_t value, const scalar_t error);
 
-                ///
-                /// \brief constructor
-                ///
-                trainer_measurement_t(
-                        const scalar_t value, const stats_t<scalar_t>& vstats, const stats_t<scalar_t>& estats);
-
-                ///
                 ///
                 /// \brief check validity of measurements (detect divergence)
                 ///
                 operator bool() const;
 
                 // attributes
-                scalar_t        m_value;                                ///< criterion value
-                scalar_t        m_value_avg, m_value_var, m_value_max;  ///< loss value (average, variance, maximum)
-                scalar_t        m_error_avg, m_error_var, m_error_max;  ///< error (average, variance, maximum)
+                scalar_t        m_value;        ///< average loss value
+                scalar_t        m_error;        ///< average error
         };
 
         ///
@@ -51,7 +37,7 @@ namespace nano
         ///
         inline std::ostream& operator<<(std::ostream& os, const trainer_measurement_t& measure)
         {
-                return os << measure.m_value << "|" << measure.m_error_avg << "+/-" << measure.m_error_var;
+                return os << measure.m_value << "|" << measure.m_error;
         }
 
         ///
@@ -72,7 +58,7 @@ namespace nano
                 ///
                 /// \brief constructor
                 ///
-                trainer_state_t(const milliseconds_t milis, const size_t epoch, const scalar_t xnorm,
+                trainer_state_t(const milliseconds_t, const size_t epoch, const scalar_t xnorm, const scalar_t gnorm,
                                 const trainer_measurement_t& train,
                                 const trainer_measurement_t& valid,
                                 const trainer_measurement_t& test);
@@ -89,6 +75,7 @@ namespace nano
                 milliseconds_t          m_milis;        ///< (cumulated) elapsed time since the optimization started
                 size_t                  m_epoch;        ///<
                 scalar_t                m_xnorm;        ///< L2-norm of the parameters
+                scalar_t                m_gnorm;        ///< L2-norm of the parameters' gradient
                 trainer_measurement_t   m_train;        ///< measurement on the training dataset
                 trainer_measurement_t   m_valid;        ///< measurement on the validation dataset
                 trainer_measurement_t   m_test;         ///< measurement on the test dataset
