@@ -18,9 +18,9 @@ namespace nano
         ///
         /// \brief process a set of inputs of size (irows, icols) and produces a set of outputs of size (orows, ocols).
         ///
-        struct NANO_PUBLIC layer_t : public clonable_t
+        struct NANO_PUBLIC layer_t : public configurable_t
         {
-                using clonable_t::clonable_t;
+                using configurable_t::configurable_t;
 
                 ///
                 /// \brief create a copy of the current object

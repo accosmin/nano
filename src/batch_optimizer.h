@@ -18,9 +18,9 @@ namespace nano
         ///
         /// \brief generic batchastic optimizer
         ///
-        struct NANO_PUBLIC batch_optimizer_t : public clonable_t
+        struct NANO_PUBLIC batch_optimizer_t : public configurable_t
         {
-                using clonable_t::clonable_t;
+                using configurable_t::configurable_t;
 
                 ///
                 /// \brief minimize starting from the initial point x0

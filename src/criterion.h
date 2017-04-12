@@ -21,7 +21,7 @@ namespace nano
         /// \brief accumulate sample evaluations (loss value, error and gradient),
         ///     this is the base case without regularization
         ///
-        class NANO_PUBLIC criterion_t : public clonable_t
+        class NANO_PUBLIC criterion_t : public configurable_t
         {
         public:
 

@@ -20,9 +20,9 @@ namespace nano
         ///
         /// \brief generic model to process fixed-size 3D tensors.
         ///
-        struct NANO_PUBLIC model_t : public clonable_t
+        struct NANO_PUBLIC model_t : public configurable_t
         {
-                using clonable_t::clonable_t;
+                using configurable_t::configurable_t;
 
                 ///
                 /// \brief create a copy of the current object

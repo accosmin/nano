@@ -24,9 +24,9 @@ namespace nano
         ///
         /// \brief generic trainer: optimizes a model on a given compatible task.
         ///
-        struct NANO_PUBLIC trainer_t : public clonable_t
+        struct NANO_PUBLIC trainer_t : public configurable_t
         {
-                using clonable_t::clonable_t;
+                using configurable_t::configurable_t;
 
                 ///
                 /// \brief train the given model starting from the current model parameters

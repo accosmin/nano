@@ -23,9 +23,9 @@ namespace nano
         /// the loss function upper-bounds/approximates
         /// the true (usually non-smooth) error function to minimize.
         ///
-        struct NANO_PUBLIC loss_t : public clonable_t
+        struct NANO_PUBLIC loss_t : public configurable_t
         {
-                using clonable_t::clonable_t;
+                using configurable_t::configurable_t;
 
                 ///
                 /// \brief compute the error value

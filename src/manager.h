@@ -3,18 +3,16 @@
 #include <map>
 #include <memory>
 #include <stdexcept>
-#include "clonable.h"
+#include "configurable.h"
 
 namespace nano
 {
         ///
-        /// \brief manage objects of similar type.
+        /// \brief manage objects of similar type that implement the configable_t interface.
         ///
         template <class tobject>
-        class manager_t
+        struct manager_t
 	{
-        public:
-
                 using trobject = std::unique_ptr<tobject>;
                 using tmaker = std::function<trobject(const string_t&)>;
 

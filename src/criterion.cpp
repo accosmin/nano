@@ -6,14 +6,14 @@
 namespace nano
 {
         criterion_t::criterion_t(const string_t& configuration) :
-                clonable_t(configuration),
+                configurable_t(configuration),
                 m_lambda(0.0),
                 m_type(type::value)
         {
         }
 
         criterion_t::criterion_t(const criterion_t& other) :
-                clonable_t(other),
+                configurable_t(other),
                 m_model(other.m_model ? other.m_model->clone() : nullptr),
                 m_params(other.m_params),
                 m_lambda(other.m_lambda),

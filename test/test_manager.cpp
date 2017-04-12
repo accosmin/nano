@@ -3,35 +3,35 @@
 
 using namespace nano;
 
-struct test_clonable_t : public nano::clonable_t
+struct test_configurable_t : public nano::configurable_t
 {
-        explicit test_clonable_t(const string_t& configuration = string_t()) :
-                nano::clonable_t(configuration) {}
+        explicit test_configurable_t(const string_t& configuration = string_t()) :
+                nano::configurable_t(configuration) {}
 };
 
-struct object1_clonable_t : public test_clonable_t
+struct object1_configurable_t : public test_configurable_t
 {
-        explicit object1_clonable_t(const string_t& configuration = string_t()) :
-                test_clonable_t(configuration + ",p1=def1") {}
+        explicit object1_configurable_t(const string_t& configuration = string_t()) :
+                test_configurable_t(configuration + ",p1=def1") {}
 };
 
-struct object2_clonable_t : public test_clonable_t
+struct object2_configurable_t : public test_configurable_t
 {
-        explicit object2_clonable_t(const string_t& configuration = string_t()) :
-                test_clonable_t(configuration + ",p2=def2") {}
+        explicit object2_configurable_t(const string_t& configuration = string_t()) :
+                test_configurable_t(configuration + ",p2=def2") {}
 };
 
-struct object3_clonable_t : public test_clonable_t
+struct object3_configurable_t : public test_configurable_t
 {
-        explicit object3_clonable_t(const string_t& configuration = string_t()) :
-                test_clonable_t(configuration + ",p3=def3") {}
+        explicit object3_configurable_t(const string_t& configuration = string_t()) :
+                test_configurable_t(configuration + ",p3=def3") {}
 };
 
 NANO_BEGIN_MODULE(test_manager)
 
 NANO_CASE(empty)
 {
-        nano::manager_t<test_clonable_t> manager;
+        nano::manager_t<test_configurable_t> manager;
 
         NANO_CHECK(manager.ids().empty());
         NANO_CHECK(manager.descriptions().empty());
@@ -44,15 +44,15 @@ NANO_CASE(empty)
 
 NANO_CASE(retrieval)
 {
-        nano::manager_t<test_clonable_t> manager;
+        nano::manager_t<test_configurable_t> manager;
 
-        const object1_clonable_t obj1;
-        const object2_clonable_t obj2;
-        const object3_clonable_t obj3;
+        const object1_configurable_t obj1;
+        const object2_configurable_t obj2;
+        const object3_configurable_t obj3;
 
-        const auto maker1 = [] (const string_t& config) { return std::make_unique<object1_clonable_t>(config); };
-        const auto maker2 = [] (const string_t& config) { return std::make_unique<object2_clonable_t>(config); };
-        const auto maker3 = [] (const string_t& config) { return std::make_unique<object3_clonable_t>(config); };
+        const auto maker1 = [] (const string_t& config) { return std::make_unique<object1_configurable_t>(config); };
+        const auto maker2 = [] (const string_t& config) { return std::make_unique<object2_configurable_t>(config); };
+        const auto maker3 = [] (const string_t& config) { return std::make_unique<object3_configurable_t>(config); };
 
         const string_t id1 = "obj1";
         const string_t id2 = "obj2";

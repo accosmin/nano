@@ -20,16 +20,18 @@ namespace nano
                 obstream_t ob(path);
                 return  ob.write(m_idims) &&
                         ob.write(m_odims) &&
-                        ob.write(m_configuration) &&
+                        ob.write(config()) &&
                         ob.write_vector(m_pdata);
         }
 
         bool forward_network_t::load(const string_t& path)
         {
+                string_t params;
                 ibstream_t ib(path);
                 return  ib.read(m_idims) &&
                         ib.read(m_odims) &&
-                        ib.read(m_configuration) &&
+                        ib.read(params) &&
+                        config(params) == params &&
                         configure(m_idims, m_odims) &&
                         ib.read_vector(m_pdata) &&
                         m_pdata.size() == psize();

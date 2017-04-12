@@ -20,9 +20,9 @@ namespace nano
         ///     split into training, validation and testing datasets.
         /// NB: the samples may be organized in folds depending on the established protocol.
         ///
-        struct NANO_PUBLIC task_t : public clonable_t
+        struct NANO_PUBLIC task_t : public configurable_t
         {
-                using clonable_t::clonable_t;
+                using configurable_t::configurable_t;
 
                 ///
                 /// \brief populate task with samples
