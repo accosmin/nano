@@ -163,7 +163,7 @@ NANO_CASE(gparam_accuracy)
         NANO_REQUIRE(params.valid());
 
         const auto pfunct = make_wrt_params_function<conv3d_naive_t>(params);
-        for (int i = 0; i < 16; ++ i)
+        for (int i = 0; i < 8; ++ i)
         {
                 vector_t px(pfunct.size()); px.setRandom();
                 NANO_CHECK_LESS(pfunct.grad_accuracy(px), epsilon2<scalar_t>());
@@ -176,7 +176,7 @@ NANO_CASE(ginput_accuracy)
         NANO_REQUIRE(params.valid());
 
         const auto ifunct = make_wrt_inputs_function<conv3d_naive_t>(params);
-        for (int i = 0; i < 16; ++ i)
+        for (int i = 0; i < 8; ++ i)
         {
                 vector_t ix(ifunct.size()); ix.setRandom();
                 NANO_CHECK_LESS(ifunct.grad_accuracy(ix), epsilon2<scalar_t>());
@@ -191,7 +191,7 @@ NANO_CASE(naive_vs_toeplitz)
         const auto op_naive = conv3d_naive_t{params};
         const auto op_toeplitz = conv3d_toeplitz_t{params};
 
-        for (int i = 0; i < 16; ++ i)
+        for (int i = 0; i < 8; ++ i)
         {
                 auto bdata = params.make_bdata(); bdata.setRandom();
                 auto idata = params.make_idata(); idata.vector().setRandom();
