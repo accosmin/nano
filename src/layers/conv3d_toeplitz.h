@@ -44,7 +44,6 @@ namespace nano
 
                 // attributes
                 conv3d_params_t         m_params;
-                // todo: these should be removed! use directly Eigen calls to map the output buffers!
                 mutable matrix_t        m_oodata;       ///< buffer: (omaps, orows x ocols)
                 mutable matrix_t        m_okdata;       ///< buffer: (omaps, imaps x krows x kcols)
                 mutable matrix_t        m_xkdata;       ///< buffer: (omaps, imaps x krows x kcols)
