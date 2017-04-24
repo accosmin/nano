@@ -190,7 +190,8 @@ NANO_CASE(naive_vs_toeplitz_output)
         NANO_REQUIRE(params.valid());
 
         const auto op_naive = conv3d_naive_t{params};
-        const auto op_toeplitz = conv3d_toeplitz_t{params};
+        const auto op_toepl = conv3d_toeplitz_t{params};
+        const auto op_dense = conv3d_toeplitz_dense_t{params};
 
         for (int i = 0; i < 8; ++ i)
         {
@@ -204,35 +205,17 @@ NANO_CASE(naive_vs_toeplitz_output)
                 auto kdatax = params.make_kdata(); kdatax.vector().setRandom();
                 auto odatax = params.make_odata(); odatax.vector().setRandom();
 
-                op_naive.output(idata, kdata, bdata, odata);
-                op_toeplitz.output(idata, kdata, bdata, odatax);
-                NANO_CHECK_EIGEN_CLOSE(odata.array(), odatax.array(), 10 * epsilon0<scalar_t>());
-        }
-}
-
-NANO_CASE(naive_vs_toeplitz_dense_output)
-{
-        const auto params = make_default_params();
-        NANO_REQUIRE(params.valid());
-
-        const auto op_naive = conv3d_naive_t{params};
-        const auto op_toeplitz = conv3d_toeplitz_dense_t{params};
-
-        for (int i = 0; i < 8; ++ i)
-        {
-                auto bdata = params.make_bdata(); bdata.setRandom();
-                auto idata = params.make_idata(); idata.vector().setRandom();
-                auto kdata = params.make_kdata(); kdata.vector().setRandom();
-                auto odata = params.make_odata(); odata.vector().setRandom();
-
-                auto bdatax = params.make_bdata(); bdatax.setRandom();
-                auto idatax = params.make_idata(); idatax.vector().setRandom();
-                auto kdatax = params.make_kdata(); kdatax.vector().setRandom();
-                auto odatax = params.make_odata(); odatax.vector().setRandom();
+                auto bdatad = params.make_bdata(); bdatad.setRandom();
+                auto idatad = params.make_idata(); idatad.vector().setRandom();
+                auto kdatad = params.make_kdata(); kdatad.vector().setRandom();
+                auto odatad = params.make_odata(); odatad.vector().setRandom();
 
                 op_naive.output(idata, kdata, bdata, odata);
-                op_toeplitz.output(idata, kdata, bdata, odatax);
+                op_toepl.output(idata, kdata, bdata, odatax);
+                op_dense.output(idata, kdata, bdata, odatad);
+
                 NANO_CHECK_EIGEN_CLOSE(odata.array(), odatax.array(), 10 * epsilon0<scalar_t>());
+                NANO_CHECK_EIGEN_CLOSE(odata.array(), odatad.array(), 10 * epsilon0<scalar_t>());
         }
 }
 
@@ -242,7 +225,8 @@ NANO_CASE(naive_vs_toeplitz_gparam)
         NANO_REQUIRE(params.valid());
 
         const auto op_naive = conv3d_naive_t{params};
-        const auto op_toeplitz = conv3d_toeplitz_t{params};
+        const auto op_toepl = conv3d_toeplitz_t{params};
+        const auto op_dense = conv3d_toeplitz_dense_t{params};
 
         for (int i = 0; i < 8; ++ i)
         {
@@ -256,45 +240,26 @@ NANO_CASE(naive_vs_toeplitz_gparam)
                 auto kdatax = params.make_kdata(); kdatax.vector().setRandom();
                 auto odatax = params.make_odata(); odatax.vector().setRandom();
 
-                op_naive.output(idata, kdata, bdata, odata);
-                op_toeplitz.output(idata, kdata, bdata, odatax);
-                NANO_CHECK_EIGEN_CLOSE(odata.array(), odatax.array(), 10 * epsilon0<scalar_t>());
-
-                op_naive.gparam(idata, kdata, bdata, odata);
-                op_toeplitz.gparam(idata, kdatax, bdatax, odata);
-                NANO_CHECK_EIGEN_CLOSE(kdata.array(), kdatax.array(), 10 * epsilon0<scalar_t>());
-                NANO_CHECK_EIGEN_CLOSE(bdata.array(), bdatax.array(), 10 * epsilon0<scalar_t>());
-        }
-}
-
-NANO_CASE(naive_vs_toeplitz_dense_gparam)
-{
-        const auto params = make_default_params();
-        NANO_REQUIRE(params.valid());
-
-        const auto op_naive = conv3d_naive_t{params};
-        const auto op_toeplitz = conv3d_toeplitz_dense_t{params};
-
-        for (int i = 0; i < 8; ++ i)
-        {
-                auto bdata = params.make_bdata(); bdata.setRandom();
-                auto idata = params.make_idata(); idata.vector().setRandom();
-                auto kdata = params.make_kdata(); kdata.vector().setRandom();
-                auto odata = params.make_odata(); odata.vector().setRandom();
-
-                auto bdatax = params.make_bdata(); bdatax.setRandom();
-                auto idatax = params.make_idata(); idatax.vector().setRandom();
-                auto kdatax = params.make_kdata(); kdatax.vector().setRandom();
-                auto odatax = params.make_odata(); odatax.vector().setRandom();
+                auto bdatad = params.make_bdata(); bdatad.setRandom();
+                auto idatad = params.make_idata(); idatad.vector().setRandom();
+                auto kdatad = params.make_kdata(); kdatad.vector().setRandom();
+                auto odatad = params.make_odata(); odatad.vector().setRandom();
 
                 op_naive.output(idata, kdata, bdata, odata);
-                op_toeplitz.output(idata, kdata, bdata, odatax);
+                op_toepl.output(idata, kdata, bdata, odatax);
+                op_dense.output(idata, kdata, bdata, odatad);
+
                 NANO_CHECK_EIGEN_CLOSE(odata.array(), odatax.array(), 10 * epsilon0<scalar_t>());
+                NANO_CHECK_EIGEN_CLOSE(odata.array(), odatad.array(), 10 * epsilon0<scalar_t>());
 
                 op_naive.gparam(idata, kdata, bdata, odata);
-                op_toeplitz.gparam(idata, kdatax, bdatax, odata);
+                op_toepl.gparam(idata, kdatax, bdatax, odata);
+                op_dense.gparam(idata, kdatad, bdatad, odata);
+
                 NANO_CHECK_EIGEN_CLOSE(kdata.array(), kdatax.array(), 10 * epsilon0<scalar_t>());
                 NANO_CHECK_EIGEN_CLOSE(bdata.array(), bdatax.array(), 10 * epsilon0<scalar_t>());
+                NANO_CHECK_EIGEN_CLOSE(kdata.array(), kdatad.array(), 10 * epsilon0<scalar_t>());
+                NANO_CHECK_EIGEN_CLOSE(bdata.array(), bdatad.array(), 10 * epsilon0<scalar_t>());
         }
 }
 
@@ -304,7 +269,8 @@ NANO_CASE(naive_vs_toeplitz_ginput)
         NANO_REQUIRE(params.valid());
 
         const auto op_naive = conv3d_naive_t{params};
-        const auto op_toeplitz = conv3d_toeplitz_t{params};
+        const auto op_toepl = conv3d_toeplitz_t{params};
+        const auto op_dense = conv3d_toeplitz_dense_t{params};
 
         for (int i = 0; i < 8; ++ i)
         {
@@ -318,43 +284,24 @@ NANO_CASE(naive_vs_toeplitz_ginput)
                 auto kdatax = params.make_kdata(); kdatax.vector().setRandom();
                 auto odatax = params.make_odata(); odatax.vector().setRandom();
 
-                op_naive.output(idata, kdata, bdata, odata);
-                op_toeplitz.output(idata, kdata, bdata, odatax);
-                NANO_CHECK_EIGEN_CLOSE(odata.array(), odatax.array(), 10 * epsilon0<scalar_t>());
-
-                op_naive.ginput(idata, kdata, bdata, odata);
-                op_toeplitz.ginput(idatax, kdata, bdata, odata);
-                NANO_CHECK_EIGEN_CLOSE(idata.array(), idatax.array(), 10 * epsilon0<scalar_t>());
-        }
-}
-
-NANO_CASE(naive_vs_toeplitz_dense_ginput)
-{
-        const auto params = make_default_params();
-        NANO_REQUIRE(params.valid());
-
-        const auto op_naive = conv3d_naive_t{params};
-        const auto op_toeplitz = conv3d_toeplitz_dense_t{params};
-
-        for (int i = 0; i < 8; ++ i)
-        {
-                auto bdata = params.make_bdata(); bdata.setRandom();
-                auto idata = params.make_idata(); idata.vector().setRandom();
-                auto kdata = params.make_kdata(); kdata.vector().setRandom();
-                auto odata = params.make_odata(); odata.vector().setRandom();
-
-                auto bdatax = params.make_bdata(); bdatax.setRandom();
-                auto idatax = params.make_idata(); idatax.vector().setRandom();
-                auto kdatax = params.make_kdata(); kdatax.vector().setRandom();
-                auto odatax = params.make_odata(); odatax.vector().setRandom();
+                auto bdatad = params.make_bdata(); bdatad.setRandom();
+                auto idatad = params.make_idata(); idatad.vector().setRandom();
+                auto kdatad = params.make_kdata(); kdatad.vector().setRandom();
+                auto odatad = params.make_odata(); odatad.vector().setRandom();
 
                 op_naive.output(idata, kdata, bdata, odata);
-                op_toeplitz.output(idata, kdata, bdata, odatax);
+                op_toepl.output(idata, kdata, bdata, odatax);
+                op_dense.output(idata, kdata, bdata, odatad);
+
                 NANO_CHECK_EIGEN_CLOSE(odata.array(), odatax.array(), 10 * epsilon0<scalar_t>());
+                NANO_CHECK_EIGEN_CLOSE(odata.array(), odatad.array(), 10 * epsilon0<scalar_t>());
 
                 op_naive.ginput(idata, kdata, bdata, odata);
-                op_toeplitz.ginput(idatax, kdata, bdata, odata);
+                op_toepl.ginput(idatax, kdata, bdata, odata);
+                op_dense.ginput(idatad, kdata, bdata, odata);
+
                 NANO_CHECK_EIGEN_CLOSE(idata.array(), idatax.array(), 10 * epsilon0<scalar_t>());
+                NANO_CHECK_EIGEN_CLOSE(idata.array(), idatad.array(), 10 * epsilon0<scalar_t>());
         }
 }
 
