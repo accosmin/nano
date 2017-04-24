@@ -143,13 +143,13 @@ namespace nano
         {
                 return  to_params(configuration,
                         "type", "digit[lalpha,ualpha,alpha,alphanum]", "color", "rgb[,luma,rgba]",
-                        "irows", "32[12,128]", "icols", "32[12,128]", "count", "1000[32,1M]");
+                        "irows", "32[12,256]", "icols", "32[12,256]", "count", "1000[32,1M]");
         }
 
         charset_task_t::charset_task_t(const string_t& configuration) : mem_vision_task_t(
                 from_params<color_mode>(append_config(configuration), "color"),
-                clamp(from_params<tensor_size_t>(append_config(configuration), "irows", 32), 12, 128),
-                clamp(from_params<tensor_size_t>(append_config(configuration), "icols", 32), 12, 128),
+                clamp(from_params<tensor_size_t>(append_config(configuration), "irows", 32), 12, 256),
+                clamp(from_params<tensor_size_t>(append_config(configuration), "icols", 32), 12, 256),
                 tensor3d_dims_t
                 {
                         nano::osize(from_params<charset_mode>(append_config(configuration), "type")),
