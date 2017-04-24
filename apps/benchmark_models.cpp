@@ -111,8 +111,8 @@ int main(int argc, const char *argv[])
         const auto criterion = get_criteria().get("avg");
 
         // construct tables to compare models
-        table_t ftable; ftable.header() << "model-forward [us] / sample";
-        table_t btable; btable.header() << "model-backward [us] / sample";
+        table_t ftable; ftable.header() << "forward [us/sample]";
+        table_t btable; btable.header() << "backward [us/sample]";
 
         for (size_t nthreads = cmd_min_nthreads; nthreads <= cmd_max_nthreads; ++ nthreads)
         {
