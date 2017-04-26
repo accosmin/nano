@@ -81,13 +81,12 @@ struct wrt_inputs_function_t final : public function_t
         mutable tensor3d_t      m_odata;
 };
 
-auto make_default_params()
+auto make_default_params(const tensor_size_t kconn = 1)
 {
-        const auto imaps = 8;
+        const auto imaps = 6;
         const auto irows = 11;
         const auto icols = 15;
         const auto omaps = 4;
-        const auto kconn = 2;
         const auto krows = 3;
         const auto kcols = 5;
         const auto kdrow = 2;
@@ -184,9 +183,9 @@ NANO_CASE(ginput_accuracy)
         }
 }
 
-NANO_CASE(naive_vs_toeplitz_output)
+NANO_CASE(naive_vs_toeplitz_output_kconn1)
 {
-        const auto params = make_default_params();
+        const auto params = make_default_params(1);
         NANO_REQUIRE(params.valid());
 
         const auto op_naive = conv3d_naive_t{params};
@@ -219,9 +218,44 @@ NANO_CASE(naive_vs_toeplitz_output)
         }
 }
 
-NANO_CASE(naive_vs_toeplitz_gparam)
+NANO_CASE(naive_vs_toeplitz_output_kconn2)
 {
-        const auto params = make_default_params();
+        const auto params = make_default_params(2);
+        NANO_REQUIRE(params.valid());
+
+        const auto op_naive = conv3d_naive_t{params};
+        const auto op_toepl = conv3d_toeplitz_t{params};
+        const auto op_dense = conv3d_toeplitz_dense_t{params};
+
+        for (int i = 0; i < 8; ++ i)
+        {
+                auto bdata = params.make_bdata(); bdata.setRandom();
+                auto idata = params.make_idata(); idata.vector().setRandom();
+                auto kdata = params.make_kdata(); kdata.vector().setRandom();
+                auto odata = params.make_odata(); odata.vector().setRandom();
+
+                auto bdatax = params.make_bdata(); bdatax.setRandom();
+                auto idatax = params.make_idata(); idatax.vector().setRandom();
+                auto kdatax = params.make_kdata(); kdatax.vector().setRandom();
+                auto odatax = params.make_odata(); odatax.vector().setRandom();
+
+                auto bdatad = params.make_bdata(); bdatad.setRandom();
+                auto idatad = params.make_idata(); idatad.vector().setRandom();
+                auto kdatad = params.make_kdata(); kdatad.vector().setRandom();
+                auto odatad = params.make_odata(); odatad.vector().setRandom();
+
+                op_naive.output(idata, kdata, bdata, odata);
+                op_toepl.output(idata, kdata, bdata, odatax);
+                op_dense.output(idata, kdata, bdata, odatad);
+
+                NANO_CHECK_EIGEN_CLOSE(odata.array(), odatax.array(), 10 * epsilon0<scalar_t>());
+                NANO_CHECK_EIGEN_CLOSE(odata.array(), odatad.array(), 10 * epsilon0<scalar_t>());
+        }
+}
+
+NANO_CASE(naive_vs_toeplitz_gparam_kconn1)
+{
+        const auto params = make_default_params(1);
         NANO_REQUIRE(params.valid());
 
         const auto op_naive = conv3d_naive_t{params};
@@ -263,9 +297,95 @@ NANO_CASE(naive_vs_toeplitz_gparam)
         }
 }
 
-NANO_CASE(naive_vs_toeplitz_ginput)
+NANO_CASE(naive_vs_toeplitz_gparam_kconn2)
 {
-        const auto params = make_default_params();
+        const auto params = make_default_params(2);
+        NANO_REQUIRE(params.valid());
+
+        const auto op_naive = conv3d_naive_t{params};
+        const auto op_toepl = conv3d_toeplitz_t{params};
+        const auto op_dense = conv3d_toeplitz_dense_t{params};
+
+        for (int i = 0; i < 8; ++ i)
+        {
+                auto bdata = params.make_bdata(); bdata.setRandom();
+                auto idata = params.make_idata(); idata.vector().setRandom();
+                auto kdata = params.make_kdata(); kdata.vector().setRandom();
+                auto odata = params.make_odata(); odata.vector().setRandom();
+
+                auto bdatax = params.make_bdata(); bdatax.setRandom();
+                auto idatax = params.make_idata(); idatax.vector().setRandom();
+                auto kdatax = params.make_kdata(); kdatax.vector().setRandom();
+                auto odatax = params.make_odata(); odatax.vector().setRandom();
+
+                auto bdatad = params.make_bdata(); bdatad.setRandom();
+                auto idatad = params.make_idata(); idatad.vector().setRandom();
+                auto kdatad = params.make_kdata(); kdatad.vector().setRandom();
+                auto odatad = params.make_odata(); odatad.vector().setRandom();
+
+                op_naive.output(idata, kdata, bdata, odata);
+                op_toepl.output(idata, kdata, bdata, odatax);
+                op_dense.output(idata, kdata, bdata, odatad);
+
+                NANO_CHECK_EIGEN_CLOSE(odata.array(), odatax.array(), 10 * epsilon0<scalar_t>());
+                NANO_CHECK_EIGEN_CLOSE(odata.array(), odatad.array(), 10 * epsilon0<scalar_t>());
+
+                op_naive.gparam(idata, kdata, bdata, odata);
+                op_toepl.gparam(idata, kdatax, bdatax, odata);
+                op_dense.gparam(idata, kdatad, bdatad, odata);
+
+                NANO_CHECK_EIGEN_CLOSE(kdata.array(), kdatax.array(), 10 * epsilon0<scalar_t>());
+                NANO_CHECK_EIGEN_CLOSE(bdata.array(), bdatax.array(), 10 * epsilon0<scalar_t>());
+                NANO_CHECK_EIGEN_CLOSE(kdata.array(), kdatad.array(), 10 * epsilon0<scalar_t>());
+                NANO_CHECK_EIGEN_CLOSE(bdata.array(), bdatad.array(), 10 * epsilon0<scalar_t>());
+        }
+}
+
+NANO_CASE(naive_vs_toeplitz_ginput_kconn1)
+{
+        const auto params = make_default_params(1);
+        NANO_REQUIRE(params.valid());
+
+        const auto op_naive = conv3d_naive_t{params};
+        const auto op_toepl = conv3d_toeplitz_t{params};
+        const auto op_dense = conv3d_toeplitz_dense_t{params};
+
+        for (int i = 0; i < 8; ++ i)
+        {
+                auto bdata = params.make_bdata(); bdata.setRandom();
+                auto idata = params.make_idata(); idata.vector().setRandom();
+                auto kdata = params.make_kdata(); kdata.vector().setRandom();
+                auto odata = params.make_odata(); odata.vector().setRandom();
+
+                auto bdatax = params.make_bdata(); bdatax.setRandom();
+                auto idatax = params.make_idata(); idatax.vector().setRandom();
+                auto kdatax = params.make_kdata(); kdatax.vector().setRandom();
+                auto odatax = params.make_odata(); odatax.vector().setRandom();
+
+                auto bdatad = params.make_bdata(); bdatad.setRandom();
+                auto idatad = params.make_idata(); idatad.vector().setRandom();
+                auto kdatad = params.make_kdata(); kdatad.vector().setRandom();
+                auto odatad = params.make_odata(); odatad.vector().setRandom();
+
+                op_naive.output(idata, kdata, bdata, odata);
+                op_toepl.output(idata, kdata, bdata, odatax);
+                op_dense.output(idata, kdata, bdata, odatad);
+
+                NANO_CHECK_EIGEN_CLOSE(odata.array(), odatax.array(), 10 * epsilon0<scalar_t>());
+                NANO_CHECK_EIGEN_CLOSE(odata.array(), odatad.array(), 10 * epsilon0<scalar_t>());
+
+                op_naive.ginput(idata, kdata, bdata, odata);
+                op_toepl.ginput(idatax, kdata, bdata, odata);
+                op_dense.ginput(idatad, kdata, bdata, odata);
+
+                NANO_CHECK_EIGEN_CLOSE(idata.array(), idatax.array(), 10 * epsilon0<scalar_t>());
+                NANO_CHECK_EIGEN_CLOSE(idata.array(), idatad.array(), 10 * epsilon0<scalar_t>());
+        }
+}
+
+NANO_CASE(naive_vs_toeplitz_ginput_kconn2)
+{
+        const auto params = make_default_params(2);
         NANO_REQUIRE(params.valid());
 
         const auto op_naive = conv3d_naive_t{params};
