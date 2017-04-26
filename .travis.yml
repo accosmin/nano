@@ -37,7 +37,7 @@ before_script:
   - pwd
 
 script:
-  - time bash build.sh --build-type Release --generator ninja --float ${PARAMS}
+  - time bash build.sh --build-type Release --generator ninja --float --werror ${PARAMS}
   - ./build-release/apps/info --system
   - cd build-release/test && time ctest -j 3 -E "test_task_*"
 #  - cd ../../

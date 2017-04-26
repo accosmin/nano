@@ -14,6 +14,7 @@ test_flag="ON"
 libcpp_flag="OFF"
 gold_flag="OFF"
 lto_flag="OFF"
+werror_flag="OFF"
 float_flag="ON"
 double_flag="OFF"
 long_double_flag="OFF"
@@ -34,6 +35,7 @@ function usage
         echo -e "\t--libc++             <use libc++ instead of default libstdc++>       optional"
         echo -e "\t--gold               <use gold linker instead of default linker>     optional"
         echo -e "\t--lto                <use link time optimization>                    optional"
+        echo -e "\t--werror             <stop compilation at first warning>             optional"
         echo -e "\t--float              <use float as the default scalar>               optional"
         echo -e "\t--double             <use double as the default scalar>              optional"
         echo -e "\t--long-double        <use long double as the default scalar>         optional"
@@ -73,6 +75,8 @@ do
                 --gold)         gold_flag="ON"
                                 ;;
                 --lto)          lto_flag="ON"
+                                ;;
+                --werror)       werror_flag="ON"
                                 ;;
                 --float)        float_flag="ON"
                                 double_flag="OFF"
@@ -167,6 +171,7 @@ cmake \
         -DNANO_WITH_LIBCPP=${libcpp_flag} \
         -DNANO_WITH_GOLD=${gold_flag} \
         -DNANO_WITH_LTO=${lto_flag} \
+        -DNANO_WITH_WERROR=${werror_flag} \
         -DNANO_WITH_FLOAT_SCALAR=${float_flag} \
         -DNANO_WITH_DOUBLE_SCALAR=${double_flag} \
         -DNANO_WITH_LONG_DOUBLE_SCALAR=${long_double_flag} \
@@ -187,5 +192,3 @@ fi
 
 # go back to the current directory
 cd ${current_dir}
-
-

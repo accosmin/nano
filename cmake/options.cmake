@@ -5,6 +5,7 @@ option(NANO_WITH_TESTS                  "build the unit tests"                  
 option(NANO_WITH_LIBCPP                 "use libc++ instead of default libstdc++ (if applicable)"       OFF)
 option(NANO_WITH_GOLD                   "use gold linker (if available)"                                OFF)
 option(NANO_WITH_LTO                    "use link time optimization (if available)"                     OFF)
+option(NANO_WITH_WERROR                 "stop compilation at first warning"                             OFF)
 option(NANO_WITH_FLOAT_SCALAR           "use float as the default scalar"                               ON)
 option(NANO_WITH_DOUBLE_SCALAR          "use double as the default scalar"                              OFF)
 option(NANO_WITH_LONG_DOUBLE_SCALAR     "use long double as the default scalar"                         OFF)
