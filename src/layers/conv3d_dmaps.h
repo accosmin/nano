@@ -10,12 +10,12 @@ namespace nano
         ///     convolutions & correlations are written as matrix multiplications.
         /// NB: requires extra buffers.
         ///
-        struct conv3d_toeplitz_t
+        struct conv3d_dmaps_t
         {
                 ///
                 /// \brief constructor
                 ///
-                explicit conv3d_toeplitz_t(const conv3d_params_t& params = conv3d_params_t());
+                explicit conv3d_dmaps_t(const conv3d_params_t& params = conv3d_params_t());
 
                 ///
                 /// \brief output
@@ -62,7 +62,7 @@ namespace nano
                 mutable matrix_t        m_ikdata;       ///< buffer: (imaps / kconn, krows x kcols)
         };
 
-        inline conv3d_toeplitz_t::conv3d_toeplitz_t(const conv3d_params_t& params) :
+        inline conv3d_dmaps_t::conv3d_dmaps_t(const conv3d_params_t& params) :
                 m_params(params)
         {
                 const auto imaps = m_params.imaps(), irows = m_params.irows(), icols = m_params.icols();
@@ -79,7 +79,7 @@ namespace nano
         }
 
         template <typename timatrix, typename tomatrix>
-        void conv3d_toeplitz_t::make_toeplitz_output(const timatrix& imat, tomatrix&& omat) const
+        void conv3d_dmaps_t::make_toeplitz_output(const timatrix& imat, tomatrix&& omat) const
         {
                 const auto orows = m_params.orows(), ocols = m_params.ocols();
                 const auto krows = m_params.krows(), kcols = m_params.kcols();
@@ -105,7 +105,7 @@ namespace nano
         }
 
         template <typename tidata, typename tkdata, typename tbdata, typename todata>
-        void conv3d_toeplitz_t::output(const tidata& idata, const tkdata& kdata, const tbdata& bdata, todata&& odata) const
+        void conv3d_dmaps_t::output(const tidata& idata, const tkdata& kdata, const tbdata& bdata, todata&& odata) const
         {
                 assert(m_params.valid_idata(idata));
                 assert(m_params.valid_kdata(kdata));
@@ -140,7 +140,7 @@ namespace nano
         }
 
         template <typename tomatrix, typename timatrix>
-        void conv3d_toeplitz_t::make_toeplitz_ginput(const tomatrix& omat, timatrix&& imat) const
+        void conv3d_dmaps_t::make_toeplitz_ginput(const tomatrix& omat, timatrix&& imat) const
         {
                 const auto orows = m_params.orows(), ocols = m_params.ocols();
                 const auto krows = m_params.krows(), kcols = m_params.kcols();
@@ -169,7 +169,7 @@ namespace nano
         }
 
         template <typename tidata, typename tkdata, typename tbdata, typename todata>
-        void conv3d_toeplitz_t::ginput(tidata&& idata, const tkdata& kdata, const tbdata& bdata, const todata& odata) const
+        void conv3d_dmaps_t::ginput(tidata&& idata, const tkdata& kdata, const tbdata& bdata, const todata& odata) const
         {
                 assert(m_params.valid_idata(idata));
                 assert(m_params.valid_kdata(kdata));
@@ -199,7 +199,7 @@ namespace nano
         }
 
         template <typename timatrix, typename tkmatrix>
-        void conv3d_toeplitz_t::make_toeplitz_gparam(const timatrix& imat, tkmatrix&& kmat) const
+        void conv3d_dmaps_t::make_toeplitz_gparam(const timatrix& imat, tkmatrix&& kmat) const
         {
                 const auto orows = m_params.orows(), ocols = m_params.ocols();
                 const auto krows = m_params.krows(), kcols = m_params.kcols();
@@ -225,7 +225,7 @@ namespace nano
         }
 
         template <typename tidata, typename tkdata, typename tbdata, typename todata>
-        void conv3d_toeplitz_t::gparam(const tidata& idata, tkdata&& kdata, tbdata&& bdata, const todata& odata) const
+        void conv3d_dmaps_t::gparam(const tidata& idata, tkdata&& kdata, tbdata&& bdata, const todata& odata) const
         {
                 assert(m_params.valid_idata(idata));
                 assert(m_params.valid_kdata(kdata));

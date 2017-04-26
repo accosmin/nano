@@ -1,7 +1,7 @@
 #pragma once
 
 #include "layer.h"
-#include "conv3d_toeplitz.h"
+#include "conv3d_dmaps.h"
 
 namespace nano
 {
@@ -46,6 +46,6 @@ namespace nano
                 auto bdata(tmap param) const { return map_vector(param.data() + ksize(), bdims()); }
 
                 // attributes
-                conv3d_toeplitz_t       m_op;           ///< 3D convolution operator
+                conv3d_dmaps_t  m_op;           ///< 3D convolution operator
         };
 }

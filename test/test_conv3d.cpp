@@ -2,8 +2,8 @@
 #include "function.h"
 #include "math/epsilon.h"
 #include "layers/conv3d_naive.h"
-#include "layers/conv3d_toeplitz.h"
-#include "layers/conv3d_toeplitz_dense.h"
+#include "layers/conv3d_dmaps.h"
+#include "layers/conv3d_dense.h"
 
 using namespace nano;
 
@@ -178,14 +178,14 @@ NANO_CASE(ginput_accuracy)
         }
 }
 
-NANO_CASE(naive_vs_toeplitz_output_kconn1)
+NANO_CASE(naive_vs_dmaps_output_kconn1)
 {
         const auto params = make_default_params(1);
         NANO_REQUIRE(params.valid());
 
         const auto op_naive = conv3d_naive_t{params};
-        const auto op_toepl = conv3d_toeplitz_t{params};
-        const auto op_dense = conv3d_toeplitz_dense_t{params};
+        const auto op_dmaps = conv3d_dmaps_t{params};
+        const auto op_dense = conv3d_dense_t{params};
 
         for (int i = 0; i < 8; ++ i)
         {
@@ -199,7 +199,7 @@ NANO_CASE(naive_vs_toeplitz_output_kconn1)
                 std::tie(bdatad, idatad, kdatad, odatad) = make_buffers(params);
 
                 op_naive.output(idata, kdata, bdata, odata);
-                op_toepl.output(idata, kdata, bdata, odatax);
+                op_dmaps.output(idata, kdata, bdata, odatax);
                 op_dense.output(idata, kdata, bdata, odatad);
 
                 NANO_CHECK_EIGEN_CLOSE(odata.array(), odatax.array(), 10 * epsilon0<scalar_t>());
@@ -207,14 +207,14 @@ NANO_CASE(naive_vs_toeplitz_output_kconn1)
         }
 }
 
-NANO_CASE(naive_vs_toeplitz_output_kconn2)
+NANO_CASE(naive_vs_dmaps_output_kconn2)
 {
         const auto params = make_default_params(2);
         NANO_REQUIRE(params.valid());
 
         const auto op_naive = conv3d_naive_t{params};
-        const auto op_toepl = conv3d_toeplitz_t{params};
-        const auto op_dense = conv3d_toeplitz_dense_t{params};
+        const auto op_dmaps = conv3d_dmaps_t{params};
+        const auto op_dense = conv3d_dense_t{params};
 
         for (int i = 0; i < 8; ++ i)
         {
@@ -228,7 +228,7 @@ NANO_CASE(naive_vs_toeplitz_output_kconn2)
                 std::tie(bdatad, idatad, kdatad, odatad) = make_buffers(params);
 
                 op_naive.output(idata, kdata, bdata, odata);
-                op_toepl.output(idata, kdata, bdata, odatax);
+                op_dmaps.output(idata, kdata, bdata, odatax);
                 op_dense.output(idata, kdata, bdata, odatad);
 
                 NANO_CHECK_EIGEN_CLOSE(odata.array(), odatax.array(), 10 * epsilon0<scalar_t>());
@@ -236,14 +236,14 @@ NANO_CASE(naive_vs_toeplitz_output_kconn2)
         }
 }
 
-NANO_CASE(naive_vs_toeplitz_gparam_kconn1)
+NANO_CASE(naive_vs_dmaps_gparam_kconn1)
 {
         const auto params = make_default_params(1);
         NANO_REQUIRE(params.valid());
 
         const auto op_naive = conv3d_naive_t{params};
-        const auto op_toepl = conv3d_toeplitz_t{params};
-        const auto op_dense = conv3d_toeplitz_dense_t{params};
+        const auto op_dmaps = conv3d_dmaps_t{params};
+        const auto op_dense = conv3d_dense_t{params};
 
         for (int i = 0; i < 8; ++ i)
         {
@@ -257,14 +257,14 @@ NANO_CASE(naive_vs_toeplitz_gparam_kconn1)
                 std::tie(bdatad, idatad, kdatad, odatad) = make_buffers(params);
 
                 op_naive.output(idata, kdata, bdata, odata);
-                op_toepl.output(idata, kdata, bdata, odatax);
+                op_dmaps.output(idata, kdata, bdata, odatax);
                 op_dense.output(idata, kdata, bdata, odatad);
 
                 NANO_CHECK_EIGEN_CLOSE(odata.array(), odatax.array(), 10 * epsilon0<scalar_t>());
                 NANO_CHECK_EIGEN_CLOSE(odata.array(), odatad.array(), 10 * epsilon0<scalar_t>());
 
                 op_naive.gparam(idata, kdata, bdata, odata);
-                op_toepl.gparam(idata, kdatax, bdatax, odata);
+                op_dmaps.gparam(idata, kdatax, bdatax, odata);
                 op_dense.gparam(idata, kdatad, bdatad, odata);
 
                 NANO_CHECK_EIGEN_CLOSE(kdata.array(), kdatax.array(), 10 * epsilon0<scalar_t>());
@@ -274,14 +274,14 @@ NANO_CASE(naive_vs_toeplitz_gparam_kconn1)
         }
 }
 
-NANO_CASE(naive_vs_toeplitz_gparam_kconn2)
+NANO_CASE(naive_vs_dmaps_gparam_kconn2)
 {
         const auto params = make_default_params(2);
         NANO_REQUIRE(params.valid());
 
         const auto op_naive = conv3d_naive_t{params};
-        const auto op_toepl = conv3d_toeplitz_t{params};
-        const auto op_dense = conv3d_toeplitz_dense_t{params};
+        const auto op_dmaps = conv3d_dmaps_t{params};
+        const auto op_dense = conv3d_dense_t{params};
 
         for (int i = 0; i < 8; ++ i)
         {
@@ -295,14 +295,14 @@ NANO_CASE(naive_vs_toeplitz_gparam_kconn2)
                 std::tie(bdatad, idatad, kdatad, odatad) = make_buffers(params);
 
                 op_naive.output(idata, kdata, bdata, odata);
-                op_toepl.output(idata, kdata, bdata, odatax);
+                op_dmaps.output(idata, kdata, bdata, odatax);
                 op_dense.output(idata, kdata, bdata, odatad);
 
                 NANO_CHECK_EIGEN_CLOSE(odata.array(), odatax.array(), 10 * epsilon0<scalar_t>());
                 NANO_CHECK_EIGEN_CLOSE(odata.array(), odatad.array(), 10 * epsilon0<scalar_t>());
 
                 op_naive.gparam(idata, kdata, bdata, odata);
-                op_toepl.gparam(idata, kdatax, bdatax, odata);
+                op_dmaps.gparam(idata, kdatax, bdatax, odata);
                 op_dense.gparam(idata, kdatad, bdatad, odata);
 
                 NANO_CHECK_EIGEN_CLOSE(kdata.array(), kdatax.array(), 10 * epsilon0<scalar_t>());
@@ -312,14 +312,14 @@ NANO_CASE(naive_vs_toeplitz_gparam_kconn2)
         }
 }
 
-NANO_CASE(naive_vs_toeplitz_ginput_kconn1)
+NANO_CASE(naive_vs_dmaps_ginput_kconn1)
 {
         const auto params = make_default_params(1);
         NANO_REQUIRE(params.valid());
 
         const auto op_naive = conv3d_naive_t{params};
-        const auto op_toepl = conv3d_toeplitz_t{params};
-        const auto op_dense = conv3d_toeplitz_dense_t{params};
+        const auto op_dmaps = conv3d_dmaps_t{params};
+        const auto op_dense = conv3d_dense_t{params};
 
         for (int i = 0; i < 8; ++ i)
         {
@@ -333,14 +333,14 @@ NANO_CASE(naive_vs_toeplitz_ginput_kconn1)
                 std::tie(bdatad, idatad, kdatad, odatad) = make_buffers(params);
 
                 op_naive.output(idata, kdata, bdata, odata);
-                op_toepl.output(idata, kdata, bdata, odatax);
+                op_dmaps.output(idata, kdata, bdata, odatax);
                 op_dense.output(idata, kdata, bdata, odatad);
 
                 NANO_CHECK_EIGEN_CLOSE(odata.array(), odatax.array(), 10 * epsilon0<scalar_t>());
                 NANO_CHECK_EIGEN_CLOSE(odata.array(), odatad.array(), 10 * epsilon0<scalar_t>());
 
                 op_naive.ginput(idata, kdata, bdata, odata);
-                op_toepl.ginput(idatax, kdata, bdata, odata);
+                op_dmaps.ginput(idatax, kdata, bdata, odata);
                 op_dense.ginput(idatad, kdata, bdata, odata);
 
                 NANO_CHECK_EIGEN_CLOSE(idata.array(), idatax.array(), 10 * epsilon0<scalar_t>());
@@ -348,14 +348,14 @@ NANO_CASE(naive_vs_toeplitz_ginput_kconn1)
         }
 }
 
-NANO_CASE(naive_vs_toeplitz_ginput_kconn2)
+NANO_CASE(naive_vs_dmaps_ginput_kconn2)
 {
         const auto params = make_default_params(2);
         NANO_REQUIRE(params.valid());
 
         const auto op_naive = conv3d_naive_t{params};
-        const auto op_toepl = conv3d_toeplitz_t{params};
-        const auto op_dense = conv3d_toeplitz_dense_t{params};
+        const auto op_dmaps = conv3d_dmaps_t{params};
+        const auto op_dense = conv3d_dense_t{params};
 
         for (int i = 0; i < 8; ++ i)
         {
@@ -369,14 +369,14 @@ NANO_CASE(naive_vs_toeplitz_ginput_kconn2)
                 std::tie(bdatad, idatad, kdatad, odatad) = make_buffers(params);
 
                 op_naive.output(idata, kdata, bdata, odata);
-                op_toepl.output(idata, kdata, bdata, odatax);
+                op_dmaps.output(idata, kdata, bdata, odatax);
                 op_dense.output(idata, kdata, bdata, odatad);
 
                 NANO_CHECK_EIGEN_CLOSE(odata.array(), odatax.array(), 10 * epsilon0<scalar_t>());
                 NANO_CHECK_EIGEN_CLOSE(odata.array(), odatad.array(), 10 * epsilon0<scalar_t>());
 
                 op_naive.ginput(idata, kdata, bdata, odata);
-                op_toepl.ginput(idatax, kdata, bdata, odata);
+                op_dmaps.ginput(idatax, kdata, bdata, odata);
                 op_dense.ginput(idatad, kdata, bdata, odata);
 
                 NANO_CHECK_EIGEN_CLOSE(idata.array(), idatax.array(), 10 * epsilon0<scalar_t>());

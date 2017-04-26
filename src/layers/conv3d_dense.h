@@ -7,15 +7,15 @@ namespace nano
 {
         ///
         /// \brief Toeplitz-based implementation of the 3D convolution:
-        ///     convolutions & correlations are written as matrix multiplications.
+        ///     convolutions & correlations are written as a single matrix multiplication.
         /// NB: requires extra buffers.
         ///
-        struct conv3d_toeplitz_dense_t
+        struct conv3d_dense_t
         {
                 ///
                 /// \brief constructor
                 ///
-                explicit conv3d_toeplitz_dense_t(const conv3d_params_t& params = conv3d_params_t());
+                explicit conv3d_dense_t(const conv3d_params_t& params = conv3d_params_t());
 
                 ///
                 /// \brief output
@@ -51,7 +51,7 @@ namespace nano
                 mutable matrix_t        m_kxdata;       ///< buffer: (imaps x krows x kcols, orows x ocols)
         };
 
-        inline conv3d_toeplitz_dense_t::conv3d_toeplitz_dense_t(const conv3d_params_t& params) :
+        inline conv3d_dense_t::conv3d_dense_t(const conv3d_params_t& params) :
                 m_params(params)
         {
                 const auto imaps = m_params.imaps();
@@ -67,7 +67,7 @@ namespace nano
         }
 
         template <typename tidata, typename tkdata, typename tbdata, typename todata>
-        void conv3d_toeplitz_dense_t::output(const tidata& idata, const tkdata& kdata, const tbdata& bdata, todata&& odata) const
+        void conv3d_dense_t::output(const tidata& idata, const tkdata& kdata, const tbdata& bdata, todata&& odata) const
         {
                 assert(m_params.valid_idata(idata));
                 assert(m_params.valid_kdata(kdata));
@@ -128,7 +128,7 @@ namespace nano
         }
 
         template <typename tidata, typename tkdata, typename tbdata, typename todata>
-        void conv3d_toeplitz_dense_t::ginput(tidata&& idata, const tkdata& kdata, const tbdata& bdata, const todata& odata) const
+        void conv3d_dense_t::ginput(tidata&& idata, const tkdata& kdata, const tbdata& bdata, const todata& odata) const
         {
                 assert(m_params.valid_idata(idata));
                 assert(m_params.valid_kdata(kdata));
@@ -167,7 +167,7 @@ namespace nano
         }
 
         template <typename tidata, typename tkdata, typename tbdata, typename todata>
-        void conv3d_toeplitz_dense_t::gparam(const tidata& idata, tkdata&& kdata, tbdata&& bdata, const todata& odata) const
+        void conv3d_dense_t::gparam(const tidata& idata, tkdata&& kdata, tbdata&& bdata, const todata& odata) const
         {
                 assert(m_params.valid_idata(idata));
                 assert(m_params.valid_kdata(kdata));

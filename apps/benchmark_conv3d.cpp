@@ -5,8 +5,8 @@
 #include "text/cmdline.h"
 #include "text/to_params.h"
 #include "layers/conv3d_naive.h"
-#include "layers/conv3d_toeplitz.h"
-#include "layers/conv3d_toeplitz_dense.h"
+#include "layers/conv3d_dmaps.h"
+#include "layers/conv3d_dense.h"
 #include <iostream>
 
 using namespace nano;
@@ -84,10 +84,10 @@ int main(int argc, const char *argv[])
 
         table_t table;
         table.header()
-                << "isize" << "convolution parameters" << "osize" << "params"
+                << "isize" << "parameters" << "osize" << "params"
                 << "output[kflops]" << "ginput" << "gparam"
                 << "naive[gflop/s]" << "ginput" << "gparam"
-                << "toepl[gflop/s]" << "ginput" << "gparam"
+                << "dmaps[gflop/s]" << "ginput" << "gparam"
                 << "dense[gflop/s]" << "ginput" << "gparam";
 
         // benchmark 3D convolutions various kernel sizes & connectivity factors
@@ -127,14 +127,14 @@ int main(int argc, const char *argv[])
                                 const auto gf_naive_ginput = measure_ginput(op_naive, idata, kdata, bdata, odata);
                                 const auto gf_naive_gparam = measure_gparam(op_naive, idata, kdata, bdata, odata);
 
-                                // Toeplitz implementation
-                                const auto op_toepl = conv3d_toeplitz_t{params};
-                                const auto gf_toepl_output = measure_output(op_toepl, idata, kdata, bdata, odata);
-                                const auto gf_toepl_ginput = measure_ginput(op_toepl, idata, kdata, bdata, odata);
-                                const auto gf_toepl_gparam = measure_gparam(op_toepl, idata, kdata, bdata, odata);
+                                // dense-per-map Toeplitz implementation
+                                const auto op_dmaps = conv3d_dmaps_t{params};
+                                const auto gf_dmaps_output = measure_output(op_dmaps, idata, kdata, bdata, odata);
+                                const auto gf_dmaps_ginput = measure_ginput(op_dmaps, idata, kdata, bdata, odata);
+                                const auto gf_dmaps_gparam = measure_gparam(op_dmaps, idata, kdata, bdata, odata);
 
                                 // dense Toeplitz implementation
-                                const auto op_dense = conv3d_toeplitz_dense_t{params};
+                                const auto op_dense = conv3d_dense_t{params};
                                 const auto gf_dense_output = measure_output(op_dense, idata, kdata, bdata, odata);
                                 const auto gf_dense_ginput = measure_ginput(op_dense, idata, kdata, bdata, odata);
                                 const auto gf_dense_gparam = measure_gparam(op_dense, idata, kdata, bdata, odata);
@@ -146,7 +146,7 @@ int main(int argc, const char *argv[])
                                         << params.psize()
                                         << kflops_output << kflops_ginput << kflops_gparam
                                         << gf_naive_output << gf_naive_ginput << gf_naive_gparam
-                                        << gf_toepl_output << gf_toepl_ginput << gf_toepl_gparam
+                                        << gf_dmaps_output << gf_dmaps_ginput << gf_dmaps_gparam
                                         << gf_dense_output << gf_dense_ginput << gf_dense_gparam;
                         }
 
