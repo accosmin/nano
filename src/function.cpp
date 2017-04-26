@@ -74,16 +74,7 @@ namespace nano
                         return (gx - gx_approx).lpNorm<Eigen::Infinity>() / (1 + std::fabs(fx));
                 };
 
-                // we're trying various scaling factors of {u^(2/3), u^(1/2), u^(1/3)}
-                scalar_t best_approx = std::numeric_limits<scalar_t>::max();
-                for (const auto dp : {scalar_t(1), scalar_t(2), scalar_t(4), scalar_t(8)})
-                {
-                        best_approx = std::min(best_approx, finite_difference(epsilon1<scalar_t>() / 10 * dp));
-                        best_approx = std::min(best_approx, finite_difference(epsilon2<scalar_t>() / 10 * dp));
-                        best_approx = std::min(best_approx, finite_difference(epsilon3<scalar_t>() / 10 * dp));
-                }
-
-                return best_approx;
+                return finite_difference(epsilon2<scalar_t>());
         }
 
         bool function_t::is_convex(const vector_t& x1, const vector_t& x2, const int steps) const
