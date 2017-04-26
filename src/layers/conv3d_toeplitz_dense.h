@@ -86,13 +86,22 @@ namespace nano
                 }
 
                 // +convolution
-                m_okdata.setZero();
-                for (tensor_size_t o = 0; o < omaps; ++ o)
+                switch (kconn)
                 {
-                        for (tensor_size_t i = o % kconn, ik = 0; i < imaps; i += kconn, ++ ik)
+                case 1:
+                        m_okdata = map_matrix(kdata.data(), omaps, imaps * krows * kcols);
+                        break;
+
+                default:
+                        m_okdata.setZero();
+                        for (tensor_size_t o = 0; o < omaps; ++ o)
                         {
-                                m_okdata.row(o).segment(i * krows * kcols, krows * kcols) = kdata.vector(o, ik);
+                                for (tensor_size_t i = o % kconn, ik = 0; i < imaps; i += kconn, ++ ik)
+                                {
+                                        m_okdata.row(o).segment(i * krows * kcols, krows * kcols) = kdata.vector(o, ik);
+                                }
                         }
+                        break;
                 }
 
                 for (tensor_size_t i = 0; i < imaps; ++ i)
