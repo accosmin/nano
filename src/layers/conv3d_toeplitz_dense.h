@@ -181,12 +181,21 @@ namespace nano
                 m_oodata = map_matrix(odata.data(), omaps, orows * ocols);
                 m_xkdata.noalias() = m_oodata * m_kodata.transpose();
 
-                for (tensor_size_t o = 0; o < omaps; ++ o)
+                switch (kconn)
                 {
-                        for (tensor_size_t i = o % kconn; i < imaps; i += kconn)
+                case 1:
+                        map_matrix(kdata.data(), omaps, imaps * krows * kcols) = m_xkdata;
+                        break;
+
+                default:
+                        for (tensor_size_t o = 0; o < omaps; ++ o)
                         {
-                                kdata.vector(o, i / kconn) = m_xkdata.row(o).segment(i * krows * kcols, krows * kcols);
+                                for (tensor_size_t i = o % kconn; i < imaps; i += kconn)
+                                {
+                                        kdata.vector(o, i / kconn) = m_xkdata.row(o).segment(i * krows * kcols, krows * kcols);
+                                }
                         }
+                        break;
                 }
         }
 }
