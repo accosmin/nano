@@ -89,10 +89,9 @@ namespace nano
                 m_okdata.setZero();
                 for (tensor_size_t o = 0; o < omaps; ++ o)
                 {
-                        for (tensor_size_t i = o % kconn; i < imaps; i += kconn)
+                        for (tensor_size_t i = o % kconn, ik = 0; i < imaps; i += kconn, ++ ik)
                         {
-                                m_okdata.row(o).segment(i * krows * kcols, krows * kcols) =
-                                kdata.vector(o, i / kconn);
+                                m_okdata.row(o).segment(i * krows * kcols, krows * kcols) = kdata.vector(o, ik);
                         }
                 }
 
@@ -190,9 +189,9 @@ namespace nano
                 default:
                         for (tensor_size_t o = 0; o < omaps; ++ o)
                         {
-                                for (tensor_size_t i = o % kconn; i < imaps; i += kconn)
+                                for (tensor_size_t i = o % kconn, ik = 0; i < imaps; i += kconn, ++ ik)
                                 {
-                                        kdata.vector(o, i / kconn) = m_xkdata.row(o).segment(i * krows * kcols, krows * kcols);
+                                        kdata.vector(o, ik) = m_xkdata.row(o).segment(i * krows * kcols, krows * kcols);
                                 }
                         }
                         break;
