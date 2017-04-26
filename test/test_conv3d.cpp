@@ -7,21 +7,37 @@
 
 using namespace nano;
 
+auto make_default_params(const tensor_size_t kconn = 1)
+{
+        const auto imaps = 6;
+        const auto irows = 11;
+        const auto icols = 15;
+        const auto omaps = 4;
+        const auto krows = 3;
+        const auto kcols = 5;
+        const auto kdrow = 2;
+        const auto kdcol = 1;
+
+        return conv3d_params_t{imaps, irows, icols, omaps, kconn, krows, kcols, kdrow, kdcol};
+}
+
+auto make_buffers(const conv3d_params_t& params)
+{
+        auto bdata = params.make_bdata(); bdata.setRandom();
+        auto idata = params.make_idata(); idata.vector().setRandom();
+        auto kdata = params.make_kdata(); kdata.vector().setRandom();
+        auto odata = params.make_odata(); odata.vector().setRandom();
+        return std::make_tuple(bdata, idata, kdata, odata);
+}
+
 template <typename top>
 struct wrt_params_function_t final : public function_t
 {
         explicit wrt_params_function_t(const top& op) : function_t("conv3d",
                 op.params().psize(), op.params().psize(), op.params().psize(), convexity::no, 1e+6),
-                m_op(op),
-                m_idata(op.params().make_idata()),
-                m_kdata(op.params().make_kdata()),
-                m_bdata(op.params().make_bdata()),
-                m_odata(op.params().make_odata())
+                m_op(op)
         {
-                m_bdata.setRandom();
-                m_idata.vector().setRandom();
-                m_kdata.vector().setRandom();
-                m_odata.vector().setRandom();
+                std::tie(m_bdata, m_idata, m_kdata, m_odata) = make_buffers(op.params());
         }
 
         scalar_t vgrad(const vector_t& x, vector_t* gx) const override
@@ -50,16 +66,9 @@ struct wrt_inputs_function_t final : public function_t
 {
         explicit wrt_inputs_function_t(const top& op) : function_t("conv3d",
                 op.params().isize(), op.params().isize(), op.params().isize(), convexity::no, 1e+6),
-                m_op(op),
-                m_idata(op.params().make_idata()),
-                m_kdata(op.params().make_kdata()),
-                m_bdata(op.params().make_bdata()),
-                m_odata(op.params().make_odata())
+                m_op(op)
         {
-                m_bdata.setRandom();
-                m_idata.vector().setRandom();
-                m_kdata.vector().setRandom();
-                m_odata.vector().setRandom();
+                std::tie(m_bdata, m_idata, m_kdata, m_odata) = make_buffers(op.params());
         }
 
         scalar_t vgrad(const vector_t& x, vector_t* gx) const override
@@ -80,20 +89,6 @@ struct wrt_inputs_function_t final : public function_t
         vector_t                m_bdata;
         mutable tensor3d_t      m_odata;
 };
-
-auto make_default_params(const tensor_size_t kconn = 1)
-{
-        const auto imaps = 6;
-        const auto irows = 11;
-        const auto icols = 15;
-        const auto omaps = 4;
-        const auto krows = 3;
-        const auto kcols = 5;
-        const auto kdrow = 2;
-        const auto kdcol = 1;
-
-        return conv3d_params_t{imaps, irows, icols, omaps, kconn, krows, kcols, kdrow, kdcol};
-}
 
 template <typename top>
 auto make_wrt_params_function(const conv3d_params_t& params)
@@ -194,20 +189,14 @@ NANO_CASE(naive_vs_toeplitz_output_kconn1)
 
         for (int i = 0; i < 8; ++ i)
         {
-                auto bdata = params.make_bdata(); bdata.setRandom();
-                auto idata = params.make_idata(); idata.vector().setRandom();
-                auto kdata = params.make_kdata(); kdata.vector().setRandom();
-                auto odata = params.make_odata(); odata.vector().setRandom();
+                vector_t bdata, bdatax, bdatad;
+                tensor3d_t idata, idatax, idatad;
+                tensor4d_t kdata, kdatax, kdatad;
+                tensor3d_t odata, odatax, odatad;
 
-                auto bdatax = params.make_bdata(); bdatax.setRandom();
-                auto idatax = params.make_idata(); idatax.vector().setRandom();
-                auto kdatax = params.make_kdata(); kdatax.vector().setRandom();
-                auto odatax = params.make_odata(); odatax.vector().setRandom();
-
-                auto bdatad = params.make_bdata(); bdatad.setRandom();
-                auto idatad = params.make_idata(); idatad.vector().setRandom();
-                auto kdatad = params.make_kdata(); kdatad.vector().setRandom();
-                auto odatad = params.make_odata(); odatad.vector().setRandom();
+                std::tie(bdata, idata, kdata, odata) = make_buffers(params);
+                std::tie(bdatax, idatax, kdatax, odatax) = make_buffers(params);
+                std::tie(bdatad, idatad, kdatad, odatad) = make_buffers(params);
 
                 op_naive.output(idata, kdata, bdata, odata);
                 op_toepl.output(idata, kdata, bdata, odatax);
@@ -229,20 +218,14 @@ NANO_CASE(naive_vs_toeplitz_output_kconn2)
 
         for (int i = 0; i < 8; ++ i)
         {
-                auto bdata = params.make_bdata(); bdata.setRandom();
-                auto idata = params.make_idata(); idata.vector().setRandom();
-                auto kdata = params.make_kdata(); kdata.vector().setRandom();
-                auto odata = params.make_odata(); odata.vector().setRandom();
+                vector_t bdata, bdatax, bdatad;
+                tensor3d_t idata, idatax, idatad;
+                tensor4d_t kdata, kdatax, kdatad;
+                tensor3d_t odata, odatax, odatad;
 
-                auto bdatax = params.make_bdata(); bdatax.setRandom();
-                auto idatax = params.make_idata(); idatax.vector().setRandom();
-                auto kdatax = params.make_kdata(); kdatax.vector().setRandom();
-                auto odatax = params.make_odata(); odatax.vector().setRandom();
-
-                auto bdatad = params.make_bdata(); bdatad.setRandom();
-                auto idatad = params.make_idata(); idatad.vector().setRandom();
-                auto kdatad = params.make_kdata(); kdatad.vector().setRandom();
-                auto odatad = params.make_odata(); odatad.vector().setRandom();
+                std::tie(bdata, idata, kdata, odata) = make_buffers(params);
+                std::tie(bdatax, idatax, kdatax, odatax) = make_buffers(params);
+                std::tie(bdatad, idatad, kdatad, odatad) = make_buffers(params);
 
                 op_naive.output(idata, kdata, bdata, odata);
                 op_toepl.output(idata, kdata, bdata, odatax);
@@ -264,20 +247,14 @@ NANO_CASE(naive_vs_toeplitz_gparam_kconn1)
 
         for (int i = 0; i < 8; ++ i)
         {
-                auto bdata = params.make_bdata(); bdata.setRandom();
-                auto idata = params.make_idata(); idata.vector().setRandom();
-                auto kdata = params.make_kdata(); kdata.vector().setRandom();
-                auto odata = params.make_odata(); odata.vector().setRandom();
+                vector_t bdata, bdatax, bdatad;
+                tensor3d_t idata, idatax, idatad;
+                tensor4d_t kdata, kdatax, kdatad;
+                tensor3d_t odata, odatax, odatad;
 
-                auto bdatax = params.make_bdata(); bdatax.setRandom();
-                auto idatax = params.make_idata(); idatax.vector().setRandom();
-                auto kdatax = params.make_kdata(); kdatax.vector().setRandom();
-                auto odatax = params.make_odata(); odatax.vector().setRandom();
-
-                auto bdatad = params.make_bdata(); bdatad.setRandom();
-                auto idatad = params.make_idata(); idatad.vector().setRandom();
-                auto kdatad = params.make_kdata(); kdatad.vector().setRandom();
-                auto odatad = params.make_odata(); odatad.vector().setRandom();
+                std::tie(bdata, idata, kdata, odata) = make_buffers(params);
+                std::tie(bdatax, idatax, kdatax, odatax) = make_buffers(params);
+                std::tie(bdatad, idatad, kdatad, odatad) = make_buffers(params);
 
                 op_naive.output(idata, kdata, bdata, odata);
                 op_toepl.output(idata, kdata, bdata, odatax);
@@ -308,20 +285,14 @@ NANO_CASE(naive_vs_toeplitz_gparam_kconn2)
 
         for (int i = 0; i < 8; ++ i)
         {
-                auto bdata = params.make_bdata(); bdata.setRandom();
-                auto idata = params.make_idata(); idata.vector().setRandom();
-                auto kdata = params.make_kdata(); kdata.vector().setRandom();
-                auto odata = params.make_odata(); odata.vector().setRandom();
+                vector_t bdata, bdatax, bdatad;
+                tensor3d_t idata, idatax, idatad;
+                tensor4d_t kdata, kdatax, kdatad;
+                tensor3d_t odata, odatax, odatad;
 
-                auto bdatax = params.make_bdata(); bdatax.setRandom();
-                auto idatax = params.make_idata(); idatax.vector().setRandom();
-                auto kdatax = params.make_kdata(); kdatax.vector().setRandom();
-                auto odatax = params.make_odata(); odatax.vector().setRandom();
-
-                auto bdatad = params.make_bdata(); bdatad.setRandom();
-                auto idatad = params.make_idata(); idatad.vector().setRandom();
-                auto kdatad = params.make_kdata(); kdatad.vector().setRandom();
-                auto odatad = params.make_odata(); odatad.vector().setRandom();
+                std::tie(bdata, idata, kdata, odata) = make_buffers(params);
+                std::tie(bdatax, idatax, kdatax, odatax) = make_buffers(params);
+                std::tie(bdatad, idatad, kdatad, odatad) = make_buffers(params);
 
                 op_naive.output(idata, kdata, bdata, odata);
                 op_toepl.output(idata, kdata, bdata, odatax);
@@ -352,20 +323,14 @@ NANO_CASE(naive_vs_toeplitz_ginput_kconn1)
 
         for (int i = 0; i < 8; ++ i)
         {
-                auto bdata = params.make_bdata(); bdata.setRandom();
-                auto idata = params.make_idata(); idata.vector().setRandom();
-                auto kdata = params.make_kdata(); kdata.vector().setRandom();
-                auto odata = params.make_odata(); odata.vector().setRandom();
+                vector_t bdata, bdatax, bdatad;
+                tensor3d_t idata, idatax, idatad;
+                tensor4d_t kdata, kdatax, kdatad;
+                tensor3d_t odata, odatax, odatad;
 
-                auto bdatax = params.make_bdata(); bdatax.setRandom();
-                auto idatax = params.make_idata(); idatax.vector().setRandom();
-                auto kdatax = params.make_kdata(); kdatax.vector().setRandom();
-                auto odatax = params.make_odata(); odatax.vector().setRandom();
-
-                auto bdatad = params.make_bdata(); bdatad.setRandom();
-                auto idatad = params.make_idata(); idatad.vector().setRandom();
-                auto kdatad = params.make_kdata(); kdatad.vector().setRandom();
-                auto odatad = params.make_odata(); odatad.vector().setRandom();
+                std::tie(bdata, idata, kdata, odata) = make_buffers(params);
+                std::tie(bdatax, idatax, kdatax, odatax) = make_buffers(params);
+                std::tie(bdatad, idatad, kdatad, odatad) = make_buffers(params);
 
                 op_naive.output(idata, kdata, bdata, odata);
                 op_toepl.output(idata, kdata, bdata, odatax);
@@ -394,20 +359,14 @@ NANO_CASE(naive_vs_toeplitz_ginput_kconn2)
 
         for (int i = 0; i < 8; ++ i)
         {
-                auto bdata = params.make_bdata(); bdata.setRandom();
-                auto idata = params.make_idata(); idata.vector().setRandom();
-                auto kdata = params.make_kdata(); kdata.vector().setRandom();
-                auto odata = params.make_odata(); odata.vector().setRandom();
+                vector_t bdata, bdatax, bdatad;
+                tensor3d_t idata, idatax, idatad;
+                tensor4d_t kdata, kdatax, kdatad;
+                tensor3d_t odata, odatax, odatad;
 
-                auto bdatax = params.make_bdata(); bdatax.setRandom();
-                auto idatax = params.make_idata(); idatax.vector().setRandom();
-                auto kdatax = params.make_kdata(); kdatax.vector().setRandom();
-                auto odatax = params.make_odata(); odatax.vector().setRandom();
-
-                auto bdatad = params.make_bdata(); bdatad.setRandom();
-                auto idatad = params.make_idata(); idatad.vector().setRandom();
-                auto kdatad = params.make_kdata(); kdatad.vector().setRandom();
-                auto odatad = params.make_odata(); odatad.vector().setRandom();
+                std::tie(bdata, idata, kdata, odata) = make_buffers(params);
+                std::tie(bdatax, idatax, kdatax, odatax) = make_buffers(params);
+                std::tie(bdatad, idatad, kdatad, odatad) = make_buffers(params);
 
                 op_naive.output(idata, kdata, bdata, odata);
                 op_toepl.output(idata, kdata, bdata, odatax);
