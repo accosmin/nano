@@ -84,11 +84,20 @@ int main(int argc, const char *argv[])
 
         table_t table;
         table.header()
+                << "" << "" << "" << ""
+                << "output" << "ginput" << "gparam"
+                << "+naive" << "ginput" << "gparam"
+                << "+dmaps" << "ginput" << "gparam"
+                << "+dense" << "ginput" << "gparam";
+
+        table.append()
                 << "isize" << "parameters" << "osize" << "params"
-                << "output[#kflops]" << "ginput" << "gparam"
-                << "+naive[gflop/s]" << "ginput" << "gparam"
-                << "+dmaps[gflop/s]" << "ginput" << "gparam"
-                << "+dense[gflop/s]" << "ginput" << "gparam";
+                << "#kflops" << "#kflops" << "#kflops"
+                << "gflop/s" << "gflop/s" << "gflop/s"
+                << "gflop/s" << "gflop/s" << "gflop/s"
+                << "gflop/s" << "gflop/s" << "gflop/s";
+
+        table.append(table_row_t::storage::delim);
 
         // benchmark 3D convolutions various kernel sizes & connectivity factors
         for (tensor_size_t ksize = cmd_min_ksize; ksize <= cmd_max_ksize; ksize += 2)
