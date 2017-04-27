@@ -33,8 +33,8 @@ auto make_buffers(const conv3d_params_t& params)
 template <typename top>
 struct wrt_params_function_t final : public function_t
 {
-        explicit wrt_params_function_t(const top& op) : function_t("conv3d",
-                op.params().psize(), op.params().psize(), op.params().psize(), convexity::no, 1e+6),
+        explicit wrt_params_function_t(const top& op) :
+                function_t("conv3d", op.params().psize(), op.params().psize(), op.params().psize(), convexity::no, 1e+6),
                 m_op(op)
         {
                 std::tie(m_bdata, m_idata, m_kdata, m_odata) = make_buffers(op.params());
@@ -48,8 +48,9 @@ struct wrt_params_function_t final : public function_t
                 if (gx)
                 {
                         gx->resize(x.size());
-                        m_op.gparam(m_idata, map_tensor(gx->data(), m_kdata.dims()),
-                                map_vector(gx->data() + m_kdata.size(), m_bdata.size()), m_odata);
+                        auto kdata = map_tensor(gx->data(), m_kdata.dims());
+                        auto bdata = map_vector(gx->data() + m_kdata.size(), m_bdata.size());
+                        m_op.gparam(m_idata, kdata, bdata, m_odata);
                 }
                 return m_odata.array().square().sum() / 2;
         }
@@ -64,8 +65,8 @@ struct wrt_params_function_t final : public function_t
 template <typename top>
 struct wrt_inputs_function_t final : public function_t
 {
-        explicit wrt_inputs_function_t(const top& op) : function_t("conv3d",
-                op.params().isize(), op.params().isize(), op.params().isize(), convexity::no, 1e+6),
+        explicit wrt_inputs_function_t(const top& op) :
+                function_t("conv3d", op.params().isize(), op.params().isize(), op.params().isize(), convexity::no, 1e+6),
                 m_op(op)
         {
                 std::tie(m_bdata, m_idata, m_kdata, m_odata) = make_buffers(op.params());
@@ -78,7 +79,8 @@ struct wrt_inputs_function_t final : public function_t
                 if (gx)
                 {
                         gx->resize(x.size());
-                        m_op.ginput(map_tensor(gx->data(), m_idata.dims()), m_kdata, m_bdata, m_odata);
+                        auto idata = map_tensor(gx->data(), m_idata.dims());
+                        m_op.ginput(idata, m_kdata, m_bdata, m_odata);
                 }
                 return m_odata.array().square().sum() / 2;
         }

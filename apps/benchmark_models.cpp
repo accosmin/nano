@@ -149,7 +149,7 @@ int main(int argc, const char *argv[])
 
                         if (cmd_forward)
                         {
-                                const auto duration = measure_robustly_usec([&] ()
+                                const auto duration = measure_robustly<microseconds_t>([&] ()
                                 {
                                         acc.mode(criterion_t::type::value);
                                         acc.update(task, fold);
@@ -165,7 +165,7 @@ int main(int argc, const char *argv[])
 
                         if (cmd_backward)
                         {
-                                const auto duration = measure_robustly_usec([&] ()
+                                const auto duration = measure_robustly<microseconds_t>([&] ()
                                 {
                                         acc.mode(criterion_t::type::vgrad);
                                         acc.update(task, fold);

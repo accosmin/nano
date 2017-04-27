@@ -32,7 +32,7 @@ namespace
         auto measure(const top& op, const tensor_size_t flops)
         {
                 const auto trials = size_t(16);
-                const auto duration = measure_robustly_usec([&] () { op(); }, trials);
+                const auto duration = measure_robustly<nanoseconds_t>(op, trials);
                 return nano::gflops(flops, duration);
         }
 
@@ -85,10 +85,10 @@ int main(int argc, const char *argv[])
         table_t table;
         table.header()
                 << "isize" << "parameters" << "osize" << "params"
-                << "output[kflops]" << "ginput" << "gparam"
-                << "naive[gflop/s]" << "ginput" << "gparam"
-                << "dmaps[gflop/s]" << "ginput" << "gparam"
-                << "dense[gflop/s]" << "ginput" << "gparam";
+                << "output[#kflops]" << "ginput" << "gparam"
+                << "+naive[gflop/s]" << "ginput" << "gparam"
+                << "+dmaps[gflop/s]" << "ginput" << "gparam"
+                << "+dense[gflop/s]" << "ginput" << "gparam";
 
         // benchmark 3D convolutions various kernel sizes & connectivity factors
         for (tensor_size_t ksize = cmd_min_ksize; ksize <= cmd_max_ksize; ksize += 2)

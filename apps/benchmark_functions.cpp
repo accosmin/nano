@@ -20,13 +20,13 @@ static void eval_func(const function_t& function, table_t& table)
         const size_t trials = 16;
 
         volatile scalar_t fx = 0;
-        const auto fval_time = measure_robustly_nsec([&] ()
+        const auto fval_time = measure_robustly<nanoseconds_t>([&] ()
         {
                 fx += function.eval(x);
         }, trials).count();
 
         volatile scalar_t gx = 0;
-        const auto grad_time = measure_robustly_nsec([&] ()
+        const auto grad_time = measure_robustly<nanoseconds_t>([&] ()
         {
                 function.eval(x, &g);
                 gx += g.template lpNorm<Eigen::Infinity>();

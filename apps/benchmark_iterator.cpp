@@ -46,7 +46,7 @@ int main(int argc, const char *argv[])
                         "type", charset_mode::digit, "color", cmd_color,
                         "irows", cmd_rows, "icols", cmd_cols, "count", task_size));
                 {
-                        const auto duration = nano::measure_robustly_msec([&] ()
+                        const auto duration = nano::measure_robustly<milliseconds_t>([&] ()
                         {
                                 task.load();
                         }, 1);
@@ -57,7 +57,7 @@ int main(int argc, const char *argv[])
                 for (const size_t batch_size : batch_sizes)
                 {
                         // vary the minibatch selection
-                        const auto duration = nano::measure_robustly_msec([&] ()
+                        const auto duration = nano::measure_robustly<milliseconds_t>([&] ()
                         {
                                 const auto fold = fold_t{0, protocol::train};
                                 const auto epochs = 100 * nano::idiv(task.n_samples(fold), batch_size);
