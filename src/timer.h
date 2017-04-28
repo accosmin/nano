@@ -64,7 +64,8 @@ namespace nano
                 timepoint_t     m_start;        ///< starting time point
         };
 
-        inline timer_t::timer_t() : m_start(now())
+        inline timer_t::timer_t() :
+                m_start(now())
         {
         }
 
