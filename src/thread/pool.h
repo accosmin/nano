@@ -13,10 +13,8 @@ namespace nano
         ///
         /// NB: this is heavily copied/inspired by http://progsch.net/wordpress/?p=81
         ///
-        class NANO_PUBLIC thread_pool_t
+        struct NANO_PUBLIC thread_pool_t
         {
-        public:
-
                 ///
                 /// \brief single instance
                 ///
@@ -74,8 +72,6 @@ namespace nano
                 /// \brief constructor (all available threads are active by default)
                 ///
                 thread_pool_t();
-
-        private:
 
                 // attributes
                 std::vector<std::thread>        m_threads;      ///<

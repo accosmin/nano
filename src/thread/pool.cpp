@@ -22,6 +22,7 @@ nano::thread_pool_t::thread_pool_t()
         const auto n_workers = static_cast<std::size_t>(nano::logical_cpus());
         const auto n_active_threads = n_workers;
 
+        m_workers.reserve(n_workers);
         for (size_t i = 0; i < n_workers; ++ i)
         {
                 m_workers.emplace_back(m_queue, i < n_active_threads);

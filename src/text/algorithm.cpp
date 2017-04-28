@@ -4,17 +4,22 @@
 
 namespace nano
 {
+        static inline bool icequals(const char c1, const char c2)
+        {
+                return std::tolower(c1) == std::tolower(c2);
+        }
+
         string_t lower(const string_t& str)
         {
                 string_t ret = str;
-                std::transform(str.begin(), str.end(), ret.begin(), [] (char c) { return std::tolower(c); });
+                std::transform(str.begin(), str.end(), ret.begin(), [] (const char c) { return std::tolower(c); });
                 return ret;
         }
 
         string_t upper(const string_t& str)
         {
                 string_t ret = str;
-                std::transform(str.begin(), str.end(), ret.begin(), [] (char c) { return std::toupper(c); });
+                std::transform(str.begin(), str.end(), ret.begin(), [] (const char c) { return std::toupper(c); });
                 return ret;
         }
 
@@ -22,15 +27,14 @@ namespace nano
         {
                 string_t ret = str;
                 std::transform(str.begin(), str.end(), ret.begin(),
-                               [=] (char c) { return (c == token) ? newtoken : c; });
+                               [=] (const char c) { return (c == token) ? newtoken : c; });
                 return ret;
         }
 
         string_t replace(const string_t& str, const string_t& token, const string_t& newtoken)
         {
                 string_t ret = str;
-                size_t index = 0;
-                while (true)
+                for (size_t index = 0;;)
                 {
                         index = ret.find(token, index);
                         if (index == string_t::npos)
@@ -51,43 +55,37 @@ namespace nano
         bool equals(const string_t& str1, const string_t& str2)
         {
                 return  str1.size() == str2.size() &&
-                        std::equal(str1.begin(), str1.end(), str2.begin(),
-                                   [] (char c1, char c2) { return c1 == c2; });
+                        std::equal(str1.begin(), str1.end(), str2.begin());
         }
 
         bool iequals(const string_t& str1, const string_t& str2)
         {
                 return  str1.size() == str2.size() &&
-                        std::equal(str1.begin(), str1.end(), str2.begin(),
-                                   [] (char c1, char c2) { return std::tolower(c1) == std::tolower(c2); });
+                        std::equal(str1.begin(), str1.end(), str2.begin(), icequals);
         }
 
         bool starts_with(const string_t& str, const string_t& token)
         {
                 return  str.size() >= token.size() &&
-                        std::equal(token.begin(), token.end(), str.begin(),
-                                   [] (char c1, char c2) { return c1 == c2; });
+                        std::equal(token.begin(), token.end(), str.begin());
         }
 
         bool istarts_with(const string_t& str, const string_t& token)
         {
                 return  str.size() >= token.size() &&
-                        std::equal(token.begin(), token.end(), str.begin(),
-                                   [] (char c1, char c2) { return std::tolower(c1) == std::tolower(c2); });
+                        std::equal(token.begin(), token.end(), str.begin(), icequals);
         }
 
         bool ends_with(const string_t& str, const string_t& token)
         {
                 return  str.size() >= token.size() &&
-                        std::equal(token.rbegin(), token.rend(), str.rbegin(),
-                                   [] (char c1, char c2) { return c1 == c2; });
+                        std::equal(token.rbegin(), token.rend(), str.rbegin());
         }
 
         bool iends_with(const string_t& str, const string_t& token)
         {
                 return  str.size() >= token.size() &&
-                        std::equal(token.rbegin(), token.rend(), str.rbegin(),
-                                   [] (char c1, char c2) { return std::tolower(c1) == std::tolower(c2); });
+                        std::equal(token.rbegin(), token.rend(), str.rbegin(), icequals);
         }
 
         strings_t split(const string_t& str, const char* delimeters)
