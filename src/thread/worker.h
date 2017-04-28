@@ -7,10 +7,8 @@ namespace nano
         ///
         /// \brief worker to process tasks enqueued in a thread pool.
         ///
-        class NANO_PUBLIC worker_t
+        struct worker_t
         {
-        public:
-
                 ///
                 /// \brief constructor
                 ///

@@ -139,4 +139,3 @@ namespace nano
                 return ofs.good();
         }
 }
-
