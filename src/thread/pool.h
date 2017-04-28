@@ -1,5 +1,6 @@
 #pragma once
 
+#include "arch.h"
 #include "queue.h"
 #include "worker.h"
 #include <thread>

@@ -39,8 +39,6 @@ namespace nano
                         }
                 }
 
-        private:
-
                 // attributes
                 std::vector<tfuture>    m_futures;
         };
