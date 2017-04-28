@@ -1,5 +1,6 @@
 #pragma once
 
+#include "arch.h"
 #include "timer.h"
 #include "scalar.h"
 #include "stringi.h"

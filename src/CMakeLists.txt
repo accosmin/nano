@@ -11,8 +11,7 @@ set(libnano_sources
         task_iterator.cpp
         trainer_state.cpp
         trainer_result.cpp
-        logger.cpp
-        timer.cpp)
+        logger.cpp)
 
 add_subdirectory(io)
 add_subdirectory(math)
