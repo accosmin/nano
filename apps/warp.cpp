@@ -50,7 +50,7 @@ int main(int argc, const char *argv[])
                 ftype = field_type::random;
         }
 
-        const warp_params_t params(ftype, scalar_t(0.1), scalar_t(4.0), cmd_alpha, cmd_beta);
+        auto warper = warper_t(ftype, scalar_t(0.1), scalar_t(4.0), cmd_alpha, cmd_beta);
 
         // load input image
         image_t iimage;
@@ -67,7 +67,7 @@ int main(int argc, const char *argv[])
                 // warp
                 tensor3d_t otensor, ftensor;
                 nano::measure_and_log(
-                        [&] () { otensor = warp(iimage.to_tensor(), params, &ftensor); },
+                        [&] () { warper(iimage.to_tensor(), otensor, &ftensor); },
                         "warped image");
 
                 // prepare output paths
