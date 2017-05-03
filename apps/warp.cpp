@@ -1,10 +1,11 @@
 #include "stringi.h"
 #include "text/cmdline.h"
-#include "vision/warp.h"
 #include "vision/image.h"
-#include "text/filesystem.h"
-#include "text/to_string.h"
+#include "text/to_params.h"
 #include "measure_and_log.h"
+#include "text/filesystem.h"
+#include "text/concatenate.h"
+#include "samplers/sampler_warp.h"
 
 int main(int argc, const char *argv[])
 {
@@ -14,9 +15,7 @@ int main(int argc, const char *argv[])
         nano::cmdline_t cmdline("randomly warp the input image");
         cmdline.add("i", "input",       "input image path");
         cmdline.add("c", "count",       "number of random warpings to generate", "32");
-        cmdline.add("", "translation",  "use translation fields");
-        cmdline.add("", "rotation",     "use rotation fields");
-        cmdline.add("", "random",       "use random fields");
+        cmdline.add("", "type",         "warping type [" + concatenate(enum_values<warp_type>()) + "]");
         cmdline.add("", "alpha",        "field mixing coefficient", "1.0");
         cmdline.add("", "beta",         "gradient magnitue mixing coefficient", "1.0");
         cmdline.add("", "save-fields",  "save fields as image");
@@ -28,29 +27,13 @@ int main(int argc, const char *argv[])
         const auto cmd_input = cmdline.get<string_t>("input");
         const auto cmd_output = cmdline.get<string_t>("output");
         const auto cmd_save_fields = cmdline.has("save-fields");
-
         const auto cmd_count = cmdline.get<size_t>("count");
         const auto cmd_alpha = cmdline.get<scalar_t>("alpha");
         const auto cmd_beta = cmdline.get<scalar_t>("beta");
-        const auto cmd_ftype_trs = cmdline.has("translation");
-        const auto cmd_ftype_rot = cmdline.has("rotation");
-        const auto cmd_ftype_rnd = cmdline.has("random");
+        const auto cmd_type = cmdline.get<warp_type>("type");
 
-        field_type ftype = field_type::random;
-        if (cmd_ftype_trs)
-        {
-                ftype = field_type::translation;
-        }
-        else if (cmd_ftype_rot)
-        {
-                ftype = field_type::rotation;
-        }
-        else if (cmd_ftype_rnd)
-        {
-                ftype = field_type::random;
-        }
-
-        auto warper = warper_t(ftype, scalar_t(0.1), scalar_t(4.0), cmd_alpha, cmd_beta);
+        auto warper = sampler_warp_t(to_params(
+                "type", cmd_type, "noise", 0.1, "sigma", 4.0, "alpha", cmd_alpha, "beta", cmd_beta));
 
         // load input image
         image_t iimage;
@@ -65,9 +48,9 @@ int main(int argc, const char *argv[])
         for (size_t c = 0; c < cmd_count; ++ c)
         {
                 // warp
-                tensor3d_t otensor, ftensor;
+                tensor3d_t wtensor = iimage.to_tensor();
                 nano::measure_and_log(
-                        [&] () { warper(iimage.to_tensor(), otensor, &ftensor); },
+                        [&] () { warper.get(wtensor, nullptr, nullptr); },
                         "warped image");
 
                 // prepare output paths
@@ -80,7 +63,7 @@ int main(int argc, const char *argv[])
                 // save warped image
                 {
                         image_t image;
-                        image.from_tensor(otensor);
+                        image.from_tensor(wtensor);
                         image.make_rgba();
 
                         nano::measure_critical_and_log(
@@ -92,7 +75,7 @@ int main(int argc, const char *argv[])
                 if (cmd_save_fields)
                 {
                         image_t image;
-                        image.from_tensor(ftensor);
+                        image.from_tensor(warper.fimage());
                         image.make_rgba();
 
                         nano::measure_critical_and_log(

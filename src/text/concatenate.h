@@ -19,4 +19,3 @@ namespace nano
                 return ret.empty() ? ret : ret.substr(0, ret.size() - glue.size());
         }
 }
-

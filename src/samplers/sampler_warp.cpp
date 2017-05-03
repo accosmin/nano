@@ -1,11 +1,14 @@
-#include "warp.h"
-#include "convolve.h"
-#include "gradient.h"
 #include "math/gauss.h"
 #include "math/random.h"
 #include "math/numeric.h"
+#include "sampler_warp.h"
 #include "tensor/numeric.h"
+#include "text/to_params.h"
+#include "vision/convolve.h"
+#include "vision/gradient.h"
+#include "text/from_params.h"
 #include "tensor/algorithm.h"
+#include "text/concatenate.h"
 
 namespace nano
 {
@@ -39,31 +42,22 @@ namespace nano
                 });
         }
 
-        static void smooth_field(matrix_t& field, const scalar_t sigma)
-        {
-                const nano::gauss_kernel_t<scalar_t> gauss(sigma);
-                nano::convolve(gauss, field);
-        }
-
-        static void make_random_fields(const scalar_t noise, const scalar_t sigma,
+        template <typename trng>
+        static void make_random_fields(trng& rng, const scalar_t noise,
                 matrix_t& fieldx, matrix_t& fieldy)
         {
-                nano::set_random(nano::make_rng<scalar_t>(-noise, +noise), fieldx, fieldy);
-
-                smooth_field(fieldx, sigma);
-                smooth_field(fieldy, sigma);
+                nano::set_random([&] () { return rng() * noise; }, fieldx, fieldy);
         }
 
-        static void make_translation_fields(const scalar_t delta, const scalar_t noise, const scalar_t sigma,
+        template <typename trng>
+        static void make_translation_fields(trng& rng, const scalar_t delta, const scalar_t noise,
                 matrix_t& fieldx, matrix_t& fieldy)
         {
-                nano::set_random(nano::make_rng<scalar_t>(delta - noise, delta + noise), fieldx, fieldy);
-
-                smooth_field(fieldx, sigma);
-                smooth_field(fieldy, sigma);
+                nano::set_random([&] () { return rng() * noise + delta; }, fieldx, fieldy);
         }
 
-        static void make_rotation_fields(const scalar_t theta, const scalar_t noise, const scalar_t sigma,
+        template <typename trng>
+        static void make_rotation_fields(trng& rng, const scalar_t delta, const scalar_t theta, const scalar_t noise,
                 matrix_t& fieldx, matrix_t& fieldy)
         {
                 const auto rows = fieldx.rows(), cols = fieldx.cols();
@@ -71,114 +65,112 @@ namespace nano
                 const auto cy = half * static_cast<scalar_t>(rows);
                 const auto id = one / (nano::square(cx) + nano::square(cy));
 
-                auto rng = nano::make_rng<scalar_t>(-noise, +noise);
                 for (tensor_size_t r = 0; r < rows; ++ r)
                 {
                         for (tensor_size_t c = 0; c < cols; ++ c)
                         {
                                 const auto dist = nano::square(scalar_t(r) - cy) + nano::square(scalar_t(c) - cx);
 
-                                fieldx(r, c) = id * dist * std::cos(theta) + rng();
-                                fieldy(r, c) = id * dist * std::sin(theta) + rng();
+                                fieldx(r, c) = id * dist * std::cos(theta) + rng() * noise + delta;
+                                fieldy(r, c) = id * dist * std::sin(theta) + rng() * noise + delta;
                         }
                 }
-
-                smooth_field(fieldx, sigma);
-                smooth_field(fieldy, sigma);
         }
 
-        template <typename tmatrixi, typename tmatrixg, typename tmatrixo>
-        static void warp_by_field(const tmatrixi& idata,
+        template <typename tmatrixio, typename tmatrixg>
+        static void warp_by_field(tmatrixio&& iodata,
                 const scalar_t alphax, const matrix_t& fieldx, const tmatrixg& gradx,
                 const scalar_t alphay, const matrix_t& fieldy, const tmatrixg& grady,
-                const scalar_t beta,
-                tmatrixo&& odata)
+                const scalar_t beta)
         {
-                odata.array() = idata.array() +
+                iodata.array() +=
                         alphax * fieldx.array() * gradx.array() +
                         alphay * fieldy.array() * grady.array() +
                         beta * (gradx.array().square() + grady.array().square()).sqrt();
         }
 
-        warper_t::warper_t(
-                field_type ftype,
-                scalar_t noise,
-                scalar_t sigma,
-                scalar_t alpha,
-                scalar_t beta) :
-                m_ftype(ftype),
-                m_noise(noise),
-                m_sigma(sigma),
-                m_alpha(alpha),
-                m_beta(beta)
+        sampler_warp_t::sampler_warp_t(const string_t& config) :
+                sampler_t(to_params(config,
+                "type", to_string(warp_type::mixed) + "[" + concatenate(enum_values<warp_type>()) + "]",
+                "noise", "0.1[0,1]",
+                "sigma", "4.0[0,10]",
+                "alpha", "1.0[0,10]",
+                "beta", "1.0[0,10]"))
         {
         }
 
-        void warper_t::operator()(const tensor3d_t& idata, tensor3d_t& odata, tensor3d_t* fimage)
+        void sampler_warp_t::get(tensor3d_t& iodata, vector_t*, string_t*)
         {
-                const auto imaps = idata.size<0>();
-                const auto irows = idata.size<1>();
-                const auto icols = idata.size<2>();
+                const auto imaps = iodata.size<0>();
+                const auto irows = iodata.size<1>();
+                const auto icols = iodata.size<2>();
+
+                const auto wtype = from_params<warp_type>(config(), "type");
+                const auto noise = from_params<scalar_t>(config(), "noise");
+                const auto sigma = from_params<scalar_t>(config(), "sigma");
+                const auto alpha = from_params<scalar_t>(config(), "alpha");
+                const auto beta = from_params<scalar_t>(config(), "beta");
 
                 // x gradient (directional gradient)
                 m_gradx.resize(imaps, irows, icols);
                 for (auto d = 0; d < imaps; ++ d)
                 {
-                        nano::gradientx(idata.matrix(d), m_gradx.matrix(d));
+                        nano::gradientx(iodata.matrix(d), m_gradx.matrix(d));
                 }
 
                 // y gradient (directional gradient)
                 m_grady.resize(imaps, irows, icols);
                 for (auto d = 0; d < imaps; ++ d)
                 {
-                        nano::gradienty(idata.matrix(d), m_grady.matrix(d));
+                        nano::gradienty(iodata.matrix(d), m_grady.matrix(d));
                 }
 
                 // generate random fields
-                auto rng_theta = nano::make_rng<scalar_t>(-pi / 8, +pi / 8);
-                auto rng_delta = nano::make_rng<scalar_t>(-one, +one);
+                auto rng = make_rng<scalar_t>(-1, +1);
+                const auto delta = rng() * one;
+                const auto theta = rng() * pi / 8;
 
                 m_fieldx.resize(irows, icols);
                 m_fieldy.resize(irows, icols);
-                switch (m_ftype)
+                switch (wtype)
                 {
-                case field_type::translation:
-                        make_translation_fields(rng_delta(), m_noise, m_sigma, m_fieldx, m_fieldy);
+                case warp_type::translation:
+                        make_translation_fields(rng, delta, noise, m_fieldx, m_fieldy);
                         break;
 
-                case field_type::rotation:
-                        make_rotation_fields(rng_theta(), m_noise, m_sigma, m_fieldx, m_fieldy);
+                case warp_type::rotation:
+                        make_rotation_fields(rng, 0, theta, noise, m_fieldx, m_fieldy);
                         break;
 
-                case field_type::random:
+                case warp_type::mixed:
+                        make_rotation_fields(rng, delta, theta, noise, m_fieldx, m_fieldy);
+                        break;
+
+                case warp_type::random:
                 default:
-                        make_random_fields(m_noise, m_sigma, m_fieldx, m_fieldy);
+                        make_random_fields(rng, noise, m_fieldx, m_fieldy);
                         break;
                 }
+
+                // smooth fields
+                const nano::gauss_kernel_t<scalar_t> gauss(sigma);
+                nano::convolve(gauss, m_fieldx);
+                nano::convolve(gauss, m_fieldy);
 
                 // visualize the fields (if requested)
-                if (fimage)
-                {
-                        image_field(m_fieldx, m_fieldy, *fimage);
-                }
+                image_field(m_fieldx, m_fieldy, m_fimage);
 
-                // warp
-                auto rng_alphax = nano::make_rng<scalar_t>(-m_alpha, +m_alpha);
-                auto rng_alphay = nano::make_rng<scalar_t>(-m_alpha, +m_alpha);
-                auto rng_beta   = nano::make_rng<scalar_t>(-m_beta, +m_beta);
+                // mix input image with field-weighted gradients
+                const auto alphax = rng() * alpha;
+                const auto alphay = rng() * alpha;
+                const auto betamx = rng() * beta;
 
-                const auto alphax = rng_alphax();
-                const auto alphay = rng_alphay();
-                const auto beta = rng_beta();
-
-                odata.resize(imaps, irows, icols);
                 for (auto d = 0; d < imaps; ++ d)
                 {
-                        warp_by_field(idata.matrix(d),
+                        warp_by_field(iodata.matrix(d),
                                       alphax, m_fieldx, m_gradx.matrix(d),
                                       alphay, m_fieldy, m_grady.matrix(d),
-                                      beta,
-                                      odata.matrix(d));
+                                      betamx);
                 }
         }
 }

@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cmath>
 #include <vector>
 #include <numeric>
 #include <algorithm>
@@ -17,19 +18,15 @@ namespace nano
         }
 
         ///
-        /// \brief constructs a Gaussian filter associated to the given standard deviation
+        /// \brief constructs a Gaussian filter associated to the given standard deviation.
         ///
         template
         <
                 typename tscalar_,
-
-                /// disable for not valid types!
                 typename tvalid_tscalar = typename std::enable_if<std::is_floating_point<tscalar_>::value>::type
         >
-        class gauss_kernel_t
+        struct gauss_kernel_t
         {
-        public:
-
                 using tscalar = tscalar_;
 
                 ///
@@ -49,20 +46,17 @@ namespace nano
                 ///
                 /// \brief kernel size (always of odd size)
                 ///
-                std::size_t size() const { return m_kernel.size(); }
+                auto size() const { return m_kernel.size(); }
 
                 ///
                 /// \brief kernel
                 ///
-                const std::vector<tscalar>& kernel() const { return m_kernel; }
+                const auto& kernel() const { return m_kernel; }
 
                 ///
                 /// \brief operator []
                 ///
-                template
-                <
-                        typename tindex
-                >
+                template <typename tindex>
                 tscalar operator[](const tindex index) const { return m_kernel[static_cast<std::size_t>(index)]; }
 
                 ///

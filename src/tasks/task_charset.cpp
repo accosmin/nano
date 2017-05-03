@@ -8,10 +8,10 @@
 #include "text/from_params.h"
 #include "tensor/algorithm.h"
 
-#include "vision/warp.h"
 #include "vision/image_io.h"
 #include "vision/convolve.h"
 #include "vision/bilinear.h"
+#include "samplers/sampler_warp.h"
 
 #include "synth_bitstream_vera_sans_mono_bold.h"
 #include "synth_bitstream_vera_sans_mono.h"
@@ -210,7 +210,7 @@ namespace nano
                 const auto irows = std::get<1>(idims());
                 const auto icols = std::get<2>(idims());
 
-                auto warper = warper_t(field_type::random, scalar_t(0.1), scalar_t(4.0), scalar_t(16.0), scalar_t(2.0));
+                auto warper = sampler_warp_t("type=mixed,noise=0.1,sigma=4.0,alpha=16.0,beta=2.0");
 
                 // generate samples
                 for (size_t i = 0; i < count; ++ i)
@@ -229,7 +229,7 @@ namespace nano
                         nano::bilinear(opatch.matrix(3), mpatch.matrix(3));
 
                         // image: random warping
-                        warper(mpatch, mpatch);
+                        warper.get(mpatch, nullptr, nullptr);
 
                         // image: background & foreground layer
                         const auto bcolor = make_random_rgba(rng_rgba);

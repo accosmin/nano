@@ -15,13 +15,13 @@ namespace nano
         };
 
         template <>
-        inline std::map<nano::protocol, std::string> enum_string<nano::protocol>()
+        inline std::map<protocol, std::string> enum_string<protocol>()
         {
                 return
                 {
-                        { nano::protocol::train,        "train" },
-                        { nano::protocol::valid,        "valid" },
-                        { nano::protocol::test,         "test" }
+                        { protocol::train,        "train" },
+                        { protocol::valid,        "valid" },
+                        { protocol::test,         "test" }
                 };
         }
 

@@ -8,10 +8,8 @@ namespace nano
         ///
         /// \brief 2D rectangle
         ///
-        class NANO_PUBLIC rect_t
+        struct NANO_PUBLIC rect_t
         {
-        public:
-
                 ///
                 /// \brief constructor
                 ///

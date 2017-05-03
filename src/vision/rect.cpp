@@ -9,7 +9,7 @@ namespace nano
                 const coord_t top = std::max(rect1.top(), rect2.top());
                 const coord_t left = std::max(rect1.left(), rect2.left());
 
-                const coord_t right = std::min(rect1.right(), rect2.right());                
+                const coord_t right = std::min(rect1.right(), rect2.right());
                 const coord_t bottom = std::min(rect1.bottom(), rect2.bottom());
 
                 if (right >= left && bottom >= top)
@@ -53,6 +53,3 @@ namespace nano
                          << "), size = " << rect.width() << "x" << rect.height() << "}";
         }
 }
-
-
-

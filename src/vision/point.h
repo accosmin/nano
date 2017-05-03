@@ -9,10 +9,8 @@ namespace nano
         ///
         /// \brief 2D point
         ///
-        class NANO_PUBLIC point_t
+        struct NANO_PUBLIC point_t
         {
-        public:
-
                 ///
                 /// \brief constructor
                 ///
@@ -44,5 +42,3 @@ namespace nano
         ///
         NANO_PUBLIC std::ostream& operator<<(std::ostream& s, const point_t& point);
 }
-
-

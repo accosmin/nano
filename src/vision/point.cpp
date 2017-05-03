@@ -14,5 +14,3 @@ namespace nano
                 return s << "{POINT: (" << point.x() << ", " << point.y() << "}";
         }
 }
-
-

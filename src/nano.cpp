@@ -43,6 +43,7 @@
 #include "batch/lbfgs.h"
 
 #include "samplers/sampler_none.h"
+#include "samplers/sampler_warp.h"
 
 #include <cfenv>
 
@@ -207,6 +208,7 @@ namespace nano
         {
                 auto& f = nano::get_samplers();
                 f.add("none", "use samples as they are", maker<sampler_none_t>());
+                f.add("warp", "warp image samples (image classification)", maker<sampler_warp_t>());
         }
 
         struct init_t
