@@ -1,7 +1,5 @@
-#include <set>
 #include "task_util.h"
 #include "text/to_string.h"
-#include "vision/image_grid.h"
 #include "logger.h"
 
 namespace nano
@@ -123,57 +121,5 @@ namespace nano
                 }
 
                 return max_duplicates;
-        }
-
-        void save_as_images(const task_t& task, const fold_t& fold, const string_t& basepath,
-                const tensor_size_t tgrows, const tensor_size_t tgcols)
-        {
-                const auto grows = static_cast<coord_t>(tgrows);
-                const auto gcols = static_cast<coord_t>(tgcols);
-                const auto border = coord_t{8};
-                const auto bkcolor = rgba_t{225, 225, 0, 255};
-
-                const auto size = task.size(fold);
-                const auto rows = std::get<1>(task.idims());
-                const auto cols = std::get<2>(task.idims());
-
-                std::set<string_t> labels;
-                for (size_t i = 0; i < size; ++ i)
-                {
-                        labels.insert(task.label(fold, i));
-                }
-
-                // process each label separately
-                for (const auto& label : labels)
-                {
-                        for (size_t i = 0, g = 1; i < size; ++ g)
-                        {
-                                image_grid_t grid_image(rows, cols, grows, gcols, border, bkcolor);
-
-                                // compose the image block
-                                for (coord_t r = 0; r < grows; ++ r)
-                                {
-                                        for (coord_t c = 0; c < gcols && i < size; ++ c)
-                                        {
-                                                for (; i < size && label != task.label(fold, i); ++ i) {}
-
-                                                if (i < size)
-                                                {
-                                                        image_t image;
-                                                        image.from_tensor(task.input(fold, i));
-                                                        image.make_rgba();
-                                                        grid_image.set(r, c, image);
-                                                        ++ i;
-                                                }
-                                        }
-                                }
-
-                                // ... and save it
-                                const auto path =
-                                        basepath +
-                                        (label.empty() ? "" : ("_" + label)) + "_group" + to_string(g) + ".png";
-                                grid_image.image().save(path);
-                        }
-                }
         }
 }

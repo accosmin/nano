@@ -22,10 +22,4 @@ namespace nano
         /// \return maximum number of duplicates between folds
         ///
         NANO_PUBLIC size_t check_intersection(const task_t& task);
-
-        ///
-        /// \brief save the samples of the given fold as images (if possible) to the given path.
-        ///
-        NANO_PUBLIC void save_as_images(const task_t&, const fold_t&, const string_t& basepath,
-                const tensor_size_t grows, const tensor_size_t gcols);
 }
