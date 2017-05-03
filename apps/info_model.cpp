@@ -10,8 +10,8 @@ int main(int argc, const char *argv[])
 
         // parse the command line
         nano::cmdline_t cmdline("describe a model");
-        cmdline.add("", "model",                ("model to choose from: " + nano::concatenate(model_ids, ", ")).c_str());
-        cmdline.add("", "model-file",           "filepath to load the model from");
+        cmdline.add("", "model",        ("model to choose from: " + nano::concatenate(model_ids, ", ")).c_str());
+        cmdline.add("", "model-file",   "filepath to load the model from");
 
         cmdline.process(argc, argv);
 
