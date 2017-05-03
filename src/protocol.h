@@ -1,6 +1,5 @@
 #pragma once
 
-#include "tensor.h"
 #include "text/enum_string.h"
 
 namespace nano

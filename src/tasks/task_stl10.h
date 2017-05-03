@@ -13,10 +13,8 @@ namespace nano
         ///
         /// http://www.stanford.edu/~acoates/stl10/
         ///
-        class stl10_task_t final : public mem_vision_task_t
+        struct stl10_task_t final : public mem_vision_task_t
         {
-        public:
-
                 explicit stl10_task_t(const string_t& configuration = string_t());
 
         private:
@@ -27,19 +25,16 @@ namespace nano
                 bool load_gfile(const string_t&, istream_t&, const size_t count);
                 bool load_folds(const string_t&, istream_t&, const size_t, const size_t, const size_t);
 
-        private:
-
                 struct sample_t
                 {
                         explicit sample_t(const size_t image = 0, const tensor_size_t label = 0) :
                                 m_image(image), m_label(label) {}
 
                         size_t          m_image;        ///< image index
-                        tensor_size_t  m_label;        ///< label index
+                        tensor_size_t   m_label;        ///< label index
                 };
 
                 // attributes
                 std::vector<sample_t>   m_samples;
         };
 }
-

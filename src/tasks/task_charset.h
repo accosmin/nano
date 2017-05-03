@@ -36,13 +36,9 @@ namespace nano
         ///     color   - color mode
         ///     count   - number of samples (training + validation)
         ///
-        class NANO_PUBLIC charset_task_t final : public mem_vision_task_t
+        struct NANO_PUBLIC charset_task_t final : public mem_vision_task_t
         {
-        public:
-
                 explicit charset_task_t(const string_t& configuration = string_t());
-
-        private:
 
                 virtual bool populate() override;
         };

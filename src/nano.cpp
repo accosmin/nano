@@ -42,6 +42,8 @@
 #include "batch/cgd.h"
 #include "batch/lbfgs.h"
 
+#include "samplers/sampler_none.h"
+
 #include <cfenv>
 
 namespace nano
@@ -73,6 +75,12 @@ namespace nano
         criterion_manager_t& get_criteria()
         {
                 static criterion_manager_t manager;
+                return manager;
+        }
+
+        sampler_manager_t& get_samplers()
+        {
+                static sampler_manager_t manager;
                 return manager;
         }
 
@@ -195,6 +203,12 @@ namespace nano
                 f.add("forward-network", "feed-forward network", maker<forward_network_t>());
         }
 
+        static void init_samplers()
+        {
+                auto& f = nano::get_samplers();
+                f.add("none", "use samples as they are", maker<sampler_none_t>());
+        }
+
         struct init_t
         {
                 init_t()
@@ -210,6 +224,7 @@ namespace nano
                         init_tasks();
                         init_layers();
                         init_models();
+                        init_samplers();
 
                         init_losses();
                         init_criteria();

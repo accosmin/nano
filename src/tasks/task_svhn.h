@@ -15,13 +15,9 @@ namespace nano
         ///
         /// http://ufldl.stanford.edu/housenumbers/
         ///
-        class svhn_task_t final : public mem_vision_task_t
+        struct svhn_task_t final : public mem_vision_task_t
         {
-        public:
-
                 explicit svhn_task_t(const string_t& configuration = string_t());
-
-        private:
 
                 virtual bool populate() override;
 

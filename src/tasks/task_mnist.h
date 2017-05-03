@@ -12,13 +12,9 @@ namespace nano
         ///
         /// http://yann.lecun.com/exdb/mnist/
         ///
-        class mnist_task_t final : public mem_vision_task_t
+        struct mnist_task_t final : public mem_vision_task_t
         {
-        public:
-
                 explicit mnist_task_t(const string_t& configuration = string_t());
-
-       private:
 
                 virtual bool populate() override;
 

@@ -34,6 +34,7 @@ int main(int argc, const char* argv[])
         cmdline.add("", "task",                 "tasks");
         cmdline.add("", "layer",                "layer types to built models");
         cmdline.add("", "model",                "model types");
+        cmdline.add("", "sampler",              "training sampling methods");
         cmdline.add("", "trainer",              "training methods");
         cmdline.add("", "criterion",            "training criteria");
         cmdline.add("", "batch",                "batch optimization algorithms");
@@ -51,6 +52,7 @@ int main(int argc, const char* argv[])
         const bool has_task = cmdline.has("task");
         const bool has_layer = cmdline.has("layer");
         const bool has_model = cmdline.has("model");
+        const bool has_sampler = cmdline.has("sampler");
         const bool has_trainer = cmdline.has("trainer");
         const bool has_criterion = cmdline.has("criterion");
         const bool has_batch = cmdline.has("batch");
@@ -66,6 +68,7 @@ int main(int argc, const char* argv[])
                 !has_task &&
                 !has_layer &&
                 !has_model &&
+                !has_sampler &&
                 !has_trainer &&
                 !has_criterion &&
                 !has_batch &&
@@ -97,6 +100,10 @@ int main(int argc, const char* argv[])
         if (has_model)
         {
                 print("model", get_models());
+        }
+        if (has_sampler)
+        {
+                print("sampler", get_samplers());
         }
         if (has_trainer)
         {

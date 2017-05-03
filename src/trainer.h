@@ -8,7 +8,6 @@ namespace nano
         struct loss_t;
         struct task_t;
         struct model_t;
-        class sampler_t;
         class criterion_t;
         class accumulator_t;
 

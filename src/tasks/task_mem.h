@@ -18,10 +18,8 @@ namespace nano
         ///     ::label()                       - associated label (if any)
         ///
         template <typename tchunk, typename tsample>
-        class mem_task_t : public task_t
+        struct mem_task_t : public task_t
         {
-        public:
-
                 ///
                 /// \brief constructor
                 ///
@@ -108,13 +106,13 @@ namespace nano
                 template <typename... t>
                 void add_sample(const fold_t& fold, t&&... ts)
                 {
-                        assert(fold.m_index < fsize());
+                        assert(fold.m_index < n_folds());
                         m_samples[fold].emplace_back(ts...);
                 }
 
                 fold_t make_fold(const size_t fold) const
                 {
-                        assert(fold < fsize());
+                        assert(fold < n_folds());
                         const size_t p = m_frand();
                         // 60% training, 20% validation, 20% testing
                         return {fold, p < 7 ? protocol::train : (p < 9 ? protocol::valid : protocol::test)};
@@ -122,7 +120,7 @@ namespace nano
 
                 fold_t make_fold(const size_t fold, const protocol proto) const
                 {
-                        assert(fold < fsize());
+                        assert(fold < n_folds());
                         const size_t p = m_frand();
                         // split training into {80% training, 20% validation}, leave the testing as it is
                         return {fold, proto == protocol::train ? (p < 9 ? protocol::train : protocol::valid) : proto};

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "arch.h"
+#include "tensor.h"
 #include "manager.h"
 #include "protocol.h"
 
