@@ -7,39 +7,12 @@
 #include "vision/convolve.h"
 #include "vision/gradient.h"
 #include "text/from_params.h"
-#include "tensor/algorithm.h"
 
 namespace nano
 {
         static constexpr auto one = scalar_t(1);
-        static constexpr auto zero = scalar_t(0);
         static constexpr auto half = scalar_t(0.5);
         static const auto pi = 4 * std::atan(one);
-        static const auto ipi = one / pi;
-
-        static void image_field(const matrix_t& fieldx, const matrix_t& fieldy, tensor3d_t& image)
-        {
-                assert(fieldx.rows() == fieldy.rows());
-                assert(fieldx.cols() == fieldy.cols());
-
-                image.resize(4, fieldx.rows(), fieldx.cols());
-                nano::transform(fieldx, fieldy, image.matrix(0), [=] (const scalar_t fx, const scalar_t fy)
-                {
-                        return nano::clamp(std::sqrt(half * (fx * fx + fy * fy)), zero, one);
-                });
-                nano::transform(fieldx, fieldy, image.matrix(1), [=] (const scalar_t, const scalar_t)
-                {
-                        return zero;
-                });
-                nano::transform(fieldx, fieldy, image.matrix(2), [=] (const scalar_t fx, const scalar_t fy)
-                {
-                        return half * nano::clamp(half * (ipi * atan2(fy, fx) + one), zero, one);
-                });
-                nano::transform(fieldx, fieldy, image.matrix(3), [] (const scalar_t, const scalar_t)
-                {
-                        return one;
-                });
-        }
 
         template <typename trng>
         static void make_random_fields(trng& rng, const scalar_t noise,
@@ -155,9 +128,6 @@ namespace nano
                 const nano::gauss_kernel_t<scalar_t> gauss(sigma);
                 nano::convolve(gauss, m_fieldx);
                 nano::convolve(gauss, m_fieldy);
-
-                // visualize the fields (if requested)
-                image_field(m_fieldx, m_fieldy, m_fimage);
 
                 // mix input image with field-weighted gradients
                 const auto alphax = rng() * alpha;

@@ -25,7 +25,6 @@ build_app(info_archive.cpp nano)
 build_app(train.cpp nano)
 build_app(evaluate.cpp nano)
 
-build_app(warp.cpp nano)
 build_app(embed.cpp nano)
 build_app(stats.cpp nano)
 build_app(tabulate.cpp nano)
@@ -33,12 +32,16 @@ build_app(tabulate.cpp nano)
 # install (some) programs
 set(programs
         info
+        info_mat5
         info_task
+        info_model
+        info_sampler
+        info_archive
         train
         evaluate
-        warp
         embed
-        stats)
+        stats
+        tabulate)
 
 install(TARGETS ${programs} DESTINATION bin)
 
