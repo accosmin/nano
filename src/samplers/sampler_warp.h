@@ -28,6 +28,9 @@ namespace nano
                 };
         }
 
+        void warp(tensor3d_t&, const warp_type,
+                const scalar_t noise, const scalar_t sigma, const scalar_t alpha, const scalar_t beta);
+
         ///
         /// \brief generate samples by randomly warp images, like described in:
         ///      "Training Invariant Support Vector Machines using Selective Sampling", by
@@ -37,13 +40,14 @@ namespace nano
         {
                 explicit sampler_warp_t(const string_t& configuration = string_t());
 
-                virtual void get(tensor3d_t&, vector_t*, string_t*) final;
+                virtual tensor3d_t input(const task_t&, const fold_t&, const size_t index) final;
+                virtual tensor3d_t target(const task_t&, const fold_t&, const size_t index) final;
 
         private:
 
                 // attributes
-                tensor3d_t      m_gradx;        ///< buffer: horizontal gradient per plane
-                tensor3d_t      m_grady;        ///< buffer: vertical gradient per plane
+                matrix_t        m_gradx;        ///< buffer: horizontal gradient
+                matrix_t        m_grady;        ///< buffer: vertical gradient
                 matrix_t        m_fieldx;       ///< buffer: horizontal displacement
                 matrix_t        m_fieldy;       ///< buffer: vertical displacement
         };

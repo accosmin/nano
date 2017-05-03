@@ -1,8 +1,6 @@
 #pragma once
 
-#include "arch.h"
-#include "tensor.h"
-#include "manager.h"
+#include "task.h"
 
 namespace nano
 {
@@ -23,8 +21,13 @@ namespace nano
                 using configurable_t::configurable_t;
 
                 ///
-                /// \brief transform the given {input tensor, its target and its label}
+                /// \brief retrieve the 3D input tensor for a given sample
                 ///
-                virtual void get(tensor3d_t& input, vector_t* target, string_t* label) = 0;
+                virtual tensor3d_t input(const task_t&, const fold_t&, const size_t index) = 0;
+
+                ///
+                /// \brief retrieve the output target for a given sample
+                ///
+                virtual tensor3d_t target(const task_t&, const fold_t&, const size_t index) = 0;
         };
 }

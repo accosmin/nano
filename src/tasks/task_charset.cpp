@@ -211,8 +211,6 @@ namespace nano
                 const auto irows = std::get<1>(idims());
                 const auto icols = std::get<2>(idims());
 
-                auto warper = sampler_warp_t("type=mixed,noise=0.1,sigma=4.0,alpha=16.0,beta=2.0");
-
                 // generate samples
                 for (size_t i = 0; i < count; ++ i)
                 {
@@ -230,7 +228,7 @@ namespace nano
                         nano::bilinear(opatch.matrix(3), mpatch.matrix(3));
 
                         // image: random warping
-                        warper.get(mpatch, nullptr, nullptr);
+                        warp(mpatch, warp_type::mixed, scalar_t(0.1), scalar_t(4), scalar_t(16), scalar_t(2));
 
                         // image: background & foreground layer
                         const auto bcolor = make_random_rgba(rng_rgba);

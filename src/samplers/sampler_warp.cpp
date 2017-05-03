@@ -61,6 +61,72 @@ namespace nano
                         beta * (gradx.array().square() + grady.array().square()).sqrt();
         }
 
+        static void warp(tensor3d_t& iodata, const warp_type wtype,
+                const scalar_t noise, const scalar_t sigma, const scalar_t alpha, const scalar_t beta,
+                matrix_t& fieldx, matrix_t& fieldy, matrix_t& gradx, matrix_t& grady)
+        {
+                const auto imaps = iodata.size<0>();
+                const auto irows = iodata.size<1>();
+                const auto icols = iodata.size<2>();
+
+                auto rng = make_rng<scalar_t>(-1, +1);
+
+                fieldx.resize(irows, icols);
+                fieldy.resize(irows, icols);
+
+                gradx.resize(irows, icols);
+                grady.resize(irows, icols);
+
+                // generate random fields
+                const auto delta = rng() * one;
+                const auto theta = rng() * pi / 8;
+
+                switch (wtype)
+                {
+                case warp_type::translation:
+                        make_translation_fields(rng, delta, noise, fieldx, fieldy);
+                        break;
+
+                case warp_type::rotation:
+                        make_rotation_fields(rng, 0, theta, noise, fieldx, fieldy);
+                        break;
+
+                case warp_type::mixed:
+                        make_rotation_fields(rng, delta, theta, noise, fieldx, fieldy);
+                        break;
+
+                case warp_type::random:
+                default:
+                        make_random_fields(rng, noise, fieldx, fieldy);
+                        break;
+                }
+
+                // smooth fields
+                const nano::gauss_kernel_t<scalar_t> gauss(sigma);
+                nano::convolve(gauss, fieldx);
+                nano::convolve(gauss, fieldy);
+
+                // mix input image with field-weighted gradients
+                const auto alphax = rng() * alpha;
+                const auto alphay = rng() * alpha;
+                const auto betamx = rng() * beta;
+
+                for (auto d = 0; d < imaps; ++ d)
+                {
+                        nano::gradientx(iodata.matrix(d), gradx);
+                        nano::gradienty(iodata.matrix(d), grady);
+
+                        warp_by_field(iodata.matrix(d), alphax, fieldx, gradx, alphay, fieldy, grady, betamx);
+                }
+        }
+
+        void warp(tensor3d_t& iodata, const warp_type wtype,
+                const scalar_t noise, const scalar_t sigma, const scalar_t alpha, const scalar_t beta)
+        {
+                matrix_t fieldx, fieldy, gradx, grady;
+                warp(iodata, wtype, noise, sigma, alpha, beta, fieldx, fieldy, gradx, grady);
+        }
+
         sampler_warp_t::sampler_warp_t(const string_t& config) :
                 sampler_t(to_params(config,
                 "type", to_string(warp_type::mixed) + "[" + concatenate(enum_values<warp_type>(warp_type::mixed)) + "]",
@@ -71,75 +137,21 @@ namespace nano
         {
         }
 
-        void sampler_warp_t::get(tensor3d_t& iodata, vector_t*, string_t*)
+        tensor3d_t sampler_warp_t::input(const task_t& task, const fold_t& fold, const size_t index)
         {
-                const auto imaps = iodata.size<0>();
-                const auto irows = iodata.size<1>();
-                const auto icols = iodata.size<2>();
-
                 const auto wtype = from_params<warp_type>(config(), "type");
                 const auto noise = from_params<scalar_t>(config(), "noise");
                 const auto sigma = from_params<scalar_t>(config(), "sigma");
                 const auto alpha = from_params<scalar_t>(config(), "alpha");
                 const auto beta = from_params<scalar_t>(config(), "beta");
 
-                // x gradient (directional gradient)
-                m_gradx.resize(imaps, irows, icols);
-                for (auto d = 0; d < imaps; ++ d)
-                {
-                        nano::gradientx(iodata.matrix(d), m_gradx.matrix(d));
-                }
+                tensor3d_t iodata = task.input(fold, index);
+                warp(iodata, wtype, noise, sigma, alpha, beta, m_fieldx, m_fieldy, m_gradx, m_grady);
+                return iodata;
+        }
 
-                // y gradient (directional gradient)
-                m_grady.resize(imaps, irows, icols);
-                for (auto d = 0; d < imaps; ++ d)
-                {
-                        nano::gradienty(iodata.matrix(d), m_grady.matrix(d));
-                }
-
-                // generate random fields
-                auto rng = make_rng<scalar_t>(-1, +1);
-                const auto delta = rng() * one;
-                const auto theta = rng() * pi / 8;
-
-                m_fieldx.resize(irows, icols);
-                m_fieldy.resize(irows, icols);
-                switch (wtype)
-                {
-                case warp_type::translation:
-                        make_translation_fields(rng, delta, noise, m_fieldx, m_fieldy);
-                        break;
-
-                case warp_type::rotation:
-                        make_rotation_fields(rng, 0, theta, noise, m_fieldx, m_fieldy);
-                        break;
-
-                case warp_type::mixed:
-                        make_rotation_fields(rng, delta, theta, noise, m_fieldx, m_fieldy);
-                        break;
-
-                case warp_type::random:
-                default:
-                        make_random_fields(rng, noise, m_fieldx, m_fieldy);
-                        break;
-                }
-
-                // smooth fields
-                const nano::gauss_kernel_t<scalar_t> gauss(sigma);
-                nano::convolve(gauss, m_fieldx);
-                nano::convolve(gauss, m_fieldy);
-
-                // mix input image with field-weighted gradients
-                const auto alphax = rng() * alpha;
-                const auto alphay = rng() * alpha;
-                const auto betamx = rng() * beta;
-
-                for (auto d = 0; d < imaps; ++ d)
-                {
-                        warp_by_field(iodata.matrix(d),
-                                      alphax, m_fieldx, m_gradx.matrix(d),
-                                      alphay, m_fieldy, m_grady.matrix(d),
-                                      betamx);
-                }
+        tensor3d_t sampler_warp_t::target(const task_t& task, const fold_t& fold, const size_t index)
+        {
+                return task.target(fold, index);
         }
 }

@@ -9,9 +9,9 @@ namespace nano
         ///
         struct sampler_none_t final : public sampler_t
         {
-                explicit sampler_none_t(const string_t& configuration = string_t()) :
-                        sampler_t(configuration) {}
+                explicit sampler_none_t(const string_t& configuration = string_t());
 
-                virtual void get(tensor3d_t&, vector_t*, string_t*) final {}
+                virtual tensor3d_t input(const task_t&, const fold_t&, const size_t index) final;
+                virtual tensor3d_t target(const task_t&, const fold_t&, const size_t index) final;
         };
 }

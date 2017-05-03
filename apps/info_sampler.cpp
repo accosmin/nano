@@ -47,9 +47,7 @@ static void save_as_images(const task_t& task, const fold_t& fold, sampler_t& sa
                 {
                         for (coord_t c = 0; c < gcols && i < size; ++ c, ++ i)
                         {
-                                tensor3d_t data = task.input(fold, i);
-                                sampler.get(data, nullptr, nullptr);
-                                grid.set(r, c, make_image(data));
+                                grid.set(r, c, make_image(sampler.input(task, fold, i)));
                         }
                 }
 
