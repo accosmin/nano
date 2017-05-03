@@ -37,10 +37,10 @@ NANO_CASE(construction)
                 NANO_CHECK_EQUAL(task.load(), true);
                 NANO_CHECK_EQUAL(task.idims(), idims);
                 NANO_CHECK_EQUAL(task.odims(), odims);
-                NANO_CHECK_EQUAL(task.n_folds(), fsize);
+                NANO_CHECK_EQUAL(task.fsize(), fsize);
                 NANO_CHECK_EQUAL(task.color(), mode);
                 NANO_CHECK_EQUAL(task.n_images(), count);
-                NANO_CHECK_EQUAL(task.n_samples(), count);
+                NANO_CHECK_EQUAL(task.size(), count);
 
                 for (size_t i = 0; i < task.n_images(); ++ i)
                 {
@@ -60,7 +60,7 @@ NANO_CASE(fixed_batch_iterator)
 
         const auto batch = size_t(123);
         const auto fold = fold_t{0, protocol::train};
-        const auto fold_size = task.n_samples(fold);
+        const auto fold_size = task.size(fold);
 
         task_iterator_t it(task, fold, batch);
         for (size_t i = 0; i < 1000; ++ i)
@@ -94,7 +94,7 @@ NANO_CASE(increasing_batch_iterator)
         const auto batch0 = size_t(3);
         const auto factor = scalar_t(1.05);
         const auto fold = fold_t{0, protocol::train};
-        const auto fold_size = task.n_samples(fold);
+        const auto fold_size = task.size(fold);
 
         task_iterator_t it(task, fold, batch0, factor);
         for (size_t i = 0; i < 1000; ++ i)
@@ -124,18 +124,18 @@ NANO_CASE(from_params)
 
         NANO_CHECK_EQUAL(task.idims(), idims);
         NANO_CHECK_EQUAL(task.odims(), odims);
-        NANO_CHECK_EQUAL(task.n_folds(), size_t(1));
-        NANO_CHECK_EQUAL(task.n_samples(), size_t(102));
+        NANO_CHECK_EQUAL(task.fsize(), size_t(1));
+        NANO_CHECK_EQUAL(task.size(), size_t(102));
 
         NANO_CHECK_EQUAL(
-                task.n_samples({0, protocol::train}) +
-                task.n_samples({0, protocol::valid}) +
-                task.n_samples({0, protocol::test}),
+                task.size({0, protocol::train}) +
+                task.size({0, protocol::valid}) +
+                task.size({0, protocol::test}),
                 size_t(102));
 
         for (const auto p : {protocol::train, protocol::valid, protocol::test})
         {
-                const auto size = task.n_samples({0, p});
+                const auto size = task.size({0, p});
                 for (size_t i = 0; i < size; ++ i)
                 {
                         const auto input = task.input({0, p}, i);

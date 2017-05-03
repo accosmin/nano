@@ -4,7 +4,7 @@ namespace nano
 {
         task_iterator_t::task_iterator_t(
                 const task_t& task, const fold_t& fold) :
-                task_iterator_t(task, fold, task.n_samples(fold))
+                task_iterator_t(task, fold, task.size(fold))
         {
         }
 
@@ -30,7 +30,7 @@ namespace nano
 
         void task_iterator_t::next()
         {
-                const auto task_size = m_task.n_samples(m_fold);
+                const auto task_size = m_task.size(m_fold);
                 const auto batch_size = static_cast<size_t>(m_batch);
 
                 // wrap around the end

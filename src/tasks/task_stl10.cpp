@@ -182,7 +182,7 @@ namespace nano
                 const size_t fold_size = 1000;
 
                 // training samples [0, n_train) ...
-                for (size_t f = 0; f < n_folds(); ++ f)
+                for (size_t f = 0; f < fsize(); ++ f)
                 {
                         string_t line;
                         if (!stream.getline(line))
@@ -209,7 +209,7 @@ namespace nano
                         }
 
                         log_info() << "STL-10: loaded " << fcount << "/" << tokens.size()
-                                   << " samples for fold [" << (f + 1) << "/" << n_folds() << "].";
+                                   << " samples for fold [" << (f + 1) << "/" << fsize() << "].";
                         if (fcount != fold_size)
                         {
                                 return false;
@@ -217,7 +217,7 @@ namespace nano
                 }
 
                 // unlabeled samples [n_train, n_train + n_unlabeled)
-                for (size_t f = 0; f < n_folds(); ++ f)
+                for (size_t f = 0; f < fsize(); ++ f)
                 {
                         for (size_t i = 0; i < n_unlabeled; ++ i)
                         {
@@ -226,7 +226,7 @@ namespace nano
                 }
 
                 // testing samples [n_train + n_unlabeled, n_train + n_unlabeled + n_test)
-                for (size_t f = 0; f < n_folds(); ++ f)
+                for (size_t f = 0; f < fsize(); ++ f)
                 {
                         for (size_t i = 0; i < n_test; ++ i)
                         {

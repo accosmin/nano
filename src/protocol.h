@@ -6,7 +6,7 @@
 namespace nano
 {
         ///
-        /// \brief
+        /// \brief sample type.
         ///
         enum class protocol
         {
@@ -15,12 +15,22 @@ namespace nano
                 test                            ///< testing
         };
 
+        template <>
+        inline std::map<nano::protocol, std::string> enum_string<nano::protocol>()
+        {
+                return
+                {
+                        { nano::protocol::train,        "train" },
+                        { nano::protocol::valid,        "valid" },
+                        { nano::protocol::test,         "test" }
+                };
+        }
+
         ///
-        /// \brief
+        /// \brief fold.
         ///
         struct fold_t
         {
-                // attributes
                 size_t          m_index;        ///< fold index
                 protocol        m_protocol;     ///<
         };
@@ -35,20 +45,3 @@ namespace nano
                 return f1.m_index < f2.m_index || (f1.m_index == f2.m_index && f1.m_protocol < f2.m_protocol);
         }
 }
-
-// string cast for enumerations
-namespace nano
-{
-        template <>
-        inline std::map<nano::protocol, std::string> enum_string<nano::protocol>()
-        {
-                return
-                {
-                        { nano::protocol::train,        "train" },
-                        { nano::protocol::valid,        "valid" },
-                        { nano::protocol::test,         "test" }
-                };
-        }
-}
-
-

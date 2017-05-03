@@ -42,17 +42,17 @@ namespace nano
                 ///
                 /// \brief number of folds
                 ///
-                virtual size_t n_folds() const = 0;
+                virtual size_t fsize() const = 0;
 
                 ///
                 /// \brief total number of samples
                 ///
-                virtual size_t n_samples() const = 0;
+                virtual size_t size() const = 0;
 
                 ///
                 /// \brief number of samples for the given fold
                 ///
-                virtual size_t n_samples(const fold_t&) const = 0;
+                virtual size_t size(const fold_t&) const = 0;
 
                 ///
                 /// \brief randomly shuffle the samples associated for the given fold

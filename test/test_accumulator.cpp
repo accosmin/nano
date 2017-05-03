@@ -41,14 +41,14 @@ NANO_CASE(evaluate)
         acc.update(*task, fold);
         const scalar_t value1 = acc.value();
 
-        NANO_CHECK_EQUAL(acc.count(), task->n_samples(fold));
+        NANO_CHECK_EQUAL(acc.count(), task->size(fold));
 
         acc.mode(criterion_t::type::vgrad);
         acc.update(*task, fold);
         const scalar_t vgrad1 = acc.value();
         const vector_t pgrad1 = acc.vgrad();
 
-        NANO_CHECK_EQUAL(acc.count(), task->n_samples(fold));
+        NANO_CHECK_EQUAL(acc.count(), task->size(fold));
         NANO_CHECK(std::isfinite(vgrad1));
         NANO_CHECK_CLOSE(vgrad1, value1, nano::epsilon1<scalar_t>());
 
@@ -64,13 +64,13 @@ NANO_CASE(evaluate)
                 accx.mode(criterion_t::type::value);
                 accx.update(*task, fold);
 
-                NANO_CHECK_EQUAL(accx.count(), task->n_samples(fold));
+                NANO_CHECK_EQUAL(accx.count(), task->size(fold));
                 NANO_CHECK_CLOSE(accx.value(), value1, nano::epsilon1<scalar_t>());
 
                 accx.mode(criterion_t::type::vgrad);
                 accx.update(*task, fold);
 
-                NANO_CHECK_EQUAL(accx.count(), task->n_samples(fold));
+                NANO_CHECK_EQUAL(accx.count(), task->size(fold));
                 NANO_CHECK_CLOSE(accx.value(), vgrad1, nano::epsilon1<scalar_t>());
                 NANO_CHECK_EIGEN_CLOSE(accx.vgrad(), pgrad1, nano::epsilon1<scalar_t>());
         }

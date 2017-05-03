@@ -65,7 +65,7 @@ namespace nano
         {
                 assert(model() == task);
 
-                update(task, fold, 0, task.n_samples(fold), loss);
+                update(task, fold, 0, task.size(fold), loss);
         }
 
         void criterion_t::update(const task_t& task, const fold_t& fold, const size_t begin, const size_t end, const loss_t& loss)
@@ -159,4 +159,3 @@ namespace nano
                 return *m_model;
         }
 }
-

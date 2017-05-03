@@ -45,7 +45,7 @@ int main(int argc, const char *argv[])
         if (cmdline.has("save-dir"))
         {
                 const auto cmd_save_dir = cmdline.get<string_t>("save-dir");
-                for (size_t f = 0; f < task->n_folds(); ++ f)
+                for (size_t f = 0; f < task->fsize(); ++ f)
                 {
                         for (auto p : {protocol::train, protocol::valid, protocol::test})
                         {

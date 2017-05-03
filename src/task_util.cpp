@@ -32,7 +32,7 @@ namespace nano
         template <typename thashes>
         static void add_hashes(const task_t& task, const fold_t& fold, thashes& hashes)
         {
-                const auto size = task.n_samples(fold);
+                const auto size = task.size(fold);
                 for (size_t i = 0; i < size; ++ i)
                 {
                         hashes.push_back(task.hash(fold, i));
@@ -41,7 +41,7 @@ namespace nano
 
         static size_t count_duplicates(const task_t& task, const size_t f)
         {
-                assert(f < task.n_folds());
+                assert(f < task.fsize());
 
                 std::vector<size_t> hashes;
 
@@ -54,7 +54,7 @@ namespace nano
 
         static size_t count_intersection(const task_t& task, const size_t f)
         {
-                assert(f < task.n_folds());
+                assert(f < task.fsize());
 
                 std::vector<size_t> train_hashes;
                 std::vector<size_t> valid_hashes;
@@ -73,9 +73,9 @@ namespace nano
         void describe(const task_t& task, const string_t& name)
         {
                 log_info() << "task [" << name << "]: in(" << task.idims() << ") -> out(" << task.odims()
-                        << "), count = " << task.n_samples() << ".";
+                        << "), count = " << task.size() << ".";
 
-                for (size_t f = 0; f < task.n_folds(); ++ f)
+                for (size_t f = 0; f < task.fsize(); ++ f)
                 {
                         log_info() << "fold [" << (1 + f) << "]: duplicates = " << count_duplicates(task, f) << ".";
                         log_info() << "fold [" << (1 + f) << "]: intersections = " << count_intersection(task, f) << ".";
@@ -83,7 +83,7 @@ namespace nano
                         for (const auto p : {protocol::train, protocol::valid, protocol::test})
                         {
                                 const auto fold = fold_t{f, p};
-                                const auto size = task.n_samples(fold);
+                                const auto size = task.size(fold);
 
                                 std::map<string_t, size_t> lcounts;
                                 for (size_t i = 0; i < size; ++ i)
@@ -97,7 +97,7 @@ namespace nano
                                         log_info() << "fold [" << (1 + f) << "," << to_string(p)
                                                 << "]: label = " << lcount.first
                                                 << ", count = " << lcount.second
-                                                << "/" << size << "/" << task.n_samples() << ".";
+                                                << "/" << size << "/" << task.size() << ".";
                                 }
                         }
                 }
@@ -106,7 +106,7 @@ namespace nano
         size_t check_duplicates(const task_t& task)
         {
                 size_t max_duplicates = 0;
-                for (size_t f = 0; f < task.n_folds(); ++ f)
+                for (size_t f = 0; f < task.fsize(); ++ f)
                 {
                         max_duplicates = std::max(max_duplicates, count_duplicates(task, f));
                 }
@@ -117,7 +117,7 @@ namespace nano
         size_t check_intersection(const task_t& task)
         {
                 size_t max_duplicates = 0;
-                for (size_t f = 0; f < task.n_folds(); ++ f)
+                for (size_t f = 0; f < task.fsize(); ++ f)
                 {
                         max_duplicates = std::max(max_duplicates, count_intersection(task, f));
                 }
@@ -133,7 +133,7 @@ namespace nano
                 const auto border = coord_t{8};
                 const auto bkcolor = rgba_t{225, 225, 0, 255};
 
-                const auto size = task.n_samples(fold);
+                const auto size = task.size(fold);
                 const auto rows = std::get<1>(task.idims());
                 const auto cols = std::get<2>(task.idims());
 

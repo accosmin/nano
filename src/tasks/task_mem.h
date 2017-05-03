@@ -54,17 +54,17 @@ namespace nano
                 ///
                 /// \brief number of folds (not considering the protocol!)
                 ///
-                virtual size_t n_folds() const final { return m_fsize; }
+                virtual size_t fsize() const final { return m_fsize; }
 
                 ///
                 /// \brief total number of samples
                 ///
-                virtual size_t n_samples() const override;
+                virtual size_t size() const override;
 
                 ///
                 /// \brief number of samples for the given fold
                 ///
-                virtual size_t n_samples(const fold_t&) const override;
+                virtual size_t size(const fold_t&) const override;
 
                 ///
                 /// \brief randomly shuffle the samples associated for the given fold
@@ -108,13 +108,13 @@ namespace nano
                 template <typename... t>
                 void add_sample(const fold_t& fold, t&&... ts)
                 {
-                        assert(fold.m_index < n_folds());
+                        assert(fold.m_index < fsize());
                         m_samples[fold].emplace_back(ts...);
                 }
 
                 fold_t make_fold(const size_t fold) const
                 {
-                        assert(fold < n_folds());
+                        assert(fold < fsize());
                         const size_t p = m_frand();
                         // 60% training, 20% validation, 20% testing
                         return {fold, p < 7 ? protocol::train : (p < 9 ? protocol::valid : protocol::test)};
@@ -122,7 +122,7 @@ namespace nano
 
                 fold_t make_fold(const size_t fold, const protocol proto) const
                 {
-                        assert(fold < n_folds());
+                        assert(fold < fsize());
                         const size_t p = m_frand();
                         // split training into {80% training, 20% validation}, leave the testing as it is
                         return {fold, proto == protocol::train ? (p < 9 ? protocol::train : protocol::valid) : proto};
@@ -200,14 +200,14 @@ namespace nano
         }
 
         template <typename tchunk, typename tsample>
-        size_t mem_task_t<tchunk, tsample>::n_samples() const
+        size_t mem_task_t<tchunk, tsample>::size() const
         {
                 return  std::accumulate(m_samples.begin(), m_samples.end(), size_t(0),
                         [&] (const size_t count, const auto& samples) { return count + samples.second.size(); });
         }
 
         template <typename tchunk, typename tsample>
-        size_t mem_task_t<tchunk, tsample>::n_samples(const fold_t& fold) const
+        size_t mem_task_t<tchunk, tsample>::size(const fold_t& fold) const
         {
                 const auto it = m_samples.find(fold);
                 assert(it != m_samples.end());

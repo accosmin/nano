@@ -15,10 +15,8 @@ namespace nano
                 typename tscalar,
                 typename tvalid = typename std::is_arithmetic<tscalar>::type
         >
-        class random_t
+        struct random_t
         {
-        public:
-
                 using result_type = tscalar;
 
                 ///

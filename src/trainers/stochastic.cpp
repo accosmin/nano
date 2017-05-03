@@ -35,7 +35,7 @@ namespace nano
                 const auto patience = from_params<size_t>(config(), "patience");
 
                 const auto train_fold = fold_t{fold, protocol::train};
-                const auto train_size = task.n_samples(train_fold);
+                const auto train_size = task.size(train_fold);
                 const auto samples = epochs * train_size;
 
                 const auto factor = (batch0 == batchK) ?

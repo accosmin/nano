@@ -30,20 +30,20 @@ NANO_CASE(construction)
         NANO_CHECK_EQUAL(task->odims(), odims);
 
         // check folds
-        NANO_CHECK_EQUAL(task->n_folds(), folds);
-        NANO_CHECK_EQUAL(task->n_samples(), train_samples + test_samples);
+        NANO_CHECK_EQUAL(task->fsize(), folds);
+        NANO_CHECK_EQUAL(task->size(), train_samples + test_samples);
 
-        NANO_CHECK_GREATER(task->n_samples(train_fold), train_samples / 10);
-        NANO_CHECK_GREATER(task->n_samples(valid_fold), train_samples / 10);
-        NANO_CHECK_EQUAL(task->n_samples(train_fold) + task->n_samples(valid_fold), train_samples);
+        NANO_CHECK_GREATER(task->size(train_fold), train_samples / 10);
+        NANO_CHECK_GREATER(task->size(valid_fold), train_samples / 10);
+        NANO_CHECK_EQUAL(task->size(train_fold) + task->size(valid_fold), train_samples);
 
-        NANO_CHECK_EQUAL(task->n_samples(test_fold), test_samples);
+        NANO_CHECK_EQUAL(task->size(test_fold), test_samples);
 
         // check samples
         std::set<string_t> labels;
         for (const auto fold : {train_fold, valid_fold, test_fold})
         {
-                const auto size = task->n_samples(fold);
+                const auto size = task->size(fold);
                 for (size_t i = 0; i < size; ++ i)
                 {
                         const auto input = task->input(fold, i);

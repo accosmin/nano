@@ -20,7 +20,7 @@ namespace nano
 
                 size_t stoch_ratio() const override
                 {
-                        const auto batch_size = m_iterator.task().n_samples(m_iterator.fold());
+                        const auto batch_size = m_iterator.task().size(m_iterator.fold());
                         const auto stoch_size = m_iterator.size();
                         assert(stoch_size > 0);
                         return nano::idiv(batch_size, stoch_size);

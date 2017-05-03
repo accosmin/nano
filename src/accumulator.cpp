@@ -84,7 +84,7 @@ namespace nano
 
         void accumulator_t::update(const task_t& task, const fold_t& fold) const
         {
-                update(task, fold, 0, task.n_samples(fold));
+                update(task, fold, 0, task.size(fold));
         }
 
         void accumulator_t::update(const task_t& task, const fold_t& fold, const size_t begin, const size_t end) const
@@ -102,7 +102,7 @@ namespace nano
                         {
                                 const auto index = begin + offset;
                                 assert(th < m_impl->m_criteria.size());
-                                assert(index < task.n_samples(fold));
+                                assert(index < task.size(fold));
                                 assert(index >= begin && index < end);
                                 m_impl->m_criteria[th]->update(task.input(fold, index), task.target(fold, index), loss);
                         });

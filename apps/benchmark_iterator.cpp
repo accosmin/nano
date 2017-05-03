@@ -60,7 +60,7 @@ int main(int argc, const char *argv[])
                         const auto duration = nano::measure_robustly<milliseconds_t>([&] ()
                         {
                                 const auto fold = fold_t{0, protocol::train};
-                                const auto epochs = 100 * nano::idiv(task.n_samples(fold), batch_size);
+                                const auto epochs = 100 * nano::idiv(task.size(fold), batch_size);
 
                                 task_iterator_t it(task, fold, batch_size);
 
