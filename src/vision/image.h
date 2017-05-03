@@ -12,10 +12,8 @@ namespace nano
         ///     - loading and saving from and to files
         ///     - scaling to/from [0, 1] 3D tensors
         ///
-        class NANO_PUBLIC image_t
+        struct NANO_PUBLIC image_t
         {
-        public:
-
                 ///
                 /// \brief constructor
                 ///
@@ -129,6 +127,4 @@ namespace nano
                 // attributes
                 image_tensor_t          m_data;
         };
-
-        using images_t = std::vector<image_t>;
 }

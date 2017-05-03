@@ -17,11 +17,10 @@ static void save_as_images(const task_t& task, const fold_t& fold, const string_
         const auto rows = std::get<1>(task.idims());
         const auto cols = std::get<2>(task.idims());
 
+        image_grid_t grid(rows, cols, grows, gcols, border, bkcolor);
+
         for (size_t i = 0, g = 1; i < size; ++ g)
         {
-                image_grid_t grid_image(rows, cols, grows, gcols, border, bkcolor);
-
-                // compose the image block
                 for (coord_t r = 0; r < grows; ++ r)
                 {
                         for (coord_t c = 0; c < gcols && i < size; ++ c)
@@ -33,15 +32,13 @@ static void save_as_images(const task_t& task, const fold_t& fold, const string_
                                         image_t image;
                                         image.from_tensor(task.input(fold, i));
                                         image.make_rgba();
-                                        grid_image.set(r, c, image);
+                                        grid.set(r, c, image);
                                         ++ i;
                                 }
                         }
                 }
 
-                // ... and save it
-                const auto path = basepath + (label.empty() ? "" : ("_" + label)) + "_group" + to_string(g) + ".png";
-                grid_image.image().save(path);
+                grid.image().save(basepath + (label.empty() ? "" : ("_" + label)) + "_group" + to_string(g) + ".png");
         }
 }
 
