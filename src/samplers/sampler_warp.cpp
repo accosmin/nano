@@ -8,7 +8,6 @@
 #include "vision/gradient.h"
 #include "text/from_params.h"
 #include "tensor/algorithm.h"
-#include "text/concatenate.h"
 
 namespace nano
 {
@@ -91,7 +90,7 @@ namespace nano
 
         sampler_warp_t::sampler_warp_t(const string_t& config) :
                 sampler_t(to_params(config,
-                "type", to_string(warp_type::mixed) + "[" + concatenate(enum_values<warp_type>()) + "]",
+                "type", to_string(warp_type::mixed) + "[" + concatenate(enum_values<warp_type>(warp_type::mixed)) + "]",
                 "noise", "0.1[0,1]",
                 "sigma", "4.0[0,10]",
                 "alpha", "1.0[0,10]",

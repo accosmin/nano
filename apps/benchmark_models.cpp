@@ -58,7 +58,7 @@ int main(int argc, const char *argv[])
 
         // generate synthetic task
         charset_task_t task(to_params(
-                "type", charset_mode::digit, "color", cmd_color, "irows", cmd_rows, "icols", cmd_cols, "count", cmd_samples));
+                "type", charset_type::digit, "color", cmd_color, "irows", cmd_rows, "icols", cmd_cols, "count", cmd_samples));
         task.load();
 
         // construct models

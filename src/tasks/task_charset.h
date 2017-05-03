@@ -4,7 +4,7 @@
 
 namespace nano
 {
-        enum class charset_mode
+        enum class charset_type
         {
                 digit,          ///< 0-9
                 lalpha,         ///< a-z
@@ -14,15 +14,15 @@ namespace nano
         };
 
         template <>
-        inline std::map<charset_mode, std::string> enum_string<charset_mode>()
+        inline std::map<charset_type, std::string> enum_string<charset_type>()
         {
                 return
                 {
-                        { charset_mode::digit,          "digit" },
-                        { charset_mode::lalpha,         "lalpha" },
-                        { charset_mode::ualpha,         "ualpha" },
-                        { charset_mode::alpha,          "alpha" },
-                        { charset_mode::alphanum,       "alphanum" }
+                        { charset_type::digit,          "digit" },
+                        { charset_type::lalpha,         "lalpha" },
+                        { charset_type::ualpha,         "ualpha" },
+                        { charset_type::alpha,          "alpha" },
+                        { charset_type::alphanum,       "alphanum" }
                 };
         }
 

@@ -3,7 +3,6 @@
 #include "text/algorithm.h"
 #include "text/to_params.h"
 #include "text/from_params.h"
-#include "text/concatenate.h"
 #include "text/table_row_mark.h"
 #include <list>
 #include <set>

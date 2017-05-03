@@ -4,7 +4,6 @@
 #include "text/to_params.h"
 #include "measure_and_log.h"
 #include "text/filesystem.h"
-#include "text/concatenate.h"
 #include "samplers/sampler_warp.h"
 
 int main(int argc, const char *argv[])

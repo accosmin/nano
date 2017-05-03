@@ -127,11 +127,39 @@ namespace nano
                 };
         }
 
+        ///
+        /// \brief unified
+        ///
         template <typename tvalue>
-        string_t to_string(tvalue value)
+        string_t to_string(const tvalue value)
         {
                 /// todo: replace this with "if constepr" in c++17
                 return detail::to_string_t<tvalue>::dispatch(value);
+        }
+
+        ///
+        /// \brief compact a list of values into a string using the given "glue" string.
+        ///
+        template <typename titerator>
+        string_t concatenate(titerator begin, const titerator end, const char* glue = ",")
+        {
+                string_t ret;
+                for (; begin != end; )
+                {
+                        ret += to_string(*begin);
+                        if (++ begin != end)
+                        {
+                                ret += glue;
+                        }
+                }
+
+                return ret;
+        }
+
+        template <typename tcontainer>
+        string_t concatenate(const tcontainer& values, const char* glue = ",")
+        {
+                return concatenate(values.begin(), values.end(), glue);
         }
 }
 

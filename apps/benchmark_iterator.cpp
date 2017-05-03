@@ -43,7 +43,7 @@ int main(int argc, const char *argv[])
 
                 // measure task generation
                 charset_task_t task(to_params(
-                        "type", charset_mode::digit, "color", cmd_color,
+                        "type", charset_type::digit, "color", cmd_color,
                         "irows", cmd_rows, "icols", cmd_cols, "count", task_size));
                 {
                         const auto duration = nano::measure_robustly<milliseconds_t>([&] ()

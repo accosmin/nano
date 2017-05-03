@@ -11,12 +11,12 @@ NANO_BEGIN_MODULE(test_charset)
 NANO_CASE(construction)
 {
         // <charset, color mode, number of outputs/classes/characters>
-        std::vector<std::tuple<charset_mode, color_mode, tensor_size_t>> configs;
-        configs.emplace_back(charset_mode::digit,            color_mode::luma,       tensor_size_t(10));
-        configs.emplace_back(charset_mode::lalpha,           color_mode::rgba,       tensor_size_t(26));
-        configs.emplace_back(charset_mode::ualpha,           color_mode::luma,       tensor_size_t(26));
-        configs.emplace_back(charset_mode::alpha,            color_mode::luma,       tensor_size_t(52));
-        configs.emplace_back(charset_mode::alphanum,         color_mode::rgba,       tensor_size_t(62));
+        std::vector<std::tuple<charset_type, color_mode, tensor_size_t>> configs;
+        configs.emplace_back(charset_type::digit,            color_mode::luma,       tensor_size_t(10));
+        configs.emplace_back(charset_type::lalpha,           color_mode::rgba,       tensor_size_t(26));
+        configs.emplace_back(charset_type::ualpha,           color_mode::luma,       tensor_size_t(26));
+        configs.emplace_back(charset_type::alpha,            color_mode::luma,       tensor_size_t(52));
+        configs.emplace_back(charset_type::alphanum,         color_mode::rgba,       tensor_size_t(62));
 
         for (const auto& config : configs)
         {
@@ -54,7 +54,7 @@ NANO_CASE(construction)
 NANO_CASE(fixed_batch_iterator)
 {
         charset_task_t task(to_params(
-                "type", charset_mode::digit, "color", color_mode::rgba, "irows", 16, "icols", 16, "count", 10000));
+                "type", charset_type::digit, "color", color_mode::rgba, "irows", 16, "icols", 16, "count", 10000));
 
         NANO_CHECK_EQUAL(task.load(), true);
 
@@ -87,7 +87,7 @@ NANO_CASE(fixed_batch_iterator)
 NANO_CASE(increasing_batch_iterator)
 {
         charset_task_t task(to_params(
-                "type", charset_mode::digit, "color", color_mode::rgba, "irows", 16, "icols", 16, "count", 10000));
+                "type", charset_type::digit, "color", color_mode::rgba, "irows", 16, "icols", 16, "count", 10000));
 
         NANO_CHECK_EQUAL(task.load(), true);
 

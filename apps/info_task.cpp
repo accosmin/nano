@@ -4,7 +4,6 @@
 #include "text/cmdline.h"
 #include "math/numeric.h"
 #include "measure_and_log.h"
-#include "text/concatenate.h"
 #include "vision/image_grid.h"
 
 using namespace nano;

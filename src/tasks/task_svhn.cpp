@@ -5,7 +5,6 @@
 #include "math/random.h"
 #include "vision/color.h"
 #include "text/to_params.h"
-#include "text/concatenate.h"
 #include "text/from_params.h"
 #include <fstream>
 

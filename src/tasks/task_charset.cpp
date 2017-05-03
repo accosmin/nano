@@ -44,33 +44,33 @@ namespace nano
                 };
         }
 
-        static tensor_size_t obegin(const charset_mode cs)
+        static tensor_size_t obegin(const charset_type cs)
         {
                 switch (cs)
                 {
-                case charset_mode::digit:       return 0;
-                case charset_mode::lalpha:      return 0 + 10;
-                case charset_mode::ualpha:      return 0 + 10 + 26;
-                case charset_mode::alpha:       return 10;
-                case charset_mode::alphanum:    return 0;
+                case charset_type::digit:       return 0;
+                case charset_type::lalpha:      return 0 + 10;
+                case charset_type::ualpha:      return 0 + 10 + 26;
+                case charset_type::alpha:       return 10;
+                case charset_type::alphanum:    return 0;
                 default:                        assert(false); return 0;
                 }
         }
 
-        static tensor_size_t oend(const charset_mode cs)
+        static tensor_size_t oend(const charset_type cs)
         {
                 switch (cs)
                 {
-                case charset_mode::digit:       return 10;
-                case charset_mode::lalpha:      return 10 + 26;
-                case charset_mode::ualpha:      return 10 + 26 + 26;
-                case charset_mode::alpha:       return 10 + 26 + 26;
-                case charset_mode::alphanum:    return 10 + 26 + 26;
+                case charset_type::digit:       return 10;
+                case charset_type::lalpha:      return 10 + 26;
+                case charset_type::ualpha:      return 10 + 26 + 26;
+                case charset_type::alpha:       return 10 + 26 + 26;
+                case charset_type::alphanum:    return 10 + 26 + 26;
                 default:                        assert(false); return 0;
                 }
         }
 
-        static tensor_size_t osize(const charset_mode cs)
+        static tensor_size_t osize(const charset_type cs)
         {
                 return oend(cs) - obegin(cs);
         }
@@ -142,7 +142,8 @@ namespace nano
         static string_t append_config(const string_t& configuration)
         {
                 return  to_params(configuration,
-                        "type", "digit[lalpha,ualpha,alpha,alphanum]", "color", "rgb[,luma,rgba]",
+                        "type", to_string(charset_type::digit) + "[" + concatenate(enum_values<charset_type>(charset_type::digit)) + "]",
+                        "color", "rgb[luma,rgba]",
                         "irows", "32[12,256]", "icols", "32[12,256]", "count", "1000[32,1M]");
         }
 
@@ -152,7 +153,7 @@ namespace nano
                 clamp(from_params<tensor_size_t>(append_config(configuration), "icols", 32), 12, 256),
                 tensor3d_dims_t
                 {
-                        nano::osize(from_params<charset_mode>(append_config(configuration), "type")),
+                        nano::osize(from_params<charset_type>(append_config(configuration), "type")),
                         1, 1
                 },
                 1, append_config(configuration))
@@ -161,7 +162,7 @@ namespace nano
 
         bool charset_task_t::populate()
         {
-                const auto charset = from_params<charset_mode>(config(), "type");
+                const auto charset = from_params<charset_type>(config(), "type");
                 const auto color = from_params<color_mode>(config(), "color");
                 const auto count = clamp(from_params<size_t>(config(), "count"), 32, 1024 * 1024);
 

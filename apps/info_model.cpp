@@ -1,7 +1,6 @@
 #include "nano.h"
 #include "text/cmdline.h"
 #include "measure_and_log.h"
-#include "text/concatenate.h"
 
 int main(int argc, const char *argv[])
 {

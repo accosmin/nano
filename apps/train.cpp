@@ -3,7 +3,6 @@
 #include "text/cmdline.h"
 #include "text/filesystem.h"
 #include "measure_and_log.h"
-#include "text/concatenate.h"
 
 int main(int argc, const char *argv[])
 {
