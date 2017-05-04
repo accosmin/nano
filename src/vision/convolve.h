@@ -13,6 +13,7 @@ namespace nano
         {
                 const int rows = static_cast<int>(src.rows());
                 const int cols = static_cast<int>(src.cols());
+                assert(rows > 1 && cols > 1);
 
                 const int ksize = static_cast<int>(kernel.size());
                 const int krad = ksize / 2;
@@ -29,7 +30,7 @@ namespace nano
 
                         for (int c = 0; c < cols; ++ c)
                         {
-                                src(r, c) = buff.segment(c, krad).dot(kernel);
+                                src(r, c) = buff.segment(c - krad, ksize).dot(kernel);
                         }
                 }
 
@@ -37,12 +38,12 @@ namespace nano
                 for (int c = 0; c < cols; ++ c)
                 {
                         buff.segment(0, krad).setConstant(src(0, c));
-                        buff.segment(krad, cols) = src.col(c);
-                        buff.segment(krad + cols, krad).setConstant(src(rows - 1, c));
+                        buff.segment(krad, rows) = src.col(c);
+                        buff.segment(krad + rows, krad).setConstant(src(rows - 1, c));
 
                         for (int r = 0; r < rows; ++ r)
                         {
-                                src(r, c) = buff.segment(c, krad).dot(kernel);
+                                src(r, c) = buff.segment(r - krad, ksize).dot(kernel);
                         }
                 }
         }
