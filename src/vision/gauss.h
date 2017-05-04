@@ -42,7 +42,7 @@ namespace nano
                 vector_t kernel(2 * radius + 1);
                 for (int x = -radius; x <= radius; x ++)
                 {
-                        kernel(x + radius) = gnorm * std::exp(-x * x * xnorm);
+                        kernel(x + radius) = gnorm * std::exp(-static_cast<scalar_t>(x * x) * xnorm);
                 }
 
                 // normalize kernel

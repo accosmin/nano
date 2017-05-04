@@ -15,13 +15,5 @@ namespace nano
 
                 virtual tensor3d_t input(const task_t&, const fold_t&, const size_t index) final;
                 virtual tensor3d_t target(const task_t&, const fold_t&, const size_t index) final;
-
-        private:
-
-                // attributes
-                matrix_t        m_gradx;        ///< buffer: horizontal gradient
-                matrix_t        m_grady;        ///< buffer: vertical gradient
-                matrix_t        m_fieldx;       ///< buffer: horizontal displacement
-                matrix_t        m_fieldy;       ///< buffer: vertical displacement
         };
 }

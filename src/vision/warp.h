@@ -35,8 +35,4 @@ namespace nano
         ///
         void warp(tensor3d_t&, const warp_type,
                 const scalar_t noise, const scalar_t sigma, const scalar_t alpha, const scalar_t beta);
-
-        void warp(tensor3d_t&, const warp_type,
-                const scalar_t noise, const scalar_t sigma, const scalar_t alpha, const scalar_t beta,
-                matrix_t& fieldx, matrix_t& fieldy, matrix_t& gradx, matrix_t& grady);
 }

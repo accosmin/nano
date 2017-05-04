@@ -62,8 +62,7 @@ namespace nano
         }
 
         void warp(tensor3d_t& iodata, const warp_type wtype,
-                const scalar_t noise, const scalar_t sigma, const scalar_t alpha, const scalar_t beta,
-                matrix_t& fieldx, matrix_t& fieldy, matrix_t& gradx, matrix_t& grady)
+                const scalar_t noise, const scalar_t sigma, const scalar_t alpha, const scalar_t beta)
         {
                 const auto imaps = iodata.size<0>();
                 const auto irows = iodata.size<1>();
@@ -71,16 +70,12 @@ namespace nano
 
                 auto rng = make_rng<scalar_t>(-1, +1);
 
-                fieldx.resize(irows, icols);
-                fieldy.resize(irows, icols);
-
-                gradx.resize(irows, icols);
-                grady.resize(irows, icols);
-
                 // generate random fields
                 const auto delta = rng() * one;
                 const auto theta = rng() * pi / 8;
 
+                matrix_t fieldx(irows, icols);
+                matrix_t fieldy(irows, icols);
                 switch (wtype)
                 {
                 case warp_type::translation:
@@ -113,17 +108,10 @@ namespace nano
 
                 for (auto d = 0; d < imaps; ++ d)
                 {
-                        nano::gradientx(iodata.matrix(d), gradx);
-                        nano::gradienty(iodata.matrix(d), grady);
+                        const auto gradx = nano::gradientx(iodata.matrix(d));
+                        const auto grady = nano::gradienty(iodata.matrix(d));
 
                         warp_by_field(iodata.matrix(d), alphax, fieldx, gradx, alphay, fieldy, grady, betamx);
                 }
-        }
-
-        void warp(tensor3d_t& iodata, const warp_type wtype,
-                const scalar_t noise, const scalar_t sigma, const scalar_t alpha, const scalar_t beta)
-        {
-                matrix_t fieldx, fieldy, gradx, grady;
-                warp(iodata, wtype, noise, sigma, alpha, beta, fieldx, fieldy, gradx, grady);
         }
 }

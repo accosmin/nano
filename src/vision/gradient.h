@@ -1,64 +1,39 @@
 #pragma once
 
-#include <cassert>
+#include "tensor.h"
 #include "math/numeric.h"
 
 namespace nano
 {
         ///
-        /// \brief compute the x gradient of the input matrix
+        /// \brief compute the y gradient of the input matrix.
         ///
-        template
-        <
-                typename tmatrixi,
-                typename tmatrixo
-        >
-        void gradientx(const tmatrixi& srcplane, tmatrixo&& xplane)
+        template <typename tmatrixi>
+        matrix_t gradienty(const tmatrixi& src)
         {
-                assert(srcplane.rows() == xplane.rows());
-                assert(srcplane.cols() == xplane.cols());
+                const auto rows = src.rows();
+                const auto cols = src.cols();
 
-                const int rows = static_cast<int>(srcplane.rows());
-                const int cols = static_cast<int>(srcplane.cols());
-
-                for (int r = 0; r < rows; ++ r)
+                matrix_t grad(rows, cols);
+                for (tensor_size_t r = 0; r < rows; ++ r)
                 {
-                        for (int c = 0; c < cols; ++ c)
-                        {
-                                const int cn = nano::clamp(c - 1, 0, cols - 1);
-                                const int cp = nano::clamp(c + 1, 0, cols - 1);
+                        const auto rn = nano::clamp(r - 1, 0, rows - 1);
+                        const auto rp = nano::clamp(r + 1, 0, rows - 1);
 
-                                xplane(r, c) = srcplane(r, cp) - srcplane(r, cn);
-                        }
+                        grad.row(r) = src.row(rp) - src.row(rn);
                 }
+
+                return grad;
         }
-
         ///
-        /// \brief compute the y gradient of the input matrix
+        /// \brief compute the x gradient of the input matrix.
         ///
-        template
-        <
-                typename tmatrixi,
-                typename tmatrixo
-        >
-        void gradienty(const tmatrixi& srcplane, tmatrixo&& yplane)
+        template <typename tmatrixi>
+        matrix_t gradientx(const tmatrixi& src)
         {
-                assert(srcplane.rows() == yplane.rows());
-                assert(srcplane.cols() == yplane.cols());
-
-                const int rows = static_cast<int>(srcplane.rows());
-                const int cols = static_cast<int>(srcplane.cols());
-
-                for (int r = 0; r < rows; ++ r)
-                {
-                        const int rn = nano::clamp(r - 1, 0, rows - 1);
-                        const int rp = nano::clamp(r + 1, 0, rows - 1);
-
-                        for (int c = 0; c < cols; ++ c)
-                        {
-                                yplane(r, c) = srcplane(rp, c) - srcplane(rn, c);
-                        }
-                }
+                matrix_t tsrc = src.transpose();
+                matrix_t grad = gradienty(tsrc);
+                grad.transposeInPlace();
+                return grad;
         }
 }
-

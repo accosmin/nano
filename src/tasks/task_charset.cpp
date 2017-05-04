@@ -206,11 +206,6 @@ namespace nano
                 const auto irows = std::get<1>(idims());
                 const auto icols = std::get<2>(idims());
 
-                matrix_t gradx(irows, icols);
-                matrix_t grady(irows, icols);
-                matrix_t fieldx(irows, icols);
-                matrix_t fieldy(irows, icols);
-
                 tensor3d_t opatch(4, irows, icols);
                 tensor3d_t mpatch(4, irows, icols);
                 tensor3d_t bpatch(4, irows, icols);
@@ -233,8 +228,7 @@ namespace nano
                         nano::bilinear(opatch.matrix(3), mpatch.matrix(3));
 
                         // image: random warping
-                        warp(mpatch, warp_type::mixed, scalar_t(0.1), scalar_t(4), scalar_t(16), scalar_t(2),
-                                fieldx, fieldy, gradx, grady);
+                        warp(mpatch, warp_type::mixed, scalar_t(0.1), scalar_t(4), scalar_t(16), scalar_t(2));
 
                         // image: background & foreground layer
                         const auto bcolor = make_random_rgba(rng_rgba);

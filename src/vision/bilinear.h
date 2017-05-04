@@ -26,15 +26,15 @@ namespace nano
 
                 for (int _or = 0; _or < orows; ++ _or)
                 {
-                        const float isr = scale_rows * _or;
+                        const float isr = scale_rows * static_cast<float>(_or);
                         const int ir0 = static_cast<int>(isr), ir1 = std::min(ir0 + 1, irows - 1);
-                        const float wr1 = isr - ir0, wr0 = 1 - wr1;
+                        const float wr1 = isr - static_cast<float>(ir0), wr0 = 1 - wr1;
 
                         for (int _oc = 0; _oc < ocols; ++ _oc)
                         {
-                                const float isc = scale_cols * _oc;
+                                const float isc = scale_cols * static_cast<float>(_oc);
                                 const int ic0 = static_cast<int>(isc), ic1 = std::min(ic0 + 1, icols - 1);
-                                const float wc1 = isc - ic0, wc0 = 1 - wc1;
+                                const float wc1 = isc - static_cast<float>(ic0), wc0 = 1 - wc1;
 
                                 dstplane(_or, _oc) = static_cast<typename tmatrixo::Scalar>(
                                         wr0 * wc0 * srcplane(ir0, ic0) +

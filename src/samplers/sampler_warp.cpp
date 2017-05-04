@@ -24,7 +24,7 @@ namespace nano
                 const auto beta = from_params<scalar_t>(config(), "beta");
 
                 tensor3d_t iodata = task.input(fold, index);
-                warp(iodata, wtype, noise, sigma, alpha, beta, m_fieldx, m_fieldy, m_gradx, m_grady);
+                warp(iodata, wtype, noise, sigma, alpha, beta);
                 return iodata;
         }
 
