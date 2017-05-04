@@ -1,6 +1,5 @@
 #pragma once
 
-#include "arch.h"
 #include "tensor.h"
 #include "text/to_string.h"
 #include <ostream>

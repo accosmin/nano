@@ -4,11 +4,11 @@
 #include "text/table.h"
 #include "accumulator.h"
 #include "text/cmdline.h"
-#include "math/random.h"
+#include "vision/color.h"
+#include "tasks/charset.h"
 #include "tensor/numeric.h"
 #include "measure_and_log.h"
 #include "layers/make_layers.h"
-#include "tasks/task_charset.h"
 #include "text/table_row_mark.h"
 #include <iostream>
 
@@ -57,9 +57,9 @@ int main(int argc, const char *argv[])
         const size_t cmd_max_nthreads = logical_cpus();
 
         // generate synthetic task
-        charset_task_t task(to_params(
+        auto task = get_tasks().get("synth-charset", to_params(
                 "type", charset_type::digit, "color", cmd_color, "irows", cmd_rows, "icols", cmd_cols, "count", cmd_samples));
-        task.load();
+        task->load();
 
         // construct models
         const string_t mlp0;
@@ -80,7 +80,7 @@ int main(int argc, const char *argv[])
         const string_t convnet6 = convnet5 + make_conv_layer(128, 3, 3, conn, activation);
         const string_t convnet7 = convnet6 + make_conv_layer(128, 3, 3, conn, activation);
 
-        const string_t outlayer = make_output_layer(task.odims());
+        const string_t outlayer = make_output_layer(task->odims());
 
         std::vector<std::pair<string_t, string_t>> networks;
         #define DEFINE(config) networks.emplace_back(config + outlayer, NANO_STRINGIFY(config))
@@ -128,7 +128,7 @@ int main(int argc, const char *argv[])
 
                 // create feed-forward network
                 const auto model = get_models().get("forward-network", cmd_network);
-                model->configure(task);
+                model->configure(*task);
                 model->random();
                 model->describe();
 
@@ -152,7 +152,7 @@ int main(int argc, const char *argv[])
                                 const auto duration = measure_robustly<microseconds_t>([&] ()
                                 {
                                         acc.mode(criterion_t::type::value);
-                                        acc.update(task, fold);
+                                        acc.update(*task, fold);
                                 }, 1);
 
                                 log_info() << "<<< processed [" << acc.count()
@@ -168,7 +168,7 @@ int main(int argc, const char *argv[])
                                 const auto duration = measure_robustly<microseconds_t>([&] ()
                                 {
                                         acc.mode(criterion_t::type::vgrad);
-                                        acc.update(task, fold);
+                                        acc.update(*task, fold);
                                 }, 1);
 
                                 log_info() << "<<< processed [" << acc.count()

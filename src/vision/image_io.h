@@ -1,5 +1,6 @@
 #pragma once
 
+#include "arch.h"
 #include "color.h"
 
 namespace nano

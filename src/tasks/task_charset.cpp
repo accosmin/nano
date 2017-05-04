@@ -1,5 +1,5 @@
 #include "class.h"
-#include "math/gauss.h"
+#include "charset.h"
 #include "math/random.h"
 #include "math/numeric.h"
 #include "task_charset.h"
@@ -8,10 +8,11 @@
 #include "text/from_params.h"
 #include "tensor/algorithm.h"
 
+#include "vision/warp.h"
+#include "vision/gauss.h"
 #include "vision/image_io.h"
 #include "vision/convolve.h"
 #include "vision/bilinear.h"
-#include "samplers/sampler_warp.h"
 
 #include "synth_bitstream_vera_sans_mono_bold.h"
 #include "synth_bitstream_vera_sans_mono.h"
@@ -76,8 +77,8 @@ namespace nano
         }
 
         template <typename tindex, typename tsize, typename trng>
-        static tensor3d_t get_object_patch(const image_tensor_t& image,
-                const tindex object_index, const tsize objects, trng& rng)
+        static void get_object_patch(const image_tensor_t& image,
+                const tindex object_index, const tsize objects, trng& rng, tensor3d_t& patch)
         {
                 const auto icols = static_cast<int>(image.cols());
                 const auto irows = static_cast<int>(image.rows());
@@ -92,21 +93,19 @@ namespace nano
                 const auto ppy = nano::clamp(std::lround(rng()), 0, irows - 1);
                 const auto pph = nano::clamp(std::lround(static_cast<scalar_t>(irows) + rng()), 0, irows - ppy);
 
-                tensor3d_t ret(4, pph, ppw);
-                ret.matrix(0) = image.matrix(0).block(ppy, ppx, pph, ppw).template cast<scalar_t>() / scalar_t(255);
-                ret.matrix(1) = image.matrix(1).block(ppy, ppx, pph, ppw).template cast<scalar_t>() / scalar_t(255);
-                ret.matrix(2) = image.matrix(2).block(ppy, ppx, pph, ppw).template cast<scalar_t>() / scalar_t(255);
-                ret.matrix(3) = image.matrix(3).block(ppy, ppx, pph, ppw).template cast<scalar_t>() / scalar_t(255);
-
-                return ret;
+                patch.resize(4, pph, ppw);
+                patch.matrix(0) = image.matrix(0).block(ppy, ppx, pph, ppw).template cast<scalar_t>() / scalar_t(255);
+                patch.matrix(1) = image.matrix(1).block(ppy, ppx, pph, ppw).template cast<scalar_t>() / scalar_t(255);
+                patch.matrix(2) = image.matrix(2).block(ppy, ppx, pph, ppw).template cast<scalar_t>() / scalar_t(255);
+                patch.matrix(3) = image.matrix(3).block(ppy, ppx, pph, ppw).template cast<scalar_t>() / scalar_t(255);
         }
 
         template <typename trng>
-        static tensor3d_t make_random_rgba_image(const tensor_size_t rows, const tensor_size_t cols,
-                const rgba_t back_color, const scalar_t sigma, trng& rng_noise)
+        static void make_random_rgba_image(const tensor_size_t rows, const tensor_size_t cols,
+                const rgba_t back_color, const scalar_t sigma, trng& rng_noise, tensor3d_t& image)
         {
                 // noisy background
-                tensor3d_t image(4, rows, cols);
+                image.resize(4, rows, cols);
                 image.matrix(0).setConstant(back_color(0) / scalar_t(255));
                 image.matrix(1).setConstant(back_color(1) / scalar_t(255));
                 image.matrix(2).setConstant(back_color(2) / scalar_t(255));
@@ -115,28 +114,24 @@ namespace nano
                 nano::add_random(rng_noise, image.matrix(0), image.matrix(1), image.matrix(2));
 
                 // smooth background
-                const nano::gauss_kernel_t<scalar_t> back_gauss(sigma);
+                const auto back_gauss = nano::make_gauss_kernel(sigma);
                 nano::convolve(back_gauss, image.matrix(0));
                 nano::convolve(back_gauss, image.matrix(1));
                 nano::convolve(back_gauss, image.matrix(2));
-
-                return image;
         }
 
-        static tensor3d_t alpha_blend(const tensor3d_t& mask, const tensor3d_t& img1, const tensor3d_t& img2)
+        static void alpha_blend(const tensor3d_t& mask, const tensor3d_t& img1, const tensor3d_t& img2, tensor3d_t& imgb)
         {
-                const auto op = [] (const auto a, const auto v1, const auto v2)
+                const auto op = [] (const auto& a, const auto& v1, const auto& v2, auto&& x)
                 {
-                        return (1 - a) * v1 + a * v2;
+                        x.array() = (1 - a.array()) * v1.array() + a.array() * v2.array();
                 };
 
-                tensor3d_t imgb(4, mask.rows(), mask.cols());
-                nano::transform(mask.matrix(3), img1.matrix(0), img2.matrix(0), imgb.matrix(0), op);
-                nano::transform(mask.matrix(3), img1.matrix(1), img2.matrix(1), imgb.matrix(1), op);
-                nano::transform(mask.matrix(3), img1.matrix(2), img2.matrix(2), imgb.matrix(2), op);
+                imgb.resize(4, mask.rows(), mask.cols());
+                op(mask.matrix(3), img1.matrix(0), img2.matrix(0), imgb.matrix(0));
+                op(mask.matrix(3), img1.matrix(1), img2.matrix(1), imgb.matrix(1));
+                op(mask.matrix(3), img1.matrix(2), img2.matrix(2), imgb.matrix(2));
                 imgb.matrix(3).setConstant(1);
-
-                return imgb;
         }
 
         static string_t append_config(const string_t& configuration)
@@ -211,24 +206,35 @@ namespace nano
                 const auto irows = std::get<1>(idims());
                 const auto icols = std::get<2>(idims());
 
+                matrix_t gradx(irows, icols);
+                matrix_t grady(irows, icols);
+                matrix_t fieldx(irows, icols);
+                matrix_t fieldy(irows, icols);
+
+                tensor3d_t opatch(4, irows, icols);
+                tensor3d_t mpatch(4, irows, icols);
+                tensor3d_t bpatch(4, irows, icols);
+                tensor3d_t fpatch(4, irows, icols);
+
                 // generate samples
                 for (size_t i = 0; i < count; ++ i)
                 {
                         // random target: character
-                        const tensor_size_t o = rng_output();
+                        const auto o = rng_output();
 
                         // image: original object patch
-                        const tensor3d_t opatch = get_object_patch(char_patches[rng_font() - 1], o, n_chars, rng_offset);
+                        get_object_patch(char_patches[rng_font() - 1], o, n_chars, rng_offset, opatch);
 
                         // image: resize to the input size
-                        tensor3d_t mpatch(4, irows, icols);
+                        mpatch.resize(4, irows, icols);
                         nano::bilinear(opatch.matrix(0), mpatch.matrix(0));
                         nano::bilinear(opatch.matrix(1), mpatch.matrix(1));
                         nano::bilinear(opatch.matrix(2), mpatch.matrix(2));
                         nano::bilinear(opatch.matrix(3), mpatch.matrix(3));
 
                         // image: random warping
-                        warp(mpatch, warp_type::mixed, scalar_t(0.1), scalar_t(4), scalar_t(16), scalar_t(2));
+                        warp(mpatch, warp_type::mixed, scalar_t(0.1), scalar_t(4), scalar_t(16), scalar_t(2),
+                                fieldx, fieldy, gradx, grady);
 
                         // image: background & foreground layer
                         const auto bcolor = make_random_rgba(rng_rgba);
@@ -237,14 +243,14 @@ namespace nano
                         const auto bsigma = rng_gauss();
                         const auto fsigma = rng_gauss();
 
-                        const auto bpatch = make_random_rgba_image(irows, icols, bcolor, bsigma, rng_bnoise);
-                        const auto fpatch = make_random_rgba_image(irows, icols, fcolor, fsigma, rng_fnoise);
+                        make_random_rgba_image(irows, icols, bcolor, bsigma, rng_bnoise, bpatch);
+                        make_random_rgba_image(irows, icols, fcolor, fsigma, rng_fnoise, fpatch);
 
                         // image: alpha-blend the background & foreground layer
-                        const tensor3d_t patch = alpha_blend(mpatch, bpatch, fpatch);
+                        alpha_blend(mpatch, bpatch, fpatch, fpatch);
 
                         image_t image;
-                        image.from_tensor(patch);
+                        image.from_tensor(fpatch);
                         switch (color)
                         {
                         case color_mode::luma:  image.make_luma(); break;

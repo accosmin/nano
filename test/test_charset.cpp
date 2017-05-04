@@ -1,8 +1,10 @@
+#include "nano.h"
 #include "utest.h"
 #include "task_util.h"
+#include "vision/color.h"
 #include "task_iterator.h"
+#include "tasks/charset.h"
 #include "text/to_params.h"
-#include "tasks/task_charset.h"
 
 using namespace nano;
 
@@ -31,38 +33,29 @@ NANO_CASE(construction)
                 const auto idims = tensor3d_dims_t{(mode == color_mode::rgba) ? 4 : 1, irows, icols};
                 const auto odims = tensor3d_dims_t{osize, 1, 1};
 
-                charset_task_t task(to_params(
+                auto task = get_tasks().get("synth-charset", to_params(
                         "type", type, "color", mode, "irows", irows, "icols", icols, "count", count));
 
-                NANO_CHECK_EQUAL(task.load(), true);
-                NANO_CHECK_EQUAL(task.idims(), idims);
-                NANO_CHECK_EQUAL(task.odims(), odims);
-                NANO_CHECK_EQUAL(task.fsize(), fsize);
-                NANO_CHECK_EQUAL(task.color(), mode);
-                NANO_CHECK_EQUAL(task.n_images(), count);
-                NANO_CHECK_EQUAL(task.size(), count);
-
-                for (size_t i = 0; i < task.n_images(); ++ i)
-                {
-                        NANO_CHECK_EQUAL(task.image(i).mode(), mode);
-                        NANO_CHECK_EQUAL(task.image(i).rows(), irows);
-                        NANO_CHECK_EQUAL(task.image(i).cols(), icols);
-                }
+                NANO_CHECK_EQUAL(task->load(), true);
+                NANO_CHECK_EQUAL(task->idims(), idims);
+                NANO_CHECK_EQUAL(task->odims(), odims);
+                NANO_CHECK_EQUAL(task->fsize(), fsize);
+                NANO_CHECK_EQUAL(task->size(), count);
         }
 }
 
 NANO_CASE(fixed_batch_iterator)
 {
-        charset_task_t task(to_params(
+        auto task = get_tasks().get("synth-charset", to_params(
                 "type", charset_type::digit, "color", color_mode::rgba, "irows", 16, "icols", 16, "count", 10000));
 
-        NANO_CHECK_EQUAL(task.load(), true);
+        NANO_CHECK_EQUAL(task->load(), true);
 
         const auto batch = size_t(123);
         const auto fold = fold_t{0, protocol::train};
-        const auto fold_size = task.size(fold);
+        const auto fold_size = task->size(fold);
 
-        task_iterator_t it(task, fold, batch);
+        task_iterator_t it(*task, fold, batch);
         for (size_t i = 0; i < 1000; ++ i)
         {
                 NANO_CHECK_LESS(it.begin(), it.end());
@@ -86,17 +79,17 @@ NANO_CASE(fixed_batch_iterator)
 
 NANO_CASE(increasing_batch_iterator)
 {
-        charset_task_t task(to_params(
+        auto task = get_tasks().get("synth-charset", to_params(
                 "type", charset_type::digit, "color", color_mode::rgba, "irows", 16, "icols", 16, "count", 10000));
 
-        NANO_CHECK_EQUAL(task.load(), true);
+        NANO_CHECK_EQUAL(task->load(), true);
 
         const auto batch0 = size_t(3);
         const auto factor = scalar_t(1.05);
         const auto fold = fold_t{0, protocol::train};
-        const auto fold_size = task.size(fold);
+        const auto fold_size = task->size(fold);
 
-        task_iterator_t it(task, fold, batch0, factor);
+        task_iterator_t it(*task, fold, batch0, factor);
         for (size_t i = 0; i < 1000; ++ i)
         {
                 NANO_CHECK_LESS(it.begin(), it.end());
@@ -116,30 +109,30 @@ NANO_CASE(increasing_batch_iterator)
 
 NANO_CASE(from_params)
 {
-        charset_task_t task("type=alpha,color=rgb,irows=23,icols=29,count=102");
-        NANO_CHECK(task.load());
+        auto task = get_tasks().get("synth-charset", "type=alpha,color=rgb,irows=23,icols=29,count=102");
+        NANO_CHECK(task->load());
 
         const auto idims = tensor3d_dims_t{3, 23, 29};
         const auto odims = tensor3d_dims_t{52, 1, 1};
 
-        NANO_CHECK_EQUAL(task.idims(), idims);
-        NANO_CHECK_EQUAL(task.odims(), odims);
-        NANO_CHECK_EQUAL(task.fsize(), size_t(1));
-        NANO_CHECK_EQUAL(task.size(), size_t(102));
+        NANO_CHECK_EQUAL(task->idims(), idims);
+        NANO_CHECK_EQUAL(task->odims(), odims);
+        NANO_CHECK_EQUAL(task->fsize(), size_t(1));
+        NANO_CHECK_EQUAL(task->size(), size_t(102));
 
         NANO_CHECK_EQUAL(
-                task.size({0, protocol::train}) +
-                task.size({0, protocol::valid}) +
-                task.size({0, protocol::test}),
+                task->size({0, protocol::train}) +
+                task->size({0, protocol::valid}) +
+                task->size({0, protocol::test}),
                 size_t(102));
 
         for (const auto p : {protocol::train, protocol::valid, protocol::test})
         {
-                const auto size = task.size({0, p});
+                const auto size = task->size({0, p});
                 for (size_t i = 0; i < size; ++ i)
                 {
-                        const auto input = task.input({0, p}, i);
-                        const auto target = task.target({0, p}, i);
+                        const auto input = task->input({0, p}, i);
+                        const auto target = task->target({0, p}, i);
 
                         NANO_CHECK_EQUAL(input.dims(), idims);
                         NANO_CHECK_EQUAL(target.dims(), odims);
@@ -147,8 +140,8 @@ NANO_CASE(from_params)
         }
 
         const size_t max_duplicates = 0;
-        NANO_CHECK_LESS_EQUAL(nano::check_duplicates(task), max_duplicates);
-        NANO_CHECK_LESS_EQUAL(nano::check_intersection(task), max_duplicates);
+        NANO_CHECK_LESS_EQUAL(nano::check_duplicates(*task), max_duplicates);
+        NANO_CHECK_LESS_EQUAL(nano::check_intersection(*task), max_duplicates);
 }
 
 NANO_END_MODULE()

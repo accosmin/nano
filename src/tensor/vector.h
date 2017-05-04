@@ -48,4 +48,3 @@ namespace nano
                 return tresult(data, rows);
         }
 }
-
