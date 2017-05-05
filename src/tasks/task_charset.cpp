@@ -228,7 +228,11 @@ namespace nano
                         nano::bilinear(opatch.matrix(3), mpatch.matrix(3));
 
                         // image: random warping
-                        warp(mpatch, warp_type::mixed, scalar_t(0.1), scalar_t(4), scalar_t(16), scalar_t(2));
+                        const auto wnoise = scalar_t(0.1);
+                        const auto wsigma = scalar_t(4);
+                        const auto walpha = scalar_t(16);
+                        const auto wbeta = scalar_t(2);
+                        warp(mpatch, warp_type::mixed, wnoise, wsigma, walpha, wbeta);
 
                         // image: background & foreground layer
                         const auto bcolor = make_random_rgba(rng_rgba);
