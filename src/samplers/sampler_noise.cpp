@@ -11,7 +11,7 @@ namespace nano
         {
         }
 
-        tensor3d_t sampler_noise_t::input(const task_t& task, const fold_t& fold, const size_t index)
+        tensor3d_t sampler_noise_t::input(const task_t& task, const fold_t& fold, const size_t index) const
         {
                 const auto noise = from_params<scalar_t>(config(), "noise");
                 auto rng = make_rng<scalar_t>(-noise, +noise);
@@ -21,7 +21,7 @@ namespace nano
                 return iodata;
         }
 
-        tensor3d_t sampler_noise_t::target(const task_t& task, const fold_t& fold, const size_t index)
+        tensor3d_t sampler_noise_t::target(const task_t& task, const fold_t& fold, const size_t index) const
         {
                 return task.target(fold, index);
         }

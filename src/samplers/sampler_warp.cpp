@@ -15,7 +15,7 @@ namespace nano
         {
         }
 
-        tensor3d_t sampler_warp_t::input(const task_t& task, const fold_t& fold, const size_t index)
+        tensor3d_t sampler_warp_t::input(const task_t& task, const fold_t& fold, const size_t index) const
         {
                 const auto wtype = from_params<warp_type>(config(), "type");
                 const auto noise = from_params<scalar_t>(config(), "noise");
@@ -28,7 +28,7 @@ namespace nano
                 return iodata;
         }
 
-        tensor3d_t sampler_warp_t::target(const task_t& task, const fold_t& fold, const size_t index)
+        tensor3d_t sampler_warp_t::target(const task_t& task, const fold_t& fold, const size_t index) const
         {
                 return task.target(fold, index);
         }

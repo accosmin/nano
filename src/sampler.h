@@ -23,11 +23,11 @@ namespace nano
                 ///
                 /// \brief retrieve the 3D input tensor for a given sample
                 ///
-                virtual tensor3d_t input(const task_t&, const fold_t&, const size_t index) = 0;
+                virtual tensor3d_t input(const task_t&, const fold_t&, const size_t index) const = 0;
 
                 ///
                 /// \brief retrieve the output target for a given sample
                 ///
-                virtual tensor3d_t target(const task_t&, const fold_t&, const size_t index) = 0;
+                virtual tensor3d_t target(const task_t&, const fold_t&, const size_t index) const = 0;
         };
 }
