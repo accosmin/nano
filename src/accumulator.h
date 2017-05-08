@@ -2,7 +2,7 @@
 
 #include "loss.h"
 #include "model.h"
-#include "sampler.h"
+#include "iterator.h"
 
 namespace nano
 {
@@ -20,7 +20,7 @@ namespace nano
                 ///
                 /// \brief constructor
                 ///
-                accumulator_t(const model_t&, const loss_t&, const task_t&, const sampler_t&);
+                accumulator_t(const model_t&, const loss_t&);
 
                 ///
                 /// \brief disable copying
@@ -49,8 +49,7 @@ namespace nano
                 ///
                 /// \brief cumulate statistics with a set of samples
                 ///
-                void update(const fold_t&);
-                void update(const fold_t&, const size_t begin, const size_t end);
+                void update(const iterator_t&);
 
                 ///
                 /// \brief cumulated gradient
@@ -100,7 +99,7 @@ namespace nano
                         tstats_t        m_estats;       ///< statistics for the error function
                 };
 
-                void update(tcache_t&, const fold_t&, const size_t index);
+                void update(tcache_t&, const iterator_t&, const size_t index);
                 void accumulate();
 
                 tcache_t& origin();
@@ -109,8 +108,6 @@ namespace nano
                 // attributes
                 mutable type            m_type;         ///<
                 const loss_t&           m_loss;         ///<
-                const task_t&           m_task;         ///<
-                const sampler_t&        m_sampler;      ///<
                 std::vector<tcache_t>   m_tcaches;      ///< cache / thread
         };
 }

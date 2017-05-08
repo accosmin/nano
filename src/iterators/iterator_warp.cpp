@@ -15,10 +15,10 @@ namespace nano
         {
         }
 
-        tensor3d_t iterator_warp_t::input(const task_t& task, const fold_t& fold, const size_t index) const
+        tensor3d_t iterator_warp_t::input(const size_t index) const
         {
-                tensor3d_t iodata = task.input(fold, index);
-                if (fold.m_protocol == protocol::train)
+                tensor3d_t iodata = task().input(fold(), index);
+                if (fold().m_protocol == protocol::train)
                 {
                         const auto wtype = from_params<warp_type>(config(), "type");
                         const auto noise = from_params<scalar_t>(config(), "noise");
@@ -31,8 +31,8 @@ namespace nano
                 return iodata;
         }
 
-        tensor3d_t iterator_warp_t::target(const task_t& task, const fold_t& fold, const size_t index) const
+        tensor3d_t iterator_warp_t::target(const size_t index) const
         {
-                return task.target(fold, index);
+                return task().target(fold(), index);
         }
 }

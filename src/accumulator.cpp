@@ -4,8 +4,8 @@
 
 namespace nano
 {
-        accumulator_t::accumulator_t(const model_t& model, const loss_t& loss, const task_t& task, const sampler_t& sampler) :
-                m_type(type::value), m_loss(loss), m_task(task), m_sampler(sampler)
+        accumulator_t::accumulator_t(const model_t& model, const loss_t& loss) :
+                m_type(type::value), m_loss(loss)
         {
                 const auto size = thread_pool_t::instance().n_workers();
                 for (size_t i = 0; i < size; ++ i)
@@ -47,18 +47,16 @@ namespace nano
                 thread_pool_t::instance().activate(nthreads);
         }
 
-        void accumulator_t::update(const fold_t& fold)
+        void accumulator_t::update(const iterator_t& it)
         {
-                update(fold, 0, m_task.size(fold));
-        }
+                const auto begin = it.begin();
+                const auto end = it.end();
 
-        void accumulator_t::update(const fold_t& fold, const size_t begin, const size_t end)
-        {
                 if (thread_pool_t::instance().n_active_workers() == 1)
                 {
                         for (size_t index = begin; index < end; ++ index)
                         {
-                                update(origin(), fold, index);
+                                update(origin(), it, index);
                         }
                 }
 
@@ -68,20 +66,19 @@ namespace nano
                         {
                                 const auto index = begin + offset;
                                 assert(th < m_tcaches.size());
-                                assert(index < m_task.size(fold));
                                 assert(index >= begin && index < end);
-                                update(m_tcaches[th], fold, index);
+                                update(m_tcaches[th], it, index);
                         });
 
                         accumulate();
                 }
         }
 
-        void accumulator_t::update(tcache_t& tcache, const fold_t& fold, const size_t index)
+        void accumulator_t::update(tcache_t& tcache, const iterator_t& it, const size_t index)
         {
-                const auto input = m_sampler.input(m_task, fold, index);
+                const auto input = it.input(index);
                 const auto output = tcache.m_model->output(input);
-                const auto target = m_sampler.target(m_task, fold, index);
+                const auto target = it.target(index);
 
                 const auto value = m_loss.value(target.vector(), output.vector());
                 const auto error = m_loss.error(target.vector(), output.vector());
