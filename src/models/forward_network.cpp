@@ -37,14 +37,15 @@ namespace nano
                         m_pdata.size() == psize();
         }
 
-        bool forward_network_t::save(vector_t& x) const
+        const vector_t& forward_network_t::params() const
         {
-                return (x = m_pdata).size() == psize();
+                return m_pdata;
         }
 
-        bool forward_network_t::load(const vector_t& x)
+        void forward_network_t::params(const vector_t& x)
         {
-                return (x.size() == psize()) && (m_pdata = x).size() == psize();
+                assert(x.size() == m_pdata.size());
+                m_pdata = x;
         }
 
         const tensor3d_t& forward_network_t::output(const tensor3d_t& input)

@@ -11,7 +11,7 @@ namespace nano
         ///
         struct trainer_function_t final : public function_t
         {
-                trainer_function_t(const accumulator_t& acc, task_iterator_t& iterator) :
+                trainer_function_t(accumulator_t& acc, task_iterator_t& iterator) :
                         function_t("ml optimization function", acc.psize(), acc.psize(), acc.psize(), convexity::no, 1e+6),
                         m_acc(acc),
                         m_iterator(iterator)
@@ -32,28 +32,26 @@ namespace nano
                         m_iterator.next();
                 }
 
-        protected:
+        private:
 
                 scalar_t vgrad(const vector_t& x, vector_t* gx) const override
                 {
                         setup(x, gx);
-                        m_acc.update(m_iterator.task(), m_iterator.fold());
+                        m_acc.update(m_iterator.fold());
                         return get(gx);
                 }
 
                 scalar_t stoch_vgrad(const vector_t& x, vector_t* gx) const override
                 {
                         setup(x, gx);
-                        m_acc.update(m_iterator.task(), m_iterator.fold(), m_iterator.begin(), m_iterator.end());
+                        m_acc.update(m_iterator.fold(), m_iterator.begin(), m_iterator.end());
                         return get(gx);
                 }
-
-        private:
 
                 void setup(const vector_t& x, vector_t* gx) const
                 {
                         m_acc.params(x);
-                        m_acc.mode(gx ? criterion_t::type::vgrad : criterion_t::type::value);
+                        m_acc.mode(gx ? accumulator_t::type::vgrad : accumulator_t::type::value);
                 }
 
                 scalar_t get(vector_t* gx) const
@@ -62,13 +60,11 @@ namespace nano
                         {
                                 *gx = m_acc.vgrad();
                         }
-                        return m_acc.value();
+                        return m_acc.vstats().avg();
                 }
 
-        private:
-
                 // attributes
-                const accumulator_t&    m_acc;          ///< function value and gradient accumulator
-                task_iterator_t&        m_iterator;
+                accumulator_t&    m_acc;        ///< function value and gradient accumulator
+                task_iterator_t&  m_iterator;   ///<
         };
 }

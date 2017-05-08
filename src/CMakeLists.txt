@@ -3,7 +3,6 @@ set(libnano_sources
         arch.cpp
         accumulator.cpp
         class.cpp
-        criterion.cpp
         nano.cpp
         "function.cpp"
         state.cpp
@@ -25,7 +24,6 @@ add_subdirectory(layers)
 add_subdirectory(losses)
 add_subdirectory(models)
 add_subdirectory(tasks)
-add_subdirectory(criteria)
 add_subdirectory(samplers)
 add_subdirectory(trainers)
 add_subdirectory(functions)

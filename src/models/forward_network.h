@@ -38,8 +38,8 @@ namespace nano
                 virtual bool save(const string_t& path) const override;
                 virtual bool load(const string_t& path) override;
 
-                virtual bool load(const vector_t& x) override;
-                virtual bool save(vector_t& x) const override;
+                virtual const vector_t& params() const override;
+                virtual void params(const vector_t& x) override;
 
                 virtual tensor_size_t psize() const override;
                 virtual tensor3d_dims_t idims() const override;

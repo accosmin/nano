@@ -108,7 +108,7 @@ int main(int argc, const char *argv[])
         #undef DEFINE
 
         const auto loss = get_losses().get("logistic");
-        const auto criterion = get_criteria().get("avg");
+        const auto sampler = get_samplers().get("none");
 
         // construct tables to compare models
         table_t ftable; ftable.header() << "forward [us/sample]";
@@ -123,8 +123,8 @@ int main(int argc, const char *argv[])
         // evaluate models
         for (const auto& config : networks)
         {
-                const string_t cmd_network = config.first;
-                const string_t cmd_name = config.second;
+                const auto cmd_network = config.first;
+                const auto cmd_name = config.second;
 
                 // create feed-forward network
                 const auto model = get_models().get("forward-network", cmd_network);
@@ -143,22 +143,21 @@ int main(int argc, const char *argv[])
                 // process the samples
                 for (size_t nthreads = cmd_min_nthreads; nthreads <= cmd_max_nthreads; ++ nthreads)
                 {
-                        accumulator_t acc(*model, *loss, *criterion);
-                        acc.lambda(scalar_t(0.1));
+                        accumulator_t acc(*model, *loss, *task, *sampler);
                         acc.threads(nthreads);
 
                         if (cmd_forward)
                         {
                                 const auto duration = measure_robustly<microseconds_t>([&] ()
                                 {
-                                        acc.mode(criterion_t::type::value);
-                                        acc.update(*task, fold);
+                                        acc.mode(accumulator_t::type::value);
+                                        acc.update(fold);
                                 }, 1);
 
-                                log_info() << "<<< processed [" << acc.count()
+                                log_info() << "<<< processed [" << acc.vstats().count()
                                            << "] forward samples in " << duration.count() << " us.";
 
-                                frow << idiv(static_cast<size_t>(duration.count()), acc.count());
+                                frow << idiv(static_cast<size_t>(duration.count()), acc.vstats().count());
 
                                 ftimings[nthreads] = acc.timings();
                         }
@@ -167,14 +166,14 @@ int main(int argc, const char *argv[])
                         {
                                 const auto duration = measure_robustly<microseconds_t>([&] ()
                                 {
-                                        acc.mode(criterion_t::type::vgrad);
-                                        acc.update(*task, fold);
+                                        acc.mode(accumulator_t::type::vgrad);
+                                        acc.update(fold);
                                 }, 1);
 
-                                log_info() << "<<< processed [" << acc.count()
+                                log_info() << "<<< processed [" << acc.vstats().count()
                                            << "] backward samples in " << duration.count() << " us.";
 
-                                brow << idiv(static_cast<size_t>(duration.count()), acc.count());
+                                brow << idiv(static_cast<size_t>(duration.count()), acc.vstats().count());
 
                                 btimings[nthreads] = acc.timings();
                         }

@@ -13,7 +13,7 @@ int main(int argc, const char *argv[])
         const strings_t loss_ids = nano::get_losses().ids();
         const strings_t model_ids = nano::get_models().ids();
         const strings_t trainer_ids = nano::get_trainers().ids();
-        const strings_t criterion_ids = nano::get_criteria().ids();
+        const strings_t sampler_ids = nano::get_samplers().ids();
 
         // parse the command line
         nano::cmdline_t cmdline("train a model");
@@ -26,7 +26,7 @@ int main(int argc, const char *argv[])
         cmdline.add("", "trainer",              nano::concatenate(trainer_ids));
         cmdline.add("", "trainer-params",       "trainer parameters (if any)");
         cmdline.add("", "loss",                 nano::concatenate(loss_ids));
-        cmdline.add("", "criterion",            nano::concatenate(criterion_ids));
+        cmdline.add("", "sampler",              nano::concatenate(sampler_ids), "none");
         cmdline.add("", "threads",              "number of threads to use", logical_cpus());
 
         cmdline.process(argc, argv);
@@ -42,7 +42,7 @@ int main(int argc, const char *argv[])
         const auto cmd_trainer = cmdline.get<string_t>("trainer");
         const auto cmd_trainer_params = cmdline.get<string_t>("trainer-params");
         const auto cmd_loss = cmdline.get<string_t>("loss");
-        const auto cmd_criterion = cmdline.get<string_t>("criterion");
+        const auto cmd_sampler = cmdline.get<string_t>("sampler");
         const auto cmd_threads = cmdline.get<size_t>("threads");
 
         // create task
@@ -59,8 +59,8 @@ int main(int argc, const char *argv[])
         // create loss
         const auto loss = nano::get_losses().get(cmd_loss);
 
-        // create criterion
-        const auto criterion = nano::get_criteria().get(cmd_criterion);
+        // create sampler
+        const auto sampler = nano::get_samplers().get(cmd_sampler);
 
         // create model
         const auto model = nano::get_models().get(cmd_model, cmd_model_params);
@@ -75,7 +75,7 @@ int main(int argc, const char *argv[])
         trainer_result_t result;
         nano::measure_critical_and_log([&] ()
                 {
-                        result = trainer->train(*task, cmd_task_fold, cmd_threads, *loss, *criterion, *model);
+                        result = trainer->train(*task, cmd_task_fold, cmd_threads, *loss, *sampler, *model);
                         return result.valid();
                 },
                 "train model");

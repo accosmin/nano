@@ -1,21 +1,26 @@
 #pragma once
 
-#include "protocol.h"
-#include "criterion.h"
+#include "loss.h"
+#include "model.h"
+#include "sampler.h"
 
 namespace nano
 {
         ///
-        /// \brief cumulate sample evaluations (loss value, error and gradient)
+        /// \brief accumulate {loss value, error and gradient} over the given samples.
         ///
-        class NANO_PUBLIC accumulator_t
+        struct NANO_PUBLIC accumulator_t
         {
-        public:
+                enum class type
+                {
+                        value,          ///< compute the loss value
+                        vgrad           ///< compute the loss value and its gradient
+                };
 
                 ///
                 /// \brief constructor
                 ///
-                accumulator_t(const model_t&, const loss_t& loss, const criterion_t&);
+                accumulator_t(const model_t&, const loss_t&, const task_t&, const sampler_t&);
 
                 ///
                 /// \brief disable copying
@@ -30,33 +35,22 @@ namespace nano
                 accumulator_t& operator=(accumulator_t&&) = default;
 
                 ///
-                /// \brief destructor
+                /// \brief change settings (and resets accumulator)
                 ///
-                ~accumulator_t();
+                void threads(const size_t nthreads);
+                void params(const vector_t& params);
+                void mode(const type);
 
                 ///
                 /// \brief resets accumulator (but keeps settings)
                 ///
-                void clear() const;
-
-                ///
-                /// \brief change settings (and resets accumulator)
-                ///
-                void threads(const size_t nthreads) const;
-                void params(const vector_t& params) const;
-                void lambda(const scalar_t lambda) const;
-                void mode(const criterion_t::type) const;
+                void clear();
 
                 ///
                 /// \brief cumulate statistics with a set of samples
                 ///
-                void update(const task_t&, const fold_t&) const;
-                void update(const task_t&, const fold_t&, const size_t begin, const size_t end) const;
-
-                ///
-                /// \brief cumulated loss value
-                ///
-                scalar_t value() const;
+                void update(const fold_t&);
+                void update(const fold_t&, const size_t begin, const size_t end);
 
                 ///
                 /// \brief cumulated gradient
@@ -74,24 +68,9 @@ namespace nano
                 const stats_t<scalar_t>& estats() const;
 
                 ///
-                /// \brief total number of processed samples
-                ///
-                size_t count() const;
-
-                ///
-                /// \brief number of dimensions/parameters
+                /// \brief number of parameters
                 ///
                 tensor_size_t psize() const;
-
-                ///
-                /// \brief regularization weight (if any)
-                ///
-                scalar_t lambda() const;
-
-                ///
-                /// \brief check if the criterion has a regularization term to tune
-                ///
-                bool can_regularize() const;
 
                 ///
                 /// \brief retrieve timing information (in microseconds) regarding various components
@@ -102,8 +81,36 @@ namespace nano
 
         private:
 
+                using tstats_t = stats_t<scalar_t>;
+
+                ///
+                /// \break thread specific cache.
+                ///
+                struct tcache_t
+                {
+                        tcache_t(const model_t& model) :
+                                m_model(model.clone()),
+                                m_vgrad(vector_t::Zero(model.psize()))
+                        {
+                        }
+
+                        rmodel_t        m_model;        ///< model copy
+                        vector_t        m_vgrad;        ///< gradient wrt parameters
+                        tstats_t        m_vstats;       ///< statistics for the loss value
+                        tstats_t        m_estats;       ///< statistics for the error function
+                };
+
+                void update(tcache_t&, const fold_t&, const size_t index);
+                void accumulate();
+
+                tcache_t& origin();
+                const tcache_t& origin() const;
+
                 // attributes
-                struct impl_t;
-                std::unique_ptr<impl_t> m_impl;
+                mutable type            m_type;         ///<
+                const loss_t&           m_loss;         ///<
+                const task_t&           m_task;         ///<
+                const sampler_t&        m_sampler;      ///<
+                std::vector<tcache_t>   m_tcaches;      ///< cache / thread
         };
 }

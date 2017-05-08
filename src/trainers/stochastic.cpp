@@ -17,7 +17,7 @@ namespace nano
 
         trainer_result_t stochastic_trainer_t::train(
                 const task_t& task, const size_t fold, const size_t nthreads,
-                const loss_t& loss, const criterion_t& criterion,
+                const loss_t& loss, const sampler_t& sampler,
                 model_t& model) const
         {
                 if (model != task)
@@ -34,64 +34,59 @@ namespace nano
                 const auto optimizer = from_params<string_t>(config(), "opt");
                 const auto patience = from_params<size_t>(config(), "patience");
 
+                // iterator
                 const auto train_fold = fold_t{fold, protocol::train};
                 const auto train_size = task.size(train_fold);
                 const auto samples = epochs * train_size;
-
-                const auto factor = (batch0 == batchK) ?
-                        scalar_t(1) :
-                        clamp(scalar_t(samples - batch0) / scalar_t(samples - batchK), scalar_t(1), scalar_t(2));
-                const auto epoch_size = (batch0 == batchK) ?
-                        batch0 :
-                        idiv(static_cast<size_t>(std::log(batchK / batch0) / std::log(factor)), epochs);
-
-                // train the model
-                const timer_t timer;
-                const auto op = [&] (const accumulator_t& acc, const vector_t& x0)
+                auto factor = scalar_t(1);
+                auto epoch_size = batch0;
+                if (batch0 != batchK)
                 {
-                        size_t epoch = 0;
-                        trainer_result_t result;
+                        factor = clamp(scalar_t(samples - batch0) / scalar_t(samples - batchK), scalar_t(1), scalar_t(2));
+                        epoch_size = idiv(static_cast<size_t>(std::log(batchK / batch0) / std::log(factor)), epochs);
+                }
+                task_iterator_t it(task, train_fold, batch0, factor);
 
-                        task_iterator_t it(task, train_fold, batch0, factor);
+                // accumulator
+                accumulator_t acc(model, loss, task, sampler);
+                acc.threads(nthreads);
 
-                        // tuning operator
-                        const auto fn_tlog = [&] (const state_t& state, const string_t& sconfig)
-                        {
-                                // NB: the training state is already computed
-                                const auto train = trainer_measurement_t{acc.vstats().avg(), acc.estats().avg()};
-                                const auto config = to_params(sconfig, "lambda", acc.lambda());
+                const timer_t timer;
+                size_t epoch = 0;
+                trainer_result_t result;
 
-                                log_info()
-                                        << "[tune:train=" << train
-                                        << "," << config << ",batch=" << it.size() << ",g=" << state.convergence_criteria()
-                                        << "] " << timer.elapsed() << ".";
+                // tuning operator
+                const auto fn_tlog = [&] (const state_t& state, const string_t& config)
+                {
+                        // NB: the training state is already computed
+                        const auto train = trainer_measurement_t{acc.vstats().avg(), acc.estats().avg()};
 
-                                // NB: need to reset the minibatch size (changed during tuning)!
-                                it.reset(batch0, factor);
-                        };
+                        log_info()
+                                << "[tune:train=" << train
+                                << "," << config << ",batch=" << it.size() << ",g=" << state.convergence_criteria()
+                                << "] " << timer.elapsed() << ".";
 
-                        // logging operator
-                        const auto fn_ulog = [&] (const state_t& state, const string_t& sconfig)
-                        {
-                                return ulog(acc, it, epoch, epochs, result, policy, patience, timer, state, sconfig);
-                        };
-
-                        // assembly optimization function & optimize the model
-                        const auto function = trainer_function_t(acc, it);
-                        const auto params = stoch_params_t{epochs, epoch_size, epsilon, fn_ulog, fn_tlog};
-
-                        get_stoch_optimizers().get(optimizer)->minimize(params, function, x0);
-
-                        return result;
+                        // NB: need to reset the minibatch size (changed during tuning)!
+                        it.reset(batch0, factor);
                 };
 
-                const auto result = trainer_loop(model, nthreads, loss, criterion, op);
+                // logging operator
+                const auto fn_ulog = [&] (const state_t& state, const string_t& config)
+                {
+                        return ulog(acc, it, epoch, epochs, result, policy, patience, timer, state, config);
+                };
+
+                // assembly optimization function & train the model
+                const auto function = trainer_function_t(acc, it);
+                const auto params = stoch_params_t{epochs, epoch_size, epsilon, fn_ulog, fn_tlog};
+                get_stoch_optimizers().get(optimizer)->minimize(params, function, model.params());
+
                 log_info() << "<<< stoch-" << optimizer << ": " << result << ",time=" << timer.elapsed() << ".";
 
                 // OK
                 if (result.valid())
                 {
-                        model.load(result.optimum_params());
+                        model.params(result.optimum_params());
                 }
                 return result;
         }

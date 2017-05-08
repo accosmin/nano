@@ -48,8 +48,8 @@ int main(int argc, const char *argv[])
         // create loss
         const auto loss = nano::get_losses().get(cmd_loss);
 
-        // create criterion
-        const auto criterion = nano::get_criteria().get("avg");
+        // create sampler
+        const auto sampler = nano::get_samplers().get("none");
 
         // create model
         const auto model = nano::get_models().get(cmd_model);
@@ -62,15 +62,15 @@ int main(int argc, const char *argv[])
         // test model
         const auto tfold = fold_t{cmd_task_fold, protocol::test};
 
-        accumulator_t lacc(*model, *loss, *criterion);
-        lacc.mode(criterion_t::type::value);
+        accumulator_t lacc(*model, *loss, *task, *sampler);
+        lacc.mode(accumulator_t::type::value);
         lacc.threads(cmd_threads);
 
         nano::measure_and_log(
-                [&] () { lacc.clear(); lacc.update(*task, tfold); },
+                [&] () { lacc.clear(); lacc.update(tfold); },
                 "evaluate model");
 
-        log_info() << "test=" << lacc.value() << "|" << lacc.estats().avg() << "+/-" << lacc.estats().var() << ".";
+        log_info() << "test=" << lacc.vstats().avg() << "|" << lacc.estats().avg() << "+/-" << lacc.estats().var() << ".";
 
         // OK
         log_info() << done;

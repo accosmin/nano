@@ -39,7 +39,6 @@ build_test_app(test_geom.cpp nano)
 build_test_app(test_image.cpp nano)
 
 build_test_app(test_accumulator.cpp nano)
-build_test_app(test_criteria.cpp nano)
 build_test_app(test_layers.cpp nano)
 build_test_app(test_loss.cpp nano)
 build_test_app(test_manager.cpp nano)

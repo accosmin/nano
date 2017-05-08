@@ -24,9 +24,6 @@
 #include "trainers/batch.h"
 #include "trainers/stochastic.h"
 
-#include "criteria/l2nreg.h"
-#include "criteria/varreg.h"
-
 #include "stoch/ag.h"
 #include "stoch/adam.h"
 #include "stoch/adagrad.h"
@@ -71,12 +68,6 @@ namespace nano
         loss_manager_t& get_losses()
         {
                 static loss_manager_t manager;
-                return manager;
-        }
-
-        criterion_manager_t& get_criteria()
-        {
-                static criterion_manager_t manager;
                 return manager;
         }
 
@@ -151,17 +142,6 @@ namespace nano
                 f.add("stoch", "stochastic trainer", maker<stochastic_trainer_t>());
         }
 
-        static void init_criteria()
-        {
-                auto& f = nano::get_criteria();
-                f.add("avg", "average loss", maker<average_criterion_t>());
-                f.add("avg-l2n", "L2-norm regularized average loss", maker<average_l2n_criterion_t>());
-                f.add("avg-var", "variance-regularized average loss", maker<average_var_criterion_t>());
-                f.add("max", "softmax loss", maker<softmax_criterion_t>());
-                f.add("max-l2n", "L2-norm regularized softmax loss", maker<softmax_l2n_criterion_t>());
-                f.add("max-var", "variance-regularized softmax loss", maker<softmax_var_criterion_t>());
-        }
-
         static void init_losses()
         {
                 auto& f = nano::get_losses();
@@ -231,7 +211,6 @@ namespace nano
                         init_samplers();
 
                         init_losses();
-                        init_criteria();
                         init_trainers();
                         init_batch_optimizers();
                         init_stoch_optimizers();

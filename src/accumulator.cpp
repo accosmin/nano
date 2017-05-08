@@ -1,99 +1,64 @@
-#include "task.h"
 #include "accumulator.h"
-#include "math/numeric.h"
 #include "thread/loopit.h"
 #include <cassert>
 
 namespace nano
 {
-        struct accumulator_t::impl_t
+        accumulator_t::accumulator_t(const model_t& model, const loss_t& loss, const task_t& task, const sampler_t& sampler) :
+                m_type(type::value), m_loss(loss), m_task(task), m_sampler(sampler)
         {
-                impl_t(const model_t& model, const loss_t& loss, const criterion_t& criterion) :
-                        m_loss(loss)
+                const auto size = thread_pool_t::instance().n_workers();
+                for (size_t i = 0; i < size; ++ i)
                 {
-                        const auto size = thread_pool_t::instance().n_workers();
-                        for (size_t i = 0; i < size; ++ i)
+                        m_tcaches.emplace_back(model);
+                }
+        }
+
+        void accumulator_t::clear()
+        {
+                for (auto& tcache : m_tcaches)
+                {
+                        tcache.m_vstats.clear();
+                        tcache.m_estats.clear();
+                        if (m_type == type::vgrad)
                         {
-                                auto cache = criterion.clone();
-                                cache->model(model);
-                                m_criteria.emplace_back(std::move(cache));
+                                tcache.m_vgrad.setZero();
                         }
                 }
-
-                void cumulate() const
-                {
-                        for (std::size_t i = 1; i < m_criteria.size(); ++ i)
-                        {
-                                criterion().update(*m_criteria[i]);
-                        }
-                }
-
-                criterion_t& criterion() const
-                {
-                        return **m_criteria.begin();
-                }
-
-                // attributes
-                const loss_t&                   m_loss;
-                std::vector<rcriterion_t>       m_criteria;     ///< cached criterion / thread
-        };
-
-        accumulator_t::accumulator_t(const model_t& model, const loss_t& loss, const criterion_t& criterion) :
-                m_impl(std::make_unique<impl_t>(model, loss, criterion))
-        {
         }
 
-        accumulator_t::~accumulator_t() = default;
-
-        void accumulator_t::clear() const
+        void accumulator_t::params(const vector_t& params)
         {
-                for (const auto& cache : m_impl->m_criteria)
+                for (auto& tcache : m_tcaches)
                 {
-                        cache->clear();
+                        tcache.m_model->params(params);
                 }
+                clear();
         }
 
-        void accumulator_t::lambda(const scalar_t lambda) const
+        void accumulator_t::mode(const accumulator_t::type type)
         {
-                for (const auto& cache : m_impl->m_criteria)
-                {
-                        cache->lambda(clamp(lambda, scalar_t(0), scalar_t(1)));
-                }
+                m_type = type;
         }
 
-        void accumulator_t::params(const vector_t& params) const
-        {
-                for (const auto& cache : m_impl->m_criteria)
-                {
-                        cache->params(params);
-                }
-        }
-
-        void accumulator_t::mode(const criterion_t::type type) const
-        {
-                for (const auto& cache : m_impl->m_criteria)
-                {
-                        cache->mode(type);
-                }
-        }
-
-        void accumulator_t::threads(const size_t nthreads) const
+        void accumulator_t::threads(const size_t nthreads)
         {
                 thread_pool_t::instance().activate(nthreads);
         }
 
-        void accumulator_t::update(const task_t& task, const fold_t& fold) const
+        void accumulator_t::update(const fold_t& fold)
         {
-                update(task, fold, 0, task.size(fold));
+                update(fold, 0, m_task.size(fold));
         }
 
-        void accumulator_t::update(const task_t& task, const fold_t& fold, const size_t begin, const size_t end) const
+        void accumulator_t::update(const fold_t& fold, const size_t begin, const size_t end)
         {
-                const loss_t& loss = m_impl->m_loss;
-
                 if (thread_pool_t::instance().n_active_workers() == 1)
                 {
-                        m_impl->criterion().update(task, fold, begin, end, loss);
+                        for (size_t index = begin; index < end; ++ index)
+                        {
+                                update(origin(), fold, index);
+                        }
                 }
 
                 else
@@ -101,68 +66,83 @@ namespace nano
                         loopit(end - begin, [&] (const size_t offset, const size_t th)
                         {
                                 const auto index = begin + offset;
-                                assert(th < m_impl->m_criteria.size());
-                                assert(index < task.size(fold));
+                                assert(th < m_models.size());
+                                assert(index < m_task.size(fold));
                                 assert(index >= begin && index < end);
-                                m_impl->m_criteria[th]->update(task.input(fold, index), task.target(fold, index), loss);
+                                update(m_tcaches[th], fold, index);
                         });
 
-                        m_impl->cumulate();
+                        accumulate();
                 }
         }
 
-        scalar_t accumulator_t::value() const
+        void accumulator_t::update(tcache_t& tcache, const fold_t& fold, const size_t index)
         {
-                return m_impl->criterion().value();
+                const auto input = m_sampler.input(m_task, fold, index);
+                const auto output = tcache.m_model->output(input);
+                const auto target = m_sampler.target(m_task, fold, index);
+
+                const auto value = m_loss.value(target.vector(), output.vector());
+                const auto error = m_loss.error(target.vector(), output.vector());
+
+                tcache.m_vstats(value);
+                tcache.m_estats(error);
+                if (m_type == type::vgrad)
+                {
+                        tcache.m_vgrad += tcache.m_model->gparam(m_loss.vgrad(target.vector(), output.vector()));
+                }
+        }
+
+        void accumulator_t::accumulate()
+        {
+                auto& origin = this->origin();
+                for (const auto& tcache : m_tcaches)
+                {
+                        if (&tcache != &origin)
+                        {
+                                origin.m_vstats(tcache.m_vstats);
+                                origin.m_estats(tcache.m_estats);
+                                if (m_type == type::vgrad)
+                                {
+                                        origin.m_vgrad += tcache.m_vgrad;
+                                }
+                        }
+                }
+        }
+
+        accumulator_t::tcache_t& accumulator_t::origin()
+        {
+                return *m_tcaches.begin();
+        }
+
+        const accumulator_t::tcache_t& accumulator_t::origin() const
+        {
+                return *m_tcaches.cbegin();
         }
 
         const stats_t<scalar_t>& accumulator_t::vstats() const
         {
-                return m_impl->criterion().vstats();
+                return origin().m_vstats;
         }
 
         const stats_t<scalar_t>& accumulator_t::estats() const
         {
-                return m_impl->criterion().estats();
+                return origin().m_estats;
         }
 
         vector_t accumulator_t::vgrad() const
         {
-                return m_impl->criterion().vgrad();
+                assert(vstats().count() > 0);
+                return origin().m_vgrad / vstats().count();
         }
 
         tensor_size_t accumulator_t::psize() const
         {
-                return m_impl->criterion().psize();
-        }
-
-        size_t accumulator_t::count() const
-        {
-                return m_impl->criterion().count();
-        }
-
-        scalar_t accumulator_t::lambda() const
-        {
-                return m_impl->criterion().lambda();
-        }
-
-        bool accumulator_t::can_regularize() const
-        {
-                return m_impl->criterion().can_regularize();
+                return origin().m_model->psize();
         }
 
         timings_t accumulator_t::timings() const
         {
-                timings_t ret;
-                for (const auto& criterion : m_impl->m_criteria)
-                {
-                        const auto timings = criterion->model().timings();
-                        for (const auto& timing : timings)
-                        {
-                                ret[timing.first](timing.second);
-                        }
-                }
-
-                return ret;
+                return origin().m_model->timings();
         }
 }

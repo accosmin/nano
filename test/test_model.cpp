@@ -42,7 +42,7 @@ NANO_CASE(evaluate)
         };
 
         const auto loss = nano::get_losses().get("logistic");
-        const auto criterion = nano::get_criteria().get("avg");
+        const auto sampler = nano::get_samplers().get("none");
 
         for (const string_t& cmd_network : cmd_networks)
         {
@@ -62,15 +62,14 @@ NANO_CASE(evaluate)
                         const string_t path = "./test_model.test";
 
                         // test error & parameters before saving
-                        accumulator_t bacc(*model, *loss, *criterion);
-                        bacc.mode(criterion_t::type::value);
-                        bacc.update(*task, fold);
-                        const auto lvalue_before = bacc.value();
+                        accumulator_t bacc(*model, *loss, *task, *sampler);
+                        bacc.mode(accumulator_t::type::value);
+                        bacc.update(fold);
+                        const auto lvalue_before = bacc.vstats().avg();
                         const auto lerror_before = bacc.estats().avg();
-                        const auto lcount_before = bacc.count();
+                        const auto lcount_before = bacc.vstats().count();
 
-                        vector_t params(model->psize());
-                        NANO_CHECK(model->save(params));
+                        const auto params = model->params();
 
                         //
                         NANO_CHECK_EQUAL(model->save(path), true);
@@ -79,15 +78,14 @@ NANO_CASE(evaluate)
                         //
 
                         // test error & parameters after loading
-                        accumulator_t aacc(*model, *loss, *criterion);
-                        aacc.mode(criterion_t::type::value);
-                        aacc.update(*task, fold);
-                        const auto lvalue_after = aacc.value();
+                        accumulator_t aacc(*model, *loss, *task, *sampler);
+                        aacc.mode(accumulator_t::type::value);
+                        aacc.update(fold);
+                        const auto lvalue_after = aacc.vstats().avg();
                         const auto lerror_after = aacc.estats().avg();
-                        const auto lcount_after = aacc.count();
+                        const auto lcount_after = aacc.vstats().count();
 
-                        vector_t xparams(model->psize());
-                        NANO_CHECK(model->save(xparams));
+                        const auto xparams = model->params();
 
                         // check
                         NANO_CHECK_EQUAL(lcount_before, lcount_after);

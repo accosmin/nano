@@ -48,8 +48,8 @@ namespace nano
                 ///
                 /// \brief serialize parameters to memory
                 ///
-                virtual bool save(vector_t& x) const = 0;
-                virtual bool load(const vector_t& x) = 0;
+                virtual const vector_t& params() const = 0;
+                virtual void params(const vector_t& x) = 0;
 
                 ///
                 /// \brief set parameters to  values

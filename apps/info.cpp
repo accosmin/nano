@@ -36,7 +36,6 @@ int main(int argc, const char* argv[])
         cmdline.add("", "model",                "model types");
         cmdline.add("", "sampler",              "training sampling methods");
         cmdline.add("", "trainer",              "training methods");
-        cmdline.add("", "criterion",            "training criteria");
         cmdline.add("", "batch",                "batch optimization algorithms");
         cmdline.add("", "stoch",                "stochastic optimization algorithms");
         cmdline.add("", "version",              "library version");
@@ -54,7 +53,6 @@ int main(int argc, const char* argv[])
         const bool has_model = cmdline.has("model");
         const bool has_sampler = cmdline.has("sampler");
         const bool has_trainer = cmdline.has("trainer");
-        const bool has_criterion = cmdline.has("criterion");
         const bool has_batch = cmdline.has("batch");
         const bool has_stoch = cmdline.has("stoch");
         const bool has_system = cmdline.has("system");
@@ -70,7 +68,6 @@ int main(int argc, const char* argv[])
                 !has_model &&
                 !has_sampler &&
                 !has_trainer &&
-                !has_criterion &&
                 !has_batch &&
                 !has_stoch &&
                 !has_system &&
@@ -108,10 +105,6 @@ int main(int argc, const char* argv[])
         if (has_trainer)
         {
                 print("trainer", get_trainers());
-        }
-        if (has_criterion)
-        {
-                print("criterion", get_criteria());
         }
         if (has_batch)
         {

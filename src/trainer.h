@@ -8,8 +8,7 @@ namespace nano
         struct loss_t;
         struct task_t;
         struct model_t;
-        class criterion_t;
-        class accumulator_t;
+        struct sampler_t;
 
         ///
         /// \brief stores registered prototypes
@@ -32,7 +31,7 @@ namespace nano
                 ///
                 virtual trainer_result_t train(
                         const task_t&, const size_t fold, const size_t nthreads,
-                        const loss_t&, const criterion_t& criterion,
+                        const loss_t&, const sampler_t&,
                         model_t&) const = 0;
         };
 }
