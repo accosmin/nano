@@ -39,9 +39,8 @@
 #include "batch/cgd.h"
 #include "batch/lbfgs.h"
 
-#include "samplers/sampler_none.h"
-#include "samplers/sampler_warp.h"
-#include "samplers/sampler_noise.h"
+#include "iterators/iterator_warp.h"
+#include "iterators/iterator_noise.h"
 
 #include <cfenv>
 
@@ -71,9 +70,9 @@ namespace nano
                 return manager;
         }
 
-        sampler_manager_t& get_samplers()
+        iterator_manager_t& get_iterators()
         {
-                static sampler_manager_t manager;
+                static iterator_manager_t manager;
                 return manager;
         }
 
@@ -185,12 +184,12 @@ namespace nano
                 f.add("forward-network", "feed-forward network", maker<forward_network_t>());
         }
 
-        static void init_samplers()
+        static void init_iterators()
         {
-                auto& f = nano::get_samplers();
-                f.add("none", "use samples as they are", maker<sampler_none_t>());
-                f.add("warp", "warp image samples (image classification)", maker<sampler_warp_t>());
-                f.add("noise", "add random noise to samples (image classification)", maker<sampler_noise_t>());
+                auto& f = nano::get_iterators();
+                f.add("default", "use samples as they are", maker<iterator_t>());
+                f.add("warp", "warp image samples (image classification)", maker<iterator_warp_t>());
+                f.add("noise", "add random noise to samples (image classification)", maker<iterator_noise_t>());
         }
 
         struct init_t
@@ -208,7 +207,7 @@ namespace nano
                         init_tasks();
                         init_layers();
                         init_models();
-                        init_samplers();
+                        init_iterators();
 
                         init_losses();
                         init_trainers();

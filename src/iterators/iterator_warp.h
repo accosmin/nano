@@ -1,6 +1,6 @@
 #pragma once
 
-#include "sampler.h"
+#include "iterator.h"
 
 namespace nano
 {
@@ -9,9 +9,9 @@ namespace nano
         ///      "Training Invariant Support Vector Machines using Selective Sampling", by
         ///      Gaelle Loosli, Stephane Canu & Leon Bottou
         ///
-        struct sampler_warp_t final : public sampler_t
+        struct iterator_warp_t final : public iterator_t
         {
-                explicit sampler_warp_t(const string_t& configuration = string_t());
+                explicit iterator_warp_t(const string_t& configuration = string_t());
 
                 virtual tensor3d_t input(const task_t&, const fold_t&, const size_t index) const final;
                 virtual tensor3d_t target(const task_t&, const fold_t&, const size_t index) const final;

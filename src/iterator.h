@@ -5,21 +5,35 @@
 namespace nano
 {
         ///
-        /// \brief minibatch iterator over a task.
-        ///     by default it produces fixed-size minibatches,
-        //      but it can also generate geometrically increasing minibatches.
+        /// \brief manage sampling objects (register new ones, query and clone them)
         ///
-        struct NANO_PUBLIC task_iterator_t
+        struct iterator_t;
+        using iterator_manager_t = manager_t<iterator_t>;
+        using riterator_t = iterator_manager_t::trobject;
+
+        NANO_PUBLIC iterator_manager_t& get_iterators();
+
+        ///
+        ///
+        /// \brief (minibatch) iterator over a task.
+        ///     by default it produces fixed-size minibatches,
+        ///     but it can also generate geometrically increasing minibatches.
+        /// NB: it can be used for artificially augmenting the training samples,
+        ///     by overriding the ::input() & the ::target() functions (e.g. to randomly warp images or add noise)
+        ///
+        struct NANO_PUBLIC iterator_t : public configurable_t
         {
+                using configurable_t::configurable_t;
+
                 ///
                 /// \brief constructor - use all samples.
                 ///
-                task_iterator_t(const task_t&, const fold_t&);
+                iterator_t(const task_t&, const fold_t&);
 
                 ///
                 /// \brief constructor - use a minibatch of samples.
                 ///
-                task_iterator_t(const task_t&, const fold_t&, const size_t batch0, const scalar_t factor = scalar_t(1));
+                iterator_t(const task_t&, const fold_t&, const size_t batch0, const scalar_t factor = scalar_t(1));
 
                 ///
                 /// \brief reset configuration, keep the task.
@@ -30,6 +44,16 @@ namespace nano
                 /// \brief advance to the next minibatch by wrapping the fold if the end is reached.
                 ///
                 void next();
+
+                ///
+                /// \brief retrieve the 3D input tensor for a given sample
+                ///
+                virtual tensor3d_t input(const task_t&, const fold_t&, const size_t index) const;
+
+                ///
+                /// \brief retrieve the output target for a given sample
+                ///
+                virtual tensor3d_t target(const task_t&, const fold_t&, const size_t index) const;
 
                 ///
                 /// \brief retrieve the [begin, end) sample range

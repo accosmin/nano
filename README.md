@@ -144,21 +144,6 @@ A **loss** function assigns a scalar score to the prediction of a model `y` by c
 |-------------|----------------------------------------------------------------------------------|---------------|
 ```
 
-The loss functions are combined into training **criteria** to account for all training samples and to regularize the model.
-```
-./apps/info --criterion
-|-----------|-----------------------------------|---------------|
-| criterion | description                       | configuration |
-|-----------|-----------------------------------|---------------|
-| avg       | average loss                      |               |
-| avg-l2n   | L2-norm regularized average loss  |               |
-| avg-var   | variance-regularized average loss |               |
-| max       | softmax loss                      | beta=5[1,10]  |
-| max-l2n   | L2-norm regularized softmax loss  | beta=5[1,10]  |
-| max-var   | variance-regularized softmax loss | beta=5[1,10]  |
-|-----------|-----------------------------------|---------------|
-```
-
 A **trainer** optimizes the parameters of a given model to produce the correct outputs for a given task using the cumulated values of a given loss over the training samples as a numerical optimization criteria. All the available trainers tune all their required hyper parameters on a separate validation dataset.
 ```
 ./apps/info --trainer
