@@ -36,9 +36,10 @@ namespace nano
                 clear();
         }
 
-        void accumulator_t::mode(const accumulator_t::type type)
+        void accumulator_t::mode(const accumulator_t::type t)
         {
-                m_type = type;
+                m_type = t;
+                clear();
         }
 
         void accumulator_t::threads(const size_t nthreads)
@@ -66,7 +67,7 @@ namespace nano
                         loopit(end - begin, [&] (const size_t offset, const size_t th)
                         {
                                 const auto index = begin + offset;
-                                assert(th < m_models.size());
+                                assert(th < m_tcaches.size());
                                 assert(index < m_task.size(fold));
                                 assert(index >= begin && index < end);
                                 update(m_tcaches[th], fold, index);
