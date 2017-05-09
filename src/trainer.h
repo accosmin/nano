@@ -6,8 +6,8 @@
 namespace nano
 {
         struct loss_t;
+        struct task_t;
         struct model_t;
-        struct iterator_t;
 
         ///
         /// \brief stores registered prototypes
@@ -28,9 +28,7 @@ namespace nano
                 ///
                 /// \brief train the given model starting from the current model parameters
                 ///
-                virtual trainer_result_t train(
-                        iterator_t& it_train, const iterator_t& it_valid, const iterator_t& test_valid,
-                        const size_t nthreads, const loss_t&,
+                virtual trainer_result_t train(const task_t&, const size_t fold, const size_t nthreads, const loss_t&,
                         model_t&) const = 0;
         };
 }

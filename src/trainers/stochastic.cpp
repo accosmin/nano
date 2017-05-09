@@ -10,14 +10,13 @@
 namespace nano
 {
         stochastic_trainer_t::stochastic_trainer_t(const string_t& parameters) :
-                trainer_t(to_params(parameters, "opt", "sg[...]", "epochs", "16[1,1024]",
-                "policy", "stop_early[,all_epochs]", "min_batch", "32[32,1024]", "max_batch", "256[32,4096]", "eps", 1e-6, "patience", 32))
+                trainer_t(to_params(parameters, "opt", "sg[...]", "epochs", "16[1,1024]", "policy", "stop_early[all_epochs]",
+                "min_batch", "32[32,1024]", "max_batch", "256[32,4096]", "eps", 1e-6, "patience", 32))
         {
         }
 
         trainer_result_t stochastic_trainer_t::train(
-                iterator_t& it_train, const iterator_t& it_valid, const iterator_t& it_test,
-                const size_t nthreads, const loss_t& loss,
+                const task_t& task, const size_t fold, const size_t nthreads, const loss_t& loss,
                 model_t& model) const
         {
                 // parameters
@@ -30,7 +29,7 @@ namespace nano
                 const auto patience = from_params<size_t>(config(), "patience");
 
                 // iterator
-                const auto train_size = it_train.task().size(it_train.fold());
+                const auto train_size = task.size({fold, protocol::train});
                 const auto samples = epochs * train_size;
                 auto factor = scalar_t(1);
                 auto epoch_size = batch0;
@@ -40,7 +39,9 @@ namespace nano
                         epoch_size = idiv(static_cast<size_t>(std::log(batchK / batch0) / std::log(factor)), epochs);
                 }
 
-                it_train.reset(it_train.task(), it_train.fold(), batch0, factor);
+                const auto it_train = make_iterator("default", "", task, {fold, protocol::train}, batch0, factor);
+                const auto it_valid = make_iterator("default", "", task, {fold, protocol::valid});
+                const auto it_test = make_iterator("default", "", task, {fold, protocol::test});
 
                 // accumulator
                 accumulator_t acc(model, loss);

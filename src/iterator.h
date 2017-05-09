@@ -14,6 +14,12 @@ namespace nano
         NANO_PUBLIC iterator_manager_t& get_iterators();
 
         ///
+        /// \brief create an iterator with the given id and configuration.
+        ///
+        riterator_t make_iterator(const string_t& id, const string_t& config,
+                const task_t&, const fold_t&, const size_t batch = 0, const scalar_t factor = scalar_t(1));
+
+        ///
         ///
         /// \brief (minibatch) iterator over a task.
         ///     by default it produces fixed-size minibatches,
@@ -29,14 +35,12 @@ namespace nano
                 iterator_t(const string_t& configuration = string_t());
 
                 ///
-                /// \brief reset to use all samples
+                /// \brief reset to use a different task & fold
+                /// NB: there are two cases possible:
+                ///     - batch (default): use all samples are used
+                ///     - minibatch: use a geometrically increasing number of samples starting from *batch* size
                 ///
-                void reset(const task_t&, const fold_t&);
-
-                ///
-                /// \brief reset to use a minibatch of samples
-                ///
-                void reset(const task_t&, const fold_t&, const size_t batch0, const scalar_t factor = scalar_t(1));
+                void configure(const task_t&, const fold_t&, const size_t batch = 0, const scalar_t factor = scalar_t(1));
 
                 ///
                 /// \brief advance to the next minibatch by wrapping the fold if the end is reached
@@ -73,21 +77,24 @@ namespace nano
                 size_t          m_begin, m_end;         ///< sample range [begin, end)
         };
 
+        inline riterator_t make_iterator(const string_t& id, const string_t& config,
+                const task_t& task, const fold_t& fold, const size_t batch, const scalar_t factor)
+        {
+                const auto iterator = get_iterators().get(id, config);
+                iterator->configure(task, fold, batch, factor);
+                return iterator;
+        }
+
         inline iterator_t::iterator_t(const string_t& config) :
                 configurable_t(config),
                 m_task(nullptr), m_batch(0), m_factor(0), m_begin(0), m_end(0)
         {
         }
 
-        inline void iterator_t::reset(
-                const task_t& task, const fold_t& fold)
+        inline void iterator_t::configure(
+                const task_t& task, const fold_t& fold, const size_t batch, const scalar_t factor)
         {
-                reset(task, fold, task.size(fold), 1);
-        }
-
-        inline void iterator_t::reset(
-                const task_t& task, const fold_t& fold, const size_t batch0, const scalar_t factor)
-        {
+                const auto batch0 = (batch == 0( ? task.size(fold) : batch;
                 m_task = &task;
                 m_fold = fold;
                 m_batch = static_cast<scalar_t>(batch0);

@@ -16,8 +16,7 @@ namespace nano
         }
 
         trainer_result_t batch_trainer_t::train(
-                iterator_t& it_train, const iterator_t& it_valid, const iterator_t& it_test,
-                const size_t nthreads, const loss_t& loss,
+                const task_t& task, const size_t fold, const size_t nthreads, const loss_t& loss,
                 model_t& model) const
         {
                 // parameters
@@ -26,6 +25,10 @@ namespace nano
                 const auto epsilon = from_params<scalar_t>(config(), "eps");
                 const auto optimizer = from_params<string_t>(config(), "opt");
                 const auto patience = from_params<size_t>(config(), "patience");
+
+                const auto it_train = make_iterator("default", "", task, fold_t{fold, protocol::train});
+                const auto it_valid = make_iterator("default", "", task, fold_t{fold, protocol::valid});
+                const auto it_test = make_iterator("default", "", task, fold_t{fold, protocol::test});
 
                 // acumulator
                 accumulator_t acc(model, loss);
