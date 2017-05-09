@@ -16,15 +16,10 @@ namespace nano
         }
 
         trainer_result_t stochastic_trainer_t::train(
-                const task_t& task, const size_t fold, const size_t nthreads,
-                const loss_t& loss, const sampler_t& sampler,
+                iterator_t& it_train, const iterator_t& it_valid, const iterator_t& it_test,
+                const size_t nthreads, const loss_t& loss,
                 model_t& model) const
         {
-                if (model != task)
-                {
-                        throw std::runtime_error("stochastic trainer: mis-matching model and task");
-                }
-
                 // parameters
                 const auto epochs = clamp(from_params<size_t>(config(), "epochs"), 1, 1024);
                 const auto policy = from_params<trainer_policy>(config(), "policy");
@@ -35,8 +30,7 @@ namespace nano
                 const auto patience = from_params<size_t>(config(), "patience");
 
                 // iterator
-                const auto train_fold = fold_t{fold, protocol::train};
-                const auto train_size = task.size(train_fold);
+                const auto train_size = it_train.task().size(it_train.fold());
                 const auto samples = epochs * train_size;
                 auto factor = scalar_t(1);
                 auto epoch_size = batch0;
@@ -45,10 +39,11 @@ namespace nano
                         factor = clamp(scalar_t(samples - batch0) / scalar_t(samples - batchK), scalar_t(1), scalar_t(2));
                         epoch_size = idiv(static_cast<size_t>(std::log(batchK / batch0) / std::log(factor)), epochs);
                 }
-                task_iterator_t it(task, train_fold, batch0, factor);
+
+                it_train.reset(it_train.task(), it_train.fold(), batch0, factor);
 
                 // accumulator
-                accumulator_t acc(model, loss, task, sampler);
+                accumulator_t acc(model, loss);
                 acc.threads(nthreads);
 
                 const timer_t timer;
@@ -63,21 +58,21 @@ namespace nano
 
                         log_info()
                                 << "[tune:train=" << train
-                                << "," << config << ",batch=" << it.size() << ",g=" << state.convergence_criteria()
+                                << "," << config << ",batch=" << it_train.size() << ",g=" << state.convergence_criteria()
                                 << "] " << timer.elapsed() << ".";
 
                         // NB: need to reset the minibatch size (changed during tuning)!
-                        it.reset(batch0, factor);
+                        it_train.reset(it_train.task(), it_train.fold(), batch0, factor);
                 };
 
                 // logging operator
                 const auto fn_ulog = [&] (const state_t& state, const string_t& config)
                 {
-                        return ulog(acc, it, epoch, epochs, result, policy, patience, timer, state, config);
+                        return ulog(acc, it_train, it_valid, it_test, epoch, epochs, result, policy, patience, timer, state, config);
                 };
 
                 // assembly optimization function & train the model
-                const auto function = trainer_function_t(acc, it);
+                const auto function = trainer_function_t(acc, it_train);
                 const auto params = stoch_params_t{epochs, epoch_size, epsilon, fn_ulog, fn_tlog};
                 get_stoch_optimizers().get(optimizer)->minimize(params, function, model.params());
 

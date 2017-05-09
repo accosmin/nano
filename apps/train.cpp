@@ -68,6 +68,12 @@ int main(int argc, const char *argv[])
         model->random();
         model->describe();
 
+        if (*model != *task)
+        {
+                log_error() << "mis-matching model and task!";
+                return EXIT_FAILURE;
+        }
+
         // create trainer
         const auto trainer = nano::get_trainers().get(cmd_trainer, cmd_trainer_params);
 

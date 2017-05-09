@@ -2,7 +2,6 @@
 
 #include "function.h"
 #include "accumulator.h"
-#include "task_iterator.h"
 
 namespace nano
 {
@@ -11,9 +10,9 @@ namespace nano
         ///
         struct trainer_function_t final : public function_t
         {
-                trainer_function_t(accumulator_t& acc, task_iterator_t& iterator) :
+                trainer_function_t(accumulator_t& acc, iterator_t& iterator) :
                         function_t("ml optimization function", acc.psize(), acc.psize(), acc.psize(), convexity::no, 1e+6),
-                        m_acc(acc),
+                        m_accumulator(acc),
                         m_iterator(iterator)
                 {
                 }
@@ -37,34 +36,34 @@ namespace nano
                 scalar_t vgrad(const vector_t& x, vector_t* gx) const override
                 {
                         setup(x, gx);
-                        m_acc.update(m_iterator.fold());
+                        m_accumulator.update(m_iterator);
                         return get(gx);
                 }
 
                 scalar_t stoch_vgrad(const vector_t& x, vector_t* gx) const override
                 {
                         setup(x, gx);
-                        m_acc.update(m_iterator.fold(), m_iterator.begin(), m_iterator.end());
+                        m_accumulator.update(m_iterator);
                         return get(gx);
                 }
 
                 void setup(const vector_t& x, vector_t* gx) const
                 {
-                        m_acc.params(x);
-                        m_acc.mode(gx ? accumulator_t::type::vgrad : accumulator_t::type::value);
+                        m_accumulator.params(x);
+                        m_accumulator.mode(gx ? accumulator_t::type::vgrad : accumulator_t::type::value);
                 }
 
                 scalar_t get(vector_t* gx) const
                 {
                         if (gx)
                         {
-                                *gx = m_acc.vgrad();
+                                *gx = m_accumulator.vgrad();
                         }
-                        return m_acc.vstats().avg();
+                        return m_accumulator.vstats().avg();
                 }
 
                 // attributes
-                accumulator_t&    m_acc;        ///< function value and gradient accumulator
-                task_iterator_t&  m_iterator;   ///<
+                accumulator_t&  m_accumulator;  ///< function value and gradient accumulator
+                iterator_t&     m_iterator;     ///<
         };
 }

@@ -4,7 +4,6 @@
 #include "text/cmdline.h"
 #include "math/numeric.h"
 #include "vision/color.h"
-#include "task_iterator.h"
 #include "tasks/charset.h"
 #include "text/to_params.h"
 #include "tensor/numeric.h"
@@ -72,19 +71,20 @@ int main(int argc, const char *argv[])
                                 const auto fold = fold_t{0, protocol::train};
                                 const auto epochs = 100 * nano::idiv(task->size(fold), batch_size);
 
-                                task_iterator_t it(*task, fold, batch_size);
+                                auto iterator = get_iterators().get("default");
+                                iterator->reset(*task, fold, batch_size);
 
                                 volatile size_t count = 0;
                                 volatile long double sum = 0;
                                 for (size_t epoch = 0; epoch < epochs; ++ epoch)
                                 {
-                                        count += it.end() - it.begin();
-                                        for (size_t index = it.begin(), end = it.end(); index < end; ++ index)
+                                        count += it->size();
+                                        for (size_t index = it->begin(), end = it->end(); index < end; ++ index)
                                         {
                                                 const auto target = task->target(fold, index);
                                                 sum += target.vector().sum();
                                         }
-                                        it.next();
+                                        it->next();
                                 }
                         }, 1);
                         row << duration.count();

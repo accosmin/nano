@@ -16,15 +16,10 @@ namespace nano
         }
 
         trainer_result_t batch_trainer_t::train(
-                const task_t& task, const size_t fold, const size_t nthreads,
-                const loss_t& loss, const sampler_t& sampler,
+                iterator_t& it_train, const iterator_t& it_valid, const iterator_t& it_test,
+                const size_t nthreads, const loss_t& loss,
                 model_t& model) const
         {
-                if (model != task)
-                {
-                        throw std::runtime_error("batch trainer: mis-matching model and task");
-                }
-
                 // parameters
                 const auto epochs = clamp(from_params<size_t>(config(), "epochs"), 4, 4096);
                 const auto policy = from_params<trainer_policy>(config(), "policy");
@@ -32,12 +27,8 @@ namespace nano
                 const auto optimizer = from_params<string_t>(config(), "opt");
                 const auto patience = from_params<size_t>(config(), "patience");
 
-                // iterator
-                const auto train_fold = fold_t{fold, protocol::train};
-                task_iterator_t it(task, train_fold);
-
                 // acumulator
-                accumulator_t acc(model, loss, task, sampler);
+                accumulator_t acc(model, loss);
                 acc.threads(nthreads);
 
                 const timer_t timer;
@@ -47,11 +38,11 @@ namespace nano
                 // logging operator
                 const auto fn_ulog = [&] (const state_t& state)
                 {
-                        return ulog(acc, it, epoch, epochs, result, policy, patience, timer, state);
+                        return ulog(acc, it_train, it_valid, it_test, epoch, epochs, result, policy, patience, timer, state);
                 };
 
                 // assembly optimization function & train the model
-                const auto function = trainer_function_t(acc, it);
+                const auto function = trainer_function_t(acc, it_train);
                 const auto params = batch_params_t{epochs, epsilon, fn_ulog};
                 get_batch_optimizers().get(optimizer)->minimize(params, function, model.params());
 

@@ -63,10 +63,6 @@ namespace nano
                 const task_t& task() const { assert(m_task); return *m_task; }
                 const fold_t& fold() const { return m_fold; }
 
-                fold_t train_fold() const { return {m_fold.m_index, protocol::train}; }
-                fold_t valid_fold() const { return {m_fold.m_index, protocol::valid}; }
-                fold_t test_fold() const { return {m_fold.m_index, protocol::test}; }
-
         private:
 
                 // attributes
