@@ -6,7 +6,7 @@
 namespace nano
 {
         ///
-        /// \brief in-place separable 2D filter.
+        /// \brief convolve in-place with a  separable 2D filter.
         ///
         template <typename tmatrix>
         void convolve(const vector_t& kernel, tmatrix&& src)
@@ -30,7 +30,7 @@ namespace nano
 
                         for (int c = 0; c < cols; ++ c)
                         {
-                                src(r, c) = buff.segment(c - krad, ksize).dot(kernel);
+                                src(r, c) = buff.segment(c, ksize).dot(kernel);
                         }
                 }
 
@@ -43,7 +43,7 @@ namespace nano
 
                         for (int r = 0; r < rows; ++ r)
                         {
-                                src(r, c) = buff.segment(r - krad, ksize).dot(kernel);
+                                src(r, c) = buff.segment(r, ksize).dot(kernel);
                         }
                 }
         }
