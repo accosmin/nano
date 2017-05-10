@@ -5,12 +5,12 @@
 #include "math/numeric.h"
 #include "layers/make_layers.h"
 
+using namespace nano;
+
 NANO_BEGIN_MODULE(test_model)
 
 NANO_CASE(evaluate)
 {
-        using namespace nano;
-
         const auto task = get_tasks().get("synth-charset",
                 to_params("type", "digit", "color", "luma", "irows", 16, "icols", 16, "count", 128));
 
@@ -41,13 +41,12 @@ NANO_CASE(evaluate)
                 convnet + outlayer
         };
 
-        const auto loss = nano::get_losses().get("logistic");
-        const auto sampler = nano::get_samplers().get("none");
+        const auto loss = get_losses().get("logistic");
 
         for (const string_t& cmd_network : cmd_networks)
         {
                 // create feed-forward network
-                const auto model = nano::get_models().get("forward-network", cmd_network);
+                const auto model = get_models().get("forward-network", cmd_network);
                 NANO_CHECK_EQUAL(model->configure(*task), true);
                 NANO_CHECK_EQUAL(model->idims(), task->idims());
                 NANO_CHECK_EQUAL(model->odims(), task->odims());
@@ -62,9 +61,9 @@ NANO_CASE(evaluate)
                         const string_t path = "./test_model.test";
 
                         // test error & parameters before saving
-                        accumulator_t bacc(*model, *loss, *task, *sampler);
+                        accumulator_t bacc(*model, *loss);
                         bacc.mode(accumulator_t::type::value);
-                        bacc.update(fold);
+                        bacc.update(*task, fold);
                         const auto lvalue_before = bacc.vstats().avg();
                         const auto lerror_before = bacc.estats().avg();
                         const auto lcount_before = bacc.vstats().count();
@@ -78,9 +77,9 @@ NANO_CASE(evaluate)
                         //
 
                         // test error & parameters after loading
-                        accumulator_t aacc(*model, *loss, *task, *sampler);
+                        accumulator_t aacc(*model, *loss);
                         aacc.mode(accumulator_t::type::value);
-                        aacc.update(fold);
+                        aacc.update(*task, fold);
                         const auto lvalue_after = aacc.vstats().avg();
                         const auto lerror_after = aacc.estats().avg();
                         const auto lcount_after = aacc.vstats().count();
@@ -89,11 +88,11 @@ NANO_CASE(evaluate)
 
                         // check
                         NANO_CHECK_EQUAL(lcount_before, lcount_after);
-                        NANO_CHECK_CLOSE(lvalue_before, lvalue_after, nano::epsilon0<scalar_t>());
-                        NANO_CHECK_CLOSE(lerror_before, lerror_after, nano::epsilon0<scalar_t>());
+                        NANO_CHECK_CLOSE(lvalue_before, lvalue_after, epsilon0<scalar_t>());
+                        NANO_CHECK_CLOSE(lerror_before, lerror_after, epsilon0<scalar_t>());
 
                         NANO_REQUIRE_EQUAL(params.size(), xparams.size());
-                        NANO_CHECK_EIGEN_CLOSE(params, xparams, nano::epsilon0<scalar_t>());
+                        NANO_CHECK_EIGEN_CLOSE(params, xparams, epsilon0<scalar_t>());
 
                         // cleanup
                         std::remove(path.c_str());

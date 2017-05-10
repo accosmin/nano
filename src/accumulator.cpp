@@ -47,38 +47,68 @@ namespace nano
                 thread_pool_t::instance().activate(nthreads);
         }
 
-        void accumulator_t::update(const iterator_t& it)
+        void accumulator_t::update(const task_t& task, const fold_t& fold)
         {
-                const auto begin = it.begin();
-                const auto end = it.end();
+                update(task, fold, 0, task.size(fold));
+        }
 
-                if (thread_pool_t::instance().n_active_workers() == 1)
+        void accumulator_t::update(const task_t& task, const fold_t& fold, const size_t begin, const size_t end)
+        {
+                switch (thread_pool_t::instance().n_active_workers())
                 {
+                case 1:
                         for (size_t index = begin; index < end; ++ index)
                         {
-                                update(origin(), it, index);
+                                update(origin(), task.input(fold, index), task.target(fold, index));
                         }
-                }
+                        break;
 
-                else
-                {
+                default:
                         loopit(end - begin, [&] (const size_t offset, const size_t th)
                         {
                                 const auto index = begin + offset;
                                 assert(th < m_tcaches.size());
                                 assert(index >= begin && index < end);
-                                update(m_tcaches[th], it, index);
+                                update(m_tcaches[th], task.input(fold, index), task.target(fold, index));
                         });
-
                         accumulate();
+                        break;
                 }
         }
 
-        void accumulator_t::update(tcache_t& tcache, const iterator_t& it, const size_t index)
+        void accumulator_t::update(const iterator_t& it, const task_t& task, const fold_t& fold)
         {
-                const auto input = it.input(index);
+                return update(it, task, fold, 0, task.size(fold));
+        }
+
+        void accumulator_t::update(const iterator_t& it, const task_t& task, const fold_t& fold,
+                const size_t begin, const size_t end)
+        {
+                switch (thread_pool_t::instance().n_active_workers())
+                {
+                case 1:
+                        for (size_t index = begin; index < end; ++ index)
+                        {
+                                update(origin(), it.input(task, fold, index), it.target(task, fold, index));
+                        }
+                        break;
+
+                default:
+                        loopit(end - begin, [&] (const size_t offset, const size_t th)
+                        {
+                                const auto index = begin + offset;
+                                assert(th < m_tcaches.size());
+                                assert(index >= begin && index < end);
+                                update(m_tcaches[th], it.input(task, fold, index), it.target(task, fold, index));
+                        });
+                        accumulate();
+                        break;
+                }
+        }
+
+        void accumulator_t::update(tcache_t& tcache, const tensor3d_t& input, const tensor3d_t& target)
+        {
                 const auto output = tcache.m_model->output(input);
-                const auto target = it.target(index);
 
                 const auto value = m_loss.value(target.vector(), output.vector());
                 const auto error = m_loss.error(target.vector(), output.vector());

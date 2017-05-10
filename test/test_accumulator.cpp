@@ -5,18 +5,17 @@
 #include "math/epsilon.h"
 #include "layers/make_layers.h"
 
+using namespace nano;
+
 NANO_BEGIN_MODULE(test_accumulator)
 
 NANO_CASE(evaluate)
 {
-        using namespace nano;
-
         const auto task = get_tasks().get("synth-charset", to_params("count", 64));
         NANO_CHECK_EQUAL(task->load(), true);
 
         const auto fold = fold_t{0, protocol::train};
         const auto loss = nano::get_losses().get("logistic");
-        const auto sampler = nano::get_samplers().get("none");
 
         // create model
         const auto cmd_model = make_affine_layer(4) + make_output_layer(task->odims());
@@ -26,17 +25,17 @@ NANO_CASE(evaluate)
         model->random();
 
         // accumulators using 1 thread
-        accumulator_t acc(*model, *loss, *task, *sampler);
+        accumulator_t acc(*model, *loss);
         acc.threads(1);
 
         acc.mode(accumulator_t::type::value);
-        acc.update(fold);
+        acc.update(*task, fold);
         const auto value1 = acc.vstats().avg();
 
         NANO_CHECK_EQUAL(acc.vstats().count(), task->size(fold));
 
         acc.mode(accumulator_t::type::vgrad);
-        acc.update(fold);
+        acc.update(*task, fold);
         const auto vgrad1 = acc.vstats().avg();
         const auto pgrad1 = acc.vgrad();
 
@@ -47,17 +46,17 @@ NANO_CASE(evaluate)
         // check results with multiple threads
         for (size_t th = 2; th <= nano::logical_cpus(); ++ th)
         {
-                accumulator_t accx(*model, *loss, *task, *sampler);
+                accumulator_t accx(*model, *loss);
                 accx.threads(th);
 
                 accx.mode(accumulator_t::type::value);
-                accx.update(fold);
+                accx.update(*task, fold);
 
                 NANO_CHECK_EQUAL(accx.vstats().count(), task->size(fold));
                 NANO_CHECK_CLOSE(accx.vstats().avg(), value1, nano::epsilon1<scalar_t>());
 
                 accx.mode(accumulator_t::type::vgrad);
-                accx.update(fold);
+                accx.update(*task, fold);
 
                 NANO_CHECK_EQUAL(accx.vstats().count(), task->size(fold));
                 NANO_CHECK_CLOSE(accx.vstats().avg(), vgrad1, nano::epsilon1<scalar_t>());

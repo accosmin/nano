@@ -1,22 +1,22 @@
-#include "loop.h"
 #include "model.h"
-#include "stochastic.h"
 #include "math/numeric.h"
+#include "trainer_stoch.h"
+#include "function_stoch.h"
 #include "text/to_params.h"
 #include "stoch_optimizer.h"
 #include "text/from_params.h"
-#include "trainer_function.h"
+#include "logger.h"
 
 namespace nano
 {
-        stochastic_trainer_t::stochastic_trainer_t(const string_t& parameters) :
+        stoch_trainer_t::stoch_trainer_t(const string_t& parameters) :
                 trainer_t(to_params(parameters, "opt", "sg[...]", "epochs", "16[1,1024]", "policy", "stop_early[all_epochs]",
                 "min_batch", "32[32,1024]", "max_batch", "256[32,4096]", "eps", 1e-6, "patience", 32))
         {
         }
 
-        trainer_result_t stochastic_trainer_t::train(
-                const task_t& task, const size_t fold, const size_t nthreads, const loss_t& loss,
+        trainer_result_t stoch_trainer_t::train(
+                const iterator_t& iterator, const task_t& task, const size_t fold, const size_t nthreads, const loss_t& loss,
                 model_t& model) const
         {
                 // parameters
@@ -28,7 +28,7 @@ namespace nano
                 const auto optimizer = from_params<string_t>(config(), "opt");
                 const auto patience = from_params<size_t>(config(), "patience");
 
-                // iterator
+                // minibatch
                 const auto train_size = task.size({fold, protocol::train});
                 const auto samples = epochs * train_size;
                 auto factor = scalar_t(1);
@@ -39,9 +39,7 @@ namespace nano
                         epoch_size = idiv(static_cast<size_t>(std::log(batchK / batch0) / std::log(factor)), epochs);
                 }
 
-                const auto it_train = make_iterator("default", "", task, {fold, protocol::train}, batch0, factor);
-                const auto it_valid = make_iterator("default", "", task, {fold, protocol::valid});
-                const auto it_test = make_iterator("default", "", task, {fold, protocol::test});
+                auto minibatch = minibatch_t(task, fold, batch0, factor);
 
                 // accumulator
                 accumulator_t acc(model, loss);
@@ -57,23 +55,55 @@ namespace nano
                         // NB: the training state is already computed
                         const auto train = trainer_measurement_t{acc.vstats().avg(), acc.estats().avg()};
 
+                        // OK, log the current state
+                        const auto xnorm = state.x.lpNorm<2>();
+                        const auto gnorm = state.convergence_criteria();
+
                         log_info()
                                 << "[tune:train=" << train
-                                << "," << config << ",batch=" << it_train.size() << ",g=" << state.convergence_criteria()
+                                << "," << config << ",batch=" << minibatch.size() << ",g=" << gnorm << ",x=" << xnorm
                                 << "] " << timer.elapsed() << ".";
 
                         // NB: need to reset the minibatch size (changed during tuning)!
-                        it_train.reset(it_train.task(), it_train.fold(), batch0, factor);
+                        minibatch.reset(batch0, factor);
                 };
 
                 // logging operator
                 const auto fn_ulog = [&] (const state_t& state, const string_t& config)
                 {
-                        return ulog(acc, it_train, it_valid, it_test, epoch, epochs, result, policy, patience, timer, state, config);
+                        // evaluate the current state
+                        // NB: the training state is already estimated!
+                        const auto train = trainer_measurement_t{acc.vstats().avg(), acc.estats().avg()};
+
+                        acc.params(state.x);
+                        acc.mode(accumulator_t::type::value);
+                        acc.update(task, {fold, protocol::valid});
+                        const auto valid = trainer_measurement_t{acc.vstats().avg(), acc.estats().avg()};
+
+                        acc.params(state.x);
+                        acc.mode(accumulator_t::type::value);
+                        acc.update(task, {fold, protocol::test});
+                        const auto test = trainer_measurement_t{acc.vstats().avg(), acc.estats().avg()};
+
+                        // OK, update the optimum solution
+                        const auto milis = timer.milliseconds();
+                        const auto xnorm = state.x.lpNorm<2>();
+                        const auto gnorm = state.convergence_criteria();
+                        const auto ret = result.update(state, {milis, ++epoch, xnorm, gnorm, train, valid, test}, config, patience);
+
+                        log_info()
+                                << "[" << epoch << "/" << epochs
+                                << ":train=" << train
+                                << ",valid=" << valid << "|" << nano::to_string(ret)
+                                << ",test=" << test
+                                << "," << config << ",batch=" << minibatch.size() << ",g=" << gnorm << ",x=" << xnorm
+                                << "] " << timer.elapsed() << ".";
+
+                        return !nano::is_done(ret, policy);
                 };
 
                 // assembly optimization function & train the model
-                const auto function = trainer_function_t(acc, it_train);
+                const auto function = stoch_function_t(acc, iterator, task, fold, minibatch);
                 const auto params = stoch_params_t{epochs, epoch_size, epsilon, fn_ulog, fn_tlog};
                 get_stoch_optimizers().get(optimizer)->minimize(params, function, model.params());
 

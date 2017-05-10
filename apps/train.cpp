@@ -8,25 +8,19 @@ int main(int argc, const char *argv[])
 {
         using namespace nano;
 
-        // prepare object string-based selection
-        const strings_t task_ids = nano::get_tasks().ids();
-        const strings_t loss_ids = nano::get_losses().ids();
-        const strings_t model_ids = nano::get_models().ids();
-        const strings_t trainer_ids = nano::get_trainers().ids();
-        const strings_t sampler_ids = nano::get_samplers().ids();
-
         // parse the command line
         nano::cmdline_t cmdline("train a model");
-        cmdline.add("", "task",                 nano::concatenate(task_ids));
+        cmdline.add("", "task",                 concatenate(get_tasks().ids()));
         cmdline.add("", "task-params",          "task parameters (if any)", "dir=.");
         cmdline.add("", "task-fold",            "fold index to use for training", "0");
-        cmdline.add("", "model",                nano::concatenate(model_ids));
+        cmdline.add("", "model",                concatenate(get_models().ids()));
         cmdline.add("", "model-params",         "model parameters (if any)");
         cmdline.add("", "model-file",           "filepath to save the model to");
-        cmdline.add("", "trainer",              nano::concatenate(trainer_ids));
+        cmdline.add("", "trainer",              concatenate(get_trainers().ids()));
         cmdline.add("", "trainer-params",       "trainer parameters (if any)");
-        cmdline.add("", "loss",                 nano::concatenate(loss_ids));
-        cmdline.add("", "sampler",              nano::concatenate(sampler_ids), "none");
+        cmdline.add("", "loss",                 concatenate(get_losses().ids()));
+        cmdline.add("", "iterator",             concatenate(get_iterators().ids()), "default");
+        cmdline.add("", "iterator-params",      "task iterator parameters (if any)", "");
         cmdline.add("", "threads",              "number of threads to use", logical_cpus());
 
         cmdline.process(argc, argv);
@@ -42,7 +36,8 @@ int main(int argc, const char *argv[])
         const auto cmd_trainer = cmdline.get<string_t>("trainer");
         const auto cmd_trainer_params = cmdline.get<string_t>("trainer-params");
         const auto cmd_loss = cmdline.get<string_t>("loss");
-        const auto cmd_sampler = cmdline.get<string_t>("sampler");
+        const auto cmd_iterator = cmdline.get<string_t>("iterator");
+        const auto cmd_iterator_params = cmdline.get<string_t>("iterator-params");
         const auto cmd_threads = cmdline.get<size_t>("threads");
 
         // create task
@@ -59,8 +54,8 @@ int main(int argc, const char *argv[])
         // create loss
         const auto loss = nano::get_losses().get(cmd_loss);
 
-        // create sampler
-        const auto sampler = nano::get_samplers().get(cmd_sampler);
+        // create iterator
+        const auto iterator = nano::get_iterators().get(cmd_iterator, cmd_iterator_params);
 
         // create model
         const auto model = nano::get_models().get(cmd_model, cmd_model_params);
@@ -81,7 +76,7 @@ int main(int argc, const char *argv[])
         trainer_result_t result;
         nano::measure_critical_and_log([&] ()
                 {
-                        result = trainer->train(*task, cmd_task_fold, cmd_threads, *loss, *sampler, *model);
+                        result = trainer->train(*iterator, *task, cmd_task_fold, cmd_threads, *loss, *model);
                         return result.valid();
                 },
                 "train model");

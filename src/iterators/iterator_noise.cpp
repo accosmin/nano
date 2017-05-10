@@ -11,20 +11,18 @@ namespace nano
         {
         }
 
-        tensor3d_t iterator_noise_t::input(const size_t index) const
+        tensor3d_t iterator_noise_t::input(const task_t& task, const fold_t& fold, const size_t index) const
         {
-                tensor3d_t iodata = task().input(fold(), index);
-                if (fold().m_protocol == protocol::train)
-                {
-                        const auto noise = from_params<scalar_t>(config(), "noise");
+                tensor3d_t iodata = task.input(fold, index);
 
-                        add_random(make_rng<scalar_t>(-noise, +noise), iodata);
-                }
+                const auto noise = from_params<scalar_t>(config(), "noise");
+                add_random(make_rng<scalar_t>(-noise, +noise), iodata);
+
                 return iodata;
         }
 
-        tensor3d_t iterator_noise_t::target(const size_t index) const
+        tensor3d_t iterator_noise_t::target(const task_t& task, const fold_t& fold, const size_t index) const
         {
-                return task().target(fold(), index);
+                return task.target(fold, index);
         }
 }

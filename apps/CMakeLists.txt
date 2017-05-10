@@ -19,8 +19,8 @@ build_app(info.cpp nano)
 build_app(info_mat5.cpp nano)
 build_app(info_task.cpp nano)
 build_app(info_model.cpp nano)
-build_app(info_sampler.cpp nano)
 build_app(info_archive.cpp nano)
+build_app(info_iterator.cpp nano)
 
 build_app(train.cpp nano)
 build_app(evaluate.cpp nano)
@@ -35,8 +35,8 @@ set(programs
         info_mat5
         info_task
         info_model
-        info_sampler
         info_archive
+        info_iterator
         train
         evaluate
         embed

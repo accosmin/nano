@@ -32,9 +32,9 @@ int main(int argc, const char* argv[])
         cmdline_t cmdline("display the registered objects");
         cmdline.add("", "loss",                 "loss functions");
         cmdline.add("", "task",                 "tasks");
-        cmdline.add("", "layer",                "layer types to built models");
-        cmdline.add("", "model",                "model types");
-        cmdline.add("", "sampler",              "training sampling methods");
+        cmdline.add("", "layer",                "layers to built models");
+        cmdline.add("", "model",                "models");
+        cmdline.add("", "iterator",             "task iterators");
         cmdline.add("", "trainer",              "training methods");
         cmdline.add("", "batch",                "batch optimization algorithms");
         cmdline.add("", "stoch",                "stochastic optimization algorithms");
@@ -51,7 +51,7 @@ int main(int argc, const char* argv[])
         const bool has_task = cmdline.has("task");
         const bool has_layer = cmdline.has("layer");
         const bool has_model = cmdline.has("model");
-        const bool has_sampler = cmdline.has("sampler");
+        const bool has_iterator = cmdline.has("iterator");
         const bool has_trainer = cmdline.has("trainer");
         const bool has_batch = cmdline.has("batch");
         const bool has_stoch = cmdline.has("stoch");
@@ -66,7 +66,7 @@ int main(int argc, const char* argv[])
                 !has_task &&
                 !has_layer &&
                 !has_model &&
-                !has_sampler &&
+                !has_iterator &&
                 !has_trainer &&
                 !has_batch &&
                 !has_stoch &&
@@ -98,9 +98,9 @@ int main(int argc, const char* argv[])
         {
                 print("model", get_models());
         }
-        if (has_sampler)
+        if (has_iterator)
         {
-                print("sampler", get_samplers());
+                print("iterator", get_iterators());
         }
         if (has_trainer)
         {

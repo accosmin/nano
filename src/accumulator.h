@@ -49,7 +49,11 @@ namespace nano
                 ///
                 /// \brief cumulate statistics with a set of samples
                 ///
-                void update(const iterator_t&);
+                void update(const task_t&, const fold_t&);
+                void update(const task_t&, const fold_t&, const size_t begin, const size_t end);
+
+                void update(const iterator_t&, const task_t&, const fold_t&);
+                void update(const iterator_t&, const task_t&, const fold_t&, const size_t begin, const size_t end);
 
                 ///
                 /// \brief cumulated gradient
@@ -99,7 +103,7 @@ namespace nano
                         tstats_t        m_estats;       ///< statistics for the error function
                 };
 
-                void update(tcache_t&, const iterator_t&, const size_t index);
+                void update(tcache_t&, const tensor3d_t& input, const tensor3d_t& target);
                 void accumulate();
 
                 tcache_t& origin();

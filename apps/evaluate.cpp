@@ -48,9 +48,6 @@ int main(int argc, const char *argv[])
         // create loss
         const auto loss = nano::get_losses().get(cmd_loss);
 
-        // create sampler
-        const auto sampler = nano::get_samplers().get("none");
-
         // create model
         const auto model = nano::get_models().get(cmd_model);
 
@@ -60,14 +57,12 @@ int main(int argc, const char *argv[])
                 "load model from <" + cmd_model_file + ">");
 
         // test model
-        const auto tfold = fold_t{cmd_task_fold, protocol::test};
-
-        accumulator_t lacc(*model, *loss, *task, *sampler);
+        accumulator_t lacc(*model, *loss);
         lacc.mode(accumulator_t::type::value);
         lacc.threads(cmd_threads);
 
         nano::measure_and_log(
-                [&] () { lacc.clear(); lacc.update(tfold); },
+                [&] () { lacc.update(*task, fold_t{cmd_task_fold, protocol::test}); },
                 "evaluate model");
 
         log_info() << "test=" << lacc.vstats().avg() << "|" << lacc.estats().avg() << "+/-" << lacc.estats().var() << ".";

@@ -108,7 +108,6 @@ int main(int argc, const char *argv[])
         #undef DEFINE
 
         const auto loss = get_losses().get("logistic");
-        const auto sampler = get_samplers().get("none");
 
         // construct tables to compare models
         table_t ftable; ftable.header() << "forward [us/sample]";
@@ -143,7 +142,7 @@ int main(int argc, const char *argv[])
                 // process the samples
                 for (size_t nthreads = cmd_min_nthreads; nthreads <= cmd_max_nthreads; ++ nthreads)
                 {
-                        accumulator_t acc(*model, *loss, *task, *sampler);
+                        accumulator_t acc(*model, *loss);
                         acc.threads(nthreads);
 
                         if (cmd_forward)
@@ -151,7 +150,7 @@ int main(int argc, const char *argv[])
                                 const auto duration = measure_robustly<microseconds_t>([&] ()
                                 {
                                         acc.mode(accumulator_t::type::value);
-                                        acc.update(fold);
+                                        acc.update(*task, fold);
                                 }, 1);
 
                                 log_info() << "<<< processed [" << acc.vstats().count()
@@ -167,7 +166,7 @@ int main(int argc, const char *argv[])
                                 const auto duration = measure_robustly<microseconds_t>([&] ()
                                 {
                                         acc.mode(accumulator_t::type::vgrad);
-                                        acc.update(fold);
+                                        acc.update(*task, fold);
                                 }, 1);
 
                                 log_info() << "<<< processed [" << acc.vstats().count()

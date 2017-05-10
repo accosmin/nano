@@ -21,8 +21,8 @@
 
 #include "models/forward_network.h"
 
-#include "trainers/batch.h"
-#include "trainers/stochastic.h"
+#include "trainers/trainer_batch.h"
+#include "trainers/trainer_stoch.h"
 
 #include "stoch/ag.h"
 #include "stoch/adam.h"
@@ -138,7 +138,7 @@ namespace nano
         {
                 auto& f = nano::get_trainers();
                 f.add("batch", "batch trainer", maker<batch_trainer_t>());
-                f.add("stoch", "stochastic trainer", maker<stochastic_trainer_t>());
+                f.add("stoch", "stochastic trainer", maker<stoch_trainer_t>());
         }
 
         static void init_losses()

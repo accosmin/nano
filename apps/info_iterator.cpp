@@ -15,7 +15,7 @@ static image_t make_image(const tensor3d_t& data)
         return image;
 }
 
-static void save_as_images(const task_t& task, const fold_t& fold, sampler_t& sampler, const string_t& basepath,
+static void save_as_images(const iterator_t& iterator, const task_t& task, const fold_t& fold, const string_t& basepath,
         const coord_t grows, const coord_t gcols,
         const size_t trials = 16,
         const coord_t border = 8,
@@ -47,7 +47,7 @@ static void save_as_images(const task_t& task, const fold_t& fold, sampler_t& sa
                 {
                         for (coord_t c = 0; c < gcols && i < size; ++ c, ++ i)
                         {
-                                grid.set(r, c, make_image(sampler.input(task, fold, i)));
+                                grid.set(r, c, make_image(iterator.input(task, fold, i)));
                         }
                 }
 
@@ -57,15 +57,12 @@ static void save_as_images(const task_t& task, const fold_t& fold, sampler_t& sa
 
 int main(int argc, const char *argv[])
 {
-        const auto task_ids = nano::get_tasks().ids();
-        const auto sampler_ids = nano::get_samplers().ids();
-
         // parse the command line
-        nano::cmdline_t cmdline("describe the augmented training samples");
-        cmdline.add("", "task",                 ("tasks to choose from: " + nano::concatenate(task_ids, ", ")).c_str());
+        cmdline_t cmdline("describe the augmented training samples");
+        cmdline.add("", "task",                 concatenate(get_tasks().ids()));
         cmdline.add("", "task-params",          "task parameters (if any)", "-");
-        cmdline.add("", "sampler",              ("samplers to choose from: " + nano::concatenate(sampler_ids, ", ")).c_str());
-        cmdline.add("", "sampler-params",       "sampler parameters (if any)", "-");
+        cmdline.add("", "iterator",              concatenate(get_iterators().ids()));
+        cmdline.add("", "iterator-params",      "task iterator parameters (if any)", "");
         cmdline.add("", "save-dir",             "directory to save samples to");
         cmdline.add("", "save-trials",          "number of sample generation trials", "16");
         cmdline.add("", "save-group-rows",      "number of samples to group in a row", "32");
@@ -74,7 +71,7 @@ int main(int argc, const char *argv[])
         cmdline.process(argc, argv);
 
         if (    !cmdline.has("task") ||
-                !cmdline.has("sampler"))
+                !cmdline.has("iterator"))
         {
                 cmdline.usage();
         }
@@ -82,23 +79,23 @@ int main(int argc, const char *argv[])
         // check arguments and options
         const auto cmd_task = cmdline.get<string_t>("task");
         const auto cmd_task_params = cmdline.get<string_t>("task-params");
-        const auto cmd_sampler = cmdline.get<string_t>("sampler");
-        const auto cmd_sampler_params = cmdline.get<string_t>("sampler-params");
+        const auto cmd_iterator = cmdline.get<string_t>("iterator");
+        const auto cmd_iterator_params = cmdline.get<string_t>("iterator-params");
         const auto cmd_save_trials = cmdline.get<size_t>("save-trials");
-        const auto cmd_save_grows = nano::clamp(cmdline.get<coord_t>("save-group-rows"), 1, 128);
-        const auto cmd_save_gcols = nano::clamp(cmdline.get<coord_t>("save-group-cols"), 1, 128);
+        const auto cmd_save_grows = clamp(cmdline.get<coord_t>("save-group-rows"), 1, 128);
+        const auto cmd_save_gcols = clamp(cmdline.get<coord_t>("save-group-cols"), 1, 128);
 
         // create & load task
-        const auto task = nano::get_tasks().get(cmd_task, cmd_task_params);
+        const auto task = get_tasks().get(cmd_task, cmd_task_params);
 
-        nano::measure_critical_and_log(
+        measure_critical_and_log(
                 [&] () { return task->load(); },
                 "load task <" + cmd_task + ">");
 
-        nano::describe(*task, cmd_task);
+        describe(*task, cmd_task);
 
-        // create sampler
-        const auto sampler = nano::get_samplers().get(cmd_sampler, cmd_sampler_params);
+        // create iterator
+        const auto iterator = get_iterators().get(cmd_iterator, cmd_iterator_params);
 
         // save samples as images
         if (cmdline.has("save-dir"))
@@ -107,14 +104,14 @@ int main(int argc, const char *argv[])
                 for (size_t f = 0; f < task->fsize(); ++ f)
                 {
                         const auto fold = fold_t{f, protocol::train};
-                        const auto path = cmd_save_dir + "/" + cmd_task + "_" + cmd_sampler + "_train" + to_string(f + 1);
-                        nano::measure_and_log(
-                                [&] () { save_as_images(*task, fold, *sampler, path, cmd_save_grows, cmd_save_gcols, cmd_save_trials); },
+                        const auto path = cmd_save_dir + "/" + cmd_task + "_" + cmd_iterator + "_train" + to_string(f + 1);
+                        measure_and_log(
+                                [&] () { save_as_images(*iterator, *task, fold, path, cmd_save_grows, cmd_save_gcols, cmd_save_trials); },
                                 "save samples as images to <" + path + "*.png>");
                 }
         }
 
         // OK
-        nano::log_info() << nano::done;
+        log_info() << done;
         return EXIT_SUCCESS;
 }
