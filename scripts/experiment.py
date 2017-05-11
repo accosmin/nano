@@ -121,21 +121,21 @@ class experiment:
                 for line in lfile:
                         if line.find("speed=") < 0:
                                 continue
-                        # search for the test value (aka criterion)
+                        # search for the test loss value
                         value, index = self.get_token(line, "test=", "|", 0)
                         # search for the test error
-                        error, index = self.get_token(line, "|", "+/-", index)
+                        error, index = self.get_token(line, "|", ",", index)
                         # search for the optimum number of epochs
                         epoch, index = self.get_token(line, "epoch=", ",", index)
                         # search for the convergence speed
-                        speed, index = self.get_token(line, "speed=", ",", index)
+                        speed, index = self.get_token(line, "speed=", "/s", index)
                         # duration
                         delta, index = self.get_token(line, "time=", ".", index)
                         return value, error, epoch, speed, self.get_seconds(delta)
                 lfile.close()
                 print("invalid log file <", lpath, ">")
 
-        def summarize_one(self, trials, mname, tname, cname, lname, lfile):
+        def summarize_one(self, trials, mname, tname, iname, lname, lfile):
                 cmdline = self.cfg.app_stats + " -p 4"
                 values = []
                 errors = []
@@ -143,7 +143,7 @@ class experiment:
                 speeds = []
                 deltas = []
                 for trial in range(trials):
-                        lpath = self.get_path(trial, mname, tname, cname, lname, ".log")
+                        lpath = self.get_path(trial, mname, tname, iname, lname, ".log")
                         value, error, epoch, speed, delta = self.get_log(lpath)
                         values.append(value)
                         errors.append(error)
@@ -156,7 +156,7 @@ class experiment:
                 speed_stats = subprocess.check_output(cmdline.split() + speeds).decode('utf-8').strip()
                 delta_stats = subprocess.check_output(cmdline.split() + deltas).decode('utf-8').strip()
                 print("{0};{1};{2};{3};{4};{5};{6};{7};{8}".format(
-                        mname, tname, cname, lname, value_stats, error_stats, epoch_stats, speed_stats, delta_stats),
+                        mname, tname, iname, lname, value_stats, error_stats, epoch_stats, speed_stats, delta_stats),
                         file = lfile)
 
         def summarize(self, trials):
@@ -166,14 +166,14 @@ class experiment:
                 cfile = open(cpath, "w")
                 # header
                 print("{0};{1};{2};{3};{4};{5};{6};{7};{8}".format(
-                        "model", "trainer", "criterion", "loss", "test value", "test error", "epochs", "convergence speed", "duration (sec)"),
+                        "model", "trainer", "iterator", "loss", "test value", "test error", "epochs", "convergence speed", "duration (sec)"),
                         file = cfile)
                 # content
                 for mname in self.models:
                         for tname in self.trainers:
-                                for cname in self.criteria:
+                                for iname in self.iterators:
                                         for lname in self.losses:
-                                                self.summarize_one(trials, mname, tname, cname, lname, cfile)
+                                                self.summarize_one(trials, mname, tname, iname, lname, cfile)
                 cfile.close()
 
                 # tabulate
