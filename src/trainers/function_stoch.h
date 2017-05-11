@@ -6,12 +6,12 @@ namespace nano
 {
         struct stoch_function_t final : public function_t
         {
-                stoch_function_t(accumulator_t& acc, const iterator_t& iterator, const task_t& task, const fold_t& fold, minibatch_t& minibatch) :
+                stoch_function_t(accumulator_t& acc, const iterator_t& iterator, const task_t& task, minibatch_t& minibatch) :
                         function_t("ml optimization function", acc.psize(), acc.psize(), acc.psize(), convexity::no, 1e+6),
                         m_accumulator(acc),
                         m_iterator(iterator),
                         m_task(task),
-                        m_fold(fold),
+                        m_fold(minibatch.fold()),
                         m_minibatch(minibatch)
                 {
                 }
@@ -59,7 +59,7 @@ namespace nano
                 accumulator_t&          m_accumulator;  ///< function value and gradient accumulator
                 const iterator_t&       m_iterator;     ///<
                 const task_t&           m_task;         ///<
-                const fold_t&           m_fold;         ///<
+                const fold_t            m_fold;         ///<
                 minibatch_t&            m_minibatch;    ///<
         };
 }

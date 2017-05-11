@@ -11,7 +11,7 @@ int main(int argc, const char *argv[])
         // parse the command line
         cmdline_t cmdline("train a model");
         cmdline.add("", "task",                 "[" + concatenate(get_tasks().ids()) + "]");
-        cmdline.add("", "task-params",          "task parameters (if any)", "dir=.");
+        cmdline.add("", "task-params",          "task parameters (if any)", "-");
         cmdline.add("", "task-fold",            "fold index to use for training", "0");
         cmdline.add("", "model",                "[" + concatenate(get_models().ids()) + "]");
         cmdline.add("", "model-params",         "model parameters (if any)");

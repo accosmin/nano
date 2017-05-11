@@ -70,7 +70,7 @@ namespace nano
                 };
 
                 // assembly optimization function & train the model
-                const auto function = batch_function_t(acc, iterator, task, fold);
+                const auto function = batch_function_t(acc, iterator, task, fold_t{fold, protocol::train});
                 const auto params = batch_params_t{epochs, epsilon, fn_ulog};
                 get_batch_optimizers().get(optimizer)->minimize(params, function, model.params());
 

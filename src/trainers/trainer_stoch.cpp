@@ -41,7 +41,7 @@ namespace nano
                         epoch_size = idiv(static_cast<size_t>(std::log(batchK / batch0) / std::log(factor)), epochs);
                 }
 
-                auto minibatch = minibatch_t(task, fold, batch0, factor);
+                auto minibatch = minibatch_t(task, {fold, protocol::train}, batch0, factor);
 
                 // accumulator
                 accumulator_t acc(model, loss);
@@ -105,7 +105,7 @@ namespace nano
                 };
 
                 // assembly optimization function & train the model
-                const auto function = stoch_function_t(acc, iterator, task, fold, minibatch);
+                const auto function = stoch_function_t(acc, iterator, task,  minibatch);
                 const auto params = stoch_params_t{epochs, epoch_size, epsilon, fn_ulog, fn_tlog};
                 get_stoch_optimizers().get(optimizer)->minimize(params, function, model.params());
 
