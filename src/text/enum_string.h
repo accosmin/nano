@@ -28,23 +28,4 @@ namespace nano
                 }
                 return ret;
         }
-
-        ///
-        /// \brief collect all the values for an enum type, except for one.
-        ///
-        template <typename tenum>
-        std::vector<tenum> enum_values(const tenum except)
-        {
-                const auto mapping = enum_string<tenum>();
-
-                std::vector<tenum> ret;
-                for (const auto& elem : mapping)
-                {
-                        if (elem.first != except)
-                        {
-                                ret.push_back(elem.first);
-                        }
-                }
-                return ret;
-        }
 }

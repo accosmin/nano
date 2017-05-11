@@ -114,17 +114,17 @@ namespace nano
                 return one.optimum_state() < other.optimum_state();
         }
 
-        bool is_done(const trainer_status code, const trainer_policy policy)
+        bool is_done(const trainer_status code, const policy policy)
         {
                 switch (policy)
                 {
-                case trainer_policy::stop_early:
+                case policy::stop_early:
                         return  code == trainer_status::diverge ||
                                 code == trainer_status::overfit ||
                                 code == trainer_status::solved ||
                                 code == trainer_status::failed;
 
-                case trainer_policy::all_epochs:
+                case policy::all_epochs:
                 default:
                         return  code == trainer_status::diverge ||
                                 code == trainer_status::failed;

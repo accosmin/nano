@@ -56,8 +56,8 @@ NANO_CASE(result_max_iters)
                 const auto status = update_result(result, opt_status::max_iters, value, epoch);
 
                 NANO_CHECK(status == trainer_status::better);
-                NANO_CHECK(false == nano::is_done(status, trainer_policy::stop_early));
-                NANO_CHECK(false == nano::is_done(status, trainer_policy::all_epochs));
+                NANO_CHECK(false == nano::is_done(status, policy::stop_early));
+                NANO_CHECK(false == nano::is_done(status, policy::all_epochs));
         }
 
         NANO_CHECK_EQUAL(result.optimum_state().m_valid.m_value, 0);
@@ -77,8 +77,8 @@ NANO_CASE(result_solved)
                         done ? opt_status::converged : opt_status::max_iters, value, epoch);
 
                 NANO_CHECK((done ? trainer_status::solved : trainer_status::better) == status);
-                NANO_CHECK((done ? true : false) == nano::is_done(status, trainer_policy::stop_early));
-                NANO_CHECK(false == nano::is_done(status, trainer_policy::all_epochs));
+                NANO_CHECK((done ? true : false) == nano::is_done(status, policy::stop_early));
+                NANO_CHECK(false == nano::is_done(status, policy::all_epochs));
 
                 if (done)
                 {
@@ -103,20 +103,20 @@ NANO_CASE(result_overfitting)
                 if (epoch <= best_epoch)
                 {
                         NANO_CHECK(trainer_status::better == status);
-                        NANO_CHECK(false == nano::is_done(status, trainer_policy::stop_early));
-                        NANO_CHECK(false == nano::is_done(status, trainer_policy::all_epochs));
+                        NANO_CHECK(false == nano::is_done(status, policy::stop_early));
+                        NANO_CHECK(false == nano::is_done(status, policy::all_epochs));
                 }
                 else if (epoch < best_epoch + static_cast<int>(patience))
                 {
                         NANO_CHECK(trainer_status::worse == status);
-                        NANO_CHECK(false == nano::is_done(status, trainer_policy::stop_early));
-                        NANO_CHECK(false == nano::is_done(status, trainer_policy::all_epochs));
+                        NANO_CHECK(false == nano::is_done(status, policy::stop_early));
+                        NANO_CHECK(false == nano::is_done(status, policy::all_epochs));
                 }
                 else
                 {
                         NANO_CHECK(trainer_status::overfit == status);
-                        NANO_CHECK(true == nano::is_done(status, trainer_policy::stop_early));
-                        NANO_CHECK(false == nano::is_done(status, trainer_policy::all_epochs));
+                        NANO_CHECK(true == nano::is_done(status, policy::stop_early));
+                        NANO_CHECK(false == nano::is_done(status, policy::all_epochs));
                         break;
                 }
         }
@@ -138,14 +138,14 @@ NANO_CASE(result_not_finite)
                 if (epoch <= best_epoch)
                 {
                         NANO_CHECK(trainer_status::better == status);
-                        NANO_CHECK(false == nano::is_done(status, trainer_policy::stop_early));
-                        NANO_CHECK(false == nano::is_done(status, trainer_policy::all_epochs));
+                        NANO_CHECK(false == nano::is_done(status, policy::stop_early));
+                        NANO_CHECK(false == nano::is_done(status, policy::all_epochs));
                 }
                 else
                 {
                         NANO_CHECK(trainer_status::diverge == status);
-                        NANO_CHECK(true == nano::is_done(status, trainer_policy::stop_early));
-                        NANO_CHECK(true == nano::is_done(status, trainer_policy::all_epochs));
+                        NANO_CHECK(true == nano::is_done(status, policy::stop_early));
+                        NANO_CHECK(true == nano::is_done(status, policy::all_epochs));
                         break;
                 }
         }

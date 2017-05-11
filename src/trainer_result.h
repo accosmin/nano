@@ -26,19 +26,43 @@ namespace nano
                 solved          ///< problem solved with arbitrary accuracy (processing should stop)
         };
 
+        template <>
+        inline std::map<trainer_status, std::string> enum_string<trainer_status>()
+        {
+                return
+                {
+                        { trainer_status::failed,          "*failed" },
+                        { trainer_status::better,          "+better" },
+                        { trainer_status::worse,           "--worse" },
+                        { trainer_status::overfit,         "overfit" },
+                        { trainer_status::diverge,         "diverge" },
+                        { trainer_status::solved,          "!solved" }
+                };
+        }
+
         ///
         /// \brief
         ///
-        enum class trainer_policy
+        enum class policy
         {
-                stop_early,     ///<
+                stop_early,     ///< stop when overfitting or some internal error is detected
                 all_epochs      ///< consume all epochs
         };
+
+        template <>
+        inline std::map<policy, std::string> enum_string<policy>()
+        {
+                return
+                {
+                        { policy::stop_early,   "stop_early" },
+                        { policy::all_epochs,   "all_epochs" }
+                };
+        }
 
         ///
         /// \brief check if the training should be stopped
         ///
-        NANO_PUBLIC bool is_done(const trainer_status, const trainer_policy);
+        NANO_PUBLIC bool is_done(const trainer_status, const policy);
 
         ///
         /// \brief track the current/optimum model state
@@ -108,29 +132,5 @@ namespace nano
         /// \brief streaming training results
         ///
         NANO_PUBLIC std::ostream& operator<<(std::ostream&, const trainer_result_t&);
-
-        template <>
-        inline std::map<trainer_status, std::string> enum_string<trainer_status>()
-        {
-                return
-                {
-                        { trainer_status::failed,          "*failed" },
-                        { trainer_status::better,          "+better" },
-                        { trainer_status::worse,           "--worse" },
-                        { trainer_status::overfit,         "overfit" },
-                        { trainer_status::diverge,         "diverge" },
-                        { trainer_status::solved,          "!solved" }
-                };
-        }
-
-        template <>
-        inline std::map<trainer_policy, std::string> enum_string<trainer_policy>()
-        {
-                return
-                {
-                        { trainer_policy::stop_early,     "stop_early" },
-                        { trainer_policy::all_epochs,     "all_epochs" }
-                };
-        }
 }
 

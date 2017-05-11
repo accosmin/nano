@@ -137,7 +137,7 @@ namespace nano
         static string_t append_config(const string_t& configuration)
         {
                 return  to_params(configuration,
-                        "type", to_string(charset_type::digit) + "[" + concatenate(enum_values<charset_type>(charset_type::digit)) + "]",
+                        "type", to_string(charset_type::digit) + "[" + concatenate(enum_values<charset_type>()) + "]",
                         "color", "rgb[luma,rgba]",
                         "irows", "32[12,256]", "icols", "32[12,256]", "count", "1000[32,1M]");
         }
