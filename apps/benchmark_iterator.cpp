@@ -9,10 +9,25 @@
 #include "tensor/numeric.h"
 #include <iostream>
 
+using namespace nano;
+
+namespace nano
+{
+        template <typename tvalue>
+        string_t serialize_to_string(const tvalue value)
+        {
+                std::stringstream s;
+                s << value;
+                return s.str();
+        }
+
+        template <> string_t to_string<tensor2d_dims_t>(const tensor2d_dims_t dims) { return serialize_to_string(dims); }
+        template <> string_t to_string<tensor3d_dims_t>(const tensor3d_dims_t dims) { return serialize_to_string(dims); }
+        template <> string_t to_string<tensor4d_dims_t>(const tensor4d_dims_t dims) { return serialize_to_string(dims); }
+}
+
 int main(int argc, const char *argv[])
 {
-        using namespace nano;
-
         const size_t kilo = 1000;
 
         // parse the command line
@@ -31,26 +46,35 @@ int main(int argc, const char *argv[])
 
         const auto cmd_rows = 32;
         const auto cmd_cols = 32;
-        const auto cmd_color = color_mode::rgba;
+        const auto cmd_color = color_mode::rgb;
 
         // prepare table
         table_t table;
-        table.header() << "#samples" << "init [ms]";
+        table.header() << "" << "" << "";
         for (const auto& id : get_iterators().ids())
         {
-                table.header() << ("it(" + id + ") [ms]");
+                table.header() << ("it(" + id + ")");
+        }
+        {
+                auto& row = table.append() << "#samples" << "isize" << "init[ms]";
+                for (const auto& id : get_iterators().ids())
+                {
+                        NANO_UNUSED1(id);
+                        row << "[us/sample]";
+                }
+                table.append(table_row_t::storage::delim);
         }
 
         // vary the task size
         for (size_t task_size = min_tasksize; task_size <= max_tasksize; task_size *= 2)
         {
-                auto& row = table.append();
-                row << task_size;
-
                 // measure task generation
                 auto task = get_tasks().get("synth-charset", to_params(
                         "type", charset_type::digit, "color", cmd_color,
                         "irows", cmd_rows, "icols", cmd_cols, "count", task_size));
+
+                auto& row = table.append();
+                row << task_size << task->idims();
                 {
                         const auto duration = measure_robustly<milliseconds_t>([&] ()
                         {
@@ -64,24 +88,20 @@ int main(int argc, const char *argv[])
                 {
                         const auto iterator = get_iterators().get(id);
 
-                        const auto duration = measure_robustly<milliseconds_t>([&] ()
-                        {
-                                const auto fold = fold_t{0, protocol::train};
-                                const auto fold_size = task->size(fold);
-                                const auto epochs = 100;
+                        const auto fold = fold_t{0, protocol::train};
+                        const auto fold_size = task->size(fold);
 
+                        const auto duration = measure_robustly<microseconds_t>([&] ()
+                        {
                                 volatile long double sum = 0;
-                                for (size_t epoch = 0; epoch < epochs; ++ epoch)
+                                for (size_t index = 0; index < fold_size; ++ index)
                                 {
-                                        for (size_t index = 0; index < fold_size; ++ index)
-                                        {
-                                                const auto input = iterator->input(*task, fold, index);
-                                                const auto target = iterator->target(*task, fold, index);
-                                                sum += input.vector().sum() - target.vector().sum();
-                                        }
+                                        const auto input = iterator->input(*task, fold, index);
+                                        const auto target = iterator->target(*task, fold, index);
+                                        sum += input.vector().sum() - target.vector().sum();
                                 }
                         }, 1);
-                        row << duration.count();
+                        row << idiv(duration.count(), fold_size);
                 }
         }
 

@@ -162,4 +162,3 @@ namespace nano
                 return concatenate(values.begin(), values.end(), glue);
         }
 }
-
