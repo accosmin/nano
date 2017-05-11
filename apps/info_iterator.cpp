@@ -62,7 +62,7 @@ int main(int argc, const char *argv[])
         cmdline.add("", "task",                 "[" + concatenate(get_tasks().ids()) + "]");
         cmdline.add("", "task-params",          "task parameters (if any)", "-");
         cmdline.add("", "iterator",             "[" + concatenate(get_iterators().ids()) + "]");
-        cmdline.add("", "iterator-params",      "task iterator parameters (if any)", "");
+        cmdline.add("", "iterator-params",      "task iterator parameters (if any)", "-");
         cmdline.add("", "save-dir",             "directory to save samples to");
         cmdline.add("", "save-trials",          "number of sample generation trials", "16");
         cmdline.add("", "save-group-rows",      "number of samples to group in a row", "32");
