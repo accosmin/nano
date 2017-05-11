@@ -16,22 +16,19 @@ class config:
         # available losses: {name, command line parameters}+
         def losses(self):
                 return {
-                        "loss_cauchy" : "--loss cauchy",
-                        "loss_classnll" : "--loss classnll",
-                        "loss_exponential" : "--loss exponential",
-                        "loss_logistic" : "--loss logistic",
-                        "loss_square" : "--loss square"
+                        "cauchy" : "--loss cauchy",
+                        "classnll" : "--loss classnll",
+                        "exponential" : "--loss exponential",
+                        "logistic" : "--loss logistic",
+                        "square" : "--loss square"
                 }
 
-        # available criteria: {name, command line parameters}+
-        def criteria(self):
+        # available iterators: {name, command line parameters}+
+        def iterators(self):
                 return {
-                        "crit_avg" : "--criterion avg",
-                        "crit_avg_l2n" : "--criterion avg-l2n",
-                        "crit_avg_var" : "--criterion avg-var",
-                        "crit_max" : "--criterion max",
-                        "crit_max_l2n" : "--criterion max-l2n",
-                        "crit_max_var" : "--criterion max-var"
+                        "default" : "--iterator default",
+                        "noise" : "--iterator noise",
+                        "warp" : "--iterator warp"
                 }
 
         # training methods: {name, command line parameters}+

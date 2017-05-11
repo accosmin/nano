@@ -16,7 +16,7 @@ class experiment:
                 self.dir = outdir
                 self.models = SortedDict({})
                 self.trainers = SortedDict({})
-                self.criteria = SortedDict({})
+                self.iterators = SortedDict({})
                 self.losses = SortedDict({})
 
         def log(self, *messages):
@@ -33,14 +33,14 @@ class experiment:
                 for name in names:
                         self.losses[name] = self.cfg.losses().get(name)
 
-        def add_criteria(self, names):
+        def add_iterators(self, names):
                 for name in names:
-                        self.criteria[name] = self.cfg.criteria().get(name)
+                        self.iterators[name] = self.cfg.iterators().get(name)
 
-        def get_path(self, trial, mname, tname, cname, lname, extension):
-                return self.dir + "/trial" + str(trial) + "_" + tname + "_" + mname + "_" + cname + "_" + lname + extension
+        def get_path(self, trial, mname, tname, iname, lname, extension):
+                return self.dir + "/trial" + str(trial) + "_" + tname + "_" + mname + "_" + iname + "_" + lname + extension
 
-        def filter(self, trial, mname_reg, tname_reg, cname_reg, lname_reg, extension):
+        def filter(self, trial, mname_reg, tname_reg, iname_reg, lname_reg, extension):
                 paths = []
                 for mname in self.models:
                         if not re.match(mname_reg, mname):
@@ -48,13 +48,13 @@ class experiment:
                         for tname in self.trainers:
                                 if not re.match(tname_reg, tname):
                                         continue
-                                for cname in self.criteria:
-                                        if not re.match(cname_reg, cname):
+                                for iname in self.iterators:
+                                        if not re.match(iname_reg, iname):
                                                 continue
                                         for lname in self.losses:
                                                 if not re.match(lname_reg, lname):
                                                         continue
-                                                paths.append(self.get_path(trial, mname, tname, cname, lname, extension))
+                                                paths.append(self.get_path(trial, mname, tname, iname, lname, extension))
                 return paths
 
         def train_one(self, param, lpath):
@@ -73,14 +73,14 @@ class experiment:
                 plotter.plot_many(spaths, ppath)
                 self.log("|--->plotting done, see <", ppath, ">")
 
-        def run_one(self, trial, mname, mparam, tname, tparam, cname, cparam, lname, lparam):
+        def run_one(self, trial, mname, mparam, tname, tparam, iname, iparam, lname, lparam):
                 os.makedirs(self.dir, exist_ok = True)
-                mpath = self.get_path(trial, mname, tname, cname, lname, ".model")
-                spath = self.get_path(trial, mname, tname, cname, lname, ".state")
-                lpath = self.get_path(trial, mname, tname, cname, lname, ".log")
-                ppath = self.get_path(trial, mname, tname, cname, lname, ".pdf")
+                mpath = self.get_path(trial, mname, tname, iname, lname, ".model")
+                spath = self.get_path(trial, mname, tname, iname, lname, ".state")
+                lpath = self.get_path(trial, mname, tname, iname, lname, ".log")
+                ppath = self.get_path(trial, mname, tname, iname, lname, ".pdf")
 
-                param = self.task + " " + mparam + " " + tparam + " " + cparam + " " + lparam + " --model-file " + mpath
+                param = self.task + " " + mparam + " " + tparam + " " + iparam + " " + lparam + " --model-file " + mpath
                 self.train_one(param, lpath)
                 self.plot_one(spath, ppath)
                 self.log()
@@ -88,10 +88,11 @@ class experiment:
         def run_trial(self, trial, epochs, policy, min_batch, max_batch, patience, epsilon):
                 for mname, mparam in self.models.items():
                         for tname, tparam in self.trainers.items():
-                                tparam += ",epochs={0},policy={1},min_batch={2},max_batch={3},patience={4},eps={5}".format(epochs, policy, min_batch, max_batch, patience, epsilon)
-                                for cname, cparam in self.criteria.items():
+                                tformat = ",epochs={0},policy={1},min_batch={2},max_batch={3},patience={4},eps={5}"
+                                tparam += tformat.format(epochs, policy, min_batch, max_batch, patience, epsilon)
+                                for iname, iparam in self.iterators.items():
                                         for lname, lparam in self.losses.items():
-                                                self.run_one(trial, mname, mparam, tname, tparam, cname, cparam, lname, lparam)
+                                                self.run_one(trial, mname, mparam, tname, tparam, iname, iparam, lname, lparam)
 
         def run_all(self, trials = 10, epochs = 1000, policy = "stop_early", min_batch = 32, max_batch = 256, patience = 32, epsilon = 1e-6):
                 for trial in range(trials):
