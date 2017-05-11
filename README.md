@@ -113,6 +113,23 @@ The image samples can be saved to disk using for example:
 ./apps/info_task --task mnist --task-params dir=$HOME/experiments/databases/mnist --save-dir ./
 ```
 
+An **iterator** is used to access the samples of a task either directly or by performing various transformation like adding random noise or warping the image samples. These transformation are used for improving the robustness of the model and for augmenting the training samples.
+```
+./apps/info --iterator
+|----------|----------------------------------------------------|-------------------------------------------------------------------------------------------------------|
+| iterator | description                                        | configuration                                                                                         |
+|----------|----------------------------------------------------|-------------------------------------------------------------------------------------------------------|
+| default  | use samples as they are                            |                                                                                                       |
+| noise    | add random noise to samples (image classification) | noise=0.1[0,1]                                                                                        |
+| warp     | warp image samples (image classification)          | type=mixed[translation,rotation,random],noise=0.1[0,1],sigma=4.0[0,10],alpha=1.0[0,10],beta=1.0[0,10] |
+|----------|----------------------------------------------------|-------------------------------------------------------------------------------------------------------|
+```
+
+The transformed image samples can be save to disk using for example:
+```
+./apps/info_iterator --task mnist --task-params dir=$HOME/experiments/databases/mnist --iterator warp --save-dir ./
+```
+
 A **model** predicts the correct output for a given image patch, either its label (if a classification task) or a score (if a regression task). The feed-forward models can be constructed using a pattern like `[layer_id[:layer_parameters];]+` with the following layers:
 ```
 ./apps/info --layer
