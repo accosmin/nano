@@ -10,16 +10,16 @@ int main(int argc, const char *argv[])
 
         // parse the command line
         nano::cmdline_t cmdline("train a model");
-        cmdline.add("", "task",                 concatenate(get_tasks().ids()));
+        cmdline.add("", "task",                 "[" + concatenate(get_tasks().ids()) + "]");
         cmdline.add("", "task-params",          "task parameters (if any)", "dir=.");
         cmdline.add("", "task-fold",            "fold index to use for training", "0");
-        cmdline.add("", "model",                concatenate(get_models().ids()));
+        cmdline.add("", "model",                "[" + concatenate(get_models().ids()) + "]");
         cmdline.add("", "model-params",         "model parameters (if any)");
         cmdline.add("", "model-file",           "filepath to save the model to");
-        cmdline.add("", "trainer",              concatenate(get_trainers().ids()));
+        cmdline.add("", "trainer",              "[" + concatenate(get_trainers().ids()) + "]");
         cmdline.add("", "trainer-params",       "trainer parameters (if any)");
-        cmdline.add("", "loss",                 concatenate(get_losses().ids()));
-        cmdline.add("", "iterator",             concatenate(get_iterators().ids()), "default");
+        cmdline.add("", "loss",                 "[" + concatenate(get_losses().ids()) + "]");
+        cmdline.add("", "iterator",             "[" + concatenate(get_iterators().ids()) + "]", "default");
         cmdline.add("", "iterator-params",      "task iterator parameters (if any)", "");
         cmdline.add("", "threads",              "number of threads to use", logical_cpus());
 

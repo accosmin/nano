@@ -59,9 +59,9 @@ int main(int argc, const char *argv[])
 {
         // parse the command line
         cmdline_t cmdline("describe the augmented training samples");
-        cmdline.add("", "task",                 concatenate(get_tasks().ids()));
+        cmdline.add("", "task",                 "[" + concatenate(get_tasks().ids()) + "]");
         cmdline.add("", "task-params",          "task parameters (if any)", "-");
-        cmdline.add("", "iterator",              concatenate(get_iterators().ids()));
+        cmdline.add("", "iterator",             "[" + concatenate(get_iterators().ids()) + "]");
         cmdline.add("", "iterator-params",      "task iterator parameters (if any)", "");
         cmdline.add("", "save-dir",             "directory to save samples to");
         cmdline.add("", "save-trials",          "number of sample generation trials", "16");

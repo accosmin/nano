@@ -63,11 +63,9 @@ static void save_as_images(const task_t& task, const fold_t& fold, const string_
 
 int main(int argc, const char *argv[])
 {
-        const auto task_ids = nano::get_tasks().ids();
-
         // parse the command line
-        nano::cmdline_t cmdline("describe a task");
-        cmdline.add("", "task",                 ("tasks to choose from: " + nano::concatenate(task_ids, ", ")).c_str());
+        cmdline_t cmdline("describe a task");
+        cmdline.add("", "task",                 "[" + concatenate(get_tasks().ids()) + "]");
         cmdline.add("", "task-params",          "task parameters (if any)", "-");
         cmdline.add("", "save-dir",             "directory to save samples to");
         cmdline.add("", "save-group-rows",      "number of samples to group in a row", "32");
@@ -83,17 +81,17 @@ int main(int argc, const char *argv[])
         // check arguments and options
         const auto cmd_task = cmdline.get<string_t>("task");
         const auto cmd_task_params = cmdline.get<string_t>("task-params");
-        const auto cmd_save_grows = nano::clamp(cmdline.get<coord_t>("save-group-rows"), 1, 128);
-        const auto cmd_save_gcols = nano::clamp(cmdline.get<coord_t>("save-group-cols"), 1, 128);
+        const auto cmd_save_grows = clamp(cmdline.get<coord_t>("save-group-rows"), 1, 128);
+        const auto cmd_save_gcols = clamp(cmdline.get<coord_t>("save-group-cols"), 1, 128);
 
         // create & load task
-        const auto task = nano::get_tasks().get(cmd_task, cmd_task_params);
+        const auto task = get_tasks().get(cmd_task, cmd_task_params);
 
-        nano::measure_critical_and_log(
+        measure_critical_and_log(
                 [&] () { return task->load(); },
                 "load task <" + cmd_task + ">");
 
-        nano::describe(*task, cmd_task);
+        describe(*task, cmd_task);
 
         // save samples as images
         if (cmdline.has("save-dir"))
@@ -105,7 +103,7 @@ int main(int argc, const char *argv[])
                         {
                                 const auto fold = fold_t{f, p};
                                 const auto path = cmd_save_dir + "/" + cmd_task + "_" + to_string(p) + to_string(f + 1);
-                                nano::measure_and_log(
+                                measure_and_log(
                                         [&] () { save_as_images(*task, fold, path, cmd_save_grows, cmd_save_gcols); },
                                         "save samples as images to <" + path + "*.png>");
                         }
@@ -113,6 +111,6 @@ int main(int argc, const char *argv[])
         }
 
         // OK
-        nano::log_info() << nano::done;
+        log_info() << done;
         return EXIT_SUCCESS;
 }
