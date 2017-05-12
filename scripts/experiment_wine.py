@@ -11,36 +11,30 @@ exp = experiment.experiment(
 
 # loss functions
 exp.add_losses([
-        "loss_classnll"])
+        "classnll"])
 
-# criteria
-exp.add_criteria([
-        "crit_avg"])
+# iterators
+exp.add_iterators([
+        "default"])
 
 # trainers
 exp.add_trainers([
         "batch_cgd"])
 
 # models
-outlayer = "affine:dims=3;act-snorm;"
+outlayer = "affine:dims=3;act-pwave;"
 
 mlp0 = "--model forward-network --model-params "
-mlp1 = mlp0 + "affine:dims=128;act-snorm;"
-mlp2 = mlp1 + "affine:dims=128;act-snorm;"
-mlp3 = mlp2 + "affine:dims=128;act-snorm;"
-mlp4 = mlp3 + "affine:dims=128;act-snorm;"
+mlp1 = mlp0 + "affine:dims=128;act-pwave;"
+mlp2 = mlp1 + "affine:dims=128;act-pwave;"
+mlp3 = mlp2 + "affine:dims=128;act-pwave;"
+mlp4 = mlp3 + "affine:dims=128;act-pwave;"
 
-def add_model(name, params, activation):
-        name = (name + "-act-" + activation).replace("-", "_")
-        params = (params + outlayer).replace("act-snorm", "act-" + activation)
-        exp.add_model(name, params)
-
-for activation in ["snorm", "tanh", "sin", "pwave"]:
-        add_model("mlp0", mlp0, activation)
-        add_model("mlp1", mlp1, activation)
-        add_model("mlp2", mlp2, activation)
-        add_model("mlp3", mlp3, activation)
-        add_model("mlp4", mlp4, activation)
+exp.add_model("mlp0", mlp0 + outlayer)
+exp.add_model("mlp1", mlp1 + outlayer)
+exp.add_model("mlp2", mlp2 + outlayer)
+exp.add_model("mlp3", mlp3 + outlayer)
+exp.add_model("mlp4", mlp4 + outlayer)
 
 # train all configurations
 trials = 10
@@ -49,24 +43,12 @@ exp.run_all(trials = trials, epochs = 1000, policy = "stop_early")
 # compare configurations
 for trial in range(trials):
         for tname in exp.trainers:
-                for cname in exp.criteria:
+                for iname in exp.iterators:
                         for lname in exp.losses:
-                                # compare activation functions for each model
+                                # compare models
                                 exp.plot_many(
-                                        exp.filter(trial, "mlp0.*", tname, cname, lname, ".state"),
-                                        exp.get_path(trial, "mlp0", tname, cname, lname, ".pdf"))
-                                exp.plot_many(
-                                        exp.filter(trial, "mlp1.*", tname, cname, lname, ".state"),
-                                        exp.get_path(trial, "mlp1", tname, cname, lname, ".pdf"))
-                                exp.plot_many(
-                                        exp.filter(trial, "mlp2.*", tname, cname, lname, ".state"),
-                                        exp.get_path(trial, "mlp2", tname, cname, lname, ".pdf"))
-                                exp.plot_many(
-                                        exp.filter(trial, "mlp3.*", tname, cname, lname, ".state"),
-                                        exp.get_path(trial, "mlp3", tname, cname, lname, ".pdf"))
-                                exp.plot_many(
-                                        exp.filter(trial, "mlp4.*", tname, cname, lname, ".state"),
-                                        exp.get_path(trial, "mlp4", tname, cname, lname, ".pdf"))
+                                        exp.filter(trial, "mlp.*", tname, iname, lname, ".state"),
+                                        exp.get_path(trial, "mlp", tname, iname, lname, ".pdf"))
 
 # summarize configurations
 exp.summarize(trials)
