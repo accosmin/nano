@@ -35,7 +35,7 @@ build_test_app(test_io.cpp nano)
 build_test_app(test_thread_loop.cpp nano)
 build_test_app(test_thread_pool.cpp nano)
 
-build_test_app(test_geom.cpp nano)
+build_test_app(test_geom.cpp "")
 build_test_app(test_image.cpp nano)
 build_test_app(test_vision.cpp "")
 

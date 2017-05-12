@@ -1,15 +1,14 @@
 #pragma once
 
-#include "arch.h"
 #include "geom.h"
-#include <iosfwd>
+#include <ostream>
 
 namespace nano
 {
         ///
         /// \brief 2D point
         ///
-        struct NANO_PUBLIC point_t
+        struct point_t
         {
                 ///
                 /// \brief constructor
@@ -32,13 +31,14 @@ namespace nano
                 coord_t         m_y;
         };
 
-        ///
-        /// \brief compare two points
-        ///
-        NANO_PUBLIC bool operator==(const point_t& point1, const point_t& point2);
+        inline bool operator==(const point_t& point1, const point_t& point2)
+        {
+                return  point1.x() == point2.x() &&
+                        point1.y() == point2.y();
+        }
 
-        ///
-        /// \brief stream a point
-        ///
-        NANO_PUBLIC std::ostream& operator<<(std::ostream& s, const point_t& point);
+        inline std::ostream& operator<<(std::ostream& s, const point_t& point)
+        {
+                return s << "{POINT: (" << point.x() << ", " << point.y() << "}";
+        }
 }

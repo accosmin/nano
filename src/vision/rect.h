@@ -2,13 +2,14 @@
 
 #include "point.h"
 #include "scalar.h"
+#include <algorithm>
 
 namespace nano
 {
         ///
         /// \brief 2D rectangle
         ///
-        struct NANO_PUBLIC rect_t
+        struct rect_t
         {
                 ///
                 /// \brief constructor
@@ -47,30 +48,57 @@ namespace nano
                 coord_t         m_h;            ///< height
         };
 
+        inline std::ostream& operator<<(std::ostream& s, const rect_t& rect)
+        {
+                return s << "{RECT: top-left = (" << rect.left() << ", " << rect.top()
+                         << "), size = " << rect.width() << "x" << rect.height() << "}";
+        }
+
         ///
         /// \brief intersect two rectangles
         ///
-        NANO_PUBLIC rect_t operator&(const rect_t& rect1, const rect_t& rect2);
+        inline rect_t operator&(const rect_t& rect1, const rect_t& rect2)
+        {
+                const auto top = std::max(rect1.top(), rect2.top());
+                const auto left = std::max(rect1.left(), rect2.left());
+                const auto right = std::min(rect1.right(), rect2.right());
+                const auto bottom = std::min(rect1.bottom(), rect2.bottom());
+
+                return  (right >= left && bottom >= top) ?
+                        rect_t(left, top, right - left, bottom - top) :
+                        rect_t(0, 0, 0, 0);
+        }
 
         ///
         /// \brief union with another rectangle
         ///
-        NANO_PUBLIC rect_t operator|(const rect_t& rect1, const rect_t& rect2);
+        inline rect_t operator|(const rect_t& rect1, const rect_t& rect2)
+        {
+                const auto top = std::min(rect1.top(), rect2.top());
+                const auto left = std::min(rect1.left(), rect2.left());
+                const auto right = std::max(rect1.right(), rect2.right());
+                const auto bottom = std::max(rect1.bottom(), rect2.bottom());
+
+                return rect_t(left, top, right - left, bottom - top);
+        }
 
         ///
         /// \brief [0, 1] overlap between two rectangle (aka Jaccard distance)
         ///
-        NANO_PUBLIC scalar_t overlap(const rect_t& rect1, const rect_t& rect2);
+        inline scalar_t overlap(const rect_t& rect1, const rect_t& rect2)
+        {
+                return static_cast<scalar_t>((rect1 & rect2).area() + 1) /
+                       static_cast<scalar_t>((rect1 | rect2).area() + 1);
+        }
 
         ///
         /// \brief compare two rectangles
         ///
-        NANO_PUBLIC bool operator==(const rect_t& rect1, const rect_t& rect2);
-
-        ///
-        /// \brief stream a rectangle
-        ///
-        NANO_PUBLIC std::ostream& operator<<(std::ostream& s, const rect_t& rect);
+        inline bool operator==(const rect_t& rect1, const rect_t& rect2)
+        {
+                return  rect1.left() == rect2.left() &&
+                        rect1.top() == rect2.top() &&
+                        rect1.width() == rect2.width() &&
+                        rect1.height() == rect2.height();
+        }
 }
-
-
