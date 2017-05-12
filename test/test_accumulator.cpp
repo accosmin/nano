@@ -15,7 +15,7 @@ NANO_CASE(evaluate)
         NANO_CHECK_EQUAL(task->load(), true);
 
         const auto fold = fold_t{0, protocol::train};
-        const auto loss = nano::get_losses().get("logistic");
+        const auto loss = nano::get_losses().get("s-logistic");
 
         // create model
         const auto cmd_model = make_affine_layer(4) + make_output_layer(task->odims());

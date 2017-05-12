@@ -41,7 +41,7 @@ NANO_CASE(evaluate)
                 convnet + outlayer
         };
 
-        const auto loss = get_losses().get("logistic");
+        const auto loss = get_losses().get("s-logistic");
 
         for (const string_t& cmd_network : cmd_networks)
         {
