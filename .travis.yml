@@ -42,7 +42,7 @@ script:
   - cd build-release/test && time ctest -j 3 -E "test_task_*"
   - cd ../../
   - time bash build.sh --build-type Debug --generator ninja --float --werror ${PARAMS}
-  - cd build-debug/test && time ctest -j 3 -E "test_task_*|test_stoch"
+  - cd build-debug/test && time ctest -j 3 -E "test_task_*"
 #  - cd ../../
 #  - ./build-release/apps/info --system
 #  - time bash build.sh --build-type Release --generator ninja --double ${PARAMS}
