@@ -18,13 +18,23 @@ namespace nano
                 ///
                 /// \brief constructor
                 ///
-                worker_queue_t();
+                worker_queue_t() : m_stop(false) {}
 
                 ///
                 /// \brief enqueue a new task to execute
                 ///
                 template <typename tfunction>
-                future_t enqueue(tfunction f);
+                future_t enqueue(tfunction f)
+                {
+                        auto task = worker_task_t(f);
+                        auto fut = task.get_future();
+
+                        const std::lock_guard<std::mutex> lock(m_mutex);
+                        m_tasks.emplace_back(std::move(task));
+                        m_condition.notify_all();
+
+                        return fut;
+                }
 
                 // attributes
                 std::deque<worker_task_t>       m_tasks;                ///< tasks to execute
@@ -32,22 +42,4 @@ namespace nano
                 mutable std::condition_variable m_condition;            ///< signaling
                 bool                            m_stop;                 ///< stop requested
         };
-
-        inline worker_queue_t::worker_queue_t() :
-                m_stop(false)
-        {
-        }
-
-        template <typename tfunction>
-        inline future_t worker_queue_t::enqueue(tfunction f)
-        {
-                auto task = worker_task_t(f);
-                auto fut = task.get_future();
-
-                const std::lock_guard<std::mutex> lock(m_mutex);
-                m_tasks.emplace_back(std::move(task));
-                m_condition.notify_all();
-
-                return fut;
-        }
 }

@@ -23,13 +23,13 @@ namespace nano
                 /// \brief toggle the worker's activation state
                 /// \return the previous activation state
                 ///
-                bool activate();
-                bool deactivate();
+                bool activate() { return toggle(m_active, true); }
+                bool deactivate() { return toggle(m_active, false); }
 
                 ///
                 /// \brief check if the worker is active (aka for processing tasks)
                 ///
-                bool active() const;
+                bool active() const { return m_active; }
 
         private:
 
@@ -80,20 +80,5 @@ namespace nano
                         // execute the task
                         task();
                 }
-        }
-
-        inline bool nano::worker_t::activate()
-        {
-                return toggle(m_active, true);
-        }
-
-        inline bool nano::worker_t::deactivate()
-        {
-                return toggle(m_active, false);
-        }
-
-        inline bool nano::worker_t::active() const
-        {
-                return m_active;
         }
 }
