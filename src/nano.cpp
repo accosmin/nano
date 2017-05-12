@@ -144,11 +144,13 @@ namespace nano
         static void init_losses()
         {
                 auto& f = nano::get_losses();
-                f.add("square",      "multivariate regression:     l(y, t) = 1/2 * L2(y, t)", maker<square_loss_t>());
-                f.add("cauchy",      "multivariate regression:     l(y, t) = log(1 + L2(y, t))", maker<cauchy_loss_t>());
-                f.add("logistic",    "multi-class classification:  l(y, t) = log(1 + exp(-t.dot(y)))", maker<logistic_loss_t>());
-                f.add("classnll",    "single-class classification: l(y, t) = log(y.exp().sum()) + 1/2 * (1 + t).dot(y)", maker<classnll_loss_t>());
-                f.add("exponential", "multi-class classification:  l(y, t) = exp(-t.dot(y))", maker<exponential_loss_t>());
+                f.add("square",         "multivariate regression:     l(y, t) = 1/2 * L2(y, t)", maker<square_loss_t>());
+                f.add("cauchy",         "multivariate regression:     l(y, t) = log(1 + L2(y, t))", maker<cauchy_loss_t>());
+                f.add("m-logistic",     "multi-class classification:  l(y, t) = log(1 + exp(-t.dot(y)))", maker<mlogistic_loss_t>());
+                f.add("m-exponential",  "multi-class classification:  l(y, t) = exp(-t.dot(y))", maker<mexponential_loss_t>());
+                f.add("classnll",       "single-class classification: l(y, t) = log(y.exp().sum()) + 1/2 * (1 + t).dot(y)", maker<classnll_loss_t>());
+                f.add("s-logistic",     "single-class classification:  l(y, t) = log(1 + exp(-t.dot(y)))", maker<slogistic_loss_t>());
+                f.add("s-exponential",  "single-class classification:  l(y, t) = exp(-t.dot(y))", maker<sexponential_loss_t>());
         }
 
         static void init_tasks()

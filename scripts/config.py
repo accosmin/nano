@@ -18,8 +18,10 @@ class config:
                 return {
                         "cauchy" : "--loss cauchy",
                         "classnll" : "--loss classnll",
-                        "exponential" : "--loss exponential",
-                        "logistic" : "--loss logistic",
+                        "sexponential" : "--loss s-exponential",
+                        "mexponential" : "--loss m-exponential",
+                        "slogistic" : "--loss s-logistic",
+                        "mlogistic" : "--loss m-logistic",
                         "square" : "--loss square"
                 }
 

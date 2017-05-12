@@ -1,6 +1,7 @@
 #pragma once
 
 #include "classification_multi.h"
+#include "classification_single.h"
 
 namespace nano
 {
@@ -21,5 +22,6 @@ namespace nano
                 }
         };
 
-        using logistic_loss_t = classification_multi_t<logistic_t>;
+        using mlogistic_loss_t = classification_multi_t<logistic_t>;
+        using slogistic_loss_t = classification_single_t<logistic_t>;
 }

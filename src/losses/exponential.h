@@ -1,6 +1,7 @@
 #pragma once
 
 #include "classification_multi.h"
+#include "classification_single.h"
 
 namespace nano
 {
@@ -20,5 +21,6 @@ namespace nano
                 }
         };
 
-        using exponential_loss_t = classification_multi_t<exponential_t>;
+        using mexponential_loss_t = classification_multi_t<exponential_t>;
+        using sexponential_loss_t = classification_single_t<exponential_t>;
 }

@@ -11,7 +11,7 @@ exp = experiment.experiment(
 
 # loss functions
 exp.add_losses([
-        "classnll"])
+        "slogistic"])
 
 # iterators
 exp.add_iterators([
