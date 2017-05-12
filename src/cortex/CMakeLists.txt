@@ -1,5 +1,4 @@
 list(APPEND libnano_sources
-        ${CMAKE_CURRENT_SOURCE_DIR}/class.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/task_util.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/accumulator.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/trainer_state.cpp
