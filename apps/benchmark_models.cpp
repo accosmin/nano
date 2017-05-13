@@ -1,4 +1,6 @@
-#include "nano.h"
+#include "loss.h"
+#include "task.h"
+#include "model.h"
 #include "class.h"
 #include "measure.h"
 #include "text/table.h"

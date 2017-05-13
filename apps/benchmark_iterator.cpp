@@ -1,5 +1,5 @@
-#include "nano.h"
 #include "measure.h"
+#include "iterator.h"
 #include "text/table.h"
 #include "text/cmdline.h"
 #include "math/numeric.h"

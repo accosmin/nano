@@ -1,4 +1,7 @@
-#include "nano.h"
+#include "loss.h"
+#include "task.h"
+#include "layer.h"
+#include "model.h"
 #include "utest.h"
 #include "accumulator.h"
 #include "math/epsilon.h"

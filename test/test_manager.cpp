@@ -50,31 +50,27 @@ NANO_CASE(retrieval)
         const object2_configurable_t obj2;
         const object3_configurable_t obj3;
 
-        const auto maker1 = [] (const string_t& config) { return std::make_unique<object1_configurable_t>(config); };
-        const auto maker2 = [] (const string_t& config) { return std::make_unique<object2_configurable_t>(config); };
-        const auto maker3 = [] (const string_t& config) { return std::make_unique<object3_configurable_t>(config); };
-
         const string_t id1 = "obj1";
         const string_t id2 = "obj2";
         const string_t id3 = "obj3";
 
         // register objects
-        NANO_CHECK(manager.add(id1, "test obj1", maker1));
-        NANO_CHECK(manager.add(id2, "test obj2", maker2));
-        NANO_CHECK(manager.add(id3, "test obj3", maker3));
+        NANO_CHECK(manager.add<object1_configurable_t>(id1, "test obj1"));
+        NANO_CHECK(manager.add<object2_configurable_t>(id2, "test obj2"));
+        NANO_CHECK(manager.add<object3_configurable_t>(id3, "test obj3"));
 
         // should not be able to register with the same id anymore
-        NANO_CHECK(!manager.add(id1, "", maker1));
-        NANO_CHECK(!manager.add(id1, "", maker2));
-        NANO_CHECK(!manager.add(id1, "", maker3));
+        NANO_CHECK(!manager.add<object1_configurable_t>(id1, ""));
+        NANO_CHECK(!manager.add<object1_configurable_t>(id1, ""));
+        NANO_CHECK(!manager.add<object1_configurable_t>(id1, ""));
 
-        NANO_CHECK(!manager.add(id2, "", maker1));
-        NANO_CHECK(!manager.add(id2, "", maker2));
-        NANO_CHECK(!manager.add(id2, "", maker3));
+        NANO_CHECK(!manager.add<object2_configurable_t>(id2, ""));
+        NANO_CHECK(!manager.add<object2_configurable_t>(id2, ""));
+        NANO_CHECK(!manager.add<object2_configurable_t>(id2, ""));
 
-        NANO_CHECK(!manager.add(id3, "", maker1));
-        NANO_CHECK(!manager.add(id3, "", maker2));
-        NANO_CHECK(!manager.add(id3, "", maker3));
+        NANO_CHECK(!manager.add<object3_configurable_t>(id3, ""));
+        NANO_CHECK(!manager.add<object3_configurable_t>(id3, ""));
+        NANO_CHECK(!manager.add<object3_configurable_t>(id3, ""));
 
         // check retrieval
         NANO_REQUIRE(manager.has(id1));

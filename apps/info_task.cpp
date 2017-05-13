@@ -1,5 +1,4 @@
 #include <set>
-#include "nano.h"
 #include "task_util.h"
 #include "text/cmdline.h"
 #include "math/numeric.h"

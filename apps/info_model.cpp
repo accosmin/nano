@@ -1,4 +1,4 @@
-#include "nano.h"
+#include "model.h"
 #include "text/cmdline.h"
 #include "measure_and_log.h"
 

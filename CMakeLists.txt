@@ -40,8 +40,6 @@ message("++ TESTS                          " "${NANO_WITH_TESTS}")
 message("++ ------------------------------------------------------------------------------" "")
 
 include_directories(${nano_SOURCE_DIR}/src)
-include_directories(${nano_SOURCE_DIR}/src/optim)
-include_directories(${nano_SOURCE_DIR}/src/cortex)
 
 add_subdirectory(src)
 add_subdirectory(apps)

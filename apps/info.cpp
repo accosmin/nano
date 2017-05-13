@@ -1,7 +1,13 @@
-#include "nano.h"
+#include "loss.h"
+#include "layer.h"
+#include "model.h"
 #include "version.h"
+#include "trainer.h"
+#include "iterator.h"
 #include "text/table.h"
 #include "text/cmdline.h"
+#include "batch_optimizer.h"
+#include "stoch_optimizer.h"
 #include <iostream>
 
 using namespace nano;

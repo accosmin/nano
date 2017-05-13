@@ -1,4 +1,7 @@
-#include "nano.h"
+#include "loss.h"
+#include "model.h"
+#include "trainer.h"
+#include "iterator.h"
 #include "task_util.h"
 #include "text/cmdline.h"
 #include "text/filesystem.h"

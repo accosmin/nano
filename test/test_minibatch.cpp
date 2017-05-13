@@ -1,4 +1,3 @@
-#include "nano.h"
 #include "utest.h"
 #include "task_util.h"
 #include "vision/color.h"

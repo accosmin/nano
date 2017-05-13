@@ -1,4 +1,3 @@
-#include "nano.h"
 #include "utest.h"
 #include "accumulator.h"
 #include "math/numeric.h"

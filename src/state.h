@@ -10,7 +10,7 @@ namespace nano
         struct state_t;
         using ref_state_t = std::reference_wrapper<const state_t>;
 
-        class function_t;
+        struct function_t;
 
         ///
         /// \brief compare two optimization states
@@ -131,7 +131,4 @@ namespace nano
                         { opt_status::stopped,     "stopped" }
                 };
         }
-
-
 }
-

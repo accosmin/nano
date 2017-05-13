@@ -1,4 +1,5 @@
-#include "nano.h"
+#include "loss.h"
+#include "model.h"
 #include "task_util.h"
 #include "accumulator.h"
 #include "text/cmdline.h"

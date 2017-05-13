@@ -10,7 +10,7 @@ namespace nano
         ///
         /// \brief manage objects of similar type that implement the configable_t interface.
         ///
-        template <class tobject>
+        template <typename tobject>
         struct manager_t
 	{
                 using trobject = std::unique_ptr<tobject>;
@@ -19,7 +19,8 @@ namespace nano
                 ///
                 /// \brief register a new object with the given ID.
                 ///
-                bool add(const string_t& id, const string_t& description, const tmaker& maker);
+                template <typename tobject_impl>
+                bool add(const string_t& id, const string_t& description);
 
                 ///
                 /// \brief check if an object was registered with the given ID.
@@ -59,19 +60,20 @@ namespace nano
                 protos_t                m_protos;       ///< registered object instances
         };
 
-        template <class tobject>
-        bool manager_t<tobject>::add(const string_t& id, const string_t& description, const tmaker& maker)
+        template <typename tobject> template<typename tobject_impl>
+        bool manager_t<tobject>::add(const string_t& id, const string_t& description)
         {
+                const auto maker = [] (const string_t& config) { return std::make_unique<tobject_impl>(config); };
                 return m_protos.emplace(id, proto_t{maker, description}).second;
         }
 
-        template <class tobject>
+        template <typename tobject>
         bool manager_t<tobject>::has(const string_t& id) const
         {
                 return m_protos.find(id) != m_protos.end();
         }
 
-        template <class tobject>
+        template <typename tobject>
         typename manager_t<tobject>::trobject manager_t<tobject>::get(const string_t& id, const string_t& configuration) const
         {
                 const auto it = m_protos.find(id);
@@ -83,7 +85,7 @@ namespace nano
                 return it->second.m_maker(configuration);
         }
 
-        template <class tobject>
+        template <typename tobject>
         strings_t manager_t<tobject>::ids() const
         {
                 strings_t ret;
@@ -94,7 +96,7 @@ namespace nano
                 return ret;
         }
 
-        template <class tobject>
+        template <typename tobject>
         strings_t manager_t<tobject>::descriptions() const
         {
                 strings_t ret;
@@ -105,7 +107,7 @@ namespace nano
                 return ret;
         }
 
-        template <class tobject>
+        template <typename tobject>
         strings_t manager_t<tobject>::configs() const
         {
                 strings_t ret;
