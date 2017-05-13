@@ -6,9 +6,10 @@ project(nano)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_SOURCE_DIR}/cmake)
 
+include(cmake/utils.cmake)
 include(cmake/options.cmake)
-include(cmake/dependencies.cmake)
 include(cmake/configure.cmake)
+include(cmake/dependencies.cmake)
 
 set(NANO_MAJOR_VERSION 0)
 set(NANO_MINOR_VERSION 4)

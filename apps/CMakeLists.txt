@@ -1,33 +1,26 @@
-# function to create an application
-function(build_app app libs)
-        get_filename_component(app_name ${app} NAME_WE)
-        add_executable(${app_name} ${app})
-        target_link_libraries(${app_name} ${libs})
-endfunction()
-
 # build command line programs
-build_app(benchmark_eigen.cpp nano)
-build_app(benchmark_batch.cpp nano)
-build_app(benchmark_stoch.cpp nano)
-build_app(benchmark_tpool.cpp nano)
-build_app(benchmark_conv3d.cpp nano)
-build_app(benchmark_models.cpp nano)
-build_app(benchmark_iterator.cpp nano)
-build_app(benchmark_functions.cpp nano)
+make_app(benchmark_eigen.cpp nano)
+make_app(benchmark_batch.cpp nano)
+make_app(benchmark_stoch.cpp nano)
+make_app(benchmark_tpool.cpp nano)
+make_app(benchmark_conv3d.cpp nano)
+make_app(benchmark_models.cpp nano)
+make_app(benchmark_iterator.cpp nano)
+make_app(benchmark_functions.cpp nano)
 
-build_app(info.cpp nano)
-build_app(info_mat5.cpp nano)
-build_app(info_task.cpp nano)
-build_app(info_model.cpp nano)
-build_app(info_archive.cpp nano)
-build_app(info_iterator.cpp nano)
+make_app(info.cpp nano)
+make_app(info_mat5.cpp nano)
+make_app(info_task.cpp nano)
+make_app(info_model.cpp nano)
+make_app(info_archive.cpp nano)
+make_app(info_iterator.cpp nano)
 
-build_app(train.cpp nano)
-build_app(evaluate.cpp nano)
+make_app(train.cpp nano)
+make_app(evaluate.cpp nano)
 
-build_app(embed.cpp nano)
-build_app(stats.cpp nano)
-build_app(tabulate.cpp nano)
+make_app(embed.cpp nano)
+make_app(stats.cpp "")
+make_app(tabulate.cpp nano)
 
 # install (some) programs
 set(programs

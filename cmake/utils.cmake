@@ -147,3 +147,17 @@ function(setup_lto)
         endif()
 endfunction()
 
+# function to create an application
+function(make_app app libs)
+        get_filename_component(app_name ${app} NAME_WE)
+        add_executable(${app_name} ${app})
+        target_link_libraries(${app_name} ${libs})
+endfunction()
+
+# function to create a unit test application
+function(make_test test libs)
+        get_filename_component(test_name ${test} NAME_WE)
+        add_executable(${test_name} ${test})
+        target_link_libraries(${test_name} ${libs})
+        add_test(${test_name} ${test_name})
+endfunction()
