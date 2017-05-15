@@ -1,3 +1,4 @@
+#include <mutex>
 #include "tasks/task_mnist.h"
 #include "tasks/task_cifar10.h"
 #include "tasks/task_cifar100.h"

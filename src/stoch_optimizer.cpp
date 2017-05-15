@@ -1,3 +1,4 @@
+#include <mutex>
 #include "stoch/ag.h"
 #include "stoch/adam.h"
 #include "stoch/adagrad.h"

@@ -1,3 +1,4 @@
+#include <mutex>
 #include "layers/affine.h"
 #include "layers/activation.h"
 #include "layers/convolution.h"

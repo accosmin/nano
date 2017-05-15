@@ -1,3 +1,4 @@
+#include <mutex>
 #include "trainers/trainer_batch.h"
 #include "trainers/trainer_stoch.h"
 

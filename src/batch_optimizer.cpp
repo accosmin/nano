@@ -1,3 +1,4 @@
+#include <mutex>
 #include "batch/gd.h"
 #include "batch/cgd.h"
 #include "batch/lbfgs.h"

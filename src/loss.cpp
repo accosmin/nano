@@ -1,3 +1,4 @@
+#include <mutex>
 #include "losses/square.h"
 #include "losses/cauchy.h"
 #include "losses/logistic.h"

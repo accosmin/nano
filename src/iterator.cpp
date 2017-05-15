@@ -1,3 +1,4 @@
+#include <mutex>
 #include "iterators/iterator_warp.h"
 #include "iterators/iterator_noise.h"
 
