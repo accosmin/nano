@@ -1,8 +1,8 @@
 # build library
 set(libnano_sources
         ${CMAKE_CURRENT_SOURCE_DIR}/arch.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/state.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/function.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/function_state.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/accumulator.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/logger.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/loss.cpp

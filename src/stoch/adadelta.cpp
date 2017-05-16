@@ -9,12 +9,12 @@ namespace nano
         {
         }
 
-        state_t stoch_adadelta_t::minimize(const stoch_params_t& param, const function_t& function, const vector_t& x0) const
+        function_state_t stoch_adadelta_t::minimize(const stoch_params_t& param, const function_t& function, const vector_t& x0) const
         {
                 return stoch_tune(this, param, function, x0, make_momenta(), make_epsilons());
         }
 
-        state_t stoch_adadelta_t::minimize(const stoch_params_t& param, const function_t& function, const vector_t& x0,
+        function_state_t stoch_adadelta_t::minimize(const stoch_params_t& param, const function_t& function, const vector_t& x0,
                 const scalar_t momentum, const scalar_t epsilon) const
         {
                 // second-order momentum of the gradient
@@ -24,7 +24,7 @@ namespace nano
                 momentum_t<vector_t> davg(momentum, x0.size());
 
                 // assembly the optimizer
-                const auto optimizer = [&] (state_t& cstate, const state_t&)
+                const auto optimizer = [&] (function_state_t& cstate, const function_state_t&)
                 {
                         // descent direction
                         gavg.update(cstate.g.array().square());
@@ -40,7 +40,7 @@ namespace nano
                         cstate.stoch_update(function, 1);
                 };
 
-                const auto snapshot = [&] (const state_t& cstate, state_t& sstate)
+                const auto snapshot = [&] (const function_state_t& cstate, function_state_t& sstate)
                 {
                         sstate.update(function, cstate.x);
                 };

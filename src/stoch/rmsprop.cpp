@@ -10,12 +10,12 @@ namespace nano
         {
         }
 
-        state_t stoch_rmsprop_t::minimize(const stoch_params_t& param, const function_t& function, const vector_t& x0) const
+        function_state_t stoch_rmsprop_t::minimize(const stoch_params_t& param, const function_t& function, const vector_t& x0) const
         {
                 return stoch_tune(this, param, function, x0, make_alpha0s(), make_decays(), make_momenta(), make_epsilons());
         }
 
-        state_t stoch_rmsprop_t::minimize(const stoch_params_t& param, const function_t& function, const vector_t& x0,
+        function_state_t stoch_rmsprop_t::minimize(const stoch_params_t& param, const function_t& function, const vector_t& x0,
                 const scalar_t alpha0, const scalar_t decay, const scalar_t momentum, const scalar_t epsilon) const
         {
                 // learning rate schedule
@@ -25,7 +25,7 @@ namespace nano
                 momentum_t<vector_t> gsum2(momentum, x0.size());
 
                 // assembly the optimizer
-                const auto optimizer = [&] (state_t& cstate, const state_t&)
+                const auto optimizer = [&] (function_state_t& cstate, const function_state_t&)
                 {
                         // learning rate
                         const scalar_t alpha = lrate.get();
@@ -40,7 +40,7 @@ namespace nano
                         cstate.stoch_update(function, alpha);
                 };
 
-                const auto snapshot = [&] (const state_t& cstate, state_t& sstate)
+                const auto snapshot = [&] (const function_state_t& cstate, function_state_t& sstate)
                 {
                         sstate.update(function, cstate.x);
                 };

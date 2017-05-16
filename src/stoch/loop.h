@@ -91,10 +91,10 @@ namespace nano
                 assert(function.size() == x0.size());
 
                 // current state
-                state_t cstate = make_stoch_state(function, x0);
+                auto cstate = make_stoch_state(function, x0);
 
                 // final state
-                state_t fstate = make_state(function, x0);
+                auto fstate = make_state(function, x0);
 
                 // for each epoch ...
                 for (size_t e = 0; e < param.m_max_epochs; ++ e)

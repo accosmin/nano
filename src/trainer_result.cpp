@@ -1,9 +1,9 @@
-#include "state.h"
+#include "function_state.h"
 #include "trainer_result.h"
 
 namespace nano
 {
-        trainer_status trainer_result_t::update(const state_t& opt_state,
+        trainer_status trainer_result_t::update(const function_state_t& opt_state,
                 const trainer_state_t& state, const string_t& config, const size_t patience)
         {
                 // out-of-bounds values (e.g. caused by invalid line-search steps)

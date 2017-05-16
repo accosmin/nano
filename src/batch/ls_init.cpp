@@ -12,7 +12,7 @@ namespace nano
         {
         }
 
-        scalar_t ls_init_t::operator()(const state_t& cstate)
+        scalar_t ls_init_t::operator()(const function_state_t& cstate)
         {
                 const scalar_t unit = scalar_t(1.0);
 

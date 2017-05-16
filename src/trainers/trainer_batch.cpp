@@ -34,7 +34,7 @@ namespace nano
                 trainer_result_t result;
 
                 // logging operator
-                const auto fn_ulog = [&] (const state_t& state)
+                const auto fn_ulog = [&] (const function_state_t& state)
                 {
                         // evaluate the current state
                         // NB: the training state is already estimated!

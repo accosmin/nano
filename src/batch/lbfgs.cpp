@@ -14,7 +14,7 @@ namespace nano
         {
         }
 
-        state_t batch_lbfgs_t::minimize(const batch_params_t& param, const function_t& function, const vector_t& x0) const
+        function_state_t batch_lbfgs_t::minimize(const batch_params_t& param, const function_t& function, const vector_t& x0) const
         {
                 return  minimize(param, function, x0,
                         from_params<ls_initializer>(config(), "ls_init"),
@@ -23,11 +23,11 @@ namespace nano
                         from_params<scalar_t>(config(), "c2"));
         }
 
-        state_t batch_lbfgs_t::minimize(const batch_params_t& param, const function_t& function, const vector_t& x0,
+        function_state_t batch_lbfgs_t::minimize(const batch_params_t& param, const function_t& function, const vector_t& x0,
                 const ls_initializer linit, const ls_strategy lstrat, const scalar_t c1, const scalar_t c2) const
         {
                 // previous state
-                state_t pstate(function.size());
+                function_state_t pstate(function.size());
 
                 std::deque<vector_t> ss, ys;
                 vector_t q, r;
@@ -38,7 +38,7 @@ namespace nano
                 // line-search step
                 ls_strategy_t ls_step(lstrat, c1, c2);
 
-                const auto op = [&] (state_t& cstate, const std::size_t i)
+                const auto op = [&] (function_state_t& cstate, const std::size_t i)
                 {
                         // descent direction
                         //      (see "Numerical optimization", Nocedal & Wright, 2nd edition, p.178)

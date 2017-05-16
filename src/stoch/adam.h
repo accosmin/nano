@@ -12,9 +12,9 @@ namespace nano
         {
                 explicit stoch_adam_t(const string_t& configuration = string_t());
 
-                state_t minimize(const stoch_params_t&, const function_t&, const vector_t& x0) const override;
+                function_state_t minimize(const stoch_params_t&, const function_t&, const vector_t& x0) const override;
 
-                state_t minimize(const stoch_params_t&, const function_t&, const vector_t& x0,
+                function_state_t minimize(const stoch_params_t&, const function_t&, const vector_t& x0,
                         const scalar_t alpha0, const scalar_t decay, const scalar_t epsilon,
                         const scalar_t beta1, const scalar_t beta2) const;
         };

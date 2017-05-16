@@ -10,10 +10,8 @@ namespace nano
         ///     see "Numerical optimization", Nocedal & Wright, 2nd edition
         ///     see libLBFGS
         ///
-        class ls_backtrack_armijo_t
+        struct ls_backtrack_armijo_t
         {
-        public:
-
                 ///
                 /// \brief compute the current step size
                 ///
@@ -24,10 +22,8 @@ namespace nano
                         const scalar_t increment = scalar_t(2.1)) const;
         };
 
-        class ls_backtrack_wolfe_t
+        struct ls_backtrack_wolfe_t
         {
-        public:
-
                 ///
                 /// \brief compute the current step size
                 ///
@@ -38,10 +34,8 @@ namespace nano
                         const scalar_t increment = scalar_t(2.1)) const;
         };
 
-        class ls_backtrack_strong_wolfe_t
+        struct ls_backtrack_strong_wolfe_t
         {
-        public:
-
                 ///
                 /// \brief compute the current step size
                 ///
@@ -52,4 +46,3 @@ namespace nano
                         const scalar_t increment = scalar_t(2.1)) const;
         };
 }
-

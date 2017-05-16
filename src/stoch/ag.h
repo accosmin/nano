@@ -26,9 +26,9 @@ namespace nano
         {
                 explicit stoch_ag_base_t(const string_t& configuration = string_t());
 
-                state_t minimize(const stoch_params_t&, const function_t&, const vector_t& x0) const override;
+                function_state_t minimize(const stoch_params_t&, const function_t&, const vector_t& x0) const override;
 
-                state_t minimize(const stoch_params_t&, const function_t&, const vector_t& x0,
+                function_state_t minimize(const stoch_params_t&, const function_t&, const vector_t& x0,
                         const scalar_t alpha0, const scalar_t q) const;
         };
 
@@ -36,4 +36,3 @@ namespace nano
         using stoch_agfr_t = stoch_ag_base_t<ag_restart::function>;
         using stoch_aggr_t = stoch_ag_base_t<ag_restart::gradient>;
 }
-

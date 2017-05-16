@@ -25,6 +25,6 @@ namespace nano
                 ///
                 /// \brief minimize starting from the initial point x0
                 ///
-                virtual state_t minimize(const stoch_params_t&, const function_t&, const vector_t& x0) const = 0;
+                virtual function_state_t minimize(const stoch_params_t&, const function_t&, const vector_t& x0) const = 0;
         };
 }

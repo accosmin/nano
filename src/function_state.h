@@ -7,25 +7,25 @@
 
 namespace nano
 {
-        struct state_t;
-        using ref_state_t = std::reference_wrapper<const state_t>;
+        struct function_state_t;
+        using ref_function_state_t = std::reference_wrapper<const function_state_t>;
 
         struct function_t;
 
         ///
         /// \brief compare two optimization states
         ///
-        bool operator<(const state_t& one, const state_t& two);
+        bool operator<(const function_state_t& one, const function_state_t& two);
 
         ///
         /// \brief create an optimization state at the given point
         ///
-        state_t make_state(const function_t&, const vector_t& x);
+        function_state_t make_state(const function_t&, const vector_t& x);
 
         ///
         /// \brief create an optimization state at the given point, using the stochastic approximation
         ///
-        state_t make_stoch_state(const function_t&, const vector_t& x);
+        function_state_t make_stoch_state(const function_t&, const vector_t& x);
 
         ///
         /// \brief optimization status
@@ -38,6 +38,17 @@ namespace nano
                 stopped         ///< user requested stop
         };
 
+        template <>
+        inline std::map<opt_status, string_t> enum_string<opt_status>()
+        {
+                return
+                {
+                        { opt_status::converged,   "converged" },
+                        { opt_status::max_iters,   "max_iters" },
+                        { opt_status::failed,      "failed" },
+                        { opt_status::stopped,     "stopped" }
+                };
+        }
         ///
         /// \brief optimization state described as:
         ///     current point (x),
@@ -46,12 +57,12 @@ namespace nano
         ///     descent direction (d) &
         ///     line-search step (t)
         ///
-        struct NANO_PUBLIC state_t
+        struct NANO_PUBLIC function_state_t
         {
                 ///
                 /// \brief constructor
                 ///
-                explicit state_t(const tensor_size_t size = 0);
+                explicit function_state_t(const tensor_size_t size = 0);
 
                 ///
                 /// \brief update current state (move to another position)
@@ -112,23 +123,11 @@ namespace nano
         ///
         /// \brief compare two optimization states
         ///
-        inline bool operator<(const state_t& one, const state_t& two)
+        inline bool operator<(const function_state_t& one, const function_state_t& two)
         {
                 const auto f1 = std::isfinite(one.f) ? one.f : std::numeric_limits<scalar_t>::max();
                 const auto f2 = std::isfinite(two.f) ? two.f : std::numeric_limits<scalar_t>::max();
 
                 return f1 < f2;
-        }
-
-        template <>
-        inline std::map<opt_status, string_t> enum_string<opt_status>()
-        {
-                return
-                {
-                        { opt_status::converged,   "converged" },
-                        { opt_status::max_iters,   "max_iters" },
-                        { opt_status::failed,      "failed" },
-                        { opt_status::stopped,     "stopped" }
-                };
         }
 }

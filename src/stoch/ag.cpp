@@ -10,7 +10,7 @@ namespace nano
         }
 
         template <ag_restart trestart>
-        state_t stoch_ag_base_t<trestart>::minimize(const stoch_params_t& param,
+        function_state_t stoch_ag_base_t<trestart>::minimize(const stoch_params_t& param,
                 const function_t& function, const vector_t& x0) const
         {
                 const auto qs = make_finite_space(scalar_t(0.0));
@@ -32,7 +32,7 @@ namespace nano
         };
 
         template <ag_restart trestart>
-        state_t stoch_ag_base_t<trestart>::minimize(const stoch_params_t& param, const function_t& function, const vector_t& x0,
+        function_state_t stoch_ag_base_t<trestart>::minimize(const stoch_params_t& param, const function_t& function, const vector_t& x0,
                 const scalar_t alpha0, const scalar_t q) const
         {
                 // current & previous iterations
@@ -48,7 +48,7 @@ namespace nano
                 scalar_t ctheta = 1;
 
                 // assembly the optimizer
-                const auto optimizer = [&] (state_t& cstate, const state_t&)
+                const auto optimizer = [&] (function_state_t& cstate, const function_state_t&)
                 {
                         // learning rate
                         const scalar_t alpha = alpha0;
@@ -91,7 +91,7 @@ namespace nano
                         ptheta = ctheta;
                 };
 
-                const auto snapshot = [&] (const state_t& cstate, state_t& sstate)
+                const auto snapshot = [&] (const function_state_t& cstate, function_state_t& sstate)
                 {
                         sstate.update(function, cstate.x);
                 };

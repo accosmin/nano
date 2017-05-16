@@ -9,19 +9,19 @@ namespace nano
         {
         }
 
-        state_t stoch_svrg_t::minimize(const stoch_params_t& param, const function_t& function, const vector_t& x0) const
+        function_state_t stoch_svrg_t::minimize(const stoch_params_t& param, const function_t& function, const vector_t& x0) const
         {
                 return stoch_tune(this, param, function, x0, make_alpha0s(), make_decays());
         }
 
-        state_t stoch_svrg_t::minimize(const stoch_params_t& param, const function_t& function, const vector_t& x0,
+        function_state_t stoch_svrg_t::minimize(const stoch_params_t& param, const function_t& function, const vector_t& x0,
                 const scalar_t alpha0, const scalar_t decay) const
         {
                 // learning rate schedule
                 lrate_t lrate(alpha0, decay);
 
                 // assembly the optimizer
-                const auto optimizer = [&] (state_t& cstate, const state_t& sstate)
+                const auto optimizer = [&] (function_state_t& cstate, const function_state_t& sstate)
                 {
                         // learning rate
                         const scalar_t alpha = lrate.get();
@@ -35,7 +35,7 @@ namespace nano
                         cstate.stoch_update(function, alpha);
                 };
 
-                const auto snapshot = [&] (const state_t& cstate, state_t& sstate)
+                const auto snapshot = [&] (const function_state_t& cstate, function_state_t& sstate)
                 {
                         sstate.update(function, cstate.x);
                 };

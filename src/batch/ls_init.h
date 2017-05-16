@@ -1,7 +1,7 @@
 #pragma once
 
 #include "types.h"
-#include "state.h"
+#include "function_state.h"
 
 namespace nano
 {
@@ -9,10 +9,8 @@ namespace nano
         /// \brief heuristics to initialize the step length,
         ///     see "Numerical optimization", Nocedal & Wright, 2nd edition, p.59
         ///
-        class ls_init_t
+        struct ls_init_t
         {
-        public:
-
                 ///
                 /// \brief constructor
                 ///
@@ -21,7 +19,7 @@ namespace nano
                 ///
                 /// \brief compute the initial step length
                 ///
-                scalar_t operator()(const state_t& cstate);
+                scalar_t operator()(const function_state_t& cstate);
 
         private:
 
@@ -32,4 +30,3 @@ namespace nano
                 scalar_t        m_prevdg;       ///< previous direction dot product
         };
 }
-

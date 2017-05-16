@@ -50,7 +50,7 @@ namespace nano
                 trainer_result_t result;
 
                 // tuning operator
-                const auto fn_tlog = [&] (const state_t& state, const string_t& config)
+                const auto fn_tlog = [&] (const function_state_t& state, const string_t& config)
                 {
                         // NB: the training state is already computed
                         const auto train = trainer_measurement_t{acc.vstats().avg(), acc.estats().avg()};
@@ -69,7 +69,7 @@ namespace nano
                 };
 
                 // logging operator
-                const auto fn_ulog = [&] (const state_t& state, const string_t& config)
+                const auto fn_ulog = [&] (const function_state_t& state, const string_t& config)
                 {
                         // evaluate the current state
                         // NB: the training state is already estimated!

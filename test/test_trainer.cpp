@@ -1,6 +1,6 @@
-#include "state.h"
 #include "utest.h"
 #include "text/config.h"
+#include "function_state.h"
 #include "trainer_result.h"
 
 using namespace nano;
@@ -22,7 +22,7 @@ static auto make_trainer_state(const tvalue valid_value, const size_t ms = 0, co
 template <typename tvalue, typename tepoch>
 static auto update_result(trainer_result_t& result, const opt_status status, const tvalue value, const tepoch epoch)
 {
-        state_t opt_state;
+        function_state_t opt_state;
         opt_state.m_status = status;
 
         const auto config = to_params("param", 0);

@@ -1,7 +1,7 @@
 #pragma once
 
-#include "state.h"
 #include "function.h"
+#include "function_state.h"
 
 namespace nano
 {
@@ -9,14 +9,12 @@ namespace nano
         /// \brief line-search (scalar) step.
         /// NB: using the notation from CG_DESCENT papers
         ///
-        class ls_step_t
+        struct ls_step_t
         {
-        public:
-
                 ///
                 /// \brief constructor
                 ///
-                ls_step_t(const function_t& function, const state_t& state0);
+                ls_step_t(const function_t& function, const function_state_t& state0);
 
                 ///
                 /// \brief minimum allowed line-search step
@@ -102,13 +100,13 @@ namespace nano
         private:
 
                 // attributes
-                ref_function_t  m_function;
-                ref_state_t     m_state0;       ///< starting state for line-search
-                scalar_t        m_gphi0;
+                ref_function_t          m_function;
+                ref_function_state_t    m_state0;       ///< starting state for line-search
+                scalar_t                m_gphi0;
 
-                scalar_t        m_alpha;        ///< line-search step (current estimate)
-                state_t         m_state;        ///< state at alpha
-                scalar_t        m_gphi;         ///< line-search function gradient at alpha
+                scalar_t                m_alpha;        ///< line-search step (current estimate)
+                function_state_t        m_state;        ///< state at alpha
+                scalar_t                m_gphi;         ///< line-search function gradient at alpha
         };
 
         ///
@@ -118,6 +116,4 @@ namespace nano
         {
                 return step1.phi() < step2.phi();
         }
-
 }
-
