@@ -16,10 +16,8 @@ namespace nano
         ///     drow    - stride factor for the vertical axis: default = 1
         ///     dcol    - stride factor for the horizontal axis: default = 1
         ///
-        class NANO_PUBLIC convolution_layer_t final : public layer_t
+        struct convolution_layer_t final : public layer_t
         {
-        public:
-
                 explicit convolution_layer_t(const string_t& parameters = string_t());
 
                 virtual rlayer_t clone() const override;

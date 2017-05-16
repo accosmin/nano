@@ -9,7 +9,7 @@ namespace nano
         ///
         /// \brief common parameters for batch optimization
         ///
-        struct NANO_PUBLIC batch_params_t
+        struct batch_params_t
         {
                 /// logging operator: op(state), returns false if the optimization should stop
                 using opulog_t = std::function<bool(const function_state_t&)>;

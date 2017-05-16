@@ -10,10 +10,8 @@ namespace nano
         /// parameters:
         ///     dims    - number of output dimensions
         ///
-        class affine_layer_t final : public layer_t
+        struct affine_layer_t final : public layer_t
         {
-        public:
-
                 explicit affine_layer_t(const string_t& parameters = string_t());
 
                 virtual rlayer_t clone() const override;

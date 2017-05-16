@@ -57,7 +57,7 @@ namespace nano
         /// \brief in-memory generic computer vision task consisting of images and
         ///     fixed-size rectangular samples from these images.
         ///
-        struct NANO_PUBLIC mem_vision_task_t : public mem_task_t<image_t, mem_vision_sample_t>
+        struct mem_vision_task_t : public mem_task_t<image_t, mem_vision_sample_t>
         {
                 ///
                 /// \brief constructor

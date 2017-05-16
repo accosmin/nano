@@ -16,7 +16,7 @@ namespace nano
         ///
         /// \brief CGD update parameters (Hestenes and Stiefel, 1952 - see (1))
         ///
-        struct NANO_PUBLIC cgd_step_HS
+        struct cgd_step_HS
         {
                 static const char* name()
                 {
@@ -33,7 +33,7 @@ namespace nano
         ///
         /// \brief CGD update parameters (Fletcher and Reeves, 1964 - see (1))
         ///
-        struct NANO_PUBLIC cgd_step_FR
+        struct cgd_step_FR
         {
                 static const char* name()
                 {
@@ -50,7 +50,7 @@ namespace nano
         ///
         /// \brief CGD update parameters (Polak and Ribiere, 1969 - see (1))
         ///
-        struct NANO_PUBLIC cgd_step_PRP
+        struct cgd_step_PRP
         {
                 static const char* name()
                 {
@@ -68,7 +68,7 @@ namespace nano
         ///
         /// \brief CGD update parameters (Fletcher - Conjugate Descent, 1987 - see (1))
         ///
-        struct NANO_PUBLIC cgd_step_CD
+        struct cgd_step_CD
         {
                 static const char* name()
                 {
@@ -85,7 +85,7 @@ namespace nano
         ///
         /// \brief CGD update parameters (Liu and Storey, 1991 - see (1))
         ///
-        struct NANO_PUBLIC cgd_step_LS
+        struct cgd_step_LS
         {
                 static const char* name()
                 {
@@ -102,7 +102,7 @@ namespace nano
         ///
         /// \brief CGD update parameters (Dai and Yuan, 1999 - see (1))
         ///
-        struct NANO_PUBLIC cgd_step_DY
+        struct cgd_step_DY
         {
                 static const char* name()
                 {
@@ -119,7 +119,7 @@ namespace nano
         ///
         /// \brief CGD update parameters (Hager and Zhang, 2005 - see (1)) aka CG_DESCENT
         ///
-        struct NANO_PUBLIC cgd_step_N
+        struct cgd_step_N
         {
                 static const char* name()
                 {
@@ -145,7 +145,7 @@ namespace nano
         ///
         /// \brief CGD update parameters (Dai and Yuan, 2001  - see (2), page 21)
         ///
-        struct NANO_PUBLIC cgd_step_DYHS
+        struct cgd_step_DYHS
         {
                 static const char* name()
                 {
@@ -164,7 +164,7 @@ namespace nano
         ///
         /// \brief CGD update parameters (Dai, 2002 - see (2), page 22)
         ///
-        struct NANO_PUBLIC cgd_step_DYCD
+        struct cgd_step_DYCD
         {
                 static const char* name()
                 {
