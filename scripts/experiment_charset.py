@@ -13,9 +13,9 @@ exp = experiment.experiment(
 exp.add_losses([
         "loss_classnll"])
 
-# criteria
-exp.add_criteria([
-        "crit_avg"])
+# iterators
+exp.add_iterators([
+        "default"])
 
 # trainers
 exp.add_trainers([
@@ -57,22 +57,22 @@ exp.run_all(trials = trials, epochs = 100, policy = "stop_early")
 # compare configurations
 for trial in range(trials):
         for mname in exp.models:
-                for cname in exp.criteria:
+                for iname in exp.iterators:
                         for lname in exp.losses:
                                 # compare stochastic trainers
                                 exp.plot_many(
-                                        exp.filter(trial, mname, "stoch*", cname, lname, ".state"),
-                                        exp.get_path(trial, mname, "stoch", cname, lname, ".pdf"))
+                                        exp.filter(trial, mname, "stoch*", iname, lname, ".state"),
+                                        exp.get_path(trial, mname, "stoch", iname, lname, ".pdf"))
 
                                 # compare batch trainers
                                 exp.plot_many(
-                                        exp.filter(trial, mname, "batch*", cname, lname, ".state"),
-                                        exp.get_path(trial, mname, "batch", cname, lname, ".pdf"))
+                                        exp.filter(trial, mname, "batch*", iname, lname, ".state"),
+                                        exp.get_path(trial, mname, "batch", iname, lname, ".pdf"))
 
                                 # compare all trainers
                                 exp.plot_many(
-                                        exp.filter(trial, mname, ".*", cname, lname, ".state"),
-                                        exp.get_path(trial, mname, "all", cname, lname, ".pdf"))
+                                        exp.filter(trial, mname, ".*", iname, lname, ".state"),
+                                        exp.get_path(trial, mname, "all", iname, lname, ".pdf"))
 
 # summarize configurations
 exp.summarize(trials)

@@ -13,9 +13,9 @@ exp = experiment.experiment(
 exp.add_losses([
         "loss_classnll"])
 
-# criteria
-exp.add_criteria([
-        "crit_avg"])
+# iterators
+exp.add_iterators([
+        "default"])
 
 # trainers
 exp.add_trainers([
@@ -52,22 +52,22 @@ exp.run_all(trials = trials, epochs = 100, policy = "stop_early")
 
 # compare configurations
 for trial in range(trials):
-        for cname in exp.criteria:
+        for iname in exp.iterators:
                 for lname in exp.losses:
                         # compare mlps
                         exp.plot_many(
-                                exp.filter(trial, "mlp*", ".*", cname, lname, ".state"),
-                                exp.get_path(trial, "mlp", "", cname, lname, ".pdf"))
+                                exp.filter(trial, "mlp*", ".*", iname, lname, ".state"),
+                                exp.get_path(trial, "mlp", "", iname, lname, ".pdf"))
 
                         # compare convnets
                         exp.plot_many(
-                                exp.filter(trial, "convnet*", ".*", cname, lname, ".state"),
-                                exp.get_path(trial, "convnet", "", cname, lname, ".pdf"))
+                                exp.filter(trial, "convnet*", ".*", iname, lname, ".state"),
+                                exp.get_path(trial, "convnet", "", iname, lname, ".pdf"))
 
                         # compare all models
                         exp.plot_many(
-                                exp.filter(trial, ".*", ".*", cname, lname, ".state"),
-                                exp.get_path(trial, "", "", cname, lname, ".pdf"))
+                                exp.filter(trial, ".*", ".*", iname, lname, ".state"),
+                                exp.get_path(trial, "", "", iname, lname, ".pdf"))
 
 # summarize configurations
 exp.summarize(trials)

@@ -13,9 +13,9 @@ exp = experiment.experiment(
 exp.add_losses([
         "loss_classnll"])
 
-# criteria
-exp.add_criteria([
-        "crit_avg"])
+# iterators
+exp.add_iterators([
+        "default"])
 
 # trainers
 exp.add_trainers([
@@ -45,12 +45,12 @@ exp.run_all(trials = trials, epochs = 1000, policy = "stop_early")
 # compare configurations
 for trial in range(trials):
         for tname in exp.trainers:
-                for cname in exp.criteria:
+                for iname in exp.iterators:
                         for lname in exp.losses:
                                 # compare all activation functions
                                 exp.plot_many(
-                                        exp.filter(trial, ".*", tname, cname, lname, ".state"),
-                                        exp.get_path(trial, "", tname, cname, lname, ".pdf"))
+                                        exp.filter(trial, ".*", tname, iname, lname, ".state"),
+                                        exp.get_path(trial, "", tname, iname, lname, ".pdf"))
 
 # summarize configurations
 exp.summarize(trials)
