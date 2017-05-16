@@ -1,8 +1,6 @@
 #include "math/random.h"
 #include "iterator_noise.h"
 #include "tensor/numeric.h"
-#include "text/to_params.h"
-#include "text/from_params.h"
 
 namespace nano
 {

@@ -2,7 +2,6 @@
 #include "task_util.h"
 #include "vision/color.h"
 #include "tasks/charset.h"
-#include "text/to_params.h"
 #include "trainers/minibatch.h"
 
 using namespace nano;

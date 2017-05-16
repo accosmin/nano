@@ -1,6 +1,5 @@
 #include "loop.h"
 #include "adagrad.h"
-#include "text/to_params.h"
 
 namespace nano
 {

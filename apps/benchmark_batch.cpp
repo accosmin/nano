@@ -1,7 +1,6 @@
-#include "text/cmdline.h"
 #include "math/random.h"
+#include "text/cmdline.h"
 #include "math/epsilon.h"
-#include "text/to_params.h"
 #include "functions/test.h"
 #include "batch_optimizer.h"
 #include "benchmark_optimizers.h"

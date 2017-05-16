@@ -2,9 +2,7 @@
 #include "math/numeric.h"
 #include "trainer_batch.h"
 #include "function_batch.h"
-#include "text/to_params.h"
 #include "batch_optimizer.h"
-#include "text/from_params.h"
 #include "logger.h"
 
 namespace nano

@@ -1,7 +1,6 @@
 #include "loop.h"
 #include "lrate.h"
 #include "rmsprop.h"
-#include "text/to_params.h"
 #include "tensor/momentum.h"
 
 namespace nano

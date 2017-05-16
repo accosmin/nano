@@ -1,8 +1,7 @@
 #include "state.h"
 #include "utest.h"
+#include "text/config.h"
 #include "trainer_result.h"
-#include "text/to_string.h"
-#include "text/to_params.h"
 
 using namespace nano;
 

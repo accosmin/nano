@@ -4,9 +4,6 @@
 #include "task_svhn.h"
 #include "math/random.h"
 #include "vision/color.h"
-#include "text/to_params.h"
-#include "text/from_params.h"
-#include <fstream>
 
 namespace nano
 {

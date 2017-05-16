@@ -2,8 +2,6 @@
 #include "loop.h"
 #include "ls_init.h"
 #include "ls_strategy.h"
-#include "text/to_params.h"
-#include "text/from_params.h"
 
 namespace nano
 {
@@ -47,4 +45,3 @@ namespace nano
                 return batch_loop(param, function, x0, op);
         }
 }
-

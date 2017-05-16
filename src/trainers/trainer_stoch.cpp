@@ -2,9 +2,7 @@
 #include "math/numeric.h"
 #include "trainer_stoch.h"
 #include "function_stoch.h"
-#include "text/to_params.h"
 #include "stoch_optimizer.h"
-#include "text/from_params.h"
 #include "logger.h"
 
 namespace nano

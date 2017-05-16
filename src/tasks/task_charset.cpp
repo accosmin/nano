@@ -4,8 +4,6 @@
 #include "math/numeric.h"
 #include "task_charset.h"
 #include "tensor/numeric.h"
-#include "text/to_params.h"
-#include "text/from_params.h"
 #include "tensor/algorithm.h"
 
 #include "vision/warp.h"

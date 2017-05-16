@@ -2,8 +2,6 @@
 #include "loop.h"
 #include "ls_init.h"
 #include "ls_strategy.h"
-#include "text/to_params.h"
-#include "text/from_params.h"
 
 namespace nano
 {
@@ -91,4 +89,3 @@ namespace nano
         template struct batch_cgd_t<cgd_step_DYCD>;
         template struct batch_cgd_t<cgd_step_DYHS>;
 }
-

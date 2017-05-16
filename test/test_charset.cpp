@@ -1,8 +1,8 @@
 #include "utest.h"
 #include "task_util.h"
+#include "text/config.h"
 #include "vision/color.h"
 #include "tasks/charset.h"
-#include "text/to_params.h"
 
 using namespace nano;
 

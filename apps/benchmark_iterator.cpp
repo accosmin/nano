@@ -5,7 +5,6 @@
 #include "math/numeric.h"
 #include "vision/color.h"
 #include "tasks/charset.h"
-#include "text/to_params.h"
 #include "tensor/numeric.h"
 #include <iostream>
 

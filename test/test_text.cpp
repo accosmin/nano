@@ -1,8 +1,7 @@
 #include "utest.h"
 #include "text/table.h"
+#include "text/config.h"
 #include "text/algorithm.h"
-#include "text/to_params.h"
-#include "text/from_params.h"
 #include "text/table_row_mark.h"
 #include <list>
 #include <set>

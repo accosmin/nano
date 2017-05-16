@@ -1,7 +1,5 @@
 #include "affine.h"
 #include "math/numeric.h"
-#include "text/to_params.h"
-#include "text/from_params.h"
 
 namespace nano
 {
