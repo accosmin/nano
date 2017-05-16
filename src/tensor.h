@@ -6,10 +6,7 @@
 namespace nano
 {
         using vector_t = tensor_vector_t<scalar_t>;
-        using vectors_t = std::vector<vector_t>;
-
         using matrix_t = tensor_matrix_t<scalar_t>;
-        using matrices_t = std::vector<matrix_t>;
 
         using tensor1d_t = tensor_mem_t<scalar_t, 1>;
         using tensor2d_t = tensor_mem_t<scalar_t, 2>;

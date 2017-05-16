@@ -14,7 +14,7 @@ static void check_function(const function_t& function,
         auto rgen = make_rng(scalar_t(-1), scalar_t(+1));
 
         // generate fixed random trials
-        vectors_t x0s(trials);
+        std::vector<vector_t> x0s(trials);
         for (auto& x0 : x0s)
         {
                 x0.resize(function.size());

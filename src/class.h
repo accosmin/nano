@@ -1,6 +1,5 @@
 #pragma once
 
-#include "arch.h"
 #include "tensor.h"
 
 namespace nano
