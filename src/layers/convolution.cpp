@@ -34,7 +34,7 @@ namespace nano
                         throw std::invalid_argument("invalid configuration for the convolution layer");
                 }
 
-                m_op = conv3d_dmaps_t{params};
+                m_op = conv3d_dense_t{params};
         }
 
         tensor_size_t convolution_layer_t::fanin() const

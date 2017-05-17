@@ -10,7 +10,6 @@ exp = experiment.experiment(
         cfg.expdir + "/charset/eval_trainers")
 
 # loss functions
-exp.add_loss("loss_classnll")
 exp.add_loss("loss_slogistic")
 
 # iterators
