@@ -10,14 +10,10 @@ exp = experiment.experiment(
         cfg.expdir + "/charset/eval_trainers")
 
 # loss functions
-exp.add_loss("loss_slogistic")
+exp.add_loss("slogistic")
 
 # iterators
 exp.add_iterator("default")
-exp.add_iterator("noise05", "sigma=0.05")
-exp.add_iterator("noise10", "sigma=0.10")
-exp.add_iterator("noise10", "sigma=0.10")
-exp.add_iterator("noise10", "sigma=0.10")
 
 # trainers
 batch_params = "epochs=100,policy=stop_early,patience=32,epsilon=1e-6"
@@ -51,12 +47,11 @@ mlp4 = mlp3 + "affine:dims=32;act-snorm;"
 mlp5 = mlp4 + "affine:dims=32;act-snorm;"
 
 convnet = "--model forward-network --model-params "
-convnet = convnet + "conv:dims=32,rows=5,cols=5,conn=1,drow=1,dcol=1;act-snorm;"
-convnet = convnet + "conv:dims=32,rows=5,cols=5,conn=1,drow=1,dcol=1;act-snorm;"
+convnet = convnet + "conv:dims=64,rows=5,cols=5,conn=1,drow=1,dcol=1;act-snorm;"
 convnet = convnet + "conv:dims=32,rows=3,cols=3,conn=1,drow=1,dcol=1;act-snorm;"
 convnet = convnet + "conv:dims=32,rows=3,cols=3,conn=1,drow=1,dcol=1;act-snorm;"
-convnet = convnet + "conv:dims=32,rows=3,cols=3,conn=1,drow=1,dcol=1;act-snorm;"
-convnet = convnet + "conv:dims=32,rows=3,cols=3,conn=1,drow=1,dcol=1;act-snorm;"
+convnet = convnet + "conv:dims=32,rows=1,cols=1,conn=1,drow=1,dcol=1;act-snorm;"
+convnet = convnet + "conv:dims=32,rows=1,cols=1,conn=1,drow=1,dcol=1;act-snorm;"
 
 outlayer = "affine:dims=10;act-snorm;"
 
