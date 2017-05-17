@@ -25,6 +25,10 @@ class config:
                         "square" : "--loss square"
                 }
 
+        # configure iterator with the given name and parameters
+        def config_loss(self, name, parameters = ""):
+                return self.losses().get(name)
+
         # available iterators: {name, command line parameters}+
         def iterators(self):
                 return {
@@ -32,6 +36,10 @@ class config:
                         "noise" : "--iterator noise",
                         "warp" : "--iterator warp"
                 }
+
+        # configure iterator with the given name and parameters
+        def config_iterator(self, name, parameters = "none"):
+                return self.iterators().get(name) + " --iterator-params " + parameters
 
         # training methods: {name, command line parameters}+
         def trainers(self):
@@ -54,13 +62,18 @@ class config:
                         "batch_gd" : "--trainer batch --trainer-params opt=gd"
                 }
 
-        # task parameters
+        # configure trainer with the given name and parameters
+        def config_trainer(self, name, parameters = ""):
+                return self.trainers().get(name) + "," + parameters
+
+        # configure synthetic tasks
         def task_synth(self, name, params):
                 return "--task synth-{0} --task-params {1}".format(name, params)
 
         def task_synth_charset(self, ctype = "digit", color = "rgb", irows = 16, icols = 16, count = 10000):
                 return self.task_synth("charset", "type={0},color={1},irows={2},icols={3},count={4}".format(ctype, color, irows, icols, count))
 
+        # configure tasks
         def task(self, name):
                 return "--task {0} --task-params dir={1}".format(name, self.dbdir + "/" + name)
 

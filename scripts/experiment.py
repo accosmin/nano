@@ -22,23 +22,21 @@ class experiment:
         def log(self, *messages):
                 print(time.strftime("[%Y-%m-%d %H:%M:%S]"), ' '.join(messages))
 
-        def add_model(self, name, params):
-                self.models[name] = params
+        def add_model(self, name, parameters):
+                self.models[name] = parameters
 
-        def add_trainers(self, names):
-                for name in names:
-                        self.trainers[name] = self.cfg.trainers().get(name)
+        def add_trainer(self, name, parameters):
+                self.trainers[name] = self.cfg.config_trainer(name, parameters)
 
-        def add_losses(self, names):
-                for name in names:
-                        self.losses[name] = self.cfg.losses().get(name)
+        def add_loss(self, name, parameters = ""):
+                self.losses[name] = self.cfg.config_loss(name, parameters)
 
-        def add_iterators(self, names):
-                for name in names:
-                        self.iterators[name] = self.cfg.iterators().get(name)
+        def add_iterator(self, name, parameters = ""):
+                self.iterators[name] = self.cfg.config_iterator(name, parameters)
 
         def get_path(self, trial, mname, tname, iname, lname, extension):
-                return self.dir + "/trial" + str(trial) + "_" + tname + "_" + mname + "_" + iname + "_" + lname + extension
+                basepath = self.dir + "/trial" + str(trial)
+                return basepath + "_" + tname + "_" + mname + "_" + iname + "_" + lname + extension
 
         def filter(self, trial, mname_reg, tname_reg, iname_reg, lname_reg, extension):
                 paths = []
@@ -85,18 +83,16 @@ class experiment:
                 self.plot_one(spath, ppath)
                 self.log()
 
-        def run_trial(self, trial, epochs, policy, min_batch, max_batch, patience, epsilon):
+        def run_trial(self, trial):
                 for mname, mparam in self.models.items():
                         for tname, tparam in self.trainers.items():
-                                tformat = ",epochs={0},policy={1},min_batch={2},max_batch={3},patience={4},eps={5}"
-                                tparam += tformat.format(epochs, policy, min_batch, max_batch, patience, epsilon)
                                 for iname, iparam in self.iterators.items():
                                         for lname, lparam in self.losses.items():
                                                 self.run_one(trial, mname, mparam, tname, tparam, iname, iparam, lname, lparam)
 
-        def run_all(self, trials = 10, epochs = 1000, policy = "stop_early", min_batch = 32, max_batch = 256, patience = 32, epsilon = 1e-6):
+        def run_all(self, trials = 10):
                 for trial in range(trials):
-                        self.run_trial(trial, epochs, policy, min_batch, max_batch, patience, epsilon)
+                        self.run_trial(trial)
 
         def get_token(self, line, begin_delim, end_delim, start = 0):
                 begin = line.find(begin_delim, start) + len(begin_delim)
