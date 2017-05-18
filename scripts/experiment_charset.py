@@ -50,7 +50,7 @@ convnet = "--model forward-network --model-params "
 convnet = convnet + "conv:dims=64,rows=5,cols=5,conn=1,drow=1,dcol=1;act-snorm;"
 convnet = convnet + "conv:dims=32,rows=3,cols=3,conn=1,drow=1,dcol=1;act-snorm;"
 convnet = convnet + "conv:dims=32,rows=3,cols=3,conn=1,drow=1,dcol=1;act-snorm;"
-convnet = convnet + "conv:dims=32,rows=1,cols=1,conn=1,drow=1,dcol=1;act-snorm;"
+convnet = convnet + "conv:dims=32,rows=3,cols=3,conn=1,drow=1,dcol=1;act-snorm;"
 convnet = convnet + "conv:dims=32,rows=1,cols=1,conn=1,drow=1,dcol=1;act-snorm;"
 
 outlayer = "affine:dims=10;act-snorm;"
@@ -69,7 +69,7 @@ exp.run_all(trials)
 
 # compare configurations
 for trial in range(trials):
-        for tname, iname, lname in [(x, y, z) for x in exp.trainers for y in exp.iterators for z in exp.losses]:
+        for mname, iname, lname in [(x, y, z) for x in exp.models for y in exp.iterators for z in exp.losses]:
                 # compare stochastic trainers
                 exp.plot_many(
                         exp.filter(trial, mname, "stoch*", iname, lname, ".state"),
