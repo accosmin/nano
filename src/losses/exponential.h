@@ -6,18 +6,18 @@
 namespace nano
 {
         ///
-        /// \brief multi-class exponential loss: exp(sum(-targets_k * scores_k, k)).
+        /// \brief multi-class exponential loss: sum(exp(-targets_k * scores_k), k).
         ///
         struct exponential_t
         {
                 static scalar_t value(const vector_t& targets, const vector_t& scores)
                 {
-                        return std::exp(-targets.dot(scores));
+                        return (-targets.array() * scores.array()).exp().sum();
                 }
 
                 static vector_t vgrad(const vector_t& targets, const vector_t& scores)
                 {
-                        return -targets.array() * std::exp(-targets.dot(scores));
+                        return -targets.array() * (-targets.array() * scores.array()).exp();
                 }
         };
 

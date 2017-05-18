@@ -43,7 +43,7 @@ for trial in range(trials):
                 # compare mlps
                 exp.plot_many(
                         exp.filter(trial, "mlp.*", tname, iname, lname, ".state"),
-                        exp.get_path(trial, "mlp", tname, iname, lname, ".pdf"))
+                        exp.path(trial, "mlp", tname, iname, lname, ".pdf"))
 
 # summarize configurations
 exp.summarize(trials)

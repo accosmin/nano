@@ -6,18 +6,20 @@ import experiment
 # - the model should predict the digit of a synthetic image
 cfg = config.config()
 exp = experiment.experiment(
-        cfg.task_synth_charset(ctype = "digit", color = "rgb", irows = 18, icols = 18, count = 10000),
-        cfg.expdir + "/charset/eval_trainers")
+        cfg.task_synth_charset(ctype = "digit", color = "rgb", irows = 16, icols = 16, count = 10000),
+        cfg.expdir + "/charset")
 
 # loss functions
+exp.add_loss("classnll")
 exp.add_loss("slogistic")
+exp.add_loss("sexponential")
 
 # iterators
 exp.add_iterator("default")
 
 # trainers
-batch_params = "epochs=100,policy=stop_early,patience=32,epsilon=1e-6"
-stoch_params = "epochs=100,policy=stop_early,patience=32,epsilon=1e-6,min_batch=32,max_batch=256"
+batch_params = "epochs=10,policy=stop_early,patience=32,epsilon=1e-6"
+stoch_params = "epochs=10,policy=stop_early,patience=32,epsilon=1e-6,min_batch=32,max_batch=256"
 
 exp.add_trainer("batch_gd", batch_params)
 exp.add_trainer("batch_cgd", batch_params)
@@ -67,23 +69,20 @@ exp.add_model("convnet", convnet + outlayer)
 trials = 10
 exp.run_all(trials)
 
-# compare configurations
-for trial in range(trials):
-        for mname, iname, lname in [(x, y, z) for x in exp.models for y in exp.iterators for z in exp.losses]:
-                # compare stochastic trainers
+# compare trainers
+for mname, iname, lname in [(x, y, z) for x in exp.models for y in exp.iterators for z in exp.losses]:
+        for trial in range(trials):
                 exp.plot_many(
                         exp.filter(trial, mname, "stoch*", iname, lname, ".state"),
-                        exp.get_path(trial, mname, "stoch", iname, lname, ".pdf"))
+                        exp.path(trial, mname, "stoch", iname, lname, ".pdf"))
 
-                # compare batch trainers
                 exp.plot_many(
                         exp.filter(trial, mname, "batch*", iname, lname, ".state"),
-                        exp.get_path(trial, mname, "batch", iname, lname, ".pdf"))
+                        exp.path(trial, mname, "batch", iname, lname, ".pdf"))
 
-                # compare all trainers
                 exp.plot_many(
                         exp.filter(trial, mname, ".*", iname, lname, ".state"),
-                        exp.get_path(trial, mname, "all", iname, lname, ".pdf"))
+                        exp.path(trial, mname, "all", iname, lname, ".pdf"))
 
 # summarize configurations
 exp.summarize(trials)

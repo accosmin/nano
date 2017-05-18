@@ -25,17 +25,26 @@ class experiment:
         def add_model(self, name, parameters):
                 self.models[name] = parameters
 
-        def add_trainer(self, name, parameters):
-                self.trainers[name] = self.cfg.config_trainer(name, parameters)
+        def add_trainer(self, name, parameters, config_name = None):
+                if not config_name:
+                        config_name = name
+                self.trainers[config_name] = self.cfg.config_trainer(name, parameters)
 
-        def add_loss(self, name, parameters = ""):
-                self.losses[name] = self.cfg.config_loss(name, parameters)
+        def add_loss(self, name, parameters = "", config_name = None):
+                if not config_name:
+                        config_name = name
+                self.losses[config_name] = self.cfg.config_loss(name, parameters)
 
-        def add_iterator(self, name, parameters = ""):
-                self.iterators[name] = self.cfg.config_iterator(name, parameters)
+        def add_iterator(self, name, parameters = "", config_name = None):
+                if not config_name:
+                        config_name = name
+                self.iterators[config_name] = self.cfg.config_iterator(name, parameters)
 
-        def get_path(self, trial, mname, tname, iname, lname, extension):
-                basepath = self.dir + "/trial" + str(trial)
+        def path(self, trial, mname, tname, iname, lname, extension):
+                if not trial:
+                        basepath = self.dir + "/"
+                else:
+                        basepath = self.dir + "/trial" + str(trial)
                 return basepath + "_" + tname + "_" + mname + "_" + iname + "_" + lname + extension
 
         def filter(self, trial, mname_reg, tname_reg, iname_reg, lname_reg, extension):
@@ -52,7 +61,7 @@ class experiment:
                                         for lname in self.losses:
                                                 if not re.match(lname_reg, lname):
                                                         continue
-                                                paths.append(self.get_path(trial, mname, tname, iname, lname, extension))
+                                                paths.append(self.path(trial, mname, tname, iname, lname, extension))
                 return paths
 
         def train_one(self, param, lpath):
@@ -73,10 +82,10 @@ class experiment:
 
         def run_one(self, trial, mname, mparam, tname, tparam, iname, iparam, lname, lparam):
                 os.makedirs(self.dir, exist_ok = True)
-                mpath = self.get_path(trial, mname, tname, iname, lname, ".model")
-                spath = self.get_path(trial, mname, tname, iname, lname, ".state")
-                lpath = self.get_path(trial, mname, tname, iname, lname, ".log")
-                ppath = self.get_path(trial, mname, tname, iname, lname, ".pdf")
+                mpath = self.path(trial, mname, tname, iname, lname, ".model")
+                spath = self.path(trial, mname, tname, iname, lname, ".state")
+                lpath = self.path(trial, mname, tname, iname, lname, ".log")
+                ppath = self.path(trial, mname, tname, iname, lname, ".pdf")
 
                 param = self.task + " " + mparam + " " + tparam + " " + iparam + " " + lparam + " --model-file " + mpath
                 self.train_one(param, lpath)
@@ -139,7 +148,7 @@ class experiment:
                 speeds = []
                 deltas = []
                 for trial in range(trials):
-                        lpath = self.get_path(trial, mname, tname, iname, lname, ".log")
+                        lpath = self.path(trial, mname, tname, iname, lname, ".log")
                         value, error, epoch, speed, delta = self.get_log(lpath)
                         values.append(value)
                         errors.append(error)
@@ -155,20 +164,25 @@ class experiment:
                         mname, tname, iname, lname, value_stats, error_stats, epoch_stats, speed_stats, delta_stats),
                         file = lfile)
 
-        def summarize(self, trials):
-                lpath = self.dir + "/result.log"
-                cpath = self.dir + "/result.csv"
-
+        def summarize(self, trials, mname_reg, tname_reg, iname_reg, lname_reg, lpath, cpath):
                 cfile = open(cpath, "w")
                 # header
                 print("{0};{1};{2};{3};{4};{5};{6};{7};{8}".format(
                         "model", "trainer", "iterator", "loss", "test value", "test error", "epochs", "convergence speed", "duration (sec)"),
                         file = cfile)
-                # content
+                # contenta
                 for mname in self.models:
+                        if not re.match(mname_reg, mname):
+                                continue
                         for tname in self.trainers:
+                                if not re.match(tname_reg, tname):
+                                        continue
                                 for iname in self.iterators:
+                                        if not re.match(iname_reg, iname):
+                                                continue
                                         for lname in self.losses:
+                                                if not re.match(lname_reg, lname):
+                                                        continue
                                                 self.summarize_one(trials, mname, tname, iname, lname, cfile)
                 cfile.close()
 

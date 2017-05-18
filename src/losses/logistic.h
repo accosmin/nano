@@ -6,19 +6,19 @@
 namespace nano
 {
         ///
-        /// \brief multi-class logistic loss: log(1 + exp(sum(-targets_k * scores_k, k))).
+        /// \brief multi-class logistic loss: sum(log(1 + exp(-targets_k * scores_k)), k).
         ///
         struct logistic_t
         {
                 static scalar_t value(const vector_t& targets, const vector_t& scores)
                 {
-                        return std::log1p(std::exp(-targets.dot(scores)));
+                        return  (1 + (-targets.array() * scores.array()).exp()).log().sum();
                 }
 
                 static vector_t vgrad(const vector_t& targets, const vector_t& scores)
                 {
-                        return  -targets.array() * std::exp(-targets.dot(scores)) /
-                                (1 + std::exp((-targets.dot(scores))));
+                        return  -targets.array() * (-targets.array() * scores.array()).exp() /
+                                (1 + (-targets.array() * scores.array()).exp());
                 }
         };
 
