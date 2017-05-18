@@ -41,11 +41,14 @@ class experiment:
                 self.iterators[config_name] = self.cfg.config_iterator(name, parameters)
 
         def path(self, trial, mname, tname, iname, lname, extension):
-                if not trial:
-                        basepath = self.dir + "/"
-                else:
-                        basepath = self.dir + "/trial" + str(trial)
-                return basepath + "_" + tname + "_" + mname + "_" + iname + "_" + lname + extension
+                basepath = self.dir + "/"
+                basepath += "trial{}".format(trial) if not (trial is None) else "result"
+                basepath += "_" + mname if mname else ""
+                basepath += "_" + tname if tname else ""
+                basepath += "_" + iname if iname else ""
+                basepath += "_" + lname if lname else ""
+                basepath += extension
+                return basepath
 
         def filter(self, trial, mname_reg, tname_reg, iname_reg, lname_reg, extension):
                 paths = []

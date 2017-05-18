@@ -82,7 +82,27 @@ for mname, iname, lname in [(x, y, z) for x in exp.models for y in exp.iterators
 
                 exp.plot_many(
                         exp.filter(trial, mname, ".*", iname, lname, ".state"),
-                        exp.path(trial, mname, "all", iname, lname, ".pdf"))
+                        exp.path(trial, mname, None, iname, lname, ".pdf"))
 
-# summarize configurations
-exp.summarize(trials)
+        exp.summarize(trials, mname, "stoch*", iname, lname,
+                exp.path(None, mname, "stoch", iname, lname, ".log",
+                exp.path(None, mname, "stoch", iname, lname, ".csv"))
+
+        exp.summarize(trials, mname, "batch*", iname, lname,
+                exp.path(None, mname, "batch", iname, lname, ".log",
+                exp.path(None, mname, "batch", iname, lname, ".csv"))
+
+        exp.summarize(trials, mname, ".*", iname, lname,
+                exp.path(None, mname, None, iname, lname, ".log",
+                exp.path(None, mname, None, iname, lname, ".csv"))
+
+# compare losses
+for mname, tname, iname in [(x, y, z) for x in exp.models for y in exp.trainers for z in exp.iterators]:
+        for trial in range(trials):
+                exp.plot_many(
+                        exp.filter(trial, mname, tname, iname, ".*", ".state"),
+                        exp.path(trial, mname, tname, iname, None, ".pdf"))
+
+        exp.summarize(trials, mname, tname, iname, ".*",
+                exp.path(None, mname, tname, iname, None, ".log"),
+                exp.path(None, mname, tname, iname, None, ".csv"))
