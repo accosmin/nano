@@ -109,7 +109,7 @@ int main(int argc, const char *argv[])
         }
         #undef DEFINE
 
-        const auto loss = get_losses().get("logistic");
+        const auto loss = get_losses().get("s-logistic");
 
         // construct tables to compare models
         table_t ftable; ftable.header() << "forward [us/sample]";
