@@ -11,8 +11,6 @@ exp = experiment.experiment(
 
 # loss functions
 exp.add_loss("classnll")
-exp.add_loss("slogistic")
-exp.add_loss("sexponential")
 
 # iterators
 exp.add_iterator("default")
@@ -49,14 +47,3 @@ for tname, iname, lname in [(x, y, z) for x in exp.trainers for y in exp.iterato
         exp.summarize(trials, ".*", tname, iname, lname,
                 exp.path(None, None, tname, iname, lname, ".log"),
                 exp.path(None, None, tname, iname, lname, ".csv"))
-
-# compare losses
-for mname, tname, iname in [(x, y, z) for x in exp.models for y in exp.trainers for z in exp.iterators]:
-        for trial in range(trials):
-                exp.plot_many(
-                        exp.filter(trial, mname, tname, iname, ".*", ".state"),
-                        exp.path(trial, mname, tname, iname, None, ".pdf"))
-
-        exp.summarize(trials, mname, tname, iname, ".*",
-                exp.path(None, mname, tname, iname, None, ".log"),
-                exp.path(None, mname, tname, iname, None, ".csv"))
