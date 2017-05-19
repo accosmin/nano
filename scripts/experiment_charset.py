@@ -18,8 +18,8 @@ exp.add_loss("sexponential")
 exp.add_iterator("default")
 
 # trainers
-batch_params = "epochs=10,policy=stop_early,patience=32,epsilon=1e-6"
-stoch_params = "epochs=10,policy=stop_early,patience=32,epsilon=1e-6,min_batch=32,max_batch=256"
+batch_params = "epochs=100,policy=stop_early,patience=32,epsilon=1e-6"
+stoch_params = "epochs=100,policy=stop_early,patience=32,epsilon=1e-6,min_batch=32,max_batch=256"
 
 exp.add_trainer("batch_gd", batch_params)
 exp.add_trainer("batch_cgd", batch_params)
@@ -52,22 +52,32 @@ convnet = "--model forward-network --model-params "
 convnet = convnet + "conv:dims=64,rows=5,cols=5,conn=1,drow=1,dcol=1;act-snorm;"
 convnet = convnet + "conv:dims=32,rows=3,cols=3,conn=1,drow=1,dcol=1;act-snorm;"
 convnet = convnet + "conv:dims=32,rows=3,cols=3,conn=1,drow=1,dcol=1;act-snorm;"
-convnet = convnet + "conv:dims=32,rows=3,cols=3,conn=1,drow=1,dcol=1;act-snorm;"
 convnet = convnet + "conv:dims=32,rows=1,cols=1,conn=1,drow=1,dcol=1;act-snorm;"
 
 outlayer = "affine:dims=10;act-snorm;"
 
-#exp.add_model("mlp0", mlp0 + outlayer)
-#exp.add_model("mlp1", mlp1 + outlayer)
-#exp.add_model("mlp2", mlp2 + outlayer)
-#exp.add_model("mlp3", mlp3 + outlayer)
-#exp.add_model("mlp4", mlp4 + outlayer)
-#exp.add_model("mlp5", mlp5 + outlayer)
+exp.add_model("mlp0", mlp0 + outlayer)
+exp.add_model("mlp1", mlp1 + outlayer)
+exp.add_model("mlp2", mlp2 + outlayer)
+exp.add_model("mlp3", mlp3 + outlayer)
+exp.add_model("mlp4", mlp4 + outlayer)
+exp.add_model("mlp5", mlp5 + outlayer)
 exp.add_model("convnet", convnet + outlayer)
 
 # train all configurations
 trials = 10
 exp.run_all(trials)
+
+# compare models
+for tname, iname, lname in [(x, y, z) for x in exp.trainers for y in exp.iterators for z in exp.losses]:
+        for trial in range(trials):
+                exp.plot_many(
+                        exp.filter(trial, ".*", tname, iname, lname, ".state"),
+                        exp.path(trial, None, tname, iname, lname, ".pdf"))
+
+        exp.summarize(trials, ".*", tname, iname, lname,
+                exp.path(None, None, tname, iname, lname, ".log"),
+                exp.path(None, None, tname, iname, lname, ".csv"))
 
 # compare trainers
 for mname, iname, lname in [(x, y, z) for x in exp.models for y in exp.iterators for z in exp.losses]:
@@ -85,15 +95,15 @@ for mname, iname, lname in [(x, y, z) for x in exp.models for y in exp.iterators
                         exp.path(trial, mname, None, iname, lname, ".pdf"))
 
         exp.summarize(trials, mname, "stoch*", iname, lname,
-                exp.path(None, mname, "stoch", iname, lname, ".log",
+                exp.path(None, mname, "stoch", iname, lname, ".log"),
                 exp.path(None, mname, "stoch", iname, lname, ".csv"))
 
         exp.summarize(trials, mname, "batch*", iname, lname,
-                exp.path(None, mname, "batch", iname, lname, ".log",
+                exp.path(None, mname, "batch", iname, lname, ".log"),
                 exp.path(None, mname, "batch", iname, lname, ".csv"))
 
         exp.summarize(trials, mname, ".*", iname, lname,
-                exp.path(None, mname, None, iname, lname, ".log",
+                exp.path(None, mname, None, iname, lname, ".log"),
                 exp.path(None, mname, None, iname, lname, ".csv"))
 
 # compare losses
