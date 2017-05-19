@@ -41,28 +41,9 @@ namespace nano
         }
 
         ///
-        /// \brief
-        ///
-        enum class policy
-        {
-                stop_early,     ///< stop when overfitting or some internal error is detected
-                all_epochs      ///< consume all epochs
-        };
-
-        template <>
-        inline std::map<policy, std::string> enum_string<policy>()
-        {
-                return
-                {
-                        { policy::stop_early,   "stop_early" },
-                        { policy::all_epochs,   "all_epochs" }
-                };
-        }
-
-        ///
         /// \brief check if the training should be stopped
         ///
-        NANO_PUBLIC bool is_done(const trainer_status, const policy);
+        NANO_PUBLIC bool is_done(const trainer_status);
 
         ///
         /// \brief track the current/optimum model state

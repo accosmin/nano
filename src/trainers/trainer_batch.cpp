@@ -8,9 +8,7 @@
 namespace nano
 {
         batch_trainer_t::batch_trainer_t(const string_t& parameters) :
-                trainer_t(to_params(parameters, "opt", "lbfgs[...]", "epochs", "1024[4,4096]",
-                "policy", to_string(policy::stop_early) + "[" + concatenate(enum_values<policy>()) + "]",
-                "eps", 1e-6, "patience", 32))
+                trainer_t(to_params(parameters, "opt", "lbfgs[...]", "epochs", "1024[4,4096]", "eps", 1e-6, "patience", 32))
         {
         }
 
@@ -20,7 +18,6 @@ namespace nano
         {
                 // parameters
                 const auto epochs = clamp(from_params<size_t>(config(), "epochs"), 4, 4096);
-                const auto tpolicy = from_params<policy>(config(), "policy");
                 const auto epsilon = from_params<scalar_t>(config(), "eps");
                 const auto optimizer = from_params<string_t>(config(), "opt");
                 const auto patience = from_params<size_t>(config(), "patience");
@@ -64,7 +61,7 @@ namespace nano
                                 << ",g=" << gnorm << ",x=" << xnorm
                                 << "] " << timer.elapsed() << ".";
 
-                        return !nano::is_done(ret, tpolicy);
+                        return !nano::is_done(ret);
                 };
 
                 // assembly optimization function & train the model

@@ -44,28 +44,22 @@ namespace nano
                         return trainer_status::better;
                 }
 
-                // worse performance
+                // worse performance, but not enough epochs, keep training
+                else if (state.m_epoch < patience)
+                {
+                        return trainer_status::worse;
+                }
+
+                // last improvement not far in the past, keep training
+                else if (state.m_epoch < m_opt_state.m_epoch + patience)
+                {
+                        return trainer_status::worse;
+                }
+
+                // no improvement since many epochs, overfitting detected
                 else
                 {
-                        // not enough epochs, keep training
-                        if (state.m_epoch < patience)
-                        {
-                                return trainer_status::worse;
-                        }
-                        else
-                        {
-                                // last improvement not far in the past, keep training
-                                if (state.m_epoch < m_opt_state.m_epoch + patience)
-                                {
-                                        return trainer_status::worse;
-                                }
-
-                                // no improvement since many epochs, overfitting detected
-                                else
-                                {
-                                        return trainer_status::overfit;
-                                }
-                        }
+                        return trainer_status::overfit;
                 }
         }
 
@@ -114,21 +108,12 @@ namespace nano
                 return one.optimum_state() < other.optimum_state();
         }
 
-        bool is_done(const trainer_status code, const policy policy)
+        bool is_done(const trainer_status code)
         {
-                switch (policy)
-                {
-                case policy::stop_early:
-                        return  code == trainer_status::diverge ||
-                                code == trainer_status::overfit ||
-                                code == trainer_status::solved ||
-                                code == trainer_status::failed;
-
-                case policy::all_epochs:
-                default:
-                        return  code == trainer_status::diverge ||
-                                code == trainer_status::failed;
-                }
+                return  code == trainer_status::diverge ||
+                        code == trainer_status::overfit ||
+                        code == trainer_status::solved ||
+                        code == trainer_status::failed;
         }
 
         std::ostream& operator<<(std::ostream& os, const trainer_result_t& result)

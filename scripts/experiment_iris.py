@@ -16,7 +16,7 @@ exp.add_loss("classnll")
 exp.add_iterator("default")
 
 # trainers
-exp.add_trainer("batch_cgd", "epochs=1000,policy=stop_early,patience=100")
+exp.add_trainer("batch_cgd", "epochs=1000,patience=100")
 
 # models
 outlayer = "affine:dims=3;act-snorm;"

@@ -16,8 +16,8 @@ exp.add_loss("classnll")
 exp.add_iterator("default")
 
 # trainers
-batch_params = "epochs=100,policy=stop_early,patience=32,epsilon=1e-6"
-stoch_params = "epochs=100,policy=stop_early,patience=32,epsilon=1e-6,min_batch=32,max_batch=256"
+batch_params = "epochs=100,patience=32,epsilon=1e-6"
+stoch_params = "epochs=100,patience=32,epsilon=1e-6,min_batch=32,max_batch=256"
 
 exp.add_trainer("batch_gd", batch_params)
 exp.add_trainer("batch_cgd", batch_params)

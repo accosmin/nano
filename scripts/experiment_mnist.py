@@ -24,8 +24,8 @@ exp.add_iterator("noise", "noise=0.99", "noise99")
 exp.add_iterator("warp")
 
 # trainers
-batch_params = "epochs=100,policy=stop_early,patience=32,epsilon=1e-6"
-stoch_params = "epochs=100,policy=stop_early,patience=32,epsilon=1e-6,min_batch=32,max_batch=256"
+batch_params = "epochs=100,patience=32,epsilon=1e-6"
+stoch_params = "epochs=100,patience=32,epsilon=1e-6,min_batch=32,max_batch=256"
 
 exp.add_trainer("stoch_adadelta", stoch_params)
 
