@@ -21,7 +21,7 @@ int main(int argc, const char *argv[])
         // parse the command line
         cmdline_t cmdline("benchmark models");
         cmdline.add("s", "samples",     "number of samples to use [100, 10000]", "1000");
-        cmdline.add("c", "conn",        "plane connectivity for convolution networks [1, 16]", "8");
+        cmdline.add("c", "conn",        "plane connectivity for convolution networks [1, 16]", "1");
         cmdline.add("", "mlps",         "benchmark MLP models");
         cmdline.add("", "convnets",     "benchmark convolution networks");
         cmdline.add("", "forward",      "evaluate the \'forward\' pass (output)");
@@ -66,21 +66,21 @@ int main(int argc, const char *argv[])
         // construct models
         const string_t mlp0;
         const string_t mlp1 = mlp0 + make_affine_layer(128, activation);
-        const string_t mlp2 = mlp1 + make_affine_layer(512, activation);
+        const string_t mlp2 = mlp1 + make_affine_layer(256, activation);
         const string_t mlp3 = mlp2 + make_affine_layer(128, activation);
-        const string_t mlp4 = mlp3 + make_affine_layer(512, activation);
+        const string_t mlp4 = mlp3 + make_affine_layer(256, activation);
         const string_t mlp5 = mlp4 + make_affine_layer(128, activation);
-        const string_t mlp6 = mlp5 + make_affine_layer(512, activation);
+        const string_t mlp6 = mlp5 + make_affine_layer(256, activation);
         const string_t mlp7 = mlp6 + make_affine_layer(128, activation);
 
         const string_t convnet0;
-        const string_t convnet1 = convnet0 + make_conv_layer(128, 7, 7, 1, activation);
-        const string_t convnet2 = convnet1 + make_conv_layer(128, 7, 7, conn, activation);
-        const string_t convnet3 = convnet2 + make_conv_layer(128, 5, 5, conn, activation);
-        const string_t convnet4 = convnet3 + make_conv_layer(128, 5, 5, conn, activation);
-        const string_t convnet5 = convnet4 + make_conv_layer(128, 3, 3, conn, activation);
-        const string_t convnet6 = convnet5 + make_conv_layer(128, 3, 3, conn, activation);
-        const string_t convnet7 = convnet6 + make_conv_layer(128, 3, 3, conn, activation);
+        const string_t convnet1 = convnet0 + make_conv_layer(32, 7, 7, 1, activation);
+        const string_t convnet2 = convnet1 + make_conv_layer(32, 7, 7, conn, activation);
+        const string_t convnet3 = convnet2 + make_conv_layer(32, 5, 5, conn, activation);
+        const string_t convnet4 = convnet3 + make_conv_layer(32, 5, 5, conn, activation);
+        const string_t convnet5 = convnet4 + make_conv_layer(32, 3, 3, conn, activation);
+        const string_t convnet6 = convnet5 + make_conv_layer(32, 3, 3, conn, activation);
+        const string_t convnet7 = convnet6 + make_conv_layer(32, 3, 3, conn, activation);
 
         const string_t outlayer = make_output_layer(task->odims());
 
