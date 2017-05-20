@@ -72,4 +72,17 @@ namespace nano
                 tensor_size_t   m_krows, m_kcols;               ///< size of the convolution kernel
                 tensor_size_t   m_kdrow, m_kdcol;               ///< convolution stride
         };
+
+        inline bool operator==(const conv3d_params_t& params1, const conv3d_params_t& params2)
+        {
+                return  params1.m_imaps == params2.m_imaps &&
+                        params1.m_irows == params2.m_irows &&
+                        params1.m_icols == params2.m_icols &&
+                        params1.m_omaps == params2.m_omaps &&
+                        params1.m_kconn == params2.m_kconn &&
+                        params1.m_krows == params2.m_krows &&
+                        params1.m_kcols == params2.m_kcols &&
+                        params1.m_kdrow == params2.m_kdrow &&
+                        params1.m_kdcol == params2.m_kdcol;
+        }
 }

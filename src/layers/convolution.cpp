@@ -1,4 +1,3 @@
-#include "logger.h"
 #include "convolution.h"
 #include "math/numeric.h"
 
@@ -28,19 +27,26 @@ namespace nano
                 const auto drows = clamp(from_params<tensor_size_t>(config(), "drow"), 1, 8);
                 const auto dcols = clamp(from_params<tensor_size_t>(config(), "dcol"), 1, 8);
 
-                const auto params = conv3d_params_t{imaps, irows, icols, omaps, kconn, krows, kcols, drows, dcols};
-                if (!params.valid())
+                m_params = conv3d_params_t{imaps, irows, icols, omaps, kconn, krows, kcols, drows, dcols};
+                if (!m_params.valid())
                 {
                         throw std::invalid_argument("invalid configuration for the convolution layer");
                 }
 
-                m_op = conv3d_dense_t{params};
+                const auto sparse = m_params.kconn() > 2 && (m_params.krows() * m_params.kcols() > 9);
+                if (sparse)
+                {
+                        m_sparse_op = conv3d_dmaps_t{m_params};
+                }
+                else
+                {
+                        m_dense_op = conv3d_dense_t{m_params};
+                }
         }
 
         tensor_size_t convolution_layer_t::fanin() const
         {
-                const auto& params = m_op.params();
-                return params.krows() * params.kcols() * params.imaps() / params.kconn();
+                return m_params.krows() * m_params.kcols() * m_params.imaps() / m_params.kconn();
         }
 
         void convolution_layer_t::output(tensor3d_const_map_t idata, tensor1d_const_map_t param, tensor3d_map_t odata)
@@ -49,7 +55,14 @@ namespace nano
                 assert(param.size() == psize());
                 assert(odata.dims() == odims());
 
-                m_op.output(idata, kdata(param), bdata(param), odata);
+                if (m_sparse_op.params() == m_params)
+                {
+                        m_sparse_op.output(idata, kdata(param), bdata(param), odata);
+                }
+                else
+                {
+                        m_dense_op.output(idata, kdata(param), bdata(param), odata);
+                }
         }
 
         void convolution_layer_t::ginput(tensor3d_map_t idata, tensor1d_const_map_t param, tensor3d_const_map_t odata)
@@ -58,7 +71,14 @@ namespace nano
                 assert(param.size() == psize());
                 assert(odata.dims() == odims());
 
-                m_op.ginput(idata, kdata(param), bdata(param), odata);
+                if (m_sparse_op.params() == m_params)
+                {
+                        m_sparse_op.ginput(idata, kdata(param), bdata(param), odata);
+                }
+                else
+                {
+                        m_dense_op.ginput(idata, kdata(param), bdata(param), odata);
+                }
         }
 
         void convolution_layer_t::gparam(tensor3d_const_map_t idata, tensor1d_map_t param, tensor3d_const_map_t odata)
@@ -67,6 +87,13 @@ namespace nano
                 assert(param.size() == psize());
                 assert(odata.dims() == odims());
 
-                m_op.gparam(idata, kdata(param), bdata(param), odata);
+                if (m_sparse_op.params() == m_params)
+                {
+                        m_sparse_op.gparam(idata, kdata(param), bdata(param), odata);
+                }
+                else
+                {
+                        m_dense_op.gparam(idata, kdata(param), bdata(param), odata);
+                }
         }
 }

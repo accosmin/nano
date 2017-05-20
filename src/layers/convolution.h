@@ -2,6 +2,7 @@
 
 #include "layer.h"
 #include "conv3d_dense.h"
+#include "conv3d_dmaps.h"
 
 namespace nano
 {
@@ -26,16 +27,18 @@ namespace nano
                 virtual void ginput(tensor3d_map_t, tensor1d_const_map_t, tensor3d_const_map_t) override;
                 virtual void gparam(tensor3d_const_map_t, tensor1d_map_t, tensor3d_const_map_t) override;
 
-                virtual tensor3d_dims_t idims() const override { return m_op.params().idims(); }
-                virtual tensor3d_dims_t odims() const override { return m_op.params().odims(); }
+                virtual tensor3d_dims_t idims() const override { return m_params.idims(); }
+                virtual tensor3d_dims_t odims() const override { return m_params.odims(); }
                 virtual tensor_size_t fanin() const override;
-                virtual tensor_size_t psize() const override { return m_op.params().psize(); }
-                virtual tensor_size_t flops() const override { return m_op.params().flops_output(); }
+                virtual tensor_size_t psize() const override { return m_params.psize(); }
+                virtual tensor_size_t flops() const override { return m_params.flops_output(); }
 
         private:
 
-                auto kdims() const { return m_op.params().kdims(); }
-                auto bdims() const { return m_op.params().bdims(); }
+                using conv3d_op_t = conv3d_dmaps_t;
+
+                auto kdims() const { return m_params.kdims(); }
+                auto bdims() const { return m_params.bdims(); }
                 auto ksize() const { return nano::size(kdims()); }
 
                 template <typename tmap>
@@ -44,6 +47,8 @@ namespace nano
                 auto bdata(tmap param) const { return map_vector(param.data() + ksize(), bdims()); }
 
                 // attributes
-                conv3d_dense_t  m_op;           ///< 3D convolution operator
+                conv3d_params_t m_params;       ///<
+                conv3d_dmaps_t  m_sparse_op;    ///< 3D convolution operator specialized for sparse mapping
+                conv3d_dense_t  m_dense_op;     ///< 3D convolution operator specialized for dense mapping
         };
 }
