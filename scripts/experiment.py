@@ -70,7 +70,6 @@ class experiment:
         def train_one(self, param, lpath):
                 lfile = open(lpath, "w")
                 self.log("running <", param, ">...")
-                print("running <", param, ">...", file = lfile)
                 subprocess.check_call((self.cfg.app_train + " " + param).split(), stdout = lfile)
                 lfile.close()
                 self.log("|--->training done, see <", lpath, ">")

@@ -72,6 +72,8 @@ int main(int argc, const char *argv[])
         const string_t mlp5 = mlp4 + make_affine_layer(128, activation);
         const string_t mlp6 = mlp5 + make_affine_layer(256, activation);
         const string_t mlp7 = mlp6 + make_affine_layer(128, activation);
+        const string_t mlp8 = mlp7 + make_affine_layer(256, activation);
+        const string_t mlp9 = mlp8 + make_affine_layer(128, activation);
 
         const string_t convnet0;
         const string_t convnet1 = convnet0 + make_conv_layer(32, 7, 7, 1, activation);
@@ -81,6 +83,8 @@ int main(int argc, const char *argv[])
         const string_t convnet5 = convnet4 + make_conv_layer(32, 3, 3, conn, activation);
         const string_t convnet6 = convnet5 + make_conv_layer(32, 3, 3, conn, activation);
         const string_t convnet7 = convnet6 + make_conv_layer(32, 3, 3, conn, activation);
+        const string_t convnet8 = convnet6 + make_conv_layer(32, 1, 1, conn, activation);
+        const string_t convnet9 = convnet6 + make_conv_layer(32, 1, 1, conn, activation);
 
         const string_t outlayer = make_output_layer(task->odims());
 
@@ -106,6 +110,8 @@ int main(int argc, const char *argv[])
                 DEFINE(convnet5);
                 DEFINE(convnet6);
                 DEFINE(convnet7);
+                DEFINE(convnet8);
+                DEFINE(convnet9);
         }
         #undef DEFINE
 
