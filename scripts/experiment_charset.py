@@ -54,12 +54,12 @@ convnet = convnet + "conv:dims=32,rows=1,cols=1,conn=1,drow=1,dcol=1;act-snorm;"
 
 outlayer = "affine:dims=10;"
 
-exp.add_model("mlp0", mlp0 + outlayer)
-exp.add_model("mlp1", mlp1 + outlayer)
-exp.add_model("mlp2", mlp2 + outlayer)
-exp.add_model("mlp3", mlp3 + outlayer)
-exp.add_model("mlp4", mlp4 + outlayer)
-exp.add_model("mlp5", mlp5 + outlayer)
+#exp.add_model("mlp0", mlp0 + outlayer)
+#exp.add_model("mlp1", mlp1 + outlayer)
+#exp.add_model("mlp2", mlp2 + outlayer)
+#exp.add_model("mlp3", mlp3 + outlayer)
+#exp.add_model("mlp4", mlp4 + outlayer)
+#exp.add_model("mlp5", mlp5 + outlayer)
 exp.add_model("convnet", convnet + outlayer)
 
 # train all configurations
@@ -67,15 +67,15 @@ trials = 10
 exp.run_all(trials)
 
 # compare models
-for tname, iname, lname in [(x, y, z) for x in exp.trainers for y in exp.iterators for z in exp.losses]:
-        for trial in range(trials):
-                exp.plot_many(
-                        exp.filter(trial, ".*", tname, iname, lname, ".state"),
-                        exp.path(trial, None, tname, iname, lname, ".pdf"))
-
-        exp.summarize(trials, ".*", tname, iname, lname,
-                exp.path(None, None, tname, iname, lname, ".log"),
-                exp.path(None, None, tname, iname, lname, ".csv"))
+#for tname, iname, lname in [(x, y, z) for x in exp.trainers for y in exp.iterators for z in exp.losses]:
+#        for trial in range(trials):
+#                exp.plot_many(
+#                        exp.filter(trial, ".*", tname, iname, lname, ".state"),
+#                        exp.path(trial, None, tname, iname, lname, ".pdf"))
+#
+#        exp.summarize(trials, ".*", tname, iname, lname,
+#                exp.path(None, None, tname, iname, lname, ".log"),
+#                exp.path(None, None, tname, iname, lname, ".csv"))
 
 # compare trainers
 for mname, iname, lname in [(x, y, z) for x in exp.models for y in exp.iterators for z in exp.losses]:

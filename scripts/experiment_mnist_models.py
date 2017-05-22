@@ -7,21 +7,13 @@ import experiment
 cfg = config.config()
 exp = experiment.experiment(
         cfg.task_mnist(),
-        cfg.expdir + "/mnist")
+        cfg.expdir + "/mnist/eval_models/")
 
 # loss functions
 exp.add_loss("classnll")
-exp.add_loss("slogistic")
-exp.add_loss("sexponential")
 
 # iterators
 exp.add_iterator("default")
-exp.add_iterator("noise", "noise=0.05", "noise05")
-exp.add_iterator("noise", "noise=0.10", "noise10")
-exp.add_iterator("noise", "noise=0.20", "noise20")
-exp.add_iterator("noise", "noise=0.50", "noise50")
-exp.add_iterator("noise", "noise=0.99", "noise99")
-exp.add_iterator("warp")
 
 # trainers
 batch_params = "epochs=100,patience=32,epsilon=1e-6"
@@ -84,25 +76,3 @@ for tname, iname, lname in [(x, y, z) for x in exp.trainers for y in exp.iterato
         exp.summarize(trials, ".*", tname, iname, lname,
                 exp.path(None, None, tname, iname, lname, ".log"),
                 exp.path(None, None, tname, iname, lname, ".csv"))
-
-# compare iterators
-for tname, mname, lname in [(x, y, z) for x in exp.trainers for y in exp.models for z in exp.losses]:
-        for trial in range(trials):
-                exp.plot_many(
-                        exp.filter(trial, mname, tname, ".*", lname, ".state"),
-                        exp.path(trial, mname, tname, None, lname, ".pdf"))
-
-        exp.summarize(trials, mname, tname, ".*", lname,
-                exp.path(None, mname, tname, None, lname, ".log"),
-                exp.path(None, mname, tname, None, lname, ".csv"))
-
-# compare losses
-for tname, mname, iname in [(x, y, z) for x in exp.trainers for y in exp.models for z in exp.iterators]:
-        for trial in range(trials):
-                exp.plot_many(
-                        exp.filter(trial, mname, tname, iname, ".*", ".state"),
-                        exp.path(trial, mname, tname, iname, None, "*.pdf"))
-
-        exp.summarize(trials, mname, tname, iname, ".*",
-                exp.path(None, mname, tname, iname, None, ".log"),
-                exp.path(None, mname, tname, iname, None, ".csv"))
