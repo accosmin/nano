@@ -30,7 +30,7 @@ stoch_params = "epochs=100,patience=32,epsilon=1e-6,min_batch=32,max_batch=256"
 exp.add_trainer("stoch_adadelta", stoch_params)
 
 # models
-outlayer = "affine:dims=10;act-snorm;"
+outlayer = "affine:dims=10;"
 
 mlp0 = "--model forward-network --model-params "
 mlp1 = mlp0 + "affine:dims=128;act-snorm;"

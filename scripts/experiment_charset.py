@@ -52,7 +52,7 @@ convnet = convnet + "conv:dims=32,rows=3,cols=3,conn=1,drow=1,dcol=1;act-snorm;"
 convnet = convnet + "conv:dims=32,rows=3,cols=3,conn=1,drow=1,dcol=1;act-snorm;"
 convnet = convnet + "conv:dims=32,rows=1,cols=1,conn=1,drow=1,dcol=1;act-snorm;"
 
-outlayer = "affine:dims=10;act-snorm;"
+outlayer = "affine:dims=10;"
 
 exp.add_model("mlp0", mlp0 + outlayer)
 exp.add_model("mlp1", mlp1 + outlayer)
