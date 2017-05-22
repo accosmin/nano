@@ -2,6 +2,7 @@
 #include "task_util.h"
 #include "text/config.h"
 #include "vision/color.h"
+#include "math/epsilon.h"
 #include "tasks/charset.h"
 
 using namespace nano;
@@ -49,6 +50,7 @@ NANO_CASE(from_params)
 
         const auto idims = tensor3d_dims_t{3, 23, 29};
         const auto odims = tensor3d_dims_t{52, 1, 1};
+        const auto target_sum = scalar_t(2) - static_cast<scalar_t>(nano::size(odims));
 
         NANO_CHECK_EQUAL(task->idims(), idims);
         NANO_CHECK_EQUAL(task->odims(), odims);
@@ -71,6 +73,7 @@ NANO_CASE(from_params)
 
                         NANO_CHECK_EQUAL(input.dims(), idims);
                         NANO_CHECK_EQUAL(target.dims(), odims);
+                        NANO_CHECK_CLOSE(target.vector().sum(), target_sum, epsilon0<scalar_t>());
                 }
         }
 
