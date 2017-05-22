@@ -43,7 +43,7 @@ for tname, mname, iname in [(x, y, z) for x in exp.trainers for y in exp.models 
         for trial in range(trials):
                 exp.plot_many(
                         exp.filter(trial, mname, tname, iname, ".*", ".state"),
-                        exp.path(trial, mname, tname, iname, None, "*.pdf"))
+                        exp.path(trial, mname, tname, iname, None, ".pdf"))
 
         exp.summarize(trials, mname, tname, iname, ".*",
                 exp.path(None, mname, tname, iname, None, ".log"),
