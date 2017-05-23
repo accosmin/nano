@@ -13,9 +13,7 @@ namespace nano
                 /// \brief constructor
                 ///
                 explicit configurable_t(const string_t& config = string_t()) :
-                        m_config(config)
-                {
-                }
+                        m_config(config) {}
 
                 ///
                 /// \brief destructor

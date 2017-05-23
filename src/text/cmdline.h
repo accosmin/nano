@@ -1,8 +1,9 @@
 #pragma once
 
+#include "arch.h"
+#include <memory>
 #include "to_string.h"
 #include "from_string.h"
-#include <memory>
 
 namespace nano
 {

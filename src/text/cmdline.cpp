@@ -1,8 +1,9 @@
 #include "cmdline.h"
-#include "algorithm.h"
 #include <cassert>
 #include <fstream>
 #include <iostream>
+#include <algorithm>
+#include "algorithm.h"
 
 namespace nano
 {

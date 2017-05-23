@@ -3,35 +3,29 @@
 
 using namespace nano;
 
-struct test_configurable_t : public nano::configurable_t
+struct object1_configurable_t : public configurable_t
 {
-        explicit test_configurable_t(const string_t& configuration = string_t()) :
-                nano::configurable_t(configuration) {}
+        explicit object1_configurable_t(const string_t& config = string_t()) :
+                configurable_t(config + ",p1=def1") {}
 };
 
-struct object1_configurable_t : public test_configurable_t
+struct object2_configurable_t : public configurable_t
 {
-        explicit object1_configurable_t(const string_t& configuration = string_t()) :
-                test_configurable_t(configuration + ",p1=def1") {}
+        explicit object2_configurable_t(const string_t& config = string_t()) :
+                configurable_t(config + ",p2=def2") {}
 };
 
-struct object2_configurable_t : public test_configurable_t
+struct object3_configurable_t : public configurable_t
 {
-        explicit object2_configurable_t(const string_t& configuration = string_t()) :
-                test_configurable_t(configuration + ",p2=def2") {}
-};
-
-struct object3_configurable_t : public test_configurable_t
-{
-        explicit object3_configurable_t(const string_t& configuration = string_t()) :
-                test_configurable_t(configuration + ",p3=def3") {}
+        explicit object3_configurable_t(const string_t& config = string_t()) :
+                configurable_t(config + ",p3=def3") {}
 };
 
 NANO_BEGIN_MODULE(test_manager)
 
 NANO_CASE(empty)
 {
-        nano::manager_t<test_configurable_t> manager;
+        nano::manager_t<configurable_t> manager;
 
         NANO_CHECK(manager.ids().empty());
         NANO_CHECK(manager.descriptions().empty());
@@ -44,7 +38,7 @@ NANO_CASE(empty)
 
 NANO_CASE(retrieval)
 {
-        nano::manager_t<test_configurable_t> manager;
+        nano::manager_t<configurable_t> manager;
 
         const object1_configurable_t obj1;
         const object2_configurable_t obj2;

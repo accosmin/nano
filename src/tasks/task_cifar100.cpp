@@ -1,6 +1,7 @@
 #include "class.h"
 #include "logger.h"
 #include "task_cifar100.h"
+#include "text/algorithm.h"
 
 namespace nano
 {

@@ -1,9 +1,8 @@
 #pragma once
 
+#include <limits>
 #include <typeinfo>
 #include <stdexcept>
-#include <algorithm>
-#include "algorithm.h"
 #include "enum_string.h"
 
 namespace nano
@@ -14,7 +13,7 @@ namespace nano
                 struct from_string_t;
 
                 ///
-                /// \brief cast strings to built-int types
+                /// \brief cast strings to builtin types
                 ///
                 template <>
                 struct from_string_t<short>
@@ -112,33 +111,43 @@ namespace nano
                 template <typename tvalue>
                 struct from_string_t<tvalue, typename std::enable_if<std::is_enum<tvalue>::value>::type>
                 {
+                        static auto revert(const std::map<tvalue, string_t>& vm)
+                        {
+                                std::map<string_t, tvalue> mv;
+                                for (const auto& v : vm)
+                                {
+                                        mv[v.second] = v.first;
+                                }
+                                return mv;
+                        }
+
                         static tvalue dispatch(const string_t& str)
                         {
-                                const auto vm = enum_string<tvalue>();
-                                const auto it = std::find_if(vm.begin(), vm.end(), [&str] (const auto& v)
-                                {
-                                        return nano::iequals(str, v.second);
-                                });
-
-                                if (it == vm.end())
+                                static const auto vm = enum_string<tvalue>();
+                                static const auto mv = revert(vm);
+                                const auto it = mv.find(str);
+                                if (it == mv.end())
                                 {
                                         const auto msg = string_t("invalid ") + typeid(tvalue).name() + " <" + str + ">!";
                                         throw std::invalid_argument(msg);
                                 }
-                                return it->first;
+                                return it->second;
                         }
                 };
         }
 
+        ///
+        /// \brief cast string to values.
+        ///
         template <typename tvalue>
         tvalue from_string(const string_t& str)
         {
-                /// todo: replace this with "if constepr" in c++17
+                /// todo: replace this with "if constexpr" in c++17
                 return detail::from_string_t<tvalue>::dispatch(str);
         }
 
         ///
-        /// \brief
+        /// \brief cast string to values and use the given default value if casting fails.
         ///
         template <typename tvalue>
         tvalue from_string(const string_t& str, const tvalue default_value)

@@ -1,6 +1,8 @@
 #pragma once
 
+#include "arch.h"
 #include "scalar.h"
+#include <algorithm>
 #include "table_row.h"
 #include "from_string.h"
 #include "table_header.h"

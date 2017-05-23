@@ -5,7 +5,7 @@
 namespace nano
 {
         ///
-        /// \brief sample type.
+        /// \brief dataset splitting protocol.
         ///
         enum class protocol
         {
@@ -26,7 +26,7 @@ namespace nano
         }
 
         ///
-        /// \brief fold.
+        /// \brief dataset splitting fold.
         ///
         struct fold_t
         {
