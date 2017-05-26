@@ -8,7 +8,7 @@
 namespace nano
 {
         ///
-        /// \brief training state
+        /// \brief training state after a training epoch.
         ///
         struct trainer_state_t
         {
@@ -45,19 +45,16 @@ namespace nano
 
         using trainer_states_t = std::vector<trainer_state_t>;
 
-        ///
-        /// \brief compute the average convergence speed of the training loss for a given set of states
-        ///
-        NANO_PUBLIC scalar_t convergence_speed(const trainer_states_t& states);
-
-        ///
-        /// \brief compare two training states
-        ///
         inline bool operator<(const trainer_state_t& one, const trainer_state_t& two)
         {
                 // compare (aka tune) on the validation dataset!
                 return one.m_valid < two.m_valid;
         }
+
+        ///
+        /// \brief compute the average convergence speed of the training loss for a given set of states
+        ///
+        NANO_PUBLIC scalar_t convergence_speed(const trainer_states_t& states);
 
         ///
         /// \brief save optimization states to text file

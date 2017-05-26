@@ -7,7 +7,7 @@
 namespace nano
 {
         ///
-        /// \brief training measurement usually after a training epoch.
+        /// \brief dataset measurement (e.g. after a training epoch).
         ///
         struct trainer_measurement_t
         {
