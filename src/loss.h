@@ -2,7 +2,7 @@
 
 #include "arch.h"
 #include "tensor.h"
-#include "manager.h"
+#include "factory.h"
 
 namespace nano
 {
@@ -10,10 +10,10 @@ namespace nano
         /// \brief stores registered prototypes
         ///
         struct loss_t;
-        using loss_manager_t = manager_t<loss_t>;
-        using rloss_t = loss_manager_t::trobject;
+        using loss_factory_t = factory_t<loss_t>;
+        using rloss_t = loss_factory_t::trobject;
 
-        NANO_PUBLIC loss_manager_t& get_losses();
+        NANO_PUBLIC loss_factory_t& get_losses();
 
         ///
         /// \brief generic multivariate loss function of two parameters:

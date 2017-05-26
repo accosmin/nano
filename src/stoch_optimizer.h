@@ -1,6 +1,6 @@
 #pragma once
 
-#include "manager.h"
+#include "factory.h"
 #include "function.h"
 #include "stoch/params.h"
 
@@ -10,10 +10,10 @@ namespace nano
         /// \brief stores registered prototypes
         ///
         struct stoch_optimizer_t;
-        using stoch_optimizer_manager_t = manager_t<stoch_optimizer_t>;
-        using rstoch_optimizer_t = stoch_optimizer_manager_t::trobject;
+        using stoch_optimizer_factory_t = factory_t<stoch_optimizer_t>;
+        using rstoch_optimizer_t = stoch_optimizer_factory_t::trobject;
 
-        NANO_PUBLIC stoch_optimizer_manager_t& get_stoch_optimizers();
+        NANO_PUBLIC stoch_optimizer_factory_t& get_stoch_optimizers();
 
         ///
         /// \brief generic stochastic optimizer

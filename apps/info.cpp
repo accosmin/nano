@@ -15,7 +15,7 @@ using namespace nano;
 namespace
 {
         template <typename tobject>
-        void print(const string_t& name, const manager_t<tobject>& manager)
+        void print(const string_t& name, const factory_t<tobject>& manager)
         {
                 const auto ids = manager.ids();
                 const auto descriptions = manager.descriptions();

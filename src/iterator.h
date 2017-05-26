@@ -8,10 +8,10 @@ namespace nano
         /// \brief manage sampling objects (register new ones, query and clone them)
         ///
         struct iterator_t;
-        using iterator_manager_t = manager_t<iterator_t>;
-        using riterator_t = iterator_manager_t::trobject;
+        using iterator_factory_t = factory_t<iterator_t>;
+        using riterator_t = iterator_factory_t::trobject;
 
-        NANO_PUBLIC iterator_manager_t& get_iterators();
+        NANO_PUBLIC iterator_factory_t& get_iterators();
 
         ///
         /// \brief iterator (generator) over a task that

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "manager.h"
+#include "factory.h"
 #include "trainer_result.h"
 
 namespace nano
@@ -14,10 +14,10 @@ namespace nano
         /// \brief stores registered prototypes
         ///
         struct trainer_t;
-        using trainer_manager_t = manager_t<trainer_t>;
-        using rtrainer_t = trainer_manager_t::trobject;
+        using trainer_factory_t = factory_t<trainer_t>;
+        using rtrainer_t = trainer_factory_t::trobject;
 
-        NANO_PUBLIC trainer_manager_t& get_trainers();
+        NANO_PUBLIC trainer_factory_t& get_trainers();
 
         ///
         /// \brief generic trainer: optimizes a model on a given compatible task.

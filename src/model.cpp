@@ -3,9 +3,9 @@
 
 using namespace nano;
 
-model_manager_t& nano::get_models()
+model_factory_t& nano::get_models()
 {
-        static model_manager_t manager;
+        static model_factory_t manager;
 
         static std::once_flag flag;
         std::call_once(flag, [&m = manager] ()

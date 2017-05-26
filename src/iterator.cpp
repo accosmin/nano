@@ -5,9 +5,9 @@
 
 using namespace nano;
 
-iterator_manager_t& nano::get_iterators()
+iterator_factory_t& nano::get_iterators()
 {
-        static iterator_manager_t manager;
+        static iterator_factory_t manager;
 
         static std::once_flag flag;
         std::call_once(flag, [&m = manager] ()

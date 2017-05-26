@@ -2,7 +2,7 @@
 
 #include "arch.h"
 #include "tensor.h"
-#include "manager.h"
+#include "factory.h"
 #include "protocol.h"
 
 namespace nano
@@ -11,10 +11,10 @@ namespace nano
         /// \brief manage tasks (register new ones, query and clone them)
         ///
         struct task_t;
-        using task_manager_t = manager_t<task_t>;
-        using rtask_t = task_manager_t::trobject;
+        using task_factory_t = factory_t<task_t>;
+        using rtask_t = task_factory_t::trobject;
 
-        NANO_PUBLIC task_manager_t& get_tasks();
+        NANO_PUBLIC task_factory_t& get_tasks();
 
         ///
         /// \brief machine learning task consisting of a collection of fixed-size 3D input tensors

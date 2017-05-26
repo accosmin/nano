@@ -2,7 +2,7 @@
 
 #include "arch.h"
 #include "tensor.h"
-#include "manager.h"
+#include "factory.h"
 
 namespace nano
 {
@@ -10,10 +10,10 @@ namespace nano
         /// \brief stores registered prototypes
         ///
         struct layer_t;
-        using layer_manager_t = manager_t<layer_t>;
-        using rlayer_t = layer_manager_t::trobject;
+        using layer_factory_t = factory_t<layer_t>;
+        using rlayer_t = layer_factory_t::trobject;
 
-        NANO_PUBLIC layer_manager_t& get_layers();
+        NANO_PUBLIC layer_factory_t& get_layers();
 
         ///
         /// \brief process a set of inputs of size (irows, icols) and produces a set of outputs of size (orows, ocols).

@@ -10,9 +10,9 @@
 
 using namespace nano;
 
-task_manager_t& nano::get_tasks()
+task_factory_t& nano::get_tasks()
 {
-        static task_manager_t manager;
+        static task_factory_t manager;
 
         static std::once_flag flag;
         std::call_once(flag, [&m = manager] ()

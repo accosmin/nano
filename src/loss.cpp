@@ -7,9 +7,9 @@
 
 using namespace nano;
 
-loss_manager_t& nano::get_losses()
+loss_factory_t& nano::get_losses()
 {
-        static loss_manager_t manager;
+        static loss_factory_t manager;
 
         static std::once_flag flag;
         std::call_once(flag, [&m = manager] ()

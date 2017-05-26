@@ -12,10 +12,10 @@ namespace nano
         /// \brief stores registered prototypes
         ///
         struct model_t;
-        using model_manager_t = manager_t<model_t>;
-        using rmodel_t = model_manager_t::trobject;
+        using model_factory_t = factory_t<model_t>;
+        using rmodel_t = model_factory_t::trobject;
 
-        NANO_PUBLIC model_manager_t& get_models();
+        NANO_PUBLIC model_factory_t& get_models();
 
         ///
         /// \brief generic model to process fixed-size 3D tensors.

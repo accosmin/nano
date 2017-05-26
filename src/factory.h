@@ -8,10 +8,10 @@
 namespace nano
 {
         ///
-        /// \brief manage objects of similar type that implement the configable_t interface.
+        /// \brief create objects of similar type that implement the configable_t interface.
         ///
         template <typename tobject>
-        struct manager_t
+        struct factory_t
 	{
                 using trobject = std::unique_ptr<tobject>;
                 using tmaker = std::function<trobject(const string_t&)>;
@@ -61,20 +61,20 @@ namespace nano
         };
 
         template <typename tobject> template<typename tobject_impl>
-        bool manager_t<tobject>::add(const string_t& id, const string_t& description)
+        bool factory_t<tobject>::add(const string_t& id, const string_t& description)
         {
                 const auto maker = [] (const string_t& config) { return std::make_unique<tobject_impl>(config); };
                 return m_protos.emplace(id, proto_t{maker, description}).second;
         }
 
         template <typename tobject>
-        bool manager_t<tobject>::has(const string_t& id) const
+        bool factory_t<tobject>::has(const string_t& id) const
         {
                 return m_protos.find(id) != m_protos.end();
         }
 
         template <typename tobject>
-        typename manager_t<tobject>::trobject manager_t<tobject>::get(const string_t& id, const string_t& configuration) const
+        typename factory_t<tobject>::trobject factory_t<tobject>::get(const string_t& id, const string_t& configuration) const
         {
                 const auto it = m_protos.find(id);
                 if (it == m_protos.end())
@@ -86,7 +86,7 @@ namespace nano
         }
 
         template <typename tobject>
-        strings_t manager_t<tobject>::ids() const
+        strings_t factory_t<tobject>::ids() const
         {
                 strings_t ret;
                 for (const auto& proto : m_protos)
@@ -97,7 +97,7 @@ namespace nano
         }
 
         template <typename tobject>
-        strings_t manager_t<tobject>::descriptions() const
+        strings_t factory_t<tobject>::descriptions() const
         {
                 strings_t ret;
                 for (const auto& proto : m_protos)
@@ -108,7 +108,7 @@ namespace nano
         }
 
         template <typename tobject>
-        strings_t manager_t<tobject>::configs() const
+        strings_t factory_t<tobject>::configs() const
         {
                 strings_t ret;
                 for (const auto& proto : m_protos)

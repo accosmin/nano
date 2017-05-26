@@ -1,5 +1,5 @@
 #include "utest.h"
-#include "manager.h"
+#include "factory.h"
 
 using namespace nano;
 
@@ -25,7 +25,7 @@ NANO_BEGIN_MODULE(test_manager)
 
 NANO_CASE(empty)
 {
-        nano::manager_t<configurable_t> manager;
+        factory_t<configurable_t> manager;
 
         NANO_CHECK(manager.ids().empty());
         NANO_CHECK(manager.descriptions().empty());
@@ -38,7 +38,7 @@ NANO_CASE(empty)
 
 NANO_CASE(retrieval)
 {
-        nano::manager_t<configurable_t> manager;
+        factory_t<configurable_t> manager;
 
         const object1_configurable_t obj1;
         const object2_configurable_t obj2;
