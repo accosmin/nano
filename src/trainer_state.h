@@ -2,54 +2,15 @@
 
 #include "arch.h"
 #include "timer.h"
-#include "scalar.h"
 #include "stringi.h"
-#include <ostream>
+#include "trainer_measurement.h"
 
 namespace nano
 {
         ///
-        /// \brief training measurement usually after a training epoch.
-        ///
-        struct NANO_PUBLIC trainer_measurement_t
-        {
-                ///
-                /// \brief constructor
-                ///
-                trainer_measurement_t();
-
-                ///
-                /// \brief constructor
-                ///
-                trainer_measurement_t(const scalar_t value, const scalar_t error);
-
-                ///
-                /// \brief check validity of measurements (detect divergence)
-                ///
-                operator bool() const;
-
-                // attributes
-                scalar_t        m_value;        ///< average loss value
-                scalar_t        m_error;        ///< average error
-        };
-
-        ///
-        /// \brief streaming training measurement
-        ///
-        inline std::ostream& operator<<(std::ostream& os, const trainer_measurement_t& measure)
-        {
-                return os << measure.m_value << "|" << measure.m_error;
-        }
-
-        ///
-        /// \brief compare two training measurements
-        ///
-        NANO_PUBLIC bool operator<(const trainer_measurement_t& one, const trainer_measurement_t& two);
-
-        ///
         /// \brief training state
         ///
-        struct NANO_PUBLIC trainer_state_t
+        struct trainer_state_t
         {
                 ///
                 /// \brief constructor
@@ -92,11 +53,14 @@ namespace nano
         ///
         /// \brief compare two training states
         ///
-        NANO_PUBLIC bool operator<(const trainer_state_t& one, const trainer_state_t& two);
+        inline bool operator<(const trainer_state_t& one, const trainer_state_t& two)
+        {
+                // compare (aka tune) on the validation dataset!
+                return one.m_valid < two.m_valid;
+        }
 
         ///
         /// \brief save optimization states to text file
         ///
         NANO_PUBLIC bool save(const string_t& path, const trainer_states_t& states);
 }
-

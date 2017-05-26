@@ -8,31 +8,6 @@
 
 namespace nano
 {
-        trainer_measurement_t::trainer_measurement_t() : trainer_measurement_t(
-                std::numeric_limits<scalar_t>::max(),
-                std::numeric_limits<scalar_t>::max())
-        {
-        }
-
-        trainer_measurement_t::trainer_measurement_t(
-                const scalar_t value, const scalar_t error) :
-                m_value(value), m_error(error)
-        {
-        }
-
-        trainer_measurement_t::operator bool() const
-        {
-                return  std::isfinite(m_value) &&
-                        std::isfinite(m_error);
-        }
-
-        bool operator<(const trainer_measurement_t& one, const trainer_measurement_t& two)
-        {
-                const auto v1 = (one) ? one.m_value : std::numeric_limits<scalar_t>::max();
-                const auto v2 = (two) ? two.m_value : std::numeric_limits<scalar_t>::max();
-                return v1 < v2;
-        }
-
         trainer_state_t::trainer_state_t() :
                 m_milis(0),
                 m_epoch(0),
@@ -85,12 +60,6 @@ namespace nano
                 }
 
                 return static_cast<scalar_t>(speeds.avg());
-        }
-
-        bool operator<(const trainer_state_t& one, const trainer_state_t& two)
-        {
-                // compare (aka tune) on the validation dataset!
-                return one.m_valid < two.m_valid;
         }
 
         bool save(const string_t& path, const trainer_states_t& states)
