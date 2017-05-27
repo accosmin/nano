@@ -30,11 +30,6 @@ namespace nano
         ///
         struct fold_t
         {
-                fold_t(const size_t index = 0, const protocol p = protocol::train) :
-                        m_index(index), m_protocol(p)
-                {
-                }
-
                 size_t          m_index;        ///< fold index
                 protocol        m_protocol;     ///<
         };
