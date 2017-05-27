@@ -10,7 +10,7 @@ namespace nano
         ///
         /// \brief training state after a training epoch.
         ///
-        struct trainer_state_t
+        struct NANO_PUBLIC trainer_state_t
         {
                 ///
                 /// \brief constructor
