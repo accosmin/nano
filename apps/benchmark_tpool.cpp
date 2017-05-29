@@ -1,9 +1,9 @@
 #include <cmath>
-#include "timer.h"
 #include "text/table.h"
 #include "thread/loopi.h"
 #include "math/numeric.h"
 #include "text/cmdline.h"
+#include "chrono/measure.h"
 #include "text/table_row_mark.h"
 #include <iostream>
 
@@ -11,19 +11,14 @@ using namespace nano;
 
 namespace
 {
-        template <typename tindex>
-        scalar_t op(const tindex index)
-        {
-                const auto x = static_cast<scalar_t>(index);
-                return std::sin(x) + std::cos(x);
-        }
-
         template <typename tvector>
-        auto measure(tvector& results)
+        void op(tvector& results)
         {
-                const nano::timer_t timer;
-                nano::loopi(results.size(), [&results = results] (const auto index) { results[index] = op(index); });
-                return timer.microseconds();
+                nano::loopi(results.size(), [&results = results] (const auto index)
+                {
+                        const auto x = static_cast<scalar_t>(index);
+                        results[index] = std::sin(x) + std::cos(x);
+                });
         }
 }
 
@@ -64,7 +59,7 @@ int main(int argc, const char *argv[])
                         pool.activate(n_active_workers);
 
                         std::vector<scalar_t> results(size);
-                        const auto deltaX = ::measure(results);
+                        const auto deltaX = measure_robustly<microseconds_t>([&] { op(results); }, 16);
                         if (n_active_workers == 1)
                         {
                                 delta1 = deltaX;

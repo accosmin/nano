@@ -1,10 +1,10 @@
-#include "measure.h"
 #include "iterator.h"
 #include "text/table.h"
 #include "text/cmdline.h"
 #include "math/numeric.h"
 #include "vision/color.h"
 #include "tasks/charset.h"
+#include "chrono/measure.h"
 #include "tensor/numeric.h"
 #include <iostream>
 

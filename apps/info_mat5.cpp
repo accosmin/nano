@@ -1,8 +1,7 @@
-#include "timer.h"
-#include "logger.h"
 #include "stringi.h"
 #include "io/mat5.h"
 #include "text/cmdline.h"
+#include "measure_and_log.h"
 
 int main(int argc, const char *argv[])
 {
@@ -34,16 +33,11 @@ int main(int argc, const char *argv[])
         };
 
         // load file
-        nano::timer_t timer;
-        if (!nano::load_mat5(cmd_input, hcallback, scallback, ecallback))
-        {
-                log_error() << "failed to load <" << cmd_input << ">!";
-                return EXIT_FAILURE;
-        }
-        else
-        {
-                log_info() << "<" << cmd_input << "> loaded in " << timer.elapsed() << ".";
-                log_info() << nano::done;
-                return EXIT_SUCCESS;
-        }
+        measure_critical_and_log(
+                [&] () { return nano::load_mat5(cmd_input, hcallback, scallback, ecallback); },
+                "load mat5 <" + cmd_input + ">");
+
+        // OK
+        log_info() << done;
+        return EXIT_SUCCESS;
 }

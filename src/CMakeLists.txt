@@ -31,6 +31,7 @@ add_subdirectory(trainers)
 add_subdirectory(iterators)
 add_subdirectory(tensor)
 add_subdirectory(thread)
+add_subdirectory(chrono)
 add_subdirectory(vision)
 
 add_library(nano SHARED ${libnano_sources})

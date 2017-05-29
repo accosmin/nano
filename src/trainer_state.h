@@ -1,8 +1,8 @@
 #pragma once
 
 #include "arch.h"
-#include "timer.h"
 #include "stringi.h"
+#include "chrono/timer.h"
 #include "trainer_measurement.h"
 
 namespace nano

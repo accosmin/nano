@@ -69,4 +69,3 @@ namespace nano
                 virtual tensor_size_t flops() const = 0;
         };
 }
-

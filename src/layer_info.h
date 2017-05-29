@@ -1,8 +1,8 @@
 #pragma once
 
 #include "layer.h"
-#include "timer.h"
 #include "timing.h"
+#include "chrono/timer.h"
 
 namespace nano
 {

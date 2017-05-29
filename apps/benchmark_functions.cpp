@@ -1,9 +1,8 @@
-#include "timer.h"
-#include "measure.h"
+#include "math/stats.h"
 #include "text/table.h"
 #include "text/cmdline.h"
-#include "math/stats.h"
 #include "functions/test.h"
+#include "chrono/measure.h"
 #include <iostream>
 
 using namespace nano;
