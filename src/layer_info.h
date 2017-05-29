@@ -1,8 +1,7 @@
 #pragma once
 
 #include "layer.h"
-#include "timing.h"
-#include "chrono/timer.h"
+#include "chrono/probe.h"
 
 namespace nano
 {
@@ -31,45 +30,51 @@ namespace nano
 
                 string_t        m_name;
                 rlayer_t        m_layer;
-                timing_t        m_output_timings;
-                timing_t        m_ginput_timings;
-                timing_t        m_gparam_timings;
+                probe_t         m_output_probe;
+                probe_t         m_ginput_probe;
+                probe_t         m_gparam_probe;
         };
 
         using layer_infos_t = std::vector<layer_info_t>;
 
         inline layer_info_t::layer_info_t(const string_t& name, rlayer_t layer) :
-                m_name(name), m_layer(std::move(layer))
+                m_name(name), m_layer(std::move(layer)),
+                m_output_probl(name + "(output)"),
+                m_ginput_probl(name + "(ginput)"),
+                m_gparam_probl(name + "(gparam)"),
         {
         }
 
         inline layer_info_t::layer_info_t(const layer_info_t& other) :
                 m_name(other.m_name),
                 m_layer(other.m_layer->clone()),
-                m_output_timings(other.m_output_timings),
-                m_ginput_timings(other.m_ginput_timings),
-                m_gparam_timings(other.m_gparam_timings)
+                m_output_probe(other.m_output_probe),
+                m_ginput_probe(other.m_ginput_probe),
+                m_gparam_probe(other.m_gparam_probe)
         {
         }
 
         inline void layer_info_t::output(const scalar_t* idata, const scalar_t* param, scalar_t* odata)
         {
-                const timer_t timer;
-                m_layer->output(map_tensor(idata, idims()), map_tensor(param, psize()), map_tensor(odata, odims()));
-                m_output_timings(static_cast<size_t>(timer.microseconds().count()));
+                m_output_probe.measure([&] ()
+                {
+                        m_layer->output(map_tensor(idata, idims()), map_tensor(param, psize()), map_tensor(odata, odims()));
+                });
         }
 
         inline void layer_info_t::ginput(scalar_t* idata, const scalar_t* param, const scalar_t* odata)
         {
-                const timer_t timer;
-                m_layer->ginput(map_tensor(idata, idims()), map_tensor(param, psize()), map_tensor(odata, odims()));
-                m_ginput_timings(static_cast<size_t>(timer.microseconds().count()));
+                m_ginput_probe.measure([&] ()
+                {
+                        m_layer->ginput(map_tensor(idata, idims()), map_tensor(param, psize()), map_tensor(odata, odims()));
+                });
         }
 
         inline void layer_info_t::gparam(const scalar_t* idata, scalar_t* param, const scalar_t* odata)
         {
-                const timer_t timer;
-                m_layer->gparam(map_tensor(idata, idims()), map_tensor(param, psize()), map_tensor(odata, odims()));
-                m_gparam_timings(static_cast<size_t>(timer.microseconds().count()));
+                m_gparam_probe.measure([&] ()
+                {
+                        m_layer->gparam(map_tensor(idata, idims()), map_tensor(param, psize()), map_tensor(odata, odims()));
+                });
         }
 }
