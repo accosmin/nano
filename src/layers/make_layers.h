@@ -9,7 +9,7 @@ namespace nano
         ///
         inline string_t make_layer(const string_t& description)
         {
-                return description + ";";
+                return description.empty() ? string_t() : (description + ";");
         }
 
         inline string_t make_affine_layer(const tensor_size_t dims, const string_t& activation = "act-snorm")

@@ -260,7 +260,7 @@ namespace nano
                                 log_info()
                                         << "forward network " << layer->probe_output().basename()
                                         << ": in(" << layer->idims() << ") -> " << "out(" << layer->odims() << ")"
-                                        << ", kFLOPs = " << flops_output << "," << flops_ginput << "," << flops_gparam
+                                        << ", kFLOPs = {" << flops_output << "," << flops_ginput << "," << flops_gparam << "}"
                                         << ", params = " << layer->psize()
                                         << ", range = [" << min << ", " << max << "].";
                         }
@@ -269,7 +269,7 @@ namespace nano
                                 log_info()
                                         << "forward network " << layer->probe_output().basename()
                                         << ": in(" << layer->idims() << ") -> " << "out(" << layer->odims() << ")"
-                                        << ", kFLOPs = " << flops_output << "," << flops_ginput << "," << flops_gparam << ".";
+                                        << ", kFLOPs = {" << flops_output << "," << flops_ginput << "," << flops_gparam << "}.";
                         }
                 }
                 log_info() << "forward network: parameters = " << psize() << ".";

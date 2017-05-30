@@ -17,6 +17,7 @@ make_app(info_iterator.cpp nano)
 
 make_app(train.cpp nano)
 make_app(evaluate.cpp nano)
+make_app(make_forward_network.cpp nano)
 
 make_app(embed.cpp nano)
 make_app(stats.cpp "")
