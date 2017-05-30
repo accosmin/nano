@@ -27,8 +27,8 @@ NANO_CASE(evaluate)
         const string_t mlp5 = mlp4 + make_affine_layer(10);
 
         const string_t convnet =
-                make_conv_layer(8, 7, 7, 1) +
-                make_conv_layer(8, 5, 5, 1);
+                make_conv3d_layer(8, 7, 7, 1) +
+                make_conv3d_layer(8, 5, 5, 1);
 
         const string_t outlayer = make_output_layer(task->odims());
 

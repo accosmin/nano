@@ -189,34 +189,34 @@ NANO_CASE(activation)
 NANO_CASE(conv)
 {
         test_model(
-                make_conv_layer(3, 3, 3, 3, "act-unit"),
+                make_conv3d_layer(3, 3, 3, 3, "act-unit"),
                 cpsize(cmd_idims, 3, 3, 3, 3) + apsize(3 * 6 * 6, cmd_odims));
 
         test_model(
-                make_conv_layer(4, 3, 3, 1, "act-snorm"),
+                make_conv3d_layer(4, 3, 3, 1, "act-snorm"),
                 cpsize(cmd_idims, 4, 3, 3, 1) + apsize(4 * 6 * 6, cmd_odims));
 
         test_model(
-                make_conv_layer(5, 3, 3, 1, "act-splus"),
+                make_conv3d_layer(5, 3, 3, 1, "act-splus"),
                 cpsize(cmd_idims, 5, 3, 3, 1) + apsize(5 * 6 * 6, cmd_odims));
 
         test_model
-                (make_conv_layer(6, 3, 3, 3, "act-tanh"),
+                (make_conv3d_layer(6, 3, 3, 3, "act-tanh"),
                 cpsize(cmd_idims, 6, 3, 3, 3) + apsize(6 * 6 * 6, cmd_odims));
 }
 
 NANO_CASE(conv_stride)
 {
         test_model(
-                make_conv_layer(3, 5, 3, 3, "act-unit", 2, 1),
+                make_conv3d_layer(3, 5, 3, 3, "act-unit", 2, 1),
                 cpsize(cmd_idims, 3, 5, 3, 3) + apsize(3 * 2 * 6, cmd_odims));
 
         test_model(
-                make_conv_layer(3, 3, 5, 3, "act-snorm", 1, 2),
+                make_conv3d_layer(3, 3, 5, 3, "act-snorm", 1, 2),
                 cpsize(cmd_idims, 3, 3, 5, 3) + apsize(3 * 6 * 2, cmd_odims));
 
         test_model(
-                make_conv_layer(3, 5, 5, 3, "act-splus", 2, 2),
+                make_conv3d_layer(3, 5, 5, 3, "act-splus", 2, 2),
                 cpsize(cmd_idims, 3, 5, 5, 3) + apsize(3 * 2 * 2, cmd_odims));
 }
 
@@ -228,36 +228,36 @@ NANO_CASE(multi_layer)
                 apsize(cmd_idims, 7) + apsize(7, 5) + apsize(5, cmd_odims));
 
         test_model(
-                make_conv_layer(7, 3, 3, 1, "act-snorm") +
-                make_conv_layer(4, 1, 1, 1, "act-splus"),
+                make_conv3d_layer(7, 3, 3, 1, "act-snorm") +
+                make_conv3d_layer(4, 1, 1, 1, "act-splus"),
                 cpsize(cmd_idims, 7, 3, 3, 1) + cpsize(7, 4, 1, 1, 1) + apsize(4 * 6 * 6, cmd_odims));
 
         test_model(
-                make_conv_layer(7, 3, 3, 1, "act-snorm") +
-                make_conv_layer(4, 3, 3, 1, "act-splus"),
+                make_conv3d_layer(7, 3, 3, 1, "act-snorm") +
+                make_conv3d_layer(4, 3, 3, 1, "act-splus"),
                 cpsize(cmd_idims, 7, 3, 3, 1) + cpsize(7, 4, 3, 3, 1) + apsize(4 * 4 * 4, cmd_odims));
 
         test_model(
-                make_conv_layer(7, 3, 3, 1, "act-snorm") +
-                make_conv_layer(5, 3, 3, 1, "act-splus") +
+                make_conv3d_layer(7, 3, 3, 1, "act-snorm") +
+                make_conv3d_layer(5, 3, 3, 1, "act-splus") +
                 make_affine_layer(5, "act-splus"),
                 cpsize(cmd_idims, 7, 3, 3, 1) + cpsize(7, 5, 3, 3, 1) + apsize(5 * 4 * 4, 5) + apsize(5, cmd_odims));
 
         test_model(
-                make_conv_layer(8, 3, 3, 1, "act-snorm") +
-                make_conv_layer(6, 3, 3, 2, "act-splus") +
+                make_conv3d_layer(8, 3, 3, 1, "act-snorm") +
+                make_conv3d_layer(6, 3, 3, 2, "act-splus") +
                 make_affine_layer(5, "act-splus"),
                 cpsize(cmd_idims, 8, 3, 3, 1) + cpsize(8, 6, 3, 3, 2) + apsize(6 * 4 * 4, 5) + apsize(5, cmd_odims));
 
         test_model(
-                make_conv_layer(8, 3, 3, 1, "act-snorm") +
-                make_conv_layer(6, 3, 3, 2, "act-splus") +
+                make_conv3d_layer(8, 3, 3, 1, "act-snorm") +
+                make_conv3d_layer(6, 3, 3, 2, "act-splus") +
                 make_affine_layer(5, "act-splus"),
                 cpsize(cmd_idims, 8, 3, 3, 1) + cpsize(8, 6, 3, 3, 2) + apsize(6 * 4 * 4, 5) + apsize(5, cmd_odims));
 
         test_model(
-                make_conv_layer(9, 3, 3, 1, "act-snorm") +
-                make_conv_layer(6, 3, 3, 3, "act-splus") +
+                make_conv3d_layer(9, 3, 3, 1, "act-snorm") +
+                make_conv3d_layer(6, 3, 3, 3, "act-splus") +
                 make_affine_layer(5, "act-splus"),
                 cpsize(cmd_idims, 9, 3, 3, 1) + cpsize(9, 6, 3, 3, 3) + apsize(6 * 4 * 4, 5) + apsize(5, cmd_odims));
 }

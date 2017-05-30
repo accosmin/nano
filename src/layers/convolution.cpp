@@ -4,7 +4,7 @@
 namespace nano
 {
         convolution_layer_t::convolution_layer_t(const string_t& parameters) :
-                layer_t(to_params(parameters, "dims", "16[1,256]", "rows", "8[1,32]", "cols", "8[1,32]",
+                layer_t(to_params(parameters, "dims", "16[1,4096]", "rows", "8[1,32]", "cols", "8[1,32]",
                 "conn", "1[1,16]", "drow", "1[1,8]", "dcol", "1[1,8]"))
         {
         }
@@ -20,7 +20,7 @@ namespace nano
                 const auto irows = std::get<1>(idims);
                 const auto icols = std::get<2>(idims);
 
-                const auto omaps = clamp(from_params<tensor_size_t>(config(), "dims"), 1, 256);
+                const auto omaps = clamp(from_params<tensor_size_t>(config(), "dims"), 1, 4096);
                 const auto krows = clamp(from_params<tensor_size_t>(config(), "rows"), 1, 32);
                 const auto kcols = clamp(from_params<tensor_size_t>(config(), "cols"), 1, 32);
                 const auto kconn = clamp(from_params<tensor_size_t>(config(), "conn"), 1, 16);

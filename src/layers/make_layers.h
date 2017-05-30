@@ -28,7 +28,7 @@ namespace nano
                 return make_output_layer(nano::size(dims), activation);
         }
 
-        inline string_t make_conv_layer(
+        inline string_t make_conv3d_layer(
                 const tensor_size_t dims, const tensor_size_t rows, const tensor_size_t cols, const tensor_size_t conn,
                 const string_t& activation = "act-snorm",
                 const tensor_size_t drow = 1, const tensor_size_t dcol = 1)
