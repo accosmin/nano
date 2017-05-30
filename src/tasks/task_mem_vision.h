@@ -32,8 +32,9 @@ namespace nano
                 auto target() const { return m_target; }
                 auto label() const { return m_label; }
 
-                size_t          m_index;
-                rect_t          m_region;
+                // attributes
+                size_t          m_index;        ///< image index
+                rect_t          m_region;       ///< patch region in image
                 tensor3d_t      m_target;
                 string_t        m_label;
         };

@@ -75,7 +75,7 @@ int main(int argc, const char *argv[])
                 auto& row = table.append();
                 row << task_size << task->idims();
                 {
-                        const auto duration = measure_robustly<milliseconds_t>([&] ()
+                        const auto duration = measure<milliseconds_t>([&] ()
                         {
                                 task->load();
                         }, 1);
@@ -90,7 +90,7 @@ int main(int argc, const char *argv[])
                         const auto fold = fold_t{0, protocol::train};
                         const auto fold_size = task->size(fold);
 
-                        const auto duration = measure_robustly<microseconds_t>([&] ()
+                        const auto duration = measure<microseconds_t>([&] ()
                         {
                                 volatile long double sum = 0;
                                 for (size_t index = 0; index < fold_size; ++ index)

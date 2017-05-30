@@ -59,7 +59,7 @@ int main(int argc, const char *argv[])
                         pool.activate(n_active_workers);
 
                         std::vector<scalar_t> results(size);
-                        const auto deltaX = measure_robustly<microseconds_t>([&] { op(results); }, 16);
+                        const auto deltaX = measure<microseconds_t>([&] { op(results); }, 16);
                         if (n_active_workers == 1)
                         {
                                 delta1 = deltaX;

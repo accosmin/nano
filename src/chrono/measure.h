@@ -9,7 +9,7 @@ namespace nano
         /// \brief robustly measure a function call (in the given time units).
         ///
         template <typename tunits, typename toperator>
-        tunits measure_robustly(const toperator& op, const std::size_t trials,
+        tunits measure(const toperator& op, const std::size_t trials,
                 const std::size_t min_trial_iterations = 1,
                 const microseconds_t min_trial_duration = microseconds_t(10 * 1000))
         {

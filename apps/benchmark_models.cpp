@@ -155,7 +155,7 @@ int main(int argc, const char *argv[])
 
                         if (cmd_forward)
                         {
-                                const auto duration = measure_robustly<microseconds_t>([&] ()
+                                const auto duration = measure<microseconds_t>([&] ()
                                 {
                                         acc.mode(accumulator_t::type::value);
                                         acc.update(*task, fold);
@@ -171,7 +171,7 @@ int main(int argc, const char *argv[])
 
                         if (cmd_backward)
                         {
-                                const auto duration = measure_robustly<microseconds_t>([&] ()
+                                const auto duration = measure<microseconds_t>([&] ()
                                 {
                                         acc.mode(accumulator_t::type::vgrad);
                                         acc.update(*task, fold);

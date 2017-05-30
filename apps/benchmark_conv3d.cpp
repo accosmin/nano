@@ -28,30 +28,27 @@ namespace nano
 
 namespace
 {
-        template <typename top>
-        auto measure(const top& op, const tensor_size_t flops)
-        {
-                const auto trials = size_t(16);
-                const auto duration = measure_robustly<nanoseconds_t>(op, trials);
-                return nano::gflops(flops, duration);
-        }
+        const auto trials = size_t(16);
 
         template <typename top, typename tidata, typename tkdata, typename tbdata, typename todata>
         auto measure_output(const top& op, const tidata& idata, const tkdata& kdata, const tbdata& bdata, todata& odata)
         {
-                return ::measure([&] () { op.output(idata, kdata, bdata, odata); }, op.params().flops_output());
+                const auto duration = measure<nanoseconds_t>([&] () { op.output(idata, kdata, bdata, odata); }, trials);
+                return nano::gflops(op.params().flops_output(), duration);
         }
 
         template <typename top, typename tidata, typename tkdata, typename tbdata, typename todata>
         auto measure_ginput(const top& op, tidata& idata, const tkdata& kdata, const tbdata& bdata, const todata& odata)
         {
-                return ::measure([&] () { op.ginput(idata, kdata, bdata, odata); }, op.params().flops_ginput());
+                const auto duration = measure<nanoseconds_t>([&] () { op.ginput(idata, kdata, bdata, odata); }, trials);
+                return nano::gflops(op.params().flops_ginput(), duration);
         }
 
         template <typename top, typename tidata, typename tkdata, typename tbdata, typename todata>
         auto measure_gparam(const top& op, const tidata& idata, tkdata& kdata, tbdata& bdata, const todata& odata)
         {
-                return ::measure([&] () { op.gparam(idata, kdata, bdata, odata); }, op.params().flops_gparam());
+                const auto duration = measure<nanoseconds_t>([&] () { op.gparam(idata, kdata, bdata, odata); }, trials);
+                return nano::gflops(op.params().flops_gparam(), duration);
         }
 }
 
