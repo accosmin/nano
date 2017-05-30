@@ -6,8 +6,8 @@
 #include "iterator.h"
 #include "text/table.h"
 #include "text/cmdline.h"
-#include "batch_optimizer.h"
-#include "stoch_optimizer.h"
+#include "solver_batch.h"
+#include "solver_stoch.h"
 #include <iostream>
 
 using namespace nano;
@@ -114,11 +114,11 @@ int main(int argc, const char* argv[])
         }
         if (has_batch)
         {
-                print("batch optimizers", get_batch_optimizers());
+                print("batch optimizers", get_batch_solvers());
         }
         if (has_stoch)
         {
-                print("stochastic optimizers", get_stoch_optimizers());
+                print("stochastic optimizers", get_stoch_solvers());
         }
         if (has_system || has_sys_physical)
         {

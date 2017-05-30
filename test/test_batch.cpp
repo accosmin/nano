@@ -4,7 +4,7 @@
 #include "math/epsilon.h"
 #include "text/to_string.h"
 #include "functions/test.h"
-#include "batch_optimizer.h"
+#include "solver_batch.h"
 
 using namespace nano;
 
@@ -26,10 +26,10 @@ static void check_function(const function_t& function)
         }
 
         // optimizers to try
-        const auto ids = get_batch_optimizers().ids();
+        const auto ids = get_batch_solvers().ids();
         for (const auto id : ids)
         {
-                const auto optimizer = get_batch_optimizers().get(id);
+                const auto optimizer = get_batch_solvers().get(id);
 
                 size_t out_of_domain = 0;
 

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "stoch_optimizer.h"
+#include "solver_stoch.h"
 
 namespace nano
 {
@@ -9,7 +9,7 @@ namespace nano
         ///     see "Accelerating Stochastic Gradient Descent using Predictive Variance Reduction",
         ///     by Rie Johnson, Tong Zhang
         ///
-        struct stoch_svrg_t final : public stoch_optimizer_t
+        struct stoch_svrg_t final : public stoch_solver_t
         {
                 explicit stoch_svrg_t(const string_t& configuration = string_t());
 

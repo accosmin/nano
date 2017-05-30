@@ -1,13 +1,13 @@
 #pragma once
 
-#include "stoch_optimizer.h"
+#include "solver_stoch.h"
 
 namespace nano
 {
         ///
         /// \brief stochastic gradient (descent) with momentum
         ///
-        struct stoch_sgm_t final : public stoch_optimizer_t
+        struct stoch_sgm_t final : public stoch_solver_t
         {
                 explicit stoch_sgm_t(const string_t& configuration = string_t());
 

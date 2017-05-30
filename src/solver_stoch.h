@@ -9,16 +9,16 @@ namespace nano
         ///
         /// \brief stores registered prototypes
         ///
-        struct stoch_optimizer_t;
-        using stoch_optimizer_factory_t = factory_t<stoch_optimizer_t>;
-        using rstoch_optimizer_t = stoch_optimizer_factory_t::trobject;
+        struct stoch_solver_t;
+        using stoch_solver_factory_t = factory_t<stoch_solver_t>;
+        using rstoch_solver_t = stoch_solver_factory_t::trobject;
 
-        NANO_PUBLIC stoch_optimizer_factory_t& get_stoch_optimizers();
+        NANO_PUBLIC stoch_solver_factory_t& get_stoch_solvers();
 
         ///
         /// \brief generic stochastic optimizer
         ///
-        struct NANO_PUBLIC stoch_optimizer_t : public configurable_t
+        struct NANO_PUBLIC stoch_solver_t : public configurable_t
         {
                 using configurable_t::configurable_t;
 

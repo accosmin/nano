@@ -1,6 +1,6 @@
 #pragma once
 
-#include "stoch_optimizer.h"
+#include "solver_stoch.h"
 
 namespace nano
 {
@@ -12,7 +12,7 @@ namespace nano
         /// NB: the first-order momentum of the past states is returned instead of the average as in the original paper
         ///     (using the average requires many more iterations).
         ///
-        struct stoch_asgd_t final : public stoch_optimizer_t
+        struct stoch_asgd_t final : public stoch_solver_t
         {
                 explicit stoch_asgd_t(const string_t& configuration = string_t());
 

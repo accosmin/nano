@@ -5,9 +5,9 @@
 
 using namespace nano;
 
-batch_optimizer_factory_t& nano::get_batch_optimizers()
+batch_solver_factory_t& nano::get_batch_solvers()
 {
-        static batch_optimizer_factory_t manager;
+        static batch_solver_factory_t manager;
 
         static std::once_flag flag;
         std::call_once(flag, [&m = manager] ()

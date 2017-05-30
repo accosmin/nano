@@ -1,6 +1,6 @@
 #pragma once
 
-#include "stoch_optimizer.h"
+#include "solver_stoch.h"
 
 namespace nano
 {
@@ -8,7 +8,7 @@ namespace nano
         /// \brief stochastic AdaDelta,
         ///     see "ADADELTA: An Adaptive Learning Rate Method", by Matthew D. Zeiler
         ///
-        struct stoch_adadelta_t final : public stoch_optimizer_t
+        struct stoch_adadelta_t final : public stoch_solver_t
         {
                 explicit stoch_adadelta_t(const string_t& configuration = string_t());
 

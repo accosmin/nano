@@ -6,7 +6,7 @@
 namespace nano
 {
         batch_gd_t::batch_gd_t(const string_t& configuration) :
-                batch_optimizer_t(to_params(configuration,
+                batch_solver_t(to_params(configuration,
                 "ls_init", ls_initializer::quadratic,
                 "ls_strat", ls_strategy::backtrack_strong_wolfe,
                 "c1", 1e-4, "c2", 0.1))

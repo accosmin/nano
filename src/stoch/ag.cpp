@@ -5,7 +5,7 @@ namespace nano
 {
         template <ag_restart trestart>
         stoch_ag_base_t<trestart>::stoch_ag_base_t(const string_t& configuration) :
-                stoch_optimizer_t(configuration)
+                stoch_solver_t(configuration)
         {
         }
 

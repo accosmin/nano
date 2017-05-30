@@ -1,6 +1,6 @@
 #pragma once
 
-#include "stoch_optimizer.h"
+#include "solver_stoch.h"
 
 namespace nano
 {
@@ -9,7 +9,7 @@ namespace nano
         ///     see Lecture 6.5 - rmsprop, COURSERA: Neural Networks for Machine Learning
         ///      by Tieleman, T. and Hinton, G. (2012)
         ///
-        struct stoch_rmsprop_t final : public stoch_optimizer_t
+        struct stoch_rmsprop_t final : public stoch_solver_t
         {
                 explicit stoch_rmsprop_t(const string_t& configuration = string_t());
 

@@ -2,13 +2,13 @@
 #include "math/numeric.h"
 #include "trainer_stoch.h"
 #include "function_stoch.h"
-#include "stoch_optimizer.h"
+#include "solver_stoch.h"
 #include "logger.h"
 
 namespace nano
 {
         stoch_trainer_t::stoch_trainer_t(const string_t& parameters) :
-                trainer_t(to_params(parameters, "opt", "sg[...]", "epochs", "16[1,1024]",
+                trainer_t(to_params(parameters, "solver", "sg[" + concatenate(get_stoch_solvers().ids()) + "]", "epochs", "16[1,1024]",
                 "min_batch", "32[32,1024]", "max_batch", "256[32,4096]", "eps", 1e-6, "patience", 32))
         {
         }
@@ -22,7 +22,7 @@ namespace nano
                 const auto batch0 = clamp(from_params<size_t>(config(), "min_batch"), 1, 1024);
                 const auto batchK = clamp(from_params<size_t>(config(), "max_batch"), batch0, 4096);
                 const auto epsilon = from_params<scalar_t>(config(), "eps");
-                const auto optimizer = from_params<string_t>(config(), "opt");
+                const auto solver = from_params<string_t>(config(), "solver");
                 const auto patience = from_params<size_t>(config(), "patience");
 
                 // minibatch
@@ -102,9 +102,9 @@ namespace nano
                 // assembly optimization function & train the model
                 const auto function = stoch_function_t(acc, iterator, task,  minibatch);
                 const auto params = stoch_params_t{epochs, epoch_size, epsilon, fn_ulog, fn_tlog};
-                get_stoch_optimizers().get(optimizer)->minimize(params, function, model.params());
+                get_stoch_solvers().get(solver)->minimize(params, function, model.params());
 
-                log_info() << "<<< stoch-" << optimizer << ": " << result << ",time=" << timer.elapsed() << ".";
+                log_info() << "<<< stoch-" << solver << ": " << result << ",time=" << timer.elapsed() << ".";
 
                 // OK
                 if (result.valid())

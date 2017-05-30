@@ -2,7 +2,7 @@
 #include "math/random.h"
 #include "math/epsilon.h"
 #include "functions/test.h"
-#include "stoch_optimizer.h"
+#include "solver_stoch.h"
 #include "benchmark_optimizers.h"
 
 using namespace nano;
@@ -25,9 +25,9 @@ static void check_function(const function_t& function,
         tostats stats;
 
         // evaluate all optimizers
-        for (const auto id : get_stoch_optimizers().ids())
+        for (const auto id : get_stoch_solvers().ids())
         {
-                const auto optimizer = get_stoch_optimizers().get(id);
+                const auto optimizer = get_stoch_solvers().get(id);
                 const auto params = stoch_params_t(epochs, epoch_size, epsilon);
                 const auto name = id;
 

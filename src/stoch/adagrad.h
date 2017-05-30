@@ -1,6 +1,6 @@
 #pragma once
 
-#include "stoch_optimizer.h"
+#include "solver_stoch.h"
 
 namespace nano
 {
@@ -11,7 +11,7 @@ namespace nano
         ///
         ///     see http://xcorr.net/2014/01/23/adagrad-eliminating-learning-rates-in-stochastic-gradient-descent/
         ///
-        struct stoch_adagrad_t final : public stoch_optimizer_t
+        struct stoch_adagrad_t final : public stoch_solver_t
         {
                 explicit stoch_adagrad_t(const string_t& configuration = string_t());
 

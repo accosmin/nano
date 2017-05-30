@@ -6,7 +6,7 @@
 namespace nano
 {
         stoch_rmsprop_t::stoch_rmsprop_t(const string_t& configuration) :
-                stoch_optimizer_t(configuration)
+                stoch_solver_t(configuration)
         {
         }
 

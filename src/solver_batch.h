@@ -9,16 +9,16 @@ namespace nano
         ///
         /// \brief stores registered prototypes
         ///
-        struct batch_optimizer_t;
-        using batch_optimizer_factory_t = factory_t<batch_optimizer_t>;
-        using rbatch_optimizer_t = batch_optimizer_factory_t::trobject;
+        struct batch_solver_t;
+        using batch_solver_factory_t = factory_t<batch_solver_t>;
+        using rbatch_solver_t = batch_solver_factory_t::trobject;
 
-        NANO_PUBLIC batch_optimizer_factory_t& get_batch_optimizers();
+        NANO_PUBLIC batch_solver_factory_t& get_batch_solvers();
 
         ///
         /// \brief generic batchastic optimizer
         ///
-        struct NANO_PUBLIC batch_optimizer_t : public configurable_t
+        struct NANO_PUBLIC batch_solver_t : public configurable_t
         {
                 using configurable_t::configurable_t;
 

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "stoch_optimizer.h"
+#include "solver_stoch.h"
 
 namespace nano
 {
@@ -22,7 +22,7 @@ namespace nano
         ///     by Brendan O’Donoghue & Emmanuel Candes, 2013
         ///
         template <ag_restart trestart>
-        struct stoch_ag_base_t final : public stoch_optimizer_t
+        struct stoch_ag_base_t final : public stoch_solver_t
         {
                 explicit stoch_ag_base_t(const string_t& configuration = string_t());
 

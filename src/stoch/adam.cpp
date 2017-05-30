@@ -6,7 +6,7 @@
 namespace nano
 {
         stoch_adam_t::stoch_adam_t(const string_t& configuration) :
-                stoch_optimizer_t(configuration)
+                stoch_solver_t(configuration)
         {
         }
 

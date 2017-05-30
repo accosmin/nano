@@ -5,7 +5,7 @@
 namespace nano
 {
         stoch_ngd_t::stoch_ngd_t(const string_t& configuration) :
-                stoch_optimizer_t(configuration)
+                stoch_solver_t(configuration)
         {
         }
 

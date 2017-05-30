@@ -1,6 +1,6 @@
 #pragma once
 
-#include "stoch_optimizer.h"
+#include "solver_stoch.h"
 
 namespace nano
 {
@@ -8,7 +8,7 @@ namespace nano
         /// \brief stochastic Adam,
         ///     see "Adam: A method for stochastic optimization", by Diederik P. Kingma & Jimmy Lei Ba
         ///
-        struct stoch_adam_t final : public stoch_optimizer_t
+        struct stoch_adam_t final : public stoch_solver_t
         {
                 explicit stoch_adam_t(const string_t& configuration = string_t());
 

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "cgd_steps.h"
-#include "batch_optimizer.h"
+#include "solver_batch.h"
 
 namespace nano
 {
@@ -12,7 +12,7 @@ namespace nano
         <
                 typename tcgd_update                    ///< CGD step update
         >
-        struct batch_cgd_t final : public batch_optimizer_t
+        struct batch_cgd_t final : public batch_solver_t
         {
                 explicit batch_cgd_t(const string_t& configuration = string_t());
 

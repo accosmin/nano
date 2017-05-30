@@ -12,9 +12,9 @@
 
 using namespace nano;
 
-stoch_optimizer_factory_t& nano::get_stoch_optimizers()
+stoch_solver_factory_t& nano::get_stoch_solvers()
 {
-        static stoch_optimizer_factory_t manager;
+        static stoch_solver_factory_t manager;
 
         static std::once_flag flag;
         std::call_once(flag, [&m = manager] ()

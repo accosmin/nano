@@ -1,6 +1,6 @@
 #pragma once
 
-#include "stoch_optimizer.h"
+#include "solver_stoch.h"
 
 namespace nano
 {
@@ -9,7 +9,7 @@ namespace nano
         ///     see "Beyond Convexity: Stochastic Quasi-Convex Optimization",
         ///     by Elan Hazan, Kfir Y. Levi, Shai Shalev-Shwartz
         ///
-        struct stoch_ngd_t final : public stoch_optimizer_t
+        struct stoch_ngd_t final : public stoch_solver_t
         {
                 explicit stoch_ngd_t(const string_t& configuration = string_t());
 

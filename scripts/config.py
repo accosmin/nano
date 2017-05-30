@@ -44,22 +44,22 @@ class config:
         # training methods: {name, command line parameters}+
         def trainers(self):
                 return {
-                        "stoch_ag" : "--trainer stoch --trainer-params opt=ag",
-                        "stoch_agfr" : "--trainer stoch --trainer-params opt=agfr",
-                        "stoch_aggr" : "--trainer stoch --trainer-params opt=aggr",
-                        "stoch_sg" : "--trainer stoch --trainer-params opt=sg",
-                        "stoch_sgm" : "--trainer stoch --trainer-params opt=sgm",
-                        "stoch_ngd" : "--trainer stoch --trainer-params opt=ngd",
-                        "stoch_svrg" : "--trainer stoch --trainer-params opt=svrg",
-                        "stoch_asgd" : "--trainer stoch --trainer-params opt=asgd",
-                        "stoch_adagrad" : "--trainer stoch --trainer-params opt=adagrad",
-                        "stoch_adadelta" : "--trainer stoch --trainer-params opt=adadelta",
-                        "stoch_adam" : "--trainer stoch --trainer-params opt=adam",
-                        "stoch_rmsprop" : "--trainer stoch --trainer-params opt=rmsprop",
+                        "stoch_ag" : "--trainer stoch --trainer-params solver=ag",
+                        "stoch_agfr" : "--trainer stoch --trainer-params solver=agfr",
+                        "stoch_aggr" : "--trainer stoch --trainer-params solver=aggr",
+                        "stoch_sg" : "--trainer stoch --trainer-params solver=sg",
+                        "stoch_sgm" : "--trainer stoch --trainer-params solver=sgm",
+                        "stoch_ngd" : "--trainer stoch --trainer-params solver=ngd",
+                        "stoch_svrg" : "--trainer stoch --trainer-params solver=svrg",
+                        "stoch_asgd" : "--trainer stoch --trainer-params solver=asgd",
+                        "stoch_adagrad" : "--trainer stoch --trainer-params solver=adagrad",
+                        "stoch_adadelta" : "--trainer stoch --trainer-params solver=adadelta",
+                        "stoch_adam" : "--trainer stoch --trainer-params solver=adam",
+                        "stoch_rmsprop" : "--trainer stoch --trainer-params solver=rmsprop",
 
-                        "batch_lbfgs" : "--trainer batch --trainer-params opt=lbfgs",
-                        "batch_cgd" : "--trainer batch --trainer-params opt=cgd",
-                        "batch_gd" : "--trainer batch --trainer-params opt=gd"
+                        "batch_lbfgs" : "--trainer batch --trainer-params solver=lbfgs",
+                        "batch_cgd" : "--trainer batch --trainer-params solver=cgd",
+                        "batch_gd" : "--trainer batch --trainer-params solver=gd"
                 }
 
         # configure trainer with the given name and parameters

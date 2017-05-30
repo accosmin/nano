@@ -1,6 +1,6 @@
 #pragma once
 
-#include "stoch_optimizer.h"
+#include "solver_stoch.h"
 
 namespace nano
 {
@@ -9,7 +9,7 @@ namespace nano
         ///     see "Minimizing Finite Sums with the Stochastic Average Gradient",
         ///     by Mark Schmidth, Nicolas Le Roux, Francis Bach
         ///
-        struct stoch_sg_t final : public stoch_optimizer_t
+        struct stoch_sg_t final : public stoch_solver_t
         {
                 explicit stoch_sg_t(const string_t& configuration = string_t());
 

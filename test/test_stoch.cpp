@@ -4,7 +4,7 @@
 #include "math/epsilon.h"
 #include "functions/test.h"
 #include "text/to_string.h"
-#include "stoch_optimizer.h"
+#include "solver_stoch.h"
 
 using namespace nano;
 
@@ -27,7 +27,7 @@ static void check_function(const function_t& function)
         }
 
         // optimizers to try
-        const auto ids = get_stoch_optimizers().ids();
+        const auto ids = get_stoch_solvers().ids();
         for (const auto id : ids)
         {
                 if (id == "ngd")
@@ -36,7 +36,7 @@ static void check_function(const function_t& function)
                         continue;
                 }
 
-                const auto optimizer = get_stoch_optimizers().get(id);
+                const auto optimizer = get_stoch_solvers().get(id);
 
                 size_t out_of_domain = 0;
 

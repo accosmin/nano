@@ -1,13 +1,13 @@
 #pragma once
 
-#include "batch_optimizer.h"
+#include "solver_batch.h"
 
 namespace nano
 {
         ///
         /// \brief gradient descent
         ///
-        struct batch_gd_t final : public batch_optimizer_t
+        struct batch_gd_t final : public batch_solver_t
         {
                 explicit batch_gd_t(const string_t& configuration = string_t());
 

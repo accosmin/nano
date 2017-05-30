@@ -37,7 +37,7 @@ This library is built around several key concepts mapped to C++ object interface
 
 ##### Numerical optimization
 
-The **batch optimizer** and the **stochastic optimizer** are gradient-based methods used for minimizing generic multi-dimensional functions. They are suitable for large-scale numerical optimization which are often the product of machine learning problems. Additionally the library provides a large set of unconstrained problems to benchmark the optimization algorithms using for example the following commands:
+The **batch solver** and the **stochastic solver** are gradient-based methods used for minimizing generic multi-dimensional functions. They are suitable for large-scale numerical optimization which are often the product of machine learning problems. Additionally the library provides a large set of unconstrained problems to benchmark the optimization algorithms using for example the following commands:
 ```
 ./apps/benchmark_batch --min-dims 10 --max-dims 100 --convex --epsilon 1e-6 --iterations 1000
 ./apps/benchmark_stoch --min-dims 1 --max-dims 4 --convex --epsilon 1e-4 --epoch-size 100 --epochs 1000
@@ -164,12 +164,12 @@ A **loss** function assigns a scalar score to the prediction of a model `y` by c
 A **trainer** optimizes the parameters of a given model to produce the correct outputs for a given task using the cumulated values of a given loss over the training samples as a numerical optimization criteria. All the available trainers tune all their required hyper parameters on a separate validation dataset.
 ```
 ./apps/info --trainer
-|---------|--------------------|------------------------------------------------------------------------------------------------------------------------|
-| trainer | description        | configuration                                                                                                          |
-|---------|--------------------|------------------------------------------------------------------------------------------------------------------------|
-| batch   | batch trainer      | opt=lbfgs[...],epochs=1024[4,4096],policy=stop_early[,all_epochs],eps=0.000001                                         |
-| stoch   | stochastic trainer | opt=sg[...],epochs=16[1,1024],policy=stop_early[,all_epochs],min_batch=32[32,1024],max_batch=256[32,4096],eps=0.000001 |
-|---------|--------------------|------------------------------------------------------------------------------------------------------------------------|
+|---------|--------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| trainer | description        | configuration                                                                                                                                                      |
+|---------|--------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| batch   | batch trainer      | solver=lbfgs[cgd,cgd-cd,cgd-dy,cgd-dycd,cgd-dyhs,cgd-fr,cgd-hs,cgd-ls,cgd-n,cgd-prp,gd,lbfgs],epochs=1024[4,4096],eps=0.000001,patience=32                         |
+| stoch   | stochastic trainer | solver=sg[adadelta,adagrad,adam,ag,agfr,aggr,asgd,ngd,rmsprop,sg,sgm,svrg],epochs=16[1,1024],min_batch=32[32,1024],max_batch=256[32,4096],eps=0.000001,patience=32 |
+|---------|--------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 ```
 
 

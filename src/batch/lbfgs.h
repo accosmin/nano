@@ -1,13 +1,13 @@
 #pragma once
 
-#include "batch_optimizer.h"
+#include "solver_batch.h"
 
 namespace nano
 {
         ///
         /// \brief limited memory bfgs (l-bfgs)
         ///
-        struct batch_lbfgs_t final : public batch_optimizer_t
+        struct batch_lbfgs_t final : public batch_solver_t
         {
                 explicit batch_lbfgs_t(const string_t& configuration = string_t());
 
