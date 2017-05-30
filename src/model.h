@@ -1,7 +1,7 @@
 #pragma once
 
 #include "task.h"
-#include "timing.h"
+#include "chrono/probe.h"
 
 namespace nano
 {
@@ -72,10 +72,9 @@ namespace nano
                 virtual const tensor3d_t& ginput(const vector_t& output) = 0;
 
                 ///
-                /// \brief retrieve timing information (in microseconds) regarding various components
-                ///      for the three basic operations (output, gradient wrt parameters, gradient wrt inputs)
+                /// \brief retrieve timing information for all components
                 ///
-                virtual timings_t timings() const = 0;
+                virtual probes_t probes() const = 0;
 
                 ///
                 /// \brief print a short description of the model

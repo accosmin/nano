@@ -3,6 +3,7 @@
 #include "arch.h"
 #include "tensor.h"
 #include "factory.h"
+#include "chrono/probe.h"
 
 namespace nano
 {
@@ -30,7 +31,7 @@ namespace nano
                 ///
                 /// \brief configure to process new tensors of the given size
                 ///
-                virtual void configure(const tensor3d_dims_t& idims) = 0;
+                virtual void configure(const tensor3d_dims_t& idims, const string_t& name) = 0;
 
                 ///
                 /// \brief compute the output: (input, parameters, output)
@@ -64,8 +65,39 @@ namespace nano
                 virtual tensor_size_t psize() const = 0;
 
                 ///
-                /// \brief returns the (approximated) FLOPs necessary to compute the output
+                /// \brief returns the timing probes for the three basic operations (output & its gradients)
                 ///
-                virtual tensor_size_t flops() const = 0;
+                virtual const probe_t& probe_output() const = 0;
+                virtual const probe_t& probe_ginput() const = 0;
+                virtual const probe_t& probe_gparam() const = 0;
+
+                ///
+                /// \brief convenience overloads for the basic operations (output & its gradients)
+                ///
+                void output(const scalar_t* idata, const scalar_t* param, scalar_t* odata);
+                void ginput(scalar_t* idata, const scalar_t* param, const scalar_t* odata);
+                void gparam(const scalar_t* idata, scalar_t* param, const scalar_t* odata);
+
+                ///
+                /// \brief returns the input/output size
+                ///
+                auto isize() const { return nano::size(idims()); }
+                auto osize() const { return nano::size(odims()); }
+                auto xsize() const { return isize() + osize(); }
         };
+
+        inline void layer_t::output(const scalar_t* idata, const scalar_t* param, scalar_t* odata)
+        {
+                output(map_tensor(idata, idims()), map_tensor(param, psize()), map_tensor(odata, odims()));
+        }
+
+        inline void layer_t::ginput(scalar_t* idata, const scalar_t* param, const scalar_t* odata)
+        {
+                ginput(map_tensor(idata, idims()), map_tensor(param, psize()), map_tensor(odata, odims()));
+        }
+
+        inline void layer_t::gparam(const scalar_t* idata, scalar_t* param, const scalar_t* odata)
+        {
+                gparam(map_tensor(idata, idims()), map_tensor(param, psize()), map_tensor(odata, odims()));
+        }
 }

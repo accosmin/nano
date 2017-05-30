@@ -16,11 +16,15 @@ namespace nano
                 return std::make_unique<affine_layer_t>(*this);
         }
 
-        void affine_layer_t::configure(const tensor3d_dims_t& idims)
+        void affine_layer_t::configure(const tensor3d_dims_t& idims, const string_t& name)
         {
                 m_idims = idims;
                 m_odims = {nano::clamp(nano::from_params<tensor_size_t>(config(), "dims"), 1, 4096), 1, 1};
-                m_psize = nano::size(m_odims) * (nano::size(m_idims) + 1);
+                m_psize = isize() * osize() + osize();
+
+                m_probe_output = probe_t{name, name + "(output)", isize() * osize() + osize()};
+                m_probe_ginput = probe_t{name, name + "(ginput)", isize() * osize()};
+                m_probe_gparam = probe_t{name, name + "(gparam)", isize() * osize()};
         }
 
         tensor_size_t affine_layer_t::fanin() const
@@ -34,7 +38,10 @@ namespace nano
                 assert(param.size() == psize());
                 assert(odata.dims() == odims());
 
-                odata.vector() = wdata(param) * idata.vector() + bdata(param);
+                m_probe_output.measure([&] ()
+                {
+                        odata.vector() = wdata(param) * idata.vector() + bdata(param);
+                });
         }
 
         void affine_layer_t::ginput(tensor3d_map_t idata, tensor1d_const_map_t param, tensor3d_const_map_t odata)
@@ -43,7 +50,10 @@ namespace nano
                 assert(param.size() == psize());
                 assert(odata.dims() == odims());
 
-                idata.vector() = wdata(param).transpose() * odata.vector();
+                m_probe_ginput.measure([&] ()
+                {
+                        idata.vector() = wdata(param).transpose() * odata.vector();
+                });
         }
 
         void affine_layer_t::gparam(tensor3d_const_map_t idata, tensor1d_map_t param, tensor3d_const_map_t odata)
@@ -52,7 +62,10 @@ namespace nano
                 assert(param.size() == psize());
                 assert(odata.dims() == odims());
 
-                bdata(param) = odata.vector();
-                wdata(param) = odata.vector() * idata.vector().transpose();
+                m_probe_gparam.measure([&] ()
+                {
+                        bdata(param) = odata.vector();
+                        wdata(param) = odata.vector() * idata.vector().transpose();
+                });
         }
 }

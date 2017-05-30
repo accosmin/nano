@@ -15,7 +15,7 @@ namespace nano
                 explicit affine_layer_t(const string_t& parameters = string_t());
 
                 virtual rlayer_t clone() const override;
-                virtual void configure(const tensor3d_dims_t&) override;
+                virtual void configure(const tensor3d_dims_t&, const string_t& name) override;
                 virtual void output(tensor3d_const_map_t, tensor1d_const_map_t, tensor3d_map_t) override;
                 virtual void ginput(tensor3d_map_t, tensor1d_const_map_t, tensor3d_const_map_t) override;
                 virtual void gparam(tensor3d_const_map_t, tensor1d_map_t, tensor3d_const_map_t) override;
@@ -24,12 +24,12 @@ namespace nano
                 virtual tensor3d_dims_t odims() const override { return m_odims; }
                 virtual tensor_size_t fanin() const override;
                 virtual tensor_size_t psize() const override { return m_psize; }
-                virtual tensor_size_t flops() const override { return 2 * psize(); }
+                virtual const probe_t& probe_output() const override { return m_probe_output; }
+                virtual const probe_t& probe_ginput() const override { return m_probe_ginput; }
+                virtual const probe_t& probe_gparam() const override { return m_probe_gparam; }
 
         private:
 
-                tensor_size_t isize() const { return nano::size(m_idims); }
-                tensor_size_t osize() const { return nano::size(m_odims); }
                 tensor_size_t wsize() const { return osize() * isize(); }
 
                 template <typename tmap>
@@ -41,5 +41,8 @@ namespace nano
                 tensor3d_dims_t m_idims;
                 tensor3d_dims_t m_odims;
                 tensor_size_t   m_psize;
+                probe_t         m_probe_output;
+                probe_t         m_probe_ginput;
+                probe_t         m_probe_gparam;
         };
 }

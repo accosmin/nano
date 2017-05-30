@@ -10,6 +10,21 @@
 
 namespace nano
 {
+        forward_network_t::forward_network_t(const forward_network_t& other) :
+                m_idims(other.m_idims),
+                m_odims(other.m_odims),
+                m_idata(other.m_idata),
+                m_odata(other.m_odata),
+                m_xdata(other.m_xdata),
+                m_pdata(other.m_pdata),
+                m_gdata(other.m_gdata)
+        {
+                for (const auto& layer : other.m_layers)
+                {
+                        m_layers.emplace_back(layer->clone());
+                }
+        }
+
         rmodel_t forward_network_t::clone() const
         {
                 return std::make_unique<forward_network_t>(*this);
@@ -60,9 +75,9 @@ namespace nano
                 for (size_t l = 0; l < n_layers(); ++ l)
                 {
                         auto& layer = m_layers[l];
-                        layer.output(pxdata, ppdata, pxdata + layer.isize());
-                        pxdata += layer.isize();
-                        ppdata += layer.psize();
+                        layer->output(pxdata, ppdata, pxdata + layer->isize());
+                        pxdata += layer->isize();
+                        ppdata += layer->psize();
                 }
                 m_odata = map_tensor(pxdata, odims());
                 pxdata += nano::size(odims());
@@ -86,9 +101,9 @@ namespace nano
                 for (size_t l = n_layers(); l > 0; -- l)
                 {
                         auto& layer = m_layers[l - 1];
-                        layer.ginput(pxdata - layer.xsize(), ppdata - layer.psize(), pxdata - layer.osize());
-                        pxdata -= layer.osize();
-                        ppdata -= layer.psize();
+                        layer->ginput(pxdata - layer->xsize(), ppdata - layer->psize(), pxdata - layer->osize());
+                        pxdata -= layer->osize();
+                        ppdata -= layer->psize();
                 }
                 pxdata -= nano::size(idims());
                 m_idata = map_tensor(pxdata, idims());
@@ -113,14 +128,14 @@ namespace nano
                 for (size_t l = n_layers(); l > 0; -- l)
                 {
                         auto& layer = m_layers[l - 1];
-                        layer.gparam(pxdata - layer.xsize(), pgdata - layer.psize(), pxdata - layer.osize());
+                        layer->gparam(pxdata - layer->xsize(), pgdata - layer->psize(), pxdata - layer->osize());
                         if (l > 1)
                         {
-                                layer.ginput(pxdata - layer.xsize(), ppdata - layer.psize(), pxdata - layer.osize());
+                                layer->ginput(pxdata - layer->xsize(), ppdata - layer->psize(), pxdata - layer->osize());
                         }
-                        pxdata -= layer.osize();
-                        ppdata -= layer.psize();
-                        pgdata -= layer.psize();
+                        pxdata -= layer->osize();
+                        ppdata -= layer->psize();
+                        pgdata -= layer->psize();
                 }
                 pxdata -= nano::size(idims());
 
@@ -137,12 +152,12 @@ namespace nano
 
                 for (const auto& layer : m_layers)
                 {
-                        const auto div = static_cast<scalar_t>(layer.m_layer->fanin());
+                        const auto div = static_cast<scalar_t>(layer->fanin());
                         const auto min = -std::sqrt(6 / (1 + div));
                         const auto max = +std::sqrt(6 / (1 + div));
 
-                        nano::set_random(random_t<scalar_t>(min, max), map_vector(ppdata, layer.psize()));
-                        ppdata += layer.psize();
+                        nano::set_random(random_t<scalar_t>(min, max), map_vector(ppdata, layer->psize()));
+                        ppdata += layer->psize();
                 }
 
                 assert(ppdata == m_pdata.data() + m_pdata.size());
@@ -182,13 +197,13 @@ namespace nano
                                 align(layer_id, 10, alignment::left, '.') + "]";
 
                         auto layer = nano::get_layers().get(layer_id, layer_params);
-                        layer->configure(xdims);
+                        layer->configure(xdims, layer_name);
 
                         xsize += nano::size(layer->odims());
                         psize += layer->psize();
                         xdims = layer->odims();
 
-                        m_layers.emplace_back(layer_name, std::move(layer));
+                        m_layers.emplace_back(std::move(layer));
                 }
 
                 // check output size to match the target
@@ -230,27 +245,31 @@ namespace nano
                         const auto& layer = m_layers[l];
 
                         // collect & print statistics for its parameters / layer
-                        const auto param = map_vector(ppdata, layer.psize());
-                        ppdata += layer.psize();
+                        const auto param = map_vector(ppdata, layer->psize());
+                        ppdata += layer->psize();
 
-                        if (layer.psize())
+                        const auto flops_output = idiv(layer->probe_output().flops(), 1024);
+                        const auto flops_ginput = idiv(layer->probe_ginput().flops(), 1024);
+                        const auto flops_gparam = idiv(layer->probe_gparam().flops(), 1024);
+
+                        if (layer->psize())
                         {
                                 const auto min = param.minCoeff();
                                 const auto max = param.maxCoeff();
 
                                 log_info()
-                                        << "forward network " << layer.m_name
-                                        << ": in(" << layer.idims() << ") -> " << "out(" << layer.odims() << ")"
-                                        << ", kFLOPs = " << nano::idiv(layer.flops(), 1024)
-                                        << ", params = " << layer.psize()
+                                        << "forward network " << layer->probe_output().basename()
+                                        << ": in(" << layer->idims() << ") -> " << "out(" << layer->odims() << ")"
+                                        << ", kFLOPs = " << flops_output << "," << flops_ginput << "," << flops_gparam
+                                        << ", params = " << layer->psize()
                                         << ", range = [" << min << ", " << max << "].";
                         }
                         else
                         {
                                 log_info()
-                                        << "forward network " << layer.m_name
-                                        << ": in(" << layer.idims() << ") -> " << "out(" << layer.odims() << ")"
-                                        << ", kFLOPs = " << nano::idiv(layer.flops(), 1024) << ".";
+                                        << "forward network " << layer->probe_output().basename()
+                                        << ": in(" << layer->idims() << ") -> " << "out(" << layer->odims() << ")"
+                                        << ", kFLOPs = " << flops_output << "," << flops_ginput << "," << flops_gparam << ".";
                         }
                 }
                 log_info() << "forward network: parameters = " << psize() << ".";
@@ -261,16 +280,16 @@ namespace nano
                 return m_gdata.size();
         }
 
-        timings_t forward_network_t::timings() const
+        probes_t forward_network_t::probes() const
         {
-                timings_t ret;
+                probes_t probes;
                 for (const auto& layer : m_layers)
                 {
-                        if (layer.m_output_timings.count() > 1) ret[layer.m_name + " (output)"] = layer.m_output_timings;
-                        if (layer.m_ginput_timings.count() > 1) ret[layer.m_name + " (ginput)"] = layer.m_ginput_timings;
-                        if (layer.m_gparam_timings.count() > 1) ret[layer.m_name + " (gparam)"] = layer.m_gparam_timings;
+                        if (layer->probe_output()) probes.push_back(layer->probe_output());
+                        if (layer->probe_ginput()) probes.push_back(layer->probe_ginput());
+                        if (layer->probe_gparam()) probes.push_back(layer->probe_gparam());
                 }
 
-                return ret;
+                return probes;
         }
 }

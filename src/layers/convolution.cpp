@@ -14,7 +14,7 @@ namespace nano
                 return std::make_unique<convolution_layer_t>(*this);
         }
 
-        void convolution_layer_t::configure(const tensor3d_dims_t& idims)
+        void convolution_layer_t::configure(const tensor3d_dims_t& idims, const string_t& name)
         {
                 const auto imaps = std::get<0>(idims);
                 const auto irows = std::get<1>(idims);
@@ -42,6 +42,10 @@ namespace nano
                 {
                         m_dense_op = conv3d_dense_t{m_params};
                 }
+
+                m_probe_output = probe_t{name, name + "(output)", m_params.flops_output()};
+                m_probe_ginput = probe_t{name, name + "(ginput)", m_params.flops_ginput()};
+                m_probe_gparam = probe_t{name, name + "(gparam)", m_params.flops_gparam()};
         }
 
         tensor_size_t convolution_layer_t::fanin() const
@@ -55,14 +59,17 @@ namespace nano
                 assert(param.size() == psize());
                 assert(odata.dims() == odims());
 
-                if (m_sparse_op.params() == m_params)
+                m_probe_output.measure([&] ()
                 {
-                        m_sparse_op.output(idata, kdata(param), bdata(param), odata);
-                }
-                else
-                {
-                        m_dense_op.output(idata, kdata(param), bdata(param), odata);
-                }
+                        if (m_sparse_op.params() == m_params)
+                        {
+                                m_sparse_op.output(idata, kdata(param), bdata(param), odata);
+                        }
+                        else
+                        {
+                                m_dense_op.output(idata, kdata(param), bdata(param), odata);
+                        }
+                });
         }
 
         void convolution_layer_t::ginput(tensor3d_map_t idata, tensor1d_const_map_t param, tensor3d_const_map_t odata)
@@ -71,14 +78,17 @@ namespace nano
                 assert(param.size() == psize());
                 assert(odata.dims() == odims());
 
-                if (m_sparse_op.params() == m_params)
+                m_probe_ginput.measure([&] ()
                 {
-                        m_sparse_op.ginput(idata, kdata(param), bdata(param), odata);
-                }
-                else
-                {
-                        m_dense_op.ginput(idata, kdata(param), bdata(param), odata);
-                }
+                        if (m_sparse_op.params() == m_params)
+                        {
+                                m_sparse_op.ginput(idata, kdata(param), bdata(param), odata);
+                        }
+                        else
+                        {
+                                m_dense_op.ginput(idata, kdata(param), bdata(param), odata);
+                        }
+                });
         }
 
         void convolution_layer_t::gparam(tensor3d_const_map_t idata, tensor1d_map_t param, tensor3d_const_map_t odata)
@@ -87,13 +97,16 @@ namespace nano
                 assert(param.size() == psize());
                 assert(odata.dims() == odims());
 
-                if (m_sparse_op.params() == m_params)
+                m_probe_gparam.measure([&] ()
                 {
-                        m_sparse_op.gparam(idata, kdata(param), bdata(param), odata);
-                }
-                else
-                {
-                        m_dense_op.gparam(idata, kdata(param), bdata(param), odata);
-                }
+                        if (m_sparse_op.params() == m_params)
+                        {
+                                m_sparse_op.gparam(idata, kdata(param), bdata(param), odata);
+                        }
+                        else
+                        {
+                                m_dense_op.gparam(idata, kdata(param), bdata(param), odata);
+                        }
+                });
         }
 }

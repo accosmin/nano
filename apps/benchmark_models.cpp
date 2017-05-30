@@ -144,8 +144,8 @@ int main(int argc, const char *argv[])
 
                 const auto fold = fold_t{0, protocol::train};
 
-                std::vector<timings_t> ftimings(cmd_max_nthreads + 1);
-                std::vector<timings_t> btimings(cmd_max_nthreads + 1);
+                std::vector<probes_t> fprobes(cmd_max_nthreads + 1);
+                std::vector<probes_t> bprobes(cmd_max_nthreads + 1);
 
                 // process the samples
                 for (size_t nthreads = cmd_min_nthreads; nthreads <= cmd_max_nthreads; ++ nthreads)
@@ -166,7 +166,7 @@ int main(int argc, const char *argv[])
 
                                 frow << idiv(static_cast<size_t>(duration.count()), acc.vstats().count());
 
-                                ftimings[nthreads] = acc.timings();
+                                fprobes[nthreads] = acc.probes();
                         }
 
                         if (cmd_backward)
@@ -182,36 +182,39 @@ int main(int argc, const char *argv[])
 
                                 brow << idiv(static_cast<size_t>(duration.count()), acc.vstats().count());
 
-                                btimings[nthreads] = acc.timings();
+                                bprobes[nthreads] = acc.probes();
                         }
                 }
 
                 // detailed per-component (e.g. per-layer) timing information
-                const auto print_timings = [&] (table_t& table, const string_t& basename,
-                        const std::vector<timings_t>& timings)
+                const auto print_probes = [&] (table_t& table, const string_t& basename, const std::vector<probes_t>& probes)
                 {
-                        for (const auto& timing0 : timings[cmd_min_nthreads])
+                        for (const auto& probe0 : probes[cmd_min_nthreads])
                         {
                                 auto& row = table.append();
-                                row << (basename + timing0.first);
+                                row << (basename + probe0.fullname());
 
-                                for (size_t nthreads = cmd_min_nthreads; nthreads <= cmd_max_nthreads; ++ nthreads)
+                                for (const auto& probesx : probes)
                                 {
-                                        const auto& timingT = timings[nthreads];
-                                        assert(timingT.find(timing0.first) != timingT.end());
-                                        row << timingT.find(timing0.first)->second.avg();
+                                        for (const auto& probex : probesx)
+                                        {
+                                                if (probe0.fullname() == probex.fullname())
+                                                {
+                                                        row << probe0.timings().avg();
+                                                }
+                                        }
                                 }
                         }
                 };
 
                 if (cmd_forward && cmd_detailed)
                 {
-                        print_timings(ftable, ">", ftimings);
+                        print_probes(ftable, ">", fprobes);
                 }
 
                 if (cmd_backward && cmd_detailed)
                 {
-                        print_timings(btable, ">", btimings);
+                        print_probes(btable, ">", bprobes);
                 }
         }
 

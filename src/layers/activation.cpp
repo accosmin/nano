@@ -10,10 +10,14 @@ namespace nano
         {
         }
 
-        void activation_layer_t::configure(const tensor3d_dims_t& idims)
+        void activation_layer_t::configure(const tensor3d_dims_t& idims, const string_t& name)
         {
                 m_idims = idims;
                 m_odims = idims;
+
+                m_probe_output = probe_t{name, name + "(output)", 10 * isize()};
+                m_probe_ginput = probe_t{name, name + "(ginput)", 10 * isize()};
+                m_probe_gparam = probe_t{name, name + "(gparam)", 0};
         }
 
         void activation_layer_t::output(tensor3d_const_map_t idata, tensor1d_const_map_t param, tensor3d_map_t odata)
@@ -23,7 +27,10 @@ namespace nano
                 assert(odata.dims() == odims());
                 NANO_UNUSED1_RELEASE(param);
 
-                aoutput(idata.array(), odata.array());
+                m_probe_output.measure([&] ()
+                {
+                        aoutput(idata.array(), odata.array());
+                });
         }
 
         void activation_layer_t::ginput(tensor3d_map_t idata, tensor1d_const_map_t param, tensor3d_const_map_t odata)
@@ -33,7 +40,10 @@ namespace nano
                 assert(odata.dims() == odims());
                 NANO_UNUSED1_RELEASE(param);
 
-                aginput(idata.array(), odata.array());
+                m_probe_ginput.measure([&] ()
+                {
+                        aginput(idata.array(), odata.array());
+                });
         }
 
         void activation_layer_t::gparam(tensor3d_const_map_t idata, tensor1d_map_t param, tensor3d_const_map_t odata)

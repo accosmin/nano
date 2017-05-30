@@ -12,8 +12,11 @@ namespace nano
         {
                 using timings_t = stats_t<int64_t>;
 
-                probe_t(const string_t& name = string_t(), const int64_t flops = 1) :
-                        m_name(name),
+                probe_t(const string_t& basename = string_t(),
+                        const string_t& fullname = string_t(),
+                        const int64_t flops = 1) :
+                        m_basename(basename),
+                        m_fullname(fullname),
                         m_flops(flops)
                 {
                 }
@@ -26,13 +29,19 @@ namespace nano
                         m_timings(timer.microseconds().count());
                 }
 
-                const auto& name() const { return m_name; }
-                const auto gflops() const { return nano::gflops(m_flops, timings.min()); }
+                operator bool() const { return m_timings; }
                 const auto& timings() const { return m_timings; }
 
+                const auto& basename() const { return m_basename; }
+                const auto& fullname() const { return m_fullname; }
+
+                auto flops() const { return m_flops; }
+                auto gflops() const { return nano::gflops(flops(), microseconds_t(timings().min())); }
+
                 // attributes
-                const string_t  m_name;                 ///< name
-                const int64_t   m_flops;                ///< #floating point operations per call
+                string_t        m_basename;             ///<
+                string_t        m_fullname;             ///<
+                int64_t         m_flops;                ///< number of floating point operations per call
                 timings_t       m_timings;              ///< time measurements
         };
 

@@ -1,7 +1,7 @@
 #pragma once
 
+#include "layer.h"
 #include "model.h"
-#include "layer_info.h"
 
 namespace nano
 {
@@ -16,7 +16,7 @@ namespace nano
                 ///
                 /// \brief enable copying
                 ///
-                forward_network_t(const forward_network_t&) = default;
+                forward_network_t(const forward_network_t&);
 
                 ///
                 /// \brief enable moving
@@ -33,7 +33,7 @@ namespace nano
                 virtual const tensor3d_t& ginput(const vector_t& output) override;
 
                 virtual void describe() const override;
-                virtual timings_t timings() const override;
+                virtual probes_t probes() const override;
 
                 virtual bool save(const string_t& path) const override;
                 virtual bool load(const string_t& path) override;
@@ -52,10 +52,12 @@ namespace nano
 
         private:
 
+                using rlayers_t = std::vector<rlayer_t>;
+
                 // attributes
                 tensor3d_dims_t m_idims;        ///<
                 tensor3d_dims_t m_odims;        ///<
-                layer_infos_t   m_layers;       ///< feed-forward layers
+                rlayers_t       m_layers;       ///< feed-forward layers
                 tensor3d_t      m_idata;        ///< input tensor
                 tensor3d_t      m_odata;        ///< output tensor
                 vector_t        m_xdata;        ///< buffer: concatenated input-output tensors for all layers

@@ -169,8 +169,8 @@ namespace nano
                 return origin().m_model->psize();
         }
 
-        timings_t accumulator_t::timings() const
+        probes_t accumulator_t::probes() const
         {
-                return origin().m_model->timings();
+                return origin().m_model->probes();
         }
 }
