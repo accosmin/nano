@@ -49,13 +49,13 @@ int main(int argc, const char *argv[])
 
         // prepare table
         table_t table;
-        table.header() << "" << "" << "";
+        table.header() << "" << "" << "" << "";
         for (const auto& id : get_iterators().ids())
         {
                 table.header() << ("it(" + id + ")");
         }
         {
-                auto& row = table.append() << "#samples" << "isize" << "init[ms]";
+                auto& row = table.append() << "#samples" << "isize" << "init[ms]" << "shuffle[us]";
                 for (const auto& id : get_iterators().ids())
                 {
                         NANO_UNUSED1(id);
@@ -74,13 +74,8 @@ int main(int argc, const char *argv[])
 
                 auto& row = table.append();
                 row << task_size << task->idims();
-                {
-                        const auto duration = measure<milliseconds_t>([&] ()
-                        {
-                                task->load();
-                        }, 1);
-                        row << duration.count();
-                }
+                row << measure<milliseconds_t>([&] () { task->load(); }, 1).count();
+                row << measure<milliseconds_t>([&] () { task->shuffle({0, protocol::train}); }, 16).count();
 
                 // vary the iterator
                 for (const auto& id : get_iterators().ids())
