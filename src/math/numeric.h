@@ -42,6 +42,15 @@ namespace nano
         }
 
         ///
+        /// \brief integer rounding
+        ///
+        template <typename tinteger, typename tinteger2>
+        tinteger iround(const tinteger value, const tinteger2 modulo)
+        {
+                return idiv(value, modulo) * modulo;
+        }
+
+        ///
         /// \brief absolute value
         ///
         template <typename tscalar>

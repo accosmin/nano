@@ -10,7 +10,7 @@ namespace nano
         struct conv3d_params_t
         {
                 conv3d_params_t(
-                        const tensor_size_t imaps = 1, const tensor_size_t irows = 1, const tensor_size_t icols = 1,
+                        const tensor_size_t imaps = 0, const tensor_size_t irows = 0, const tensor_size_t icols = 0,
                         const tensor_size_t omaps = 1, const tensor_size_t kconn = 1,
                         const tensor_size_t krows = 1, const tensor_size_t kcols = 1,
                         const tensor_size_t kdrow = 1, const tensor_size_t kdcol = 1) :
