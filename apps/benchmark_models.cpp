@@ -14,10 +14,37 @@
 #include "text/table_row_mark.h"
 #include <iostream>
 
+using namespace nano;
+
+template <typename tunits>
+auto measure_accumulator(accumulator_t& acc, const task_t& task, const fold_t& fold, const size_t trials = 1)
+{
+        const auto duration = measure<tunits>([&] () { acc.update(task, fold); }, trials);
+        return duration.count();
+}
+
+void print_probes(table_t& table, const string_t& basename, const std::vector<probes_t>& probes, const probes_t& probes0)
+{
+        for (const auto& probe0 : probes0)
+        {
+                auto& row = table.append();
+                row << (basename + probe0.fullname());
+
+                for (const auto& probesx : probes)
+                {
+                        for (const auto& probex : probesx)
+                        {
+                                if (probe0.fullname() == probex.fullname())
+                                {
+                                        row << probe0.timings().avg();
+                                }
+                        }
+                }
+        }
+}
+
 int main(int argc, const char *argv[])
 {
-        using namespace nano;
-
         // parse the command line
         cmdline_t cmdline("benchmark models");
         cmdline.add("s", "samples",     "number of samples to use [100, 10000]", "1000");
@@ -150,71 +177,46 @@ int main(int argc, const char *argv[])
                 // process the samples
                 for (size_t nthreads = cmd_min_nthreads; nthreads <= cmd_max_nthreads; ++ nthreads)
                 {
-                        accumulator_t acc(*model, *loss);
-                        acc.threads(nthreads);
-
                         if (cmd_forward)
                         {
-                                const auto duration = measure<microseconds_t>([&] ()
-                                {
-                                        acc.mode(accumulator_t::type::value);
-                                        acc.update(*task, fold);
-                                }, 1);
+                                accumulator_t acc(*model, *loss);
+                                acc.threads(nthreads);
+                                acc.mode(accumulator_t::type::value);
 
-                                log_info() << "<<< processed [" << acc.vstats().count()
-                                           << "] forward samples in " << duration.count() << " us.";
+                                const auto usecs = measure_accumulator<microseconds_t>(acc, *task, fold);
+                                const auto count = acc.vstats().count();
 
-                                frow << idiv(static_cast<size_t>(duration.count()), acc.vstats().count());
+                                log_info() << "<<< processed [" << count << "] forward samples in " << usecs << " us.";
 
+                                frow << idiv(usecs, count);
                                 fprobes[nthreads] = acc.probes();
                         }
 
                         if (cmd_backward)
                         {
-                                const auto duration = measure<microseconds_t>([&] ()
-                                {
-                                        acc.mode(accumulator_t::type::vgrad);
-                                        acc.update(*task, fold);
-                                }, 1);
+                                accumulator_t acc(*model, *loss);
+                                acc.threads(nthreads);
+                                acc.mode(accumulator_t::type::vgrad);
 
-                                log_info() << "<<< processed [" << acc.vstats().count()
-                                           << "] backward samples in " << duration.count() << " us.";
+                                const auto usecs = measure_accumulator<microseconds_t>(acc, *task, fold);
+                                const auto count = acc.vstats().count();
 
-                                brow << idiv(static_cast<size_t>(duration.count()), acc.vstats().count());
+                                log_info() << "<<< processed [" << count << "] backward samples in " << usecs << " us.";
 
+                                brow << idiv(usecs, count);
                                 bprobes[nthreads] = acc.probes();
                         }
                 }
 
                 // detailed per-component (e.g. per-layer) timing information
-                const auto print_probes = [&] (table_t& table, const string_t& basename, const std::vector<probes_t>& probes)
-                {
-                        for (const auto& probe0 : probes[cmd_min_nthreads])
-                        {
-                                auto& row = table.append();
-                                row << (basename + probe0.fullname());
-
-                                for (const auto& probesx : probes)
-                                {
-                                        for (const auto& probex : probesx)
-                                        {
-                                                if (probe0.fullname() == probex.fullname())
-                                                {
-                                                        row << probe0.timings().avg();
-                                                }
-                                        }
-                                }
-                        }
-                };
-
                 if (cmd_forward && cmd_detailed)
                 {
-                        print_probes(ftable, ">", fprobes);
+                        print_probes(ftable, ">", fprobes, fprobes[cmd_min_nthreads]);
                 }
 
                 if (cmd_backward && cmd_detailed)
                 {
-                        print_probes(btable, ">", bprobes);
+                        print_probes(btable, ">", bprobes, bprobes[cmd_min_nthreads]);
                 }
         }
 
