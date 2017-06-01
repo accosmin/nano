@@ -65,55 +65,55 @@ int main(int argc, const char *argv[])
 
         // construct models
         const string_t mlp0;
-        const string_t mlp1 = mlp0 + make_affine_layer(128, activation);
+        const string_t mlp1 = mlp0 + make_affine_layer(256, activation);
         const string_t mlp2 = mlp1 + make_affine_layer(256, activation);
-        const string_t mlp3 = mlp2 + make_affine_layer(128, activation);
+        const string_t mlp3 = mlp2 + make_affine_layer(256, activation);
         const string_t mlp4 = mlp3 + make_affine_layer(256, activation);
-        const string_t mlp5 = mlp4 + make_affine_layer(128, activation);
+        const string_t mlp5 = mlp4 + make_affine_layer(256, activation);
         const string_t mlp6 = mlp5 + make_affine_layer(256, activation);
         const string_t mlp7 = mlp6 + make_affine_layer(128, activation);
-        const string_t mlp8 = mlp7 + make_affine_layer(256, activation);
+        const string_t mlp8 = mlp7 + make_affine_layer(128, activation);
         const string_t mlp9 = mlp8 + make_affine_layer(128, activation);
 
         const string_t convnet0;
-        const string_t convnet1 = convnet0 + make_conv3d_layer(32, 7, 7, 1, activation);
-        const string_t convnet2 = convnet1 + make_conv3d_layer(32, 7, 7, conn, activation);
-        const string_t convnet3 = convnet2 + make_conv3d_layer(32, 5, 5, conn, activation);
-        const string_t convnet4 = convnet3 + make_conv3d_layer(32, 5, 5, conn, activation);
-        const string_t convnet5 = convnet4 + make_conv3d_layer(32, 3, 3, conn, activation);
-        const string_t convnet6 = convnet5 + make_conv3d_layer(32, 3, 3, conn, activation);
-        const string_t convnet7 = convnet6 + make_conv3d_layer(32, 3, 3, conn, activation);
-        const string_t convnet8 = convnet6 + make_conv3d_layer(32, 1, 1, conn, activation);
-        const string_t convnet9 = convnet6 + make_conv3d_layer(32, 1, 1, conn, activation);
+        const string_t convnet1 = convnet0 + make_conv3d_layer(32,  7, 7, 1, activation);
+        const string_t convnet2 = convnet1 + make_conv3d_layer(32,  7, 7, conn, activation);
+        const string_t convnet3 = convnet2 + make_conv3d_layer(64,  5, 5, conn, activation);
+        const string_t convnet4 = convnet3 + make_conv3d_layer(64,  5, 5, conn, activation);
+        const string_t convnet5 = convnet4 + make_conv3d_layer(128, 3, 3, conn, activation);
+        const string_t convnet6 = convnet5 + make_conv3d_layer(128, 3, 3, conn, activation);
+        const string_t convnet7 = convnet6 + make_conv3d_layer(128, 3, 3, conn, activation);
+        const string_t convnet8 = convnet7 + make_conv3d_layer(256, 1, 1, conn, activation);
+        const string_t convnet9 = convnet8 + make_conv3d_layer(256, 1, 1, conn, activation);
 
         const string_t outlayer = make_output_layer(task->odims());
 
         std::vector<std::pair<string_t, string_t>> networks;
-        #define DEFINE(config) networks.emplace_back(config + outlayer, NANO_STRINGIFY(config))
         if (cmd_mlps)
         {
-                DEFINE(mlp0);
-                DEFINE(mlp1);
-                DEFINE(mlp2);
-                DEFINE(mlp3);
-                DEFINE(mlp4);
-                DEFINE(mlp5);
-                DEFINE(mlp6);
-                DEFINE(mlp7);
+                networks.emplace_back(mlp0 + outlayer, "mlp0");
+                networks.emplace_back(mlp1 + outlayer, "mlp1");
+                networks.emplace_back(mlp2 + outlayer, "mlp2");
+                networks.emplace_back(mlp3 + outlayer, "mlp3");
+                networks.emplace_back(mlp4 + outlayer, "mlp4");
+                networks.emplace_back(mlp5 + outlayer, "mlp5");
+                networks.emplace_back(mlp6 + outlayer, "mlp6");
+                networks.emplace_back(mlp7 + outlayer, "mlp7");
+                networks.emplace_back(mlp8 + outlayer, "mlp8");
+                networks.emplace_back(mlp9 + outlayer, "mlp9");
         }
         if (cmd_convnets)
         {
-                DEFINE(convnet1);
-                DEFINE(convnet2);
-                DEFINE(convnet3);
-                DEFINE(convnet4);
-                DEFINE(convnet5);
-                DEFINE(convnet6);
-                DEFINE(convnet7);
-                DEFINE(convnet8);
-                DEFINE(convnet9);
+                networks.emplace_back(convnet1 + outlayer, "convnet1");
+                networks.emplace_back(convnet2 + outlayer, "convnet2");
+                networks.emplace_back(convnet3 + outlayer, "convnet3");
+                networks.emplace_back(convnet4 + outlayer, "convnet4");
+                networks.emplace_back(convnet5 + outlayer, "convnet5");
+                networks.emplace_back(convnet6 + outlayer, "convnet6");
+                networks.emplace_back(convnet7 + outlayer, "convnet7");
+                networks.emplace_back(convnet8 + outlayer, "convnet8");
+                networks.emplace_back(convnet9 + outlayer, "convnet9");
         }
-        #undef DEFINE
 
         const auto loss = get_losses().get("s-logistic");
 
