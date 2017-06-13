@@ -1,4 +1,3 @@
-#include "class.h"
 #include "logger.h"
 #include "task_stl10.h"
 #include "text/algorithm.h"

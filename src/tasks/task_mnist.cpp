@@ -1,4 +1,3 @@
-#include "class.h"
 #include "logger.h"
 #include "task_mnist.h"
 #include "io/archive.h"

@@ -1,4 +1,3 @@
-#include "class.h"
 #include "logger.h"
 #include "io/mat5.h"
 #include "task_svhn.h"

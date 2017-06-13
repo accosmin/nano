@@ -1,9 +1,8 @@
 #pragma once
 
 #include "arch.h"
-#include "tensor.h"
+#include "cortex.h"
 #include "factory.h"
-#include "protocol.h"
 
 namespace nano
 {
@@ -61,19 +60,9 @@ namespace nano
                 virtual void shuffle(const fold_t&) const = 0;
 
                 ///
-                /// \brief retrieve the 3D input tensor for a given sample
+                /// \brief retrieve the given sample
                 ///
-                virtual tensor3d_t input(const fold_t&, const size_t index) const = 0;
-
-                ///
-                /// \brief retrieve the output target for a given sample
-                ///
-                virtual tensor3d_t target(const fold_t&, const size_t index) const = 0;
-
-                ///
-                /// \brief retrieve the associated label (if any) for a given sample
-                ///
-                virtual string_t label(const fold_t&, const size_t index) const = 0;
+                virtual sample_t get(const fold_t&, const size_t index) const = 0;
 
                 ///
                 /// \brief retrieve the hash for a given sample

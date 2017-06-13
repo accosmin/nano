@@ -1,4 +1,3 @@
-#include "class.h"
 #include "charset.h"
 #include "math/random.h"
 #include "math/numeric.h"

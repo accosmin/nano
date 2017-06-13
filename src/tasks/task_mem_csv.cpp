@@ -1,4 +1,3 @@
-#include "class.h"
 #include "logger.h"
 #include "text/table.h"
 #include "task_mem_csv.h"

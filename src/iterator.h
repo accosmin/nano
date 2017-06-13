@@ -22,13 +22,8 @@ namespace nano
                 using configurable_t::configurable_t;
 
                 ///
-                /// \brief retrieve the 3D input tensor for a given sample
+                /// \brief retrieve the given sample
                 ///
-                virtual tensor3d_t input(const task_t& task, const fold_t& fold, const size_t index) const = 0;
-
-                ///
-                /// \brief retrieve the output target for a given sample
-                ///
-                virtual tensor3d_t target(const task_t& task, const fold_t& fold, const size_t index) const = 0;
+                virtual sample_t get(const task_t& task, const fold_t& fold, const size_t index) const = 0;
         };
 }

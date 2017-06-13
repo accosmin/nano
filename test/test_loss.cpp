@@ -1,6 +1,6 @@
 #include "loss.h"
-#include "class.h"
 #include "utest.h"
+#include "cortex.h"
 #include "function.h"
 #include "math/random.h"
 #include "math/epsilon.h"

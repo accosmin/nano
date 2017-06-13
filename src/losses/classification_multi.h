@@ -1,7 +1,7 @@
 #pragma once
 
 #include "loss.h"
-#include "class.h"
+#include "cortex.h"
 #include <cassert>
 
 namespace nano

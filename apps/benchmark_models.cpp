@@ -1,7 +1,6 @@
 #include "loss.h"
 #include "task.h"
 #include "model.h"
-#include "class.h"
 #include "text/table.h"
 #include "accumulator.h"
 #include "text/cmdline.h"
