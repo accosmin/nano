@@ -13,22 +13,17 @@ namespace nano
         {
         }
 
-        tensor3d_t iterator_warp_t::input(const task_t& task, const fold_t& fold, const size_t index) const
+        sample_t iterator_warp_t::get(const task_t& task, const fold_t& fold, const size_t index) const
         {
-                tensor3d_t iodata = task.input(fold, index);
+                sample_t sample = task.get(fold, index);
 
                 const auto wtype = from_params<warp_type>(config(), "type");
                 const auto noise = from_params<scalar_t>(config(), "noise");
                 const auto sigma = from_params<scalar_t>(config(), "sigma");
                 const auto alpha = from_params<scalar_t>(config(), "alpha");
                 const auto beta = from_params<scalar_t>(config(), "beta");
-                warp(iodata, wtype, noise, sigma, alpha, beta);
+                warp(sample.m_input, wtype, noise, sigma, alpha, beta);
 
-                return iodata;
-        }
-
-        tensor3d_t iterator_warp_t::target(const task_t& task, const fold_t& fold, const size_t index) const
-        {
-                return task.target(fold, index);
+                return sample;
         }
 }

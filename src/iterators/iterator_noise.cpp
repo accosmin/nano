@@ -9,18 +9,14 @@ namespace nano
         {
         }
 
-        tensor3d_t iterator_noise_t::input(const task_t& task, const fold_t& fold, const size_t index) const
+        sample_t iterator_noise_t::get(const task_t& task, const fold_t& fold, const size_t index) const
         {
-                tensor3d_t iodata = task.input(fold, index);
+                sample_t sample = task.input(fold, index);
 
+                // add salt & pepper noise to the input tensor
                 const auto noise = from_params<scalar_t>(config(), "noise");
-                add_random(make_rng<scalar_t>(-noise, +noise), iodata);
+                add_random(make_rng<scalar_t>(-noise, +noise), sample.m_input);
 
-                return iodata;
-        }
-
-        tensor3d_t iterator_noise_t::target(const task_t& task, const fold_t& fold, const size_t index) const
-        {
-                return task.target(fold, index);
+                return sample;
         }
 }
