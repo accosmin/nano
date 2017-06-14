@@ -1,5 +1,4 @@
 #include <mutex>
-#include "logger.h"
 #include "tasks/task_mnist.h"
 #include "tasks/task_cifar10.h"
 #include "tasks/task_cifar100.h"
@@ -8,6 +7,7 @@
 #include "tasks/task_charset.h"
 #include "tasks/task_iris.h"
 #include "tasks/task_wine.h"
+#include "logger.h"
 
 using namespace nano;
 

@@ -6,6 +6,24 @@
 #include <list>
 #include <set>
 
+enum class enum_type
+{
+        type1,
+        type2,
+        type3
+};
+
+template <>
+std::map<enum_type, std::string> nano::enum_string<enum_type>()
+{
+        return
+        {
+                { enum_type::type1,     "type1" },
+//                { enum_type::type2,     "type2" },
+                { enum_type::type3,     "type3" }
+        };
+}
+
 NANO_BEGIN_MODULE(test_text)
 
 NANO_CASE(contains)
@@ -161,6 +179,20 @@ NANO_CASE(from_string)
         NANO_CHECK_EQUAL(nano::from_string<float>("-4.3"), -4.3f);
         NANO_CHECK_EQUAL(nano::from_string<short>("1"), 1);
         NANO_CHECK_EQUAL(nano::from_string<long int>("124545"), 124545);
+}
+
+NANO_CASE(enum_string)
+{
+        NANO_CHECK_EQUAL(nano::to_string(enum_type::type1), "type1");
+        NANO_CHECK_THROW(nano::to_string(enum_type::type2), std::invalid_argument);
+        NANO_CHECK_EQUAL(nano::to_string(enum_type::type3), "type3");
+
+        NANO_CHECK(nano::from_string<enum_type>("type1") == enum_type::type1);
+        NANO_CHECK(nano::from_string<enum_type>("type3") == enum_type::type3);
+
+        NANO_CHECK_THROW(nano::from_string<enum_type>("????"), std::invalid_argument);
+        NANO_CHECK_THROW(nano::from_string<enum_type>("type"), std::invalid_argument);
+        NANO_CHECK_THROW(nano::from_string<enum_type>("type2"), std::invalid_argument);
 }
 
 NANO_CASE(replace)

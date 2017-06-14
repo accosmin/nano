@@ -1,5 +1,7 @@
 #pragma once
 
+#include <typeinfo>
+#include <stdexcept>
 #include "enum_string.h"
 
 namespace nano
@@ -45,9 +47,14 @@ namespace nano
                         static string_t dispatch(const tvalue value)
                         {
                                 static const auto vm = enum_string<tvalue>();
-                                static const auto not_found = string_t("???");
                                 const auto it = vm.find(value);
-                                return (it == vm.end()) ? not_found : it->second;
+                                if (it == vm.end())
+                                {
+                                        const auto str = std::to_string(static_cast<int>(value));
+                                        const auto msg = string_t("missing mapping for enumeration ") + typeid(tvalue).name() + " <" + str + ">!";
+                                        throw std::invalid_argument(msg);
+                                }
+                                return it->second;
                         }
                 };
         }
