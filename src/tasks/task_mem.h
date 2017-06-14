@@ -70,19 +70,9 @@ namespace nano
                 virtual void shuffle(const fold_t&) const override;
 
                 ///
-                /// \brief retrieve the 3D input tensor for a given sample
+                /// \brief retrieve the given sample
                 ///
-                virtual tensor3d_t input(const fold_t&, const size_t index) const override;
-
-                ///
-                /// \brief retrieve the target for a given sample
-                ///
-                virtual tensor3d_t target(const fold_t&, const size_t index) const override;
-
-                ///
-                /// \brief retrieve the associated label (if any) for a given sample
-                ///
-                virtual string_t label(const fold_t&, const size_t index) const override;
+                virtual sample_t get(const fold_t&, const size_t index) const override;
 
                 ///
                 /// \brief retrieve the hash for a given sample
@@ -224,11 +214,11 @@ namespace nano
         }
 
         template <typename tchunk, typename tsample>
-        tensor3d_t mem_task_t<tchunk, tsample>::input(const fold_t& fold, const size_t index) const
+        sample_t mem_task_t<tchunk, tsample>::get(const fold_t& fold, const size_t index) const
         {
                 const auto& sample = get_sample(fold, index);
                 const auto& chunk = get_chunk(sample);
-                return sample.input(chunk);
+                return {sample.input(chunk), sample.target(), sample.label()};
         }
 
         template <typename tchunk, typename tsample>
@@ -238,19 +228,4 @@ namespace nano
                 const auto& hash = get_hash(sample);
                 return sample.hash(hash);
         }
-
-        template <typename tchunk, typename tsample>
-        tensor3d_t mem_task_t<tchunk, tsample>::target(const fold_t& fold, const size_t index) const
-        {
-                const auto& sample = get_sample(fold, index);
-                return sample.target();
-        }
-
-        template <typename tchunk, typename tsample>
-        string_t mem_task_t<tchunk, tsample>::label(const fold_t& fold, const size_t index) const
-        {
-                const auto& sample = get_sample(fold, index);
-                return sample.label();
-        }
 }
-

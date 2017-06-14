@@ -1,5 +1,4 @@
 #include "utest.h"
-#include "task_util.h"
 #include "vision/color.h"
 #include "tasks/charset.h"
 #include "trainers/minibatch.h"

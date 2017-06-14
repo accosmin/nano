@@ -90,8 +90,9 @@ int main(int argc, const char *argv[])
                                 volatile long double sum = 0;
                                 for (size_t index = 0; index < fold_size; ++ index)
                                 {
-                                        const auto input = iterator->input(*task, fold, index);
-                                        const auto target = iterator->target(*task, fold, index);
+                                        const auto sample = iterator->get(*task, fold, index);
+                                        const auto& input = sample.m_input;
+                                        const auto& target = sample.m_target;
                                         sum += input.vector().sum() - target.vector().sum();
                                 }
                         }, 1);

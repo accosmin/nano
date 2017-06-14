@@ -1,6 +1,6 @@
 #include "loss.h"
+#include "task.h"
 #include "model.h"
-#include "task_util.h"
 #include "accumulator.h"
 #include "text/cmdline.h"
 #include "measure_and_log.h"

@@ -11,7 +11,7 @@ namespace nano
 
         sample_t iterator_noise_t::get(const task_t& task, const fold_t& fold, const size_t index) const
         {
-                sample_t sample = task.input(fold, index);
+                sample_t sample = task.get(fold, index);
 
                 // add salt & pepper noise to the input tensor
                 const auto noise = from_params<scalar_t>(config(), "noise");

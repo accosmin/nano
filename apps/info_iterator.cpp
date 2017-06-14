@@ -1,5 +1,4 @@
 #include "iterator.h"
-#include "task_util.h"
 #include "text/cmdline.h"
 #include "math/numeric.h"
 #include "measure_and_log.h"
@@ -33,7 +32,7 @@ static void save_as_images(const iterator_t& iterator, const task_t& task, const
         {
                 for (coord_t c = 0; c < gcols && i < size; ++ c, ++ i)
                 {
-                        grid.set(r, c, make_image(task.input(fold, i)));
+                        grid.set(r, c, make_image(task.get(fold, i).m_input));
                 }
         }
 
@@ -47,7 +46,7 @@ static void save_as_images(const iterator_t& iterator, const task_t& task, const
                 {
                         for (coord_t c = 0; c < gcols && i < size; ++ c, ++ i)
                         {
-                                grid.set(r, c, make_image(iterator.input(task, fold, i)));
+                                grid.set(r, c, make_image(iterator.get(task, fold, i).m_input));
                         }
                 }
 

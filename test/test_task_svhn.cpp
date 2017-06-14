@@ -1,6 +1,6 @@
 #include <set>
+#include "task.h"
 #include "utest.h"
-#include "task_util.h"
 #include "math/epsilon.h"
 
 NANO_BEGIN_MODULE(test_svhn)
@@ -45,9 +45,10 @@ NANO_CASE(construction)
                 const auto size = task->size(fold);
                 for (size_t i = 0; i < size; ++ i)
                 {
-                        const auto input = task->input(fold, i);
-                        const auto label = task->label(fold, i);
-                        const auto target = task->target(fold, i);
+                        const auto sample = task->get(fold, i);
+                        const auto& input = sample.m_input;
+                        const auto& label = sample.m_label;
+                        const auto& target = sample.m_target;
 
                         NANO_CHECK_EQUAL(input.dims(), idims);
                         NANO_CHECK_EQUAL(target.dims(), odims);

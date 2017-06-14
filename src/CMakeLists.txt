@@ -12,7 +12,6 @@ set(libnano_sources
         ${CMAKE_CURRENT_SOURCE_DIR}/trainer_state.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/trainer_result.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/task.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/task_util.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/iterator.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/solver_batch.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/solver_stoch.cpp)

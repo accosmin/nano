@@ -1,5 +1,5 @@
+#include "task.h"
 #include "utest.h"
-#include "task_util.h"
 #include "text/config.h"
 #include "vision/color.h"
 #include "math/epsilon.h"
@@ -68,8 +68,9 @@ NANO_CASE(from_params)
                 const auto size = task->size({0, p});
                 for (size_t i = 0; i < size; ++ i)
                 {
-                        const auto input = task->input({0, p}, i);
-                        const auto target = task->target({0, p}, i);
+                        const auto sample = task->get({0, p}, i);
+                        const auto& input = sample.m_input;
+                        const auto& target = sample.m_target;
 
                         NANO_CHECK_EQUAL(input.dims(), idims);
                         NANO_CHECK_EQUAL(target.dims(), odims);
