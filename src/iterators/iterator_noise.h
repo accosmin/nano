@@ -5,7 +5,7 @@
 namespace nano
 {
         ///
-        /// \brief generate samples by adding noise to inputs.
+        /// \brief generate samples by adding salt & pepper noise to inputs.
         ///
         struct iterator_noise_t final : public iterator_t
         {

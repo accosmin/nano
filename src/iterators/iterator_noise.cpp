@@ -13,9 +13,11 @@ sample_t iterator_noise_t::get(const task_t& task, const fold_t& fold, const siz
 {
         sample_t sample = task.get(fold, index);
 
-        // add salt & pepper noise to the input tensor
         const auto noise = from_params<scalar_t>(config(), "noise");
-        add_random(make_rng<scalar_t>(-noise, +noise), sample.m_input);
+
+        // keep input and add some salt & pepper noise
+        auto rng = make_rng<scalar_t>(-1, +1);
+        nano::add_random([&] () { return rng() * noise; }, sample.m_input);
 
         return sample;
 }

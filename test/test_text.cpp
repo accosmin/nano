@@ -13,15 +13,18 @@ enum class enum_type
         type3
 };
 
-template <>
-std::map<enum_type, std::string> nano::enum_string<enum_type>()
+namespace nano
 {
-        return
+        template <>
+        std::map<enum_type, std::string> enum_string<enum_type>()
         {
-                { enum_type::type1,     "type1" },
-//                { enum_type::type2,     "type2" },
-                { enum_type::type3,     "type3" }
-        };
+                return
+                {
+                        { enum_type::type1,     "type1" },
+        //                { enum_type::type2,     "type2" },
+                        { enum_type::type3,     "type3" }
+                };
+        }
 }
 
 NANO_BEGIN_MODULE(test_text)
