@@ -34,7 +34,8 @@ class config:
                 return {
                         "default" : "--iterator default",
                         "noise" : "--iterator noise",
-                        "warp" : "--iterator warp"
+                        "warp" : "--iterator warp",
+                        "noclass" : "--iterator noclass"
                 }
 
         # configure iterator with the given name and parameters

@@ -1,0 +1,15 @@
+outlayer = "affine:dims=10;"
+
+mlp0 = "--model forward-network --model-params "
+mlp1 = mlp0 + "affine:dims=128;act-snorm;"
+mlp2 = mlp1 + "affine:dims=128;act-snorm;"
+mlp3 = mlp2 + "affine:dims=128;act-snorm;"
+mlp4 = mlp3 + "affine:dims=128;act-snorm;"
+mlp5 = mlp4 + "affine:dims=128;act-snorm;"
+
+convnet0 = "--model forward-network --model-params "
+convnet1 = convnet0 + "conv:dims=32,rows=7,cols=7,conn=1,drow=2,dcol=2;act-snorm;"
+convnet2 = convnet1 + "conv:dims=64,rows=5,cols=5,conn=1,drow=1,dcol=1;act-snorm;"
+convnet3 = convnet2 + "conv:dims=64,rows=3,cols=3,conn=1,drow=1,dcol=1;act-snorm;"
+convnet4 = convnet3 + "conv:dims=64,rows=3,cols=3,conn=1,drow=1,dcol=1;act-snorm;"
+convnet5 = convnet4 + "conv:dims=64,rows=3,cols=3,conn=1,drow=1,dcol=1;act-snorm;"

@@ -1,14 +1,14 @@
 import config
 import experiment
-import models_mnist as models
+import models_cifar10 as models
 
 # initialize experiment:
-# - single-class classification problem using the MNIST dataset
-# - the model should predict the digit of a grayscale image
+# - single-class classification problem using the CIFAR-10 dataset
+# - the model should predict the object of a RGB image
 cfg = config.config()
 exp = experiment.experiment(
         cfg.task_mnist(),
-        cfg.expdir + "/mnist/eval_iterators")
+        cfg.expdir + "/cifar10/eval_iterators")
 
 # loss functions
 exp.add_loss("classnll")
@@ -32,7 +32,7 @@ stoch_params = "epochs=1000,patience=32,epsilon=1e-6,min_batch=32,max_batch=256"
 exp.add_trainer("stoch_adadelta", stoch_params)
 
 # models
-exp.add_model("convnet5", models.convnet5 + models.outlayer)
+exp.add_model("convnet9", models.convnet9 + models.outlayer)
 
 # train all configurations
 trials = 10

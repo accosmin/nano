@@ -1,5 +1,6 @@
 import config
 import experiment
+import models_mnist as models
 
 # initialize experiment:
 # - single-class classification problem using the MNIST dataset
@@ -16,35 +17,23 @@ exp.add_loss("classnll")
 exp.add_iterator("default")
 
 # trainers
-batch_params = "epochs=100,patience=32,epsilon=1e-6"
-stoch_params = "epochs=100,patience=32,epsilon=1e-6,min_batch=32,max_batch=256"
+batch_params = "epochs=1000,patience=32,epsilon=1e-6"
+stoch_params = "epochs=1000,patience=32,epsilon=1e-6,min_batch=32,max_batch=256"
 
 exp.add_trainer("stoch_adadelta", stoch_params)
 
 # models
-outlayer = "affine:dims=10;"
-
-mlp0 = "--model forward-network --model-params "
-mlp1 = mlp0 + "affine:dims=128;act-snorm;"
-mlp2 = mlp1 + "affine:dims=128;act-snorm;"
-mlp3 = mlp2 + "affine:dims=128;act-snorm;"
-mlp4 = mlp3 + "affine:dims=128;act-snorm;"
-
-convnet0 = "--model forward-network --model-params "
-convnet1 = convnet0 + "conv:dims=32,rows=7,cols=7,conn=1,drow=2,dcol=2;act-snorm;"
-convnet2 = convnet1 + "conv:dims=32,rows=5,cols=5,conn=1,drow=1,dcol=1;act-snorm;"
-convnet3 = convnet2 + "conv:dims=32,rows=3,cols=3,conn=1,drow=1,dcol=1;act-snorm;"
-convnet4 = convnet3 + "conv:dims=32,rows=3,cols=3,conn=1,drow=1,dcol=1;act-snorm;"
-
-exp.add_model("mlp0", mlp0 + outlayer)
-exp.add_model("mlp1", mlp1 + outlayer)
-exp.add_model("mlp2", mlp2 + outlayer)
-exp.add_model("mlp3", mlp3 + outlayer)
-exp.add_model("mlp4", mlp4 + outlayer)
-exp.add_model("convnet1", convnet1 + outlayer)
-exp.add_model("convnet2", convnet2 + outlayer)
-exp.add_model("convnet3", convnet3 + outlayer)
-exp.add_model("convnet4", convnet4 + outlayer)
+exp.add_model("mlp0", models.mlp0 + models.outlayer)
+exp.add_model("mlp1", models.mlp1 + models.outlayer)
+exp.add_model("mlp2", models.mlp2 + models.outlayer)
+exp.add_model("mlp3", models.mlp3 + models.outlayer)
+exp.add_model("mlp4", models.mlp4 + models.outlayer)
+exp.add_model("mlp5", models.mlp5 + models.outlayer)
+exp.add_model("convnet1", models.convnet1 + models.outlayer)
+exp.add_model("convnet2", models.convnet2 + models.outlayer)
+exp.add_model("convnet3", models.convnet3 + models.outlayer)
+exp.add_model("convnet4", models.convnet4 + models.outlayer)
+exp.add_model("convnet5", models.convnet5 + models.outlayer)
 
 # train all configurations
 trials = 10
