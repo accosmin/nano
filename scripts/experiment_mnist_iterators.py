@@ -11,7 +11,7 @@ exp = experiment.experiment(
         cfg.expdir + "/mnist/eval_iterators")
 
 # loss functions
-exp.add_loss("classnll")
+exp.add_loss("slogistic")
 
 # iterators
 exp.add_iterator("default")
