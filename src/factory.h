@@ -3,6 +3,7 @@
 #include <map>
 #include <memory>
 #include <stdexcept>
+#include <functional>
 #include "configurable.h"
 
 namespace nano
