@@ -27,16 +27,20 @@ trainer_result_t stoch_trainer_t::train(
 
         // minibatch
         const auto train_size = task.size({fold, protocol::train});
-        const auto samples = epochs * train_size;
         auto factor = scalar_t(1);
-        auto epoch_size = batch0;
+        auto epoch_size = idiv(train_size, batch0);
         if (batch0 != batchK)
         {
+                const auto samples = epochs * train_size;
                 factor = clamp(scalar_t(samples - batch0) / scalar_t(samples - batchK), scalar_t(1), scalar_t(2));
                 epoch_size = idiv(static_cast<size_t>(std::log(batchK / batch0) / std::log(factor)), epochs);
         }
 
         auto minibatch = minibatch_t(task, {fold, protocol::train}, batch0, factor);
+
+        log_info()
+                << "setup:epochs=" << epochs << ",epoch_size=" << epoch_size
+                << ",batch0=" << batch0 << ",factor="<< factor << ".";
 
         // accumulator
         accumulator_t acc(model, loss);
