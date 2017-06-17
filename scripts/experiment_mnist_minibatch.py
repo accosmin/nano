@@ -18,9 +18,10 @@ exp.add_iterator("default")
 
 # trainers
 stoch_params = "epochs=1000,patience=32,epsilon=1e-6,min_batch={},max_batch={}"
+minibatch_name = "minibatch{}to{}"
 
-for size in [32, 64, 128, 256, 512, 1024]:
-        exp.add_trainer("stoch_adadelta", stoch_params.format(size, size), "minibatch{}".format(size))
+for size in [[32, 32], [64, 64], [128, 128], [256, 256], [512, 512], [1024, 1024], [32, 1024], [32, 16 * 1024]]:
+        exp.add_trainer("stoch_adadelta", stoch_params.format(size[0], size[1]), minibatch_name.format(size[0], size[1]))
 
 # models
 exp.add_model("convnet5", models.convnet5 + models.outlayer)
