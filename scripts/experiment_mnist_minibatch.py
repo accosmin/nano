@@ -20,7 +20,7 @@ exp.add_iterator("default")
 stoch_params = "epochs=1000,patience=32,epsilon=1e-6,batch={},factor={}"
 minibatch_name = "minibatch{}f{}"
 
-for size in [[32, 1.000], [32, 1.001], [32, 1.010], [32, 1.100]]:
+for size in [[32, 1.00000], [32, 1.00001], [32, 1.00003], [32, 1.00010], [32, 1.00030], [32, 1.00100]]:
         exp.add_trainer("stoch_adadelta", stoch_params.format(size[0], size[1]), minibatch_name.format(size[0], size[1]))
 
 # models
