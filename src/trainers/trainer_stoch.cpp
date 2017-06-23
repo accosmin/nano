@@ -9,7 +9,7 @@ using namespace nano;
 
 stoch_trainer_t::stoch_trainer_t(const string_t& parameters) :
         trainer_t(to_params(parameters, "solver", "sg[" + concatenate(get_stoch_solvers().ids()) + "]", "epochs", "16[1,1024]",
-        "min_batch", "32[32,1024]", "max_batch", "256[32,4096]", "eps", 1e-6, "patience", 32))
+        "batch", "32[32,1024]", "factor", "1[1.0,1.1]", "eps", 1e-6, "patience", 32))
 {
 }
 
@@ -19,22 +19,15 @@ trainer_result_t stoch_trainer_t::train(
 {
         // parameters
         const auto epochs = clamp(from_params<size_t>(config(), "epochs"), 1, 1024);
-        const auto batch0 = clamp(from_params<size_t>(config(), "min_batch"), 1, 1024);
-        const auto batchK = clamp(from_params<size_t>(config(), "max_batch"), batch0, 4096);
+        const auto batch0 = clamp(from_params<size_t>(config(), "batch"), 1, 1024);
+        const auto factor = clamp(from_params<size_t>(config(), "factor"), scalar_t(1.0), scalar_t(1.1));
         const auto epsilon = from_params<scalar_t>(config(), "eps");
         const auto solver = from_params<string_t>(config(), "solver");
         const auto patience = from_params<size_t>(config(), "patience");
 
         // minibatch
         const auto train_size = task.size({fold, protocol::train});
-        auto factor = scalar_t(1);
-        auto epoch_size = idiv(train_size, batch0);
-        if (batch0 != batchK)
-        {
-                const auto samples = epochs * train_size;
-                factor = clamp(scalar_t(samples - batch0) / scalar_t(samples - batchK), scalar_t(1), scalar_t(2));
-                epoch_size = idiv(static_cast<size_t>(std::log(batchK / batch0) / std::log(factor)), epochs);
-        }
+        const auto epoch_size = idiv(train_size, batch0);
 
         auto minibatch = minibatch_t(task, {fold, protocol::train}, batch0, factor);
 

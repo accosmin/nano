@@ -17,10 +17,10 @@ exp.add_loss("slogistic")
 exp.add_iterator("default")
 
 # trainers
-stoch_params = "epochs=1000,patience=32,epsilon=1e-6,min_batch={},max_batch={}"
-minibatch_name = "minibatch{}to{}"
+stoch_params = "epochs=1000,patience=32,epsilon=1e-6,batch={},factor={}"
+minibatch_name = "minibatch{}f{}"
 
-for size in [[32, 32], [64, 64], [128, 128], [256, 256], [512, 512], [1024, 1024], [32, 1024], [32, 16 * 1024]]:
+for size in [[32, 1.000], [32, 1.001], [32, 1.010], [32, 1.100]]:
         exp.add_trainer("stoch_adadelta", stoch_params.format(size[0], size[1]), minibatch_name.format(size[0], size[1]))
 
 # models
