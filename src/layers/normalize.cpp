@@ -4,9 +4,10 @@
 using namespace nano;
 
 normalize_layer_t::normalize_layer_t(const string_t& parameters) :
-        layer_t(parameters),
+        layer_t(to_params(parameters, "type", norm_type::plane)),
         m_idims({0, 0, 0}),
-        m_odims({0, 0, 0})
+        m_odims({0, 0, 0}),
+        m_type(norm_type::plane)
 {
 }
 
@@ -14,6 +15,7 @@ void normalize_layer_t::configure(const tensor3d_dims_t& idims, const string_t& 
 {
         m_idims = idims;
         m_odims = idims;
+        m_type = from_params<norm_type>(config(), "type");
 
         m_probe_output = probe_t{name, name + "(output)", 10 * isize()};
         m_probe_ginput = probe_t{name, name + "(ginput)", 10 * isize()};
@@ -27,14 +29,30 @@ void normalize_layer_t::output(tensor3d_const_map_t idata, tensor1d_const_map_t 
         assert(odata.dims() == odims());
         NANO_UNUSED1_RELEASE(param);
 
-        m_probe_output.measure([&] ()
+        const auto norm = [] (const auto& data)
         {
-                const auto sum = idata.array().sum();
-                const auto sumsq = idata.array().square().sum();
-                const auto count = static_cast<size_t>(idata.size());
+                const auto sum = data.array().sum();
+                const auto sumsq = data.array().square().sum();
+                const auto count = static_cast<size_t>(data.size());
                 const auto avg = sum / count;
                 const auto stdev = std::sqrt((sumsq - sum * sum / count) / count);
-                odata.array() = (idata.array() - avg) / stdev;
+                return (data.array() - avg) / stdev;
+        };
+
+        m_probe_output.measure([&] ()
+        {
+                switch (m_type)
+                {
+                case norm_type::global:
+                        odata.array() = norm(idata);
+                        break;
+                case norm_type::plane:
+                        for (tensor_size_t i = 0; i < std::get<0>(m_idims); ++ i)
+                        {
+                                odata.array(i) = norm(idata.array(i));
+                        }
+                        break;
+                }
         });
 }
 

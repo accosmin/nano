@@ -1,9 +1,26 @@
 #pragma once
 
 #include "layer.h"
+#include "text/enum_string.h"
 
 namespace nano
 {
+        enum class norm_type
+        {
+                global,                 ///< globablly using all feature planes
+                plane,                  ///< per feature plane
+        };
+
+        template <>
+        inline std::map<norm_type, std::string> enum_string<norm_type>()
+        {
+                return
+                {
+                        { norm_type::global,    "global" },
+                        { norm_type::plane,     "plane" }
+                };
+        }
+
         ///
         /// \brief normalize layer: transforms the input tensor to have zero mean and one variance,
         ///     either globally or for each feature map.
@@ -31,6 +48,7 @@ namespace nano
                 // attributes
                 tensor3d_dims_t m_idims;
                 tensor3d_dims_t m_odims;
+                norm_type       m_type;
                 probe_t         m_probe_output;
                 probe_t         m_probe_ginput;
                 probe_t         m_probe_gparam;
