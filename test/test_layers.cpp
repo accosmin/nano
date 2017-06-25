@@ -220,6 +220,22 @@ NANO_CASE(conv_stride)
                 cpsize(cmd_idims, 3, 5, 5, 3) + apsize(3 * 2 * 2, cmd_odims));
 }
 
+NANO_CASE(norm_global_layer)
+{
+        test_model(
+                "normalize:type=global;" +
+                make_affine_layer(7, "act-snorm"),
+                apsize(cmd_idims, 7) + apsize(7, cmd_odims));
+}
+
+NANO_CASE(norm_plane_layer)
+{
+        test_model(
+                "normalize:type=plane;" +
+                make_affine_layer(6, "act-snorm"),
+                apsize(cmd_idims, 6) + apsize(6, cmd_odims));
+}
+
 NANO_CASE(multi_layer)
 {
         test_model(
