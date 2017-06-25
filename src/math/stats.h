@@ -79,7 +79,6 @@ namespace nano
                 operator bool() const { return count() > 1; }
 
                 std::size_t count() const { return m_count; }
-                tstorage count1() const { return static_cast<tstorage>(count() - 1); }
                 tscalar min() const { return m_min; }
                 tscalar max() const { return m_max; }
                 tstorage sum() const { return m_sum; }
@@ -99,13 +98,13 @@ namespace nano
                 tscalar var() const
                 {
                         assert(count() > 0);
-                        return (count() == 1) ? tscalar(0) : static_cast<tscalar>(var2() / count1());
+                        return static_cast<tscalar>((m_sumsq - m_sum * m_sum / count()) / count());
                 }
 
                 tscalar stdev() const
                 {
                         assert(count() > 0);
-                        return (count() == 1) ? tscalar(0) : static_cast<tscalar>(std::sqrt(var2() / count1()));
+                        return static_cast<tscalar>((m_sumsq - m_sum * m_sum / count()) / (count() - 1));
                 }
 
         private:

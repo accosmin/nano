@@ -32,12 +32,12 @@ NANO_CASE(full)
 
         layer->output(map_tensor(idata.data(), idims), map_tensor(param.data(), pdims), map_tensor(odata.data(), odims));
 
-        stats_t<double> stats;
+        stats_t<scalar_t> stats;
         stats(odata.data(), odata.data() + odata.size());
 
         NANO_CHECK_EQUAL(stats.count(), static_cast<size_t>(nano::size(odims)));
-        NANO_CHECK_LESS(std::fabs(stats.avg() - double(0)), epsilon0<double>());
-        NANO_CHECK_LESS(std::fabs(stats.var() - double(1)), epsilon0<double>());
+        NANO_CHECK_LESS(std::fabs(stats.avg() - scalar_t(0)), epsilon0<scalar_t>());
+        NANO_CHECK_LESS(std::fabs(stats.var() - scalar_t(1)), epsilon0<scalar_t>());
 }
 
 NANO_END_MODULE()

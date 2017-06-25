@@ -29,7 +29,12 @@ void whitening_layer_t::output(tensor3d_const_map_t idata, tensor1d_const_map_t 
 
         m_probe_output.measure([&] ()
         {
-                odata.array() = idata.array();
+                const auto sum = idata.array().sum();
+                const auto sumsq = idata.array().square().sum();
+                const auto count = static_cast<size_t>(idata.size());
+                const auto avg = sum / count;
+                const auto stdev = std::sqrt((sumsq - sum * sum / count) / count);
+                odata.array() = (idata.array() - avg) / stdev;
         });
 }
 
