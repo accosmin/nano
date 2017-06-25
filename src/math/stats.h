@@ -12,10 +12,8 @@ namespace nano
         /// \brief computes statistics: average, standard deviation etc.
         ///
         template <typename tscalar = long double>
-        class stats_t
+        struct stats_t
         {
-        public:
-
                 using tstorage = long double;
 
                 ///

@@ -51,7 +51,7 @@ namespace nano
                         tbase(dims...),
                         m_data(data)
                 {
-                        assert(data != nullptr);
+                        assert(data != nullptr || this->size() == 0);
                 }
 
                 ///
