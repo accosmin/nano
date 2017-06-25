@@ -1,16 +1,16 @@
-#include "whitening.h"
+#include "normalize.h"
 #include "math/numeric.h"
 
 using namespace nano;
 
-whitening_layer_t::whitening_layer_t(const string_t& parameters) :
+normalize_layer_t::normalize_layer_t(const string_t& parameters) :
         layer_t(parameters),
         m_idims({0, 0, 0}),
         m_odims({0, 0, 0})
 {
 }
 
-void whitening_layer_t::configure(const tensor3d_dims_t& idims, const string_t& name)
+void normalize_layer_t::configure(const tensor3d_dims_t& idims, const string_t& name)
 {
         m_idims = idims;
         m_odims = idims;
@@ -20,7 +20,7 @@ void whitening_layer_t::configure(const tensor3d_dims_t& idims, const string_t& 
         m_probe_gparam = probe_t{name, name + "(gparam)", 0};
 }
 
-void whitening_layer_t::output(tensor3d_const_map_t idata, tensor1d_const_map_t param, tensor3d_map_t odata)
+void normalize_layer_t::output(tensor3d_const_map_t idata, tensor1d_const_map_t param, tensor3d_map_t odata)
 {
         assert(idata.dims() == idims());
         assert(param.size() == psize());
@@ -38,7 +38,7 @@ void whitening_layer_t::output(tensor3d_const_map_t idata, tensor1d_const_map_t 
         });
 }
 
-void whitening_layer_t::ginput(tensor3d_map_t idata, tensor1d_const_map_t param, tensor3d_const_map_t odata)
+void normalize_layer_t::ginput(tensor3d_map_t idata, tensor1d_const_map_t param, tensor3d_const_map_t odata)
 {
         assert(idata.dims() == idims());
         assert(param.size() == psize());
@@ -51,7 +51,7 @@ void whitening_layer_t::ginput(tensor3d_map_t idata, tensor1d_const_map_t param,
         });
 }
 
-void whitening_layer_t::gparam(tensor3d_const_map_t idata, tensor1d_map_t param, tensor3d_const_map_t odata)
+void normalize_layer_t::gparam(tensor3d_const_map_t idata, tensor1d_map_t param, tensor3d_const_map_t odata)
 {
         assert(idata.dims() == idims());
         assert(param.size() == psize());
@@ -59,7 +59,7 @@ void whitening_layer_t::gparam(tensor3d_const_map_t idata, tensor1d_map_t param,
         NANO_UNUSED3_RELEASE(idata, param, odata);
 }
 
-rlayer_t whitening_layer_t::clone() const
+rlayer_t normalize_layer_t::clone() const
 {
-        return std::make_unique<whitening_layer_t>(*this);
+        return std::make_unique<normalize_layer_t>(*this);
 }

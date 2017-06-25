@@ -36,7 +36,7 @@ make_test(test_factory.cpp nano)
 make_test(test_model.cpp nano)
 make_test(test_trainer.cpp nano)
 make_test(test_conv3d.cpp nano)
-make_test(test_whitening.cpp nano)
+make_test(test_normalize.cpp nano)
 
 make_test(test_charset.cpp nano)
 make_test(test_minibatch.cpp nano)

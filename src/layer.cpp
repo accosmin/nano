@@ -1,6 +1,6 @@
 #include <mutex>
 #include "layers/affine.h"
-#include "layers/whitening.h"
+#include "layers/normalize.h"
 #include "layers/activation.h"
 #include "layers/convolution.h"
 
@@ -21,7 +21,7 @@ layer_factory_t& nano::get_layers()
                 m.add<activation_layer_sigm_t>("act-sigm",      "activation: a(x) = exp(x) / (1 + exp(x))");
                 m.add<activation_layer_pwave_t>("act-pwave",    "activation: a(x) = x / (1 + x^2)");
                 m.add<affine_layer_t>("affine",                 "transform:  L(x) = A * x + b");
-                m.add<whitening_layer_t>("whitening",           "zero-mean & one-variance transformation");
+                m.add<normalize_layer_t>("normalize",           "zero-mean & one-variance transformation");
                 m.add<convolution_layer_t>("conv",              "transform:  L(x) = conv3D(x, kernel) + b");
         });
 

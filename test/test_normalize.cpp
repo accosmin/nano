@@ -12,7 +12,7 @@ auto make_tensor(const tensor3d_dims_t& dims)
         return t;
 }
 
-NANO_BEGIN_MODULE(test_whitening)
+NANO_BEGIN_MODULE(test_normalize)
 
 NANO_CASE(full)
 {
@@ -20,7 +20,7 @@ NANO_CASE(full)
         const auto odims = idims;
         const auto pdims = tensor1d_dims_t{0};
 
-        const auto layer = get_layers().get("whitening");
+        const auto layer = get_layers().get("normalize");
         layer->configure(idims, "");
         NANO_CHECK_EQUAL(idims, layer->idims());
         NANO_CHECK_EQUAL(odims, layer->odims());
