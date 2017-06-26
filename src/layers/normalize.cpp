@@ -3,6 +3,36 @@
 
 using namespace nano;
 
+template <typename tidata, typename todata>
+static void onorm(const tidata& idata, todata&& odata)
+{
+        const auto isum1 = idata.array().sum();
+        const auto isum2 = idata.array().square().sum();
+        const auto count = static_cast<size_t>(idata.size());
+        const auto imean = isum1 / count;
+        const auto istdv = std::sqrt((isum2 - isum1 * isum1 / count) / count);
+
+        odata.array() = (idata.array() - imean) / istdv;
+}
+
+template <typename tidata, typename todata>
+static void gnorm(tidata&& idata, const todata& odata)
+{
+        const auto isum1 = idata.array().sum();
+        const auto isum2 = idata.array().square().sum();
+        const auto count = static_cast<size_t>(idata.size());
+        const auto imean = isum1 / count;
+        const auto istdv = std::sqrt((isum2 - isum1 * isum1 / count) / count);
+
+        const auto osum1 = odata.array().sum();
+        const auto oisum = (odata.array() * (idata.array() - imean)).sum();
+
+        idata.array() =
+                odata.array() / (istdv) -
+                osum1 / (count * istdv) -
+                idata.array() * (imean - 1) / (count * istdv * istdv * istdv) * oisum;
+}
+
 normalize_layer_t::normalize_layer_t(const string_t& parameters) :
         layer_t(to_params(parameters, "type", norm_type::plane)),
         m_idims({0, 0, 0}),
@@ -29,27 +59,17 @@ void normalize_layer_t::output(tensor3d_const_map_t idata, tensor1d_const_map_t 
         assert(odata.dims() == odims());
         NANO_UNUSED1_RELEASE(param);
 
-        const auto norm = [] (const auto& data)
-        {
-                const auto sum = data.array().sum();
-                const auto sumsq = data.array().square().sum();
-                const auto count = static_cast<size_t>(data.size());
-                const auto avg = sum / count;
-                const auto stdev = std::sqrt((sumsq - sum * sum / count) / count);
-                return (data.array() - avg) / stdev;
-        };
-
         m_probe_output.measure([&] ()
         {
                 switch (m_type)
                 {
                 case norm_type::global:
-                        odata.array() = norm(idata);
+                        onorm(idata, odata);
                         break;
                 case norm_type::plane:
                         for (tensor_size_t i = 0; i < std::get<0>(m_idims); ++ i)
                         {
-                                odata.array(i) = norm(idata.array(i));
+                                onorm(idata.array(i), odata.array(i));
                         }
                         break;
                 }
@@ -65,7 +85,18 @@ void normalize_layer_t::ginput(tensor3d_map_t idata, tensor1d_const_map_t param,
 
         m_probe_ginput.measure([&] ()
         {
-                idata.array() = odata.array();
+                switch (m_type)
+                {
+                case norm_type::global:
+                        gnorm(idata, odata);
+                        break;
+                case norm_type::plane:
+                        for (tensor_size_t i = 0; i < std::get<0>(m_idims); ++ i)
+                        {
+                                gnorm(idata.array(i), odata.array(i));
+                        }
+                        break;
+                }
         });
 }
 
