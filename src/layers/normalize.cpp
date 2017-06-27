@@ -8,7 +8,7 @@ static void onorm(const tidata& idata, todata&& odata)
 {
         const auto isum1 = idata.array().sum();
         const auto isum2 = idata.array().square().sum();
-        const auto count = static_cast<size_t>(idata.size());
+        const auto count = static_cast<scalar_t>(idata.size());
         const auto imean = isum1 / count;
         const auto istdv = std::sqrt((isum2 - isum1 * isum1 / count) / count);
 
@@ -20,7 +20,7 @@ static void gnorm(tidata&& idata, const todata& odata)
 {
         const auto isum1 = idata.array().sum();
         const auto isum2 = idata.array().square().sum();
-        const auto count = static_cast<size_t>(idata.size());
+        const auto count = static_cast<scalar_t>(idata.size());
         const auto imean = isum1 / count;
         const auto istdv = std::sqrt((isum2 - isum1 * isum1 / count) / count);
 
