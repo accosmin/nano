@@ -30,7 +30,7 @@ static void gnorm(tidata&& idata, const todata& odata)
         idata.array() =
                 odata.array() / (istdv) -
                 osum1 / (count * istdv) -
-                idata.array() * (imean - 1) / (count * istdv * istdv * istdv) * oisum;
+                (idata.array() - imean) * oisum / (count * istdv * istdv * istdv);
 }
 
 normalize_layer_t::normalize_layer_t(const string_t& parameters) :
