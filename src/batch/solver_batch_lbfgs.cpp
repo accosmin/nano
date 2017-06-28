@@ -1,7 +1,7 @@
 #include "loop.h"
-#include "lbfgs.h"
 #include "ls_init.h"
 #include "ls_strategy.h"
+#include "solver_batch_lbfgs.h"
 #include <deque>
 
 using namespace nano;

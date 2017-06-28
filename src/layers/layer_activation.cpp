@@ -1,5 +1,5 @@
-#include "activation.h"
 #include "math/numeric.h"
+#include "layer_activation.h"
 
 using namespace nano;
 

@@ -1,7 +1,7 @@
-#include "cgd.h"
 #include "loop.h"
 #include "ls_init.h"
 #include "ls_strategy.h"
+#include "solver_batch_cgd.h"
 
 using namespace nano;
 

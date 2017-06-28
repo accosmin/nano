@@ -1,7 +1,7 @@
 #include "loop.h"
 #include "lrate.h"
-#include "rmsprop.h"
 #include "tensor/momentum.h"
+#include "solver_stoch_rmsprop.h"
 
 using namespace nano;
 

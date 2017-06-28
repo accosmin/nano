@@ -1,6 +1,6 @@
-#include "sg.h"
 #include "loop.h"
 #include "lrate.h"
+#include "solver_stoch_sg.h"
 
 using namespace nano;
 

@@ -1,5 +1,5 @@
 #include "loop.h"
-#include "adagrad.h"
+#include "solver_stoch_adagrad.h"
 
 using namespace nano;
 

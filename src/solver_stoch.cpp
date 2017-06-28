@@ -1,14 +1,14 @@
 #include <mutex>
-#include "stoch/ag.h"
-#include "stoch/adam.h"
-#include "stoch/adagrad.h"
-#include "stoch/adadelta.h"
-#include "stoch/ngd.h"
-#include "stoch/sg.h"
-#include "stoch/sgm.h"
-#include "stoch/svrg.h"
-#include "stoch/asgd.h"
-#include "stoch/rmsprop.h"
+#include "stoch/solver_stoch_ag.h"
+#include "stoch/solver_stoch_adam.h"
+#include "stoch/solver_stoch_adagrad.h"
+#include "stoch/solver_stoch_adadelta.h"
+#include "stoch/solver_stoch_ngd.h"
+#include "stoch/solver_stoch_sg.h"
+#include "stoch/solver_stoch_sgm.h"
+#include "stoch/solver_stoch_svrg.h"
+#include "stoch/solver_stoch_asgd.h"
+#include "stoch/solver_stoch_rmsprop.h"
 
 using namespace nano;
 

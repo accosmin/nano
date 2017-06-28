@@ -1,5 +1,5 @@
-#include "ag.h"
 #include "loop.h"
+#include "solver_stoch_ag.h"
 
 using namespace nano;
 

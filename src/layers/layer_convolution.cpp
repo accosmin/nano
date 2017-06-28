@@ -1,5 +1,5 @@
-#include "convolution.h"
 #include "math/numeric.h"
+#include "layer_convolution.h"
 
 using namespace nano;
 

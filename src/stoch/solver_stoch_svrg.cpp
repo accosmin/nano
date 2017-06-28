@@ -1,34 +1,34 @@
-#include "ngd.h"
 #include "loop.h"
 #include "lrate.h"
+#include "solver_stoch_svrg.h"
 
 using namespace nano;
 
-stoch_ngd_t::stoch_ngd_t(const string_t& configuration) :
+stoch_svrg_t::stoch_svrg_t(const string_t& configuration) :
         stoch_solver_t(configuration)
 {
 }
 
-function_state_t stoch_ngd_t::minimize(const stoch_params_t& param, const function_t& function, const vector_t& x0) const
+function_state_t stoch_svrg_t::minimize(const stoch_params_t& param, const function_t& function, const vector_t& x0) const
 {
         return stoch_tune(this, param, function, x0, make_alpha0s(), make_decays());
 }
 
-function_state_t stoch_ngd_t::minimize(const stoch_params_t& param, const function_t& function, const vector_t& x0,
+function_state_t stoch_svrg_t::minimize(const stoch_params_t& param, const function_t& function, const vector_t& x0,
         const scalar_t alpha0, const scalar_t decay) const
 {
         // learning rate schedule
         lrate_t lrate(alpha0, decay);
 
         // assembly the optimizer
-        const auto optimizer = [&] (function_state_t& cstate, const function_state_t&)
+        const auto optimizer = [&] (function_state_t& cstate, const function_state_t& sstate)
         {
                 // learning rate
                 const scalar_t alpha = lrate.get();
 
                 // descent direction
-                const scalar_t norm = 1 / cstate.g.template lpNorm<2>();
-                cstate.d = -cstate.g * norm;
+                function.stoch_eval(sstate.x, &cstate.d);// NB: reuse descent direction to store snapshot gradient!
+                cstate.d.noalias() = - cstate.g + cstate.d - sstate.g;
 
                 // update solution
                 function.stoch_next();

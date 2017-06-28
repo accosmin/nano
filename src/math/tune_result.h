@@ -13,10 +13,8 @@ namespace nano
                 typename toptimum,
                 typename tparameters
         >
-        class tune_result_t
+        struct tune_result_t
         {
-        public:
-
                 ///
                 /// \brief constructor
                 ///

@@ -1,7 +1,7 @@
 #include <mutex>
-#include "batch/gd.h"
-#include "batch/cgd.h"
-#include "batch/lbfgs.h"
+#include "batch/solver_batch_gd.h"
+#include "batch/solver_batch_cgd.h"
+#include "batch/solver_batch_lbfgs.h"
 
 using namespace nano;
 

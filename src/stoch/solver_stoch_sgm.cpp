@@ -1,7 +1,7 @@
-#include "sgm.h"
 #include "loop.h"
 #include "lrate.h"
 #include "tensor/momentum.h"
+#include "solver_stoch_sgm.h"
 
 using namespace nano;
 

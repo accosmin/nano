@@ -1,7 +1,7 @@
-#include "adam.h"
 #include "loop.h"
 #include "lrate.h"
 #include "tensor/momentum.h"
+#include "solver_stoch_adam.h"
 
 using namespace nano;
 

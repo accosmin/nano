@@ -1,6 +1,6 @@
 #include "loop.h"
-#include "adadelta.h"
 #include "tensor/momentum.h"
+#include "solver_stoch_adadelta.h"
 
 using namespace nano;
 
