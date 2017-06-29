@@ -5,7 +5,7 @@
 using namespace nano;
 
 stoch_adadelta_t::stoch_adadelta_t(const string_t& configuration) :
-        stoch_solver_t(configuration)
+        stoch_solver_t(to_params(configuration, "momentum", 0.9, "epsilon", 1e-3))
 {
 }
 
@@ -14,8 +14,15 @@ function_state_t stoch_adadelta_t::minimize(const stoch_params_t& param, const f
         return stoch_tune(this, param, function, x0, make_momenta(), make_epsilons());
 }
 
+function_state_t stoch_adadelta_t::minimize(const stoch_params_t& param, const function_t& function, const vector_t& x0) const
+{
+        return  minimize(param, function, x0,
+                from_params<scalar_t>(config(), "momentum"),
+                from_params<scalar_t>(config(), "epsilon"));
+}
+
 function_state_t stoch_adadelta_t::minimize(const stoch_params_t& param, const function_t& function, const vector_t& x0,
-        const scalar_t momentum, const scalar_t epsilon) const
+        const scalar_t momentum, const scalar_t epsilon)
 {
         // second-order momentum of the gradient
         momentum_t<vector_t> gavg(momentum, x0.size());
@@ -45,6 +52,5 @@ function_state_t stoch_adadelta_t::minimize(const stoch_params_t& param, const f
                 sstate.update(function, cstate.x);
         };
 
-        return  stoch_loop(param, function, x0, optimizer, snapshot,
-                to_params("momentum", momentum, "epsilon", epsilon));
+        return  stoch_loop(param, function, x0, optimizer, snapshot);
 }
