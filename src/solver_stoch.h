@@ -16,14 +16,21 @@ namespace nano
         NANO_PUBLIC stoch_solver_factory_t& get_stoch_solvers();
 
         ///
-        /// \brief generic stochastic optimizer
+        /// \brief generic stochastic optimizer.
         ///
         struct NANO_PUBLIC stoch_solver_t : public configurable_t
         {
                 using configurable_t::configurable_t;
 
                 ///
-                /// \brief minimize starting from the initial point x0
+                /// \brief tune the optimization parameters for the given function.
+                /// NB: the optimum parameters are saved to ::config().
+                ///
+                virtual function_state_t tune(const stoch_params_t&, const function_t&, const vector_t& x0) = 0;
+
+                ///
+                /// \brief minimize starting from the initial point x0.
+                /// NB: no tuning is performed and the optimization parameters are loaded using ::config().
                 ///
                 virtual function_state_t minimize(const stoch_params_t&, const function_t&, const vector_t& x0) const = 0;
         };
