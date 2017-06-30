@@ -26,39 +26,6 @@ namespace nano
                 return params + (params.empty() ? "" : ",") + to_params(name, value, values...);
         }
 
-        template
-        <
-                std::size_t tindex,
-                typename... ttnames,
-                typename... ttvalues,
-                typename tnames = std::tuple<ttnames...>,
-                typename tvalues = std::tuple<ttvalues...>
-        >
-        string_t to_params(const tnames& names, const tvalues& values)
-        {
-                string_t params = to_params(std::get<tindex>(names), std::get<tindex>(values));
-                if (tindex + 1 < std::tuple_size<tnames>::value)
-                {
-                        params += "," + to_params<tindex + 1>(names, values);
-                }
-                return params;
-        }
-
-        template
-        <
-                typename... ttnames,
-                typename... ttvalues,
-                typename tnames = std::tuple<ttnames...>,
-                typename tvalues = std::tuple<ttvalues...>
-        >
-        string_t to_params(const tnames& names, const tvalues& values)
-        {
-                static_assert(
-                        std::tuple_size<tnames>::value == std::tuple_size<tvalues>::value,
-                        "mismatching number of names and values");
-                return to_params<0>(names, values);
-        }
-
         ///
         /// \brief computes the [begin, begin + size) range of the value associated for the given parameter name.
         /// \return true if there is any value associated.

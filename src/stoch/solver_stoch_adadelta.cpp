@@ -9,14 +9,18 @@ stoch_adadelta_t::stoch_adadelta_t(const string_t& configuration) :
 {
 }
 
-function_state_t stoch_adadelta_t::minimize(const stoch_params_t& param, const function_t& function, const vector_t& x0) const
+function_state_t stoch_adadelta_t::tune(const stoch_params_t& param, const function_t& function, const vector_t& x0)
 {
-        return stoch_tune(this, param, function, x0, make_momenta(), make_epsilons());
+        const auto tuned = stoch_tune(this, param, function, x0, make_momenta(), make_epsilons());
+        config(to_params(
+                "momentum", std::get<0>(tuned.params()),
+                "epsilon", std::get<1>(tuned.params())));
+        return tuned.optimum();
 }
 
 function_state_t stoch_adadelta_t::minimize(const stoch_params_t& param, const function_t& function, const vector_t& x0) const
 {
-        return  minimize(param, function, x0,
+        return  minimize(param.tuned(), function, x0,
                 from_params<scalar_t>(config(), "momentum"),
                 from_params<scalar_t>(config(), "epsilon"));
 }
@@ -52,5 +56,6 @@ function_state_t stoch_adadelta_t::minimize(const stoch_params_t& param, const f
                 sstate.update(function, cstate.x);
         };
 
-        return  stoch_loop(param, function, x0, optimizer, snapshot);
+        return  stoch_loop(param, function, x0, optimizer, snapshot,
+                to_params("momentum", momentum, "epsilon", epsilon));
 }

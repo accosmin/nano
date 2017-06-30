@@ -17,6 +17,9 @@ namespace nano
 
         ///
         /// \brief generic stochastic optimizer.
+        /// NB: its parameters (e.g. the learning rate) need to be tuned:
+        ///     - first call ::tune to estimate the optimum parameters (which can be retrieved using ::config())
+        ///     - second call ::minimize to use these parameters
         ///
         struct NANO_PUBLIC stoch_solver_t : public configurable_t
         {

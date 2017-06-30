@@ -20,7 +20,7 @@ trainer_result_t stoch_trainer_t::train(
         // parameters
         const auto epochs = clamp(from_params<size_t>(config(), "epochs"), 1, 1024);
         const auto batch0 = clamp(from_params<size_t>(config(), "batch"), 1, 1024);
-        const auto factor = clamp(from_params<size_t>(config(), "factor"), scalar_t(1.0), scalar_t(1.1));
+        const auto factor = clamp(from_params<scalar_t>(config(), "factor"), scalar_t(1.0), scalar_t(1.1));
         const auto epsilon = from_params<scalar_t>(config(), "eps");
         const auto solver = from_params<string_t>(config(), "solver");
         const auto patience = from_params<size_t>(config(), "patience");

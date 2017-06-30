@@ -33,7 +33,12 @@ static void check_function(const function_t& function,
                 const auto params = batch_params_t(iterations, epsilon);
                 const auto name = id + "[" + to_string(ls_init) + "][" + to_string(ls_strat) + "]";
 
-                benchmark::benchmark_function(optimizer, params, function, x0s, name, stats, gstats);
+                const auto op = [&] (const function_t& f, const vector_t& x0)
+                {
+                        return optimizer->minimize(params, f, x0);
+                };
+
+                benchmark::benchmark_function(op, function, x0s, name, stats, gstats);
         }
 
         // show per-problem statistics

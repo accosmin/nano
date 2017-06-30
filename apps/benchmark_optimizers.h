@@ -56,10 +56,9 @@ namespace benchmark
                 std::cout << table;
         }
 
-        template <typename toptimizer, typename tparams, typename tostats>
+        template <typename toptimizer, typename tostats>
         void benchmark_function(
-                const toptimizer& optimizer,
-                const tparams& params, const function_t& function, const std::vector<vector_t>& x0s, const string_t& name,
+                const toptimizer& optimizer, const function_t& function, const std::vector<vector_t>& x0s, const string_t& name,
                 tostats& stats, tostats& gstats)
         {
                 for (const auto& x0 : x0s)
@@ -72,7 +71,7 @@ namespace benchmark
                         const auto old_fcalls = function.fcalls();
                         const auto old_gcalls = function.gcalls();
 
-                        const auto state = optimizer->minimize(params, function, x0);
+                        const auto state = optimizer(function, x0);
 
                         const auto fcalls = function.fcalls() - old_fcalls;
                         const auto gcalls = function.gcalls() - old_gcalls;

@@ -31,7 +31,13 @@ static void check_function(const function_t& function,
                 const auto params = stoch_params_t(epochs, epoch_size, epsilon);
                 const auto name = id;
 
-                benchmark::benchmark_function(optimizer, params, function, x0s, name, stats, gstats);
+                const auto op = [&] (const function_t& f, const vector_t& x0)
+                {
+                        const auto tuned = optimizer->tune(params, f, x0);
+                        return optimizer->minimize(params, f, tuned.x);
+                };
+
+                benchmark::benchmark_function(op, function, x0s, name, stats, gstats);
         }
 
         // show per-problem statistics

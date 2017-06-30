@@ -3,37 +3,50 @@
 
 using namespace nano;
 
-template <ag_restart trestart>
-stoch_ag_base_t<trestart>::stoch_ag_base_t(const string_t& configuration) :
-        stoch_solver_t(configuration)
-{
-}
-
-template <ag_restart trestart>
-function_state_t stoch_ag_base_t<trestart>::minimize(const stoch_params_t& param,
-        const function_t& function, const vector_t& x0) const
-{
-        const auto qs = make_finite_space(scalar_t(0.0));
-        return stoch_tune(this, param, function, x0, make_alpha0s(), qs);
-}
-
-const auto get_theta = [] (const auto ptheta, const auto q)
+static scalar_t get_theta(const scalar_t ptheta, const scalar_t q)
 {
         const auto a = scalar_t(1);
         const auto b = ptheta * ptheta - q;
         const auto c = - ptheta * ptheta;
 
         return (-b + std::sqrt(b * b - 4 * a * c)) / (2 * a);
-};
+}
 
-const auto get_beta = [] (const auto ptheta, const auto ctheta)
+static scalar_t get_beta(const scalar_t ptheta, const scalar_t ctheta)
 {
         return ptheta * (1 - ptheta) / (ptheta * ptheta + ctheta);
-};
+}
+
+template <ag_restart trestart>
+stoch_ag_base_t<trestart>::stoch_ag_base_t(const string_t& configuration) :
+        stoch_solver_t(to_params(configuration, "alpha0", 1.0, "q", 0.0))
+{
+}
+
+template <ag_restart trestart>
+function_state_t stoch_ag_base_t<trestart>::tune(const stoch_params_t& param,
+        const function_t& function, const vector_t& x0)
+{
+        const auto qs = make_finite_space(scalar_t(0.0));
+        const auto tuned = stoch_tune(this, param, function, x0, make_alpha0s(), qs);
+        config(to_params(
+                "alpha0", std::get<0>(tuned.params()),
+                "q", std::get<1>(tuned.params())));
+        return tuned.optimum();
+}
+
+template <ag_restart trestart>
+function_state_t stoch_ag_base_t<trestart>::minimize(const stoch_params_t& param,
+        const function_t& function, const vector_t& x0) const
+{
+        return  minimize(param.tuned(), function, x0,
+                from_params<scalar_t>(config(), "alpha0"),
+                from_params<scalar_t>(config(), "q"));
+}
 
 template <ag_restart trestart>
 function_state_t stoch_ag_base_t<trestart>::minimize(const stoch_params_t& param, const function_t& function, const vector_t& x0,
-        const scalar_t alpha0, const scalar_t q) const
+        const scalar_t alpha0, const scalar_t q)
 {
         // current & previous iterations
         vector_t cx = x0;

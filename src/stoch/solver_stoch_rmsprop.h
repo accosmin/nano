@@ -13,9 +13,10 @@ namespace nano
         {
                 explicit stoch_rmsprop_t(const string_t& configuration = string_t());
 
+                function_state_t tune(const stoch_params_t&, const function_t&, const vector_t& x0) override;
                 function_state_t minimize(const stoch_params_t&, const function_t&, const vector_t& x0) const override;
 
-                function_state_t minimize(const stoch_params_t&, const function_t&, const vector_t& x0,
-                        const scalar_t alpha0, const scalar_t decay, const scalar_t momentum, const scalar_t epsilon) const;
+                static function_state_t minimize(const stoch_params_t&, const function_t&, const vector_t& x0,
+                        const scalar_t alpha0, const scalar_t decay, const scalar_t momentum, const scalar_t epsilon);
         };
 }
