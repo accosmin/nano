@@ -11,9 +11,8 @@ namespace nano
         <
                 typename tscalar_
         >
-        class tune_finite_space_t
+        struct tune_finite_space_t
         {
-        public:
                 using tscalar = tscalar_;
                 using tscalars = std::vector<tscalar>;
 

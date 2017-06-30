@@ -47,14 +47,13 @@ namespace nano
                 }
         }
 
-        ///
-        /// \brief tune the given stochastic optimizer.
-        ///
-        template <typename toptimizer, typename... tspaces>
-        auto stoch_tune(const toptimizer* optimizer,
-                const stoch_params_t& param, const function_t& function, const vector_t& x0,
-                tspaces... spaces)
-        {
+         ///
+         /// \brief tune the given stochastic optimizer.
+         ///
+         template <typename toptimizer, typename... tspaces>
+         auto stoch_tune(const toptimizer* optimizer,
+                const stoch_params_t& param, const function_t& function, const vector_t& x0, tspaces... spaces)
+         {
                 const auto tune_op = [&] (const auto... hypers)
                 {
                         return optimizer->minimize(param.tunable(), function, x0, hypers...);

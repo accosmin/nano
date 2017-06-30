@@ -131,20 +131,20 @@ static void alpha_blend(const tensor3d_t& mask, const tensor3d_t& img1, const te
         imgb.matrix(3).setConstant(1);
 }
 
-static string_t append_config(const string_t& configuration)
+static string_t append_config(const string_t& params)
 {
-        return  to_params(configuration,
+        return  to_params(params,
                 "type", to_string(charset_type::digit) + "[" + concatenate(enum_values<charset_type>()) + "]",
                 "color", "rgb[luma,rgba]",
                 "irows", "32[12,256]", "icols", "32[12,256]", "count", "1000[32,1M]");
 }
 
-charset_task_t::charset_task_t(const string_t& configuration) : mem_vision_task_t(
-        from_params<color_mode>(append_config(configuration), "color"),
-        clamp(from_params<tensor_size_t>(append_config(configuration), "irows", 32), 12, 256),
-        clamp(from_params<tensor_size_t>(append_config(configuration), "icols", 32), 12, 256),
-        tensor3d_dims_t{osize(from_params<charset_type>(append_config(configuration), "type")), 1, 1},
-        1, append_config(configuration))
+charset_task_t::charset_task_t(const string_t& params) : mem_vision_task_t(
+        from_params<color_mode>(append_config(params), "color"),
+        clamp(from_params<tensor_size_t>(append_config(params), "irows", 32), 12, 256),
+        clamp(from_params<tensor_size_t>(append_config(params), "icols", 32), 12, 256),
+        tensor3d_dims_t{osize(from_params<charset_type>(append_config(params), "type")), 1, 1},
+        1, append_config(params))
 {
 }
 

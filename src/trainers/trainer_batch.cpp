@@ -7,9 +7,8 @@
 
 using namespace nano;
 
-batch_trainer_t::batch_trainer_t(const string_t& parameters) :
-        trainer_t(to_params(parameters,
-        "solver", "lbfgs[" + concatenate(get_batch_solvers().ids()) + "]",
+batch_trainer_t::batch_trainer_t(const string_t& params) :
+        trainer_t(to_params(params, "solver", "lbfgs[" + concatenate(get_batch_solvers().ids()) + "]",
         "epochs", "1024[4,4096]", "eps", 1e-6, "patience", 32))
 {
 }
@@ -20,8 +19,8 @@ trainer_result_t batch_trainer_t::train(
 {
         // parameters
         const auto epochs = clamp(from_params<size_t>(config(), "epochs"), 4, 4096);
-        const auto epsilon = from_params<scalar_t>(config(), "eps");
         const auto solver = from_params<string_t>(config(), "solver");
+        const auto epsilon = from_params<scalar_t>(config(), "eps");
         const auto patience = from_params<size_t>(config(), "patience");
 
         // acumulator

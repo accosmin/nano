@@ -1,8 +1,8 @@
 #include <mutex>
-#include "layers/affine.h"
-#include "layers/normalize.h"
-#include "layers/activation.h"
-#include "layers/convolution.h"
+#include "layers/layer_affine.h"
+#include "layers/layer_normalize.h"
+#include "layers/layer_activation.h"
+#include "layers/layer_convolution.h"
 
 using namespace nano;
 

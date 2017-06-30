@@ -11,7 +11,7 @@ namespace nano
         template <typename top>
         struct regression_t final : public loss_t
         {
-                explicit regression_t(const string_t& parameters = string_t()) : loss_t(parameters) {}
+                explicit regression_t(const string_t& params = string_t()) : loss_t(params) {}
 
                 virtual scalar_t error(const vector_t& targets, const vector_t& scores) const override;
                 virtual scalar_t value(const vector_t& targets, const vector_t& scores) const override;

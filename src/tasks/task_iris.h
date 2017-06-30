@@ -14,7 +14,7 @@ namespace nano
         ///
         struct iris_task_t final : public mem_csv_task_t
         {
-                explicit iris_task_t(const string_t& configuration = string_t());
+                explicit iris_task_t(const string_t& params = string_t());
 
                 virtual bool populate() override;
         };

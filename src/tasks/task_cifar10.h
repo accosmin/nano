@@ -15,7 +15,7 @@ namespace nano
         ///
         struct cifar10_task_t final : public mem_vision_task_t
         {
-                explicit cifar10_task_t(const string_t& configuration = string_t());
+                explicit cifar10_task_t(const string_t& params = string_t());
 
                 virtual bool populate() override;
 

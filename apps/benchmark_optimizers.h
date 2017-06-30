@@ -58,8 +58,8 @@ namespace benchmark
 
         template <typename toptimizer, typename tparams, typename tostats>
         void benchmark_function(
-                const toptimizer& optimizer,
-                const tparams& params, const function_t& function, const std::vector<vector_t>& x0s, const string_t& name,
+                const toptimizer& optimizer, const tparams& params,
+                const function_t& function, const std::vector<vector_t>& x0s, const string_t& name,
                 tostats& stats, tostats& gstats)
         {
                 for (const auto& x0 : x0s)

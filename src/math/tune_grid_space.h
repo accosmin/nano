@@ -67,9 +67,8 @@ namespace nano
                 typename tmapping,
                 typename tvalid_tscalar = typename std::enable_if<std::is_floating_point<tscalar_>::value>::type
         >
-        class tune_grid_space_t
+        struct tune_grid_space_t
         {
-        public:
                 using tscalar = tscalar_;
                 using tscalars = std::vector<tscalar>;
 
