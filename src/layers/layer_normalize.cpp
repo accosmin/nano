@@ -33,8 +33,8 @@ static void gnorm(tidata&& idata, const todata& odata)
                 (idata.array() - imean) * oisum / (count * istdv * istdv * istdv);
 }
 
-normalize_layer_t::normalize_layer_t(const string_t& parameters) :
-        layer_t(to_params(parameters, "type", norm_type::plane)),
+normalize_layer_t::normalize_layer_t(const string_t& params) :
+        layer_t(to_params(params, "type", norm_type::plane)),
         m_idims({0, 0, 0}),
         m_odims({0, 0, 0}),
         m_type(norm_type::plane)
