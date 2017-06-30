@@ -29,18 +29,42 @@ namespace nano
                 return make_finite_space(scalar_t(1e-6), scalar_t(1e-5), scalar_t(1e-4));
         }
 
-        ///
-        /// \brief tune the given stochastic optimizer.
-        ///
-        template <typename toptimizer, typename... tspaces>
-        auto stoch_tune(const toptimizer* optimizer,
-                const stoch_params_t& param, const function_t& function, const vector_t& x0, tspaces... spaces)
+        namespace detail
         {
+                /// reference: http://www.cppsamples.com/common-tasks/apply-tuple-to-function.html
+                /// \todo replace this with std::apply when moving to C++17
+                template<typename F, typename Tuple, size_t ...S >
+                decltype(auto) apply_tuple_impl(F&& fn, Tuple&& t, std::index_sequence<S...>)
+                {
+                        return std::forward<F>(fn)(std::get<S>(std::forward<Tuple>(t))...);
+                }
+
+                template<typename F, typename Tuple>
+                decltype(auto) apply_from_tuple(F&& fn, Tuple&& t)
+                {
+                        std::size_t constexpr tSize = std::tuple_size<typename std::remove_reference<Tuple>::type>::value;
+                        return apply_tuple_impl(std::forward<F>(fn), std::forward<Tuple>(t), std::make_index_sequence<tSize>());
+                }
+        }
+
+         ///
+         /// \brief tune the given stochastic optimizer.
+         ///
+         template <typename toptimizer, typename... tspaces>
+         auto stoch_tune(const toptimizer* optimizer,
+                const stoch_params_t& param, const function_t& function, const vector_t& x0, tspaces... spaces)
+         {
                 const auto tune_op = [&] (const auto... hypers)
                 {
                         return optimizer->minimize(param.tunable(), function, x0, hypers...);
                 };
-                return nano::tune(tune_op, spaces...);
+                const auto config = nano::tune(tune_op, spaces...);
+
+                const auto done_op = [&] (const auto... hypers)
+                {
+                        return optimizer->minimize(param.tuned(), function, config.optimum().x, hypers...);
+                };
+                return detail::apply_from_tuple(done_op, config.params());
         }
 
         ///

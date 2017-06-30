@@ -48,8 +48,7 @@ static void check_function(const function_t& function)
 
                         // optimize
                         const auto params = stoch_params_t(epochs, epoch_size, epsilon3<scalar_t>());
-                        const auto tuned = optimizer->tune(params, function, x0);
-                        const auto state = optimizer->minimize(params, function, tuned.x);
+                        const auto state = optimizer->minimize(params, function, x0);
 
                         const auto x = state.x;
                         const auto f = state.f;

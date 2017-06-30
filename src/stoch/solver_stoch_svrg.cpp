@@ -5,24 +5,13 @@
 using namespace nano;
 
 stoch_svrg_t::stoch_svrg_t(const string_t& params) :
-        stoch_solver_t(to_params(params, "alpha0", 1.0, "decay", 0.5))
+        stoch_solver_t(params)
 {
-}
-
-function_state_t stoch_svrg_t::tune(const stoch_params_t& param, const function_t& function, const vector_t& x0)
-{
-        const auto tuned = stoch_tune(this, param, function, x0, make_alpha0s(), make_decays());
-        config(to_params(
-                "alpha0", std::get<0>(tuned.params()),
-                "decay", std::get<1>(tuned.params())));
-        return tuned.optimum();
 }
 
 function_state_t stoch_svrg_t::minimize(const stoch_params_t& param, const function_t& function, const vector_t& x0) const
 {
-        return  minimize(param.tuned(), function, x0,
-                from_params<scalar_t>(config(), "alpha0"),
-                from_params<scalar_t>(config(), "decay"));
+        return stoch_tune(this, param, function, x0, make_alpha0s(), make_decays());
 }
 
 function_state_t stoch_svrg_t::minimize(const stoch_params_t& param, const function_t& function, const vector_t& x0,

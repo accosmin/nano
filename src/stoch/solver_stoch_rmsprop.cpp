@@ -6,28 +6,13 @@
 using namespace nano;
 
 stoch_rmsprop_t::stoch_rmsprop_t(const string_t& params) :
-        stoch_solver_t(to_params(params, "alpha0", 1.0, "decay", 0.5, "momentum", 0.9, "epsilon", 1e-6))
+        stoch_solver_t(params)
 {
-}
-
-function_state_t stoch_rmsprop_t::tune(const stoch_params_t& param, const function_t& function, const vector_t& x0)
-{
-        const auto tuned = stoch_tune(this, param, function, x0, make_alpha0s(), make_decays(), make_momenta(), make_epsilons());
-        config(to_params(
-                "alpha0", std::get<0>(tuned.params()),
-                "decay", std::get<1>(tuned.params()),
-                "momentum", std::get<2>(tuned.params()),
-                "epsilon", std::get<3>(tuned.params())));
-        return tuned.optimum();
 }
 
 function_state_t stoch_rmsprop_t::minimize(const stoch_params_t& param, const function_t& function, const vector_t& x0) const
 {
-        return  minimize(param.tuned(), function, x0,
-                from_params<scalar_t>(config(), "alpha0"),
-                from_params<scalar_t>(config(), "decay"),
-                from_params<scalar_t>(config(), "momentum"),
-                from_params<scalar_t>(config(), "epsilon"));
+        return stoch_tune(this, param, function, x0, make_alpha0s(), make_decays(), make_momenta(), make_epsilons());
 }
 
 function_state_t stoch_rmsprop_t::minimize(const stoch_params_t& param, const function_t& function, const vector_t& x0,

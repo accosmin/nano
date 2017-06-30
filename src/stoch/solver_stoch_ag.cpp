@@ -19,29 +19,16 @@ static scalar_t get_beta(const scalar_t ptheta, const scalar_t ctheta)
 
 template <ag_restart trestart>
 stoch_ag_base_t<trestart>::stoch_ag_base_t(const string_t& params) :
-        stoch_solver_t(to_params(params, "alpha0", 1.0, "q", 0.0))
+        stoch_solver_t(params)
 {
-}
-
-template <ag_restart trestart>
-function_state_t stoch_ag_base_t<trestart>::tune(const stoch_params_t& param,
-        const function_t& function, const vector_t& x0)
-{
-        const auto qs = make_finite_space(scalar_t(0.0));
-        const auto tuned = stoch_tune(this, param, function, x0, make_alpha0s(), qs);
-        config(to_params(
-                "alpha0", std::get<0>(tuned.params()),
-                "q", std::get<1>(tuned.params())));
-        return tuned.optimum();
 }
 
 template <ag_restart trestart>
 function_state_t stoch_ag_base_t<trestart>::minimize(const stoch_params_t& param,
         const function_t& function, const vector_t& x0) const
 {
-        return  minimize(param.tuned(), function, x0,
-                from_params<scalar_t>(config(), "alpha0"),
-                from_params<scalar_t>(config(), "q"));
+        const auto qs = make_finite_space(scalar_t(0.0));
+        return stoch_tune(this, param, function, x0, make_alpha0s(), qs);
 }
 
 template <ag_restart trestart>

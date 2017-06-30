@@ -6,33 +6,15 @@
 using namespace nano;
 
 stoch_adam_t::stoch_adam_t(const string_t& params) :
-        stoch_solver_t(to_params(params,
-        "alpha0", 1.0, "decay", 0.5, "epsilon", 1e-6, "beta1", 0.900, "beta2", 0.999))
+        stoch_solver_t(params)
 {
-}
-
-function_state_t stoch_adam_t::tune(const stoch_params_t& param, const function_t& function, const vector_t& x0)
-{
-        const auto beta1s = make_finite_space(scalar_t(0.90));
-        const auto beta2s = make_finite_space(scalar_t(0.90), scalar_t(0.95), scalar_t(0.99));
-        const auto tuned = stoch_tune(this, param, function, x0, make_alpha0s(), make_decays(), make_epsilons(), beta1s, beta2s);
-        config(to_params(
-                "alpha0", std::get<0>(tuned.params()),
-                "decay", std::get<1>(tuned.params()),
-                "epsilon", std::get<2>(tuned.params()),
-                "beta1", std::get<3>(tuned.params()),
-                "beta2", std::get<4>(tuned.params())));
-        return tuned.optimum();
 }
 
 function_state_t stoch_adam_t::minimize(const stoch_params_t& param, const function_t& function, const vector_t& x0) const
 {
-        return  minimize(param.tuned(), function, x0,
-                from_params<scalar_t>(config(), "alpha0"),
-                from_params<scalar_t>(config(), "decay"),
-                from_params<scalar_t>(config(), "epsilon"),
-                from_params<scalar_t>(config(), "beta1"),
-                from_params<scalar_t>(config(), "beta2"));
+        const auto beta1s = make_finite_space(scalar_t(0.90));
+        const auto beta2s = make_finite_space(scalar_t(0.90), scalar_t(0.95), scalar_t(0.99));
+        return stoch_tune(this, param, function, x0, make_alpha0s(), make_decays(), make_epsilons(), beta1s, beta2s);
 }
 
 function_state_t stoch_adam_t::minimize(const stoch_params_t& param, const function_t& function, const vector_t& x0,

@@ -9,7 +9,7 @@ using namespace nano;
 
 stoch_trainer_t::stoch_trainer_t(const string_t& params) :
         trainer_t(to_params(params, "solver", "sg[" + concatenate(get_stoch_solvers().ids()) + "]",
-        "epochs", "16[1,1024]", "batch", "32[32,1024]", "eps", 1e-6, "patience", 32))
+        "epochs", "16[1,1024]", "batch", "32[32,1024]", "factor", "1[1.0,1.1]", "eps", 1e-6, "patience", 32))
 {
 }
 
@@ -20,10 +20,10 @@ trainer_result_t stoch_trainer_t::train(
         // parameters
         const auto epochs = clamp(from_params<size_t>(config(), "epochs"), 1, 1024);
         const auto batch0 = clamp(from_params<size_t>(config(), "batch"), 1, 1024);
+        const auto solver = from_params<string_t>(config(), "solver");
+        const auto factor = from_params<scalar_t>(config(), "factor");
         const auto epsilon = from_params<scalar_t>(config(), "eps");
-        const auto solvern = from_params<string_t>(config(), "solver");
         const auto patience = from_params<size_t>(config(), "patience");
-        const scalar_t factor = 1;
 
         // minibatch
         const auto train_size = task.size({fold, protocol::train});
@@ -97,15 +97,9 @@ trainer_result_t stoch_trainer_t::train(
         // assembly optimization function & train the model
         const auto function = stoch_function_t(acc, iterator, task,  minibatch);
         const auto params = stoch_params_t{epochs, epoch_size, epsilon, fn_ulog, fn_tlog};
-        const auto solver = get_stoch_solvers().get(solvern);
+        get_stoch_solvers().get(solver)->minimize(params, function, model.params());
 
-        // tune the batch ratio
-        //const auto factors = make_log10_space(scalar_t(-4), scalar_t(+0), scalar_t(0.5));
-        // todo
-
-        solver->minimize(params, function, model.params());
-
-        log_info() << "<<< stoch-" << solvern << ": " << result << ",time=" << timer.elapsed() << ".";
+        log_info() << "<<< stoch-" << solver << ": " << result << ",time=" << timer.elapsed() << ".";
 
         // OK
         if (result.valid())
