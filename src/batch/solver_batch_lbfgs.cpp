@@ -6,8 +6,8 @@
 
 using namespace nano;
 
-batch_lbfgs_t::batch_lbfgs_t(const string_t& configuration) :
-        batch_solver_t(to_params(configuration,
+batch_lbfgs_t::batch_lbfgs_t(const string_t& params) :
+        batch_solver_t(to_params(params,
         "ls_init", ls_initializer::quadratic,
         "ls_strat", ls_strategy::interpolation,
         "c1", 1e-4, "c2", 0.9))

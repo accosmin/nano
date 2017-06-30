@@ -3,8 +3,8 @@
 
 using namespace nano;
 
-stoch_adagrad_t::stoch_adagrad_t(const string_t& configuration) :
-        stoch_solver_t(to_params(configuration, "alpha0", 1.0, "epsilon", 1e-6))
+stoch_adagrad_t::stoch_adagrad_t(const string_t& params) :
+        stoch_solver_t(to_params(params, "alpha0", 1.0, "epsilon", 1e-6))
 {
 }
 

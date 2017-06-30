@@ -12,7 +12,7 @@ namespace nano
         ///
         struct affine_layer_t final : public layer_t
         {
-                explicit affine_layer_t(const string_t& parameters = string_t());
+                explicit affine_layer_t(const string_t& params = string_t());
 
                 virtual rlayer_t clone() const override;
                 virtual void configure(const tensor3d_dims_t&, const string_t& name) override;

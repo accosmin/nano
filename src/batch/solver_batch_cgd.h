@@ -14,7 +14,7 @@ namespace nano
         >
         struct batch_cgd_t final : public batch_solver_t
         {
-                explicit batch_cgd_t(const string_t& configuration = string_t());
+                explicit batch_cgd_t(const string_t& params = string_t());
 
                 function_state_t minimize(const batch_params_t&, const function_t&, const vector_t& x0) const override;
 

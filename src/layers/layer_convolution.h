@@ -19,7 +19,7 @@ namespace nano
         ///
         struct convolution_layer_t final : public layer_t
         {
-                explicit convolution_layer_t(const string_t& parameters = string_t());
+                explicit convolution_layer_t(const string_t& params = string_t());
 
                 virtual rlayer_t clone() const override;
                 virtual void configure(const tensor3d_dims_t&, const string_t&) override;

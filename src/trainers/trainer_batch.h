@@ -9,7 +9,7 @@ namespace nano
         ///
         struct batch_trainer_t final : public trainer_t
         {
-                explicit batch_trainer_t(const string_t& parameters = string_t());
+                explicit batch_trainer_t(const string_t& params = string_t());
 
                 virtual trainer_result_t train(
                         const iterator_t&, const task_t&, const size_t fold, const size_t nthreads, const loss_t&,

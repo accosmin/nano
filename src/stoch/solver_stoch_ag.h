@@ -24,7 +24,7 @@ namespace nano
         template <ag_restart trestart>
         struct stoch_ag_base_t final : public stoch_solver_t
         {
-                explicit stoch_ag_base_t(const string_t& configuration = string_t());
+                explicit stoch_ag_base_t(const string_t& params = string_t());
 
                 function_state_t tune(const stoch_params_t&, const function_t&, const vector_t& x0) override;
                 function_state_t minimize(const stoch_params_t&, const function_t&, const vector_t& x0) const override;

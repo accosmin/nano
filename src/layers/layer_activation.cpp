@@ -3,8 +3,8 @@
 
 using namespace nano;
 
-activation_layer_t::activation_layer_t(const string_t& parameters) :
-        layer_t(parameters),
+activation_layer_t::activation_layer_t(const string_t& params) :
+        layer_t(params),
         m_idims({0, 0, 0}),
         m_odims({0, 0, 0})
 {

@@ -29,13 +29,13 @@ static void check_function(const function_t& function,
                 for (const ls_initializer ls_init : enum_values<ls_initializer>())
                         for (const ls_strategy ls_strat : enum_values<ls_strategy>())
         {
-                const auto optimizer = get_batch_solvers().get(id, to_params("ls_init", ls_init, "ls_strat", ls_strat));
+                const auto solver = get_batch_solvers().get(id, to_params("ls_init", ls_init, "ls_strat", ls_strat));
                 const auto params = batch_params_t(iterations, epsilon);
                 const auto name = id + "[" + to_string(ls_init) + "][" + to_string(ls_strat) + "]";
 
                 const auto op = [&] (const function_t& f, const vector_t& x0)
                 {
-                        return optimizer->minimize(params, f, x0);
+                        return solver->minimize(params, f, x0);
                 };
 
                 benchmark::benchmark_function(op, function, x0s, name, stats, gstats);

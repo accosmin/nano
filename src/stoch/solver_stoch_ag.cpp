@@ -18,8 +18,8 @@ static scalar_t get_beta(const scalar_t ptheta, const scalar_t ctheta)
 }
 
 template <ag_restart trestart>
-stoch_ag_base_t<trestart>::stoch_ag_base_t(const string_t& configuration) :
-        stoch_solver_t(to_params(configuration, "alpha0", 1.0, "q", 0.0))
+stoch_ag_base_t<trestart>::stoch_ag_base_t(const string_t& params) :
+        stoch_solver_t(to_params(params, "alpha0", 1.0, "q", 0.0))
 {
 }
 

@@ -4,8 +4,8 @@
 
 using namespace nano;
 
-stoch_adadelta_t::stoch_adadelta_t(const string_t& configuration) :
-        stoch_solver_t(to_params(configuration, "momentum", 0.9, "epsilon", 1e-3))
+stoch_adadelta_t::stoch_adadelta_t(const string_t& params) :
+        stoch_solver_t(to_params(params, "momentum", 0.9, "epsilon", 1e-3))
 {
 }
 

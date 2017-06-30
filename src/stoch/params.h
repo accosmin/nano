@@ -10,10 +10,10 @@ namespace nano
         ///
         struct stoch_params_t
         {
-                /// logging operator: op(state, configuration), returns true if the optimization should stop
+                /// logging operator: op(state, params), returns true if the optimization should stop
                 using opulog_t = std::function<bool(const function_state_t&, const string_t&)>;
 
-                /// tunning operator: op(state, configuration)
+                /// tunning operator: op(state, params)
                 using optlog_t = std::function<void(const function_state_t&, const string_t&)>;
 
                 ///

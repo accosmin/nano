@@ -27,8 +27,8 @@ namespace nano
                         const tensor3d_dims_t& idims,
                         const tensor3d_dims_t& odims,
                         const size_t fsize,
-                        const string_t& configuration = string_t()) :
-                        task_t(configuration),
+                        const string_t& params = string_t()) :
+                        task_t(params),
                         m_idims(idims), m_odims(odims),
                         m_fsize(fsize), m_frand(1, 10)
                 {

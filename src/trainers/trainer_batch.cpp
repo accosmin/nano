@@ -7,9 +7,8 @@
 
 using namespace nano;
 
-batch_trainer_t::batch_trainer_t(const string_t& parameters) :
-        trainer_t(to_params(parameters,
-        "solver", "lbfgs[" + concatenate(get_batch_solvers().ids()) + "]",
+batch_trainer_t::batch_trainer_t(const string_t& params) :
+        trainer_t(to_params(params, "solver", "lbfgs[" + concatenate(get_batch_solvers().ids()) + "]",
         "epochs", "1024[4,4096]", "eps", 1e-6, "patience", 32))
 {
 }
@@ -21,7 +20,7 @@ trainer_result_t batch_trainer_t::train(
         // parameters
         const auto epochs = clamp(from_params<size_t>(config(), "epochs"), 4, 4096);
         const auto epsilon = from_params<scalar_t>(config(), "eps");
-        const auto solver = from_params<string_t>(config(), "solver");
+        const auto solvern = from_params<string_t>(config(), "solver");
         const auto patience = from_params<size_t>(config(), "patience");
 
         // acumulator
@@ -69,9 +68,11 @@ trainer_result_t batch_trainer_t::train(
         // assembly optimization function & train the model
         const auto function = batch_function_t(acc, iterator, task, fold_t{fold, protocol::train});
         const auto params = batch_params_t{epochs, epsilon, fn_ulog};
-        get_batch_solvers().get(solver)->minimize(params, function, model.params());
+        const auto solver = get_batch_solvers().get(solvern);
 
-        log_info() << "<<< batch-" << solver << ": " << result << ",time=" << timer.elapsed() << ".";
+        solver->minimize(params, function, model.params());
+
+        log_info() << "<<< batch-" << solvern << ": " << result << ",time=" << timer.elapsed() << ".";
 
         // OK
         if (result.valid())

@@ -4,8 +4,8 @@
 
 using namespace nano;
 
-stoch_ngd_t::stoch_ngd_t(const string_t& configuration) :
-        stoch_solver_t(to_params(configuration, "alpha0", 1.0, "decay", 0.5))
+stoch_ngd_t::stoch_ngd_t(const string_t& params) :
+        stoch_solver_t(to_params(params, "alpha0", 1.0, "decay", 0.5))
 {
 }
 

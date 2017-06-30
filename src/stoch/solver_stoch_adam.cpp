@@ -5,8 +5,8 @@
 
 using namespace nano;
 
-stoch_adam_t::stoch_adam_t(const string_t& configuration) :
-        stoch_solver_t(to_params(configuration,
+stoch_adam_t::stoch_adam_t(const string_t& params) :
+        stoch_solver_t(to_params(params,
         "alpha0", 1.0, "decay", 0.5, "epsilon", 1e-6, "beta1", 0.900, "beta2", 0.999))
 {
 }

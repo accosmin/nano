@@ -9,7 +9,7 @@ namespace nano
         ///
         struct activation_layer_t : public layer_t
         {
-                explicit activation_layer_t(const string_t& parameters = string_t());
+                explicit activation_layer_t(const string_t& params = string_t());
 
                 virtual void configure(const tensor3d_dims_t&, const string_t&) override;
                 virtual void output(tensor3d_const_map_t, tensor1d_const_map_t, tensor3d_map_t) override;

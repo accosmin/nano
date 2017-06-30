@@ -3,8 +3,8 @@
 
 using namespace nano;
 
-convolution_layer_t::convolution_layer_t(const string_t& parameters) :
-        layer_t(to_params(parameters, "dims", "16[1,4096]", "rows", "8[1,32]", "cols", "8[1,32]",
+convolution_layer_t::convolution_layer_t(const string_t& params) :
+        layer_t(to_params(params, "dims", "16[1,4096]", "rows", "8[1,32]", "cols", "8[1,32]",
         "conn", "1[1,16]", "drow", "1[1,8]", "dcol", "1[1,8]"))
 {
 }

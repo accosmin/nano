@@ -3,8 +3,8 @@
 
 using namespace nano;
 
-affine_layer_t::affine_layer_t(const string_t& parameters) :
-        layer_t(to_params(parameters, "dims", "10[1,4096]")),
+affine_layer_t::affine_layer_t(const string_t& params) :
+        layer_t(to_params(params, "dims", "10[1,4096]")),
         m_idims({0, 0, 0}),
         m_odims({0, 0, 0}),
         m_psize(0)
