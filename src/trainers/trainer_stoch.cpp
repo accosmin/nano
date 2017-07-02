@@ -9,7 +9,7 @@ using namespace nano;
 
 stoch_trainer_t::stoch_trainer_t(const string_t& params) :
         trainer_t(to_params(params, "solver", "sg[" + concatenate(get_stoch_solvers().ids()) + "]",
-        "epochs", "16[1,1024]", "batch", "32[32,1024]", "factor", "1[1.0,1.1]", "eps", 1e-6, "patience", 32))
+        "epochs", "16[1,1024]", "batch", "32[32,1024]", "eps", 1e-6, "patience", 32))
 {
 }
 
@@ -21,7 +21,6 @@ trainer_result_t stoch_trainer_t::train(
         const auto epochs = clamp(from_params<size_t>(config(), "epochs"), 1, 1024);
         const auto batch0 = clamp(from_params<size_t>(config(), "batch"), 1, 1024);
         const auto solver = from_params<string_t>(config(), "solver");
-        const auto factor = from_params<scalar_t>(config(), "factor");
         const auto epsilon = from_params<scalar_t>(config(), "eps");
         const auto patience = from_params<size_t>(config(), "patience");
 
@@ -57,7 +56,7 @@ trainer_result_t stoch_trainer_t::train(
                         << "] " << timer.elapsed() << ".";
 
                 // NB: need to reset the minibatch size (changed during tuning)!
-                minibatch.reset(batch0, factor);
+                minibatch.reset(batch0);
         };
 
         // logging operator

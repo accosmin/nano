@@ -18,7 +18,7 @@ exp.add_iterator("default")
 
 # trainers
 batch_params = "epochs=1000,patience=32,epsilon=1e-6"
-stoch_params = "epochs=1000,patience=32,epsilon=1e-6,batch=32,factor=1"
+stoch_params = "epochs=1000,patience=32,epsilon=1e-6,batch=32"
 
 exp.add_trainer("stoch_adadelta", stoch_params)
 

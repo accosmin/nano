@@ -17,25 +17,25 @@ exp.add_loss("slogistic")
 exp.add_iterator("default")
 
 # trainers
-stoch_params = "epochs=1000,patience=32,epsilon=1e-6,batch={},factor={}"
-minibatch_name = "minibatch{}f{}"
+stoch_params = "epochs=20,patience=32,epsilon=1e-6,batch={}"
+minibatch_name = "minibatch{}"
 
-for size in [[32, 1.00000], [32, 1.00001], [32, 1.00003], [32, 1.00010], [32, 1.00030], [32, 1.00100]]:
-        exp.add_trainer("stoch_adadelta", stoch_params.format(size[0], size[1]), minibatch_name.format(size[0], size[1]))
+for size in [32, 64, 128, 256, 512, 1024]:
+        exp.add_trainer("stoch_adadelta", stoch_params.format(size), minibatch_name.format(size))
 
 # models
-exp.add_model("convnet5", models.convnet5 + models.outlayer)
+exp.add_model("convnet8", models.convnet8 + models.outlayer)
 
 # train all configurations
 trials = 10
-exp.run_all(trials = trials)
+#exp.run_all(trials = trials)
 
 # compare trainers
 for mname, iname, lname in [(x, y, z) for x in exp.models for y in exp.iterators for z in exp.losses]:
-        for trial in range(trials):
-                exp.plot_many(
-                        exp.filter(trial, mname, ".*", iname, lname, ".state"),
-                        exp.path(trial, mname, None, iname, lname, ".pdf"))
+        #for trial in range(trials):
+        #        exp.plot_many(
+        #                exp.filter(trial, mname, ".*", iname, lname, ".state"),
+        #                exp.path(trial, mname, None, iname, lname, ".pdf"))
 
         exp.summarize(trials, mname, ".*", iname, lname,
                 exp.path(None, mname, None, iname, lname, ".log"),
