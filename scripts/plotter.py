@@ -3,24 +3,41 @@ import matplotlib.mlab as mlab
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_pdf import PdfPages
 
-def get_state_csv(spath):
+def get_state_csv(path):
         # state file with the following format:
         #  (epoch, {train, valid, test} x {criterion, loss{average, variance, maximum}, error{average, variance, maximum}}, time)+
-        name = os.path.basename(spath).replace(".state", "")
+        name = os.path.basename(path).replace(".state", "")
         name = name.replace(name[0 : name.find("_") + 1], "")
-        data = mlab.csv2rec(spath, delimiter = ' ', names = None)
+        data = mlab.csv2rec(path, delimiter = ' ', names = None)
         return name, data
 
-def get_state_csvs(spaths):
+def get_state_csvs(paths):
         datas = []
         names = []
-        for spath in spaths:
-                name, data = get_state_csv(spath)
+        for path in paths:
+                name, data = get_state_csv(path)
                 datas.append(data)
                 names.append(name)
         return names, datas
 
-def plot_one(spath, ppath):
+def get_trial_csv(path):
+        # trial file with the following format:
+        #  (model name, trainer name, iterator name, loss name, test value, test error, #epochs, convergence speed, training time)+
+        name = os.path.basename(path).replace(".state", "")
+        name = name.replace(name[0 : name.find("_") + 1], "")
+        data = mlab.csv2rec(path, delimiter = ';', names = None)
+        return name, data
+
+def get_trial_csvs(paths):
+        datas = []
+        names = []
+        for path in paths:
+                name, data = get_trial_csv(paths)
+                datas.append(data)
+                names.append(name)
+        return names, datas
+
+def plot_state_one(spath, ppath):
         title, data = get_state_csv(spath)
         with PdfPages(ppath) as pdf:
                 for col in (0, 1):
@@ -58,7 +75,7 @@ def plot_one(spath, ppath):
                         pdf.savefig()
                         plt.close()
 
-def plot_many_wrt(names, datas, pdf, xcol, ycol):
+def plot_state_many_wrt(names, datas, pdf, xcol, ycol):
         colnames = datas[0].dtype.names
         title = colnames[ycol + 1]
         # x axis - epoch/iteration index
@@ -77,11 +94,20 @@ def plot_many_wrt(names, datas, pdf, xcol, ycol):
         pdf.savefig()
         plt.close()
 
-def plot_many(spaths, ppath):
+def plot_state_many(spaths, ppath):
         names, datas = get_state_csvs(spaths)
         with PdfPages(ppath) as pdf:
                 for col in (0, 1, 2, 3, 4, 5, 7, 8):
                         # plot wrt epoch/iteration number
-                        plot_many_wrt(names, datas, pdf, 0, col)
+                        plot_state_many_wrt(names, datas, pdf, 0, col)
                         # plot wrt time
-                        plot_many_wrt(names, datas, pdf, 7, col)
+                        plot_state_many_wrt(names, datas, pdf, 7, col)
+
+def plot_trial_many_wrt(names, datas, pdf, ycol):
+        # todo
+
+def plot_trial_many(spaths, ppath):
+        names, datas = get_trial_csvs(spaths)
+        with PdfPages(ppath) as pdf:
+                for col in (4, 5, 6, 7, 8):
+                        plot_trial_many_wrt(names, datas, pdf, col)

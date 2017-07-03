@@ -74,11 +74,11 @@ class experiment:
                 self.log("|--->training done, see <", lpath, ">")
 
         def plot_one(self, spath, ppath):
-                plotter.plot_one(spath, ppath)
+                plotter.plot_state_one(spath, ppath)
                 self.log("|--->plotting done, see <", ppath, ">")
 
         def plot_many(self, spaths, ppath):
-                plotter.plot_many(spaths, ppath)
+                plotter.plot_state_many(spaths, ppath)
                 self.log("|--->plotting done, see <", ppath, ">")
 
         def run_one(self, trial, mname, mparam, tname, tparam, iname, iparam, lname, lparam):
