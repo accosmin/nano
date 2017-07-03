@@ -142,8 +142,7 @@ class experiment:
                 lfile.close()
                 print("invalid log file <", lpath, ">")
 
-        def summarize_one(self, trials, mname, tname, iname, lname, lfile):
-                cmdline = self.cfg.app_stats + " -p 4"
+        def get_logs(self, trials, mname, tname, iname, lname):
                 values = []
                 errors = []
                 epochs = []
@@ -157,22 +156,28 @@ class experiment:
                         epochs.append(epoch)
                         speeds.append(speed)
                         deltas.append(delta)
+                return values, errors, epochs, speeds, deltas
+
+        def summarize_one(self, trials, mname, tname, iname, lname, lfile):
+                values, errors, epochs, speeds, deltas = self.get_logs(trials, mname, tname, iname, lname)
+                cmdline = self.cfg.app_stats + " -p 4"
                 value_stats = subprocess.check_output(cmdline.split() + values).decode('utf-8').strip()
                 error_stats = subprocess.check_output(cmdline.split() + errors).decode('utf-8').strip()
                 epoch_stats = subprocess.check_output(cmdline.split() + epochs).decode('utf-8').strip()
                 speed_stats = subprocess.check_output(cmdline.split() + speeds).decode('utf-8').strip()
                 delta_stats = subprocess.check_output(cmdline.split() + deltas).decode('utf-8').strip()
-                print("{0};{1};{2};{3};{4};{5};{6};{7};{8}".format(
-                        mname, tname, iname, lname, value_stats, error_stats, epoch_stats, speed_stats, delta_stats),
-                        file = lfile)
+                cform = "{};{};{};{};{};{};{};{};{}"
+                print(cform.format(mname, tname, iname, lname, value_stats, error_stats, epoch_stats, speed_stats, delta_stats), file = lfile)
 
         def summarize(self, trials, mname_reg, tname_reg, iname_reg, lname_reg, lpath, cpath):
                 cfile = open(cpath, "w")
+
                 # header
-                print("{0};{1};{2};{3};{4};{5};{6};{7};{8}".format(
-                        "model", "trainer", "iterator", "loss", "test value", "test error", "epochs", "convergence speed", "duration (sec)"),
-                        file = cfile)
-                # contenta
+                hform = "{};{};{};{};{};{};{};{};{}"
+                header = hform.format("model", "trainer", "iterator", "loss", "test value", "test error", "epochs", "convergence speed", "duration (sec)")
+                print(header, file = cfile)
+
+                # contents
                 for mname in self.models:
                         if not re.match(mname_reg, mname):
                                 continue

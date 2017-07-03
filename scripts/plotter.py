@@ -3,7 +3,7 @@ import matplotlib.mlab as mlab
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_pdf import PdfPages
 
-def get_csv(spath):
+def get_state_csv(spath):
         # state file with the following format:
         #  (epoch, {train, valid, test} x {criterion, loss{average, variance, maximum}, error{average, variance, maximum}}, time)+
         name = os.path.basename(spath).replace(".state", "")
@@ -11,17 +11,17 @@ def get_csv(spath):
         data = mlab.csv2rec(spath, delimiter = ' ', names = None)
         return name, data
 
-def get_csvs(spaths):
+def get_state_csvs(spaths):
         datas = []
         names = []
         for spath in spaths:
-                name, data = get_csv(spath)
+                name, data = get_state_csv(spath)
                 datas.append(data)
                 names.append(name)
         return names, datas
 
 def plot_one(spath, ppath):
-        title, data = get_csv(spath)
+        title, data = get_state_csv(spath)
         with PdfPages(ppath) as pdf:
                 for col in (0, 1):
                         # x axis - epoch/iteration index
@@ -78,7 +78,7 @@ def plot_many_wrt(spaths, names, datas, pdf, xcol, ycol):
         plt.close()
 
 def plot_many(spaths, ppath):
-        names, datas = get_csvs(spaths)
+        names, datas = get_state_csvs(spaths)
         with PdfPages(ppath) as pdf:
                 for col in (0, 1, 2, 3, 4, 5, 7, 8):
                         # plot wrt epoch/iteration number
