@@ -68,10 +68,9 @@ class experiment:
                 return paths
 
         def train_one(self, param, lpath):
-                lfile = open(lpath, "w")
-                self.log("running <", param, ">...")
-                subprocess.check_call((self.cfg.app_train + " " + param).split(), stdout = lfile)
-                lfile.close()
+                with open(lpath, "w") as lfile:
+                        self.log("running <", param, ">...")
+                        subprocess.check_call((self.cfg.app_train + " " + param).split(), stdout = lfile)
                 self.log("|--->training done, see <", lpath, ">")
 
         def plot_one(self, spath, ppath):
@@ -132,22 +131,21 @@ class experiment:
                 return str(eval(delta))
 
         def get_log(self, lpath):
-                lfile = open(lpath, "r")
-                for line in lfile:
-                        if line.find("speed=") < 0:
-                                continue
-                        # search for the test loss value
-                        value, index = self.get_token(line, "test=", "|", 0)
-                        # search for the test error
-                        error, index = self.get_token(line, "|", ",", index)
-                        # search for the optimum number of epochs
-                        epoch, index = self.get_token(line, "epoch=", ",", index)
-                        # search for the convergence speed
-                        speed, index = self.get_token(line, "speed=", "/s", index)
-                        # duration
-                        delta, index = self.get_token(line, "time=", ".", index)
-                        return value, error, epoch, speed, self.get_seconds(delta)
-                lfile.close()
+                with open(lpath, "r") as lfile:
+                        for line in lfile:
+                                if line.find("speed=") < 0:
+                                        continue
+                                # search for the test loss value
+                                value, index = self.get_token(line, "test=", "|", 0)
+                                # search for the test error
+                                error, index = self.get_token(line, "|", ",", index)
+                                # search for the optimum number of epochs
+                                epoch, index = self.get_token(line, "epoch=", ",", index)
+                                # search for the convergence speed
+                                speed, index = self.get_token(line, "speed=", "/s", index)
+                                # duration
+                                delta, index = self.get_token(line, "time=", ".", index)
+                                return value, error, epoch, speed, self.get_seconds(delta)
                 print("invalid log file <", lpath, ">")
 
         def get_logs(self, trials, mname, tname, iname, lname):
