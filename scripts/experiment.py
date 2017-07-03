@@ -41,7 +41,7 @@ class experiment:
                 self.iterators[config_name] = self.cfg.config_iterator(name, parameters)
 
         def path(self, trial, mname, tname, iname, lname, extension):
-                basepath = self.dir + "/"
+                basepath = self.dir
                 basepath += "trial{}".format(trial) if not (trial is None) else "result"
                 basepath += "_" + mname if mname else ""
                 basepath += "_" + tname if tname else ""
@@ -94,16 +94,24 @@ class experiment:
                 self.plot_one(spath, ppath)
                 self.log()
 
-        def run_trial(self, trial):
+        def run_trials(self, trials, mname, mparam, tname, tparam, iname, iparam, lname, lparam):
+                for trial in range(trials):
+                        self.run_one(trial, mname, mparam, tname, tparam, iname, iparam, lname, lparam)
+
+                # export the results from multiple trials as csv
+                cpath = self.path(None, mname, tname, iname, lname, ".csv")
+                with open(cpath, "w") as cfile:
+                        print(self.get_csv_header(), file = cfile)
+                        values, errors, epochs, speeds, deltas = self.get_logs(trials, mname, tname, iname, lname)
+                        for value, error, epoch, speed, delta in zip(values, errors, epochs, speeds, deltas):
+                                print(self.get_csv_row(mname, tname, iname, lname, value, error, epoch, speed, delta), file = cfile)
+
+        def run_all(self, trials = 10):
                 for mname, mparam in self.models.items():
                         for tname, tparam in self.trainers.items():
                                 for iname, iparam in self.iterators.items():
                                         for lname, lparam in self.losses.items():
-                                                self.run_one(trial, mname, mparam, tname, tparam, iname, iparam, lname, lparam)
-
-        def run_all(self, trials = 10):
-                for trial in range(trials):
-                        self.run_trial(trial)
+                                                self.run_trials(trials, mname, mparam, tname, tparam, iname, iparam, lname, lparam)
 
         def get_token(self, line, begin_delim, end_delim, start = 0):
                 begin = line.find(begin_delim, start) + len(begin_delim)
@@ -158,7 +166,13 @@ class experiment:
                         deltas.append(delta)
                 return values, errors, epochs, speeds, deltas
 
-        def summarize_one(self, trials, mname, tname, iname, lname, lfile):
+        def get_csv_header(self, delim = ";"):
+                return delim.join(["model", "trainer", "iterator", "loss", "test value", "test error", "epochs", "convergence speed", "duration (sec)"])
+
+        def get_csv_row(self, mname, tname, iname, lname, value, error, epoch, speed, delta, delim = ";"):
+                return delim.join([mname, tname, iname, lname, value, error, epoch, speed, delta])
+
+        def summarize_one(self, trials, mname, tname, iname, lname, cfile):
                 values, errors, epochs, speeds, deltas = self.get_logs(trials, mname, tname, iname, lname)
                 cmdline = self.cfg.app_stats + " -p 4"
                 value_stats = subprocess.check_output(cmdline.split() + values).decode('utf-8').strip()
@@ -166,40 +180,31 @@ class experiment:
                 epoch_stats = subprocess.check_output(cmdline.split() + epochs).decode('utf-8').strip()
                 speed_stats = subprocess.check_output(cmdline.split() + speeds).decode('utf-8').strip()
                 delta_stats = subprocess.check_output(cmdline.split() + deltas).decode('utf-8').strip()
-                cform = "{};{};{};{};{};{};{};{};{}"
-                print(cform.format(mname, tname, iname, lname, value_stats, error_stats, epoch_stats, speed_stats, delta_stats), file = lfile)
+                print(self.get_csv_row(mname, tname, iname, lname, value_stats, error_stats, epoch_stats, speed_stats, delta_stats), file = cfile)
 
         def summarize(self, trials, mname_reg, tname_reg, iname_reg, lname_reg, lpath, cpath):
-                cfile = open(cpath, "w")
-
-                # header
-                hform = "{};{};{};{};{};{};{};{};{}"
-                header = hform.format("model", "trainer", "iterator", "loss", "test value", "test error", "epochs", "convergence speed", "duration (sec)")
-                print(header, file = cfile)
-
-                # contents
-                for mname in self.models:
-                        if not re.match(mname_reg, mname):
-                                continue
-                        for tname in self.trainers:
-                                if not re.match(tname_reg, tname):
+                # export the results as csv
+                with open(cpath, "w") as cfile:
+                        print(self.get_csv_header(), file = cfile)
+                        for mname in self.models:
+                                if not re.match(mname_reg, mname):
                                         continue
-                                for iname in self.iterators:
-                                        if not re.match(iname_reg, iname):
+                                for tname in self.trainers:
+                                        if not re.match(tname_reg, tname):
                                                 continue
-                                        for lname in self.losses:
-                                                if not re.match(lname_reg, lname):
+                                        for iname in self.iterators:
+                                                if not re.match(iname_reg, iname):
                                                         continue
-                                                self.summarize_one(trials, mname, tname, iname, lname, cfile)
-                cfile.close()
+                                                for lname in self.losses:
+                                                        if not re.match(lname_reg, lname):
+                                                                continue
+                                                        self.summarize_one(trials, mname, tname, iname, lname, cfile)
 
                 # tabulate
-                lfile = open(lpath, "w")
-                subprocess.check_call((self.cfg.app_tabulate + " -i " + cpath + " -d \";\"").split(), stdout = lfile)
-                lfile.close()
+                with open(lpath, "w") as lfile:
+                        subprocess.check_call((self.cfg.app_tabulate + " -i " + cpath + " -d \";\"").split(), stdout = lfile)
 
                 # print file to screen
-                lfile = open(lpath, "r")
-                self.log()
-                print(lfile.read())
-                lfile.close()
+                with open(lpath, "r") as lfile:
+                        self.log()
+                        print(lfile.read())
