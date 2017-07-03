@@ -58,7 +58,7 @@ def plot_one(spath, ppath):
                         pdf.savefig()
                         plt.close()
 
-def plot_many_wrt(spaths, names, datas, pdf, xcol, ycol):
+def plot_many_wrt(names, datas, pdf, xcol, ycol):
         colnames = datas[0].dtype.names
         title = colnames[ycol + 1]
         # x axis - epoch/iteration index
@@ -71,8 +71,8 @@ def plot_many_wrt(spaths, names, datas, pdf, xcol, ycol):
         plt.xlabel(xlabel, fontsize = "smaller")
         plt.ylabel(ylabel, fontsize = "smaller")
         plt.title(title, weight = "bold")
-        for i, spath in enumerate(spaths):
-                plt.plot(datas[i][xname], datas[i][yname], label = names[i])
+        for data, name in zip(datas, names):
+                plt.plot(data[xname], data[yname], label = name)
         plt.legend(fontsize = "smaller")
         pdf.savefig()
         plt.close()
@@ -82,6 +82,6 @@ def plot_many(spaths, ppath):
         with PdfPages(ppath) as pdf:
                 for col in (0, 1, 2, 3, 4, 5, 7, 8):
                         # plot wrt epoch/iteration number
-                        plot_many_wrt(spaths, names, datas, pdf, 0, col)
+                        plot_many_wrt(names, datas, pdf, 0, col)
                         # plot wrt time
-                        plot_many_wrt(spaths, names, datas, pdf, 7, col)
+                        plot_many_wrt(names, datas, pdf, 7, col)
