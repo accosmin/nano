@@ -81,6 +81,10 @@ class experiment:
                 plotter.plot_state_many(spaths, ppath)
                 self.log("|--->plotting done, see <", ppath, ">")
 
+        def plot_trial(self, spaths, ppath):
+                plotter.plot_trial_many(spaths, ppath)
+                self.log("|--->plotting done, see <", ppath, ">")
+
         def run_one(self, trial, mname, mparam, tname, tparam, iname, iparam, lname, lparam):
                 os.makedirs(self.dir, exist_ok = True)
                 mpath = self.path(trial, mname, tname, iname, lname, ".model")

@@ -23,7 +23,7 @@ def get_state_csvs(paths):
 def get_trial_csv(path):
         # trial file with the following format:
         #  (model name, trainer name, iterator name, loss name, test value, test error, #epochs, convergence speed, training time)+
-        name = os.path.basename(path).replace(".state", "")
+        name = os.path.basename(path).replace(".csv", "")
         name = name.replace(name[0 : name.find("_") + 1], "")
         data = mlab.csv2rec(path, delimiter = ';', names = None)
         return name, data
@@ -32,7 +32,7 @@ def get_trial_csvs(paths):
         datas = []
         names = []
         for path in paths:
-                name, data = get_trial_csv(paths)
+                name, data = get_trial_csv(path)
                 datas.append(data)
                 names.append(name)
         return names, datas
@@ -104,7 +104,13 @@ def plot_state_many(spaths, ppath):
                         plot_state_many_wrt(names, datas, pdf, 7, col)
 
 def plot_trial_many_wrt(names, datas, pdf, ycol):
-        # todo
+        colnames = datas[0].dtype.names
+        yname = colnames[ycol]
+        for data in datas:
+                plt.boxplot(data[yname])
+        plt.legend(fontsize = "smaller")
+        pdf.savefig()
+        plt.close()
 
 def plot_trial_many(spaths, ppath):
         names, datas = get_trial_csvs(spaths)
