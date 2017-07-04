@@ -6,7 +6,6 @@ import plotter
 import subprocess
 import matplotlib.mlab as mlab
 import matplotlib.pyplot as plt
-from sortedcontainers import SortedDict
 from matplotlib.backends.backend_pdf import PdfPages
 
 class experiment:
@@ -14,31 +13,25 @@ class experiment:
                 self.cfg = config.config()
                 self.task = task
                 self.dir = outdir
-                self.models = SortedDict({})
-                self.trainers = SortedDict({})
-                self.iterators = SortedDict({})
-                self.losses = SortedDict({})
+                self.models = []
+                self.trainers = []
+                self.iterators = []
+                self.losses = []
 
         def log(self, *messages):
                 print(time.strftime("[%Y-%m-%d %H:%M:%S]"), ' '.join(messages))
 
         def add_model(self, name, parameters):
-                self.models[name] = parameters
+                self.models.append([name, parameters])
 
         def add_trainer(self, name, parameters, config_name = None):
-                if not config_name:
-                        config_name = name
-                self.trainers[config_name] = self.cfg.config_trainer(name, parameters)
+                self.trainers.append([config_name if config_name else name, self.cfg.config_trainer(name, parameters)])
 
         def add_loss(self, name, parameters = "", config_name = None):
-                if not config_name:
-                        config_name = name
-                self.losses[config_name] = self.cfg.config_loss(name, parameters)
+                self.losses.append([config_name if config_name else name, self.cfg.config_loss(name, parameters)])
 
         def add_iterator(self, name, parameters = "", config_name = None):
-                if not config_name:
-                        config_name = name
-                self.iterators[config_name] = self.cfg.config_iterator(name, parameters)
+                self.iterators.append([config_name if config_name else name, self.cfg.config_iterator(name, parameters)])
 
         def path(self, trial, mname, tname, iname, lname, extension):
                 basepath = self.dir
@@ -50,18 +43,30 @@ class experiment:
                 basepath += extension
                 return basepath
 
+        def name(self, name_config):
+                return name_config[0]
+
+        def config(self, name_config):
+                return name_config[1]
+
+        def names(self, names_configs):
+                names = []
+                for name_config in names_configs:
+                        names.append(self.name(name_config))
+                return names
+
         def filter(self, trial, mname_reg, tname_reg, iname_reg, lname_reg, extension):
                 paths = []
-                for mname in self.models:
+                for mname in self.names(self.models):
                         if not re.match(mname_reg, mname):
                                 continue
-                        for tname in self.trainers:
+                        for tname in self.names(self.trainers):
                                 if not re.match(tname_reg, tname):
                                         continue
-                                for iname in self.iterators:
+                                for iname in self.names(self.iterators):
                                         if not re.match(iname_reg, iname):
                                                 continue
-                                        for lname in self.losses:
+                                        for lname in self.names(self.losses):
                                                 if not re.match(lname_reg, lname):
                                                         continue
                                                 paths.append(self.path(trial, mname, tname, iname, lname, extension))
@@ -79,6 +84,10 @@ class experiment:
 
         def plot_many(self, spaths, ppath):
                 plotter.plot_state_many(spaths, ppath)
+                self.log("|--->plotting done, see <", ppath, ">")
+
+        def plot_trial(self, spaths, ppath, names):
+                plotter.plot_trial_many(spaths, ppath, names)
                 self.log("|--->plotting done, see <", ppath, ">")
 
         def run_one(self, trial, mname, mparam, tname, tparam, iname, iparam, lname, lparam):
@@ -106,11 +115,31 @@ class experiment:
                                 print(self.get_csv_row(mname, tname, iname, lname, value, error, epoch, speed, delta), file = cfile)
 
         def run_all(self, trials = 10):
-                for mname, mparam in self.models.items():
-                        for tname, tparam in self.trainers.items():
-                                for iname, iparam in self.iterators.items():
-                                        for lname, lparam in self.losses.items():
-                                                self.run_trials(trials, mname, mparam, tname, tparam, iname, iparam, lname, lparam)
+                for mdata in self.models:
+                        for tdata in self.trainers:
+                                for idata in self.iterators:
+                                        for ldata in self.losses:
+                                                self.run_trials(trials,
+                                                        self.name(mdata), self.config(mdata),
+                                                        self.name(tdata), self.config(tdata),
+                                                        self.name(idata), self.config(idata),
+                                                        self.name(ldata), self.config(ldata))
+
+        def summarize_by_trainers(self, trials):
+                mnames = self.names(self.models)
+                inames = self.names(self.iterators)
+                lnames = self.names(self.losses)
+                for mname, iname, lname in [(x, y, z) for x in mnames for y in inames for z in lnames]:
+                        for trial in range(trials):
+                                self.plot_many(
+                                        self.filter(trial, mname, ".*", iname, lname, ".state"),
+                                        self.path(trial, mname, None, iname, lname, ".pdf"))
+
+                        self.summarize(trials, mname, ".*", iname, lname,
+                                self.path(None, mname, None, iname, lname, ".log"),
+                                self.path(None, mname, None, iname, lname, ".csv"),
+                                self.path(None, mname, None, iname, lname, ".pdf"),
+                                self.names(self.trainers))
 
         def get_token(self, line, begin_delim, end_delim, start = 0):
                 begin = line.find(begin_delim, start) + len(begin_delim)
@@ -189,16 +218,16 @@ class experiment:
                 # export the results as csv
                 with open(cpath, "w") as cfile:
                         print(self.get_csv_header(), file = cfile)
-                        for mname in self.models:
+                        for mname in self.names(self.models):
                                 if not re.match(mname_reg, mname):
                                         continue
-                                for tname in self.trainers:
+                                for tname in self.names(self.trainers):
                                         if not re.match(tname_reg, tname):
                                                 continue
-                                        for iname in self.iterators:
+                                        for iname in self.names(self.iterators):
                                                 if not re.match(iname_reg, iname):
                                                         continue
-                                                for lname in self.losses:
+                                                for lname in self.names(self.losses):
                                                         if not re.match(lname_reg, lname):
                                                                 continue
                                                         self.summarize_one(trials, mname, tname, iname, lname, cfile)
