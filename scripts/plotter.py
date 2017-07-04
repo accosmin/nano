@@ -103,17 +103,27 @@ def plot_state_many(spaths, ppath):
                         # plot wrt time
                         plot_state_many_wrt(names, datas, pdf, 7, col)
 
-def plot_trial_many_wrt(names, datas, pdf, ycol):
+def plot_trial_many_wrt(title, names, datas, pdf, ycol):
         colnames = datas[0].dtype.names
+        # x axis -
+        xlabels = names
+        # y axis - loss value, loss error, #epochs, convergence speed, time
         yname = colnames[ycol]
+        ylabel = yname.replace("train_", "").replace("valid_", "").replace("test_", "").replace("_", " ")
+        # plot
+        plt.ylabel(ylabel, fontsize = "smaller")
+        plt.title(title, weight = "bold")
+        bdata = []
         for data in datas:
-                plt.boxplot(data[yname])
+                bdata.append(data[yname])
+        plt.boxplot(bdata, labels = xlabels)
         plt.legend(fontsize = "smaller")
         pdf.savefig()
         plt.close()
 
-def plot_trial_many(spaths, ppath):
-        names, datas = get_trial_csvs(spaths)
+def plot_trial_many(spaths, ppath, names):
+        __, datas = get_trial_csvs(spaths)
+        title = os.path.basename(ppath).replace(".pdf", "").replace("result_", "")
         with PdfPages(ppath) as pdf:
                 for col in (4, 5, 6, 7, 8):
-                        plot_trial_many_wrt(names, datas, pdf, col)
+                        plot_trial_many_wrt(title, names, datas, pdf, col)

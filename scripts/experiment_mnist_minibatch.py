@@ -18,7 +18,7 @@ exp.add_iterator("default")
 
 # trainers
 stoch_params = "epochs=20,patience=32,epsilon=1e-6,batch={}"
-minibatch_name = "minibatch{}"
+minibatch_name = "batch{}"
 
 for size in [32, 64, 128, 256, 512, 1024]:
         exp.add_trainer("stoch_adadelta", stoch_params.format(size), minibatch_name.format(size))
@@ -39,7 +39,8 @@ for mname, iname, lname in [(x, y, z) for x in exp.models for y in exp.iterators
 
         exp.plot_trial(
                 exp.filter(None, mname, ".*", iname, lname, ".csv"),
-                exp.path(None, mname, None, iname, lname, ".pdf"))
+                exp.path(None, mname, None, iname, lname, ".pdf"),
+                exp.trainers)
 
         exp.summarize(trials, mname, ".*", iname, lname,
                 exp.path(None, mname, None, iname, lname, ".log"),
