@@ -81,10 +81,6 @@ class experiment:
                 plotter.plot_state_many(spaths, ppath)
                 self.log("|--->plotting done, see <", ppath, ">")
 
-        def plot_trial(self, spaths, ppath, names):
-                plotter.plot_trial_many(spaths, ppath, names)
-                self.log("|--->plotting done, see <", ppath, ">")
-
         def run_one(self, trial, mname, mparam, tname, tparam, iname, iparam, lname, lparam):
                 os.makedirs(self.dir, exist_ok = True)
                 mpath = self.path(trial, mname, tname, iname, lname, ".model")
@@ -184,7 +180,12 @@ class experiment:
                 delta_stats = subprocess.check_output(cmdline.split() + deltas).decode('utf-8').strip()
                 print(self.get_csv_row(mname, tname, iname, lname, value_stats, error_stats, epoch_stats, speed_stats, delta_stats), file = cfile)
 
-        def summarize(self, trials, mname_reg, tname_reg, iname_reg, lname_reg, lpath, cpath):
+        def summarize(self, trials, mname_reg, tname_reg, iname_reg, lname_reg, lpath, cpath, ppath, names):
+                # plot models
+                self.plot_trial(
+                        self.filter(None, mname_reg, tname_reg, iname_reg, lname_reg, ".csv"),
+                        ppath, names)
+
                 # export the results as csv
                 with open(cpath, "w") as cfile:
                         print(self.get_csv_header(), file = cfile)

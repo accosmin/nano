@@ -17,7 +17,7 @@ exp.add_loss("slogistic")
 exp.add_iterator("default")
 
 # trainers
-stoch_params = "epochs=20,patience=32,epsilon=1e-6,batch={}"
+stoch_params = "epochs=100,patience=32,epsilon=1e-6,batch={}"
 minibatch_name = "batch{}"
 
 for size in [32, 64, 128, 256, 512, 1024]:
@@ -28,20 +28,17 @@ exp.add_model("convnet8", models.convnet8 + models.outlayer)
 
 # train all configurations
 trials = 10
-#exp.run_all(trials = trials)
+exp.run_all(trials = trials)
 
 # compare trainers
 for mname, iname, lname in [(x, y, z) for x in exp.models for y in exp.iterators for z in exp.losses]:
-        #for trial in range(trials):
-        #        exp.plot_many(
-        #                exp.filter(trial, mname, ".*", iname, lname, ".state"),
-        #                exp.path(trial, mname, None, iname, lname, ".pdf"))
-
-        exp.plot_trial(
-                exp.filter(None, mname, ".*", iname, lname, ".csv"),
-                exp.path(None, mname, None, iname, lname, ".pdf"),
-                exp.trainers)
+        for trial in range(trials):
+                exp.plot_many(
+                        exp.filter(trial, mname, ".*", iname, lname, ".state"),
+                        exp.path(trial, mname, None, iname, lname, ".pdf"))
 
         exp.summarize(trials, mname, ".*", iname, lname,
                 exp.path(None, mname, None, iname, lname, ".log"),
-                exp.path(None, mname, None, iname, lname, ".csv"))
+                exp.path(None, mname, None, iname, lname, ".csv"),
+                exp.path(None, mname, None, iname, lname, ".pdf"),
+                exp.trainers)
