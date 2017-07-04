@@ -47,28 +47,4 @@ trials = 10
 exp.run_all(trials = trials)
 
 # compare trainers
-for mname, iname, lname in [(x, y, z) for x in exp.models for y in exp.iterators for z in exp.losses]:
-        for trial in range(trials):
-                exp.plot_many(
-                        exp.filter(trial, mname, "stoch*", iname, lname, ".state"),
-                        exp.path(trial, mname, "stoch", iname, lname, ".pdf"))
-
-                exp.plot_many(
-                        exp.filter(trial, mname, "batch*", iname, lname, ".state"),
-                        exp.path(trial, mname, "batch", iname, lname, ".pdf"))
-
-                exp.plot_many(
-                        exp.filter(trial, mname, ".*", iname, lname, ".state"),
-                        exp.path(trial, mname, None, iname, lname, ".pdf"))
-
-        exp.summarize(trials, mname, "stoch*", iname, lname,
-                exp.path(None, mname, "stoch", iname, lname, ".log"),
-                exp.path(None, mname, "stoch", iname, lname, ".csv"))
-
-        exp.summarize(trials, mname, "batch*", iname, lname,
-                exp.path(None, mname, "batch", iname, lname, ".log"),
-                exp.path(None, mname, "batch", iname, lname, ".csv"))
-
-        exp.summarize(trials, mname, ".*", iname, lname,
-                exp.path(None, mname, None, iname, lname, ".log"),
-                exp.path(None, mname, None, iname, lname, ".csv"))
+exp.summarize_by_trainers(trials = trials)

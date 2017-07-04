@@ -125,6 +125,22 @@ class experiment:
                                                         self.name(idata), self.config(idata),
                                                         self.name(ldata), self.config(ldata))
 
+        def summarize_by_models(self, trials):
+                tnames = self.names(self.trainers)
+                inames = self.names(self.iterators)
+                lnames = self.names(self.losses)
+                for tname, iname, lname in [(x, y, z) for x in tnames for y in inames for z in lnames]:
+                        for trial in range(trials):
+                                self.plot_many(
+                                        self.filter(trial, ".*", tname, iname, lname, ".state"),
+                                        self.path(trial, None, tname, iname, lname, ".pdf"))
+
+                        self.summarize(trials, ".*", tname, iname, lname,
+                                self.path(None, None, tname, iname, lname, ".log"),
+                                self.path(None, None, tname, iname, lname, ".csv"),
+                                self.path(None, None, tname, iname, lname, ".pdf"),
+                                self.names(self.models))
+
         def summarize_by_trainers(self, trials):
                 mnames = self.names(self.models)
                 inames = self.names(self.iterators)
@@ -140,6 +156,38 @@ class experiment:
                                 self.path(None, mname, None, iname, lname, ".csv"),
                                 self.path(None, mname, None, iname, lname, ".pdf"),
                                 self.names(self.trainers))
+
+        def summarize_by_iterators(self, trials):
+                mnames = self.names(self.models)
+                tnames = self.names(self.trainers)
+                lnames = self.names(self.losses)
+                for mname, tname, lname in [(x, y, z) for x in mnames for y in tnames for z in lnames]:
+                        for trial in range(trials):
+                                self.plot_many(
+                                        self.filter(trial, mname, tname, ".*", lname, ".state"),
+                                        self.path(trial, mname, tname, None, lname, ".pdf"))
+
+                        self.summarize(trials, mname, tname, ".*", lname,
+                                self.path(None, mname, tname, None, lname, ".log"),
+                                self.path(None, mname, tname, None, lname, ".csv"),
+                                self.path(None, mname, tname, None, lname, ".pdf"),
+                                self.names(self.iterators))
+
+        def summarize_by_losses(self, trials):
+                mnames = self.names(self.models)
+                tnames = self.names(self.trainers)
+                inames = self.names(self.iterators)
+                for mname, tname, iname in [(x, y, z) for x in mnames for y in tnames for z in inames]:
+                        for trial in range(trials):
+                                self.plot_many(
+                                        self.filter(trial, mname, tname, iname, ".*", ".state"),
+                                        self.path(trial, mname, tname, iname, None, ".pdf"))
+
+                        self.summarize(trials, mname, tname, iname, ".*",
+                                self.path(None, mname, tname, iname, None, ".log"),
+                                self.path(None, mname, tname, iname, None, ".csv"),
+                                self.path(None, mname, tname, iname, None, ".pdf"),
+                                self.names(self.losses))
 
         def get_token(self, line, begin_delim, end_delim, start = 0):
                 begin = line.find(begin_delim, start) + len(begin_delim)

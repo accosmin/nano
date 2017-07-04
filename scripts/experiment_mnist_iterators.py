@@ -39,12 +39,4 @@ trials = 10
 exp.run_all(trials = trials)
 
 # compare iterators
-for tname, mname, lname in [(x, y, z) for x in exp.trainers for y in exp.models for z in exp.losses]:
-        for trial in range(trials):
-                exp.plot_many(
-                        exp.filter(trial, mname, tname, ".*", lname, ".state"),
-                        exp.path(trial, mname, tname, None, lname, ".pdf"))
-
-        exp.summarize(trials, mname, tname, ".*", lname,
-                exp.path(None, mname, tname, None, lname, ".log"),
-                exp.path(None, mname, tname, None, lname, ".csv"))
+exp.summarize_by_iterators(trials = trials)
