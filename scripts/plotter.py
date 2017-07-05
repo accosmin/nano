@@ -125,7 +125,6 @@ def plot_trial_many_wrt(title, names, datas, pdf, ycol):
         for data in datas:
                 bdata.append(data[yname])
         plt.boxplot(bdata, labels = xlabels)
-        plt.legend(fontsize = "smaller")
         plt.grid(True, linestyle='--')
         pdf.savefig()
         plt.close()
