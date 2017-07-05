@@ -7,7 +7,8 @@ import experiment
 cfg = config.config()
 exp = experiment.experiment(
         cfg.task_synth_charset(ctype = "digit", color = "rgb", irows = 16, icols = 16, count = 10000),
-        cfg.expdir + "/charset")
+        cfg.expdir + "/charset",
+        trials = 10)
 
 # loss functions
 exp.add_loss("classnll")
@@ -63,43 +64,10 @@ outlayer = "affine:dims=10;"
 exp.add_model("convnet", convnet + outlayer)
 
 # train all configurations
-trials = 10
-exp.run_all(trials)
+exp.run_all()
 
-# compare models
-#for tname, iname, lname in [(x, y, z) for x in exp.trainers for y in exp.iterators for z in exp.losses]:
-#        for trial in range(trials):
-#                exp.plot_many(
-#                        exp.filter(trial, ".*", tname, iname, lname, ".state"),
-#                        exp.path(trial, None, tname, iname, lname, ".pdf"))
-#
-#        exp.summarize(trials, ".*", tname, iname, lname,
-#                exp.path(None, None, tname, iname, lname, ".log"),
-#                exp.path(None, None, tname, iname, lname, ".csv"))
-
-# compare trainers
-for mname, iname, lname in [(x, y, z) for x in exp.models for y in exp.iterators for z in exp.losses]:
-        for trial in range(trials):
-                exp.plot_many(
-                        exp.filter(trial, mname, "stoch*", iname, lname, ".state"),
-                        exp.path(trial, mname, "stoch", iname, lname, ".pdf"))
-
-                exp.plot_many(
-                        exp.filter(trial, mname, "batch*", iname, lname, ".state"),
-                        exp.path(trial, mname, "batch", iname, lname, ".pdf"))
-
-                exp.plot_many(
-                        exp.filter(trial, mname, ".*", iname, lname, ".state"),
-                        exp.path(trial, mname, None, iname, lname, ".pdf"))
-
-        exp.summarize(trials, mname, "stoch*", iname, lname,
-                exp.path(None, mname, "stoch", iname, lname, ".log"),
-                exp.path(None, mname, "stoch", iname, lname, ".csv"))
-
-        exp.summarize(trials, mname, "batch*", iname, lname,
-                exp.path(None, mname, "batch", iname, lname, ".log"),
-                exp.path(None, mname, "batch", iname, lname, ".csv"))
-
-        exp.summarize(trials, mname, ".*", iname, lname,
-                exp.path(None, mname, None, iname, lname, ".log"),
-                exp.path(None, mname, None, iname, lname, ".csv"))
+# compare configurations
+exp.summarize_by_models(".*")
+exp.summarize_by_trainers("stoch*")
+exp.summarize_by_trainers("batch*")
+exp.summarize_by_trainers(".*")

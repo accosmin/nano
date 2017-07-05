@@ -8,7 +8,8 @@ import models_mnist as models
 cfg = config.config()
 exp = experiment.experiment(
         cfg.task_mnist(),
-        cfg.expdir + "/mnist/eval_activations/")
+        cfg.expdir + "/mnist/eval_activations/",
+        trials = 10)
 
 # loss functions
 exp.add_loss("classnll")
@@ -29,8 +30,7 @@ for activation in ["snorm", "tanh", "sin", "pwave"]:
         exp.add_model(name, params)
 
 # train all configurations
-trials = 10
-exp.run_all(trials = trials)
+exp.run_all()
 
 # compare models
-exp.summarize_by_models(trials = trials)
+exp.summarize_by_models(".*")

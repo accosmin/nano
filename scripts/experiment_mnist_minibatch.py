@@ -28,7 +28,7 @@ for size in [32, 64, 128, 256, 512, 1024]:
 exp.add_model("mlp0", models.mlp0 + models.outlayer)
 
 # train all configurations
-#exp.train_all()
+exp.train_all()
 
-# compare trainers
+# compare configurations
 exp.summarize_by_trainers(".*")

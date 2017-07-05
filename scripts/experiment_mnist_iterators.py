@@ -8,7 +8,8 @@ import models_mnist as models
 cfg = config.config()
 exp = experiment.experiment(
         cfg.task_mnist(),
-        cfg.expdir + "/mnist/eval_iterators")
+        cfg.expdir + "/mnist/eval_iterators",
+        trials = 10)
 
 # loss functions
 exp.add_loss("slogistic")
@@ -35,8 +36,7 @@ exp.add_trainer("stoch_adadelta", stoch_params)
 exp.add_model("convnet5", models.convnet5 + models.outlayer)
 
 # train all configurations
-trials = 10
-exp.run_all(trials = trials)
+exp.run_all()
 
-# compare iterators
-exp.summarize_by_iterators(trials = trials)
+# compare configurations
+exp.summarize_by_iterators(".*")

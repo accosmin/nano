@@ -8,7 +8,8 @@ import models_mnist as models
 cfg = config.config()
 exp = experiment.experiment(
         cfg.task_mnist(),
-        cfg.expdir + "/mnist/eval_models/")
+        cfg.expdir + "/mnist/eval_models/",
+        trials = 10)
 
 # loss functions
 exp.add_loss("classnll")
@@ -36,8 +37,7 @@ exp.add_model("convnet4", models.convnet4 + models.outlayer)
 exp.add_model("convnet5", models.convnet5 + models.outlayer)
 
 # train all configurations
-trials = 10
-exp.run_all(trials = trials)
+exp.run_all()
 
-# compare models
-exp.summarize_by_models(trials = trials)
+# compare configurations
+exp.summarize_by_models(".*")

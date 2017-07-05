@@ -7,7 +7,8 @@ import experiment
 cfg = config.config()
 exp = experiment.experiment(
         cfg.task_wine(),
-        cfg.expdir + "/wine")
+        cfg.expdir + "/wine",
+        trials = 10)
 
 # loss functions
 exp.add_loss("classnll")
@@ -34,16 +35,7 @@ exp.add_model("mlp3", mlp3 + outlayer)
 exp.add_model("mlp4", mlp4 + outlayer)
 
 # train all configurations
-trials = 10
-exp.run_all(trials)
+exp.run_all(".*")
 
-# compare models
-for tname, iname, lname in [(x, y, z) for x in exp.trainers for y in exp.iterators for z in exp.losses]:
-        for trial in range(trials):
-                exp.plot_many(
-                        exp.filter(trial, ".*", tname, iname, lname, ".state"),
-                        exp.path(trial, None, tname, iname, lname, ".pdf"))
-
-        exp.summarize(trials, ".*", tname, iname, lname,
-                exp.path(None, None, tname, iname, lname, ".log"),
-                exp.path(None, None, tname, iname, lname, ".csv"))
+# compare configurations
+exp.summarize_by_models(".*")

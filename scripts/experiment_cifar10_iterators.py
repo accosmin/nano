@@ -8,7 +8,8 @@ import models_cifar10 as models
 cfg = config.config()
 exp = experiment.experiment(
         cfg.task_mnist(),
-        cfg.expdir + "/cifar10/eval_iterators")
+        cfg.expdir + "/cifar10/eval_iterators",
+        trials = 10)
 
 # loss functions
 exp.add_loss("slogistic")
@@ -35,16 +36,7 @@ exp.add_trainer("stoch_adadelta", stoch_params)
 exp.add_model("convnet9", models.convnet9 + models.outlayer)
 
 # train all configurations
-trials = 10
-exp.run_all(trials = trials)
+exp.run_all()
 
-# compare iterators
-for tname, mname, lname in [(x, y, z) for x in exp.trainers for y in exp.models for z in exp.losses]:
-        for trial in range(trials):
-                exp.plot_many(
-                        exp.filter(trial, mname, tname, ".*", lname, ".state"),
-                        exp.path(trial, mname, tname, None, lname, ".pdf"))
-
-        exp.summarize(trials, mname, tname, ".*", lname,
-                exp.path(None, mname, tname, None, lname, ".log"),
-                exp.path(None, mname, tname, None, lname, ".csv"))
+# compare configurations
+exp.summarize_by_iterators(".*")

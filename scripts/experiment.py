@@ -160,25 +160,25 @@ class experiment:
                         self.log()
                         print(lfile.read())
 
-        def summarize_by_models(self, mname_reg = None):
+        def summarize_by_models(self, mname_reg = ".*"):
                 mname = self.reg2str(mname_reg)
                 mnames, tnames, inames, lnames = self.filter_names(mname_reg, None, None, None)
                 for tname, iname, lname in [(x, y, z) for x in tnames for y in inames for z in lnames]:
                         self.summarize_trials(mname, mname_reg, tname, tname, iname, iname, lname, lname, mnames)
 
-        def summarize_by_trainers(self, tname_reg = None):
+        def summarize_by_trainers(self, tname_reg = ".*"):
                 tname = self.reg2str(tname_reg)
                 mnames, tnames, inames, lnames = self.filter_names(None, tname_reg, None, None)
                 for mname, iname, lname in [(x, y, z) for x in mnames for y in inames for z in lnames]:
                         self.summarize_trials(mname, mname, tname, tname_reg, iname, iname, lname, lname, tnames)
 
-        def summarize_by_iterators(self, iname_reg = None):
+        def summarize_by_iterators(self, iname_reg = ".*"):
                 iname = self.reg2str(iname_reg)
                 mnames, tnames, inames, lnames = self.filter_names(None, None, iname_reg, None)
                 for mname, tname, lname in [(x, y, z) for x in mnames for y in tnames for z in lnames]:
                         self.summarize_trials(mname, mname, tname, tname, iname, iname_reg, lname, lname, inames)
 
-        def summarize_by_losses(self, lname_reg = None):
+        def summarize_by_losses(self, lname_reg = ".*"):
                 lname = self.reg2str(lname_reg)
                 mnames, tnames, inames, lnames = self.filter_names(None, None, None, lname_reg)
                 for mname, tname, iname in [(x, y, z) for x in mnames for y in tnames for z in inames]:
