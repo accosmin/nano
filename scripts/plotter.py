@@ -41,6 +41,7 @@ def get_trial_csvs(paths):
 def plot_state_one(spath, ppath):
         title, data = get_state_csv(spath)
         with PdfPages(ppath) as pdf:
+                # (train, validation, test) loss value and error
                 for col in (0, 1):
                         # x axis - epoch/iteration index
                         xname = data.dtype.names[0]
@@ -54,12 +55,14 @@ def plot_state_one(spath, ppath):
                         plt.xlabel(xlabel, fontsize = "smaller")
                         plt.ylabel(ylabel, fontsize = "smaller")
                         plt.title(title, weight = "bold")
-                        plt.plot(data[xname], data[yname0], "r--", label = yname0)
-                        plt.plot(data[xname], data[yname1], "g:", label = yname1)
+                        plt.plot(data[xname], data[yname0], "r-", label = yname0)
+                        plt.plot(data[xname], data[yname1], "g-", label = yname1)
                         plt.plot(data[xname], data[yname2], "b-", label = yname2)
                         plt.legend(fontsize = "smaller")
+                        plt.grid(True, linestyle='--')
                         pdf.savefig()
                         plt.close()
+                # xnorm and gnorm
                 for col in (7, 8):
                         # x axis - epoch/iteration index
                         xname = data.dtype.names[0]
@@ -73,6 +76,7 @@ def plot_state_one(spath, ppath):
                         plt.title(title, weight = "bold")
                         plt.plot(data[xname], data[yname], "k-", label = yname)
                         plt.legend(fontsize = "smaller")
+                        plt.grid(True, linestyle='--')
                         pdf.savefig()
                         plt.close()
 
@@ -93,6 +97,7 @@ def plot_state_many_wrt(names, datas, pdf, xcol, ycol):
         for data, name in zip(datas, names):
                 plt.plot(data[xname], data[yname], label = name)
         plt.legend(fontsize = "smaller")
+        plt.grid(True, linestyle='--')
         pdf.savefig()
         plt.close()
 
@@ -121,6 +126,7 @@ def plot_trial_many_wrt(title, names, datas, pdf, ycol):
                 bdata.append(data[yname])
         plt.boxplot(bdata, labels = xlabels)
         plt.legend(fontsize = "smaller")
+        plt.grid(True, linestyle='--')
         pdf.savefig()
         plt.close()
 

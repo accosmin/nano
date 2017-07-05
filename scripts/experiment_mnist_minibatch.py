@@ -8,7 +8,8 @@ import models_mnist as models
 cfg = config.config()
 exp = experiment.experiment(
         cfg.task_mnist(),
-        cfg.expdir + "/mnist/eval_minibatch/")
+        cfg.expdir + "/mnist/eval_minibatch/",
+        trials = 10)
 
 # loss functions
 exp.add_loss("slogistic")
@@ -27,8 +28,7 @@ for size in [32, 64, 128, 256, 512, 1024]:
 exp.add_model("mlp0", models.mlp0 + models.outlayer)
 
 # train all configurations
-trials = 10
-#exp.run_all(trials = trials)
+#exp.train_all()
 
 # compare trainers
-exp.summarize_by_trainers(trials = trials)
+exp.summarize_by_trainers(".*")
