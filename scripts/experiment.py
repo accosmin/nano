@@ -93,6 +93,17 @@ class experiment:
                 plotter.plot_trial_many(spaths, ppath, names)
                 self.log("|--->plotting done, see <", ppath, ">")
 
+        def tabulate(self, cpath, lpath):
+                with open(lpath, "w") as lfile:
+                        subprocess.check_call((self.cfg.app_tabulate + " -i " + cpath + " -d \";\"").split(), stdout = lfile)
+
+                with open(lpath, "r") as lfile:
+                        self.log()
+                        print(lfile.read())
+
+        def summarize_by_models(self, mname_reg = ".*"):
+                mname = self.reg2str(mname_reg)
+
         def train_trials(self, mname, mparam, tname, tparam, iname, iparam, lname, lparam):
                 # train the given configuration for multiple trials
                 for trial in range(self.trials):
@@ -109,11 +120,19 @@ class experiment:
 
                 # export the results from multiple trials as csv
                 cpath = self.path(None, mname, tname, iname, lname, ".csv")
-                with open(cpath, "w") as cfile:
+                spath = self.path(None, mname, tname, iname, lname, ".stats")
+                with open(cpath, "w") as cfile, open(spath, "w") as sfile:
                         print(self.get_csv_header(), file = cfile)
+                        print(self.get_csv_header(), file = sfile)
                         values, errors, epochs, speeds, deltas = self.get_logs( mname, tname, iname, lname)
                         for value, error, epoch, speed, delta in zip(values, errors, epochs, speeds, deltas):
                                 print(self.get_csv_row(mname, tname, iname, lname, value, error, epoch, speed, delta), file = cfile)
+                        value_stats, error_stats, epoch_stats, speed_stats, delta_stats = self.get_log_stats(values, errors, epochs, speeds, deltas)
+                        print(self.get_csv_row(mname, tname, iname, lname, value_stats, error_stats, epoch_stats, speed_stats, delta_stats), file = sfile)
+
+                # display basic statistics for the results from multiple trials
+                lpath = self.path(None, mname, tname, iname, lname, ".log")
+                self.tabulate(spath, lpath)
 
         def train_all(self):
                 # run all possible configurations
@@ -136,29 +155,24 @@ class experiment:
                                 self.path(trial, mname, tname, iname, lname, ".pdf"))
 
                 # compare configurations across all trials: boxplot the results
-                lpath = self.path(None, mname, tname, iname, lname, ".log")
-                cpath = self.path(None, mname, tname, iname, lname, ".csv")
                 ppath = self.path(None, mname, tname, iname, lname, ".pdf")
 
                 self.plot_trial(
                         self.filter_paths(None, mname_reg, tname_reg, iname_reg, lname_reg, ".csv"),
                         ppath, names)
 
-                # export the results as csv
-                with open(cpath, "w") as cfile:
-                        print(self.get_csv_header(), file = cfile)
+                # compare configurations across all trials: display basic statistics
+                spath = self.path(None, mname, tname, iname, lname, ".stats")
+                with open(spath, "w") as sfile:
+                        print(self.get_csv_header(), file = sfile)
                         mnames, tnames, inames, lnames = self.filter_names(mname_reg, tname_reg, iname_reg, lname_reg)
                         for mname, tname, iname, lname in [(u, x, y, z) for u in mnames for x in tnames for y in inames for z in lnames]:
-                                self.summarize_one(mname, tname, iname, lname, cfile)
+                                values, errors, epochs, speeds, deltas = self.get_logs(mname, tname, iname, lname)
+                                value_stats, error_stats, epoch_stats, speed_stats, delta_stats = self.get_log_stats(values, errors, epochs, speeds, deltas)
+                                print(self.get_csv_row(mname, tname, iname, lname, value_stats, error_stats, epoch_stats, speed_stats, delta_stats), file = sfile)
 
-                # tabulate
-                with open(lpath, "w") as lfile:
-                        subprocess.check_call((self.cfg.app_tabulate + " -i " + cpath + " -d \";\"").split(), stdout = lfile)
-
-                # print file to screen
-                with open(lpath, "r") as lfile:
-                        self.log()
-                        print(lfile.read())
+                lpath = self.path(None, mname, tname, iname, lname, ".log")
+                self.tabulate(spath, lpath)
 
         def summarize_by_models(self, mname_reg = ".*"):
                 mname = self.reg2str(mname_reg)
@@ -236,18 +250,17 @@ class experiment:
                         deltas.append(delta)
                 return values, errors, epochs, speeds, deltas
 
-        def get_csv_header(self, delim = ";"):
-                return delim.join(["model", "trainer", "iterator", "loss", "test value", "test error", "epochs", "convergence speed", "duration (sec)"])
-
-        def get_csv_row(self, mname, tname, iname, lname, value, error, epoch, speed, delta, delim = ";"):
-                return delim.join([mname, tname, iname, lname, value, error, epoch, speed, delta])
-
-        def summarize_one(self, mname, tname, iname, lname, cfile):
-                values, errors, epochs, speeds, deltas = self.get_logs(mname, tname, iname, lname)
+        def get_log_stats(self, values, errors, epochs, speeds, deltas):
                 cmdline = self.cfg.app_stats + " -p 4"
                 value_stats = subprocess.check_output(cmdline.split() + values).decode('utf-8').strip()
                 error_stats = subprocess.check_output(cmdline.split() + errors).decode('utf-8').strip()
                 epoch_stats = subprocess.check_output(cmdline.split() + epochs).decode('utf-8').strip()
                 speed_stats = subprocess.check_output(cmdline.split() + speeds).decode('utf-8').strip()
                 delta_stats = subprocess.check_output(cmdline.split() + deltas).decode('utf-8').strip()
-                print(self.get_csv_row(mname, tname, iname, lname, value_stats, error_stats, epoch_stats, speed_stats, delta_stats), file = cfile)
+                return value_stats, error_stats, epoch_stats, speed_stats, delta_stats
+
+        def get_csv_header(self, delim = ";"):
+                return delim.join(["model", "trainer", "iterator", "loss", "test value", "test error", "epochs", "convergence speed", "duration (sec)"])
+
+        def get_csv_row(self, mname, tname, iname, lname, value, error, epoch, speed, delta, delim = ";"):
+                return delim.join([mname, tname, iname, lname, value, error, epoch, speed, delta])
