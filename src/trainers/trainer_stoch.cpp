@@ -95,7 +95,9 @@ trainer_result_t stoch_trainer_t::train(
 
         // assembly optimization function & train the model
         const auto function = stoch_function_t(acc, iterator, task,  minibatch);
-        const auto params = stoch_params_t{epochs, epoch_size, epsilon, fn_ulog, fn_tlog};
+        auto params = stoch_params_t{epochs, epoch_size, epsilon, fn_ulog, fn_tlog};
+        params.m_tune_max_epochs = 1;
+        params.m_tune_epoch_size = std::max(epoch_size / 10, size_t(10));
         get_stoch_solvers().get(solver)->minimize(params, function, model.params());
 
         log_info() << "<<< stoch-" << solver << ": " << result << ",time=" << timer.elapsed() << ".";
