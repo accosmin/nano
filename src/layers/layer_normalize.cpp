@@ -47,8 +47,8 @@ void normalize_layer_t::configure(const tensor3d_dims_t& idims, const string_t& 
         m_odims = idims;
         m_type = from_params<norm_type>(config(), "type");
 
-        m_probe_output = probe_t{name, name + "(output)", 10 * isize()};
-        m_probe_ginput = probe_t{name, name + "(ginput)", 10 * isize()};
+        m_probe_output = probe_t{name, name + "(output)", 5 * isize()};
+        m_probe_ginput = probe_t{name, name + "(ginput)", 12 * isize()};
         m_probe_gparam = probe_t{name, name + "(gparam)", 0};
 }
 
