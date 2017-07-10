@@ -24,10 +24,8 @@ namespace nano
         ///
         /// \brief collects & formats tabular data for ASCII display.
         ///
-        class NANO_PUBLIC table_t
+        struct NANO_PUBLIC table_t
         {
-        public:
-
                 enum class sorting
                 {
                         asc,
@@ -154,4 +152,3 @@ namespace nano
                 }
         }
 }
-

@@ -12,7 +12,6 @@ namespace nano
                 explicit stoch_trainer_t(const string_t& params = string_t());
 
                 virtual trainer_result_t train(
-                        const iterator_t&, const task_t&, const size_t fold, const size_t nthreads, const loss_t&,
-                        model_t&) const override;
+                        const iterator_t&, const task_t&, const size_t fold, accumulator_t&) const override;
         };
 }

@@ -14,8 +14,7 @@ stoch_trainer_t::stoch_trainer_t(const string_t& params) :
 }
 
 trainer_result_t stoch_trainer_t::train(
-        const iterator_t& iterator, const task_t& task, const size_t fold, const size_t nthreads, const loss_t& loss,
-        model_t& model) const
+        const iterator_t& iterator, const task_t& task, const size_t fold, accumulator_t& acc) const
 {
         // parameters
         const auto epochs = clamp(from_params<size_t>(config(), "epochs"), 1, 1024);
@@ -31,10 +30,6 @@ trainer_result_t stoch_trainer_t::train(
         auto minibatch = minibatch_t(task, {fold, protocol::train}, batch0);
 
         log_info() << "setup:epochs=" << epochs << ",epoch_size=" << epoch_size << ",batch0=" << batch0;
-
-        // accumulator
-        accumulator_t acc(model, loss);
-        acc.threads(nthreads);
 
         const timer_t timer;
         size_t epoch = 0;
@@ -98,14 +93,10 @@ trainer_result_t stoch_trainer_t::train(
         auto params = stoch_params_t{epochs, epoch_size, epsilon, fn_ulog, fn_tlog};
         params.m_tune_max_epochs = 1;
         params.m_tune_epoch_size = std::max(epoch_size / 10, size_t(10));
-        get_stoch_solvers().get(solver)->minimize(params, function, model.params());
+        get_stoch_solvers().get(solver)->minimize(params, function, acc.params());
 
         log_info() << "<<< stoch-" << solver << ": " << result << ",time=" << timer.elapsed() << ".";
 
         // OK
-        if (result.valid())
-        {
-                model.params(result.optimum_params());
-        }
         return result;
 }

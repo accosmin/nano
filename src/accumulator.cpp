@@ -177,3 +177,8 @@ probes_t accumulator_t::probes() const
 {
         return origin().m_model->probes();
 }
+
+vector_t accumulator_t::params() const
+{
+        return origin().m_model->params();
+}

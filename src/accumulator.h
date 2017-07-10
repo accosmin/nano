@@ -56,6 +56,11 @@ namespace nano
                 void update(const iterator_t&, const task_t&, const fold_t&, const size_t begin, const size_t end);
 
                 ///
+                /// \brief current parameters
+                ///
+                vector_t params() const;
+
+                ///
                 /// \brief cumulated gradient
                 ///
                 vector_t vgrad() const;
@@ -78,7 +83,6 @@ namespace nano
                 ///
                 /// \brief retrieve timing information (in microseconds) regarding various components
                 ///     for the three basic operations (output, gradient wrt parameters, gradient wrt inputs)
-                ///     by aggregating information from all cached models (if multi-threaded)
                 ///
                 probes_t probes() const;
 

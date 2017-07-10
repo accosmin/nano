@@ -14,18 +14,13 @@ batch_trainer_t::batch_trainer_t(const string_t& params) :
 }
 
 trainer_result_t batch_trainer_t::train(
-        const iterator_t& iterator, const task_t& task, const size_t fold, const size_t nthreads, const loss_t& loss,
-        model_t& model) const
+        const iterator_t& iterator, const task_t& task, const size_t fold, accumulator_t& acc) const
 {
         // parameters
         const auto epochs = clamp(from_params<size_t>(config(), "epochs"), 4, 4096);
         const auto solver = from_params<string_t>(config(), "solver");
         const auto epsilon = from_params<scalar_t>(config(), "eps");
         const auto patience = from_params<size_t>(config(), "patience");
-
-        // acumulator
-        accumulator_t acc(model, loss);
-        acc.threads(nthreads);
 
         const timer_t timer;
         size_t epoch = 0;
@@ -68,14 +63,10 @@ trainer_result_t batch_trainer_t::train(
         // assembly optimization function & train the model
         const auto function = batch_function_t(acc, iterator, task, fold_t{fold, protocol::train});
         const auto params = batch_params_t{epochs, epsilon, fn_ulog};
-        get_batch_solvers().get(solver)->minimize(params, function, model.params());
+        get_batch_solvers().get(solver)->minimize(params, function, acc.params());
 
         log_info() << "<<< batch-" << solver << ": " << result << ",time=" << timer.elapsed() << ".";
 
         // OK
-        if (result.valid())
-        {
-                model.params(result.optimum_params());
-        }
         return result;
 }
