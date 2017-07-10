@@ -9,7 +9,7 @@
 
 namespace nano
 {
-        class table_t;
+        struct table_t;
 
         ///
         /// \brief streaming operator.
