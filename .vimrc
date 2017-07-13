@@ -53,6 +53,7 @@ set path+=src/batch
 set path+=src/stoch
 set path+=src/functions
 set path+=src/io
+set path+=src/chrono
 set path+=apps
 set path+=test
 
