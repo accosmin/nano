@@ -35,8 +35,21 @@ matrix:
 
 install:
   - echo $TRAVIS_OS_NAME
-  - if [ "$TRAVIS_OS_NAME" = "osx" ]; then brew update; brew install cmake ninja eigen devil libarchive; brew link libarchive --force; fi
-  - if [ "$TRAVIS_OS_NAME" = "linux" ]; then sudo add-apt-repository ppa:ubuntu-toolchain-r/test -y && sudo add-apt-repository ppa:nschloe/eigen-backports -y && sudo add-apt-repository ppa:jonathonf/llvm -y && sudo apt-get update -qq && sudo apt-get install -y ${PACKAGES//_/ } cmake cmake-data ninja-build libdevil-dev libeigen3-dev libarchive-dev && export CXX="$COMPILER"; fi
+  - |
+    if [ "$TRAVIS_OS_NAME" = "osx" ]; then
+      brew update
+      brew install cmake ninja eigen devil libarchive
+      brew link libarchive --force
+    fi
+  - |
+    if [ "$TRAVIS_OS_NAME" = "linux" ]; then
+      sudo add-apt-repository ppa:ubuntu-toolchain-r/test -y
+      sudo add-apt-repository ppa:nschloe/eigen-backports -y
+      sudo add-apt-repository ppa:jonathonf/llvm -y
+      sudo apt-get update -qq
+      sudo apt-get install -y ${PACKAGES//_/ } cmake cmake-data ninja-build libdevil-dev libeigen3-dev libarchive-dev
+      export CXX="$COMPILER"
+    fi
   - mkdir build
 
 before_script:
