@@ -9,7 +9,7 @@ namespace nano
         ///     either of fixed size if *factor* == 1
         ///     or of geometrically increasing size if *factor* > 1
         ///
-        struct NANO_PUBLIC minibatch_t
+        struct minibatch_t
         {
                 ///
                 /// \brief constructor
