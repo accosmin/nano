@@ -15,7 +15,7 @@ class experiment:
                 self.dir = outdir
                 self.models = []
                 self.trainers = []
-                self.iterators = []
+                self.enhancers = []
                 self.losses = []
                 self.trials = trials
 
@@ -31,8 +31,8 @@ class experiment:
         def add_loss(self, name, parameters = "", config_name = None):
                 self.losses.append([config_name if config_name else name, self.cfg.config_loss(name, parameters)])
 
-        def add_iterator(self, name, parameters = "", config_name = None):
-                self.iterators.append([config_name if config_name else name, self.cfg.config_iterator(name, parameters)])
+        def add_enhancer(self, name, parameters = "", config_name = None):
+                self.enhancers.append([config_name if config_name else name, self.cfg.config_enhancer(name, parameters)])
 
         def path(self, trial, mname, tname, iname, lname, extension):
                 basepath = self.dir
@@ -61,7 +61,7 @@ class experiment:
         def filter_names(self, mname_reg, tname_reg, iname_reg, lname_reg):
                 mnames = self.names(self.models, mname_reg)
                 tnames = self.names(self.trainers, tname_reg)
-                inames = self.names(self.iterators, iname_reg)
+                inames = self.names(self.enhancers, iname_reg)
                 lnames = self.names(self.losses, lname_reg)
                 return mnames, tnames, inames, lnames
 
@@ -138,7 +138,7 @@ class experiment:
                 # run all possible configurations
                 mdatas = self.models
                 tdatas = self.trainers
-                idatas = self.iterators
+                idatas = self.enhancers
                 ldatas = self.losses
                 for mdata, tdata, idata, ldata in [(u, x, y, z) for u in mdatas for x in tdatas for y in idatas for z in ldatas]:
                         self.train_trials(
@@ -186,7 +186,7 @@ class experiment:
                 for mname, iname, lname in [(x, y, z) for x in mnames for y in inames for z in lnames]:
                         self.summarize_trials(mname, mname, tname, tname_reg, iname, iname, lname, lname, tnames)
 
-        def summarize_by_iterators(self, iname_reg = ".*"):
+        def summarize_by_enhancers(self, iname_reg = ".*"):
                 iname = self.reg2str(iname_reg)
                 mnames, tnames, inames, lnames = self.filter_names(None, None, iname_reg, None)
                 for mname, tname, lname in [(x, y, z) for x in mnames for y in tnames for z in lnames]:
@@ -260,7 +260,7 @@ class experiment:
                 return value_stats, error_stats, epoch_stats, speed_stats, delta_stats
 
         def get_csv_header(self, delim = ";"):
-                return delim.join(["model", "trainer", "iterator", "loss", "test value", "test error", "epochs", "convergence speed", "duration (sec)"])
+                return delim.join(["model", "trainer", "enhancer", "loss", "test value", "test error", "epochs", "convergence speed", "duration (sec)"])
 
         def get_csv_row(self, mname, tname, iname, lname, value, error, epoch, speed, delta, delim = ";"):
                 return delim.join([mname, tname, iname, lname, value, error, epoch, speed, delta])

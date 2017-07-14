@@ -14,7 +14,7 @@ batch_trainer_t::batch_trainer_t(const string_t& params) :
 }
 
 trainer_result_t batch_trainer_t::train(
-        const iterator_t& iterator, const task_t& task, const size_t fold, accumulator_t& acc) const
+        const enhancer_t& enhancer, const task_t& task, const size_t fold, accumulator_t& acc) const
 {
         // parameters
         const auto epochs = clamp(from_params<size_t>(config(), "epochs"), 4, 4096);
@@ -61,7 +61,7 @@ trainer_result_t batch_trainer_t::train(
         };
 
         // assembly optimization function & train the model
-        const auto function = batch_function_t(acc, iterator, task, fold_t{fold, protocol::train});
+        const auto function = batch_function_t(acc, enhancer, task, fold_t{fold, protocol::train});
         const auto params = batch_params_t{epochs, epsilon, fn_ulog};
         get_batch_solvers().get(solver)->minimize(params, function, acc.params());
 

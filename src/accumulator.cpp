@@ -78,12 +78,12 @@ void accumulator_t::update(const task_t& task, const fold_t& fold, const size_t 
         }
 }
 
-void accumulator_t::update(const iterator_t& it, const task_t& task, const fold_t& fold)
+void accumulator_t::update(const enhancer_t& it, const task_t& task, const fold_t& fold)
 {
         return update(it, task, fold, 0, task.size(fold));
 }
 
-void accumulator_t::update(const iterator_t& it, const task_t& task, const fold_t& fold,
+void accumulator_t::update(const enhancer_t& it, const task_t& task, const fold_t& fold,
         const size_t begin, const size_t end)
 {
         switch (thread_pool_t::instance().n_active_workers())

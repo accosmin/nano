@@ -1,4 +1,4 @@
-#include "iterator.h"
+#include "enhancer.h"
 #include "text/cmdline.h"
 #include "math/numeric.h"
 #include "measure_and_log.h"
@@ -14,7 +14,7 @@ static image_t make_image(const tensor3d_t& data)
         return image;
 }
 
-static void save_as_images(const iterator_t& iterator, const task_t& task, const fold_t& fold, const string_t& basepath,
+static void save_as_images(const enhancer_t& enhancer, const task_t& task, const fold_t& fold, const string_t& basepath,
         const coord_t grows, const coord_t gcols,
         const size_t trials = 16,
         const coord_t border = 8,
@@ -46,7 +46,7 @@ static void save_as_images(const iterator_t& iterator, const task_t& task, const
                 {
                         for (coord_t c = 0; c < gcols && i < size; ++ c, ++ i)
                         {
-                                grid.set(r, c, make_image(iterator.get(task, fold, i).m_input));
+                                grid.set(r, c, make_image(enhancer.get(task, fold, i).m_input));
                         }
                 }
 
@@ -60,8 +60,8 @@ int main(int argc, const char *argv[])
         cmdline_t cmdline("describe the augmented training samples");
         cmdline.add("", "task",                 "[" + concatenate(get_tasks().ids()) + "]");
         cmdline.add("", "task-params",          "task parameters (if any)", "-");
-        cmdline.add("", "iterator",             "[" + concatenate(get_iterators().ids()) + "]");
-        cmdline.add("", "iterator-params",      "task iterator parameters (if any)", "-");
+        cmdline.add("", "enhancer",             "[" + concatenate(get_enhancers().ids()) + "]");
+        cmdline.add("", "enhancer-params",      "task enhancer parameters (if any)", "-");
         cmdline.add("", "save-dir",             "directory to save samples to");
         cmdline.add("", "save-trials",          "number of sample generation trials", "16");
         cmdline.add("", "save-group-rows",      "number of samples to group in a row", "32");
@@ -70,7 +70,7 @@ int main(int argc, const char *argv[])
         cmdline.process(argc, argv);
 
         if (    !cmdline.has("task") ||
-                !cmdline.has("iterator"))
+                !cmdline.has("enhancer"))
         {
                 cmdline.usage();
         }
@@ -78,8 +78,8 @@ int main(int argc, const char *argv[])
         // check arguments and options
         const auto cmd_task = cmdline.get<string_t>("task");
         const auto cmd_task_params = cmdline.get<string_t>("task-params");
-        const auto cmd_iterator = cmdline.get<string_t>("iterator");
-        const auto cmd_iterator_params = cmdline.get<string_t>("iterator-params");
+        const auto cmd_enhancer = cmdline.get<string_t>("enhancer");
+        const auto cmd_enhancer_params = cmdline.get<string_t>("enhancer-params");
         const auto cmd_save_trials = cmdline.get<size_t>("save-trials");
         const auto cmd_save_grows = clamp(cmdline.get<coord_t>("save-group-rows"), 1, 128);
         const auto cmd_save_gcols = clamp(cmdline.get<coord_t>("save-group-cols"), 1, 128);
@@ -93,8 +93,8 @@ int main(int argc, const char *argv[])
 
         describe(*task, cmd_task);
 
-        // create iterator
-        const auto iterator = get_iterators().get(cmd_iterator, cmd_iterator_params);
+        // create enhancer
+        const auto enhancer = get_enhancers().get(cmd_enhancer, cmd_enhancer_params);
 
         // save samples as images
         if (cmdline.has("save-dir"))
@@ -103,9 +103,9 @@ int main(int argc, const char *argv[])
                 for (size_t f = 0; f < task->fsize(); ++ f)
                 {
                         const auto fold = fold_t{f, protocol::train};
-                        const auto path = cmd_save_dir + "/" + cmd_task + "_" + cmd_iterator + "_train" + to_string(f + 1);
+                        const auto path = cmd_save_dir + "/" + cmd_task + "_" + cmd_enhancer + "_train" + to_string(f + 1);
                         measure_and_log(
-                                [&] () { save_as_images(*iterator, *task, fold, path, cmd_save_grows, cmd_save_gcols, cmd_save_trials); },
+                                [&] () { save_as_images(*enhancer, *task, fold, path, cmd_save_grows, cmd_save_gcols, cmd_save_trials); },
                                 "save samples as images to <" + path + "*.png>");
                 }
         }

@@ -13,8 +13,8 @@ exp = experiment.experiment(
 # loss functions
 exp.add_loss("classnll")
 
-# iterators
-exp.add_iterator("default")
+# enhancers
+exp.add_enhancer("default")
 
 # trainers
 exp.add_trainer("batch_cgd", "epochs=1000,patience=100")

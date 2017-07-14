@@ -8,7 +8,7 @@ namespace nano
         struct loss_t;
         struct task_t;
         struct model_t;
-        struct iterator_t;
+        struct enhancer_t;
         struct accumulator_t;
 
         ///
@@ -31,6 +31,6 @@ namespace nano
                 /// \brief train the given model starting from the current model parameters
                 ///
                 virtual trainer_result_t train(
-                        const iterator_t&, const task_t&, const size_t fold, accumulator_t&) const = 0;
+                        const enhancer_t&, const task_t&, const size_t fold, accumulator_t&) const = 0;
         };
 }

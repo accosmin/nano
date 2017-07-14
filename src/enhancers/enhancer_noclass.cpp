@@ -1,15 +1,15 @@
 #include "math/random.h"
 #include "tensor/numeric.h"
-#include "iterator_noclass.h"
+#include "enhancer_noclass.h"
 
 using namespace nano;
 
-iterator_noclass_t::iterator_noclass_t(const string_t& config) :
-        iterator_t(to_params(config, "ratio", "0.1[0,1]", "noise", "0.1[0,1]"))
+enhancer_noclass_t::enhancer_noclass_t(const string_t& config) :
+        enhancer_t(to_params(config, "ratio", "0.1[0,1]", "noise", "0.1[0,1]"))
 {
 }
 
-sample_t iterator_noclass_t::get(const task_t& task, const fold_t& fold, const size_t index) const
+sample_t enhancer_noclass_t::get(const task_t& task, const fold_t& fold, const size_t index) const
 {
         sample_t sample = task.get(fold, index);
 

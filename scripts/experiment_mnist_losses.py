@@ -16,8 +16,8 @@ exp.add_loss("classnll")
 exp.add_loss("slogistic")
 exp.add_loss("sexponential")
 
-# iterators
-exp.add_iterator("default")
+# enhancers
+exp.add_enhancer("default")
 
 # trainers
 batch_params = "epochs=1000,patience=32,epsilon=1e-6"

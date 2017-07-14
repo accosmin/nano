@@ -3,7 +3,7 @@
 #include "model.h"
 #include "version.h"
 #include "trainer.h"
-#include "iterator.h"
+#include "enhancer.h"
 #include "text/table.h"
 #include "text/cmdline.h"
 #include "solver_batch.h"
@@ -40,7 +40,7 @@ int main(int argc, const char* argv[])
         cmdline.add("", "task",                 "tasks");
         cmdline.add("", "layer",                "layers to built models");
         cmdline.add("", "model",                "models");
-        cmdline.add("", "iterator",             "task iterators");
+        cmdline.add("", "enhancer",             "task enhancers");
         cmdline.add("", "trainer",              "training methods");
         cmdline.add("", "batch",                "batch optimization algorithms");
         cmdline.add("", "stoch",                "stochastic optimization algorithms");
@@ -57,7 +57,7 @@ int main(int argc, const char* argv[])
         const bool has_task = cmdline.has("task");
         const bool has_layer = cmdline.has("layer");
         const bool has_model = cmdline.has("model");
-        const bool has_iterator = cmdline.has("iterator");
+        const bool has_enhancer = cmdline.has("enhancer");
         const bool has_trainer = cmdline.has("trainer");
         const bool has_batch = cmdline.has("batch");
         const bool has_stoch = cmdline.has("stoch");
@@ -72,7 +72,7 @@ int main(int argc, const char* argv[])
                 !has_task &&
                 !has_layer &&
                 !has_model &&
-                !has_iterator &&
+                !has_enhancer &&
                 !has_trainer &&
                 !has_batch &&
                 !has_stoch &&
@@ -104,9 +104,9 @@ int main(int argc, const char* argv[])
         {
                 print("model", get_models());
         }
-        if (has_iterator)
+        if (has_enhancer)
         {
-                print("iterator", get_iterators());
+                print("enhancer", get_enhancers());
         }
         if (has_trainer)
         {

@@ -14,7 +14,7 @@ stoch_trainer_t::stoch_trainer_t(const string_t& params) :
 }
 
 trainer_result_t stoch_trainer_t::train(
-        const iterator_t& iterator, const task_t& task, const size_t fold, accumulator_t& acc) const
+        const enhancer_t& enhancer, const task_t& task, const size_t fold, accumulator_t& acc) const
 {
         // parameters
         const auto epochs = clamp(from_params<size_t>(config(), "epochs"), 1, 1024);
@@ -23,11 +23,11 @@ trainer_result_t stoch_trainer_t::train(
         const auto epsilon = from_params<scalar_t>(config(), "eps");
         const auto patience = from_params<size_t>(config(), "patience");
 
-        // minibatch
+        // minibatch iterator
         const auto train_size = task.size({fold, protocol::train});
         const auto epoch_size = idiv(train_size, batch0);
 
-        auto minibatch = minibatch_t(task, {fold, protocol::train}, batch0);
+        auto iterator = iterator_t(task, {fold, protocol::train}, batch0);
 
         log_info() << "setup:epochs=" << epochs << ",epoch_size=" << epoch_size << ",batch0=" << batch0;
 
@@ -47,11 +47,11 @@ trainer_result_t stoch_trainer_t::train(
 
                 log_info()
                         << "[tune:train=" << train
-                        << "," << config << ",batch=" << minibatch.size() << ",g=" << gnorm << ",x=" << xnorm
+                        << "," << config << ",batch=" << iterator.size() << ",g=" << gnorm << ",x=" << xnorm
                         << "] " << timer.elapsed() << ".";
 
                 // NB: need to reset the minibatch size (changed during tuning)!
-                minibatch.reset(batch0);
+                iterator.reset(batch0);
         };
 
         // logging operator
@@ -82,14 +82,14 @@ trainer_result_t stoch_trainer_t::train(
                         << ":train=" << train
                         << ",valid=" << valid << "|" << nano::to_string(ret)
                         << ",test=" << test
-                        << "," << config << ",batch=" << minibatch.size() << ",g=" << gnorm << ",x=" << xnorm
+                        << "," << config << ",batch=" << iterator.size() << ",g=" << gnorm << ",x=" << xnorm
                         << "] " << timer.elapsed() << ".";
 
                 return !nano::is_done(ret);
         };
 
         // assembly optimization function & train the model
-        const auto function = stoch_function_t(acc, iterator, task,  minibatch);
+        const auto function = stoch_function_t(acc, enhancer, task,  iterator);
         auto params = stoch_params_t{epochs, epoch_size, epsilon, fn_ulog, fn_tlog};
         params.m_tune_max_epochs = 1;
         params.m_tune_epoch_size = std::max(epoch_size / 10, size_t(10));

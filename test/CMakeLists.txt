@@ -39,7 +39,7 @@ make_test(test_conv3d.cpp nano)
 make_test(test_normalize.cpp nano)
 
 make_test(test_charset.cpp nano)
-make_test(test_minibatch.cpp nano)
+make_test(test_iterator.cpp nano)
 
 make_test(test_task_svhn.cpp nano)
 make_test(test_task_iris.cpp nano)

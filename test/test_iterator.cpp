@@ -1,11 +1,11 @@
 #include "utest.h"
+#include "iterator.h"
 #include "vision/color.h"
 #include "tasks/charset.h"
-#include "trainers/minibatch.h"
 
 using namespace nano;
 
-NANO_BEGIN_MODULE(test_minibatch)
+NANO_BEGIN_MODULE(test_iterator)
 
 NANO_CASE(fixed_batch_iterator)
 {
@@ -18,7 +18,7 @@ NANO_CASE(fixed_batch_iterator)
         const auto fold = fold_t{0, protocol::train};
         const auto fold_size = task->size(fold);
 
-        minibatch_t it(*task, fold, batch);
+        iterator_t it(*task, fold, batch);
         for (size_t i = 0; i < 1000; ++ i)
         {
                 NANO_CHECK_LESS(it.begin(), it.end());
@@ -52,7 +52,7 @@ NANO_CASE(increasing_batch_iterator)
         const auto fold = fold_t{0, protocol::train};
         const auto fold_size = task->size(fold);
 
-        minibatch_t it(*task, fold, batch0, factor);
+        iterator_t it(*task, fold, batch0, factor);
         for (size_t i = 0; i < 1000; ++ i)
         {
                 NANO_CHECK_LESS(it.begin(), it.end());

@@ -5,7 +5,7 @@ make_app(benchmark_stoch.cpp nano)
 make_app(benchmark_tpool.cpp nano)
 make_app(benchmark_conv3d.cpp nano)
 make_app(benchmark_models.cpp nano)
-make_app(benchmark_iterator.cpp nano)
+make_app(benchmark_enhancer.cpp nano)
 make_app(benchmark_functions.cpp nano)
 
 make_app(info.cpp nano)
@@ -13,7 +13,7 @@ make_app(info_mat5.cpp nano)
 make_app(info_task.cpp nano)
 make_app(info_model.cpp nano)
 make_app(info_archive.cpp nano)
-make_app(info_iterator.cpp nano)
+make_app(info_enhancer.cpp nano)
 
 make_app(train.cpp nano)
 make_app(evaluate.cpp nano)
@@ -29,7 +29,7 @@ set(programs
         info_task
         info_model
         info_archive
-        info_iterator
+        info_enhancer
         train
         evaluate
         embed

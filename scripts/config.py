@@ -25,22 +25,22 @@ class config:
                         "square" : "--loss square"
                 }
 
-        # configure iterator with the given name and parameters
+        # configure enhancer with the given name and parameters
         def config_loss(self, name, parameters = ""):
                 return self.losses().get(name)
 
-        # available iterators: {name, command line parameters}+
-        def iterators(self):
+        # available enhancers: {name, command line parameters}+
+        def enhancers(self):
                 return {
-                        "default" : "--iterator default",
-                        "noise" : "--iterator noise",
-                        "warp" : "--iterator warp",
-                        "noclass" : "--iterator noclass"
+                        "default" : "--enhancer default",
+                        "noise" : "--enhancer noise",
+                        "warp" : "--enhancer warp",
+                        "noclass" : "--enhancer noclass"
                 }
 
-        # configure iterator with the given name and parameters
-        def config_iterator(self, name, parameters = "none"):
-                return self.iterators().get(name) + " --iterator-params " + parameters
+        # configure enhancer with the given name and parameters
+        def config_enhancer(self, name, parameters = "none"):
+                return self.enhancers().get(name) + " --enhancer-params " + parameters
 
         # training methods: {name, command line parameters}+
         def trainers(self):

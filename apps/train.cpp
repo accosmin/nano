@@ -3,7 +3,7 @@
 #include "model.h"
 #include <fstream>
 #include "trainer.h"
-#include "iterator.h"
+#include "enhancer.h"
 #include "text/table.h"
 #include "accumulator.h"
 #include "text/cmdline.h"
@@ -57,8 +57,8 @@ int main(int argc, const char *argv[])
         cmdline.add("", "trainer",              "[" + concatenate(get_trainers().ids()) + "]");
         cmdline.add("", "trainer-params",       "trainer parameters (if any)");
         cmdline.add("", "loss",                 "[" + concatenate(get_losses().ids()) + "]");
-        cmdline.add("", "iterator",             "[" + concatenate(get_iterators().ids()) + "]", "default");
-        cmdline.add("", "iterator-params",      "task iterator parameters (if any)", "-");
+        cmdline.add("", "enhancer",             "[" + concatenate(get_enhancers().ids()) + "]", "default");
+        cmdline.add("", "enhancer-params",      "task enhancer parameters (if any)", "-");
         cmdline.add("", "threads",              "number of threads to use", logical_cpus());
 
         cmdline.process(argc, argv);
@@ -75,8 +75,8 @@ int main(int argc, const char *argv[])
         const auto cmd_trainer = cmdline.get<string_t>("trainer");
         const auto cmd_trainer_params = cmdline.get<string_t>("trainer-params");
         const auto cmd_loss = cmdline.get<string_t>("loss");
-        const auto cmd_iterator = cmdline.get<string_t>("iterator");
-        const auto cmd_iterator_params = cmdline.get<string_t>("iterator-params");
+        const auto cmd_enhancer = cmdline.get<string_t>("enhancer");
+        const auto cmd_enhancer_params = cmdline.get<string_t>("enhancer-params");
         const auto cmd_threads = cmdline.get<size_t>("threads");
 
         // create task
@@ -93,8 +93,8 @@ int main(int argc, const char *argv[])
         // create loss
         const auto loss = get_losses().get(cmd_loss);
 
-        // create iterator
-        const auto iterator = get_iterators().get(cmd_iterator, cmd_iterator_params);
+        // create enhancer
+        const auto enhancer = get_enhancers().get(cmd_enhancer, cmd_enhancer_params);
 
         // create model
         const auto model = get_models().get(cmd_model, cmd_model_params);
@@ -118,7 +118,7 @@ int main(int argc, const char *argv[])
         trainer_result_t result;
         measure_critical_and_log([&] ()
                 {
-                        result = trainer->train(*iterator, *task, cmd_task_fold, acc);
+                        result = trainer->train(*enhancer, *task, cmd_task_fold, acc);
                         return result.valid();
                 },
                 "train model");

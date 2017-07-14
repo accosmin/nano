@@ -21,7 +21,7 @@ def get_state_csvs(paths):
         return names, datas
 
 # load trial file with the following format:
-#  (model name, trainer name, iterator name, loss name, test value, test error, #epochs, convergence speed, training time)+
+#  (model name, trainer name, enhancer name, loss name, test value, test error, #epochs, convergence speed, training time)+
 def get_trial_csv(path):
         name = os.path.basename(path).replace(".csv", "")
         name = name.replace(name[0 : name.find("_") + 1], "")

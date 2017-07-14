@@ -1,4 +1,4 @@
-#include "iterator.h"
+#include "enhancer.h"
 #include "text/table.h"
 #include "text/cmdline.h"
 #include "math/numeric.h"
@@ -30,7 +30,7 @@ int main(int argc, const char *argv[])
         const size_t kilo = 1000;
 
         // parse the command line
-        cmdline_t cmdline("benchmark task iterators");
+        cmdline_t cmdline("benchmark task enhancers");
         cmdline.add("", "min-samples",  "minimum number of samples [1K, 10K]", 10 * 1000);
         cmdline.add("", "max-samples",  "maximum number of samples [10K, 1M]", 80 * 1000);
 
@@ -50,13 +50,13 @@ int main(int argc, const char *argv[])
         // prepare table
         table_t table;
         table.header() << "" << "" << "" << "";
-        for (const auto& id : get_iterators().ids())
+        for (const auto& id : get_enhancers().ids())
         {
                 table.header() << ("it(" + id + ")");
         }
         {
                 auto& row = table.append() << "#samples" << "isize" << "init[ms]" << "shuffle[us]";
-                for (const auto& id : get_iterators().ids())
+                for (const auto& id : get_enhancers().ids())
                 {
                         NANO_UNUSED1(id);
                         row << "[us/sample]";
@@ -77,10 +77,10 @@ int main(int argc, const char *argv[])
                 row << measure<milliseconds_t>([&] () { task->load(); }, 1).count();
                 row << measure<milliseconds_t>([&] () { task->shuffle({0, protocol::train}); }, 16).count();
 
-                // vary the iterator
-                for (const auto& id : get_iterators().ids())
+                // vary the enhancer
+                for (const auto& id : get_enhancers().ids())
                 {
-                        const auto iterator = get_iterators().get(id);
+                        const auto enhancer = get_enhancers().get(id);
 
                         const auto fold = fold_t{0, protocol::train};
                         const auto fold_size = task->size(fold);
@@ -90,7 +90,7 @@ int main(int argc, const char *argv[])
                                 volatile long double sum = 0;
                                 for (size_t index = 0; index < fold_size; ++ index)
                                 {
-                                        const auto sample = iterator->get(*task, fold, index);
+                                        const auto sample = enhancer->get(*task, fold, index);
                                         const auto& input = sample.m_input;
                                         const auto& target = sample.m_target;
                                         sum += input.vector().sum() - target.vector().sum();

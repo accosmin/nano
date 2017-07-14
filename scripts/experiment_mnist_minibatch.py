@@ -14,8 +14,8 @@ exp = experiment.experiment(
 # loss functions
 exp.add_loss("slogistic")
 
-# iterators
-exp.add_iterator("default")
+# enhancers
+exp.add_enhancer("default")
 
 # trainers
 stoch_params = "epochs=100,patience=32,epsilon=1e-6,batch={}"

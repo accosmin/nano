@@ -12,7 +12,7 @@ set(libnano_sources
         ${CMAKE_CURRENT_SOURCE_DIR}/trainer_state.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/trainer_result.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/task.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/iterator.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/enhancer.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/solver_batch.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/solver_stoch.cpp)
 
@@ -27,7 +27,7 @@ add_subdirectory(layers)
 add_subdirectory(models)
 add_subdirectory(tasks)
 add_subdirectory(trainers)
-add_subdirectory(iterators)
+add_subdirectory(enhancers)
 add_subdirectory(tensor)
 add_subdirectory(thread)
 add_subdirectory(chrono)
