@@ -93,9 +93,10 @@ bool function_t::is_convex(const vector_t& x1, const vector_t& x2, const int ste
         {
                 const auto t1 = scalar_t(step) / scalar_t(steps);
                 const auto t2 = scalar_t(1) - t1;
+                const auto ftc = t1 * f1 + t2 * f2;
 
                 const auto ft = vgrad(t1 * x1 + t2 * x2, nullptr);
-                if (std::isfinite(ft) && ft > (1 + epsilon0<scalar_t>()) * (t1 * f1 + t2 * f2))
+                if (std::isfinite(ft) && ft > ftc + epsilon0<scalar_t>() * (1 + std::fabs(ftc)))
                 {
                         return false;
                 }
