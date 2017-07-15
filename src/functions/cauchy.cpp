@@ -14,5 +14,5 @@ scalar_t function_cauchy_t::vgrad(const vector_t& x, vector_t* gx) const
                 *gx = (2 * x.array()) / (1 + x.array().square());
         }
 
-        return (1.0 + x.array().square()).log().sum();
+        return (1 + x.array().square()).log().sum();
 }

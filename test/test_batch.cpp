@@ -10,7 +10,7 @@ using namespace nano;
 
 static void check_function(const function_t& function)
 {
-        const auto iterations = size_t(100000);
+        const auto iterations = size_t(1000000);
         const auto trials = size_t(10);
 
         const auto dims = function.size();
@@ -29,7 +29,7 @@ static void check_function(const function_t& function)
         const auto ids = get_batch_solvers().ids();
         for (const auto id : ids)
         {
-                const auto optimizer = get_batch_solvers().get(id);
+                const auto optimizer = get_batch_solvers().get(id, "c1=1e-6");
 
                 size_t out_of_domain = 0;
 
@@ -40,7 +40,7 @@ static void check_function(const function_t& function)
                         const auto g_thres = epsilon2<scalar_t>();
 
                         // optimize
-                        const auto params = batch_params_t(iterations, epsilon1<scalar_t>());
+                        const auto params = batch_params_t(iterations, epsilon2<scalar_t>());
                         const auto state = optimizer->minimize(params, function, x0);
 
                         const auto x = state.x;
