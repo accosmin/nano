@@ -9,7 +9,7 @@ using namespace nano;
 
 template <typename tostats>
 static void check_function(const function_t& function,
-        const size_t trials, const size_t iterations, const scalar_t epsilon, tostats& gstats)
+        const size_t trials, const size_t iterations, const scalar_t epsilon, const scalar_t c1, tostats& gstats)
 {
         auto rgen = make_rng(scalar_t(-1), scalar_t(+1));
 
@@ -29,7 +29,7 @@ static void check_function(const function_t& function,
                 for (const ls_initializer ls_init : enum_values<ls_initializer>())
                         for (const ls_strategy ls_strat : enum_values<ls_strategy>())
         {
-                const auto solver = get_batch_solvers().get(id, to_params("ls_init", ls_init, "ls_strat", ls_strat));
+                const auto solver = get_batch_solvers().get(id, to_params("ls_init", ls_init, "ls_strat", ls_strat, "c1", c1));
                 const auto params = batch_params_t(iterations, epsilon);
                 const auto name = id + "[" + to_string(ls_init) + "][" + to_string(ls_strat) + "]";
 
@@ -52,6 +52,7 @@ int main(int argc, const char* argv[])
         cmdline.add("", "iterations",   "maximum number of iterations", "1000");
         cmdline.add("", "epsilon",      "convergence criteria", 1e-6);
         cmdline.add("", "convex",       "use only convex test functions");
+        cmdline.add("", "c1",           "sufficient decrease coefficient (Wolfe conditions)", 1e-4);
 
         cmdline.process(argc, argv);
 
@@ -62,13 +63,14 @@ int main(int argc, const char* argv[])
         const auto iterations = cmdline.get<size_t>("iterations");
         const auto epsilon = cmdline.get<scalar_t>("epsilon");
         const auto is_convex = cmdline.has("convex");
+        const auto c1 = cmdline.get<scalar_t>("c1");
 
         std::map<std::string, benchmark::optimizer_stat_t> gstats;
 
         const auto functions = (is_convex ? make_convex_functions : make_functions)(min_dims, max_dims);
         foreach_test_function(functions, [&] (const function_t& function)
         {
-                check_function(function, trials, iterations, epsilon, gstats);
+                check_function(function, trials, iterations, epsilon, c1, gstats);
         });
 
         // show global statistics
