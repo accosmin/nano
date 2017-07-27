@@ -63,5 +63,8 @@ namespace nano
                 vector_t        m_xdata;        ///< buffer: concatenated input-output tensors for all layers
                 vector_t        m_pdata;        ///< buffer: parameters for all layers
                 vector_t        m_gdata;        ///< buffer: parameter gradients for all layers
+                probe_t         m_probe_output;
+                probe_t         m_probe_ginput;
+                probe_t         m_probe_gparam;
         };
 }

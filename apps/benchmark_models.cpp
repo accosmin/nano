@@ -35,7 +35,7 @@ void print_probes(table_t& table, const string_t& basename, const std::vector<pr
                         {
                                 if (probe0.fullname() == probex.fullname())
                                 {
-                                        row << probe0.timings().avg();
+                                        row << probe0.timings().min();
                                 }
                         }
                 }
@@ -44,6 +44,9 @@ void print_probes(table_t& table, const string_t& basename, const std::vector<pr
 
 int main(int argc, const char *argv[])
 {
+        //todo: change benchmark to output probe info like in apps/train (flops, gflops, min/max/avg timings)
+        //todo: the probes' timings do not match the results from measure_accumulator
+
         // parse the command line
         cmdline_t cmdline("benchmark models");
         cmdline.add("s", "samples",     "number of samples to use [100, 10000]", "1000");
@@ -208,26 +211,35 @@ int main(int argc, const char *argv[])
                 }
 
                 // detailed per-component (e.g. per-layer) timing information
+                const auto last = config == *networks.rbegin();
                 if (cmd_forward && cmd_detailed)
                 {
                         print_probes(ftable, ">", fprobes, fprobes[cmd_min_nthreads]);
+                        if (!last)
+                        {
+                                ftable.append(table_row_t::storage::delim);
+                        }
                 }
 
                 if (cmd_backward && cmd_detailed)
                 {
                         print_probes(btable, ">", bprobes, bprobes[cmd_min_nthreads]);
+                        if (!last)
+                        {
+                                btable.append(table_row_t::storage::delim);
+                        }
                 }
         }
 
         // print results
         if (cmd_forward)
         {
-                ftable.mark(make_table_mark_minimum_percentage_cols<size_t>(5));
+                //ftable.mark(make_table_mark_minimum_percentage_cols<size_t>(5));
                 std::cout << ftable;
         }
         if (cmd_backward)
         {
-                btable.mark(make_table_mark_minimum_percentage_cols<size_t>(5));
+                //btable.mark(make_table_mark_minimum_percentage_cols<size_t>(5));
                 std::cout << btable;
         }
 
