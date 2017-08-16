@@ -38,7 +38,7 @@ namespace nano
                 virtual scalar_t value(const vector_t& targets, const vector_t& scores) const = 0;
 
                 ///
-                /// \brief compute the loss gradient
+                /// \brief compute the loss gradient (wrt the scores)
                 ///
                 virtual vector_t vgrad(const vector_t& targets, const vector_t& scores) const = 0;
 
