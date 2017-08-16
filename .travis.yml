@@ -49,8 +49,9 @@ install:
       sudo add-apt-repository ppa:nschloe/eigen-backports -y
       sudo add-apt-repository ppa:jonathonf/llvm -y
       sudo apt-get update -qq
-      sudo apt-get install -y ${PACKAGES//_/ } cmake cmake-data ninja-build libdevil-dev libeigen3-dev libarchive-dev
+      sudo apt-get install -y ${PACKAGES//_/ } ccache cmake cmake-data ninja-build libdevil-dev libeigen3-dev libarchive-dev
       export CXX="$COMPILER"
+      export CCACHE_CPP2=true
     fi
   - mkdir build
 
