@@ -78,15 +78,16 @@ namespace
         }
 
         auto measure_level3(const tensor_size_t dims,
-                table_row_t& row1, table_row_t& row2)
+                table_row_t& row1, table_row_t& row2, table_row_t& row3)
         {
                 auto A = make_matrix(dims, dims);
                 auto B = make_matrix(dims, dims);
                 auto C = make_matrix(dims, dims);
                 auto Z = make_matrix(dims, dims);
 
-                store(row1, 2 * dims * dims * dims, [&] () { Z = A * B + C; });
-                store(row2, 2 * dims * dims * dims, [&] () { Z = A * B.transpose() + C; });
+                store(row1, 2 * dims * dims * dims, [&] () { Z = A * B; });
+                store(row2, 2 * dims * dims * dims + dims * dims, [&] () { Z = A * B + C; });
+                store(row3, 2 * dims * dims * dims + dims * dims, [&] () { Z = A * B.transpose() + C; });
         }
 
         template <typename top>
@@ -189,11 +190,12 @@ int main(int argc, const char* argv[])
                 table.header() << "operation";
                 fillheader(min, max, table);
                 {
-                        auto& row1 = table.append() << "Z = AB + C";
-                        auto& row2 = table.append() << "Z = AB^t + C";
+                        auto& row1 = table.append() << "Z = AB";
+                        auto& row2 = table.append() << "Z = AB + C";
+                        auto& row3 = table.append() << "Z = AB^t + C";
                         foreach_dims(min, max, [&] (const auto dims)
                         {
-                                measure_level3(dims, row1, row2);
+                                measure_level3(dims, row1, row2, row3);
                         });
                 }
                 std::cout << table;

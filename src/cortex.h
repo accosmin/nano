@@ -46,13 +46,13 @@ namespace nano
         }
 
         ///
-        /// \brief dataset sample
+        /// \brief dataset sample (minibatch)
         ///
         struct sample_t
         {
-                tensor3d_t      m_input;        ///<
-                tensor3d_t      m_target;       ///< desired (ideal) output
-                string_t        m_label;        ///< optionally label (useful for classification)
+                tensor3d_t      m_input;        ///< input: count x planes x rows x columns
+                tensor3d_t      m_target;       ///< desired (ideal) output: count x planes x rows x columns
+                string_t        m_label;        ///< classification label (optional)
         };
 
         ///
