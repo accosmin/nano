@@ -29,7 +29,7 @@ static void check_function(const function_t& function)
         const auto ids = get_batch_solvers().ids();
         for (const auto id : ids)
         {
-                const auto optimizer = get_batch_solvers().get(id, to_params("c1", epsilon1<scalar_t>()));
+                const auto optimizer = get_batch_solvers().get(id, to_params("c1", epsilon0<scalar_t>()));
 
                 size_t out_of_domain = 0;
 
