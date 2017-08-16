@@ -1,52 +1,45 @@
 #include "loss.h"
 #include "task.h"
 #include "model.h"
+#include "logger.h"
 #include "text/table.h"
 #include "accumulator.h"
 #include "text/cmdline.h"
 #include "vision/color.h"
 #include "tasks/charset.h"
-#include "chrono/measure.h"
 #include "tensor/numeric.h"
-#include "measure_and_log.h"
+#include "text/algorithm.h"
 #include "layers/make_layers.h"
-#include "text/table_row_mark.h"
 #include <iostream>
 
 using namespace nano;
 
-template <typename tunits>
-auto measure_accumulator(accumulator_t& acc, const task_t& task, const fold_t& fold, const size_t trials = 1)
+void append(table_t& table, const string_t& name, const probes_t& probes, const bool detailed)
 {
-        const auto duration = measure<tunits>([&] () { acc.update(task, fold); }, trials);
-        return duration.count();
-}
-
-void print_probes(table_t& table, const string_t& basename, const std::vector<probes_t>& probes, const probes_t& probes0)
-{
-        for (const auto& probe0 : probes0)
+        for (const auto& probe : probes)
         {
-                auto& row = table.append();
-                row << (basename + probe0.fullname());
-
-                for (const auto& probesx : probes)
+                if (!starts_with(probe.fullname(), "network") && !detailed)
                 {
-                        for (const auto& probex : probesx)
-                        {
-                                if (probe0.fullname() == probex.fullname())
-                                {
-                                        row << probe0.timings().min();
-                                }
-                        }
+                        continue;
                 }
+
+                auto& row = table.append();
+                row << (name + " " + probe.fullname());
+                row << probe.flops();
+                if (probe.timings().min() < int64_t(1))
+                {
+                        row << "-";
+                }
+                else
+                {
+                        row << probe.gflops();
+                }
+                row << probe.timings().min() << probe.timings().avg() << probe.timings().max();
         }
 }
 
 int main(int argc, const char *argv[])
 {
-        //todo: change benchmark to output probe info like in apps/train (flops, gflops, min/max/avg timings)
-        //todo: the probes' timings do not match the results from measure_accumulator
-
         // parse the command line
         cmdline_t cmdline("benchmark models");
         cmdline.add("s", "samples",     "number of samples to use [100, 10000]", "1000");
@@ -83,9 +76,6 @@ int main(int argc, const char *argv[])
         const auto cmd_rows = 28;
         const auto cmd_cols = 28;
         const auto cmd_color = color_mode::luma;
-
-        const size_t cmd_min_nthreads = 1;
-        const size_t cmd_max_nthreads = logical_cpus();
 
         // generate synthetic task
         auto task = get_tasks().get("synth-charset", to_params(
@@ -147,14 +137,10 @@ int main(int argc, const char *argv[])
         const auto loss = get_losses().get("s-logistic");
 
         // construct tables to compare models
-        table_t ftable; ftable.header() << "forward [us/sample]";
-        table_t btable; btable.header() << "backward [us/sample]";
+        table_t ftable, btable;
 
-        for (size_t nthreads = cmd_min_nthreads; nthreads <= cmd_max_nthreads; ++ nthreads)
-        {
-                ftable.header() << (to_string(nthreads) + "xCPU");
-                btable.header() << (to_string(nthreads) + "xCPU");
-        }
+        ftable.header() << "forward" << "#flops" << "gflop/s" << "min[us]" << "avg[us]" << "max[us]";
+        btable.header() << "forward" << "#flops" << "gflop/s" << "min[us]" << "avg[us]" << "max[us]";
 
         // evaluate models
         for (const auto& config : networks)
@@ -168,78 +154,54 @@ int main(int argc, const char *argv[])
                 model->random();
                 model->describe();
 
-                auto& frow = ftable.append() << (cmd_name + " (" + to_string(model->psize()) + ")");
-                auto& brow = btable.append() << (cmd_name + " (" + to_string(model->psize()) + ")");
-
+                const auto name = cmd_name + " (" + to_string(model->psize()) + ")";
                 const auto fold = fold_t{0, protocol::train};
+                const auto size = task->size(fold);
 
-                std::vector<probes_t> fprobes(cmd_max_nthreads + 1);
-                std::vector<probes_t> bprobes(cmd_max_nthreads + 1);
-
-                // process the samples
-                for (size_t nthreads = cmd_min_nthreads; nthreads <= cmd_max_nthreads; ++ nthreads)
+                // measure processing
+                if (cmd_forward)
                 {
-                        if (cmd_forward)
-                        {
-                                accumulator_t acc(*model, *loss);
-                                acc.threads(nthreads);
-                                acc.mode(accumulator_t::type::value);
+                        accumulator_t acc(*model, *loss);
+                        acc.threads(1);
+                        acc.mode(accumulator_t::type::value);
+                        acc.update(*task, fold);
 
-                                const auto usecs = measure_accumulator<microseconds_t>(acc, *task, fold);
-                                const auto count = acc.vstats().count();
+                        log_info() << "<<< processed [" << size << "] forward samples for " << name << ".";
 
-                                log_info() << "<<< processed [" << count << "] forward samples in " << usecs << " us.";
-
-                                frow << idiv(usecs, count);
-                                fprobes[nthreads] = acc.probes();
-                        }
-
-                        if (cmd_backward)
-                        {
-                                accumulator_t acc(*model, *loss);
-                                acc.threads(nthreads);
-                                acc.mode(accumulator_t::type::vgrad);
-
-                                const auto usecs = measure_accumulator<microseconds_t>(acc, *task, fold);
-                                const auto count = acc.vstats().count();
-
-                                log_info() << "<<< processed [" << count << "] backward samples in " << usecs << " us.";
-
-                                brow << idiv(usecs, count);
-                                bprobes[nthreads] = acc.probes();
-                        }
+                        append(ftable, name, acc.probes(), cmd_detailed);
                 }
 
-                // detailed per-component (e.g. per-layer) timing information
+                if (cmd_backward)
+                {
+                        accumulator_t acc(*model, *loss);
+                        acc.threads(1);
+                        acc.mode(accumulator_t::type::vgrad);
+                        acc.update(*task, fold);
+
+                        log_info() << "<<< processed [" << size << "] backward samples for " << name << ".";
+
+                        append(btable, name, acc.probes(), cmd_detailed);
+                }
+
                 const auto last = config == *networks.rbegin();
-                if (cmd_forward && cmd_detailed)
+                if ((cmd_forward && cmd_detailed) && !last)
                 {
-                        print_probes(ftable, ">", fprobes, fprobes[cmd_min_nthreads]);
-                        if (!last)
-                        {
-                                ftable.append(table_row_t::storage::delim);
-                        }
+                        ftable.append(table_row_t::storage::delim);
                 }
 
-                if (cmd_backward && cmd_detailed)
+                if ((cmd_backward && cmd_detailed) && !last)
                 {
-                        print_probes(btable, ">", bprobes, bprobes[cmd_min_nthreads]);
-                        if (!last)
-                        {
-                                btable.append(table_row_t::storage::delim);
-                        }
+                        btable.append(table_row_t::storage::delim);
                 }
         }
 
         // print results
         if (cmd_forward)
         {
-                //ftable.mark(make_table_mark_minimum_percentage_cols<size_t>(5));
                 std::cout << ftable;
         }
         if (cmd_backward)
         {
-                //btable.mark(make_table_mark_minimum_percentage_cols<size_t>(5));
                 std::cout << btable;
         }
 

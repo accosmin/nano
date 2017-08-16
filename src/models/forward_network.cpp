@@ -219,9 +219,9 @@ bool forward_network_t::configure(const tensor3d_dims_t& idims, const tensor3d_d
                 psize += layer->psize();
                 xdims = layer->odims();
 
-                flops_output = layer->probe_output().flops();
-                flops_ginput = layer->probe_ginput().flops();
-                flops_gparam = layer->probe_gparam().flops();
+                flops_output += layer->probe_output().flops();
+                flops_ginput += layer->probe_ginput().flops();
+                flops_gparam += layer->probe_gparam().flops();
 
                 m_layers.emplace_back(std::move(layer));
         }
@@ -262,40 +262,15 @@ tensor3d_dims_t forward_network_t::odims() const
 
 void forward_network_t::describe() const
 {
-        const scalar_t* ppdata = m_pdata.data();
-
         log_info() << "forward network [" << config() << "]";
         for (size_t l = 0; l < n_layers(); ++ l)
         {
                 const auto& layer = m_layers[l];
 
-                // collect & print statistics for its parameters / layer
-                const auto param = map_vector(ppdata, layer->psize());
-                ppdata += layer->psize();
-
-                const auto flops_output = idiv(layer->probe_output().flops(), 1024);
-                const auto flops_ginput = idiv(layer->probe_ginput().flops(), 1024);
-                const auto flops_gparam = idiv(layer->probe_gparam().flops(), 1024);
-
-                if (layer->psize())
-                {
-                        const auto min = param.minCoeff();
-                        const auto max = param.maxCoeff();
-
-                        log_info()
-                                << "forward network " << layer->probe_output().basename()
-                                << ": in(" << layer->idims() << ") -> " << "out(" << layer->odims() << ")"
-                                << ", kFLOPs = {" << flops_output << "," << flops_ginput << "," << flops_gparam << "}"
-                                << ", params = " << layer->psize()
-                                << ", range = [" << min << ", " << max << "].";
-                }
-                else
-                {
-                        log_info()
-                                << "forward network " << layer->probe_output().basename()
-                                << ": in(" << layer->idims() << ") -> " << "out(" << layer->odims() << ")"
-                                << ", kFLOPs = {" << flops_output << "," << flops_ginput << "," << flops_gparam << "}.";
-                }
+                log_info()
+                        << "forward network " << layer->probe_output().basename()
+                        << ": in(" << layer->idims() << ") -> " << "out(" << layer->odims() << ")"
+                        << ", params = " << layer->psize() << ".";
         }
         log_info() << "forward network: parameters = " << psize() << ".";
 }
