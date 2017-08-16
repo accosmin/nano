@@ -137,10 +137,8 @@ int main(int argc, const char *argv[])
         const auto loss = get_losses().get("s-logistic");
 
         // construct tables to compare models
-        table_t ftable, btable;
-
-        ftable.header() << "forward" << "#flops" << "gflop/s" << "min[us]" << "avg[us]" << "max[us]";
-        btable.header() << "forward" << "#flops" << "gflop/s" << "min[us]" << "avg[us]" << "max[us]";
+        table_t table;
+        table.header() << "network" << "#flops" << "gflop/s" << "min[us]" << "avg[us]" << "max[us]";
 
         // evaluate models
         for (const auto& config : networks)
@@ -159,7 +157,7 @@ int main(int argc, const char *argv[])
                 const auto size = task->size(fold);
 
                 // measure processing
-                if (cmd_forward)
+                if (cmd_forward && !cmd_backward)
                 {
                         accumulator_t acc(*model, *loss);
                         acc.threads(1);
@@ -168,10 +166,9 @@ int main(int argc, const char *argv[])
 
                         log_info() << "<<< processed [" << size << "] forward samples for " << name << ".";
 
-                        append(ftable, name, acc.probes(), cmd_detailed);
+                        append(table, name, acc.probes(), cmd_detailed);
                 }
-
-                if (cmd_backward)
+                else
                 {
                         accumulator_t acc(*model, *loss);
                         acc.threads(1);
@@ -180,30 +177,18 @@ int main(int argc, const char *argv[])
 
                         log_info() << "<<< processed [" << size << "] backward samples for " << name << ".";
 
-                        append(btable, name, acc.probes(), cmd_detailed);
+                        append(table, name, acc.probes(), cmd_detailed);
                 }
 
                 const auto last = config == *networks.rbegin();
-                if ((cmd_forward && cmd_detailed) && !last)
+                if (cmd_detailed && !last)
                 {
-                        ftable.append(table_row_t::storage::delim);
-                }
-
-                if ((cmd_backward && cmd_detailed) && !last)
-                {
-                        btable.append(table_row_t::storage::delim);
+                        table.append(table_row_t::storage::delim);
                 }
         }
 
         // print results
-        if (cmd_forward)
-        {
-                std::cout << ftable;
-        }
-        if (cmd_backward)
-        {
-                std::cout << btable;
-        }
+        std::cout << table;
 
         // OK
         return EXIT_SUCCESS;
