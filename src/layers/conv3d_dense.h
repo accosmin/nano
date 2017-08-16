@@ -1,7 +1,6 @@
 #pragma once
 
-#include <cassert>
-#include "conv3d_params.h"
+#include "conv3d_utils.h"
 
 namespace nano
 {
@@ -75,9 +74,8 @@ namespace nano
                 assert(m_params.valid_odata(odata));
 
                 const auto imaps = m_params.imaps();
-                const auto kconn = m_params.kconn(), krows = m_params.krows(), kcols = m_params.kcols();
-                const auto omaps = m_params.omaps(), orows = m_params.orows(), ocols = m_params.ocols();
-                const auto drows = m_params.kdrow(), dcols = m_params.kdcol();
+                const auto kconn = m_params.kconn(), krows = m_params.krows(), kcols = m_params.kcols(), ksize = krows * kcols;
+                const auto omaps = m_params.omaps(), orows = m_params.orows(), ocols = m_params.ocols(), osize = orows * ocols;
 
                 // bias
                 for (tensor_size_t o = 0; o < omaps; ++ o)
@@ -106,21 +104,7 @@ namespace nano
 
                 for (tensor_size_t i = 0; i < imaps; ++ i)
                 {
-                        const auto imat = idata.matrix(i);
-                        for (tensor_size_t kr = 0; kr < krows; ++ kr)
-                        {
-                                for (tensor_size_t kc = 0; kc < kcols; ++ kc)
-                                {
-                                        auto orow = m_kodata.row(i * krows * kcols + kr * kcols + kc);
-                                        for (tensor_size_t r = 0; r < orows; ++ r)
-                                        {
-                                                for (tensor_size_t c = 0; c < ocols; ++ c)
-                                                {
-                                                        orow(r * ocols + c) = imat(r * drows + kr, c * dcols + kc);
-                                                }
-                                        }
-                                }
-                        }
+                        img2col(m_params, idata.matrix(i), map_matrix(m_kodata.data() + i * ksize * osize, ksize, osize));
                 }
 
                 m_oodata.noalias() = m_okdata * m_kodata;

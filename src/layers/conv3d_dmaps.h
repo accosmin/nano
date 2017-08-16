@@ -1,7 +1,6 @@
 #pragma once
 
-#include <cassert>
-#include "conv3d_params.h"
+#include "conv3d_utils.h"
 
 namespace nano
 {
@@ -42,9 +41,6 @@ namespace nano
 
         private:
 
-                template <typename timatrix, typename tomatrix>
-                void make_toeplitz_output(const timatrix& imat, tomatrix&& omat) const;
-
                 template <typename timatrix, typename tkmatrix>
                 void make_toeplitz_gparam(const timatrix& imat, tkmatrix&& kmat) const;
 
@@ -78,32 +74,6 @@ namespace nano
                 m_ikdata.resize(imaps / kconn, krows * kcols);
         }
 
-        template <typename timatrix, typename tomatrix>
-        void conv3d_dmaps_t::make_toeplitz_output(const timatrix& imat, tomatrix&& omat) const
-        {
-                const auto orows = m_params.orows(), ocols = m_params.ocols();
-                const auto krows = m_params.krows(), kcols = m_params.kcols();
-                const auto drows = m_params.kdrow(), dcols = m_params.kdcol();
-
-                assert(omat.rows() == krows * kcols);
-                assert(omat.cols() == orows * ocols);
-
-                for (tensor_size_t kr = 0; kr < krows; ++ kr)
-                {
-                        for (tensor_size_t kc = 0; kc < kcols; ++ kc)
-                        {
-                                for (tensor_size_t r = 0; r < orows; ++ r)
-                                {
-                                        for (tensor_size_t c = 0; c < ocols; ++ c)
-                                        {
-                                                omat(kr * kcols + kc, r * ocols + c) =
-                                                imat(r * drows + kr, c * dcols + kc);
-                                        }
-                                }
-                        }
-                }
-        }
-
         template <typename tidata, typename tkdata, typename tbdata, typename todata>
         void conv3d_dmaps_t::output(const tidata& idata, const tkdata& kdata, const tbdata& bdata, todata&& odata) const
         {
@@ -125,7 +95,7 @@ namespace nano
                 // +convolution
                 for (tensor_size_t i = 0; i < imaps; ++ i)
                 {
-                        make_toeplitz_output(idata.matrix(i), m_idata_toe.matrix(i));
+                        img2col(m_params, idata.matrix(i), m_idata_toe.matrix(i));
                         for (tensor_size_t o = i % kconn, ok = 0; o < omaps; o += kconn, ++ ok)
                         {
                                 m_okdata.row(ok) = kdata.vector(o, i / kconn);
