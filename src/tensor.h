@@ -8,6 +8,9 @@ namespace nano
         using vector_t = tensor_vector_t<scalar_t>;
         using matrix_t = tensor_matrix_t<scalar_t>;
 
+        using vector_map_t = Eigen::Map<vector_t>;
+        using vector_const_map_t = Eigen::Map<const vector_t>;
+
         using tensor1d_t = tensor_mem_t<scalar_t, 1>;
         using tensor2d_t = tensor_mem_t<scalar_t, 2>;
         using tensor3d_t = tensor_mem_t<scalar_t, 3>;
