@@ -117,6 +117,16 @@ function(setup_gold)
         to_parent()
 endfunction()
 
+# setup ccache
+function(setup_ccache)
+        find_program(CCACHE_PROGRAM ccache)
+        if(CCACHE_PROGRAM)
+                # Support Unix Makefiles and Ninja
+                set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE "${CCACHE_PROGRAM}")
+        endif()
+endfunction()
+
+project(nano)
 # setup LTO
 function(setup_lto)
         set(CMAKE_REQUIRED_FLAGS "-flto")

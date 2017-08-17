@@ -2,20 +2,17 @@ cmake_minimum_required(VERSION 3.1)
 
 enable_language(CXX)
 
-find_program(CCACHE_PROGRAM ccache)
-if(CCACHE_PROGRAM)
-        # Support Unix Makefiles and Ninja
-        set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE "${CCACHE_PROGRAM}")
-endif()
-
-project(nano)
-
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_SOURCE_DIR}/cmake)
-
 include(cmake/utils.cmake)
 include(cmake/options.cmake)
 include(cmake/configure.cmake)
 include(cmake/dependencies.cmake)
+
+if(NANO_WITH_CCACHE)
+        setup_ccache()
+endif()
+
+project(nano)
 
 set(NANO_MAJOR_VERSION 0)
 set(NANO_MINOR_VERSION 4)
@@ -43,6 +40,7 @@ message("++ ASAN                           " "${NANO_WITH_ASAN}")
 message("++ MSAN                           " "${NANO_WITH_MSAN}")
 message("++ TSAN                           " "${NANO_WITH_TSAN}")
 message("++ TESTS                          " "${NANO_WITH_TESTS}")
+message("++ CCACHE                         " "${NANO_WITH_CCACHE}")
 message("++ ------------------------------------------------------------------------------" "")
 
 include_directories(${nano_SOURCE_DIR}/src)
