@@ -35,6 +35,7 @@ make_test(test_loss.cpp nano)
 make_test(test_factory.cpp nano)
 make_test(test_model.cpp nano)
 make_test(test_trainer.cpp nano)
+make_test(test_affine.cpp nano)
 make_test(test_conv3d.cpp nano)
 make_test(test_normalize.cpp nano)
 
