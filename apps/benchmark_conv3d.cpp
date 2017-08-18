@@ -88,7 +88,7 @@ int main(int argc, const char *argv[])
                 << "+dense" << "ginput" << "gparam";
 
         table.append()
-                << "isize" << "parameters" << "osize" << "params"
+                << "isize" << "config" << "osize" << "#params"
                 << "#kflops" << "#kflops" << "#kflops"
                 << "gflop/s" << "gflop/s" << "gflop/s"
                 << "gflop/s" << "gflop/s" << "gflop/s"

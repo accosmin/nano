@@ -81,7 +81,7 @@ int main(int argc, const char *argv[])
                 << "+dense" << "ginput" << "gparam";
 
         table.append()
-                << "isize" << "parameters" << "osize" << "params"
+                << "isize" << "config" << "osize" << "#params"
                 << "#kflops" << "#kflops" << "#kflops"
                 << "gflop/s" << "gflop/s" << "gflop/s"
                 << "gflop/s" << "gflop/s" << "gflop/s"
@@ -101,8 +101,7 @@ int main(int argc, const char *argv[])
                                 const auto kflops_ginput = params.flops_ginput() / 1024;
                                 const auto kflops_gparam = params.flops_gparam() / 1024;
 
-                                const auto config = to_params("conn", kconn,
-                                        "rows", ksize, "cols", ksize, "drow", kdelta, "dcol", kdelta);
+                                const auto config = to_params("dims", osize);
 
                                 auto wdata = params.make_wdata(); wdata.setRandom();
                                 auto bdata = params.make_bdata(); bdata.setRandom();
@@ -127,20 +126,9 @@ int main(int argc, const char *argv[])
                                         << tensor3d_dims_t{params.omaps(), params.orows(), params.ocols()}
                                         << params.psize()
                                         << kflops_output << kflops_ginput << kflops_gparam
-                                        << gf_naive_output << gf_naive_ginput << gf_naive_gparam
-                                        << gf_dmaps_output << gf_dmaps_ginput << gf_dmaps_gparam
-                                        << gf_dense_output << gf_dense_ginput << gf_dense_gparam;
+                                        << gf3d_output << gf3d_ginput << gf3d_gparam
+                                        << gf4d_output << gf4d_ginput << gf4d_gparam;
                         }
-
-                        if (kdelta + 1 <= cmd_max_kdelta)
-                        {
-                                table.append(table_row_t::storage::delim);
-                        }
-                }
-
-                if (ksize + 2 <= cmd_max_ksize)
-                {
-                        table.append(table_row_t::storage::delim);
                 }
         }
 
