@@ -32,22 +32,25 @@ namespace
         template <typename top, typename tidata, typename twdata, typename tbdata, typename todata>
         auto measure_output(top& op, const tidata& idata, const twdata& wdata, const tbdata& bdata, todata& odata)
         {
+                const auto count = idata.template size<0>();
                 const auto duration = measure<nanoseconds_t>([&] () { op.output(idata, wdata, bdata, odata); }, trials);
-                return nano::gflops(op.params().flops_output(), duration);
+                return nano::gflops(op.params().flops_output() * count, duration);
         }
 
         template <typename top, typename tidata, typename twdata, typename tbdata, typename todata>
         auto measure_ginput(top& op, tidata& idata, const twdata& wdata, const tbdata& bdata, const todata& odata)
         {
+                const auto count = idata.template size<0>();
                 const auto duration = measure<nanoseconds_t>([&] () { op.ginput(idata, wdata, bdata, odata); }, trials);
-                return nano::gflops(op.params().flops_ginput(), duration);
+                return nano::gflops(op.params().flops_ginput() * count, duration);
         }
 
         template <typename top, typename tidata, typename twdata, typename tbdata, typename todata>
         auto measure_gparam(top& op, const tidata& idata, twdata& wdata, tbdata& bdata, const todata& odata)
         {
+                const auto count = idata.template size<0>();
                 const auto duration = measure<nanoseconds_t>([&] () { op.gparam(idata, wdata, bdata, odata); }, trials);
-                return nano::gflops(op.params().flops_gparam(), duration);
+                return nano::gflops(op.params().flops_gparam() * count, duration);
         }
 }
 
@@ -55,12 +58,12 @@ int main(int argc, const char *argv[])
 {
         // parse the command line
         cmdline_t cmdline("benchmark affine operators");
-        cmdline.add("", "min-isize",    "minimum input size [32, 1024]", "1024");
-        cmdline.add("", "max-isize",    "maximum input size [32, 4096]", "4096");
-        cmdline.add("", "min-osize",    "minimum output size [32, 1024]", "1024");
-        cmdline.add("", "max-osize",    "maximum output size [32, 4096]", "4096");
+        cmdline.add("", "min-isize",    "minimum input size [32, 1024]", "512");
+        cmdline.add("", "max-isize",    "maximum input size [32, 4096]", "1024");
+        cmdline.add("", "min-osize",    "minimum output size [32, 1024]", "512");
+        cmdline.add("", "max-osize",    "maximum output size [32, 4096]", "1024");
         cmdline.add("", "min-count",    "minimum number of samples in minibatch [1, 16]", "1");
-        cmdline.add("", "max-count",    "maximum number of samples in minibatch [1, 32]", "16");
+        cmdline.add("", "max-count",    "maximum number of samples in minibatch [1, 64]", "32");
 
         cmdline.process(argc, argv);
 
@@ -70,20 +73,18 @@ int main(int argc, const char *argv[])
         const auto cmd_min_osize = clamp(cmdline.get<int>("min-osize"), 32, 1024);
         const auto cmd_max_osize = clamp(cmdline.get<int>("max-osize"), cmd_min_osize, 4096);
         const auto cmd_min_count = clamp(cmdline.get<int>("min-count"), 1, 16);
-        const auto cmd_max_count = clamp(cmdline.get<int>("max-count"), cmd_min_count, 32);
+        const auto cmd_max_count = clamp(cmdline.get<int>("max-count"), cmd_min_count, 64);
 
         table_t table;
         table.header()
                 << "" << "" << "" << ""
                 << "output" << "ginput" << "gparam"
-                << "+naive" << "ginput" << "gparam"
-                << "+dmaps" << "ginput" << "gparam"
-                << "+dense" << "ginput" << "gparam";
+                << "+3d" << "ginput" << "gparam"
+                << "+4d" << "ginput" << "gparam";
 
         table.append()
                 << "isize" << "config" << "osize" << "#params"
                 << "#kflops" << "#kflops" << "#kflops"
-                << "gflop/s" << "gflop/s" << "gflop/s"
                 << "gflop/s" << "gflop/s" << "gflop/s"
                 << "gflop/s" << "gflop/s" << "gflop/s";
 
@@ -101,7 +102,7 @@ int main(int argc, const char *argv[])
                                 const auto kflops_ginput = params.flops_ginput() / 1024;
                                 const auto kflops_gparam = params.flops_gparam() / 1024;
 
-                                const auto config = to_params("dims", osize);
+                                const auto config = to_params("isize", isize, "osize", osize, "count", count);
 
                                 auto wdata = params.make_wdata(); wdata.setRandom();
                                 auto bdata = params.make_bdata(); bdata.setRandom();
@@ -129,6 +130,16 @@ int main(int argc, const char *argv[])
                                         << gf3d_output << gf3d_ginput << gf3d_gparam
                                         << gf4d_output << gf4d_ginput << gf4d_gparam;
                         }
+
+                        if (osize * 2 <= cmd_max_osize)
+                        {
+                                table.append(table_row_t::storage::delim);
+                        }
+                }
+
+                if (isize * 2 <= cmd_max_isize)
+                {
+                        table.append(table_row_t::storage::delim);
                 }
         }
 
