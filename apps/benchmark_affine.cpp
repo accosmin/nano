@@ -58,12 +58,12 @@ int main(int argc, const char *argv[])
 {
         // parse the command line
         cmdline_t cmdline("benchmark affine operators");
-        cmdline.add("", "min-isize",    "minimum input size [32, 1024]", "512");
+        cmdline.add("", "min-isize",    "minimum input size [32, 1024]", "1024");
         cmdline.add("", "max-isize",    "maximum input size [32, 4096]", "1024");
-        cmdline.add("", "min-osize",    "minimum output size [32, 1024]", "512");
+        cmdline.add("", "min-osize",    "minimum output size [32, 1024]", "1024");
         cmdline.add("", "max-osize",    "maximum output size [32, 4096]", "1024");
-        cmdline.add("", "min-count",    "minimum number of samples in minibatch [1, 16]", "1");
-        cmdline.add("", "max-count",    "maximum number of samples in minibatch [1, 64]", "32");
+        cmdline.add("", "min-count",    "minimum number of samples in minibatch [1, 16]",  "1");
+        cmdline.add("", "max-count",    "maximum number of samples in minibatch [1, 128]", "128");
 
         cmdline.process(argc, argv);
 
@@ -73,7 +73,7 @@ int main(int argc, const char *argv[])
         const auto cmd_min_osize = clamp(cmdline.get<int>("min-osize"), 32, 1024);
         const auto cmd_max_osize = clamp(cmdline.get<int>("max-osize"), cmd_min_osize, 4096);
         const auto cmd_min_count = clamp(cmdline.get<int>("min-count"), 1, 16);
-        const auto cmd_max_count = clamp(cmdline.get<int>("max-count"), cmd_min_count, 64);
+        const auto cmd_max_count = clamp(cmdline.get<int>("max-count"), cmd_min_count, 128);
 
         table_t table;
         table.header()
