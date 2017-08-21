@@ -1,0 +1,158 @@
+#pragma once
+
+#include "conv_utils.h"
+
+namespace nano
+{
+        ///
+        /// \brief 3D convolution transformation with 4D input and output tensors using
+        ///     unrolled & not vectorized looping through pixels.
+        ///
+        /// parameters:
+        ///     idata: 4D input tensor (count x imaps x irows x icols, with isize = imaps x irows x icols)
+        ///     kdata: convolution kernel (omaps x imaps/kconn x krows x kcols)
+        ///     bdata: bias vector (omaps)
+        ///     odata: 4D output tensor (count x omaps x orows x ocols, with osize = omaps x orows x ocols)
+        ///
+        struct conv3d_t
+        {
+                ///
+                /// \brief constructor
+                ///
+                explicit conv3d_t(const conv_params_t& params = conv_params_t()) :
+                        m_params(params) {}
+
+                ///
+                /// \brief output
+                ///
+                template <typename tidata, typename tkdata, typename tbdata, typename todata>
+                bool output(const tidata&, const tkdata&, const tbdata&, todata&&) const;
+
+                ///
+                /// \brief gradient wrt inputs
+                ///
+                template <typename tidata, typename tkdata, typename tbdata, typename todata>
+                bool ginput(tidata&&, const tkdata&, const tbdata&, const todata&) const;
+
+                ///
+                /// \brief accumulate the gradient wrt parameters (convolution kernels and bias)
+                ///
+                template <typename tidata, typename tkdata, typename tbdata, typename todata>
+                bool gparam(const tidata&, tkdata&&, tbdata&&, const todata& odata) const;
+
+                ///
+                /// \brief parameters
+                ///
+                const conv_params_t& params() const { return m_params; }
+
+        private:
+
+                // attributes
+                conv_params_t   m_params;
+        };
+
+        template <typename tidata, typename tkdata, typename tbdata, typename todata>
+        bool conv3d_t::output(const tidata& idata, const tkdata& kdata, const tbdata& bdata, todata&& odata) const
+        {
+                if (m_params.valid(idata, kdata, bdata, odata))
+                {
+                        const auto count = idata.template size<0>();
+                        const auto imaps = m_params.imaps(), isize = m_params.isize();
+                        const auto omaps = m_params.omaps(), osize = m_params.osize();
+                        const auto kconn = m_params.kconn(), kdrow = m_params.kdrow(), m_params.kdcol();
+
+                        for (tensor_size_t x = 0; x < count; ++ x)
+                        {
+                                auto imap = map_tensor(idata.data() + x * isize, m_params.idims());
+                                auto omap = map_tensor(odata.data() + x * osize, m_params.odims());
+
+                                for (tensor_size_t o = 0; o < omaps; ++ o)
+                                {
+                                        omap.vector(o).setConstant(bdata(o));
+
+                                        for (tensor_size_t i = o % kconn, ik = 0; i < imaps; i += kconn, ++ ik)
+                                        {
+                                                conv2d(imap.matrix(i), kdata.matrix(o, ik), kdrow, kdcol, omap.matrix(o));
+                                        }
+                                }
+                        }
+                        return true;
+                }
+                else
+                {
+                        return false;
+                }
+        }
+
+        template <typename tidata, typename tkdata, typename tbdata, typename todata>
+        bool conv3d_t::ginput(tidata&& idata, const tkdata& kdata, const tbdata& bdata, const todata& odata) const
+        {
+                if (m_params.valid(idata, kdata, bdata, odata))
+                {
+                        NANO_UNUSED1_RELEASE(bdata);
+
+                        const auto count = idata.template size<0>();
+                        const auto imaps = m_params.imaps(), isize = m_params.isize();
+                        const auto omaps = m_params.omaps(), osize = m_params.osize();
+                        const auto kconn = m_params.kconn(), kdrow = m_params.kdrow(), m_params.kdcol();
+
+                        for (tensor_size_t x = 0; x < count; ++ x)
+                        {
+                                auto imap = map_tensor(idata.data() + x * isize, m_params.idims());
+                                auto omap = map_tensor(odata.data() + x * osize, m_params.odims());
+
+                                for (tensor_size_t i = 0; i < imaps; ++ i)
+                                {
+                                        imap.matrix(i).setZero();
+
+                                        for (tensor_size_t o = i % kconn, ok = 0; o < omaps; o += kconn, ++ ok)
+                                        {
+                                                corr2d(imap.amatrix(i), kdata.matrix(o, i / kconn), kdrow, kdcol, omap.matrix(o));
+                                        }
+                                }
+                        }
+                        return true;
+                }
+                else
+                {
+                        return false;
+                }
+        }
+
+        template <typename tidata, typename tkdata, typename tbdata, typename todata>
+        bool conv3d_t::gparam(const tidata& idata, tkdata&& kdata, tbdata&& bdata, const todata& odata) const
+        {
+                if (m_params.valid(idata, kdata, bdata, odata))
+                {
+                        const auto count = idata.template size<0>();
+                        const auto count = idata.template size<0>();
+                        const auto imaps = m_params.imaps(), isize = m_params.isize();
+                        const auto omaps = m_params.omaps(), osize = m_params.osize();
+                        const auto kconn = m_params.kconn(), kdrow = m_params.kdrow(), m_params.kdcol();
+
+                        kdata.vector().setZero();
+                        bdata.setZero();
+
+                        for (tensor_size_t x = 0; x < count; ++ x)
+                        {
+                                auto imap = map_tensor(idata.data() + x * isize, m_params.idims());
+                                auto omap = map_tensor(odata.data() + x * osize, m_params.odims());
+
+                                for (tensor_size_t o = 0; o < omaps; ++ o)
+                                {
+                                        bdata(o) += omap.vector(o).sum();
+
+                                        for (tensor_size_t i = o % kconn, ik = 0; i < imaps; i += kconn, ++ ik)
+                                        {
+                                                conv2d(imap.matrix(i), omap.matrix(o), kdrow, kdcol, kdata.matrix(o, ik));
+                                        }
+                                }
+                        }
+                        return true;
+                }
+                else
+                {
+                        return false;
+                }
+        }
+}
