@@ -50,8 +50,6 @@ namespace nano
 
                 // attributes
                 affine_params_t         m_params;
-                matrix_t                m_idata;        ///< (aligned) input buffer
-                matrix_t                m_odata;        ///< (aligned) output buffer
         };
 
         template <typename tidata, typename twdata, typename tbdata, typename todata>
@@ -63,13 +61,11 @@ namespace nano
                         const auto isize = m_params.isize();
                         const auto osize = m_params.osize();
 
-                        m_idata.resize(count, isize);
-                        m_odata.resize(count, osize);
+                        auto midata = map_matrix(idata.data(), count, isize);
+                        auto modata = map_matrix(odata.data(), count, osize);
 
-                        m_idata = map_matrix(idata.data(), count, isize);
-                        m_odata = m_idata * wdata.transpose();
-                        m_odata.rowwise() += bdata.transpose();
-                        map_matrix(odata.data(), count, osize) = m_odata;
+                        modata = midata * wdata.transpose();
+                        modata.rowwise() += bdata.transpose();
                         return true;
                 }
                 else
@@ -89,12 +85,10 @@ namespace nano
                         const auto isize = m_params.isize();
                         const auto osize = m_params.osize();
 
-                        m_idata.resize(count, isize);
-                        m_odata.resize(count, osize);
+                        auto midata = map_matrix(idata.data(), count, isize);
+                        auto modata = map_matrix(odata.data(), count, osize);
 
-                        m_odata = map_matrix(odata.data(), count, osize);
-                        m_idata = m_odata * wdata;
-                        map_matrix(idata.data(), count, isize) = m_idata;
+                        midata = modata * wdata;
                         return true;
                 }
                 else
@@ -112,13 +106,11 @@ namespace nano
                         const auto isize = m_params.isize();
                         const auto osize = m_params.osize();
 
-                        m_idata.resize(count, isize);
-                        m_odata.resize(count, osize);
+                        auto midata = map_matrix(idata.data(), count, isize);
+                        auto modata = map_matrix(odata.data(), count, osize);
 
-                        m_idata = map_matrix(idata.data(), count, isize);
-                        m_odata = map_matrix(odata.data(), count, osize);
-                        wdata = m_odata.transpose() * m_idata;
-                        bdata = m_odata.colwise().sum();
+                        wdata = modata.transpose() * midata;
+                        bdata = modata.colwise().sum();
                         return true;
                 }
                 else

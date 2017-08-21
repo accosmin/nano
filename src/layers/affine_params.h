@@ -32,7 +32,7 @@ namespace nano
                 auto psize() const { return isize() * osize() + osize(); }
                 auto flops_output() const { return 2 * isize() * osize() + osize(); }
                 auto flops_ginput() const { return 2 * isize() * osize(); }
-                auto flops_gparam() const { return isize() * osize(); }
+                auto flops_gparam() const { return 2 * isize() * osize() + osize(); }
 
                 auto make_idata(const tensor_size_t count) const { return tensor4d_t(idims(count)); }
                 auto make_odata(const tensor_size_t count) const { return tensor4d_t(odims(count)); }
