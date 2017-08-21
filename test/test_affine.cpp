@@ -155,8 +155,8 @@ NANO_CASE(3d_vs_4d_output)
         const auto params = make_default_params();
         NANO_REQUIRE(params.valid());
 
-        auto op3d = affine3d_t{params};
-        auto op4d = affine4d_t{params};
+        const auto op3d = affine3d_t{params};
+        const auto op4d = affine4d_t{params};
 
         for (int i = 0; i < 8; ++ i)
         {
@@ -179,8 +179,8 @@ NANO_CASE(3d_vs_4d_gparam)
         const auto params = make_default_params();
         NANO_REQUIRE(params.valid());
 
-        auto op3d = affine3d_t{params};
-        auto op4d = affine4d_t{params};
+        const auto op3d = affine3d_t{params};
+        const auto op4d = affine4d_t{params};
 
         for (int i = 0; i < 8; ++ i)
         {
@@ -204,8 +204,8 @@ NANO_CASE(3d_vs_4d_ginput)
         const auto params = make_default_params();
         NANO_REQUIRE(params.valid());
 
-        auto op3d = affine3d_t{params};
-        auto op4d = affine4d_t{params};
+        const auto op3d = affine3d_t{params};
+        const auto op4d = affine4d_t{params};
 
         for (int i = 0; i < 8; ++ i)
         {

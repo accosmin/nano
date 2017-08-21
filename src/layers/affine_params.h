@@ -36,7 +36,6 @@ namespace nano
 
                 auto make_idata(const tensor_size_t count) const { return tensor4d_t(idims(count)); }
                 auto make_odata(const tensor_size_t count) const { return tensor4d_t(odims(count)); }
-
                 auto make_wdata() const { return matrix_t(osize(), isize()); }
                 auto make_bdata() const { return vector_t(osize()); }
 

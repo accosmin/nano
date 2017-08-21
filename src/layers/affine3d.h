@@ -1,6 +1,5 @@
 #pragma once
 
-#include <cassert>
 #include "affine_params.h"
 
 namespace nano
@@ -10,10 +9,10 @@ namespace nano
         ///     level-2 Blas calls (thus processing each sample independently).
         ///
         /// parameters:
-        ///     idata: 4D input tensor (count x iplanes x irows x icols, with isize = iplanes x irows x icols)
+        ///     idata: 4D input tensor (count x imaps x irows x icols, with isize = imaps x irows x icols)
         ///     wdata: weight matrix (osize x isize)
         ///     bdata: bias vector (osize)
-        ///     odata: 4D output tensor (count x oplanes x orows x ocols, with osize = oplanes x orows x ocols)
+        ///     odata: 4D output tensor (count x omaps x orows x ocols, with osize = omaps x orows x ocols)
         ///
         struct affine3d_t
         {

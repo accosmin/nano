@@ -1,6 +1,5 @@
 #pragma once
 
-#include <cassert>
 #include "affine_params.h"
 
 namespace nano
@@ -10,10 +9,10 @@ namespace nano
         ///     level-3 Blas calls (thus processing all samples at once).
         ///
         /// parameters:
-        ///     idata: 4D input tensor (count x iplanes x irows x icols, with isize = iplanes x irows x icols)
+        ///     idata: 4D input tensor (count x imaps x irows x icols, with isize = imaps x irows x icols)
         ///     wdata: weight matrix (osize x isize)
         ///     bdata: bias vector (osize)
-        ///     odata: 4D output tensor (count x oplanes x orows x ocols, with osize = oplanes x orows x ocols)
+        ///     odata: 4D output tensor (count x omaps x orows x ocols, with osize = omaps x orows x ocols)
         ///
         struct affine4d_t
         {
@@ -27,19 +26,19 @@ namespace nano
                 /// \brief output
                 ///
                 template <typename tidata, typename twdata, typename tbdata, typename todata>
-                bool output(const tidata& idata, const twdata& wdata, const tbdata& bdata, todata&& odata);
+                bool output(const tidata& idata, const twdata& wdata, const tbdata& bdata, todata&& odata) const;
 
                 ///
                 /// \brief gradient wrt inputs
                 ///
                 template <typename tidata, typename twdata, typename tbdata, typename todata>
-                bool ginput(tidata&& idata, const twdata& wdata, const tbdata& bdata, const todata& odata);
+                bool ginput(tidata&& idata, const twdata& wdata, const tbdata& bdata, const todata& odata) const;
 
                 ///
                 /// \brief accumulate the gradient wrt parameters (weights and bias)
                 ///
                 template <typename tidata, typename twdata, typename tbdata, typename todata>
-                bool gparam(const tidata& idata, twdata&& wdata, tbdata&& bdata, const todata& odata);
+                bool gparam(const tidata& idata, twdata&& wdata, tbdata&& bdata, const todata& odata) const;
 
                 ///
                 /// \brief parameters
@@ -53,7 +52,7 @@ namespace nano
         };
 
         template <typename tidata, typename twdata, typename tbdata, typename todata>
-        bool affine4d_t::output(const tidata& idata, const twdata& wdata, const tbdata& bdata, todata&& odata)
+        bool affine4d_t::output(const tidata& idata, const twdata& wdata, const tbdata& bdata, todata&& odata) const
         {
                 if (m_params.valid(idata, wdata, bdata, odata))
                 {
@@ -75,7 +74,7 @@ namespace nano
         }
 
         template <typename tidata, typename twdata, typename tbdata, typename todata>
-        bool affine4d_t::ginput(tidata&& idata, const twdata& wdata, const tbdata& bdata, const todata& odata)
+        bool affine4d_t::ginput(tidata&& idata, const twdata& wdata, const tbdata& bdata, const todata& odata) const
         {
                 NANO_UNUSED1_RELEASE(bdata);
 
@@ -98,7 +97,7 @@ namespace nano
         }
 
         template <typename tidata, typename twdata, typename tbdata, typename todata>
-        bool affine4d_t::gparam(const tidata& idata, twdata&& wdata, tbdata&& bdata, const todata& odata)
+        bool affine4d_t::gparam(const tidata& idata, twdata&& wdata, tbdata&& bdata, const todata& odata) const
         {
                 if (m_params.valid(idata, wdata, bdata, odata))
                 {

@@ -30,7 +30,7 @@ namespace
         const auto trials = size_t(16);
 
         template <typename top, typename tidata, typename twdata, typename tbdata, typename todata>
-        auto measure_output(top& op, const tidata& idata, const twdata& wdata, const tbdata& bdata, todata& odata)
+        auto measure_output(const top& op, const tidata& idata, const twdata& wdata, const tbdata& bdata, todata& odata)
         {
                 const auto count = idata.template size<0>();
                 const auto duration = measure<nanoseconds_t>([&] () { op.output(idata, wdata, bdata, odata); }, trials);
@@ -38,7 +38,7 @@ namespace
         }
 
         template <typename top, typename tidata, typename twdata, typename tbdata, typename todata>
-        auto measure_ginput(top& op, tidata& idata, const twdata& wdata, const tbdata& bdata, const todata& odata)
+        auto measure_ginput(const top& op, tidata& idata, const twdata& wdata, const tbdata& bdata, const todata& odata)
         {
                 const auto count = idata.template size<0>();
                 const auto duration = measure<nanoseconds_t>([&] () { op.ginput(idata, wdata, bdata, odata); }, trials);
@@ -46,7 +46,7 @@ namespace
         }
 
         template <typename top, typename tidata, typename twdata, typename tbdata, typename todata>
-        auto measure_gparam(top& op, const tidata& idata, twdata& wdata, tbdata& bdata, const todata& odata)
+        auto measure_gparam(const top& op, const tidata& idata, twdata& wdata, tbdata& bdata, const todata& odata)
         {
                 const auto count = idata.template size<0>();
                 const auto duration = measure<nanoseconds_t>([&] () { op.gparam(idata, wdata, bdata, odata); }, trials);
@@ -110,13 +110,13 @@ int main(int argc, const char *argv[])
                                 auto odata = params.make_odata(count); odata.vector().setRandom();
 
                                 // 3D implementation
-                                auto op3d = affine3d_t{params};
+                                const auto op3d = affine3d_t{params};
                                 const auto gf3d_output = measure_output(op3d, idata, wdata, bdata, odata);
                                 const auto gf3d_ginput = measure_ginput(op3d, idata, wdata, bdata, odata);
                                 const auto gf3d_gparam = measure_gparam(op3d, idata, wdata, bdata, odata);
 
                                 // 4D implementation
-                                auto op4d = affine4d_t{params};
+                                const auto op4d = affine4d_t{params};
                                 const auto gf4d_output = measure_output(op4d, idata, wdata, bdata, odata);
                                 const auto gf4d_ginput = measure_ginput(op4d, idata, wdata, bdata, odata);
                                 const auto gf4d_gparam = measure_gparam(op4d, idata, wdata, bdata, odata);
