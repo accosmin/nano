@@ -76,8 +76,6 @@ namespace nano
         template <typename tidata, typename twdata, typename tbdata, typename todata>
         bool affine4d_t::ginput(tidata&& idata, const twdata& wdata, const tbdata& bdata, const todata& odata) const
         {
-                NANO_UNUSED1_RELEASE(bdata);
-
                 if (m_params.valid(idata, wdata, bdata, odata))
                 {
                         const auto count = idata.template size<0>();
