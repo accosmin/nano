@@ -89,8 +89,6 @@ namespace nano
         {
                 if (m_params.valid(idata, kdata, bdata, odata))
                 {
-                        NANO_UNUSED1_RELEASE(bdata);
-
                         const auto count = idata.template size<0>();
                         const auto imaps = m_params.imaps(), isize = m_params.isize();
                         const auto omaps = m_params.omaps(), osize = m_params.osize();
@@ -138,10 +136,12 @@ namespace nano
                                 auto imap = map_tensor(idata.data() + x * isize, m_params.idims());
                                 auto omap = map_tensor(odata.data() + x * osize, m_params.odims());
 
+                                // bias
+                                bdata += map_matrix(omap.data(), omaps, orows * ocols).rowwise().sum();
+
+                                // convolution
                                 for (tensor_size_t o = 0; o < omaps; ++ o)
                                 {
-                                        bdata(o) += omap.vector(o).sum();
-
                                         for (tensor_size_t i = o % kconn, ik = 0; i < imaps; i += kconn, ++ ik)
                                         {
                                                 conv2d(imap.matrix(i), omap.matrix(o), kdrow, kdcol, kdata.matrix(o, ik));

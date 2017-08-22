@@ -76,126 +76,152 @@ namespace nano
         template <typename tidata, typename tkdata, typename tbdata, typename todata>
         bool conv4d_t::output(const tidata& idata, const tkdata& kdata, const tbdata& bdata, todata&& odata) const
         {
-                assert(m_params.valid_idata(idata));
-                assert(m_params.valid_kdata(kdata));
-                assert(m_params.valid_bdata(bdata));
-                assert(m_params.valid_odata(odata));
-
-                const auto imaps = m_params.imaps();
-                const auto kconn = m_params.kconn(), krows = m_params.krows(), kcols = m_params.kcols(), ksize = krows * kcols;
-                const auto omaps = m_params.omaps(), orows = m_params.orows(), ocols = m_params.ocols(), osize = orows * ocols;
-
-                // bias
-                for (tensor_size_t o = 0; o < omaps; ++ o)
+                if (m_params.valid(idata, kdata, bdata, odata))
                 {
-                        odata.vector(o).setConstant(bdata(o));
-                }
+                        const auto count = idata.template size<0>();
+                        const auto imaps = m_params.imaps(), isize = m_params.isize();
+                        const auto kconn = m_params.kconn(), krows = m_params.krows(), kcols = m_params.kcols();
+                        const auto omaps = m_params.omaps(), orows = m_params.orows(), ocols = m_params.ocols(), osize = m_params.osize();
 
-                // +convolution
-                switch (kconn)
-                {
-                case 1:
-                        m_okdata = map_matrix(kdata.data(), omaps, imaps * krows * kcols);
-                        break;
-
-                default:
-                        m_okdata.setZero();
-                        for (tensor_size_t o = 0; o < omaps; ++ o)
+                        switch (kconn)
                         {
-                                for (tensor_size_t i = o % kconn, ik = 0; i < imaps; i += kconn, ++ ik)
+                        case 1:
+                                m_okdata = map_matrix(kdata.data(), omaps, imaps * krows * kcols);
+                                break;
+
+                        default:
+                                m_okdata.setZero();
+                                for (tensor_size_t o = 0; o < omaps; ++ o)
                                 {
-                                        m_okdata.row(o).segment(i * krows * kcols, krows * kcols) = kdata.vector(o, ik);
+                                        for (tensor_size_t i = o % kconn, ik = 0; i < imaps; i += kconn, ++ ik)
+                                        {
+                                                m_okdata.row(o).segment(i * krows * kcols, krows * kcols) = kdata.vector(o, ik);
+                                        }
                                 }
+                                break;
                         }
-                        break;
-                }
 
-                for (tensor_size_t i = 0; i < imaps; ++ i)
+                        for (tensor_size_t x = 0; x < count; ++ x)
+                        {
+                                auto imap = map_tensor(idata, x * isize, m_params.idims());
+                                auto omap = map_tensor(odata, x * osize, m_params.odims());
+
+                                // bias
+                                map_matrix(omap.data(), omaps, orows * ocols).colwise() = bdata;
+
+                                // +convolution
+                                for (tensor_size_t i = 0; i < imaps; ++ i)
+                                {
+                                        img2col(m_params, imap.matrix(i),
+                                                map_matrix(m_kodata.data() + i * krows * kcols * orows * ocols,
+                                                           krows * kcols, orows * ocols));
+                                }
+
+                                m_oodata.noalias() = m_okdata * m_kodata;
+                                map_matrix(omap.data(), omaps, orows * ocols) += m_oodata;
+                        }
+                        return true;
+                }
+                else
                 {
-                        img2col(m_params, idata.matrix(i), map_matrix(m_kodata.data() + i * ksize * osize, ksize, osize));
+                        return false;
                 }
-
-                m_oodata.noalias() = m_okdata * m_kodata;
-                map_matrix(odata.data(), omaps, orows * ocols) += m_oodata;
         }
 
         template <typename tidata, typename tkdata, typename tbdata, typename todata>
-        void conv4d_t::ginput(tidata&& idata, const tkdata& kdata, const tbdata& bdata, const todata& odata) const
+        bool conv4d_t::ginput(tidata&& idata, const tkdata& kdata, const tbdata& bdata, const todata& odata) const
         {
-                assert(m_params.valid_idata(idata));
-                assert(m_params.valid_kdata(kdata));
-                assert(m_params.valid_bdata(bdata));
-                assert(m_params.valid_odata(odata));
-                NANO_UNUSED1_RELEASE(kdata);
-                NANO_UNUSED1_RELEASE(bdata);
-
-                const auto imaps = m_params.imaps();
-                const auto krows = m_params.krows(), kcols = m_params.kcols();
-                const auto omaps = m_params.omaps(), orows = m_params.orows(), ocols = m_params.ocols();
-                const auto drows = m_params.kdrow(), dcols = m_params.kdcol();
-
-                m_oodata = map_matrix(odata.data(), omaps, orows * ocols);
-                m_kxdata.noalias() = m_okdata.transpose() * m_oodata;
-
-                idata.array().setZero();
-                for (tensor_size_t i = 0; i < imaps; ++ i)
+                if (m_params.valid(idata, kdata, bdata, odata))
                 {
-                        auto imat = idata.matrix(i);
-                        for (tensor_size_t kr = 0; kr < krows; ++ kr)
+                        const auto count = idata.template size<0>();
+                        const auto imaps = m_params.imaps(), isize = m_params.isize();
+                        const auto krows = m_params.krows(), kcols = m_params.kcols();
+                        const auto omaps = m_params.omaps(), orows = m_params.orows(), ocols = m_params.ocols(), osize = m_params.osize();
+                        const auto drows = m_params.kdrow(), dcols = m_params.kdcol();
+
+                        for (tensor_size_t x = 0; x < count; ++ x)
                         {
-                                for (tensor_size_t kc = 0; kc < kcols; ++ kc)
+                                auto imap = map_tensor(idata, x * isize, m_params.idims());
+                                auto omap = map_tensor(odata, x * osize, m_params.odims());
+
+                                m_oodata = map_matrix(omap.data(), omaps, orows * ocols);
+                                m_kxdata.noalias() = m_okdata.transpose() * m_oodata;
+
+                                imap.array().setZero();
+                                for (tensor_size_t i = 0; i < imaps; ++ i)
                                 {
-                                        const auto orow = m_kxdata.row(i * krows * kcols + kr * kcols + kc);
-                                        for (tensor_size_t r = 0; r < orows; ++ r)
+                                        auto imat = imap.matrix(i);
+                                        for (tensor_size_t kr = 0; kr < krows; ++ kr)
                                         {
-                                                for (tensor_size_t c = 0; c < ocols; ++ c)
+                                                for (tensor_size_t kc = 0; kc < kcols; ++ kc)
                                                 {
-                                                        imat(r * drows + kr, c * dcols + kc) += orow(r * ocols + c);
+                                                        const auto orow = m_kxdata.row(i * krows * kcols + kr * kcols + kc);
+                                                        for (tensor_size_t r = 0; r < orows; ++ r)
+                                                        {
+                                                                for (tensor_size_t c = 0; c < ocols; ++ c)
+                                                                {
+                                                                        imat(r * drows + kr, c * dcols + kc) += orow(r * ocols + c);
+                                                                }
+                                                        }
                                                 }
                                         }
                                 }
                         }
+                        return true;
+                }
+                else
+                {
+                        return false;
                 }
         }
 
         template <typename tidata, typename tkdata, typename tbdata, typename todata>
-        void conv4d_t::gparam(const tidata& idata, tkdata&& kdata, tbdata&& bdata, const todata& odata) const
+        bool conv4d_t::gparam(const tidata& idata, tkdata&& kdata, tbdata&& bdata, const todata& odata) const
         {
-                assert(m_params.valid_idata(idata));
-                assert(m_params.valid_kdata(kdata));
-                assert(m_params.valid_bdata(bdata));
-                assert(m_params.valid_odata(odata));
-                NANO_UNUSED1_RELEASE(idata);
-
-                const auto imaps = m_params.imaps();
-                const auto kconn = m_params.kconn(), krows = m_params.krows(), kcols = m_params.kcols();
-                const auto omaps = m_params.omaps(), orows = m_params.orows(), ocols = m_params.ocols();
-
-                // bias
-                for (tensor_size_t o = 0; o < omaps; ++ o)
+                if (m_params.valid(idata, kdata, bdata, odata))
                 {
-                        bdata(o) = odata.vector(o).sum();
-                }
+                        const auto count = idata.template size<0>();
+                        const auto imaps = m_params.imaps(), isize = m_params.isize();
+                        const auto kconn = m_params.kconn(), krows = m_params.krows(), kcols = m_params.kcols();
+                        const auto omaps = m_params.omaps(), orows = m_params.orows(), ocols = m_params.ocols(), osize = m_params.osize();
 
-                // convolution
-                m_oodata = map_matrix(odata.data(), omaps, orows * ocols);
-                m_xkdata.noalias() = m_oodata * m_kodata.transpose();
+                        kdata.vector().setZero();
+                        bdata.setZero();
 
-                switch (kconn)
-                {
-                case 1:
-                        map_matrix(kdata.data(), omaps, imaps * krows * kcols) = m_xkdata;
-                        break;
-
-                default:
-                        for (tensor_size_t o = 0; o < omaps; ++ o)
+                        for (tensor_size_t x = 0; x < count; ++ x)
                         {
-                                for (tensor_size_t i = o % kconn, ik = 0; i < imaps; i += kconn, ++ ik)
+                                auto imap = map_tensor(idata, x * isize, m_params.idims());
+                                auto omap = map_tensor(odata, x * osize, m_params.odims());
+
+                                // bias
+                                bdata = map_matrix(odata.data(), omaps, orows * ocols).rowwise().sum();
+
+                                // convolution
+                                m_oodata = map_matrix(odata.data(), omaps, orows * ocols);
+                                m_xkdata.noalias() = m_oodata * m_kodata.transpose();
+
+                                switch (kconn)
                                 {
-                                        kdata.vector(o, ik) = m_xkdata.row(o).segment(i * krows * kcols, krows * kcols);
+                                case 1:
+                                        map_matrix(kdata.data(), omaps, imaps * krows * kcols) = m_xkdata;
+                                        break;
+
+                                default:
+                                        for (tensor_size_t o = 0; o < omaps; ++ o)
+                                        {
+                                                for (tensor_size_t i = o % kconn, ik = 0; i < imaps; i += kconn, ++ ik)
+                                                {
+                                                        kdata.vector(o, ik) = m_xkdata.row(o).segment(i * krows * kcols, krows * kcols);
+                                                }
+                                        }
+                                        break;
                                 }
                         }
-                        break;
+                        return true;
+                }
+                else
+                {
+                        return false;
                 }
         }
 }
