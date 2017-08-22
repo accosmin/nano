@@ -78,10 +78,7 @@ namespace nano
                 const auto omaps = m_params.omaps(), orows = m_params.orows(), ocols = m_params.ocols(), osize = orows * ocols;
 
                 // bias
-                for (tensor_size_t o = 0; o < omaps; ++ o)
-                {
-                        odata.vector(o).setConstant(bdata(o));
-                }
+                map_matrix(odata.data(), omaps, orows * ocols).colwise() = bdata;
 
                 // +convolution
                 switch (kconn)
@@ -164,10 +161,7 @@ namespace nano
                 const auto omaps = m_params.omaps(), orows = m_params.orows(), ocols = m_params.ocols();
 
                 // bias
-                for (tensor_size_t o = 0; o < omaps; ++ o)
-                {
-                        bdata(o) = odata.vector(o).sum();
-                }
+                bdata = map_matrix(odata.data(), omaps, orows * ocols).rowwise().sum();
 
                 // convolution
                 m_oodata = map_matrix(odata.data(), omaps, orows * ocols);
