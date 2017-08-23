@@ -1,6 +1,7 @@
 #pragma once
 
 #include "conv_utils.h"
+#include "conv_params.h"
 
 namespace nano
 {
@@ -58,18 +59,20 @@ namespace nano
                 {
                         const auto count = idata.template size<0>();
                         const auto imaps = m_params.imaps(), isize = m_params.isize();
-                        const auto omaps = m_params.omaps(), osize = m_params.osize();
-                        const auto kconn = m_params.kconn(), kdrow = m_params.kdrow(), m_params.kdcol();
+                        const auto omaps = m_params.omaps(), orows = m_params.orows(), ocols = m_params.ocols(), osize = m_params.osize();
+                        const auto kconn = m_params.kconn(), kdrow = m_params.kdrow(), kdcol = m_params.kdcol();
 
                         for (tensor_size_t x = 0; x < count; ++ x)
                         {
                                 auto imap = map_tensor(idata.data() + x * isize, m_params.idims());
                                 auto omap = map_tensor(odata.data() + x * osize, m_params.odims());
 
+                                // bias
+                                map_matrix(omap.data(), omaps, orows * ocols).colwise() = bdata;
+
+                                // + convolution
                                 for (tensor_size_t o = 0; o < omaps; ++ o)
                                 {
-                                        omap.vector(o).setConstant(bdata(o));
-
                                         for (tensor_size_t i = o % kconn, ik = 0; i < imaps; i += kconn, ++ ik)
                                         {
                                                 conv2d(imap.matrix(i), kdata.matrix(o, ik), kdrow, kdcol, omap.matrix(o));
@@ -92,7 +95,7 @@ namespace nano
                         const auto count = idata.template size<0>();
                         const auto imaps = m_params.imaps(), isize = m_params.isize();
                         const auto omaps = m_params.omaps(), osize = m_params.osize();
-                        const auto kconn = m_params.kconn(), kdrow = m_params.kdrow(), m_params.kdcol();
+                        const auto kconn = m_params.kconn(), kdrow = m_params.kdrow(), kdcol = m_params.kdcol();
 
                         for (tensor_size_t x = 0; x < count; ++ x)
                         {
@@ -105,7 +108,7 @@ namespace nano
 
                                         for (tensor_size_t o = i % kconn, ok = 0; o < omaps; o += kconn, ++ ok)
                                         {
-                                                corr2d(imap.amatrix(i), kdata.matrix(o, i / kconn), kdrow, kdcol, omap.matrix(o));
+                                                corr2d(imap.matrix(i), kdata.matrix(o, i / kconn), kdrow, kdcol, omap.matrix(o));
                                         }
                                 }
                         }
@@ -123,10 +126,9 @@ namespace nano
                 if (m_params.valid(idata, kdata, bdata, odata))
                 {
                         const auto count = idata.template size<0>();
-                        const auto count = idata.template size<0>();
                         const auto imaps = m_params.imaps(), isize = m_params.isize();
-                        const auto omaps = m_params.omaps(), osize = m_params.osize();
-                        const auto kconn = m_params.kconn(), kdrow = m_params.kdrow(), m_params.kdcol();
+                        const auto omaps = m_params.omaps(), orows = m_params.orows(), ocols = m_params.ocols(), osize = m_params.osize();
+                        const auto kconn = m_params.kconn(), kdrow = m_params.kdrow(), kdcol = m_params.kdcol();
 
                         kdata.vector().setZero();
                         bdata.setZero();

@@ -1,17 +1,19 @@
 #pragma once
 
 #include <cassert>
-#include "conv_params.h"
+#include "tensor.h"
 
 namespace nano
 {
         template <typename timatrix, typename tomatrix>
-        void img2col(const conv_params_t& params, const timatrix& imat, tomatrix&& omat)
+        void img2col(const timatrix& imat,
+                const tensor_size_t orows, const tensor_size_t ocols,
+                const tensor_size_t krows, const tensor_size_t kcols,
+                const tensor_size_t drows, const tensor_size_t dcols,
+                tomatrix&& omat)
         {
-                const auto orows = params.orows(), ocols = params.ocols();
-                const auto krows = params.krows(), kcols = params.kcols();
-                const auto drows = params.kdrow(), dcols = params.kdcol();
-
+                assert(orows * drows >= imat.rows() - krows + 1 && orows * drows < imat.rows() - krows + 1 + drows);
+                assert(ocols * dcols >= imat.cols() - kcols + 1 && ocols * dcols < imat.cols() - kcols + 1 + dcols);
                 assert(omat.rows() == krows * kcols);
                 assert(omat.cols() == orows * ocols);
 
@@ -32,18 +34,24 @@ namespace nano
         }
 
         template <typename timatrix, typename tkmatrix, typename tomatrix>
-        void conv2d(const timatrix& imat, const tkmatrix& kmat, const tensor_size_t dr, const tensor_size_t dc,
+        void conv2d(const timatrix& imat, const tkmatrix& kmat, const tensor_size_t drows, const tensor_size_t dcols,
                 tomatrix&& omat)
         {
-                for (tensor_size_t orows = omat.rows(), r = 0; r < orows; ++ r)
+                const auto krows = kmat.rows(), kcols = kmat.cols();
+                const auto orows = omat.rows(), ocols = omat.cols();
+
+                assert(orows * drows >= imat.rows() - krows + 1 && orows * drows < imat.rows() - krows + 1 + drows);
+                assert(ocols * dcols >= imat.cols() - kcols + 1 && ocols * dcols < imat.cols() - kcols + 1 + dcols);
+
+                for (tensor_size_t r = 0; r < orows; ++ r)
                 {
-                        for (tensor_size_t ocols = omat.cols(), c = 0; c < ocols; ++ c)
+                        for (tensor_size_t c = 0; c < ocols; ++ c)
                         {
-                                for (tensor_size_t krows = kmat.rows(), kr = 0; kr < krows; ++ kr)
+                                for (tensor_size_t kr = 0; kr < krows; ++ kr)
                                 {
-                                        for (tensor_size_t kcols = kmat.cols(), kc = 0; kc < kcols; ++ kc)
+                                        for (tensor_size_t kc = 0; kc < kcols; ++ kc)
                                         {
-                                                omat(r, c) += imat(r * dr + kr, c * dc + kc) * kmat(kr, kc);
+                                                omat(r, c) += imat(r * drows + kr, c * dcols + kc) * kmat(kr, kc);
                                         }
                                 }
                         }
@@ -51,20 +59,27 @@ namespace nano
         }
 
         template <typename timatrix, typename tkmatrix, typename tomatrix>
-        void corr2d(timatrix&& imat, const tkmatrix& kmat, const tensor_size_t dr, const tensor_size_t dc, const tomatrix& omat)
+        void corr2d(timatrix&& imat, const tkmatrix& kmat, const tensor_size_t drows, const tensor_size_t dcols,
+                const tomatrix& omat)
         {
-                for (tensor_size_t orows = omat.rows(), r = 0; r < orows; ++ r)
+                const auto krows = kmat.rows(), kcols = kmat.cols();
+                const auto orows = omat.rows(), ocols = omat.cols();
+
+                assert(orows * drows >= imat.rows() - krows + 1 && orows * drows < imat.rows() - krows + 1 + drows);
+                assert(ocols * dcols >= imat.cols() - kcols + 1 && ocols * dcols < imat.cols() - kcols + 1 + dcols);
+
+                for (tensor_size_t r = 0; r < orows; ++ r)
                 {
-                        for (tensor_size_t ocols = omat.cols(), c = 0; c < ocols; ++ c)
+                        for (tensor_size_t c = 0; c < ocols; ++ c)
                         {
-                                for (tensor_size_t krows = kmat.rows(), kr = 0; kr < krows; ++ kr)
+                                for (tensor_size_t kr = 0; kr < krows; ++ kr)
                                 {
-                                        for (tensor_size_t kcols = kmat.cols(), kc = 0; kc < kcols; ++ kc)
+                                        for (tensor_size_t kc = 0; kc < kcols; ++ kc)
                                         {
-                                                imat(r * dr + kr, c * dc + kc) += omat(r, c) * kmat(kr, kc);
+                                                imat(r * drows + kr, c * dcols + kc) += omat(r, c) * kmat(kr, kc);
                                         }
                                 }
                         }
                 }
-        };
+        }
 }

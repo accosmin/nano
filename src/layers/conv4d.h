@@ -74,13 +74,13 @@ namespace nano
         }
 
         template <typename tidata, typename tkdata, typename tbdata, typename todata>
-        bool conv4d_t::output(const tidata& idata, const tkdata& kdata, const tbdata& bdata, todata&& odata) const
+        bool conv4d_t::output(const tidata& idata, const tkdata& kdata, const tbdata& bdata, todata&& odata)
         {
                 if (m_params.valid(idata, kdata, bdata, odata))
                 {
                         const auto count = idata.template size<0>();
                         const auto imaps = m_params.imaps(), isize = m_params.isize();
-                        const auto kconn = m_params.kconn(), krows = m_params.krows(), kcols = m_params.kcols();
+                        const auto kconn = m_params.kconn(), kdrow = m_params.kdrow(), kdcol = m_params.kdcol(), krows = m_params.krows(), kcols = m_params.kcols();
                         const auto omaps = m_params.omaps(), orows = m_params.orows(), ocols = m_params.ocols(), osize = m_params.osize();
 
                         switch (kconn)
@@ -103,8 +103,8 @@ namespace nano
 
                         for (tensor_size_t x = 0; x < count; ++ x)
                         {
-                                auto imap = map_tensor(idata, x * isize, m_params.idims());
-                                auto omap = map_tensor(odata, x * osize, m_params.odims());
+                                auto imap = map_tensor(idata.data() + x * isize, m_params.idims());
+                                auto omap = map_tensor(odata.data() + x * osize, m_params.odims());
 
                                 // bias
                                 map_matrix(omap.data(), omaps, orows * ocols).colwise() = bdata;
@@ -112,7 +112,7 @@ namespace nano
                                 // +convolution
                                 for (tensor_size_t i = 0; i < imaps; ++ i)
                                 {
-                                        img2col(m_params, imap.matrix(i),
+                                        img2col(imap.matrix(i), orows, ocols, krows, kcols, kdrow, kdcol,
                                                 map_matrix(m_kodata.data() + i * krows * kcols * orows * ocols,
                                                            krows * kcols, orows * ocols));
                                 }
@@ -129,7 +129,7 @@ namespace nano
         }
 
         template <typename tidata, typename tkdata, typename tbdata, typename todata>
-        bool conv4d_t::ginput(tidata&& idata, const tkdata& kdata, const tbdata& bdata, const todata& odata) const
+        bool conv4d_t::ginput(tidata&& idata, const tkdata& kdata, const tbdata& bdata, const todata& odata)
         {
                 if (m_params.valid(idata, kdata, bdata, odata))
                 {
@@ -141,8 +141,8 @@ namespace nano
 
                         for (tensor_size_t x = 0; x < count; ++ x)
                         {
-                                auto imap = map_tensor(idata, x * isize, m_params.idims());
-                                auto omap = map_tensor(odata, x * osize, m_params.odims());
+                                auto imap = map_tensor(idata.data() + x * isize, m_params.idims());
+                                auto omap = map_tensor(odata.data() + x * osize, m_params.odims());
 
                                 m_oodata = map_matrix(omap.data(), omaps, orows * ocols);
                                 m_kxdata.noalias() = m_okdata.transpose() * m_oodata;
@@ -176,12 +176,12 @@ namespace nano
         }
 
         template <typename tidata, typename tkdata, typename tbdata, typename todata>
-        bool conv4d_t::gparam(const tidata& idata, tkdata&& kdata, tbdata&& bdata, const todata& odata) const
+        bool conv4d_t::gparam(const tidata& idata, tkdata&& kdata, tbdata&& bdata, const todata& odata)
         {
                 if (m_params.valid(idata, kdata, bdata, odata))
                 {
                         const auto count = idata.template size<0>();
-                        const auto imaps = m_params.imaps(), isize = m_params.isize();
+                        const auto imaps = m_params.imaps();
                         const auto kconn = m_params.kconn(), krows = m_params.krows(), kcols = m_params.kcols();
                         const auto omaps = m_params.omaps(), orows = m_params.orows(), ocols = m_params.ocols(), osize = m_params.osize();
 
@@ -190,14 +190,13 @@ namespace nano
 
                         for (tensor_size_t x = 0; x < count; ++ x)
                         {
-                                auto imap = map_tensor(idata, x * isize, m_params.idims());
-                                auto omap = map_tensor(odata, x * osize, m_params.odims());
+                                auto omap = map_tensor(odata.data() + x * osize, m_params.odims());
 
                                 // bias
-                                bdata = map_matrix(odata.data(), omaps, orows * ocols).rowwise().sum();
+                                bdata += map_matrix(omap.data(), omaps, orows * ocols).rowwise().sum();
 
                                 // convolution
-                                m_oodata = map_matrix(odata.data(), omaps, orows * ocols);
+                                m_oodata = map_matrix(omap.data(), omaps, orows * ocols);
                                 m_xkdata.noalias() = m_oodata * m_kodata.transpose();
 
                                 switch (kconn)
