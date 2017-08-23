@@ -75,7 +75,7 @@ namespace nano
                                 {
                                         for (tensor_size_t i = o % kconn, ik = 0; i < imaps; i += kconn, ++ ik)
                                         {
-                                                conv2d(imap.matrix(i), kdata.matrix(o, ik), kdrow, kdcol, omap.matrix(o));
+                                                convo2d(imap.matrix(i), kdata.matrix(o, ik), kdrow, kdcol, omap.matrix(o));
                                         }
                                 }
                         }
@@ -108,7 +108,7 @@ namespace nano
 
                                         for (tensor_size_t o = i % kconn, ok = 0; o < omaps; o += kconn, ++ ok)
                                         {
-                                                corr2d(imap.matrix(i), kdata.matrix(o, i / kconn), kdrow, kdcol, omap.matrix(o));
+                                                convi2d(imap.matrix(i), kdata.matrix(o, i / kconn), kdrow, kdcol, omap.matrix(o));
                                         }
                                 }
                         }
@@ -146,7 +146,7 @@ namespace nano
                                 {
                                         for (tensor_size_t i = o % kconn, ik = 0; i < imaps; i += kconn, ++ ik)
                                         {
-                                                conv2d(imap.matrix(i), omap.matrix(o), kdrow, kdcol, kdata.matrix(o, ik));
+                                                convk2d(imap.matrix(i), kdata.matrix(o, ik), kdrow, kdcol, omap.matrix(o));
                                         }
                                 }
                         }
