@@ -54,7 +54,7 @@ namespace nano
                 matrix_t        m_oodata;       ///< buffer: (omaps, orows x ocols)
                 matrix_t        m_okdata;       ///< buffer: (omaps, imaps x krows x kcols)
                 matrix_t        m_xkdata;       ///< buffer: (omaps, imaps x krows x kcols)
-                matrix_t        m_kodata;       ///< buffer: (imaps x krows x kcols, orows x ocols)
+                tensor3d_t      m_kodata;       ///< buffer: (count, imaps x krows x kcols, orows x ocols)
                 matrix_t        m_kxdata;       ///< buffer: (imaps x krows x kcols, orows x ocols)
         };
 
@@ -69,7 +69,6 @@ namespace nano
                 m_oodata.resize(omaps, orows * ocols);
                 m_okdata.resize(omaps, imaps * krows * kcols);
                 m_xkdata.resize(omaps, imaps * krows * kcols);
-                m_kodata.resize(imaps * krows * kcols, orows * ocols);
                 m_kxdata.resize(imaps * krows * kcols, orows * ocols);
         }
 
@@ -101,10 +100,12 @@ namespace nano
                                 break;
                         }
 
+                        m_kodata.resize(count, imaps * krows * kcols, orows * ocols);
                         for (tensor_size_t x = 0; x < count; ++ x)
                         {
                                 auto imap = map_tensor(idata.data() + x * isize, m_params.idims());
                                 auto omap = map_tensor(odata.data() + x * osize, m_params.odims());
+                                auto kodata = m_kodata.matrix(x);
 
                                 // bias
                                 map_matrix(omap.data(), omaps, orows * ocols).colwise() = bdata;
@@ -113,12 +114,11 @@ namespace nano
                                 for (tensor_size_t i = 0; i < imaps; ++ i)
                                 {
                                         img2col(imap.matrix(i), orows, ocols, krows, kcols, kdrow, kdcol,
-                                                map_matrix(m_kodata.data() + i * krows * kcols * orows * ocols,
+                                                map_matrix(kodata.row(i * krows * kcols).data(),
                                                            krows * kcols, orows * ocols));
                                 }
 
-                                m_oodata.noalias() = m_okdata * m_kodata;
-                                map_matrix(omap.data(), omaps, orows * ocols) += m_oodata;
+                                map_matrix(omap.data(), omaps, orows * ocols) += m_okdata * kodata;
                         }
                         return true;
                 }
@@ -197,12 +197,12 @@ namespace nano
 
                                 // convolution
                                 m_oodata = map_matrix(omap.data(), omaps, orows * ocols);
-                                m_xkdata.noalias() = m_oodata * m_kodata.transpose();
+                                m_xkdata.noalias() = m_oodata * m_kodata.matrix(x).transpose();
 
                                 switch (kconn)
                                 {
                                 case 1:
-                                        map_matrix(kdata.data(), omaps, imaps * krows * kcols) = m_xkdata;
+                                        map_matrix(kdata.data(), omaps, imaps * krows * kcols) += m_xkdata;
                                         break;
 
                                 default:
@@ -210,7 +210,7 @@ namespace nano
                                         {
                                                 for (tensor_size_t i = o % kconn, ik = 0; i < imaps; i += kconn, ++ ik)
                                                 {
-                                                        kdata.vector(o, ik) = m_xkdata.row(o).segment(i * krows * kcols, krows * kcols);
+                                                        kdata.vector(o, ik) += m_xkdata.row(o).segment(i * krows * kcols, krows * kcols);
                                                 }
                                         }
                                         break;

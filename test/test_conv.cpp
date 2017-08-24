@@ -241,6 +241,7 @@ NANO_CASE(3d_vs_4d_gparam_kconn1)
                 std::tie(bdata3, idata, kdata3, odata) = make_buffers(params, i + 2);
                 std::tie(bdata4, idata, kdata4, odata) = make_buffers(params, i + 2);
 
+                NANO_REQUIRE(op4d.output(idata, kdata4, bdata4, odata));// NB: needed to update the internal buffers!
                 NANO_REQUIRE(op3d.gparam(idata, kdata3, bdata3, odata));
                 NANO_REQUIRE(op4d.gparam(idata, kdata4, bdata4, odata));
 
@@ -265,6 +266,7 @@ NANO_CASE(3d_vs_4d_gparam_kconn2)
                 std::tie(bdata3, idata, kdata3, odata) = make_buffers(params, i + 2);
                 std::tie(bdata4, idata, kdata4, odata) = make_buffers(params, i + 2);
 
+                NANO_REQUIRE(op4d.output(idata, kdata4, bdata4, odata));// NB: needed to update the internal buffers!
                 NANO_REQUIRE(op3d.gparam(idata, kdata3, bdata3, odata));
                 NANO_REQUIRE(op4d.gparam(idata, kdata4, bdata4, odata));
 
@@ -287,8 +289,9 @@ NANO_CASE(3d_vs_4d_ginput_kconn1)
                 vector_t bdata;
 
                 std::tie(bdata, idata3, kdata, odata) = make_buffers(params, i + 2);
-                std::tie(bdata, idata3, kdata, odata) = make_buffers(params, i + 2);
+                std::tie(bdata, idata4, kdata, odata) = make_buffers(params, i + 2);
 
+                NANO_REQUIRE(op4d.output(idata4, kdata, bdata, odata));// NB: needed to update the internal buffers!
                 NANO_REQUIRE(op3d.ginput(idata3, kdata, bdata, odata));
                 NANO_REQUIRE(op4d.ginput(idata4, kdata, bdata, odata));
 
@@ -310,8 +313,9 @@ NANO_CASE(3d_vs_4d_ginput_kconn2)
                 vector_t bdata;
 
                 std::tie(bdata, idata3, kdata, odata) = make_buffers(params, i + 2);
-                std::tie(bdata, idata3, kdata, odata) = make_buffers(params, i + 2);
+                std::tie(bdata, idata4, kdata, odata) = make_buffers(params, i + 2);
 
+                NANO_REQUIRE(op4d.output(idata4, kdata, bdata, odata));// NB: needed to update the internal buffers!
                 NANO_REQUIRE(op3d.ginput(idata3, kdata, bdata, odata));
                 NANO_REQUIRE(op4d.ginput(idata4, kdata, bdata, odata));
 
