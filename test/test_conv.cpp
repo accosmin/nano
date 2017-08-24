@@ -9,11 +9,11 @@ using namespace nano;
 auto make_default_params(const tensor_size_t kconn = 1)
 {
         const auto imaps = 6;
-        const auto irows = 11;
-        const auto icols = 15;
+        const auto irows = 9;
+        const auto icols = 8;
         const auto omaps = 4;
-        const auto krows = 3;
-        const auto kcols = 5;
+        const auto krows = 2;
+        const auto kcols = 3;
         const auto kdrow = 2;
         const auto kdcol = 1;
 
@@ -198,7 +198,7 @@ NANO_CASE(3d_vs_4d_output_kconn1)
                 NANO_REQUIRE(op3d.output(idata, kdata, bdata, odata3));
                 NANO_REQUIRE(op4d.output(idata, kdata, bdata, odata4));
 
-                NANO_CHECK_EIGEN_CLOSE(odata3.array(), odata4.array(), 10 * epsilon0<scalar_t>());
+                NANO_CHECK_EIGEN_CLOSE(odata3.array(), odata4.array(), epsilon1<scalar_t>());
         }
 }
 
@@ -221,7 +221,7 @@ NANO_CASE(3d_vs_4d_output_kconn2)
                 NANO_REQUIRE(op3d.output(idata, kdata, bdata, odata3));
                 NANO_REQUIRE(op4d.output(idata, kdata, bdata, odata4));
 
-                NANO_CHECK_EIGEN_CLOSE(odata3.array(), odata4.array(), 10 * epsilon0<scalar_t>());
+                NANO_CHECK_EIGEN_CLOSE(odata3.array(), odata4.array(), epsilon1<scalar_t>());
         }
 }
 
@@ -245,8 +245,8 @@ NANO_CASE(3d_vs_4d_gparam_kconn1)
                 NANO_REQUIRE(op3d.gparam(idata, kdata3, bdata3, odata));
                 NANO_REQUIRE(op4d.gparam(idata, kdata4, bdata4, odata));
 
-                NANO_CHECK_EIGEN_CLOSE(bdata3.array(), bdata4.array(), 10 * epsilon0<scalar_t>());
-                NANO_CHECK_EIGEN_CLOSE(kdata3.array(), kdata4.array(), 10 * epsilon0<scalar_t>());
+                NANO_CHECK_EIGEN_CLOSE(bdata3.array(), bdata4.array(), epsilon1<scalar_t>());
+                NANO_CHECK_EIGEN_CLOSE(kdata3.array(), kdata4.array(), epsilon1<scalar_t>());
         }
 }
 
@@ -270,8 +270,8 @@ NANO_CASE(3d_vs_4d_gparam_kconn2)
                 NANO_REQUIRE(op3d.gparam(idata, kdata3, bdata3, odata));
                 NANO_REQUIRE(op4d.gparam(idata, kdata4, bdata4, odata));
 
-                NANO_CHECK_EIGEN_CLOSE(bdata3.array(), bdata4.array(), 10 * epsilon0<scalar_t>());
-                NANO_CHECK_EIGEN_CLOSE(kdata3.array(), kdata4.array(), 10 * epsilon0<scalar_t>());
+                NANO_CHECK_EIGEN_CLOSE(bdata3.array(), bdata4.array(), epsilon1<scalar_t>());
+                NANO_CHECK_EIGEN_CLOSE(kdata3.array(), kdata4.array(), epsilon1<scalar_t>());
         }
 }
 
@@ -295,7 +295,7 @@ NANO_CASE(3d_vs_4d_ginput_kconn1)
                 NANO_REQUIRE(op3d.ginput(idata3, kdata, bdata, odata));
                 NANO_REQUIRE(op4d.ginput(idata4, kdata, bdata, odata));
 
-                NANO_CHECK_EIGEN_CLOSE(idata3.array(), idata4.array(), 10 * epsilon0<scalar_t>());
+                NANO_CHECK_EIGEN_CLOSE(idata3.array(), idata4.array(), epsilon1<scalar_t>());
         }
 }
 
@@ -319,7 +319,7 @@ NANO_CASE(3d_vs_4d_ginput_kconn2)
                 NANO_REQUIRE(op3d.ginput(idata3, kdata, bdata, odata));
                 NANO_REQUIRE(op4d.ginput(idata4, kdata, bdata, odata));
 
-                NANO_CHECK_EIGEN_CLOSE(idata3.array(), idata4.array(), 10 * epsilon0<scalar_t>());
+                NANO_CHECK_EIGEN_CLOSE(idata3.array(), idata4.array(), epsilon1<scalar_t>());
         }
 }
 
