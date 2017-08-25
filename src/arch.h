@@ -19,6 +19,7 @@
 #endif
 
 // fix "unused variable" warnings
+// todo: in C++17 these should be replaced with [[maybe_unused]] attribute
 #define NANO_UNUSED1(x) (void)(x)
 #define NANO_UNUSED2(x, y) NANO_UNUSED1(x); NANO_UNUSED1(y)
 #define NANO_UNUSED3(x, y, z) NANO_UNUSED2(x, y); NANO_UNUSED1(z)
