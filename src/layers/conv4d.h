@@ -1,6 +1,7 @@
 #pragma once
 
-#include "conv3d_utils.h"
+#include "conv_utils.h"
+#include "conv_params.h"
 
 namespace nano
 {
@@ -188,6 +189,7 @@ namespace nano
                         kdata.vector().setZero();
                         bdata.setZero();
 
+                        assert(m_kodata.dims() == tensor3d_dims_t(count, imaps * krows * kcols, orows * ocols));
                         for (tensor_size_t x = 0; x < count; ++ x)
                         {
                                 auto omap = map_tensor(odata.data() + x * osize, m_params.odims());

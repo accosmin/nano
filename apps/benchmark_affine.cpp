@@ -104,6 +104,12 @@ int main(int argc, const char *argv[])
 
                                 const auto config = to_params("isize", isize, "osize", osize, "count", count);
 
+                                if (!params.valid())
+                                {
+                                        log_error() << "invalid parameters (" << config << ")!";
+                                        break;
+                                }
+
                                 auto wdata = params.make_wdata(); wdata.setRandom();
                                 auto bdata = params.make_bdata(); bdata.setRandom();
                                 auto idata = params.make_idata(count); idata.vector().setRandom();
