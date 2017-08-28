@@ -76,13 +76,13 @@ namespace nano
         template <typename tidata, typename tkdata, typename tbdata, typename todata>
         bool conv4d_t::output(const tidata& idata, const tkdata& kdata, const tbdata& bdata, todata&& odata)
         {
+                const auto count = idata.template size<0>();
+                const auto imaps = m_params.imaps(), isize = m_params.isize();
+                const auto kconn = m_params.kconn(), kdrow = m_params.kdrow(), kdcol = m_params.kdcol(), krows = m_params.krows(), kcols = m_params.kcols();
+                const auto omaps = m_params.omaps(), orows = m_params.orows(), ocols = m_params.ocols(), osize = m_params.osize();
+
                 if (m_params.valid(idata, kdata, bdata, odata))
                 {
-                        const auto count = idata.template size<0>();
-                        const auto imaps = m_params.imaps(), isize = m_params.isize();
-                        const auto kconn = m_params.kconn(), kdrow = m_params.kdrow(), kdcol = m_params.kdcol(), krows = m_params.krows(), kcols = m_params.kcols();
-                        const auto omaps = m_params.omaps(), orows = m_params.orows(), ocols = m_params.ocols(), osize = m_params.osize();
-
                         switch (kconn)
                         {
                         case 1:
@@ -119,7 +119,8 @@ namespace nano
                                                            krows * kcols, orows * ocols));
                                 }
 
-                                map_matrix(omap.data(), omaps, orows * ocols) += m_okdata * kodata;
+                                m_oodata.noalias() = m_okdata * kodata;
+                                map_matrix(omap.data(), omaps, orows * ocols) += m_oodata;
                         }
                         return true;
                 }
@@ -132,14 +133,14 @@ namespace nano
         template <typename tidata, typename tkdata, typename tbdata, typename todata>
         bool conv4d_t::ginput(tidata&& idata, const tkdata& kdata, const tbdata& bdata, const todata& odata)
         {
+                const auto count = idata.template size<0>();
+                const auto imaps = m_params.imaps(), isize = m_params.isize();
+                const auto krows = m_params.krows(), kcols = m_params.kcols();
+                const auto omaps = m_params.omaps(), orows = m_params.orows(), ocols = m_params.ocols(), osize = m_params.osize();
+                const auto drows = m_params.kdrow(), dcols = m_params.kdcol();
+
                 if (m_params.valid(idata, kdata, bdata, odata))
                 {
-                        const auto count = idata.template size<0>();
-                        const auto imaps = m_params.imaps(), isize = m_params.isize();
-                        const auto krows = m_params.krows(), kcols = m_params.kcols();
-                        const auto omaps = m_params.omaps(), orows = m_params.orows(), ocols = m_params.ocols(), osize = m_params.osize();
-                        const auto drows = m_params.kdrow(), dcols = m_params.kdcol();
-
                         for (tensor_size_t x = 0; x < count; ++ x)
                         {
                                 auto imap = map_tensor(idata.data() + x * isize, m_params.idims());
@@ -179,17 +180,19 @@ namespace nano
         template <typename tidata, typename tkdata, typename tbdata, typename todata>
         bool conv4d_t::gparam(const tidata& idata, tkdata&& kdata, tbdata&& bdata, const todata& odata)
         {
+                const auto count = idata.template size<0>();
+                const auto imaps = m_params.imaps();
+                const auto kconn = m_params.kconn(), krows = m_params.krows(), kcols = m_params.kcols();
+                const auto omaps = m_params.omaps(), orows = m_params.orows(), ocols = m_params.ocols(), osize = m_params.osize();
+
                 if (m_params.valid(idata, kdata, bdata, odata))
                 {
-                        const auto count = idata.template size<0>();
-                        const auto imaps = m_params.imaps();
-                        const auto kconn = m_params.kconn(), krows = m_params.krows(), kcols = m_params.kcols();
-                        const auto omaps = m_params.omaps(), orows = m_params.orows(), ocols = m_params.ocols(), osize = m_params.osize();
-
                         kdata.vector().setZero();
                         bdata.setZero();
 
-                        assert(m_kodata.dims() == tensor3d_dims_t(count, imaps * krows * kcols, orows * ocols));
+                        assert(m_kodata.size<0>() == count);
+                        assert(m_kodata.size<1>() == imaps * krows * kcols);
+                        assert(m_kodata.size<2>() == orows * ocols);
                         for (tensor_size_t x = 0; x < count; ++ x)
                         {
                                 auto omap = map_tensor(odata.data() + x * osize, m_params.odims());
