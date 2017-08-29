@@ -77,6 +77,10 @@ namespace nano
                 {
                         m_data.setZero();
                 }
+                void setZero()
+                {
+                        zero();
+                }
 
                 ///
                 /// \brief set all elements to a constant value
@@ -84,6 +88,10 @@ namespace nano
                 void constant(const tscalar value)
                 {
                         m_data.setConstant(value);
+                }
+                void setConstant(const tscalar value)
+                {
+                        constant(value);
                 }
 
                 ///
@@ -113,6 +121,36 @@ namespace nano
                 ///
                 auto data() const { return m_data.data(); }
                 auto data() { return m_data.data(); }
+
+                ///
+                /// \brief access the data from a given
+                ///
+                template <typename... tindices>
+                auto data(const tindices... indices) const
+                {
+                        return this->data() + nano::index(this->dims(), indices...);
+                }
+                template <typename... tindices>
+                auto data(const tindices... indices)
+                {
+                        return this->data() + nano::index(this->dims(), indices...);
+                }
+
+                ///
+                /// \brief reshape to a new tensor (with the same number of elements)
+                ///
+                template <typename... tsizes>
+                auto reshape(const tsizes... sizes) const
+                {
+                        assert(nano::size(nano::make_dims(sizes...)) == this->size());
+                        return map_tensor(data(), sizes...);
+                }
+                template <typename... tsizes>
+                auto reshape(const tsizes... sizes)
+                {
+                        assert(nano::size(nano::make_dims(sizes...)) == this->size());
+                        return map_tensor(data(), sizes...);
+                }
 
                 ///
                 /// \brief access the 2D plane (indices...) as a vector
