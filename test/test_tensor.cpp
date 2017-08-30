@@ -1,5 +1,5 @@
 #include "utest.h"
-#include "tensor/tensor.h"
+#include "tensor/tensor_mem.h"
 #include <vector>
 
 NANO_BEGIN_MODULE(test_tensor)
@@ -299,6 +299,39 @@ NANO_CASE(tensor3d_fill)
         tensor.random(+5, +11);
         NANO_CHECK_GREATER(tensor.vector().minCoeff(), +5);
         NANO_CHECK_LESS(tensor.vector().maxCoeff(), +11);
+}
+
+NANO_CASE(tensor4d_reshape)
+{
+        using tensor4d_t = nano::tensor_mem_t<int, 4>;
+
+        tensor4d_t tensor(5, 6, 7, 8);
+
+        auto reshape4d = tensor.reshape(5, 3, 28, 4);
+        NANO_CHECK_EQUAL(reshape4d.data(), tensor.data());
+        NANO_CHECK_EQUAL(reshape4d.size(), tensor.size());
+        NANO_CHECK_EQUAL(reshape4d.size<0>(), 5);
+        NANO_CHECK_EQUAL(reshape4d.size<1>(), 3);
+        NANO_CHECK_EQUAL(reshape4d.size<2>(), 28);
+        NANO_CHECK_EQUAL(reshape4d.size<3>(), 4);
+
+        auto reshape3d = tensor.reshape(30, 14, 4);
+        NANO_CHECK_EQUAL(reshape3d.data(), tensor.data());
+        NANO_CHECK_EQUAL(reshape3d.size(), tensor.size());
+        NANO_CHECK_EQUAL(reshape3d.size<0>(), 30);
+        NANO_CHECK_EQUAL(reshape3d.size<1>(), 14);
+        NANO_CHECK_EQUAL(reshape3d.size<2>(), 4);
+
+        auto reshape2d = tensor.reshape(30, 56);
+        NANO_CHECK_EQUAL(reshape2d.data(), tensor.data());
+        NANO_CHECK_EQUAL(reshape2d.size(), tensor.size());
+        NANO_CHECK_EQUAL(reshape2d.size<0>(), 30);
+        NANO_CHECK_EQUAL(reshape2d.size<1>(), 56);
+
+        auto reshape1d = tensor.reshape(1680);
+        NANO_CHECK_EQUAL(reshape1d.data(), tensor.data());
+        NANO_CHECK_EQUAL(reshape1d.size(), tensor.size());
+        NANO_CHECK_EQUAL(reshape1d.size<0>(), 1680);
 }
 
 NANO_END_MODULE()
