@@ -151,10 +151,10 @@ namespace nano
                 auto vector() const { return map_vector(data(), this->size()); }
 
                 template <typename... tindices>
-                auto vector(const tindices... indices, const tensor_size_t size) const
+                auto vector(const tensor_size_t rows, const tindices... indices) const
                 {
-                        assert(nano::index(this->dims(), indices...) + size <= this->size());
-                        return map_vector(data(indices...), size);
+                        assert(nano::index(this->dims(), indices...) + rows <= this->size());
+                        return map_vector(data(indices...), rows);
                 }
 
                 ///
@@ -163,16 +163,16 @@ namespace nano
                 auto array() const { return vector().array(); }
 
                 template <typename... tindices>
-                auto array(const tindices... indices, const tensor_size_t size) const
+                auto array(const tensor_size_t rows, const tindices... indices) const
                 {
-                        return vector(indices..., size).array();
+                        return vector(rows, indices...).array();
                 }
 
                 ///
                 /// \brief access the tensor as a matrix
                 ///
                 template <typename... tindices>
-                auto matrix(const tindices... indices, const tensor_size_t rows, const tensor_size_t cols) const
+                auto matrix(const tensor_size_t rows, const tensor_size_t cols, const tindices... indices) const
                 {
                         assert(nano::index(this->dims(), indices...) + rows * cols <= this->size());
                         return map_matrix(data(indices...), rows, cols);
