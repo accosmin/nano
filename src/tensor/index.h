@@ -10,7 +10,7 @@ namespace nano
         using tensor_size_t = Eigen::Index;
 
         ///
-        /// \brief dimenions of a multi-dimensional tensor.
+        /// \brief dimensions of a multi-dimensional tensor.
         ///
         template <std::size_t tdims>
         using tensor_dims_t = std::array<tensor_size_t, tdims>;
@@ -66,36 +66,6 @@ namespace nano
         {
                 static_assert(tdims >= 1, "invalid number of tensor dimensions");
                 return detail::product(dims, 0);
-        }
-
-        ///
-        /// \brief number of rows of a multi-dimensional tensor.
-        ///
-        template <std::size_t tdims>
-        tensor_size_t rows(const tensor_dims_t<tdims>& dims)
-        {
-                static_assert(tdims >= 3, "plane-based indexing is available for at least 3D tensors");
-                return std::get<tdims - 2>(dims);
-        }
-
-        ///
-        /// \brief number of columns of a multi-dimensional tensor.
-        ///
-        template <std::size_t tdims>
-        tensor_size_t cols(const tensor_dims_t<tdims>& dims)
-        {
-                static_assert(tdims >= 3, "plane-based indexing is available for at least 3D tensors");
-                return std::get<tdims - 1>(dims);
-        }
-
-        ///
-        /// \brief plane size in number of elements of a multi-dimensional tensor.
-        ///
-        template <std::size_t tdims>
-        tensor_size_t planeSize(const tensor_dims_t<tdims>& dims)
-        {
-                static_assert(tdims >= 3, "plane-based indexing is available for at least 3D tensors");
-                return rows(dims) * cols(dims);
         }
 
         ///
@@ -169,10 +139,7 @@ namespace nano
                 auto size() const { return nano::size(m_dims); }
                 template <int idim>
                 auto size() const { return std::get<idim>(m_dims); }
-                auto rows() const { return nano::rows(m_dims); }
-                auto cols() const { return nano::cols(m_dims); }
                 static auto dimensionality() { return tdimensions; }
-                auto planeSize() const { return nano::planeSize(m_dims); }
 
         protected:
 

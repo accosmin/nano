@@ -103,33 +103,23 @@ namespace nano
                         m_data.setRandom(); // [-1, +1]
                         array() = (array() + 1) * (max - min) / 2 + min;
                 }
+                void setRandom(const tscalar min, const tscalar max)
+                {
+                        random(min, max);
+                }
 
                 ///
-                /// \brief access the whole tensor as a vector (size() x 1)
-                ///
-                auto vector() const { return map_vector(data(), this->size()); }
-                auto vector() { return map_vector(data(), this->size()); }
-
-                ///
-                /// \brief access the whole tensor as an array (size() x 1)
-                ///
-                auto array() const { return vector().array(); }
-                auto array() { return vector().array(); }
-
-                ///
-                /// \brief access the whole tensor as a C-array
+                /// \brief access the tensor as a C-array
                 ///
                 auto data() const { return m_data.data(); }
                 auto data() { return m_data.data(); }
 
-                ///
-                /// \brief access the data from a given
-                ///
                 template <typename... tindices>
                 auto data(const tindices... indices) const
                 {
                         return this->data() + nano::index(this->dims(), indices...);
                 }
+
                 template <typename... tindices>
                 auto data(const tindices... indices)
                 {
@@ -137,77 +127,58 @@ namespace nano
                 }
 
                 ///
-                /// \brief reshape to a new tensor (with the same number of elements)
+                /// \brief access the tensor as a vector
                 ///
-                template <typename... tsizes>
-                auto reshape(const tsizes... sizes) const
+                auto vector() const { return map_vector(data(), this->size()); }
+                auto vector() { return map_vector(data(), this->size()); }
+
+                template <typename... tindices>
+                auto vector(const tindices... indices, const tensor_size_t size) const
                 {
-                        assert(nano::size(nano::make_dims(sizes...)) == this->size());
-                        return map_tensor(data(), sizes...);
+                        assert(nano::index(this->dims(), indices...) + size <= this->size());
+                        return map_vector(data(indices...), size);
                 }
-                template <typename... tsizes>
-                auto reshape(const tsizes... sizes)
+
+                template <typename... tindices>
+                auto vector(const tindices... indices, const tensor_size_t size)
                 {
-                        assert(nano::size(nano::make_dims(sizes...)) == this->size());
-                        return map_tensor(data(), sizes...);
+                        assert(nano::index(this->dims(), indices...) + size <= this->size());
+                        return map_vector(data(indices...), size);
                 }
 
                 ///
-                /// \brief access the 2D plane (indices...) as a vector
+                /// \brief access the tensor as an array
                 ///
+                auto array() const { return vector().array(); }
+                auto array() { return vector().array(); }
+
                 template <typename... tindices>
-                auto vector(const tindices... indices) const
+                auto array(const tindices... indices, const tensor_size_t size) const
                 {
-                        return map_vector(planeData(indices...), this->planeSize());
+                        return vector(indices..., size).array();
                 }
+
                 template <typename... tindices>
-                auto vector(const tindices... indices)
+                auto array(const tindices... indices, const tensor_size_t size)
                 {
-                        return map_vector(planeData(indices...), this->planeSize());
+                        return vector(indices..., size).array();
                 }
 
                 ///
-                /// \brief access the 2D plane (indices...) as an array
+                /// \brief access the tensor as a matrix
                 ///
                 template <typename... tindices>
-                auto array(const tindices... indices) const
+                auto matrix(const tindices... indices, const tensor_size_t rows, const tensor_size_t cols) const
                 {
-                        return vector(indices...).array();
-                }
-                template <typename... tindices>
-                auto array(const tindices... indices)
-                {
-                        return vector(indices...).array();
+                        assert(nano::index(this->dims(), indices...) + rows * cols <= this->size());
+                        return map_matrix(data(indices...), rows, cols);
                 }
 
-                ///
-                /// \brief access the 2D plane (indices...) as matrix
-                ///
                 template <typename... tindices>
-                auto matrix(const tindices... indices) const
+                auto matrix(const tindices... indices, const tensor_size_t rows, const tensor_size_t cols)
                 {
-                        return map_matrix(planeData(indices...), this->rows(), this->cols());
-                }
-                template <typename... tindices>
-                auto matrix(const tindices... indices)
-                {
-                        return map_matrix(planeData(indices...), this->rows(), this->cols());
-                }
-
-                ///
-                /// \brief access the 2D plane (indices...) as a C-array
-                ///
-                template <typename... tindices>
-                auto planeData(const tindices... indices) const
-                {
-                        static_assert(sizeof...(indices) == tdimensions - 2, "method not available");
-                        return data() + nano::index(this->dims(), indices..., 0, 0);
-                }
-                template <typename... tindices>
-                auto planeData(const tindices... indices)
-                {
-                        static_assert(sizeof...(indices) == tdimensions - 2, "method not available");
-                        return data() + nano::index(this->dims(), indices..., 0, 0);
+                        assert(nano::index(this->dims(), indices...) + rows * cols <= this->size());
+                        return map_matrix(data(indices...), rows, cols);
                 }
 
                 ///
@@ -222,18 +193,33 @@ namespace nano
                         return m_data(index);
                 }
 
-                ///
-                /// \brief access an element of the tensor
-                ///
                 template <typename... tindices>
                 const tscalar& operator()(const tensor_size_t index, const tindices... indices) const
                 {
-                        return m_data(nano::index(this->dims(), index, indices...));
+                        return this->operator()(nano::index(this->dims(), index, indices...));
                 }
+
                 template <typename... tindices>
                 tscalar& operator()(const tensor_size_t index, const tindices... indices)
                 {
-                        return m_data(nano::index(this->dims(), index, indices...));
+                        return this->operator()(nano::index(this->dims(), index, indices...));
+                }
+
+                ///
+                /// \brief reshape to a new tensor (with the same number of elements)
+                ///
+                template <typename... tsizes>
+                auto reshape(const tsizes... sizes) const
+                {
+                        assert(nano::size(nano::make_dims(sizes...)) == this->size());
+                        return map_tensor(data(), sizes...);
+                }
+
+                template <typename... tsizes>
+                auto reshape(const tsizes... sizes)
+                {
+                        assert(nano::size(nano::make_dims(sizes...)) == this->size());
+                        return map_tensor(data(), sizes...);
                 }
 
         private:

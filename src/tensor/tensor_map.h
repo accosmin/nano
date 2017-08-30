@@ -85,31 +85,53 @@ namespace nano
                 /// \brief constructor
                 ///
                 template <typename... tsizes>
-                tensor_array_t(tstorage data, const tsizes... dims) :
+                tensor_array_t(tstorage pdata, const tsizes... dims) :
                         tbase(dims...),
-                        m_data(data)
+                        m_data(pdata)
                 {
-                        assert(data != nullptr || this->size() == 0);
+                        assert(pdata != nullptr || this->size() == 0);
                 }
 
                 ///
-                /// \brief access the whole tensor as a vector (size() x 1)
+                /// \brief set all elements to zero
                 ///
-                auto vector() const
+                void zero() const
                 {
-                        return map_vector(data(), this->size());
+                        this->array().setZero();
+                }
+                void setZero() const
+                {
+                        zero();
                 }
 
                 ///
-                /// \brief access the whole tensor as an array (size() x 1)
+                /// \brief set all elements to a constant value
                 ///
-                auto array() const
+                void constant(const tscalar value) const
                 {
-                        return vector().array();
+                        this->array().setConstant(value);
+                }
+                void setConstant(const tscalar value) const
+                {
+                        constant(value);
                 }
 
                 ///
-                /// \brief access the whole tensor as a C-array
+                /// \brief set all elements to random values in the [min, max] range
+                ///
+                void random(const tscalar min, const tscalar max) const
+                {
+                        assert(min < max);
+                        array().setRandom(); // [-1, +1]
+                        array() = (array() + 1) * (max - min) / 2 + min;
+                }
+                void setRandom(const tscalar min, const tscalar max) const
+                {
+                        random(min, max);
+                }
+
+                ///
+                /// \brief access the tensor as a C-array
                 ///
                 auto data() const
                 {
@@ -117,41 +139,43 @@ namespace nano
                         return m_data;
                 }
 
-                ///
-                /// \brief access the 2D plane (indices...) as a vector
-                ///
                 template <typename... tindices>
-                auto vector(const tindices... indices) const
+                auto data(const tindices... indices) const
                 {
-                        return map_vector(planeData(indices...), this->planeSize());
+                        return this->data() + nano::index(this->dims(), indices...);
                 }
 
                 ///
-                /// \brief access the 2D plane (indices...) as an array
+                /// \brief access the tensor as a vector
                 ///
+                auto vector() const { return map_vector(data(), this->size()); }
+
                 template <typename... tindices>
-                auto array(const tindices... indices) const
+                auto vector(const tindices... indices, const tensor_size_t size) const
                 {
-                        return vector(indices...).array();
+                        assert(nano::index(this->dims(), indices...) + size <= this->size());
+                        return map_vector(data(indices...), size);
                 }
 
                 ///
-                /// \brief access the 2D plane (indices...) as matrix
+                /// \brief access the tensor as an array
                 ///
+                auto array() const { return vector().array(); }
+
                 template <typename... tindices>
-                auto matrix(const tindices... indices) const
+                auto array(const tindices... indices, const tensor_size_t size) const
                 {
-                        return map_matrix(planeData(indices...), this->rows(), this->cols());
+                        return vector(indices..., size).array();
                 }
 
                 ///
-                /// \brief access the 2D plane (indices...) as a C-array
+                /// \brief access the tensor as a matrix
                 ///
                 template <typename... tindices>
-                auto planeData(const tindices... indices) const
+                auto matrix(const tindices... indices, const tensor_size_t rows, const tensor_size_t cols) const
                 {
-                        static_assert(sizeof...(indices) == tdimensions - 2, "method not available");
-                        return data() + nano::index(this->dims(), indices..., 0, 0);
+                        assert(nano::index(this->dims(), indices...) + rows * cols <= this->size());
+                        return map_matrix(data(indices...), rows, cols);
                 }
 
                 ///
@@ -162,13 +186,20 @@ namespace nano
                         return m_data[index];
                 }
 
-                ///
-                /// \brief access an element of the tensor
-                ///
                 template <typename... tindices>
                 treference operator()(const tensor_size_t index, const tindices... indices) const
                 {
-                        return m_data[nano::index(this->dims(), index, indices...)];
+                        return this->operator()(nano::index(this->dims(), index, indices...));
+                }
+
+                ///
+                /// \brief reshape to a new tensor (with the same number of elements)
+                ///
+                template <typename... tsizes>
+                auto reshape(const tsizes... sizes) const
+                {
+                        assert(nano::size(nano::make_dims(sizes...)) == this->size());
+                        return map_tensor(data(), sizes...);
                 }
 
         private:
