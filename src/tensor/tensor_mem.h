@@ -133,17 +133,17 @@ namespace nano
                 auto vector() { return map_vector(data(), this->size()); }
 
                 template <typename... tindices>
-                auto vector(const tindices... indices, const tensor_size_t size) const
+                auto vector(const tindices... indices, const tensor_size_t rows) const
                 {
-                        assert(nano::index(this->dims(), indices...) + size <= this->size());
-                        return map_vector(data(indices...), size);
+                        assert(nano::index(this->dims(), indices...) + rows <= this->size());
+                        return map_vector(data(indices...), rows);
                 }
 
                 template <typename... tindices>
-                auto vector(const tindices... indices, const tensor_size_t size)
+                auto vector(const tindices... indices, const tensor_size_t rows)
                 {
-                        assert(nano::index(this->dims(), indices...) + size <= this->size());
-                        return map_vector(data(indices...), size);
+                        assert(nano::index(this->dims(), indices...) + rows <= this->size());
+                        return map_vector(data(indices...), rows);
                 }
 
                 ///
@@ -153,15 +153,15 @@ namespace nano
                 auto array() { return vector().array(); }
 
                 template <typename... tindices>
-                auto array(const tindices... indices, const tensor_size_t size) const
+                auto array(const tindices... indices, const tensor_size_t rows) const
                 {
-                        return vector(indices..., size).array();
+                        return vector(indices..., rows).array();
                 }
 
                 template <typename... tindices>
-                auto array(const tindices... indices, const tensor_size_t size)
+                auto array(const tindices... indices, const tensor_size_t rows)
                 {
-                        return vector(indices..., size).array();
+                        return vector(indices..., rows).array();
                 }
 
                 ///
