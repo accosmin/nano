@@ -47,4 +47,36 @@ namespace nano
         {
                 return tresult(data, rows);
         }
+
+        ///
+        /// \brief map non-constant data to arrays
+        ///
+        template
+        <
+                int alignment = Eigen::Unaligned,
+                typename tvalue_,
+                typename tsize,
+                typename tvalue = typename std::remove_const<tvalue_>::type,
+                typename tresult = Eigen::Array<tensor_vector_t<tvalue>, alignment>
+        >
+        tresult map_array(tvalue_* data, const tsize rows)
+        {
+                return tresult(data, rows);
+        }
+
+        ///
+        /// \brief map constant data to arrays
+        ///
+        template
+        <
+                int alignment = Eigen::Unaligned,
+                typename tvalue_,
+                typename tsize,
+                typename tvalue = typename std::remove_const<tvalue_>::type,
+                typename tresult = Eigen::Array<const tensor_vector_t<tvalue>, alignment>
+        >
+        tresult map_array(const tvalue_* data, const tsize rows)
+        {
+                return tresult(data, rows);
+        }
 }

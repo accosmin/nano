@@ -133,13 +133,34 @@ namespace nano
                 }
 
                 ///
-                /// \brief indexing
+                /// \brief number of dimensions (aka the rank of the tensor)
+                ///
+                static auto rank() { return tdimensions; }
+
+                ///
+                /// \brief list of dimensions
                 ///
                 const tdims& dims() const { return m_dims; }
+
+                ///
+                /// \brief total number of elements
+                ///
                 auto size() const { return nano::size(m_dims); }
+
+                ///
+                /// \brief number of elements for the given dimension
+                ///
                 template <int idim>
                 auto size() const { return std::get<idim>(m_dims); }
-                static auto dimensionality() { return tdimensions; }
+
+                ///
+                /// \brief compute the linearized index from the list of offsets
+                ///
+                template <typename... tindices>
+                auto offset(const tindices... offsets) const
+                {
+                        return nano::index(dims(), offsets...);
+                }
 
         protected:
 

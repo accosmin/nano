@@ -115,16 +115,10 @@ namespace nano
                 auto data() { return m_data.data(); }
 
                 template <typename... tindices>
-                auto data(const tindices... indices) const
-                {
-                        return this->data() + nano::index(this->dims(), indices...);
-                }
+                auto data(const tindices... indices) const { return data() + this->offset(indices...); }
 
                 template <typename... tindices>
-                auto data(const tindices... indices)
-                {
-                        return this->data() + nano::index(this->dims(), indices...);
-                }
+                auto data(const tindices... indices) { return data() + this->offset(indices...); }
 
                 ///
                 /// \brief access the tensor as a vector
@@ -135,33 +129,35 @@ namespace nano
                 template <typename... tindices>
                 auto vector(const tensor_size_t rows, const tindices... indices) const
                 {
-                        assert(nano::index(this->dims(), indices...) + rows <= this->size());
+                        assert(this->offset(indices...) + rows <= this->size());
                         return map_vector(data(indices...), rows);
                 }
 
                 template <typename... tindices>
                 auto vector(const tensor_size_t rows, const tindices... indices)
                 {
-                        assert(nano::index(this->dims(), indices...) + rows <= this->size());
+                        assert(this->offset(indices...) + rows <= this->size());
                         return map_vector(data(indices...), rows);
                 }
 
                 ///
                 /// \brief access the tensor as an array
                 ///
-                auto array() const { return vector().array(); }
-                auto array() { return vector().array(); }
+                auto array() const { return map_array(data(), this->size()); }
+                auto array() { return map_array(data(), this->size()); }
 
                 template <typename... tindices>
                 auto array(const tensor_size_t rows, const tindices... indices) const
                 {
-                        return vector(rows, indices...).array();
+                        assert(this->offset(indicess...) + rows <= this->size());
+                        return map_array(data(indices...), rows);
                 }
 
                 template <typename... tindices>
                 auto array(const tensor_size_t rows, const tindices... indices)
                 {
-                        return vector(rows, indices...).array();
+                        assert(this->offset(indicess...) + rows <= this->size());
+                        return map_array(data(indices...), rows);
                 }
 
                 ///
@@ -170,14 +166,14 @@ namespace nano
                 template <typename... tindices>
                 auto matrix(const tensor_size_t rows, const tensor_size_t cols, const tindices... indices) const
                 {
-                        assert(nano::index(this->dims(), indices...) + rows * cols <= this->size());
+                        assert(this->offset(indices...) + rows * cols <= this->size());
                         return map_matrix(data(indices...), rows, cols);
                 }
 
                 template <typename... tindices>
                 auto matrix(const tensor_size_t rows, const tensor_size_t cols, const tindices... indices)
                 {
-                        assert(nano::index(this->dims(), indices...) + rows * cols <= this->size());
+                        assert(this->offset(indices...) + rows * cols <= this->size());
                         return map_matrix(data(indices...), rows, cols);
                 }
 
@@ -196,13 +192,13 @@ namespace nano
                 template <typename... tindices>
                 const tscalar& operator()(const tensor_size_t index, const tindices... indices) const
                 {
-                        return this->operator()(nano::index(this->dims(), index, indices...));
+                        return this->operator()(this->offset(index, indices...));
                 }
 
                 template <typename... tindices>
                 tscalar& operator()(const tensor_size_t index, const tindices... indices)
                 {
-                        return this->operator()(nano::index(this->dims(), index, indices...));
+                        return this->operator()(this->offset(index, indices...));
                 }
 
                 ///
