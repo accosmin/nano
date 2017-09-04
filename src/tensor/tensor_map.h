@@ -1,8 +1,6 @@
 #pragma once
 
-#include "index.h"
-#include "vector.h"
-#include "matrix.h"
+#include "tensor_base.h"
 
 namespace nano
 {
@@ -63,9 +61,9 @@ namespace nano
         /// \brief tensor mapping a const or non-const 1D C-array.
         ///
         template <typename tstorage, std::size_t tdimensions>
-        struct tensor_array_t : public tensor_indexer_t<tdimensions>
+        struct tensor_array_t : public tensor_base_t<tdimensions>
         {
-                using tbase = tensor_indexer_t<tdimensions>;
+                using tbase = tensor_base_t<tdimensions>;
 
                 using tscalar = typename std::remove_pointer<tstorage>::type;
                 using treference = typename std::conditional<std::is_const<tstorage>::value, const tscalar&, tscalar&>::type;
@@ -153,8 +151,7 @@ namespace nano
                 template <typename... tindices>
                 auto vector(const tensor_size_t rows, const tindices... indices) const
                 {
-                        assert(this->offset(indices...) + rows <= this->size());
-                        return map_vector(data(indices...), rows);
+                        return this->vector(data(), rows, indices...);
                 }
 
                 ///
@@ -165,8 +162,7 @@ namespace nano
                 template <typename... tindices>
                 auto array(const tensor_size_t rows, const tindices... indices) const
                 {
-                        assert(this->offset(indices...) + rows <= this->size());
-                        return map_array(data(indices...), rows);
+                        return this->array(data(), rows, indices...);
                 }
 
                 ///
@@ -175,8 +171,7 @@ namespace nano
                 template <typename... tindices>
                 auto matrix(const tensor_size_t rows, const tensor_size_t cols, const tindices... indices) const
                 {
-                        assert(this->offset(indices...) + rows * cols <= this->size());
-                        return map_matrix(data(indices...), rows, cols);
+                        return this->matrix(data(), rows, cols, indices...);
                 }
 
                 ///

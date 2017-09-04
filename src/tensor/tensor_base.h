@@ -3,7 +3,8 @@
 #include <array>
 #include <cassert>
 #include <ostream>
-#include <eigen3/Eigen/Core>
+#include "vector.h"
+#include "matrix.h"
 
 namespace nano
 {
@@ -97,10 +98,10 @@ namespace nano
         }
 
         ///
-        /// \brief indexing operations for tensors.
+        /// \brief base object for allocated or mapped tensors with support for indexing operations.
         ///
         template <std::size_t tdimensions>
-        struct tensor_indexer_t
+        struct tensor_base_t
         {
                 static_assert(tdimensions >= 1, "cannot create tensors with fewer than one dimension");
 
@@ -110,7 +111,7 @@ namespace nano
                 ///
                 /// \brief constructor
                 ///
-                tensor_indexer_t()
+                tensor_base_t()
                 {
                         m_dims.fill(0);
                 }
@@ -118,7 +119,7 @@ namespace nano
                 ///
                 /// \brief constructor
                 ///
-                explicit tensor_indexer_t(const tdims& dims) :
+                explicit tensor_base_t(const tdims& dims) :
                         m_dims(dims)
                 {
                 }
@@ -127,7 +128,7 @@ namespace nano
                 /// \brief constructor
                 ///
                 template <typename... tsizes>
-                explicit tensor_indexer_t(const tsizes... dims) :
+                explicit tensor_base_t(const tsizes... dims) :
                         m_dims({dims...})
                 {
                 }
@@ -163,6 +164,27 @@ namespace nano
                 }
 
         protected:
+
+                template <typename tdata, typename... tindices>
+                auto array(tdata data, const tensor_size_t rows, const tindices... indices) const
+                {
+                        assert(offset(indices...) + rows <= size());
+                        return map_array(data + offset(indices...), rows);
+                }
+
+                template <typename tdata, typename... tindices>
+                auto vector(tdata data, const tensor_size_t rows, const tindices... indices) const
+                {
+                        assert(offset(indices...) + rows <= size());
+                        return map_vector(data + offset(indices...), rows);
+                }
+
+                template <typename tdata, typename... tindices>
+                auto matrix(tdata data, const tensor_size_t rows, const tensor_size_t cols, const tindices... indices) const
+                {
+                        assert(offset(indices...) + rows * cols <= size());
+                        return map_matrix(data + offset(indices...), rows, cols);
+                }
 
                 // attributes
                 tdims           m_dims;         ///< dimensions
