@@ -166,21 +166,20 @@ namespace nano
         protected:
 
                 template <typename tdata, typename... tindices>
-                auto array(tdata data, const tensor_size_t rows, const tindices... indices) const
-                {
-                        assert(offset(indices...) + rows <= size());
-                        return map_array(data + offset(indices...), rows);
-                }
-
-                template <typename tdata, typename... tindices>
-                auto vector(tdata data, const tensor_size_t rows, const tindices... indices) const
+                auto mvector(tdata data, const tensor_size_t rows, const tindices... indices) const
                 {
                         assert(offset(indices...) + rows <= size());
                         return map_vector(data + offset(indices...), rows);
                 }
 
                 template <typename tdata, typename... tindices>
-                auto matrix(tdata data, const tensor_size_t rows, const tensor_size_t cols, const tindices... indices) const
+                auto marray(tdata data, const tensor_size_t rows, const tindices... indices) const
+                {
+                        return vector(data, rows, indices...).array();
+                }
+
+                template <typename tdata, typename... tindices>
+                auto mmatrix(tdata data, const tensor_size_t rows, const tensor_size_t cols, const tindices... indices) const
                 {
                         assert(offset(indices...) + rows * cols <= size());
                         return map_matrix(data + offset(indices...), rows, cols);

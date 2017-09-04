@@ -151,18 +151,18 @@ namespace nano
                 template <typename... tindices>
                 auto vector(const tensor_size_t rows, const tindices... indices) const
                 {
-                        return this->vector(data(), rows, indices...);
+                        return this->mvector(data(), rows, indices...);
                 }
 
                 ///
                 /// \brief access the tensor as an array
                 ///
-                auto array() const { return map_array(data(), this->size()); }
+                auto array() const { return vector().array(); }
 
                 template <typename... tindices>
                 auto array(const tensor_size_t rows, const tindices... indices) const
                 {
-                        return this->array(data(), rows, indices...);
+                        return this->marray(data(), rows, indices...);
                 }
 
                 ///
@@ -171,7 +171,7 @@ namespace nano
                 template <typename... tindices>
                 auto matrix(const tensor_size_t rows, const tensor_size_t cols, const tindices... indices) const
                 {
-                        return this->matrix(data(), rows, cols, indices...);
+                        return this->mmatrix(data(), rows, cols, indices...);
                 }
 
                 ///
