@@ -7,10 +7,10 @@ namespace nano
         ///
         /// \brief tensor that owns the allocated memory.
         ///
-        template <typename tscalar, std::size_t tdimensions>
-        struct tensor_mem_t : public tensor_base_t<tdimensions>
+        template <typename tscalar, std::size_t trank>
+        struct tensor_mem_t : public tensor_base_t<trank>
         {
-                using tbase = tensor_base_t<tdimensions>;
+                using tbase = tensor_base_t<trank>;
 
                 using tvector = tensor_vector_t<tscalar>;
                 using tdims = typename tbase::tdims;
@@ -45,7 +45,7 @@ namespace nano
                 /// \brief constructor
                 ///
                 template <typename tscalar2>
-                tensor_mem_t(const tensor_array_t<tscalar2, tdimensions>& other) :
+                tensor_mem_t(const tensor_array_t<tscalar2, trank>& other) :
                         tbase(other.dims())
                 {
                         m_data = other.vector();

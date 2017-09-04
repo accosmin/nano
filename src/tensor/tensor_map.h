@@ -4,39 +4,39 @@
 
 namespace nano
 {
-        template <typename tstorage, std::size_t tdimensions>
+        template <typename tstorage, std::size_t trank>
         struct tensor_array_t;
 
         ///
         /// \brief tensor mapping a non-constant array.
         ///
-        template <typename tscalar, std::size_t tdimensions>
-        using tensor_map_t = tensor_array_t<tscalar*, tdimensions>;
+        template <typename tscalar, std::size_t trank>
+        using tensor_map_t = tensor_array_t<tscalar*, trank>;
 
         ///
         /// \brief tensor mapping a constant array.
         ///
-        template <typename tscalar, std::size_t tdimensions>
-        using tensor_const_map_t = tensor_array_t<const tscalar*, tdimensions>;
+        template <typename tscalar, std::size_t trank>
+        using tensor_const_map_t = tensor_array_t<const tscalar*, trank>;
 
         ///
         /// \brief map non-constant data to tensors
         ///
-        template <typename tvalue_, std::size_t tdimensions>
-        auto map_tensor(tvalue_* data, const tensor_dims_t<tdimensions>& dims)
+        template <typename tvalue_, std::size_t trank>
+        auto map_tensor(tvalue_* data, const tensor_dims_t<trank>& dims)
         {
                 using tvalue = typename std::remove_const<tvalue_>::type;
-                return tensor_map_t<tvalue, tdimensions>(data, dims);
+                return tensor_map_t<tvalue, trank>(data, dims);
         }
 
         ///
         /// \brief map constant data to tensors
         ///
-        template <typename tvalue_, std::size_t tdimensions>
-        auto map_tensor(const tvalue_* data, const tensor_dims_t<tdimensions>& dims)
+        template <typename tvalue_, std::size_t trank>
+        auto map_tensor(const tvalue_* data, const tensor_dims_t<trank>& dims)
         {
                 using tvalue = typename std::remove_const<tvalue_>::type;
-                return tensor_const_map_t<tvalue, tdimensions>(data, dims);
+                return tensor_const_map_t<tvalue, trank>(data, dims);
         }
 
         ///
@@ -60,10 +60,10 @@ namespace nano
         ///
         /// \brief tensor mapping a const or non-const 1D C-array.
         ///
-        template <typename tstorage, std::size_t tdimensions>
-        struct tensor_array_t : public tensor_base_t<tdimensions>
+        template <typename tstorage, std::size_t trank>
+        struct tensor_array_t : public tensor_base_t<trank>
         {
-                using tbase = tensor_base_t<tdimensions>;
+                using tbase = tensor_base_t<trank>;
 
                 using tscalar = typename std::remove_pointer<tstorage>::type;
                 using treference = typename std::conditional<std::is_const<tstorage>::value, const tscalar&, tscalar&>::type;

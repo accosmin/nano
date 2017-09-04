@@ -100,12 +100,12 @@ namespace nano
         ///
         /// \brief base object for allocated or mapped tensors with support for indexing operations.
         ///
-        template <std::size_t tdimensions>
+        template <std::size_t trank>
         struct tensor_base_t
         {
-                static_assert(tdimensions >= 1, "cannot create tensors with fewer than one dimension");
+                static_assert(trank >= 1, "cannot create tensors with fewer than one dimension");
 
-                using tdims = tensor_dims_t<tdimensions>;
+                using tdims = tensor_dims_t<trank>;
                 using Index = tensor_size_t;
 
                 ///
@@ -136,7 +136,7 @@ namespace nano
                 ///
                 /// \brief number of dimensions (aka the rank of the tensor)
                 ///
-                static auto rank() { return tdimensions; }
+                static auto rank() { return trank; }
 
                 ///
                 /// \brief list of dimensions
@@ -153,6 +153,14 @@ namespace nano
                 ///
                 template <int idim>
                 auto size() const { return std::get<idim>(m_dims); }
+
+                ///
+                /// \brief interpret the last two dimensions as rows/columns
+                /// NB: e.g. images represented as 3D tensors (color plane, rows, columns)
+                /// NB: e.g. ML minibatches represented as 4D tensors (sample, feature plane, rows, columns)
+                ///
+                auto rows() const { static_assert(trank >= 3, ""); return size<trank - 2>(); }
+                auto cols() const { static_assert(trank >= 3, ""); return size<trank - 1>(); }
 
                 ///
                 /// \brief compute the linearized index from the list of offsets
