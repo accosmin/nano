@@ -126,7 +126,6 @@ function(setup_ccache)
         endif()
 endfunction()
 
-project(nano)
 # setup LTO
 function(setup_lto)
         set(CMAKE_REQUIRED_FLAGS "-flto")
