@@ -61,7 +61,7 @@ NANO_CASE(plane)
         for (tensor_size_t i = 0; i < std::get<0>(odims); ++ i)
         {
                 stats_t<scalar_t> stats;
-                stats(odata.array(i).data(), odata.array(i).data() + odata.array(i).size());
+                stats(odata.matrix(i).data(), odata.matrix(i).data() + odata.matrix(i).size());
 
                 NANO_CHECK_EQUAL(stats.count(), static_cast<size_t>(nano::size(odims) / std::get<0>(odims)));
                 NANO_CHECK_LESS(std::fabs(stats.avg() - scalar_t(0)), epsilon0<scalar_t>());

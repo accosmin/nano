@@ -95,13 +95,13 @@ namespace nano
                         img2col(m_params, idata.matrix(i), m_idata_toe.matrix(i));
                         for (tensor_size_t o = i % kconn, ok = 0; o < omaps; o += kconn, ++ ok)
                         {
-                                m_okdata.row(ok) = kdata.vector(o, i / kconn);
+                                m_okdata.row(ok) = kdata.matrix(o, i / kconn);
                         }
 
                         m_oodata.noalias() = m_okdata * m_idata_toe.matrix(i);
                         for (tensor_size_t o = i % kconn, ok = 0; o < omaps; o += kconn, ++ ok)
                         {
-                                odata.vector(o) += m_oodata.row(ok);
+                                odata.matrix(o) += m_oodata.row(ok);
                         }
                 }
         }
@@ -154,13 +154,13 @@ namespace nano
                         make_toeplitz_ginput(odata.matrix(o), m_kidata);
                         for (tensor_size_t i = o % kconn, ik = 0; i < imaps; i += kconn, ++ ik)
                         {
-                                m_ikdata.row(ik) = kdata.vector(o, ik);
+                                m_ikdata.row(ik) = kdata.matrix(o, ik);
                         }
 
                         m_iidata.noalias() = m_ikdata * m_kidata;
                         for (tensor_size_t i = o % kconn, ik = 0; i < imaps; i += kconn, ++ ik)
                         {
-                                idata.vector(i) += m_iidata.row(ik);
+                                idata.matrix(i) += m_iidata.row(ik);
                         }
                 }
         }
@@ -212,13 +212,13 @@ namespace nano
                 {
                         for (tensor_size_t o = i % kconn, ok = 0; o < omaps; o += kconn, ++ ok)
                         {
-                                m_oodata.row(ok) = odata.vector(o);
+                                m_oodata.row(ok) = odata.matrix(o);
                         }
 
                         m_okdata.noalias() = m_oodata * m_idata_toe.matrix(i).transpose();
                         for (tensor_size_t o = i % kconn, ok = 0; o < omaps; o += kconn, ++ ok)
                         {
-                                kdata.vector(o, i / kconn) = m_okdata.row(ok);
+                                kdata.matrix(o, i / kconn) = m_okdata.row(ok);
                         }
                 }
         }

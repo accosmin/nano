@@ -69,7 +69,7 @@ void normalize_layer_t::output(tensor3d_const_map_t idata, tensor1d_const_map_t 
                 case norm_type::plane:
                         for (tensor_size_t i = 0; i < std::get<0>(m_idims); ++ i)
                         {
-                                onorm(idata.array(i), odata.array(i));
+                                onorm(idata.matrix(i), odata.matrix(i));
                         }
                         break;
                 }
@@ -93,7 +93,7 @@ void normalize_layer_t::ginput(tensor3d_map_t idata, tensor1d_const_map_t param,
                 case norm_type::plane:
                         for (tensor_size_t i = 0; i < std::get<0>(m_idims); ++ i)
                         {
-                                gnorm(idata.array(i), odata.array(i));
+                                gnorm(idata.matrix(i), odata.matrix(i));
                         }
                         break;
                 }

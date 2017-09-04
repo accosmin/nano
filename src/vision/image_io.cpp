@@ -21,7 +21,7 @@ static bool load_image(const color_mode mode, image_tensor_t& image)
                 case color_mode::luma:
                         image.resize(1, rows, cols);
                         {
-                                auto band0 = image.vector(0);
+                                auto band0 = image.matrix(0);
                                 for (int i = 0; i < size; ++ i, data += 4)
                                 {
                                         band0(i) = static_cast<luma_t>(make_luma(data[0], data[1], data[2]));
@@ -32,10 +32,10 @@ static bool load_image(const color_mode mode, image_tensor_t& image)
                 case color_mode::rgba:
                         image.resize(4, rows, cols);
                         {
-                                auto band0 = image.vector(0);
-                                auto band1 = image.vector(1);
-                                auto band2 = image.vector(2);
-                                auto band3 = image.vector(3);
+                                auto band0 = image.matrix(0);
+                                auto band1 = image.matrix(1);
+                                auto band2 = image.matrix(2);
+                                auto band3 = image.matrix(3);
                                 for (int i = 0; i < size; ++ i, data += 4)
                                 {
                                         band0(i) = data[0];
@@ -49,9 +49,9 @@ static bool load_image(const color_mode mode, image_tensor_t& image)
                 case color_mode::rgb:
                         image.resize(3, rows, cols);
                         {
-                                auto band0 = image.vector(0);
-                                auto band1 = image.vector(1);
-                                auto band2 = image.vector(2);
+                                auto band0 = image.matrix(0);
+                                auto band1 = image.matrix(1);
+                                auto band2 = image.matrix(2);
                                 for (int i = 0; i < size; ++ i, data += 4)
                                 {
                                         band0(i) = data[0];

@@ -73,7 +73,7 @@ NANO_CASE(tensor3d)
         NANO_CHECK_EQUAL(tensor.size(), dims * rows * cols);
 
         NANO_CHECK_EQUAL(tensor.vector().size(), tensor.size());
-        NANO_CHECK_EQUAL(tensor.vector(dims / 2).size(), tensor.planeSize());
+        NANO_CHECK_EQUAL(tensor.vector(dims / 2, rows / 2).size(), tensor.cols());
 
         NANO_CHECK_EQUAL(tensor.matrix(dims - 1).rows(), tensor.rows());
         NANO_CHECK_EQUAL(tensor.matrix(dims - 1).cols(), tensor.cols());
@@ -88,8 +88,8 @@ NANO_CASE(tensor3d)
         NANO_CHECK_EQUAL(tensor.vector().maxCoeff(), 42);
 
         tensor.matrix(3).setConstant(13);
-        NANO_CHECK_EQUAL(tensor.vector(3).minCoeff(), 13);
-        NANO_CHECK_EQUAL(tensor.vector(3).maxCoeff(), 13);
+        NANO_CHECK_EQUAL(tensor.matrix(3).minCoeff(), 13);
+        NANO_CHECK_EQUAL(tensor.matrix(3).maxCoeff(), 13);
 }
 
 NANO_CASE(tensor3d_map)
@@ -113,8 +113,8 @@ NANO_CASE(tensor3d_map)
         NANO_CHECK_EQUAL(tmap.size<0>(), dims);
         NANO_CHECK_EQUAL(tmap.size<1>(), rows);
         NANO_CHECK_EQUAL(tmap.size<2>(), cols);
-        NANO_CHECK_EQUAL(tensor.rows(), rows);
-        NANO_CHECK_EQUAL(tensor.cols(), cols);
+        NANO_CHECK_EQUAL(tmap.rows(), rows);
+        NANO_CHECK_EQUAL(tmap.cols(), cols);
         NANO_CHECK_EQUAL(tmap.size(), dims * rows * cols);
 
         for (int d = 0, i = 0; d < dims; ++ d)
@@ -182,7 +182,7 @@ NANO_CASE(tensor4d)
         NANO_CHECK_EQUAL(tensor.size(), dim1 * dim2 * rows * cols);
 
         NANO_CHECK_EQUAL(tensor.vector().size(), tensor.size());
-        NANO_CHECK_EQUAL(tensor.vector(dim1 / 2, dim2 / 2).size(), tensor.planeSize());
+        NANO_CHECK_EQUAL(tensor.vector(dim1 / 2, dim2 / 2, rows / 2).size(), tensor.cols());
 
         NANO_CHECK_EQUAL(tensor.matrix(dim1 - 1, dim2 - 1).rows(), tensor.rows());
         NANO_CHECK_EQUAL(tensor.matrix(dim1 - 1, dim2 - 1).cols(), tensor.cols());
@@ -197,8 +197,8 @@ NANO_CASE(tensor4d)
         NANO_CHECK_EQUAL(tensor.vector().maxCoeff(), 42);
 
         tensor.matrix(0, 3).setConstant(13);
-        NANO_CHECK_EQUAL(tensor.vector(0, 3).minCoeff(), 13);
-        NANO_CHECK_EQUAL(tensor.vector(0, 3).maxCoeff(), 13);
+        NANO_CHECK_EQUAL(tensor.matrix(0, 3).minCoeff(), 13);
+        NANO_CHECK_EQUAL(tensor.matrix(0, 3).maxCoeff(), 13);
 }
 
 NANO_CASE(tensor4d_map)
@@ -224,8 +224,8 @@ NANO_CASE(tensor4d_map)
         NANO_CHECK_EQUAL(tmap.size<1>(), dim2);
         NANO_CHECK_EQUAL(tmap.size<2>(), rows);
         NANO_CHECK_EQUAL(tmap.size<3>(), cols);
-        NANO_CHECK_EQUAL(tensor.rows(), rows);
-        NANO_CHECK_EQUAL(tensor.cols(), cols);
+        NANO_CHECK_EQUAL(tmap.rows(), rows);
+        NANO_CHECK_EQUAL(tmap.cols(), cols);
         NANO_CHECK_EQUAL(tmap.size(), dim1 * dim2 * rows * cols);
 
         for (int d1 = 0, i = 0; d1 < dim1; ++ d1)

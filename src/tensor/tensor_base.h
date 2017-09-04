@@ -13,8 +13,8 @@ namespace nano
         ///
         /// \brief dimensions of a multi-dimensional tensor.
         ///
-        template <std::size_t tdims>
-        using tensor_dims_t = std::array<tensor_size_t, tdims>;
+        template <std::size_t trank>
+        using tensor_dims_t = std::array<tensor_size_t, trank>;
 
         ///
         /// \brief create a dimension structure for a tensor.
@@ -27,20 +27,20 @@ namespace nano
 
         namespace detail
         {
-                template <std::size_t tdims>
-                tensor_size_t product(const tensor_dims_t<tdims>& dims, const std::size_t idim)
+                template <std::size_t trank>
+                tensor_size_t product(const tensor_dims_t<trank>& dims, const std::size_t idim)
                 {
-                        return (idim >= tdims) ? 1 : dims[idim] * product(dims, idim + 1);
+                        return (idim >= trank) ? 1 : dims[idim] * product(dims, idim + 1);
                 }
 
-                template <std::size_t tdims>
-                tensor_size_t get_index(const tensor_dims_t<tdims>&, const std::size_t, const tensor_size_t index)
+                template <std::size_t trank>
+                tensor_size_t get_index(const tensor_dims_t<trank>&, const std::size_t, const tensor_size_t index)
                 {
                         return index;
                 }
 
-                template <std::size_t tdims, typename... tindices>
-                tensor_size_t get_index(const tensor_dims_t<tdims>& dims, const std::size_t idim,
+                template <std::size_t trank, typename... tindices>
+                tensor_size_t get_index(const tensor_dims_t<trank>& dims, const std::size_t idim,
                         const tensor_size_t index, const tindices... indices)
                 {
                         assert(index >= 0 && index < dims[idim]);
@@ -51,35 +51,35 @@ namespace nano
         ///
         /// \brief index a multi-dimensional tensor.
         ///
-        template <std::size_t tdims, typename... tindices>
-        tensor_size_t index(const tensor_dims_t<tdims>& dims, const tindices... indices)
+        template <std::size_t trank, typename... tindices>
+        tensor_size_t index(const tensor_dims_t<trank>& dims, const tindices... indices)
         {
-                static_assert(tdims >= 1, "invalid number of tensor dimensions");
-                static_assert(sizeof...(indices) == tdims, "invalid number of tensor indices");
+                static_assert(trank >= 1, "invalid number of tensor dimensions");
+                static_assert(sizeof...(indices) == trank, "invalid number of tensor indices");
                 return detail::get_index(dims, 0, indices...);
         }
 
         ///
         /// \brief size of a multi-dimensional tensor (#elements).
         ///
-        template <std::size_t tdims>
-        tensor_size_t size(const tensor_dims_t<tdims>& dims)
+        template <std::size_t trank>
+        tensor_size_t size(const tensor_dims_t<trank>& dims)
         {
-                static_assert(tdims >= 1, "invalid number of tensor dimensions");
+                static_assert(trank >= 1, "invalid number of tensor dimensions");
                 return detail::product(dims, 0);
         }
 
         ///
         /// \brief compare two tensor dimensions.
         ///
-        template <std::size_t tdims>
-        bool operator==(const tensor_dims_t<tdims>& dims1, const tensor_dims_t<tdims>& dims2)
+        template <std::size_t trank>
+        bool operator==(const tensor_dims_t<trank>& dims1, const tensor_dims_t<trank>& dims2)
         {
                 return std::operator==(dims1, dims2);
         }
 
-        template <std::size_t tdims>
-        bool operator!=(const tensor_dims_t<tdims>& dims1, const tensor_dims_t<tdims>& dims2)
+        template <std::size_t trank>
+        bool operator!=(const tensor_dims_t<trank>& dims1, const tensor_dims_t<trank>& dims2)
         {
                 return std::operator!=(dims1, dims2);
         }
@@ -87,8 +87,8 @@ namespace nano
         ///
         /// \brief stream tensor dimensions.
         ///
-        template <std::size_t tdims>
-        std::ostream& operator<<(std::ostream& os, const tensor_dims_t<tdims>& dims)
+        template <std::size_t trank>
+        std::ostream& operator<<(std::ostream& os, const tensor_dims_t<trank>& dims)
         {
                 for (std::size_t d = 0; d < dims.size(); ++ d)
                 {
@@ -141,7 +141,7 @@ namespace nano
                 ///
                 /// \brief list of dimensions
                 ///
-                const tdims& dims() const { return m_dims; }
+                const auto& dims() const { return m_dims; }
 
                 ///
                 /// \brief total number of elements
@@ -174,23 +174,33 @@ namespace nano
         protected:
 
                 template <typename tdata, typename... tindices>
-                auto mvector(tdata data, const tensor_size_t rows, const tindices... indices) const
+                auto vector(tdata data, const tindices... indices) const
                 {
-                        assert(offset(indices...) + rows <= size());
-                        return map_vector(data + offset(indices...), rows);
+                        static_assert(sizeof...(indices) == trank - 1, "invalid number of tensor dimensions");
+                        return map_vector(data + offset(indices..., 0), cols());
                 }
 
                 template <typename tdata, typename... tindices>
-                auto marray(tdata data, const tensor_size_t rows, const tindices... indices) const
+                auto array(tdata data, const tindices... indices) const
                 {
-                        return vector(data, rows, indices...).array();
+                        static_assert(sizeof...(indices) == trank - 1, "invalid number of tensor dimensions");
+                        return vector(data, indices...).array();
                 }
 
                 template <typename tdata, typename... tindices>
-                auto mmatrix(tdata data, const tensor_size_t rows, const tensor_size_t cols, const tindices... indices) const
+                auto matrix(tdata data, const tindices... indices) const
                 {
-                        assert(offset(indices...) + rows * cols <= size());
-                        return map_matrix(data + offset(indices...), rows, cols);
+                        static_assert(sizeof...(indices) == trank - 2, "invalid number of tensor dimensions");
+                        return map_matrix(data + offset(indices..., 0, 0), rows(), cols());
+                }
+
+                template <typename tdata, typename... tindices>
+                auto tensor(tdata data, const tindices... indices) const
+                {
+                        static_assert(sizeof...(indices) > 0, "invalid number of tensor dimensions");
+                        static_assert(sizeof...(indices) > trank, "invalid number of tensor dimensions");
+                        // todo: generic tensor mapping
+                        (void)data;
                 }
 
                 // attributes

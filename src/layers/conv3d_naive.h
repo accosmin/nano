@@ -79,7 +79,7 @@ namespace nano
 
                 for (tensor_size_t o = 0; o < omaps; ++ o)
                 {
-                        odata.vector(o).setConstant(bdata(o));
+                        odata.matrix(o).setConstant(bdata(o));
 
                         for (tensor_size_t i = o % kconn, ik = 0; i < imaps; i += kconn, ++ ik)
                         {
@@ -164,7 +164,7 @@ namespace nano
 
                 for (tensor_size_t o = 0; o < omaps; ++ o)
                 {
-                        bdata(o) = odata.vector(o).sum();
+                        bdata(o) = odata.matrix(o).sum();
 
                         for (tensor_size_t i = o % kconn, ik = 0; i < imaps; i += kconn, ++ ik)
                         {

@@ -127,15 +127,15 @@ namespace nano
                 auto vector() { return map_vector(data(), this->size()); }
 
                 template <typename... tindices>
-                auto vector(const tensor_size_t rows, const tindices... indices) const
+                auto vector(const tindices... indices) const
                 {
-                        return this->mvector(data(), rows, indices...);
+                        return tbase::vector(data(), indices...);
                 }
 
                 template <typename... tindices>
-                auto vector(const tensor_size_t rows, const tindices... indices)
+                auto vector(const tindices... indices)
                 {
-                        return this->mvector(data(), rows, indices...);
+                        return tbase::vector(data(), indices...);
                 }
 
                 ///
@@ -145,30 +145,30 @@ namespace nano
                 auto array() { return vector().array(); }
 
                 template <typename... tindices>
-                auto array(const tensor_size_t rows, const tindices... indices) const
+                auto array(const tindices... indices) const
                 {
-                        return this->marray(data(), rows, indices...);
+                        return tbase::array(data(), indices...);
                 }
 
                 template <typename... tindices>
-                auto array(const tensor_size_t rows, const tindices... indices)
+                auto array(const tindices... indices)
                 {
-                        return this->marray(data(), rows, indices...);
+                        return tbase::array(data(), indices...);
                 }
 
                 ///
                 /// \brief access the tensor as a matrix
                 ///
                 template <typename... tindices>
-                auto matrix(const tensor_size_t rows, const tensor_size_t cols, const tindices... indices) const
+                auto matrix(const tindices... indices) const
                 {
-                        return this->mmatrix(data(), rows, cols, indices...);
+                        return tbase::matrix(data(), indices...);
                 }
 
                 template <typename... tindices>
-                auto matrix(const tensor_size_t rows, const tensor_size_t cols, const tindices... indices)
+                auto matrix(const tindices... indices)
                 {
-                        return this->mmatrix(data(), rows, cols, indices...);
+                        return tbase::matrix(data(), indices...);
                 }
 
                 ///

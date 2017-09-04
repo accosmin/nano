@@ -138,10 +138,10 @@ void image_t::make_rgba()
                 {
                         const auto data = m_data;
                         resize(rows(), cols(), color_mode::rgba);
-                        m_data.vector(0) = data.vector(0);
-                        m_data.vector(1) = data.vector(0);
-                        m_data.vector(2) = data.vector(0);
-                        m_data.vector(3).setConstant(255);      // no alpha!
+                        m_data.matrix(0) = data.matrix(0);
+                        m_data.matrix(1) = data.matrix(0);
+                        m_data.matrix(2) = data.matrix(0);
+                        m_data.matrix(3).setConstant(255);      // no alpha!
                 }
                 break;
 
@@ -149,10 +149,10 @@ void image_t::make_rgba()
                 {
                         const auto data = m_data;
                         resize(rows(), cols(), color_mode::rgba);
-                        m_data.vector(0) = data.vector(0);
-                        m_data.vector(1) = data.vector(1);
-                        m_data.vector(2) = data.vector(2);
-                        m_data.vector(3).setConstant(255);      // no alpha!
+                        m_data.matrix(0) = data.matrix(0);
+                        m_data.matrix(1) = data.matrix(1);
+                        m_data.matrix(2) = data.matrix(2);
+                        m_data.matrix(3).setConstant(255);      // no alpha!
                 }
                 break;
 
@@ -169,9 +169,9 @@ void image_t::make_rgb()
                 {
                         const auto data = m_data;
                         resize(rows(), cols(), color_mode::rgb);
-                        m_data.vector(0) = data.vector(0);
-                        m_data.vector(1) = data.vector(0);
-                        m_data.vector(2) = data.vector(0);
+                        m_data.matrix(0) = data.matrix(0);
+                        m_data.matrix(1) = data.matrix(0);
+                        m_data.matrix(2) = data.matrix(0);
                 }
                 break;
 
@@ -179,9 +179,9 @@ void image_t::make_rgb()
                 {
                         const auto data = m_data;
                         resize(rows(), cols(), color_mode::rgb);
-                        m_data.vector(0) = data.vector(0);
-                        m_data.vector(1) = data.vector(1);
-                        m_data.vector(2) = data.vector(2);
+                        m_data.matrix(0) = data.matrix(0);
+                        m_data.matrix(1) = data.matrix(1);
+                        m_data.matrix(2) = data.matrix(2);
                 }
                 break;
 
