@@ -26,38 +26,56 @@ namespace nano
 
         namespace detail
         {
-                template <std::size_t trank>
-                tensor_size_t product(const tensor_dims_t<trank>& dims, const std::size_t idim)
+                template <std::size_t idim, std::size_t trank>
+                struct product_t
                 {
-                        return (idim >= trank) ? 1 : dims[idim] * product(dims, idim + 1);
-                }
+                        static tensor_size_t get(const tensor_dims_t<trank>& dims)
+                        {
+                                return std::get<idim>(dims) * product_t<idim + 1, trank>::get(dims);
+                        }
+                };
 
                 template <std::size_t trank>
-                tensor_size_t get_index(const tensor_dims_t<trank>&, const std::size_t, const tensor_size_t index)
+                struct product_t<trank, trank>
+                {
+                        static tensor_size_t get(const tensor_dims_t<trank>&)
+                        {
+                                return 1;
+                        }
+                };
+
+                template <std::size_t idim, std::size_t trank>
+                tensor_size_t product(const tensor_dims_t<trank>& dims)
+                {
+                        return product_t<idim, trank>::get(dims);
+                }
+
+                template <std::size_t idim, std::size_t trank>
+                tensor_size_t get_index(const tensor_dims_t<trank>&, const tensor_size_t index)
                 {
                         return index;
                 }
 
-                template <std::size_t trank, typename... tindices>
-                tensor_size_t get_index(const tensor_dims_t<trank>& dims, const std::size_t idim,
+                template <std::size_t idim, std::size_t trank, typename... tindices>
+                tensor_size_t get_index(const tensor_dims_t<trank>& dims,
                         const tensor_size_t index, const tindices... indices)
                 {
-                        assert(index >= 0 && index < dims[idim]);
-                        return index * product(dims, idim + 1) + get_index(dims, idim + 1, indices...);
+                        assert(index >= 0 && index < std::get<idim>(dims));
+                        return index * product<idim + 1>(dims) + get_index<idim + 1>(dims, indices...);
                 }
 
-                template <std::size_t trank>
-                tensor_size_t get_index_fill0(const tensor_dims_t<trank>&, const std::size_t)
+                template <std::size_t idim, std::size_t trank>
+                tensor_size_t get_index0(const tensor_dims_t<trank>&)
                 {
                         return 0;
                 }
 
-                template <std::size_t trank, typename... tindices>
-                tensor_size_t get_index_fill0(const tensor_dims_t<trank>& dims, const std::size_t idim,
+                template <std::size_t idim, std::size_t trank, typename... tindices>
+                tensor_size_t get_index0(const tensor_dims_t<trank>& dims,
                         const tensor_size_t index, const tindices... indices)
                 {
-                        assert(index >= 0 && index < dims[idim]);
-                        return index * product(dims, idim + 1) + get_index_fill0(dims, idim + 1, indices...);
+                        assert(index >= 0 && index < std::get<idim>(dims));
+                        return index * product<idim + 1>(dims) + get_index0<idim + 1>(dims, indices...);
                 }
         }
 
@@ -69,19 +87,30 @@ namespace nano
         {
                 static_assert(trank >= 1, "invalid number of tensor dimensions");
                 static_assert(sizeof...(indices) == trank, "invalid number of tensor indices");
-                return detail::get_index(dims, 0, indices...);
+                return detail::get_index<0>(dims, indices...);
         }
 
         ///
         /// \brief index a multi-dimensional tensor (assuming the last dimensions that are ignored are zero).
         ///
         template <std::size_t trank, typename... tindices>
-        tensor_size_t index_fill0(const tensor_dims_t<trank>& dims, const tindices... indices)
+        tensor_size_t index0(const tensor_dims_t<trank>& dims, const tindices... indices)
         {
                 static_assert(trank >= 1, "invalid number of tensor dimensions");
                 static_assert(sizeof...(indices) <= trank, "invalid number of tensor indices");
-                return detail::get_index_fill0(dims, 0, indices...);
+                return detail::get_index0<0>(dims, indices...);
         }
+        ///
+        /// \brief index a multi-dimensional tensor (assuming the last dimensions that are ignored are zero).
+        /// NB: gather the missing dimensions in dimx.
+        ///
+        template <std::size_t trank, typename... tindices, std::size_t trankx = trank - sizeof...(tindices)>
+        tensor_size_t index0x(const tensor_dims_t<trank>& dims, tensor_dims_t<trankx>& dimx, const tindices... indices)
+        ;/*{
+                static_assert(trank >= 1, "invalid number of tensor dimensions");
+                static_assert(sizeof...(indices) < trank, "invalid number of tensor indices");
+                return detail::get_index0x(dims, dimx, 0, indices...);
+        }*/
 
         ///
         /// \brief size of a multi-dimensional tensor (#elements).
@@ -90,7 +119,7 @@ namespace nano
         tensor_size_t size(const tensor_dims_t<trank>& dims)
         {
                 static_assert(trank >= 1, "invalid number of tensor dimensions");
-                return detail::product(dims, 0);
+                return detail::product<0>(dims);
         }
 
         ///
