@@ -14,6 +14,9 @@ NANO_CASE(index1d)
         NANO_CHECK_EQUAL(nano::index(dims, 0), 0);
         NANO_CHECK_EQUAL(nano::index(dims, 1), 1);
         NANO_CHECK_EQUAL(nano::index(dims, 6), 6);
+
+        NANO_CHECK_EQUAL(nano::index_fill0(dims), nano::index(dims, 0));
+        NANO_CHECK_EQUAL(nano::index_fill0(dims, 6), nano::index(dims, 6));
 }
 
 NANO_CASE(index2d)
@@ -29,6 +32,10 @@ NANO_CASE(index2d)
         NANO_CHECK_EQUAL(nano::index(dims, 1, 0), 5);
         NANO_CHECK_EQUAL(nano::index(dims, 3, 2), 17);
         NANO_CHECK_EQUAL(nano::index(dims, 6, 4), 34);
+
+        NANO_CHECK_EQUAL(nano::index_fill0(dims), nano::index(dims, 0, 0));
+        NANO_CHECK_EQUAL(nano::index_fill0(dims, 3), nano::index(dims, 3, 0));
+        NANO_CHECK_EQUAL(nano::index_fill0(dims, 3, 1), nano::index(dims, 3, 1));
 }
 
 NANO_CASE(index3d)
@@ -48,6 +55,11 @@ NANO_CASE(index3d)
         NANO_CHECK_EQUAL(nano::index(dims, 1, 0, 3), 38);
         NANO_CHECK_EQUAL(nano::index(dims, 2, 4, 1), 91);
         NANO_CHECK_EQUAL(nano::index(dims, 2, 6, 4), 104);
+
+        NANO_CHECK_EQUAL(nano::index_fill0(dims), nano::index(dims, 0, 0, 0));
+        NANO_CHECK_EQUAL(nano::index_fill0(dims, 2), nano::index(dims, 2, 0, 0));
+        NANO_CHECK_EQUAL(nano::index_fill0(dims, 2, 4), nano::index(dims, 2, 4, 0));
+        NANO_CHECK_EQUAL(nano::index_fill0(dims, 2, 4, 3), nano::index(dims, 2, 4, 3));
 }
 
 NANO_CASE(tensor3d)
