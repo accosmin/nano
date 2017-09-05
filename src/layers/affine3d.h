@@ -54,69 +54,63 @@ namespace nano
         template <typename tidata, typename twdata, typename tbdata, typename todata>
         bool affine3d_t::output(const tidata& idata, const twdata& wdata, const tbdata& bdata, todata&& odata) const
         {
-                if (m_params.valid(idata, wdata, bdata, odata))
-                {
-                        const auto count = idata.template size<0>();
-                        const auto isize = m_params.isize();
-                        const auto osize = m_params.osize();
-
-                        for (tensor_size_t x = 0; x < count; ++ x)
-                        {
-                                map_vector(odata.data() + x * osize, osize) = wdata *
-                                map_vector(idata.data() + x * isize, isize) + bdata;
-                        }
-                        return true;
-                }
-                else
+                if (!m_params.valid(idata, wdata, bdata, odata))
                 {
                         return false;
                 }
+
+                const auto count = idata.template size<0>();
+                const auto isize = m_params.isize();
+                const auto osize = m_params.osize();
+
+                for (tensor_size_t x = 0; x < count; ++ x)
+                {
+                        map_vector(odata.data() + x * osize, osize) = wdata *
+                        map_vector(idata.data() + x * isize, isize) + bdata;
+                }
+                return true;
         }
 
         template <typename tidata, typename twdata, typename tbdata, typename todata>
         bool affine3d_t::ginput(tidata&& idata, const twdata& wdata, const tbdata& bdata, const todata& odata) const
         {
-                if (m_params.valid(idata, wdata, bdata, odata))
-                {
-                        const auto count = idata.template size<0>();
-                        const auto isize = m_params.isize();
-                        const auto osize = m_params.osize();
-
-                        for (tensor_size_t x = 0; x < count; ++ x)
-                        {
-                                map_vector(idata.data() + x * isize, isize) = wdata.transpose() *
-                                map_vector(odata.data() + x * osize, osize);
-                        }
-                        return true;
-                }
-                else
+                if (!m_params.valid(idata, wdata, bdata, odata))
                 {
                         return false;
                 }
+
+                const auto count = idata.template size<0>();
+                const auto isize = m_params.isize();
+                const auto osize = m_params.osize();
+
+                for (tensor_size_t x = 0; x < count; ++ x)
+                {
+                        map_vector(idata.data() + x * isize, isize) = wdata.transpose() *
+                        map_vector(odata.data() + x * osize, osize);
+                }
+                return true;
         }
 
         template <typename tidata, typename twdata, typename tbdata, typename todata>
         bool affine3d_t::gparam(const tidata& idata, twdata&& wdata, tbdata&& bdata, const todata& odata) const
         {
-                if (m_params.valid(idata, wdata, bdata, odata))
-                {
-                        const auto count = idata.template size<0>();
-                        const auto isize = m_params.isize();
-                        const auto osize = m_params.osize();
-
-                        wdata.setZero();
-                        bdata.setZero();
-                        for (tensor_size_t x = 0; x < count; ++ x)
-                        {
-                                wdata += map_vector(odata.data() + x * osize, osize) *
-                                         map_vector(idata.data() + x * isize, isize).transpose();
-                                bdata += map_vector(odata.data() + x * osize, osize);
-                        }
-                        return true;
-                }
-                else
+                if (!m_params.valid(idata, wdata, bdata, odata))
                 {
                         return false;
                 }
+
+                const auto count = idata.template size<0>();
+                const auto isize = m_params.isize();
+                const auto osize = m_params.osize();
+
+                wdata.setZero();
+                bdata.setZero();
+                for (tensor_size_t x = 0; x < count; ++ x)
+                {
+                        wdata += map_vector(odata.data() + x * osize, osize) *
+                                 map_vector(idata.data() + x * isize, isize).transpose();
+                        bdata += map_vector(odata.data() + x * osize, osize);
+                }
+                return true;
         }
 }

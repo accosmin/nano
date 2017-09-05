@@ -54,65 +54,59 @@ namespace nano
         template <typename tidata, typename twdata, typename tbdata, typename todata>
         bool affine4d_t::output(const tidata& idata, const twdata& wdata, const tbdata& bdata, todata&& odata) const
         {
-                if (m_params.valid(idata, wdata, bdata, odata))
-                {
-                        const auto count = idata.template size<0>();
-                        const auto isize = m_params.isize();
-                        const auto osize = m_params.osize();
-
-                        auto midata = map_matrix(idata.data(), count, isize);
-                        auto modata = map_matrix(odata.data(), count, osize);
-
-                        modata = midata * wdata.transpose();
-                        modata.rowwise() += bdata.transpose();
-                        return true;
-                }
-                else
+                if (!m_params.valid(idata, wdata, bdata, odata))
                 {
                         return false;
                 }
+
+                const auto count = idata.template size<0>();
+                const auto isize = m_params.isize();
+                const auto osize = m_params.osize();
+
+                auto midata = map_matrix(idata.data(), count, isize);
+                auto modata = map_matrix(odata.data(), count, osize);
+
+                modata = midata * wdata.transpose();
+                modata.rowwise() += bdata.transpose();
+                return true;
         }
 
         template <typename tidata, typename twdata, typename tbdata, typename todata>
         bool affine4d_t::ginput(tidata&& idata, const twdata& wdata, const tbdata& bdata, const todata& odata) const
         {
-                if (m_params.valid(idata, wdata, bdata, odata))
-                {
-                        const auto count = idata.template size<0>();
-                        const auto isize = m_params.isize();
-                        const auto osize = m_params.osize();
-
-                        auto midata = map_matrix(idata.data(), count, isize);
-                        auto modata = map_matrix(odata.data(), count, osize);
-
-                        midata = modata * wdata;
-                        return true;
-                }
-                else
+                if (!m_params.valid(idata, wdata, bdata, odata))
                 {
                         return false;
                 }
+
+                const auto count = idata.template size<0>();
+                const auto isize = m_params.isize();
+                const auto osize = m_params.osize();
+
+                auto midata = map_matrix(idata.data(), count, isize);
+                auto modata = map_matrix(odata.data(), count, osize);
+
+                midata = modata * wdata;
+                return true;
         }
 
         template <typename tidata, typename twdata, typename tbdata, typename todata>
         bool affine4d_t::gparam(const tidata& idata, twdata&& wdata, tbdata&& bdata, const todata& odata) const
         {
-                if (m_params.valid(idata, wdata, bdata, odata))
-                {
-                        const auto count = idata.template size<0>();
-                        const auto isize = m_params.isize();
-                        const auto osize = m_params.osize();
-
-                        auto midata = map_matrix(idata.data(), count, isize);
-                        auto modata = map_matrix(odata.data(), count, osize);
-
-                        wdata = modata.transpose() * midata;
-                        bdata = modata.colwise().sum();
-                        return true;
-                }
-                else
+                if (!m_params.valid(idata, wdata, bdata, odata))
                 {
                         return false;
                 }
+
+                const auto count = idata.template size<0>();
+                const auto isize = m_params.isize();
+                const auto osize = m_params.osize();
+
+                auto midata = map_matrix(idata.data(), count, isize);
+                auto modata = map_matrix(odata.data(), count, osize);
+
+                wdata = modata.transpose() * midata;
+                bdata = modata.colwise().sum();
+                return true;
         }
 }
