@@ -127,7 +127,7 @@ namespace nano
                 m_oodata = map_matrix(odata.data(), omaps, orows * ocols);
                 m_kxdata.noalias() = m_okdata.transpose() * m_oodata;
 
-                idata.array().setZero();
+                idata.setZero();
                 for (tensor_size_t i = 0; i < imaps; ++ i)
                 {
                         auto imat = idata.matrix(i);
