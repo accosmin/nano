@@ -95,8 +95,9 @@ NANO_CASE(tensor3d)
         NANO_CHECK_EQUAL(tensor.cols(), cols);
         NANO_CHECK_EQUAL(tensor.size(), dims * rows * cols);
 
-        NANO_CHECK_EQUAL(tensor.vector().size(), tensor.size());
-        NANO_CHECK_EQUAL(tensor.vector(dims / 2, rows / 2).size(), tensor.cols());
+        NANO_CHECK_EQUAL(tensor.vector().size(), dims * rows * cols);
+        NANO_CHECK_EQUAL(tensor.vector(dims / 2).size(), rows * cols);
+        NANO_CHECK_EQUAL(tensor.vector(dims / 2, rows / 2).size(), cols);
 
         NANO_CHECK_EQUAL(tensor.matrix(dims - 1).rows(), tensor.rows());
         NANO_CHECK_EQUAL(tensor.matrix(dims - 1).cols(), tensor.cols());
@@ -204,8 +205,10 @@ NANO_CASE(tensor4d)
         NANO_CHECK_EQUAL(tensor.cols(), cols);
         NANO_CHECK_EQUAL(tensor.size(), dim1 * dim2 * rows * cols);
 
-        NANO_CHECK_EQUAL(tensor.vector().size(), tensor.size());
-        NANO_CHECK_EQUAL(tensor.vector(dim1 / 2, dim2 / 2, rows / 2).size(), tensor.cols());
+        NANO_CHECK_EQUAL(tensor.vector().size(), dim1 * dim2 * rows * cols);
+        NANO_CHECK_EQUAL(tensor.vector(dim1 / 2).size(), dim2 * rows * cols);
+        NANO_CHECK_EQUAL(tensor.vector(dim1 / 2, dim2 / 2).size(), rows * cols);
+        NANO_CHECK_EQUAL(tensor.vector(dim1 / 2, dim2 / 2, rows / 2).size(), cols);
 
         NANO_CHECK_EQUAL(tensor.matrix(dim1 - 1, dim2 - 1).rows(), tensor.rows());
         NANO_CHECK_EQUAL(tensor.matrix(dim1 - 1, dim2 - 1).cols(), tensor.cols());

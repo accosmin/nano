@@ -99,7 +99,7 @@ namespace nano
                                 for (tensor_size_t i = o % kconn, ik = 0; i < imaps; i += kconn, ++ ik)
                                 {
                                         m_okdata.row(o).segment(i * krows * kcols, krows * kcols) =
-                                        kdata.matrix(o, ik).array();
+                                        kdata.vector(o, ik);
                                 }
                         }
                         break;
@@ -152,7 +152,7 @@ namespace nano
                         m_oodata = map_matrix(omap.data(), omaps, orows * ocols);
                         m_kxdata.noalias() = m_okdata.transpose() * m_oodata;
 
-                        imap.array().setZero();
+                        imap.setZero();
                         for (tensor_size_t i = 0; i < imaps; ++ i)
                         {
                                 auto imat = imap.matrix(i);
@@ -216,7 +216,7 @@ namespace nano
                                 {
                                         for (tensor_size_t i = o % kconn, ik = 0; i < imaps; i += kconn, ++ ik)
                                         {
-                                                kdata.matrix(o, ik) +=
+                                                kdata.vector(o, ik) +=
                                                 m_xkdata.row(o).segment(i * krows * kcols, krows * kcols);
                                         }
                                 }

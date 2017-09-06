@@ -85,15 +85,16 @@ namespace nano
                 template <typename tdata, typename... tindices>
                 auto vector(tdata data, const tindices... indices) const
                 {
-                        static_assert(sizeof...(indices) == trank - 1, "invalid number of tensor dimensions");
-                        return map_vector(data + offset(indices..., 0), cols());
+                        static_assert(sizeof...(indices) < trank, "invalid number of tensor dimensions");
+                        return  map_vector(data + nano::index0(dims(), indices...),
+                                nano::size(nano::dims0(dims(), indices...)));
                 }
 
                 template <typename tdata, typename... tindices>
                 auto array(tdata data, const tindices... indices) const
                 {
-                        static_assert(sizeof...(indices) == trank - 1, "invalid number of tensor dimensions");
-                        return vector(data, indices...).array();
+                        static_assert(sizeof...(indices) < trank, "invalid number of tensor dimensions");
+                        return  vector(data, indices...).array();
                 }
 
                 template <typename tdata, typename... tindices>
@@ -108,7 +109,7 @@ namespace nano
                 {
                         static_assert(sizeof...(indices) > 0, "invalid number of tensor dimensions");
                         static_assert(sizeof...(indices) > trank, "invalid number of tensor dimensions");
-                        // todo: generic tensor mapping
+                        // todo: generic sub-tensor mapping
                         (void)data;
                 }
 
