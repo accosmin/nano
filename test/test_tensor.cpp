@@ -111,6 +111,11 @@ NANO_CASE(tensor3d)
         NANO_CHECK_EQUAL(tensor.vector().minCoeff(), 42);
         NANO_CHECK_EQUAL(tensor.vector().maxCoeff(), 42);
 
+        tensor.vector(3, 0).setConstant(7);
+        NANO_CHECK_EQUAL(tensor.vector().minCoeff(), 7);
+        NANO_CHECK_EQUAL(tensor.vector().maxCoeff(), 42);
+        NANO_CHECK_EQUAL(tensor.vector().sum(), 42 * dims * rows * cols - (42 - 7) * cols);
+
         tensor.matrix(3).setConstant(13);
         NANO_CHECK_EQUAL(tensor.matrix(3).minCoeff(), 13);
         NANO_CHECK_EQUAL(tensor.matrix(3).maxCoeff(), 13);
@@ -221,6 +226,12 @@ NANO_CASE(tensor4d)
         tensor.constant(42);
         NANO_CHECK_EQUAL(tensor.vector().minCoeff(), 42);
         NANO_CHECK_EQUAL(tensor.vector().maxCoeff(), 42);
+
+        tensor.vector(0, 3).setConstant(7);
+        NANO_CHECK_EQUAL(tensor.vector().minCoeff(), 7);
+        NANO_CHECK_EQUAL(tensor.vector().maxCoeff(), 42);
+        NANO_CHECK_EQUAL(tensor.vector().sum(), 42 * dim1 * dim2 * rows * cols - (42 - 7) * rows * cols);
+
 
         tensor.matrix(0, 3).setConstant(13);
         NANO_CHECK_EQUAL(tensor.matrix(0, 3).minCoeff(), 13);
