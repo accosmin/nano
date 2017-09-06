@@ -2,6 +2,8 @@
 #include "tensor/tensor_mem.h"
 #include <vector>
 
+using namespace nano;
+
 NANO_BEGIN_MODULE(test_tensor)
 
 NANO_CASE(index1d)
@@ -17,6 +19,8 @@ NANO_CASE(index1d)
 
         NANO_CHECK_EQUAL(nano::index0(dims), nano::index(dims, 0));
         NANO_CHECK_EQUAL(nano::index0(dims, 6), nano::index(dims, 6));
+
+        NANO_CHECK_EQUAL(nano::dims0(dims), nano::make_dims(7));
 }
 
 NANO_CASE(index2d)
@@ -36,6 +40,9 @@ NANO_CASE(index2d)
         NANO_CHECK_EQUAL(nano::index0(dims), nano::index(dims, 0, 0));
         NANO_CHECK_EQUAL(nano::index0(dims, 3), nano::index(dims, 3, 0));
         NANO_CHECK_EQUAL(nano::index0(dims, 3, 1), nano::index(dims, 3, 1));
+
+        NANO_CHECK_EQUAL(nano::dims0(dims), nano::make_dims(7, 5));
+        NANO_CHECK_EQUAL(nano::dims0(dims, 3), nano::make_dims(5));
 }
 
 NANO_CASE(index3d)
@@ -60,6 +67,10 @@ NANO_CASE(index3d)
         NANO_CHECK_EQUAL(nano::index0(dims, 2), nano::index(dims, 2, 0, 0));
         NANO_CHECK_EQUAL(nano::index0(dims, 2, 4), nano::index(dims, 2, 4, 0));
         NANO_CHECK_EQUAL(nano::index0(dims, 2, 4, 3), nano::index(dims, 2, 4, 3));
+
+        NANO_CHECK_EQUAL(nano::dims0(dims), nano::make_dims(3, 7, 5));
+        NANO_CHECK_EQUAL(nano::dims0(dims, 2), nano::make_dims(7, 5));
+        NANO_CHECK_EQUAL(nano::dims0(dims, 2, 4), nano::make_dims(5));
 }
 
 NANO_CASE(tensor3d)

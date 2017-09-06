@@ -26,6 +26,7 @@ namespace nano
 
         namespace detail
         {
+                // todo: simplify this part with C++17 using "if constexpr"
                 template <std::size_t idim, std::size_t trank>
                 struct product_t
                 {
@@ -77,6 +78,33 @@ namespace nano
                         assert(index >= 0 && index < std::get<idim>(dims));
                         return index * product<idim + 1>(dims) + get_index0<idim + 1>(dims, indices...);
                 }
+
+                template <std::size_t idim, std::size_t trank>
+                struct dims_t
+                {
+                        template <std::size_t trankx>
+                        static void set(const tensor_dims_t<trank>& dims, tensor_dims_t<trankx>& dimsx)
+                        {
+                                static_assert(idim >= trank - trankx && idim < trank, "");
+                                std::get<idim + trankx - trank>(dimsx) = std::get<idim>(dims);
+                                dims_t<idim + 1, trank>::set(dims, dimsx);
+                        }
+                };
+
+                template <std::size_t trank>
+                struct dims_t<trank, trank>
+                {
+                        template <std::size_t trankx>
+                        static void set(const tensor_dims_t<trank>&, tensor_dims_t<trankx>&)
+                        {
+                        }
+                };
+
+                template <std::size_t trank, std::size_t trankx>
+                void get_dims0(const tensor_dims_t<trank>& dims, tensor_dims_t<trankx>& dimsx)
+                {
+                        dims_t<trank - trankx, trank>::set(dims, dimsx);
+                }
         }
 
         ///
@@ -101,16 +129,19 @@ namespace nano
                 return detail::get_index0<0>(dims, indices...);
         }
         ///
-        /// \brief index a multi-dimensional tensor (assuming the last dimensions that are ignored are zero).
-        /// NB: gather the missing dimensions in dimx.
+        /// \brief gather the missing dimensions in a multi-dimensional tensor
+        ///     (assuming the last dimensions that are ignored are zero).
         ///
         template <std::size_t trank, typename... tindices, std::size_t trankx = trank - sizeof...(tindices)>
-        tensor_size_t index0x(const tensor_dims_t<trank>& dims, tensor_dims_t<trankx>& dimx, const tindices... indices)
-        ;/*{
+        tensor_dims_t<trankx> dims0(const tensor_dims_t<trank>& dims, const tindices...)
+        {
                 static_assert(trank >= 1, "invalid number of tensor dimensions");
-                static_assert(sizeof...(indices) < trank, "invalid number of tensor indices");
-                return detail::get_index0x(dims, dimx, 0, indices...);
-        }*/
+                static_assert(sizeof...(tindices) < trank, "invalid number of tensor indices");
+                tensor_dims_t<trankx> dimsx;
+                dimsx.fill(0);
+                detail::get_dims0(dims, dimsx);
+                return dimsx;
+        }
 
         ///
         /// \brief size of a multi-dimensional tensor (#elements).
