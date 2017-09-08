@@ -45,12 +45,23 @@ namespace nano
                 ///
                 /// \brief number of dimensions (aka the rank of the tensor)
                 ///
-                static auto rank() { return trank; }
+                static constexpr auto rank() { return trank; }
 
                 ///
                 /// \brief list of dimensions
                 ///
                 const auto& dims() const { return m_dims; }
+
+                ///
+                /// \brief gather the missing dimensions in a multi-dimensional tensor
+                ///     (assuming the last dimensions that are ignored are zero).
+                ///
+                template <typename... tindices>
+                auto dims0(const tindices... indices) const
+                {
+                        static_assert(sizeof...(indices) <= trank, "invalid number of tensor dimensions");
+                        return nano::dims0(dims(), indices...);
+                }
 
                 ///
                 /// \brief total number of elements
@@ -75,42 +86,71 @@ namespace nano
                 /// \brief compute the linearized index from the list of offsets
                 ///
                 template <typename... tindices>
-                auto offset(const tindices... offsets) const
+                auto offset(const tindices... indices) const
                 {
-                        return nano::index(dims(), offsets...);
+                        static_assert(sizeof...(indices) == trank, "invalid number of tensor dimensions");
+                        return nano::index(dims(), indices...);
+                }
+
+                ///
+                /// \brief compute the linearized index from the list of offsets
+                ///     (assuming the last dimensions that are ignored are zero)
+                ///
+                template <typename... tindices>
+                auto offset0(const tindices... indices) const
+                {
+                        static_assert(sizeof...(indices) <= trank, "invalid number of tensor dimensions");
+                        return nano::index0(dims(), indices...);
                 }
 
         protected:
 
-                template <typename tdata, typename... tindices>
-                auto vector(tdata data, const tindices... indices) const
+                template <typename tarray>
+                static void zero(tarray&& array)
                 {
-                        static_assert(sizeof...(indices) < trank, "invalid number of tensor dimensions");
-                        return  map_vector(data + nano::index0(dims(), indices...),
-                                nano::size(nano::dims0(dims(), indices...)));
+                        array.setZero();
+                }
+
+                template <typename tarray, typename tscalar>
+                static void constant(tarray&& array, const tscalar value)
+                {
+                        array.setConstant(value);
+                }
+
+                template <typename tarray, typename tscalar>
+                static void random(tarray&& array, const tscalar min, const tscalar max)
+                {
+                        assert(min < max);
+                        array.setRandom(); // [-1, +1]
+                        array = (array + 1) * (max - min) / 2 + min;
                 }
 
                 template <typename tdata, typename... tindices>
-                auto array(tdata data, const tindices... indices) const
+                auto data(tdata ptr, const tindices... indices) const
                 {
-                        static_assert(sizeof...(indices) < trank, "invalid number of tensor dimensions");
-                        return  vector(data, indices...).array();
+                        static_assert(sizeof...(indices) <= trank, "invalid number of tensor dimensions");
+                        return ptr + offset0(indices...);
                 }
 
                 template <typename tdata, typename... tindices>
-                auto matrix(tdata data, const tindices... indices) const
+                auto vector(tdata ptr, const tindices... indices) const
+                {
+                        static_assert(sizeof...(indices) < trank, "invalid number of tensor dimensions");
+                        return map_vector(data(ptr, indices...), nano::size(nano::dims0(dims(), indices...)));
+                }
+
+                template <typename tdata, typename... tindices>
+                auto array(tdata ptr, const tindices... indices) const
+                {
+                        static_assert(sizeof...(indices) < trank, "invalid number of tensor dimensions");
+                        return vector(ptr, indices...).array();
+                }
+
+                template <typename tdata, typename... tindices>
+                auto matrix(tdata ptr, const tindices... indices) const
                 {
                         static_assert(sizeof...(indices) == trank - 2, "invalid number of tensor dimensions");
-                        return map_matrix(data + offset(indices..., 0, 0), rows(), cols());
-                }
-
-                template <typename tdata, typename... tindices>
-                auto tensor(tdata data, const tindices... indices) const
-                {
-                        static_assert(sizeof...(indices) > 0, "invalid number of tensor dimensions");
-                        static_assert(sizeof...(indices) > trank, "invalid number of tensor dimensions");
-                        // todo: generic sub-tensor mapping
-                        (void)data;
+                        return map_matrix(data(ptr, indices..., 0, 0), rows(), cols());
                 }
 
                 // attributes

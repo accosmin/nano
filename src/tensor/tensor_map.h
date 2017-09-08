@@ -58,6 +58,26 @@ namespace nano
         }
 
         ///
+        /// \brief
+        ///
+        template <typename ttensor, typename... tindices>
+        auto subtensor(ttensor& tensor, const tindices... indices)
+        {
+                //static_assert(sizeof...(indices) < tensor.rank(), "invalid number of tensor dimensions");
+                return map_tensor(tensor.data(indices...), nano::dims0(tensor.dims(), indices...));
+        }
+
+        ///
+        /// \brief
+        ///
+        template <typename ttensor, typename... tsizes>
+        auto reshape(ttensor& tensor, const tsizes... sizes)
+        {
+                assert(nano::size(nano::make_dims(sizes...)) == tensor.size());
+                return map_tensor(tensor.data(), sizes...);
+        }
+
+        ///
         /// \brief tensor mapping a const or non-const 1D C-array.
         ///
         template <typename tstorage, std::size_t trank>
@@ -93,40 +113,20 @@ namespace nano
                 ///
                 /// \brief set all elements to zero
                 ///
-                void zero() const
-                {
-                        this->array().setZero();
-                }
-                void setZero() const
-                {
-                        zero();
-                }
+                void zero() const { tbase::zero(array()); }
+                void setZero() const { zero(); }
 
                 ///
                 /// \brief set all elements to a constant value
                 ///
-                void constant(const tscalar value) const
-                {
-                        this->array().setConstant(value);
-                }
-                void setConstant(const tscalar value) const
-                {
-                        constant(value);
-                }
+                void constant(const tscalar value) const { tbase::constant(array(), value); }
+                void setConstant(const tscalar value) const { constant(value); }
 
                 ///
                 /// \brief set all elements to random values in the [min, max] range
                 ///
-                void random(const tscalar min, const tscalar max) const
-                {
-                        assert(min < max);
-                        array().setRandom(); // [-1, +1]
-                        array() = (array() + 1) * (max - min) / 2 + min;
-                }
-                void setRandom(const tscalar min, const tscalar max) const
-                {
-                        random(min, max);
-                }
+                void random(const tscalar min, const tscalar max) const { tbase::random(array(), min, max); }
+                void setRandom(const tscalar min, const tscalar max) const { random(min, max); }
 
                 ///
                 /// \brief access the tensor as a C-array
@@ -138,10 +138,7 @@ namespace nano
                 }
 
                 template <typename... tindices>
-                auto data(const tindices... indices) const
-                {
-                        return data() + this->offset(indices...);
-                }
+                auto data(const tindices... indices) const { return tbase::data(data(), indices...); }
 
                 ///
                 /// \brief access the tensor as a vector
@@ -149,10 +146,7 @@ namespace nano
                 auto vector() const { return map_vector(data(), this->size()); }
 
                 template <typename... tindices>
-                auto vector(const tindices... indices) const
-                {
-                        return tbase::vector(data(), indices...);
-                }
+                auto vector(const tindices... indices) const { return tbase::vector(data(), indices...); }
 
                 ///
                 /// \brief access the tensor as an array
@@ -160,18 +154,21 @@ namespace nano
                 auto array() const { return vector().array(); }
 
                 template <typename... tindices>
-                auto array(const tindices... indices) const
-                {
-                        return tbase::array(data(), indices...);
-                }
+                auto array(const tindices... indices) const { return tbase::array(data(), indices...); }
 
                 ///
                 /// \brief access the tensor as a matrix
                 ///
                 template <typename... tindices>
-                auto matrix(const tindices... indices) const
+                auto matrix(const tindices... indices) const { return tbase::matrix(data(), indices...); }
+
+                ///
+                /// \brief access the tensor as a (sub-)tensor
+                ///
+                template <typename... tindices>
+                auto tensor(const tindices... indices) const
                 {
-                        return tbase::matrix(data(), indices...);
+                        return nano::subtensor(*this, indices...);
                 }
 
                 ///
@@ -185,18 +182,14 @@ namespace nano
                 template <typename... tindices>
                 treference operator()(const tensor_size_t index, const tindices... indices) const
                 {
-                        return this->operator()(this->offset(index, indices...));
+                        return m_data[this->offset(index, indices...)];
                 }
 
                 ///
                 /// \brief reshape to a new tensor (with the same number of elements)
                 ///
                 template <typename... tsizes>
-                auto reshape(const tsizes... sizes) const
-                {
-                        assert(nano::size(nano::make_dims(sizes...)) == this->size());
-                        return map_tensor(data(), sizes...);
-                }
+                auto reshape(const tsizes... sizes) const { return nano::reshape(*this, sizes...); }
 
         private:
 
