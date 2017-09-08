@@ -63,7 +63,7 @@ namespace nano
         template <typename ttensor, typename... tindices>
         auto subtensor(ttensor& tensor, const tindices... indices)
         {
-                //static_assert(sizeof...(indices) < tensor.rank(), "invalid number of tensor dimensions");
+                static_assert(sizeof...(indices) < ttensor::rank(), "invalid number of tensor dimensions");
                 return map_tensor(tensor.data(indices...), nano::dims0(tensor.dims(), indices...));
         }
 
