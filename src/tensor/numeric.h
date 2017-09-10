@@ -51,21 +51,4 @@ namespace nano
                 set_zero(tensor);
                 set_zero(others...);
         }
-
-        ///
-        /// \brief normalize the given tensors (t := t / t.size())
-        ///
-        template <typename ttensor>
-        void normalize(ttensor&& tensor)
-        {
-                tensor /= static_cast<typename std::remove_reference<ttensor>::type::Scalar>(tensor.size());
-        }
-
-        template <typename ttensor, typename... tothers>
-        void normalize(ttensor&& tensor, tothers&&... others)
-        {
-                normalize(tensor);
-                normalize(others...);
-        }
 }
-
