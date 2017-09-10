@@ -77,9 +77,9 @@ namespace nano
         bool conv4d_t::output(const tidata& idata, const tkdata& kdata, const tbdata& bdata, todata&& odata)
         {
                 const auto count = idata.template size<0>();
-                const auto imaps = m_params.imaps(), isize = m_params.isize();
+                const auto imaps = m_params.imaps();
                 const auto kconn = m_params.kconn(), kdrow = m_params.kdrow(), kdcol = m_params.kdcol(), krows = m_params.krows(), kcols = m_params.kcols();
-                const auto omaps = m_params.omaps(), orows = m_params.orows(), ocols = m_params.ocols(), osize = m_params.osize();
+                const auto omaps = m_params.omaps(), orows = m_params.orows(), ocols = m_params.ocols();
 
                 if (!m_params.valid(idata, kdata, bdata, odata))
                 {
@@ -108,8 +108,8 @@ namespace nano
                 m_kodata.resize(count, imaps * krows * kcols, orows * ocols);
                 for (tensor_size_t x = 0; x < count; ++ x)
                 {
-                        auto imap = map_tensor(idata.data() + x * isize, m_params.idims());
-                        auto omap = map_tensor(odata.data() + x * osize, m_params.odims());
+                        auto imap = idata.tensor(x);
+                        auto omap = odata.tensor(x);
                         auto kodata = m_kodata.matrix(x);
 
                         // bias
@@ -133,9 +133,9 @@ namespace nano
         bool conv4d_t::ginput(tidata&& idata, const tkdata& kdata, const tbdata& bdata, const todata& odata)
         {
                 const auto count = idata.template size<0>();
-                const auto imaps = m_params.imaps(), isize = m_params.isize();
+                const auto imaps = m_params.imaps();
                 const auto krows = m_params.krows(), kcols = m_params.kcols();
-                const auto omaps = m_params.omaps(), orows = m_params.orows(), ocols = m_params.ocols(), osize = m_params.osize();
+                const auto omaps = m_params.omaps(), orows = m_params.orows(), ocols = m_params.ocols();
                 const auto drows = m_params.kdrow(), dcols = m_params.kdcol();
 
                 if (!m_params.valid(idata, kdata, bdata, odata))
@@ -146,8 +146,8 @@ namespace nano
 
                 for (tensor_size_t x = 0; x < count; ++ x)
                 {
-                        auto imap = map_tensor(idata.data() + x * isize, m_params.idims());
-                        auto omap = map_tensor(odata.data() + x * osize, m_params.odims());
+                        auto imap = idata.tensor(x);
+                        auto omap = odata.tensor(x);
 
                         m_oodata = map_matrix(omap.data(), omaps, orows * ocols);
                         m_kxdata.noalias() = m_okdata.transpose() * m_oodata;
@@ -181,7 +181,7 @@ namespace nano
                 const auto count = idata.template size<0>();
                 const auto imaps = m_params.imaps();
                 const auto kconn = m_params.kconn(), krows = m_params.krows(), kcols = m_params.kcols();
-                const auto omaps = m_params.omaps(), orows = m_params.orows(), ocols = m_params.ocols(), osize = m_params.osize();
+                const auto omaps = m_params.omaps(), orows = m_params.orows(), ocols = m_params.ocols();
 
                 if (!m_params.valid(idata, kdata, bdata, odata))
                 {
@@ -196,10 +196,10 @@ namespace nano
                 assert(m_kodata.size<2>() == orows * ocols);
                 for (tensor_size_t x = 0; x < count; ++ x)
                 {
-                        auto omap = map_tensor(odata.data() + x * osize, m_params.odims());
+                        auto omap = odata.tensor(x);
 
                         // bias
-                        bdata += map_matrix(omap.data(), omaps, orows * ocols).rowwise().sum();
+                        bdata += omap.reshape(omaps, orows * ocols).matrix().rowwise().sum();
 
                         // convolution
                         m_oodata = map_matrix(omap.data(), omaps, orows * ocols);

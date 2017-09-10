@@ -188,8 +188,8 @@ namespace nano
                 /// NB: e.g. images represented as 3D tensors (color plane, rows, columns)
                 /// NB: e.g. ML minibatches represented as 4D tensors (sample, feature plane, rows, columns)
                 ///
-                auto rows() const { static_assert(trank >= 3, ""); return size<trank - 2>(); }
-                auto cols() const { static_assert(trank >= 3, ""); return size<trank - 1>(); }
+                auto rows() const { static_assert(trank >= 2, ""); return size<trank - 2>(); }
+                auto cols() const { static_assert(trank >= 2, ""); return size<trank - 1>(); }
 
                 ///
                 /// \brief compute the linearized index from the list of offsets

@@ -61,14 +61,14 @@ namespace nano
                 }
 
                 const auto count = idata.template size<0>();
-                const auto imaps = m_params.imaps(), isize = m_params.isize();
-                const auto omaps = m_params.omaps(), orows = m_params.orows(), ocols = m_params.ocols(), osize = m_params.osize();
+                const auto imaps = m_params.imaps();
+                const auto omaps = m_params.omaps(), orows = m_params.orows(), ocols = m_params.ocols();
                 const auto kconn = m_params.kconn(), kdrow = m_params.kdrow(), kdcol = m_params.kdcol();
 
                 for (tensor_size_t x = 0; x < count; ++ x)
                 {
-                        auto imap = map_tensor(idata.data() + x * isize, m_params.idims());
-                        auto omap = map_tensor(odata.data() + x * osize, m_params.odims());
+                        auto imap = idata.tensor(x);
+                        auto omap = odata.tensor(x);
 
                         // bias
                         map_matrix(omap.data(), omaps, orows * ocols).colwise() = bdata;
@@ -94,14 +94,14 @@ namespace nano
                 }
 
                 const auto count = idata.template size<0>();
-                const auto imaps = m_params.imaps(), isize = m_params.isize();
-                const auto omaps = m_params.omaps(), osize = m_params.osize();
+                const auto imaps = m_params.imaps();
+                const auto omaps = m_params.omaps();
                 const auto kconn = m_params.kconn(), kdrow = m_params.kdrow(), kdcol = m_params.kdcol();
 
                 for (tensor_size_t x = 0; x < count; ++ x)
                 {
-                        auto imap = map_tensor(idata.data() + x * isize, m_params.idims());
-                        auto omap = map_tensor(odata.data() + x * osize, m_params.odims());
+                        auto imap = idata.tensor(x);
+                        auto omap = odata.tensor(x);
 
                         for (tensor_size_t i = 0; i < imaps; ++ i)
                         {
@@ -125,8 +125,8 @@ namespace nano
                 }
 
                 const auto count = idata.template size<0>();
-                const auto imaps = m_params.imaps(), isize = m_params.isize();
-                const auto omaps = m_params.omaps(), orows = m_params.orows(), ocols = m_params.ocols(), osize = m_params.osize();
+                const auto imaps = m_params.imaps();
+                const auto omaps = m_params.omaps(), orows = m_params.orows(), ocols = m_params.ocols();
                 const auto kconn = m_params.kconn(), kdrow = m_params.kdrow(), kdcol = m_params.kdcol();
 
                 kdata.vector().setZero();
@@ -134,8 +134,8 @@ namespace nano
 
                 for (tensor_size_t x = 0; x < count; ++ x)
                 {
-                        auto imap = map_tensor(idata.data() + x * isize, m_params.idims());
-                        auto omap = map_tensor(odata.data() + x * osize, m_params.odims());
+                        auto imap = idata.tensor(x);
+                        auto omap = odata.tensor(x);
 
                         // bias
                         bdata += map_matrix(omap.data(), omaps, orows * ocols).rowwise().sum();

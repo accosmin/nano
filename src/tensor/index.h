@@ -16,7 +16,7 @@ namespace nano
         using tensor_dims_t = std::array<tensor_size_t, trank>;
 
         ///
-        /// \brief create a dimension structure for a tensor.
+        /// \brief stores the dimensions of a tensor.
         ///
         template <typename... tsizes>
         auto make_dims(const tsizes... sizes)
