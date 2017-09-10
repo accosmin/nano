@@ -1,5 +1,5 @@
 #include "utest.h"
-#include "tensor/tensor_mem.h"
+#include "tensor/tensor.h"
 #include <vector>
 
 using namespace nano;

@@ -10,12 +10,12 @@ namespace nano
         ///
         template
         <
-                typename tvalue_,
+                typename tscalar_,
                 int trows = Eigen::Dynamic,
                 int tcols = Eigen::Dynamic,
-                typename tvalue = typename std::remove_const<tvalue_>::type
+                typename tscalar = typename std::remove_const<tscalar_>::type
         >
-        using tensor_matrix_t = Eigen::Matrix<tvalue, trows, tcols, Eigen::RowMajor>;
+        using tensor_matrix_t = Eigen::Matrix<tscalar, trows, tcols, Eigen::RowMajor>;
 
         ///
         /// \brief map non-constant data to matrices
@@ -23,12 +23,12 @@ namespace nano
         template
         <
                 int alignment = Eigen::Unaligned,
-                typename tvalue_,
+                typename tscalar_,
                 typename tsize,
-                typename tvalue = typename std::remove_const<tvalue_>::type,
-                typename tresult = Eigen::Map<tensor_matrix_t<tvalue>, alignment>
+                typename tscalar = typename std::remove_const<tscalar_>::type,
+                typename tresult = Eigen::Map<tensor_matrix_t<tscalar>, alignment>
         >
-        tresult map_matrix(tvalue_* data, const tsize rows, const tsize cols)
+        tresult map_matrix(tscalar_* data, const tsize rows, const tsize cols)
         {
                 return tresult(data, rows, cols);
         }
@@ -39,12 +39,12 @@ namespace nano
         template
         <
                 int alignment = Eigen::Unaligned,
-                typename tvalue_,
+                typename tscalar_,
                 typename tsize,
-                typename tvalue = typename std::remove_const<tvalue_>::type,
-                typename tresult = Eigen::Map<const tensor_matrix_t<tvalue>, alignment>
+                typename tscalar = typename std::remove_const<tscalar_>::type,
+                typename tresult = Eigen::Map<const tensor_matrix_t<tscalar>, alignment>
         >
-        tresult map_matrix(const tvalue_* data, const tsize rows, const tsize cols)
+        tresult map_matrix(const tscalar_* data, const tsize rows, const tsize cols)
         {
                 return tresult(data, rows, cols);
         }

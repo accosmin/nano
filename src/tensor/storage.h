@@ -46,9 +46,9 @@ namespace nano
                 using treference = typename std::conditional<std::is_const<tscalar_>::value, const tscalar&, tscalar&>::type;
                 using tconst_reference = treference;
 
-                static constexpr bool resizable() { return true; }
-                static constexpr bool owns_memory() { return true; }
-                static constexpr bool only_const() { return false; }
+                static constexpr bool resizable() { return false; }
+                static constexpr bool owns_memory() { return false; }
+                static constexpr bool only_const() { return true; }
 
                 tensor_pstorage_t() : m_data(nullptr) {}
                 tensor_pstorage_t(const tstorage& data) : m_data(data) {}

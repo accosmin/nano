@@ -30,28 +30,28 @@ namespace nano
         ///
         /// \brief map non-constant data to tensors
         ///
-        template <typename tvalue_, std::size_t trank>
-        auto map_tensor(tvalue_* data, const tensor_dims_t<trank>& dims)
+        template <typename tscalar_, std::size_t trank>
+        auto map_tensor(tscalar_* data, const tensor_dims_t<trank>& dims)
         {
-                using tvalue = typename std::remove_const<tvalue_>::type;
-                return tensor_map_t<tvalue, trank>(data, dims);
+                using tscalar = typename std::remove_const<tscalar_>::type;
+                return tensor_map_t<tscalar, trank>(data, dims);
         }
 
         ///
         /// \brief map constant data to tensors
         ///
-        template <typename tvalue_, std::size_t trank>
-        auto map_tensor(const tvalue_* data, const tensor_dims_t<trank>& dims)
+        template <typename tscalar_, std::size_t trank>
+        auto map_tensor(const tscalar_* data, const tensor_dims_t<trank>& dims)
         {
-                using tvalue = typename std::remove_const<tvalue_>::type;
-                return tensor_const_map_t<tvalue, trank>(data, dims);
+                using tscalar = typename std::remove_const<tscalar_>::type;
+                return tensor_const_map_t<tscalar, trank>(data, dims);
         }
 
         ///
         /// \brief map non-constant data to tensors
         ///
-        template <typename tvalue_, typename... tsizes>
-        auto map_tensor(tvalue_* data, const tsizes... dims)
+        template <typename tscalar_, typename... tsizes>
+        auto map_tensor(tscalar_* data, const tsizes... dims)
         {
                 return map_tensor(data, make_dims(dims...));
         }
@@ -59,8 +59,8 @@ namespace nano
         ///
         /// \brief map constant data to tensors
         ///
-        template <typename tvalue_, typename... tsizes>
-        auto map_tensor(const tvalue_* data, const tsizes... dims)
+        template <typename tscalar_, typename... tsizes>
+        auto map_tensor(const tscalar_* data, const tsizes... dims)
         {
                 return map_tensor(data, make_dims(dims...));
         }
@@ -108,28 +108,48 @@ namespace nano
                 }
 
                 ///
-                /// \brief constructors that copy the storage
+                /// \brief constructor
                 ///
-                explicit tensor_t(const tstorage& storage, const tdims& dims) :
+                explicit tensor_t(tscalar* ptr, const tdims& dims) :
                         m_dims(dims),
-                        m_storage(storage)
+                        m_storage(ptr)
                 {
                         static_assert(!tstorage::resizable(), "tensor resizable");
-                        assert(storage.data() != nullptr);
+                        assert(ptr != nullptr || !size());
+                }
+
+                explicit tensor_t(const tscalar* ptr, const tdims& dims) :
+                        m_dims(dims),
+                        m_storage(ptr)
+                {
+                        static_assert(!tstorage::resizable(), "tensor resizable");
+                        assert(ptr != nullptr || !size());
                 }
 
                 ///
+                /// \brief copy constructor
                 ///
-                /// \brief copy constructor (todo)
-                ///
+                tensor_t(const tensor_t&) = default;
+
                 template <typename tstorage2>
-                tensor_t(const tensor_t<tstorage2, trank>& other);
+                tensor_t(const tensor_t<tstorage2, trank>& other)
+                {
+                        static_assert(tstorage::resizable(), "tensor not resizable");
+                        resize(other.dims());
+                        array() = other.array();
+                }
 
                 ///
-                /// \brief assignment operator (todo)
+                /// \brief assignment operator
                 ///
                 template <typename tstorage2>
-                tensor_t& operator=(const tensor_t<tstorage2, trank>& other);
+                tensor_t& operator=(const tensor_t<tstorage2, trank>& other)
+                {
+                        static_assert(tstorage::resizable(), "tensor not resizable");
+                        resize(other.dims());
+                        array() = other.array();
+                        return *this;
+                }
 
                 ///
                 /// \brief number of dimensions (aka the rank of the tensor)
@@ -234,12 +254,6 @@ namespace nano
                 auto data() const { return m_storage.data(); }
                 auto data() { return m_storage.data(); }
 
-                template <typename... tindices>
-                auto data(const tindices... indices) const { return data(data(), indices...); }
-
-                template <typename... tindices>
-                auto data(const tindices... indices) { return data(data(), indices...); }
-
                 ///
                 /// \brief access the tensor as a vector
                 ///
@@ -247,10 +261,10 @@ namespace nano
                 auto vector() { return map_vector(data(), size()); }
 
                 template <typename... tindices>
-                auto vector(const tindices... indices) const { return vector(data(), indices...); }
+                auto vector(const tindices... indices) const { return tvector(data(), indices...); }
 
                 template <typename... tindices>
-                auto vector(const tindices... indices) { return vector(data(), indices...); }
+                auto vector(const tindices... indices) { return tvector(data(), indices...); }
 
                 ///
                 /// \brief access the tensor as an array
@@ -259,28 +273,28 @@ namespace nano
                 auto array() { return vector().array(); }
 
                 template <typename... tindices>
-                auto array(const tindices... indices) const { return array(data(), indices...); }
+                auto array(const tindices... indices) const { return tarray(data(), indices...); }
 
                 template <typename... tindices>
-                auto array(const tindices... indices) { return array(data(), indices...); }
+                auto array(const tindices... indices) { return tarray(data(), indices...); }
 
                 ///
                 /// \brief access the tensor as a matrix
                 ///
                 template <typename... tindices>
-                auto matrix(const tindices... indices) const { return matrix(data(), indices...); }
+                auto matrix(const tindices... indices) const { return tmatrix(data(), indices...); }
 
                 template <typename... tindices>
-                auto matrix(const tindices... indices) { return matrix(data(), indices...); }
+                auto matrix(const tindices... indices) { return tmatrix(data(), indices...); }
 
                 ///
                 /// \brief access the tensor as a (sub-)tensor
                 ///
                 template <typename... tindices>
-                auto tensor(const tindices... indices) const { return tensor(data(), indices...); }
+                auto tensor(const tindices... indices) const { return ttensor(data(), indices...); }
 
                 template <typename... tindices>
-                auto tensor(const tindices... indices) { return tensor(data(), indices...); }
+                auto tensor(const tindices... indices) { return ttensor(data(), indices...); }
 
                 ///
                 /// \brief access an element of the tensor
@@ -304,10 +318,10 @@ namespace nano
                 /// \brief reshape to a new tensor (with the same number of elements)
                 ///
                 template <typename... tsizes>
-                auto reshape(const tsizes... sizes) const { return reshape(data(), sizes...); }
+                auto reshape(const tsizes... sizes) const { return treshape(data(), sizes...); }
 
                 template <typename... tsizes>
-                auto reshape(const tsizes... sizes) { return reshape(data(), sizes...); }
+                auto reshape(const tsizes... sizes) { return treshape(data(), sizes...); }
 
         private:
 
@@ -332,42 +346,35 @@ namespace nano
                 }
 
                 template <typename tdata, typename... tindices>
-                auto data(tdata ptr, const tindices... indices) const
-                {
-                        static_assert(sizeof...(indices) <= trank, "invalid number of tensor dimensions");
-                        return ptr + offset0(indices...);
-                }
-
-                template <typename tdata, typename... tindices>
-                auto vector(tdata ptr, const tindices... indices) const
+                auto tvector(tdata ptr, const tindices... indices) const
                 {
                         static_assert(sizeof...(indices) < trank, "invalid number of tensor dimensions");
                         return map_vector(ptr + offset0(indices...), nano::size(nano::dims0(dims(), indices...)));
                 }
 
                 template <typename tdata, typename... tindices>
-                auto array(tdata ptr, const tindices... indices) const
+                auto tarray(tdata ptr, const tindices... indices) const
                 {
                         static_assert(sizeof...(indices) < trank, "invalid number of tensor dimensions");
                         return vector(ptr, indices...).array();
                 }
 
                 template <typename tdata, typename... tindices>
-                auto matrix(tdata ptr, const tindices... indices) const
+                auto tmatrix(tdata ptr, const tindices... indices) const
                 {
                         static_assert(sizeof...(indices) == trank - 2, "invalid number of tensor dimensions");
                         return map_matrix(ptr + offset0(indices...), rows(), cols());
                 }
 
                 template <typename tdata, typename... tindices>
-                auto subtensor(tdata ptr, const tindices... indices) const
+                auto ttensor(tdata ptr, const tindices... indices) const
                 {
                         static_assert(sizeof...(indices) < trank, "invalid number of tensor dimensions");
                         return map_tensor(ptr + offset0(indices...), nano::dims0(dims(), indices...));
                 }
 
                 template <typename tdata, typename... tsizes>
-                auto reshape(tdata ptr, const tsizes... sizes)
+                auto treshape(tdata ptr, const tsizes... sizes)
                 {
                         assert(nano::size(nano::make_dims(sizes...)) == size());
                         return map_tensor(ptr, sizes...);

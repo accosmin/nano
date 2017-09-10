@@ -10,11 +10,11 @@ namespace nano
         ///
         template
         <
-                typename tvalue_,
+                typename tscalar_,
                 int trows = Eigen::Dynamic,
-                typename tvalue = typename std::remove_const<tvalue_>::type
+                typename tscalar = typename std::remove_const<tscalar_>::type
         >
-        using tensor_vector_t = Eigen::Matrix<tvalue, trows, 1, Eigen::ColMajor>;
+        using tensor_vector_t = Eigen::Matrix<tscalar, trows, 1, Eigen::ColMajor>;
 
         ///
         /// \brief map non-constant data to vectors
@@ -22,12 +22,12 @@ namespace nano
         template
         <
                 int alignment = Eigen::Unaligned,
-                typename tvalue_,
+                typename tscalar_,
                 typename tsize,
-                typename tvalue = typename std::remove_const<tvalue_>::type,
-                typename tresult = Eigen::Map<tensor_vector_t<tvalue>, alignment>
+                typename tscalar = typename std::remove_const<tscalar_>::type,
+                typename tresult = Eigen::Map<tensor_vector_t<tscalar>, alignment>
         >
-        tresult map_vector(tvalue_* data, const tsize rows)
+        tresult map_vector(tscalar_* data, const tsize rows)
         {
                 return tresult(data, rows);
         }
@@ -38,12 +38,12 @@ namespace nano
         template
         <
                 int alignment = Eigen::Unaligned,
-                typename tvalue_,
+                typename tscalar_,
                 typename tsize,
-                typename tvalue = typename std::remove_const<tvalue_>::type,
-                typename tresult = Eigen::Map<const tensor_vector_t<tvalue>, alignment>
+                typename tscalar = typename std::remove_const<tscalar_>::type,
+                typename tresult = Eigen::Map<const tensor_vector_t<tscalar>, alignment>
         >
-        tresult map_vector(const tvalue_* data, const tsize rows)
+        tresult map_vector(const tscalar_* data, const tsize rows)
         {
                 return tresult(data, rows);
         }
