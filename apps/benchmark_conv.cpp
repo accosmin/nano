@@ -130,9 +130,9 @@ int main(int argc, const char *argv[])
                                         }
 
                                         auto bdata = params.make_bdata(); bdata.setRandom();
-                                        auto kdata = params.make_kdata(); kdata.vector().setRandom();
-                                        auto idata = params.make_idata(count); idata.vector().setRandom();
-                                        auto odata = params.make_odata(count); odata.vector().setRandom();
+                                        auto kdata = params.make_kdata(); kdata.setRandom();
+                                        auto idata = params.make_idata(count); idata.setRandom();
+                                        auto odata = params.make_odata(count); odata.setRandom();
 
                                         // 3D implementation
                                         const auto op3d = conv3d_t{params};

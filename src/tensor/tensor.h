@@ -245,8 +245,8 @@ namespace nano
                 ///
                 /// \brief set all elements to random values in the [min, max] range
                 ///
-                void random(const tscalar min, const tscalar max) { random(array(), min, max); }
-                void setRandom(const tscalar min, const tscalar max) { random(min, max); }
+                void random(const tscalar min = -1, const tscalar max = +1) { random(array(), min, max); }
+                void setRandom(const tscalar min = -1, const tscalar max = +1) { random(min, max); }
 
                 ///
                 /// \brief access the tensor as a C-array

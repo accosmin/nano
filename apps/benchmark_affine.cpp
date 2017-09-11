@@ -112,8 +112,8 @@ int main(int argc, const char *argv[])
 
                                 auto wdata = params.make_wdata(); wdata.setRandom();
                                 auto bdata = params.make_bdata(); bdata.setRandom();
-                                auto idata = params.make_idata(count); idata.vector().setRandom();
-                                auto odata = params.make_odata(count); odata.vector().setRandom();
+                                auto idata = params.make_idata(count); idata.setRandom();
+                                auto odata = params.make_odata(count); odata.setRandom();
 
                                 // 3D implementation
                                 const auto op3d = affine3d_t{params};

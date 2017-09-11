@@ -123,9 +123,9 @@ int main(int argc, const char *argv[])
                                 }
 
                                 auto bdata = params.make_bdata(); bdata.setRandom();
-                                auto idata = params.make_idata(); idata.vector().setRandom();
-                                auto kdata = params.make_kdata(); kdata.vector().setRandom();
-                                auto odata = params.make_odata(); odata.vector().setRandom();
+                                auto idata = params.make_idata(); idata.setRandom();
+                                auto kdata = params.make_kdata(); kdata.setRandom();
+                                auto odata = params.make_odata(); odata.setRandom();
 
                                 // naive implementation
                                 const auto op_naive = conv3d_naive_t{params};

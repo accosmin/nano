@@ -129,7 +129,7 @@ namespace nano
                 const auto omaps = m_params.omaps(), orows = m_params.orows(), ocols = m_params.ocols();
                 const auto kconn = m_params.kconn(), kdrow = m_params.kdrow(), kdcol = m_params.kdcol();
 
-                kdata.vector().setZero();
+                kdata.setZero();
                 bdata.setZero();
 
                 for (tensor_size_t x = 0; x < count; ++ x)

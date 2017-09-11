@@ -188,7 +188,7 @@ namespace nano
                         return false;
                 }
 
-                kdata.vector().setZero();
+                kdata.setZero();
                 bdata.setZero();
 
                 assert(m_kodata.size<0>() == count);

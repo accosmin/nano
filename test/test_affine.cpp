@@ -22,8 +22,8 @@ auto make_buffers(const affine_params_t& params, const tensor_size_t count)
 {
         auto bdata = params.make_bdata(); bdata.setRandom();
         auto wdata = params.make_wdata(); wdata.setRandom();
-        auto idata = params.make_idata(count); idata.vector().setRandom();
-        auto odata = params.make_odata(count); odata.vector().setRandom();
+        auto idata = params.make_idata(count); idata.setRandom();
+        auto odata = params.make_odata(count); odata.setRandom();
         return std::make_tuple(idata, wdata, bdata, odata);
 }
 

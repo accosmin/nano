@@ -23,9 +23,9 @@ auto make_default_params(const tensor_size_t kconn = 1)
 auto make_buffers(const conv_params_t& params, const tensor_size_t count)
 {
         auto bdata = params.make_bdata(); bdata.setRandom();
-        auto kdata = params.make_kdata(); kdata.vector().setRandom();
-        auto idata = params.make_idata(count); idata.vector().setRandom();
-        auto odata = params.make_odata(count); odata.vector().setRandom();
+        auto kdata = params.make_kdata(); kdata.setRandom();
+        auto idata = params.make_idata(count); idata.setRandom();
+        auto odata = params.make_odata(count); odata.setRandom();
         return std::make_tuple(bdata, idata, kdata, odata);
 }
 
