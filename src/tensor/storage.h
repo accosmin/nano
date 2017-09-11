@@ -5,7 +5,8 @@
 namespace nano
 {
         ///
-        /// \brief storage for a tensor that owns the allocated memory.
+        /// \brief tensor storage using an Eigen vector.
+        /// NB: the tensor owns the allocated memory and as such the tensor is resizable.
         ///
         template <typename tscalar_>
         struct tensor_vstorage_t
@@ -36,7 +37,8 @@ namespace nano
         };
 
         ///
-        /// \brief storage for a tensor that maps the allocated memory.
+        /// \brief tensor storage using a C-array.
+        /// NB: the tensors doesn't own the allocated memory and as such is not resizable.
         ///
         template <typename tscalar_>
         struct tensor_pstorage_t

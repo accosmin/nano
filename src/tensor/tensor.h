@@ -66,7 +66,7 @@ namespace nano
         }
 
         ///
-        /// \brief
+        /// \brief tensor.
         ///
         template <typename tstorage, std::size_t trank>
         struct tensor_t
@@ -108,7 +108,7 @@ namespace nano
                 }
 
                 ///
-                /// \brief constructor
+                /// \brief constructors that maps const or non-const arrays
                 ///
                 explicit tensor_t(tscalar* ptr, const tdims& dims) :
                         m_dims(dims),
@@ -256,6 +256,7 @@ namespace nano
 
                 ///
                 /// \brief access the tensor as a vector
+                ///     (assuming the last dimensions that are ignored are zero).
                 ///
                 auto vector() const { return map_vector(data(), size()); }
                 auto vector() { return map_vector(data(), size()); }
@@ -268,6 +269,7 @@ namespace nano
 
                 ///
                 /// \brief access the tensor as an array
+                ///     (assuming the last dimensions that are ignored are zero).
                 ///
                 auto array() const { return vector().array(); }
                 auto array() { return vector().array(); }
@@ -280,6 +282,7 @@ namespace nano
 
                 ///
                 /// \brief access the tensor as a matrix
+                ///     (assuming that the last two dimensions are ignored).
                 ///
                 template <typename... tindices>
                 auto matrix(const tindices... indices) const { return tmatrix(data(), indices...); }
@@ -289,6 +292,7 @@ namespace nano
 
                 ///
                 /// \brief access the tensor as a (sub-)tensor
+                ///     (assuming the last dimensions that are ignored are zero).
                 ///
                 template <typename... tindices>
                 auto tensor(const tindices... indices) const { return ttensor(data(), indices...); }
