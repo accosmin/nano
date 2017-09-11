@@ -35,20 +35,4 @@ namespace nano
                 add_random(rgen, tensor);
                 add_random(rgen, others...);
         }
-
-        ///
-        /// \brief set the given tensors to zero.
-        ///
-        template <typename ttensor>
-        void set_zero(ttensor&& tensor)
-        {
-                tensor.zero();
-        }
-
-        template <typename ttensor, typename... tothers>
-        void set_zero(ttensor&& tensor, tothers&&... others)
-        {
-                set_zero(tensor);
-                set_zero(others...);
-        }
 }
