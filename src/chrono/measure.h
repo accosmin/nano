@@ -11,7 +11,7 @@ namespace nano
         template <typename tunits, typename toperator>
         tunits measure(const toperator& op, const std::size_t trials,
                 const std::size_t min_trial_iterations = 1,
-                const microseconds_t min_trial_duration = microseconds_t(10 * 1000))
+                const microseconds_t min_trial_duration = microseconds_t(1000))
         {
                 const auto run_opx = [&] (const size_t times)
                 {
