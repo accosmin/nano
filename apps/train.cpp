@@ -59,7 +59,7 @@ int main(int argc, const char *argv[])
         cmdline.add("", "loss",                 "[" + concatenate(get_losses().ids()) + "]");
         cmdline.add("", "enhancer",             "[" + concatenate(get_enhancers().ids()) + "]", "default");
         cmdline.add("", "enhancer-params",      "task enhancer parameters (if any)", "-");
-        cmdline.add("", "threads",              "number of threads to use", logical_cpus());
+        cmdline.add("", "threads",              "number of threads to use", physical_cpus());
 
         cmdline.process(argc, argv);
 
