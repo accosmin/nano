@@ -52,8 +52,7 @@ namespace nano
         template <typename tinteger, typename tduration>
         int64_t gflops(const tinteger flops, const tduration& duration)
         {
-                return  nano::idiv(
-                        static_cast<int64_t>(flops) * 1000,
-                        static_cast<int64_t>(std::chrono::duration_cast<picoseconds_t>(duration).count()) + 1);
+                const auto div = static_cast<int64_t>(std::chrono::duration_cast<picoseconds_t>(duration).count());
+                return nano::idiv(static_cast<int64_t>(flops) * 1000, std::max(div, int64_t(1)));
         }
 }

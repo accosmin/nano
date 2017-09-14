@@ -5,30 +5,19 @@
 
 namespace test
 {
-        template
-        <
-                typename tsize
-        >
+        template <typename tsize>
         tsize sign(const tsize index)
         {
                 return (index % 2 == 0) ? tsize(+1) : tsize(-1);
         }
 
-        template
-        <
-                typename tscalar,
-                typename tsize
-        >
+        template <typename tscalar, typename tsize>
         tscalar average1(const tsize range)
         {
                 return static_cast<tscalar>(range + 1) / static_cast<tscalar>(2);
         }
 
-        template
-        <
-                typename tscalar,
-                typename tsize
-        >
+        template <typename tscalar, typename tsize>
         tscalar average2(const tsize range)
         {
                 return static_cast<tscalar>((range + 1) * sign(range + 1)) / static_cast<tscalar>(2);

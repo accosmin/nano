@@ -38,7 +38,7 @@ namespace nano
         template <typename tinteger, typename tinteger2>
         tinteger idiv(const tinteger nominator, const tinteger2 denominator)
         {
-                return (nominator + static_cast<tinteger>(denominator) - 1) / static_cast<tinteger>(denominator);
+                return (nominator + static_cast<tinteger>(denominator) / 2) / static_cast<tinteger>(denominator);
         }
 
         ///
@@ -90,12 +90,7 @@ namespace nano
         /// \brief clamp value in the [min_value, max_value] range
         /// \todo replace this with std::clamp when moving to C++17
         ///
-        template
-        <
-                typename tscalar,
-                typename tscalar_min,
-                typename tscalar_max
-        >
+        template <typename tscalar, typename tscalar_min, typename tscalar_max>
         tscalar clamp(const tscalar value, const tscalar_min min_value, const tscalar_max max_value)
         {
                 return  value < static_cast<tscalar>(min_value) ? static_cast<tscalar>(min_value) :

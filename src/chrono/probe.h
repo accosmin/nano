@@ -12,8 +12,8 @@ namespace nano
         {
                 using timings_t = stats_t<int64_t>;
 
-                probe_t(const string_t& basename = string_t(),
-                        const string_t& fullname = string_t(),
+                probe_t(const std::string& basename = std::string(),
+                        const std::string& fullname = std::string(),
                         const int64_t flops = 1) :
                         m_basename(basename),
                         m_fullname(fullname),
@@ -39,8 +39,8 @@ namespace nano
                 auto gflops() const { return nano::gflops(flops(), microseconds_t(timings().min())); }
 
                 // attributes
-                string_t        m_basename;             ///<
-                string_t        m_fullname;             ///<
+                std::string     m_basename;             ///<
+                std::string     m_fullname;             ///<
                 int64_t         m_flops;                ///< number of floating point operations per call
                 timings_t       m_timings;              ///< time measurements
         };

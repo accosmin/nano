@@ -11,6 +11,7 @@ make_test(test_random.cpp "")
 make_test(test_stats.cpp "")
 make_test(test_tensor.cpp "")
 make_test(test_tune.cpp "")
+make_test(test_chrono.cpp "")
 
 make_test(test_stoch.cpp nano)
 make_test(test_batch.cpp nano)
