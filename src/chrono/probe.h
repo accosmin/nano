@@ -1,5 +1,6 @@
 #pragma once
 
+#include <vector>
 #include "measure.h"
 #include "math/stats.h"
 
