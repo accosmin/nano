@@ -5,7 +5,7 @@ cache: ccache
 
 branches:
   only:
-    - 0.4
+    - master
 
 matrix:
   include:
