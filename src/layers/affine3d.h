@@ -60,13 +60,10 @@ namespace nano
                 }
 
                 const auto count = idata.template size<0>();
-                const auto isize = m_params.isize();
-                const auto osize = m_params.osize();
 
                 for (tensor_size_t x = 0; x < count; ++ x)
                 {
-                        map_vector(odata.data() + x * osize, osize) = wdata *
-                        map_vector(idata.data() + x * isize, isize) + bdata;
+                        odata.vector(x) = wdata * idata.vector(x) + bdata;
                 }
                 return true;
         }
@@ -80,13 +77,10 @@ namespace nano
                 }
 
                 const auto count = idata.template size<0>();
-                const auto isize = m_params.isize();
-                const auto osize = m_params.osize();
 
                 for (tensor_size_t x = 0; x < count; ++ x)
                 {
-                        map_vector(idata.data() + x * isize, isize) = wdata.transpose() *
-                        map_vector(odata.data() + x * osize, osize);
+                        idata.vector(x) = wdata.transpose() * odata.vector(x);
                 }
                 return true;
         }
@@ -100,16 +94,13 @@ namespace nano
                 }
 
                 const auto count = idata.template size<0>();
-                const auto isize = m_params.isize();
-                const auto osize = m_params.osize();
 
                 wdata.setZero();
                 bdata.setZero();
                 for (tensor_size_t x = 0; x < count; ++ x)
                 {
-                        wdata += map_vector(odata.data() + x * osize, osize) *
-                                 map_vector(idata.data() + x * isize, isize).transpose();
-                        bdata += map_vector(odata.data() + x * osize, osize);
+                        wdata += odata.vector(x) * idata.vector(x).transpose();
+                        bdata += odata.vector(x);
                 }
                 return true;
         }
