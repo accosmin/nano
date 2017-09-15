@@ -378,7 +378,7 @@ namespace nano
                 }
 
                 template <typename tdata, typename... tsizes>
-                auto treshape(tdata ptr, const tsizes... sizes)
+                auto treshape(tdata ptr, const tsizes... sizes) const
                 {
                         assert(nano::size(nano::make_dims(sizes...)) == size());
                         return map_tensor(ptr, sizes...);
