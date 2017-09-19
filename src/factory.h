@@ -1,6 +1,7 @@
 #pragma once
 
 #include <map>
+#include <regex>
 #include <memory>
 #include <stdexcept>
 #include <functional>
@@ -37,6 +38,11 @@ namespace nano
                 /// \brief get the IDs of all registered objects.
                 ///
                 strings_t ids() const;
+
+                ///
+                /// \brief get the IDs of the registered objects matching the ID regex.
+                ///
+                strings_t ids(const std::regex& id_regex) const;
 
                 ///
                 /// \brief get the descriptions of all registered objects.
@@ -93,6 +99,20 @@ namespace nano
                 for (const auto& proto : m_protos)
                 {
                         ret.push_back(proto.first);
+                }
+                return ret;
+        }
+
+        template <typename tobject>
+        strings_t factory_t<tobject>::ids(const std::regex& id_regex) const
+        {
+                strings_t ret;
+                for (const auto& proto : m_protos)
+                {
+                        if (std::regex_match(proto.first, id_regex))
+                        {
+                                ret.push_back(proto.first);
+                        }
                 }
                 return ret;
         }

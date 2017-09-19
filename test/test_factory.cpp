@@ -90,6 +90,14 @@ NANO_CASE(retrieval)
         NANO_CHECK_THROW(manager.get(""), std::runtime_error);
         NANO_CHECK_THROW(manager.get(id1 + id2 + "ddd"), std::runtime_error);
         NANO_CHECK_THROW(manager.get("not there"), std::runtime_error);
+
+        // check retrieval by regex
+        NANO_CHECK_EQUAL(manager.ids(std::regex("[a-z]+[0-9]")).size(), 3);
+        NANO_CHECK_EQUAL(manager.ids(std::regex("[a-z]+1")).size(), 1);
+        NANO_CHECK_EQUAL(manager.ids(std::regex(".+")).size(), 3);
+        NANO_CHECK_EQUAL(manager.ids(std::regex("obj1")).size(), 1);
+        NANO_CHECK_EQUAL(manager.ids(std::regex("obj[0-9]")).size(), 3);
+        NANO_CHECK_EQUAL(manager.ids(std::regex("obj[1|2]")).size(), 2);
 }
 
 NANO_END_MODULE()
