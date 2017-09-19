@@ -114,11 +114,11 @@ int main(int argc, const char* argv[])
         }
         if (has_batch)
         {
-                print("batch optimizers", get_batch_solvers());
+                print("batch solvers", get_batch_solvers());
         }
         if (has_stoch)
         {
-                print("stochastic optimizers", get_stoch_solvers());
+                print("stochastic solvers", get_stoch_solvers());
         }
         if (has_system || has_sys_physical)
         {

@@ -103,6 +103,6 @@ function_state_t batch_lbfgs_t::minimize(const batch_params_t& param, const func
                 return true;
         };
 
-        // OK, assembly the optimizer
+        // assembly the solver
         return batch_loop(param, function, x0, op);
 }

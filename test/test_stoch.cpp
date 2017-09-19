@@ -26,7 +26,7 @@ static void check_function(const function_t& function)
                 rgen(x0.data(), x0.data() + x0.size());
         }
 
-        // optimizers to try
+        // solvers to try
         const auto ids = get_stoch_solvers().ids();
         for (const auto id : ids)
         {
@@ -36,7 +36,7 @@ static void check_function(const function_t& function)
                         continue;
                 }
 
-                const auto optimizer = get_stoch_solvers().get(id);
+                const auto solver = get_stoch_solvers().get(id);
 
                 size_t out_of_domain = 0;
 
@@ -48,7 +48,7 @@ static void check_function(const function_t& function)
 
                         // optimize
                         const auto params = stoch_params_t(epochs, epoch_size, epsilon3<scalar_t>());
-                        const auto state = optimizer->minimize(params, function, x0);
+                        const auto state = solver->minimize(params, function, x0);
 
                         const auto x = state.x;
                         const auto f = state.f;
@@ -79,7 +79,7 @@ static void check_function(const function_t& function)
         }
 }
 
-NANO_BEGIN_MODULE(test_stoch_optimizers)
+NANO_BEGIN_MODULE(test_stoch_solvers)
 
 NANO_CASE(evaluate)
 {

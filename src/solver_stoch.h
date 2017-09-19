@@ -16,7 +16,7 @@ namespace nano
         NANO_PUBLIC stoch_solver_factory_t& get_stoch_solvers();
 
         ///
-        /// \brief generic stochastic optimizer.
+        /// \brief generic stochastic solver.
         ///
         struct NANO_PUBLIC stoch_solver_t : public configurable_t
         {

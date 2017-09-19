@@ -23,8 +23,8 @@ function_state_t stoch_adadelta_t::minimize(const stoch_params_t& param, const f
         // second-order momentum of the step updates
         momentum_t<vector_t> davg(momentum, x0.size());
 
-        // assembly the optimizer
-        const auto optimizer = [&] (function_state_t& cstate, const function_state_t&)
+        // assembly the solver
+        const auto solver = [&] (function_state_t& cstate, const function_state_t&)
         {
                 // descent direction
                 gavg.update(cstate.g.array().square());
@@ -45,6 +45,6 @@ function_state_t stoch_adadelta_t::minimize(const stoch_params_t& param, const f
                 sstate.update(function, cstate.x);
         };
 
-        return  stoch_loop(param, function, x0, optimizer, snapshot,
+        return  stoch_loop(param, function, x0, solver, snapshot,
                 to_params("momentum", momentum, "epsilon", epsilon));
 }

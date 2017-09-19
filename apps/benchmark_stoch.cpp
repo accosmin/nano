@@ -3,7 +3,7 @@
 #include "math/epsilon.h"
 #include "functions/test.h"
 #include "solver_stoch.h"
-#include "benchmark_optimizers.h"
+#include "benchmark_solvers.h"
 
 using namespace nano;
 
@@ -64,7 +64,7 @@ int main(int argc, const char* argv[])
 
         const auto solvers = get_stoch_solvers().ids(std::regex(cmdline.get<string_t>("solvers")));
 
-        std::map<std::string, benchmark::optimizer_stat_t> gstats;
+        std::map<std::string, benchmark::solver_stat_t> gstats;
 
         const auto functions = (is_convex ? make_convex_functions : make_functions)(min_dims, max_dims);
         foreach_test_function(functions, [&] (const function_t& function)

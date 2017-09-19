@@ -16,7 +16,7 @@ namespace nano
         NANO_PUBLIC batch_solver_factory_t& get_batch_solvers();
 
         ///
-        /// \brief generic batchastic optimizer
+        /// \brief generic batch solver.
         ///
         struct NANO_PUBLIC batch_solver_t : public configurable_t
         {

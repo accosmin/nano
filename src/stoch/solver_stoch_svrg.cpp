@@ -20,8 +20,8 @@ function_state_t stoch_svrg_t::minimize(const stoch_params_t& param, const funct
         // learning rate schedule
         lrate_t lrate(alpha0, decay);
 
-        // assembly the optimizer
-        const auto optimizer = [&] (function_state_t& cstate, const function_state_t& sstate)
+        // assembly the solver
+        const auto solver = [&] (function_state_t& cstate, const function_state_t& sstate)
         {
                 // learning rate
                 const scalar_t alpha = lrate.get();
@@ -40,6 +40,6 @@ function_state_t stoch_svrg_t::minimize(const stoch_params_t& param, const funct
                 sstate.update(function, cstate.x);
         };
 
-        return  stoch_loop(param, function, x0, optimizer, snapshot,
+        return  stoch_loop(param, function, x0, solver, snapshot,
                 to_params("alpha0", alpha0, "decay", decay));
 }

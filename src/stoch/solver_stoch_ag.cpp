@@ -47,8 +47,8 @@ function_state_t stoch_ag_base_t<trestart>::minimize(const stoch_params_t& param
         scalar_t ptheta = 1;
         scalar_t ctheta = 1;
 
-        // assembly the optimizer
-        const auto optimizer = [&] (function_state_t& cstate, const function_state_t&)
+        // assembly the solver
+        const auto solver = [&] (function_state_t& cstate, const function_state_t&)
         {
                 // learning rate
                 const scalar_t alpha = alpha0;
@@ -96,7 +96,7 @@ function_state_t stoch_ag_base_t<trestart>::minimize(const stoch_params_t& param
                 sstate.update(function, cstate.x);
         };
 
-        return  stoch_loop(param, function, x0, optimizer, snapshot,
+        return  stoch_loop(param, function, x0, solver, snapshot,
                 to_params("alpha0", alpha0, "q", q));
 }
 

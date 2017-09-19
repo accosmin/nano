@@ -24,8 +24,8 @@ function_state_t stoch_rmsprop_t::minimize(const stoch_params_t& param, const fu
         // second-order momentum of the gradient
         momentum_t<vector_t> gsum2(momentum, x0.size());
 
-        // assembly the optimizer
-        const auto optimizer = [&] (function_state_t& cstate, const function_state_t&)
+        // assembly the solver
+        const auto solver = [&] (function_state_t& cstate, const function_state_t&)
         {
                 // learning rate
                 const scalar_t alpha = lrate.get();
@@ -45,6 +45,6 @@ function_state_t stoch_rmsprop_t::minimize(const stoch_params_t& param, const fu
                 sstate.update(function, cstate.x);
         };
 
-        return  stoch_loop(param, function, x0, optimizer, snapshot,
+        return  stoch_loop(param, function, x0, solver, snapshot,
                 to_params("alpha0", alpha0, "decay", decay, "momentum", momentum, "epsilon", epsilon));
 }

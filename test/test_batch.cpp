@@ -25,11 +25,11 @@ static void check_function(const function_t& function)
                 rgen(x0.data(), x0.data() + x0.size());
         }
 
-        // optimizers to try
+        // solvers to try
         const auto ids = get_batch_solvers().ids();
         for (const auto id : ids)
         {
-                const auto optimizer = get_batch_solvers().get(id, to_params("c1", epsilon0<scalar_t>()));
+                const auto solver = get_batch_solvers().get(id, to_params("c1", epsilon0<scalar_t>()));
 
                 size_t out_of_domain = 0;
 
@@ -41,7 +41,7 @@ static void check_function(const function_t& function)
 
                         // optimize
                         const auto params = batch_params_t(iterations, epsilon2<scalar_t>());
-                        const auto state = optimizer->minimize(params, function, x0);
+                        const auto state = solver->minimize(params, function, x0);
 
                         const auto x = state.x;
                         const auto f = state.f;
@@ -72,7 +72,7 @@ static void check_function(const function_t& function)
         }
 }
 
-NANO_BEGIN_MODULE(test_batch_optimizers)
+NANO_BEGIN_MODULE(test_batch_solvers)
 
 NANO_CASE(evaluate)
 {

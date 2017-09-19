@@ -46,43 +46,43 @@ The **batch solver** and the **stochastic solver** are gradient-based methods us
 The following batch (line-search based) optimization methods are built-in:
 ```
 ./apps/info --batch
-|------------------|------------------------------------------------|------------------------------------------------------------------|
-| batch optimizers | description                                    | configuration                                                    |
-|------------------|------------------------------------------------|------------------------------------------------------------------|
-| cgd              | nonlinear conjugate gradient descent (default) | ls_init=quadratic,ls_strat=interpolation,c1=0.000100,c2=0.100000 |
-| cgd-cd           | nonlinear conjugate gradient descent (CD)      | ls_init=quadratic,ls_strat=interpolation,c1=0.000100,c2=0.100000 |
-| cgd-dy           | nonlinear conjugate gradient descent (DY)      | ls_init=quadratic,ls_strat=interpolation,c1=0.000100,c2=0.100000 |
-| cgd-dycd         | nonlinear conjugate gradient descent (DYCD)    | ls_init=quadratic,ls_strat=interpolation,c1=0.000100,c2=0.100000 |
-| cgd-dyhs         | nonlinear conjugate gradient descent (DYHS)    | ls_init=quadratic,ls_strat=interpolation,c1=0.000100,c2=0.100000 |
-| cgd-fr           | nonlinear conjugate gradient descent (FR)      | ls_init=quadratic,ls_strat=interpolation,c1=0.000100,c2=0.100000 |
-| cgd-hs           | nonlinear conjugate gradient descent (HS)      | ls_init=quadratic,ls_strat=interpolation,c1=0.000100,c2=0.100000 |
-| cgd-ls           | nonlinear conjugate gradient descent (LS)      | ls_init=quadratic,ls_strat=interpolation,c1=0.000100,c2=0.100000 |
-| cgd-n            | nonlinear conjugate gradient descent (N)       | ls_init=quadratic,ls_strat=interpolation,c1=0.000100,c2=0.100000 |
-| cgd-prp          | nonlinear conjugate gradient descent (PRP+)    | ls_init=quadratic,ls_strat=interpolation,c1=0.000100,c2=0.100000 |
-| gd               | gradient descent                               | ls_init=quadratic,ls_strat=back-sWolfe,c1=0.000100,c2=0.100000   |
-| lbfgs            | limited-memory BFGS                            | ls_init=quadratic,ls_strat=interpolation,c1=0.000100,c2=0.900000 |
-|------------------|------------------------------------------------|------------------------------------------------------------------|
+|---------------|------------------------------------------------|------------------------------------------------------------------|
+| batch solvers | description                                    | configuration                                                    |
+|---------------|------------------------------------------------|------------------------------------------------------------------|
+| cgd           | nonlinear conjugate gradient descent (default) | ls_init=quadratic,ls_strat=interpolation,c1=0.000100,c2=0.100000 |
+| cgd-cd        | nonlinear conjugate gradient descent (CD)      | ls_init=quadratic,ls_strat=interpolation,c1=0.000100,c2=0.100000 |
+| cgd-dy        | nonlinear conjugate gradient descent (DY)      | ls_init=quadratic,ls_strat=interpolation,c1=0.000100,c2=0.100000 |
+| cgd-dycd      | nonlinear conjugate gradient descent (DYCD)    | ls_init=quadratic,ls_strat=interpolation,c1=0.000100,c2=0.100000 |
+| cgd-dyhs      | nonlinear conjugate gradient descent (DYHS)    | ls_init=quadratic,ls_strat=interpolation,c1=0.000100,c2=0.100000 |
+| cgd-fr        | nonlinear conjugate gradient descent (FR)      | ls_init=quadratic,ls_strat=interpolation,c1=0.000100,c2=0.100000 |
+| cgd-hs        | nonlinear conjugate gradient descent (HS)      | ls_init=quadratic,ls_strat=interpolation,c1=0.000100,c2=0.100000 |
+| cgd-ls        | nonlinear conjugate gradient descent (LS)      | ls_init=quadratic,ls_strat=interpolation,c1=0.000100,c2=0.100000 |
+| cgd-n         | nonlinear conjugate gradient descent (N)       | ls_init=quadratic,ls_strat=interpolation,c1=0.000100,c2=0.100000 |
+| cgd-prp       | nonlinear conjugate gradient descent (PRP+)    | ls_init=quadratic,ls_strat=interpolation,c1=0.000100,c2=0.100000 |
+| gd            | gradient descent                               | ls_init=quadratic,ls_strat=back-sWolfe,c1=0.000100,c2=0.100000   |
+| lbfgs         | limited-memory BFGS                            | ls_init=quadratic,ls_strat=interpolation,c1=0.000100,c2=0.900000 |
+|---------------|------------------------------------------------|------------------------------------------------------------------
 ```
 
 The following stochastic optimization methods are built-in:
 ```
 ./apps/info --stoch
-|-----------------------|--------------------------------------------------------------|---------------|
-| stochastic optimizers | description                                                  | configuration |
-|-----------------------|--------------------------------------------------------------|---------------|
-| adadelta              | AdaDelta (see citation)                                      |               |
-| adagrad               | AdaGrad (see citation)                                       |               |
-| adam                  | Adam (see citation)                                          |               |
-| ag                    | Nesterov's accelerated gradient                              |               |
-| agfr                  | Nesterov's accelerated gradient with function value restarts |               |
-| aggr                  | Nesterov's accelerated gradient with gradient restarts       |               |
-| asgd                  | averaged stochastic gradient (descent)                       |               |
-| ngd                   | stochastic normalized gradient                               |               |
-| rmsprop               | RMSProp (see citation)                                       |               |
-| sg                    | stochastic gradient (descent)                                |               |
-| sgm                   | stochastic gradient (descent) with momentum                  |               |
-| svrg                  | stochastic variance reduced gradient                         |               |
-|-----------------------|--------------------------------------------------------------|---------------|
+|--------------------|--------------------------------------------------------------|---------------|
+| stochastic solvers | description                                                  | configuration |
+|--------------------|--------------------------------------------------------------|---------------|
+| adadelta           | AdaDelta (see citation)                                      |               |
+| adagrad            | AdaGrad (see citation)                                       |               |
+| adam               | Adam (see citation)                                          |               |
+| ag                 | Nesterov's accelerated gradient                              |               |
+| agfr               | Nesterov's accelerated gradient with function value restarts |               |
+| aggr               | Nesterov's accelerated gradient with gradient restarts       |               |
+| asgd               | averaged stochastic gradient (descent)                       |               |
+| ngd                | stochastic normalized gradient                               |               |
+| rmsprop            | RMSProp (see citation)                                       |               |
+| sg                 | stochastic gradient (descent)                                |               |
+| sgm                | stochastic gradient (descent) with momentum                  |               |
+| svrg               | stochastic variance reduced gradient                         |               |
+|--------------------|--------------------------------------------------------------|---------------|
 ```
 
 

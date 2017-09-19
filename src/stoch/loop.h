@@ -7,7 +7,7 @@
 namespace nano
 {
         ///
-        /// \brief hyper-parameter tuning for stochastic optimizers.
+        /// \brief hyper-parameter tuning for stochastic solvers.
         ///
         inline auto make_alpha0s()
         {
@@ -16,7 +16,7 @@ namespace nano
 
         inline auto make_decays()
         {
-                return make_finite_space(scalar_t(0.50), scalar_t(0.75), scalar_t(0.90), scalar_t(0.95));
+                return make_finite_space(scalar_t(0.50), scalar_t(0.75), scalar_t(0.90));
         }
 
         inline auto make_momenta()
@@ -48,21 +48,21 @@ namespace nano
         }
 
          ///
-         /// \brief tune the given stochastic optimizer.
+         /// \brief tune the given stochastic solver.
          ///
-         template <typename toptimizer, typename... tspaces>
-         auto stoch_tune(const toptimizer* optimizer,
+         template <typename tsolver, typename... tspaces>
+         auto stoch_tune(const tsolver* solver,
                 const stoch_params_t& param, const function_t& function, const vector_t& x0, tspaces... spaces)
          {
                 const auto tune_op = [&] (const auto... hypers)
                 {
-                        return optimizer->minimize(param.tunable(), function, x0, hypers...);
+                        return solver->minimize(param.tunable(), function, x0, hypers...);
                 };
                 const auto config = nano::tune(tune_op, spaces...);
 
                 const auto done_op = [&] (const auto... hypers)
                 {
-                        return optimizer->minimize(param.tuned(), function, config.optimum().x, hypers...);
+                        return solver->minimize(param.tuned(), function, config.optimum().x, hypers...);
                 };
                 return detail::apply_from_tuple(done_op, config.params());
         }
@@ -76,14 +76,14 @@ namespace nano
         ///
         template
         <
-                typename toptimizer,            ///< optimization algorithm: update the current state
+                typename tsolver,            ///< optimization algorithm: update the current state
                 typename tsnapshot              ///< snapshot at the end of an epoch: update the final state
         >
         auto stoch_loop(
                 const stoch_params_t& param,
                 const function_t& function,
                 const vector_t& x0,
-                const toptimizer& optimizer,
+                const tsolver& solver,
                 const tsnapshot& snapshot,
                 const string_t& config)
         {
@@ -101,7 +101,7 @@ namespace nano
                         // for each iteration ...
                         for (size_t i = 0; i < param.m_epoch_size && cstate; ++ i)
                         {
-                                optimizer(cstate, fstate);
+                                solver(cstate, fstate);
                         }
 
                         // check divergence

@@ -10,7 +10,7 @@ namespace benchmark
 {
         using namespace nano;
 
-        struct optimizer_stat_t
+        struct solver_stat_t
         {
                 stats_t<scalar_t> m_crits;      ///< convergence criteria
                 stats_t<scalar_t> m_fails;      ///< #convergence failures
@@ -19,14 +19,14 @@ namespace benchmark
                 stats_t<scalar_t> m_speeds;     ///< #convergence speeds
         };
 
-        void show_table(const string_t& table_name, const std::map<string_t, optimizer_stat_t>& ostats)
+        void show_table(const string_t& table_name, const std::map<string_t, solver_stat_t>& ostats)
         {
                 assert(!ostats.empty());
 
                 // show global statistics
                 nano::table_t table;
                 table.header()
-                        << nano::align(table_name.empty() ? "optimizer" : table_name, 32)
+                        << nano::align(table_name.empty() ? "solver" : table_name, 32)
                         << "cost"
                         << "|g|/(1+|f|)"
                         << "#fails"
@@ -56,9 +56,9 @@ namespace benchmark
                 std::cout << table;
         }
 
-        template <typename toptimizer, typename tparams, typename tostats>
+        template <typename tsolver, typename tparams, typename tostats>
         void benchmark_function(
-                const toptimizer& optimizer, const tparams& params,
+                const tsolver& solver, const tparams& params,
                 const function_t& function, const std::vector<vector_t>& x0s, const string_t& name,
                 tostats& stats, tostats& gstats)
         {
@@ -72,7 +72,7 @@ namespace benchmark
                         const auto old_fcalls = function.fcalls();
                         const auto old_gcalls = function.gcalls();
 
-                        const auto state = optimizer->minimize(params, function, x0);
+                        const auto state = solver->minimize(params, function, x0);
 
                         const auto fcalls = function.fcalls() - old_fcalls;
                         const auto gcalls = function.gcalls() - old_gcalls;
@@ -87,7 +87,7 @@ namespace benchmark
                         if (state && function.is_valid(state.x))
                         {
                                 // update per-function statistics
-                                optimizer_stat_t& stat = stats[name];
+                                solver_stat_t& stat = stats[name];
                                 stat.m_crits(g);
                                 stat.m_fails(state.m_status != opt_status::converged ? 1 : 0);
                                 stat.m_fcalls(static_cast<scalar_t>(fcalls));
@@ -95,7 +95,7 @@ namespace benchmark
                                 stat.m_speeds(static_cast<scalar_t>(speed));
 
                                 // update global statistics
-                                optimizer_stat_t& gstat = gstats[name];
+                                solver_stat_t& gstat = gstats[name];
                                 gstat.m_crits(g);
                                 gstat.m_fails(state.m_status != opt_status::converged ? 1 : 0);
                                 gstat.m_fcalls(static_cast<scalar_t>(fcalls));

@@ -41,6 +41,6 @@ function_state_t batch_gd_t::minimize(const batch_params_t& param, const functio
                 return ls_step(function, t0, cstate);
         };
 
-        // OK, assembly the optimizer
+        // assembly the solver
         return batch_loop(param, function, x0, op);
 }

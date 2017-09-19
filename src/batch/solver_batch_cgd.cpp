@@ -75,7 +75,7 @@ function_state_t nano::batch_cgd_t<tcgd_update>::minimize(const batch_params_t& 
                 return ls_step(function, t0, cstate);
         };
 
-        // OK, assembly the optimizer
+        // assembly the solver
         return batch_loop(param, function, x0, op);
 }
 

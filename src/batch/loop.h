@@ -10,14 +10,14 @@ namespace nano
         ///     - convergence is achieved (critical point, possiblly a local/global minima) or
         ///     - the maximum number of iterations is reached or
         ///     - the user canceled the optimization (using the logging function) or
-        ///     - the optimizer failed (e.g. line-search failed)
+        ///     - the solver failed (e.g. line-search failed)
         ///
-        template <typename toptimizer>
+        template <typename tsolver>
         auto batch_loop(
                 const batch_params_t& params,
                 const function_t& function,
                 const vector_t& x0,
-                const toptimizer& optimizer)
+                const tsolver& solver)
         {
                 assert(function.size() == x0.size());
 
@@ -27,7 +27,7 @@ namespace nano
                 // for each iteration ...
                 for (size_t i = 0; i < params.m_max_iterations; i ++)
                 {
-                        if (!optimizer(cstate, i) || !cstate)
+                        if (!solver(cstate, i) || !cstate)
                         {
                                 cstate.m_status = opt_status::failed;
                                 break;
