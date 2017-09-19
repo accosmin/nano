@@ -8,7 +8,7 @@
 using namespace nano;
 
 template <typename tostats>
-static void check_function(const function_t& function,
+static void check_function(const function_t& function, const strings_t& solvers,
         const size_t trials, const size_t epochs, const size_t epoch_size, const scalar_t epsilon, tostats& gstats)
 {
         auto rgen = make_rng(scalar_t(-1), scalar_t(+1));
@@ -24,8 +24,8 @@ static void check_function(const function_t& function,
         // per-problem statistics
         tostats stats;
 
-        // evaluate all optimizers
-        for (const auto id : get_stoch_solvers().ids())
+        // evaluate all solvers
+        for (const auto id : solvers)
         {
                 const auto solver = get_stoch_solvers().get(id);
                 const auto params = stoch_params_t(epochs, epoch_size, epsilon);
@@ -41,7 +41,8 @@ static void check_function(const function_t& function,
 int main(int argc, const char* argv[])
 {
         // parse the command line
-        cmdline_t cmdline("benchmark stochastic optimizers");
+        cmdline_t cmdline("benchmark stochastic solvers");
+        cmdline.add("", "solvers",      "use this regex to select the solvers to benchmark", ".+");
         cmdline.add("", "min-dims",     "minimum number of dimensions for each test function (if feasible)", "10");
         cmdline.add("", "max-dims",     "maximum number of dimensions for each test function (if feasible)", "100");
         cmdline.add("", "trials",       "number of random trials for each test function", "100");
@@ -61,12 +62,14 @@ int main(int argc, const char* argv[])
         const auto epsilon = cmdline.get<scalar_t>("epsilon");
         const auto is_convex = cmdline.has("convex");
 
+        const auto solvers = get_stoch_solvers().ids(std::regex(cmdline.get<string_t>("solvers")));
+
         std::map<std::string, benchmark::optimizer_stat_t> gstats;
 
         const auto functions = (is_convex ? make_convex_functions : make_functions)(min_dims, max_dims);
         foreach_test_function(functions, [&] (const function_t& function)
         {
-                check_function(function, trials, epochs, epoch_size, epsilon, gstats);
+                check_function(function, solvers, trials, epochs, epoch_size, epsilon, gstats);
         });
 
         // show global statistics

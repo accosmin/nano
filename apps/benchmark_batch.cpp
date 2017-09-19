@@ -8,7 +8,7 @@
 using namespace nano;
 
 template <typename tostats>
-static void check_function(const function_t& function,
+static void check_function(const function_t& function, const strings_t& solvers,
         const size_t trials, const size_t iterations, const scalar_t epsilon, const scalar_t c1, tostats& gstats)
 {
         auto rgen = make_rng(scalar_t(-1), scalar_t(+1));
@@ -24,8 +24,8 @@ static void check_function(const function_t& function,
         // per-problem statistics
         tostats stats;
 
-        // evaluate all possible combinations (optimizer & line-search)
-        for (const auto id : get_batch_solvers().ids())
+        // evaluate all possible combinations (solver & line-search)
+        for (const auto id : solvers)
                 for (const ls_initializer ls_init : enum_values<ls_initializer>())
                         for (const ls_strategy ls_strat : enum_values<ls_strategy>())
         {
@@ -45,7 +45,8 @@ int main(int argc, const char* argv[])
         using namespace nano;
 
         // parse the command line
-        cmdline_t cmdline("benchmark batch optimizers");
+        cmdline_t cmdline("benchmark batch solvers");
+        cmdline.add("", "solvers",      "use this regex to select the solvers to benchmark", ".+");
         cmdline.add("", "min-dims",     "minimum number of dimensions for each test function (if feasible)", "100");
         cmdline.add("", "max-dims",     "maximum number of dimensions for each test function (if feasible)", "1000");
         cmdline.add("", "trials",       "number of random trials for each test function", "100");
@@ -65,22 +66,23 @@ int main(int argc, const char* argv[])
         const auto is_convex = cmdline.has("convex");
         const auto c1 = cmdline.get<scalar_t>("c1");
 
+        const auto solvers = get_batch_solvers().ids(std::regex(cmdline.get<string_t>("solvers")));
+
         std::map<std::string, benchmark::optimizer_stat_t> gstats;
 
         const auto functions = (is_convex ? make_convex_functions : make_functions)(min_dims, max_dims);
         foreach_test_function(functions, [&] (const function_t& function)
         {
-                check_function(function, trials, iterations, epsilon, c1, gstats);
+                check_function(function, solvers, trials, iterations, epsilon, c1, gstats);
         });
 
         // show global statistics
         benchmark::show_table(std::string(), gstats);
 
-        // show per-optimizer statistics
-        const auto ids = get_batch_solvers().ids();
-        for (const auto optimizer : ids)
+        // show per-solver statistics
+        for (const auto solver : solvers)
         {
-                const auto name = optimizer + "[";
+                const auto name = solver + "[";
 
                 std::map<std::string, benchmark::optimizer_stat_t> stats;
                 for (const auto& gstat : gstats)
