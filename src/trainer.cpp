@@ -9,10 +9,10 @@ trainer_factory_t& nano::get_trainers()
         static trainer_factory_t manager;
 
         static std::once_flag flag;
-        std::call_once(flag, [&m = manager] ()
+        std::call_once(flag, [] ()
         {
-                m.add<batch_trainer_t>("batch", "batch trainer");
-                m.add<stoch_trainer_t>("stoch", "stochastic trainer");
+                manager.add<batch_trainer_t>("batch", "batch trainer");
+                manager.add<stoch_trainer_t>("stoch", "stochastic trainer");
         });
 
         return manager;

@@ -11,12 +11,12 @@ enhancer_factory_t& nano::get_enhancers()
         static enhancer_factory_t manager;
 
         static std::once_flag flag;
-        std::call_once(flag, [&m = manager] ()
+        std::call_once(flag, [] ()
         {
-                m.add<enhancer_warp_t>("warp", "warp image samples (image classification)");
-                m.add<enhancer_noise_t>("noise", "add salt&pepper noise to samples");
-                m.add<enhancer_default_t>("default", "use samples as they are");
-                m.add<enhancer_noclass_t>("noclass", "replace some samples with random samples having no label (classification)");
+                manager.add<enhancer_warp_t>("warp", "warp image samples (image classification)");
+                manager.add<enhancer_noise_t>("noise", "add salt&pepper noise to samples");
+                manager.add<enhancer_default_t>("default", "use samples as they are");
+                manager.add<enhancer_noclass_t>("noclass", "replace some samples with random samples having no label (classification)");
         });
 
         return manager;
