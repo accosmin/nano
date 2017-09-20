@@ -159,11 +159,9 @@ NANO_CASE(gparam_accuracy)
         NANO_REQUIRE(params.valid());
 
         const auto pfunct = make_wrt_params_function<conv3d_t>(params);
-        for (int i = 0; i < 8; ++ i)
-        {
-                vector_t px(pfunct.size()); px.setRandom();
-                NANO_CHECK_LESS(pfunct.grad_accuracy(px), epsilon1<scalar_t>());
-        }
+
+        vector_t px(pfunct.size()); px.setRandom();
+        NANO_CHECK_LESS(pfunct.grad_accuracy(px), epsilon1<scalar_t>());
 }
 
 NANO_CASE(ginput_accuracy)
@@ -172,11 +170,9 @@ NANO_CASE(ginput_accuracy)
         NANO_REQUIRE(params.valid());
 
         const auto ifunct = make_wrt_inputs_function<conv3d_t>(params);
-        for (int i = 0; i < 8; ++ i)
-        {
-                vector_t ix(ifunct.size()); ix.setRandom();
-                NANO_CHECK_LESS(ifunct.grad_accuracy(ix), epsilon1<scalar_t>());
-        }
+
+        vector_t ix(ifunct.size()); ix.setRandom();
+        NANO_CHECK_LESS(ifunct.grad_accuracy(ix), epsilon1<scalar_t>());
 }
 
 NANO_CASE(3d_vs_4d_output_kconn1)

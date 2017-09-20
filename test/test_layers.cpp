@@ -69,7 +69,6 @@ struct model_wrt_inputs_function_t final : public function_t
 
 const auto cmd_idims = tensor3d_dims_t{3, 8, 8};
 const auto cmd_odims = tensor3d_dims_t{3, 1, 1};
-const auto cmd_tests = size_t{7};
 const auto cmd_layer_output = make_output_layer(cmd_odims);
 
 static tensor_size_t apsize(const tensor_size_t isize, const tensor_size_t osize)
@@ -149,15 +148,12 @@ static void test_model(const string_t& model_description, const tensor_size_t ex
         const model_wrt_inputs_function_t ifunction(model, loss, params, target);
 
         // construct optimization problem: analytic gradient vs finite difference approximation
-        for (size_t t = 0; t < cmd_tests; ++ t)
-        {
-                make_random_config(inputs, target);
-                model->random();
-                params = model->params();
+        make_random_config(inputs, target);
+        model->random();
+        params = model->params();
 
-                NANO_CHECK_LESS(pfunction.grad_accuracy(params), epsilon);
-                NANO_CHECK_LESS(ifunction.grad_accuracy(inputs.vector()), epsilon);
-        }
+        NANO_CHECK_LESS(pfunction.grad_accuracy(params), epsilon);
+        NANO_CHECK_LESS(ifunction.grad_accuracy(inputs.vector()), epsilon);
 }
 
 NANO_BEGIN_MODULE(test_layers)

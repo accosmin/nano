@@ -11,7 +11,7 @@ auto make_default_params(const tensor_size_t kconn = 1)
 {
         const auto imaps = 6;
         const auto irows = 11;
-        const auto icols = 15;
+        const auto icols = 13;
         const auto omaps = 4;
         const auto krows = 3;
         const auto kcols = 5;
@@ -160,11 +160,9 @@ NANO_CASE(gparam_accuracy)
         NANO_REQUIRE(params.valid());
 
         const auto pfunct = make_wrt_params_function<conv3d_naive_t>(params);
-        for (int i = 0; i < 8; ++ i)
-        {
-                vector_t px(pfunct.size()); px.setRandom();
-                NANO_CHECK_LESS(pfunct.grad_accuracy(px), epsilon2<scalar_t>());
-        }
+
+        vector_t px(pfunct.size()); px.setRandom();
+        NANO_CHECK_LESS(pfunct.grad_accuracy(px), epsilon1<scalar_t>());
 }
 
 NANO_CASE(ginput_accuracy)
@@ -173,11 +171,9 @@ NANO_CASE(ginput_accuracy)
         NANO_REQUIRE(params.valid());
 
         const auto ifunct = make_wrt_inputs_function<conv3d_naive_t>(params);
-        for (int i = 0; i < 8; ++ i)
-        {
-                vector_t ix(ifunct.size()); ix.setRandom();
-                NANO_CHECK_LESS(ifunct.grad_accuracy(ix), epsilon2<scalar_t>());
-        }
+
+        vector_t ix(ifunct.size()); ix.setRandom();
+        NANO_CHECK_LESS(ifunct.grad_accuracy(ix), epsilon1<scalar_t>());
 }
 
 NANO_CASE(naive_vs_dmaps_output_kconn1)
@@ -189,24 +185,21 @@ NANO_CASE(naive_vs_dmaps_output_kconn1)
         const auto op_dmaps = conv3d_dmaps_t{params};
         const auto op_dense = conv3d_dense_t{params};
 
-        for (int i = 0; i < 8; ++ i)
-        {
-                vector_t bdata, bdatax, bdatad;
-                tensor3d_t idata, idatax, idatad;
-                tensor4d_t kdata, kdatax, kdatad;
-                tensor3d_t odata, odatax, odatad;
+        vector_t bdata, bdatax, bdatad;
+        tensor3d_t idata, idatax, idatad;
+        tensor4d_t kdata, kdatax, kdatad;
+        tensor3d_t odata, odatax, odatad;
 
-                std::tie(bdata, idata, kdata, odata) = make_buffers(params);
-                std::tie(bdatax, idatax, kdatax, odatax) = make_buffers(params);
-                std::tie(bdatad, idatad, kdatad, odatad) = make_buffers(params);
+        std::tie(bdata, idata, kdata, odata) = make_buffers(params);
+        std::tie(bdatax, idatax, kdatax, odatax) = make_buffers(params);
+        std::tie(bdatad, idatad, kdatad, odatad) = make_buffers(params);
 
-                op_naive.output(idata, kdata, bdata, odata);
-                op_dmaps.output(idata, kdata, bdata, odatax);
-                op_dense.output(idata, kdata, bdata, odatad);
+        op_naive.output(idata, kdata, bdata, odata);
+        op_dmaps.output(idata, kdata, bdata, odatax);
+        op_dense.output(idata, kdata, bdata, odatad);
 
-                NANO_CHECK_EIGEN_CLOSE(odata.array(), odatax.array(), 10 * epsilon0<scalar_t>());
-                NANO_CHECK_EIGEN_CLOSE(odata.array(), odatad.array(), 10 * epsilon0<scalar_t>());
-        }
+        NANO_CHECK_EIGEN_CLOSE(odata.array(), odatax.array(), epsilon1<scalar_t>());
+        NANO_CHECK_EIGEN_CLOSE(odata.array(), odatad.array(), epsilon1<scalar_t>());
 }
 
 NANO_CASE(naive_vs_dmaps_output_kconn2)
@@ -218,24 +211,21 @@ NANO_CASE(naive_vs_dmaps_output_kconn2)
         const auto op_dmaps = conv3d_dmaps_t{params};
         const auto op_dense = conv3d_dense_t{params};
 
-        for (int i = 0; i < 8; ++ i)
-        {
-                vector_t bdata, bdatax, bdatad;
-                tensor3d_t idata, idatax, idatad;
-                tensor4d_t kdata, kdatax, kdatad;
-                tensor3d_t odata, odatax, odatad;
+        vector_t bdata, bdatax, bdatad;
+        tensor3d_t idata, idatax, idatad;
+        tensor4d_t kdata, kdatax, kdatad;
+        tensor3d_t odata, odatax, odatad;
 
-                std::tie(bdata, idata, kdata, odata) = make_buffers(params);
-                std::tie(bdatax, idatax, kdatax, odatax) = make_buffers(params);
-                std::tie(bdatad, idatad, kdatad, odatad) = make_buffers(params);
+        std::tie(bdata, idata, kdata, odata) = make_buffers(params);
+        std::tie(bdatax, idatax, kdatax, odatax) = make_buffers(params);
+        std::tie(bdatad, idatad, kdatad, odatad) = make_buffers(params);
 
-                op_naive.output(idata, kdata, bdata, odata);
-                op_dmaps.output(idata, kdata, bdata, odatax);
-                op_dense.output(idata, kdata, bdata, odatad);
+        op_naive.output(idata, kdata, bdata, odata);
+        op_dmaps.output(idata, kdata, bdata, odatax);
+        op_dense.output(idata, kdata, bdata, odatad);
 
-                NANO_CHECK_EIGEN_CLOSE(odata.array(), odatax.array(), 10 * epsilon0<scalar_t>());
-                NANO_CHECK_EIGEN_CLOSE(odata.array(), odatad.array(), 10 * epsilon0<scalar_t>());
-        }
+        NANO_CHECK_EIGEN_CLOSE(odata.array(), odatax.array(), epsilon1<scalar_t>());
+        NANO_CHECK_EIGEN_CLOSE(odata.array(), odatad.array(), epsilon1<scalar_t>());
 }
 
 NANO_CASE(naive_vs_dmaps_gparam_kconn1)
@@ -247,33 +237,30 @@ NANO_CASE(naive_vs_dmaps_gparam_kconn1)
         const auto op_dmaps = conv3d_dmaps_t{params};
         const auto op_dense = conv3d_dense_t{params};
 
-        for (int i = 0; i < 8; ++ i)
-        {
-                vector_t bdata, bdatax, bdatad;
-                tensor3d_t idata, idatax, idatad;
-                tensor4d_t kdata, kdatax, kdatad;
-                tensor3d_t odata, odatax, odatad;
+        vector_t bdata, bdatax, bdatad;
+        tensor3d_t idata, idatax, idatad;
+        tensor4d_t kdata, kdatax, kdatad;
+        tensor3d_t odata, odatax, odatad;
 
-                std::tie(bdata, idata, kdata, odata) = make_buffers(params);
-                std::tie(bdatax, idatax, kdatax, odatax) = make_buffers(params);
-                std::tie(bdatad, idatad, kdatad, odatad) = make_buffers(params);
+        std::tie(bdata, idata, kdata, odata) = make_buffers(params);
+        std::tie(bdatax, idatax, kdatax, odatax) = make_buffers(params);
+        std::tie(bdatad, idatad, kdatad, odatad) = make_buffers(params);
 
-                op_naive.output(idata, kdata, bdata, odata);
-                op_dmaps.output(idata, kdata, bdata, odatax);
-                op_dense.output(idata, kdata, bdata, odatad);
+        op_naive.output(idata, kdata, bdata, odata);
+        op_dmaps.output(idata, kdata, bdata, odatax);
+        op_dense.output(idata, kdata, bdata, odatad);
 
-                NANO_CHECK_EIGEN_CLOSE(odata.array(), odatax.array(), 10 * epsilon0<scalar_t>());
-                NANO_CHECK_EIGEN_CLOSE(odata.array(), odatad.array(), 10 * epsilon0<scalar_t>());
+        NANO_CHECK_EIGEN_CLOSE(odata.array(), odatax.array(), epsilon1<scalar_t>());
+        NANO_CHECK_EIGEN_CLOSE(odata.array(), odatad.array(), epsilon1<scalar_t>());
 
-                op_naive.gparam(idata, kdata, bdata, odata);
-                op_dmaps.gparam(idata, kdatax, bdatax, odata);
-                op_dense.gparam(idata, kdatad, bdatad, odata);
+        op_naive.gparam(idata, kdata, bdata, odata);
+        op_dmaps.gparam(idata, kdatax, bdatax, odata);
+        op_dense.gparam(idata, kdatad, bdatad, odata);
 
-                NANO_CHECK_EIGEN_CLOSE(kdata.array(), kdatax.array(), 10 * epsilon0<scalar_t>());
-                NANO_CHECK_EIGEN_CLOSE(bdata.array(), bdatax.array(), 10 * epsilon0<scalar_t>());
-                NANO_CHECK_EIGEN_CLOSE(kdata.array(), kdatad.array(), 10 * epsilon0<scalar_t>());
-                NANO_CHECK_EIGEN_CLOSE(bdata.array(), bdatad.array(), 10 * epsilon0<scalar_t>());
-        }
+        NANO_CHECK_EIGEN_CLOSE(kdata.array(), kdatax.array(), epsilon1<scalar_t>());
+        NANO_CHECK_EIGEN_CLOSE(bdata.array(), bdatax.array(), epsilon1<scalar_t>());
+        NANO_CHECK_EIGEN_CLOSE(kdata.array(), kdatad.array(), epsilon1<scalar_t>());
+        NANO_CHECK_EIGEN_CLOSE(bdata.array(), bdatad.array(), epsilon1<scalar_t>());
 }
 
 NANO_CASE(naive_vs_dmaps_gparam_kconn2)
@@ -285,33 +272,30 @@ NANO_CASE(naive_vs_dmaps_gparam_kconn2)
         const auto op_dmaps = conv3d_dmaps_t{params};
         const auto op_dense = conv3d_dense_t{params};
 
-        for (int i = 0; i < 8; ++ i)
-        {
-                vector_t bdata, bdatax, bdatad;
-                tensor3d_t idata, idatax, idatad;
-                tensor4d_t kdata, kdatax, kdatad;
-                tensor3d_t odata, odatax, odatad;
+        vector_t bdata, bdatax, bdatad;
+        tensor3d_t idata, idatax, idatad;
+        tensor4d_t kdata, kdatax, kdatad;
+        tensor3d_t odata, odatax, odatad;
 
-                std::tie(bdata, idata, kdata, odata) = make_buffers(params);
-                std::tie(bdatax, idatax, kdatax, odatax) = make_buffers(params);
-                std::tie(bdatad, idatad, kdatad, odatad) = make_buffers(params);
+        std::tie(bdata, idata, kdata, odata) = make_buffers(params);
+        std::tie(bdatax, idatax, kdatax, odatax) = make_buffers(params);
+        std::tie(bdatad, idatad, kdatad, odatad) = make_buffers(params);
 
-                op_naive.output(idata, kdata, bdata, odata);
-                op_dmaps.output(idata, kdata, bdata, odatax);
-                op_dense.output(idata, kdata, bdata, odatad);
+        op_naive.output(idata, kdata, bdata, odata);
+        op_dmaps.output(idata, kdata, bdata, odatax);
+        op_dense.output(idata, kdata, bdata, odatad);
 
-                NANO_CHECK_EIGEN_CLOSE(odata.array(), odatax.array(), 10 * epsilon0<scalar_t>());
-                NANO_CHECK_EIGEN_CLOSE(odata.array(), odatad.array(), 10 * epsilon0<scalar_t>());
+        NANO_CHECK_EIGEN_CLOSE(odata.array(), odatax.array(), epsilon1<scalar_t>());
+        NANO_CHECK_EIGEN_CLOSE(odata.array(), odatad.array(), epsilon1<scalar_t>());
 
-                op_naive.gparam(idata, kdata, bdata, odata);
-                op_dmaps.gparam(idata, kdatax, bdatax, odata);
-                op_dense.gparam(idata, kdatad, bdatad, odata);
+        op_naive.gparam(idata, kdata, bdata, odata);
+        op_dmaps.gparam(idata, kdatax, bdatax, odata);
+        op_dense.gparam(idata, kdatad, bdatad, odata);
 
-                NANO_CHECK_EIGEN_CLOSE(kdata.array(), kdatax.array(), 10 * epsilon0<scalar_t>());
-                NANO_CHECK_EIGEN_CLOSE(bdata.array(), bdatax.array(), 10 * epsilon0<scalar_t>());
-                NANO_CHECK_EIGEN_CLOSE(kdata.array(), kdatad.array(), 10 * epsilon0<scalar_t>());
-                NANO_CHECK_EIGEN_CLOSE(bdata.array(), bdatad.array(), 10 * epsilon0<scalar_t>());
-        }
+        NANO_CHECK_EIGEN_CLOSE(kdata.array(), kdatax.array(), epsilon1<scalar_t>());
+        NANO_CHECK_EIGEN_CLOSE(bdata.array(), bdatax.array(), epsilon1<scalar_t>());
+        NANO_CHECK_EIGEN_CLOSE(kdata.array(), kdatad.array(), epsilon1<scalar_t>());
+        NANO_CHECK_EIGEN_CLOSE(bdata.array(), bdatad.array(), epsilon1<scalar_t>());
 }
 
 NANO_CASE(naive_vs_dmaps_ginput_kconn1)
@@ -323,31 +307,28 @@ NANO_CASE(naive_vs_dmaps_ginput_kconn1)
         const auto op_dmaps = conv3d_dmaps_t{params};
         const auto op_dense = conv3d_dense_t{params};
 
-        for (int i = 0; i < 8; ++ i)
-        {
-                vector_t bdata, bdatax, bdatad;
-                tensor3d_t idata, idatax, idatad;
-                tensor4d_t kdata, kdatax, kdatad;
-                tensor3d_t odata, odatax, odatad;
+        vector_t bdata, bdatax, bdatad;
+        tensor3d_t idata, idatax, idatad;
+        tensor4d_t kdata, kdatax, kdatad;
+        tensor3d_t odata, odatax, odatad;
 
-                std::tie(bdata, idata, kdata, odata) = make_buffers(params);
-                std::tie(bdatax, idatax, kdatax, odatax) = make_buffers(params);
-                std::tie(bdatad, idatad, kdatad, odatad) = make_buffers(params);
+        std::tie(bdata, idata, kdata, odata) = make_buffers(params);
+        std::tie(bdatax, idatax, kdatax, odatax) = make_buffers(params);
+        std::tie(bdatad, idatad, kdatad, odatad) = make_buffers(params);
 
-                op_naive.output(idata, kdata, bdata, odata);
-                op_dmaps.output(idata, kdata, bdata, odatax);
-                op_dense.output(idata, kdata, bdata, odatad);
+        op_naive.output(idata, kdata, bdata, odata);
+        op_dmaps.output(idata, kdata, bdata, odatax);
+        op_dense.output(idata, kdata, bdata, odatad);
 
-                NANO_CHECK_EIGEN_CLOSE(odata.array(), odatax.array(), 10 * epsilon0<scalar_t>());
-                NANO_CHECK_EIGEN_CLOSE(odata.array(), odatad.array(), 10 * epsilon0<scalar_t>());
+        NANO_CHECK_EIGEN_CLOSE(odata.array(), odatax.array(), epsilon1<scalar_t>());
+        NANO_CHECK_EIGEN_CLOSE(odata.array(), odatad.array(), epsilon1<scalar_t>());
 
-                op_naive.ginput(idata, kdata, bdata, odata);
-                op_dmaps.ginput(idatax, kdata, bdata, odata);
-                op_dense.ginput(idatad, kdata, bdata, odata);
+        op_naive.ginput(idata, kdata, bdata, odata);
+        op_dmaps.ginput(idatax, kdata, bdata, odata);
+        op_dense.ginput(idatad, kdata, bdata, odata);
 
-                NANO_CHECK_EIGEN_CLOSE(idata.array(), idatax.array(), 10 * epsilon0<scalar_t>());
-                NANO_CHECK_EIGEN_CLOSE(idata.array(), idatad.array(), 10 * epsilon0<scalar_t>());
-        }
+        NANO_CHECK_EIGEN_CLOSE(idata.array(), idatax.array(), epsilon1<scalar_t>());
+        NANO_CHECK_EIGEN_CLOSE(idata.array(), idatad.array(), epsilon1<scalar_t>());
 }
 
 NANO_CASE(naive_vs_dmaps_ginput_kconn2)
@@ -359,31 +340,28 @@ NANO_CASE(naive_vs_dmaps_ginput_kconn2)
         const auto op_dmaps = conv3d_dmaps_t{params};
         const auto op_dense = conv3d_dense_t{params};
 
-        for (int i = 0; i < 8; ++ i)
-        {
-                vector_t bdata, bdatax, bdatad;
-                tensor3d_t idata, idatax, idatad;
-                tensor4d_t kdata, kdatax, kdatad;
-                tensor3d_t odata, odatax, odatad;
+        vector_t bdata, bdatax, bdatad;
+        tensor3d_t idata, idatax, idatad;
+        tensor4d_t kdata, kdatax, kdatad;
+        tensor3d_t odata, odatax, odatad;
 
-                std::tie(bdata, idata, kdata, odata) = make_buffers(params);
-                std::tie(bdatax, idatax, kdatax, odatax) = make_buffers(params);
-                std::tie(bdatad, idatad, kdatad, odatad) = make_buffers(params);
+        std::tie(bdata, idata, kdata, odata) = make_buffers(params);
+        std::tie(bdatax, idatax, kdatax, odatax) = make_buffers(params);
+        std::tie(bdatad, idatad, kdatad, odatad) = make_buffers(params);
 
-                op_naive.output(idata, kdata, bdata, odata);
-                op_dmaps.output(idata, kdata, bdata, odatax);
-                op_dense.output(idata, kdata, bdata, odatad);
+        op_naive.output(idata, kdata, bdata, odata);
+        op_dmaps.output(idata, kdata, bdata, odatax);
+        op_dense.output(idata, kdata, bdata, odatad);
 
-                NANO_CHECK_EIGEN_CLOSE(odata.array(), odatax.array(), 10 * epsilon0<scalar_t>());
-                NANO_CHECK_EIGEN_CLOSE(odata.array(), odatad.array(), 10 * epsilon0<scalar_t>());
+        NANO_CHECK_EIGEN_CLOSE(odata.array(), odatax.array(), epsilon1<scalar_t>());
+        NANO_CHECK_EIGEN_CLOSE(odata.array(), odatad.array(), epsilon1<scalar_t>());
 
-                op_naive.ginput(idata, kdata, bdata, odata);
-                op_dmaps.ginput(idatax, kdata, bdata, odata);
-                op_dense.ginput(idatad, kdata, bdata, odata);
+        op_naive.ginput(idata, kdata, bdata, odata);
+        op_dmaps.ginput(idatax, kdata, bdata, odata);
+        op_dense.ginput(idatad, kdata, bdata, odata);
 
-                NANO_CHECK_EIGEN_CLOSE(idata.array(), idatax.array(), 10 * epsilon0<scalar_t>());
-                NANO_CHECK_EIGEN_CLOSE(idata.array(), idatad.array(), 10 * epsilon0<scalar_t>());
-        }
+        NANO_CHECK_EIGEN_CLOSE(idata.array(), idatax.array(), epsilon1<scalar_t>());
+        NANO_CHECK_EIGEN_CLOSE(idata.array(), idatad.array(), epsilon1<scalar_t>());
 }
 
 NANO_END_MODULE()

@@ -152,7 +152,7 @@ bool charset_task_t::populate()
 {
         const auto charset = from_params<charset_type>(config(), "type");
         const auto color = from_params<color_mode>(config(), "color");
-        const auto count = clamp(from_params<size_t>(config(), "count"), 32, 1024 * 1024);
+        const auto count = clamp(from_params<size_t>(config(), "count"), 16, 1024 * 1024);
 
         const string_t characters =
                 "0123456789" \

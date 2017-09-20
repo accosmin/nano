@@ -10,7 +10,7 @@ static void test_function(const function_t& function)
 {
         std::cout << function.name() << std::endl;
 
-        const auto trials = size_t(10000);
+        const auto trials = size_t(1000);
 
         const auto dims = function.size();
         NANO_CHECK_GREATER(dims, 0);
@@ -40,7 +40,7 @@ NANO_BEGIN_MODULE(test_functions)
 
 NANO_CASE(evaluate)
 {
-        foreach_test_function(make_functions(1, 8), test_function);
+        foreach_test_function(make_functions(1, 4), test_function);
 }
 
 NANO_END_MODULE()

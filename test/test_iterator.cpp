@@ -10,11 +10,11 @@ NANO_BEGIN_MODULE(test_iterator)
 NANO_CASE(fixed_batch_iterator)
 {
         auto task = get_tasks().get("synth-charset", to_params(
-                "type", charset_type::digit, "color", color_mode::rgba, "irows", 16, "icols", 16, "count", 10000));
+                "type", charset_type::digit, "color", color_mode::rgba, "irows", 16, "icols", 16, "count", 100));
 
         NANO_CHECK_EQUAL(task->load(), true);
 
-        const auto batch = size_t(123);
+        const auto batch = size_t(23);
         const auto fold = fold_t{0, protocol::train};
         const auto fold_size = task->size(fold);
 
@@ -43,7 +43,7 @@ NANO_CASE(fixed_batch_iterator)
 NANO_CASE(increasing_batch_iterator)
 {
         auto task = get_tasks().get("synth-charset", to_params(
-                "type", charset_type::digit, "color", color_mode::rgba, "irows", 16, "icols", 16, "count", 10000));
+                "type", charset_type::digit, "color", color_mode::rgba, "irows", 16, "icols", 16, "count", 100));
 
         NANO_CHECK_EQUAL(task->load(), true);
 

@@ -26,7 +26,7 @@ NANO_CASE(construction)
                 const auto irows = tensor_size_t(17);
                 const auto icols = tensor_size_t(16);
                 const auto osize = std::get<2>(config);
-                const auto count = size_t(10 * osize);
+                const auto count = size_t(2 * osize);
                 const auto fsize = size_t(1);   // folds
 
                 const auto idims = tensor3d_dims_t{(mode == color_mode::rgba) ? 4 : 1, irows, icols};
@@ -45,10 +45,10 @@ NANO_CASE(construction)
 
 NANO_CASE(from_params)
 {
-        auto task = get_tasks().get("synth-charset", "type=alpha,color=rgb,irows=23,icols=29,count=102");
+        auto task = get_tasks().get("synth-charset", "type=alpha,color=rgb,irows=18,icols=17,count=102");
         NANO_CHECK(task->load());
 
-        const auto idims = tensor3d_dims_t{3, 23, 29};
+        const auto idims = tensor3d_dims_t{3, 18, 17};
         const auto odims = tensor3d_dims_t{52, 1, 1};
         const auto target_sum = scalar_t(2) - static_cast<scalar_t>(nano::size(odims));
 
