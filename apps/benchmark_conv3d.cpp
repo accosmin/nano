@@ -56,9 +56,9 @@ int main(int argc, const char *argv[])
 {
         // parse the command line
         cmdline_t cmdline("benchmark 3D convolution operators");
-        cmdline.add("", "imaps",        "number of input planes [1,128]", "32");
-        cmdline.add("", "irows",        "number of input rows [16, 128]", "24");
-        cmdline.add("", "icols",        "number of input cols [16, 128]", "24");
+        cmdline.add("", "imaps",        "number of input planes [1, 128]", "32");
+        cmdline.add("", "irows",        "number of input rows [1, 128]", "24");
+        cmdline.add("", "icols",        "number of input cols [1, 128]", "24");
         cmdline.add("", "omaps",        "number of output planes [1, 128]", "32");
         cmdline.add("", "min-kconn",    "minimum connectivity factor [1, 16]", "1");
         cmdline.add("", "max-kconn",    "maximum connectivity factor [1, 16]", "4");
@@ -69,8 +69,8 @@ int main(int argc, const char *argv[])
 
         // check arguments and options
         const auto cmd_imaps = clamp(cmdline.get<int>("imaps"), 1, 128);
-        const auto cmd_irows = clamp(cmdline.get<int>("irows"), 16, 128);
-        const auto cmd_icols = clamp(cmdline.get<int>("icols"), 16, 128);
+        const auto cmd_irows = clamp(cmdline.get<int>("irows"), 1, 128);
+        const auto cmd_icols = clamp(cmdline.get<int>("icols"), 1, 128);
         const auto cmd_omaps = clamp(cmdline.get<int>("omaps"), 1, 128);
         const auto cmd_min_kconn = clamp(cmdline.get<int>("min-kconn"), 1, 16);
         const auto cmd_max_kconn = clamp(cmdline.get<int>("max-kconn"), cmd_min_kconn, 16);
