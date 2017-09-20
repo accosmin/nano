@@ -52,10 +52,13 @@ else
         compilers="${compilers} --compiler;g++-4.9"
         compilers="${compilers} --compiler;g++-5"
         compilers="${compilers} --compiler;g++-6"
+        compilers="${compilers} --compiler;g++-7"
         compilers="${compilers} --compiler;clang++-3.6;--libc++"
         compilers="${compilers} --compiler;clang++-3.7;--libc++"
         compilers="${compilers} --compiler;clang++-3.8;--libc++"
         compilers="${compilers} --compiler;clang++-3.9;--libc++"
+        compilers="${compilers} --compiler;clang++-4.0;--libc++"
+        compilers="${compilers} --compiler;clang++-5.0;--libc++"
         timer="/usr/bin/time -f %E"
 fi
 
@@ -141,7 +144,7 @@ do
                         if [ "${do_tests}" == "ON" ]
                         then
                                 cd ${basedir}/${bdir}/test
-                                for test in $(ls test_* | grep -v test_task_mnist | grep -v test_task_cifar10 | grep -v test_task_stl10 | grep -v test_task_svhn)
+                                for test in $(ls test_* | grep -v test_task_)
                                 do
                                         printf "  -%-21s" "${test}..."
 
