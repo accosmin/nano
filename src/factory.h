@@ -35,14 +35,9 @@ namespace nano
                 trobject get(const string_t& id, const string_t& params = string_t()) const;
 
                 ///
-                /// \brief get the IDs of all registered objects.
-                ///
-                strings_t ids() const;
-
-                ///
                 /// \brief get the IDs of the registered objects matching the ID regex.
                 ///
-                strings_t ids(const std::regex& id_regex) const;
+                strings_t ids(const std::regex& id_regex = std::regex(".+")) const;
 
                 ///
                 /// \brief get the descriptions of all registered objects.
@@ -90,17 +85,6 @@ namespace nano
                                 "invalid object id <" + id + "> of type <" + typeid(tobject).name() + ">!");
                 }
                 return it->second.m_maker(configuration);
-        }
-
-        template <typename tobject>
-        strings_t factory_t<tobject>::ids() const
-        {
-                strings_t ret;
-                for (const auto& proto : m_protos)
-                {
-                        ret.push_back(proto.first);
-                }
-                return ret;
         }
 
         template <typename tobject>

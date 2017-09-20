@@ -21,6 +21,15 @@ struct object3_configurable_t : public configurable_t
                 configurable_t(config + ",p3=def3") {}
 };
 
+std::ostream& operator<<(std::ostream& os, const strings_t& strings)
+{
+        for (size_t i = 0; i < strings.size(); ++ i)
+        {
+                os << strings[i] << (i + 1 == strings.size() ? "" : ",");
+        }
+        return os;
+}
+
 NANO_BEGIN_MODULE(test_manager)
 
 NANO_CASE(empty)
@@ -92,12 +101,18 @@ NANO_CASE(retrieval)
         NANO_CHECK_THROW(manager.get("not there"), std::runtime_error);
 
         // check retrieval by regex
-        NANO_CHECK_EQUAL(manager.ids(std::regex("[a-z]+[0-9]")).size(), 3);
-        NANO_CHECK_EQUAL(manager.ids(std::regex("[a-z]+1")).size(), 1);
-        NANO_CHECK_EQUAL(manager.ids(std::regex(".+")).size(), 3);
-        NANO_CHECK_EQUAL(manager.ids(std::regex("obj1")).size(), 1);
-        NANO_CHECK_EQUAL(manager.ids(std::regex("obj[0-9]")).size(), 3);
-        NANO_CHECK_EQUAL(manager.ids(std::regex("obj[1|2]")).size(), 2);
+        const auto ids0 = strings_t{};
+        const auto ids1 = strings_t{id1};
+        const auto ids12 = strings_t{id1, id2};
+        const auto ids123 = strings_t{id1, id2, id3};
+        NANO_CHECK_EQUAL(manager.ids(), ids123);
+        NANO_CHECK_EQUAL(manager.ids(std::regex("[a-z]+[0-9]")), ids123);
+        NANO_CHECK_EQUAL(manager.ids(std::regex("[a-z]+1")), ids1);
+        NANO_CHECK_EQUAL(manager.ids(std::regex(".+")), ids123);
+        NANO_CHECK_EQUAL(manager.ids(std::regex("obj1")), ids1);
+        NANO_CHECK_EQUAL(manager.ids(std::regex("obj[0-9]")), ids123);
+        NANO_CHECK_EQUAL(manager.ids(std::regex("obj[1|2]")), ids12);
+        NANO_CHECK_EQUAL(manager.ids(std::regex("obj7")), ids0);
 }
 
 NANO_END_MODULE()

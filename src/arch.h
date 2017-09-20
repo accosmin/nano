@@ -35,7 +35,7 @@
         #define NANO_UNUSED3_RELEASE(x, y, z) NANO_UNUSED3(x, y, z)
 #endif
 
-// string a given variable
+// stringify a given variable
 #define NANO_STRINGIFY_(x) #x
 #define NANO_STRINGIFY(x) NANO_STRINGIFY_(x)
 
