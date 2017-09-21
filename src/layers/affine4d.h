@@ -63,8 +63,8 @@ namespace nano
                 const auto isize = m_params.isize();
                 const auto osize = m_params.osize();
 
-                auto midata = map_matrix(idata.data(), count, isize);
-                auto modata = map_matrix(odata.data(), count, osize);
+                auto midata = idata.reshape(count, isize).matrix();
+                auto modata = odata.reshape(count, osize).matrix();
 
                 modata = midata * wdata.transpose();
                 modata.rowwise() += bdata.transpose();
@@ -83,10 +83,10 @@ namespace nano
                 const auto isize = m_params.isize();
                 const auto osize = m_params.osize();
 
-                auto midata = map_matrix(idata.data(), count, isize);
-                auto modata = map_matrix(odata.data(), count, osize);
+                auto midata = idata.reshape(count, isize).matrix();
+                auto modata = odata.reshape(count, osize).matrix();
 
-                midata = modata * wdata;
+                midata.transpose() = wdata.transpose() * modata.transpose();
                 return true;
         }
 
@@ -102,8 +102,8 @@ namespace nano
                 const auto isize = m_params.isize();
                 const auto osize = m_params.osize();
 
-                auto midata = map_matrix(idata.data(), count, isize);
-                auto modata = map_matrix(odata.data(), count, osize);
+                auto midata = idata.reshape(count, isize).matrix();
+                auto modata = odata.reshape(count, osize).matrix();
 
                 wdata = modata.transpose() * midata;
                 bdata = modata.colwise().sum();
