@@ -10,25 +10,25 @@ branches:
 matrix:
   include:
     - compiler: gcc
-      env: COMPILER=g++-4.9 PACKAGES=g++-4.9
+      env: COMPILER=g++-4.9 TOOLCHAIN=ppa:ubuntu-toolchain-r/test PACKAGES=g++-4.9
     - compiler: gcc
-      env: COMPILER=g++-5 PACKAGES=g++-5
+      env: COMPILER=g++-5 TOOLCHAIN=ppa:ubuntu-toolchain-r/test PACKAGES=g++-5
     - compiler: gcc
-      env: COMPILER=g++-6 PACKAGES=g++-6
+      env: COMPILER=g++-6 TOOLCHAIN=ppa:ubuntu-toolchain-r/test PACKAGES=g++-6
     - compiler: gcc
-      env: COMPILER=g++-7 PACKAGES=g++-7
+      env: COMPILER=g++-7 TOOLCHAIN=ppa:ubuntu-toolchain-r/test PACKAGES=g++-7
     - compiler: clang
-      env: COMPILER=clang++-3.6 PACKAGES=clang-3.6_libc++abi-dev_libc++-dev PARAMS=--libc++
+      env: COMPILER=clang++-3.6 TOOLCHAIN=ppa:llvm-toolchain-3.6 PACKAGES=clang-3.6_libc++abi-dev_libc++-dev PARAMS=--libc++
     - compiler: clang
-      env: COMPILER=clang++-3.7 PACKAGES=clang-3.7_libc++abi-dev_libc++-dev PARAMS=--libc++
+      env: COMPILER=clang++-3.7 TOOLCHAIN=ppa:llvm-toolchain-3.7 PACKAGES=clang-3.7_libc++abi-dev_libc++-dev PARAMS=--libc++
     - compiler: clang
-      env: COMPILER=clang++-3.8 PACKAGES=clang-3.8_libc++abi-dev_libc++-dev PARAMS=--libc++
+      env: COMPILER=clang++-3.8 TOOLCHAIN=ppa:llvm-toolchain-3.8 PACKAGES=clang-3.8_libc++abi-dev_libc++-dev PARAMS=--libc++
     - compiler: clang
-      env: COMPILER=clang++-3.9 PACKAGES=clang-3.9_libc++abi-dev_libc++-dev PARAMS=--libc++
+      env: COMPILER=clang++-3.9 TOOLCHAIN=ppa:llvm-toolchain-3.9 PACKAGES=clang-3.9_libc++abi-dev_libc++-dev PARAMS=--libc++
     - compiler: clang
-      env: COMPILER=clang++-4.0 PACKAGES=clang-4.0_libc++abi-dev_libc++-dev PARAMS=--libc++
+      env: COMPILER=clang++-4.0 TOOLCHAIN=ppa:llvm-toolchain-4.0 PACKAGES=clang-4.0_libc++abi-dev_libc++-dev PARAMS=--libc++
     - compiler: clang
-      env: COMPILER=clang++-5.0 PACKAGES=clang-5.0_libc++abi-dev_libc++-dev PARAMS=--libc++
+      env: COMPILER=clang++-5.0 TOOLCHAIN=ppa:llvm-toolchain-5.0 PACKAGES=clang-5.0_libc++abi-dev_libc++-dev PARAMS=--libc++
     - os: osx
       osx_image: xcode7.3.1
       env: COMPILER=xcode7
@@ -48,12 +48,8 @@ install:
     fi
   - |
     if [ "$TRAVIS_OS_NAME" = "linux" ]; then
-      sudo add-apt-repository ppa:ubuntu-toolchain-r/test -y
       sudo add-apt-repository ppa:nschloe/eigen-backports -y
-      if [ "$COMPILER" = "clang++*" ]; then
-        sudo echo "deb http://apt.llvm.org/trusty/ llvm-toolchain-trusty${COMPILER/clang++/} main" >> /etc/apt/sources.list
-        sudo echo "deb-src http://apt.llvm.org/trusty/ llvm-toolchain-trusty${COMPILER/clang++} main" >> /etc/apt/sources.list
-      fi
+      sudo add-apt-repository ${TOOLCHAIN} -y
       sudo apt-get update -qq
       sudo apt-get install -y ${PACKAGES//_/ } ccache cmake cmake-data ninja-build libdevil-dev libeigen3-dev libarchive-dev
       export CXX="$COMPILER"
