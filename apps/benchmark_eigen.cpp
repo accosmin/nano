@@ -61,7 +61,7 @@ namespace
         }
 
         void measure_level2(const tensor_size_t dims,
-                table_row_t& row1, table_row_t& row2, table_row_t& row3, table_row_t& row4)
+                table_row_t& row1, table_row_t& row2, table_row_t& row3, table_row_t& row4, table_row_t& row5)
         {
                 auto A = make_matrix(dims, dims);
                 auto Z = make_matrix(dims, dims);
@@ -70,11 +70,14 @@ namespace
                 auto y = make_vector(dims);
                 auto z = make_vector(dims);
                 auto c = make_scalar();
+                auto zz = make_matrix(1, dims);
+                auto xx = make_matrix(1, dims);
 
                 store(row1, 2 * dims * dims, [&] () { z = A * x; });
                 store(row2, 2 * dims * dims + dims, [&] () { z = (A * x).array() + c; });
                 store(row3, 2 * dims * dims + dims, [&] () { z = A * x + y; });
                 store(row4, 2 * dims * dims + dims, [&] () { Z = x * y.transpose() + C; });
+                store(row5, 2 * dims * dims, [&] () { zz = xx * A.transpose(); });
         }
 
         auto measure_level3(const tensor_size_t dims,
@@ -174,9 +177,10 @@ int main(int argc, const char* argv[])
                         auto& row2 = table.append() << "z = Ax + c";
                         auto& row3 = table.append() << "z = Ax + y";
                         auto& row4 = table.append() << "Z = xy^t + C";
+                        auto& row5 = table.append() << "col(z) = col(x)A^t";
                         foreach_dims(min, max, [&] (const auto dims)
                         {
-                                measure_level2(dims, row1, row2, row3, row4);
+                                measure_level2(dims, row1, row2, row3, row4, row5);
                         });
                 }
                 std::cout << table;
