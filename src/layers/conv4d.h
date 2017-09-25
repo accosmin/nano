@@ -89,7 +89,7 @@ namespace nano
                 switch (kconn)
                 {
                 case 1:
-                        m_okdata = map_matrix(kdata.data(), omaps, imaps * krows * kcols);
+                        m_okdata = kdata.reshape(omaps, imaps * krows * kcols).matrix();
                         break;
 
                 default:

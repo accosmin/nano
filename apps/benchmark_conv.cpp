@@ -66,6 +66,8 @@ int main(int argc, const char *argv[])
         cmdline.add("", "max-kconn",    "maximum connectivity factor [1, 16]", "4");
         cmdline.add("", "min-ksize",    "minimum kernel size [1, 15]", "1");
         cmdline.add("", "max-ksize",    "maximum kernel size [1, 15]", "9");
+        cmdline.add("", "min-kdelta",   "minimum kernel stride [1, 3]", "1");
+        cmdline.add("", "max-kdelta",   "maximum kernel stride [1, 3]", "2");
         cmdline.add("", "min-count",    "minimum number of samples in minibatch [1, 16]",  "1");
         cmdline.add("", "max-count",    "maximum number of samples in minibatch [1, 128]", "128");
 
@@ -80,8 +82,8 @@ int main(int argc, const char *argv[])
         const auto cmd_max_kconn = clamp(cmdline.get<int>("max-kconn"), cmd_min_kconn, 16);
         const auto cmd_min_ksize = clamp(cmdline.get<int>("min-ksize"), 1, 15);
         const auto cmd_max_ksize = clamp(cmdline.get<int>("max-ksize"), cmd_min_ksize, 15);
-        const auto cmd_min_kdelta = 1;
-        const auto cmd_max_kdelta = 2;
+        const auto cmd_min_kdelta = clamp(cmdline.get<int>("min-kdelta"), 1, 3);
+        const auto cmd_max_kdelta = clamp(cmdline.get<int>("max-kdelta"), cmd_min_kdelta, 3);
         const auto cmd_min_count = clamp(cmdline.get<int>("min-count"), 1, 16);
         const auto cmd_max_count = clamp(cmdline.get<int>("max-count"), cmd_min_count, 128);
 
