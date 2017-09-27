@@ -105,6 +105,11 @@ namespace nano
                         break;
                 }
 
+//                output[x] = kernel * input[x]
+//
+//                oodata                  = okdata *                         kodata
+//                (omaps, orows * ocols)  = (omaps, imaps * krows * kcols) x (imaps * krows * kcols, orows * ocols)
+
                 m_kodata.resize(count, imaps * krows * kcols, orows * ocols);
                 for (tensor_size_t x = 0; x < count; ++ x)
                 {
@@ -149,8 +154,7 @@ namespace nano
                         auto imap = idata.tensor(x);
                         auto omap = odata.tensor(x);
 
-                        m_oodata = map_matrix(omap.data(), omaps, orows * ocols);
-                        m_kxdata.noalias() = m_okdata.transpose() * m_oodata;
+                        m_kxdata.noalias() = m_okdata.transpose() * omap.reshape(omaps, orows * ocols).matrix();
 
                         imap.setZero();
                         for (tensor_size_t i = 0; i < imaps; ++ i)
@@ -196,19 +200,18 @@ namespace nano
                 assert(m_kodata.size<2>() == orows * ocols);
                 for (tensor_size_t x = 0; x < count; ++ x)
                 {
-                        auto omap = odata.tensor(x);
+                        auto omap = odata.tensor(x).reshape(omaps, orows * ocols).matrix();
 
                         // bias
-                        bdata += omap.reshape(omaps, orows * ocols).matrix().rowwise().sum();
+                        bdata += omap.rowwise().sum();
 
                         // convolution
-                        m_oodata = map_matrix(omap.data(), omaps, orows * ocols);
-                        m_xkdata.noalias() = m_oodata * m_kodata.matrix(x).transpose();
+                        m_xkdata.noalias() = omap * m_kodata.matrix(x).transpose();
 
                         switch (kconn)
                         {
                         case 1:
-                                map_matrix(kdata.data(), omaps, imaps * krows * kcols) += m_xkdata;
+                                kdata.reshape(omaps, imaps * krows * kcols).matrix() += m_xkdata;
                                 break;
 
                         default:
