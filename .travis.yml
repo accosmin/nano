@@ -19,8 +19,8 @@ matrix:
       env: COMPILER=g++-7 PACKAGES=g++-7
     - compiler: clang
       env: COMPILER=clang++-3.6 PACKAGES=clang-3.6_libc++abi-dev_libc++-dev PARAMS=--libc++
-    - compiler: clang
-      env: COMPILER=clang++-3.7 PACKAGES=clang-3.7_libc++abi-dev_libc++-dev PARAMS=--libc++
+#    - compiler: clang
+#      env: COMPILER=clang++-3.7 PACKAGES=clang-3.7_libc++abi-dev_libc++-dev PARAMS=--libc++
     - compiler: clang
       env: COMPILER=clang++-3.8 PACKAGES=clang-3.8_libc++abi-dev_libc++-dev PARAMS=--libc++
     - compiler: clang
@@ -49,9 +49,8 @@ install:
   - |
     if [ "$TRAVIS_OS_NAME" = "linux" ]; then
       sudo add-apt-repository ppa:nschloe/eigen-backports -y
-      if [ "$COMPILER" = "clang++*" ]; then
+      if [ "$COMPILER" = "clang*" ]; then
         sudo echo "deb http://apt.llvm.org/trusty/ llvm-toolchain-trusty main" >> /etc/apt/sources.list
-        sudo echo "deb-src http://apt.llvm.org/trusty/ llvm-toolchain-trusty main" >> /etc/apt/sources.list
         wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | sudo apt-key add -
       else
         sudo add-apt-repository ppa:ubuntu-toolchain-r/test -y
