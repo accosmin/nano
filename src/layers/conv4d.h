@@ -78,8 +78,9 @@ namespace nano
         {
                 const auto count = idata.template size<0>();
                 const auto imaps = m_params.imaps();
-                const auto kconn = m_params.kconn(), kdrow = m_params.kdrow(), kdcol = m_params.kdcol(), krows = m_params.krows(), kcols = m_params.kcols();
+                const auto kconn = m_params.kconn(), krows = m_params.krows(), kcols = m_params.kcols();
                 const auto omaps = m_params.omaps(), orows = m_params.orows(), ocols = m_params.ocols();
+                const auto drows = m_params.kdrow(), dcols = m_params.kdcol();
 
                 if (!m_params.valid(idata, kdata, bdata, odata))
                 {
@@ -113,23 +114,23 @@ namespace nano
                 m_kodata.resize(count, imaps * krows * kcols, orows * ocols);
                 for (tensor_size_t x = 0; x < count; ++ x)
                 {
-                        auto imap = idata.tensor(x);
-                        auto omap = odata.tensor(x);
+                        auto xidata = idata.tensor(x);
+                        auto xodata = odata.tensor(x);
                         auto kodata = m_kodata.matrix(x);
 
                         // bias
-                        map_matrix(omap.data(), omaps, orows * ocols).colwise() = bdata;
+                        xodata.reshape(omaps, orows * ocols).matrix().colwise() = bdata;
 
                         // +convolution
                         for (tensor_size_t i = 0; i < imaps; ++ i)
                         {
-                                img2col(imap.matrix(i), orows, ocols, krows, kcols, kdrow, kdcol,
+                                img2col(xidata.matrix(i), orows, ocols, krows, kcols, drows, dcols,
                                         map_matrix(kodata.row(i * krows * kcols).data(),
                                                    krows * kcols, orows * ocols));
                         }
 
                         m_oodata.noalias() = m_okdata * kodata;
-                        map_matrix(omap.data(), omaps, orows * ocols) += m_oodata;
+                        xodata.reshape(omaps, orows * ocols).matrix() += m_oodata;
                 }
                 return true;
         }
@@ -148,32 +149,19 @@ namespace nano
                         return false;
                 }
 
-
                 for (tensor_size_t x = 0; x < count; ++ x)
                 {
-                        auto imap = idata.tensor(x);
-                        auto omap = odata.tensor(x);
+                        auto xidata = idata.tensor(x);
+                        auto xodata = odata.tensor(x);
 
-                        m_kxdata.noalias() = m_okdata.transpose() * omap.reshape(omaps, orows * ocols).matrix();
+                        m_kxdata.noalias() = m_okdata.transpose() * xodata.reshape(omaps, orows * ocols).matrix();
 
-                        imap.setZero();
+                        xidata.zero();
                         for (tensor_size_t i = 0; i < imaps; ++ i)
                         {
-                                auto imat = imap.matrix(i);
-                                for (tensor_size_t kr = 0; kr < krows; ++ kr)
-                                {
-                                        for (tensor_size_t kc = 0; kc < kcols; ++ kc)
-                                        {
-                                                const auto orow = m_kxdata.row(i * krows * kcols + kr * kcols + kc);
-                                                for (tensor_size_t r = 0; r < orows; ++ r)
-                                                {
-                                                        for (tensor_size_t c = 0; c < ocols; ++ c)
-                                                        {
-                                                                imat(r * drows + kr, c * dcols + kc) += orow(r * ocols + c);
-                                                        }
-                                                }
-                                        }
-                                }
+                                col2img(xidata.matrix(i), orows, ocols, krows, kcols, drows, dcols,
+                                        map_matrix(m_kxdata.row(i * krows * kcols).data(),
+                                                   krows * kcols, orows * ocols));
                         }
                 }
                 return true;
@@ -200,13 +188,14 @@ namespace nano
                 assert(m_kodata.size<2>() == orows * ocols);
                 for (tensor_size_t x = 0; x < count; ++ x)
                 {
-                        auto omap = odata.tensor(x).reshape(omaps, orows * ocols).matrix();
+                        auto xodata = odata.tensor(x);
+                        auto kodata = m_kodata.matrix(x);
 
                         // bias
-                        bdata += omap.rowwise().sum();
+                        bdata += xodata.reshape(omaps, orows * ocols).matrix().rowwise().sum();
 
                         // convolution
-                        m_xkdata.noalias() = omap * m_kodata.matrix(x).transpose();
+                        m_xkdata.noalias() = xodata.reshape(omaps, orows * ocols).matrix() * kodata.transpose();
 
                         switch (kconn)
                         {

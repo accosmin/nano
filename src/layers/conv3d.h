@@ -67,18 +67,18 @@ namespace nano
 
                 for (tensor_size_t x = 0; x < count; ++ x)
                 {
-                        auto imap = idata.tensor(x);
-                        auto omap = odata.tensor(x);
+                        auto xidata = idata.tensor(x);
+                        auto xodata = odata.tensor(x);
 
                         // bias
-                        map_matrix(omap.data(), omaps, orows * ocols).colwise() = bdata;
+                        xodata.reshape(omaps, orows * ocols).matrix().colwise() = bdata;
 
                         // + convolution
                         for (tensor_size_t o = 0; o < omaps; ++ o)
                         {
                                 for (tensor_size_t i = o % kconn, ik = 0; i < imaps; i += kconn, ++ ik)
                                 {
-                                        convo2d(imap.matrix(i), kdata.matrix(o, ik), kdrow, kdcol, omap.matrix(o));
+                                        convo2d(xidata.matrix(i), kdata.matrix(o, ik), kdrow, kdcol, xodata.matrix(o));
                                 }
                         }
                 }
@@ -100,16 +100,15 @@ namespace nano
 
                 for (tensor_size_t x = 0; x < count; ++ x)
                 {
-                        auto imap = idata.tensor(x);
-                        auto omap = odata.tensor(x);
+                        auto xidata = idata.tensor(x);
+                        auto xodata = odata.tensor(x);
 
+                        xidata.setZero();
                         for (tensor_size_t i = 0; i < imaps; ++ i)
                         {
-                                imap.matrix(i).setZero();
-
-                                for (tensor_size_t o = i % kconn, ok = 0; o < omaps; o += kconn, ++ ok)
+                                for (tensor_size_t o = i % kconn, ik = i / kconn; o < omaps; o += kconn)
                                 {
-                                        convi2d(imap.matrix(i), kdata.matrix(o, i / kconn), kdrow, kdcol, omap.matrix(o));
+                                        convi2d(xidata.matrix(i), kdata.matrix(o, ik), kdrow, kdcol, xodata.matrix(o));
                                 }
                         }
                 }
@@ -134,18 +133,18 @@ namespace nano
 
                 for (tensor_size_t x = 0; x < count; ++ x)
                 {
-                        auto imap = idata.tensor(x);
-                        auto omap = odata.tensor(x);
+                        auto xidata = idata.tensor(x);
+                        auto xodata = odata.tensor(x);
 
                         // bias
-                        bdata += map_matrix(omap.data(), omaps, orows * ocols).rowwise().sum();
+                        bdata += xodata.reshape(omaps, orows * ocols).matrix().rowwise().sum();
 
                         // convolution
                         for (tensor_size_t o = 0; o < omaps; ++ o)
                         {
                                 for (tensor_size_t i = o % kconn, ik = 0; i < imaps; i += kconn, ++ ik)
                                 {
-                                        convk2d(imap.matrix(i), kdata.matrix(o, ik), kdrow, kdcol, omap.matrix(o));
+                                        convk2d(xidata.matrix(i), kdata.matrix(o, ik), kdrow, kdcol, xodata.matrix(o));
                                 }
                         }
                 }
