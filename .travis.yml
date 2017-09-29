@@ -49,12 +49,9 @@ install:
   - |
     if [ "$TRAVIS_OS_NAME" = "linux" ]; then
       sudo add-apt-repository ppa:nschloe/eigen-backports -y
-      if [ "$COMPILER" = "clang*" ]; then
-        sudo echo "deb http://apt.llvm.org/trusty/ llvm-toolchain-trusty main" >> /etc/apt/sources.list
-        wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | sudo apt-key add -
-      else
-        sudo add-apt-repository ppa:ubuntu-toolchain-r/test -y
-      fi
+      sudo echo "deb http://apt.llvm.org/trusty/ llvm-toolchain-trusty main" >> /etc/apt/sources.list
+      wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | sudo apt-key add -
+      sudo add-apt-repository ppa:ubuntu-toolchain-r/test -y
       sudo apt-get update -qq
       sudo apt-get install -y ${PACKAGES//_/ } ccache cmake cmake-data ninja-build libdevil-dev libeigen3-dev libarchive-dev
       export CXX="$COMPILER"
