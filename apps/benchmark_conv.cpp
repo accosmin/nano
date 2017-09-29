@@ -52,6 +52,59 @@ namespace
                 const auto duration = measure<nanoseconds_t>([&] () { op.gparam(idata, kdata, bdata, odata); }, trials);
                 return nano::gflops(op.params().flops_gparam() * count, duration);
         }
+
+        bool benchmark(const int imaps, const int irows, const int icols, const int omaps,
+                const int ksize, const int kdelta, const int kconn, const int count, table_t& table)
+        {
+                const auto params = conv_params_t
+                {
+                        imaps, irows, icols,
+                        omaps, kconn, ksize, ksize, kdelta, kdelta
+                };
+
+                const auto kflops_output = params.flops_output() / 1024;
+                const auto kflops_ginput = params.flops_ginput() / 1024;
+                const auto kflops_gparam = params.flops_gparam() / 1024;
+
+                const auto config = to_params(
+                        "conn", kconn, "rows", ksize, "cols", ksize, "drow", kdelta, "dcol", kdelta,
+                        "count", count);
+
+                if (!params.valid())
+                {
+                        log_error() << "invalid parameters (" << config << ")!";
+                        return false;
+                }
+
+                auto bdata = params.make_bdata(); bdata.setRandom();
+                auto kdata = params.make_kdata(); kdata.setRandom();
+                auto idata = params.make_idata(count); idata.setRandom();
+                auto odata = params.make_odata(count); odata.setRandom();
+
+                // 3D implementation
+                const auto op3d = conv3d_t{params};
+                const auto gf3d_output = measure_output(op3d, idata, kdata, bdata, odata);
+                const auto gf3d_ginput = measure_ginput(op3d, idata, kdata, bdata, odata);
+                const auto gf3d_gparam = measure_gparam(op3d, idata, kdata, bdata, odata);
+
+                // 4D implementation
+                auto op4d = conv4d_t{params};
+                op4d.output(idata, kdata, bdata, odata);// NB: needed to update the internal buffers!
+                const auto gf4d_output = measure_output(op4d, idata, kdata, bdata, odata);
+                const auto gf4d_ginput = measure_ginput(op4d, idata, kdata, bdata, odata);
+                const auto gf4d_gparam = measure_gparam(op4d, idata, kdata, bdata, odata);
+
+                table.append()
+                        << tensor3d_dims_t{params.imaps(), params.irows(), params.icols()}
+                        << config
+                        << tensor3d_dims_t{params.omaps(), params.orows(), params.ocols()}
+                        << params.psize()
+                        << kflops_output << kflops_ginput << kflops_gparam
+                        << gf3d_output << gf3d_ginput << gf3d_gparam
+                        << gf4d_output << gf4d_ginput << gf4d_gparam;
+
+                return true;
+        }
 }
 
 int main(int argc, const char *argv[])
@@ -103,60 +156,19 @@ int main(int argc, const char *argv[])
         table.append(table_row_t::storage::delim);
 
         // benchmark for different kernel sizes, connectivity factors and number of samples in a minibatch
-        for (tensor_size_t ksize = cmd_min_ksize; ksize <= cmd_max_ksize; ksize += 2)
+        for (auto ksize = cmd_min_ksize; ksize <= cmd_max_ksize; ksize += 2)
         {
-                for (tensor_size_t kdelta = cmd_min_kdelta; kdelta <= cmd_max_kdelta; ++ kdelta)
+                for (auto kdelta = cmd_min_kdelta; kdelta <= cmd_max_kdelta; ++ kdelta)
                 {
-                        for (tensor_size_t kconn = cmd_min_kconn; kconn <= cmd_max_kconn; kconn *= 2)
+                        for (auto kconn = cmd_min_kconn; kconn <= cmd_max_kconn; kconn *= 2)
                         {
                                 for (auto count = cmd_min_count; count <= cmd_max_count; count *= 2)
                                 {
-                                        const auto params = conv_params_t
+                                        if (!benchmark(cmd_imaps, cmd_irows, cmd_icols, cmd_omaps,
+                                                       ksize, kdelta, kconn, count, table))
                                         {
-                                                cmd_imaps, cmd_irows, cmd_icols,
-                                                cmd_omaps, kconn, ksize, ksize, kdelta, kdelta
-                                        };
-
-                                        const auto kflops_output = params.flops_output() / 1024;
-                                        const auto kflops_ginput = params.flops_ginput() / 1024;
-                                        const auto kflops_gparam = params.flops_gparam() / 1024;
-
-                                        const auto config = to_params(
-                                                "conn", kconn, "rows", ksize, "cols", ksize, "drow", kdelta, "dcol", kdelta,
-                                                "count", count);
-
-                                        if (!params.valid())
-                                        {
-                                                log_error() << "invalid parameters (" << config << ")!";
                                                 break;
                                         }
-
-                                        auto bdata = params.make_bdata(); bdata.setRandom();
-                                        auto kdata = params.make_kdata(); kdata.setRandom();
-                                        auto idata = params.make_idata(count); idata.setRandom();
-                                        auto odata = params.make_odata(count); odata.setRandom();
-
-                                        // 3D implementation
-                                        const auto op3d = conv3d_t{params};
-                                        const auto gf3d_output = measure_output(op3d, idata, kdata, bdata, odata);
-                                        const auto gf3d_ginput = measure_ginput(op3d, idata, kdata, bdata, odata);
-                                        const auto gf3d_gparam = measure_gparam(op3d, idata, kdata, bdata, odata);
-
-                                        // 4D implementation
-                                        auto op4d = conv4d_t{params};
-                                        op4d.output(idata, kdata, bdata, odata);// NB: needed to update the internal buffers!
-                                        const auto gf4d_output = measure_output(op4d, idata, kdata, bdata, odata);
-                                        const auto gf4d_ginput = measure_ginput(op4d, idata, kdata, bdata, odata);
-                                        const auto gf4d_gparam = measure_gparam(op4d, idata, kdata, bdata, odata);
-
-                                        table.append()
-                                                << tensor3d_dims_t{params.imaps(), params.irows(), params.icols()}
-                                                << config
-                                                << tensor3d_dims_t{params.omaps(), params.orows(), params.ocols()}
-                                                << params.psize()
-                                                << kflops_output << kflops_ginput << kflops_gparam
-                                                << gf3d_output << gf3d_ginput << gf3d_gparam
-                                                << gf4d_output << gf4d_ginput << gf4d_gparam;
                                 }
 
                                 if (kconn + 1 <= cmd_max_kconn)
