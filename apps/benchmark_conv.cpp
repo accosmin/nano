@@ -67,8 +67,7 @@ namespace
                 const auto kflops_gparam = params.flops_gparam() / 1024;
 
                 const auto config = to_params(
-                        "conn", kconn, "rows", ksize, "cols", ksize, "drow", kdelta, "dcol", kdelta,
-                        "count", count);
+                        "conn", kconn, "rows", ksize, "cols", ksize, "drow", kdelta, "dcol", kdelta, "count", count);
 
                 if (!params.valid())
                 {
