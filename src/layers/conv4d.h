@@ -7,7 +7,7 @@ namespace nano
 {
         ///
         /// \brief convolution transformation with 4D input and output tensors using
-        ///     level-3 Blas calls (thus processing all samples at once).
+        ///     efficient level-3 BLAS calls.
         ///
         /// NB: the 3D convolutions and correlations are replaced with matrix multiplications.
         /// NB: requires extra buffers.
@@ -17,6 +17,9 @@ namespace nano
         ///     kdata: convolution kernel (omaps x imaps/kconn x krows x kcols)
         ///     bdata: bias vector (omaps)
         ///     odata: 4D output tensor (count x omaps x orows x ocols, with osize = omaps x orows x ocols)
+        ///
+        /// operation:
+        ///     odata(o) = sum(i, conv2d(idata(i), kdata(o, i))) + bdata(o)
         ///
         struct conv4d_t
         {
@@ -124,9 +127,9 @@ namespace nano
                         // +convolution
                         for (tensor_size_t i = 0; i < imaps; ++ i)
                         {
-                                img2col(xidata.matrix(i), orows, ocols, krows, kcols, drows, dcols,
-                                        map_matrix(kodata.row(i * krows * kcols).data(),
-                                                   krows * kcols, orows * ocols));
+                                img2col0(xidata.matrix(i), orows, ocols, krows, kcols, drows, dcols,
+                                         map_matrix(kodata.row(i * krows * kcols).data(),
+                                                    krows * kcols, orows * ocols));
                         }
 
                         m_oodata.noalias() = m_okdata * kodata;

@@ -29,18 +29,45 @@ namespace
 {
         const auto trials = size_t(16);
 
+        template <typename top>
+        auto measure_img2col(const top& op,
+                const tensor_size_t orows, const tensor_size_t ocols,
+                const tensor_size_t krows, const tensor_size_t kcols)
+        {
+                const auto flops = orows * ocols * krows * kcols;
+                const auto duration = measure<picoseconds_t>([&] () { op(); }, trials);
+                return nano::gflops(flops, duration);
+        }
+
         template <typename timatrix, typename tomatrix>
-        auto measure_img2col(const timatrix& imat,
+        auto measure_img2col0(const timatrix& imat,
                 const tensor_size_t orows, const tensor_size_t ocols,
                 const tensor_size_t krows, const tensor_size_t kcols,
                 const tensor_size_t drows, const tensor_size_t dcols,
                 tomatrix&& omat)
         {
-                const auto flops = orows * ocols * krows * kcols;
-                const auto duration = measure<nanoseconds_t>([&] ()
-                {
-                        nano::img2col(imat, orows, ocols, krows, kcols, drows, dcols, omat);
-                }, trials);
+                return  measure_img2col([&] () { nano::img2col0(imat, orows, ocols, krows, kcols, drows, dcols, omat); },
+                        orows, ocols, krows, kcols);
+        }
+
+        template <typename timatrix, typename tomatrix>
+        auto measure_img2colx(const timatrix& imat,
+                const tensor_size_t orows, const tensor_size_t ocols,
+                const tensor_size_t krows, const tensor_size_t kcols,
+                const tensor_size_t drows, const tensor_size_t dcols,
+                tomatrix&& omat)
+        {
+                return  measure_img2col([&] () { nano::img2colx(imat, orows, ocols, krows, kcols, drows, dcols, omat); },
+                        orows, ocols, krows, kcols);
+        }
+
+        template <typename top>
+        auto measure_col2img(const top& op,
+                const tensor_size_t orows, const tensor_size_t ocols,
+                const tensor_size_t krows, const tensor_size_t kcols)
+        {
+                const auto flops = 2 * orows * ocols * krows * kcols;
+                const auto duration = measure<picoseconds_t>([&] () { op(); }, trials);
                 return nano::gflops(flops, duration);
         }
 
@@ -51,12 +78,8 @@ namespace
                 const tensor_size_t drows, const tensor_size_t dcols,
                 const tomatrix& omat)
         {
-                const auto flops = orows * ocols * krows * kcols;
-                const auto duration = measure<nanoseconds_t>([&] ()
-                {
-                        nano::col2img(imat, orows, ocols, krows, kcols, drows, dcols, omat);
-                }, trials);
-                return nano::gflops(flops, duration);
+                return  measure_col2img([&] { nano::col2img(imat, orows, ocols, krows, kcols, drows, dcols, omat); },
+                        orows, ocols, krows, kcols);
         }
 
         bool benchmark(const int imaps, const int irows, const int icols, const int omaps,
@@ -85,14 +108,16 @@ namespace
                 matrix_t imap(irows, icols); imap.setRandom();
                 matrix_t omap(krows * kcols, orows * ocols); omap.setRandom();
 
-                const auto img2col = measure_img2col(imap, orows, ocols, krows, kcols, drows, dcols, omap);
+                const auto img2col0 = measure_img2col0(imap, orows, ocols, krows, kcols, drows, dcols, omap);
+                const auto img2colx = measure_img2colx(imap, orows, ocols, krows, kcols, drows, dcols, omap);
+
                 const auto col2img = measure_col2img(imap, orows, ocols, krows, kcols, drows, dcols, omap);
 
                 table.append()
                         << tensor3d_dims_t{params.imaps(), params.irows(), params.icols()}
                         << config
                         << tensor3d_dims_t{params.omaps(), params.orows(), params.ocols()}
-                        << img2col << col2img;
+                        << img2col0 << img2colx << col2img;
 
                 return true;
         }
@@ -130,11 +155,11 @@ int main(int argc, const char *argv[])
         table_t table;
         table.header()
                 << "" << "" << ""
-                << "img2col" << "col2img";
+                << "img2col" << "img2colx" << "col2img";
 
         table.append()
                 << "isize" << "config" << "osize"
-                << "gflop/s" << "gflop/s";
+                << "gflop/s" << "gflop/s" << "gflop/s";
 
         table.append(table_row_t::storage::delim);
 

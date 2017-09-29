@@ -15,6 +15,9 @@ namespace nano
         ///     bdata: bias vector (omaps)
         ///     odata: 4D output tensor (count x omaps x orows x ocols, with osize = omaps x orows x ocols)
         ///
+        /// operation:
+        ///     odata(o) = sum(i, conv2d(idata(i), kdata(o, i))) + bdata(o)
+        ///
         struct conv3d_t
         {
                 ///
