@@ -14,6 +14,9 @@ namespace nano
         ///     bdata: bias vector (osize)
         ///     odata: 4D output tensor (count x omaps x orows x ocols, with osize = omaps x orows x ocols)
         ///
+        /// operation:
+        ///     odata = wdata * idata + bdata
+        ///
         struct affine4d_t
         {
                 ///
