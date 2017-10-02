@@ -69,8 +69,7 @@ namespace nano
                 auto midata = idata.reshape(count, isize).matrix();
                 auto modata = odata.reshape(count, osize).matrix();
 
-                modata = midata * wdata.transpose();
-                modata.rowwise() += bdata.transpose();
+                modata.noalias() = (midata * wdata.transpose()).rowwise() + bdata.transpose();
                 return true;
         }
 
