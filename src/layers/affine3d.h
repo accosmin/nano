@@ -102,7 +102,7 @@ namespace nano
                 bdata.setZero();
                 for (tensor_size_t x = 0; x < count; ++ x)
                 {
-                        wdata += odata.vector(x) * idata.vector(x).transpose();
+                        wdata.noalias() += odata.vector(x) * idata.vector(x).transpose();
                         bdata += odata.vector(x);
                 }
                 return true;

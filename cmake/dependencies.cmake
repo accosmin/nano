@@ -13,4 +13,3 @@ include_directories(SYSTEM ${LibArchive_INCLUDE_DIRS})
 # Eigen
 find_package(Eigen3 3.3 REQUIRED)
 include_directories(${EIGEN3_INCLUDE_DIR})
-add_definitions(-DEIGEN_DONT_PARALLELIZE -DEIGEN_MPL2_ONLY)
