@@ -55,7 +55,6 @@ namespace nano
 
                 // attributes
                 conv_params_t   m_params;
-                matrix_t        m_oodata;       ///< buffer: (omaps, orows x ocols)
                 matrix_t        m_okdata;       ///< buffer: (omaps, imaps x krows x kcols)
                 matrix_t        m_xkdata;       ///< buffer: (omaps, imaps x krows x kcols)
                 tensor3d_t      m_kodata;       ///< buffer: (count, imaps x krows x kcols, orows x ocols)
@@ -70,7 +69,6 @@ namespace nano
                 const auto omaps = m_params.omaps(), orows = m_params.orows(), ocols = m_params.ocols();
 
                 // allocate buffers
-                m_oodata.resize(omaps, orows * ocols);
                 m_okdata.resize(omaps, imaps * krows * kcols);
                 m_xkdata.resize(omaps, imaps * krows * kcols);
                 m_kxdata.resize(imaps * krows * kcols, orows * ocols);
@@ -79,16 +77,16 @@ namespace nano
         template <typename tidata, typename tkdata, typename tbdata, typename todata>
         bool conv4d_t::output(const tidata& idata, const tkdata& kdata, const tbdata& bdata, todata&& odata)
         {
+                if (!m_params.valid(idata, kdata, bdata, odata))
+                {
+                        return false;
+                }
+
                 const auto count = idata.template size<0>();
                 const auto imaps = m_params.imaps();
                 const auto kconn = m_params.kconn(), krows = m_params.krows(), kcols = m_params.kcols();
                 const auto omaps = m_params.omaps(), orows = m_params.orows(), ocols = m_params.ocols();
                 const auto drows = m_params.kdrow(), dcols = m_params.kdcol();
-
-                if (!m_params.valid(idata, kdata, bdata, odata))
-                {
-                        return false;
-                }
 
                 switch (kconn)
                 {
@@ -118,11 +116,11 @@ namespace nano
                 for (tensor_size_t x = 0; x < count; ++ x)
                 {
                         auto xidata = idata.tensor(x);
-                        auto xodata = odata.tensor(x);
+                        auto xodata = odata.tensor(x).reshape(omaps, orows * ocols).matrix();
                         auto kodata = m_kodata.matrix(x);
 
                         // bias
-                        xodata.reshape(omaps, orows * ocols).matrix().colwise() = bdata;
+                        xodata.colwise() = bdata;
 
                         // +convolution
                         for (tensor_size_t i = 0; i < imaps; ++ i)
@@ -132,8 +130,7 @@ namespace nano
                                                     krows * kcols, orows * ocols));
                         }
 
-                        m_oodata.noalias() = m_okdata * kodata;
-                        xodata.reshape(omaps, orows * ocols).matrix() += m_oodata;
+                        xodata.noalias() += m_okdata * kodata;
                 }
                 return true;
         }
@@ -141,16 +138,16 @@ namespace nano
         template <typename tidata, typename tkdata, typename tbdata, typename todata>
         bool conv4d_t::ginput(tidata&& idata, const tkdata& kdata, const tbdata& bdata, const todata& odata)
         {
+                if (!m_params.valid(idata, kdata, bdata, odata))
+                {
+                        return false;
+                }
+
                 const auto count = idata.template size<0>();
                 const auto imaps = m_params.imaps();
                 const auto krows = m_params.krows(), kcols = m_params.kcols();
                 const auto omaps = m_params.omaps(), orows = m_params.orows(), ocols = m_params.ocols();
                 const auto drows = m_params.kdrow(), dcols = m_params.kdcol();
-
-                if (!m_params.valid(idata, kdata, bdata, odata))
-                {
-                        return false;
-                }
 
                 for (tensor_size_t x = 0; x < count; ++ x)
                 {
@@ -173,15 +170,15 @@ namespace nano
         template <typename tidata, typename tkdata, typename tbdata, typename todata>
         bool conv4d_t::gparam(const tidata& idata, tkdata&& kdata, tbdata&& bdata, const todata& odata)
         {
-                const auto count = idata.template size<0>();
-                const auto imaps = m_params.imaps();
-                const auto kconn = m_params.kconn(), krows = m_params.krows(), kcols = m_params.kcols();
-                const auto omaps = m_params.omaps(), orows = m_params.orows(), ocols = m_params.ocols();
-
                 if (!m_params.valid(idata, kdata, bdata, odata))
                 {
                         return false;
                 }
+
+                const auto count = idata.template size<0>();
+                const auto imaps = m_params.imaps();
+                const auto kconn = m_params.kconn(), krows = m_params.krows(), kcols = m_params.kcols();
+                const auto omaps = m_params.omaps(), orows = m_params.orows(), ocols = m_params.ocols();
 
                 kdata.setZero();
                 bdata.setZero();
@@ -191,19 +188,19 @@ namespace nano
                 assert(m_kodata.size<2>() == orows * ocols);
                 for (tensor_size_t x = 0; x < count; ++ x)
                 {
-                        auto xodata = odata.tensor(x);
+                        auto xodata = odata.tensor(x).reshape(omaps, orows * ocols).matrix();
                         auto kodata = m_kodata.matrix(x);
 
                         // bias
-                        bdata += xodata.reshape(omaps, orows * ocols).matrix().rowwise().sum();
+                        bdata += xodata.rowwise().sum();
 
                         // convolution
-                        m_xkdata.noalias() = xodata.reshape(omaps, orows * ocols).matrix() * kodata.transpose();
+                        m_xkdata.noalias() = xodata * kodata.transpose();
 
                         switch (kconn)
                         {
                         case 1:
-                                kdata.reshape(omaps, imaps * krows * kcols).matrix() += m_xkdata;
+                                kdata.reshape(omaps, imaps * krows * kcols).matrix().noalias() += m_xkdata;
                                 break;
 
                         default:
