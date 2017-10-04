@@ -1,7 +1,6 @@
 sudo: required
 dist: trusty
 language: cpp
-cache: ccache
 
 branches:
   only:
@@ -65,14 +64,14 @@ before_script:
   - pwd
 
 script:
-#  - time bash build.sh --build-type Release --generator ninja --float --werror --ccache ${PARAMS}
+#  - time bash build.sh --build-type Release --generator ninja --float --werror ${PARAMS}
 #  - ./build-release/apps/info --system
 #  - cd build-release/test && time ctest -j 2 -E "test_task_*"
 #  - cd ../../
-  - time bash build.sh --build-type Debug --generator ninja --float --werror --ccache ${PARAMS}
+  - time bash build.sh --build-type Debug --generator ninja --float --werror ${PARAMS}
   - ./build-debug/apps/info --system
   - cd build-debug/test && time ctest -j 2 -E "test_task_*"
   - cd ../../
 #  - ./build-release/apps/info --system
-#  - time bash build.sh --build-type Release --generator ninja --double --werror --ccache ${PARAMS}
+#  - time bash build.sh --build-type Release --generator ninja --double --werror ${PARAMS}
 #  - cd build-release/test && time ctest -j 2 -E "test_task_*"
