@@ -108,7 +108,7 @@ namespace nano
                 auto modata = odata.reshape(count, osize).matrix();
 
                 wdata.noalias() = modata.transpose() * midata;
-                bdata = modata.colwise().sum();
+                bdata.noalias() = modata.colwise().sum();
                 return true;
         }
 }
