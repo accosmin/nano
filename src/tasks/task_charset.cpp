@@ -3,7 +3,6 @@
 #include "math/numeric.h"
 #include "task_charset.h"
 #include "tensor/numeric.h"
-#include "tensor/algorithm.h"
 
 #include "vision/warp.h"
 #include "vision/gauss.h"
