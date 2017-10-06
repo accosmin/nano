@@ -130,11 +130,9 @@ NANO_CASE(gparam_accuracy)
         NANO_REQUIRE(params.valid());
 
         const auto pfunct = make_wrt_params_function<affine3d_t>(params);
-        for (int i = 0; i < 8; ++ i)
-        {
-                vector_t px(pfunct.size()); px.setRandom();
-                NANO_CHECK_LESS(pfunct.grad_accuracy(px), epsilon1<scalar_t>());
-        }
+
+        vector_t px(pfunct.size()); px.setRandom();
+        NANO_CHECK_LESS(pfunct.grad_accuracy(px), epsilon1<scalar_t>());
 }
 
 NANO_CASE(ginput_accuracy)
@@ -143,11 +141,9 @@ NANO_CASE(ginput_accuracy)
         NANO_REQUIRE(params.valid());
 
         const auto ifunct = make_wrt_inputs_function<affine3d_t>(params);
-        for (int i = 0; i < 8; ++ i)
-        {
-                vector_t ix(ifunct.size()); ix.setRandom();
-                NANO_CHECK_LESS(ifunct.grad_accuracy(ix), epsilon1<scalar_t>());
-        }
+
+        vector_t ix(ifunct.size()); ix.setRandom();
+        NANO_CHECK_LESS(ifunct.grad_accuracy(ix), epsilon1<scalar_t>());
 }
 
 NANO_CASE(3d_vs_4d_output)
@@ -170,7 +166,7 @@ NANO_CASE(3d_vs_4d_output)
                 NANO_REQUIRE(op3d.output(idata, wdata, bdata, odata3));
                 NANO_REQUIRE(op4d.output(idata, wdata, bdata, odata4));
 
-                NANO_CHECK_EIGEN_CLOSE(odata3.array(), odata4.array(), 10 * epsilon0<scalar_t>());
+                NANO_CHECK_EIGEN_CLOSE(odata3.array(), odata4.array(), epsilon1<scalar_t>());
         }
 }
 
@@ -194,8 +190,8 @@ NANO_CASE(3d_vs_4d_gparam)
                 NANO_REQUIRE(op3d.gparam(idata, wdata3, bdata3, odata));
                 NANO_REQUIRE(op4d.gparam(idata, wdata4, bdata4, odata));
 
-                NANO_CHECK_EIGEN_CLOSE(wdata3, wdata4, 10 * epsilon0<scalar_t>());
-                NANO_CHECK_EIGEN_CLOSE(bdata3, bdata4, 10 * epsilon0<scalar_t>());
+                NANO_CHECK_EIGEN_CLOSE(wdata3, wdata4, epsilon1<scalar_t>());
+                NANO_CHECK_EIGEN_CLOSE(bdata3, bdata4, epsilon1<scalar_t>());
         }
 }
 
@@ -219,7 +215,7 @@ NANO_CASE(3d_vs_4d_ginput)
                 NANO_REQUIRE(op3d.ginput(idata3, wdata, bdata, odata));
                 NANO_REQUIRE(op4d.ginput(idata4, wdata, bdata, odata));
 
-                NANO_CHECK_EIGEN_CLOSE(idata3.array(), idata4.array(), 10 * epsilon0<scalar_t>());
+                NANO_CHECK_EIGEN_CLOSE(idata3.array(), idata4.array(), epsilon1<scalar_t>());
         }
 }
 

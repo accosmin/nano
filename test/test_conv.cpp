@@ -11,7 +11,7 @@ auto make_default_params(const tensor_size_t kconn = 1)
         const auto imaps = 6;
         const auto irows = 9;
         const auto icols = 8;
-        const auto omaps = 4;
+        const auto omaps = 6;
         const auto krows = 2;
         const auto kcols = 3;
         const auto kdrow = 2;
@@ -175,147 +175,84 @@ NANO_CASE(ginput_accuracy)
         NANO_CHECK_LESS(ifunct.grad_accuracy(ix), epsilon1<scalar_t>());
 }
 
-NANO_CASE(3d_vs_4d_output_kconn1)
+NANO_CASE(3d_vs_4d_output)
 {
-        const auto params = make_default_params(1);
-        NANO_REQUIRE(params.valid());
-
-        auto op3d = conv3d_t{params};
-        auto op4d = conv4d_t{params};
-
-        for (int i = 0; i < 8; ++ i)
+        for (const auto kconn : {1, 2, 3})
         {
-                tensor4d_t idata, kdata, odata3, odata4;
-                vector_t bdata;
+                const auto params = make_default_params(kconn);
+                NANO_REQUIRE(params.valid());
 
-                std::tie(bdata, idata, kdata, odata3) = make_buffers(params, i + 2);
-                std::tie(bdata, idata, kdata, odata4) = make_buffers(params, i + 2);
+                auto op3d = conv3d_t{params};
+                auto op4d = conv4d_t{params};
 
-                NANO_REQUIRE(op3d.output(idata, kdata, bdata, odata3));
-                NANO_REQUIRE(op4d.output(idata, kdata, bdata, odata4));
+                for (int i = 0; i < 3; ++ i)
+                {
+                        tensor4d_t idata, kdata, odata3, odata4;
+                        vector_t bdata;
 
-                NANO_CHECK_EIGEN_CLOSE(odata3.array(), odata4.array(), epsilon1<scalar_t>());
+                        std::tie(bdata, idata, kdata, odata3) = make_buffers(params, i + 2);
+                        std::tie(bdata, idata, kdata, odata4) = make_buffers(params, i + 2);
+
+                        NANO_REQUIRE(op3d.output(idata, kdata, bdata, odata3));
+                        NANO_REQUIRE(op4d.output(idata, kdata, bdata, odata4));
+
+                        NANO_CHECK_EIGEN_CLOSE(odata3.array(), odata4.array(), epsilon1<scalar_t>());
+                }
         }
 }
 
-NANO_CASE(3d_vs_4d_output_kconn2)
+NANO_CASE(3d_vs_4d_gparam)
 {
-        const auto params = make_default_params(2);
-        NANO_REQUIRE(params.valid());
-
-        auto op3d = conv3d_t{params};
-        auto op4d = conv4d_t{params};
-
-        for (int i = 0; i < 8; ++ i)
+        for (const auto kconn : {1, 2, 3})
         {
-                tensor4d_t idata, kdata, odata3, odata4;
-                vector_t bdata;
+                const auto params = make_default_params(kconn);
+                NANO_REQUIRE(params.valid());
 
-                std::tie(bdata, idata, kdata, odata3) = make_buffers(params, i + 2);
-                std::tie(bdata, idata, kdata, odata4) = make_buffers(params, i + 2);
+                auto op3d = conv3d_t{params};
+                auto op4d = conv4d_t{params};
 
-                NANO_REQUIRE(op3d.output(idata, kdata, bdata, odata3));
-                NANO_REQUIRE(op4d.output(idata, kdata, bdata, odata4));
+                for (int i = 0; i < 3; ++ i)
+                {
+                        tensor4d_t idata, kdata3, kdata4, odata;
+                        vector_t bdata3, bdata4;
 
-                NANO_CHECK_EIGEN_CLOSE(odata3.array(), odata4.array(), epsilon1<scalar_t>());
+                        std::tie(bdata3, idata, kdata3, odata) = make_buffers(params, i + 2);
+                        std::tie(bdata4, idata, kdata4, odata) = make_buffers(params, i + 2);
+
+                        NANO_REQUIRE(op4d.output(idata, kdata4, bdata4, odata));// NB: needed to update the internal buffers!
+                        NANO_REQUIRE(op3d.gparam(idata, kdata3, bdata3, odata));
+                        NANO_REQUIRE(op4d.gparam(idata, kdata4, bdata4, odata));
+
+                        NANO_CHECK_EIGEN_CLOSE(bdata3.array(), bdata4.array(), epsilon1<scalar_t>());
+                        NANO_CHECK_EIGEN_CLOSE(kdata3.array(), kdata4.array(), epsilon1<scalar_t>());
+                }
         }
 }
 
-NANO_CASE(3d_vs_4d_gparam_kconn1)
+NANO_CASE(3d_vs_4d_ginput)
 {
-        const auto params = make_default_params(1);
-        NANO_REQUIRE(params.valid());
-
-        auto op3d = conv3d_t{params};
-        auto op4d = conv4d_t{params};
-
-        for (int i = 0; i < 8; ++ i)
+        for (const auto kconn : {1, 2, 3})
         {
-                tensor4d_t idata, kdata3, kdata4, odata;
-                vector_t bdata3, bdata4;
+                const auto params = make_default_params(kconn);
+                NANO_REQUIRE(params.valid());
 
-                std::tie(bdata3, idata, kdata3, odata) = make_buffers(params, i + 2);
-                std::tie(bdata4, idata, kdata4, odata) = make_buffers(params, i + 2);
+                auto op3d = conv3d_t{params};
+                auto op4d = conv4d_t{params};
 
-                NANO_REQUIRE(op4d.output(idata, kdata4, bdata4, odata));// NB: needed to update the internal buffers!
-                NANO_REQUIRE(op3d.gparam(idata, kdata3, bdata3, odata));
-                NANO_REQUIRE(op4d.gparam(idata, kdata4, bdata4, odata));
+                for (int i = 0; i < 3; ++ i)
+                {
+                        tensor4d_t idata3, idata4, kdata, odata;
+                        vector_t bdata;
 
-                NANO_CHECK_EIGEN_CLOSE(bdata3.array(), bdata4.array(), epsilon1<scalar_t>());
-                NANO_CHECK_EIGEN_CLOSE(kdata3.array(), kdata4.array(), epsilon1<scalar_t>());
-        }
-}
+                        std::tie(bdata, idata3, kdata, odata) = make_buffers(params, i + 2);
+                        std::tie(bdata, idata4, kdata, odata) = make_buffers(params, i + 2);
 
-NANO_CASE(3d_vs_4d_gparam_kconn2)
-{
-        const auto params = make_default_params(2);
-        NANO_REQUIRE(params.valid());
+                        NANO_REQUIRE(op4d.output(idata4, kdata, bdata, odata));// NB: needed to update the internal buffers!
+                        NANO_REQUIRE(op3d.ginput(idata3, kdata, bdata, odata));
+                        NANO_REQUIRE(op4d.ginput(idata4, kdata, bdata, odata));
 
-        auto op3d = conv3d_t{params};
-        auto op4d = conv4d_t{params};
-
-        for (int i = 0; i < 8; ++ i)
-        {
-                tensor4d_t idata, kdata3, kdata4, odata;
-                vector_t bdata3, bdata4;
-
-                std::tie(bdata3, idata, kdata3, odata) = make_buffers(params, i + 2);
-                std::tie(bdata4, idata, kdata4, odata) = make_buffers(params, i + 2);
-
-                NANO_REQUIRE(op4d.output(idata, kdata4, bdata4, odata));// NB: needed to update the internal buffers!
-                NANO_REQUIRE(op3d.gparam(idata, kdata3, bdata3, odata));
-                NANO_REQUIRE(op4d.gparam(idata, kdata4, bdata4, odata));
-
-                NANO_CHECK_EIGEN_CLOSE(bdata3.array(), bdata4.array(), epsilon1<scalar_t>());
-                NANO_CHECK_EIGEN_CLOSE(kdata3.array(), kdata4.array(), epsilon1<scalar_t>());
-        }
-}
-
-NANO_CASE(3d_vs_4d_ginput_kconn1)
-{
-        const auto params = make_default_params(1);
-        NANO_REQUIRE(params.valid());
-
-        auto op3d = conv3d_t{params};
-        auto op4d = conv4d_t{params};
-
-        for (int i = 0; i < 8; ++ i)
-        {
-                tensor4d_t idata3, idata4, kdata, odata;
-                vector_t bdata;
-
-                std::tie(bdata, idata3, kdata, odata) = make_buffers(params, i + 2);
-                std::tie(bdata, idata4, kdata, odata) = make_buffers(params, i + 2);
-
-                NANO_REQUIRE(op4d.output(idata4, kdata, bdata, odata));// NB: needed to update the internal buffers!
-                NANO_REQUIRE(op3d.ginput(idata3, kdata, bdata, odata));
-                NANO_REQUIRE(op4d.ginput(idata4, kdata, bdata, odata));
-
-                NANO_CHECK_EIGEN_CLOSE(idata3.array(), idata4.array(), epsilon1<scalar_t>());
-        }
-}
-
-NANO_CASE(3d_vs_4d_ginput_kconn2)
-{
-        const auto params = make_default_params(2);
-        NANO_REQUIRE(params.valid());
-
-        auto op3d = conv3d_t{params};
-        auto op4d = conv4d_t{params};
-
-        for (int i = 0; i < 8; ++ i)
-        {
-                tensor4d_t idata3, idata4, kdata, odata;
-                vector_t bdata;
-
-                std::tie(bdata, idata3, kdata, odata) = make_buffers(params, i + 2);
-                std::tie(bdata, idata4, kdata, odata) = make_buffers(params, i + 2);
-
-                NANO_REQUIRE(op4d.output(idata4, kdata, bdata, odata));// NB: needed to update the internal buffers!
-                NANO_REQUIRE(op3d.ginput(idata3, kdata, bdata, odata));
-                NANO_REQUIRE(op4d.ginput(idata4, kdata, bdata, odata));
-
-                NANO_CHECK_EIGEN_CLOSE(idata3.array(), idata4.array(), epsilon1<scalar_t>());
+                        NANO_CHECK_EIGEN_CLOSE(idata3.array(), idata4.array(), epsilon1<scalar_t>());
+                }
         }
 }
 
