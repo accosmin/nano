@@ -6,7 +6,7 @@
 namespace nano
 {
         template <typename timatrix, typename tomatrix>
-        void img2col0(const timatrix& imat,
+        void img2col(const timatrix& imat,
                 const tensor_size_t orows, const tensor_size_t ocols,
                 const tensor_size_t krows, const tensor_size_t kcols,
                 const tensor_size_t drows, const tensor_size_t dcols,
@@ -17,36 +17,9 @@ namespace nano
                 assert(omat.rows() == krows * kcols);
                 assert(omat.cols() == orows * ocols);
 
-                for (tensor_size_t kr = 0; kr < krows; ++ kr)
+                switch (drows * dcols)
                 {
-                        for (tensor_size_t kc = 0; kc < kcols; ++ kc)
-                        {
-                                for (tensor_size_t r = 0; r < orows; ++ r)
-                                {
-                                        for (tensor_size_t c = 0; c < ocols; ++ c)
-                                        {
-                                                omat(kr * kcols + kc, r * ocols + c) =
-                                                imat(r * drows + kr, c * dcols + kc);
-                                        }
-                                }
-                        }
-                }
-        }
-
-        template <typename timatrix, typename tomatrix>
-        void img2colx(const timatrix& imat,
-                const tensor_size_t orows, const tensor_size_t ocols,
-                const tensor_size_t krows, const tensor_size_t kcols,
-                const tensor_size_t drows, const tensor_size_t dcols,
-                tomatrix&& omat)
-        {
-                assert(orows == (imat.rows() - krows + 1) / drows);
-                assert(ocols == (imat.cols() - kcols + 1) / dcols);
-                assert(omat.rows() == krows * kcols);
-                assert(omat.cols() == orows * ocols);
-
-                if (drows == 1 && dcols == 1)
-                {
+                case 1:
                         for (tensor_size_t kr = 0; kr < krows; ++ kr)
                         {
                                 for (tensor_size_t kc = 0; kc < kcols; ++ kc)
@@ -61,10 +34,24 @@ namespace nano
                                         }
                                 }
                         }
-                }
-                else
-                {
-                        img2col0(imat, orows, ocols, krows, kcols, drows, dcols, omat);
+                        break;
+
+                default:
+                        for (tensor_size_t kr = 0; kr < krows; ++ kr)
+                        {
+                                for (tensor_size_t kc = 0; kc < kcols; ++ kc)
+                                {
+                                        for (tensor_size_t r = 0; r < orows; ++ r)
+                                        {
+                                                for (tensor_size_t c = 0; c < ocols; ++ c)
+                                                {
+                                                        omat(kr * kcols + kc, r * ocols + c) =
+                                                        imat(r * drows + kr, c * dcols + kc);
+                                                }
+                                        }
+                                }
+                        }
+                        break;
                 }
         }
 
@@ -80,19 +67,41 @@ namespace nano
                 assert(omat.rows() == krows * kcols);
                 assert(omat.cols() == orows * ocols);
 
-                for (tensor_size_t kr = 0; kr < krows; ++ kr)
+                switch (drows * dcols)
                 {
-                        for (tensor_size_t kc = 0; kc < kcols; ++ kc)
+                case 1:
+                        for (tensor_size_t kr = 0; kr < krows; ++ kr)
                         {
-                                for (tensor_size_t r = 0; r < orows; ++ r)
+                                for (tensor_size_t kc = 0; kc < kcols; ++ kc)
                                 {
-                                        for (tensor_size_t c = 0; c < ocols; ++ c)
+                                        for (tensor_size_t r = 0; r < orows; ++ r)
                                         {
-                                                imat(r * drows + kr, c * dcols + kc) +=
-                                                omat(kr * kcols + kc, r * ocols + c);
+                                                for (tensor_size_t c = 0; c < ocols; ++ c)
+                                                {
+                                                        imat(r + kr, c + kc) +=
+                                                        omat(kr * kcols + kc, r * ocols + c);
+                                                }
                                         }
                                 }
                         }
+                        break;
+
+                default:
+                        for (tensor_size_t kr = 0; kr < krows; ++ kr)
+                        {
+                                for (tensor_size_t kc = 0; kc < kcols; ++ kc)
+                                {
+                                        for (tensor_size_t r = 0; r < orows; ++ r)
+                                        {
+                                                for (tensor_size_t c = 0; c < ocols; ++ c)
+                                                {
+                                                        imat(r * drows + kr, c * dcols + kc) +=
+                                                        omat(kr * kcols + kc, r * ocols + c);
+                                                }
+                                        }
+                                }
+                        }
+                        break;
                 }
         }
 

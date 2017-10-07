@@ -7,7 +7,6 @@ make_app(benchmark_conv.cpp nano)
 make_app(benchmark_affine.cpp nano)
 make_app(benchmark_conv3d.cpp nano)
 make_app(benchmark_models.cpp nano)
-make_app(benchmark_img2col.cpp nano)
 make_app(benchmark_enhancer.cpp nano)
 make_app(benchmark_functions.cpp nano)
 

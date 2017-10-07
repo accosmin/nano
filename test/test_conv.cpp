@@ -6,7 +6,7 @@
 
 using namespace nano;
 
-auto make_default_params(const tensor_size_t kconn = 1)
+auto make_default_params(const tensor_size_t kconn = 1, const tensor_size_t drows = 2, const tensor_size_t dcols = 1)
 {
         const auto imaps = 6;
         const auto irows = 9;
@@ -14,10 +14,8 @@ auto make_default_params(const tensor_size_t kconn = 1)
         const auto omaps = 6;
         const auto krows = 2;
         const auto kcols = 3;
-        const auto kdrow = 2;
-        const auto kdcol = 1;
 
-        return conv_params_t{imaps, irows, icols, omaps, kconn, krows, kcols, kdrow, kdcol};
+        return conv_params_t{imaps, irows, icols, omaps, kconn, krows, kcols, drows, dcols};
 }
 
 auto make_buffers(const conv_params_t& params, const tensor_size_t count)
@@ -155,31 +153,43 @@ NANO_CASE(params_invalid)
 
 NANO_CASE(gparam_accuracy)
 {
-        const auto params = make_default_params();
-        NANO_REQUIRE(params.valid());
+        for (const auto kconn : {1, 2, 3})
+        for (const auto drows : {1, 2})
+        for (const auto dcols : {1, 2})
+        {
+                const auto params = make_default_params(kconn, drows, dcols);
+                NANO_REQUIRE(params.valid());
 
-        const auto pfunct = make_wrt_params_function<conv3d_t>(params);
+                const auto pfunct = make_wrt_params_function<conv3d_t>(params);
 
-        vector_t px(pfunct.size()); px.setRandom();
-        NANO_CHECK_LESS(pfunct.grad_accuracy(px), epsilon1<scalar_t>());
+                vector_t px(pfunct.size()); px.setRandom();
+                NANO_CHECK_LESS(pfunct.grad_accuracy(px), epsilon1<scalar_t>());
+        }
 }
 
 NANO_CASE(ginput_accuracy)
 {
-        const auto params = make_default_params();
-        NANO_REQUIRE(params.valid());
+        for (const auto kconn : {1, 2, 3})
+        for (const auto drows : {1, 2})
+        for (const auto dcols : {1, 2})
+        {
+                const auto params = make_default_params(kconn, drows, dcols);
+                NANO_REQUIRE(params.valid());
 
-        const auto ifunct = make_wrt_inputs_function<conv3d_t>(params);
+                const auto ifunct = make_wrt_inputs_function<conv3d_t>(params);
 
-        vector_t ix(ifunct.size()); ix.setRandom();
-        NANO_CHECK_LESS(ifunct.grad_accuracy(ix), epsilon1<scalar_t>());
+                vector_t ix(ifunct.size()); ix.setRandom();
+                NANO_CHECK_LESS(ifunct.grad_accuracy(ix), epsilon1<scalar_t>());
+        }
 }
 
 NANO_CASE(3d_vs_4d_output)
 {
         for (const auto kconn : {1, 2, 3})
+        for (const auto drows : {1, 2})
+        for (const auto dcols : {1, 2})
         {
-                const auto params = make_default_params(kconn);
+                const auto params = make_default_params(kconn, drows, dcols);
                 NANO_REQUIRE(params.valid());
 
                 auto op3d = conv3d_t{params};
@@ -204,8 +214,10 @@ NANO_CASE(3d_vs_4d_output)
 NANO_CASE(3d_vs_4d_gparam)
 {
         for (const auto kconn : {1, 2, 3})
+        for (const auto drows : {1, 2})
+        for (const auto dcols : {1, 2})
         {
-                const auto params = make_default_params(kconn);
+                const auto params = make_default_params(kconn, drows, dcols);
                 NANO_REQUIRE(params.valid());
 
                 auto op3d = conv3d_t{params};
@@ -232,8 +244,10 @@ NANO_CASE(3d_vs_4d_gparam)
 NANO_CASE(3d_vs_4d_ginput)
 {
         for (const auto kconn : {1, 2, 3})
+        for (const auto drows : {1, 2})
+        for (const auto dcols : {1, 2})
         {
-                const auto params = make_default_params(kconn);
+                const auto params = make_default_params(kconn, drows, dcols);
                 NANO_REQUIRE(params.valid());
 
                 auto op3d = conv3d_t{params};

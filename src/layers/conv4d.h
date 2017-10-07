@@ -125,7 +125,7 @@ namespace nano
                         // +convolution
                         for (tensor_size_t i = 0; i < imaps; ++ i)
                         {
-                                img2col0(xidata.matrix(i), orows, ocols, krows, kcols, drows, dcols,
+                                img2col(xidata.matrix(i), orows, ocols, krows, kcols, drows, dcols,
                                          map_matrix(kodata.row(i * krows * kcols).data(),
                                                     krows * kcols, orows * ocols));
                         }

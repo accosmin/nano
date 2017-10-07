@@ -39,7 +39,6 @@ make_test(test_trainer.cpp nano)
 make_test(test_affine.cpp nano)
 make_test(test_conv.cpp nano)
 make_test(test_conv3d.cpp nano)
-make_test(test_img2col.cpp nano)
 make_test(test_normalize.cpp nano)
 
 make_test(test_charset.cpp nano)
