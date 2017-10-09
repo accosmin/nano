@@ -62,6 +62,11 @@ namespace nano
         {
                 minibatch_t() = default;
 
+                minibatch_t(const size_t count, const tensor3d_dims_t& idims, const tensor3d_dims_t& odims) :
+                        minibatch_t(static_cast<tensor_size_t>(count), idims, odims)
+                {
+                }
+
                 minibatch_t(const tensor_size_t count, const tensor3d_dims_t& idims, const tensor3d_dims_t& odims) :
                         m_inputs(count, std::get<0>(idims), std::get<1>(idims), std::get<2>(idims)),
                         m_targets(count, std::get<0>(odims), std::get<1>(odims), std::get<2>(odims)),

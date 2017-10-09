@@ -31,3 +31,9 @@ sample_t enhancer_noclass_t::get(const task_t& task, const fold_t& fold, const s
 
         return sample;
 }
+
+minibatch_t enhancer_noclass_t::get(const task_t& task, const fold_t& fold, const size_t begin, const size_t end) const
+{
+        // todo
+        return minibatch_t{};
+}
