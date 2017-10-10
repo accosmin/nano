@@ -17,7 +17,7 @@ namespace nano
         ///     ::target()                      - target 3D tensor
         ///     ::label()                       - associated label (if any)
         ///
-        template <typename tchunk, typename tsample>
+        template <typename titensor, typename totensor>
         struct mem_task_t : public task_t
         {
                 ///
@@ -34,50 +34,20 @@ namespace nano
                 {
                 }
 
-                ///
-                /// \brief populate the task with samples
-                ///
-                virtual bool load() override;
+                virtual bool load() override final;
 
-                ///
-                /// \brief input size
-                ///
-                virtual tensor3d_dims_t idims() const final { return m_idims; }
+                virtual tensor3d_dims_t idims() const override final { return m_idims; }
+                virtual tensor3d_dims_t odims() const override final { return m_odims; }
 
-                ///
-                /// \brief output size
-                ///
-                virtual tensor3d_dims_t odims() const final { return m_odims; }
-
-                ///
-                /// \brief number of folds (not considering the protocol!)
-                ///
-                virtual size_t fsize() const final { return m_fsize; }
-
-                ///
-                /// \brief total number of samples
-                ///
                 virtual size_t size() const override final;
-
-                ///
-                /// \brief number of samples for the given fold
-                ///
                 virtual size_t size(const fold_t&) const override final;
+                virtual size_t fsize() const override final { return m_fsize; }
 
-                ///
-                /// \brief randomly shuffle the samples associated for the given fold
-                ///
                 virtual void shuffle(const fold_t&) const override final;
 
-                ///
-                /// \brief retrieve the given sample
-                ///
+                virtual size_t ihash(const fold_t&, const size_t index) const override final;
+                virtual size_t ohash(const fold_t&, const size_t index) const override final;
                 virtual sample_t get(const fold_t&, const size_t index) const override final;
-
-                ///
-                /// \brief retrieve the hash for a given sample
-                ///
-                virtual size_t hash(const fold_t&, const size_t index) const override final;
 
         protected:
 
@@ -127,29 +97,57 @@ namespace nano
 
         private:
 
-                using tsamples = std::map<fold_t, std::vector<tsample>>;
-
-                const tsample& get_sample(const fold_t& fold, const size_t sample_index) const
+                struct fold_data_t
                 {
-                        const auto it = m_samples.find(fold);
-                        assert(it != m_samples.end());
-                        assert(sample_index < it->second.size());
-                        return it->second[sample_index];
+                        bool valid() const { return m_idata.template size<0>() == m_odata.template size<0>(); }
+                        auto count() const { return m_idata.template size<0>(); }
+
+                        auto idata(const tensor_size_t index)
+                        {
+                                assert(index >= 0 && index < count());
+                                return m_idata.tensor(index);
+                        }
+                        auto idata(const tensor_size_t index) const
+                        {
+                                assert(index >= 0 && index < count());
+                                return m_idata.tensor(index);
+                        }
+
+                        auto odata(const tensor_size_t index)
+                        {
+                                assert(index >= 0 && index < count());
+                                return m_odata.tensor(index);
+                        }
+                        auto odata(const tensor_size_t index) const
+                        {
+                                assert(index >= 0 && index < count());
+                                return m_odata.tensor(index);
+                        }
+
+                        titensor                m_idata;        ///< 4d inputs tensor: count x idims
+                        totensor                m_odata;        ///< 4d outputs/targets tensor: count x odims
+                };
+
+                static size_t findex(const fold_t& fold)
+                {
+                        assert(fold.m_index < fsize());
+                        return fold.m_index + static_cast<size_t>(fold.m_protocol) * fsize();
                 }
 
-                const tchunk& get_chunk(const tsample& sample) const
-                {
-                        const auto chunk_index = sample.index();
-                        assert(chunk_index < m_chunks.size());
-                        return m_chunks[chunk_index];
-                }
+                fold_data_t& fdata(const fold_t& fold) { return m_fdata[findex(fold)]; }
+                const fold_data_t& fdata(const fold_t& fold) const { return m_fdata[findex(fold)]; }
 
-                const size_t& get_hash(const tsample& sample) const
-                {
-                        const auto hash_index = sample.index();
-                        assert(hash_index < m_hashes.size());
-                        return m_hashes[hash_index];
-                }
+                titensor& itensor(const fold_t& fold) { return fdata(fold).m_idata; }
+                totensor& otensor(const fold_t& fold) { return fdata(fold).m_odata; }
+
+                const titensor& itensor(const fold_t& fold) const { return fdata(fold).m_idata; }
+                const totensor& otensor(const fold_t& fold) const { return fdata(fold).m_odata; }
+
+                auto isample(const fold_t& fold, const tensor_size_t index) { return fdata(fold).idata(index); }
+                auto osample(const fold_t& fold, const tensor_size_t index) { return fdata(fold).odata(index); }
+
+                auto isample(const fold_t& fold, const tensor_size_t index) const { return fdata(fold).idata(index); }
+                auto osample(const fold_t& fold, const tensor_size_t index) const { return fdata(fold).odata(index); }
 
         private:
 
@@ -157,13 +155,23 @@ namespace nano
                 tensor3d_dims_t                 m_idims;        ///< input size
                 tensor3d_dims_t                 m_odims;        ///< output size
                 size_t                          m_fsize;        ///< number of folds
-                mutable random_t<size_t>        m_frand;        ///< rng for training-validation fold assignment
-                std::vector<tchunk>             m_chunks;       ///<
-                std::vector<size_t>             m_hashes;       ///< hash / chunk
-                mutable tsamples                m_samples;      ///< stored samples (training, validation, test)
+                mutable random_t<size_t>        m_frand;        ///< rng for fold assignment (training vs. validation vs. test)
+                std::vector<fold_data_t>        m_fdata;        ///< samples / fold
         };
 
-        template <typename tchunk, typename tsample>
+        template <typename titensor, typename totensor>
+        mem_task_t::mem_task_t(
+                const tensor3d_dims_t& idims,
+                const tensor3d_dims_t& odims,
+                const size_t fsize,
+                const string_t& params = string_t()) :
+                task_t(params),
+                m_idims(idims), m_odims(odims),
+                m_fsize(fsize), m_frand(1, 10)
+        {
+        }
+
+        template <typename titensor, typename totensor>
         bool mem_task_t<tchunk, tsample>::load()
         {
                 m_chunks.clear();
@@ -187,14 +195,14 @@ namespace nano
                 }
         }
 
-        template <typename tchunk, typename tsample>
+        template <typename titensor, typename totensor>
         size_t mem_task_t<tchunk, tsample>::size() const
         {
                 return  std::accumulate(m_samples.begin(), m_samples.end(), size_t(0),
                         [&] (const size_t count, const auto& samples) { return count + samples.second.size(); });
         }
 
-        template <typename tchunk, typename tsample>
+        template <typename titensor, typename totensor>
         size_t mem_task_t<tchunk, tsample>::size(const fold_t& fold) const
         {
                 const auto it = m_samples.find(fold);
@@ -202,7 +210,7 @@ namespace nano
                 return it->second.size();
         }
 
-        template <typename tchunk, typename tsample>
+        template <typename titensor, typename totensor>
         void mem_task_t<tchunk, tsample>::shuffle(const fold_t& fold) const
         {
                 const auto it = m_samples.find(fold);
@@ -213,7 +221,7 @@ namespace nano
                 std::shuffle(it->second.begin(), it->second.end(), g);
         }
 
-        template <typename tchunk, typename tsample>
+        template <typename titensor, typename totensor>
         sample_t mem_task_t<tchunk, tsample>::get(const fold_t& fold, const size_t index) const
         {
                 const auto& sample = get_sample(fold, index);
@@ -221,9 +229,11 @@ namespace nano
                 return {sample.input(chunk), sample.target(), sample.label()};
         }
 
-        template <typename tchunk, typename tsample>
+        template <typename titensor, typename totensor>
         size_t mem_task_t<tchunk, tsample>::hash(const fold_t& fold, const size_t index) const
         {
+                const auto& fdata = get_fdata(fold);
+
                 const auto& sample = get_sample(fold, index);
                 const auto& hash = get_hash(sample);
                 return sample.hash(hash);
