@@ -57,27 +57,27 @@ namespace nano
                 ///
                 /// \brief total number of samples
                 ///
-                virtual size_t size() const override;
+                virtual size_t size() const override final;
 
                 ///
                 /// \brief number of samples for the given fold
                 ///
-                virtual size_t size(const fold_t&) const override;
+                virtual size_t size(const fold_t&) const override final;
 
                 ///
                 /// \brief randomly shuffle the samples associated for the given fold
                 ///
-                virtual void shuffle(const fold_t&) const override;
+                virtual void shuffle(const fold_t&) const override final;
 
                 ///
                 /// \brief retrieve the given sample
                 ///
-                virtual sample_t get(const fold_t&, const size_t index) const override;
+                virtual sample_t get(const fold_t&, const size_t index) const override final;
 
                 ///
                 /// \brief retrieve the hash for a given sample
                 ///
-                virtual size_t hash(const fold_t&, const size_t index) const override;
+                virtual size_t hash(const fold_t&, const size_t index) const override final;
 
         protected:
 
