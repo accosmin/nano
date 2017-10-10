@@ -24,6 +24,7 @@ sample_t enhancer_noise_t::get(const task_t& task, const fold_t& fold, const siz
 
 minibatch_t enhancer_noise_t::get(const task_t& task, const fold_t& fold, const size_t begin, const size_t end) const
 {
+        NANO_UNUSED4(task, fold, begin, end);
         // todo
         return minibatch_t{};
 }
