@@ -117,4 +117,34 @@ NANO_CASE(shuffle)
         }
 }
 
+NANO_CASE(minibatch)
+{
+        auto task = get_tasks().get("synth-charset", "type=alpha,color=rgb,irows=18,icols=17,count=102");
+        NANO_CHECK(task->load());
+
+        for (const auto p : {protocol::train, protocol::valid, protocol::test})
+        {
+                const auto fold = fold_t{0, p};
+                const auto size = task->size(fold);
+
+                for (size_t count = 1; count < std::min(size_t(8), size); ++ count)
+                {
+                        const auto minibatch = task->get(fold, size_t(0), count);
+
+                        NANO_CHECK_EQUAL(minibatch.idims(), task->idims());
+                        NANO_CHECK_EQUAL(minibatch.odims(), task->odims());
+                        NANO_CHECK_EQUAL(minibatch.count(), static_cast<tensor_size_t>(count));
+
+                        for (auto i = 0; i < static_cast<tensor_size_t>(count); ++ i)
+                        {
+                                const auto sample = task->get(fold, static_cast<size_t>(i));
+                                const auto epsilon = epsilon0<scalar_t>();
+
+                                NANO_CHECK_EIGEN_CLOSE(sample.m_input.array(), minibatch.idata(i).array(), epsilon);
+                                NANO_CHECK_EIGEN_CLOSE(sample.m_target.array(), minibatch.odata(i).array(), epsilon);
+                        }
+                }
+        }
+}
+
 NANO_END_MODULE()
