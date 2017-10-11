@@ -5,6 +5,46 @@
 
 using namespace nano;
 
+cell_t::cell_t() :
+        m_span(1), m_align(alignment::left)
+{
+}
+
+void cell_t::print(std::ostream& os, const size_t maximum) const
+{
+        os << nano::align(m_data, maximum, m_align);
+}
+
+row_t::row_t(const type t) :
+        m_type(t)
+{
+}
+
+row_t& row_t::operator<<(const cell_t& cell)
+{
+        m_cells.push_back(cell);
+        return *this;
+}
+
+size_t row_t::cols() const
+{
+        return  std::accumulate(m_cells.begin(), m_cells.end(), size_t(0),
+                [] (const size_t size, const cell_t& cell) { return size + cell.m_span; });
+}
+
+cell_t row_t::find(const size_t column) const
+{
+        for (size_t i = 0, colstart = 0; i < m_cells.size(); ++ i)
+        {
+                if (column >= colstart)
+                {
+                        return m_cells[i];
+                }
+                colstart += m_cells[i].m_span;
+        }
+        return cell_t{};
+}
+
 table_t::table_t()
 {
         m_rows.reserve(1024);

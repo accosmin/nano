@@ -3,13 +3,54 @@
 #include "arch.h"
 #include "scalar.h"
 #include <algorithm>
-#include "table_row.h"
+#include "algorithm.h"
 #include "from_string.h"
-#include "table_header.h"
 
 namespace nano
 {
         struct table_t;
+
+        struct cell_t
+        {
+                cell_t();
+
+                template <typename tvalue>
+                cell_t(const tvalue value, const size_t span = 1, const alignment align = alignment::left) :
+                        m_data(to_string(value)),
+                        m_span(span),
+                        m_align(align)
+                {
+                }
+
+                bool empty() const { return m_data.empty(); }
+                void print(std::ostream&, const size_t maximum) const;
+
+                // attributes
+                string_t                m_data;
+                string_t                m_mark;
+                size_t                  m_span;
+                alignment               m_align;
+        };
+
+        struct row_t
+        {
+                enum class type
+                {
+                        data,
+                        header
+                };
+
+                row_t(const type t = type::data);
+
+                row_t& operator<<(const cell_t& cell);
+
+                size_t cols() const;
+                cell_t find(const size_t col) const;
+
+                // attributes
+                type                    m_type;
+                std::vector<cell_t>     m_cells;
+        };
 
         ///
         /// \brief streaming operator.
@@ -43,14 +84,10 @@ namespace nano
                 void clear();
 
                 ///
-                /// \brief access header
+                /// \brief append a row either as a header or as a data row
                 ///
-                table_header_t& header();
-
-                ///
-                /// \brief append a new row
-                ///
-                table_row_t& append(const table_row_t::storage type = table_row_t::storage::data);
+                row_t& header();
+                row_t& append();
 
                 ///
                 /// \brief (stable) sort the table using the given row-based comparison operator
@@ -88,14 +125,11 @@ namespace nano
                 ///
                 size_t cols() const;
                 size_t rows() const;
-                const table_header_t& header() const;
-                const table_row_t& row(const std::size_t index) const;
 
         private:
 
                 // attributes
-                table_header_t                  m_header;       ///<
-                std::vector<table_row_t>        m_rows;         ///<
+                std::vector<row_t>      m_rows;
         };
 
         template <typename toperator>
