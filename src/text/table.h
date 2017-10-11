@@ -4,6 +4,7 @@
 #include "scalar.h"
 #include <algorithm>
 #include "algorithm.h"
+#include "to_string.h"
 #include "from_string.h"
 
 namespace nano
@@ -13,14 +14,7 @@ namespace nano
         struct cell_t
         {
                 cell_t();
-
-                template <typename tvalue>
-                cell_t(const tvalue value, const size_t span = 1, const alignment align = alignment::left) :
-                        m_data(to_string(value)),
-                        m_span(span),
-                        m_align(align)
-                {
-                }
+                cell_t(const string_t& data, const size_t span, const alignment);
 
                 bool empty() const { return m_data.empty(); }
                 void print(std::ostream&, const size_t maximum) const;
@@ -29,7 +23,7 @@ namespace nano
                 string_t                m_data;
                 string_t                m_mark;
                 size_t                  m_span;
-                alignment               m_align;
+                alignment               m_alignment;
         };
 
         struct row_t
@@ -43,13 +37,30 @@ namespace nano
 
                 row_t(const type t = type::data);
 
-                row_t& operator<<(const cell_t& cell);
+                template <typename tvalue>
+                row_t& operator<<(const tvalue value)
+                {
+                        m_cells.emplace_back(to_string(value), colspan(), align());
+                        return *this;
+                }
 
                 size_t cols() const;
-                cell_t find(const size_t col) const;
+                void mark(size_t col, const string_t& marker);
+
+                const auto& cells() const { return m_cells; }
+                const auto& cell(const size_t c) const { return m_cells.at(c); }
+
+                size_t colspan() const { return m_colspan; }
+                alignment align() const { return m_alignment; }
+                row_t& colspan(const size_t span) { m_colspan = span; return *this; }
+                row_t& align(const alignment align) { m_alignment = align; return *this; }
+
+        private:
 
                 // attributes
                 type                    m_type;
+                size_t                  m_colspan;      ///< current column span
+                alignment               m_alignment;    ///< current cell alignment
                 std::vector<cell_t>     m_cells;
         };
 
@@ -91,6 +102,16 @@ namespace nano
                 row_t& append();
 
                 ///
+                /// \brief print table
+                ///
+                std::ostream& print(std::ostream&) const;
+
+                ///
+                /// \brief check if equal with another table
+                ///
+                bool equals(const table_t&) const;
+
+                ///
                 /// \brief (stable) sort the table using the given row-based comparison operator
                 ///
                 template <typename toperator>
@@ -126,6 +147,7 @@ namespace nano
                 ///
                 size_t cols() const;
                 size_t rows() const;
+                const row_t& row(const size_t r) const { return m_rows.at(r); }
 
         private:
 
@@ -182,7 +204,7 @@ namespace nano
                         const auto sel_cols = marker(row);
                         for (const auto& col : sel_cols)
                         {
-                                row.marking(col) = marker_string;
+                                row.mark(col, marker_string);
                         }
                 }
         }

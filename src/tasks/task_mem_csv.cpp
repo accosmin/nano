@@ -75,7 +75,7 @@ bool mem_csv_task_t::load_classification(const string_t& path, const string_t& t
         {
                 const auto& row = table.row(i);
 
-                const auto cc = row.value(label_col);
+                const auto cc = row.cell(label_col).m_data;
                 const auto itc = std::find(labels.begin(),labels.end(), cc);
                 if (itc == labels.end())
                 {
@@ -83,7 +83,7 @@ bool mem_csv_task_t::load_classification(const string_t& path, const string_t& t
                         return false;
                 }
 
-                const auto make_sample = [this, row = std::ref(row), label_col = label_col] ()
+                const auto make_sample = [this, &row = row, label_col = label_col] ()
                 {
                         tensor3d_t sample(idims());
                         size_t col = 0;
@@ -93,7 +93,7 @@ bool mem_csv_task_t::load_classification(const string_t& path, const string_t& t
                                 {
                                         ++ col;
                                 }
-                                sample(k, 0, 0) = from_string<scalar_t>(row.get().value(col));
+                                sample(k, 0, 0) = from_string<scalar_t>(row.cell(col).m_data);
                         }
                         return sample;
                 };

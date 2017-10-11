@@ -1,29 +1,31 @@
 #include "table.h"
-#include "algorithm.h"
 #include <numeric>
 #include <fstream>
+#include "algorithm.h"
+#include "math/numeric.h"
 
 using namespace nano;
 
 cell_t::cell_t() :
-        m_span(1), m_align(alignment::left)
+        m_span(1), m_alignment(alignment::left)
+{
+}
+
+cell_t::cell_t(const string_t& data, const size_t span, const alignment align) :
+        m_data(data), m_span(span), m_alignment(align)
 {
 }
 
 void cell_t::print(std::ostream& os, const size_t maximum) const
 {
-        os << nano::align(m_data, maximum, m_align);
+        os << nano::align(m_data, maximum, m_alignment);
 }
 
 row_t::row_t(const type t) :
-        m_type(t)
+        m_type(t),
+        m_colspan(1),
+        m_alignment(alignment::left)
 {
-}
-
-row_t& row_t::operator<<(const cell_t& cell)
-{
-        m_cells.push_back(cell);
-        return *this;
 }
 
 size_t row_t::cols() const
@@ -32,17 +34,17 @@ size_t row_t::cols() const
                 [] (const size_t size, const cell_t& cell) { return size + cell.m_span; });
 }
 
-cell_t row_t::find(const size_t column) const
+void row_t::mark(size_t col, const string_t& marker)
 {
-        for (size_t i = 0, colstart = 0; i < m_cells.size(); ++ i)
+        for (auto& cell : m_cells)
         {
-                if (column >= colstart)
+                if (col < cell.m_span)
                 {
-                        return m_cells[i];
+                        cell.m_mark = marker;
+                        return;
                 }
-                colstart += m_cells[i].m_span;
+                col -= cell.m_span;
         }
-        return cell_t{};
 }
 
 row_t& table_t::header()
@@ -85,7 +87,7 @@ bool table_t::save(const string_t& path, const string_t& delim) const
 
         for (const auto& row : m_rows)
         {
-                for (const auto& cell : row.m_cells)
+                for (const auto& cell : row.cells())
                 {
                         os << cell.m_data;
                         for (size_t i = 0; i + 1 < cell.m_span; ++ i)
@@ -158,32 +160,36 @@ bool table_t::load(const string_t& path, const string_t& delim, const bool load_
         return is.eof();
 }
 
-std::ostream& nano::operator<<(std::ostream& os, const table_t& table)
+std::ostream& table_t::print(std::ostream& os) const
 {
+        /*
+        const auto rows = this->rows();
+        const auto cols = this->cols();
+
         // size of the value columns (in characters)
-        const sizes_t colsizes = [&] ()
+        sizes_t colsizes(cols, 0);
+        for (const auto& row : m_rows)
         {
-                sizes_t sizes(table.cols(), 0);
-                for (size_t c = 0; c < table.cols(); ++ c)
+                size_t icol = 0;
+                for (const auto& cell : row.m_cells)
                 {
-                        sizes[c] = std::max(sizes[c], table.header().value(c).size());
-                }
-                for (size_t r = 0; r < table.rows(); ++ r)
-                {
-                        const auto& row = table.row(r);
-                        for (size_t c = 0; c < std::min(table.cols(), row.size()); ++ c)
+                        const auto span = cell.m_span;
+                        const auto size = cell.m_data.size() + cell.m_mark.size();
+                        for (size_t c = icol; c < icol + span; ++ c)
                         {
-                                sizes[c] = std::max(sizes[c], row.value(c).size() + row.marking(c).size());
+                                colsizes[c] = std::max(colsizes[c], idiv(size, span));
                         }
+                        icol += span;
                 }
+        }
 
-                return sizes;
-        }();
+        for (const auto& row : m_rows)
+        {
+        }
 
-        //
         const auto print_row_delim = [&] ()
         {
-                for (size_t c = 0; c < table.cols(); ++ c)
+                for (size_t c = 0; c < cols; ++ c)
                 {
                         os << "|" << string_t(colsizes[c] + 2, '-');
                 }
@@ -220,23 +226,35 @@ std::ostream& nano::operator<<(std::ostream& os, const table_t& table)
                 }
         }
         print_row_delim();
+        */
 
         return os;
+}
+
+bool table_t::equals(const table_t& other) const
+{
+        // todo: ignore delimeting rows from equality checks
+        return std::operator==(m_rows, other.m_rows);
+}
+
+std::ostream& nano::operator<<(std::ostream& os, const table_t& table)
+{
+        return table.print(os);
 }
 
 bool nano::operator==(const cell_t& c1, const cell_t& c2)
 {
         return  c1.m_data == c2.m_data &&
                 c1.m_span == c2.m_span &&
-                c1.m_align = c2.m_align;
+                c1.m_alignment == c2.m_alignment;
 }
 
 bool nano::operator==(const row_t& r1, const row_t& r2)
 {
-        return std::operator==(r1.m_cells, r2.m_cells);
+        return std::operator==(r1.cells(), r2.cells());
 }
 
 bool nano::operator==(const table_t& t1, const table_t& t2)
 {
-        return std::operator==(t1.m_rows, t2.m_rows);
+        return t1.equals(t2);
 }
