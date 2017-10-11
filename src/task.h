@@ -84,6 +84,11 @@ namespace nano
                 virtual sample_t get(const fold_t&, const size_t index) const = 0;
 
                 ///
+                /// \brief retrieve the given [begin, end) range of samples as a minibatch
+                ///
+                virtual minibatch_t get(const fold_t&, const size_t begin, const size_t end) const = 0;
+
+                ///
                 /// \brief retrieve the hash for a given input/target
                 ///
                 virtual size_t ihash(const fold_t&, const size_t index) const = 0;

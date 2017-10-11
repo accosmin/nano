@@ -62,26 +62,37 @@ namespace nano
         {
                 minibatch_t() = default;
 
-                minibatch_t(const size_t count, const tensor3d_dims_t& idims, const tensor3d_dims_t& odims) :
-                        minibatch_t(static_cast<tensor_size_t>(count), idims, odims)
-                {
-                }
-
                 minibatch_t(const tensor_size_t count, const tensor3d_dims_t& idims, const tensor3d_dims_t& odims) :
-                        m_inputs(count, std::get<0>(idims), std::get<1>(idims), std::get<2>(idims)),
-                        m_targets(count, std::get<0>(odims), std::get<1>(odims), std::get<2>(odims)),
+                        m_idata(count, std::get<0>(idims), std::get<1>(idims), std::get<2>(idims)),
+                        m_odata(count, std::get<0>(odims), std::get<1>(odims), std::get<2>(odims)),
                         m_labels(static_cast<size_t>(count))
                 {
                 }
 
-                operator bool() const
+                auto count() const { return m_idata.size<0>(); }
+                auto idims() const { return tensor3d_dims_t{m_idata.size<1>(), m_idata.size<2>(), m_idata.size<3>()}; }
+                auto odims() const { return tensor3d_dims_t{m_odata.size<1>(), m_odata.size<2>(), m_odata.size<3>()}; }
+
+                template <typename titensor, typename totensor>
+                void copy(const tensor_size_t index, const titensor& idata, const totensor& odata, const string_t& label)
                 {
-                        return  m_inputs.size<0>() == m_targets.size<0>() &&
-                                m_inputs.size<0>() == static_cast<tensor_size_t>(m_labels.size());
+                        assert(index >= 0 && index < count());
+                        assert(idata.dims() == idims());
+                        assert(odata.dims() == odims());
+                        m_idata.vector(index) = idata.vector();
+                        m_odata.vector(index) = odata.vector();
+                        m_labels[static_cast<size_t>(index)] = label;
                 }
 
-                tensor4d_t      m_inputs;       ///< inputs: count x planes x rows x columns
-                tensor4d_t      m_targets;      ///< desired (ideal) outputs: count x planes x rows x columns
+                const auto& idata() const { return m_idata; }
+                const auto& odata() const { return m_odata; }
+                const auto& labels() const { return m_labels; }
+
+        private:
+
+                // attributes
+                tensor4d_t      m_idata;        ///< inputs: count x planes x rows x columns
+                tensor4d_t      m_odata;        ///< desired (ideal) outputs/targets: count x planes x rows x columns
                 strings_t       m_labels;       ///< classification labels (optional)
         };
 
