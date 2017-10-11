@@ -84,8 +84,9 @@ namespace nano
                 virtual sample_t get(const fold_t&, const size_t index) const = 0;
 
                 ///
-                /// \brief retrieve the hash for a given sample
+                /// \brief retrieve the hash for a given input/target
                 ///
-                virtual size_t hash(const fold_t&, const size_t index) const = 0;
+                virtual size_t ihash(const fold_t&, const size_t index) const = 0;
+                virtual size_t ohash(const fold_t&, const size_t index) const = 0;
         };
 }

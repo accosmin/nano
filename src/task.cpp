@@ -60,7 +60,7 @@ static void add_hashes(const task_t& task, const fold_t& fold, thashes& hashes)
         const auto size = task.size(fold);
         for (size_t i = 0; i < size; ++ i)
         {
-                hashes.push_back(task.hash(fold, i));
+                hashes.push_back(task.ihash(fold, i));
         }
 }
 

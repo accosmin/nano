@@ -13,8 +13,9 @@ namespace nano
         /// tsample is a sample associated to a chunk (e.g. can map to the whole or a part of the chunk):
         ///     ::index()                       - index of the associated chunk
         ///     ::input(const tchunk&)          - input 3D tensor
-        ///     ::input(const size_t chunk_hash)- hash of the input tensor given the hash of the associated chunk
-        ///     ::target()                      - target 3D tensor
+        ///     ::ihash(size_t chunk_hash)      - hash of the input tensor given the hash of the associated chunk
+        ///     ::output()                      - output/target 3D tensor
+        ///     ::ohash()                       - hash of the output tensor
         ///     ::label()                       - associated label (if any)
         ///
         template <typename tchunk, typename tsample>
@@ -27,57 +28,22 @@ namespace nano
                         const tensor3d_dims_t& idims,
                         const tensor3d_dims_t& odims,
                         const size_t fsize,
-                        const string_t& params = string_t()) :
-                        task_t(params),
-                        m_idims(idims), m_odims(odims),
-                        m_fsize(fsize), m_frand(1, 10)
-                {
-                }
+                        const string_t& params = string_t());
 
-                ///
-                /// \brief populate the task with samples
-                ///
-                virtual bool load() override;
+                virtual bool load() override final;
 
-                ///
-                /// \brief input size
-                ///
-                virtual tensor3d_dims_t idims() const final { return m_idims; }
+                virtual tensor3d_dims_t idims() const override final { return m_idims; }
+                virtual tensor3d_dims_t odims() const override final { return m_odims; }
 
-                ///
-                /// \brief output size
-                ///
-                virtual tensor3d_dims_t odims() const final { return m_odims; }
-
-                ///
-                /// \brief number of folds (not considering the protocol!)
-                ///
-                virtual size_t fsize() const final { return m_fsize; }
-
-                ///
-                /// \brief total number of samples
-                ///
                 virtual size_t size() const override final;
-
-                ///
-                /// \brief number of samples for the given fold
-                ///
                 virtual size_t size(const fold_t&) const override final;
+                virtual size_t fsize() const override final { return m_fsize; }
 
-                ///
-                /// \brief randomly shuffle the samples associated for the given fold
-                ///
                 virtual void shuffle(const fold_t&) const override final;
 
-                ///
-                /// \brief retrieve the given sample
-                ///
                 virtual sample_t get(const fold_t&, const size_t index) const override final;
-
-                ///
-                /// \brief retrieve the hash for a given sample
-                ///
-                virtual size_t hash(const fold_t&, const size_t index) const override final;
+                virtual size_t ihash(const fold_t&, const size_t index) const override final;
+                virtual size_t ohash(const fold_t&, const size_t index) const override final;
 
         protected:
 
@@ -164,6 +130,18 @@ namespace nano
         };
 
         template <typename tchunk, typename tsample>
+        mem_task_t<tchunk, tsample>::mem_task_t(
+                const tensor3d_dims_t& idims,
+                const tensor3d_dims_t& odims,
+                const size_t fsize,
+                const string_t& params) :
+                task_t(params),
+                m_idims(idims), m_odims(odims),
+                m_fsize(fsize), m_frand(1, 10)
+        {
+        }
+
+        template <typename tchunk, typename tsample>
         bool mem_task_t<tchunk, tsample>::load()
         {
                 m_chunks.clear();
@@ -218,14 +196,20 @@ namespace nano
         {
                 const auto& sample = get_sample(fold, index);
                 const auto& chunk = get_chunk(sample);
-                return {sample.input(chunk), sample.target(), sample.label()};
+                return {sample.input(chunk), sample.output(), sample.label()};
         }
 
         template <typename tchunk, typename tsample>
-        size_t mem_task_t<tchunk, tsample>::hash(const fold_t& fold, const size_t index) const
+        size_t mem_task_t<tchunk, tsample>::ihash(const fold_t& fold, const size_t index) const
         {
                 const auto& sample = get_sample(fold, index);
-                const auto& hash = get_hash(sample);
-                return sample.hash(hash);
+                return sample.ihash(get_hash(sample));
+        }
+
+        template <typename tchunk, typename tsample>
+        size_t mem_task_t<tchunk, tsample>::ohash(const fold_t& fold, const size_t index) const
+        {
+                const auto& sample = get_sample(fold, index);
+                return sample.ohash();
         }
 }

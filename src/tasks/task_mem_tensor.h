@@ -1,6 +1,7 @@
 #pragma once
 
 #include "task_mem.h"
+#include "math/hash.h"
 
 namespace nano
 {
@@ -24,13 +25,15 @@ namespace nano
 
                 auto index() const { return m_index; }
                 auto input(const tensor3d_t& tensor) const { return tensor; }
-                auto hash(const size_t seed) const { return seed; }
-                auto target() const { return m_target; }
+                auto ihash(const size_t seed) const { return seed; }
+                auto ohash() const { return nano::hash_range(m_target.data(), m_target.data() + m_target.size()); }
+                auto output() const { return m_target; }
                 auto label() const { return m_label; }
 
-                size_t          m_index;
-                tensor3d_t      m_target;
-                string_t        m_label;
+                // attributes
+                size_t          m_index;        ///< input tensor index
+                tensor3d_t      m_target;       ///<
+                string_t        m_label;        ///<
         };
 
         ///

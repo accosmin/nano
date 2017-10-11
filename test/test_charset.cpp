@@ -83,4 +83,38 @@ NANO_CASE(from_params)
         NANO_CHECK_LESS_EQUAL(nano::check_intersection(*task), max_duplicates);
 }
 
+NANO_CASE(shuffle)
+{
+        auto task = get_tasks().get("synth-charset", "type=alpha,color=rgb,irows=18,icols=17,count=102");
+        NANO_CHECK(task->load());
+
+        for (const auto p : {protocol::train, protocol::valid, protocol::test})
+        {
+                const auto fold = fold_t{0, p};
+                const auto size = task->size(fold);
+
+                std::map<size_t, size_t> iohashes;
+                for (size_t i = 0; i < size; ++ i)
+                {
+                        iohashes[task->ihash(fold, i)] = task->ohash(fold, i);
+                }
+
+                for (auto t = 0; t < 8; ++ t)
+                {
+                        task->shuffle(fold);
+                        NANO_REQUIRE_EQUAL(task->size(fold), size);
+
+                        for (size_t i = 0; i < size; ++ i)
+                        {
+                                const auto ihash = task->ihash(fold, i);
+                                const auto ohash = task->ohash(fold, i);
+                                const auto it = iohashes.find(ihash);
+
+                                NANO_REQUIRE(it != iohashes.end());
+                                NANO_CHECK_EQUAL(it->second, ohash);
+                        }
+                }
+        }
+}
+
 NANO_END_MODULE()

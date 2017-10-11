@@ -28,15 +28,17 @@ namespace nano
 
                 auto index() const { return m_index; }
                 tensor3d_t input(const image_t& image) const;
-                size_t hash(size_t seed) const;
-                auto target() const { return m_target; }
+                auto output() const { return m_target; }
                 auto label() const { return m_label; }
+
+                size_t ohash() const;
+                size_t ihash(size_t seed) const;
 
                 // attributes
                 size_t          m_index;        ///< image index
                 rect_t          m_region;       ///< patch region in image
-                tensor3d_t      m_target;
-                string_t        m_label;
+                tensor3d_t      m_target;       ///<
+                string_t        m_label;        ///<
         };
 
         inline tensor3d_t mem_vision_sample_t::input(const image_t& image) const
@@ -44,7 +46,7 @@ namespace nano
                 return m_region.empty() ? image.to_tensor() : image.to_tensor(m_region);
         }
 
-        inline size_t mem_vision_sample_t::hash(size_t seed) const
+        inline size_t mem_vision_sample_t::ihash(size_t seed) const
         {
                 std::hash<coord_t> hasher;
                 nano::hash_combine(seed, m_region.top(), hasher);
@@ -52,6 +54,11 @@ namespace nano
                 nano::hash_combine(seed, m_region.right(), hasher);
                 nano::hash_combine(seed, m_region.bottom(), hasher);
                 return seed;
+        }
+
+        inline size_t mem_vision_sample_t::ohash() const
+        {
+                return nano::hash_range(m_target.data(), m_target.data() + m_target.size());
         }
 
         ///
