@@ -9,9 +9,10 @@
 
 namespace nano
 {
-        struct table_t;
-
-        struct cell_t
+        ///
+        /// \brief
+        ///
+        struct NANO_PUBLIC cell_t
         {
                 cell_t();
                 cell_t(const string_t& data, const size_t span, const alignment);
@@ -26,7 +27,10 @@ namespace nano
                 alignment               m_alignment;
         };
 
-        struct row_t
+        ///
+        /// \brief
+        ///
+        struct NANO_PUBLIC row_t
         {
                 enum class type
                 {
@@ -63,6 +67,8 @@ namespace nano
                 alignment               m_alignment;    ///< current cell alignment
                 std::vector<cell_t>     m_cells;
         };
+
+        struct table_t;
 
         ///
         /// \brief streaming operators.

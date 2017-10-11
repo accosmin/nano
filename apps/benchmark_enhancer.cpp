@@ -61,7 +61,7 @@ int main(int argc, const char *argv[])
                         NANO_UNUSED1(id);
                         row << "[us/sample]";
                 }
-                table.append(table_row_t::storage::delim);
+                table.delim();
         }
 
         // vary the task size

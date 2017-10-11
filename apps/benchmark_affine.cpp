@@ -139,13 +139,13 @@ int main(int argc, const char *argv[])
 
                         if (osize * 2 <= cmd_max_osize)
                         {
-                                table.append(table_row_t::storage::delim);
+                                table.delim();
                         }
                 }
 
                 if (isize * 2 <= cmd_max_isize)
                 {
-                        table.append(table_row_t::storage::delim);
+                        table.delim();
                 }
         }
 

@@ -183,7 +183,7 @@ int main(int argc, const char *argv[])
                 const auto last = config == *networks.rbegin();
                 if (cmd_detailed && !last)
                 {
-                        table.append(table_row_t::storage::delim);
+                        table.delim();
                 }
         }
 
