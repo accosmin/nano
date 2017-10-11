@@ -88,6 +88,9 @@ namespace nano
                 const auto& odata() const { return m_odata; }
                 const auto& labels() const { return m_labels; }
 
+                auto idata() { return m_idata.tensor(); }
+                auto odata() { return m_odata.tensor(); }
+
                 auto idata(const tensor_size_t index) { return m_idata.tensor(index); }
                 auto odata(const tensor_size_t index) { return m_odata.tensor(index); }
 
@@ -102,8 +105,6 @@ namespace nano
                 strings_t       m_labels;       ///< classification labels (optional)
         };
 
-        ///
-        /// \brief target value of the positive class
         ///
         /// \brief target value of the positive class
         ///

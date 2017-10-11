@@ -1,4 +1,5 @@
 list(APPEND libnano_sources
+        ${CMAKE_CURRENT_SOURCE_DIR}/warp.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/image.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/image_grid.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/image_io.cpp)
