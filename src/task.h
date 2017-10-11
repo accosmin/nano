@@ -54,7 +54,7 @@ namespace nano
                 virtual tensor3d_dims_t idims() const = 0;
 
                 ///
-                /// \brief output/target size
+                /// \brief output size
                 ///
                 virtual tensor3d_dims_t odims() const = 0;
 
@@ -66,12 +66,12 @@ namespace nano
                 ///
                 /// \brief total number of samples
                 ///
-                virtual tensor_size_t size() const = 0;
+                virtual size_t size() const = 0;
 
                 ///
                 /// \brief number of samples for the given fold
                 ///
-                virtual tensor_size_t size(const fold_t&) const = 0;
+                virtual size_t size(const fold_t&) const = 0;
 
                 ///
                 /// \brief randomly shuffle the samples associated for the given fold
@@ -81,16 +81,11 @@ namespace nano
                 ///
                 /// \brief retrieve the given sample
                 ///
-                virtual sample_t get(const fold_t&, const tensor_size_t index) const = 0;
+                virtual sample_t get(const fold_t&, const size_t index) const = 0;
 
                 ///
-                /// \brief retrieve the hash for a given input sample
+                /// \brief retrieve the hash for a given sample
                 ///
-                virtual size_t ihash(const fold_t&, const tensor_size_t index) const = 0;
-
-                ///
-                /// \brief retrieve the hash for a given target sample
-                ///
-                virtual size_t ohash(const fold_t&, const tensor_size_t index) const = 0;
+                virtual size_t hash(const fold_t&, const size_t index) const = 0;
         };
 }
