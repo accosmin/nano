@@ -88,6 +88,12 @@ namespace nano
                 const auto& odata() const { return m_odata; }
                 const auto& labels() const { return m_labels; }
 
+                auto idata(const tensor_size_t index) { return m_idata.tensor(index); }
+                auto odata(const tensor_size_t index) { return m_odata.tensor(index); }
+
+                auto idata(const tensor_size_t index) const { return m_idata.tensor(index); }
+                auto odata(const tensor_size_t index) const { return m_odata.tensor(index); }
+
         private:
 
                 // attributes

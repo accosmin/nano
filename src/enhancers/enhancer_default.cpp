@@ -14,7 +14,5 @@ sample_t enhancer_default_t::get(const task_t& task, const fold_t& fold, const s
 
 minibatch_t enhancer_default_t::get(const task_t& task, const fold_t& fold, const size_t begin, const size_t end) const
 {
-        NANO_UNUSED4(task, fold, begin, end);
-        // todo
-        return minibatch_t{};
+        return task.get(fold, begin, end);
 }
