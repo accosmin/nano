@@ -64,6 +64,7 @@ namespace nano
         /// \brief tokenize a string using the given delimeters
         ///
         NANO_PUBLIC strings_t split(const string_t& str, const char* delimeters);
+        NANO_PUBLIC strings_t split(const string_t& str, const char delimeter);
 
         ///
         /// \brief align a string to fill the given size (if possible)

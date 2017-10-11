@@ -88,6 +88,12 @@ bool nano::iends_with(const string_t& str, const string_t& token)
                 std::equal(token.rbegin(), token.rend(), str.rbegin(), icequals);
 }
 
+strings_t nano::split(const string_t& str, const char delimeter)
+{
+        const char delimeters[2] = {delimeter, '\0'};
+        return split(str, delimeters);
+}
+
 strings_t nano::split(const string_t& str, const char* delimeters)
 {
         strings_t tokens;

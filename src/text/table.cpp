@@ -45,45 +45,34 @@ cell_t row_t::find(const size_t column) const
         return cell_t{};
 }
 
-table_t::table_t()
+row_t& table_t::header()
 {
-        m_rows.reserve(1024);
-}
-
-table_header_t& table_t::header()
-{
-        return m_header;
-}
-
-const table_header_t& table_t::header() const
-{
-        return m_header;
-}
-
-table_row_t& table_t::append(const table_row_t::storage type)
-{
-        m_rows.emplace_back(type);
+        m_rows.emplace_back(row_t::type::header);
         return *m_rows.rbegin();
 }
 
-const table_row_t& table_t::row(const std::size_t index) const
+row_t& table_t::append()
 {
-        return m_rows.at(index);
+        m_rows.emplace_back(row_t::type::data);
+        return *m_rows.rbegin();
+}
+
+row_t& table_t::delim()
+{
+        m_rows.emplace_back(row_t::type::delim);
+        return *m_rows.rbegin();
 }
 
 std::size_t table_t::cols() const
 {
-        return header().size();
+        const auto op = [] (const row_t& row1, const row_t& row2) { return row1.cols() < row2.cols(); };
+        const auto it = std::max_element(m_rows.begin(), m_rows.end(), op);
+        return (it == m_rows.end()) ? size_t(0) : it->cols();
 }
 
 std::size_t table_t::rows() const
 {
         return m_rows.size();
-}
-
-void table_t::clear()
-{
-        m_rows.clear();
 }
 
 bool table_t::save(const string_t& path, const string_t& delim) const
@@ -94,17 +83,15 @@ bool table_t::save(const string_t& path, const string_t& delim) const
                 return false;
         }
 
-        for (size_t c = 0; c < cols(); ++ c)
-        {
-                os << m_header.value(c) << (c + 1 == cols() ? "" : delim);
-        }
-        os << std::endl;
-
         for (const auto& row : m_rows)
         {
-                for (size_t c = 0; c < row.size(); ++ c)
+                for (const auto& cell : row.m_cells)
                 {
-                        os << row.value(c) << (c + 1 == row.size() ? "" : delim);
+                        os << cell.m_data;
+                        for (size_t i = 0; i + 1 < cell.m_span; ++ i)
+                        {
+                                os << delim;
+                        }
                 }
                 os << std::endl;
         }
@@ -120,18 +107,19 @@ bool table_t::load(const string_t& path, const string_t& delim, const bool load_
                 return false;
         }
 
-        if (load_header)
-        {
-                m_header = table_header_t();
-        }
-        clear();
+        m_rows.clear();
 
-        const auto op_header = [=] (const auto& values)
+        const auto op_row = [&] (auto& row, const auto& values)
         {
                 for (const auto& value : values)
                 {
-                        header() << value;
+                        row << value;
                 }
+        };
+
+        const auto op_header = [=] (const auto& values)
+        {
+                op_row(header(), values);
         };
 
         const auto op_append = [=] (const auto& values)
@@ -142,14 +130,13 @@ bool table_t::load(const string_t& path, const string_t& delim, const bool load_
                 }
                 else
                 {
-                        auto& row = append();
-                        for (const auto& value : values)
-                        {
-                                row << value;
-                        }
+                        op_row(append(), values);
                         return true;
                 }
         };
+
+        // todo: this does not handle missing values
+        // todo: this does not handle delimiting rows
 
         size_t count = 0;
         for (string_t line; std::getline(is, line); ++ count)
@@ -237,21 +224,19 @@ std::ostream& nano::operator<<(std::ostream& os, const table_t& table)
         return os;
 }
 
+bool nano::operator==(const cell_t& c1, const cell_t& c2)
+{
+        return  c1.m_data == c2.m_data &&
+                c1.m_span == c2.m_span &&
+                c1.m_align = c2.m_align;
+}
+
+bool nano::operator==(const row_t& r1, const row_t& r2)
+{
+        return std::operator==(r1.m_cells, r2.m_cells);
+}
+
 bool nano::operator==(const table_t& t1, const table_t& t2)
 {
-        const auto rows_equal = [&] ()
-        {
-                for (std::size_t i = 0; i < t1.rows(); ++ i)
-                {
-                        if (t1.row(i) != t2.row(i))
-                        {
-                                return false;
-                        }
-                }
-                return true;
-        };
-
-        return  t1.header() == t2.header() &&
-                t1.rows() == t2.rows() &&
-                rows_equal();
+        return std::operator==(t1.m_rows, t2.m_rows);
 }

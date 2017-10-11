@@ -37,7 +37,8 @@ namespace nano
                 enum class type
                 {
                         data,
-                        header
+                        delim,
+                        header,
                 };
 
                 row_t(const type t = type::data);
@@ -53,14 +54,16 @@ namespace nano
         };
 
         ///
-        /// \brief streaming operator.
+        /// \brief streaming operators.
         ///
         NANO_PUBLIC std::ostream& operator<<(std::ostream&, const table_t&);
 
         ///
-        /// \brief comparison operator.
+        /// \brief comparison operators.
         ///
-        NANO_PUBLIC bool operator==(const table_t& t1, const table_t& t2);
+        NANO_PUBLIC bool operator==(const row_t&, const row_t&);
+        NANO_PUBLIC bool operator==(const cell_t&, const cell_t&);
+        NANO_PUBLIC bool operator==(const table_t&, const table_t&);
 
         ///
         /// \brief collects & formats tabular data for ASCII display.
@@ -73,10 +76,7 @@ namespace nano
                         desc
                 };
 
-                ///
-                /// \brief constructor
-                ///
-                explicit table_t();
+                table_t() = default;
 
                 ///
                 /// \brief remove all rows, but keeps the header
@@ -84,8 +84,9 @@ namespace nano
                 void clear();
 
                 ///
-                /// \brief append a row either as a header or as a data row
+                /// \brief append a row as a header, as a data or as a delimeter row
                 ///
+                row_t& delim();
                 row_t& header();
                 row_t& append();
 
