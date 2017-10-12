@@ -30,6 +30,16 @@ namespace nano
         ///
         /// \brief
         ///
+        struct colspan_t
+        {
+                size_t                  m_span;
+        };
+
+        inline colspan_t colspan(const size_t span) { return {span}; }
+
+        ///
+        /// \brief
+        ///
         struct NANO_PUBLIC row_t
         {
                 enum class type
@@ -46,6 +56,14 @@ namespace nano
                 {
                         m_cells.emplace_back(to_string(value), colspan(), align());
                         return *this;
+                }
+                row_t& operator<<(const alignment a)
+                {
+                        return align(a);
+                }
+                row_t& operator<<(const colspan_t c)
+                {
+                        return colspan(c.m_span);
                 }
 
                 size_t cols() const;
