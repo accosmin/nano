@@ -4,7 +4,6 @@
 #include "math/numeric.h"
 #include "text/cmdline.h"
 #include "chrono/measure.h"
-#include "text/table_row_mark.h"
 #include <iostream>
 
 using namespace nano;
@@ -65,8 +64,7 @@ int main(int argc, const char *argv[])
                                 delta1 = deltaX;
                         }
 
-                        const auto scaling = static_cast<scalar_t>(delta1.count()) / static_cast<scalar_t>(deltaX.count());
-                        row << scaling;
+                        row << (static_cast<scalar_t>(delta1.count()) / static_cast<scalar_t>(deltaX.count()));
                 }
         }
 

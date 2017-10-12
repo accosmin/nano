@@ -152,7 +152,7 @@ int main(int argc, const char *argv[])
                 << "gflop/s" << "gflop/s" << "gflop/s"
                 << "gflop/s" << "gflop/s" << "gflop/s";
 
-        table.append(table_row_t::storage::delim);
+        table.delim();
 
         // benchmark for different kernel sizes, connectivity factors and number of samples in a minibatch
         for (auto ksize = cmd_min_ksize; ksize <= cmd_max_ksize; ksize += 2)
@@ -172,19 +172,19 @@ int main(int argc, const char *argv[])
 
                                 if (kconn + 1 <= cmd_max_kconn)
                                 {
-                                        table.append(table_row_t::storage::delim);
+                                        table.delim();
                                 }
                         }
 
                         if (kdelta + 1 <= cmd_max_kdelta)
                         {
-                                table.append(table_row_t::storage::delim);
+                                table.delim();
                         }
                 }
 
                 if (ksize + 2 <= cmd_max_ksize)
                 {
-                        table.append(table_row_t::storage::delim);
+                        table.delim();
                 }
         }
 

@@ -4,7 +4,6 @@
 #include "text/cmdline.h"
 #include "chrono/measure.h"
 #include "tensor/numeric.h"
-#include "text/table_row_mark.h"
 #include <iostream>
 
 namespace

@@ -88,7 +88,7 @@ int main(int argc, const char *argv[])
                 << "gflop/s" << "gflop/s" << "gflop/s"
                 << "gflop/s" << "gflop/s" << "gflop/s";
 
-        table.append(table_row_t::storage::delim);
+        table.delim();
 
         // benchmark for different input-output sizes and number of samples in a minibatch
         for (auto isize = cmd_min_isize; isize <= cmd_max_isize; isize *= 2)
