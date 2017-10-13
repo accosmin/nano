@@ -303,25 +303,25 @@ NANO_CASE(table_mark)
         {
                 for (size_t c = 0; c < table.cols(); ++ c)
                 {
-                        NANO_CHECK_EQUAL(table.row(r).marking(c), "");
+                        NANO_CHECK_EQUAL(table.row(r).mark(c), "");
                 }
         }
 
         {
                 auto tablex = table;
-                tablex.mark(nano::make_table_mark_minimum_col<int>(), "*");
+                tablex.mark(nano::make_marker_minimum_col<int>(), "*");
 
-                NANO_CHECK_EQUAL(tablex.row(0).marking(1), "*");
-                NANO_CHECK_EQUAL(tablex.row(1).marking(2), "*");
-                NANO_CHECK_EQUAL(tablex.row(2).marking(1), "*");
+                NANO_CHECK_EQUAL(tablex.row(0).mark(1), "*");
+                NANO_CHECK_EQUAL(tablex.row(1).mark(2), "*");
+                NANO_CHECK_EQUAL(tablex.row(2).mark(1), "*");
         }
         {
                 auto tablex = table;
-                tablex.mark(nano::make_table_mark_maximum_col<int>(), "*");
+                tablex.mark(nano::make_marker_maximum_col<int>(), "*");
 
-                NANO_CHECK_EQUAL(tablex.row(0).marking(2), "*");
-                NANO_CHECK_EQUAL(tablex.row(1).marking(3), "*");
-                NANO_CHECK_EQUAL(tablex.row(2).marking(2), "*");
+                NANO_CHECK_EQUAL(tablex.row(0).mark(2), "*");
+                NANO_CHECK_EQUAL(tablex.row(1).mark(3), "*");
+                NANO_CHECK_EQUAL(tablex.row(2).mark(2), "*");
         }
 }
 

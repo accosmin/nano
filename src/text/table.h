@@ -18,6 +18,7 @@ namespace nano
                 cell_t(const string_t& data, const size_t span, const alignment);
 
                 const auto& data() const { return m_data; }
+                const auto& mark() const { return m_mark; }
                 bool empty() const { return data().empty(); }
                 void print(std::ostream&, const size_t maximum) const;
 
@@ -267,14 +268,14 @@ namespace nano
 
         namespace detail
         {
-                template <typename tscalar, typename toperator>
+                template <typename tscalar>
                 auto min_element(const std::vector<std::pair<size_t, tscalar>>& values)
                 {
                         const auto comp = [] (const auto& cv1, const auto& cv2) { return cv1.second < cv2.second; };
                         return std::min_element(values.begin(), values.end(), comp);
                 }
 
-                template <typename tscalar, typename toperator>
+                template <typename tscalar>
                 auto max_element(const std::vector<std::pair<size_t, tscalar>>& values)
                 {
                         const auto comp = [] (const auto& cv1, const auto& cv2) { return cv1.second < cv2.second; };
@@ -298,13 +299,13 @@ namespace nano
                 template <typename tscalar>
                 indices_t filter_less(const std::vector<std::pair<size_t, tscalar>>& values, const tscalar threshold)
                 {
-                        return filter(values, [threshold = threshold] (const auto& cv) { return cv.second < threshold; });
+                        return filter(values, [threshold = threshold] (const auto& cv) { return cv < threshold; });
                 }
 
                 template <typename tscalar>
                 indices_t filter_greater(const std::vector<std::pair<size_t, tscalar>>& values, const tscalar threshold)
                 {
-                        return filter(values, [threshold = threshold] (const auto& cv) { return cv.second > threshold; });
+                        return filter(values, [threshold = threshold] (const auto& cv) { return cv > threshold; });
                 }
         }
 
