@@ -2,8 +2,8 @@
 
 #include "arch.h"
 #include "scalar.h"
+#include <cassert>
 #include <algorithm>
-#include "algorithm.h"
 #include "to_string.h"
 #include "from_string.h"
 
@@ -17,7 +17,8 @@ namespace nano
                 cell_t();
                 cell_t(const string_t& data, const size_t span, const alignment);
 
-                bool empty() const { return m_data.empty(); }
+                const auto& data() const { return m_data; }
+                bool empty() const { return data().empty(); }
                 void print(std::ostream&, const size_t maximum) const;
 
                 // attributes
@@ -32,28 +33,70 @@ namespace nano
         ///
         struct NANO_PUBLIC row_t
         {
-                enum class type
+                enum class mode
                 {
                         data,           ///<
                         delim,          ///< delimiting row
                         header,         ///< header (not considered for operations like sorting or marking)
                 };
 
-                row_t(const type t = type::data);
+                row_t(const mode t = mode::data);
 
-                template <typename tvalue>
-                row_t& operator<<(const tvalue value)
+                template <typename tscalar>
+                row_t& operator<<(const tscalar value)
                 {
                         m_cells.emplace_back(to_string(value), colspan(), align());
                         return *this;
                 }
 
+                ///
+                /// \brief return the number of columns taking into account column spanning
+                ///
                 size_t cols() const;
-                size_t find(const size_t col);
-                void mark(size_t col, const string_t& marker);
 
+                ///
+                /// \brief mark a column (finds the right cell taking into account column spanning)
+                ///
+                void mark(const size_t col, const string_t& marker);
+
+                ///
+                /// \brief find the a cell taking into account column spanning
+                ///
+                cell_t* find(const size_t col);
+                const cell_t* find(const size_t col) const;
+
+                ///
+                /// \brief access functions
+                ///
+                auto type() const { return m_type; }
                 const auto& cells() const { return m_cells; }
                 const auto& cell(const size_t c) const { return m_cells.at(c); }
+
+                ///
+                /// \brief select the columns that satisfy the given operator
+                ///
+                template <typename tscalar, typename toperator>
+                auto select_cols(const row_t& row, const toperator& op)
+                {
+                        indices_t indices;
+                        if (row.type() == row_t::mode::data)
+                        {
+                                for (size_t col = 0, cols = row.cols(); col < cols; ++ col)
+                                {
+                                        try
+                                        {
+                                                const cell_t* cell = row.find(col);
+                                                assert(cell);
+                                                if (op(nano::from_string<tscalar>(cell->data())))
+                                                {
+                                                        indices.push_back(col);
+                                                }
+                                        }
+                                        catch (std::exception&) {}
+                                }
+                        }
+                        return indices;
+                }
 
                 size_t colspan() const { return m_colspan; }
                 alignment align() const { return m_alignment; }
@@ -63,7 +106,7 @@ namespace nano
         private:
 
                 // attributes
-                type                    m_type;
+                mode                    m_type;
                 size_t                  m_colspan;      ///< current column span
                 alignment               m_alignment;    ///< current cell alignment
                 std::vector<cell_t>     m_cells;
@@ -83,17 +126,17 @@ namespace nano
         NANO_PUBLIC bool operator==(const cell_t&, const cell_t&);
         NANO_PUBLIC bool operator==(const table_t&, const table_t&);
 
+        enum class sorting
+        {
+                asc,
+                desc
+        };
+
         ///
         /// \brief collects & formats tabular data for ASCII display.
         ///
         struct NANO_PUBLIC table_t
         {
-                enum class sorting
-                {
-                        asc,
-                        desc
-                };
-
                 table_t() = default;
 
                 ///
@@ -133,7 +176,7 @@ namespace nano
                 ///
                 /// \brief (stable) sort the table using the given columns
                 ///
-                template <typename tvalue>
+                template <typename tscalar>
                 void sort(const sorting, const indices_t& columns);
 
                 ///
@@ -171,34 +214,41 @@ namespace nano
         template <typename toperator>
         void table_t::sort(const toperator& comp, const indices_t& columns)
         {
-                sort([&] (const auto& row1, const auto& row2)
+                sort([&] (const row_t& row1, const row_t& row2)
                 {
-                        for (const auto col : columns)
+                        if (row1.type() == row_t::mode::data && row2.type() == row_t::mode::data)
                         {
-                                if (comp(row1.value(col), row2.value(col)))
+                                assert(row1.cols() == row2.cols());
+                                for (const auto col : columns)
                                 {
-                                        return true;
-                                }
-                                else if (comp(row2.value(col), row1.value(col)))
-                                {
-                                        return false;
+                                        assert(row1.find(col) && row2.find(col));
+                                        const auto* cell1 = row1.find(col);
+                                        const auto* cell2 = row2.find(col);
+                                        if (comp(cell1->data(), cell2->data()))
+                                        {
+                                                return true;
+                                        }
+                                        else if (comp(cell1->data(), cell2->data()))
+                                        {
+                                                return false;
+                                        }
                                 }
                         }
                         return true;
                 });
         }
 
-        template <typename tvalue>
+        template <typename tscalar>
         void table_t::sort(const sorting type, const indices_t& columns)
         {
                 switch (type)
                 {
                 case sorting::asc:
-                        sort(nano::make_less_from_string<tvalue>(), columns);
+                        sort(nano::make_less_from_string<tscalar>(), columns);
                         break;
 
                 case sorting::desc:
-                        sort(nano::make_greater_from_string<tvalue>(), columns);
+                        sort(nano::make_greater_from_string<tscalar>(), columns);
                         break;
                 }
         }
@@ -208,35 +258,15 @@ namespace nano
         {
                 for (auto& row : m_rows)
                 {
-                        const auto sel_cols = marker(row);
-                        for (const auto& col : sel_cols)
+                        for (const auto col : marker(row))
                         {
                                 row.mark(col, marker_string);
                         }
                 }
         }
 
-        /*
         namespace detail
         {
-                template <typename tscalar, typename toperator>
-                auto select_cols(const row_t& row, const toperator& op)
-                {
-                        indices_t indices;
-                        for (std::size_t i = 0; i < row.size(); ++ i)
-                        {
-                                try
-                                {
-                                        if (op(nano::from_string<tscalar>(row.value(i))))
-                                        {
-                                                indices.push_back(i);
-                                        }
-                                }
-                                catch (std::exception&) {}
-                        }
-                        return indices;
-                }
-
                 template <typename tscalar>
                 auto min_element(const row_t& row)
                 {
@@ -351,5 +381,4 @@ namespace nano
                         return detail::select_cols<tscalar>(row, [thres] (const auto& val) { return val <= thres; });
                 };
         }
-        */
 }

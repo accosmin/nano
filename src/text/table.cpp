@@ -34,34 +34,54 @@ size_t row_t::cols() const
                 [] (const size_t size, const cell_t& cell) { return size + cell.m_span; });
 }
 
-void row_t::mark(size_t col, const string_t& marker)
+template <typename tcells>
+static auto findcell(tcells&& cells, const size_t col) const
 {
-        for (auto& cell : m_cells)
+        for (size_t icell = 0, icol = 0; icell < cells.size(); ++ icell)
         {
-                if (col < cell.m_span)
+                if (icol + cells[icell].m_span > col)
                 {
-                        cell.m_mark = marker;
-                        return;
+                        return &cells[icell];
                 }
-                col -= cell.m_span;
+                icol += cells[icell].m_span;
+        }
+        return nullptr;
+}
+
+cell_t* row_t::find(const size_t col) const
+{
+        return findcell(m_cells, col);
+}
+
+const cell_t* row_t::find(const size_t col) const
+{
+        return findcell(m_cells, col);
+}
+
+void row_t::mark(const size_t col, const string_t& marker)
+{
+        cell_t* cell = find(col);
+        if (cell)
+        {
+                cell->m_mark = marker;
         }
 }
 
 row_t& table_t::header()
 {
-        m_rows.emplace_back(row_t::type::header);
+        m_rows.emplace_back(row_t::mode::header);
         return *m_rows.rbegin();
 }
 
 row_t& table_t::append()
 {
-        m_rows.emplace_back(row_t::type::data);
+        m_rows.emplace_back(row_t::mode::data);
         return *m_rows.rbegin();
 }
 
 row_t& table_t::delim()
 {
-        m_rows.emplace_back(row_t::type::delim);
+        m_rows.emplace_back(row_t::mode::delim);
         return *m_rows.rbegin();
 }
 
