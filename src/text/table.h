@@ -29,6 +29,16 @@ namespace nano
         };
 
         ///
+        /// \brief
+        ///
+        struct colspan_t
+        {
+                size_t                  m_span;
+        };
+
+        inline colspan_t colspan(const size_t span) { return {span}; }
+
+        ///
         /// \brief row in a table.
         ///
         struct NANO_PUBLIC row_t
@@ -42,11 +52,22 @@ namespace nano
 
                 row_t(const mode t = mode::data);
 
+                ///
+                /// \brief insert cells into the row or change its formatting
+                ///
                 template <typename tscalar>
                 row_t& operator<<(const tscalar value)
                 {
                         m_cells.emplace_back(to_string(value), colspan(), align());
                         return *this;
+                }
+                row_t& operator<<(const alignment a)
+                {
+                        return align(a);
+                }
+                row_t& operator<<(const colspan_t c)
+                {
+                        return colspan(c.m_span);
                 }
 
                 ///
@@ -66,17 +87,10 @@ namespace nano
                 const cell_t* find(const size_t col) const;
 
                 ///
-                /// \brief access functions
-                ///
-                auto type() const { return m_type; }
-                const auto& cells() const { return m_cells; }
-                const auto& cell(const size_t c) const { return m_cells.at(c); }
-
-                ///
-                /// \brief select the columns that satisfy the given operator
+                /// \brief select the columns that satisfy the given operator taking into account column spanning
                 ///
                 template <typename tscalar, typename toperator>
-                auto select_cols(const row_t& row, const toperator& op)
+                auto select(const row_t& row, const toperator& op)
                 {
                         indices_t indices;
                         if (row.type() == row_t::mode::data)
@@ -98,6 +112,13 @@ namespace nano
                         return indices;
                 }
 
+                ///
+                /// \brief access functions
+                ///
+                const auto& cells() const { return m_cells; }
+                const auto& cell(const size_t c) const { return m_cells.at(c); }
+
+                auto type() const { return m_type; }
                 size_t colspan() const { return m_colspan; }
                 alignment align() const { return m_alignment; }
                 row_t& colspan(const size_t span) { m_colspan = span; return *this; }
