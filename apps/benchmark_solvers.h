@@ -52,7 +52,7 @@ namespace benchmark
                         }
                 }
 
-                table.sort<scalar_t>(table_t::sorting::asc, {2, 0});
+                table.sort(nano::make_less_from_string<scalar_t>(), {2, 0});
                 std::cout << table;
         }
 

@@ -21,7 +21,7 @@ void cell_t::print(std::ostream& os, const size_t maximum) const
         os << nano::align(m_data, maximum, m_alignment);
 }
 
-row_t::row_t(const type t) :
+row_t::row_t(const mode t) :
         m_type(t),
         m_colspan(1),
         m_alignment(alignment::left)
@@ -34,28 +34,30 @@ size_t row_t::cols() const
                 [] (const size_t size, const cell_t& cell) { return size + cell.m_span; });
 }
 
-template <typename tcells>
-static auto findcell(tcells&& cells, const size_t col) const
+cell_t* row_t::find(const size_t col)
 {
-        for (size_t icell = 0, icol = 0; icell < cells.size(); ++ icell)
+        for (size_t icell = 0, icol = 0; icell < m_cells.size(); ++ icell)
         {
-                if (icol + cells[icell].m_span > col)
+                if (icol + m_cells[icell].m_span > col)
                 {
-                        return &cells[icell];
+                        return &m_cells[icell];
                 }
-                icol += cells[icell].m_span;
+                icol += m_cells[icell].m_span;
         }
         return nullptr;
 }
 
-cell_t* row_t::find(const size_t col) const
-{
-        return findcell(m_cells, col);
-}
-
 const cell_t* row_t::find(const size_t col) const
 {
-        return findcell(m_cells, col);
+        for (size_t icell = 0, icol = 0; icell < m_cells.size(); ++ icell)
+        {
+                if (icol + m_cells[icell].m_span > col)
+                {
+                        return &m_cells[icell];
+                }
+                icol += m_cells[icell].m_span;
+        }
+        return nullptr;
 }
 
 void row_t::mark(const size_t col, const string_t& marker)

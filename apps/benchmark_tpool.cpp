@@ -69,7 +69,7 @@ int main(int argc, const char *argv[])
         }
 
         // print results
-        table.mark(make_table_mark_maximum_percentage_cols<size_t>(5));
+        table.mark(make_marker_maximum_percentage_cols<size_t>(5));
         std::cout << table;
 
         // OK

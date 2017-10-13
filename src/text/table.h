@@ -87,30 +87,16 @@ namespace nano
                 const cell_t* find(const size_t col) const;
 
                 ///
-                /// \brief select the columns that satisfy the given operator taking into account column spanning
+                /// \brief collect the columns as scalar values using nano::from_string<tscalar>
+                ///
+                template <typename tscalar>
+                std::vector<std::pair<size_t, tscalar>> collect() const;
+
+                ///
+                /// \brief select the columns that satisfy the given operator
                 ///
                 template <typename tscalar, typename toperator>
-                auto select(const row_t& row, const toperator& op)
-                {
-                        indices_t indices;
-                        if (row.type() == row_t::mode::data)
-                        {
-                                for (size_t col = 0, cols = row.cols(); col < cols; ++ col)
-                                {
-                                        try
-                                        {
-                                                const cell_t* cell = row.find(col);
-                                                assert(cell);
-                                                if (op(nano::from_string<tscalar>(cell->data())))
-                                                {
-                                                        indices.push_back(col);
-                                                }
-                                        }
-                                        catch (std::exception&) {}
-                                }
-                        }
-                        return indices;
-                }
+                indices_t select(const toperator& op) const;
 
                 ///
                 /// \brief access functions
@@ -147,12 +133,6 @@ namespace nano
         NANO_PUBLIC bool operator==(const cell_t&, const cell_t&);
         NANO_PUBLIC bool operator==(const table_t&, const table_t&);
 
-        enum class sorting
-        {
-                asc,
-                desc
-        };
-
         ///
         /// \brief collects & formats tabular data for ASCII display.
         ///
@@ -183,22 +163,11 @@ namespace nano
                 bool equals(const table_t&) const;
 
                 ///
-                /// \brief (stable) sort the table using the given row-based comparison operator
-                ///
-                template <typename toperator>
-                void sort(const toperator&);
-
-                ///
-                /// \brief (stable) sort the table using the given columns
+                /// \brief (stable) sort the table using the given operator and columns
+                /// e.g. toperator can be nano::make_[less|greater]_from_string<tscalar>
                 ///
                 template <typename toperator>
                 void sort(const toperator&, const indices_t& columns);
-
-                ///
-                /// \brief (stable) sort the table using the given columns
-                ///
-                template <typename tscalar>
-                void sort(const sorting, const indices_t& columns);
 
                 ///
                 /// \brief mark row-wise the selected columns with the given operator
@@ -226,16 +195,41 @@ namespace nano
                 std::vector<row_t>      m_rows;
         };
 
-        template <typename toperator>
-        void table_t::sort(const toperator& comp)
+        template <typename tscalar>
+        std::vector<std::pair<size_t, tscalar>> row_t::collect() const
         {
-                std::stable_sort(m_rows.begin(), m_rows.end(), comp);
+                std::vector<std::pair<size_t, tscalar>> values;
+                for (size_t col = 0, cols = this->cols(); type() == row_t::mode::data && col < cols; ++ col)
+                {
+                        try
+                        {
+                                const cell_t* cell = find(col);
+                                assert(cell);
+                                values.emplace_back(col, nano::from_string<tscalar>(cell->data()));
+                        }
+                        catch (std::exception&) {}
+                }
+                return values;
+        }
+
+        template <typename tscalar, typename toperator>
+        indices_t row_t::select(const toperator& op) const
+        {
+                indices_t indices;
+                for (const auto& cv : collect<tscalar>())
+                {
+                        if (op(cv.second))
+                        {
+                                indices.emplace_back(cv.first);
+                        }
+                }
+                return indices;
         }
 
         template <typename toperator>
         void table_t::sort(const toperator& comp, const indices_t& columns)
         {
-                sort([&] (const row_t& row1, const row_t& row2)
+                std::stable_sort(m_rows.begin(), m_rows.end(), [&] (const row_t& row1, const row_t& row2)
                 {
                         if (row1.type() == row_t::mode::data && row2.type() == row_t::mode::data)
                         {
@@ -259,21 +253,6 @@ namespace nano
                 });
         }
 
-        template <typename tscalar>
-        void table_t::sort(const sorting type, const indices_t& columns)
-        {
-                switch (type)
-                {
-                case sorting::asc:
-                        sort(nano::make_less_from_string<tscalar>(), columns);
-                        break;
-
-                case sorting::desc:
-                        sort(nano::make_greater_from_string<tscalar>(), columns);
-                        break;
-                }
-        }
-
         template <typename tmarker>
         void table_t::mark(const tmarker& marker, const char* marker_string)
         {
@@ -288,22 +267,44 @@ namespace nano
 
         namespace detail
         {
-                template <typename tscalar>
-                auto min_element(const row_t& row)
+                template <typename tscalar, typename toperator>
+                auto min_element(const std::vector<std::pair<size_t, tscalar>>& values)
                 {
-                        const auto op = nano::make_less_from_string<tscalar>();
-                        const auto it = std::min_element(row.begin(), row.end(), op);
-                        assert(it != row.end());
-                        return it;
+                        const auto comp = [] (const auto& cv1, const auto& cv2) { return cv1.second < cv2.second; };
+                        return std::min_element(values.begin(), values.end(), comp);
+                }
+
+                template <typename tscalar, typename toperator>
+                auto max_element(const std::vector<std::pair<size_t, tscalar>>& values)
+                {
+                        const auto comp = [] (const auto& cv1, const auto& cv2) { return cv1.second < cv2.second; };
+                        return std::max_element(values.begin(), values.end(), comp);
+                }
+
+                template <typename tscalar, typename toperator>
+                indices_t filter(const std::vector<std::pair<size_t, tscalar>>& values, const toperator& op)
+                {
+                        indices_t indices;
+                        std::for_each(values.begin(), values.end(), [&] (const auto& cv)
+                        {
+                                if (op(cv.second))
+                                {
+                                        indices.emplace_back(cv.first);
+                                }
+                        });
+                        return indices;
                 }
 
                 template <typename tscalar>
-                auto max_element(const row_t& row)
+                indices_t filter_less(const std::vector<std::pair<size_t, tscalar>>& values, const tscalar threshold)
                 {
-                        const auto op = nano::make_less_from_string<tscalar>();
-                        const auto it = std::max_element(row.begin(), row.end(), op);
-                        assert(it != row.end());
-                        return it;
+                        return filter(values, [threshold = threshold] (const auto& cv) { return cv.second < threshold; });
+                }
+
+                template <typename tscalar>
+                indices_t filter_greater(const std::vector<std::pair<size_t, tscalar>>& values, const tscalar threshold)
+                {
+                        return filter(values, [threshold = threshold] (const auto& cv) { return cv.second > threshold; });
                 }
         }
 
@@ -311,12 +312,13 @@ namespace nano
         /// \brief select the column with the minimum value
         ///
         template <typename tscalar>
-        auto make_table_mark_minimum_col()
+        auto make_marker_minimum_col()
         {
-                return [=] (const row_t& row) -> indices_t
+                return [=] (const row_t& row)
                 {
-                        const auto it = detail::min_element<tscalar>(row);
-                        return { static_cast<size_t>(it - row.begin()) };
+                        const auto values = row.collect<tscalar>();
+                        const auto it = detail::min_element(values);
+                        return (it == values.end()) ? indices_t{} : indices_t{it->first};
                 };
         }
 
@@ -324,12 +326,13 @@ namespace nano
         /// \brief select the column with the maximum value
         ///
         template <typename tscalar>
-        auto make_table_mark_maximum_col()
+        auto make_marker_maximum_col()
         {
                 return [=] (const row_t& row) -> indices_t
                 {
-                        const auto it = detail::max_element<tscalar>(row);
-                        return { static_cast<size_t>(it - row.begin()) };
+                        const auto values = row.collect<tscalar>();
+                        const auto it = detail::max_element(values);
+                        return  (it == values.end()) ? indices_t{} : indices_t{it->first};
                 };
         }
 
@@ -337,15 +340,14 @@ namespace nano
         /// \brief select the columns within [0, epsilon] from the maximum value
         ///
         template <typename tscalar>
-        auto make_table_mark_maximum_epsilon_cols(const tscalar epsilon)
+        auto make_marker_maximum_epsilon_cols(const tscalar epsilon)
         {
                 return [=] (const row_t& row)
                 {
-                        const auto it = detail::max_element<tscalar>(row);
-                        const auto max = nano::from_string<tscalar>(*it);
-                        const auto thres = max - epsilon;
-
-                        return detail::select_cols<tscalar>(row, [thres] (const auto& val) { return val >= thres; });
+                        const auto values = row.collect<tscalar>();
+                        const auto it = detail::max_element(values);
+                        return  (it == values.end()) ? indices_t{} : detail::filter_greater(values,
+                                it->second - epsilon);
                 };
         }
 
@@ -353,15 +355,14 @@ namespace nano
         /// \brief select the columns within [0, epsilon] from the minimum value
         ///
         template <typename tscalar>
-        auto make_table_mark_minimum_epsilon_cols(const tscalar epsilon)
+        auto make_marker_minimum_epsilon_cols(const tscalar epsilon)
         {
                 return [=] (const row_t& row)
                 {
-                        const auto it = detail::min_element<tscalar>(row);
-                        const auto min = nano::from_string<tscalar>(*it);
-                        const auto thres = min + epsilon;
-
-                        return detail::select_cols<tscalar>(row, [thres] (const auto& val) { return val <= thres; });
+                        const auto values = row.collect<tscalar>();
+                        const auto it = detail::min_element(values);
+                        return  (it == values.end()) ? indices_t{} : detail::filter_less(values,
+                                it->second + epsilon);
                 };
         }
 
@@ -369,18 +370,16 @@ namespace nano
         /// \brief select the columns within [0, percentage]% from the maximum value
         ///
         template <typename tscalar>
-        auto make_table_mark_maximum_percentage_cols(const tscalar percentage)
+        auto make_marker_maximum_percentage_cols(const tscalar percentage)
         {
                 return [=] (const row_t& row)
                 {
                         assert(percentage >= tscalar(1));
                         assert(percentage <= tscalar(99));
-
-                        const auto it = detail::max_element<tscalar>(row);
-                        const auto max = nano::from_string<tscalar>(*it);
-                        const auto thres = max - percentage * (max < 0 ? -max : +max) / tscalar(100);
-
-                        return detail::select_cols<tscalar>(row, [thres] (const auto& val) { return val >= thres; });
+                        const auto values = row.collect<tscalar>();
+                        const auto it = detail::max_element(values);
+                        return  (it == values.end()) ? indices_t{} : detail::filter_greater(values,
+                                it->second - percentage * (it->second < 0 ? -it->second : +it->second) / tscalar(100));
                 };
         }
 
@@ -388,18 +387,16 @@ namespace nano
         /// \brief select the columns within [0, percentage]% from the minimum value
         ///
         template <typename tscalar>
-        auto make_table_mark_minimum_percentage_cols(const tscalar percentage)
+        auto make_marker_minimum_percentage_cols(const tscalar percentage)
         {
                 return [=] (const row_t& row)
                 {
                         assert(percentage >= tscalar(1));
                         assert(percentage <= tscalar(99));
-
-                        const auto it = detail::min_element<tscalar>(row);
-                        const auto min = nano::from_string<tscalar>(*it);
-                        const auto thres = min + percentage * (min < 0 ? -min : +min) / tscalar(100);
-
-                        return detail::select_cols<tscalar>(row, [thres] (const auto& val) { return val <= thres; });
+                        const auto values = row.collect<tscalar>();
+                        const auto it = detail::min_element(values);
+                        return  (it == values.end()) ? indices_t{} : detail::filter_less(values,
+                                it->second + percentage * (it->second < 0 ? -it->second : +it->second) / tscalar(100));
                 };
         }
 }

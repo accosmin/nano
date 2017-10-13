@@ -32,7 +32,7 @@ namespace
         }
 
         template <typename toperator>
-        void store(table_row_t& row, const tensor_size_t flops, const toperator& op)
+        void store(row_t& row, const tensor_size_t flops, const toperator& op)
         {
                 const auto trials = size_t(16);
                 const auto duration = nano::measure<picoseconds_t>([&] () { op(); }, trials);
@@ -40,9 +40,9 @@ namespace
         }
 
         void measure_level1(const tensor_size_t dims,
-                table_row_t& row1, table_row_t& row2,
-                table_row_t& row3, table_row_t& row4,
-                table_row_t& row5, table_row_t& row6)
+                row_t& row1, row_t& row2,
+                row_t& row3, row_t& row4,
+                row_t& row5, row_t& row6)
         {
                 auto a = make_scalar();
                 auto b = make_scalar();
@@ -60,7 +60,7 @@ namespace
         }
 
         void measure_level2(const tensor_size_t dims,
-                table_row_t& row1, table_row_t& row2, table_row_t& row3, table_row_t& row4)
+                row_t& row1, row_t& row2, row_t& row3, row_t& row4)
         {
                 auto A = make_matrix(dims, dims);
                 auto Z = make_matrix(dims, dims);
@@ -77,7 +77,7 @@ namespace
         }
 
         auto measure_level3(const tensor_size_t dims,
-                table_row_t& row1, table_row_t& row2, table_row_t& row3)
+                row_t& row1, row_t& row2, row_t& row3)
         {
                 auto A = make_matrix(dims, dims);
                 auto B = make_matrix(dims, dims);
