@@ -23,9 +23,6 @@ namespace nano
                 void data(const string_t& str) { m_data = str; }
                 void mark(const string_t& str) { m_mark = str; }
 
-                bool empty() const { return data().empty(); }
-                void print(std::ostream&, const size_t maximum) const;
-
                 // attributes
                 string_t                m_data;
                 string_t                m_mark;

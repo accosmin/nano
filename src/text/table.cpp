@@ -16,11 +16,6 @@ cell_t::cell_t(const string_t& data, const size_t span, const alignment align) :
 {
 }
 
-void cell_t::print(std::ostream& os, const size_t maximum) const
-{
-        os << nano::align(m_data, maximum, m_alignment);
-}
-
 row_t::row_t(const mode t) :
         m_type(t),
         m_colspan(1),
@@ -133,7 +128,7 @@ bool table_t::save(const string_t& path, const string_t& delim) const
                 for (const auto& cell : row.cells())
                 {
                         os << cell.m_data;
-                        for (size_t i = 0; i + 1 < cell.m_span; ++ i)
+                        for (size_t i = 0; i < cell.m_span; ++ i)
                         {
                                 os << delim;
                         }
@@ -205,16 +200,12 @@ bool table_t::load(const string_t& path, const string_t& delim, const bool load_
 
 std::ostream& table_t::print(std::ostream& os) const
 {
-        /*
-        const auto rows = this->rows();
-        const auto cols = this->cols();
-
         // size of the value columns (in characters)
-        sizes_t colsizes(cols, 0);
+        sizes_t colsizes(this->cols(), 0);
         for (const auto& row : m_rows)
         {
                 size_t icol = 0;
-                for (const auto& cell : row.m_cells)
+                for (const auto& cell : row.cells())
                 {
                         const auto span = cell.m_span;
                         const auto size = cell.m_data.size() + cell.m_mark.size();
@@ -226,57 +217,45 @@ std::ostream& table_t::print(std::ostream& os) const
                 }
         }
 
-        for (const auto& row : m_rows)
-        {
-        }
-
         const auto print_row_delim = [&] ()
         {
-                for (size_t c = 0; c < cols; ++ c)
+                for (const auto colsize : colsizes)
                 {
-                        os << "|" << string_t(colsizes[c] + 2, '-');
+                        os << "|" << string_t(colsize + 2, '-');
                 }
                 os << "|" << std::endl;
         };
 
-        // display header
-        print_row_delim();
-        for (size_t c = 0; c < table.cols(); ++ c)
-        {
-                os << nano::align("| " + table.header().value(c), colsizes[c] + 3);
-        }
-        os << "|" << std::endl;
-        print_row_delim();
-
         // display rows
-        for (size_t r = 0; r < table.rows(); ++ r)
+        print_row_delim();
+        for (const auto& row : m_rows)
         {
-                const auto& row = table.row(r);
-
+                auto it = colsizes.begin();
                 switch (row.type())
                 {
-                case table_row_t::storage::delim:
+                case row_t::mode::delim:
                         print_row_delim();
                         break;
 
                 default:
-                        for (size_t c = 0; c < std::min(table.cols(), row.size()); ++ c)
+                        for (const auto& cell : row.cells())
                         {
-                                os << nano::align("| " + row.value(c) + row.marking(c), colsizes[c] + 3);
+                                const auto colspan = static_cast<std::ptrdiff_t>(cell.m_span);
+                                const auto colsize = std::accumulate(it, it + colspan, size_t(0));
+                                os << nano::align("| " + cell.data() + cell.mark(), colsize + 3, cell.m_alignment);
+                                std::advance(it, colspan);
                         }
                         os << "|" << std::endl;
                         break;
                 }
         }
         print_row_delim();
-        */
 
         return os;
 }
 
 bool table_t::equals(const table_t& other) const
 {
-        // todo: ignore delimeting rows from equality checks
         return std::operator==(m_rows, other.m_rows);
 }
 
