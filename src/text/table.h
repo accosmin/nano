@@ -19,6 +19,10 @@ namespace nano
 
                 const auto& data() const { return m_data; }
                 const auto& mark() const { return m_mark; }
+
+                void data(const string_t& str) { m_data = str; }
+                void mark(const string_t& str) { m_mark = str; }
+
                 bool empty() const { return data().empty(); }
                 void print(std::ostream&, const size_t maximum) const;
 
@@ -77,15 +81,16 @@ namespace nano
                 size_t cols() const;
 
                 ///
-                /// \brief mark a column (finds the right cell taking into account column spanning)
-                ///
-                void mark(const size_t col, const string_t& marker);
-
-                ///
                 /// \brief find the a cell taking into account column spanning
                 ///
                 cell_t* find(const size_t col);
                 const cell_t* find(const size_t col) const;
+
+                ///
+                /// \brief change a column's mark or data (finds the right cell taking into account column spanning)
+                ///
+                void data(const size_t col, const string_t&);
+                void mark(const size_t col, const string_t&);
 
                 ///
                 /// \brief collect the columns as scalar values using nano::from_string<tscalar>
@@ -103,11 +108,15 @@ namespace nano
                 /// \brief access functions
                 ///
                 const auto& cells() const { return m_cells; }
-                const auto& cell(const size_t c) const { return m_cells.at(c); }
+                const auto& cell(const size_t icell) const { return m_cells.at(icell); }
+
+                string_t data(const size_t col) const;
+                string_t mark(const size_t col) const;
 
                 auto type() const { return m_type; }
                 size_t colspan() const { return m_colspan; }
                 alignment align() const { return m_alignment; }
+
                 row_t& colspan(const size_t span) { m_colspan = span; return *this; }
                 row_t& align(const alignment align) { m_alignment = align; return *this; }
 

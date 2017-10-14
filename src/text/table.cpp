@@ -60,13 +60,34 @@ const cell_t* row_t::find(const size_t col) const
         return nullptr;
 }
 
-void row_t::mark(const size_t col, const string_t& marker)
+void row_t::data(const size_t col, const string_t& str)
 {
         cell_t* cell = find(col);
         if (cell)
         {
-                cell->m_mark = marker;
+                cell->data(str);
         }
+}
+
+void row_t::mark(const size_t col, const string_t& str)
+{
+        cell_t* cell = find(col);
+        if (cell)
+        {
+                cell->mark(str);
+        }
+}
+
+string_t row_t::data(const size_t col) const
+{
+        const cell_t* cell = find(col);
+        return cell ? cell->data() : string_t();
+}
+
+string_t row_t::mark(const size_t col) const
+{
+        const cell_t* cell = find(col);
+        return cell ? cell->mark() : string_t();
 }
 
 row_t& table_t::header()
@@ -273,7 +294,8 @@ bool nano::operator==(const cell_t& c1, const cell_t& c2)
 
 bool nano::operator==(const row_t& r1, const row_t& r2)
 {
-        return std::operator==(r1.cells(), r2.cells());
+        return  r1.type() == r2.type() &&
+                std::operator==(r1.cells(), r2.cells());
 }
 
 bool nano::operator==(const table_t& t1, const table_t& t2)
