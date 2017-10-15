@@ -77,17 +77,16 @@ int main(int argc, const char *argv[])
 
         table_t table;
         table.header()
-                << "" << "" << "" << ""
-                << "output" << "ginput" << "gparam"
-                << "+3d" << "ginput" << "gparam"
-                << "+4d" << "ginput" << "gparam";
-
+                << colspan(4) << ""
+                << colspan(3) << alignment::center << "operations[#kflops]"
+                << colspan(3) << alignment::center << "3d kernel[gflop/s]"
+                << colspan(3) << alignment::center << "4d kernel[gflop/s]";
+        table.delim();
         table.append()
                 << "isize" << "config" << "osize" << "#params"
-                << "#kflops" << "#kflops" << "#kflops"
-                << "gflop/s" << "gflop/s" << "gflop/s"
-                << "gflop/s" << "gflop/s" << "gflop/s";
-
+                << "output" << "ginput" << "gparam"
+                << "output" << "ginput" << "gparam"
+                << "output" << "ginput" << "gparam";
         table.delim();
 
         // benchmark for different input-output sizes and number of samples in a minibatch

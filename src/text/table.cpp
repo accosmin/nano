@@ -209,11 +209,10 @@ std::ostream& table_t::print(std::ostream& os) const
                 {
                         const auto span = cell.m_span;
                         const auto size = cell.m_data.size() + cell.m_mark.size();
-                        for (size_t c = icol; c < icol + span; ++ c)
+                        for (size_t c = 0; c < span; ++ c, ++ icol)
                         {
-                                colsizes[c] = std::max(colsizes[c], idiv(size, span));
+                                colsizes[icol] = std::max(colsizes[icol], idiv(size, span));
                         }
-                        icol += span;
                 }
         }
 
@@ -242,7 +241,8 @@ std::ostream& table_t::print(std::ostream& os) const
                         {
                                 const auto colspan = static_cast<std::ptrdiff_t>(cell.m_span);
                                 const auto colsize = std::accumulate(it, it + colspan, size_t(0));
-                                os << nano::align("| " + cell.data() + cell.mark(), colsize + 3, cell.m_alignment);
+                                const auto extsize = cell.m_span * 3;
+                                os << nano::align("| " + cell.data() + cell.mark(), colsize + extsize, cell.m_alignment);
                                 std::advance(it, colspan);
                         }
                         os << "|" << std::endl;

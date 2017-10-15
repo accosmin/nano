@@ -61,7 +61,7 @@ NANO_CASE(resize)
 {
         NANO_CHECK_EQUAL(nano::align("text", 10, nano::alignment::left, '='),   "text======");
         NANO_CHECK_EQUAL(nano::align("text", 10, nano::alignment::right, '='),  "======text");
-        NANO_CHECK_EQUAL(nano::align("text", 10, nano::alignment::center, '='), "===text===");
+        NANO_CHECK_EQUAL(nano::align("text", 10, nano::alignment::left, '='),   "text======");
 }
 
 NANO_CASE(split)

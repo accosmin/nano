@@ -61,7 +61,7 @@ namespace nano
                 row_t& operator<<(const tscalar value)
                 {
                         m_cells.emplace_back(to_string(value), colspan(), align());
-                        return *this;
+                        return colspan(1).align(alignment::left);
                 }
                 row_t& operator<<(const alignment a)
                 {
