@@ -392,7 +392,6 @@ NANO_CASE(table_mark)
         {
                 auto tablex = table;
                 tablex.mark(nano::make_marker_minimum_col<int>(), "*");
-
                 NANO_CHECK_EQUAL(tablex.row(1).mark(1), "*");
                 NANO_CHECK_EQUAL(tablex.row(2).mark(2), "*");
                 NANO_CHECK_EQUAL(tablex.row(3).mark(1), "*");
@@ -400,10 +399,67 @@ NANO_CASE(table_mark)
         {
                 auto tablex = table;
                 tablex.mark(nano::make_marker_maximum_col<int>(), "*");
-
                 NANO_CHECK_EQUAL(tablex.row(1).mark(2), "*");
                 NANO_CHECK_EQUAL(tablex.row(2).mark(3), "*");
                 NANO_CHECK_EQUAL(tablex.row(3).mark(2), "*");
+        }
+}
+
+NANO_CASE(table_sort)
+{
+        nano::table_t table;
+        table.header() << "name " << "col1" << "col2" << "col3";
+        table.append() << "name1" << "1000" << "9000" << "4000";
+        table.append() << "name2" << "3200" << "2000" << "6000";
+        table.append() << "name3" << "1500" << "2000" << "5000";
+
+        {
+                auto tablex = table;
+                tablex.sort(nano::make_less_from_string<int>(), {2, 3});
+
+                NANO_CHECK_EQUAL(tablex.row(0).data(0), "name ");
+                NANO_CHECK_EQUAL(tablex.row(0).data(1), "col1");
+                NANO_CHECK_EQUAL(tablex.row(0).data(2), "col2");
+                NANO_CHECK_EQUAL(tablex.row(0).data(3), "col3");
+
+                NANO_CHECK_EQUAL(tablex.row(1).data(0), "name3");
+                NANO_CHECK_EQUAL(tablex.row(1).data(1), "1500");
+                NANO_CHECK_EQUAL(tablex.row(1).data(2), "2000");
+                NANO_CHECK_EQUAL(tablex.row(1).data(3), "5000");
+
+                NANO_CHECK_EQUAL(tablex.row(2).data(0), "name2");
+                NANO_CHECK_EQUAL(tablex.row(2).data(1), "3200");
+                NANO_CHECK_EQUAL(tablex.row(2).data(2), "2000");
+                NANO_CHECK_EQUAL(tablex.row(2).data(3), "6000");
+
+                NANO_CHECK_EQUAL(tablex.row(3).data(0), "name1");
+                NANO_CHECK_EQUAL(tablex.row(3).data(1), "1000");
+                NANO_CHECK_EQUAL(tablex.row(3).data(2), "9000");
+                NANO_CHECK_EQUAL(tablex.row(3).data(3), "4000");
+        }
+        {
+                auto tablex = table;
+                tablex.sort(nano::make_greater_from_string<int>(), {1});
+
+                NANO_CHECK_EQUAL(tablex.row(0).data(0), "name ");
+                NANO_CHECK_EQUAL(tablex.row(0).data(1), "col1");
+                NANO_CHECK_EQUAL(tablex.row(0).data(2), "col2");
+                NANO_CHECK_EQUAL(tablex.row(0).data(3), "col3");
+
+                NANO_CHECK_EQUAL(tablex.row(1).data(0), "name2");
+                NANO_CHECK_EQUAL(tablex.row(1).data(1), "3200");
+                NANO_CHECK_EQUAL(tablex.row(1).data(2), "2000");
+                NANO_CHECK_EQUAL(tablex.row(1).data(3), "6000");
+
+                NANO_CHECK_EQUAL(tablex.row(2).data(0), "name3");
+                NANO_CHECK_EQUAL(tablex.row(2).data(1), "1500");
+                NANO_CHECK_EQUAL(tablex.row(2).data(2), "2000");
+                NANO_CHECK_EQUAL(tablex.row(2).data(3), "5000");
+
+                NANO_CHECK_EQUAL(tablex.row(3).data(0), "name1");
+                NANO_CHECK_EQUAL(tablex.row(3).data(1), "1000");
+                NANO_CHECK_EQUAL(tablex.row(3).data(2), "9000");
+                NANO_CHECK_EQUAL(tablex.row(3).data(3), "4000");
         }
 }
 

@@ -271,13 +271,17 @@ namespace nano
                                         {
                                                 return true;
                                         }
-                                        else if (comp(cell1->m_data, cell2->m_data))
+                                        else if (comp(cell2->m_data, cell1->m_data))
                                         {
                                                 return false;
                                         }
                                 }
+                                return true;
                         }
-                        return true;
+                        else
+                        {
+                                return false;
+                        }
                 });
         }
 

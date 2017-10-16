@@ -24,7 +24,7 @@ namespace benchmark
                 assert(!ostats.empty());
 
                 // show global statistics
-                nano::table_t table;
+                table_t table;
                 table.header()
                         << nano::align(table_name.empty() ? "solver" : table_name, 32)
                         << "cost"
@@ -33,6 +33,7 @@ namespace benchmark
                         << "#fcalls"
                         << "#gcalls"
                         << "speed";
+                table.delim();
 
                 for (const auto& it : ostats)
                 {
