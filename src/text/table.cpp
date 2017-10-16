@@ -241,8 +241,8 @@ std::ostream& table_t::print(std::ostream& os) const
                         {
                                 const auto colspan = static_cast<std::ptrdiff_t>(cell.m_span);
                                 const auto colsize = std::accumulate(it, it + colspan, size_t(0));
-                                const auto extsize = cell.m_span * 3;
-                                os << nano::align("| " + cell.data() + cell.mark(), colsize + extsize, cell.m_alignment);
+                                const auto extsize = (cell.m_span - 1) * 3 + 1;
+                                os << "| " << nano::align(cell.data() + cell.mark(), colsize + extsize, cell.m_alignment);
                                 std::advance(it, colspan);
                         }
                         os << "|" << std::endl;
