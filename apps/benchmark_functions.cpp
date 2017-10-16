@@ -50,7 +50,7 @@ int main(int argc, const char* argv[])
 
         table_t table;
         table.header() << "function" << "f(x) [ns]" << "f(x, g) [ns]";
-
+        table.delim();
         foreach_test_function(make_functions(min_dims, max_dims), [&] (const function_t& function)
         {
                 eval_func(function, table);

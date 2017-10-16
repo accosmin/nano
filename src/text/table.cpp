@@ -7,17 +7,18 @@
 using namespace nano;
 
 cell_t::cell_t() :
-        m_span(1), m_alignment(alignment::left)
+        m_span(1), m_fill(' '), m_alignment(alignment::left)
 {
 }
 
-cell_t::cell_t(const string_t& data, const size_t span, const alignment align) :
-        m_data(data), m_span(span), m_alignment(align)
+cell_t::cell_t(const string_t& data, const size_t span, const alignment align, const char fill) :
+        m_data(data), m_span(span), m_fill(fill), m_alignment(align)
 {
 }
 
 row_t::row_t(const mode t) :
         m_type(t),
+        m_colfill(' '),
         m_colspan(1),
         m_alignment(alignment::left)
 {
@@ -60,7 +61,7 @@ void row_t::data(const size_t col, const string_t& str)
         cell_t* cell = find(col);
         if (cell)
         {
-                cell->data(str);
+                cell->m_data = str;
         }
 }
 
@@ -69,20 +70,20 @@ void row_t::mark(const size_t col, const string_t& str)
         cell_t* cell = find(col);
         if (cell)
         {
-                cell->mark(str);
+                cell->m_mark = str;
         }
 }
 
 string_t row_t::data(const size_t col) const
 {
         const cell_t* cell = find(col);
-        return cell ? cell->data() : string_t();
+        return cell ? cell->m_data : string_t();
 }
 
 string_t row_t::mark(const size_t col) const
 {
         const cell_t* cell = find(col);
-        return cell ? cell->mark() : string_t();
+        return cell ? cell->m_mark : string_t();
 }
 
 row_t& table_t::header()
@@ -241,8 +242,9 @@ std::ostream& table_t::print(std::ostream& os) const
                         {
                                 const auto colspan = static_cast<std::ptrdiff_t>(cell.m_span);
                                 const auto colsize = std::accumulate(it, it + colspan, size_t(0));
-                                const auto extsize = (cell.m_span - 1) * 3 + 1;
-                                os << "| " << nano::align(cell.data() + cell.mark(), colsize + extsize, cell.m_alignment);
+                                const auto extsize = (cell.m_span - 1) * 3;
+                                const auto coltext = cell.m_data + cell.m_mark;
+                                os << "| " << nano::align(coltext, colsize + extsize, cell.m_alignment, cell.m_fill) << " ";
                                 std::advance(it, colspan);
                         }
                         os << "|" << std::endl;

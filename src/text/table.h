@@ -15,19 +15,14 @@ namespace nano
         struct NANO_PUBLIC cell_t
         {
                 cell_t();
-                cell_t(const string_t& data, const size_t span, const alignment);
-
-                const auto& data() const { return m_data; }
-                const auto& mark() const { return m_mark; }
-
-                void data(const string_t& str) { m_data = str; }
-                void mark(const string_t& str) { m_mark = str; }
+                cell_t(const string_t& data, const size_t span, const alignment, const char fill);
 
                 // attributes
-                string_t                m_data;
-                string_t                m_mark;
-                size_t                  m_span;
-                alignment               m_alignment;
+                string_t                m_data;         ///<
+                string_t                m_mark;         ///<
+                size_t                  m_span;         ///< column spanning
+                char                    m_fill;         ///< filling character for aligning cells
+                alignment               m_alignment;    ///<
         };
 
         ///
@@ -38,13 +33,21 @@ namespace nano
                 size_t                  m_span;
         };
 
+        struct colfill_t
+        {
+                char                    m_fill;
+        };
+
         inline colspan_t colspan(const size_t span) { return {span}; }
+        inline colfill_t colfill(const char fill) { return {fill}; }
 
         ///
         /// \brief row in a table.
         ///
-        struct NANO_PUBLIC row_t
+        class NANO_PUBLIC row_t
         {
+        public:
+
                 enum class mode
                 {
                         data,           ///<
@@ -60,8 +63,17 @@ namespace nano
                 template <typename tscalar>
                 row_t& operator<<(const tscalar value)
                 {
-                        m_cells.emplace_back(to_string(value), colspan(), align());
+                        m_cells.emplace_back(to_string(value), colspan(), align(), colfill());
                         return colspan(1).align(alignment::left);
+                }
+                template <typename tscalar>
+                row_t& operator<<(const std::vector<tscalar>& values)
+                {
+                        for (const auto value : values)
+                        {
+                                operator<<(value);
+                        }
+                        return *this;
                 }
                 row_t& operator<<(const alignment a)
                 {
@@ -70,6 +82,10 @@ namespace nano
                 row_t& operator<<(const colspan_t c)
                 {
                         return colspan(c.m_span);
+                }
+                row_t& operator<<(const colfill_t c)
+                {
+                        return colfill(c.m_fill);
                 }
 
                 ///
@@ -111,9 +127,11 @@ namespace nano
                 string_t mark(const size_t col) const;
 
                 auto type() const { return m_type; }
+                char colfill() const { return m_colfill;}
                 size_t colspan() const { return m_colspan; }
                 alignment align() const { return m_alignment; }
 
+                row_t& colfill(const char fill) { m_colfill = fill; return *this; }
                 row_t& colspan(const size_t span) { m_colspan = span; return *this; }
                 row_t& align(const alignment align) { m_alignment = align; return *this; }
 
@@ -121,12 +139,13 @@ namespace nano
 
                 // attributes
                 mode                    m_type;
-                size_t                  m_colspan;      ///< current column span
+                char                    m_colfill;      ///< current cell fill character
+                size_t                  m_colspan;      ///< current cell column span
                 alignment               m_alignment;    ///< current cell alignment
                 std::vector<cell_t>     m_cells;
         };
 
-        struct table_t;
+        class table_t;
 
         ///
         /// \brief streaming operators.
@@ -143,8 +162,10 @@ namespace nano
         ///
         /// \brief collects & formats tabular data for ASCII display.
         ///
-        struct NANO_PUBLIC table_t
+        class NANO_PUBLIC table_t
         {
+        public:
+
                 table_t() = default;
 
                 ///
@@ -212,7 +233,7 @@ namespace nano
                         {
                                 const cell_t* cell = find(col);
                                 assert(cell);
-                                values.emplace_back(col, nano::from_string<tscalar>(cell->data()));
+                                values.emplace_back(col, nano::from_string<tscalar>(cell->m_data));
                         }
                         catch (std::exception&) {}
                 }
@@ -246,11 +267,11 @@ namespace nano
                                         assert(row1.find(col) && row2.find(col));
                                         const auto* cell1 = row1.find(col);
                                         const auto* cell2 = row2.find(col);
-                                        if (comp(cell1->data(), cell2->data()))
+                                        if (comp(cell1->m_data, cell2->m_data))
                                         {
                                                 return true;
                                         }
-                                        else if (comp(cell1->data(), cell2->data()))
+                                        else if (comp(cell1->m_data, cell2->m_data))
                                         {
                                                 return false;
                                         }

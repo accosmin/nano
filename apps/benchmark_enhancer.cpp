@@ -49,20 +49,14 @@ int main(int argc, const char *argv[])
 
         // prepare table
         table_t table;
-        table.header() << "" << "" << "" << "";
-        for (const auto& id : get_enhancers().ids())
-        {
-                table.header() << ("it(" + id + ")");
-        }
-        {
-                auto& row = table.append() << "#samples" << "isize" << "init[ms]" << "shuffle[us]";
-                for (const auto& id : get_enhancers().ids())
-                {
-                        NANO_UNUSED1(id);
-                        row << "[us/sample]";
-                }
-                table.delim();
-        }
+        table.header()
+                << colspan(4) << ""
+                << colspan(get_enhancers().size()) << colfill('=') << alignment::center << "enhancers[us/sample]";
+        table.delim();
+        table.append()
+                << "#samples" << "isize" << "init[ms]" << "shuffle[us]"
+                << get_enhancers().ids();
+        table.delim();
 
         // vary the task size
         for (size_t task_size = min_tasksize; task_size <= max_tasksize; task_size *= 2)

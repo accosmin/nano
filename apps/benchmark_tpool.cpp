@@ -38,11 +38,13 @@ int main(int argc, const char *argv[])
         const size_t n_threads = nano::logical_cpus();
 
         table_t table;
-        table.header() << "function";
+        auto& header = table.header();
+        header << "function";
         for (size_t n_active_workers = 1; n_active_workers <= n_threads; ++ n_active_workers)
         {
-                table.header() << (to_string(n_active_workers) + " thread(s)");
+                header << (to_string(n_active_workers) + (n_active_workers == 1 ? "thread" : "threads"));
         }
+        table.delim();
 
         // benchmark for different problem sizes and number of active workers
         for (size_t size = cmd_min_size; size <= cmd_max_size; size *= 2)
@@ -69,7 +71,7 @@ int main(int argc, const char *argv[])
         }
 
         // print results
-        table.mark(make_marker_maximum_percentage_cols<size_t>(5));
+        table.mark(make_marker_maximum_percentage_cols<scalar_t>(5));
         std::cout << table;
 
         // OK

@@ -39,10 +39,56 @@ namespace
                 row << nano::gflops(flops, duration);
         }
 
-        void measure_level1(const tensor_size_t dims,
-                row_t& row1, row_t& row2,
-                row_t& row3, row_t& row4,
-                row_t& row5, row_t& row6)
+        void measure_level11(const tensor_size_t dims, row_t& row)
+        {
+                auto c = make_scalar();
+                auto x = make_vector(dims);
+                auto z = make_vector(dims);
+
+                store(row, dims, [&] () { z = x.array() + c; });
+        }
+
+        void measure_level12(const tensor_size_t dims, row_t& row)
+        {
+                auto x = make_vector(dims);
+                auto y = make_vector(dims);
+                auto z = make_vector(dims);
+
+                store(row, dims, [&] () { z = x.array() + y.array(); });
+        }
+
+        void measure_level13(const tensor_size_t dims, row_t& row)
+        {
+                auto a = make_scalar();
+                auto c = make_scalar();
+                auto x = make_vector(dims);
+                auto z = make_vector(dims);
+
+                store(row, 2 * dims, [&] () { z = x.array() * a + c; });
+        }
+
+        void measure_level14(const tensor_size_t dims, row_t& row)
+        {
+                auto a = make_scalar();
+                auto x = make_vector(dims);
+                auto y = make_vector(dims);
+                auto z = make_vector(dims);
+
+                store(row, 2 * dims, [&] () { z = x.array() * a + y.array(); });
+        }
+
+        void measure_level15(const tensor_size_t dims, row_t& row)
+        {
+                auto a = make_scalar();
+                auto b = make_scalar();
+                auto x = make_vector(dims);
+                auto y = make_vector(dims);
+                auto z = make_vector(dims);
+
+                store(row, 3 * dims, [&] () { z = x.array() * a + y.array() * b; });
+        }
+
+        void measure_level16(const tensor_size_t dims, row_t& row)
         {
                 auto a = make_scalar();
                 auto b = make_scalar();
@@ -51,42 +97,75 @@ namespace
                 auto y = make_vector(dims);
                 auto z = make_vector(dims);
 
-                store(row1, dims, [&] () { z = x.array() + c; });
-                store(row2, dims, [&] () { z = x.array() + y.array(); });
-                store(row3, 2 * dims, [&] () { z = x.array() * a + c; });
-                store(row4, 2 * dims, [&] () { z = x.array() * a + y.array(); });
-                store(row5, 3 * dims, [&] () { z = x.array() * a + y.array() * b; });
-                store(row6, 4 * dims, [&] () { z = x.array() * a + y.array() * b + c; });
+                store(row, 4 * dims, [&] () { z = x.array() * a + y.array() * b + c; });
         }
 
-        void measure_level2(const tensor_size_t dims,
-                row_t& row1, row_t& row2, row_t& row3, row_t& row4)
+        void measure_level21(const tensor_size_t dims, row_t& row)
         {
                 auto A = make_matrix(dims, dims);
+                auto x = make_vector(dims);
+                auto z = make_vector(dims);
+
+                store(row, 2 * dims * dims, [&] () { z = A * x; });
+        }
+
+        void measure_level22(const tensor_size_t dims, row_t& row)
+        {
+                auto A = make_matrix(dims, dims);
+                auto x = make_vector(dims);
+                auto z = make_vector(dims);
+                auto c = make_scalar();
+
+                store(row, 2 * dims * dims + dims, [&] () { z = (A * x).array() + c; });
+        }
+
+        void measure_level23(const tensor_size_t dims, row_t& row)
+        {
+                auto A = make_matrix(dims, dims);
+                auto x = make_vector(dims);
+                auto y = make_vector(dims);
+                auto z = make_vector(dims);
+
+                store(row, 2 * dims * dims + dims, [&] () { z = A * x + y; });
+        }
+
+        void measure_level24(const tensor_size_t dims, row_t& row)
+        {
                 auto Z = make_matrix(dims, dims);
                 auto C = make_matrix(dims, dims);
                 auto x = make_vector(dims);
                 auto y = make_vector(dims);
-                auto z = make_vector(dims);
-                auto c = make_scalar();
 
-                store(row1, 2 * dims * dims, [&] () { z = A * x; });
-                store(row2, 2 * dims * dims + dims, [&] () { z = (A * x).array() + c; });
-                store(row3, 2 * dims * dims + dims, [&] () { z = A * x + y; });
-                store(row4, 2 * dims * dims + dims, [&] () { Z = x * y.transpose() + C; });
+                store(row, 2 * dims * dims + dims, [&] () { Z.noalias() = x * y.transpose() + C; });
         }
 
-        auto measure_level3(const tensor_size_t dims,
-                row_t& row1, row_t& row2, row_t& row3)
+        auto measure_level31(const tensor_size_t dims, row_t& row)
+        {
+                auto A = make_matrix(dims, dims);
+                auto B = make_matrix(dims, dims);
+                auto Z = make_matrix(dims, dims);
+
+                store(row, 2 * dims * dims * dims, [&] () { Z.noalias() = A * B; });
+        }
+
+        auto measure_level32(const tensor_size_t dims, row_t& row)
         {
                 auto A = make_matrix(dims, dims);
                 auto B = make_matrix(dims, dims);
                 auto C = make_matrix(dims, dims);
                 auto Z = make_matrix(dims, dims);
 
-                store(row1, 2 * dims * dims * dims, [&] () { Z = A * B; });
-                store(row2, 2 * dims * dims * dims + dims * dims, [&] () { Z = A * B + C; });
-                store(row3, 2 * dims * dims * dims + dims * dims, [&] () { Z = A * B.transpose() + C; });
+                store(row, 2 * dims * dims * dims + dims * dims, [&] () { Z.noalias() = A * B + C; });
+        }
+
+        auto measure_level33(const tensor_size_t dims, row_t& row)
+        {
+                auto A = make_matrix(dims, dims);
+                auto B = make_matrix(dims, dims);
+                auto C = make_matrix(dims, dims);
+                auto Z = make_matrix(dims, dims);
+
+                store(row, 2 * dims * dims * dims + dims * dims, [&] () { Z.noalias() = A * B.transpose() + C; });
         }
 
         template <typename top>
@@ -98,17 +177,28 @@ namespace
                 }
         }
 
+        template <typename top>
+        void foreach_dims_row(const tensor_size_t min, const tensor_size_t max, row_t& row, const top& op)
+        {
+                for (tensor_size_t dim = min; dim <= max; dim *= 2)
+                {
+                        op(dim, row);
+                }
+        }
+
         void fillheader(const tensor_size_t min, const tensor_size_t max, table_t& table)
         {
+                auto& header = table.header();
+                header << "operation";
                 foreach_dims(min, max, [&] (const tensor_size_t dims)
                 {
                         const auto kilo = tensor_size_t(1) << 10;
                         const auto mega = tensor_size_t(1) << 20;
                         const auto value = (dims < kilo) ? dims : (dims < mega ? (dims / kilo) : (dims / mega));
                         const auto units = (dims < kilo) ? string_t("") : (dims < mega ? string_t("K") : string_t("M"));
-                        const auto header = to_string(value) + units;
-                        table.header() << (header + "[gflop/s]");
+                        header << (to_string(value) + units + "[gflop/s]");
                 });
+                table.delim();
         }
 }
 
@@ -144,19 +234,14 @@ int main(int argc, const char* argv[])
                 const auto max = 1024 * max_dims;
 
                 table_t table;
-                table.header() << "operation";
                 fillheader(min, max, table);
                 {
-                        auto& row1 = table.append() << "z = x + c";
-                        auto& row2 = table.append() << "z = x + y";
-                        auto& row3 = table.append() << "z = ax + c";
-                        auto& row4 = table.append() << "z = ax + y";
-                        auto& row5 = table.append() << "z = ax + by";
-                        auto& row6 = table.append() << "z = ax + by + c";
-                        foreach_dims(min, max, [&] (const auto dims)
-                        {
-                                measure_level1(dims, row1, row2, row3, row4, row5, row6);
-                        });
+                        foreach_dims_row(min, max, table.append() << "z = x + c", measure_level11);
+                        foreach_dims_row(min, max, table.append() << "z = x + y", measure_level12);
+                        foreach_dims_row(min, max, table.append() << "z = ax + c", measure_level13);
+                        foreach_dims_row(min, max, table.append() << "z = ax + y", measure_level14);
+                        foreach_dims_row(min, max, table.append() << "z = ax + by", measure_level15);
+                        foreach_dims_row(min, max, table.append() << "z = ax + by + c", measure_level16);
                 }
                 std::cout << table;
         }
@@ -166,17 +251,12 @@ int main(int argc, const char* argv[])
                 const auto max = max_dims;
 
                 table_t table;
-                table.header() << "operation";
                 fillheader(min, max, table);
                 {
-                        auto& row1 = table.append() << "z = Ax";
-                        auto& row2 = table.append() << "z = Ax + c";
-                        auto& row3 = table.append() << "z = Ax + y";
-                        auto& row4 = table.append() << "Z = xy^t + C";
-                        foreach_dims(min, max, [&] (const auto dims)
-                        {
-                                measure_level2(dims, row1, row2, row3, row4);
-                        });
+                        foreach_dims_row(min, max, table.append() << "z = Ax", measure_level21);
+                        foreach_dims_row(min, max, table.append() << "z = Ax + c", measure_level22);
+                        foreach_dims_row(min, max, table.append() << "z = Ax + y", measure_level23);
+                        foreach_dims_row(min, max, table.append() << "Z = xy^t + C", measure_level24);
                 }
                 std::cout << table;
         }
@@ -186,16 +266,11 @@ int main(int argc, const char* argv[])
                 const auto max = max_dims;
 
                 table_t table;
-                table.header() << "operation";
                 fillheader(min, max, table);
                 {
-                        auto& row1 = table.append() << "Z = AB";
-                        auto& row2 = table.append() << "Z = AB + C";
-                        auto& row3 = table.append() << "Z = AB^t + C";
-                        foreach_dims(min, max, [&] (const auto dims)
-                        {
-                                measure_level3(dims, row1, row2, row3);
-                        });
+                        foreach_dims_row(min, max, table.append() << "Z = AB", measure_level31);
+                        foreach_dims_row(min, max, table.append() << "Z = AB + C", measure_level32);
+                        foreach_dims_row(min, max, table.append() << "Z = AB^t + C", measure_level33);
                 }
                 std::cout << table;
         }

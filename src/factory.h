@@ -40,6 +40,11 @@ namespace nano
                 strings_t ids(const std::regex& id_regex = std::regex(".+")) const;
 
                 ///
+                /// \brief returns the number of registered objects.
+                ///
+                size_t size() const { return m_protos.size(); }
+
+                ///
                 /// \brief get the descriptions of all registered objects.
                 ///
                 strings_t descriptions() const;

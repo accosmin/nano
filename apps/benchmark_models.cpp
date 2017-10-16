@@ -139,6 +139,7 @@ int main(int argc, const char *argv[])
         // construct tables to compare models
         table_t table;
         table.header() << "network" << "#flops" << "gflop/s" << "min[us]" << "avg[us]" << "max[us]";
+        table.delim();
 
         // evaluate models
         for (const auto& config : networks)
