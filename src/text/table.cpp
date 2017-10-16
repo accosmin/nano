@@ -150,32 +150,6 @@ bool table_t::load(const string_t& path, const string_t& delim, const bool load_
 
         m_rows.clear();
 
-        const auto op_row = [&] (auto& row, const auto& values)
-        {
-                for (const auto& value : values)
-                {
-                        row << value;
-                }
-        };
-
-        const auto op_header = [=] (const auto& values)
-        {
-                op_row(header(), values);
-        };
-
-        const auto op_append = [=] (const auto& values)
-        {
-                if (values.size() != cols())
-                {
-                        return false;
-                }
-                else
-                {
-                        op_row(append(), values);
-                        return true;
-                }
-        };
-
         // todo: this does not handle missing values
         // todo: this does not handle delimiting rows
 
@@ -187,11 +161,15 @@ bool table_t::load(const string_t& path, const string_t& delim, const bool load_
                 {
                         if (!count && load_header)
                         {
-                                op_header(tokens);
+                                header() << tokens;
                         }
-                        else if (!op_append(tokens))
+                        else if (tokens.size() != cols() && cols())
                         {
                                 return false;
+                        }
+                        else
+                        {
+                                append() << tokens;
                         }
                 }
         }
