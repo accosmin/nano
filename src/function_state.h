@@ -39,7 +39,7 @@ namespace nano
         };
 
         template <>
-        inline std::map<opt_status, string_t> enum_string<opt_status>()
+        inline enum_map_t<opt_status> enum_string<opt_status>()
         {
                 return
                 {

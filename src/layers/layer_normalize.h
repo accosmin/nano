@@ -12,7 +12,7 @@ namespace nano
         };
 
         template <>
-        inline std::map<norm_type, std::string> enum_string<norm_type>()
+        inline enum_map_t<norm_type> enum_string<norm_type>()
         {
                 return
                 {

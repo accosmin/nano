@@ -1,5 +1,6 @@
 #pragma once
 
+#include <map>
 #include "tensor.h"
 #include "trainer_state.h"
 #include "text/enum_string.h"
@@ -27,7 +28,7 @@ namespace nano
         };
 
         template <>
-        inline std::map<trainer_status, std::string> enum_string<trainer_status>()
+        inline enum_map_t<trainer_status> enum_string<trainer_status>()
         {
                 return
                 {

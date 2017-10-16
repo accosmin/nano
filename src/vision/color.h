@@ -48,7 +48,7 @@ namespace nano
         }
 
         template <>
-        inline std::map<nano::color_mode, std::string> enum_string<nano::color_mode>()
+        inline enum_map_t<color_mode> enum_string<color_mode>()
         {
                 return
                 {

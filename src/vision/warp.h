@@ -17,7 +17,7 @@ namespace nano
         };
 
         template <>
-        inline std::map<warp_type, std::string> enum_string<warp_type>()
+        inline enum_map_t<warp_type> enum_string<warp_type>()
         {
                 return
                 {

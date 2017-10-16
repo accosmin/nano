@@ -111,27 +111,18 @@ namespace nano
                 template <typename tvalue>
                 struct from_string_t<tvalue, typename std::enable_if<std::is_enum<tvalue>::value>::type>
                 {
-                        static auto revert(const std::map<tvalue, string_t>& vm)
-                        {
-                                std::map<string_t, tvalue> mv;
-                                for (const auto& v : vm)
-                                {
-                                        mv[v.second] = v.first;
-                                }
-                                return mv;
-                        }
-
                         static tvalue dispatch(const string_t& str)
                         {
-                                static const auto vm = enum_string<tvalue>();
-                                static const auto mv = revert(vm);
-                                const auto it = mv.find(str);
-                                if (it == mv.end())
+                                static const auto mapping = enum_string<tvalue>();
+                                for (const auto& elem : mapping)
                                 {
-                                        const auto msg = string_t("invalid ") + typeid(tvalue).name() + " <" + str + ">!";
-                                        throw std::invalid_argument(msg);
+                                        if (elem.second == str)
+                                        {
+                                                return elem.first;
+                                        }
                                 }
-                                return it->second;
+                                const auto msg = string_t("invalid ") + typeid(tvalue).name() + " <" + str + ">!";
+                                throw std::invalid_argument(msg);
                         }
                 };
         }

@@ -1,16 +1,19 @@
 #pragma once
 
-#include <map>
+#include <utility>
 #include "stringi.h"
 
 namespace nano
 {
+        template <typename tenum>
+        using enum_map_t = std::vector<std::pair<tenum, std::string>>;
+
         ///
         /// \brief maps all possible values of an enum to string.
         /// NB: to specialize it, such that nano::to_string & nano::from_string work on a particular enum
         ///
         template <typename tenum>
-        std::map<tenum, std::string> enum_string();
+        enum_map_t<tenum> enum_string();
 
         ///
         /// \brief collect all the values for an enum type.

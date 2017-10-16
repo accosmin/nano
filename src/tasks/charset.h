@@ -14,7 +14,7 @@ namespace nano
         };
 
         template <>
-        inline std::map<charset_type, std::string> enum_string<charset_type>()
+        inline enum_map_t<charset_type> enum_string<charset_type>()
         {
                 return
                 {

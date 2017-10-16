@@ -16,7 +16,7 @@ namespace nano
         };
 
         template <>
-        inline std::map<protocol, std::string> enum_string<protocol>()
+        inline enum_map_t<protocol> enum_string<protocol>()
         {
                 return
                 {

@@ -15,7 +15,7 @@ enum class enum_type
 namespace nano
 {
         template <>
-        std::map<enum_type, std::string> enum_string<enum_type>()
+        enum_map_t<enum_type> enum_string<enum_type>()
         {
                 return
                 {

@@ -32,7 +32,7 @@ namespace nano
         };
 
         template <>
-        inline std::map<ls_initializer, std::string> enum_string<ls_initializer>()
+        inline enum_map_t<ls_initializer> enum_string<ls_initializer>()
         {
                 return
                 {
@@ -43,7 +43,7 @@ namespace nano
         }
 
         template <>
-        inline std::map<ls_strategy, std::string> enum_string<ls_strategy>()
+        inline enum_map_t<ls_strategy> enum_string<ls_strategy>()
         {
                 return
                 {

@@ -46,15 +46,17 @@ namespace nano
                 {
                         static string_t dispatch(const tvalue value)
                         {
-                                static const auto vm = enum_string<tvalue>();
-                                const auto it = vm.find(value);
-                                if (it == vm.end())
+                                static const auto mapping = enum_string<tvalue>();
+                                for (const auto& elem : mapping)
                                 {
-                                        const auto str = std::to_string(static_cast<int>(value));
-                                        const auto msg = string_t("missing mapping for enumeration ") + typeid(tvalue).name() + " <" + str + ">!";
-                                        throw std::invalid_argument(msg);
+                                        if (elem.first == value)
+                                        {
+                                                return elem.second;
+                                        }
                                 }
-                                return it->second;
+                                const auto str = std::to_string(static_cast<int>(value));
+                                const auto msg = string_t("missing mapping for enumeration ") + typeid(tvalue).name() + " <" + str + ">!";
+                                throw std::invalid_argument(msg);
                         }
                 };
         }
