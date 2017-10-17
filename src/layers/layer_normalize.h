@@ -1,7 +1,6 @@
 #pragma once
 
 #include "layer.h"
-#include "text/enum_string.h"
 
 namespace nano
 {

@@ -1,7 +1,6 @@
 #pragma once
 
-#include "to_string.h"
-#include "from_string.h"
+#include "cast.h"
 
 namespace nano
 {

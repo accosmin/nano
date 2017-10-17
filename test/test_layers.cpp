@@ -8,7 +8,6 @@
 #include "math/numeric.h"
 #include "math/epsilon.h"
 #include "tensor/numeric.h"
-#include "text/to_string.h"
 #include "text/algorithm.h"
 #include "layers/make_layers.h"
 

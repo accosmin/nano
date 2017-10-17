@@ -1,7 +1,7 @@
 #pragma once
 
 #include "tensor.h"
-#include "text/enum_string.h"
+#include "text/cast.h"
 
 namespace nano
 {
@@ -33,12 +33,12 @@ namespace nano
         ///      "Training Invariant Support Vector Machines using Selective Sampling", by
         ///      Gaelle Loosli, Stephane Canu & Leon Bottou
         ///
-        void warp(tensor3d_t& iodata, const warp_type wtype,
+        void warp(tensor3d_t& iodata, const warp_type,
                 const scalar_t noise, const scalar_t sigma, const scalar_t alpha, const scalar_t beta);
 
-        void warp(tensor4d_t& iodata, const warp_type wtype,
+        void warp(tensor4d_t& iodata, const warp_type,
                 const scalar_t noise, const scalar_t sigma, const scalar_t alpha, const scalar_t beta);
 
-        void warp(tensor4d_map_t&& iodata, const warp_type wtype,
+        void warp(tensor4d_map_t&& iodata, const warp_type,
                 const scalar_t noise, const scalar_t sigma, const scalar_t alpha, const scalar_t beta);
 }

@@ -1,7 +1,7 @@
-#include "math/stats.h"
-#include "text/from_string.h"
-#include <iostream>
 #include <iomanip>
+#include <iostream>
+#include "text/cast.h"
+#include "math/stats.h"
 
 int main(int argc, const char* argv[])
 {

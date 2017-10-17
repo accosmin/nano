@@ -2,9 +2,8 @@
 #include "math/random.h"
 #include "math/numeric.h"
 #include "math/epsilon.h"
-#include "text/to_string.h"
-#include "functions/test.h"
 #include "solver_batch.h"
+#include "functions/test.h"
 
 using namespace nano;
 

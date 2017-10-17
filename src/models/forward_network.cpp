@@ -3,7 +3,6 @@
 #include "math/random.h"
 #include "math/numeric.h"
 #include "tensor/numeric.h"
-#include "text/to_string.h"
 #include "text/algorithm.h"
 #include "forward_network.h"
 #include "logger.h"

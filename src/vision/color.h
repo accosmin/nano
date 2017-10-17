@@ -1,9 +1,9 @@
 #pragma once
 
-#include "tensor.h"
-#include "text/to_string.h"
 #include <ostream>
 #include <cstdint>
+#include "tensor.h"
+#include "text/cast.h"
 
 namespace nano
 {
@@ -23,6 +23,17 @@ namespace nano
                 rgba,           ///< RGBA (4 bands)
                 rgb             ///< RGB (3 bands)
         };
+
+        template <>
+        inline enum_map_t<color_mode> enum_string<color_mode>()
+        {
+                return
+                {
+                        { nano::color_mode::luma, "luma" },
+                        { nano::color_mode::rgba, "rgba" },
+                        { nano::color_mode::rgb, "rgb" }
+                };
+        }
 
         inline std::ostream& operator<<(std::ostream& os, const color_mode mode)
         {
@@ -45,16 +56,5 @@ namespace nano
                 return (static_cast<uint32_t>(r) * 11 +
                         static_cast<uint32_t>(g) * 16 +
                         static_cast<uint32_t>(b) * 5) / 32;
-        }
-
-        template <>
-        inline enum_map_t<color_mode> enum_string<color_mode>()
-        {
-                return
-                {
-                        { nano::color_mode::luma, "luma" },
-                        { nano::color_mode::rgba, "rgba" },
-                        { nano::color_mode::rgb, "rgb" }
-                };
         }
 }

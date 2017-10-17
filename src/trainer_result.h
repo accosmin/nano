@@ -2,8 +2,8 @@
 
 #include <map>
 #include "tensor.h"
+#include "text/cast.h"
 #include "trainer_state.h"
-#include "text/enum_string.h"
 
 namespace nano
 {

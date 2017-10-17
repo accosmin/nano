@@ -1,11 +1,10 @@
 #pragma once
 
 #include "arch.h"
-#include "scalar.h"
+#include "cast.h"
 #include <cassert>
+#include "scalar.h"
 #include <algorithm>
-#include "to_string.h"
-#include "from_string.h"
 
 namespace nano
 {
