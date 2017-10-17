@@ -10,7 +10,7 @@ namespace nano
         ///
         /// \brief stores registered prototypes
         ///
-        struct layer_t;
+        class layer_t;
         using layer_factory_t = factory_t<layer_t>;
         using rlayer_t = layer_factory_t::trobject;
 
@@ -22,7 +22,6 @@ namespace nano
         class NANO_PUBLIC layer_t : public configurable_t
         {
         public:
-
                 ///
                 /// \brief constructor
                 ///

@@ -11,7 +11,7 @@ namespace nano
         ///
         /// \brief stores registered prototypes
         ///
-        struct model_t;
+        class model_t;
         using model_factory_t = factory_t<model_t>;
         using rmodel_t = model_factory_t::trobject;
 
@@ -20,8 +20,9 @@ namespace nano
         ///
         /// \brief generic model to process fixed-size 3D tensors.
         ///
-        struct NANO_PUBLIC model_t : public configurable_t
+        class NANO_PUBLIC model_t : public configurable_t
         {
+        public:
                 using configurable_t::configurable_t;
 
                 ///
@@ -59,17 +60,17 @@ namespace nano
                 ///
                 /// \brief compute the model's output
                 ///
-                virtual const tensor3d_t& output(const tensor3d_t& input) = 0;
+                virtual const tensor4d_t& output(const tensor4d_t& input) = 0;
 
                 ///
                 /// \brief compute the model's gradient wrt parameters
                 ///
-                virtual const vector_t& gparam(const vector_t& output) = 0;
+                virtual const tensor1d_t& gparam(const tensor4d_t& output) = 0;
 
                 ///
                 /// \brief compute the model's gradient wrt inputs
                 ///
-                virtual const tensor3d_t& ginput(const vector_t& output) = 0;
+                virtual const tensor4d_t& ginput(const tensor4d_t& output) = 0;
 
                 ///
                 /// \brief retrieve timing information for all components
