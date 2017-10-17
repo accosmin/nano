@@ -19,9 +19,14 @@ namespace nano
         ///
         /// \brief process a set of inputs of size (irows, icols) and produces a set of outputs of size (orows, ocols).
         ///
-        struct NANO_PUBLIC layer_t : public configurable_t
+        class NANO_PUBLIC layer_t : public configurable_t
         {
-                using configurable_t::configurable_t;
+        public:
+
+                ///
+                /// \brief constructor
+                ///
+                layer_t(const string_t& config = string_t());
 
                 ///
                 /// \brief create a copy of the current object
@@ -31,28 +36,27 @@ namespace nano
                 ///
                 /// \brief configure to process new tensors of the given size
                 ///
-                virtual void configure(const tensor3d_dims_t& idims, const string_t& name) = 0;
+                void configure(const tensor3d_dims_t& idims, const string_t& name);
 
                 ///
-                /// \brief compute the output: (input, parameters, output)
+                /// \brief change parameters
                 ///
-                virtual void output(tensor3d_const_map_t idata, tensor1d_const_map_t param, tensor3d_map_t odata) = 0;
+                void param(const tensor1d_const_map_t&);
 
                 ///
-                /// \brief compute the gradient wrt the inputs: (input, parameters, output)
+                /// \brief compute the output
                 ///
-                virtual void ginput(tensor3d_map_t idata, tensor1d_const_map_t param, tensor3d_const_map_t odata) = 0;
+                const tensor4d_t& output(const tensor4d_t& idata);
 
                 ///
-                /// \brief compute the gradient wrt the parameters: (input, parameters, output)
+                /// \brief compute the gradient wrt the inputs
                 ///
-                virtual void gparam(tensor3d_const_map_t idata, tensor1d_map_t param, tensor3d_const_map_t odata) = 0;
+                const tensor4d_t& ginput(const tensor4d_t& odata);
 
                 ///
-                /// \brief returns the input/output dimensions
+                /// \brief compute the (cumulated) gradient wrt the parameters
                 ///
-                virtual tensor3d_dims_t idims() const = 0;
-                virtual tensor3d_dims_t odims() const = 0;
+                const tensor1d_t& gparam(const tensor4d_t& odata);
 
                 ///
                 /// \brief number of inputs per processing unit (e.g. neuron, convolution kernel)
@@ -60,9 +64,16 @@ namespace nano
                 virtual tensor_size_t fanin() const = 0;
 
                 ///
-                /// \brief returns the number of (optimization) parameters
+                /// \brief returns the input/output dimensions
                 ///
-                virtual tensor_size_t psize() const = 0;
+                tensor3d_dims_t idims() const { return m_idims; }
+                tensor3d_dims_t odims() const { return m_odims; }
+
+                ///
+                /// \brief returns the number of parameters to optimize
+                ///
+                tensor1d_dims_t pdims() const { return m_pdims; }
+                tensor_size_t psize() const { return nano::size(m_pdims; }
 
                 ///
                 /// \brief returns the timing probes for the three basic operations (output & its gradients)
@@ -72,32 +83,32 @@ namespace nano
                 virtual const probe_t& probe_gparam() const = 0;
 
                 ///
-                /// \brief convenience overloads for the basic operations (output & its gradients)
+                /// \brief access functions
                 ///
-                void output(const scalar_t* idata, const scalar_t* param, scalar_t* odata);
-                void ginput(scalar_t* idata, const scalar_t* param, const scalar_t* odata);
-                void gparam(const scalar_t* idata, scalar_t* param, const scalar_t* odata);
+                const tensor4d_t& input() const { return m_idata; }
+                const tensor1d_t& param() const { return m_param; }
+                const tensor4d_t& output() const { return m_odata; }
+                const tensor1d_t& gparam() const { return m_gparam; }
 
-                ///
-                /// \brief returns the input/output size
-                ///
-                auto isize() const { return nano::size(idims()); }
-                auto osize() const { return nano::size(odims()); }
-                auto xsize() const { return isize() + osize(); }
+        protected:
+
+                virtual void configure(const tensor3d_dims_t& idims, const string_t& name,
+                        tensor3d_dims_t& odims, tensor1d_dims_t& pdims) = 0;
+
+                virtual void output(const tensor4d_t& idata, const tensor1d_t& param, tensor4d_t& odata) const = 0;
+                virtual void ginput(tensor4d_t& idata, const tensor1d_t& param, const tensor4d_t& odata) const = 0;
+                virtual void gparam(const tensor4d_t& idata, tensor1d_t& param, const tensor4d_t& odata) const = 0;
+
+        private:
+
+                // attributes
+                tensor3d_dims_t m_idims;        ///<
+                tensor1d_dims_t m_pdims;        ///<
+                tensor3d_dims_t m_odims;        ///<
+
+                tensor1d_t      m_param;        ///< parameters buffer
+                tensor1d_t      m_gparam;       ///< cumulated parameters gradient buffer
+                tensor4d_t      m_idata;        ///< inputs (or its gradient) buffer
+                tensor4d_t      m_odata;        ///< outputs (or its gradient) buffer
         };
-
-        inline void layer_t::output(const scalar_t* idata, const scalar_t* param, scalar_t* odata)
-        {
-                output(map_tensor(idata, idims()), map_tensor(param, psize()), map_tensor(odata, odims()));
-        }
-
-        inline void layer_t::ginput(scalar_t* idata, const scalar_t* param, const scalar_t* odata)
-        {
-                ginput(map_tensor(idata, idims()), map_tensor(param, psize()), map_tensor(odata, odims()));
-        }
-
-        inline void layer_t::gparam(const scalar_t* idata, scalar_t* param, const scalar_t* odata)
-        {
-                gparam(map_tensor(idata, idims()), map_tensor(param, psize()), map_tensor(odata, odims()));
-        }
 }
