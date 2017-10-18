@@ -9,8 +9,9 @@ namespace nano
         ///
         /// \brief accumulate {loss value, error and gradient} over the given samples.
         ///
-        struct NANO_PUBLIC accumulator_t
+        class NANO_PUBLIC accumulator_t
         {
+        public:
                 enum class type
                 {
                         value,          ///< compute the loss value
@@ -107,7 +108,8 @@ namespace nano
                         tstats_t        m_estats;       ///< statistics for the error function
                 };
 
-                void update(tcache_t&, const tensor3d_t& input, const tensor3d_t& target);
+                void update(tcache_t&, const minibatch_t&);
+                void update(tcache_t&, const tensor4d_t& targets, const tensor4d_t& inputs);
                 void accumulate();
 
                 tcache_t& origin();

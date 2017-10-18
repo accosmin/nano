@@ -45,17 +45,17 @@ namespace nano
                 ///
                 /// \brief compute the output
                 ///
-                const tensor4d_t& output(const tensor4d_t& idata);
+                const tensor4d_t& output(const tensor4d_t& input);
 
                 ///
                 /// \brief compute the gradient wrt the inputs
                 ///
-                const tensor4d_t& ginput(const tensor4d_t& odata);
+                const tensor4d_t& ginput(const tensor4d_t& output);
 
                 ///
                 /// \brief compute the (cumulated) gradient wrt the parameters
                 ///
-                const tensor1d_t& gparam(const tensor4d_t& odata);
+                const tensor1d_t& gparam(const tensor4d_t& output);
 
                 ///
                 /// \brief number of inputs per processing unit (e.g. neuron, convolution kernel)
@@ -72,7 +72,7 @@ namespace nano
                 /// \brief returns the number of parameters to optimize
                 ///
                 tensor1d_dims_t pdims() const { return m_pdims; }
-                tensor_size_t psize() const { return nano::size(m_pdims; }
+                tensor_size_t psize() const { return nano::size(m_pdims); }
 
                 ///
                 /// \brief returns the timing probes for the three basic operations (output & its gradients)

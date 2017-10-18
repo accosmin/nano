@@ -54,28 +54,13 @@ void accumulator_t::update(const task_t& task, const fold_t& fold)
 
 void accumulator_t::update(const task_t& task, const fold_t& fold, const size_t begin, const size_t end)
 {
-        switch (thread_pool_t::instance().n_active_workers())
+        loopit(end - begin, size_t(128), [&] (const size_t ibegin, const size_t iend, const size_t thread)
         {
-        case 1:
-                for (size_t index = begin; index < end; ++ index)
-                {
-                        const auto sample = task.get(fold, index);
-                        update(origin(), sample.m_input, sample.m_target);
-                }
-                break;
-
-        default:
-                loopit(end - begin, [&] (const size_t offset, const size_t th)
-                {
-                        const auto index = begin + offset;
-                        assert(th < m_tcaches.size());
-                        assert(index >= begin && index < end);
-                        const auto sample = task.get(fold, index);
-                        update(m_tcaches[th], sample.m_input, sample.m_target);
-                });
-                accumulate();
-                break;
-        }
+                assert(thread < m_tcaches.size());
+                assert(begin <= ibegin && ibegin < iend && iend <= end);
+                update(m_tcaches[thread], task.get(task, fold, ibegin, iend));
+        });
+        accumulate();
 }
 
 void accumulator_t::update(const enhancer_t& it, const task_t& task, const fold_t& fold)
@@ -86,42 +71,36 @@ void accumulator_t::update(const enhancer_t& it, const task_t& task, const fold_
 void accumulator_t::update(const enhancer_t& it, const task_t& task, const fold_t& fold,
         const size_t begin, const size_t end)
 {
-        switch (thread_pool_t::instance().n_active_workers())
+        loopit(end - begin, size_t(128), [&] (const size_t ibegin, const size_t iend, const size_t thread)
         {
-        case 1:
-                for (size_t index = begin; index < end; ++ index)
-                {
-                        const auto sample = it.get(task, fold, index);
-                        update(origin(), sample.m_input, sample.m_target);
-                }
-                break;
-
-        default:
-                loopit(end - begin, [&] (const size_t offset, const size_t th)
-                {
-                        const auto index = begin + offset;
-                        assert(th < m_tcaches.size());
-                        assert(index >= begin && index < end);
-                        const auto sample = it.get(task, fold, index);
-                        update(m_tcaches[th], sample.m_input, sample.m_target);
-                });
-                accumulate();
-                break;
-        }
+                assert(thread < m_tcaches.size());
+                assert(begin <= ibegin && ibegin < iend && iend <= end);
+                update(m_tcaches[thread], enhancer.get(task, fold, ibegin, iend));
+        });
+        accumulate();
 }
 
-void accumulator_t::update(tcache_t& tcache, const tensor3d_t& input, const tensor3d_t& target)
+void accumulator_t::update(tcache_t& tcache, const minibatch_t& minibatch)
 {
-        const auto output = tcache.m_model->output(input);
+        update(tcache, minibatch.m_targets, minibatch.m_inputs);
+}
 
-        const auto value = m_loss.value(target.vector(), output.vector());
-        const auto error = m_loss.error(target.vector(), output.vector());
+void accumulator_t::update(tcache_t& tcache, const tensor4d_t& targets, const tensor4d_t& inputs)
+{
+        const auto& outputs = tcache.m_model->output(inputs);
 
-        tcache.m_vstats(value);
-        tcache.m_estats(error);
+        const auto values = m_loss.value(targets, outputs);
+        const auto errors = m_loss.error(targets, outputs);
+
+        assert(outputs.size<0>() == values.size<0>());
+        assert(outputs.size<0>() == errors.size<0>());
+
+        tcache.m_vstats(values.data(), values.data() + values.size());
+        tcache.m_estats(errors.data(), errors.data() + errors.size());
+
         if (m_type == type::vgrad)
         {
-                tcache.m_vgrad += tcache.m_model->gparam(m_loss.vgrad(target.vector(), output.vector()));
+                tcache.m_vgrad += tcache.m_model->gparam(m_loss.vgrad(targets, outputs)).vector();
         }
 }
 

@@ -7,40 +7,50 @@ namespace nano
 {
         ///
         /// \brief split a loop computation of the given size using a thread pool.
-        /// NB: the operator receives the index of the sample to process: op(i)
+        /// NB: the operator receives the range [begin, end) to process and the assigned thread index:
+        ///     op(begin, end, thread)
         ///
         template <typename tsize, typename toperator>
-        void loopi(const tsize size, const toperator op, const tsize split = 1)
+        void loopit(const tsize size, const tsize max_thread_chunk, const toperator& op)
         {
                 auto& pool = thread_pool_t::instance();
 
-                assert(split > 0);
-                const auto n_workers = static_cast<tsize>(pool.n_active_workers());
-                const auto task_size = (size + n_workers * split - 1) / (n_workers * split);
-
-                section_t<future_t> futures;
-                for (tsize begin = 0, end = 0; end < size; )
+                const auto workers = static_cast<tsize>(pool.active_workers());
+                const auto thread_chunk = (size + workers - 1) / workers;
+                if (thread_chunk > tsize(0))
                 {
-                        begin = end;
-                        end = std::min(begin + task_size, size);
-
-                        futures.push_back(pool.enqueue([=,&op]()
+                        section_t<future_t> section;
+                        for (tsize thread = 0; thread < workers; ++ thread)
                         {
-                                for (tsize i = begin; i < end; ++ i)
+                                const auto begin = thread * thread_chunk;
+                                const auto end = std::min(begin + thread_chunk, size);
+                                const auto chunk = std::min(thread_chunk, max_thread_chunk);
+
+                                assert(begin < end && chunk > 0);
+                                section.emplace_back(pool.enqueue([=, &op = op]()
                                 {
-                                        op(i);
-                                }
-                        }));
+                                        for ( ; begin < end; begin = std::min(begin + chunk, end))
+                                        {
+                                                op(begin, std::min(begin + chunk, end), thread);
+                                        }
+                                }));
+                        }
+                        // NB: the section is destroyed here waiting for all tasks to finish!
                 }
         }
 
         ///
-        /// \brief split a loop computation of the given size using the given number of threads.
+        /// \brief split a loop computation of the given size using a thread pool.
+        /// NB: the operator receives the range [begin, end) to process:
+        ///     op(begin, end)
         ///
         template <typename tsize, typename toperator>
-        void loopi(const tsize size, const tsize nthreads, const toperator op, const tsize split = 1)
+        void loopi(const tsize size, const tsize max_thread_chunk, const toperator& op)
         {
-                thread_pool_t::instance().activate(nthreads);
-                loopi(size, op, split);
+                loopit(tsize, max_thread_chunk, [&] (const tsize begin, const tsize end, const tsize thread)
+                {
+                        NANO_UNUSED1(thread);
+                        op(begin, end);
+                });
         }
 }

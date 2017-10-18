@@ -9,8 +9,7 @@
 namespace nano
 {
         ///
-        /// \brief thread pool
-        ///
+        /// \brief thread pool.
         /// NB: this is heavily copied/inspired by http://progsch.net/wordpress/?p=81
         ///
         struct NANO_PUBLIC thread_pool_t
@@ -54,17 +53,17 @@ namespace nano
                 ///
                 /// \brief number of available worker threads
                 ///
-                std::size_t n_workers() const;
+                std::size_t workers() const;
 
                 ///
                 /// \brief number of active worker threads
                 ///
-                std::size_t n_active_workers() const;
+                std::size_t active_workers() const;
 
                 ///
                 /// \brief number of tasks still enqueued
                 ///
-                std::size_t n_tasks() const;
+                std::size_t tasks() const;
 
         private:
 

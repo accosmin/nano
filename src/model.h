@@ -41,7 +41,7 @@ namespace nano
                 bool configure(const task_t& task) { return configure(task.idims(), task.odims()); }
 
                 ///
-                /// \brief serialize to disk
+                /// \brief serialize model to disk
                 ///
                 virtual bool save(const string_t& path) const = 0;
                 virtual bool load(const string_t& path) = 0;
@@ -53,7 +53,7 @@ namespace nano
                 virtual void params(const vector_t& x) = 0;
 
                 ///
-                /// \brief set parameters to  values
+                /// \brief set parameters to random values
                 ///
                 virtual void random() = 0;
 
