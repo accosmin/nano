@@ -7,22 +7,13 @@
 using namespace nano;
 
 layer_t::layer_t(const string_t& config) :
-        configurable_t(config),
-        m_idims(make_dims(0, 0, 0)),
-        m_pdims(make_dims(1)),
-        m_odims(make_dims(0, 0, 0))
+        configurable_t(config)
 {
-}
-
-void layer_t::configure(const tensor3d_dims_t& idims, const string_t& name)
-{
-        m_idims = idims;
-        configure(m_idims, name, m_odims, m_pdims);
 }
 
 void layer_t::param(const tensor1d_cmap_t& pdata)
 {
-        assert(pdata.size() == nano::size(pdims()));
+        assert(pdata.dims() == pdims());
 
         m_param = pdata;
         m_gparam.resize(pdims());
@@ -32,12 +23,15 @@ void layer_t::param(const tensor1d_cmap_t& pdata)
 const tensor4d_t& layer_t::output(const tensor4d_t& idata)
 {
         const auto count = idata.size<0>();
+        const auto omaps = std::get<0>(odims());
+        const auto orows = std::get<1>(odims());
+        const auto ocols = std::get<2>(odims());
 
         assert(count > 0);
-        assert(m_idims == idata.tensor(0).dims());
+        assert(idims() == idata.tensor(0).dims());
 
         m_idata = idata;
-        m_odata.resize(count, m_odims);
+        m_odata.resize(count, omaps, orows, ocols);
         output(m_idata, m_param, m_odata);
         return m_odata;
 }

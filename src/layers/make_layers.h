@@ -12,9 +12,9 @@ namespace nano
                 return description.empty() ? string_t() : (description + ";");
         }
 
-        inline string_t make_affine_layer(const tensor_size_t dims, const string_t& activation = "act-snorm")
+        inline string_t make_affine_layer(const tensor_size_t omaps, const string_t& activation = "act-snorm")
         {
-                return  make_layer("affine:" + to_params("dims", dims)) +
+                return  make_layer("affine:" + to_params("omaps", omaps)) +
                         make_layer(activation);
         }
 
@@ -29,11 +29,10 @@ namespace nano
         }
 
         inline string_t make_conv3d_layer(
-                const tensor_size_t dims, const tensor_size_t rows, const tensor_size_t cols, const tensor_size_t conn,
-                const string_t& activation = "act-snorm",
-                const tensor_size_t drow = 1, const tensor_size_t dcol = 1)
+                const tensor_size_t omaps, const tensor_size_t krows, const tensor_size_t kcols, const tensor_size_t kconn,
+                const string_t& activation = "act-snorm", const tensor_size_t kdrow = 1, const tensor_size_t kdcol = 1)
         {
-                return  make_layer("conv:" + to_params("dims", dims, "rows", rows, "cols", cols, "conn", conn, "drow", drow, "dcol", dcol)) +
+                return  make_layer("conv:" + to_params("omaps", omaps, "krows", krows, "kcols", kcols, "kconn", kconn, "kdrow", kdrow, "kdcol", kdcol)) +
                         make_layer(activation);
         }
 }

@@ -1,13 +1,12 @@
 #include "accumulator.h"
-#include "thread/loopit.h"
-#include <cassert>
+#include "thread/loopi.h"
 
 using namespace nano;
 
 accumulator_t::accumulator_t(const model_t& model, const loss_t& loss) :
         m_type(type::value), m_loss(loss)
 {
-        const auto size = thread_pool_t::instance().n_workers();
+        const auto size = thread_pool_t::instance().workers();
         for (size_t i = 0; i < size; ++ i)
         {
                 m_tcaches.emplace_back(model);
@@ -58,17 +57,17 @@ void accumulator_t::update(const task_t& task, const fold_t& fold, const size_t 
         {
                 assert(thread < m_tcaches.size());
                 assert(begin <= ibegin && ibegin < iend && iend <= end);
-                update(m_tcaches[thread], task.get(task, fold, ibegin, iend));
+                update(m_tcaches[thread], task.get(fold, ibegin, iend));
         });
         accumulate();
 }
 
-void accumulator_t::update(const enhancer_t& it, const task_t& task, const fold_t& fold)
+void accumulator_t::update(const enhancer_t& enhancer, const task_t& task, const fold_t& fold)
 {
-        return update(it, task, fold, 0, task.size(fold));
+        return update(enhancer, task, fold, 0, task.size(fold));
 }
 
-void accumulator_t::update(const enhancer_t& it, const task_t& task, const fold_t& fold,
+void accumulator_t::update(const enhancer_t& enhancer, const task_t& task, const fold_t& fold,
         const size_t begin, const size_t end)
 {
         loopit(end - begin, size_t(128), [&] (const size_t ibegin, const size_t iend, const size_t thread)
@@ -82,7 +81,7 @@ void accumulator_t::update(const enhancer_t& it, const task_t& task, const fold_
 
 void accumulator_t::update(tcache_t& tcache, const minibatch_t& minibatch)
 {
-        update(tcache, minibatch.m_targets, minibatch.m_inputs);
+        update(tcache, minibatch.odata(), minibatch.idata());
 }
 
 void accumulator_t::update(tcache_t& tcache, const tensor4d_t& targets, const tensor4d_t& inputs)

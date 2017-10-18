@@ -23,11 +23,12 @@ namespace nano
                 }
 
                 template <typename toperator>
-                void measure(const toperator& op)
+                void measure(const toperator& op, const int64_t count = 1)
                 {
+                        assert(count > 0);
                         const timer_t timer;
                         op();
-                        m_timings(timer.microseconds().count());
+                        m_timings(timer.microseconds().count() / count);
                 }
 
                 operator bool() const { return m_timings; }

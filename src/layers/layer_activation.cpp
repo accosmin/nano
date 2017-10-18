@@ -1,4 +1,3 @@
-#include "math/numeric.h"
 #include "layer_activation.h"
 
 using namespace nano;
@@ -20,38 +19,46 @@ void activation_layer_t::configure(const tensor3d_dims_t& idims, const string_t&
         m_probe_gparam = probe_t{name, name + "(gparam)", 0};
 }
 
-void activation_layer_t::output(tensor3d_cmap_t idata, tensor1d_cmap_t param, tensor3d_map_t odata)
+void activation_layer_t::output(const tensor4d_t& idata, const tensor1d_t& pdata, tensor4d_t& odata)
 {
         assert(idata.dims() == idims());
-        assert(param.size() == psize());
+        assert(pdata.dims() == pdims());
         assert(odata.dims() == odims());
-        NANO_UNUSED1_RELEASE(param);
+        NANO_UNUSED1_RELEASE(pdata);
 
+        const auto count = idata.size<0>();
         m_probe_output.measure([&] ()
         {
-                aoutput(idata.array(), odata.array());
-        });
+                for (auto x = 0; x < count; ++ x)
+                {
+                        aoutput(idata.array(x), odata.array(x));
+                }
+        }, count);
 }
 
-void activation_layer_t::ginput(tensor3d_map_t idata, tensor1d_cmap_t param, tensor3d_cmap_t odata)
+void activation_layer_t::ginput(tensor4d_t& idata, const tensor1d_t& pdata, const tensor4d_t& odata)
 {
         assert(idata.dims() == idims());
-        assert(param.size() == psize());
+        assert(pdata.dims() == pdims());
         assert(odata.dims() == odims());
-        NANO_UNUSED1_RELEASE(param);
+        NANO_UNUSED1_RELEASE(pdata);
 
+        const auto count = idata.size<0>();
         m_probe_ginput.measure([&] ()
         {
-                aginput(idata.array(), odata.array());
-        });
+                for (auto x = 0; x < count; ++ x)
+                {
+                        aginput(idata.array(x), odata.array(x));
+                }
+        }, count);
 }
 
-void activation_layer_t::gparam(tensor3d_cmap_t idata, tensor1d_map_t param, tensor3d_cmap_t odata)
+void activation_layer_t::gparam(const tensor4d_t& idata, tensor1d_t& pdata, const tensor4d_t& odata)
 {
         assert(idata.dims() == idims());
-        assert(param.size() == psize());
+        assert(pdata.dims() == pdims());
         assert(odata.dims() == odims());
-        NANO_UNUSED3_RELEASE(idata, param, odata);
+        NANO_UNUSED3_RELEASE(idata, pdata, odata);
 }
 
 rlayer_t activation_layer_sine_t::clone() const

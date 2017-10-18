@@ -30,6 +30,8 @@ namespace nano
                 auto osize() const { return nano::size(odims()); }
 
                 auto psize() const { return isize() * osize() + osize(); }
+                auto pdims() const { return tensor1d_dims_t{psize()}; }
+
                 auto flops_output() const { return 2 * isize() * osize() + osize(); }
                 auto flops_ginput() const { return 2 * isize() * osize(); }
                 auto flops_gparam() const { return 2 * isize() * osize() + osize(); }
@@ -54,7 +56,8 @@ namespace nano
                 const tidata& idata, const twdata& wdata, const tbdata& bdata, const todata& odata) const
         {
                 const auto count = idata.template size<0>();
-                return  idata.template size<0>() == count &&
+                return  valid() &&
+                        idata.template size<0>() == count &&
                         idata.template size<1>() == imaps() &&
                         idata.template size<2>() == irows() &&
                         idata.template size<3>() == icols() &&

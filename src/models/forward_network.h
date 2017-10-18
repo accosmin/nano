@@ -28,9 +28,9 @@ namespace nano
                 virtual bool configure(const tensor3d_dims_t& idims, const tensor3d_dims_t& odims) override;
 
                 virtual void random() override;
-                virtual const tensor3d_t& output(const tensor3d_t& input) override;
-                virtual const vector_t& gparam(const vector_t& output) override;
-                virtual const tensor3d_t& ginput(const vector_t& output) override;
+                virtual const tensor4d_t& output(const tensor4d_t& input) override;
+                virtual const tensor1d_t& gparam(const tensor4d_t& output) override;
+                virtual const tensor4d_t& ginput(const tensor4d_t& output) override;
 
                 virtual void describe() const override;
                 virtual probes_t probes() const override;
@@ -58,11 +58,6 @@ namespace nano
                 tensor3d_dims_t m_idims;        ///<
                 tensor3d_dims_t m_odims;        ///<
                 rlayers_t       m_layers;       ///< feed-forward layers
-                tensor3d_t      m_idata;        ///< input tensor
-                tensor3d_t      m_odata;        ///< output tensor
-                vector_t        m_xdata;        ///< buffer: concatenated input-output tensors for all layers
-                vector_t        m_pdata;        ///< buffer: parameters for all layers
-                vector_t        m_gdata;        ///< buffer: parameter gradients for all layers
                 probe_t         m_probe_output;
                 probe_t         m_probe_ginput;
                 probe_t         m_probe_gparam;

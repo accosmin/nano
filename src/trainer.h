@@ -9,7 +9,7 @@ namespace nano
         struct task_t;
         class model_t;
         struct enhancer_t;
-        struct accumulator_t;
+        class accumulator_t;
 
         ///
         /// \brief stores registered prototypes

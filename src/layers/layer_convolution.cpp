@@ -4,8 +4,8 @@
 using namespace nano;
 
 convolution_layer_t::convolution_layer_t(const string_t& params) :
-        layer_t(to_params(params, "dims", "16[1,4096]", "rows", "8[1,32]", "cols", "8[1,32]",
-        "conn", "1[1,16]", "drow", "1[1,8]", "dcol", "1[1,8]"))
+        layer_t(to_params(params, "omaps", "16[1,4096]", "krows", "8[1,32]", "kcols", "8[1,32]",
+        "kconn", "1[1,16]", "kdrow", "1[1,8]", "kdcol", "1[1,8]"))
 {
 }
 
@@ -20,92 +20,46 @@ void convolution_layer_t::configure(const tensor3d_dims_t& idims, const string_t
         const auto irows = std::get<1>(idims);
         const auto icols = std::get<2>(idims);
 
-        const auto omaps = clamp(from_params<tensor_size_t>(config(), "dims"), 1, 4096);
-        const auto krows = clamp(from_params<tensor_size_t>(config(), "rows"), 1, 32);
-        const auto kcols = clamp(from_params<tensor_size_t>(config(), "cols"), 1, 32);
-        const auto kconn = clamp(from_params<tensor_size_t>(config(), "conn"), 1, 16);
-        const auto drows = clamp(from_params<tensor_size_t>(config(), "drow"), 1, 8);
-        const auto dcols = clamp(from_params<tensor_size_t>(config(), "dcol"), 1, 8);
+        const auto omaps = clamp(from_params<tensor_size_t>(config(), "omaps"), 1, 4096);
+        const auto krows = clamp(from_params<tensor_size_t>(config(), "krows"), 1, 32);
+        const auto kcols = clamp(from_params<tensor_size_t>(config(), "kcols"), 1, 32);
+        const auto kconn = clamp(from_params<tensor_size_t>(config(), "kconn"), 1, 16);
+        const auto kdrow = clamp(from_params<tensor_size_t>(config(), "kdrow"), 1, 8);
+        const auto kdcol = clamp(from_params<tensor_size_t>(config(), "kdcol"), 1, 8);
 
-        m_params = conv3d_params_t{imaps, irows, icols, omaps, kconn, krows, kcols, drows, dcols};
-        if (!m_params.valid())
+        const auto params = conv_params_t{imaps, irows, icols, omaps, kconn, krows, kcols, kdrow, kdcol};
+        if (!params.valid())
         {
                 throw std::invalid_argument("invalid configuration for the convolution layer");
         }
 
-        const auto sparse = m_params.kconn() > 2 && (m_params.krows() * m_params.kcols() > 9);
-        if (sparse)
-        {
-                m_sparse_op = conv3d_dmaps_t{m_params};
-        }
-        else
-        {
-                m_dense_op = conv3d_dense_t{m_params};
-        }
+        m_kernel = conv4d_t{params};
 
-        m_probe_output = probe_t{name, name + "(output)", m_params.flops_output()};
-        m_probe_ginput = probe_t{name, name + "(ginput)", m_params.flops_ginput()};
-        m_probe_gparam = probe_t{name, name + "(gparam)", m_params.flops_gparam()};
+        m_probe_output = probe_t{name, name + "(output)", params.flops_output()};
+        m_probe_ginput = probe_t{name, name + "(ginput)", params.flops_ginput()};
+        m_probe_gparam = probe_t{name, name + "(gparam)", params.flops_gparam()};
 }
 
 tensor_size_t convolution_layer_t::fanin() const
 {
-        return m_params.krows() * m_params.kcols() * m_params.imaps() / m_params.kconn();
+        const auto& params = m_kernel.params();
+        return params.krows() * params.kcols() * params.imaps() / params.kconn();
 }
 
-void convolution_layer_t::output(tensor3d_cmap_t idata, tensor1d_cmap_t param, tensor3d_map_t odata)
+void convolution_layer_t::output(const tensor4d_t& idata, const tensor1d_t& pdata, tensor4d_t& odata)
 {
-        assert(idata.dims() == idims());
-        assert(param.size() == psize());
-        assert(odata.dims() == odims());
-
-        m_probe_output.measure([&] ()
-        {
-                if (m_sparse_op.params() == m_params)
-                {
-                        m_sparse_op.output(idata, kdata(param), bdata(param), odata);
-                }
-                else
-                {
-                        m_dense_op.output(idata, kdata(param), bdata(param), odata);
-                }
-        });
+        const auto count = idata.size<0>();
+        m_probe_output.measure([&] () { m_kernel.output(idata, kdata(pdata), bdata(pdata), odata); }, count);
 }
 
-void convolution_layer_t::ginput(tensor3d_map_t idata, tensor1d_cmap_t param, tensor3d_cmap_t odata)
+void convolution_layer_t::ginput(tensor4d_t& idata, const tensor1d_t& pdata, const tensor4d_t& odata)
 {
-        assert(idata.dims() == idims());
-        assert(param.size() == psize());
-        assert(odata.dims() == odims());
-
-        m_probe_ginput.measure([&] ()
-        {
-                if (m_sparse_op.params() == m_params)
-                {
-                        m_sparse_op.ginput(idata, kdata(param), bdata(param), odata);
-                }
-                else
-                {
-                        m_dense_op.ginput(idata, kdata(param), bdata(param), odata);
-                }
-        });
+        const auto count = idata.size<0>();
+        m_probe_ginput.measure([&] () { m_kernel.ginput(idata, kdata(pdata), bdata(pdata), odata); }, count);
 }
 
-void convolution_layer_t::gparam(tensor3d_cmap_t idata, tensor1d_map_t param, tensor3d_cmap_t odata)
+void convolution_layer_t::gparam(const tensor4d_t& idata, tensor1d_t& pdata, const tensor4d_t& odata)
 {
-        assert(idata.dims() == idims());
-        assert(param.size() == psize());
-        assert(odata.dims() == odims());
-
-        m_probe_gparam.measure([&] ()
-        {
-                if (m_sparse_op.params() == m_params)
-                {
-                        m_sparse_op.gparam(idata, kdata(param), bdata(param), odata);
-                }
-                else
-                {
-                        m_dense_op.gparam(idata, kdata(param), bdata(param), odata);
-                }
-        });
+        const auto count = idata.size<0>();
+        m_probe_gparam.measure([&] () { m_kernel.gparam(idata, kdata(pdata), bdata(pdata), odata); }, count);
 }

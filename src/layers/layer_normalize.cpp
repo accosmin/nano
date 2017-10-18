@@ -1,4 +1,3 @@
-#include "math/numeric.h"
 #include "layer_normalize.h"
 
 using namespace nano;
