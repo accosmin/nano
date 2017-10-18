@@ -20,7 +20,7 @@ void layer_t::configure(const tensor3d_dims_t& idims, const string_t& name)
         configure(m_idims, name, m_odims, m_pdims);
 }
 
-void layer_t::param(const tensor1d_const_map_t& pdata)
+void layer_t::param(const tensor1d_cmap_t& pdata)
 {
         assert(pdata.size() == nano::size(pdims()));
 

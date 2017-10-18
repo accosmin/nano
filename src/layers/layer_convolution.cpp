@@ -53,7 +53,7 @@ tensor_size_t convolution_layer_t::fanin() const
         return m_params.krows() * m_params.kcols() * m_params.imaps() / m_params.kconn();
 }
 
-void convolution_layer_t::output(tensor3d_const_map_t idata, tensor1d_const_map_t param, tensor3d_map_t odata)
+void convolution_layer_t::output(tensor3d_cmap_t idata, tensor1d_cmap_t param, tensor3d_map_t odata)
 {
         assert(idata.dims() == idims());
         assert(param.size() == psize());
@@ -72,7 +72,7 @@ void convolution_layer_t::output(tensor3d_const_map_t idata, tensor1d_const_map_
         });
 }
 
-void convolution_layer_t::ginput(tensor3d_map_t idata, tensor1d_const_map_t param, tensor3d_const_map_t odata)
+void convolution_layer_t::ginput(tensor3d_map_t idata, tensor1d_cmap_t param, tensor3d_cmap_t odata)
 {
         assert(idata.dims() == idims());
         assert(param.size() == psize());
@@ -91,7 +91,7 @@ void convolution_layer_t::ginput(tensor3d_map_t idata, tensor1d_const_map_t para
         });
 }
 
-void convolution_layer_t::gparam(tensor3d_const_map_t idata, tensor1d_map_t param, tensor3d_const_map_t odata)
+void convolution_layer_t::gparam(tensor3d_cmap_t idata, tensor1d_map_t param, tensor3d_cmap_t odata)
 {
         assert(idata.dims() == idims());
         assert(param.size() == psize());

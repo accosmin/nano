@@ -1,7 +1,6 @@
 #pragma once
 
-#include "classification_multi.h"
-#include "classification_single.h"
+#include "classification.h"
 
 namespace nano
 {
@@ -10,18 +9,18 @@ namespace nano
         ///
         struct logistic_t
         {
-                static scalar_t value(const vector_t& targets, const vector_t& scores)
+                static auto value(const vector_cmap_t& targets, const vector_cmap_t& scores)
                 {
                         return  (1 + (-targets.array() * scores.array()).exp()).log().sum();
                 }
 
-                static vector_t vgrad(const vector_t& targets, const vector_t& scores)
+                static auto vgrad(const vector_cmap_t& targets, const vector_cmap_t& scores)
                 {
                         return  -targets.array() * (-targets.array() * scores.array()).exp() /
                                 (1 + (-targets.array() * scores.array()).exp());
                 }
         };
 
-        using mlogistic_loss_t = classification_multi_t<logistic_t>;
-        using slogistic_loss_t = classification_single_t<logistic_t>;
+        using mlogistic_loss_t = mclassification_t<logistic_t>;
+        using slogistic_loss_t = sclassification_t<logistic_t>;
 }

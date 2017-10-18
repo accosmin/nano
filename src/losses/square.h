@@ -9,12 +9,12 @@ namespace nano
         ///
         struct square_t
         {
-                static scalar_t value(const vector_t& targets, const vector_t& scores)
+                static auto value(const vector_cmap_t& targets, const vector_cmap_t& scores)
                 {
                         return scalar_t(0.5) * (scores - targets).array().square().sum();
                 }
 
-                static vector_t vgrad(const vector_t& targets, const vector_t& scores)
+                static auto vgrad(const vector_cmap_t& targets, const vector_cmap_t& scores)
                 {
                         return scores - targets;
                 }

@@ -40,7 +40,7 @@ namespace nano
                 ///
                 /// \brief change parameters
                 ///
-                void param(const tensor1d_const_map_t&);
+                void param(const tensor1d_cmap_t&);
 
                 ///
                 /// \brief compute the output
@@ -72,7 +72,6 @@ namespace nano
                 /// \brief returns the number of parameters to optimize
                 ///
                 tensor1d_dims_t pdims() const { return m_pdims; }
-                tensor_size_t psize() const { return nano::size(m_pdims); }
 
                 ///
                 /// \brief returns the timing probes for the three basic operations (output & its gradients)
@@ -89,14 +88,20 @@ namespace nano
                 const tensor4d_t& output() const { return m_odata; }
                 const tensor1d_t& gparam() const { return m_gparam; }
 
+                tensor_size_t isize() const { return nano::size(m_idims); }
+                tensor_size_t osize() const { return nano::size(m_odims); }
+                tensor_size_t psize() const { return nano::size(m_pdims); }
+
         protected:
 
+                /// \brief configure to produce inputs of the given size and
+                ///     returns the output size and the number of parameters to optimize
                 virtual void configure(const tensor3d_dims_t& idims, const string_t& name,
                         tensor3d_dims_t& odims, tensor1d_dims_t& pdims) = 0;
 
-                virtual void output(const tensor4d_t& idata, const tensor1d_t& param, tensor4d_t& odata) const = 0;
-                virtual void ginput(tensor4d_t& idata, const tensor1d_t& param, const tensor4d_t& odata) const = 0;
-                virtual void gparam(const tensor4d_t& idata, tensor1d_t& param, const tensor4d_t& odata) const = 0;
+                virtual void output(const tensor4d_t& idata, const tensor1d_t& param, tensor4d_t& odata) = 0;
+                virtual void ginput(tensor4d_t& idata, const tensor1d_t& param, const tensor4d_t& odata) = 0;
+                virtual void gparam(const tensor4d_t& idata, tensor1d_t& param, const tensor4d_t& odata) = 0;
 
         private:
 

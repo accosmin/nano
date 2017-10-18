@@ -1,6 +1,6 @@
 #pragma once
 
-#include "classification_single.h"
+#include "classification.h"
 
 namespace nano
 {
@@ -9,18 +9,18 @@ namespace nano
         ///
         struct classnll_t
         {
-                static scalar_t value(const vector_t& targets, const vector_t& scores)
+                static auto value(const vector_cmap_t& targets, const vector_cmap_t& scores)
                 {
                         return  std::log(scores.array().exp().sum()) -
                                 scalar_t(0.5) * ((1 + targets.array()) * scores.array()).sum();
                 }
 
-                static vector_t vgrad(const vector_t& targets, const vector_t& scores)
+                static auto vgrad(const vector_cmap_t& targets, const vector_cmap_t& scores)
                 {
                         return  scores.array().exp() / (scores.array().exp().sum()) -
                                 scalar_t(0.5) * (1 + targets.array());
                 }
         };
 
-        using classnll_loss_t = classification_single_t<classnll_t>;
+        using classnll_loss_t = sclassification_t<classnll_t>;
 }

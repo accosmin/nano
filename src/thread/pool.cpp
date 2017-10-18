@@ -54,11 +54,11 @@ void nano::thread_pool_t::activate(std::size_t count)
 
         if (!count)
         {
-                count = n_workers();
+                count = workers();
         }
-        count = std::max(std::size_t(1), std::min(count, n_workers()));
+        count = std::max(std::size_t(1), std::min(count, workers()));
 
-        std::size_t crt_count = ::n_active_workers(m_workers);
+        std::size_t crt_count = ::active_workers(m_workers);
         assert(crt_count > 0);
         for (auto& worker :  m_workers)
         {
@@ -84,7 +84,7 @@ void nano::thread_pool_t::activate(std::size_t count)
                 }
         }
 
-        assert(count == ::n_active_workers(m_workers));
+        assert(count == ::active_workers(m_workers));
 
         m_queue.m_condition.notify_all();
 }

@@ -5,16 +5,16 @@
 
 namespace nano
 {
-        struct loss_t;
+        class loss_t;
         struct task_t;
-        struct model_t;
+        class model_t;
         struct enhancer_t;
         struct accumulator_t;
 
         ///
         /// \brief stores registered prototypes
         ///
-        struct trainer_t;
+        class trainer_t;
         using trainer_factory_t = factory_t<trainer_t>;
         using rtrainer_t = trainer_factory_t::trobject;
 
@@ -23,8 +23,9 @@ namespace nano
         ///
         /// \brief generic trainer: optimizes a model on a given compatible task.
         ///
-        struct NANO_PUBLIC trainer_t : public configurable_t
+        class NANO_PUBLIC trainer_t : public configurable_t
         {
+        public:
                 using configurable_t::configurable_t;
 
                 ///

@@ -9,12 +9,12 @@ namespace nano
         ///
         struct cauchy_t
         {
-                static scalar_t value(const vector_t& targets, const vector_t& scores)
+                static auto value(const vector_cmap_t& targets, const vector_cmap_t& scores)
                 {
                         return ((targets - scores).array().square() + 1).log().sum();
                 }
 
-                static vector_t vgrad(const vector_t& targets, const vector_t& scores)
+                static auto vgrad(const vector_cmap_t& targets, const vector_cmap_t& scores)
                 {
                         return 2 * (scores - targets).array() / (1 + (scores - targets).array().square());
                 }
@@ -22,4 +22,3 @@ namespace nano
 
         using cauchy_loss_t = regression_t<cauchy_t>;
 }
-

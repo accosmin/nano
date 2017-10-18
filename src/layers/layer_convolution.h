@@ -1,8 +1,7 @@
 #pragma once
 
 #include "layer.h"
-#include "conv3d_dense.h"
-#include "conv3d_dmaps.h"
+#include "conv4d.h"
 
 namespace nano
 {
@@ -22,15 +21,12 @@ namespace nano
                 explicit convolution_layer_t(const string_t& params = string_t());
 
                 virtual rlayer_t clone() const override;
-                virtual void configure(const tensor3d_dims_t&, const string_t&) override;
-                virtual void output(tensor3d_const_map_t, tensor1d_const_map_t, tensor3d_map_t) override;
-                virtual void ginput(tensor3d_map_t, tensor1d_const_map_t, tensor3d_const_map_t) override;
-                virtual void gparam(tensor3d_const_map_t, tensor1d_map_t, tensor3d_const_map_t) override;
+                virtual void configure(const tensor3d_dims_t&, const string_t&, tensor3d_dims_t&, tensor1d_dims_t&) override;
+                virtual void output(const tensor4d_t&, const tensor1d_t&, tensor4d_t&) override;
+                virtual void ginput(tensor4d_t&, const tensor1d_t&, const tensor4d_t&) override;
+                virtual void gparam(const tensor4d_t&, tensor1d_t&, const tensor4d_t&) override;
 
-                virtual tensor3d_dims_t idims() const override { return m_params.idims(); }
-                virtual tensor3d_dims_t odims() const override { return m_params.odims(); }
                 virtual tensor_size_t fanin() const override;
-                virtual tensor_size_t psize() const override { return m_params.psize(); }
                 virtual const probe_t& probe_output() const override { return m_probe_output; }
                 virtual const probe_t& probe_ginput() const override { return m_probe_ginput; }
                 virtual const probe_t& probe_gparam() const override { return m_probe_gparam; }

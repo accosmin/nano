@@ -25,7 +25,7 @@ namespace nano
         /// \brief tensor mapping a constant array.
         ///
         template <typename tscalar, std::size_t trank>
-        using tensor_const_map_t = tensor_t<tensor_pstorage_t<const tscalar>, trank>;
+        using tensor_cmap_t = tensor_t<tensor_pstorage_t<const tscalar>, trank>;
 
         ///
         /// \brief map non-constant data to tensors
@@ -44,7 +44,7 @@ namespace nano
         auto map_tensor(const tscalar_* data, const tensor_dims_t<trank>& dims)
         {
                 using tscalar = typename std::remove_const<tscalar_>::type;
-                return tensor_const_map_t<tscalar, trank>(data, dims);
+                return tensor_cmap_t<tscalar, trank>(data, dims);
         }
 
         ///

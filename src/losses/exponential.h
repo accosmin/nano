@@ -1,7 +1,6 @@
 #pragma once
 
-#include "classification_multi.h"
-#include "classification_single.h"
+#include "classification.h"
 
 namespace nano
 {
@@ -10,17 +9,17 @@ namespace nano
         ///
         struct exponential_t
         {
-                static scalar_t value(const vector_t& targets, const vector_t& scores)
+                static auto value(const vector_cmap_t& targets, const vector_cmap_t& scores)
                 {
                         return (-targets.array() * scores.array()).exp().sum();
                 }
 
-                static vector_t vgrad(const vector_t& targets, const vector_t& scores)
+                static auto vgrad(const vector_cmap_t& targets, const vector_cmap_t& scores)
                 {
                         return -targets.array() * (-targets.array() * scores.array()).exp();
                 }
         };
 
-        using mexponential_loss_t = classification_multi_t<exponential_t>;
-        using sexponential_loss_t = classification_single_t<exponential_t>;
+        using mexponential_loss_t = mclassification_t<exponential_t>;
+        using sexponential_loss_t = sclassification_t<exponential_t>;
 }
