@@ -34,9 +34,9 @@ namespace nano
                 virtual void ginput(tensor4d_t& idata, const tensor1d_t& pdata, const tensor4d_t& odata) override;
                 virtual void gparam(const tensor4d_t& idata, tensor1d_t& pdata, const tensor4d_t& odata) override;
 
-                virtual tensor_size_t fanin() const override;
-                virtual tensor3d_dims_t idims() const override;
-                virtual tensor3d_dims_t odims() const override;
+                virtual tensor_size_t fanin() const override { return 1; }
+                virtual tensor3d_dims_t idims() const override { return m_xdims; }
+                virtual tensor3d_dims_t odims() const override { return m_xdims; }
                 virtual tensor1d_dims_t pdims() const override { return {0}; }
 
                 virtual const probe_t& probe_output() const override { return m_probe_output; }
@@ -46,6 +46,7 @@ namespace nano
         private:
 
                 // attributes
+                tensor3d_dims_t m_xdims;        ///< input/output dimensions
                 norm_type       m_type;
                 probe_t         m_probe_output;
                 probe_t         m_probe_ginput;

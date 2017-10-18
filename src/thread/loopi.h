@@ -27,11 +27,11 @@ namespace nano
                                 const auto chunk = std::min(thread_chunk, max_thread_chunk);
 
                                 assert(begin < end && chunk > 0);
-                                section.emplace_back(pool.enqueue([=, &op = op]()
+                                section.push_back(pool.enqueue([=, &op = op]()
                                 {
-                                        for ( ; begin < end; begin = std::min(begin + chunk, end))
+                                        for (auto ibegin = begin; ibegin < end; ibegin = std::min(ibegin + chunk, end))
                                         {
-                                                op(begin, std::min(begin + chunk, end), thread);
+                                                op(ibegin, std::min(ibegin + chunk, end), thread);
                                         }
                                 }));
                         }
@@ -47,7 +47,7 @@ namespace nano
         template <typename tsize, typename toperator>
         void loopi(const tsize size, const tsize max_thread_chunk, const toperator& op)
         {
-                loopit(tsize, max_thread_chunk, [&] (const tsize begin, const tsize end, const tsize thread)
+                loopit(size, max_thread_chunk, [&] (const tsize begin, const tsize end, const tsize thread)
                 {
                         NANO_UNUSED1(thread);
                         op(begin, end);

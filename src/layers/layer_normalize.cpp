@@ -2,48 +2,50 @@
 
 using namespace nano;
 
-template <typename tidata, typename todata>
-static void onorm(const tidata& idata, todata&& odata)
+template <typename tiarray, typename toarray>
+static void onorm(const tiarray& iarray, toarray&& oarray)
 {
-        const auto isum1 = idata.array().sum();
-        const auto isum2 = idata.array().square().sum();
-        const auto count = static_cast<scalar_t>(idata.size());
+        const auto isum1 = iarray.sum();
+        const auto isum2 = iarray.square().sum();
+        const auto count = static_cast<scalar_t>(iarray.size());
         const auto imean = isum1 / count;
         const auto istdv = std::sqrt((isum2 - isum1 * isum1 / count) / count);
 
-        odata.array() = (idata.array() - imean) / istdv;
+        oarray = (iarray - imean) / istdv;
 }
 
-template <typename tidata, typename todata>
-static void gnorm(tidata&& idata, const todata& odata)
+template <typename tiarray, typename toarray>
+static void gnorm(tiarray&& iarray, const toarray& oarray)
 {
-        const auto isum1 = idata.array().sum();
-        const auto isum2 = idata.array().square().sum();
-        const auto count = static_cast<scalar_t>(idata.size());
+        const auto isum1 = iarray.sum();
+        const auto isum2 = iarray.square().sum();
+        const auto count = static_cast<scalar_t>(iarray.size());
         const auto imean = isum1 / count;
         const auto istdv = std::sqrt((isum2 - isum1 * isum1 / count) / count);
 
-        const auto osum1 = odata.array().sum();
-        const auto oisum = (odata.array() * (idata.array() - imean)).sum();
+        const auto osum1 = oarray.sum();
+        const auto oisum = (oarray * (iarray - imean)).sum();
 
-        idata.array() =
-                odata.array() / (istdv) -
-                osum1 / (count * istdv) -
-                (idata.array() - imean) * oisum / (count * istdv * istdv * istdv);
+        iarray = oarray / (istdv) -
+                 osum1 / (count * istdv) -
+                 (iarray - imean) * oisum / (count * istdv * istdv * istdv);
 }
 
 normalize_layer_t::normalize_layer_t(const string_t& params) :
         layer_t(to_params(params, "type", norm_type::plane)),
-        m_idims({0, 0, 0}),
-        m_odims({0, 0, 0}),
+        m_xdims({0, 0, 0}),
         m_type(norm_type::plane)
 {
 }
 
+rlayer_t normalize_layer_t::clone() const
+{
+        return std::make_unique<normalize_layer_t>(*this);
+}
+
 void normalize_layer_t::configure(const tensor3d_dims_t& idims, const string_t& name)
 {
-        m_idims = idims;
-        m_odims = idims;
+        m_xdims = idims;
         m_type = from_params<norm_type>(config(), "type");
 
         m_probe_output = probe_t{name, name + "(output)", 5 * isize()};
@@ -51,63 +53,71 @@ void normalize_layer_t::configure(const tensor3d_dims_t& idims, const string_t& 
         m_probe_gparam = probe_t{name, name + "(gparam)", 0};
 }
 
-void normalize_layer_t::output(tensor3d_cmap_t idata, tensor1d_cmap_t param, tensor3d_map_t odata)
+void normalize_layer_t::output(const tensor4d_t& idata, const tensor1d_t& pdata, tensor4d_t& odata)
 {
-        assert(idata.dims() == idims());
-        assert(param.size() == psize());
-        assert(odata.dims() == odims());
-        NANO_UNUSED1_RELEASE(param);
+        assert(idata.dims() == odata.dims());
+        assert(pdata.dims() == pdims());
+        NANO_UNUSED1_RELEASE(pdata);
 
+        const auto count = idata.size<0>();
+        const auto imaps = idata.size<1>();
         m_probe_output.measure([&] ()
         {
                 switch (m_type)
                 {
                 case norm_type::global:
-                        onorm(idata, odata);
+                        for (auto x = 0; x < count; ++ x)
+                        {
+                                onorm(idata.array(x), odata.array(x));
+                        }
                         break;
                 case norm_type::plane:
-                        for (tensor_size_t i = 0; i < std::get<0>(m_idims); ++ i)
+                        for (auto x = 0; x < count; ++ x)
                         {
-                                onorm(idata.matrix(i), odata.matrix(i));
+                                for (auto i = 0; i < imaps; ++ i)
+                                {
+                                        onorm(idata.array(x, i), odata.array(x, i));
+                                }
                         }
                         break;
                 }
-        });
+        }, count);
 }
 
-void normalize_layer_t::ginput(tensor3d_map_t idata, tensor1d_cmap_t param, tensor3d_cmap_t odata)
+void normalize_layer_t::ginput(tensor4d_t& idata, const tensor1d_t& pdata, const tensor4d_t& odata)
 {
-        assert(idata.dims() == idims());
-        assert(param.size() == psize());
-        assert(odata.dims() == odims());
-        NANO_UNUSED1_RELEASE(param);
+        assert(idata.dims() == odata.dims());
+        assert(pdata.dims() == pdims());
+        NANO_UNUSED1_RELEASE(pdata);
 
+        const auto count = idata.size<0>();
+        const auto imaps = idata.size<1>();
         m_probe_ginput.measure([&] ()
         {
                 switch (m_type)
                 {
                 case norm_type::global:
-                        gnorm(idata, odata);
+                        for (auto x = 0; x < count; ++ x)
+                        {
+                                gnorm(idata.array(x), odata.array(x));
+                        }
                         break;
                 case norm_type::plane:
-                        for (tensor_size_t i = 0; i < std::get<0>(m_idims); ++ i)
+                        for (auto x = 0; x < count; ++ x)
                         {
-                                gnorm(idata.matrix(i), odata.matrix(i));
+                                for (auto i = 0; i < imaps; ++ i)
+                                {
+                                        gnorm(idata.array(x, i), odata.array(x, i));
+                                }
                         }
                         break;
                 }
-        });
+        }, count);
 }
 
-void normalize_layer_t::gparam(tensor3d_cmap_t idata, tensor1d_map_t param, tensor3d_cmap_t odata)
+void normalize_layer_t::gparam(const tensor4d_t& idata, tensor1d_t& pdata, const tensor4d_t& odata)
 {
-        assert(idata.dims() == idims());
-        assert(param.size() == psize());
-        assert(odata.dims() == odims());
-        NANO_UNUSED3_RELEASE(idata, param, odata);
-}
-
-rlayer_t normalize_layer_t::clone() const
-{
-        return std::make_unique<normalize_layer_t>(*this);
+        assert(idata.dims() == odata.dims());
+        assert(pdata.dims() == pdims());
+        NANO_UNUSED3_RELEASE(idata, pdata, odata);
 }
