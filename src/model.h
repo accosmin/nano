@@ -49,8 +49,8 @@ namespace nano
                 ///
                 /// \brief serialize parameters to memory
                 ///
-                virtual const vector_t& params() const = 0;
-                virtual void params(const vector_t& x) = 0;
+                virtual vector_t params() const = 0;
+                virtual void params(const vector_t&) = 0;
 
                 ///
                 /// \brief set parameters to random values
@@ -58,19 +58,19 @@ namespace nano
                 virtual void random() = 0;
 
                 ///
-                /// \brief compute the model's output
+                /// \brief compute the model's output given its input
                 ///
-                virtual const tensor4d_t& output(const tensor4d_t& input) = 0;
+                virtual const tensor4d_t& output(const tensor4d_t& idata) = 0;
 
                 ///
-                /// \brief compute the model's gradient wrt parameters
+                /// \brief compute the model's gradient wrt parameters given its output
                 ///
-                virtual const tensor1d_t& gparam(const tensor4d_t& output) = 0;
+                virtual const tensor1d_t& gparam(const tensor4d_t& odata) = 0;
 
                 ///
-                /// \brief compute the model's gradient wrt inputs
+                /// \brief compute the model's gradient wrt inputs given its output
                 ///
-                virtual const tensor4d_t& ginput(const tensor4d_t& output) = 0;
+                virtual const tensor4d_t& ginput(const tensor4d_t& odata) = 0;
 
                 ///
                 /// \brief retrieve timing information for all components

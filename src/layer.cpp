@@ -15,9 +15,9 @@ void layer_t::param(const tensor1d_cmap_t& pdata)
 {
         assert(pdata.dims() == pdims());
 
-        m_param = pdata;
-        m_gparam.resize(pdims());
-        m_gparam.zero();
+        m_pdata = pdata;
+        m_gdata.resize(pdims());
+        m_gdata.zero();
 }
 
 const tensor4d_t& layer_t::output(const tensor4d_t& idata)
@@ -32,7 +32,7 @@ const tensor4d_t& layer_t::output(const tensor4d_t& idata)
 
         m_idata = idata;
         m_odata.resize(count, omaps, orows, ocols);
-        output(m_idata, m_param, m_odata);
+        output(m_idata, m_pdata, m_odata);
         return m_odata;
 }
 
@@ -40,7 +40,7 @@ const tensor4d_t& layer_t::ginput(const tensor4d_t& odata)
 {
         assert(m_odata.dims() == odata.dims());
 
-        ginput(m_idata, m_param, odata);
+        ginput(m_idata, m_pdata, odata);
         return m_idata;
 }
 
@@ -48,8 +48,8 @@ const tensor1d_t& layer_t::gparam(const tensor4d_t& odata)
 {
         assert(m_odata.dims() == odata.dims());
 
-        gparam(m_idata, m_gparam, odata);
-        return m_gparam;
+        gparam(m_idata, m_gdata, odata);
+        return m_gdata;
 }
 
 layer_factory_t& nano::get_layers()

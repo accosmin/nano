@@ -6,7 +6,7 @@
 namespace nano
 {
         ///
-        /// multi-layer feed-forward network model
+        /// \brief multi-layer feed-forward network model
         ///
         struct forward_network_t final : public model_t
         {
@@ -17,6 +17,7 @@ namespace nano
                 /// \brief enable copying
                 ///
                 forward_network_t(const forward_network_t&);
+                forward_network_t& operator=(const forward_network_t&) = delete;
 
                 ///
                 /// \brief enable moving
@@ -28,9 +29,9 @@ namespace nano
                 virtual bool configure(const tensor3d_dims_t& idims, const tensor3d_dims_t& odims) override;
 
                 virtual void random() override;
-                virtual const tensor4d_t& output(const tensor4d_t& input) override;
-                virtual const tensor1d_t& gparam(const tensor4d_t& output) override;
-                virtual const tensor4d_t& ginput(const tensor4d_t& output) override;
+                virtual const tensor4d_t& output(const tensor4d_t& idata) override;
+                virtual const tensor1d_t& gparam(const tensor4d_t& odata) override;
+                virtual const tensor4d_t& ginput(const tensor4d_t& odata) override;
 
                 virtual void describe() const override;
                 virtual probes_t probes() const override;
@@ -38,8 +39,8 @@ namespace nano
                 virtual bool save(const string_t& path) const override;
                 virtual bool load(const string_t& path) override;
 
-                virtual const vector_t& params() const override;
-                virtual void params(const vector_t& x) override;
+                virtual vector_t params() const override;
+                virtual void params(const vector_t&) override;
 
                 virtual tensor_size_t psize() const override;
                 virtual tensor3d_dims_t idims() const override;
@@ -55,9 +56,8 @@ namespace nano
                 using rlayers_t = std::vector<rlayer_t>;
 
                 // attributes
-                tensor3d_dims_t m_idims;        ///<
-                tensor3d_dims_t m_odims;        ///<
                 rlayers_t       m_layers;       ///< feed-forward layers
+                tensor1d_t      m_gdata;        ///< gradient wrt parameters
                 probe_t         m_probe_output;
                 probe_t         m_probe_ginput;
                 probe_t         m_probe_gparam;

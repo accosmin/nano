@@ -80,9 +80,9 @@ namespace nano
                 /// \brief access functions
                 ///
                 const tensor4d_t& input() const { return m_idata; }
-                const tensor1d_t& param() const { return m_param; }
+                const tensor1d_t& param() const { return m_pdata; }
                 const tensor4d_t& output() const { return m_odata; }
-                const tensor1d_t& gparam() const { return m_gparam; }
+                const tensor1d_t& gparam() const { return m_gdata; }
 
                 tensor_size_t isize() const { return nano::size(idims()); }
                 tensor_size_t osize() const { return nano::size(odims()); }
@@ -97,8 +97,8 @@ namespace nano
         private:
 
                 // attributes
-                tensor1d_t      m_param;        ///< parameters buffer
-                tensor1d_t      m_gparam;       ///< cumulated parameters gradient buffer
+                tensor1d_t      m_pdata;        ///< parameters buffer
+                tensor1d_t      m_gdata;        ///< cumulated parameters gradient buffer
                 tensor4d_t      m_idata;        ///< inputs (or its gradient) buffer
                 tensor4d_t      m_odata;        ///< outputs (or its gradient) buffer
         };

@@ -10,12 +10,6 @@
 using namespace nano;
 
 forward_network_t::forward_network_t(const forward_network_t& other) :
-        m_idims(other.m_idims),
-        m_odims(other.m_odims),
-        m_idata(other.m_idata),
-        m_odata(other.m_odata),
-        m_xdata(other.m_xdata),
-        m_pdata(other.m_pdata),
         m_gdata(other.m_gdata),
         m_probe_output(other.m_probe_output),
         m_probe_ginput(other.m_probe_ginput),
@@ -35,156 +29,161 @@ rmodel_t forward_network_t::clone() const
 bool forward_network_t::save(const string_t& path) const
 {
         obstream_t ob(path);
-        return  ob.write(m_idims) &&
-                ob.write(m_odims) &&
+        return  ob.write(idims()) &&
+                ob.write(odims()) &&
                 ob.write(config()) &&
-                ob.write_vector(m_pdata);
+                ob.write_vector(params());
 }
 
 bool forward_network_t::load(const string_t& path)
 {
-        string_t params;
+        tensor3d_dims_t idims, odims;
+        vector_t pdata;
+        string_t param;
+
         ibstream_t ib(path);
-        return  ib.read(m_idims) &&
-                ib.read(m_odims) &&
-                ib.read(params) &&
-                config(params) == params &&
-                configure(m_idims, m_odims) &&
-                ib.read_vector(m_pdata) &&
-                m_pdata.size() == psize();
+        return  ib.read(idims) &&
+                ib.read(odims) &&
+                ib.read(param) &&
+                ib.read_vector(pdata) &&
+                config(param) == param &&
+                configure(idims, odims) &&
+                pdata.size() == psize() &&
+                [&] () { params(pdata); return true; }();
 }
 
-const vector_t& forward_network_t::params() const
+vector_t forward_network_t::params() const
 {
-        return m_pdata;
+        vector_t pdata(psize());
+
+        tensor_size_t pindex = 0;
+        for (const auto& layer : m_layers)
+        {
+                if (layer->psize())
+                {
+                        assert(pindex + layer->psize() <= pdata.size());
+                        map_vector(pdata.data() + pindex, layer->psize()) = layer->param().vector();
+                        pindex += layer->psize();
+                }
+        }
+        assert(pindex == psize());
+
+        return pdata;
 }
 
-void forward_network_t::params(const vector_t& x)
+void forward_network_t::params(const vector_t& pdata)
 {
-        assert(x.size() == m_pdata.size());
-        m_pdata = x;
+        assert(pdata.size() == psize());
+
+        tensor_size_t pindex = 0;
+        for (const auto& layer : m_layers)
+        {
+                if (layer->psize())
+                {
+                        assert(pindex + layer->psize() <= pdata.size());
+                        layer->param(map_tensor(pdata.data() + pindex, layer->pdims()));
+                        pindex += layer->psize();
+                }
+        }
+        assert(pindex == psize());
 }
 
-const tensor3d_t& forward_network_t::output(const tensor3d_t& input)
+const tensor4d_t& forward_network_t::output(const tensor4d_t& idata)
 {
-        assert(input.dims() == idims());
+        assert(idata.tensor(0).dims() == idims());
 
-        scalar_t* pxdata = m_xdata.data();
-        scalar_t* ppdata = m_pdata.data();
+        auto pidata = &idata;
 
+        const auto count = idata.size<0>();
         m_probe_output.measure([&] ()
         {
                 // forward step
-                map_vector(pxdata, nano::size(idims())) = input.vector();
-                for (size_t l = 0; l < n_layers(); ++ l)
+                for (auto it = m_layers.begin(); it != m_layers.end(); ++ it)
                 {
-                        auto& layer = m_layers[l];
-                        layer->output(pxdata, ppdata, pxdata + layer->isize());
-                        pxdata += layer->isize();
-                        ppdata += layer->psize();
+                        pidata = &(*it)->output(*pidata);
                 }
-                m_odata = map_tensor(pxdata, odims());
-                pxdata += nano::size(odims());
-        });
+        }, count);
 
-        assert(pxdata == m_xdata.data() + m_xdata.size());
-        assert(ppdata == m_pdata.data() + m_pdata.size());
-
-        return m_odata;
+        return *pidata;
 }
 
-const tensor3d_t& forward_network_t::ginput(const vector_t& output)
+const tensor4d_t& forward_network_t::ginput(const tensor4d_t& odata)
 {
-        assert(output.size() == nano::size(odims()));
-        assert(!m_layers.empty());
+        assert(odata.tensor(0).dims() == odims());
 
-        scalar_t* pxdata = m_xdata.data() + m_xdata.size();
-        scalar_t* ppdata = m_pdata.data() + m_pdata.size();
+        auto podata = &odata;
 
+        const auto count = odata.size<0>();
         m_probe_ginput.measure([&] ()
         {
                 // backward step
-                map_vector(pxdata - nano::size(odims()), nano::size(odims())) = output;
-                for (size_t l = n_layers(); l > 0; -- l)
+                for (auto it = m_layers.rbegin(); it != m_layers.rend(); ++ it)
                 {
-                        auto& layer = m_layers[l - 1];
-                        layer->ginput(pxdata - layer->xsize(), ppdata - layer->psize(), pxdata - layer->osize());
-                        pxdata -= layer->osize();
-                        ppdata -= layer->psize();
+                        podata = &(*it)->ginput(*podata);
                 }
-                pxdata -= nano::size(idims());
-                m_idata = map_tensor(pxdata, idims());
-        });
+        }, count);
 
-        assert(pxdata == m_xdata.data());
-        assert(ppdata == m_pdata.data());
-
-        return m_idata;
+        return *podata;
 }
 
-const vector_t& forward_network_t::gparam(const vector_t& output)
+const tensor1d_t& forward_network_t::gparam(const tensor4d_t& odata)
 {
-        assert(output.size() == nano::size(odims()));
-        assert(!m_layers.empty());
+        assert(odata.tensor(0).dims() == odims());
 
-        scalar_t* pxdata = m_xdata.data() + m_xdata.size();
-        scalar_t* ppdata = m_pdata.data() + m_pdata.size();
-        scalar_t* pgdata = m_gdata.data() + m_gdata.size();
+        auto podata = &odata;
+        tensor_size_t pindex = m_gdata.size();
 
+        const auto count = odata.size<0>();
         m_probe_gparam.measure([&] ()
         {
                 // backward step
-                map_vector(pxdata - nano::size(odims()), nano::size(odims())) = output;
                 for (size_t l = n_layers(); l > 0; -- l)
                 {
                         auto& layer = m_layers[l - 1];
-                        layer->gparam(pxdata - layer->xsize(), pgdata - layer->psize(), pxdata - layer->osize());
+                        const auto& gdata = layer->gparam(*podata);
+                        map_vector(m_gdata.data() + pindex - layer->psize(), layer->psize()) = gdata.vector();
                         if (l > 1)
                         {
-                                layer->ginput(pxdata - layer->xsize(), ppdata - layer->psize(), pxdata - layer->osize());
+                                podata = &layer->ginput(*podata);
                         }
-                        pxdata -= layer->osize();
-                        ppdata -= layer->psize();
-                        pgdata -= layer->psize();
+                        pindex -= layer->psize();
                 }
-                pxdata -= nano::size(idims());
-        });
-
-        assert(pxdata == m_xdata.data());
-        assert(ppdata == m_pdata.data());
-        assert(pgdata == m_gdata.data());
+        }, count);
+        assert(pindex == 0);
 
         return m_gdata;
 }
 
 void forward_network_t::random()
 {
-        scalar_t* ppdata = m_pdata.data();
-
+        tensor_size_t pindex = 0;
         for (const auto& layer : m_layers)
         {
-                const auto div = static_cast<scalar_t>(layer->fanin());
-                const auto min = -std::sqrt(6 / (1 + div));
-                const auto max = +std::sqrt(6 / (1 + div));
+                if (layer->psize())
+                {
+                        const auto div = static_cast<scalar_t>(layer->fanin());
+                        const auto min = -std::sqrt(6 / (1 + div));
+                        const auto max = +std::sqrt(6 / (1 + div));
 
-                nano::set_random(random_t<scalar_t>(min, max), map_vector(ppdata, layer->psize()));
-                ppdata += layer->psize();
+                        auto gdata = map_tensor(m_gdata.data() + pindex, layer->pdims());
+                        auto pdata = map_tensor(static_cast<const scalar_t*>(m_gdata.data()) + pindex, layer->pdims());
+
+                        nano::set_random(random_t<scalar_t>(min, max), gdata);
+                        layer->param(pdata);
+
+                        pindex += layer->psize();
+                }
         }
-
-        assert(ppdata == m_pdata.data() + m_pdata.size());
+        assert(pindex == psize());
 }
 
 bool forward_network_t::configure(const tensor3d_dims_t& idims, const tensor3d_dims_t& odims)
 {
-        m_idims = idims;
-        m_odims = odims;
-
-        auto xdims = idims;
-        auto xsize = nano::size(idims);
-        auto psize = tensor_size_t(0);
-
         m_layers.clear();
 
+        auto xdims = idims;
+
+        tensor_size_t psize = 0;
         int64_t flops_output = 0;
         int64_t flops_ginput = 0;
         int64_t flops_gparam = 0;
@@ -214,9 +213,8 @@ bool forward_network_t::configure(const tensor3d_dims_t& idims, const tensor3d_d
                 auto layer = nano::get_layers().get(layer_id, layer_params);
                 layer->configure(xdims, layer_name);
 
-                xsize += nano::size(layer->odims());
-                psize += layer->psize();
                 xdims = layer->odims();
+                psize += layer->psize();
 
                 flops_output += layer->probe_output().flops();
                 flops_ginput += layer->probe_ginput().flops();
@@ -233,13 +231,7 @@ bool forward_network_t::configure(const tensor3d_dims_t& idims, const tensor3d_d
         }
 
         // allocate buffers
-        m_idata.resize(idims);
-        m_odata.resize(odims);
-        m_xdata.resize(xsize);
-        m_pdata.resize(psize);
         m_gdata.resize(psize);
-
-        m_pdata.setZero();
 
         // setup probes
         m_probe_output = probe_t{"network", "network(output)", flops_output};
@@ -249,34 +241,34 @@ bool forward_network_t::configure(const tensor3d_dims_t& idims, const tensor3d_d
         return true;
 }
 
+tensor_size_t forward_network_t::psize() const
+{
+        const auto acc = [] (const tensor_size_t sum, const rlayer_t& layer) { return sum + layer->psize(); };
+        return std::accumulate(m_layers.begin(), m_layers.end(), tensor_size_t(0), acc);
+}
+
 tensor3d_dims_t forward_network_t::idims() const
 {
-        return m_idims;
+        return m_layers.at(0)->idims();
 }
 
 tensor3d_dims_t forward_network_t::odims() const
 {
-        return m_odims;
+        return m_layers.at(m_layers.size() - 1)->odims();
 }
 
 void forward_network_t::describe() const
 {
         log_info() << "forward network [" << config() << "]";
-        for (size_t l = 0; l < n_layers(); ++ l)
+        for (const auto& layer : m_layers)
         {
-                const auto& layer = m_layers[l];
-
                 log_info()
                         << "forward network " << layer->probe_output().basename()
-                        << ": in(" << layer->idims() << ") -> " << "out(" << layer->odims() << ")"
-                        << ", params = " << layer->psize() << ".";
+                        << ": idims = " << layer->idims()
+                        << ", odims = " << layer->odims()
+                        << ", pdims = " << layer->pdims() << ".";
         }
         log_info() << "forward network: parameters = " << psize() << ".";
-}
-
-tensor_size_t forward_network_t::psize() const
-{
-        return m_gdata.size();
 }
 
 probes_t forward_network_t::probes() const
