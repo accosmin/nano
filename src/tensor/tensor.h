@@ -275,10 +275,10 @@ namespace nano
                 auto array() { return vector().array(); }
 
                 template <typename... tindices>
-                auto array(const tindices... indices) const { return tarray(data(), indices...); }
+                auto array(const tindices... indices) const { return vector(indices...).array(); }
 
                 template <typename... tindices>
-                auto array(const tindices... indices) { return tarray(data(), indices...); }
+                auto array(const tindices... indices) { return vector(indices...).array(); }
 
                 ///
                 /// \brief access the tensor as a matrix
@@ -354,13 +354,6 @@ namespace nano
                 {
                         static_assert(sizeof...(indices) < trank, "invalid number of tensor dimensions");
                         return map_vector(ptr + offset0(indices...), nano::size(nano::dims0(dims(), indices...)));
-                }
-
-                template <typename tdata, typename... tindices>
-                auto tarray(tdata ptr, const tindices... indices) const
-                {
-                        static_assert(sizeof...(indices) < trank, "invalid number of tensor dimensions");
-                        return vector(ptr, indices...).array();
                 }
 
                 template <typename tdata, typename... tindices>
