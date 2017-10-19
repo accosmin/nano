@@ -44,6 +44,12 @@ namespace nano
         }
 
         template <typename top>
+        rlayer_t activation_layer_t<top>::clone() const
+        {
+                return std::make_unique<activation_layer_t<top>>(*this);
+        }
+
+        template <typename top>
         void activation_layer_t<top>::configure(const tensor3d_dims_t& idims, const string_t& name)
         {
                 m_xdims = idims;
