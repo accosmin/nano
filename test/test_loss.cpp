@@ -21,12 +21,23 @@ struct loss_function_t final : public function_t
 
         scalar_t vgrad(const vector_t& x, vector_t* gx) const override
         {
+                NANO_CHECK_EQUAL(x.size(), m_targets.size());
                 const auto scores = map_tensor(x.data(), m_targets.dims());
+
                 if (gx)
                 {
-                        *gx = m_loss->vgrad(m_targets, scores).vector();
+                        const auto grads = m_loss->vgrad(m_targets, scores);
+                        NANO_CHECK_EQUAL(gx->size(), grads.size());
+                        NANO_CHECK(std::isfinite(grads.vector().minCoeff()));
+                        NANO_CHECK(std::isfinite(grads.vector().maxCoeff()));
+
+                        *gx = grads.vector();
                 }
-                return m_loss->value(m_targets, scores).vector().sum();
+
+                const auto values = m_loss->value(m_targets, scores);
+                NANO_CHECK(std::isfinite(values.vector().minCoeff()));
+                NANO_CHECK(std::isfinite(values.vector().maxCoeff()));
+                return values.vector().sum();
         }
 
         const rloss_t&          m_loss;

@@ -65,8 +65,14 @@ namespace nano
                 assert(pdata.dims() == pdims());
                 NANO_UNUSED1_RELEASE(pdata);
 
+                assert(std::isfinite(idata.vector().minCoeff()));
+                assert(std::isfinite(idata.vector().maxCoeff()));
+
                 const auto count = idata.size<0>();
                 m_probe_output.measure([&] () { top::output(idata.array(), odata.array()); }, count);
+
+                assert(std::isfinite(odata.vector().minCoeff()));
+                assert(std::isfinite(odata.vector().maxCoeff()));
         }
 
         template <typename top>
@@ -76,8 +82,16 @@ namespace nano
                 assert(pdata.dims() == pdims());
                 NANO_UNUSED1_RELEASE(pdata);
 
+                assert(std::isfinite(idata.vector().minCoeff()));
+                assert(std::isfinite(idata.vector().maxCoeff()));
+                assert(std::isfinite(odata.vector().minCoeff()));
+                assert(std::isfinite(odata.vector().maxCoeff()));
+
                 const auto count = idata.size<0>();
                 m_probe_ginput.measure([&] () { top::ginput(idata.array(), odata.array()); }, count);
+
+                assert(std::isfinite(idata.vector().minCoeff()));
+                assert(std::isfinite(idata.vector().maxCoeff()));
         }
 
         template <typename top>

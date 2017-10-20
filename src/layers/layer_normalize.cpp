@@ -5,6 +5,9 @@ using namespace nano;
 template <typename tiarray, typename toarray>
 static void onorm(const tiarray& iarray, toarray&& oarray)
 {
+        assert(std::isfinite(iarray.minCoeff()));
+        assert(std::isfinite(iarray.maxCoeff()));
+
         const auto isum1 = iarray.sum();
         const auto isum2 = iarray.square().sum();
         const auto count = static_cast<scalar_t>(iarray.size());
@@ -12,11 +15,19 @@ static void onorm(const tiarray& iarray, toarray&& oarray)
         const auto istdv = std::sqrt((isum2 - isum1 * isum1 / count) / count);
 
         oarray = (iarray - imean) / istdv;
+
+        assert(std::isfinite(oarray.minCoeff()));
+        assert(std::isfinite(oarray.maxCoeff()));
 }
 
 template <typename tiarray, typename toarray>
 static void gnorm(tiarray&& iarray, const toarray& oarray)
 {
+        assert(std::isfinite(iarray.minCoeff()));
+        assert(std::isfinite(iarray.maxCoeff()));
+        assert(std::isfinite(oarray.minCoeff()));
+        assert(std::isfinite(oarray.maxCoeff()));
+
         const auto isum1 = iarray.sum();
         const auto isum2 = iarray.square().sum();
         const auto count = static_cast<scalar_t>(iarray.size());
@@ -29,6 +40,9 @@ static void gnorm(tiarray&& iarray, const toarray& oarray)
         iarray = oarray / (istdv) -
                  osum1 / (count * istdv) -
                  (iarray - imean) * oisum / (count * istdv * istdv * istdv);
+
+        assert(std::isfinite(iarray.minCoeff()));
+        assert(std::isfinite(iarray.maxCoeff()));
 }
 
 normalize_layer_t::normalize_layer_t(const string_t& params) :

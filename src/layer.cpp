@@ -23,15 +23,12 @@ void layer_t::param(const tensor1d_cmap_t& pdata)
 const tensor4d_t& layer_t::output(const tensor4d_t& idata)
 {
         const auto count = idata.size<0>();
-        const auto omaps = std::get<0>(odims());
-        const auto orows = std::get<1>(odims());
-        const auto ocols = std::get<2>(odims());
 
         assert(count > 0);
-        assert(idims() == idata.tensor(0).dims());
+        assert(idata.dims() == cat_dims(count, idims()));
 
         m_idata = idata;
-        m_odata.resize(count, omaps, orows, ocols);
+        m_odata.resize(cat_dims(count, odims()));
         output(m_idata, m_pdata, m_odata);
         return m_odata;
 }

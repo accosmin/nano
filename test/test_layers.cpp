@@ -23,7 +23,7 @@ struct model_wrt_params_function_t final : public function_t
                 m_targets(cat_dims(count, model->odims()))
         {
                 m_model->random();
-                m_inputs.random(-1, +1);
+                m_inputs.random(scalar_t(-0.1), scalar_t(+0.1));
                 for (auto x = 0; x < count; ++ x)
                 {
                         m_targets.vector(x) = class_target(x % model->osize(), model->osize());
@@ -33,14 +33,21 @@ struct model_wrt_params_function_t final : public function_t
         scalar_t vgrad(const vector_t& x, vector_t* gx) const override
         {
                 NANO_CHECK_EQUAL(x.size(), m_model->psize());
+                NANO_CHECK(std::isfinite(x.minCoeff()));
+                NANO_CHECK(std::isfinite(x.maxCoeff()));
+
                 m_model->params(x);
                 const auto& outputs = m_model->output(m_inputs);
+                NANO_CHECK(std::isfinite(outputs.vector().minCoeff()));
+                NANO_CHECK(std::isfinite(outputs.vector().maxCoeff()));
+
                 if (gx)
                 {
                         const auto& gparam = m_model->gparam(m_loss->vgrad(m_targets, outputs));
                         NANO_CHECK_EQUAL(gx->size(), gparam.size());
                         NANO_CHECK(std::isfinite(gparam.vector().minCoeff()));
                         NANO_CHECK(std::isfinite(gparam.vector().maxCoeff()));
+
                         *gx = gparam.vector();
                 }
                 return m_loss->value(m_targets, outputs).vector().sum();
@@ -62,20 +69,31 @@ struct model_wrt_inputs_function_t final : public function_t
                 m_targets(cat_dims(count, model->odims()))
         {
                 m_model->random();
-                m_inputs.random(-1, +1);
+                m_inputs.random(scalar_t(-0.1), scalar_t(+0.1));
+                for (auto x = 0; x < count; ++ x)
+                {
+                        m_targets.vector(x) = class_target(x % model->osize(), model->osize());
+                }
         }
 
         scalar_t vgrad(const vector_t& x, vector_t* gx) const override
         {
                 NANO_CHECK_EQUAL(x.size(), m_inputs.size());
+                NANO_CHECK(std::isfinite(x.minCoeff()));
+                NANO_CHECK(std::isfinite(x.maxCoeff()));
+
                 m_inputs.vector() = x;
                 const auto& outputs = m_model->output(m_inputs);
+                NANO_CHECK(std::isfinite(outputs.vector().minCoeff()));
+                NANO_CHECK(std::isfinite(outputs.vector().maxCoeff()));
+
                 if (gx)
                 {
                         const auto& ginput = m_model->ginput(m_loss->vgrad(m_targets, outputs));
                         NANO_CHECK_EQUAL(gx->size(), ginput.size());
                         NANO_CHECK(std::isfinite(ginput.vector().minCoeff()));
                         NANO_CHECK(std::isfinite(ginput.vector().maxCoeff()));
+
                         *gx = ginput.vector();
                 }
                 return m_loss->value(m_targets, outputs).vector().sum();
@@ -128,7 +146,6 @@ static auto get_loss()
         static auto iloss = make_rng<size_t>();
         const auto loss_ids = get_losses().ids();
         const auto loss_id = loss_ids[iloss() % loss_ids.size()];
-
         return get_losses().get(loss_id);
 }
 
@@ -148,8 +165,6 @@ static void test_model(const string_t& model_description, const tensor_size_t ex
 
         const auto model = get_model(model_description);
         NANO_CHECK_EQUAL(model->psize(), expected_psize);
-
-        model->describe();
 
         for (auto count = 1; count < 3; ++ count)
         {
