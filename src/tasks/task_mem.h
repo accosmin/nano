@@ -203,7 +203,7 @@ namespace nano
         template <typename tchunk, typename tsample>
         minibatch_t mem_task_t<tchunk, tsample>::get(const fold_t& fold, const size_t begin, const size_t end) const
         {
-                assert(begin < end && end < size(fold));
+                assert(begin < end && end <= size(fold));
                 minibatch_t minibatch(static_cast<tensor_size_t>(end - begin), idims(), odims());
                 for (size_t index = begin; index < end; ++ index)
                 {
