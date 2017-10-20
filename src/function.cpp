@@ -27,7 +27,9 @@ scalar_t function_t::eval(const vector_t& x, vector_t* gx) const
                 gx->resize(size());
         }
 
-        return vgrad(x, gx);
+        const auto f = vgrad(x, gx);
+        assert(!gx || gx->size() == size());
+        return f;
 }
 
 scalar_t function_t::stoch_eval(const vector_t& x, vector_t* gx) const
@@ -41,7 +43,9 @@ scalar_t function_t::stoch_eval(const vector_t& x, vector_t* gx) const
                 gx->resize(size());
         }
 
-        return stoch_vgrad(x, gx);
+        const auto f = stoch_vgrad(x, gx);
+        assert(!gx || gx->size() == size());
+        return f;
 }
 
 scalar_t function_t::grad_accuracy(const vector_t& x) const
@@ -56,6 +60,7 @@ scalar_t function_t::grad_accuracy(const vector_t& x) const
 
         // analytical gradient
         const auto fx = vgrad(x, &gx);
+        assert(gx.size() == size());
 
         // finite-difference approximated gradient
         //      see "Numerical optimization", Nocedal & Wright, 2nd edition, p.197

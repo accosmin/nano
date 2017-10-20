@@ -15,55 +15,71 @@ using namespace nano;
 
 struct model_wrt_params_function_t final : public function_t
 {
-        explicit model_wrt_params_function_t(const rmodel_t& model,
-                const rloss_t& loss, const tensor3d_t& inputs, const vector_t& target) :
+        explicit model_wrt_params_function_t(const rloss_t& loss, const rmodel_t& model, const tensor_size_t count) :
                 function_t("model", model->psize(), model->psize(), model->psize(), convexity::no, 1e+6),
-                m_model(model), m_loss(loss), m_inputs(inputs), m_target(target)
+                m_loss(loss),
+                m_model(model),
+                m_inputs(cat_dims(count, model->idims())),
+                m_targets(cat_dims(count, model->odims()))
         {
+                m_model->random();
+                m_inputs.random(-1, +1);
+                for (auto x = 0; x < count; ++ x)
+                {
+                        m_targets.vector(x) = class_target(x % model->osize(), model->osize());
+                }
         }
 
         scalar_t vgrad(const vector_t& x, vector_t* gx) const override
         {
+                NANO_CHECK_EQUAL(x.size(), m_model->psize());
                 m_model->params(x);
-                const vector_t output = m_model->output(m_inputs).vector();
+                const auto& outputs = m_model->output(m_inputs);
                 if (gx)
                 {
-                        *gx = m_model->gparam(m_loss->vgrad(m_target, output));
+                        const auto& gparam = m_model->gparam(m_loss->vgrad(m_targets, outputs));
+                        NANO_CHECK_EQUAL(gx->size(), gparam.size());
+                        *gx = gparam.vector();
                 }
-                return m_loss->value(m_target, output);
+                return m_loss->value(m_targets, outputs).vector().sum();
         }
 
-        const rmodel_t&         m_model;
         const rloss_t&          m_loss;
-        const tensor3d_t&       m_inputs;
-        const vector_t&         m_target;
+        const rmodel_t&         m_model;
+        tensor4d_t              m_inputs;
+        tensor4d_t              m_targets;
 };
 
 struct model_wrt_inputs_function_t final : public function_t
 {
-        explicit model_wrt_inputs_function_t(const rmodel_t& model,
-                const rloss_t& loss, const vector_t& params, const vector_t& target) :
-                function_t("model", nano::size(model->idims()), nano::size(model->idims()), nano::size(model->idims()), convexity::no, 1e+6),
-                m_model(model), m_loss(loss), m_params(params), m_target(target)
+        explicit model_wrt_inputs_function_t(const rloss_t& loss, const rmodel_t& model, const tensor_size_t count) :
+                function_t("model", count * model->isize(), count * model->isize(), count * model->isize(), convexity::no, 1e+6),
+                m_loss(loss),
+                m_model(model),
+                m_inputs(cat_dims(count, model->idims())),
+                m_targets(cat_dims(count, model->odims()))
         {
+                m_model->random();
         }
 
         scalar_t vgrad(const vector_t& x, vector_t* gx) const override
         {
-                m_model->params(m_params);
-                const auto inputs = nano::map_tensor(x.data(), m_model->idims());
-                const auto output = m_model->output(inputs).vector();
+                NANO_CHECK_EQUAL(x.size(), m_inputs.size());
+                m_inputs.vector() = x;
+                const auto& outputs = m_model->output(m_inputs);
                 if (gx)
                 {
-                        *gx = m_model->ginput(m_loss->vgrad(m_target, output)).vector();
+                        const auto& ginput = m_model->ginput(m_loss->vgrad(m_targets, outputs));
+                        NANO_CHECK_EQUAL(gx->size(), ginput.size());
+                        *gx = ginput.vector();
                 }
-                return m_loss->value(m_target, output);
+                return m_loss->value(m_targets, outputs).vector().sum();
         }
 
-        const rmodel_t&         m_model;
         const rloss_t&          m_loss;
-        const vector_t&         m_params;
-        const vector_t&         m_target;
+        const rmodel_t&         m_model;
+        mutable tensor4d_t      m_inputs;
+        tensor4d_t              m_targets;
 };
 
 const auto cmd_idims = tensor3d_dims_t{3, 8, 8};
@@ -120,39 +136,22 @@ static auto get_model(const string_t& description)
         return model;
 }
 
-static void make_random_config(tensor3d_t& inputs, vector_t& target)
-{
-        random_t<scalar_t> irgen(-scalar_t(1.0), +scalar_t(1.0));
-        random_t<tensor_size_t> trgen(0, target.size() - 1);
-
-        nano::set_random(irgen, inputs);
-        target = class_target(trgen(), target.size());
-}
-
 static void test_model(const string_t& model_description, const tensor_size_t expected_psize,
-        const scalar_t epsilon = epsilon2<scalar_t>())
+        const scalar_t epsilon = epsilon1<scalar_t>())
 {
-        const auto model = get_model(model_description);
         const auto loss = get_loss();
 
+        const auto model = get_model(model_description);
         NANO_CHECK_EQUAL(model->psize(), expected_psize);
 
-        vector_t params(model->psize());
-        vector_t target(nano::size(model->odims()));
-        tensor3d_t inputs(model->idims());
+        for (auto count = 1; count < 3; ++ count)
+        {
+                const model_wrt_params_function_t pfunction(loss, model, count);
+                const model_wrt_inputs_function_t ifunction(loss, model, count);
 
-        NANO_CHECK_EQUAL(model->odims(), cmd_odims);
-
-        const model_wrt_params_function_t pfunction(model, loss, inputs, target);
-        const model_wrt_inputs_function_t ifunction(model, loss, params, target);
-
-        // construct optimization problem: analytic gradient vs finite difference approximation
-        make_random_config(inputs, target);
-        model->random();
-        params = model->params();
-
-        NANO_CHECK_LESS(pfunction.grad_accuracy(params), epsilon);
-        NANO_CHECK_LESS(ifunction.grad_accuracy(inputs.vector()), epsilon);
+                NANO_CHECK_LESS(pfunction.grad_accuracy(pfunction.m_model->params()), epsilon);
+                NANO_CHECK_LESS(ifunction.grad_accuracy(ifunction.m_inputs.vector()), epsilon);
+        }
 }
 
 NANO_BEGIN_MODULE(test_layers)

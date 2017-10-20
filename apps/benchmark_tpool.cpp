@@ -13,10 +13,13 @@ namespace
         template <typename tvector>
         void op(tvector& results)
         {
-                nano::loopi(results.size(), [&results = results] (const auto index)
+                nano::loopi(results.size(), size_t(1), [&results = results] (const auto begin, const auto end)
                 {
-                        const auto x = static_cast<scalar_t>(index);
-                        results[index] = std::sin(x) + std::cos(x);
+                        for (auto i = begin; i < end; ++ i)
+                        {
+                                const auto x = static_cast<scalar_t>(i);
+                                results[i] = std::sin(x) + std::cos(x);
+                        }
                 });
         }
 }

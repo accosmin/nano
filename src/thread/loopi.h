@@ -26,6 +26,12 @@ namespace nano
                                 const auto end = std::min(begin + thread_chunk, size);
                                 const auto chunk = std::min(thread_chunk, max_thread_chunk);
 
+                                if (begin >= end)
+                                {
+                                        // not enough data to split to all threads
+                                        break;
+                                }
+
                                 assert(begin < end && chunk > 0);
                                 section.push_back(pool.enqueue([=, &op = op]()
                                 {

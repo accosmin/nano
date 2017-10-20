@@ -5,67 +5,70 @@
 
 using namespace nano;
 
-auto make_tensor(const tensor3d_dims_t& dims)
+template <typename ttensor>
+static auto get_stats(const ttensor& xdata)
 {
-        tensor3d_t t(dims);
-        t.random(-1, +1);
-        return t;
+        stats_t<scalar_t> stats;
+        stats(xdata.data(), xdata.data() + xdata.size());
+        return stats;
 }
 
 NANO_BEGIN_MODULE(test_normalize)
 
 NANO_CASE(global)
 {
-        const auto idims = tensor3d_dims_t{3, 7, 5};
-        const auto odims = idims;
-        const auto pdims = tensor1d_dims_t{0};
+        const auto count = 9, xmaps = 3, xrows = 7, xcols = 5;
+
+        tensor4d_t idata(count, xmaps, xrows, xcols);
+        idata.random(-1, +1);
 
         const auto layer = get_layers().get("normalize", "type=global");
-        layer->configure(idims, "");
-        NANO_CHECK_EQUAL(idims, layer->idims());
-        NANO_CHECK_EQUAL(odims, layer->odims());
+
+        layer->configure(make_dims(xmaps, xrows, xcols), "");
+        NANO_CHECK_EQUAL(make_dims(xmaps, xrows, xcols), layer->idims());
+        NANO_CHECK_EQUAL(make_dims(xmaps, xrows, xcols), layer->odims());
         NANO_CHECK_EQUAL(0, layer->psize());
 
-        const auto idata = make_tensor(idims);
-        const auto param = tensor1d_t{pdims};
-        auto odata = tensor3d_t{odims};
+        const auto& odata = layer->output(idata);
+        NANO_CHECK_EQUAL(odata.dims(), make_dims(count, xmaps, xrows, xcols));
 
-        layer->output(map_tensor(idata.data(), idims), map_tensor(param.data(), pdims), map_tensor(odata.data(), odims));
+        for (auto x = 0; x < count; ++ x)
+        {
+                const auto stats = get_stats(odata.tensor(x));
 
-        stats_t<scalar_t> stats;
-        stats(odata.data(), odata.data() + odata.size());
-
-        NANO_CHECK_EQUAL(stats.count(), static_cast<size_t>(nano::size(odims)));
-        NANO_CHECK_LESS(std::fabs(stats.avg() - scalar_t(0)), epsilon0<scalar_t>());
-        NANO_CHECK_LESS(std::fabs(stats.var() - scalar_t(1)), epsilon0<scalar_t>());
+                NANO_CHECK_EQUAL(stats.count(), static_cast<size_t>(xmaps * xrows * xcols));
+                NANO_CHECK_LESS(std::fabs(stats.avg() - scalar_t(0)), epsilon0<scalar_t>());
+                NANO_CHECK_LESS(std::fabs(stats.var() - scalar_t(1)), epsilon0<scalar_t>());
+        }
 }
 
 NANO_CASE(plane)
 {
-        const auto idims = tensor3d_dims_t{3, 7, 5};
-        const auto odims = idims;
-        const auto pdims = tensor1d_dims_t{0};
+        const auto count = 9, xmaps = 3, xrows = 7, xcols = 5;
+
+        tensor4d_t idata(count, xmaps, xrows, xcols);
+        idata.random(-1, +1);
 
         const auto layer = get_layers().get("normalize", "type=plane");
-        layer->configure(idims, "");
-        NANO_CHECK_EQUAL(idims, layer->idims());
-        NANO_CHECK_EQUAL(odims, layer->odims());
+
+        layer->configure(make_dims(xmaps, xrows, xcols), "");
+        NANO_CHECK_EQUAL(make_dims(xmaps, xrows, xcols), layer->idims());
+        NANO_CHECK_EQUAL(make_dims(xmaps, xrows, xcols), layer->odims());
         NANO_CHECK_EQUAL(0, layer->psize());
 
-        const auto idata = make_tensor(idims);
-        const auto param = tensor1d_t{pdims};
-        auto odata = tensor3d_t{odims};
+        const auto& odata = layer->output(idata);
+        NANO_CHECK_EQUAL(odata.dims(), make_dims(count, xmaps, xrows, xcols));
 
-        layer->output(map_tensor(idata.data(), idims), map_tensor(param.data(), pdims), map_tensor(odata.data(), odims));
-
-        for (tensor_size_t i = 0; i < std::get<0>(odims); ++ i)
+        for (auto x = 0; x < count; ++ x)
         {
-                stats_t<scalar_t> stats;
-                stats(odata.matrix(i).data(), odata.matrix(i).data() + odata.matrix(i).size());
+                for (auto i = 0; i < xmaps; ++ i)
+                {
+                        const auto stats = get_stats(odata.matrix(x, i));
 
-                NANO_CHECK_EQUAL(stats.count(), static_cast<size_t>(nano::size(odims) / std::get<0>(odims)));
-                NANO_CHECK_LESS(std::fabs(stats.avg() - scalar_t(0)), epsilon0<scalar_t>());
-                NANO_CHECK_LESS(std::fabs(stats.var() - scalar_t(1)), epsilon0<scalar_t>());
+                        NANO_CHECK_EQUAL(stats.count(), static_cast<size_t>(xrows * xcols));
+                        NANO_CHECK_LESS(std::fabs(stats.avg() - scalar_t(0)), epsilon0<scalar_t>());
+                        NANO_CHECK_LESS(std::fabs(stats.var() - scalar_t(1)), epsilon0<scalar_t>());
+                }
         }
 }
 

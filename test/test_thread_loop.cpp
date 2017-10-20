@@ -6,11 +6,7 @@
 namespace
 {
         // single-threaded
-        template
-        <
-                typename tscalar,
-                typename toperator
-        >
+        template <typename tscalar, typename toperator>
         tscalar test_st(const size_t size, const toperator op)
         {
                 std::vector<tscalar> results(size);
@@ -22,36 +18,21 @@ namespace
                 return std::accumulate(results.begin(), results.end(), tscalar(0));
         }
 
-        // multi-threaded (default number of threads)
-        template
-        <
-                typename tscalar,
-                typename toperator
-        >
-        tscalar test_mt(const size_t size, const toperator op, const size_t splits)
+        // multi-threaded
+        template <typename tscalar, typename toperator>
+        tscalar test_mt(const size_t size, const size_t chunk, const toperator op)
         {
                 std::vector<tscalar> results(size);
-                nano::loopi(size, [results = std::ref(results), op = op] (size_t i)
+                nano::loopi(size, chunk, [&results = results, size = size, op = op] (const size_t begin, const size_t end)
                 {
-                        results.get()[i] = op(i);
-                }, splits);
-
-                return std::accumulate(results.begin(), results.end(), tscalar(0));
-        }
-
-        // multi-threaded (variable number of threads)
-        template
-        <
-                typename tscalar,
-                typename toperator
-        >
-        tscalar test_mt(const size_t size, const size_t nthreads, const toperator op, const size_t splits)
-        {
-                std::vector<tscalar> results(size);
-                nano::loopi(size, nthreads, [results = std::ref(results), op = op] (size_t i)
-                {
-                        results.get()[i] = op(i);
-                }, splits);
+                        NANO_CHECK_LESS(0, begin);
+                        NANO_CHECK_LESS(begin, end);
+                        NANO_CHECK_LESS_EQUAL(end, size);
+                        for (size_t i = begin; i < end; ++ i)
+                        {
+                                results[i] = op(i);
+                        }
+                });
 
                 return std::accumulate(results.begin(), results.end(), tscalar(0));
         }
@@ -67,7 +48,7 @@ NANO_CASE(evaluate)
         using scalar_t = double;
 
         // operator to test
-        const auto op = [](size_t i)
+        const auto op = [](const size_t i)
         {
                 const auto ii = static_cast<scalar_t>(i);
                 return ii * ii + 1 - ii;
@@ -80,15 +61,14 @@ NANO_CASE(evaluate)
                 const scalar_t st = test_st<scalar_t>(size, op);
 
                 // multi-threaded
-                const scalar_t mt = test_mt<scalar_t>(size, op, 1);
-                NANO_CHECK_CLOSE(st, mt, nano::epsilon1<scalar_t>());
-
                 for (size_t nthreads = 1; nthreads <= nano::logical_cpus(); nthreads += 2)
                 {
-                        for (size_t splits = 1; splits <= 8; ++ splits)
+                        nano::thread_pool_t::instance().activate(nthreads);
+
+                        for (size_t chunk = 1; chunk < 8; ++ chunk)
                         {
-                                const scalar_t mtx = test_mt<scalar_t>(size, nthreads, op, splits);
-                                NANO_CHECK_CLOSE(st, mtx, nano::epsilon1<scalar_t>());
+                                const scalar_t mt = test_mt<scalar_t>(size, chunk, op);
+                                NANO_CHECK_CLOSE(st, mt, nano::epsilon1<scalar_t>());
                         }
                 }
         }

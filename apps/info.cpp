@@ -23,7 +23,7 @@ namespace
 
                 table_t table;
                 table.header() << name << "description" << "configuration";
-
+                table.delim();
                 for (size_t i = 0; i < ids.size(); ++ i)
                 {
                         table.append() << ids[i] << descriptions[i] << configurations[i];

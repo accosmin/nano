@@ -27,6 +27,8 @@ NANO_CASE(index2d)
 {
         const auto dims = nano::make_dims(7, 5);
 
+        NANO_CHECK_EQUAL(dims, nano::cat_dims(7, nano::make_dims(5)));
+
         NANO_CHECK_EQUAL(std::get<0>(dims), 7);
         NANO_CHECK_EQUAL(std::get<1>(dims), 5);
         NANO_CHECK_EQUAL(nano::size(dims), 35);
@@ -48,6 +50,8 @@ NANO_CASE(index2d)
 NANO_CASE(index3d)
 {
         const auto dims = nano::make_dims(3, 7, 5);
+
+        NANO_CHECK_EQUAL(dims, nano::cat_dims(3, nano::make_dims(7, 5)));
 
         NANO_CHECK_EQUAL(std::get<0>(dims), 3);
         NANO_CHECK_EQUAL(std::get<1>(dims), 7);

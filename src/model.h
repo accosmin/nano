@@ -88,6 +88,9 @@ namespace nano
                 virtual tensor3d_dims_t idims() const = 0;
                 virtual tensor3d_dims_t odims() const = 0;
 
+                auto isize() const { return nano::size(idims()); }
+                auto osize() const { return nano::size(odims()); }
+
                 ///
                 /// \brief number of parameters (to optimize)
                 ///

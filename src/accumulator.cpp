@@ -3,6 +3,8 @@
 
 using namespace nano;
 
+static const size_t max_minibatch_size = 1024;
+
 accumulator_t::accumulator_t(const model_t& model, const loss_t& loss) :
         m_type(type::value), m_loss(loss)
 {
@@ -53,7 +55,7 @@ void accumulator_t::update(const task_t& task, const fold_t& fold)
 
 void accumulator_t::update(const task_t& task, const fold_t& fold, const size_t begin, const size_t end)
 {
-        loopit(end - begin, size_t(128), [&] (const size_t ibegin, const size_t iend, const size_t thread)
+        loopit(end - begin, max_minibatch_size, [&] (const size_t ibegin, const size_t iend, const size_t thread)
         {
                 assert(thread < m_tcaches.size());
                 assert(begin <= ibegin && ibegin < iend && iend <= end);
@@ -70,7 +72,7 @@ void accumulator_t::update(const enhancer_t& enhancer, const task_t& task, const
 void accumulator_t::update(const enhancer_t& enhancer, const task_t& task, const fold_t& fold,
         const size_t begin, const size_t end)
 {
-        loopit(end - begin, size_t(128), [&] (const size_t ibegin, const size_t iend, const size_t thread)
+        loopit(end - begin, max_minibatch_size, [&] (const size_t ibegin, const size_t iend, const size_t thread)
         {
                 assert(thread < m_tcaches.size());
                 assert(begin <= ibegin && ibegin < iend && iend <= end);
