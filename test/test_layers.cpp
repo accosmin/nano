@@ -39,6 +39,8 @@ struct model_wrt_params_function_t final : public function_t
                 {
                         const auto& gparam = m_model->gparam(m_loss->vgrad(m_targets, outputs));
                         NANO_CHECK_EQUAL(gx->size(), gparam.size());
+                        NANO_CHECK(std::isfinite(gparam.vector().minCoeff()));
+                        NANO_CHECK(std::isfinite(gparam.vector().maxCoeff()));
                         *gx = gparam.vector();
                 }
                 return m_loss->value(m_targets, outputs).vector().sum();
@@ -60,6 +62,7 @@ struct model_wrt_inputs_function_t final : public function_t
                 m_targets(cat_dims(count, model->odims()))
         {
                 m_model->random();
+                m_inputs.random(-1, +1);
         }
 
         scalar_t vgrad(const vector_t& x, vector_t* gx) const override
@@ -71,6 +74,8 @@ struct model_wrt_inputs_function_t final : public function_t
                 {
                         const auto& ginput = m_model->ginput(m_loss->vgrad(m_targets, outputs));
                         NANO_CHECK_EQUAL(gx->size(), ginput.size());
+                        NANO_CHECK(std::isfinite(ginput.vector().minCoeff()));
+                        NANO_CHECK(std::isfinite(ginput.vector().maxCoeff()));
                         *gx = ginput.vector();
                 }
                 return m_loss->value(m_targets, outputs).vector().sum();
@@ -144,13 +149,21 @@ static void test_model(const string_t& model_description, const tensor_size_t ex
         const auto model = get_model(model_description);
         NANO_CHECK_EQUAL(model->psize(), expected_psize);
 
+        model->describe();
+
         for (auto count = 1; count < 3; ++ count)
         {
                 const model_wrt_params_function_t pfunction(loss, model, count);
                 const model_wrt_inputs_function_t ifunction(loss, model, count);
 
-                NANO_CHECK_LESS(pfunction.grad_accuracy(pfunction.m_model->params()), epsilon);
-                NANO_CHECK_LESS(ifunction.grad_accuracy(ifunction.m_inputs.vector()), epsilon);
+                const vector_t px = pfunction.m_model->params();
+                const vector_t ix = ifunction.m_inputs.vector();
+
+                NANO_CHECK_EQUAL(px.size(), pfunction.size());
+                NANO_CHECK_EQUAL(ix.size(), ifunction.size());
+
+                NANO_CHECK_LESS(pfunction.grad_accuracy(px), epsilon);
+                NANO_CHECK_LESS(ifunction.grad_accuracy(ix), epsilon);
         }
 }
 
@@ -180,7 +193,7 @@ NANO_CASE(activation)
         }
 }
 
-NANO_CASE(conv)
+NANO_CASE(conv3d)
 {
         test_model(
                 make_conv3d_layer(3, 3, 3, 3, "act-unit"),
@@ -199,7 +212,7 @@ NANO_CASE(conv)
                 cpsize(cmd_idims, 6, 3, 3, 3) + apsize(6 * 6 * 6, cmd_odims));
 }
 
-NANO_CASE(conv_stride)
+NANO_CASE(conv3d_stride)
 {
         test_model(
                 make_conv3d_layer(3, 5, 3, 3, "act-unit", 2, 1),

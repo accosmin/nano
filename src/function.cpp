@@ -74,6 +74,9 @@ scalar_t function_t::grad_accuracy(const vector_t& x) const
                         const auto dfi = vgrad(xp, nullptr) - vgrad(xn, nullptr);
                         const auto dxi = xp(i) - xn(i);
                         gx_approx(i) = dfi / dxi;
+
+                        assert(std::isfinite(gx(i)));
+                        assert(std::isfinite(gx_approx(i)));
                 }
 
                 return (gx - gx_approx).lpNorm<Eigen::Infinity>() / (1 + std::fabs(fx));
