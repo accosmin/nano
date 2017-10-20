@@ -25,8 +25,8 @@ namespace
                 std::vector<tscalar> results(size);
                 nano::loopi(size, chunk, [&results = results, size = size, op = op] (const size_t begin, const size_t end)
                 {
-                        NANO_CHECK_LESS(0, begin);
                         NANO_CHECK_LESS(begin, end);
+                        NANO_CHECK_LESS_EQUAL(0, begin);
                         NANO_CHECK_LESS_EQUAL(end, size);
                         for (size_t i = begin; i < end; ++ i)
                         {
