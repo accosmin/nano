@@ -32,19 +32,19 @@ namespace nano
                 /// \brief output
                 ///
                 template <typename tidata, typename tkdata, typename tbdata, typename todata>
-                bool output(const tidata&, const tkdata&, const tbdata&, todata&&);
+                void output(const tidata&, const tkdata&, const tbdata&, todata&&);
 
                 ///
                 /// \brief gradient wrt inputs
                 ///
                 template <typename tidata, typename tkdata, typename tbdata, typename todata>
-                bool ginput(tidata&&, const tkdata&, const tbdata&, const todata&);
+                void ginput(tidata&&, const tkdata&, const tbdata&, const todata&);
 
                 ///
                 /// \brief gradient wrt parameters (convolution kernels and bias)
                 ///
                 template <typename tidata, typename tkdata, typename tbdata, typename todata>
-                bool gparam(const tidata&, tkdata&&, tbdata&&, const todata& odata);
+                void gparam(const tidata&, tkdata&&, tbdata&&, const todata& odata);
 
                 ///
                 /// \brief parameters
@@ -75,12 +75,9 @@ namespace nano
         }
 
         template <typename tidata, typename tkdata, typename tbdata, typename todata>
-        bool conv4d_t::output(const tidata& idata, const tkdata& kdata, const tbdata& bdata, todata&& odata)
+        void conv4d_t::output(const tidata& idata, const tkdata& kdata, const tbdata& bdata, todata&& odata)
         {
-                if (!m_params.valid(idata, kdata, bdata, odata))
-                {
-                        return false;
-                }
+                assert(m_params.valid(idata, kdata, bdata, odata));
 
                 const auto count = idata.template size<0>();
                 const auto imaps = m_params.imaps();
@@ -132,16 +129,12 @@ namespace nano
 
                         xodata.noalias() += m_okdata * kodata;
                 }
-                return true;
         }
 
         template <typename tidata, typename tkdata, typename tbdata, typename todata>
-        bool conv4d_t::ginput(tidata&& idata, const tkdata& kdata, const tbdata& bdata, const todata& odata)
+        void conv4d_t::ginput(tidata&& idata, const tkdata& kdata, const tbdata& bdata, const todata& odata)
         {
-                if (!m_params.valid(idata, kdata, bdata, odata))
-                {
-                        return false;
-                }
+                assert(m_params.valid(idata, kdata, bdata, odata));
 
                 const auto count = idata.template size<0>();
                 const auto imaps = m_params.imaps();
@@ -164,16 +157,12 @@ namespace nano
                                                    krows * kcols, orows * ocols));
                         }
                 }
-                return true;
         }
 
         template <typename tidata, typename tkdata, typename tbdata, typename todata>
-        bool conv4d_t::gparam(const tidata& idata, tkdata&& kdata, tbdata&& bdata, const todata& odata)
+        void conv4d_t::gparam(const tidata& idata, tkdata&& kdata, tbdata&& bdata, const todata& odata)
         {
-                if (!m_params.valid(idata, kdata, bdata, odata))
-                {
-                        return false;
-                }
+                assert(m_params.valid(idata, kdata, bdata, odata));
 
                 const auto count = idata.template size<0>();
                 const auto imaps = m_params.imaps();
@@ -215,6 +204,5 @@ namespace nano
                                 break;
                         }
                 }
-                return true;
         }
 }

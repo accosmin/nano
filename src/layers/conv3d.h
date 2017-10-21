@@ -30,19 +30,19 @@ namespace nano
                 /// \brief output
                 ///
                 template <typename tidata, typename tkdata, typename tbdata, typename todata>
-                bool output(const tidata&, const tkdata&, const tbdata&, todata&&) const;
+                void output(const tidata&, const tkdata&, const tbdata&, todata&&) const;
 
                 ///
                 /// \brief gradient wrt inputs
                 ///
                 template <typename tidata, typename tkdata, typename tbdata, typename todata>
-                bool ginput(tidata&&, const tkdata&, const tbdata&, const todata&) const;
+                void ginput(tidata&&, const tkdata&, const tbdata&, const todata&) const;
 
                 ///
                 /// \brief accumulate the gradient wrt parameters (convolution kernels and bias)
                 ///
                 template <typename tidata, typename tkdata, typename tbdata, typename todata>
-                bool gparam(const tidata&, tkdata&&, tbdata&&, const todata& odata) const;
+                void gparam(const tidata&, tkdata&&, tbdata&&, const todata& odata) const;
 
                 ///
                 /// \brief parameters
@@ -56,12 +56,9 @@ namespace nano
         };
 
         template <typename tidata, typename tkdata, typename tbdata, typename todata>
-        bool conv3d_t::output(const tidata& idata, const tkdata& kdata, const tbdata& bdata, todata&& odata) const
+        void conv3d_t::output(const tidata& idata, const tkdata& kdata, const tbdata& bdata, todata&& odata) const
         {
-                if (!m_params.valid(idata, kdata, bdata, odata))
-                {
-                        return false;
-                }
+                assert(m_params.valid(idata, kdata, bdata, odata));
 
                 const auto count = idata.template size<0>();
                 const auto imaps = m_params.imaps();
@@ -85,16 +82,12 @@ namespace nano
                                 }
                         }
                 }
-                return true;
         }
 
         template <typename tidata, typename tkdata, typename tbdata, typename todata>
-        bool conv3d_t::ginput(tidata&& idata, const tkdata& kdata, const tbdata& bdata, const todata& odata) const
+        void conv3d_t::ginput(tidata&& idata, const tkdata& kdata, const tbdata& bdata, const todata& odata) const
         {
-                if (!m_params.valid(idata, kdata, bdata, odata))
-                {
-                        return false;
-                }
+                assert(m_params.valid(idata, kdata, bdata, odata));
 
                 const auto count = idata.template size<0>();
                 const auto imaps = m_params.imaps();
@@ -115,16 +108,12 @@ namespace nano
                                 }
                         }
                 }
-                return true;
         }
 
         template <typename tidata, typename tkdata, typename tbdata, typename todata>
-        bool conv3d_t::gparam(const tidata& idata, tkdata&& kdata, tbdata&& bdata, const todata& odata) const
+        void conv3d_t::gparam(const tidata& idata, tkdata&& kdata, tbdata&& bdata, const todata& odata) const
         {
-                if (!m_params.valid(idata, kdata, bdata, odata))
-                {
-                        return false;
-                }
+                assert(m_params.valid(idata, kdata, bdata, odata));
 
                 const auto count = idata.template size<0>();
                 const auto imaps = m_params.imaps();
@@ -151,6 +140,5 @@ namespace nano
                                 }
                         }
                 }
-                return true;
         }
 }

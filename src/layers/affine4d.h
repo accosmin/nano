@@ -29,19 +29,19 @@ namespace nano
                 /// \brief output
                 ///
                 template <typename tidata, typename twdata, typename tbdata, typename todata>
-                bool output(const tidata& idata, const twdata& wdata, const tbdata& bdata, todata&& odata) const;
+                void output(const tidata& idata, const twdata& wdata, const tbdata& bdata, todata&& odata) const;
 
                 ///
                 /// \brief gradient wrt inputs
                 ///
                 template <typename tidata, typename twdata, typename tbdata, typename todata>
-                bool ginput(tidata&& idata, const twdata& wdata, const tbdata& bdata, const todata& odata) const;
+                void ginput(tidata&& idata, const twdata& wdata, const tbdata& bdata, const todata& odata) const;
 
                 ///
                 /// \brief accumulate the gradient wrt parameters (weights and bias)
                 ///
                 template <typename tidata, typename twdata, typename tbdata, typename todata>
-                bool gparam(const tidata& idata, twdata&& wdata, tbdata&& bdata, const todata& odata) const;
+                void gparam(const tidata& idata, twdata&& wdata, tbdata&& bdata, const todata& odata) const;
 
                 ///
                 /// \brief parameters
@@ -55,12 +55,9 @@ namespace nano
         };
 
         template <typename tidata, typename twdata, typename tbdata, typename todata>
-        bool affine4d_t::output(const tidata& idata, const twdata& wdata, const tbdata& bdata, todata&& odata) const
+        void affine4d_t::output(const tidata& idata, const twdata& wdata, const tbdata& bdata, todata&& odata) const
         {
-                if (!m_params.valid(idata, wdata, bdata, odata))
-                {
-                        return false;
-                }
+                assert(m_params.valid(idata, wdata, bdata, odata));
 
                 const auto count = idata.template size<0>();
                 const auto isize = m_params.isize();
@@ -70,16 +67,12 @@ namespace nano
                 auto modata = odata.reshape(count, osize).matrix();
 
                 modata.noalias() = (midata * wdata.transpose()).rowwise() + bdata.transpose();
-                return true;
         }
 
         template <typename tidata, typename twdata, typename tbdata, typename todata>
-        bool affine4d_t::ginput(tidata&& idata, const twdata& wdata, const tbdata& bdata, const todata& odata) const
+        void affine4d_t::ginput(tidata&& idata, const twdata& wdata, const tbdata& bdata, const todata& odata) const
         {
-                if (!m_params.valid(idata, wdata, bdata, odata))
-                {
-                        return false;
-                }
+                assert(m_params.valid(idata, wdata, bdata, odata));
 
                 const auto count = idata.template size<0>();
                 const auto isize = m_params.isize();
@@ -89,16 +82,12 @@ namespace nano
                 auto modata = odata.reshape(count, osize).matrix();
 
                 midata.transpose().noalias() = wdata.transpose() * modata.transpose();
-                return true;
         }
 
         template <typename tidata, typename twdata, typename tbdata, typename todata>
-        bool affine4d_t::gparam(const tidata& idata, twdata&& wdata, tbdata&& bdata, const todata& odata) const
+        void affine4d_t::gparam(const tidata& idata, twdata&& wdata, tbdata&& bdata, const todata& odata) const
         {
-                if (!m_params.valid(idata, wdata, bdata, odata))
-                {
-                        return false;
-                }
+                assert(m_params.valid(idata, wdata, bdata, odata));
 
                 const auto count = idata.template size<0>();
                 const auto isize = m_params.isize();
@@ -109,6 +98,5 @@ namespace nano
 
                 wdata.noalias() = modata.transpose() * midata;
                 bdata.noalias() = modata.colwise().sum();
-                return true;
         }
 }

@@ -163,8 +163,8 @@ NANO_CASE(3d_vs_4d_output)
                 std::tie(idata, wdata, bdata, odata3) = make_buffers(params, i + 2);
                 std::tie(idata, wdata, bdata, odata4) = make_buffers(params, i + 2);
 
-                NANO_REQUIRE(op3d.output(idata, wdata, bdata, odata3));
-                NANO_REQUIRE(op4d.output(idata, wdata, bdata, odata4));
+                op3d.output(idata, wdata, bdata, odata3);
+                op4d.output(idata, wdata, bdata, odata4);
 
                 NANO_CHECK_EIGEN_CLOSE(odata3.array(), odata4.array(), epsilon1<scalar_t>());
         }
@@ -187,8 +187,8 @@ NANO_CASE(3d_vs_4d_gparam)
                 std::tie(idata, wdata3, bdata3, odata) = make_buffers(params, i + 2);
                 std::tie(idata, wdata4, bdata4, odata) = make_buffers(params, i + 2);
 
-                NANO_REQUIRE(op3d.gparam(idata, wdata3, bdata3, odata));
-                NANO_REQUIRE(op4d.gparam(idata, wdata4, bdata4, odata));
+                op3d.gparam(idata, wdata3, bdata3, odata);
+                op4d.gparam(idata, wdata4, bdata4, odata);
 
                 NANO_CHECK_EIGEN_CLOSE(wdata3, wdata4, epsilon1<scalar_t>());
                 NANO_CHECK_EIGEN_CLOSE(bdata3, bdata4, epsilon1<scalar_t>());
@@ -212,8 +212,8 @@ NANO_CASE(3d_vs_4d_ginput)
                 std::tie(idata3, wdata, bdata, odata) = make_buffers(params, i + 2);
                 std::tie(idata4, wdata, bdata, odata) = make_buffers(params, i + 2);
 
-                NANO_REQUIRE(op3d.ginput(idata3, wdata, bdata, odata));
-                NANO_REQUIRE(op4d.ginput(idata4, wdata, bdata, odata));
+                op3d.ginput(idata3, wdata, bdata, odata);
+                op4d.ginput(idata4, wdata, bdata, odata);
 
                 NANO_CHECK_EIGEN_CLOSE(idata3.array(), idata4.array(), epsilon1<scalar_t>());
         }
