@@ -145,4 +145,18 @@ namespace nano
                 }
                 return target;
         }
+
+        ///
+        /// \brief cast tensor dimensions to string.
+        ///
+        template <std::size_t trank>
+        struct to_string_t<tensor_dims_t<trank>>
+        {
+                static string_t cast(const tensor_dims_t<trank>& dims)
+                {
+                        std::stringstream s;
+                        s << dims;
+                        return s.str();
+                }
+        };
 }

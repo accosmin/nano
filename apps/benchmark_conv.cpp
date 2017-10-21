@@ -1,3 +1,4 @@
+#include "cortex.h"
 #include "logger.h"
 #include "text/table.h"
 #include "text/config.h"
@@ -9,21 +10,6 @@
 #include <iostream>
 
 using namespace nano;
-
-namespace nano
-{
-        template <typename tvalue>
-        string_t serialize_to_string(const tvalue value)
-        {
-                std::stringstream s;
-                s << value;
-                return s.str();
-        }
-
-        template <> string_t to_string<tensor2d_dims_t>(const tensor2d_dims_t dims) { return serialize_to_string(dims); }
-        template <> string_t to_string<tensor3d_dims_t>(const tensor3d_dims_t dims) { return serialize_to_string(dims); }
-        template <> string_t to_string<tensor4d_dims_t>(const tensor4d_dims_t dims) { return serialize_to_string(dims); }
-}
 
 namespace
 {
