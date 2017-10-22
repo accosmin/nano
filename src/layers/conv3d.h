@@ -88,6 +88,7 @@ namespace nano
         void conv3d_t::ginput(tidata&& idata, const tkdata& kdata, const tbdata& bdata, const todata& odata) const
         {
                 assert(m_params.valid(idata, kdata, bdata, odata));
+                NANO_UNUSED1(bdata);
 
                 const auto count = idata.template size<0>();
                 const auto imaps = m_params.imaps();

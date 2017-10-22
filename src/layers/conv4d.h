@@ -135,6 +135,7 @@ namespace nano
         void conv4d_t::ginput(tidata&& idata, const tkdata& kdata, const tbdata& bdata, const todata& odata)
         {
                 assert(m_params.valid(idata, kdata, bdata, odata));
+                NANO_UNUSED2(kdata, bdata);
 
                 const auto count = idata.template size<0>();
                 const auto imaps = m_params.imaps();

@@ -73,6 +73,7 @@ namespace nano
         void affine4d_t::ginput(tidata&& idata, const twdata& wdata, const tbdata& bdata, const todata& odata) const
         {
                 assert(m_params.valid(idata, wdata, bdata, odata));
+                NANO_UNUSED1(bdata);
 
                 const auto count = idata.template size<0>();
                 const auto isize = m_params.isize();
