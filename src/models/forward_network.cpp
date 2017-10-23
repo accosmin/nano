@@ -9,6 +9,11 @@
 
 using namespace nano;
 
+forward_network_t::forward_network_t(const string_t& params) :
+        model_t(!params.empty() ? params : "[layer_id[:layer_parameters];]+")
+{
+}
+
 forward_network_t::forward_network_t(const forward_network_t& other) :
         m_gdata(other.m_gdata),
         m_probe_output(other.m_probe_output),

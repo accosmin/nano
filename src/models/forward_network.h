@@ -6,12 +6,16 @@
 namespace nano
 {
         ///
-        /// \brief multi-layer feed-forward network model
+        /// \brief multi-layer feed-forward network model.
         ///
         struct forward_network_t final : public model_t
         {
-                using model_t::model_t;
                 using model_t::configure;
+
+                ///
+                /// \brief constructor
+                ///
+                forward_network_t(const string_t& config = string_t());
 
                 ///
                 /// \brief enable copying

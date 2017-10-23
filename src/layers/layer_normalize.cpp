@@ -46,7 +46,7 @@ static void gnorm(tiarray&& iarray, const toarray& oarray)
 }
 
 normalize_layer_t::normalize_layer_t(const string_t& params) :
-        layer_t(to_params(params, "type", norm_type::plane)),
+        layer_t(to_params(params, "type", to_string(norm_type::plane) + "[" + concatenate(enum_values<norm_type>()) + "]")),
         m_xdims({0, 0, 0}),
         m_type(norm_type::plane)
 {
