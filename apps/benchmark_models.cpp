@@ -14,7 +14,8 @@
 
 using namespace nano;
 
-void append(table_t& table, const string_t& name, const probes_t& probes, const bool detailed)
+void append(table_t& table, const string_t& name, const tensor_size_t params, const size_t minibatch,
+        const probes_t& probes, const bool detailed)
 {
         for (const auto& probe : probes)
         {
@@ -24,8 +25,7 @@ void append(table_t& table, const string_t& name, const probes_t& probes, const 
                 }
 
                 auto& row = table.append();
-                row << (name + " " + probe.fullname());
-                row << probe.flops();
+                row << (name + " " + probe.fullname()) << params << probe.flops() << minibatch;
                 if (probe.timings().min() < int64_t(1))
                 {
                         row << "-";
@@ -50,6 +50,8 @@ int main(int argc, const char *argv[])
         cmdline.add("", "backward",     "evaluate the \'backward' pass (gradient)");
         cmdline.add("", "activation",   "activation layer", "act-snorm");
         cmdline.add("", "detailed",     "print detailed measurements (e.g. per-layer)");
+        cmdline.add("", "min-count",    "minimum number of samples in minibatch [1, 16]",  "1");
+        cmdline.add("", "max-count",    "maximum number of samples in minibatch [1, 128]", "16");
 
         cmdline.process(argc, argv);
 
@@ -62,6 +64,8 @@ int main(int argc, const char *argv[])
         const auto cmd_convnets = cmdline.has("convnets");
         const auto activation = cmdline.get("activation");
         const auto cmd_detailed = cmdline.has("detailed");
+        const auto cmd_min_count = clamp(cmdline.get<size_t>("min-count"), 1, 16);
+        const auto cmd_max_count = clamp(cmdline.get<size_t>("max-count"), cmd_min_count, 128);
 
         if (!cmd_forward && !cmd_backward)
         {
@@ -83,22 +87,19 @@ int main(int argc, const char *argv[])
         task->load();
 
         // construct models
-        const string_t mlp0;
-        const string_t mlp1 = mlp0 + make_affine_layer(256, activation);
-        const string_t mlp2 = mlp1 + make_affine_layer(256, activation);
-        const string_t mlp3 = mlp2 + make_affine_layer(256, activation);
-        const string_t mlp4 = mlp3 + make_affine_layer(256, activation);
-        const string_t mlp5 = mlp4 + make_affine_layer(256, activation);
-        const string_t mlp6 = mlp5 + make_affine_layer(256, activation);
-        const string_t mlp7 = mlp6 + make_affine_layer(128, activation);
-        const string_t mlp8 = mlp7 + make_affine_layer(128, activation);
-        const string_t mlp9 = mlp8 + make_affine_layer(128, activation);
+        const string_t mlp0 = "normalize:type=plane;";
+        const string_t mlp1 = mlp0 + make_affine_layer(1024, activation);
+        const string_t mlp2 = mlp1 + make_affine_layer(1024, activation);
+        const string_t mlp3 = mlp2 + make_affine_layer(1024, activation);
+        const string_t mlp4 = mlp3 + make_affine_layer(1024, activation);
+        const string_t mlp5 = mlp3 + make_affine_layer(1024, activation);
+        const string_t mlp6 = mlp3 + make_affine_layer(1024, activation);
 
-        const string_t convnet0;
-        const string_t convnet1 = convnet0 + make_conv3d_layer(32,  7, 7, 1, activation);
-        const string_t convnet2 = convnet1 + make_conv3d_layer(32,  7, 7, conn, activation);
-        const string_t convnet3 = convnet2 + make_conv3d_layer(64,  5, 5, conn, activation);
-        const string_t convnet4 = convnet3 + make_conv3d_layer(64,  5, 5, conn, activation);
+        const string_t convnet0 = "normalize:type=plane;";
+        const string_t convnet1 = convnet0 + make_conv3d_layer(128, 7, 7, 1, activation);
+        const string_t convnet2 = convnet1 + make_conv3d_layer(128, 7, 7, conn, activation);
+        const string_t convnet3 = convnet2 + make_conv3d_layer(128, 5, 5, conn, activation);
+        const string_t convnet4 = convnet3 + make_conv3d_layer(128, 5, 5, conn, activation);
         const string_t convnet5 = convnet4 + make_conv3d_layer(128, 3, 3, conn, activation);
         const string_t convnet6 = convnet5 + make_conv3d_layer(128, 3, 3, conn, activation);
         const string_t convnet7 = convnet6 + make_conv3d_layer(128, 3, 3, conn, activation);
@@ -115,11 +116,6 @@ int main(int argc, const char *argv[])
                 networks.emplace_back(mlp2 + outlayer, "mlp2");
                 networks.emplace_back(mlp3 + outlayer, "mlp3");
                 networks.emplace_back(mlp4 + outlayer, "mlp4");
-                networks.emplace_back(mlp5 + outlayer, "mlp5");
-                networks.emplace_back(mlp6 + outlayer, "mlp6");
-                networks.emplace_back(mlp7 + outlayer, "mlp7");
-                networks.emplace_back(mlp8 + outlayer, "mlp8");
-                networks.emplace_back(mlp9 + outlayer, "mlp9");
         }
         if (cmd_convnets)
         {
@@ -138,7 +134,7 @@ int main(int argc, const char *argv[])
 
         // construct tables to compare models
         table_t table;
-        table.header() << "network" << "#flops" << "gflop/s" << "min[us]" << "avg[us]" << "max[us]";
+        table.header() << "network" << "#params" << "#flops" << "batch" << "gflop/s" << "min[us]" << "avg[us]" << "max[us]";
         table.delim();
 
         // evaluate models
@@ -153,36 +149,35 @@ int main(int argc, const char *argv[])
                 model->random();
                 model->describe();
 
-                const auto name = cmd_name + " (" + to_string(model->psize()) + ")";
                 const auto fold = fold_t{0, protocol::train};
                 const auto size = task->size(fold);
 
-                // measure processing
-                if (cmd_forward && !cmd_backward)
+                for (size_t count = cmd_min_count; count <= cmd_max_count; count *= 2)
                 {
+                        // measure processing
                         accumulator_t acc(*model, *loss);
                         acc.threads(1);
-                        acc.mode(accumulator_t::type::value);
-                        acc.update(*task, fold);
+                        acc.mode((cmd_forward && !cmd_backward) ? accumulator_t::type::value : accumulator_t::type::vgrad);
 
-                        log_info() << "<<< processed [" << size << "] forward samples for " << name << ".";
+                        for (size_t i = 0; i + count < size; i += count)
+                        {
+                                acc.update(*task, fold, i, i + count);
+                        }
 
-                        append(table, name, acc.probes(), cmd_detailed);
-                }
-                else
-                {
-                        accumulator_t acc(*model, *loss);
-                        acc.threads(1);
-                        acc.mode(accumulator_t::type::vgrad);
-                        acc.update(*task, fold);
+                        log_info()
+                                << "<<< processed [" << size << "] samples using "
+                                << cmd_name << " and minibatch of " << count << ".";
 
-                        log_info() << "<<< processed [" << size << "] backward samples for " << name << ".";
+                        append(table, cmd_name, model->psize(), count, acc.probes(), cmd_detailed);
 
-                        append(table, name, acc.probes(), cmd_detailed);
+                        if (cmd_detailed && count * 2 <= cmd_max_count)
+                        {
+                                table.delim();
+                        }
                 }
 
                 const auto last = config == *networks.rbegin();
-                if (cmd_detailed && !last)
+                if (!cmd_detailed && !last)
                 {
                         table.delim();
                 }
