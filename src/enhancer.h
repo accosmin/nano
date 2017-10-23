@@ -7,7 +7,7 @@ namespace nano
         ///
         /// \brief manage sampling objects (register new ones, query and clone them)
         ///
-        struct enhancer_t;
+        class enhancer_t;
         using enhancer_factory_t = factory_t<enhancer_t>;
         using renhancer_t = enhancer_factory_t::trobject;
 
@@ -16,8 +16,9 @@ namespace nano
         ///
         /// \brief artificially augment the (training) samples, useful for improving the generalization error.
         ///
-        struct NANO_PUBLIC enhancer_t : public configurable_t
+        class NANO_PUBLIC enhancer_t : public configurable_t
         {
+        public:
                 using configurable_t::configurable_t;
 
                 ///

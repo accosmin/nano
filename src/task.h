@@ -9,7 +9,7 @@ namespace nano
         ///
         /// \brief manage tasks (register new ones, query and clone them)
         ///
-        struct task_t;
+        class task_t;
         using task_factory_t = factory_t<task_t>;
         using rtask_t = task_factory_t::trobject;
 
@@ -39,8 +39,9 @@ namespace nano
         ///     split into training, validation and testing datasets.
         /// NB: the samples may be organized in folds depending on the established protocol.
         ///
-        struct NANO_PUBLIC task_t : public configurable_t
+        class NANO_PUBLIC task_t : public configurable_t
         {
+        public:
                 using configurable_t::configurable_t;
 
                 ///

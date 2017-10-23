@@ -6,9 +6,9 @@
 namespace nano
 {
         class loss_t;
-        struct task_t;
+        class task_t;
         class model_t;
-        struct enhancer_t;
+        class enhancer_t;
         class accumulator_t;
 
         ///
