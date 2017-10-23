@@ -28,7 +28,7 @@ namespace
                 {
                         table.append() << ids[i] << descriptions[i] << configurations[i];
                 }
-                std::cout << table << std::endl;
+                std::cout << table;
         }
 }
 

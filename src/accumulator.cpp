@@ -55,13 +55,27 @@ void accumulator_t::update(const task_t& task, const fold_t& fold)
 
 void accumulator_t::update(const task_t& task, const fold_t& fold, const size_t begin, const size_t end)
 {
-        loopit(end - begin, max_minibatch_size, [&] (const size_t ibegin, const size_t iend, const size_t thread)
+        switch (thread_pool_t::instance().active_workers())
         {
-                assert(thread < m_tcaches.size());
-                assert(begin <= ibegin && ibegin < iend && iend <= end);
-                update(m_tcaches[thread], task.get(fold, ibegin, iend));
-        });
-        accumulate();
+        case 1:
+                for (size_t chunk = std::min(end - begin, max_minibatch_size), ibegin = begin; ibegin < end; )
+                {
+                        const auto iend = std::min(ibegin + chunk, end);
+                        update(origin(), task.get(fold, ibegin, iend));
+                        ibegin = iend;
+                }
+                break;
+
+        default:
+                loopit(end - begin, max_minibatch_size, [&] (const size_t ibegin, const size_t iend, const size_t thread)
+                {
+                        assert(thread < m_tcaches.size());
+                        assert(begin <= ibegin && ibegin < iend && iend <= end);
+                        update(m_tcaches[thread], task.get(fold, ibegin, iend));
+                });
+                accumulate();
+                break;
+        }
 }
 
 void accumulator_t::update(const enhancer_t& enhancer, const task_t& task, const fold_t& fold)
@@ -72,13 +86,27 @@ void accumulator_t::update(const enhancer_t& enhancer, const task_t& task, const
 void accumulator_t::update(const enhancer_t& enhancer, const task_t& task, const fold_t& fold,
         const size_t begin, const size_t end)
 {
-        loopit(end - begin, max_minibatch_size, [&] (const size_t ibegin, const size_t iend, const size_t thread)
+        switch (thread_pool_t::instance().active_workers())
         {
-                assert(thread < m_tcaches.size());
-                assert(begin <= ibegin && ibegin < iend && iend <= end);
-                update(m_tcaches[thread], enhancer.get(task, fold, ibegin, iend));
-        });
-        accumulate();
+        case 1:
+                for (size_t chunk = std::min(end - begin, max_minibatch_size), ibegin = begin; ibegin < end; )
+                {
+                        const auto iend = std::min(ibegin + chunk, end);
+                        update(origin(), enhancer.get(task, fold, ibegin, iend));
+                        ibegin = iend;
+                }
+                break;
+
+        default:
+                loopit(end - begin, max_minibatch_size, [&] (const size_t ibegin, const size_t iend, const size_t thread)
+                {
+                        assert(thread < m_tcaches.size());
+                        assert(begin <= ibegin && ibegin < iend && iend <= end);
+                        update(m_tcaches[thread], enhancer.get(task, fold, ibegin, iend));
+                });
+                accumulate();
+                break;
+        }
 }
 
 void accumulator_t::update(tcache_t& tcache, const minibatch_t& minibatch)
