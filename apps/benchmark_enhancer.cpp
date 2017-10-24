@@ -25,21 +25,20 @@ int main(int argc, const char *argv[])
         const auto min_tasksize = clamp(cmdline.get<size_t>("min-samples"), kilo, 10 * kilo);
         const auto max_tasksize = clamp(cmdline.get<size_t>("max-samples"), min_tasksize, 1000 * kilo);
 
-        NANO_UNUSED1(argc);
-        NANO_UNUSED1(argv);
-
         const auto cmd_rows = 32;
         const auto cmd_cols = 32;
         const auto cmd_color = color_mode::rgb;
+        const auto min_minibatch = size_t(1);
+        const auto max_minibatch = size_t(16);
 
         // prepare table
         table_t table;
         table.header()
-                << colspan(4) << ""
+                << colspan(5) << ""
                 << colspan(get_enhancers().size()) << colfill('=') << alignment::center << "enhancers[us/sample]";
         table.delim();
         table.append()
-                << "#samples" << "isize" << "init[ms]" << "shuffle[us]"
+                << "#samples" << "isize" << "minibatch" << "init[ms]" << "shuffle[us]"
                 << get_enhancers().ids();
         table.delim();
 
@@ -51,31 +50,40 @@ int main(int argc, const char *argv[])
                         "type", charset_type::digit, "color", cmd_color,
                         "irows", cmd_rows, "icols", cmd_cols, "count", task_size));
 
-                auto& row = table.append();
-                row << task_size << task->idims();
-                row << measure<milliseconds_t>([&] () { task->load(); }, 1).count();
-                row << measure<milliseconds_t>([&] () { task->shuffle({0, protocol::train}); }, 16).count();
-
-                // vary the enhancer
-                for (const auto& id : get_enhancers().ids())
+                // vary the minibatch size
+                for (size_t minibatch = min_minibatch; minibatch <= max_minibatch; minibatch *= 2)
                 {
-                        const auto enhancer = get_enhancers().get(id);
+                        auto& row = table.append();
+                        row << task_size << task->idims() << minibatch;
+                        row << measure<milliseconds_t>([&] () { task->load(); }, 1).count();
+                        row << measure<microseconds_t>([&] () { task->shuffle({0, protocol::train}); }, 16).count();
 
                         const auto fold = fold_t{0, protocol::train};
                         const auto fold_size = task->size(fold);
 
-                        const auto duration = measure<microseconds_t>([&] ()
+                        // vary the enhancer
+                        for (const auto& id : get_enhancers().ids())
                         {
-                                volatile long double sum = 0;
-                                for (size_t index = 0; index < fold_size; ++ index)
+                                const auto enhancer = get_enhancers().get(id);
+
+                                const auto duration = measure<microseconds_t>([&] ()
                                 {
-                                        const auto sample = enhancer->get(*task, fold, index);
-                                        const auto& input = sample.m_input;
-                                        const auto& target = sample.m_target;
-                                        sum += input.vector().sum() - target.vector().sum();
-                                }
-                        }, 1);
-                        row << idiv(duration.count(), fold_size);
+                                        volatile long double sum = 0;
+                                        for (size_t index = 0; index + minibatch < fold_size; index += minibatch)
+                                        {
+                                                const auto mbatch = enhancer->get(*task, fold, index, index + minibatch);
+                                                const auto& idata = mbatch.idata();
+                                                const auto& odata = mbatch.odata();
+                                                sum += idata.vector().sum() - odata.vector().sum();
+                                        }
+                                }, 1);
+                                row << idiv(duration.count(), fold_size);
+                        }
+                }
+
+                if (task_size * 2 <= max_tasksize)
+                {
+                        table.delim();
                 }
         }
 

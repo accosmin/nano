@@ -13,20 +13,6 @@ enhancer_warp_t::enhancer_warp_t(const string_t& config) :
 {
 }
 
-sample_t enhancer_warp_t::get(const task_t& task, const fold_t& fold, const size_t index) const
-{
-        const auto wtype = from_params<warp_type>(config(), "type");
-        const auto noise = from_params<scalar_t>(config(), "noise");
-        const auto sigma = from_params<scalar_t>(config(), "sigma");
-        const auto alpha = from_params<scalar_t>(config(), "alpha");
-        const auto beta = from_params<scalar_t>(config(), "beta");
-
-        sample_t sample = task.get(fold, index);
-        warp(sample.m_input, wtype, noise, sigma, alpha, beta);
-
-        return sample;
-}
-
 minibatch_t enhancer_warp_t::get(const task_t& task, const fold_t& fold, const size_t begin, const size_t end) const
 {
         const auto wtype = from_params<warp_type>(config(), "type");

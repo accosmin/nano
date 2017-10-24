@@ -46,7 +46,8 @@ static void save_as_images(const enhancer_t& enhancer, const task_t& task, const
                 {
                         for (coord_t c = 0; c < gcols && i < size; ++ c, ++ i)
                         {
-                                grid.set(r, c, make_image(enhancer.get(task, fold, i).m_input));
+                                const auto mbatch = enhancer.get(task, fold, i, i + 1);
+                                grid.set(r, c, make_image(mbatch.idata(0)));
                         }
                 }
 

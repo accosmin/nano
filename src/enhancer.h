@@ -22,11 +22,6 @@ namespace nano
                 using configurable_t::configurable_t;
 
                 ///
-                /// \brief retrieve the given sample
-                ///
-                virtual sample_t get(const task_t&, const fold_t&, const size_t index) const = 0;
-
-                ///
                 /// \brief retrieve the given [begin, end) samples as a minibatch
                 ///
                 virtual minibatch_t get(const task_t&, const fold_t&, const size_t begin, const size_t end) const = 0;
