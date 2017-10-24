@@ -43,10 +43,10 @@ NANO_CASE(construction)
                 const auto size = task->size(fold);
                 for (size_t i = 0; i < size; ++ i)
                 {
-                        const auto sample = task->get(fold, i);
-                        const auto& input = sample.m_input;
-                        const auto& label = sample.m_label;
-                        const auto& target = sample.m_target;
+                        const auto sample = task->get(fold, i, i +1);
+                        const auto& input = sample.idata(0);
+                        const auto& label = sample.label(0);
+                        const auto& target = sample.odata(0);
 
                         NANO_CHECK_EQUAL(input.dims(), idims);
                         NANO_CHECK_EQUAL(target.dims(), odims);

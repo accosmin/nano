@@ -23,16 +23,17 @@ static void save_as_images(const enhancer_t& enhancer, const task_t& task, const
         const auto size = task.size(fold);
         const auto rows = std::get<1>(task.idims());
         const auto cols = std::get<2>(task.idims());
+        const auto bsize = std::min(static_cast<size_t>(grows * gcols), size);
 
         image_grid_t grid(rows, cols, grows, gcols, border, bkcolor);
 
         // compose the image block with the original samples
-        size_t i = 0;
-        for (coord_t r = 0; r < grows; ++ r, ++ i)
+        const auto minibatch = task.get(fold, 0, bsize);
+        for (coord_t r = 0, i = 0; r < grows; ++ r)
         {
-                for (coord_t c = 0; c < gcols && i < size; ++ c, ++ i)
+                for (coord_t c = 0; c < gcols && i < minibatch.count(); ++ c, ++ i)
                 {
-                        grid.set(r, c, make_image(task.get(fold, i).m_input));
+                        grid.set(r, c, make_image(minibatch.idata(i)));
                 }
         }
 
@@ -41,13 +42,12 @@ static void save_as_images(const enhancer_t& enhancer, const task_t& task, const
         // compose the image block with generated samples
         for (size_t t = 0; t < trials; ++ t)
         {
-                i = 0;
-                for (coord_t r = 0; r < grows; ++ r, ++ i)
+                const auto eminibatch = enhancer.get(task, fold, 0, bsize);
+                for (coord_t r = 0, i = 0; r < grows; ++ r)
                 {
-                        for (coord_t c = 0; c < gcols && i < size; ++ c, ++ i)
+                        for (coord_t c = 0; c < gcols && i < minibatch.count(); ++ c, ++ i)
                         {
-                                const auto mbatch = enhancer.get(task, fold, i, i + 1);
-                                grid.set(r, c, make_image(mbatch.idata(0)));
+                                grid.set(r, c, make_image(eminibatch.idata(i)));
                         }
                 }
 

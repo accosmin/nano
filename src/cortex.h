@@ -46,13 +46,12 @@ namespace nano
         }
 
         ///
-        /// \brief dataset sample.
+        /// \brief sample range in a dataset.
         ///
-        struct sample_t
+        struct range_t
         {
-                tensor3d_t      m_input;        ///< input: count x planes x rows x columns
-                tensor3d_t      m_target;       ///< desired (ideal) output: count x planes x rows x columns
-                string_t        m_label;        ///< classification label (optional)
+                tensor_size_t   m_begin;
+                tensor_size_t   m_end;
         };
 
         ///
@@ -78,10 +77,17 @@ namespace nano
                 {
                         assert(index >= 0 && index < count());
                         assert(idata.dims() == idims());
-                        assert(odata.dims() == odims());
                         m_idata.vector(index) = idata.vector();
-                        m_odata.vector(index) = odata.vector();
-                        m_labels[static_cast<size_t>(index)] = label;
+                        if (odata.size() == 0)
+                        {
+                                m_odata.vector(0).setZero();
+                        }
+                        else
+                        {
+                                assert(odata.dims() == odims());
+                                m_odata.vector(index) = odata.vector();
+                                m_labels[static_cast<size_t>(index)] = label;
+                        }
                 }
 
                 const auto& idata() const { return m_idata; }
@@ -96,6 +102,7 @@ namespace nano
 
                 auto idata(const tensor_size_t index) const { return m_idata.tensor(index); }
                 auto odata(const tensor_size_t index) const { return m_odata.tensor(index); }
+                const auto& label(const size_t index) const { assert(index < m_labels.size()); return m_labels[index]; }
 
         private:
 

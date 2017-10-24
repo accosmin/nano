@@ -80,11 +80,6 @@ namespace nano
                 virtual void shuffle(const fold_t&) const = 0;
 
                 ///
-                /// \brief retrieve the given sample
-                ///
-                virtual sample_t get(const fold_t&, const size_t index) const = 0;
-
-                ///
                 /// \brief retrieve the given [begin, end) range of samples as a minibatch
                 ///
                 virtual minibatch_t get(const fold_t&, const size_t begin, const size_t end) const = 0;
@@ -94,5 +89,10 @@ namespace nano
                 ///
                 virtual size_t ihash(const fold_t&, const size_t index) const = 0;
                 virtual size_t ohash(const fold_t&, const size_t index) const = 0;
+
+                ///
+                /// \brief retrieve the label (if available) for a given sample
+                ///
+                virtual string_t label(const fold_t&, const size_t index) const = 0;
         };
 }

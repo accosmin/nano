@@ -24,12 +24,12 @@ static void save_as_images(const task_t& task, const fold_t& fold, const string_
                 {
                         for (coord_t c = 0; c < gcols && i < size; ++ c)
                         {
-                                for (; i < size && label != task.get(fold, i).m_label; ++ i) {}
+                                for (; i < size && label != task.label(fold, i); ++ i) {}
 
                                 if (i < size)
                                 {
                                         image_t image;
-                                        image.from_tensor(task.get(fold, i).m_input);
+                                        image.from_tensor(task.get(fold, i, i + 1).idata(0));
                                         image.make_rgba();
                                         grid.set(r, c, image);
                                         ++ i;
@@ -51,7 +51,7 @@ static void save_as_images(const task_t& task, const fold_t& fold, const string_
         std::set<string_t> labels;
         for (size_t i = 0; i < size; ++ i)
         {
-                labels.insert(task.get(fold, i).m_label);
+                labels.insert(task.label(fold, i));
         }
 
         for (const auto& label : labels)

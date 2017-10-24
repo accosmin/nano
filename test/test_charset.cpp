@@ -68,9 +68,9 @@ NANO_CASE(from_params)
                 const auto size = task->size({0, p});
                 for (size_t i = 0; i < size; ++ i)
                 {
-                        const auto sample = task->get({0, p}, i);
-                        const auto& input = sample.m_input;
-                        const auto& target = sample.m_target;
+                        const auto sample = task->get({0, p}, i, i + 1);
+                        const auto& input = sample.idata(0);
+                        const auto& target = sample.odata(0);
 
                         NANO_CHECK_EQUAL(input.dims(), idims);
                         NANO_CHECK_EQUAL(target.dims(), odims);
@@ -134,15 +134,6 @@ NANO_CASE(minibatch)
                         NANO_CHECK_EQUAL(minibatch.idims(), task->idims());
                         NANO_CHECK_EQUAL(minibatch.odims(), task->odims());
                         NANO_CHECK_EQUAL(minibatch.count(), static_cast<tensor_size_t>(count));
-
-                        for (auto i = 0; i < static_cast<tensor_size_t>(count); ++ i)
-                        {
-                                const auto sample = task->get(fold, static_cast<size_t>(i));
-                                const auto epsilon = epsilon0<scalar_t>();
-
-                                NANO_CHECK_EIGEN_CLOSE(sample.m_input.array(), minibatch.idata(i).array(), epsilon);
-                                NANO_CHECK_EIGEN_CLOSE(sample.m_target.array(), minibatch.odata(i).array(), epsilon);
-                        }
                 }
         }
 }

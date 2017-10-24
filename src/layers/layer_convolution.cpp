@@ -14,7 +14,7 @@ rlayer_t convolution_layer_t::clone() const
         return std::make_unique<convolution_layer_t>(*this);
 }
 
-void convolution_layer_t::configure(const tensor3d_dims_t& idims, const string_t& name)
+bool convolution_layer_t::configure(const tensor3d_dims_t& idims, const string_t& name)
 {
         const auto imaps = std::get<0>(idims);
         const auto irows = std::get<1>(idims);
@@ -30,7 +30,7 @@ void convolution_layer_t::configure(const tensor3d_dims_t& idims, const string_t
         const auto params = conv_params_t{imaps, irows, icols, omaps, kconn, krows, kcols, kdrow, kdcol};
         if (!params.valid())
         {
-                throw std::invalid_argument("invalid configuration for the convolution layer");
+                return false;
         }
 
         m_kernel = conv4d_t{params};
@@ -38,6 +38,7 @@ void convolution_layer_t::configure(const tensor3d_dims_t& idims, const string_t
         m_probe_output = probe_t{name, name + "(output)", params.flops_output()};
         m_probe_ginput = probe_t{name, name + "(ginput)", params.flops_ginput()};
         m_probe_gparam = probe_t{name, name + "(gparam)", params.flops_gparam()};
+        return true;
 }
 
 tensor_size_t convolution_layer_t::fanin() const

@@ -21,7 +21,7 @@ namespace nano
                 explicit convolution_layer_t(const string_t& params = string_t());
 
                 virtual rlayer_t clone() const override;
-                virtual void configure(const tensor3d_dims_t& idims, const string_t& name) override;
+                virtual bool configure(const tensor3d_dims_t& idims, const string_t& name) override;
                 virtual void output(const tensor4d_t& idata, const tensor1d_t& pdata, tensor4d_t& odata) override;
                 virtual void ginput(tensor4d_t& idata, const tensor1d_t& pdata, const tensor4d_t& odata) override;
                 virtual void gparam(const tensor4d_t& idata, tensor1d_t& pdata, const tensor4d_t& odata) override;

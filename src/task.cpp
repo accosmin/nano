@@ -113,8 +113,7 @@ void nano::describe(const task_t& task, const string_t& name)
                         std::map<string_t, size_t> lcounts;
                         for (size_t i = 0; i < size; ++ i)
                         {
-                                const auto sample = task.get(fold, i);
-                                lcounts[sample.m_label] ++;
+                                lcounts[task.label(fold, i)] ++;
                         }
 
                         // describe each label separately

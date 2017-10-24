@@ -41,9 +41,9 @@ namespace nano
 
                 virtual size_t ihash(const fold_t&, const size_t index) const override final;
                 virtual size_t ohash(const fold_t&, const size_t index) const override final;
+                virtual string_t label(const fold_t&, const size_t index) const override final;
 
                 virtual void shuffle(const fold_t&) const override final;
-                virtual sample_t get(const fold_t&, const size_t index) const override final;
                 virtual minibatch_t get(const fold_t&, const size_t begin, const size_t end) const override final;
 
         protected:
@@ -193,14 +193,6 @@ namespace nano
         }
 
         template <typename tchunk, typename tsample>
-        sample_t mem_task_t<tchunk, tsample>::get(const fold_t& fold, const size_t index) const
-        {
-                const auto& sample = get_sample(fold, index);
-                const auto& chunk = get_chunk(sample);
-                return {sample.input(chunk), sample.output(), sample.label()};
-        }
-
-        template <typename tchunk, typename tsample>
         minibatch_t mem_task_t<tchunk, tsample>::get(const fold_t& fold, const size_t begin, const size_t end) const
         {
                 assert(begin < end && end <= size(fold));
@@ -227,5 +219,12 @@ namespace nano
         {
                 const auto& sample = get_sample(fold, index);
                 return sample.ohash();
+        }
+
+        template <typename tchunk, typename tsample>
+        string_t mem_task_t<tchunk, tsample>::label(const fold_t& fold, const size_t index) const
+        {
+                const auto& sample = get_sample(fold, index);
+                return sample.label();
         }
 }

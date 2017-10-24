@@ -98,7 +98,11 @@ int main(int argc, const char *argv[])
 
         // create model
         const auto model = get_models().get(cmd_model, cmd_model_params);
-        model->configure(*task);
+        if (!model->configure(*task))
+        {
+                log_error() << "failed to configure model!";
+                return EXIT_FAILURE;
+        }
         model->random();
         model->describe();
 

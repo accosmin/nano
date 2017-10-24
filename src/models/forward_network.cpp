@@ -207,7 +207,7 @@ bool forward_network_t::configure(const tensor3d_dims_t& idims, const tensor3d_d
                 {
                         log_error() << "forward network: invalid layer description <"
                                     << net_params[l] << ">! expecting <layer_id[:layer_parameters]>!";
-                        throw std::invalid_argument("invalid layer description");
+                        return false;
                 }
 
                 const auto layer_id = layer_tokens[0];
@@ -216,7 +216,12 @@ bool forward_network_t::configure(const tensor3d_dims_t& idims, const tensor3d_d
                         align(layer_id, 10, alignment::left, '.') + "]";
 
                 auto layer = nano::get_layers().get(layer_id, layer_params);
-                layer->configure(xdims, layer_name);
+                if (!layer->configure(xdims, layer_name))
+                {
+                        log_error() << "forward network: invalid layer configuration <"
+                                    << net_params[l] << ">!";
+                        return false;
+                }
 
                 xdims = layer->odims();
                 psize += layer->psize();
@@ -232,7 +237,7 @@ bool forward_network_t::configure(const tensor3d_dims_t& idims, const tensor3d_d
         if (xdims != odims)
         {
                 log_error() << "forward network: miss-matching output size " << xdims << ", expecting " << odims << "!";
-                throw std::invalid_argument("invalid output layer description");
+                return false;
         }
 
         // allocate buffers
