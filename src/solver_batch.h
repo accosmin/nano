@@ -9,7 +9,7 @@ namespace nano
         ///
         /// \brief stores registered prototypes
         ///
-        struct batch_solver_t;
+        class batch_solver_t;
         using batch_solver_factory_t = factory_t<batch_solver_t>;
         using rbatch_solver_t = batch_solver_factory_t::trobject;
 
@@ -18,8 +18,9 @@ namespace nano
         ///
         /// \brief generic batch solver.
         ///
-        struct NANO_PUBLIC batch_solver_t : public configurable_t
+        class NANO_PUBLIC batch_solver_t : public configurable_t
         {
+        public:
                 using configurable_t::configurable_t;
 
                 ///

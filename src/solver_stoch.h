@@ -9,7 +9,7 @@ namespace nano
         ///
         /// \brief stores registered prototypes
         ///
-        struct stoch_solver_t;
+        class stoch_solver_t;
         using stoch_solver_factory_t = factory_t<stoch_solver_t>;
         using rstoch_solver_t = stoch_solver_factory_t::trobject;
 
@@ -18,8 +18,9 @@ namespace nano
         ///
         /// \brief generic stochastic solver.
         ///
-        struct NANO_PUBLIC stoch_solver_t : public configurable_t
+        class NANO_PUBLIC stoch_solver_t : public configurable_t
         {
+        public:
                 using configurable_t::configurable_t;
 
                 ///
