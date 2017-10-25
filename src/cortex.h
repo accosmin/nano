@@ -46,31 +46,21 @@ namespace nano
         }
 
         ///
-        /// \brief sample range in a dataset.
-        ///
-        struct range_t
-        {
-                tensor_size_t   m_begin;
-                tensor_size_t   m_end;
-        };
-
-        ///
         /// \brief dataset samples composing a minibatch.
         ///
         struct minibatch_t
         {
                 minibatch_t() = default;
-
                 minibatch_t(const tensor_size_t count, const tensor3d_dims_t& idims, const tensor3d_dims_t& odims) :
-                        m_idata(count, std::get<0>(idims), std::get<1>(idims), std::get<2>(idims)),
-                        m_odata(count, std::get<0>(odims), std::get<1>(odims), std::get<2>(odims)),
+                        m_idata(cat_dims(count, idims)),
+                        m_odata(cat_dims(count, odims)),
                         m_labels(static_cast<size_t>(count))
                 {
                 }
 
                 auto count() const { return m_idata.size<0>(); }
-                auto idims() const { return tensor3d_dims_t{m_idata.size<1>(), m_idata.size<2>(), m_idata.size<3>()}; }
-                auto odims() const { return tensor3d_dims_t{m_odata.size<1>(), m_odata.size<2>(), m_odata.size<3>()}; }
+                auto idims() const { return make_dims(m_idata.size<1>(), m_idata.size<2>(), m_idata.size<3>()); }
+                auto odims() const { return make_dims(m_odata.size<1>(), m_odata.size<2>(), m_odata.size<3>()); }
 
                 template <typename titensor, typename totensor>
                 void copy(const tensor_size_t index, const titensor& idata, const totensor& odata, const string_t& label)

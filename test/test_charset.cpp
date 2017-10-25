@@ -1,5 +1,6 @@
 #include "task.h"
 #include "utest.h"
+#include "enhancer.h"
 #include "text/config.h"
 #include "vision/color.h"
 #include "math/epsilon.h"
@@ -23,8 +24,8 @@ NANO_CASE(construction)
         {
                 const auto type = std::get<0>(config);
                 const auto mode = std::get<1>(config);
-                const auto irows = tensor_size_t(17);
-                const auto icols = tensor_size_t(16);
+                const auto irows = tensor_size_t(13);
+                const auto icols = tensor_size_t(12);
                 const auto osize = std::get<2>(config);
                 const auto count = size_t(2 * osize);
                 const auto fsize = size_t(1);   // folds
@@ -45,10 +46,10 @@ NANO_CASE(construction)
 
 NANO_CASE(from_params)
 {
-        auto task = get_tasks().get("synth-charset", "type=alpha,color=rgb,irows=18,icols=17,count=102");
+        auto task = get_tasks().get("synth-charset", "type=alpha,color=rgb,irows=13,icols=12,count=102");
         NANO_CHECK(task->load());
 
-        const auto idims = tensor3d_dims_t{3, 18, 17};
+        const auto idims = tensor3d_dims_t{3, 13, 12};
         const auto odims = tensor3d_dims_t{52, 1, 1};
         const auto target_sum = scalar_t(2) - static_cast<scalar_t>(nano::size(odims));
 
@@ -85,7 +86,7 @@ NANO_CASE(from_params)
 
 NANO_CASE(shuffle)
 {
-        auto task = get_tasks().get("synth-charset", "type=alpha,color=rgb,irows=18,icols=17,count=102");
+        auto task = get_tasks().get("synth-charset", "type=alpha,color=rgb,irows=12,icols=13,count=102");
         NANO_CHECK(task->load());
 
         for (const auto p : {protocol::train, protocol::valid, protocol::test})
@@ -119,7 +120,7 @@ NANO_CASE(shuffle)
 
 NANO_CASE(minibatch)
 {
-        auto task = get_tasks().get("synth-charset", "type=alpha,color=rgb,irows=18,icols=17,count=102");
+        auto task = get_tasks().get("synth-charset", "type=alpha,color=rgb,irows=12,icols=12,count=102");
         NANO_CHECK(task->load());
 
         for (const auto p : {protocol::train, protocol::valid, protocol::test})
@@ -130,6 +131,29 @@ NANO_CASE(minibatch)
                 for (size_t count = 1; count < std::min(size_t(8), size); ++ count)
                 {
                         const auto minibatch = task->get(fold, size_t(0), count);
+
+                        NANO_CHECK_EQUAL(minibatch.idims(), task->idims());
+                        NANO_CHECK_EQUAL(minibatch.odims(), task->odims());
+                        NANO_CHECK_EQUAL(minibatch.count(), static_cast<tensor_size_t>(count));
+                }
+        }
+}
+
+NANO_CASE(enhancers)
+{
+        auto task = get_tasks().get("synth-charset", "type=alpha,color=rgb,irows=12,icols=12,count=102");
+        NANO_CHECK(task->load());
+
+        for (const auto& id : get_enhancers().ids())
+        {
+                const auto enhancer = get_enhancers().get(id);
+
+                const auto fold = fold_t{0, protocol::train};
+                const auto size = task->size(fold);
+
+                for (size_t count = 1; count < std::min(size_t(8), size); ++ count)
+                {
+                        const auto minibatch = enhancer->get(*task, fold, size_t(0), count);
 
                         NANO_CHECK_EQUAL(minibatch.idims(), task->idims());
                         NANO_CHECK_EQUAL(minibatch.odims(), task->odims());
