@@ -16,7 +16,19 @@ namespace nano
                         const tensor_size_t kdrow = 1, const tensor_size_t kdcol = 1) :
                         m_imaps(imaps), m_irows(irows), m_icols(icols),
                         m_omaps(omaps), m_kconn(kconn),
-                        m_krows(krows), m_kcols(kcols), m_kdrow(kdrow), m_kdcol(kdcol) {}
+                        m_krows(krows), m_kcols(kcols), m_kdrow(kdrow), m_kdcol(kdcol)
+                {
+                }
+
+                conv_params_t(
+                        const tensor3d_dims_t& idims,
+                        const tensor_size_t omaps = 1, const tensor_size_t kconn = 1,
+                        const tensor_size_t krows = 1, const tensor_size_t kcols = 1,
+                        const tensor_size_t kdrow = 1, const tensor_size_t kdcol = 1) : conv_params_t(
+                        std::get<0>(idims), std::get<1>(idims), std::get<2>(idims),
+                        omaps, kconn, krows, kcols, kdrow, kdcol)
+                {
+                }
 
                 auto imaps() const { return m_imaps; }
                 auto irows() const { return m_irows; }

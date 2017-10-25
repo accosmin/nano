@@ -20,11 +20,11 @@ NANO_CASE(evaluate)
         NANO_CHECK(task->load());
 
         const string_t mlp0;
-        const string_t mlp1 = mlp0 + make_affine_layer(10);
-        const string_t mlp2 = mlp1 + make_affine_layer(10);
-        const string_t mlp3 = mlp2 + make_affine_layer(10);
-        const string_t mlp4 = mlp3 + make_affine_layer(10);
-        const string_t mlp5 = mlp4 + make_affine_layer(10);
+        const string_t mlp1 = mlp0 + make_affine_layer(10, 1, 1);
+        const string_t mlp2 = mlp1 + make_affine_layer(10, 1, 1);
+        const string_t mlp3 = mlp2 + make_affine_layer(10, 1, 1);
+        const string_t mlp4 = mlp3 + make_affine_layer(10, 1, 1);
+        const string_t mlp5 = mlp4 + make_affine_layer(10, 1, 1);
 
         const string_t convnet =
                 make_conv3d_layer(8, 7, 7, 1) +

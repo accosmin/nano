@@ -31,7 +31,7 @@ namespace nano
         ///
         inline bool value_range(const string_t& params, const string_t& param_name, size_t& begin, size_t& size)
         {
-                begin = params.find(param_name + "=");
+                begin = params.find(param_name + '=');
                 if (begin == string_t::npos)
                 {
                         return false;
@@ -39,7 +39,10 @@ namespace nano
                 else
                 {
                         begin += param_name.size() + 1;
-                        const auto end = std::min(params.find(",", begin), params.find("[", begin));
+                        const auto end1 = params.find(',', begin);
+                        const auto end2 = params.find('[', begin);
+                        const auto end3 = params.find(';', begin);
+                        const auto end = std::min({end1, end2, end3});
                         return (size = (end == string_t::npos ? params.size() : end) - begin) > 0;
                 }
         }

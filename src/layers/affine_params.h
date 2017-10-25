@@ -13,7 +13,15 @@ namespace nano
                         const tensor_size_t imaps = 0, const tensor_size_t irows = 0, const tensor_size_t icols = 0,
                         const tensor_size_t omaps = 0, const tensor_size_t orows = 0, const tensor_size_t ocols = 0) :
                         m_imaps(imaps), m_irows(irows), m_icols(icols),
-                        m_omaps(omaps), m_orows(orows), m_ocols(ocols) {}
+                        m_omaps(omaps), m_orows(orows), m_ocols(ocols)
+                {
+                }
+
+                affine_params_t(const tensor3d_dims_t& idims, const tensor3d_dims_t& odims) : affine_params_t(
+                        std::get<0>(idims), std::get<1>(idims), std::get<2>(idims),
+                        std::get<0>(odims), std::get<1>(odims), std::get<2>(odims))
+                {
+                }
 
                 auto imaps() const { return m_imaps; }
                 auto irows() const { return m_irows; }

@@ -10,6 +10,8 @@
 #include "tensor/numeric.h"
 #include "text/algorithm.h"
 #include "layers/make_layers.h"
+#include "layers/conv_params.h"
+#include "layers/affine_params.h"
 
 using namespace nano;
 
@@ -105,40 +107,23 @@ struct model_wrt_inputs_function_t final : public function_t
         tensor4d_t              m_targets;
 };
 
-const auto cmd_idims = tensor3d_dims_t{3, 8, 8};
+const auto cmd_idims = tensor3d_dims_t{3, 6, 6};
 const auto cmd_odims = tensor3d_dims_t{3, 1, 1};
 const auto cmd_layer_output = make_output_layer(cmd_odims);
 
-static tensor_size_t apsize(const tensor_size_t isize, const tensor_size_t osize)
-{
-        return isize * osize + osize;
-}
-
-static tensor_size_t apsize(const tensor3d_dims_t& idims, const tensor_size_t osize)
-{
-        return apsize(nano::size(idims), osize);
-}
-
 static tensor_size_t apsize(const tensor3d_dims_t& idims, const tensor3d_dims_t& odims)
 {
-        return apsize(nano::size(idims), nano::size(odims));
-}
-
-static tensor_size_t apsize(const tensor_size_t isize, const tensor3d_dims_t& odims)
-{
-        return apsize(isize, nano::size(odims));
-}
-
-static tensor_size_t cpsize(const tensor_size_t idims,
-        const tensor_size_t odims, const tensor_size_t krows, const tensor_size_t kcols, const tensor_size_t kconn)
-{
-        return idims * odims * krows * kcols / kconn + odims;
+        const auto params = affine_params_t{idims, odims};
+        NANO_CHECK(params.valid());
+        return params.psize();
 }
 
 static tensor_size_t cpsize(const tensor3d_dims_t& idims,
-        const tensor_size_t odims, const tensor_size_t krows, const tensor_size_t kcols, const tensor_size_t kconn)
+        const tensor_size_t omaps, const tensor_size_t krows, const tensor_size_t kcols, const tensor_size_t kconn)
 {
-        return cpsize(std::get<0>(idims), odims, krows, kcols, kconn);
+        const auto params = conv_params_t{idims, omaps, kconn, krows, kcols};
+        NANO_CHECK(params.valid());
+        return params.psize();
 }
 
 static auto get_loss()
@@ -161,24 +146,23 @@ static auto get_model(const string_t& description)
 static void test_model(const string_t& model_description, const tensor_size_t expected_psize,
         const scalar_t epsilon = epsilon1<scalar_t>())
 {
-        const auto loss = get_loss();
-
         const auto model = get_model(model_description);
         NANO_CHECK_EQUAL(model->psize(), expected_psize);
 
-        for (auto count = 1; count < 3; ++ count)
+        for (auto count = 1; count <= 3; ++ count)
         {
-                const model_wrt_params_function_t pfunction(loss, model, count);
-                const model_wrt_inputs_function_t ifunction(loss, model, count);
+                const auto loss = get_loss();
+                const auto pfun = model_wrt_params_function_t{loss, model, count};
+                const auto ifun = model_wrt_inputs_function_t{loss, model, count};
 
-                const vector_t px = pfunction.m_model->params();
-                const vector_t ix = ifunction.m_inputs.vector();
+                const vector_t px = pfun.m_model->params();
+                const vector_t ix = ifun.m_inputs.vector();
 
-                NANO_CHECK_EQUAL(px.size(), pfunction.size());
-                NANO_CHECK_EQUAL(ix.size(), ifunction.size());
+                NANO_CHECK_EQUAL(px.size(), pfun.size());
+                NANO_CHECK_EQUAL(ix.size(), ifun.size());
 
-                NANO_CHECK_LESS(pfunction.grad_accuracy(px), epsilon);
-                NANO_CHECK_LESS(ifunction.grad_accuracy(ix), epsilon);
+                NANO_CHECK_LESS(pfun.grad_accuracy(px), epsilon);
+                NANO_CHECK_LESS(ifun.grad_accuracy(ix), epsilon);
         }
 }
 
@@ -191,18 +175,18 @@ NANO_CASE(affine)
                 apsize(cmd_idims, cmd_odims));
 
         test_model(
-                make_affine_layer(7),
-                apsize(cmd_idims, 7) + apsize(7, cmd_odims));
+                make_affine_layer(7, 1, 1),
+                apsize(cmd_idims, {7, 1, 1}) + apsize({7, 1, 1}, cmd_odims));
 }
 
 NANO_CASE(activation)
 {
-        for (const auto& activation_id : get_layers().ids())
+        for (const auto& layer_id : get_layers().ids())
         {
-                if (nano::starts_with(activation_id, "act-"))
+                if (is_activation_layer(layer_id))
                 {
                         test_model(
-                                activation_id,
+                                make_layer(layer_id),
                                 apsize(cmd_idims, cmd_odims));
                 }
         }
@@ -212,92 +196,84 @@ NANO_CASE(conv3d)
 {
         test_model(
                 make_conv3d_layer(3, 3, 3, 3, "act-unit"),
-                cpsize(cmd_idims, 3, 3, 3, 3) + apsize(3 * 6 * 6, cmd_odims));
+                cpsize(cmd_idims, 3, 3, 3, 3) + apsize({3, 4, 4}, cmd_odims));
 
         test_model(
                 make_conv3d_layer(4, 3, 3, 1, "act-snorm"),
-                cpsize(cmd_idims, 4, 3, 3, 1) + apsize(4 * 6 * 6, cmd_odims));
+                cpsize(cmd_idims, 4, 3, 3, 1) + apsize({4, 4, 4}, cmd_odims));
 
         test_model(
                 make_conv3d_layer(5, 3, 3, 1, "act-splus"),
-                cpsize(cmd_idims, 5, 3, 3, 1) + apsize(5 * 6 * 6, cmd_odims));
+                cpsize(cmd_idims, 5, 3, 3, 1) + apsize({5, 4, 4}, cmd_odims));
 
         test_model
                 (make_conv3d_layer(6, 3, 3, 3, "act-tanh"),
-                cpsize(cmd_idims, 6, 3, 3, 3) + apsize(6 * 6 * 6, cmd_odims));
+                cpsize(cmd_idims, 6, 3, 3, 3) + apsize({6, 4, 4}, cmd_odims));
 }
 
 NANO_CASE(conv3d_stride)
 {
         test_model(
                 make_conv3d_layer(3, 5, 3, 3, "act-unit", 2, 1),
-                cpsize(cmd_idims, 3, 5, 3, 3) + apsize(3 * 2 * 6, cmd_odims));
+                cpsize(cmd_idims, 3, 5, 3, 3) + apsize({3, 1, 4}, cmd_odims));
 
         test_model(
                 make_conv3d_layer(3, 3, 5, 3, "act-snorm", 1, 2),
-                cpsize(cmd_idims, 3, 3, 5, 3) + apsize(3 * 6 * 2, cmd_odims));
+                cpsize(cmd_idims, 3, 3, 5, 3) + apsize({3, 4, 1}, cmd_odims));
 
         test_model(
                 make_conv3d_layer(3, 5, 5, 3, "act-splus", 2, 2),
-                cpsize(cmd_idims, 3, 5, 5, 3) + apsize(3 * 2 * 2, cmd_odims));
+                cpsize(cmd_idims, 3, 5, 5, 3) + apsize({3, 1, 1}, cmd_odims));
 }
 
 NANO_CASE(norm_global_layer)
 {
         test_model(
-                "normalize:type=global;" +
-                make_affine_layer(7, "act-snorm"),
-                apsize(cmd_idims, 7) + apsize(7, cmd_odims));
+                make_norm_globally_layer(),
+                apsize(cmd_idims, cmd_odims));
 }
 
 NANO_CASE(norm_plane_layer)
 {
         test_model(
-                "normalize:type=plane;" +
-                make_affine_layer(6, "act-snorm"),
-                apsize(cmd_idims, 6) + apsize(6, cmd_odims));
+                make_norm_by_plane_layer(),
+                apsize(cmd_idims, cmd_odims));
 }
 
 NANO_CASE(multi_layer)
 {
         test_model(
-                make_affine_layer(7, "act-snorm") +
-                make_affine_layer(5, "act-splus"),
-                apsize(cmd_idims, 7) + apsize(7, 5) + apsize(5, cmd_odims));
+                make_affine_layer(7, 1, 1, "act-snorm") +
+                make_affine_layer(5, 1, 1, "act-splus"),
+                apsize(cmd_idims, {7, 1, 1}) + apsize({7, 1, 1}, {5, 1, 1}) + apsize({5, 1, 1}, cmd_odims));
 
         test_model(
                 make_conv3d_layer(7, 3, 3, 1, "act-snorm") +
                 make_conv3d_layer(4, 1, 1, 1, "act-splus"),
-                cpsize(cmd_idims, 7, 3, 3, 1) + cpsize(7, 4, 1, 1, 1) + apsize(4 * 6 * 6, cmd_odims));
+                cpsize(cmd_idims, 7, 3, 3, 1) + cpsize({7, 4, 4}, 4, 1, 1, 1) + apsize({4, 4, 4}, cmd_odims));
 
         test_model(
                 make_conv3d_layer(7, 3, 3, 1, "act-snorm") +
                 make_conv3d_layer(4, 3, 3, 1, "act-splus"),
-                cpsize(cmd_idims, 7, 3, 3, 1) + cpsize(7, 4, 3, 3, 1) + apsize(4 * 4 * 4, cmd_odims));
+                cpsize(cmd_idims, 7, 3, 3, 1) + cpsize({7, 4, 4}, 4, 3, 3, 1) + apsize({4, 2, 2}, cmd_odims));
 
         test_model(
                 make_conv3d_layer(7, 3, 3, 1, "act-snorm") +
                 make_conv3d_layer(5, 3, 3, 1, "act-splus") +
-                make_affine_layer(5, "act-splus"),
-                cpsize(cmd_idims, 7, 3, 3, 1) + cpsize(7, 5, 3, 3, 1) + apsize(5 * 4 * 4, 5) + apsize(5, cmd_odims));
+                make_affine_layer(5, 1, 1, "act-splus"),
+                cpsize(cmd_idims, 7, 3, 3, 1) + cpsize({7, 4, 4}, 5, 3, 3, 1) + apsize({5, 2, 2}, {5, 1, 1}) + apsize({5, 1, 1}, cmd_odims));
 
         test_model(
                 make_conv3d_layer(8, 3, 3, 1, "act-snorm") +
                 make_conv3d_layer(6, 3, 3, 2, "act-splus") +
-                make_affine_layer(5, "act-splus"),
-                cpsize(cmd_idims, 8, 3, 3, 1) + cpsize(8, 6, 3, 3, 2) + apsize(6 * 4 * 4, 5) + apsize(5, cmd_odims));
-
-        test_model(
-                make_conv3d_layer(8, 3, 3, 1, "act-snorm") +
-                make_conv3d_layer(6, 3, 3, 2, "act-splus") +
-                make_affine_layer(5, "act-splus"),
-                cpsize(cmd_idims, 8, 3, 3, 1) + cpsize(8, 6, 3, 3, 2) + apsize(6 * 4 * 4, 5) + apsize(5, cmd_odims));
+                make_affine_layer(5, 1, 1, "act-splus"),
+                cpsize(cmd_idims, 8, 3, 3, 1) + cpsize({8, 4, 4}, 6, 3, 3, 2) + apsize({6, 2, 2}, {5, 1, 1}) + apsize({5, 1, 1}, cmd_odims));
 
         test_model(
                 make_conv3d_layer(9, 3, 3, 1, "act-snorm") +
                 make_conv3d_layer(6, 3, 3, 3, "act-splus") +
-                make_affine_layer(5, "act-splus"),
-                cpsize(cmd_idims, 9, 3, 3, 1) + cpsize(9, 6, 3, 3, 3) + apsize(6 * 4 * 4, 5) + apsize(5, cmd_odims));
+                make_affine_layer(5, 1, 1, "act-splus"),
+                cpsize(cmd_idims, 9, 3, 3, 1) + cpsize({9, 4, 4}, 6, 3, 3, 3) + apsize({6, 2, 2}, {5, 1, 1}) + apsize({5, 1, 1}, cmd_odims));
 }
 
 NANO_END_MODULE()

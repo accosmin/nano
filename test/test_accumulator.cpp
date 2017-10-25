@@ -17,7 +17,7 @@ NANO_CASE(evaluate)
         const auto loss = nano::get_losses().get("s-logistic");
 
         // create model
-        const auto cmd_model = make_affine_layer(4) + make_output_layer(task->odims());
+        const auto cmd_model = make_affine_layer(4, 1, 1) + make_output_layer(task->odims());
         const auto model = nano::get_models().get("forward-network", cmd_model);
         NANO_CHECK_EQUAL(model->configure(*task), true);
 

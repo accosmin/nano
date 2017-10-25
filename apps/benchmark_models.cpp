@@ -88,12 +88,12 @@ int main(int argc, const char *argv[])
 
         // construct models
         const string_t mlp0 = "normalize:type=plane;";
-        const string_t mlp1 = mlp0 + make_affine_layer(1024, activation);
-        const string_t mlp2 = mlp1 + make_affine_layer(1024, activation);
-        const string_t mlp3 = mlp2 + make_affine_layer(1024, activation);
-        const string_t mlp4 = mlp3 + make_affine_layer(1024, activation);
-        const string_t mlp5 = mlp3 + make_affine_layer(1024, activation);
-        const string_t mlp6 = mlp3 + make_affine_layer(1024, activation);
+        const string_t mlp1 = mlp0 + make_affine_layer(1024, 1, 1, activation);
+        const string_t mlp2 = mlp1 + make_affine_layer(1024, 1, 1, activation);
+        const string_t mlp3 = mlp2 + make_affine_layer(1024, 1, 1, activation);
+        const string_t mlp4 = mlp3 + make_affine_layer(1024, 1, 1, activation);
+        const string_t mlp5 = mlp3 + make_affine_layer(1024, 1, 1, activation);
+        const string_t mlp6 = mlp3 + make_affine_layer(1024, 1, 1, activation);
 
         const string_t convnet0 = "normalize:type=plane;";
         const string_t convnet1 = convnet0 + make_conv3d_layer(128, 7, 7, 1, activation);

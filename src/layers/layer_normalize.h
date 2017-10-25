@@ -4,9 +4,12 @@
 
 namespace nano
 {
+        ///
+        /// \brief normalization type.
+        ///
         enum class norm_type
         {
-                global,                 ///< globablly using all feature planes
+                global,                 ///< globally using all feature planes
                 plane,                  ///< per feature plane
         };
 

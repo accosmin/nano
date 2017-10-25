@@ -8,7 +8,7 @@
 namespace nano
 {
         ///
-        /// \brief stores registered prototypes
+        /// \brief stores registered prototypes.
         ///
         class layer_t;
         using layer_factory_t = factory_t<layer_t>;

@@ -2,6 +2,7 @@
 #include "utest.h"
 #include "math/stats.h"
 #include "math/epsilon.h"
+#include "layers/make_layers.h"
 
 using namespace nano;
 
@@ -15,14 +16,14 @@ static auto get_stats(const ttensor& xdata)
 
 NANO_BEGIN_MODULE(test_normalize)
 
-NANO_CASE(global)
+NANO_CASE(globally)
 {
         const auto count = 9, xmaps = 3, xrows = 7, xcols = 5;
 
         tensor4d_t idata(count, xmaps, xrows, xcols);
         idata.random(-1, +1);
 
-        const auto layer = get_layers().get("normalize", "type=global");
+        const auto layer = get_layers().get("norm", make_norm_globally_layer());
 
         NANO_CHECK_EQUAL(layer->configure(make_dims(xmaps, xrows, xcols), ""), true);
         NANO_CHECK_EQUAL(make_dims(xmaps, xrows, xcols), layer->idims());
@@ -42,14 +43,14 @@ NANO_CASE(global)
         }
 }
 
-NANO_CASE(plane)
+NANO_CASE(by_plane)
 {
         const auto count = 9, xmaps = 3, xrows = 7, xcols = 5;
 
         tensor4d_t idata(count, xmaps, xrows, xcols);
         idata.random(-1, +1);
 
-        const auto layer = get_layers().get("normalize", "type=plane");
+        const auto layer = get_layers().get("norm", make_norm_by_plane_layer());
 
         NANO_CHECK_EQUAL(layer->configure(make_dims(xmaps, xrows, xcols), ""), true);
         NANO_CHECK_EQUAL(make_dims(xmaps, xrows, xcols), layer->idims());
