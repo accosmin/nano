@@ -14,7 +14,7 @@
 
 using namespace nano;
 
-void append(table_t& table, const string_t& name, const tensor_size_t params, const size_t minibatch,
+static void append(table_t& table, const string_t& name, const tensor_size_t params, const size_t minibatch,
         const probes_t& probes, const bool detailed)
 {
         for (const auto& probe : probes)
@@ -92,8 +92,8 @@ int main(int argc, const char *argv[])
         const string_t mlp2 = mlp1 + make_affine_layer(1024, 1, 1, activation);
         const string_t mlp3 = mlp2 + make_affine_layer(1024, 1, 1, activation);
         const string_t mlp4 = mlp3 + make_affine_layer(1024, 1, 1, activation);
-        const string_t mlp5 = mlp3 + make_affine_layer(1024, 1, 1, activation);
-        const string_t mlp6 = mlp3 + make_affine_layer(1024, 1, 1, activation);
+        const string_t mlp5 = mlp4 + make_affine_layer(1024, 1, 1, activation);
+        const string_t mlp6 = mlp5 + make_affine_layer(1024, 1, 1, activation);
 
         const string_t convnet0 = "normalize:type=plane;";
         const string_t convnet1 = convnet0 + make_conv3d_layer(128, 7, 7, 1, activation);
@@ -116,6 +116,8 @@ int main(int argc, const char *argv[])
                 networks.emplace_back(mlp2 + outlayer, "mlp2");
                 networks.emplace_back(mlp3 + outlayer, "mlp3");
                 networks.emplace_back(mlp4 + outlayer, "mlp4");
+//                networks.emplace_back(mlp5 + outlayer, "mlp5");
+//                networks.emplace_back(mlp6 + outlayer, "mlp6");
         }
         if (cmd_convnets)
         {

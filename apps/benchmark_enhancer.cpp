@@ -38,7 +38,7 @@ int main(int argc, const char *argv[])
                 << colspan(get_enhancers().size()) << colfill('=') << alignment::center << "enhancers[us/sample]";
         table.delim();
         table.append()
-                << "#samples" << "isize" << "minibatch" << "init[ms]" << "shuffle[us]"
+                << "#samples" << "isize" << "batch" << "init[ms]" << "shuffle[us]"
                 << get_enhancers().ids();
         table.delim();
 
@@ -54,7 +54,7 @@ int main(int argc, const char *argv[])
                 for (size_t minibatch = min_minibatch; minibatch <= max_minibatch; minibatch *= 2)
                 {
                         auto& row = table.append();
-                        row << task_size << task->idims() << minibatch;
+                        row << task_size << task->idims() << ("x" + to_string(minibatch));
                         row << measure<milliseconds_t>([&] () { task->load(); }, 1).count();
                         row << measure<microseconds_t>([&] () { task->shuffle({0, protocol::train}); }, 16).count();
 

@@ -7,55 +7,64 @@
 
 namespace nano
 {
+        template <typename tiodata, typename tgdata>
+        static void warp_by_field(tiodata&& iodata,
+                const scalar_t alphax, const matrix_t& fieldx, const tgdata& gradx,
+                const scalar_t alphay, const matrix_t& fieldy, const tgdata& grady,
+                const scalar_t betaxy)
+        {
+                iodata.array() +=
+                        alphax * fieldx.array() * gradx.array() +
+                        alphay * fieldy.array() * grady.array() +
+                        betaxy * (gradx.array().square() + grady.array().square()).sqrt();
+        }
+
+        template <typename trng>
+        static void make_random_fields(const scalar_t noise,
+                matrix_t& fieldx, matrix_t& fieldy, trng&& rng)
+        {
+                nano::set_random([&] () { return rng() * noise; }, fieldx, fieldy);
+        }
+
+        template <typename trng>
+        static void make_translation_fields(const scalar_t noise, const scalar_t delta,
+                matrix_t& fieldx, matrix_t& fieldy, trng&& rng)
+        {
+                nano::set_random([&] () { return rng() * noise + delta; }, fieldx, fieldy);
+        }
+
+        template <typename trng>
+        static void make_rotation_fields(const scalar_t noise, const scalar_t delta, const scalar_t theta,
+                matrix_t& fieldx, matrix_t& fieldy, trng&& rng)
+        {
+                static constexpr auto one = scalar_t(1);
+                static constexpr auto half = scalar_t(0.5);
+
+                const auto rows = fieldx.rows(), cols = fieldx.cols();
+                const auto cx = half * static_cast<scalar_t>(cols);
+                const auto cy = half * static_cast<scalar_t>(rows);
+                const auto id = one / (nano::square(cx) + nano::square(cy));
+                const auto cos_theta = std::cos(theta);
+                const auto sin_theta = std::sin(theta);
+
+                for (tensor_size_t r = 0; r < rows; ++ r)
+                {
+                        for (tensor_size_t c = 0; c < cols; ++ c)
+                        {
+                                const auto dist = nano::square(scalar_t(r) - cy) + nano::square(scalar_t(c) - cx);
+
+                                fieldx(r, c) = id * dist * cos_theta + rng() * noise + delta;
+                                fieldy(r, c) = id * dist * sin_theta + rng() * noise + delta;
+                        }
+                }
+        }
+
         template <typename ttensor, typename trng>
         void warp3d(ttensor&& iodata, const warp_type wtype,
                 const scalar_t noise, const scalar_t sigma, const scalar_t alpha, const scalar_t beta, trng&& rng)
         {
                 static constexpr auto one = scalar_t(1);
-                static constexpr auto half = scalar_t(0.5);
                 static const auto pi = 4 * std::atan(one);
-
-                const auto op_make_random_fields = [&] (matrix_t& fieldx, matrix_t& fieldy)
-                {
-                        nano::set_random([&] () { return rng() * noise; }, fieldx, fieldy);
-                };
-
-                const auto op_make_translation_fields = [&] (const scalar_t delta, matrix_t& fieldx, matrix_t& fieldy)
-                {
-                        nano::set_random([&] () { return rng() * noise + delta; }, fieldx, fieldy);
-                };
-
-                const auto op_make_rotation_fields = [&] (const scalar_t delta, const scalar_t theta, matrix_t& fieldx, matrix_t& fieldy)
-                {
-                        const auto rows = fieldx.rows(), cols = fieldx.cols();
-                        const auto cx = half * static_cast<scalar_t>(cols);
-                        const auto cy = half * static_cast<scalar_t>(rows);
-                        const auto id = one / (nano::square(cx) + nano::square(cy));
-                        const auto cos_theta = std::cos(theta);
-                        const auto sin_theta = std::sin(theta);
-
-                        for (tensor_size_t r = 0; r < rows; ++ r)
-                        {
-                                for (tensor_size_t c = 0; c < cols; ++ c)
-                                {
-                                        const auto dist = nano::square(scalar_t(r) - cy) + nano::square(scalar_t(c) - cx);
-
-                                        fieldx(r, c) = id * dist * cos_theta + rng() * noise + delta;
-                                        fieldy(r, c) = id * dist * sin_theta + rng() * noise + delta;
-                                }
-                        }
-                };
-
-                const auto op_warp_by_field = [&] (auto&& iodata,
-                        const scalar_t alphax, const matrix_t& fieldx, const auto& gradx,
-                        const scalar_t alphay, const matrix_t& fieldy, const auto& grady,
-                        const scalar_t beta)
-                {
-                        iodata.array() +=
-                                alphax * fieldx.array() * gradx.array() +
-                                alphay * fieldy.array() * grady.array() +
-                                beta * (gradx.array().square() + grady.array().square()).sqrt();
-                };
 
                 const auto imaps = iodata.template size<0>();
                 const auto irows = iodata.template size<1>();
@@ -70,20 +79,20 @@ namespace nano
                 switch (wtype)
                 {
                 case warp_type::translation:
-                        op_make_translation_fields(delta, fieldx, fieldy);
+                        make_translation_fields(noise, delta, fieldx, fieldy, rng);
                         break;
 
                 case warp_type::rotation:
-                        op_make_rotation_fields(0, theta, fieldx, fieldy);
+                        make_rotation_fields(noise, 0, theta, fieldx, fieldy, rng);
                         break;
 
                 case warp_type::mixed:
-                        op_make_rotation_fields(delta, theta, fieldx, fieldy);
+                        make_rotation_fields(noise, delta, theta, fieldx, fieldy, rng);
                         break;
 
                 case warp_type::random:
                 default:
-                        op_make_random_fields(fieldx, fieldy);
+                        make_random_fields(noise, fieldx, fieldy, rng);
                         break;
                 }
 
@@ -102,7 +111,7 @@ namespace nano
                         const auto gradx = nano::gradientx(iodata.matrix(d));
                         const auto grady = nano::gradienty(iodata.matrix(d));
 
-                        op_warp_by_field(iodata.matrix(d), alphax, fieldx, gradx, alphay, fieldy, grady, betamx);
+                        warp_by_field(iodata.matrix(d), alphax, fieldx, gradx, alphay, fieldy, grady, betamx);
                 }
         }
 

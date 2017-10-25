@@ -39,7 +39,7 @@ namespace
                 return nano::gflops(op.params().flops_gparam() * count, duration);
         }
 
-        bool benchmark(const int imaps, const int irows, const int icols, const int omaps,
+        void benchmark(const int imaps, const int irows, const int icols, const int omaps,
                 const int ksize, const int kdelta, const int kconn, const int count, table_t& table)
         {
                 const auto params = conv_params_t
@@ -58,7 +58,7 @@ namespace
                 if (!params.valid())
                 {
                         log_error() << "invalid parameters (" << config << ")!";
-                        return false;
+                        return;
                 }
 
                 auto bdata = params.make_bdata(); bdata.setRandom();
@@ -80,15 +80,10 @@ namespace
                 const auto gf4d_gparam = measure_gparam(op4d, idata, kdata, bdata, odata);
 
                 table.append()
-                        << tensor3d_dims_t{params.imaps(), params.irows(), params.icols()}
-                        << config
-                        << tensor3d_dims_t{params.omaps(), params.orows(), params.ocols()}
-                        << params.psize()
+                        << params.idims() << config << params.odims() << params.psize()
                         << kflops_output << kflops_ginput << kflops_gparam
                         << gf3d_output << gf3d_ginput << gf3d_gparam
                         << gf4d_output << gf4d_ginput << gf4d_gparam;
-
-                return true;
         }
 }
 
@@ -148,11 +143,8 @@ int main(int argc, const char *argv[])
                         {
                                 for (auto count = cmd_min_count; count <= cmd_max_count; count *= 2)
                                 {
-                                        if (!benchmark(cmd_imaps, cmd_irows, cmd_icols, cmd_omaps,
-                                                       ksize, kdelta, kconn, count, table))
-                                        {
-                                                break;
-                                        }
+                                        benchmark(cmd_imaps, cmd_irows, cmd_icols, cmd_omaps,
+                                                  ksize, kdelta, kconn, count, table);
                                 }
 
                                 if (kconn + 1 <= cmd_max_kconn)

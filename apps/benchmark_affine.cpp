@@ -38,6 +38,46 @@ namespace
                 const auto duration = measure<nanoseconds_t>([&] () { op.gparam(idata, wdata, bdata, odata); }, trials);
                 return nano::gflops(op.params().flops_gparam() * count, duration);
         }
+
+        bool benchmark(const int isize, const int osize, const int count, table_t& table)
+        {
+                const auto params = affine_params_t{isize, 1, 1, osize, 1, 1};
+                const auto kflops_output = params.flops_output() / 1024;
+                const auto kflops_ginput = params.flops_ginput() / 1024;
+                const auto kflops_gparam = params.flops_gparam() / 1024;
+
+                const auto config = to_params("isize", isize, "osize", osize, "count", count);
+
+                if (!params.valid())
+                {
+                        log_error() << "invalid parameters (" << config << ")!";
+                        return false;
+                }
+
+                auto wdata = params.make_wdata(); wdata.setRandom();
+                auto bdata = params.make_bdata(); bdata.setRandom();
+                auto idata = params.make_idata(count); idata.setRandom();
+                auto odata = params.make_odata(count); odata.setRandom();
+
+                // 3D implementation
+                const auto op3d = affine3d_t{params};
+                const auto gf3d_output = measure_output(op3d, idata, wdata, bdata, odata);
+                const auto gf3d_ginput = measure_ginput(op3d, idata, wdata, bdata, odata);
+                const auto gf3d_gparam = measure_gparam(op3d, idata, wdata, bdata, odata);
+
+                // 4D implementation
+                const auto op4d = affine4d_t{params};
+                const auto gf4d_output = measure_output(op4d, idata, wdata, bdata, odata);
+                const auto gf4d_ginput = measure_ginput(op4d, idata, wdata, bdata, odata);
+                const auto gf4d_gparam = measure_gparam(op4d, idata, wdata, bdata, odata);
+
+                table.append()
+                        << params.idims() << config << params.odims() << params.psize()
+                        << kflops_output << kflops_ginput << kflops_gparam
+                        << gf3d_output << gf3d_ginput << gf3d_gparam
+                        << gf4d_output << gf4d_ginput << gf4d_gparam;
+                return true;
+        }
 }
 
 int main(int argc, const char *argv[])
@@ -82,44 +122,7 @@ int main(int argc, const char *argv[])
                 {
                         for (auto count = cmd_min_count; count <= cmd_max_count; count *= 2)
                         {
-                                const auto params = affine_params_t{isize, 1, 1, osize, 1, 1};
-                                const auto kflops_output = params.flops_output() / 1024;
-                                const auto kflops_ginput = params.flops_ginput() / 1024;
-                                const auto kflops_gparam = params.flops_gparam() / 1024;
-
-                                const auto config = to_params("isize", isize, "osize", osize, "count", count);
-
-                                if (!params.valid())
-                                {
-                                        log_error() << "invalid parameters (" << config << ")!";
-                                        break;
-                                }
-
-                                auto wdata = params.make_wdata(); wdata.setRandom();
-                                auto bdata = params.make_bdata(); bdata.setRandom();
-                                auto idata = params.make_idata(count); idata.setRandom();
-                                auto odata = params.make_odata(count); odata.setRandom();
-
-                                // 3D implementation
-                                const auto op3d = affine3d_t{params};
-                                const auto gf3d_output = measure_output(op3d, idata, wdata, bdata, odata);
-                                const auto gf3d_ginput = measure_ginput(op3d, idata, wdata, bdata, odata);
-                                const auto gf3d_gparam = measure_gparam(op3d, idata, wdata, bdata, odata);
-
-                                // 4D implementation
-                                const auto op4d = affine4d_t{params};
-                                const auto gf4d_output = measure_output(op4d, idata, wdata, bdata, odata);
-                                const auto gf4d_ginput = measure_ginput(op4d, idata, wdata, bdata, odata);
-                                const auto gf4d_gparam = measure_gparam(op4d, idata, wdata, bdata, odata);
-
-                                table.append()
-                                        << tensor3d_dims_t{params.imaps(), params.irows(), params.icols()}
-                                        << config
-                                        << tensor3d_dims_t{params.omaps(), params.orows(), params.ocols()}
-                                        << params.psize()
-                                        << kflops_output << kflops_ginput << kflops_gparam
-                                        << gf3d_output << gf3d_ginput << gf3d_gparam
-                                        << gf4d_output << gf4d_ginput << gf4d_gparam;
+                                benchmark(isize, osize, count, table);
                         }
 
                         if (osize * 2 <= cmd_max_osize)
