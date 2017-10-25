@@ -96,8 +96,8 @@ int main(int argc, const char *argv[])
         const string_t mlp6 = mlp5 + make_affine_layer(1024, 1, 1, activation);
 
         const string_t convnet0 = "normalize:type=plane;";
-        const string_t convnet1 = convnet0 + make_conv3d_layer(128, 7, 7, 1, activation);
-        const string_t convnet2 = convnet1 + make_conv3d_layer(128, 7, 7, conn, activation);
+        const string_t convnet1 = convnet0 + make_conv3d_layer(64,  9, 9, 1, activation);
+        const string_t convnet2 = convnet1 + make_conv3d_layer(96,  7, 7, conn, activation);
         const string_t convnet3 = convnet2 + make_conv3d_layer(128, 5, 5, conn, activation);
         const string_t convnet4 = convnet3 + make_conv3d_layer(128, 5, 5, conn, activation);
         const string_t convnet5 = convnet4 + make_conv3d_layer(128, 3, 3, conn, activation);
@@ -116,8 +116,8 @@ int main(int argc, const char *argv[])
                 networks.emplace_back(mlp2 + outlayer, "mlp2");
                 networks.emplace_back(mlp3 + outlayer, "mlp3");
                 networks.emplace_back(mlp4 + outlayer, "mlp4");
-//                networks.emplace_back(mlp5 + outlayer, "mlp5");
-//                networks.emplace_back(mlp6 + outlayer, "mlp6");
+                networks.emplace_back(mlp5 + outlayer, "mlp5");
+                networks.emplace_back(mlp6 + outlayer, "mlp6");
         }
         if (cmd_convnets)
         {
