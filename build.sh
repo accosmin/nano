@@ -19,6 +19,7 @@ ccache_flag="OFF"
 float_flag="ON"
 double_flag="OFF"
 long_double_flag="OFF"
+time_report="OFF"
 
 # usage
 function usage
@@ -41,6 +42,7 @@ function usage
         echo -e "\t--float              <use float as the default scalar>               optional"
         echo -e "\t--double             <use double as the default scalar>              optional"
         echo -e "\t--long-double        <use long double as the default scalar>         optional"
+        echo -e "\t--time-report        <report detailed compilation time>              optional"
         echo
 }
 
@@ -93,6 +95,8 @@ do
                 --long-double)  float_flag="OFF"
                                 double_flag="OFF"
                                 long_double_flag="ON"
+                                ;;
+                --time-report)  time_report="ON"
                                 ;;
                 -h | --help)    usage
                                 exit
@@ -180,6 +184,7 @@ cmake \
         -DNANO_WITH_FLOAT_SCALAR=${float_flag} \
         -DNANO_WITH_DOUBLE_SCALAR=${double_flag} \
         -DNANO_WITH_LONG_DOUBLE_SCALAR=${long_double_flag} \
+        -DNANO_WITH_TIME_REPORT=${time_report} \
         -G "${generator}" \
         -DCMAKE_INSTALL_PREFIX=${install_dir} \
         ${current_dir}/

@@ -10,3 +10,4 @@ option(NANO_WITH_CCACHE                 "use ccache (if available)"             
 option(NANO_WITH_FLOAT_SCALAR           "use float as the default scalar"                               ON)
 option(NANO_WITH_DOUBLE_SCALAR          "use double as the default scalar"                              OFF)
 option(NANO_WITH_LONG_DOUBLE_SCALAR     "use long double as the default scalar"                         OFF)
+option(NANO_WITH_TIME_REPORT            "report detailed compilation time"                              OFF)
