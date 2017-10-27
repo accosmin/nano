@@ -33,7 +33,7 @@ namespace nano
                                 }
 
                                 assert(begin < end && chunk > 0);
-                                section.push_back(pool.enqueue([=, &op = op]()
+                                section.push_back(pool.enqueue([&op = op, =]()
                                 {
                                         for (auto ibegin = begin; ibegin < end; ibegin = std::min(ibegin + chunk, end))
                                         {
