@@ -82,16 +82,16 @@ matrix:
         - ./build-debug/apps/info --system
         - cd build-debug/test && time ctest -j 2 -E "test_task_*"
 
-    - os: linux
-      compiler: clang++-3.7
-      env:
-        - TEST="Build clang++-3.7"
-      script:
-        - sudo apt-get install -y clang-3.7 libc++abi-dev libc++-dev
-        - export CXX=clang++-3.7
-        - time bash build.sh --build-type Debug --generator ninja --float --werror --libc++
-        - ./build-debug/apps/info --system
-        - cd build-debug/test && time ctest -j 2 -E "test_task_*"
+#    - os: linux
+#      compiler: clang++-3.7
+#      env:
+#        - TEST="Build clang++-3.7"
+#      script:
+#        - sudo apt-get install -y clang-3.7 libc++abi-dev libc++-dev
+#        - export CXX=clang++-3.7
+#        - time bash build.sh --build-type Debug --generator ninja --float --werror --libc++
+#        - ./build-debug/apps/info --system
+#        - cd build-debug/test && time ctest -j 2 -E "test_task_*"
 
     - os: linux
       compiler: clang++-3.8
