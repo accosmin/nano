@@ -116,7 +116,7 @@ namespace nano
         template <typename tcontainer>
         string_t concatenate(const tcontainer& values, const char* glue = ",")
         {
-                return concatenate(std::cbegin(values), std::cend(values), glue);
+                return concatenate(values.begin(), values.end(), glue);
         }
 
         template <typename, typename = void>
