@@ -28,6 +28,7 @@ before_script:
 matrix:
   include:
     - os: linux
+      compiler: g++-4.9
       env:
         - TEST="build g++-4.9"
       script:
@@ -38,6 +39,7 @@ matrix:
         - cd build-debug/test && time ctest -j 2 -E "test_task_*"
 
     - os: linux
+      compiler: g++-5
       env:
         - TEST="build g++-5"
       script:
@@ -48,6 +50,7 @@ matrix:
         - cd build-debug/test && time ctest -j 2 -E "test_task_*"
 
     - os: linux
+      compiler: g++-6
       env:
         - TEST="build g++-6"
       script:
@@ -58,6 +61,7 @@ matrix:
         - cd build-debug/test && time ctest -j 2 -E "test_task_*"
 
     - os: linux
+      compiler: g++-7
       env:
         - TEST="build g++-7"
       script:
@@ -68,6 +72,7 @@ matrix:
         - cd build-debug/test && time ctest -j 2 -E "test_task_*"
 
     - os: linux
+      compiler: clang++-3.6
       env:
         - TEST="build clang++-3.6"
       script:
@@ -78,6 +83,7 @@ matrix:
         - cd build-debug/test && time ctest -j 2 -E "test_task_*"
 
     - os: linux
+      compiler: clang++-3.7
       env:
         - TEST="build clang++-3.7"
       script:
@@ -88,6 +94,7 @@ matrix:
         - cd build-debug/test && time ctest -j 2 -E "test_task_*"
 
     - os: linux
+      compiler: clang++-3.8
       env:
         - TEST="build clang++-3.8"
       script:
@@ -98,6 +105,7 @@ matrix:
         - cd build-debug/test && time ctest -j 2 -E "test_task_*"
 
     - os: linux
+      compiler: clang++-3.9
       env:
         - TEST="build clang++-3.9"
       script:
@@ -108,6 +116,7 @@ matrix:
         - cd build-debug/test && time ctest -j 2 -E "test_task_*"
 
     - os: linux
+      compiler: clang++-4.0
       env:
         - TEST="build clang++-4.0"
       script:
@@ -118,6 +127,7 @@ matrix:
         - cd build-debug/test && time ctest -j 2 -E "test_task_*"
 
     - os: linux
+      compiler: clang++-5.0
       env:
         - TEST="build clang++-5.0"
       script:
@@ -128,6 +138,7 @@ matrix:
         - cd build-debug/test && time ctest -j 2 -E "test_task_*"
 
     - os: osx
+      compiler: xcode7.3
       env:
         - TEST="build xcode7.3"
       script:
@@ -136,8 +147,36 @@ matrix:
         - cd build-debug/test && time ctest -j 2 -E "test_task_*"
 
     - os: osx
+      compiler: xcode8
       env:
         - TEST="build xcode8"
+      script:
+        - time bash build.sh --build-type Debug --generator ninja --float --werror
+        - ./build-debug/apps/info --system
+        - cd build-debug/test && time ctest -j 2 -E "test_task_*"
+
+    - os: osx
+      compiler: xcode8.1
+      env:
+        - TEST="build xcode8.1"
+      script:
+        - time bash build.sh --build-type Debug --generator ninja --float --werror
+        - ./build-debug/apps/info --system
+        - cd build-debug/test && time ctest -j 2 -E "test_task_*"
+
+    - os: osx
+      compiler: xcode8.2
+      env:
+        - TEST="build xcode8.2"
+      script:
+        - time bash build.sh --build-type Debug --generator ninja --float --werror
+        - ./build-debug/apps/info --system
+        - cd build-debug/test && time ctest -j 2 -E "test_task_*"
+
+    - os: osx
+      compiler: xcode8.3
+      env:
+        - TEST="build xcode8.3"
       script:
         - time bash build.sh --build-type Debug --generator ninja --float --werror
         - ./build-debug/apps/info --system
