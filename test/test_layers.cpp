@@ -230,14 +230,16 @@ NANO_CASE(norm_global_layer)
 {
         test_model(
                 make_norm_globally_layer(),
-                apsize(cmd_idims, cmd_odims));
+                apsize(cmd_idims, cmd_odims),
+                2 * epsilon1<scalar_t>());
 }
 
 NANO_CASE(norm_plane_layer)
 {
         test_model(
                 make_norm_by_plane_layer(),
-                apsize(cmd_idims, cmd_odims));
+                apsize(cmd_idims, cmd_odims),
+                2 * epsilon1<scalar_t>());
 }
 
 NANO_CASE(multi_layer)
