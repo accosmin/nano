@@ -148,6 +148,28 @@ matrix:
         - ./build-debug-asan/apps/info --system
         - cd build-debug-asan/test && time ctest -j 2 -E "test_task_*"
 
+    - os: linux
+      compiler: clang++-5.0
+      env:
+        - TEST="MSAN clang++-5.0"
+      script:
+        - sudo apt-get install -y clang-5.0 libc++abi-dev libc++-dev
+        - export CXX=clang++-5.0
+        - time bash build.sh --build-type Debug --generator ninja --float --werror --libc++ --msan
+        - ./build-debug-msan/apps/info --system
+        - cd build-debug-msan/test && time ctest -j 2 -E "test_task_*"
+
+    - os: linux
+      compiler: clang++-5.0
+      env:
+        - TEST="TSAN clang++-5.0"
+      script:
+        - sudo apt-get install -y clang-5.0 libc++abi-dev libc++-dev
+        - export CXX=clang++-5.0
+        - time bash build.sh --build-type Debug --generator ninja --float --werror --libc++ --tsan
+        - ./build-debug-tsan/apps/info --system
+        - cd build-debug-tsan/test && time ctest -j 2 -E "test_task_*"
+
     - os: osx
       compiler: xcode7.3
       env:
