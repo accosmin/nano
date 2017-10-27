@@ -83,7 +83,7 @@ bool mem_csv_task_t::load_classification(const string_t& path, const string_t& t
                         return false;
                 }
 
-                const auto make_sample = [this, &row = row, label_col = label_col] ()
+                const auto make_sample = [&row, this, label_col] ()
                 {
                         tensor3d_t sample(idims());
                         size_t col = 0;
