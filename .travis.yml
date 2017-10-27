@@ -2,45 +2,12 @@ sudo: required
 dist: trusty
 language: cpp
 
-branches:
-  only:
-    - master
-
-matrix:
-  include:
-    - compiler: gcc
-      env: COMPILER=g++-4.9 PACKAGES=g++-4.9
-    - compiler: gcc
-      env: COMPILER=g++-5 PACKAGES=g++-5
-    - compiler: gcc
-      env: COMPILER=g++-6 PACKAGES=g++-6
-    - compiler: gcc
-      env: COMPILER=g++-7 PACKAGES=g++-7
-    - compiler: clang
-      env: COMPILER=clang++-3.6 PACKAGES=clang-3.6_libc++abi-dev_libc++-dev PARAMS=--libc++
-#    - compiler: clang
-#      env: COMPILER=clang++-3.7 PACKAGES=clang-3.7_libc++abi-dev_libc++-dev PARAMS=--libc++
-    - compiler: clang
-      env: COMPILER=clang++-3.8 PACKAGES=clang-3.8_libc++abi-dev_libc++-dev PARAMS=--libc++
-    - compiler: clang
-      env: COMPILER=clang++-3.9 PACKAGES=clang-3.9_libc++abi-dev_libc++-dev PARAMS=--libc++
-    - compiler: clang
-      env: COMPILER=clang++-4.0 PACKAGES=clang-4.0_libc++abi-dev_libc++-dev PARAMS=--libc++
-    - compiler: clang
-      env: COMPILER=clang++-5.0 PACKAGES=clang-5.0_libc++abi-dev_libc++-dev PARAMS=--libc++
-    - os: osx
-      osx_image: xcode7.3.1
-      env: COMPILER=xcode7
-    - os: osx
-      osx_image: xcode8
-      env: COMPILER=xcode8
-
-install:
+before_script:
   - echo $TRAVIS_OS_NAME
   - |
     if [ "$TRAVIS_OS_NAME" = "osx" ]; then
       brew update
-      brew install cmake ninja eigen devil libarchive ccache
+      brew install cmake ninja eigen devil libarchive
       brew link libarchive --force
       export PATH="/usr/local/opt/ccache/libexec:$PATH"
       export CCACHE_CPP2=true
@@ -54,24 +21,125 @@ install:
       sudo add-apt-repository ppa:ubuntu-toolchain-r/test -y
       wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | sudo apt-key add -
       sudo apt-get update -qq
-      sudo apt-get install -y ${PACKAGES//_/ } ccache cmake cmake-data ninja-build libdevil-dev libeigen3-dev libarchive-dev
-      export CXX="$COMPILER"
+      sudo apt-get install -y cmake cmake-data ninja-build libdevil-dev libeigen3-dev libarchive-dev
       export CCACHE_CPP2=true
     fi
-  - mkdir build
 
-before_script:
-  - pwd
+matrix:
+  include:
+    - os: linux
+      env:
+        - TEST="build g++-4.9"
+      script:
+        - sudo apt-get install -y g++-4.9
+        - export CXX=g++-4.9
+        - time bash build.sh --build-type Debug --generator ninja --float --werror
+        - ./build-debug/apps/info --system
+        - cd build-debug/test && time ctest -j 2 -E "test_task_*"
 
-script:
-#  - time bash build.sh --build-type Release --generator ninja --float --werror ${PARAMS}
-#  - ./build-release/apps/info --system
-#  - cd build-release/test && time ctest -j 2 -E "test_task_*"
-#  - cd ../../
-  - time bash build.sh --build-type Debug --generator ninja --float --werror ${PARAMS}
-  - ./build-debug/apps/info --system
-  - cd build-debug/test && time ctest -j 2 -E "test_task_*"
-  - cd ../../
-#  - ./build-release/apps/info --system
-#  - time bash build.sh --build-type Release --generator ninja --double --werror ${PARAMS}
-#  - cd build-release/test && time ctest -j 2 -E "test_task_*"
+    - os: linux
+      env:
+        - TEST="build g++-5"
+      script:
+        - sudo apt-get install -y g++-5
+        - export CXX=g++-5
+        - time bash build.sh --build-type Debug --generator ninja --float --werror
+        - ./build-debug/apps/info --system
+        - cd build-debug/test && time ctest -j 2 -E "test_task_*"
+
+    - os: linux
+      env:
+        - TEST="build g++-6"
+      script:
+        - sudo apt-get install -y g++-6
+        - export CXX=g++-6
+        - time bash build.sh --build-type Debug --generator ninja --float --werror
+        - ./build-debug/apps/info --system
+        - cd build-debug/test && time ctest -j 2 -E "test_task_*"
+
+    - os: linux
+      env:
+        - TEST="build g++-7"
+      script:
+        - sudo apt-get install -y g++-7
+        - export CXX=g++-7
+        - time bash build.sh --build-type Debug --generator ninja --float --werror
+        - ./build-debug/apps/info --system
+        - cd build-debug/test && time ctest -j 2 -E "test_task_*"
+
+    - os: linux
+      env:
+        - TEST="build clang++-3.6"
+      script:
+        - sudo apt-get install -y clang-3.6 libc++abi-dev libc++-dev
+        - export CXX=clang++-3.6
+        - time bash build.sh --build-type Debug --generator ninja --float --werror --libc++
+        - ./build-debug/apps/info --system
+        - cd build-debug/test && time ctest -j 2 -E "test_task_*"
+
+    - os: linux
+      env:
+        - TEST="build clang++-3.7"
+      script:
+        - sudo apt-get install -y clang-3.7 libc++abi-dev libc++-dev
+        - export CXX=clang++-3.7
+        - time bash build.sh --build-type Debug --generator ninja --float --werror --libc++
+        - ./build-debug/apps/info --system
+        - cd build-debug/test && time ctest -j 2 -E "test_task_*"
+
+    - os: linux
+      env:
+        - TEST="build clang++-3.8"
+      script:
+        - sudo apt-get install -y clang-3.8 libc++abi-dev libc++-dev
+        - export CXX=clang++-3.8
+        - time bash build.sh --build-type Debug --generator ninja --float --werror --libc++
+        - ./build-debug/apps/info --system
+        - cd build-debug/test && time ctest -j 2 -E "test_task_*"
+
+    - os: linux
+      env:
+        - TEST="build clang++-3.9"
+      script:
+        - sudo apt-get install -y clang-3.9 libc++abi-dev libc++-dev
+        - export CXX=clang++-3.9
+        - time bash build.sh --build-type Debug --generator ninja --float --werror --libc++
+        - ./build-debug/apps/info --system
+        - cd build-debug/test && time ctest -j 2 -E "test_task_*"
+
+    - os: linux
+      env:
+        - TEST="build clang++-4.0"
+      script:
+        - sudo apt-get install -y clang-4.0 libc++abi-dev libc++-dev
+        - export CXX=clang++-4.0
+        - time bash build.sh --build-type Debug --generator ninja --float --werror --libc++
+        - ./build-debug/apps/info --system
+        - cd build-debug/test && time ctest -j 2 -E "test_task_*"
+
+    - os: linux
+      env:
+        - TEST="build clang++-5.0"
+      script:
+        - sudo apt-get install -y clang-5.0 libc++abi-dev libc++-dev
+        - export CXX=clang++-5.0
+        - time bash build.sh --build-type Debug --generator ninja --float --werror --libc++
+        - ./build-debug/apps/info --system
+        - cd build-debug/test && time ctest -j 2 -E "test_task_*"
+
+    - os: osx
+      env:
+        - TEST="build xcode7.3"
+      script:
+        - time bash build.sh --build-type Debug --generator ninja --float --werror
+        - ./build-debug/apps/info --system
+        - cd build-debug/test && time ctest -j 2 -E "test_task_*"
+
+    - os: osx
+      env:
+        - TEST="build xcode8"
+      script:
+        - time bash build.sh --build-type Debug --generator ninja --float --werror
+        - ./build-debug/apps/info --system
+        - cd build-debug/test && time ctest -j 2 -E "test_task_*"
+
