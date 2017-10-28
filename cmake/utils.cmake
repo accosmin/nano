@@ -130,6 +130,9 @@ endfunction()
 function(setup_clang_tidy)
         set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
+        find_program(CLANG_TIDY_BIN clang-tidy-5.0)
+        find_program(RUN_CLANG_TIDY_BIN run-clang-tidy-5.0.py)
+
         list(APPEND RUN_CLANG_TIDY_BIN_ARGS
             -clang-tidy-binary ${CLANG_TIDY_BIN}
             -header-filter=.*
