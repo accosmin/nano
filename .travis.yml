@@ -203,39 +203,6 @@ matrix:
 
     - os: osx
       compiler: clang++
-      osx_image: xcode8
-      env:
-        - TEST="Build xcode8"
-      script:
-        - cmake -G "Ninja" -DCMAKE_BUILD_TYPE=Debug -DNANO_WITH_WERROR=ON ..
-        - ninja
-        - ./apps/info --system
-        - cd test && time ctest -j 2 -E "test_task_*"
-
-    - os: osx
-      compiler: clang++
-      osx_image: xcode8.1
-      env:
-        - TEST="Build xcode8.1"
-      script:
-        - cmake -G "Ninja" -DCMAKE_BUILD_TYPE=Debug -DNANO_WITH_WERROR=ON ..
-        - ninja
-        - ./apps/info --system
-        - cd test && time ctest -j 2 -E "test_task_*"
-
-    - os: osx
-      compiler: clang++
-      osx_image: xcode8.2
-      env:
-        - TEST="Build xcode8.2"
-      script:
-        - cmake -G "Ninja" -DCMAKE_BUILD_TYPE=Debug -DNANO_WITH_WERROR=ON ..
-        - ninja
-        - ./apps/info --system
-        - cd test && time ctest -j 2 -E "test_task_*"
-
-    - os: osx
-      compiler: clang++
       osx_image: xcode8.3
       env:
         - TEST="Build xcode8.3"
