@@ -128,8 +128,6 @@ endfunction()
 
 # create clang-tidy-based target for static analysis
 function(setup_clang_tidy)
-        set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
-
         find_program(CLANG_TIDY_BIN clang-tidy-5.0)
         find_program(RUN_CLANG_TIDY_BIN run-clang-tidy-5.0.py)
 
