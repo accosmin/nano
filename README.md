@@ -9,24 +9,22 @@ Use a C++14 compiler and install Eigen3.3+, LibArchive, Zlib and DevIL. Nano is 
 
 The easiest way to compile (and install) is to run:
 ```
-bash build.sh --build-type release --generator ninja
+mkdir build-release && cd build-release
+cmake -G "Ninja" -DCMAKE_BUILD_TYPE=Release
 ```
 The test programs and utilities will be found in the `build-release` directory.
 
 To build the debugging version with or without address, memory and thread sanitizers (if available) run:
 ```
-bash build.sh --build-type debug [--asan|--msan|--tsan] --generator ninja
+mkdir build-debug && cd build-debug
+cmake -G "Ninja" -DCMAKE_BUILD_TYPE=Release -DNANO_WITH_[ASAN|MSAN|TSAN]=ON
 ```
 
 It is recommended to use libc++ with clang by issuing the following command:
 ```
-bash build.sh --build-type release --compiler clang++-3.8 --libc++ --generator ninja
+cmake -G "Ninja" -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER="clang++-4.0" -DNANO_WITH_LIBCPP=ON
 ```
 
-To display the list of available build options invoke:
-```
-bash build.sh --help
-```
 
 #### Structure
 
