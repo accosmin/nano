@@ -170,6 +170,26 @@ matrix:
         - ./build-debug-tsan/apps/info --system
         - cd build-debug-tsan/test && time ctest -j 2 -E "test_task_*"
 
+    - os: linux
+      compiler: clang++-5.0
+      env:
+        - TEST="TIDY clang++-5.0"
+      script:
+        - sudo apt-get install -y clang-5.0 clang-tidy-5.0 libc++abi-dev libc++-dev
+        - export CXX=clang++-5.0
+        - time bash build.sh --build-type Debug --generator ninja --float --werror --libc++ --clang-tidy
+        - ./build-debug/apps/info --system
+        - cd build-debug/ && ninja tidy > output.txt
+        - |
+          if [[ -n $(grep "warning: " output.txt) ]] || [[ -n $(grep "error: " output.txt) ]]; then
+              echo "Clang-tidy detected the following warning and errors:"
+              echo ""
+              grep --color -E '^|warning: |error: ' output.txt
+              exit -1;
+          else
+              echo -e "\033[1;32m\xE2\x9C\x93 passed:\033[0m $1";
+          fi
+
     - os: osx
       compiler: xcode7.3
       env:

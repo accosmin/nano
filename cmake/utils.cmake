@@ -126,6 +126,23 @@ function(setup_ccache)
         endif()
 endfunction()
 
+# create clang-tidy-based target for static analysis
+function(setup_clang_tidy)
+        set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
+        list(APPEND RUN_CLANG_TIDY_BIN_ARGS
+            -clang-tidy-binary ${CLANG_TIDY_BIN}
+            -header-filter=.*
+            -checks=clan*,cert*,misc*,perf*,cppc*,read*,mode*,-cert-err58-cpp,-misc-noexcept-move-constructor
+        )
+
+        add_custom_target(
+            tidy
+            COMMAND ${RUN_CLANG_TIDY_BIN} ${RUN_CLANG_TIDY_BIN_ARGS}
+            COMMENT "running clang tidy"
+        )
+endfunction()
+
 # setup LTO
 function(setup_lto)
         set(CMAKE_REQUIRED_FLAGS "-flto")

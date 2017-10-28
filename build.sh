@@ -20,6 +20,7 @@ float_flag="ON"
 double_flag="OFF"
 long_double_flag="OFF"
 time_report="OFF"
+clang_tidy="OFF"
 
 # usage
 function usage
@@ -43,6 +44,7 @@ function usage
         echo -e "\t--double             <use double as the default scalar>              optional"
         echo -e "\t--long-double        <use long double as the default scalar>         optional"
         echo -e "\t--time-report        <report detailed compilation time>              optional"
+        echo -e "\t--clang-tidy         <create clang-tidy target for static analysis>  optional"
         echo
 }
 
@@ -97,6 +99,8 @@ do
                                 long_double_flag="ON"
                                 ;;
                 --time-report)  time_report="ON"
+                                ;;
+                --clang-tidy)   clang_tidy="ON"
                                 ;;
                 -h | --help)    usage
                                 exit
@@ -185,6 +189,7 @@ cmake \
         -DNANO_WITH_DOUBLE_SCALAR=${double_flag} \
         -DNANO_WITH_LONG_DOUBLE_SCALAR=${long_double_flag} \
         -DNANO_WITH_TIME_REPORT=${time_report} \
+        -DNANO_WITH_CLANG_TIDY=${clang_tidy} \
         -G "${generator}" \
         -DCMAKE_INSTALL_PREFIX=${install_dir} \
         ${current_dir}/

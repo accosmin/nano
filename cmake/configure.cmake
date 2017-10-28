@@ -73,6 +73,11 @@ else()
         message(WARNING "++ Compiling with an unsupported compiler ...")
 endif()
 
+# set clang-tidy
+if(NANO_WITH_CLANG_TIDY)
+        setup_clang_tidy()
+endif()
+
 # debug
 if(CMAKE_BUILD_TYPE MATCHES "[Dd][Ee][Bb][Uu][Gg]")
         add_definitions(-DNANO_DEBUG)
