@@ -35,7 +35,7 @@ matrix:
         - TEST="Build g++-4.9"
       script:
         - sudo apt-get install -y g++-4.9
-        - cmake -G "Ninja" -DCMAKE_CXX_COMPILER="g++-4.9" -DCMAKE_BUILD_TYPE=Debug -DNANO_WITH_FLOAT_SCALAR=ON -DNANO_WITH_WERROR
+        - cmake -G "Ninja" -DCMAKE_CXX_COMPILER="g++-4.9" -DCMAKE_BUILD_TYPE=Debug -DNANO_WITH_FLOAT_SCALAR=ON -DNANO_WITH_WERROR=ON
         - ninja
         - ./apps/info --system
         - cd test && time ctest -j 2 -E "test_task_*"
@@ -46,7 +46,7 @@ matrix:
         - TEST="Build g++-5"
       script:
         - sudo apt-get install -y g++-5
-        - cmake -G "Ninja" -DCMAKE_CXX_COMPILER="g++-5" -DCMAKE_BUILD_TYPE=Debug -DNANO_WITH_FLOAT_SCALAR=ON -DNANO_WITH_WERROR
+        - cmake -G "Ninja" -DCMAKE_CXX_COMPILER="g++-5" -DCMAKE_BUILD_TYPE=Debug -DNANO_WITH_FLOAT_SCALAR=ON -DNANO_WITH_WERROR=ON
         - ninja
         - ./apps/info --system
         - cd test && time ctest -j 2 -E "test_task_*"
@@ -57,7 +57,7 @@ matrix:
         - TEST="Build g++-6"
       script:
         - sudo apt-get install -y g++-6
-        - cmake -G "Ninja" -DCMAKE_CXX_COMPILER="g++-6" -DCMAKE_BUILD_TYPE=Debug -DNANO_WITH_FLOAT_SCALAR=ON -DNANO_WITH_WERROR
+        - cmake -G "Ninja" -DCMAKE_CXX_COMPILER="g++-6" -DCMAKE_BUILD_TYPE=Debug -DNANO_WITH_FLOAT_SCALAR=ON -DNANO_WITH_WERROR=ON
         - ninja
         - ./apps/info --system
         - cd test && time ctest -j 2 -E "test_task_*"
@@ -68,7 +68,7 @@ matrix:
         - TEST="Build g++-7"
       script:
         - sudo apt-get install -y g++-7
-        - cmake -G "Ninja" -DCMAKE_CXX_COMPILER="g++-7" -DCMAKE_BUILD_TYPE=Debug -DNANO_WITH_FLOAT_SCALAR=ON -DNANO_WITH_WERROR
+        - cmake -G "Ninja" -DCMAKE_CXX_COMPILER="g++-7" -DCMAKE_BUILD_TYPE=Debug -DNANO_WITH_FLOAT_SCALAR=ON -DNANO_WITH_WERROR=ON
         - ninja
         - ./apps/info --system
         - cd test && time ctest -j 2 -E "test_task_*"
@@ -79,7 +79,7 @@ matrix:
         - TEST="Build clang++-3.6"
       script:
         - sudo apt-get install -y clang-3.6 libc++abi-dev libc++-dev
-        - cmake -G "Ninja" -DCMAKE_CXX_COMPILER="clang++-3.6" -DCMAKE_BUILD_TYPE=Debug -DNANO_WITH_FLOAT_SCALAR=ON -DNANO_WITH_WERROR -DNANO_WITH_LIBCPP=ON
+        - cmake -G "Ninja" -DCMAKE_CXX_COMPILER="clang++-3.6" -DCMAKE_BUILD_TYPE=Debug -DNANO_WITH_FLOAT_SCALAR=ON -DNANO_WITH_WERROR=ON -DNANO_WITH_LIBCPP=ON
         - ninja
         - ./apps/info --system
         - cd test && time ctest -j 2 -E "test_task_*"
@@ -90,7 +90,7 @@ matrix:
 #        - TEST="Build clang++-3.7"
 #      script:
 #        - sudo apt-get install -y clang-3.7 libc++abi-dev libc++-dev
-#        - cmake -G "Ninja" -DCMAKE_CXX_COMPILER="clang++-3.7" -DCMAKE_BUILD_TYPE=Debug -DNANO_WITH_FLOAT_SCALAR=ON -DNANO_WITH_WERROR -DNANO_WITH_LIBCPP=ON
+#        - cmake -G "Ninja" -DCMAKE_CXX_COMPILER="clang++-3.7" -DCMAKE_BUILD_TYPE=Debug -DNANO_WITH_FLOAT_SCALAR=ON -DNANO_WITH_WERROR=ON -DNANO_WITH_LIBCPP=ON
 #        - ninja
 #        - ./apps/info --system
 #        - cd test && time ctest -j 2 -E "test_task_*"
@@ -101,7 +101,7 @@ matrix:
         - TEST="Build clang++-3.8"
       script:
         - sudo apt-get install -y clang-3.8 libc++abi-dev libc++-dev
-        - cmake -G "Ninja" -DCMAKE_CXX_COMPILER="clang++-3.8" -DCMAKE_BUILD_TYPE=Debug -DNANO_WITH_FLOAT_SCALAR=ON -DNANO_WITH_WERROR -DNANO_WITH_LIBCPP=ON
+        - cmake -G "Ninja" -DCMAKE_CXX_COMPILER="clang++-3.8" -DCMAKE_BUILD_TYPE=Debug -DNANO_WITH_FLOAT_SCALAR=ON -DNANO_WITH_WERROR=ON -DNANO_WITH_LIBCPP=ON
         - ninja
         - ./apps/info --system
         - cd test && time ctest -j 2 -E "test_task_*"
@@ -112,7 +112,7 @@ matrix:
         - TEST="Build clang++-3.9"
       script:
         - sudo apt-get install -y clang-3.9 libc++abi-dev libc++-dev
-        - cmake -G "Ninja" -DCMAKE_CXX_COMPILER="clang++-3.9" -DCMAKE_BUILD_TYPE=Debug -DNANO_WITH_FLOAT_SCALAR=ON -DNANO_WITH_WERROR -DNANO_WITH_LIBCPP=ON
+        - cmake -G "Ninja" -DCMAKE_CXX_COMPILER="clang++-3.9" -DCMAKE_BUILD_TYPE=Debug -DNANO_WITH_FLOAT_SCALAR=ON -DNANO_WITH_WERROR=ON -DNANO_WITH_LIBCPP=ON
         - ninja
         - ./apps/info --system
         - cd test && time ctest -j 2 -E "test_task_*"
@@ -123,7 +123,7 @@ matrix:
         - TEST="Build clang++-4.0"
       script:
         - sudo apt-get install -y clang-4.0 libc++abi-dev libc++-dev
-        - cmake -G "Ninja" -DCMAKE_CXX_COMPILER="clang++-4.0" -DCMAKE_BUILD_TYPE=Debug -DNANO_WITH_FLOAT_SCALAR=ON -DNANO_WITH_WERROR -DNANO_WITH_LIBCPP=ON
+        - cmake -G "Ninja" -DCMAKE_CXX_COMPILER="clang++-4.0" -DCMAKE_BUILD_TYPE=Debug -DNANO_WITH_FLOAT_SCALAR=ON -DNANO_WITH_WERROR=ON -DNANO_WITH_LIBCPP=ON
         - ninja
         - ./apps/info --system
         - cd test && time ctest -j 2 -E "test_task_*"
@@ -134,7 +134,7 @@ matrix:
         - TEST="Build clang++-5.0"
       script:
         - sudo apt-get install -y clang-5.0 libc++abi-dev libc++-dev
-        - cmake -G "Ninja" -DCMAKE_CXX_COMPILER="clang++-5.0" -DCMAKE_BUILD_TYPE=Debug -DNANO_WITH_FLOAT_SCALAR=ON -DNANO_WITH_WERROR -DNANO_WITH_LIBCPP=ON
+        - cmake -G "Ninja" -DCMAKE_CXX_COMPILER="clang++-5.0" -DCMAKE_BUILD_TYPE=Debug -DNANO_WITH_FLOAT_SCALAR=ON -DNANO_WITH_WERROR=ON -DNANO_WITH_LIBCPP=ON
         - ninja
         - ./apps/info --system
         - cd test && time ctest -j 2 -E "test_task_*"
@@ -145,7 +145,7 @@ matrix:
         - TEST="ASAN clang++-5.0"
       script:
         - sudo apt-get install -y clang-5.0 libc++abi-dev libc++-dev
-        - cmake -G "Ninja" -DCMAKE_CXX_COMPILER="clang++-5.0" -DCMAKE_BUILD_TYPE=Debug -DNANO_WITH_FLOAT_SCALAR=ON -DNANO_WITH_WERROR -DNANO_WITH_LIBCPP=ON -DNANO_WITH_ASAN=ON
+        - cmake -G "Ninja" -DCMAKE_CXX_COMPILER="clang++-5.0" -DCMAKE_BUILD_TYPE=Debug -DNANO_WITH_FLOAT_SCALAR=ON -DNANO_WITH_WERROR=ON -DNANO_WITH_LIBCPP=ON -DNANO_WITH_ASAN=ON
         - ninja
         - ./apps/info --system
         - cd test && time ctest -j 2 -E "test_task_*"
@@ -156,7 +156,7 @@ matrix:
         - TEST="MSAN clang++-5.0"
       script:
         - sudo apt-get install -y clang-5.0 libc++abi-dev libc++-dev
-        - cmake -G "Ninja" -DCMAKE_CXX_COMPILER="clang++-5.0" -DCMAKE_BUILD_TYPE=Debug -DNANO_WITH_FLOAT_SCALAR=ON -DNANO_WITH_WERROR -DNANO_WITH_LIBCPP=ON -DNANO_WITH_MSAN=ON
+        - cmake -G "Ninja" -DCMAKE_CXX_COMPILER="clang++-5.0" -DCMAKE_BUILD_TYPE=Debug -DNANO_WITH_FLOAT_SCALAR=ON -DNANO_WITH_WERROR=ON -DNANO_WITH_LIBCPP=ON -DNANO_WITH_MSAN=ON
         - ninja
         - ./apps/info --system
         - cd test && time ctest -j 2 -E "test_task_*"
@@ -167,7 +167,7 @@ matrix:
         - TEST="TSAN clang++-5.0"
       script:
         - sudo apt-get install -y clang-5.0 libc++abi-dev libc++-dev
-        - cmake -G "Ninja" -DCMAKE_CXX_COMPILER="clang++-5.0" -DCMAKE_BUILD_TYPE=Debug -DNANO_WITH_FLOAT_SCALAR=ON -DNANO_WITH_WERROR -DNANO_WITH_LIBCPP=ON -DNANO_WITH_TSAN=ON
+        - cmake -G "Ninja" -DCMAKE_CXX_COMPILER="clang++-5.0" -DCMAKE_BUILD_TYPE=Debug -DNANO_WITH_FLOAT_SCALAR=ON -DNANO_WITH_WERROR=ON -DNANO_WITH_LIBCPP=ON -DNANO_WITH_TSAN=ON
         - ninja
         - ./apps/info --system
         - cd test && time ctest -j 2 -E "test_task_*"
@@ -178,7 +178,7 @@ matrix:
         - TEST="TIDY clang++-5.0"
       script:
         - sudo apt-get install -y clang-5.0 clang-tidy-5.0 libc++abi-dev libc++-dev
-        - cmake -G "Ninja" -DCMAKE_CXX_COMPILER="clang++-5.0" -DCMAKE_BUILD_TYPE=Debug -DNANO_WITH_FLOAT_SCALAR=ON -DNANO_WITH_WERROR -DNANO_WITH_LIBCPP=ON
+        - cmake -G "Ninja" -DCMAKE_CXX_COMPILER="clang++-5.0" -DCMAKE_BUILD_TYPE=Debug -DNANO_WITH_FLOAT_SCALAR=ON -DNANO_WITH_WERROR=ON -DNANO_WITH_LIBCPP=ON
         - ninja tidy > output.txt
         - |
           if [[ -n $(grep "warning: " output.txt) ]] || [[ -n $(grep "error: " output.txt) ]]; then
@@ -196,7 +196,7 @@ matrix:
       env:
         - TEST="Build xcode7.3"
       script:
-        - cmake -G "Ninja" -DCMAKE_BUILD_TYPE=Debug -DNANO_WITH_FLOAT_SCALAR=ON -DNANO_WITH_WERROR
+        - cmake -G "Ninja" -DCMAKE_BUILD_TYPE=Debug -DNANO_WITH_FLOAT_SCALAR=ON -DNANO_WITH_WERROR=ON
         - ninja
         - ./apps/info --system
         - cd test && time ctest -j 2 -E "test_task_*"
@@ -207,7 +207,7 @@ matrix:
       env:
         - TEST="Build xcode8"
       script:
-        - cmake -G "Ninja" -DCMAKE_BUILD_TYPE=Debug -DNANO_WITH_FLOAT_SCALAR=ON -DNANO_WITH_WERROR
+        - cmake -G "Ninja" -DCMAKE_BUILD_TYPE=Debug -DNANO_WITH_FLOAT_SCALAR=ON -DNANO_WITH_WERROR=ON
         - ninja
         - ./apps/info --system
         - cd test && time ctest -j 2 -E "test_task_*"
@@ -218,7 +218,7 @@ matrix:
       env:
         - TEST="Build xcode8.1"
       script:
-        - cmake -G "Ninja" -DCMAKE_BUILD_TYPE=Debug -DNANO_WITH_FLOAT_SCALAR=ON -DNANO_WITH_WERROR
+        - cmake -G "Ninja" -DCMAKE_BUILD_TYPE=Debug -DNANO_WITH_FLOAT_SCALAR=ON -DNANO_WITH_WERROR=ON
         - ninja
         - ./apps/info --system
         - cd test && time ctest -j 2 -E "test_task_*"
@@ -229,7 +229,7 @@ matrix:
       env:
         - TEST="Build xcode8.2"
       script:
-        - cmake -G "Ninja" -DCMAKE_BUILD_TYPE=Debug -DNANO_WITH_FLOAT_SCALAR=ON -DNANO_WITH_WERROR
+        - cmake -G "Ninja" -DCMAKE_BUILD_TYPE=Debug -DNANO_WITH_FLOAT_SCALAR=ON -DNANO_WITH_WERROR=ON
         - ninja
         - ./apps/info --system
         - cd test && time ctest -j 2 -E "test_task_*"
@@ -240,7 +240,7 @@ matrix:
       env:
         - TEST="Build xcode8.3"
       script:
-        - cmake -G "Ninja" -DCMAKE_BUILD_TYPE=Debug -DNANO_WITH_FLOAT_SCALAR=ON -DNANO_WITH_WERROR
+        - cmake -G "Ninja" -DCMAKE_BUILD_TYPE=Debug -DNANO_WITH_FLOAT_SCALAR=ON -DNANO_WITH_WERROR=ON
         - ninja
         - ./apps/info --system
         - cd test && time ctest -j 2 -E "test_task_*"
