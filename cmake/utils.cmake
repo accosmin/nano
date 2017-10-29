@@ -128,13 +128,14 @@ endfunction()
 
 # create clang-tidy-based target for static analysis
 function(setup_clang_tidy)
-        find_program(CLANG_TIDY_BIN clang-tidy-5.0)
-        find_program(RUN_CLANG_TIDY_BIN run-clang-tidy-5.0.py)
+        find_program(CLANG_TIDY_BIN NAMES clang-tidy-5.0 clang-tidy)
+        find_program(RUN_CLANG_TIDY_BIN NAMES run-clang-tidy-5.0.py run-clang-tidy.py HINTS /usr/share/clang/)
 
         list(APPEND RUN_CLANG_TIDY_BIN_ARGS
             -clang-tidy-binary ${CLANG_TIDY_BIN}
             -header-filter=.*
             -checks=clan*,cert*,misc*,perf*,cppc*,read*,mode*,-cert-err58-cpp,-misc-noexcept-move-constructor
+            -j3
         )
 
         add_custom_target(
