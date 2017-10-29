@@ -211,3 +211,14 @@ matrix:
         - ninja
         - ./apps/info --system
         - cd test && time ctest -j 2 -E "test_task_*"
+
+    - os: osx
+      compiler: clang++
+      osx_image: xcode9.1
+      env:
+        - TEST="Build xcode9.1"
+      script:
+        - cmake -G "Ninja" -DCMAKE_BUILD_TYPE=Debug -DNANO_WITH_WERROR=ON ..
+        - ninja
+        - ./apps/info --system
+        - cd test && time ctest -j 2 -E "test_task_*"
