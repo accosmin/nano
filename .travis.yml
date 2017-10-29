@@ -38,7 +38,7 @@ matrix:
         - cmake -G "Ninja" -DCMAKE_CXX_COMPILER="g++-4.9" -DCMAKE_BUILD_TYPE=Debug -DNANO_WITH_WERROR=ON ..
         - ninja
         - ./apps/info --system
-        - ctest -j 2 -E "test_task_*"
+        - ctest --output-on-failure -j 2 -E "test_task_*"
 
     - os: linux
       compiler: g++-5
@@ -49,7 +49,7 @@ matrix:
         - cmake -G "Ninja" -DCMAKE_CXX_COMPILER="g++-5" -DCMAKE_BUILD_TYPE=Debug -DNANO_WITH_WERROR=ON ..
         - ninja
         - ./apps/info --system
-        - ctest -j 2 -E "test_task_*"
+        - ctest --output-on-failure -j 2 -E "test_task_*"
 
     - os: linux
       compiler: g++-6
@@ -60,7 +60,7 @@ matrix:
         - cmake -G "Ninja" -DCMAKE_CXX_COMPILER="g++-6" -DCMAKE_BUILD_TYPE=Debug -DNANO_WITH_WERROR=ON ..
         - ninja
         - ./apps/info --system
-        - ctest -j 2 -E "test_task_*"
+        - ctest --output-on-failure -j 2 -E "test_task_*"
 
     - os: linux
       compiler: g++-7
@@ -71,114 +71,114 @@ matrix:
         - cmake -G "Ninja" -DCMAKE_CXX_COMPILER="g++-7" -DCMAKE_BUILD_TYPE=Debug -DNANO_WITH_WERROR=ON ..
         - ninja
         - ./apps/info --system
-        - ctest -j 2 -E "test_task_*"
+        - ctest --output-on-failure -j 2 -E "test_task_*"
 
     - os: linux
       compiler: clang++-3.6
       env:
         - TEST="build (clang++-3.6)"
       script:
-        - sudo apt-get install -y clang-3.6 libc++abi-dev libc++-dev
-        - cmake -G "Ninja" -DCMAKE_CXX_COMPILER="clang++-3.6" -DCMAKE_BUILD_TYPE=Debug -DNANO_WITH_WERROR=ON -DNANO_WITH_LIBCPP=ON ..
+        - sudo apt-get install -y clang-3.6
+        - cmake -G "Ninja" -DCMAKE_CXX_COMPILER="clang++-3.6" -DCMAKE_BUILD_TYPE=Debug -DNANO_WITH_WERROR=ON ..
         - ninja
         - ./apps/info --system
-        - ctest -j 2 -E "test_task_*"
+        - ctest --output-on-failure -j 2 -E "test_task_*"
 
 #    - os: linux
 #      compiler: clang++-3.7
 #      env:
 #        - TEST="build (clang++-3.7)"
 #      script:
-#        - sudo apt-get install -y clang-3.7 libc++abi-dev libc++-dev
-#        - cmake -G "Ninja" -DCMAKE_CXX_COMPILER="clang++-3.7" -DCMAKE_BUILD_TYPE=Debug -DNANO_WITH_WERROR=ON -DNANO_WITH_LIBCPP=ON ..
+#        - sudo apt-get install -y clang-3.7
+#        - cmake -G "Ninja" -DCMAKE_CXX_COMPILER="clang++-3.7" -DCMAKE_BUILD_TYPE=Debug -DNANO_WITH_WERROR=ON ..
 #        - ninja
 #        - ./apps/info --system
-#        - ctest -j 2 -E "test_task_*"
+#        - ctest --output-on-failure -j 2 -E "test_task_*"
 
     - os: linux
       compiler: clang++-3.8
       env:
         - TEST="build (clang++-3.8)"
       script:
-        - sudo apt-get install -y clang-3.8 libc++abi-dev libc++-dev
-        - cmake -G "Ninja" -DCMAKE_CXX_COMPILER="clang++-3.8" -DCMAKE_BUILD_TYPE=Debug -DNANO_WITH_WERROR=ON -DNANO_WITH_LIBCPP=ON ..
+        - sudo apt-get install -y clang-3.8
+        - cmake -G "Ninja" -DCMAKE_CXX_COMPILER="clang++-3.8" -DCMAKE_BUILD_TYPE=Debug -DNANO_WITH_WERROR=ON ..
         - ninja
         - ./apps/info --system
-        - ctest -j 2 -E "test_task_*"
+        - ctest --output-on-failure -j 2 -E "test_task_*"
 
     - os: linux
       compiler: clang++-3.9
       env:
         - TEST="build (clang++-3.9)"
       script:
-        - sudo apt-get install -y clang-3.9 libc++abi-dev libc++-dev
-        - cmake -G "Ninja" -DCMAKE_CXX_COMPILER="clang++-3.9" -DCMAKE_BUILD_TYPE=Debug -DNANO_WITH_WERROR=ON -DNANO_WITH_LIBCPP=ON ..
+        - sudo apt-get install -y clang-3.9
+        - cmake -G "Ninja" -DCMAKE_CXX_COMPILER="clang++-3.9" -DCMAKE_BUILD_TYPE=Debug -DNANO_WITH_WERROR=ON ..
         - ninja
         - ./apps/info --system
-        - ctest -j 2 -E "test_task_*"
+        - ctest --output-on-failure -j 2 -E "test_task_*"
 
     - os: linux
       compiler: clang++-4.0
       env:
         - TEST="build (clang++-4.0)"
       script:
-        - sudo apt-get install -y clang-4.0 libc++abi-dev libc++-dev
-        - cmake -G "Ninja" -DCMAKE_CXX_COMPILER="clang++-4.0" -DCMAKE_BUILD_TYPE=Debug -DNANO_WITH_WERROR=ON -DNANO_WITH_LIBCPP=ON ..
+        - sudo apt-get install -y clang-4.0
+        - cmake -G "Ninja" -DCMAKE_CXX_COMPILER="clang++-4.0" -DCMAKE_BUILD_TYPE=Debug -DNANO_WITH_WERROR=ON ..
         - ninja
         - ./apps/info --system
-        - ctest -j 2 -E "test_task_*"
+        - ctest --output-on-failure -j 2 -E "test_task_*"
 
     - os: linux
       compiler: clang++-5.0
       env:
         - TEST="build (clang++-5.0)"
       script:
-        - sudo apt-get install -y clang-5.0 libc++abi-dev libc++-dev
-        - cmake -G "Ninja" -DCMAKE_CXX_COMPILER="clang++-5.0" -DCMAKE_BUILD_TYPE=Debug -DNANO_WITH_WERROR=ON -DNANO_WITH_LIBCPP=ON ..
+        - sudo apt-get install -y clang-5.0
+        - cmake -G "Ninja" -DCMAKE_CXX_COMPILER="clang++-5.0" -DCMAKE_BUILD_TYPE=Debug -DNANO_WITH_WERROR=ON ..
         - ninja
         - ./apps/info --system
-        - ctest -j 2 -E "test_task_*"
+        - ctest --output-on-failure -j 2 -E "test_task_*"
 
     - os: linux
       compiler: clang++-5.0
       env:
         - TEST="ASAN (clang++-5.0)"
       script:
-        - sudo apt-get install -y clang-5.0 libc++abi-dev libc++-dev
-        - cmake -G "Ninja" -DCMAKE_CXX_COMPILER="clang++-5.0" -DCMAKE_BUILD_TYPE=Debug -DNANO_WITH_WERROR=ON -DNANO_WITH_LIBCPP=ON -DNANO_WITH_ASAN=ON ..
+        - sudo apt-get install -y clang-5.0
+        - cmake -G "Ninja" -DCMAKE_CXX_COMPILER="clang++-5.0" -DCMAKE_BUILD_TYPE=Debug -DNANO_WITH_WERROR=ON -DNANO_WITH_ASAN=ON ..
         - ninja
         - ./apps/info --system
-        - ctest -j 2 -E "test_task_*"
+        - ctest --output-on-failure -j 2 -E "test_task_*"
 
     - os: linux
       compiler: clang++-5.0
       env:
         - TEST="MSAN (clang++-5.0)"
       script:
-        - sudo apt-get install -y clang-5.0 libc++abi-dev libc++-dev
-        - cmake -G "Ninja" -DCMAKE_CXX_COMPILER="clang++-5.0" -DCMAKE_BUILD_TYPE=Debug -DNANO_WITH_WERROR=ON -DNANO_WITH_LIBCPP=ON -DNANO_WITH_MSAN=ON ..
+        - sudo apt-get install -y clang-5.0
+        - cmake -G "Ninja" -DCMAKE_CXX_COMPILER="clang++-5.0" -DCMAKE_BUILD_TYPE=Debug -DNANO_WITH_WERROR=ON -DNANO_WITH_MSAN=ON ..
         - ninja
         - ./apps/info --system
-        - ctest -j 2 -E "test_task_*"
+        - ctest --output-on-failure -j 2 -E "test_task_*"
 
     - os: linux
       compiler: clang++-5.0
       env:
         - TEST="TSAN (clang++-5.0)"
       script:
-        - sudo apt-get install -y clang-5.0 libc++abi-dev libc++-dev
-        - cmake -G "Ninja" -DCMAKE_CXX_COMPILER="clang++-5.0" -DCMAKE_BUILD_TYPE=Debug -DNANO_WITH_WERROR=ON -DNANO_WITH_LIBCPP=ON -DNANO_WITH_TSAN=ON ..
+        - sudo apt-get install -y clang-5.0
+        - cmake -G "Ninja" -DCMAKE_CXX_COMPILER="clang++-5.0" -DCMAKE_BUILD_TYPE=Debug -DNANO_WITH_WERROR=ON -DNANO_WITH_TSAN=ON ..
         - ninja
         - ./apps/info --system
-        - ctest -j 2 -E "test_task_*"
+        - ctest --output-on-failure -j 2 -E "test_task_*"
 
     - os: linux
       compiler: clang++-5.0
       env:
         - TEST="clang-tidy (clang++-5.0)"
       script:
-        - sudo apt-get install -y clang-5.0 clang-tidy-5.0 libc++abi-dev libc++-dev
-        - cmake -G "Ninja" -DCMAKE_CXX_COMPILER="clang++-5.0" -DCMAKE_BUILD_TYPE=Debug -DNANO_WITH_WERROR=ON -DNANO_WITH_LIBCPP=ON -DNANO_WITH_CLANG_TIDY=ON ..
+        - sudo apt-get install -y clang-5.0 clang-tidy-5.0
+        - cmake -G "Ninja" -DCMAKE_CXX_COMPILER="clang++-5.0" -DCMAKE_BUILD_TYPE=Debug -DNANO_WITH_WERROR=ON -DNANO_WITH_CLANG_TIDY=ON ..
         - ninja tidy > output.txt
         - |
           if [[ -n $(grep "warning: " output.txt) ]] || [[ -n $(grep "error: " output.txt) ]]; then
@@ -195,10 +195,10 @@ matrix:
       env:
         - TEST="valgrind (clang++-5.0)"
       script:
-        - sudo apt-get install -y clang-5.0 libc++abi-dev libc++-dev valgrind
-        - cmake -G "Ninja" -DCMAKE_CXX_COMPILER="clang++-5.0" -DCMAKE_BUILD_TYPE=Release -DNANO_WITH_WERROR=ON -DNANO_WITH_LIBCPP=ON ..
+        - sudo apt-get install -y clang-5.0 valgrind
+        - cmake -G "Ninja" -DCMAKE_CXX_COMPILER="clang++-5.0" -DCMAKE_BUILD_TYPE=Release -DNANO_WITH_WERROR=ON ..
         - ninja
-        - ctest -T memcheck -E "test_task_*"
+        - ctest --output-on-failure -T memcheck -E "test_task_*"
 
     - os: osx
       compiler: clang++
@@ -209,7 +209,7 @@ matrix:
         - cmake -G "Ninja" -DCMAKE_BUILD_TYPE=Debug -DNANO_WITH_WERROR=ON ..
         - ninja
         - ./apps/info --system
-        - ctest -j 2 -E "test_task_*"
+        - ctest --output-on-failure -j 2 -E "test_task_*"
 
     - os: osx
       compiler: clang++
@@ -220,7 +220,7 @@ matrix:
         - cmake -G "Ninja" -DCMAKE_BUILD_TYPE=Debug -DNANO_WITH_WERROR=ON ..
         - ninja
         - ./apps/info --system
-        - ctest -j 2 -E "test_task_*"
+        - ctest --output-on-failure -j 2 -E "test_task_*"
 
     - os: osx
       compiler: clang++
@@ -231,4 +231,4 @@ matrix:
         - cmake -G "Ninja" -DCMAKE_BUILD_TYPE=Debug -DNANO_WITH_WERROR=ON ..
         - ninja
         - ./apps/info --system
-        - ctest -j 2 -E "test_task_*"
+        - ctest --output-on-failure -j 2 -E "test_task_*"
