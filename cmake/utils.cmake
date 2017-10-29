@@ -135,14 +135,12 @@ function(setup_clang_tidy)
             -clang-tidy-binary ${CLANG_TIDY_BIN}
             -header-filter=.*
             -checks=clan*,cert*,misc*,perf*,cppc*,read*,mode*,-cert-err58-cpp,-misc-noexcept-move-constructor
-            -j3
-        )
+            -j3)
 
         add_custom_target(
             tidy
             COMMAND ${RUN_CLANG_TIDY_BIN} ${RUN_CLANG_TIDY_BIN_ARGS}
-            COMMENT "running clang tidy"
-        )
+            COMMENT "running clang tidy")
 endfunction()
 
 # setup LTO
