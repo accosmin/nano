@@ -1,6 +1,3 @@
-# setup CMake to run tests
-enable_testing()
-
 # build unit tests
 make_test(test_average.cpp "")
 make_test(test_cubic.cpp "")

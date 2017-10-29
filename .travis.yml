@@ -32,150 +32,150 @@ matrix:
     - os: linux
       compiler: g++-4.9
       env:
-        - TEST="Build g++-4.9"
+        - TEST="build (g++-4.9)"
       script:
         - sudo apt-get install -y g++-4.9
         - cmake -G "Ninja" -DCMAKE_CXX_COMPILER="g++-4.9" -DCMAKE_BUILD_TYPE=Debug -DNANO_WITH_WERROR=ON ..
         - ninja
         - ./apps/info --system
-        - cd test && time ctest -j 2 -E "test_task_*"
+        - ctest -j 2 -E "test_task_*"
 
     - os: linux
       compiler: g++-5
       env:
-        - TEST="Build g++-5"
+        - TEST="build (g++-5)"
       script:
         - sudo apt-get install -y g++-5
         - cmake -G "Ninja" -DCMAKE_CXX_COMPILER="g++-5" -DCMAKE_BUILD_TYPE=Debug -DNANO_WITH_WERROR=ON ..
         - ninja
         - ./apps/info --system
-        - cd test && time ctest -j 2 -E "test_task_*"
+        - ctest -j 2 -E "test_task_*"
 
     - os: linux
       compiler: g++-6
       env:
-        - TEST="Build g++-6"
+        - TEST="build (g++-6)"
       script:
         - sudo apt-get install -y g++-6
         - cmake -G "Ninja" -DCMAKE_CXX_COMPILER="g++-6" -DCMAKE_BUILD_TYPE=Debug -DNANO_WITH_WERROR=ON ..
         - ninja
         - ./apps/info --system
-        - cd test && time ctest -j 2 -E "test_task_*"
+        - ctest -j 2 -E "test_task_*"
 
     - os: linux
       compiler: g++-7
       env:
-        - TEST="Build g++-7"
+        - TEST="build (g++-7)"
       script:
         - sudo apt-get install -y g++-7
         - cmake -G "Ninja" -DCMAKE_CXX_COMPILER="g++-7" -DCMAKE_BUILD_TYPE=Debug -DNANO_WITH_WERROR=ON ..
         - ninja
         - ./apps/info --system
-        - cd test && time ctest -j 2 -E "test_task_*"
+        - ctest -j 2 -E "test_task_*"
 
     - os: linux
       compiler: clang++-3.6
       env:
-        - TEST="Build clang++-3.6"
+        - TEST="build (clang++-3.6)"
       script:
         - sudo apt-get install -y clang-3.6 libc++abi-dev libc++-dev
         - cmake -G "Ninja" -DCMAKE_CXX_COMPILER="clang++-3.6" -DCMAKE_BUILD_TYPE=Debug -DNANO_WITH_WERROR=ON -DNANO_WITH_LIBCPP=ON ..
         - ninja
         - ./apps/info --system
-        - cd test && time ctest -j 2 -E "test_task_*"
+        - ctest -j 2 -E "test_task_*"
 
 #    - os: linux
 #      compiler: clang++-3.7
 #      env:
-#        - TEST="Build clang++-3.7"
+#        - TEST="build (clang++-3.7)"
 #      script:
 #        - sudo apt-get install -y clang-3.7 libc++abi-dev libc++-dev
 #        - cmake -G "Ninja" -DCMAKE_CXX_COMPILER="clang++-3.7" -DCMAKE_BUILD_TYPE=Debug -DNANO_WITH_WERROR=ON -DNANO_WITH_LIBCPP=ON ..
 #        - ninja
 #        - ./apps/info --system
-#        - cd test && time ctest -j 2 -E "test_task_*"
+#        - ctest -j 2 -E "test_task_*"
 
     - os: linux
       compiler: clang++-3.8
       env:
-        - TEST="Build clang++-3.8"
+        - TEST="build (clang++-3.8)"
       script:
         - sudo apt-get install -y clang-3.8 libc++abi-dev libc++-dev
         - cmake -G "Ninja" -DCMAKE_CXX_COMPILER="clang++-3.8" -DCMAKE_BUILD_TYPE=Debug -DNANO_WITH_WERROR=ON -DNANO_WITH_LIBCPP=ON ..
         - ninja
         - ./apps/info --system
-        - cd test && time ctest -j 2 -E "test_task_*"
+        - ctest -j 2 -E "test_task_*"
 
     - os: linux
       compiler: clang++-3.9
       env:
-        - TEST="Build clang++-3.9"
+        - TEST="build (clang++-3.9)"
       script:
         - sudo apt-get install -y clang-3.9 libc++abi-dev libc++-dev
         - cmake -G "Ninja" -DCMAKE_CXX_COMPILER="clang++-3.9" -DCMAKE_BUILD_TYPE=Debug -DNANO_WITH_WERROR=ON -DNANO_WITH_LIBCPP=ON ..
         - ninja
         - ./apps/info --system
-        - cd test && time ctest -j 2 -E "test_task_*"
+        - ctest -j 2 -E "test_task_*"
 
     - os: linux
       compiler: clang++-4.0
       env:
-        - TEST="Build clang++-4.0"
+        - TEST="build (clang++-4.0)"
       script:
         - sudo apt-get install -y clang-4.0 libc++abi-dev libc++-dev
         - cmake -G "Ninja" -DCMAKE_CXX_COMPILER="clang++-4.0" -DCMAKE_BUILD_TYPE=Debug -DNANO_WITH_WERROR=ON -DNANO_WITH_LIBCPP=ON ..
         - ninja
         - ./apps/info --system
-        - cd test && time ctest -j 2 -E "test_task_*"
+        - ctest -j 2 -E "test_task_*"
 
     - os: linux
       compiler: clang++-5.0
       env:
-        - TEST="Build clang++-5.0"
+        - TEST="build (clang++-5.0)"
       script:
         - sudo apt-get install -y clang-5.0 libc++abi-dev libc++-dev
         - cmake -G "Ninja" -DCMAKE_CXX_COMPILER="clang++-5.0" -DCMAKE_BUILD_TYPE=Debug -DNANO_WITH_WERROR=ON -DNANO_WITH_LIBCPP=ON ..
         - ninja
         - ./apps/info --system
-        - cd test && time ctest -j 2 -E "test_task_*"
+        - ctest -j 2 -E "test_task_*"
 
     - os: linux
       compiler: clang++-5.0
       env:
-        - TEST="ASAN clang++-5.0"
+        - TEST="ASAN (clang++-5.0)"
       script:
         - sudo apt-get install -y clang-5.0 libc++abi-dev libc++-dev
         - cmake -G "Ninja" -DCMAKE_CXX_COMPILER="clang++-5.0" -DCMAKE_BUILD_TYPE=Debug -DNANO_WITH_WERROR=ON -DNANO_WITH_LIBCPP=ON -DNANO_WITH_ASAN=ON ..
         - ninja
         - ./apps/info --system
-        - cd test && time ctest -j 2 -E "test_task_*"
+        - ctest -j 2 -E "test_task_*"
 
     - os: linux
       compiler: clang++-5.0
       env:
-        - TEST="MSAN clang++-5.0"
+        - TEST="MSAN (clang++-5.0)"
       script:
         - sudo apt-get install -y clang-5.0 libc++abi-dev libc++-dev
         - cmake -G "Ninja" -DCMAKE_CXX_COMPILER="clang++-5.0" -DCMAKE_BUILD_TYPE=Debug -DNANO_WITH_WERROR=ON -DNANO_WITH_LIBCPP=ON -DNANO_WITH_MSAN=ON ..
         - ninja
         - ./apps/info --system
-        - cd test && time ctest -j 2 -E "test_task_*"
+        - ctest -j 2 -E "test_task_*"
 
     - os: linux
       compiler: clang++-5.0
       env:
-        - TEST="TSAN clang++-5.0"
+        - TEST="TSAN (clang++-5.0)"
       script:
         - sudo apt-get install -y clang-5.0 libc++abi-dev libc++-dev
         - cmake -G "Ninja" -DCMAKE_CXX_COMPILER="clang++-5.0" -DCMAKE_BUILD_TYPE=Debug -DNANO_WITH_WERROR=ON -DNANO_WITH_LIBCPP=ON -DNANO_WITH_TSAN=ON ..
         - ninja
         - ./apps/info --system
-        - cd test && time ctest -j 2 -E "test_task_*"
+        - ctest -j 2 -E "test_task_*"
 
     - os: linux
       compiler: clang++-5.0
       env:
-        - TEST="TIDY clang++-5.0"
+        - TEST="clang-tidy (clang++-5.0)"
       script:
         - sudo apt-get install -y clang-5.0 clang-tidy-5.0 libc++abi-dev libc++-dev
         - cmake -G "Ninja" -DCMAKE_CXX_COMPILER="clang++-5.0" -DCMAKE_BUILD_TYPE=Debug -DNANO_WITH_WERROR=ON -DNANO_WITH_LIBCPP=ON -DNANO_WITH_CLANG_TIDY=ON ..
@@ -190,35 +190,45 @@ matrix:
               echo -e "\033[1;32m\xE2\x9C\x93 passed:\033[0m $1";
           fi
 
+    - os: linux
+      compiler: clang++-5.0
+      env:
+        - TEST="valgrind (clang++-5.0)"
+      script:
+        - sudo apt-get install -y clang-5.0 clang-tidy-5.0 libc++abi-dev libc++-dev valgrind
+        - cmake -G "Ninja" -DCMAKE_CXX_COMPILER="clang++-5.0" -DCMAKE_BUILD_TYPE=Debug -DNANO_WITH_WERROR=ON -DNANO_WITH_LIBCPP=ON ..
+        - ninja
+        - ctest -T memcheck -E "test_task_*"
+
     - os: osx
       compiler: clang++
       osx_image: xcode7.3
       env:
-        - TEST="Build xcode7.3"
+        - TEST="build (xcode7.3)"
       script:
         - cmake -G "Ninja" -DCMAKE_BUILD_TYPE=Debug -DNANO_WITH_WERROR=ON ..
         - ninja
         - ./apps/info --system
-        - cd test && time ctest -j 2 -E "test_task_*"
+        - ctest -j 2 -E "test_task_*"
 
     - os: osx
       compiler: clang++
       osx_image: xcode8.3
       env:
-        - TEST="Build xcode8.3"
+        - TEST="build (xcode8.3)"
       script:
         - cmake -G "Ninja" -DCMAKE_BUILD_TYPE=Debug -DNANO_WITH_WERROR=ON ..
         - ninja
         - ./apps/info --system
-        - cd test && time ctest -j 2 -E "test_task_*"
+        - ctest -j 2 -E "test_task_*"
 
     - os: osx
       compiler: clang++
       osx_image: xcode9.1
       env:
-        - TEST="Build xcode9.1"
+        - TEST="build (xcode9.1)"
       script:
         - cmake -G "Ninja" -DCMAKE_BUILD_TYPE=Debug -DNANO_WITH_WERROR=ON ..
         - ninja
         - ./apps/info --system
-        - cd test && time ctest -j 2 -E "test_task_*"
+        - ctest -j 2 -E "test_task_*"
