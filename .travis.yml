@@ -196,7 +196,7 @@ matrix:
         - TEST="valgrind (clang++-5.0)"
       script:
         - sudo apt-get install -y clang-5.0 clang-tidy-5.0 libc++abi-dev libc++-dev valgrind
-        - cmake -G "Ninja" -DCMAKE_CXX_COMPILER="clang++-5.0" -DCMAKE_BUILD_TYPE=Debug -DNANO_WITH_WERROR=ON -DNANO_WITH_LIBCPP=ON ..
+        - cmake -G "Ninja" -DCMAKE_CXX_COMPILER="clang++-5.0" -DCMAKE_BUILD_TYPE=Release -DNANO_WITH_WERROR=ON -DNANO_WITH_LIBCPP=ON ..
         - ninja
         - ctest -T memcheck -E "test_task_*"
 
