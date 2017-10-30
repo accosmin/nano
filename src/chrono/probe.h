@@ -28,7 +28,7 @@ namespace nano
                         assert(count > 0);
                         const timer_t timer;
                         op();
-                        m_timings(timer.microseconds().count() / count);
+                        m_timings(timer.nanoseconds().count() / count);
                 }
 
                 operator bool() const { return m_timings; }
@@ -38,7 +38,7 @@ namespace nano
                 const auto& fullname() const { return m_fullname; }
 
                 auto flops() const { return m_flops; }
-                auto gflops() const { return nano::gflops(flops(), microseconds_t(timings().min())); }
+                auto gflops() const { return nano::gflops(flops(), nanoseconds_t(timings().min())); }
 
                 // attributes
                 std::string     m_basename;             ///<

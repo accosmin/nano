@@ -35,8 +35,7 @@ NANO_CASE(probe)
         probe.measure([] () {});
 
         NANO_CHECK_EQUAL(probe.flops(), flops);
-        NANO_CHECK_EQUAL(probe.gflops(), nano::gflops(flops, nano::nanoseconds_t(0)));
+        NANO_CHECK_EQUAL(probe.gflops(), nano::gflops(flops, nano::nanoseconds_t(probe.timings().min())));
 }
 
 NANO_END_MODULE()
-
