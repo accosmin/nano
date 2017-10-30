@@ -131,15 +131,25 @@ function(setup_clang_tidy)
         find_program(CLANG_TIDY_BIN NAMES clang-tidy-5.0 clang-tidy)
         find_program(RUN_CLANG_TIDY_BIN NAMES run-clang-tidy-5.0.py run-clang-tidy.py HINTS /usr/share/clang/)
 
-        list(APPEND RUN_CLANG_TIDY_BIN_ARGS
-            -clang-tidy-binary ${CLANG_TIDY_BIN}
-            -header-filter=.*
-            -checks=-*,modernize*,performance*,clang-analyzer*)
-
         add_custom_target(
             tidy
-            COMMAND ${RUN_CLANG_TIDY_BIN} ${RUN_CLANG_TIDY_BIN_ARGS}
-            COMMENT "running clang tidy")
+            COMMAND ${RUN_CLANG_TIDY_BIN} -clang-tidy-binary ${CLANG_TIDY_BIN} -header-filter=.* -checks=*
+            COMMENT "running clang tidy (everything)")
+
+        add_custom_target(
+            tidy-modernize
+            COMMAND ${RUN_CLANG_TIDY_BIN} -clang-tidy-binary ${CLANG_TIDY_BIN} -header-filter=.* -checks=-*,modernize*
+            COMMENT "running clang tidy (modernize)")
+
+        add_custom_target(
+            tidy-performance
+            COMMAND ${RUN_CLANG_TIDY_BIN} -clang-tidy-binary ${CLANG_TIDY_BIN} -header-filter=.* -checks=-*,performance*
+            COMMENT "running clang tidy (performance)")
+
+        add_custom_target(
+            tidy-clang-analyzer
+            COMMAND ${RUN_CLANG_TIDY_BIN} -clang-tidy-binary ${CLANG_TIDY_BIN} -header-filter=.* -checks=-*,clang-analyzer*
+            COMMENT "running clang tidy (clang-analyzer)")
 endfunction()
 
 # setup LTO
