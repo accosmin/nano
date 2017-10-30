@@ -128,16 +128,16 @@ matrix:
         - ./apps/info --system
         - ctest --output-on-failure -j 2 -E "test_task_*"
 
-    - os: linux
-      compiler: clang++-5.0
-      env:
-        - TEST="MSAN (clang++-5.0)"
-      script:
-        - sudo apt-get install -y clang-5.0 g++-6
-        - cmake -G "Ninja" -DCMAKE_CXX_COMPILER="clang++-5.0" -DCMAKE_BUILD_TYPE=Debug -DNANO_WITH_WERROR=ON -DNANO_WITH_MSAN=ON ..
-        - ninja
-        - ./apps/info --system
-        - ctest --output-on-failure -j 2 -E "test_task_*"
+#    - os: linux
+#      compiler: clang++-5.0
+#      env:
+#        - TEST="MSAN (clang++-5.0)"
+#      script:
+#        - sudo apt-get install -y clang-5.0 g++-6
+#        - cmake -G "Ninja" -DCMAKE_CXX_COMPILER="clang++-5.0" -DCMAKE_BUILD_TYPE=Debug -DNANO_WITH_WERROR=ON -DNANO_WITH_MSAN=ON ..
+#        - ninja
+#        - ./apps/info --system
+#        - ctest --output-on-failure -j 2 -E "test_task_*"
 
     - os: linux
       compiler: clang++-5.0
