@@ -157,6 +157,7 @@ matrix:
       script:
         - sudo apt-get install -y clang-5.0 g++-6 clang-tidy-5.0
         - cmake -G "Ninja" -DCMAKE_CXX_COMPILER="clang++-5.0" -DCMAKE_BUILD_TYPE=Debug -DNANO_WITH_WERROR=ON -DNANO_WITH_CLANG_TIDY=ON ..
+        - ninja tidy-bugprone | tee tidy_bugprone.txt
         - ninja tidy-modernize | tee tidy_modernize.txt
         - ninja tidy-performance | tee tidy_performance.txt
         - ninja tidy-clang-analyzer | tee tidy_clang_analyzer.txt

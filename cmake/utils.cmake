@@ -137,6 +137,11 @@ function(setup_clang_tidy)
             COMMENT "running clang tidy (everything)")
 
         add_custom_target(
+            tidy-bugprone
+            COMMAND ${RUN_CLANG_TIDY_BIN} -clang-tidy-binary ${CLANG_TIDY_BIN} -header-filter=.* -checks=-*,bugprone*
+            COMMENT "running clang tidy (bugprone)")
+
+        add_custom_target(
             tidy-modernize
             COMMAND ${RUN_CLANG_TIDY_BIN} -clang-tidy-binary ${CLANG_TIDY_BIN} -header-filter=.* -checks=-*,modernize*
             COMMENT "running clang tidy (modernize)")
