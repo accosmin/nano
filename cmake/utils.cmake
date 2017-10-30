@@ -185,6 +185,15 @@ function(setup_lto)
         endif()
 endfunction()
 
+# setup valgrind within CTest
+function(setup_valgrind)
+        set(MEMORYCHECK_COMMAND_OPTIONS "${MEMORYCHECK_COMMAND_OPTIONS} --leak-check=full")
+        set(MEMORYCHECK_COMMAND_OPTIONS "${MEMORYCHECK_COMMAND_OPTIONS} --track-fds=yes")
+        set(MEMORYCHECK_COMMAND_OPTIONS "${MEMORYCHECK_COMMAND_OPTIONS} --track-origins=yes")
+        set(MEMORYCHECK_COMMAND_OPTIONS "${MEMORYCHECK_COMMAND_OPTIONS} --trace-children=yes")
+        set(MEMORYCHECK_COMMAND_OPTIONS "${MEMORYCHECK_COMMAND_OPTIONS} --error-exitcode=1")
+endfunction()
+
 # function to create an application
 function(make_app app libs)
         get_filename_component(app_name ${app} NAME_WE)
@@ -193,9 +202,9 @@ function(make_app app libs)
 endfunction()
 
 # function to create a unit test application
-macro(make_test test libs)
+function(make_test test libs)
         get_filename_component(test_name ${test} NAME_WE)
         add_executable(${test_name} ${test})
         target_link_libraries(${test_name} ${libs})
         add_test(${test_name} ${test_name})
-endmacro()
+endfunction()
