@@ -25,7 +25,7 @@ struct model_wrt_params_function_t final : public function_t
                 m_targets(cat_dims(count, model->odims()))
         {
                 m_model->random();
-                m_inputs.random(scalar_t(-0.1), scalar_t(+0.1));
+                m_inputs.random(0, 1);
                 for (auto x = 0; x < count; ++ x)
                 {
                         m_targets.vector(x) = class_target(x % model->osize(), model->osize());
@@ -71,7 +71,7 @@ struct model_wrt_inputs_function_t final : public function_t
                 m_targets(cat_dims(count, model->odims()))
         {
                 m_model->random();
-                m_inputs.random(scalar_t(-0.1), scalar_t(+0.1));
+                m_inputs.random(0, 1);
                 for (auto x = 0; x < count; ++ x)
                 {
                         m_targets.vector(x) = class_target(x % model->osize(), model->osize());
@@ -144,7 +144,7 @@ static auto get_model(const string_t& description)
 }
 
 static void test_model(const string_t& model_description, const tensor_size_t expected_psize,
-        const scalar_t epsilon = epsilon1<scalar_t>())
+        const scalar_t epsilon = 3 * epsilon1<scalar_t>())
 {
         const auto model = get_model(model_description);
         NANO_CHECK_EQUAL(model->psize(), expected_psize);
@@ -230,16 +230,14 @@ NANO_CASE(norm_global_layer)
 {
         test_model(
                 make_norm_globally_layer(),
-                apsize(cmd_idims, cmd_odims),
-                2 * epsilon1<scalar_t>());
+                apsize(cmd_idims, cmd_odims));
 }
 
 NANO_CASE(norm_plane_layer)
 {
         test_model(
                 make_norm_by_plane_layer(),
-                apsize(cmd_idims, cmd_odims),
-                2 * epsilon1<scalar_t>());
+                apsize(cmd_idims, cmd_odims));
 }
 
 NANO_CASE(multi_layer)
