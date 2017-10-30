@@ -4,7 +4,9 @@
 using namespace nano;
 
 function_state_t::function_state_t(const tensor_size_t size) :
-        x(size), g(size), d(size),
+        x(vector_t::Zero(size)),
+        g(vector_t::Zero(size)),
+        d(vector_t::Zero(size)),
         f(std::numeric_limits<scalar_t>::max()),
         m_status(opt_status::max_iters)
 {
