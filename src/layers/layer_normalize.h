@@ -50,7 +50,6 @@ namespace nano
 
                 // attributes
                 tensor3d_dims_t m_xdims;        ///< input/output dimensions
-                norm_type       m_type;
                 probe_t         m_probe_output;
                 probe_t         m_probe_ginput;
                 probe_t         m_probe_gparam;

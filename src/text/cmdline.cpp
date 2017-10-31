@@ -16,8 +16,7 @@ struct option_t
                 m_short_name(std::move(short_name)),
                 m_name(std::move(name)),
                 m_description(std::move(description)),
-                m_default_value(std::move(default_value)),
-                m_given(false)
+                m_default_value(std::move(default_value))
         {
         }
 
@@ -44,7 +43,7 @@ struct option_t
         string_t        m_description;
         string_t        m_default_value;
         string_t        m_value;
-        bool            m_given;
+        bool            m_given{false};
 };
 
 bool operator==(const option_t& option, const string_t& name_or_short_name)

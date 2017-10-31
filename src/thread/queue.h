@@ -18,7 +18,7 @@ namespace nano
                 ///
                 /// \brief constructor
                 ///
-                worker_queue_t() : m_stop(false) {}
+                worker_queue_t() = default;
 
                 ///
                 /// \brief enqueue a new task to execute
@@ -40,6 +40,6 @@ namespace nano
                 std::deque<worker_task_t>       m_tasks;                ///< tasks to execute
                 mutable std::mutex              m_mutex;                ///< synchronization
                 mutable std::condition_variable m_condition;            ///< signaling
-                bool                            m_stop;                 ///< stop requested
+                bool                            m_stop{false};          ///< stop requested
         };
 }

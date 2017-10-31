@@ -47,8 +47,7 @@ static void gnorm(tiarray&& iarray, const toarray& oarray)
 
 normalize_layer_t::normalize_layer_t(const string_t& params) :
         layer_t(to_params(params, "type", to_string(norm_type::plane) + "[" + concatenate(enum_values<norm_type>()) + "]")),
-        m_xdims({0, 0, 0}),
-        m_type(norm_type::plane)
+        m_xdims({0, 0, 0})
 {
 }
 
@@ -60,7 +59,6 @@ rlayer_t normalize_layer_t::clone() const
 bool normalize_layer_t::configure(const tensor3d_dims_t& idims, const string_t& name)
 {
         m_xdims = idims;
-        m_type = from_params<norm_type>(config(), "type");
         m_probe_output = probe_t{name, name + "(output)", 5 * isize()};
         m_probe_ginput = probe_t{name, name + "(ginput)", 12 * isize()};
         m_probe_gparam = probe_t{name, name + "(gparam)", 0};
@@ -77,7 +75,7 @@ void normalize_layer_t::output(const tensor4d_t& idata, const tensor1d_t& pdata,
         const auto imaps = idata.size<1>();
         m_probe_output.measure([&] ()
         {
-                switch (m_type)
+                switch (from_params<norm_type>(config(), "type"))
                 {
                 case norm_type::global:
                         for (auto x = 0; x < count; ++ x)
@@ -108,7 +106,7 @@ void normalize_layer_t::ginput(tensor4d_t& idata, const tensor1d_t& pdata, const
         const auto imaps = idata.size<1>();
         m_probe_ginput.measure([&] ()
         {
-                switch (m_type)
+                switch (from_params<norm_type>(config(), "type"))
                 {
                 case norm_type::global:
                         for (auto x = 0; x < count; ++ x)
