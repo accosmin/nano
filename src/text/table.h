@@ -13,28 +13,31 @@ namespace nano
         ///
         struct NANO_PUBLIC cell_t
         {
-                cell_t();
+                cell_t() = default;
                 cell_t(string_t data, const size_t span, const alignment, const char fill);
 
                 // attributes
-                string_t                m_data;         ///<
-                string_t                m_mark;         ///<
-                size_t                  m_span;         ///< column spanning
-                char                    m_fill;         ///< filling character for aligning cells
-                alignment               m_alignment;    ///<
+                string_t        m_data;         ///<
+                string_t        m_mark;         ///<
+                size_t          m_span{1};      ///< column spanning
+                char            m_fill{' '};    ///< filling character for aligning cells
+                alignment       m_alignment{alignment::left};    ///<
         };
 
         ///
-        /// \brief
+        /// \brief control column spanning.
         ///
         struct colspan_t
         {
-                size_t                  m_span;
+                size_t          m_span{1};
         };
 
+        ///
+        /// \brief control filling for aligning text in a cell.
+        ///
         struct colfill_t
         {
-                char                    m_fill;
+                char            m_fill{' '};
         };
 
         inline colspan_t colspan(const size_t span) { return {span}; }
@@ -137,10 +140,10 @@ namespace nano
         private:
 
                 // attributes
-                mode                    m_type;
-                char                    m_colfill;      ///< current cell fill character
-                size_t                  m_colspan;      ///< current cell column span
-                alignment               m_alignment;    ///< current cell alignment
+                mode                    m_type{mode::data};             ///< row type
+                char                    m_colfill{' '};                 ///< current cell fill character
+                size_t                  m_colspan{1};                   ///< current cell column span
+                alignment               m_alignment{alignment::left};   ///< current cell alignment
                 std::vector<cell_t>     m_cells;
         };
 

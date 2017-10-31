@@ -6,21 +6,13 @@
 
 using namespace nano;
 
-cell_t::cell_t() :
-        m_span(1), m_fill(' '), m_alignment(alignment::left)
-{
-}
-
 cell_t::cell_t(string_t data, const size_t span, const alignment align, const char fill) :
         m_data(std::move(data)), m_span(span), m_fill(fill), m_alignment(align)
 {
 }
 
 row_t::row_t(const mode t) :
-        m_type(t),
-        m_colfill(' '),
-        m_colspan(1),
-        m_alignment(alignment::left)
+        m_type(t)
 {
 }
 

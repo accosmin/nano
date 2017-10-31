@@ -7,9 +7,9 @@
 namespace nano
 {
         ///
-        /// \brief data type
+        /// \brief data storage type.
         ///
-        enum class mat5_data_type
+        enum class mat5_dtype
         {
                 miINT8 = 1,
                 miUINT8 = 2,
@@ -30,21 +30,27 @@ namespace nano
                 miUNKNOWN
         };
 
-        enum class mat5_format_type
+        ///
+        /// \brief data format type.
+        ///
+        enum class mat5_ftype
         {
                 small,
                 regular
         };
 
-        enum class mat5_parent_type
+        ///
+        /// \brief data chunk parent type.
+        ///
+        enum class mat5_ptype
         {
                 none,
                 miMATRIX
         };
 
-        NANO_PUBLIC std::string to_string(const mat5_data_type);
-        NANO_PUBLIC std::string to_string(const mat5_format_type);
-        NANO_PUBLIC std::string to_string(const mat5_parent_type);
+        NANO_PUBLIC std::string to_string(const mat5_dtype);
+        NANO_PUBLIC std::string to_string(const mat5_ftype);
+        NANO_PUBLIC std::string to_string(const mat5_ptype);
 
         ///
         /// \brief matlab5 header.
@@ -75,7 +81,7 @@ namespace nano
                 ///
                 /// \brief constructor
                 ///
-                explicit mat5_section_t(const mat5_parent_type ptype = mat5_parent_type::none);
+                explicit mat5_section_t(const mat5_ptype ptype = mat5_ptype::none);
 
                 ///
                 /// \brief load from the input stream
@@ -96,12 +102,12 @@ namespace nano
                 bool matrix_data(istream_t&) const;
 
                 // attributes
-                std::streamsize         m_size;         ///< byte range of the whole section
-                std::streamsize         m_dsize;        ///< byte range of the data section
-                mat5_data_type          m_dtype;        ///<
-                mat5_format_type        m_ftype;        ///<
-                mat5_parent_type        m_ptype;        ///< parent type (e.g. if a sub-section of a miMATRIX section)
-                std::uint32_t           m_bytes;        ///< data section for small sections
+                std::streamsize m_size{0};      ///< byte range of the whole section
+                std::streamsize m_dsize{0};     ///< byte range of the data section
+                mat5_dtype      m_dtype{mat5_dtype::miUNKNOWN}; ///<
+                mat5_ftype      m_ftype{mat5_ftype::small};     ///<
+                mat5_ptype      m_ptype{mat5_ptype::none};      ///< parent type (e.g. if a sub-section of a miMATRIX section)
+                std::uint32_t   m_bytes{0};     ///< data section for small sections
         };
 
         NANO_PUBLIC std::ostream& operator<<(std::ostream&, const mat5_header_t&);

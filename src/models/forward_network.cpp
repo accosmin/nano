@@ -103,9 +103,9 @@ const tensor4d_t& forward_network_t::output(const tensor4d_t& idata)
         m_probe_output.measure([&] ()
         {
                 // forward step
-                for (auto it = m_layers.begin(); it != m_layers.end(); ++ it)
+                for (const auto& layer : m_layers)
                 {
-                        pidata = &(*it)->output(*pidata);
+                        pidata = &layer->output(*pidata);
                 }
         }, count);
 

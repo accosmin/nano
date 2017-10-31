@@ -116,7 +116,7 @@ tensor_size_t svhn_task_t::load_pixels(const mat5_section_t& section,
                 return 0;
         }
 
-        if (    section.m_dtype != mat5_data_type::miUINT8)
+        if (    section.m_dtype != mat5_dtype::miUINT8)
         {
                 log_error() << "SVHN: expecting miUINT8 image array!";
                 return 0;
@@ -159,7 +159,7 @@ tensor_size_t svhn_task_t::load_labels(const mat5_section_t& section,
                 return 0;
         }
 
-        if (    section.m_dtype != nano::mat5_data_type::miUINT8)
+        if (    section.m_dtype != nano::mat5_dtype::miUINT8)
         {
                 log_error() << "SVHN: expecting miUINT8 label array!";
                 return 0;

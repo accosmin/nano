@@ -17,7 +17,7 @@ namespace nano
                 ///
                 /// \brief constructor
                 ///
-                istream_t();
+                istream_t() = default;
 
                 ///
                 /// \brief disable copying
@@ -94,11 +94,11 @@ namespace nano
         private:
 
                 // attributes
-                buffer_t                m_buffer;       ///< buffer
-                std::streamsize         m_index;        ///< position in the buffer
-                io_status               m_status;       ///<
-                std::streamsize         m_tellg;        ///< position since begining
-                std::streamsize         m_gcount;
+                buffer_t                m_buffer;                       ///< buffer
+                std::streamsize         m_index{0};                     ///< position in the buffer
+                io_status               m_status{io_status::good};      ///<
+                std::streamsize         m_tellg{0};                     ///< position since begining
+                std::streamsize         m_gcount{0};                    ///< number of bytes read at the last operation
         };
 
         template <typename tstruct, typename>

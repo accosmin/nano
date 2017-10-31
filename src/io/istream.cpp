@@ -19,14 +19,6 @@ static std::streamsize chunk_size()
         return 1024 * 1024;
 }
 
-istream_t::istream_t() :
-        m_index(0),
-        m_status(io_status::good),
-        m_tellg(0),
-        m_gcount(0)
-{
-}
-
 std::streamsize istream_t::buffer(const std::streamsize num_bytes)
 {
         // read the missing buffered data (if possible)

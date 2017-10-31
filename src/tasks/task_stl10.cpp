@@ -135,7 +135,7 @@ bool stl10_task_t::load_gfile(const string_t& gfile, istream_t& stream,
         // load annotations
         while (stream.read(&label, 1) == 1)
         {
-                const tensor_size_t ilabel = static_cast<tensor_size_t>(label) - 1;
+                const auto ilabel = static_cast<tensor_size_t>(label) - 1;
 
                 if (ilabel >= 0 && ilabel < nano::size(odims()))
                 {
@@ -188,16 +188,15 @@ bool stl10_task_t::load_folds(const string_t& ifile, istream_t& stream,
                         return false;
                 }
 
-                const strings_t tokens = nano::split(line, " \t\n\r");
+                const auto tokens = nano::split(line, " \t\n\r");
 
                 size_t fcount = 0;
-                for (size_t t = 0; t < tokens.size(); ++ t)
+                for (const auto& token : tokens)
                 {
-                        const size_t i = nano::from_string<size_t>(tokens[t]);
+                        const auto i = nano::from_string<size_t>(token);
                         if (i < n_train)
                         {
                                 op_sample(make_fold(f, protocol::train), m_samples[n_test + i]);
-
                                 ++ fcount;
                         }
                         else
