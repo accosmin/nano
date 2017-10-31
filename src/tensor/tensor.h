@@ -303,19 +303,28 @@ namespace nano
                 ///
                 /// \brief access an element of the tensor
                 ///
-                tconst_reference operator()(const tensor_size_t index) const { return data()[index]; }
-                treference operator()(const tensor_size_t index) { return data()[index]; }
+                tconst_reference operator()(const tensor_size_t index) const
+                {
+                        assert(index >= 0 && index < size());
+                        return data()[index];
+                }
+
+                treference operator()(const tensor_size_t index)
+                {
+                        assert(index >= 0 && index < size());
+                        return data()[index];
+                }
 
                 template <typename... tindices>
                 tconst_reference operator()(const tensor_size_t index, const tindices... indices) const
                 {
-                        return data()[offset(index, indices...)];
+                        return operator()(offset(index, indices...));
                 }
 
                 template <typename... tindices>
                 treference operator()(const tensor_size_t index, const tindices... indices)
                 {
-                        return data()[offset(index, indices...)];
+                        return operator()(offset(index, indices...));
                 }
 
                 ///

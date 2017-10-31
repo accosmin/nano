@@ -8,18 +8,22 @@ namespace nano
         ///
         /// \brief stores the tuning result: optimum and its associated tuple of parameters.
         ///
-        template
-        <
-                typename toptimum,
-                typename tparameters
-        >
+        template <typename toptimum, typename tparameters>
         struct tune_result_t
         {
                 ///
                 /// \brief constructor
                 ///
-                tune_result_t() : m_initialized(false)
+                tune_result_t() : m_initialized(false), m_optimum(), m_parameters()
                 {
+                }
+
+                ///
+                /// \brief check if the result is initialized (aka tuned)
+                ///
+                operator bool() const
+                {
+                        return m_initialized;
                 }
 
                 ///

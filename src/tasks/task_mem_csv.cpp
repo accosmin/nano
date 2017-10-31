@@ -8,9 +8,10 @@ static void scale(const string_t& task_name, tensor3ds_t& samples)
 {
         const auto dims = samples.begin()->size();
 
-        vector_t maximums(dims);
+        vector_t maximums = vector_t::Zero(dims);
         for (const auto& sample : samples)
         {
+                assert(maximums.size() == sample.array().size());
                 maximums.array() = maximums.array().max(sample.array().abs());
         }
 
@@ -103,7 +104,10 @@ bool mem_csv_task_t::load_classification(const string_t& path, const string_t& t
         }
 
         // scale inputs to improve numerical robustness
-        scale(task_name, samples);
+        if (!samples.empty() && samples.begin()->size() > 0)
+        {
+                scale(task_name, samples);
+        }
 
         // setup task
         for (size_t i = 0; i < samples.size(); ++ i)

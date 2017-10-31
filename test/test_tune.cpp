@@ -24,12 +24,14 @@ static void check(const scalar_t a, const scalar_t b,
         {
                 const auto ret = tune(op1, log10_space);
 
+                NANO_REQUIRE(ret);
                 NANO_CHECK_CLOSE(ret.optimum(), b, epsilon);
                 NANO_CHECK_CLOSE(ret.param0(), a, epsilon);
         }
         {
                 const auto ret = tune(op1, linear_space);
 
+                NANO_REQUIRE(ret);
                 NANO_CHECK_CLOSE(ret.optimum(), b, epsilon);
                 NANO_CHECK_CLOSE(ret.param0(), a, epsilon);
         }
@@ -41,6 +43,7 @@ static void check(const scalar_t a, const scalar_t b,
         {
                 const auto ret = tune(op2, log10_space, log10_space);
 
+                NANO_REQUIRE(ret);
                 NANO_CHECK_CLOSE(ret.optimum(), b, epsilon);
                 NANO_CHECK_CLOSE(ret.param0(), b, epsilon);
                 NANO_CHECK_CLOSE(ret.param1(), a, epsilon);
@@ -48,6 +51,7 @@ static void check(const scalar_t a, const scalar_t b,
         {
                 const auto ret = tune(op2, linear_space, log10_space);
 
+                NANO_REQUIRE(ret);
                 NANO_CHECK_CLOSE(ret.optimum(), b, epsilon);
                 NANO_CHECK_CLOSE(ret.param0(), b, epsilon);
                 NANO_CHECK_CLOSE(ret.param1(), a, epsilon);
@@ -55,6 +59,7 @@ static void check(const scalar_t a, const scalar_t b,
         {
                 const auto ret = tune(op2, log10_space, linear_space);
 
+                NANO_REQUIRE(ret);
                 NANO_CHECK_CLOSE(ret.optimum(), b, epsilon);
                 NANO_CHECK_CLOSE(ret.param0(), b, epsilon);
                 NANO_CHECK_CLOSE(ret.param1(), a, epsilon);
@@ -62,6 +67,7 @@ static void check(const scalar_t a, const scalar_t b,
         {
                 const auto ret = tune(op2, linear_space, linear_space);
 
+                NANO_REQUIRE(ret);
                 NANO_CHECK_CLOSE(ret.optimum(), b, epsilon);
                 NANO_CHECK_CLOSE(ret.param0(), b, epsilon);
                 NANO_CHECK_CLOSE(ret.param1(), a, epsilon);
@@ -114,6 +120,11 @@ NANO_CASE(tune_finite)
         const auto ret2 = tune(op2, params1, params2);
         const auto ret3 = tune(op3, params1, params2, params3);
         const auto ret4 = tune(op4, params1, params2, params3, params4);
+
+        NANO_REQUIRE(ret1);
+        NANO_REQUIRE(ret2);
+        NANO_REQUIRE(ret3);
+        NANO_REQUIRE(ret4);
 
         NANO_CHECK_EQUAL(ret1.optimum(), op1(0));
         NANO_CHECK_EQUAL(ret1.param0(), 0);
