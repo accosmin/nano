@@ -78,7 +78,7 @@ matrix:
       env:
         - TEST="build (clang++-3.8)"
       script:
-        - sudo apt-get install -y clang-3.8 g++-6
+        - sudo apt-get install -y clang-3.8
         - cmake -G "Ninja" -DCMAKE_CXX_COMPILER="clang++-3.8" -DCMAKE_BUILD_TYPE=Debug -DNANO_WITH_WERROR=ON ..
         - ninja
         - ./apps/info --system
@@ -89,7 +89,7 @@ matrix:
       env:
         - TEST="build (clang++-3.9)"
       script:
-        - sudo apt-get install -y clang-3.9 g++-6
+        - sudo apt-get install -y clang-3.9
         - cmake -G "Ninja" -DCMAKE_CXX_COMPILER="clang++-3.9" -DCMAKE_BUILD_TYPE=Debug -DNANO_WITH_WERROR=ON ..
         - ninja
         - ./apps/info --system
@@ -100,7 +100,7 @@ matrix:
       env:
         - TEST="build (clang++-4.0)"
       script:
-        - sudo apt-get install -y clang-4.0 g++-6
+        - sudo apt-get install -y clang-4.0
         - cmake -G "Ninja" -DCMAKE_CXX_COMPILER="clang++-4.0" -DCMAKE_BUILD_TYPE=Debug -DNANO_WITH_WERROR=ON ..
         - ninja
         - ./apps/info --system
@@ -111,7 +111,7 @@ matrix:
       env:
         - TEST="build (clang++-5.0)"
       script:
-        - sudo apt-get install -y clang-5.0 g++-6
+        - sudo apt-get install -y clang-5.0
         - cmake -G "Ninja" -DCMAKE_CXX_COMPILER="clang++-5.0" -DCMAKE_BUILD_TYPE=Debug -DNANO_WITH_WERROR=ON ..
         - ninja
         - ./apps/info --system
@@ -122,7 +122,7 @@ matrix:
       env:
         - TEST="ASAN (clang++-5.0)"
       script:
-        - sudo apt-get install -y clang-5.0 g++-6
+        - sudo apt-get install -y clang-5.0
         - cmake -G "Ninja" -DCMAKE_CXX_COMPILER="clang++-5.0" -DCMAKE_BUILD_TYPE=Debug -DNANO_WITH_WERROR=ON -DNANO_WITH_ASAN=ON ..
         - ninja
         - ./apps/info --system
@@ -133,7 +133,7 @@ matrix:
 #      env:
 #        - TEST="MSAN (clang++-5.0)"
 #      script:
-#        - sudo apt-get install -y clang-5.0 g++-6
+#        - sudo apt-get install -y clang-5.0
 #        - cmake -G "Ninja" -DCMAKE_CXX_COMPILER="clang++-5.0" -DCMAKE_BUILD_TYPE=Debug -DNANO_WITH_WERROR=ON -DNANO_WITH_MSAN=ON ..
 #        - ninja
 #        - ./apps/info --system
@@ -144,7 +144,7 @@ matrix:
       env:
         - TEST="TSAN (clang++-5.0)"
       script:
-        - sudo apt-get install -y clang-5.0 g++-6
+        - sudo apt-get install -y clang-5.0
         - cmake -G "Ninja" -DCMAKE_CXX_COMPILER="clang++-5.0" -DCMAKE_BUILD_TYPE=Debug -DNANO_WITH_WERROR=ON -DNANO_WITH_TSAN=ON ..
         - ninja
         - ./apps/info --system
@@ -155,7 +155,7 @@ matrix:
       env:
         - TEST="clang-tidy (clang++-5.0)"
       script:
-        - sudo apt-get install -y clang-5.0 g++-6 clang-tidy-5.0
+        - sudo apt-get install -y clang-5.0 clang-tidy-5.0
         - cmake -G "Ninja" -DCMAKE_CXX_COMPILER="clang++-5.0" -DCMAKE_BUILD_TYPE=Debug -DNANO_WITH_WERROR=ON -DNANO_WITH_CLANG_TIDY=ON ..
         - ninja clang-tidy-bugprone > tidy_bugprone.txt
         - ninja clang-tidy-modernize > tidy_modernize.txt
@@ -177,7 +177,7 @@ matrix:
       env:
         - TEST="valgrind (clang++-5.0)"
       script:
-        - sudo apt-get install -y clang-5.0 g++-6 valgrind
+        - sudo apt-get install -y clang-5.0 valgrind
         - cmake -G "Ninja" -DCMAKE_CXX_COMPILER="clang++-5.0" -DCMAKE_BUILD_TYPE=Release -DNANO_WITH_WERROR=ON ..
         - ninja
         - ctest --output-on-failure -T memcheck -E "test_task_*"
