@@ -30,17 +30,6 @@ before_script:
 matrix:
   include:
     - os: linux
-      compiler: g++-4.9
-      env:
-        - TEST="build (g++-4.9)"
-      script:
-        - sudo apt-get install -y g++-4.9
-        - cmake -G "Ninja" -DCMAKE_CXX_COMPILER="g++-4.9" -DCMAKE_BUILD_TYPE=Debug -DNANO_WITH_WERROR=ON ..
-        - ninja
-        - ./apps/info --system
-        - ctest --output-on-failure -j 2 -E "test_task_*"
-
-    - os: linux
       compiler: g++-5
       env:
         - TEST="build (g++-5)"
@@ -164,7 +153,7 @@ matrix:
         - cat tidy_*.txt | grep -v header-filter >> output.txt
         - |
           if [[ -n $(grep "warning: " output.txt) ]] || [[ -n $(grep "error: " output.txt) ]]; then
-              echo "Clang-tidy detected the following warning and errors:"
+              echo "clang-tidy detected the following warning and errors:"
               echo ""
               grep --color -E '^|warning: |error: ' output.txt
               exit 1
