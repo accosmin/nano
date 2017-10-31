@@ -157,11 +157,11 @@ matrix:
       script:
         - sudo apt-get install -y clang-5.0 g++-6 clang-tidy-5.0
         - cmake -G "Ninja" -DCMAKE_CXX_COMPILER="clang++-5.0" -DCMAKE_BUILD_TYPE=Debug -DNANO_WITH_WERROR=ON -DNANO_WITH_CLANG_TIDY=ON ..
-        - ninja tidy-bugprone > tidy_bugprone.txt
-        - ninja tidy-modernize > tidy_modernize.txt
-        - ninja tidy-performance > tidy_performance.txt
-        - ninja tidy-clang-analyzer > tidy_clang_analyzer.txt
-        - cat tidy_*.txt >> output.txt
+        - ninja clang-tidy-bugprone > tidy_bugprone.txt
+        - ninja clang-tidy-modernize > tidy_modernize.txt
+        - ninja clang-tidy-performance > tidy_performance.txt
+        - ninja clang-tidy-clang-analyzer > tidy_clang_analyzer.txt
+        - cat tidy_*.txt | grep -v header-filter >> output.txt
         - |
           if [[ -n $(grep "warning: " output.txt) ]] || [[ -n $(grep "error: " output.txt) ]]; then
               echo "Clang-tidy detected the following warning and errors:"

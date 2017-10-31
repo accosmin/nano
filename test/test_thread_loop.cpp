@@ -58,7 +58,7 @@ NANO_CASE(evaluate)
         for (size_t size = min_size; size <= max_size; size *= 3)
         {
                 // single-threaded
-                const scalar_t st = test_st<scalar_t>(size, op);
+                const auto st = test_st<scalar_t>(size, op);
 
                 // multi-threaded
                 for (size_t nthreads = 1; nthreads <= nano::logical_cpus(); nthreads += 2)
@@ -67,7 +67,7 @@ NANO_CASE(evaluate)
 
                         for (size_t chunk = 1; chunk < 8; ++ chunk)
                         {
-                                const scalar_t mt = test_mt<scalar_t>(size, chunk, op);
+                                const auto mt = test_mt<scalar_t>(size, chunk, op);
                                 NANO_CHECK_CLOSE(st, mt, nano::epsilon1<scalar_t>());
                         }
                 }

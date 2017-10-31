@@ -17,7 +17,7 @@ namespace nano
         {
                 explicit cifar100_task_t(const string_t& params = string_t());
 
-                virtual bool populate() override;
+                bool populate() override;
 
                 bool load_binary(const string_t& filename, istream_t&, const protocol, const size_t);
         };

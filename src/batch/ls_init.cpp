@@ -14,17 +14,16 @@ ls_init_t::ls_init_t(const ls_initializer type) :
 
 scalar_t ls_init_t::operator()(const function_state_t& cstate)
 {
-        const scalar_t unit = scalar_t(1.0);
+        const auto unit = scalar_t(1.0);
 
         scalar_t t0 = unit;
 
         if (m_first)
         {
                 // following CG_DESCENT's initial procedure ...
-                const scalar_t phi0 = scalar_t(0.01);
-
-                const scalar_t xnorm = cstate.x.lpNorm<Eigen::Infinity>();
-                const scalar_t fnorm = std::fabs(cstate.f);
+                const auto phi0 = scalar_t(0.01);
+                const auto xnorm = cstate.x.lpNorm<Eigen::Infinity>();
+                const auto fnorm = std::fabs(cstate.f);
 
                 if (xnorm > 0)
                 {
@@ -57,7 +56,7 @@ scalar_t ls_init_t::operator()(const function_state_t& cstate)
                 {
                 case ls_initializer::consistent:
                         {
-                                const scalar_t dg = cstate.d.dot(cstate.g);
+                                const auto dg = cstate.d.dot(cstate.g);
 
                                 t0 = (m_prevt0 * m_prevdg / dg);
 
@@ -67,8 +66,8 @@ scalar_t ls_init_t::operator()(const function_state_t& cstate)
 
                 case ls_initializer::quadratic:
                         {
-                                const scalar_t dg = cstate.d.dot(cstate.g);
-                                const scalar_t ro = scalar_t(1.01 * 2.0);
+                                const auto dg = cstate.d.dot(cstate.g);
+                                const auto ro = scalar_t(1.01 * 2.0);
 
                                 t0 = std::min(unit, ro * (cstate.f - m_prevf) / dg);
                         }

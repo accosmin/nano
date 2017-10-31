@@ -18,8 +18,9 @@ namespace nano
         ///     - each option must have a long name, while the short name (single character) is optional
         ///     - options need not have an associated value (they can be interpreted as boolean flags)
         ///
-        struct NANO_PUBLIC cmdline_t
+        class NANO_PUBLIC cmdline_t
         {
+        public:
                 ///
                 /// \brief constructor
                 ///

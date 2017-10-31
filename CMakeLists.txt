@@ -1,5 +1,7 @@
 cmake_minimum_required(VERSION 3.1)
 
+project(nano)
+
 enable_language(CXX)
 
 set(CMAKE_CXX_STANDARD 14)
@@ -14,8 +16,6 @@ include(cmake/dependencies.cmake)
 if(NANO_WITH_CCACHE)
         setup_ccache()
 endif()
-
-project(nano)
 
 set(NANO_MAJOR_VERSION 0)
 set(NANO_MINOR_VERSION 4)

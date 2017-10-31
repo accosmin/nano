@@ -6,10 +6,10 @@
 
 namespace nano
 {
-        struct function_state_t;
+        class function_state_t;
         using ref_function_state_t = std::reference_wrapper<const function_state_t>;
 
-        struct function_t;
+        class function_t;
 
         ///
         /// \brief compare two optimization states
@@ -56,8 +56,9 @@ namespace nano
         ///     descent direction (d) &
         ///     line-search step (t)
         ///
-        struct NANO_PUBLIC function_state_t
+        class NANO_PUBLIC function_state_t
         {
+        public:
                 ///
                 /// \brief constructor
                 ///

@@ -17,9 +17,9 @@ namespace nano
                 {
                 }
 
-                ~mem_istream_t() = default;
+                ~mem_istream_t() override = default;
 
-                virtual io_status advance(const std::streamsize num_bytes, buffer_t& buffer) override;
+                io_status advance(const std::streamsize num_bytes, buffer_t& buffer) override;
 
         private:
 

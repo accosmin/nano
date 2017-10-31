@@ -88,7 +88,7 @@ NANO_CASE(istream)
                         mem_istream_t stream(ref_buffer.data(), size);
 
                         NANO_CHECK_EQUAL(stream.tellg(), std::streamsize(0));
-                        std::streamsize remaining = static_cast<std::streamsize>(size);
+                        auto remaining = static_cast<std::streamsize>(size);
                         while (stream)
                         {
                                 NANO_REQUIRE_GREATER(remaining, 0);

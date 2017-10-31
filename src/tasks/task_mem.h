@@ -30,21 +30,21 @@ namespace nano
                         const size_t fsize,
                         const string_t& params = string_t());
 
-                virtual bool load() override final;
+                bool load() final;
 
-                virtual tensor3d_dims_t idims() const override final { return m_idims; }
-                virtual tensor3d_dims_t odims() const override final { return m_odims; }
+                tensor3d_dims_t idims() const final { return m_idims; }
+                tensor3d_dims_t odims() const final { return m_odims; }
 
-                virtual size_t size() const override final;
-                virtual size_t size(const fold_t&) const override final;
-                virtual size_t fsize() const override final { return m_fsize; }
+                size_t size() const final;
+                size_t size(const fold_t&) const final;
+                size_t fsize() const final { return m_fsize; }
 
-                virtual size_t ihash(const fold_t&, const size_t index) const override final;
-                virtual size_t ohash(const fold_t&, const size_t index) const override final;
-                virtual string_t label(const fold_t&, const size_t index) const override final;
+                size_t ihash(const fold_t&, const size_t index) const final;
+                size_t ohash(const fold_t&, const size_t index) const final;
+                string_t label(const fold_t&, const size_t index) const final;
 
-                virtual void shuffle(const fold_t&) const override final;
-                virtual minibatch_t get(const fold_t&, const size_t begin, const size_t end) const override final;
+                void shuffle(const fold_t&) const final;
+                minibatch_t get(const fold_t&, const size_t begin, const size_t end) const final;
 
         protected:
 

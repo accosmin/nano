@@ -9,14 +9,14 @@ using namespace nano;
 
 struct option_t
 {
-        explicit option_t(const string_t& short_name = string_t(),
-                          const string_t& name = string_t(),
-                          const string_t& description = string_t(),
-                          const string_t& default_value = string_t()) :
-                m_short_name(short_name),
-                m_name(name),
-                m_description(description),
-                m_default_value(default_value),
+        explicit option_t(string_t short_name = string_t(),
+                          string_t name = string_t(),
+                          string_t description = string_t(),
+                          string_t default_value = string_t()) :
+                m_short_name(std::move(short_name)),
+                m_name(std::move(name)),
+                m_description(std::move(description)),
+                m_default_value(std::move(default_value)),
                 m_given(false)
         {
         }
@@ -57,8 +57,8 @@ using options_t = std::vector<option_t>;
 
 struct cmdline_t::impl_t
 {
-        explicit impl_t(const string_t& title) :
-                m_title(title)
+        explicit impl_t(string_t title) :
+                m_title(std::move(title))
         {
         }
 

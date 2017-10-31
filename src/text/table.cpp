@@ -11,8 +11,8 @@ cell_t::cell_t() :
 {
 }
 
-cell_t::cell_t(const string_t& data, const size_t span, const alignment align, const char fill) :
-        m_data(data), m_span(span), m_fill(fill), m_alignment(align)
+cell_t::cell_t(string_t data, const size_t span, const alignment align, const char fill) :
+        m_data(std::move(data)), m_span(span), m_fill(fill), m_alignment(align)
 {
 }
 

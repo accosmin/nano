@@ -16,6 +16,6 @@ namespace nano
         {
                 explicit iris_task_t(const string_t& params = string_t());
 
-                virtual bool populate() override;
+                bool populate() override;
         };
 }

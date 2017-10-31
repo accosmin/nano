@@ -92,8 +92,8 @@ function_state_t batch_lbfgs_t::minimize(const batch_params_t& param, const func
                         return false;
                 }
 
-                ss.push_back(cstate.x - pstate.x);
-                ys.push_back(cstate.g - pstate.g);
+                ss.emplace_back(cstate.x - pstate.x);
+                ys.emplace_back(cstate.g - pstate.g);
                 if (ss.size() > param.m_lbfgs_hsize)
                 {
                         ss.pop_front();

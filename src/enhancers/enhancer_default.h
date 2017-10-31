@@ -11,6 +11,6 @@ namespace nano
         {
                 explicit enhancer_default_t(const string_t& params = string_t());
 
-                virtual minibatch_t get(const task_t&, const fold_t&, const size_t begin, const size_t end) const final;
+                minibatch_t get(const task_t&, const fold_t&, const size_t begin, const size_t end) const final;
         };
 }

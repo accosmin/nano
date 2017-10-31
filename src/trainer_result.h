@@ -7,7 +7,7 @@
 
 namespace nano
 {
-        struct function_state_t;
+        class function_state_t;
 
         ///
         /// \brief training history (configuration, optimization states)
@@ -49,8 +49,9 @@ namespace nano
         ///
         /// \brief track the current/optimum model state
         ///
-        struct NANO_PUBLIC trainer_result_t
+        class NANO_PUBLIC trainer_result_t
         {
+        public:
                 ///
                 /// \brief update the current/optimum state with a possible better state
                 ///

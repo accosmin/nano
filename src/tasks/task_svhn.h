@@ -19,7 +19,7 @@ namespace nano
         {
                 explicit svhn_task_t(const string_t& params = string_t());
 
-                virtual bool populate() override;
+                bool populate() override;
 
                 tensor_size_t load_binary(const string_t& path, const protocol);
                 tensor_size_t load_pixels(const mat5_section_t&, const string_t&, const std::vector<int32_t>&, istream_t&);

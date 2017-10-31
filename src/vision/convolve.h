@@ -11,12 +11,12 @@ namespace nano
         template <typename tmatrix>
         void convolve(const vector_t& kernel, tmatrix&& src)
         {
-                const int rows = static_cast<int>(src.rows());
-                const int cols = static_cast<int>(src.cols());
+                const auto rows = static_cast<int>(src.rows());
+                const auto cols = static_cast<int>(src.cols());
                 assert(rows > 1 && cols > 1);
 
-                const int ksize = static_cast<int>(kernel.size());
-                const int krad = ksize / 2;
+                const auto ksize = static_cast<int>(kernel.size());
+                const auto krad = ksize / 2;
                 assert(ksize == 2 * krad + 1);
 
                 vector_t buff(std::max(rows, cols) + ksize);

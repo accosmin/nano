@@ -11,7 +11,6 @@ namespace nano
         {
                 explicit batch_trainer_t(const string_t& params = string_t());
 
-                virtual trainer_result_t train(
-                        const enhancer_t&, const task_t&, const size_t fold, accumulator_t&) const override;
+                trainer_result_t train(const enhancer_t&, const task_t&, const size_t fold, accumulator_t&) const override;
         };
 }

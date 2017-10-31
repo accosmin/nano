@@ -19,7 +19,7 @@ namespace nano
 
         private:
 
-                virtual bool populate() override;
+                bool populate() override;
 
                 bool load_ifile(const string_t&, istream_t&, const bool unlabed, const size_t count);
                 bool load_gfile(const string_t&, istream_t&, const size_t count);

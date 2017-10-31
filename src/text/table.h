@@ -14,7 +14,7 @@ namespace nano
         struct NANO_PUBLIC cell_t
         {
                 cell_t();
-                cell_t(const string_t& data, const size_t span, const alignment, const char fill);
+                cell_t(string_t data, const size_t span, const alignment, const char fill);
 
                 // attributes
                 string_t                m_data;         ///<

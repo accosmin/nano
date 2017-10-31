@@ -7,8 +7,9 @@ namespace nano
         ///
         /// \brief configurable object with parameters represented as a string.
         ///
-        struct configurable_t
+        class configurable_t
         {
+        public:
                 ///
                 /// \brief constructor
                 ///
@@ -18,7 +19,7 @@ namespace nano
                 ///
                 /// \brief destructor
                 ///
-                virtual ~configurable_t() {}
+                virtual ~configurable_t() = default;
 
                 ///
                 /// \brief current config (aka parameters).

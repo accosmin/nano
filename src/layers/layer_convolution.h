@@ -20,20 +20,20 @@ namespace nano
         {
                 explicit convolution_layer_t(const string_t& params = string_t());
 
-                virtual rlayer_t clone() const override;
-                virtual bool configure(const tensor3d_dims_t& idims, const string_t& name) override;
-                virtual void output(const tensor4d_t& idata, const tensor1d_t& pdata, tensor4d_t& odata) override;
-                virtual void ginput(tensor4d_t& idata, const tensor1d_t& pdata, const tensor4d_t& odata) override;
-                virtual void gparam(const tensor4d_t& idata, tensor1d_t& pdata, const tensor4d_t& odata) override;
+                rlayer_t clone() const override;
+                bool configure(const tensor3d_dims_t& idims, const string_t& name) override;
+                void output(const tensor4d_t& idata, const tensor1d_t& pdata, tensor4d_t& odata) override;
+                void ginput(tensor4d_t& idata, const tensor1d_t& pdata, const tensor4d_t& odata) override;
+                void gparam(const tensor4d_t& idata, tensor1d_t& pdata, const tensor4d_t& odata) override;
 
-                virtual tensor_size_t fanin() const override;
-                virtual tensor3d_dims_t idims() const override { return m_kernel.params().idims(); }
-                virtual tensor3d_dims_t odims() const override { return m_kernel.params().odims(); }
-                virtual tensor1d_dims_t pdims() const override { return m_kernel.params().pdims(); }
+                tensor_size_t fanin() const override;
+                tensor3d_dims_t idims() const override { return m_kernel.params().idims(); }
+                tensor3d_dims_t odims() const override { return m_kernel.params().odims(); }
+                tensor1d_dims_t pdims() const override { return m_kernel.params().pdims(); }
 
-                virtual const probe_t& probe_output() const override { return m_probe_output; }
-                virtual const probe_t& probe_ginput() const override { return m_probe_ginput; }
-                virtual const probe_t& probe_gparam() const override { return m_probe_gparam; }
+                const probe_t& probe_output() const override { return m_probe_output; }
+                const probe_t& probe_ginput() const override { return m_probe_ginput; }
+                const probe_t& probe_gparam() const override { return m_probe_gparam; }
 
         private:
 

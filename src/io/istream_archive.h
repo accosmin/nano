@@ -13,9 +13,9 @@ namespace nano
         {
                 explicit archive_istream_t(archive* ar);
 
-                ~archive_istream_t() = default;
+                ~archive_istream_t() override = default;
 
-                virtual io_status advance(const std::streamsize num_bytes, buffer_t& buffer) override;
+                io_status advance(const std::streamsize num_bytes, buffer_t& buffer) override;
 
         private:
 

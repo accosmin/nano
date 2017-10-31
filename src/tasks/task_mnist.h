@@ -16,7 +16,7 @@ namespace nano
         {
                 explicit mnist_task_t(const string_t& params = string_t());
 
-                virtual bool populate() override;
+                bool populate() override;
 
                 bool load_binary(const string_t& ifile, const string_t& gfile, const protocol, const size_t count);
         };

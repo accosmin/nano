@@ -12,9 +12,9 @@ namespace nano
         {
                 explicit std_istream_t(std::istream& stream);
 
-                ~std_istream_t() = default;
+                ~std_istream_t() override = default;
 
-                virtual io_status advance(const std::streamsize num_bytes, buffer_t& buffer) override;
+                io_status advance(const std::streamsize num_bytes, buffer_t& buffer) override;
 
         private:
 

@@ -6,7 +6,7 @@
 
 namespace nano
 {
-        struct function_t;
+        class function_t;
         using ref_function_t = std::reference_wrapper<const function_t>;
 
         enum class convexity
@@ -24,8 +24,9 @@ namespace nano
         ///
         /// NB: by default the stochastic approximation is disabled (aka calling the batch version)
         ///
-        struct NANO_PUBLIC function_t
+        class NANO_PUBLIC function_t
         {
+        public:
                 ///
                 /// \brief constructor
                 ///
@@ -37,7 +38,7 @@ namespace nano
                 ///
                 /// \brief destructor
                 ///
-                virtual ~function_t() {}
+                virtual ~function_t() = default;
 
                 ///
                 /// \brief function name to identify it in tests and benchmarks

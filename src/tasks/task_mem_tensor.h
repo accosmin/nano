@@ -10,8 +10,8 @@ namespace nano
                 explicit mem_tensor_sample_t(
                         const size_t index = 0,
                         const tensor3d_t& target = tensor3d_t(),
-                        const string_t& label = string_t()) :
-                        m_index(index), m_target(target), m_label(label)
+                        string_t label = string_t()) :
+                        m_index(index), m_target(target), m_label(std::move(label))
                 {
                 }
 

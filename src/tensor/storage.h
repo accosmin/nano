@@ -9,8 +9,9 @@ namespace nano
         /// NB: the tensor owns the allocated memory and as such the tensor is resizable.
         ///
         template <typename tscalar_>
-        struct tensor_vstorage_t
+        class tensor_vstorage_t
         {
+        public:
                 using tscalar = typename std::remove_const<tscalar_>::type;
                 using tstorage = tensor_vector_t<tscalar>;
                 using treference = tscalar&;
@@ -20,7 +21,7 @@ namespace nano
                 static constexpr bool owns_memory() { return true; }
                 static constexpr bool only_const() { return false; }
 
-                tensor_vstorage_t() {}
+                tensor_vstorage_t() = default;
                 tensor_vstorage_t(const tstorage& data) : m_data(data) {}
                 tensor_vstorage_t(const tensor_size_t size) : m_data(size) {}
 
@@ -41,8 +42,9 @@ namespace nano
         /// NB: the tensors doesn't own the allocated memory and as such is not resizable.
         ///
         template <typename tscalar_>
-        struct tensor_pstorage_t
+        class tensor_pstorage_t
         {
+        public:
                 using tscalar = typename std::remove_const<tscalar_>::type;
                 using tstorage = tscalar_*;
                 using treference = typename std::conditional<std::is_const<tscalar_>::value, const tscalar&, tscalar&>::type;

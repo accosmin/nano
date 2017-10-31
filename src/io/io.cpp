@@ -18,7 +18,7 @@ bool nano::save_buffer(const std::string& path, const buffer_t& buffer)
         }
 
         const std::streamsize stream_size = 64 * 1024;
-        std::streamsize num_bytes = static_cast<std::streamsize>(buffer.size());
+        auto num_bytes = static_cast<std::streamsize>(buffer.size());
 
         const char* pbuffer = buffer.data();
         while (stream && num_bytes > 0)

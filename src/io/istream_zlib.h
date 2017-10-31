@@ -12,9 +12,9 @@ namespace nano
         {
                 explicit zlib_istream_t(istream_t& istream, const std::streamsize max_num_bytes = max_streamsize());
 
-                ~zlib_istream_t();
+                ~zlib_istream_t() override;
 
-                virtual io_status advance(const std::streamsize num_bytes, buffer_t& buffer) override;
+                io_status advance(const std::streamsize num_bytes, buffer_t& buffer) override;
 
         private:
 
