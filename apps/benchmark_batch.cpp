@@ -25,7 +25,7 @@ static void check_function(const function_t& function, const strings_t& solvers,
         tostats stats;
 
         // evaluate all possible combinations (solver & line-search)
-        for (const auto id : solvers)
+        for (const auto& id : solvers)
                 for (const ls_initializer ls_init : enum_values<ls_initializer>())
                         for (const ls_strategy ls_strat : enum_values<ls_strategy>())
         {
@@ -80,7 +80,7 @@ int main(int argc, const char* argv[])
         benchmark::show_table(std::string(), gstats);
 
         // show per-solver statistics
-        for (const auto solver : solvers)
+        for (const auto& solver : solvers)
         {
                 const auto name = solver + "[";
 

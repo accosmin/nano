@@ -47,7 +47,7 @@ namespace nano
         template <>
         struct to_string_t<string_t, void>
         {
-                static string_t cast(const string_t value)
+                static string_t cast(const string_t& value)
                 {
                         return value;
                 }

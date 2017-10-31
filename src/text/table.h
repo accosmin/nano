@@ -68,7 +68,7 @@ namespace nano
                 template <typename tscalar>
                 row_t& operator<<(const std::vector<tscalar>& values)
                 {
-                        for (const auto value : values)
+                        for (const auto& value : values)
                         {
                                 operator<<(value);
                         }

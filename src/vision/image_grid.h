@@ -15,7 +15,7 @@ namespace nano
                 image_grid_t(   const coord_t patch_rows, const coord_t patch_cols,
                                 const coord_t group_rows, const coord_t group_cols,
                                 const coord_t border = 8,
-                                const rgba_t back_color = {225, 225, 0, 255});
+                                const rgba_t& back_color = {225, 225, 0, 255});
 
                 // setup a patch at a given grid position
                 bool set(coord_t grow, coord_t gcol, const image_t& image);

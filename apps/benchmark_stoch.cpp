@@ -25,11 +25,11 @@ static void check_function(const function_t& function, const strings_t& solvers,
         tostats stats;
 
         // evaluate all solvers
-        for (const auto id : solvers)
+        for (const auto& id : solvers)
         {
                 const auto solver = get_stoch_solvers().get(id);
                 const auto params = stoch_params_t(epochs, epoch_size, epsilon);
-                const auto name = id;
+                const auto& name = id;
 
                 benchmark::benchmark_function(solver, params, function, x0s, name, stats, gstats);
         }

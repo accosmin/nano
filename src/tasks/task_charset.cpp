@@ -98,7 +98,7 @@ static void get_object_patch(const image_tensor_t& image,
 
 template <typename trng>
 static void make_random_rgba_image(const tensor_size_t rows, const tensor_size_t cols,
-        const rgba_t back_color, const scalar_t sigma, trng& rng_noise, tensor3d_t& image)
+        const rgba_t& back_color, const scalar_t sigma, trng& rng_noise, tensor3d_t& image)
 {
         // noisy background
         image.resize(4, rows, cols);

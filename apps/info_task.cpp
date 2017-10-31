@@ -10,7 +10,7 @@ using namespace nano;
 static void save_as_images(const task_t& task, const fold_t& fold, const string_t& basepath,
         const coord_t grows, const coord_t gcols, const string_t& label,
         const coord_t border = 8,
-        const rgba_t bkcolor = rgba_t{225, 225, 0, 255})
+        const rgba_t& bkcolor = rgba_t{225, 225, 0, 255})
 {
         const auto size = task.size(fold);
         const auto rows = std::get<1>(task.idims());
@@ -44,7 +44,7 @@ static void save_as_images(const task_t& task, const fold_t& fold, const string_
 static void save_as_images(const task_t& task, const fold_t& fold, const string_t& basepath,
         const coord_t grows, const coord_t gcols,
         const coord_t border = 8,
-        const rgba_t bkcolor = rgba_t{225, 225, 0, 255})
+        const rgba_t& bkcolor = rgba_t{225, 225, 0, 255})
 {
         const auto size = task.size(fold);
 

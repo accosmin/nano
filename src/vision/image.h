@@ -78,8 +78,8 @@ namespace nano
                 /// \brief fill with constant color
                 ///
                 void fill(const luma_t);
-                void fill(const rgba_t);
-                void fill(const rgb_t);
+                void fill(const rgba_t&);
+                void fill(const rgb_t&);
 
                 ///
                 /// \brief check if the given rectangle is within image bounds

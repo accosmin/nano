@@ -148,7 +148,7 @@ function(setup_clang_tidy)
 
         add_custom_target(
             tidy-performance
-            COMMAND ${RUN_CLANG_TIDY_BIN} -clang-tidy-binary ${CLANG_TIDY_BIN} -header-filter=.* -checks=-*,performance*
+            COMMAND ${RUN_CLANG_TIDY_BIN} -clang-tidy-binary ${CLANG_TIDY_BIN} -header-filter=.* -checks=-*,performance*,-performance-inefficient-string-concatenation
             COMMENT "running clang tidy (performance)")
 
         add_custom_target(

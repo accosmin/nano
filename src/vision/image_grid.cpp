@@ -6,7 +6,7 @@ image_grid_t::image_grid_t(
         const coord_t patch_rows, const coord_t patch_cols,
         const coord_t group_rows, const coord_t group_cols,
         const coord_t border,
-        const rgba_t back_color) :
+        const rgba_t& back_color) :
         m_prows(patch_rows),
         m_pcols(patch_cols),
         m_grows(group_rows),

@@ -27,7 +27,7 @@ static void check_function(const function_t& function)
 
         // solvers to try
         const auto ids = get_stoch_solvers().ids();
-        for (const auto id : ids)
+        for (const auto& id : ids)
         {
                 if (id == "ngd")
                 {

@@ -208,7 +208,7 @@ void image_t::make_luma()
         }
 }
 
-void image_t::fill(const rgba_t rgba)
+void image_t::fill(const rgba_t& rgba)
 {
         switch (mode())
         {
@@ -231,7 +231,7 @@ void image_t::fill(const rgba_t rgba)
         }
 }
 
-void image_t::fill(const rgb_t rgb)
+void image_t::fill(const rgb_t& rgb)
 {
         return fill(rgba_t{rgb(0), rgb(1), rgb(2), 255});
 }

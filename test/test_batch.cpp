@@ -26,7 +26,7 @@ static void check_function(const function_t& function)
 
         // solvers to try
         const auto ids = get_batch_solvers().ids();
-        for (const auto id : ids)
+        for (const auto& id : ids)
         {
                 const auto solver = get_batch_solvers().get(id, to_params("c1", epsilon0<scalar_t>()));
 

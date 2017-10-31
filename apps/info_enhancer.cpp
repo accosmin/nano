@@ -18,7 +18,7 @@ static void save_as_images(const enhancer_t& enhancer, const task_t& task, const
         const coord_t grows, const coord_t gcols,
         const size_t trials = 16,
         const coord_t border = 8,
-        const rgba_t bkcolor = rgba_t{225, 225, 0, 255})
+        const rgba_t& bkcolor = rgba_t{225, 225, 0, 255})
 {
         const auto size = task.size(fold);
         const auto rows = std::get<1>(task.idims());
