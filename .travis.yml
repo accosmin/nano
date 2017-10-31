@@ -150,7 +150,7 @@ matrix:
         - ninja clang-tidy-modernize > tidy_modernize.txt
         - ninja clang-tidy-performance > tidy_performance.txt
         - ninja clang-tidy-clang-analyzer > tidy_clang_analyzer.txt
-        - cat tidy_*.txt | grep -v header-filter >> output.txt
+        - cat tidy_*.txt | grep -v header-filter | grep -vi "warnings generated" | grep -vi "non-user code"  >> output.txt
         - |
           if [[ -n $(grep "warning: " output.txt) ]] || [[ -n $(grep "error: " output.txt) ]]; then
               echo "clang-tidy detected the following warning and errors:"
