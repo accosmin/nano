@@ -269,6 +269,12 @@ NANO_CASE(to_params)
         NANO_CHECK_EQUAL(nano::from_params(config, "param2", 32322), param2);
 }
 
+NANO_CASE(strcat)
+{
+        NANO_CHECK_EQUAL(nano::strcat(nano::string_t("str"), "x", 'a', 42, nano::string_t("end")), "strxa42end");
+        NANO_CHECK_EQUAL(nano::strcat("str", nano::string_t("x"), 'a', 42, nano::string_t("end")), "strxa42end");
+}
+
 NANO_CASE(make_less)
 {
         const auto less = nano::make_less_from_string<int>();

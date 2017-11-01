@@ -286,4 +286,48 @@ namespace nano
                                 from_string<tscalar>(v2, std::numeric_limits<tscalar>::lowest());
                 };
         }
+
+        namespace detail
+        {
+                template <typename tvalue>
+                void strcat(string_t& str, const tvalue& value)
+                {
+                        str += to_string(value);
+                }
+
+                template <>
+                inline void strcat<string_t>(string_t& str, const string_t& value)
+                {
+                        str += value;
+                }
+
+                template <>
+                inline void strcat<char>(string_t& str, const char& value)
+                {
+                        str += value;
+                }
+
+                inline void strcat(string_t& str, const char* value)
+                {
+                        str += value;
+                }
+
+                template <typename tvalue, typename... tvalues>
+                void strcat(string_t& str, const tvalue& value, const tvalues&... values)
+                {
+                        strcat(str, value);
+                        strcat(str, values...);
+                }
+        }
+
+        ///
+        /// \brief concatenate a list of potentially heterogeneous values into a string
+        ///
+        template <typename... tvalues>
+        string_t strcat(const tvalues&... values)
+        {
+                string_t str;
+                detail::strcat(str, values...);
+                return str;
+        }
 }
