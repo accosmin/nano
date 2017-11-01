@@ -6,11 +6,11 @@
 #include "math/numeric.h"
 #include <eigen3/Eigen/Core>
 
-std::string module_name;
-std::string case_name;
-std::size_t n_cases = 0;
-std::size_t n_checks = 0;
-std::size_t n_failures = 0;
+static std::string module_name;
+static std::string case_name;
+static std::size_t n_cases = 0;
+static std::size_t n_checks = 0;
+static std::size_t n_failures = 0;
 
 #define NANO_BEGIN_MODULE(name) \
 int main(int, char* []) \
@@ -147,14 +147,14 @@ int main(int, char* []) \
         NANO_EVALUATE_GREATER_EQUAL(left, right, true)
 
 #define NANO_EVALUATE_CLOSE(left, right, epsilon, critical) \
-        NANO_EVALUATE_LESS(nano::abs(left - right), epsilon, critical)
+        NANO_EVALUATE_LESS(nano::abs((left) - (right)), epsilon, critical)
 #define NANO_CHECK_CLOSE(left, right, epsilon) \
         NANO_EVALUATE_CLOSE(left, right, epsilon, false)
 #define NANO_REQUIRE_CLOSE(left, right, epsilon) \
         NANO_EVALUATE_CLOSE(left, right, epsilon, true)
 
 #define NANO_EVALUATE_EIGEN_CLOSE(left, right, epsilon, critical) \
-        NANO_EVALUATE_LESS(((left - right).array().abs().maxCoeff()), epsilon, critical)
+        NANO_EVALUATE_LESS((((left) - (right)).array().abs().maxCoeff()), epsilon, critical)
 #define NANO_CHECK_EIGEN_CLOSE(left, right, epsilon) \
         NANO_EVALUATE_EIGEN_CLOSE(left, right, epsilon, false)
 #define NANO_REQUIRE_EIGEN_CLOSE(left, right, epsilon) \
