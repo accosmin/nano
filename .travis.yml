@@ -37,8 +37,7 @@ matrix:
         - sudo apt-get install -y g++-5
         - cmake -G "Ninja" -DCMAKE_CXX_COMPILER="g++-5" -DCMAKE_BUILD_TYPE=Debug -DNANO_WITH_WERROR=ON ..
         - ninja
-        - ./apps/info --system
-        - ctest --output-on-failure -j 2 -E "test_task_*"
+        - bash ../scripts/ci_ctest.sh
 
     - os: linux
       compiler: g++-6
@@ -48,8 +47,7 @@ matrix:
         - sudo apt-get install -y g++-6
         - cmake -G "Ninja" -DCMAKE_CXX_COMPILER="g++-6" -DCMAKE_BUILD_TYPE=Debug -DNANO_WITH_WERROR=ON ..
         - ninja
-        - ./apps/info --system
-        - ctest --output-on-failure -j 2 -E "test_task_*"
+        - bash ../scripts/ci_ctest.sh
 
     - os: linux
       compiler: g++-7
@@ -59,8 +57,7 @@ matrix:
         - sudo apt-get install -y g++-7
         - cmake -G "Ninja" -DCMAKE_CXX_COMPILER="g++-7" -DCMAKE_BUILD_TYPE=Debug -DNANO_WITH_WERROR=ON ..
         - ninja
-        - ./apps/info --system
-        - ctest --output-on-failure -j 2 -E "test_task_*"
+        - bash ../scripts/ci_ctest.sh
 
     - os: linux
       compiler: clang++-3.8
@@ -70,8 +67,7 @@ matrix:
         - sudo apt-get install -y clang-3.8 g++-6
         - cmake -G "Ninja" -DCMAKE_CXX_COMPILER="clang++-3.8" -DCMAKE_BUILD_TYPE=Debug -DNANO_WITH_WERROR=ON ..
         - ninja
-        - ./apps/info --system
-        - ctest --output-on-failure -j 2 -E "test_task_*"
+        - bash ../scripts/ci_ctest.sh
 
     - os: linux
       compiler: clang++-3.9
@@ -81,8 +77,7 @@ matrix:
         - sudo apt-get install -y clang-3.9 g++-6
         - cmake -G "Ninja" -DCMAKE_CXX_COMPILER="clang++-3.9" -DCMAKE_BUILD_TYPE=Debug -DNANO_WITH_WERROR=ON ..
         - ninja
-        - ./apps/info --system
-        - ctest --output-on-failure -j 2 -E "test_task_*"
+        - bash ../scripts/ci_ctest.sh
 
     - os: linux
       compiler: clang++-4.0
@@ -92,8 +87,7 @@ matrix:
         - sudo apt-get install -y clang-4.0 g++-6
         - cmake -G "Ninja" -DCMAKE_CXX_COMPILER="clang++-4.0" -DCMAKE_BUILD_TYPE=Debug -DNANO_WITH_WERROR=ON ..
         - ninja
-        - ./apps/info --system
-        - ctest --output-on-failure -j 2 -E "test_task_*"
+        - bash ../scripts/ci_ctest.sh
 
     - os: linux
       compiler: clang++-5.0
@@ -103,8 +97,7 @@ matrix:
         - sudo apt-get install -y clang-5.0 g++-6
         - cmake -G "Ninja" -DCMAKE_CXX_COMPILER="clang++-5.0" -DCMAKE_BUILD_TYPE=Debug -DNANO_WITH_WERROR=ON ..
         - ninja
-        - ./apps/info --system
-        - ctest --output-on-failure -j 2 -E "test_task_*"
+        - bash ../scripts/ci_ctest.sh
 
     - os: linux
       compiler: clang++-5.0
@@ -114,8 +107,7 @@ matrix:
         - sudo apt-get install -y clang-5.0 g++-6
         - cmake -G "Ninja" -DCMAKE_CXX_COMPILER="clang++-5.0" -DCMAKE_BUILD_TYPE=Debug -DNANO_WITH_WERROR=ON -DNANO_WITH_ASAN=ON ..
         - ninja
-        - ./apps/info --system
-        - ctest --output-on-failure -j 2 -E "test_task_*"
+        - bash ../scripts/ci_ctest.sh
 
 #    - os: linux
 #      compiler: clang++-5.0
@@ -125,8 +117,7 @@ matrix:
 #        - sudo apt-get install -y clang-5.0 g++-6
 #        - cmake -G "Ninja" -DCMAKE_CXX_COMPILER="clang++-5.0" -DCMAKE_BUILD_TYPE=Debug -DNANO_WITH_WERROR=ON -DNANO_WITH_MSAN=ON ..
 #        - ninja
-#        - ./apps/info --system
-#        - ctest --output-on-failure -j 2 -E "test_task_*"
+#        - bash ../scripts/ci_ctest.sh
 
     - os: linux
       compiler: clang++-5.0
@@ -136,8 +127,7 @@ matrix:
         - sudo apt-get install -y clang-5.0 g++-6
         - cmake -G "Ninja" -DCMAKE_CXX_COMPILER="clang++-5.0" -DCMAKE_BUILD_TYPE=Debug -DNANO_WITH_WERROR=ON -DNANO_WITH_TSAN=ON ..
         - ninja
-        - ./apps/info --system
-        - ctest --output-on-failure -j 2 -E "test_task_*"
+        - bash ../scripts/ci_ctest.sh
 
     - os: linux
       compiler: clang++-5.0
@@ -146,20 +136,7 @@ matrix:
       script:
         - sudo apt-get install -y clang-5.0 g++-6 clang-tidy-5.0
         - cmake -G "Ninja" -DCMAKE_CXX_COMPILER="clang++-5.0" -DCMAKE_BUILD_TYPE=Debug -DNANO_WITH_WERROR=ON -DNANO_WITH_CLANG_TIDY=ON ..
-        - ninja clang-tidy-bugprone > tidy_bugprone.txt
-        - ninja clang-tidy-modernize > tidy_modernize.txt
-        - ninja clang-tidy-performance > tidy_performance.txt
-        - ninja clang-tidy-clang-analyzer > tidy_clang_analyzer.txt
-        - cat tidy_*.txt | grep -v header-filter | grep -vi "warnings generated" | grep -vi "non-user code"  >> output.txt
-        - |
-          if [[ -n $(grep "warning: " output.txt) ]] || [[ -n $(grep "error: " output.txt) ]]; then
-              echo "clang-tidy detected the following warning and errors:"
-              echo ""
-              grep --color -E '^|warning: |error: ' output.txt
-              exit 1
-          else
-              echo -e "\033[1;32m\xE2\x9C\x93 passed:\033[0m $1"
-          fi
+        - bash ../scripts/ci_clang_tidy.sh
 
     - os: linux
       compiler: clang++-5.0
@@ -169,8 +146,7 @@ matrix:
         - sudo apt-get install -y clang-5.0 g++-6 valgrind
         - cmake -G "Ninja" -DCMAKE_CXX_COMPILER="clang++-5.0" -DCMAKE_BUILD_TYPE=Release -DNANO_WITH_WERROR=ON ..
         - ninja
-        - valgrind --version
-        - ctest --output-on-failure -T memcheck -E "test_task_*"
+        - bash ../scripts/ci_valgrind.sh
 
     - os: osx
       compiler: clang++
@@ -180,8 +156,7 @@ matrix:
       script:
         - cmake -G "Ninja" -DCMAKE_BUILD_TYPE=Debug -DNANO_WITH_WERROR=ON ..
         - ninja
-        - ./apps/info --system
-        - ctest --output-on-failure -j 2 -E "test_task_*"
+        - bash ../scripts/ci_ctest.sh
 
     - os: osx
       compiler: clang++
@@ -191,8 +166,7 @@ matrix:
       script:
         - cmake -G "Ninja" -DCMAKE_BUILD_TYPE=Debug -DNANO_WITH_WERROR=ON ..
         - ninja
-        - ./apps/info --system
-        - ctest --output-on-failure -j 2 -E "test_task_*"
+        - bash ../scripts/ci_ctest.sh
 
     - os: osx
       compiler: clang++
@@ -202,5 +176,4 @@ matrix:
       script:
         - cmake -G "Ninja" -DCMAKE_BUILD_TYPE=Debug -DNANO_WITH_WERROR=ON ..
         - ninja
-        - ./apps/info --system
-        - ctest --output-on-failure -j 2 -E "test_task_*"
+        - bash ../scripts/ci_ctest.sh
