@@ -140,6 +140,11 @@ function(setup_clang_tidy)
                 COMMENT "running clang tidy (everything)")
 
         add_custom_target(
+                clang-tidy-misc
+                COMMAND ${CLANG_TIDY_ARGS} -checks=-*,misc*
+                COMMENT "running clang tidy (bugprone)")
+
+        add_custom_target(
                 clang-tidy-bugprone
                 COMMAND ${CLANG_TIDY_ARGS} -checks=-*,bugprone*
                 COMMENT "running clang tidy (bugprone)")
@@ -151,13 +156,23 @@ function(setup_clang_tidy)
 
         add_custom_target(
                 clang-tidy-performance
-                COMMAND ${CLANG_TIDY_ARGS} -checks=-*,performance*,-performance-inefficient-string-concatenation
+                COMMAND ${CLANG_TIDY_ARGS} -checks=-*,performance*
                 COMMENT "running clang tidy (performance)")
+
+        add_custom_target(
+                clang-tidy-readability
+                COMMAND ${CLANG_TIDY_ARGS} -checks=-*,readability*
+                COMMENT "running clang tidy (readability)")
 
         add_custom_target(
                 clang-tidy-clang-analyzer
                 COMMAND ${CLANG_TIDY_ARGS} -checks=-*,clang-analyzer*
                 COMMENT "running clang tidy (clang-analyzer)")
+
+        add_custom_target(
+                clang-tidy-cppcoreguidelines
+                COMMAND ${CLANG_TIDY_ARGS} -checks=-*,cppcoreguidelines*
+                COMMENT "running clang tidy (cppcoreguidelines)")
 endfunction()
 
 # setup LTO

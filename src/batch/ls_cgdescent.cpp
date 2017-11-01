@@ -4,13 +4,6 @@
 
 using namespace nano;
 
-ls_cgdescent_t::ls_cgdescent_t() :
-        m_sumQ(0),
-        m_sumC(0),
-        m_approx(false)
-{
-}
-
 ls_step_t ls_cgdescent_t::operator()(
         const scalar_t c1, const scalar_t c2,
         const ls_step_t& step0, const scalar_t t0,

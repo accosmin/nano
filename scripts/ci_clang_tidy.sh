@@ -1,22 +1,29 @@
 #!/bin/bash
 
-checks="clang-tidy-bugprone clang-tidy-modernize clang-tidy-performance clang-tidy-clang-analyzer"
+checks="clang-tidy-misc
+        clang-tidy-bugprone
+        clang-tidy-modernize
+        clang-tidy-performance
+        clang-tidy-readability
+        clang-tidy-clang-analyzer
+        clang-tidy-cppcoreguidelines"
+
 extlog="clang_tidy.log"
 
-rm -f $extlog
 for check in $checks
 do
         printf "running $check ...\n"
         log=${check//-/_}.log
         ninja $check > $log
-        warnings=$(grep -E "warning: " $log | wc -l)
-        errors=$(grep -E "error: " $log | wc -l)
 
-        printf "\terrors: %3d, warnings: %3d\n\n" $errors $warnings
+        cat $log | grep warning: | grep -oE '[^ ]+$' | sort | uniq -c
+        printf "\n"
 
         #cat $log | grep -v "header-filter" | grep -v "warnings generated" | grep -v "non-user code" >> $extlog
         cat $log >> $extlog
 done
+
+exit
 
 if [[ -n $(grep -E "warning: |error: " $extlog) ]]
 then

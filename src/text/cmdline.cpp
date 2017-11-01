@@ -172,8 +172,7 @@ void cmdline_t::process(const int argc, const char* argv[]) const
 
                         if (name.empty())
                         {
-                                log_critical(
-                                "cmdline: invalid option name [" + name + "/" + token + "]");
+                                log_critical(strcat("cmdline: invalid option name [", name, "/", token, "]"));
                         }
 
                         m_impl->store(name);
@@ -185,8 +184,7 @@ void cmdline_t::process(const int argc, const char* argv[]) const
 
                         if (short_name.size() != 1)
                         {
-                                log_critical(
-                                "cmdline: invalid short option name [" + short_name + "/" + token + "]");
+                                log_critical(strcat("cmdline: invalid short option name [", short_name, "/", token, "]"));
                         }
 
                         m_impl->store(short_name);
@@ -198,7 +196,7 @@ void cmdline_t::process(const int argc, const char* argv[]) const
 
                         if (current_name_or_short_name.empty())
                         {
-                                log_critical("cmdline: missing option before value [" + value + "]");
+                                log_critical(strcat("cmdline: missing option before value [", value, "]"));
                         }
 
                         m_impl->store(current_name_or_short_name, value);

@@ -51,7 +51,7 @@ static void save_as_images(const enhancer_t& enhancer, const task_t& task, const
                         }
                 }
 
-                grid.image().save(basepath + "_trial" + to_string(t + 1) + ".png");
+                grid.image().save(strcat(basepath, "_trial", t + 1, ".png"));
         }
 }
 
@@ -104,7 +104,7 @@ int main(int argc, const char *argv[])
                 for (size_t f = 0; f < task->fsize(); ++ f)
                 {
                         const auto fold = fold_t{f, protocol::train};
-                        const auto path = cmd_save_dir + "/" + cmd_task + "_" + cmd_enhancer + "_train" + to_string(f + 1);
+                        const auto path = strcat(cmd_save_dir, "/", cmd_task, "_", cmd_enhancer, "_train", f + 1);
                         measure_and_log(
                                 [&] () { save_as_images(*enhancer, *task, fold, path, cmd_save_grows, cmd_save_gcols, cmd_save_trials); },
                                 "save samples as images to <" + path + "*.png>");

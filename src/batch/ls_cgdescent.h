@@ -19,7 +19,7 @@ namespace nano
                 ///
                 /// \brief constructor
                 ///
-                ls_cgdescent_t();
+                ls_cgdescent_t() = default;
 
                 ///
                 /// \brief compute the current step size
@@ -75,9 +75,9 @@ namespace nano
         private:
 
                 // attributes
-                mutable scalar_t        m_sumQ;         ///<
-                mutable scalar_t        m_sumC;         ///<
-                mutable bool            m_approx;       ///< use permanently the approximate Wolfe condition?
+                mutable scalar_t        m_sumQ{0};              ///<
+                mutable scalar_t        m_sumC{0};              ///<
+                mutable bool            m_approx{false};        ///< use permanently the approximate Wolfe condition?
         };
 }
 

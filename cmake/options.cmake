@@ -12,3 +12,4 @@ option(NANO_WITH_DOUBLE_SCALAR          "use double as the default scalar"      
 option(NANO_WITH_LONG_DOUBLE_SCALAR     "use long double as the default scalar"                         OFF)
 option(NANO_WITH_TIME_REPORT            "report detailed compilation time"                              OFF)
 option(NANO_WITH_CLANG_TIDY             "create clang-tidy target for static analysis"                  OFF)
+option(NANO_WITH_TUNE_NATIVE            "tune for the native platform (-mtune=native -march=native)"    ON)

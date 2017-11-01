@@ -37,7 +37,7 @@ static void save_as_images(const task_t& task, const fold_t& fold, const string_
                         }
                 }
 
-                grid.image().save(basepath + (label.empty() ? "" : ("_" + label)) + "_group" + to_string(g) + ".png");
+                grid.image().save(strcat(basepath, label.empty() ? "" : ("_" + label), "_group", g, ".png"));
         }
 }
 
@@ -101,7 +101,7 @@ int main(int argc, const char *argv[])
                         for (auto p : {protocol::train, protocol::valid, protocol::test})
                         {
                                 const auto fold = fold_t{f, p};
-                                const auto path = cmd_save_dir + "/" + cmd_task + "_" + to_string(p) + to_string(f + 1);
+                                const auto path = strcat(cmd_save_dir, "/", cmd_task, "_", p, f + 1);
                                 measure_and_log(
                                         [&] () { save_as_images(*task, fold, path, cmd_save_grows, cmd_save_gcols); },
                                         "save samples as images to <" + path + "*.png>");
