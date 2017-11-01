@@ -11,9 +11,9 @@ spinner()
                 printf " [%c]  " "$spinstr"
                 local spinstr=$temp${spinstr%"$temp"}
                 sleep $delay
-                printf "\b\b\b\b\b\b"
+                printf "\r"
         done
-        printf "     \b\b\b\b"
+        printf "      "
 }
 
 checks="clang-tidy-misc
