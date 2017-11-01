@@ -19,7 +19,7 @@ namespace benchmark
                 stats_t<scalar_t> m_speeds;     ///< #convergence speeds
         };
 
-        void show_table(const string_t& table_name, const std::map<string_t, solver_stat_t>& ostats)
+        static void show_table(const string_t& table_name, const std::map<string_t, solver_stat_t>& ostats)
         {
                 assert(!ostats.empty());
 
@@ -58,7 +58,7 @@ namespace benchmark
         }
 
         template <typename tsolver, typename tparams, typename tostats>
-        void benchmark_function(
+        static void benchmark_function(
                 const tsolver& solver, const tparams& params,
                 const function_t& function, const std::vector<vector_t>& x0s, const string_t& name,
                 tostats& stats, tostats& gstats)
