@@ -1,5 +1,21 @@
 #!/bin/bash
 
+spinner()
+{
+        local pid=$!
+        local delay=0.75
+        local spinstr='|/-\'
+        while [ "$(ps a | awk '{print $1}' | grep $pid)" ]
+        do
+                local temp=${spinstr#?}
+                printf " [%c]  " "$spinstr"
+                local spinstr=$temp${spinstr%"$temp"}
+                sleep $delay
+                printf "\b\b\b\b\b\b"
+        done
+        printf "     \b\b\b\b"
+}
+
 checks="clang-tidy-misc
         clang-tidy-bugprone
         clang-tidy-modernize
@@ -8,28 +24,25 @@ checks="clang-tidy-misc
         clang-tidy-clang-analyzer
         clang-tidy-cppcoreguidelines"
 
-extlog="clang_tidy.log"
-
+warnings=0
 for check in $checks
 do
-        printf "running $check ...\n"
+        printf "running $check...\n"
         log=${check//-/_}.log
-        ninja $check > $log
+        ninja $check > $log&
+        spinner
 
-        cat $log | grep warning: | grep -oE '[^ ]+$' | sort | uniq -c
+        cat $log | grep warning: | grep -oE "[^ ]+$" | sort | uniq -c
         printf "\n"
 
-        #cat $log | grep -v "header-filter" | grep -v "warnings generated" | grep -v "non-user code" >> $extlog
-        cat $log >> $extlog
+        count=$(cat $log | grep warning: | sort -u | wc -l)
+        warnings=$((warnings + $count))
 done
 
-exit
-
-if [[ -n $(grep -E "warning: |error: " $extlog) ]]
+if [[ $warnings -gt 0 ]]
 then
-        printf "clang-tidy detected the following warning and errors:\n\n"
-        grep --color -E '^|warning: |error: ' $extlog
+        printf "failed with $warnings unique warnings!\n\n"
         exit 1
 else
-        printf "passed\n"
+        printf "passed.\n"
 fi
