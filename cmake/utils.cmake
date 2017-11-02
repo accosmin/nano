@@ -231,6 +231,17 @@ function(setup_valgrind)
         set(MEMORYCHECK_COMMAND_OPTIONS "${MEMORYCHECK_COMMAND_OPTIONS} --error-exitcode=1")
 endfunction()
 
+# setup coverage
+function(setup_coverage)
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g ")
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O0")
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fprofile-arcs")
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -ftest-coverage")
+        set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} --coverage")
+
+        to_parent()
+endfunction()
+
 # function to create an application
 function(make_app app libs)
         get_filename_component(app_name ${app} NAME_WE)

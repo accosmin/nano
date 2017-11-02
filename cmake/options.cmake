@@ -3,7 +3,7 @@ option(NANO_WITH_MSAN                   "build with memory sanitizer suppport (i
 option(NANO_WITH_TSAN                   "build with thread sanitizer suppport (if available)"           OFF)
 option(NANO_WITH_TESTS                  "build the unit tests"                                          ON)
 option(NANO_WITH_LIBCPP                 "use libc++ instead of default libstdc++ (if applicable)"       OFF)
-option(NANO_WITH_GOLD                   "use gold linker (if available)"                                OFF)
+option(NANO_WITH_GOLD                   "use gold linker (if available)"                                ON)
 option(NANO_WITH_LTO                    "use link time optimization (if available)"                     OFF)
 option(NANO_WITH_WERROR                 "stop compilation at first warning"                             OFF)
 option(NANO_WITH_CCACHE                 "use ccache (if available)"                                     OFF)
@@ -13,3 +13,4 @@ option(NANO_WITH_LONG_DOUBLE_SCALAR     "use long double as the default scalar" 
 option(NANO_WITH_TIME_REPORT            "report detailed compilation time"                              OFF)
 option(NANO_WITH_CLANG_TIDY             "create clang-tidy target for static analysis"                  OFF)
 option(NANO_WITH_TUNE_NATIVE            "tune for the native platform (-mtune=native -march=native)"    ON)
+option(NANO_WITH_COVERAGE               "build with support for code coverage"                          OFF)

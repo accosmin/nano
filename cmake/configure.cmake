@@ -81,6 +81,11 @@ if(NANO_WITH_CLANG_TIDY)
         setup_clang_tidy()
 endif()
 
+# set coverage
+if(NANO_WITH_COVERAGE)
+        setup_coverage()
+endif()
+
 # debug
 if(CMAKE_BUILD_TYPE MATCHES "[Dd][Ee][Bb][Uu][Gg]")
         add_definitions(-DNANO_DEBUG)
