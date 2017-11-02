@@ -13,7 +13,7 @@ spinner()
                 sleep $delay
                 printf "\r"
         done
-        printf "      "
+        printf "      \r"
 }
 
 checks="clang-tidy-misc
