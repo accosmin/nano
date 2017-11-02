@@ -3,7 +3,8 @@
 Nano provides numerical optimization and machine learning utilities. For example it can be used to train models such as multi-layer perceptrons (classical neural networks) and convolution networks.
 
 
-#### Compilation [![Build Status](https://travis-ci.org/accosmin/nano.svg?branch=0.4)](https://travis-ci.org/accosmin/nano)
+#### Compilation [![build](https://travis-ci.org/accosmin/nano.svg?branch=master)](https://travis-ci.org/accosmin/nano)
+[![codecov](https://codecov.io/gh/accosmin/nano/branch/master/graph/badge.svg)](https://codecov.io/gh/accosmin/nano)
 
 Use a C++14 compiler and install Eigen3.3+, LibArchive, Zlib and DevIL. Nano is tested on Linux ([gcc 5+ | clang 3.8+], CMake 3.1+, Ninja or Make) and OSX (XCode 7+, homebrew, CMake 3.1+, Ninja or Make). The code is written to be cross-platform, so it may work (with minor fixes) on other platforms as well (e.g. Windows/MSVC).
 
