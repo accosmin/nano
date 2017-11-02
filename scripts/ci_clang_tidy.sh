@@ -16,7 +16,8 @@ spinner()
         printf "      \r"
 }
 
-checks="clang-tidy-misc
+checks="clang-tidy-cert
+        clang-tidy-misc
         clang-tidy-bugprone
         clang-tidy-modernize
         clang-tidy-performance
@@ -24,10 +25,20 @@ checks="clang-tidy-misc
         clang-tidy-clang-analyzer
         clang-tidy-cppcoreguidelines"
 
+optional_checks="
+        clang-tidy-cert
+        clang-tidy-readability
+        clang-tidy-cppcoreguidelines"
+
 warnings=0
 for check in $checks
 do
-        printf "running $check...\n"
+        if [[ -z $(echo $optional_checks | grep $check) ]]
+        then
+                printf "running $check (mandatory)...\n"
+        else
+                printf "running $check (optional)...\n"
+        fi
         log=${check//-/_}.log
         ninja $check > $log&
         spinner
@@ -36,12 +47,15 @@ do
         printf "\n"
 
         count=$(cat $log | grep warning: | sort -u | wc -l)
-        warnings=$((warnings + $count))
+        if [[ -z $(echo $optional_checks | grep $check) ]]
+        then
+                warnings=$((warnings + $count))
+        fi
 done
 
 if [[ $warnings -gt 0 ]]
 then
-        printf "failed with $warnings unique warnings!\n\n"
+        printf "failed with $warnings warnings from the mandatory checks!\n\n"
         exit 1
 else
         printf "passed.\n"

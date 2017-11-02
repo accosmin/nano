@@ -137,12 +137,17 @@ function(setup_clang_tidy)
         add_custom_target(
                 clang-tidy
                 COMMAND ${CLANG_TIDY_ARGS} -checks=*
-                COMMENT "running clang tidy (everything)")
+                COMMENT "running clang tidy (*)")
+
+        add_custom_target(
+                clang-tidy-cert
+                COMMAND ${CLANG_TIDY_ARGS} -checks=-*,cert*
+                COMMENT "running clang tidy (cert)")
 
         add_custom_target(
                 clang-tidy-misc
                 COMMAND ${CLANG_TIDY_ARGS} -checks=-*,misc*
-                COMMENT "running clang tidy (bugprone)")
+                COMMENT "running clang tidy (misc)")
 
         add_custom_target(
                 clang-tidy-bugprone
