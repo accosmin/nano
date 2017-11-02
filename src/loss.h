@@ -45,8 +45,8 @@ namespace nano
 
         protected:
 
-                virtual void error(const vector_cmap_t& targets, const vector_cmap_t& scores, scalar_t&) const = 0;
-                virtual void value(const vector_cmap_t& targets, const vector_cmap_t& scores, scalar_t&) const = 0;
+                virtual scalar_t error(const vector_cmap_t& targets, const vector_cmap_t& scores) const = 0;
+                virtual scalar_t value(const vector_cmap_t& targets, const vector_cmap_t& scores) const = 0;
                 virtual void vgrad(const vector_cmap_t& targets, const vector_cmap_t& scores, vector_map_t&&) const = 0;
         };
 }

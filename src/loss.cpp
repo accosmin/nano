@@ -14,7 +14,7 @@ tensor1d_t loss_t::error(const tensor4d_t& targets, const tensor4d_t& scores) co
         tensor1d_t errors(targets.size<0>());
         for (auto x = 0; x < targets.size<0>(); ++ x)
         {
-                error(targets.vector(x), scores.vector(x), errors(x));
+                errors(x) = error(targets.vector(x), scores.vector(x));
         }
         return errors;
 }
@@ -26,7 +26,7 @@ tensor1d_t loss_t::value(const tensor4d_t& targets, const tensor4d_t& scores) co
         tensor1d_t values(targets.size<0>());
         for (auto x = 0; x < targets.size<0>(); ++ x)
         {
-                value(targets.vector(x), scores.vector(x), values(x));
+                values(x) = value(targets.vector(x), scores.vector(x));
         }
         return values;
 }

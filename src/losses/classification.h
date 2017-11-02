@@ -14,27 +14,27 @@ namespace nano
         {
                 explicit mclassification_t(const string_t& params = string_t()) : loss_t(params) {}
 
-                virtual void error(const vector_cmap_t& targets, const vector_cmap_t& scores, scalar_t&) const override;
-                virtual void value(const vector_cmap_t& targets, const vector_cmap_t& scores, scalar_t&) const override;
+                virtual scalar_t error(const vector_cmap_t& targets, const vector_cmap_t& scores) const override;
+                virtual scalar_t value(const vector_cmap_t& targets, const vector_cmap_t& scores) const override;
                 virtual void vgrad(const vector_cmap_t& targets, const vector_cmap_t& scores, vector_map_t&&) const override;
         };
 
         template <typename top>
-        void mclassification_t<top>::error(const vector_cmap_t& targets, const vector_cmap_t& scores, scalar_t& ret) const
+        scalar_t mclassification_t<top>::error(const vector_cmap_t& targets, const vector_cmap_t& scores) const
         {
                 assert(targets.size() == scores.size());
 
                 const auto edges = targets.array() * scores.array();
                 const auto epsilon = std::numeric_limits<scalar_t>::epsilon();
-                ret = static_cast<scalar_t>((edges < epsilon).count());
+                return static_cast<scalar_t>((edges < epsilon).count());
         }
 
         template <typename top>
-        void mclassification_t<top>::value(const vector_cmap_t& targets, const vector_cmap_t& scores, scalar_t& ret) const
+        scalar_t mclassification_t<top>::value(const vector_cmap_t& targets, const vector_cmap_t& scores) const
         {
                 assert(targets.size() == scores.size());
 
-                ret = top::value(targets, scores);
+                return top::value(targets, scores);
         }
 
         template <typename top>
@@ -53,28 +53,28 @@ namespace nano
         {
                 explicit sclassification_t(const string_t& params = string_t()) : loss_t(params) {}
 
-                virtual void error(const vector_cmap_t& targets, const vector_cmap_t& scores, scalar_t&) const override;
-                virtual void value(const vector_cmap_t& targets, const vector_cmap_t& scores, scalar_t&) const override;
+                virtual scalar_t error(const vector_cmap_t& targets, const vector_cmap_t& scores) const override;
+                virtual scalar_t value(const vector_cmap_t& targets, const vector_cmap_t& scores) const override;
                 virtual void vgrad(const vector_cmap_t& targets, const vector_cmap_t& scores, vector_map_t&&) const override;
         };
 
         template <typename top>
-        void sclassification_t<top>::error(const vector_cmap_t& targets, const vector_cmap_t& scores, scalar_t& ret) const
+        scalar_t sclassification_t<top>::error(const vector_cmap_t& targets, const vector_cmap_t& scores) const
         {
                 assert(targets.size() == scores.size());
 
                 vector_t::Index idx;
                 scores.maxCoeff(&idx);
 
-                ret = is_pos_target(targets(idx)) ? 0 : 1;
+                return is_pos_target(targets(idx)) ? 0 : 1;
         }
 
         template <typename top>
-        void sclassification_t<top>::value(const vector_cmap_t& targets, const vector_cmap_t& scores, scalar_t& ret) const
+        scalar_t sclassification_t<top>::value(const vector_cmap_t& targets, const vector_cmap_t& scores) const
         {
                 assert(targets.size() == scores.size());
 
-                ret = top::value(targets, scores);
+                return top::value(targets, scores);
         }
 
         template <typename top>
