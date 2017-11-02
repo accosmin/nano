@@ -14,7 +14,7 @@ namespace nano
         ///
         /// \brief compare two optimization states
         ///
-        bool operator<(const function_state_t& one, const function_state_t& two);
+        bool operator<(const function_state_t&, const function_state_t&);
 
         ///
         /// \brief create an optimization state at the given point
@@ -67,28 +67,28 @@ namespace nano
                 ///
                 /// \brief update current state (move to another position)
                 ///
-                void update(const function_t& problem, const vector_t& xx);
+                void update(const function_t&, const vector_t& xx);
 
                 ///
                 /// \brief update current state (move to another position) using the stochastic approximation
                 ///
-                void stoch_update(const function_t& problem, const vector_t& xx);
+                void stoch_update(const function_t&, const vector_t& xx);
 
                 ///
                 /// \brief update current state (move t along the chosen direction)
                 ///
-                void update(const function_t& problem, const scalar_t t);
+                void update(const function_t&, const scalar_t t);
 
                 ///
                 /// \brief update current state (move t along the chosen direction) using the stochastic approximation
                 ///
-                void stoch_update(const function_t& problem, const scalar_t t);
+                void stoch_update(const function_t&, const scalar_t t);
 
                 ///
                 /// \brief update current state (move t along the chosen direction,
                 /// but the function value & gradient are already computed)
                 ///
-                void update(const function_t& problem, const scalar_t t, const scalar_t ft, const vector_t& gt);
+                void update(const function_t&, const scalar_t t, const scalar_t ft, const vector_t& gt);
 
                 ///
                 /// \brief check convergence: the gradient is relatively small
