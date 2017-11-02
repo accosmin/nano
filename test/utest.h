@@ -24,7 +24,7 @@ static exception_status check_throw(const toperator& op)
 {
         try
         {
-                (void)op;
+                op();
                 return exception_status::none;
         }
         catch (texception&)
@@ -87,7 +87,7 @@ int main(int, char* []) \
 
 #define NANO_THROW(call, exception, critical) \
         ++ n_checks; \
-        switch (check_throw<exception>(call)) \
+        switch (check_throw<exception>([&] () { (void)(call); })) \
         { \
         case exception_status::none: \
                 NANO_HANDLE_FAILURE() \
@@ -108,7 +108,7 @@ int main(int, char* []) \
 
 #define NANO_NOTHROW(call, critical) \
         ++ n_checks; \
-        switch (check_throw<std::exception>(call)) \
+        switch (check_throw<std::exception>([&] () { (void)(call); })) \
         { \
         case exception_stats::none: \
                 break; \
