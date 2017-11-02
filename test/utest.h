@@ -12,6 +12,31 @@ static std::size_t n_cases = 0;
 static std::size_t n_checks = 0;
 static std::size_t n_failures = 0;
 
+enum class exception_status
+{
+        none,
+        expected,
+        unexpected
+};
+
+template <typename texception, typename toperator>
+static exception_status check_throw(const toperator& op)
+{
+        try
+        {
+                (void)op;
+                return exception_status::none;
+        }
+        catch (texception&)
+        {
+                return exception_status::expected;
+        }
+        catch (...)
+        {
+                return exception_status::unexpected;
+        }
+}
+
 #define NANO_BEGIN_MODULE(name) \
 int main(int, char* []) \
 { \
@@ -62,18 +87,15 @@ int main(int, char* []) \
 
 #define NANO_THROW(call, exception, critical) \
         ++ n_checks; \
-        try \
+        switch (check_throw<exception>(call)) \
         { \
-                call; \
+        case exception_status::none: \
                 NANO_HANDLE_FAILURE() \
                         << "]: call {" << NANO_STRINGIFY(call) << "} does not throw!" << std::endl; \
                 NANO_HANDLE_CRITICAL(critical) \
-        } \
-        catch (exception&) \
-        { \
-        } \
-        catch (...) \
-        { \
+        case exception_status::expected: \
+                break; \
+        case exception_status::unexpected: \
                 NANO_HANDLE_FAILURE() \
                         << "]: call {" << NANO_STRINGIFY(call) << "} does not throw {" \
                         << NANO_STRINGIFY(exception) << "}!" << std::endl; \
@@ -86,12 +108,12 @@ int main(int, char* []) \
 
 #define NANO_NOTHROW(call, critical) \
         ++ n_checks; \
-        try \
+        switch (check_throw<std::exception>(call)) \
         { \
-                call; \
-        } \
-        catch (...) \
-        { \
+        case exception_stats::none: \
+                break; \
+        case exception_status::expected: \
+        case exception_status::unexpected: \
                 NANO_HANDLE_FAILURE() \
                         << "]: call {" << NANO_STRINGIFY(call) << "} throws!" << std::endl; \
                 NANO_HANDLE_CRITICAL(critical) \
