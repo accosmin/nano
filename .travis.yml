@@ -156,7 +156,7 @@ matrix:
         - sudo apt-get install -y clang-5.0 g++-6
         - cmake -G "Ninja" -DCMAKE_CXX_COMPILER="clang++-5.0" -DCMAKE_BUILD_TYPE=Release -DNANO_WITH_WERROR=ON -DNANO_WITH_COVERAGE=ON ..
         - ninja
-        - bash scripts/ci_codecov.sh
+        - bash ../scripts/ci_codecov.sh
 
     - os: osx
       compiler: clang++
