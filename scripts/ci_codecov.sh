@@ -1,6 +1,5 @@
 #!/bin/bash
 
-
 cpus=$(./apps/info --sys-logical-cpus)
 cpus=${cpus/*./}
 
