@@ -35,7 +35,7 @@ matrix:
         - TEST="build (g++-5)"
       script:
         - sudo apt-get install -y g++-5
-        - cmake -G "Ninja" -DCMAKE_CXX_COMPILER="g++-5" -DCMAKE_BUILD_TYPE=Debug -DNANO_WITH_WERROR=ON ..
+        - cmake -G "Ninja" -DCMAKE_CXX_COMPILER="g++-5" -DCMAKE_BUILD_TYPE=Debug -DNANO_WITH_GOLD=OFF -DNANO_WITH_WERROR=ON ..
         - ninja
         - bash ../scripts/ci_ctest.sh
 
@@ -45,7 +45,7 @@ matrix:
         - TEST="build (g++-6)"
       script:
         - sudo apt-get install -y g++-6
-        - cmake -G "Ninja" -DCMAKE_CXX_COMPILER="g++-6" -DCMAKE_BUILD_TYPE=Debug -DNANO_WITH_WERROR=ON ..
+        - cmake -G "Ninja" -DCMAKE_CXX_COMPILER="g++-6" -DCMAKE_BUILD_TYPE=Debug -DNANO_WITH_GOLD=OFF -DNANO_WITH_WERROR=ON ..
         - ninja
         - bash ../scripts/ci_ctest.sh
 
@@ -55,7 +55,7 @@ matrix:
         - TEST="build (g++-7)"
       script:
         - sudo apt-get install -y g++-7
-        - cmake -G "Ninja" -DCMAKE_CXX_COMPILER="g++-7" -DCMAKE_BUILD_TYPE=Debug -DNANO_WITH_WERROR=ON ..
+        - cmake -G "Ninja" -DCMAKE_CXX_COMPILER="g++-7" -DCMAKE_BUILD_TYPE=Debug -DNANO_WITH_GOLD=OFF -DNANO_WITH_WERROR=ON ..
         - ninja
         - bash ../scripts/ci_ctest.sh
 
