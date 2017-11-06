@@ -11,7 +11,7 @@ make_test(test_tune.cpp "")
 make_test(test_chrono.cpp "")
 make_test(test_geom.cpp "")
 make_test(test_vision.cpp "")
-make_test(test_graph.cpp "")
+make_test(test_digraph.cpp "")
 make_test(test_factory.cpp "")
 
 make_test(test_stoch.cpp nano)
