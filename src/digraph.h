@@ -115,8 +115,9 @@ namespace nano
 
                 ///
                 /// \brief topologically sort the graph
+                /// \return true if sorting makes sense (e.g. DAG)
                 ///
-                void tsort();
+                bool tsort();
 
                 ///
                 /// \brief access functions
@@ -251,6 +252,26 @@ namespace nano
         template <typename tpayload>
         bool digraph_t<tpayload>::dag() const
         {
-                return !depth_first([] (const size_t vindex) { (void)vindex; });
+                return depth_first([] (const size_t vindex) { (void)vindex; });
+        }
+
+        template <typename tpayload>
+        bool digraph_t<tpayload>::tsort()
+        {
+                std::vector<size_t> vindices;
+                depth_first([&] (const size_t vindex) { vindices.push_back(vindex); });
+
+                if (vindices.size() == m_vertices.size())
+                {
+                        for (const auto vindex : vindices)
+                        {
+                                // todo
+                        }
+                        return true;
+                }
+                else
+                {
+                        return false;
+                }
         }
 }
