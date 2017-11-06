@@ -190,8 +190,8 @@ namespace nano
         template <typename tpayload>
         size_t digraph_t<tpayload>::add(tpayload vertex)
         {
-                m_vertices.emplace_back(m_id ++, std::move(vertex));
-                return m_id;
+                m_vertices.emplace_back(m_id, std::move(vertex));
+                return m_id ++;
         }
 
         template <typename tpayload>

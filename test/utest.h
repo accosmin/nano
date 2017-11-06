@@ -124,14 +124,18 @@ int main(int, char* []) \
         NANO_NOTHROW(call, true)
 
 #define NANO_EVALUATE_BINARY_OP(left, right, op, critical) \
+{ \
         ++ n_checks; \
-        if (!((left) op (right))) \
+        const auto res_left = (left); \
+        const auto res_right = (right); \
+        if (!(res_left op res_right)) \
         { \
                 NANO_HANDLE_FAILURE() \
                         << "]: check {" << NANO_STRINGIFY(left op right) \
-                        << "} failed {" << (left) << " " << NANO_STRINGIFY(op) << " " << (right) << "}!" << std::endl; \
+                        << "} failed {" << res_left << " " << NANO_STRINGIFY(op) << " " << res_right << "}!" << std::endl; \
                 NANO_HANDLE_CRITICAL(critical) \
-        }
+        } \
+}
 
 #define NANO_EVALUATE_EQUAL(left, right, critical) \
         NANO_EVALUATE_BINARY_OP(left, right, ==, critical)
