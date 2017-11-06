@@ -89,12 +89,12 @@ namespace nano
                 ///
                 /// \brief returns then vertices with no incoming edge
                 ///
-                std::vector<size_t> sources() const;
+                std::vector<size_t> incoming() const;
 
                 ///
                 /// \brief returns the vertices with no outgoing edge
                 ///
-                std::vector<size_t> destinations() const;
+                std::vector<size_t> outgoing() const;
 
                 ///
                 /// \brief depth-first search where the given operator is called with the current vertex id
@@ -221,7 +221,7 @@ namespace nano
         }
 
         template <typename tpayload>
-        std::vector<size_t> digraph_t<tpayload>::sources() const
+        std::vector<size_t> digraph_t<tpayload>::incoming() const
         {
                 std::vector<size_t> srcs, dsts;
                 srcs.reserve(m_edges.size());
@@ -236,7 +236,7 @@ namespace nano
         }
 
         template <typename tpayload>
-        std::vector<size_t> digraph_t<tpayload>::destinations() const
+        std::vector<size_t> digraph_t<tpayload>::outgoing() const
         {
                 std::vector<size_t> srcs, dsts;
                 srcs.reserve(m_edges.size());
@@ -257,9 +257,18 @@ namespace nano
                 std::vector<flag> flags(m_vertices.size(), flag::none);
 
                 // start from the vertices that don't have incoming edges
-                for (const auto src : sources())
+                for (const auto src : incoming())
                 {
                         if (!visit(flags, vcall, src))
+                        {
+                                return false;
+                        }
+                }
+
+                // check if any remaning not visited vertices (e.g. another cycle in the graph not connected)
+                for (size_t src = 0; src < flags.size(); ++ src)
+                {
+                        if (flags[src] == flag::none && !visit(flags, vcall, src))
                         {
                                 return false;
                         }
@@ -281,6 +290,9 @@ namespace nano
 
                 if (vindices.size() == m_vertices.size())
                 {
+                        std::reverse(vindices.begin(), vindices.end());
+                        // todo: re-order the vertices given these indices
+                        // todo: must re-index the edges as well
                         return true;
                 }
                 else

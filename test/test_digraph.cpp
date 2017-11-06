@@ -68,7 +68,7 @@ NANO_CASE(vertices_and_edges)
         const auto v4 = vertex_t<int>{3, 23}; NANO_CHECK_EQUAL(g.vertices()[3], v4);
 }
 
-NANO_CASE(sources)
+NANO_CASE(incoming)
 {
         digraph_t<int> g;
         NANO_CHECK_EQUAL(g.add(20, 21, 22, 23, 24), 4);
@@ -78,11 +78,11 @@ NANO_CASE(sources)
         NANO_CHECK(g.connect(1, 2));
         NANO_CHECK(g.connect(3, 4));
 
-        const std::vector<size_t> sources = {0, 1};
-        NANO_CHECK_EQUAL(g.sources(), sources);
+        const std::vector<size_t> incoming = {0, 1};
+        NANO_CHECK_EQUAL(g.incoming(), incoming);
 }
 
-NANO_CASE(destinations)
+NANO_CASE(outgoing)
 {
         digraph_t<int> g;
         NANO_CHECK_EQUAL(g.add(20, 21, 22, 23, 24), 4);
@@ -92,37 +92,31 @@ NANO_CASE(destinations)
         NANO_CHECK(g.connect(1, 2));
         NANO_CHECK(g.connect(3, 4));
 
-        const std::vector<size_t> destinations = {4};
-        NANO_CHECK_EQUAL(g.destinations(), destinations);
+        const std::vector<size_t> outgoing = {4};
+        NANO_CHECK_EQUAL(g.outgoing(), outgoing);
 }
 
 NANO_CASE(cyclic0)
 {
         digraph_t<int> g;
-        NANO_CHECK_EQUAL(g.add(20, 21, 22, 23), 3);
+        NANO_CHECK(!g.cyclic());
 
+        NANO_CHECK_EQUAL(g.add(20, 21, 22, 23), 3);
         NANO_CHECK(!g.cyclic());
 }
 
 NANO_CASE(cyclic1)
 {
         digraph_t<int> g;
-        NANO_CHECK_EQUAL(g.add(20, 21, 22, 23), 3);
+        NANO_CHECK_EQUAL(g.add(20, 21, 22, 23, 24), 4);
 
         NANO_CHECK(g.connect(0, 2));
         NANO_CHECK(g.connect(2, 3));
         NANO_CHECK(g.connect(1, 2));
+        NANO_CHECK(g.connect(3, 4));
 
+        NANO_CHECK(g.dag());
         NANO_CHECK(!g.cyclic());
-
-        std::vector<size_t> vindices;
-        g.depth_first([&] (const size_t vindex) { vindices.push_back(vindex); });
-
-        for (const auto vindex : vindices)
-        {
-                std::cout << vindex << ",";
-        }
-        std::cout << std::endl;
 }
 
 NANO_CASE(cyclic2)
@@ -135,6 +129,7 @@ NANO_CASE(cyclic2)
         NANO_CHECK(g.connect(1, 2));
         NANO_CHECK(g.connect(3, 0));
 
+        NANO_CHECK(!g.dag());
         NANO_CHECK(g.cyclic());
 }
 
@@ -147,6 +142,7 @@ NANO_CASE(cyclic3)
         NANO_CHECK(g.connect(2, 0));
         NANO_CHECK(g.connect(0, 1));
 
+        NANO_CHECK(!g.dag());
         NANO_CHECK(g.cyclic());
 }
 
@@ -158,6 +154,7 @@ NANO_CASE(cyclic4)
         NANO_CHECK(g.connect(1, 2));
         NANO_CHECK(g.connect(2, 0));
 
+        NANO_CHECK(g.dag());
         NANO_CHECK(!g.cyclic());
 }
 
@@ -173,6 +170,7 @@ NANO_CASE(cyclic5)
         NANO_CHECK(g.connect(5, 6));
         NANO_CHECK(g.connect(6, 4));
 
+        NANO_CHECK(!g.dag());
         NANO_CHECK(g.cyclic());
 }
 
@@ -187,6 +185,7 @@ NANO_CASE(cyclic6)
         NANO_CHECK(g.connect(4, 5));
         NANO_CHECK(g.connect(5, 6));
 
+        NANO_CHECK(g.dag());
         NANO_CHECK(!g.cyclic());
 }
 
