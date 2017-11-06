@@ -3,6 +3,15 @@
 
 using namespace nano;
 
+std::ostream& operator<<(std::ostream& os, const std::vector<size_t>& indices)
+{
+        for (const auto index : indices)
+        {
+                os << index << ',';
+        }
+        return os;
+}
+
 NANO_BEGIN_MODULE(test_digraph)
 
 NANO_CASE(vertices)
@@ -59,6 +68,34 @@ NANO_CASE(vertices_and_edges)
         const auto v4 = vertex_t<int>{3, 23}; NANO_CHECK_EQUAL(g.vertices()[3], v4);
 }
 
+NANO_CASE(sources)
+{
+        digraph_t<int> g;
+        NANO_CHECK_EQUAL(g.add(20, 21, 22, 23, 24), 4);
+
+        NANO_CHECK(g.connect(0, 2));
+        NANO_CHECK(g.connect(2, 3));
+        NANO_CHECK(g.connect(1, 2));
+        NANO_CHECK(g.connect(3, 4));
+
+        const std::vector<size_t> sources = {0, 1};
+        NANO_CHECK_EQUAL(g.sources(), sources);
+}
+
+NANO_CASE(destinations)
+{
+        digraph_t<int> g;
+        NANO_CHECK_EQUAL(g.add(20, 21, 22, 23, 24), 4);
+
+        NANO_CHECK(g.connect(0, 2));
+        NANO_CHECK(g.connect(2, 3));
+        NANO_CHECK(g.connect(1, 2));
+        NANO_CHECK(g.connect(3, 4));
+
+        const std::vector<size_t> destinations = {4};
+        NANO_CHECK_EQUAL(g.destinations(), destinations);
+}
+
 NANO_CASE(cyclic0)
 {
         digraph_t<int> g;
@@ -77,6 +114,15 @@ NANO_CASE(cyclic1)
         NANO_CHECK(g.connect(1, 2));
 
         NANO_CHECK(!g.cyclic());
+
+        std::vector<size_t> vindices;
+        g.depth_first([&] (const size_t vindex) { vindices.push_back(vindex); });
+
+        for (const auto vindex : vindices)
+        {
+                std::cout << vindex << ",";
+        }
+        std::cout << std::endl;
 }
 
 NANO_CASE(cyclic2)

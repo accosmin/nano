@@ -140,12 +140,6 @@ namespace nano
                                 [=] (const auto& edge) { return edge.m_src == src && edge.m_dst == dst; });
                 }
 
-                static void unique(std::vector<size_t>& ids)
-                {
-                        std::sort(ids.begin(), ids.end());
-                        ids.erase(std::unique(ids.begin(), ids.end()), ids.end());
-                }
-
                 enum class flag : uint8_t
                 {
                         none,
@@ -180,6 +174,21 @@ namespace nano
                                 vcall(vindex);
                                 return true;
                         }
+                }
+
+                static std::vector<size_t> difference(std::vector<size_t>& set1, std::vector<size_t>& set2)
+                {
+                        std::sort(set1.begin(), set1.end());
+                        std::sort(set2.begin(), set2.end());
+
+                        set1.erase(std::unique(set1.begin(), set1.end()), set1.end());
+                        set2.erase(std::unique(set2.begin(), set2.end()), set2.end());
+
+                        std::vector<size_t> diff;
+                        std::set_difference(
+                                set1.begin(), set1.end(), set2.begin(), set2.end(),
+                                std::inserter(diff, diff.begin()));
+                        return diff;
                 }
 
                 // attributes
@@ -223,13 +232,22 @@ namespace nano
                         dsts.emplace_back(edge.m_dst);
                 }
 
-                unique(srcs);
-                unique(dsts);
+                return difference(srcs, dsts);
+        }
 
-                const auto op = [&] (const auto& src) { return std::binary_search(dsts.begin(), dsts.end(), src); };
-                srcs.erase(std::remove_if(srcs.begin(), srcs.end(), op), srcs.end());
+        template <typename tpayload>
+        std::vector<size_t> digraph_t<tpayload>::destinations() const
+        {
+                std::vector<size_t> srcs, dsts;
+                srcs.reserve(m_edges.size());
+                dsts.reserve(m_edges.size());
+                for (const auto& edge : m_edges)
+                {
+                        srcs.emplace_back(edge.m_src);
+                        dsts.emplace_back(edge.m_dst);
+                }
 
-                return srcs;
+                return difference(dsts, srcs);
         }
 
         template <typename tpayload>
@@ -263,10 +281,6 @@ namespace nano
 
                 if (vindices.size() == m_vertices.size())
                 {
-                        for (const auto vindex : vindices)
-                        {
-                                // todo
-                        }
                         return true;
                 }
                 else
