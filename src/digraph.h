@@ -70,6 +70,17 @@ namespace nano
                 size_t add(tpayload vertex);
 
                 ///
+                /// \brief add new vertices
+                /// \return the id of the last vertex in the pack
+                ///
+                template <typename... tpayloads>
+                size_t add(tpayload vertex, tpayloads&&... vertices)
+                {
+                        add(vertex);
+                        return add(vertices...);
+                }
+
+                ///
                 /// \brief create a directed edge between the src and the dst vertex ids
                 /// \return true if the vertex ids are valid
                 ///
