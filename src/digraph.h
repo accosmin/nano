@@ -1,23 +1,12 @@
 #pragma once
 
 #include <vector>
-#include <ostream>
+#include <cassert>
+#include <cstdint>
 #include <algorithm>
 
 namespace nano
 {
-        ///
-        /// \brief a directed edge in a directed graph.
-        ///
-        template <typename tindex>
-        using edge_t = std::pair<tindex, tindex>;
-
-        template <typename tindex>
-        std::ostream& operator<<(std::ostream& os, const edge_t<tindex>& e)
-        {
-                return os << '{' << e.first << "->" << e.second << '}';
-        }
-
         ///
         /// \brief generic directed graph specified by a set of edges.
         ///
@@ -25,7 +14,8 @@ namespace nano
         class digraph_t
         {
         public:
-                using edges_t = std::vector<edge_t<tindex>>;
+                using edge_t = std::pair<tindex, tindex>;
+                using edges_t = std::vector<edge_t>;
                 using indices_t = std::vector<tindex>;
 
                 ///

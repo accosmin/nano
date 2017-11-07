@@ -4,13 +4,19 @@
 using namespace nano;
 
 template <typename tindex>
-std::ostream& operator<<(std::ostream& os, const std::vector<tindex>& indices)
+std::ostream& operator<<(std::ostream& os, const typename digraph_t<tindex>::indices_t& indices)
 {
         for (const auto index : indices)
         {
                 os << index << ',';
         }
         return os;
+}
+
+template <typename tindex>
+std::ostream& operator<<(std::ostream& os, const typename digraph_t<tindex>::edge_t& e)
+{
+        return os << '{' << e.first << "->" << e.second << '}';
 }
 
 NANO_BEGIN_MODULE(test_digraph)
@@ -47,9 +53,9 @@ NANO_CASE(vertices_and_edges)
         NANO_REQUIRE_EQUAL(g.edges().size(), 3u);
         NANO_REQUIRE_EQUAL(g.vertices(), 4u);
 
-        const auto e1 = edge_t<size_t>{0, 2}; NANO_REQUIRE_EQUAL(g.edges()[0], e1);
-        const auto e2 = edge_t<size_t>{2, 3}; NANO_REQUIRE_EQUAL(g.edges()[1], e2);
-        const auto e3 = edge_t<size_t>{1, 2}; NANO_REQUIRE_EQUAL(g.edges()[2], e3);
+        const auto e1 = digraph_t<size_t>::edge_t{0, 2}; NANO_REQUIRE_EQUAL(g.edges()[0], e1);
+        const auto e2 = digraph_t<size_t>::edge_t{2, 3}; NANO_REQUIRE_EQUAL(g.edges()[1], e2);
+        const auto e3 = digraph_t<size_t>::edge_t{1, 2}; NANO_REQUIRE_EQUAL(g.edges()[2], e3);
 }
 
 NANO_CASE(incoming)
