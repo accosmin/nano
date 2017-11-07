@@ -67,24 +67,24 @@ namespace nano
                 /// \brief add a new vertex
                 /// \return the id of the new vertex
                 ///
-                size_t add(tpayload vertex);
+                size_t vertex(tpayload);
 
                 ///
                 /// \brief add new vertices
                 /// \return the id of the last vertex in the pack
                 ///
                 template <typename... tpayloads>
-                size_t add(tpayload vertex, tpayloads&&... vertices)
+                size_t vertex(tpayload payload, tpayloads&&... payloads)
                 {
-                        add(vertex);
-                        return add(vertices...);
+                        vertex(payload);
+                        return vertex(payloads...);
                 }
 
                 ///
                 /// \brief create a directed edge between the src and the dst vertex ids
                 /// \return true if the vertex ids are valid
                 ///
-                bool connect(const size_t src, const size_t dst);
+                bool edge(const size_t src, const size_t dst);
 
                 ///
                 /// \brief returns then vertices with no incoming edge
@@ -102,11 +102,6 @@ namespace nano
                 ///
                 template <typename tvcall>
                 bool depth_first(const tvcall&) const;
-
-                ///
-                /// \brief checks if the graph has cycles (aka not a DAG)
-                ///
-                bool cyclic() const { return !dag(); }
 
                 ///
                 /// \brief checks if the graph is a DAG
@@ -127,18 +122,6 @@ namespace nano
                 bool empty() const { return m_edges.empty() && m_vertices.empty(); }
 
         private:
-
-                auto vertex(const size_t id) const
-                {
-                        return  std::find_if(m_vertices.begin(), m_vertices.end(),
-                                [=] (const auto& vertex) { return vertex.m_id == id; });
-                }
-
-                auto edge(const size_t src, const size_t dst) const
-                {
-                        return  std::find_if(m_edges.begin(), m_edges.end(),
-                                [=] (const auto& edge) { return edge.m_src == src && edge.m_dst == dst; });
-                }
 
                 enum class flag : uint8_t
                 {
@@ -192,24 +175,24 @@ namespace nano
                 }
 
                 // attributes
-                size_t          m_id{0};
                 edges_t         m_edges;
                 vertices_t      m_vertices;
         };
 
         template <typename tpayload>
-        size_t digraph_t<tpayload>::add(tpayload vertex)
+        size_t digraph_t<tpayload>::vertex(tpayload payload)
         {
-                m_vertices.emplace_back(m_id, std::move(vertex));
-                return m_id ++;
+                const auto id = m_vertices.size();
+                m_vertices.emplace_back(id, std::move(payload));
+                return id;
         }
 
         template <typename tpayload>
-        bool digraph_t<tpayload>::connect(const size_t src, const size_t dst)
+        bool digraph_t<tpayload>::edge(const size_t src, const size_t dst)
         {
-                if (    vertex(src) != m_vertices.end() &&
-                        vertex(dst) != m_vertices.end() &&
-                        edge(src, dst) == m_edges.end())
+                if (    src < m_vertices.size() && dst < m_vertices.size() &&
+                        std::find_if(m_edges.begin(), m_edges.end(),
+                        [=] (const auto& edge) { return edge.m_src == src && edge.m_dst == dst; }) == m_edges.end())
                 {
                         m_edges.emplace_back(src, dst);
                         return true;
