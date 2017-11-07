@@ -303,8 +303,8 @@ NANO_CASE(table)
         t1.append() << "row2" << "v21" << "v22";
         t1.append() << "row3" << "v21" << "v22";
 
-        NANO_CHECK_EQUAL(t1.rows(), 4);
-        NANO_CHECK_EQUAL(t1.cols(), 3);
+        NANO_CHECK_EQUAL(t1.rows(), 4u);
+        NANO_CHECK_EQUAL(t1.cols(), 3u);
 
         const auto path = "table.csv";
         const auto delim = ";";
@@ -329,13 +329,13 @@ NANO_CASE(table_rows)
         table.append() << "row2" << "3200" << colspan(2) << "2000";
         table.append() << "row3" << colspan(3) << "2500";
 
-        NANO_CHECK_EQUAL(table.rows(), 4);
-        NANO_CHECK_EQUAL(table.cols(), 4);
+        NANO_CHECK_EQUAL(table.rows(), 4u);
+        NANO_CHECK_EQUAL(table.cols(), 4u);
 
-        NANO_CHECK_EQUAL(table.row(0).cols(), 4);
-        NANO_CHECK_EQUAL(table.row(1).cols(), 4);
-        NANO_CHECK_EQUAL(table.row(2).cols(), 4);
-        NANO_CHECK_EQUAL(table.row(3).cols(), 4);
+        NANO_CHECK_EQUAL(table.row(0).cols(), 4u);
+        NANO_CHECK_EQUAL(table.row(1).cols(), 4u);
+        NANO_CHECK_EQUAL(table.row(2).cols(), 4u);
+        NANO_CHECK_EQUAL(table.row(3).cols(), 4u);
 
         NANO_CHECK_EQUAL(table.row(0).data(0), "head"); NANO_CHECK_EQUAL(table.row(0).mark(0), "");
         NANO_CHECK_EQUAL(table.row(0).data(1), "colx"); NANO_CHECK_EQUAL(table.row(0).mark(1), "");

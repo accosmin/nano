@@ -64,8 +64,8 @@ NANO_CASE(construction)
 
                                 if (label.empty())
                                 {
-                                        NANO_CHECK_EQUAL(target.vector().minCoeff(), 0);
-                                        NANO_CHECK_EQUAL(target.vector().maxCoeff(), 0);
+                                        NANO_CHECK_EQUAL(target.vector().minCoeff(), scalar_t(0));
+                                        NANO_CHECK_EQUAL(target.vector().maxCoeff(), scalar_t(0));
                                         continue;
                                 }
 

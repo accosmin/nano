@@ -21,7 +21,7 @@ NANO_CASE(empty)
 
         NANO_CHECK(g.empty());
         NANO_CHECK(g.edges().empty());
-        NANO_CHECK_EQUAL(g.vertices(), 0);
+        NANO_CHECK_EQUAL(g.vertices(), 0u);
 }
 
 NANO_CASE(vertices)
@@ -30,7 +30,7 @@ NANO_CASE(vertices)
 
         NANO_CHECK(!g.empty());
         NANO_REQUIRE(g.edges().empty());
-        NANO_REQUIRE_EQUAL(g.vertices(), 4);
+        NANO_REQUIRE_EQUAL(g.vertices(), 4u);
 }
 
 NANO_CASE(vertices_and_edges)
@@ -44,8 +44,8 @@ NANO_CASE(vertices_and_edges)
         NANO_CHECK(!g.edge(1, 2));   ///< duplicated edge
 
         NANO_CHECK(!g.empty());
-        NANO_REQUIRE_EQUAL(g.edges().size(), 3);
-        NANO_REQUIRE_EQUAL(g.vertices(), 4);
+        NANO_REQUIRE_EQUAL(g.edges().size(), 3u);
+        NANO_REQUIRE_EQUAL(g.vertices(), 4u);
 
         const auto e1 = edge_t<size_t>{0, 2}; NANO_REQUIRE_EQUAL(g.edges()[0], e1);
         const auto e2 = edge_t<size_t>{2, 3}; NANO_REQUIRE_EQUAL(g.edges()[1], e2);

@@ -14,7 +14,7 @@ NANO_CASE(construction)
         const auto target_sum = scalar_t(2) - static_cast<scalar_t>(nano::size(odims));
 
         const auto folds = size_t(1);
-        const auto samples = 150;
+        const auto samples = size_t(150);
         const auto train_fold = fold_t{0, protocol::train};
         const auto valid_fold = fold_t{0, protocol::valid};
         const auto test_fold = fold_t{0, protocol::test};

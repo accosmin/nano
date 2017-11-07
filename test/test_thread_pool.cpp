@@ -12,7 +12,7 @@ NANO_CASE(empty)
 
         NANO_CHECK_EQUAL(pool.workers(), nano::logical_cpus());
         NANO_CHECK_EQUAL(pool.active_workers(), nano::logical_cpus());
-        NANO_CHECK_EQUAL(pool.tasks(), 0);
+        NANO_CHECK_EQUAL(pool.tasks(), 0u);
 }
 
 NANO_CASE(enqueue)
@@ -28,7 +28,7 @@ NANO_CASE(enqueue)
 
                 NANO_CHECK_EQUAL(pool.workers(), threads);
                 NANO_CHECK_EQUAL(pool.active_workers(), active_workers);
-                NANO_CHECK_EQUAL(pool.tasks(), 0);
+                NANO_CHECK_EQUAL(pool.tasks(), 0u);
 
                 nano::random_t<size_t> rnd(1, max_tasks);
                 const size_t tasks = rnd();
@@ -56,7 +56,7 @@ NANO_CASE(enqueue)
 
                 NANO_CHECK_EQUAL(pool.workers(), threads);
                 NANO_CHECK_EQUAL(pool.active_workers(), active_workers);
-                NANO_CHECK_EQUAL(pool.tasks(), 0);
+                NANO_CHECK_EQUAL(pool.tasks(), 0u);
 
                 NANO_CHECK_EQUAL(tasks_done.size(), tasks);
                 for (size_t j = 0; j < tasks; ++ j)

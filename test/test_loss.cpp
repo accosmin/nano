@@ -67,7 +67,7 @@ NANO_CASE(evaluate)
                                 tensor1d_t x(3 * cmd_dims);
                                 x.random(scalar_t(-0.1), scalar_t(+0.1));
 
-                                NANO_CHECK_GREATER(function.eval(x.vector()), 0);
+                                NANO_CHECK_GREATER(function.eval(x.vector()), scalar_t(0));
                                 NANO_CHECK_LESS(function.grad_accuracy(x.vector()), epsilon1<scalar_t>());
                         }
                 }

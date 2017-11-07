@@ -8,6 +8,7 @@ using namespace nano;
 const auto epochs = 200;
 const auto best_epoch = 50;
 const auto patience = size_t(32);
+const auto optimum_value = static_cast<scalar_t>(epochs - best_epoch);
 
 template <typename tvalue>
 static auto make_trainer_state(const tvalue valid_value, const size_t ms = 0, const size_t epoch = 0)
@@ -58,7 +59,7 @@ NANO_CASE(result_max_iters)
                 NANO_CHECK(false == nano::is_done(status));
         }
 
-        NANO_CHECK_EQUAL(result.optimum_state().m_valid.m_value, 0);
+        NANO_CHECK_EQUAL(result.optimum_state().m_valid.m_value, scalar_t(0));
         NANO_CHECK_EQUAL(result.optimum_epoch(), epochs);
 }
 
@@ -83,7 +84,7 @@ NANO_CASE(result_solved)
                 }
         }
 
-        NANO_CHECK_EQUAL(result.optimum_state().m_valid.m_value, epochs - best_epoch);
+        NANO_CHECK_EQUAL(result.optimum_state().m_valid.m_value, optimum_value);
         NANO_CHECK_EQUAL(result.optimum_epoch(), best_epoch);
 }
 
@@ -115,7 +116,7 @@ NANO_CASE(result_overfitting)
                 }
         }
 
-        NANO_CHECK_EQUAL(result.optimum_state().m_valid.m_value, epochs - best_epoch);
+        NANO_CHECK_EQUAL(result.optimum_state().m_valid.m_value, optimum_value);
         NANO_CHECK_EQUAL(result.optimum_epoch(), best_epoch);
 }
 
@@ -142,7 +143,7 @@ NANO_CASE(result_not_finite)
                 }
         }
 
-        NANO_CHECK_EQUAL(result.optimum_state().m_valid.m_value, epochs - best_epoch);
+        NANO_CHECK_EQUAL(result.optimum_state().m_valid.m_value, optimum_value);
         NANO_CHECK_EQUAL(result.optimum_epoch(), best_epoch);
 }
 
