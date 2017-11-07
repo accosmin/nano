@@ -13,22 +13,21 @@ namespace nano
         struct vertex_t
         {
                 vertex_t() = default;
-                vertex_t(const size_t id, tpayload&& data) : m_id(id), m_data(std::move(data)) {}
+                vertex_t(tpayload&& data) : m_data(std::move(data)) {}
 
-                size_t          m_id{0};        ///<
                 tpayload        m_data;         ///<
         };
 
         template <typename tpayload>
         bool operator==(const vertex_t<tpayload>& v1, const vertex_t<tpayload>& v2)
         {
-                return v1.m_id == v2.m_id && v1.m_data == v2.m_data;
+                return v1.m_data == v2.m_data;
         }
 
         template <typename tpayload>
         std::ostream& operator<<(std::ostream& os, const vertex_t<tpayload>& v)
         {
-                return os << '{' << v.m_id << ':' << v.m_data << '}';
+                return os << '{' << v.m_data << '}';
         }
 
         ///
@@ -65,19 +64,17 @@ namespace nano
 
                 ///
                 /// \brief add a new vertex
-                /// \return the id of the new vertex
                 ///
-                size_t vertex(tpayload);
+                void vertex(tpayload);
 
                 ///
                 /// \brief add new vertices
-                /// \return the id of the last vertex in the pack
                 ///
                 template <typename... tpayloads>
-                size_t vertex(tpayload payload, tpayloads&&... payloads)
+                void vertices(tpayload payload, tpayloads&&... payloads)
                 {
                         vertex(payload);
-                        return vertex(payloads...);
+                        vertices(payloads...);
                 }
 
                 ///
@@ -180,11 +177,9 @@ namespace nano
         };
 
         template <typename tpayload>
-        size_t digraph_t<tpayload>::vertex(tpayload payload)
+        void digraph_t<tpayload>::vertex(tpayload payload)
         {
-                const auto id = m_vertices.size();
-                m_vertices.emplace_back(id, std::move(payload));
-                return id;
+                m_vertices.emplace_back(std::move(payload));
         }
 
         template <typename tpayload>

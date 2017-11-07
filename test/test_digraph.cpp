@@ -21,19 +21,16 @@ NANO_CASE(vertices)
         NANO_CHECK(g.edges().empty());
         NANO_CHECK(g.vertices().empty());
 
-        NANO_CHECK_EQUAL(g.vertex(10), 0);
-        NANO_CHECK_EQUAL(g.vertex(11), 1);
-        NANO_CHECK_EQUAL(g.vertex(12), 2);
-        NANO_CHECK_EQUAL(g.vertex(13), 3);
+        g.vertices(10, 11, 12, 13);
 
         NANO_CHECK(!g.empty());
         NANO_REQUIRE(g.edges().empty());
         NANO_REQUIRE_EQUAL(g.vertices().size(), 4);
 
-        const auto v1 = vertex_t<int>{0, 10}; NANO_CHECK_EQUAL(g.vertices()[0], v1);
-        const auto v2 = vertex_t<int>{1, 11}; NANO_CHECK_EQUAL(g.vertices()[1], v2);
-        const auto v3 = vertex_t<int>{2, 12}; NANO_CHECK_EQUAL(g.vertices()[2], v3);
-        const auto v4 = vertex_t<int>{3, 13}; NANO_CHECK_EQUAL(g.vertices()[3], v4);
+        const auto v1 = vertex_t<int>{10}; NANO_CHECK_EQUAL(g.vertices()[0], v1);
+        const auto v2 = vertex_t<int>{11}; NANO_CHECK_EQUAL(g.vertices()[1], v2);
+        const auto v3 = vertex_t<int>{12}; NANO_CHECK_EQUAL(g.vertices()[2], v3);
+        const auto v4 = vertex_t<int>{13}; NANO_CHECK_EQUAL(g.vertices()[3], v4);
 }
 
 NANO_CASE(vertices_and_edges)
@@ -43,10 +40,7 @@ NANO_CASE(vertices_and_edges)
         NANO_CHECK(g.edges().empty());
         NANO_CHECK(g.vertices().empty());
 
-        NANO_CHECK_EQUAL(g.vertex(20), 0);
-        NANO_CHECK_EQUAL(g.vertex(21), 1);
-        NANO_CHECK_EQUAL(g.vertex(22), 2);
-        NANO_CHECK_EQUAL(g.vertex(23), 3);
+        g.vertices(20, 21, 22, 23);
 
         NANO_CHECK(g.edge(0, 2));
         NANO_CHECK(g.edge(2, 3));
@@ -62,16 +56,16 @@ NANO_CASE(vertices_and_edges)
         const auto e2 = edge_t{2, 3}; NANO_REQUIRE_EQUAL(g.edges()[1], e2);
         const auto e3 = edge_t{1, 2}; NANO_REQUIRE_EQUAL(g.edges()[2], e3);
 
-        const auto v1 = vertex_t<int>{0, 20}; NANO_CHECK_EQUAL(g.vertices()[0], v1);
-        const auto v2 = vertex_t<int>{1, 21}; NANO_CHECK_EQUAL(g.vertices()[1], v2);
-        const auto v3 = vertex_t<int>{2, 22}; NANO_CHECK_EQUAL(g.vertices()[2], v3);
-        const auto v4 = vertex_t<int>{3, 23}; NANO_CHECK_EQUAL(g.vertices()[3], v4);
+        const auto v1 = vertex_t<int>{20}; NANO_CHECK_EQUAL(g.vertices()[0], v1);
+        const auto v2 = vertex_t<int>{21}; NANO_CHECK_EQUAL(g.vertices()[1], v2);
+        const auto v3 = vertex_t<int>{22}; NANO_CHECK_EQUAL(g.vertices()[2], v3);
+        const auto v4 = vertex_t<int>{23}; NANO_CHECK_EQUAL(g.vertices()[3], v4);
 }
 
 NANO_CASE(incoming)
 {
         digraph_t<int> g;
-        NANO_CHECK_EQUAL(g.vertex(20, 21, 22, 23, 24), 4);
+        g.vertices(20, 21, 22, 23, 24);
 
         NANO_CHECK(g.edge(0, 2));
         NANO_CHECK(g.edge(2, 3));
@@ -85,7 +79,7 @@ NANO_CASE(incoming)
 NANO_CASE(outgoing)
 {
         digraph_t<int> g;
-        NANO_CHECK_EQUAL(g.vertex(20, 21, 22, 23, 24), 4);
+        g.vertices(20, 21, 22, 23, 24);
 
         NANO_CHECK(g.edge(0, 2));
         NANO_CHECK(g.edge(2, 3));
@@ -101,14 +95,14 @@ NANO_CASE(cyclic0)
         digraph_t<int> g;
         NANO_CHECK(g.dag());
 
-        NANO_CHECK_EQUAL(g.vertex(20, 21, 22, 23), 3);
+        g.vertices(20, 21, 22, 23);
         NANO_CHECK(g.dag());
 }
 
 NANO_CASE(cyclic1)
 {
         digraph_t<int> g;
-        NANO_CHECK_EQUAL(g.vertex(20, 21, 22, 23, 24), 4);
+        g.vertices(20, 21, 22, 23, 24);
 
         NANO_CHECK(g.edge(0, 2));
         NANO_CHECK(g.edge(2, 3));
@@ -121,7 +115,7 @@ NANO_CASE(cyclic1)
 NANO_CASE(cyclic2)
 {
         digraph_t<int> g;
-        NANO_CHECK_EQUAL(g.vertex(20, 21, 22, 23), 3);
+        g.vertices(20, 21, 22, 23);
 
         NANO_CHECK(g.edge(0, 2));
         NANO_CHECK(g.edge(2, 3));
@@ -134,7 +128,7 @@ NANO_CASE(cyclic2)
 NANO_CASE(cyclic3)
 {
         digraph_t<int> g;
-        NANO_CHECK_EQUAL(g.vertex(20, 21, 22), 2);
+        g.vertices(20, 21, 22);
 
         NANO_CHECK(g.edge(1, 2));
         NANO_CHECK(g.edge(2, 0));
@@ -146,7 +140,7 @@ NANO_CASE(cyclic3)
 NANO_CASE(cyclic4)
 {
         digraph_t<int> g;
-        NANO_CHECK_EQUAL(g.vertex(20, 21, 22), 2);
+        g.vertices(20, 21, 22);
 
         NANO_CHECK(g.edge(1, 2));
         NANO_CHECK(g.edge(2, 0));
@@ -157,7 +151,7 @@ NANO_CASE(cyclic4)
 NANO_CASE(cyclic5)
 {
         digraph_t<int> g;
-        NANO_CHECK_EQUAL(g.vertex(20, 21, 22, 23, 24, 25, 26), 6);
+        g.vertices(20, 21, 22, 23, 24, 25, 26);
 
         NANO_CHECK(g.edge(0, 2));
         NANO_CHECK(g.edge(1, 2));
@@ -172,7 +166,7 @@ NANO_CASE(cyclic5)
 NANO_CASE(cyclic6)
 {
         digraph_t<int> g;
-        NANO_CHECK_EQUAL(g.vertex(20, 21, 22, 23, 24, 25, 26), 6);
+        g.vertices(20, 21, 22, 23, 24, 25, 26);
 
         NANO_CHECK(g.edge(0, 2));
         NANO_CHECK(g.edge(1, 2));
