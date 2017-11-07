@@ -126,8 +126,8 @@ int main(int, char* []) \
 #define NANO_EVALUATE_BINARY_OP(left, right, op, critical) \
 { \
         ++ n_checks; \
-        const auto res_left = (left); \
-        const auto res_right = (right); \
+        const auto res_left = (left); /* NOLINT */ \
+        const auto res_right = (right); /* NOLINT */ \
         if (!(res_left op res_right)) \
         { \
                 NANO_HANDLE_FAILURE() \

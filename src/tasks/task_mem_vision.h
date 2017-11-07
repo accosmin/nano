@@ -86,7 +86,7 @@ namespace nano
                         const size_t fsize,
                         const string_t& config = string_t()) :
                         mem_vision_task_t(
-                        tensor3d_dims_t{(color == color_mode::rgba ? 4 : (color == color_mode::rgb ? 3 : 1)), irows, icols},
+                        tensor3d_dims_t{color == color_mode::rgba ? 4 : (color == color_mode::rgb ? 3 : 1), irows, icols},
                         odims, fsize, config) {}
 
                 ///
