@@ -237,7 +237,13 @@ function(setup_coverage)
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O0")
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fprofile-arcs")
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -ftest-coverage")
-        set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} --coverage")
+
+        set(CMAKE_REQUIRED_FLAGS "--coverage")
+        CHECK_CXX_SOURCE_COMPILES("${TEST_PROGRAM}" COMPILER_SUPPORTS_COVERAGE)
+
+        if (COMPILER_SUPPORTS_COVERAGE)
+                set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} --coverage")
+        endif()
 
         to_parent()
 endfunction()

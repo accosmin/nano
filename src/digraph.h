@@ -7,91 +7,52 @@
 namespace nano
 {
         ///
-        /// \brief a vertex in a directed graph.
-        ///
-        template <typename tpayload>
-        struct vertex_t
-        {
-                vertex_t() = default;
-                vertex_t(tpayload&& data) : m_data(std::move(data)) {}
-
-                tpayload        m_data;         ///<
-        };
-
-        template <typename tpayload>
-        bool operator==(const vertex_t<tpayload>& v1, const vertex_t<tpayload>& v2)
-        {
-                return v1.m_data == v2.m_data;
-        }
-
-        template <typename tpayload>
-        std::ostream& operator<<(std::ostream& os, const vertex_t<tpayload>& v)
-        {
-                return os << '{' << v.m_data << '}';
-        }
-
-        ///
         /// \brief a directed edge in a directed graph.
         ///
-        struct edge_t
-        {
-                edge_t() = default;
-                edge_t(const size_t src, const size_t dst) : m_src(src), m_dst(dst) {}
+        template <typename tindex>
+        using edge_t = std::pair<tindex, tindex>;
 
-                size_t          m_src{0};       ///< source vertex id
-                size_t          m_dst{0};       ///< destination vertex id
-        };
-
-        inline bool operator==(const edge_t& e1, const edge_t& e2)
+        template <typename tindex>
+        std::ostream& operator<<(std::ostream& os, const edge_t<tindex>& e)
         {
-                return e1.m_src == e2.m_src && e1.m_dst == e2.m_dst;
-        }
-
-        std::ostream& operator<<(std::ostream& os, const edge_t& e)
-        {
-                return os << '{' << e.m_src << "->" << e.m_dst << '}';
+                return os << '{' << e.first << "->" << e.second << '}';
         }
 
         ///
-        /// \brief generic directed graph where each nodes has a given payload.
+        /// \brief generic directed graph specified by a set of edges.
         ///
-        template <typename tpayload>
+        template <typename tindex>
         class digraph_t
         {
         public:
-                using edges_t = std::vector<edge_t>;
-                using vertices_t = std::vector<vertex_t<tpayload>>;
+                using edges_t = std::vector<edge_t<tindex>>;
+                using indices_t = std::vector<tindex>;
 
                 ///
-                /// \brief add a new vertex
+                /// \brief
                 ///
-                void vertex(tpayload);
+                digraph_t() = default;
 
                 ///
-                /// \brief add new vertices
+                /// \brief initialize the digraph with the given number of vertices
                 ///
-                template <typename... tpayloads>
-                void vertices(tpayload payload, tpayloads&&... payloads)
-                {
-                        vertex(payload);
-                        vertices(payloads...);
-                }
+                digraph_t(const tindex vertices) : m_vertices(vertices) {}
 
                 ///
                 /// \brief create a directed edge between the src and the dst vertex ids
                 /// \return true if the vertex ids are valid
                 ///
-                bool edge(const size_t src, const size_t dst);
+                bool edge(const tindex src, const tindex dst);
 
                 ///
-                /// \brief returns then vertices with no incoming edge
+                /// \brief returns the vertices with no incoming edge
                 ///
-                std::vector<size_t> incoming() const;
+                indices_t incoming() const;
 
                 ///
                 /// \brief returns the vertices with no outgoing edge
                 ///
-                std::vector<size_t> outgoing() const;
+                indices_t outgoing() const;
 
                 ///
                 /// \brief depth-first search where the given operator is called with the current vertex id
@@ -107,16 +68,16 @@ namespace nano
 
                 ///
                 /// \brief topologically sort the graph
-                /// \return true if sorting makes sense (e.g. DAG)
+                /// \return the list of sorted vertices
                 ///
-                bool tsort();
+                indices_t tsort() const;
 
                 ///
                 /// \brief access functions
                 ///
+                auto vertices() const { return m_vertices; }
                 const auto& edges() const { return m_edges; }
-                const auto& vertices() const { return m_vertices; }
-                bool empty() const { return m_edges.empty() && m_vertices.empty(); }
+                auto empty() const { return m_edges.empty() && !m_vertices; }
 
         private:
 
@@ -128,9 +89,9 @@ namespace nano
                 };
 
                 template <typename tvcall>
-                bool visit(std::vector<flag>& flags, const tvcall& vcall, const size_t vindex) const
+                bool visit(std::vector<flag>& flags, const tvcall& vcall, const tindex vindex) const
                 {
-                        assert(flags.size() == m_vertices.size());
+                        assert(flags.size() == vertices());
 
                         switch (flags[vindex])
                         {
@@ -145,7 +106,7 @@ namespace nano
                                 flags[vindex] = flag::temporary;
                                 for (const auto& edge : m_edges)
                                 {
-                                        if (edge.m_src == vindex && !visit(flags, vcall, edge.m_dst))
+                                        if (edge.first == vindex && !visit(flags, vcall, edge.second))
                                         {
                                                 return false;
                                         }
@@ -156,7 +117,7 @@ namespace nano
                         }
                 }
 
-                static std::vector<size_t> difference(std::vector<size_t>& set1, std::vector<size_t>& set2)
+                static indices_t difference(indices_t& set1, indices_t& set2)
                 {
                         std::sort(set1.begin(), set1.end());
                         std::sort(set2.begin(), set2.end());
@@ -164,7 +125,7 @@ namespace nano
                         set1.erase(std::unique(set1.begin(), set1.end()), set1.end());
                         set2.erase(std::unique(set2.begin(), set2.end()), set2.end());
 
-                        std::vector<size_t> diff;
+                        indices_t diff;
                         std::set_difference(
                                 set1.begin(), set1.end(), set2.begin(), set2.end(),
                                 std::inserter(diff, diff.begin()));
@@ -173,21 +134,15 @@ namespace nano
 
                 // attributes
                 edges_t         m_edges;
-                vertices_t      m_vertices;
+                tindex          m_vertices{0};
         };
 
-        template <typename tpayload>
-        void digraph_t<tpayload>::vertex(tpayload payload)
+        template <typename tindex>
+        bool digraph_t<tindex>::edge(const tindex src, const tindex dst)
         {
-                m_vertices.emplace_back(std::move(payload));
-        }
-
-        template <typename tpayload>
-        bool digraph_t<tpayload>::edge(const size_t src, const size_t dst)
-        {
-                if (    src < m_vertices.size() && dst < m_vertices.size() &&
+                if (    src < vertices() && dst < vertices() &&
                         std::find_if(m_edges.begin(), m_edges.end(),
-                        [=] (const auto& edge) { return edge.m_src == src && edge.m_dst == dst; }) == m_edges.end())
+                        [=] (const auto& edge) { return edge.first == src && edge.second == dst; }) == m_edges.end())
                 {
                         m_edges.emplace_back(src, dst);
                         return true;
@@ -198,41 +153,41 @@ namespace nano
                 }
         }
 
-        template <typename tpayload>
-        std::vector<size_t> digraph_t<tpayload>::incoming() const
+        template <typename tindex>
+        typename digraph_t<tindex>::indices_t digraph_t<tindex>::incoming() const
         {
-                std::vector<size_t> srcs, dsts;
+                indices_t srcs, dsts;
                 srcs.reserve(m_edges.size());
                 dsts.reserve(m_edges.size());
                 for (const auto& edge : m_edges)
                 {
-                        srcs.emplace_back(edge.m_src);
-                        dsts.emplace_back(edge.m_dst);
+                        srcs.emplace_back(edge.first);
+                        dsts.emplace_back(edge.second);
                 }
 
                 return difference(srcs, dsts);
         }
 
-        template <typename tpayload>
-        std::vector<size_t> digraph_t<tpayload>::outgoing() const
+        template <typename tindex>
+        typename digraph_t<tindex>::indices_t digraph_t<tindex>::outgoing() const
         {
-                std::vector<size_t> srcs, dsts;
+                indices_t srcs, dsts;
                 srcs.reserve(m_edges.size());
                 dsts.reserve(m_edges.size());
                 for (const auto& edge : m_edges)
                 {
-                        srcs.emplace_back(edge.m_src);
-                        dsts.emplace_back(edge.m_dst);
+                        srcs.emplace_back(edge.first);
+                        dsts.emplace_back(edge.second);
                 }
 
                 return difference(dsts, srcs);
         }
 
-        template <typename tpayload>
+        template <typename tindex>
         template <typename tvcall>
-        bool digraph_t<tpayload>::depth_first(const tvcall& vcall) const
+        bool digraph_t<tindex>::depth_first(const tvcall& vcall) const
         {
-                std::vector<flag> flags(m_vertices.size(), flag::none);
+                std::vector<flag> flags(vertices(), flag::none);
 
                 // start from the vertices that don't have incoming edges
                 for (const auto src : incoming())
@@ -244,7 +199,7 @@ namespace nano
                 }
 
                 // check if any remaning not visited vertices (e.g. another cycle in the graph not connected)
-                for (size_t src = 0; src < flags.size(); ++ src)
+                for (tindex src = 0; src < flags.size(); ++ src)
                 {
                         if (flags[src] == flag::none && !visit(flags, vcall, src))
                         {
@@ -254,28 +209,19 @@ namespace nano
                 return true;
         }
 
-        template <typename tpayload>
-        bool digraph_t<tpayload>::dag() const
+        template <typename tindex>
+        bool digraph_t<tindex>::dag() const
         {
-                return depth_first([] (const size_t vindex) { (void)vindex; });
+                return depth_first([] (const tindex vindex) { (void)vindex; });
         }
 
-        template <typename tpayload>
-        bool digraph_t<tpayload>::tsort()
+        template <typename tindex>
+        typename digraph_t<tindex>::indices_t digraph_t<tindex>::tsort() const
         {
-                std::vector<size_t> vindices;
-                depth_first([&] (const size_t vindex) { vindices.push_back(vindex); });
+                indices_t vindices;
+                depth_first([&] (const tindex vindex) { vindices.push_back(vindex); });
 
-                if (vindices.size() == m_vertices.size())
-                {
-                        std::reverse(vindices.begin(), vindices.end());
-                        // todo: re-order the vertices given these indices
-                        // todo: must re-index the edges as well
-                        return true;
-                }
-                else
-                {
-                        return false;
-                }
+                std::reverse(vindices.begin(), vindices.end());
+                return vindices;
         }
 }
