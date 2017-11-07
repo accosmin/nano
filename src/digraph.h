@@ -211,7 +211,14 @@ namespace nano
                 indices_t vindices;
                 depth_first([&] (const tindex vindex) { vindices.push_back(vindex); });
 
-                std::reverse(vindices.begin(), vindices.end());
+                if (vindices.size() == vertices())
+                {
+                        std::reverse(vindices.begin(), vindices.end());
+                }
+                else
+                {
+                        vindices.clear();       // !DAG
+                }
                 return vindices;
         }
 }
