@@ -21,9 +21,9 @@ model_t::model_t(const model_t& other) :
         m_probe_ginput(other.m_probe_ginput),
         m_probe_gparam(other.m_probe_gparam)
 {
-        for (const auto& layer : other.m_layers)
+        for (const auto& layer : other.m_nodes)
         {
-                m_layers.emplace_back(layer->clone());
+                m_nodes.emplace_back(layer->clone());
         }
 }
 
@@ -63,7 +63,7 @@ vector_t model_t::params() const
         vector_t pdata(psize());
 
         tensor_size_t pindex = 0;
-        for (const auto& layer : m_layers)
+        for (const auto& layer : m_nodes)
         {
                 if (layer->psize())
                 {
@@ -82,7 +82,7 @@ void model_t::params(const vector_t& pdata)
         assert(pdata.size() == psize());
 
         tensor_size_t pindex = 0;
-        for (const auto& layer : m_layers)
+        for (const auto& layer : m_nodes)
         {
                 if (layer->psize())
                 {
@@ -104,7 +104,7 @@ const tensor4d_t& model_t::output(const tensor4d_t& idata)
         m_probe_output.measure([&] ()
         {
                 // forward step
-                for (const auto& layer : m_layers)
+                for (const auto& layer : m_nodes)
                 {
                         pidata = &layer->output(*pidata);
                 }
@@ -123,7 +123,7 @@ const tensor4d_t& model_t::ginput(const tensor4d_t& odata)
         m_probe_ginput.measure([&] ()
         {
                 // backward step
-                for (auto it = m_layers.rbegin(); it != m_layers.rend(); ++ it)
+                for (auto it = m_nodes.rbegin(); it != m_nodes.rend(); ++ it)
                 {
                         podata = &(*it)->ginput(*podata);
                 }
@@ -143,9 +143,9 @@ const tensor1d_t& model_t::gparam(const tensor4d_t& odata)
         m_probe_gparam.measure([&] ()
         {
                 // backward step
-                for (size_t l = m_layers.size(); l > 0; -- l)
+                for (size_t l = m_nodes.size(); l > 0; -- l)
                 {
-                        auto& layer = m_layers[l - 1];
+                        auto& layer = m_nodes[l - 1];
                         const auto& gdata = layer->gparam(*podata);
                         map_vector(m_gdata.data() + pindex - layer->psize(), layer->psize()) = gdata.vector();
                         if (l > 1)
@@ -163,7 +163,7 @@ const tensor1d_t& model_t::gparam(const tensor4d_t& odata)
 void model_t::random()
 {
         tensor_size_t pindex = 0;
-        for (const auto& layer : m_layers)
+        for (const auto& layer : m_nodes)
         {
                 if (layer->psize())
                 {
@@ -185,7 +185,7 @@ void model_t::random()
 
 bool model_t::config(const tensor3d_dims_t& idims, const tensor3d_dims_t& odims)
 {
-        m_layers.clear();
+        m_nodes.clear();
 
         auto xdims = idims;
 
@@ -231,7 +231,7 @@ bool model_t::config(const tensor3d_dims_t& idims, const tensor3d_dims_t& odims)
                 flops_ginput += layer->probe_ginput().flops();
                 flops_gparam += layer->probe_gparam().flops();
 
-                m_layers.emplace_back(std::move(layer));
+                m_nodes.emplace_back(std::move(layer));
         }
 
         // check output size to match the target
@@ -255,23 +255,23 @@ bool model_t::config(const tensor3d_dims_t& idims, const tensor3d_dims_t& odims)
 tensor_size_t model_t::psize() const
 {
         const auto acc = [] (const tensor_size_t sum, const rlayer_t& layer) { return sum + layer->psize(); };
-        return std::accumulate(m_layers.begin(), m_layers.end(), tensor_size_t(0), acc);
+        return std::accumulate(m_nodes.begin(), m_nodes.end(), tensor_size_t(0), acc);
 }
 
 tensor3d_dims_t model_t::idims() const
 {
-        return m_layers.at(0)->idims();
+        return m_nodes.at(0)->idims();
 }
 
 tensor3d_dims_t model_t::odims() const
 {
-        return m_layers.at(m_layers.size() - 1)->odims();
+        return m_nodes.at(m_nodes.size() - 1)->odims();
 }
 
 void model_t::describe() const
 {
         log_info() << "forward network [" << config() << "]";
-        for (const auto& layer : m_layers)
+        for (const auto& layer : m_nodes)
         {
                 log_info()
                         << "forward network " << layer->probe_output().basename()
@@ -298,7 +298,7 @@ probes_t model_t::probes() const
         append(m_probe_ginput);
         append(m_probe_gparam);
 
-        for (const auto& layer : m_layers)
+        for (const auto& layer : m_nodes)
         {
                 append(layer->probe_output());
                 append(layer->probe_ginput());

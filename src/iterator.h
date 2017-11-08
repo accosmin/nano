@@ -9,8 +9,9 @@ namespace nano
         ///     either using a fixed minibatch size if *factor* == 1
         ///     or using a geometrically increasing minibatch size if *factor* > 1.
         ///
-        struct iterator_t
+        class iterator_t
         {
+        public:
                 ///
                 /// \brief constructor
                 ///

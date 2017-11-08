@@ -2,6 +2,7 @@
 
 #include "task.h"
 #include "layer.h"
+#include "digraph.h"
 
 namespace nano
 {
@@ -96,9 +97,11 @@ namespace nano
         private:
 
                 using rlayers_t = std::vector<rlayer_t>;
+                using digraph_t = nano::digraph_t<uint16_t>;
 
                 // attributes
-                rlayers_t       m_layers;       ///< feed-forward layers
+                rlayers_t       m_nodes;        ///< computation nodes
+                digraph_t       m_graph;        ///< computation graph (aka dependency between nodes)
                 tensor1d_t      m_gdata;        ///< gradient wrt parameters
                 probe_t         m_probe_output;
                 probe_t         m_probe_ginput;
