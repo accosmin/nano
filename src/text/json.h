@@ -5,7 +5,7 @@
 namespace nano
 {
         ///
-        /// \brief JSON encoder.
+        /// \brief limited ascii-based JSON encoder.
         ///
         template <char tbegin, char tend>
         class json_encoder_t
@@ -63,4 +63,29 @@ namespace nano
         {
                 return json_encoder_t<'{', '}'>{text};
         }
+
+        ///
+        /// \brief limited ascii-based JSON decoder.
+        ///
+        template <char tbegin, char tend>
+        class json_decoder_t
+        {
+        public:
+
+                json_decoder_t(const string_t& text, const size_t pos = 0) : m_text(text), m_pos(pos)
+                {
+                        m_pos = m_text.find(tbegin, m_pos);
+                }
+
+                ~json_decoder_t()
+                {
+                        m_pos = m_text.find(tend, m_pos);
+                }
+
+        private:
+
+                // attributes
+                const string_t& m_text;
+                size_t          m_pos;
+        };
 }
