@@ -25,7 +25,7 @@ NANO_CASE(globally)
 
         const auto layer = get_layers().get("norm", make_norm_globally_layer());
 
-        NANO_CHECK_EQUAL(layer->configure(make_dims(xmaps, xrows, xcols), ""), true);
+        NANO_CHECK_EQUAL(layer->config(make_dims(xmaps, xrows, xcols), ""), true);
         NANO_CHECK_EQUAL(make_dims(xmaps, xrows, xcols), layer->idims());
         NANO_CHECK_EQUAL(make_dims(xmaps, xrows, xcols), layer->odims());
         NANO_CHECK_EQUAL(0, layer->psize());
@@ -52,7 +52,7 @@ NANO_CASE(by_plane)
 
         const auto layer = get_layers().get("norm", make_norm_by_plane_layer());
 
-        NANO_CHECK_EQUAL(layer->configure(make_dims(xmaps, xrows, xcols), ""), true);
+        NANO_CHECK_EQUAL(layer->config(make_dims(xmaps, xrows, xcols), ""), true);
         NANO_CHECK_EQUAL(make_dims(xmaps, xrows, xcols), layer->idims());
         NANO_CHECK_EQUAL(make_dims(xmaps, xrows, xcols), layer->odims());
         NANO_CHECK_EQUAL(0, layer->psize());

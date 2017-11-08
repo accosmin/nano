@@ -17,7 +17,7 @@ NANO_CASE(affine)
         NANO_CHECK(param.valid());
 
         const auto layer = get_layers().get("affine", make_affine_layer(odims));
-        NANO_CHECK(layer->configure(idims, lname));
+        NANO_CHECK(layer->config(idims, lname));
         NANO_CHECK_EQUAL(layer->idims(), idims);
         NANO_CHECK_EQUAL(layer->odims(), odims);
         NANO_CHECK_EQUAL(layer->psize(), param.psize());
@@ -39,7 +39,7 @@ NANO_CASE(conv3d)
                 NANO_CHECK(param.valid());
 
                 const auto layer = get_layers().get("conv3d", make_conv3d_layer(omaps, krows, kcols, kconn, "", kdrow, kdcol));
-                NANO_CHECK(layer->configure(idims, lname));
+                NANO_CHECK(layer->config(idims, lname));
                 NANO_CHECK_EQUAL(layer->idims(), idims);
                 NANO_CHECK_EQUAL(layer->odims(), param.odims());
                 NANO_CHECK_EQUAL(layer->psize(), param.psize());
@@ -52,7 +52,7 @@ NANO_CASE(norm_by_plane)
         const auto lname = "name";
 
         const auto layer = get_layers().get("norm", make_norm_by_plane_layer());
-        NANO_CHECK(layer->configure(idims, lname));
+        NANO_CHECK(layer->config(idims, lname));
         NANO_CHECK_EQUAL(layer->idims(), idims);
         NANO_CHECK_EQUAL(layer->odims(), idims);
         NANO_CHECK_EQUAL(layer->psize(), 0);
@@ -64,7 +64,7 @@ NANO_CASE(norm_globally)
         const auto lname = "name";
 
         const auto layer = get_layers().get("norm", make_norm_globally_layer());
-        NANO_CHECK(layer->configure(idims, lname));
+        NANO_CHECK(layer->config(idims, lname));
         NANO_CHECK_EQUAL(layer->idims(), idims);
         NANO_CHECK_EQUAL(layer->odims(), idims);
         NANO_CHECK_EQUAL(layer->psize(), 0);
@@ -80,7 +80,7 @@ NANO_CASE(activation)
                 if (is_activation_layer(layer_id))
                 {
                         const auto layer = get_layers().get(layer_id);
-                        NANO_CHECK(layer->configure(idims, lname));
+                        NANO_CHECK(layer->config(idims, lname));
                         NANO_CHECK_EQUAL(layer->idims(), idims);
                         NANO_CHECK_EQUAL(layer->odims(), idims);
                         NANO_CHECK_EQUAL(layer->psize(), 0);

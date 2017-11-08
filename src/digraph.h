@@ -107,13 +107,16 @@ namespace nano
                         }
                 }
 
+                static void unique(indices_t& set)
+                {
+                        std::sort(set.begin(), set.end());
+                        set.erase(std::unique(set.begin(), set.end()), set.end());
+                }
+
                 static indices_t difference(indices_t& set1, indices_t& set2)
                 {
-                        std::sort(set1.begin(), set1.end());
-                        std::sort(set2.begin(), set2.end());
-
-                        set1.erase(std::unique(set1.begin(), set1.end()), set1.end());
-                        set2.erase(std::unique(set2.begin(), set2.end()), set2.end());
+                        unique(set1);
+                        unique(set2);
 
                         indices_t diff;
                         std::set_difference(

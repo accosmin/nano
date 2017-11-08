@@ -17,25 +17,28 @@ namespace nano
         NANO_PUBLIC layer_factory_t& get_layers();
 
         ///
-        /// \brief process a set of inputs of size (irows, icols) and produces a set of outputs of size (orows, ocols).
+        /// \brief computation node.
         ///
         class NANO_PUBLIC layer_t : public configurable_t
         {
         public:
+
+                using configurable_t::config;
+
                 ///
                 /// \brief constructor
                 ///
                 layer_t(const string_t& config = string_t());
 
                 ///
-                /// \brief create a copy of the current object
+                /// \brief copy the current object
                 ///
                 virtual rlayer_t clone() const = 0;
 
                 ///
                 /// \brief configure to process new tensors of the given size
                 ///
-                virtual bool configure(const tensor3d_dims_t& idims, const string_t& name) = 0;
+                virtual bool config(const tensor3d_dims_t& idims, const string_t& name) = 0;
 
                 ///
                 /// \brief change parameters

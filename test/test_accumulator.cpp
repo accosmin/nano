@@ -11,20 +11,19 @@ NANO_BEGIN_MODULE(test_accumulator)
 NANO_CASE(evaluate)
 {
         const auto task = get_tasks().get("synth-charset", to_params("count", 64));
-        NANO_CHECK_EQUAL(task->load(), true);
+        NANO_CHECK(task->load());
 
         const auto fold = fold_t{0, protocol::train};
         const auto loss = nano::get_losses().get("s-logistic");
 
         // create model
-        const auto cmd_model = make_affine_layer(4, 1, 1) + make_output_layer(task->odims());
-        const auto model = nano::get_models().get("forward-network", cmd_model);
-        NANO_CHECK_EQUAL(model->configure(*task), true);
+        model_t model(make_affine_layer(4, 1, 1) + make_output_layer(task->odims()));
 
-        model->random();
+        NANO_CHECK(model.config(task->idims(), task->odims()));
+        model.random();
 
         // accumulators using 1 thread
-        accumulator_t acc(*model, *loss);
+        accumulator_t acc(model, *loss);
         acc.threads(1);
 
         acc.mode(accumulator_t::type::value);
@@ -45,7 +44,7 @@ NANO_CASE(evaluate)
         // check results with multiple threads
         for (size_t th = 2; th <= nano::logical_cpus(); ++ th)
         {
-                accumulator_t accx(*model, *loss);
+                accumulator_t accx(model, *loss);
                 accx.threads(th);
 
                 accx.mode(accumulator_t::type::value);

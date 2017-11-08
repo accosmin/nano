@@ -49,45 +49,45 @@ NANO_CASE(evaluate)
         for (const string_t& cmd_network : cmd_networks)
         {
                 // create feed-forward network
-                const auto model = get_models().get("forward-network", cmd_network);
-                NANO_CHECK_EQUAL(model->configure(*task), true);
-                NANO_CHECK_EQUAL(model->idims(), task->idims());
-                NANO_CHECK_EQUAL(model->odims(), task->odims());
+                model_t model(cmd_network);
+                NANO_CHECK(model.config(task->idims(), task->odims()));
+                NANO_CHECK_EQUAL(model.idims(), task->idims());
+                NANO_CHECK_EQUAL(model.odims(), task->odims());
 
                 // test random networks
                 for (size_t t = 0; t < 5; ++ t)
                 {
-                        model->random();
+                        model.random();
 
                         const fold_t fold = {0, protocol::test};
 
                         const string_t path = "./test_model.test";
 
                         // test error & parameters before saving
-                        accumulator_t bacc(*model, *loss);
+                        accumulator_t bacc(model, *loss);
                         bacc.mode(accumulator_t::type::value);
                         bacc.update(*task, fold);
                         const auto lvalue_before = bacc.vstats().avg();
                         const auto lerror_before = bacc.estats().avg();
                         const auto lcount_before = bacc.vstats().count();
 
-                        const auto params = model->params();
+                        const auto params = model.params();
 
                         //
-                        NANO_CHECK_EQUAL(model->save(path), true);
-                        model->random();
-                        NANO_CHECK_EQUAL(model->load(path), true);
+                        NANO_CHECK_EQUAL(model.save(path), true);
+                        model.random();
+                        NANO_CHECK_EQUAL(model.load(path), true);
                         //
 
                         // test error & parameters after loading
-                        accumulator_t aacc(*model, *loss);
+                        accumulator_t aacc(model, *loss);
                         aacc.mode(accumulator_t::type::value);
                         aacc.update(*task, fold);
                         const auto lvalue_after = aacc.vstats().avg();
                         const auto lerror_after = aacc.estats().avg();
                         const auto lcount_after = aacc.vstats().count();
 
-                        const auto xparams = model->params();
+                        const auto xparams = model.params();
 
                         // check
                         NANO_CHECK_EQUAL(lcount_before, lcount_after);

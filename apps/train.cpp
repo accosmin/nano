@@ -51,7 +51,6 @@ int main(int argc, const char *argv[])
         cmdline.add("", "task",                 "[" + concatenate(get_tasks().ids()) + "]");
         cmdline.add("", "task-params",          "task parameters (if any)", "-");
         cmdline.add("", "task-fold",            "fold index to use for training", "0");
-        cmdline.add("", "model",                "[" + concatenate(get_models().ids()) + "]");
         cmdline.add("", "model-params",         "model parameters (if any)");
         cmdline.add("", "model-file",           "filepath to save the model to");
         cmdline.add("", "trainer",              "[" + concatenate(get_trainers().ids()) + "]");
@@ -67,7 +66,6 @@ int main(int argc, const char *argv[])
         const auto cmd_task = cmdline.get<string_t>("task");
         const auto cmd_task_params = cmdline.get<string_t>("task-params");
         const auto cmd_task_fold = cmdline.get<size_t>("task-fold");
-        const auto cmd_model = cmdline.get<string_t>("model");
         const auto cmd_model_params = cmdline.get<string_t>("model-params");
         const auto cmd_model_file = cmdline.get<string_t>("model-file");
         const auto cmd_state_file = dirname(cmd_model_file) + stem(cmd_model_file) + ".state";
@@ -97,16 +95,16 @@ int main(int argc, const char *argv[])
         const auto enhancer = get_enhancers().get(cmd_enhancer, cmd_enhancer_params);
 
         // create model
-        const auto model = get_models().get(cmd_model, cmd_model_params);
-        if (!model->configure(*task))
+        model_t model(cmd_model_params);
+        if (!model.config(task->idims(), task->odims()))
         {
                 log_error() << "failed to configure model!";
                 return EXIT_FAILURE;
         }
-        model->random();
-        model->describe();
+        model.random();
+        model.describe();
 
-        if (*model != *task)
+        if (model != *task)
         {
                 log_error() << "mis-matching model and task!";
                 return EXIT_FAILURE;
@@ -116,7 +114,7 @@ int main(int argc, const char *argv[])
         const auto trainer = get_trainers().get(cmd_trainer, cmd_trainer_params);
 
         // train model
-        accumulator_t acc(*model, *loss);
+        accumulator_t acc(model, *loss);
         acc.threads(cmd_threads);
 
         trainer_result_t result;
@@ -129,12 +127,12 @@ int main(int argc, const char *argv[])
 
         if (result.valid())
         {
-                model->params(result.optimum_params());
+                model.params(result.optimum_params());
         }
 
         // save the model & its optimization history
         measure_critical_and_log(
-                [&] () { return model->save(cmd_model_file); },
+                [&] () { return model.save(cmd_model_file); },
                 "save model to <" + cmd_model_file + ">");
 
         measure_critical_and_log(

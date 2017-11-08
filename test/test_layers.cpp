@@ -17,35 +17,35 @@ using namespace nano;
 
 struct model_wrt_params_function_t final : public function_t
 {
-        explicit model_wrt_params_function_t(const rloss_t& loss, const rmodel_t& model, const tensor_size_t count) :
-                function_t("model", model->psize(), model->psize(), model->psize(), convexity::no, 1e+6),
+        explicit model_wrt_params_function_t(const rloss_t& loss, model_t& model, const tensor_size_t count) :
+                function_t("model", model.psize(), model.psize(), model.psize(), convexity::no, 1e+6),
                 m_loss(loss),
                 m_model(model),
-                m_inputs(cat_dims(count, model->idims())),
-                m_targets(cat_dims(count, model->odims()))
+                m_inputs(idims(model, count)),
+                m_targets(odims(model, count))
         {
-                m_model->random();
+                m_model.random();
                 m_inputs.random(0, 1);
                 for (auto x = 0; x < count; ++ x)
                 {
-                        m_targets.vector(x) = class_target(x % model->osize(), model->osize());
+                        m_targets.vector(x) = class_target(x % osize(model), osize(model));
                 }
         }
 
         scalar_t vgrad(const vector_t& x, vector_t* gx) const override
         {
-                NANO_CHECK_EQUAL(x.size(), m_model->psize());
+                NANO_CHECK_EQUAL(x.size(), m_model.psize());
                 NANO_CHECK(std::isfinite(x.minCoeff()));
                 NANO_CHECK(std::isfinite(x.maxCoeff()));
 
-                m_model->params(x);
-                const auto& outputs = m_model->output(m_inputs);
+                m_model.params(x);
+                const auto& outputs = m_model.output(m_inputs);
                 NANO_CHECK(std::isfinite(outputs.vector().minCoeff()));
                 NANO_CHECK(std::isfinite(outputs.vector().maxCoeff()));
 
                 if (gx)
                 {
-                        const auto& gparam = m_model->gparam(m_loss->vgrad(m_targets, outputs));
+                        const auto& gparam = m_model.gparam(m_loss->vgrad(m_targets, outputs));
                         NANO_CHECK_EQUAL(gx->size(), gparam.size());
                         NANO_CHECK(std::isfinite(gparam.vector().minCoeff()));
                         NANO_CHECK(std::isfinite(gparam.vector().maxCoeff()));
@@ -56,25 +56,25 @@ struct model_wrt_params_function_t final : public function_t
         }
 
         const rloss_t&          m_loss;
-        const rmodel_t&         m_model;
+        model_t&                m_model;
         tensor4d_t              m_inputs;
         tensor4d_t              m_targets;
 };
 
 struct model_wrt_inputs_function_t final : public function_t
 {
-        explicit model_wrt_inputs_function_t(const rloss_t& loss, const rmodel_t& model, const tensor_size_t count) :
-                function_t("model", count * model->isize(), count * model->isize(), count * model->isize(), convexity::no, 1e+6),
+        explicit model_wrt_inputs_function_t(const rloss_t& loss, model_t& model, const tensor_size_t count) :
+                function_t("model", isize(model, count), isize(model, count), isize(model, count), convexity::no, 1e+6),
                 m_loss(loss),
                 m_model(model),
-                m_inputs(cat_dims(count, model->idims())),
-                m_targets(cat_dims(count, model->odims()))
+                m_inputs(idims(model, count)),
+                m_targets(odims(model, count))
         {
-                m_model->random();
+                m_model.random();
                 m_inputs.random(0, 1);
                 for (auto x = 0; x < count; ++ x)
                 {
-                        m_targets.vector(x) = class_target(x % model->osize(), model->osize());
+                        m_targets.vector(x) = class_target(x % osize(model), osize(model));
                 }
         }
 
@@ -85,13 +85,13 @@ struct model_wrt_inputs_function_t final : public function_t
                 NANO_CHECK(std::isfinite(x.maxCoeff()));
 
                 m_inputs.vector() = x;
-                const auto& outputs = m_model->output(m_inputs);
+                const auto& outputs = m_model.output(m_inputs);
                 NANO_CHECK(std::isfinite(outputs.vector().minCoeff()));
                 NANO_CHECK(std::isfinite(outputs.vector().maxCoeff()));
 
                 if (gx)
                 {
-                        const auto& ginput = m_model->ginput(m_loss->vgrad(m_targets, outputs));
+                        const auto& ginput = m_model.ginput(m_loss->vgrad(m_targets, outputs));
                         NANO_CHECK_EQUAL(gx->size(), ginput.size());
                         NANO_CHECK(std::isfinite(ginput.vector().minCoeff()));
                         NANO_CHECK(std::isfinite(ginput.vector().maxCoeff()));
@@ -102,7 +102,7 @@ struct model_wrt_inputs_function_t final : public function_t
         }
 
         const rloss_t&          m_loss;
-        const rmodel_t&         m_model;
+        model_t&                m_model;
         mutable tensor4d_t      m_inputs;
         tensor4d_t              m_targets;
 };
@@ -136,18 +136,18 @@ static auto get_loss()
 
 static auto get_model(const string_t& description)
 {
-        auto model = get_models().get("forward-network", description + ";" + cmd_layer_output);
-        NANO_CHECK(model->configure(cmd_idims, cmd_odims));
-        NANO_CHECK_EQUAL(model->idims(), cmd_idims);
-        NANO_CHECK_EQUAL(model->odims(), cmd_odims);
+        model_t model(description + ";" + cmd_layer_output);
+        NANO_CHECK(model.config(cmd_idims, cmd_odims));
+        NANO_CHECK_EQUAL(model.idims(), cmd_idims);
+        NANO_CHECK_EQUAL(model.odims(), cmd_odims);
         return model;
 }
 
 static void test_model(const string_t& model_description, const tensor_size_t expected_psize,
         const scalar_t epsilon = 3 * epsilon1<scalar_t>())
 {
-        const auto model = get_model(model_description);
-        NANO_CHECK_EQUAL(model->psize(), expected_psize);
+        auto model = get_model(model_description);
+        NANO_CHECK_EQUAL(model.psize(), expected_psize);
 
         for (auto count = 1; count <= 3; ++ count)
         {
@@ -155,7 +155,7 @@ static void test_model(const string_t& model_description, const tensor_size_t ex
                 const auto pfun = model_wrt_params_function_t{loss, model, count};
                 const auto ifun = model_wrt_inputs_function_t{loss, model, count};
 
-                const vector_t px = pfun.m_model->params();
+                const vector_t px = pfun.m_model.params();
                 const vector_t ix = ifun.m_inputs.vector();
 
                 NANO_CHECK_EQUAL(px.size(), pfun.size());

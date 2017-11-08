@@ -146,10 +146,10 @@ int main(int argc, const char *argv[])
                 const auto cmd_name = config.second;
 
                 // create feed-forward network
-                const auto model = get_models().get("forward-network", cmd_network);
-                model->configure(*task);
-                model->random();
-                model->describe();
+                model_t model(cmd_network);
+                model.config(task->idims(), task->odims());
+                model.random();
+                model.describe();
 
                 const auto fold = fold_t{0, protocol::train};
                 const auto size = task->size(fold);
@@ -157,7 +157,7 @@ int main(int argc, const char *argv[])
                 for (size_t count = cmd_min_count; count <= cmd_max_count; count *= 2)
                 {
                         // measure processing
-                        accumulator_t acc(*model, *loss);
+                        accumulator_t acc(model, *loss);
                         acc.threads(1);
                         acc.mode((cmd_forward && !cmd_backward) ? accumulator_t::type::value : accumulator_t::type::vgrad);
 
@@ -170,7 +170,7 @@ int main(int argc, const char *argv[])
                                 << "<<< processed [" << size << "] samples using "
                                 << cmd_name << " and minibatch of " << count << ".";
 
-                        append(table, cmd_name, model->psize(), count, acc.probes(), cmd_detailed);
+                        append(table, cmd_name, model.psize(), count, acc.probes(), cmd_detailed);
 
                         if (cmd_detailed && count * 2 <= cmd_max_count)
                         {

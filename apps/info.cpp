@@ -39,7 +39,6 @@ int main(int argc, const char* argv[])
         cmdline.add("", "loss",                 "loss functions");
         cmdline.add("", "task",                 "tasks");
         cmdline.add("", "layer",                "layers to built models");
-        cmdline.add("", "model",                "models");
         cmdline.add("", "enhancer",             "task enhancers");
         cmdline.add("", "trainer",              "training methods");
         cmdline.add("", "batch",                "batch optimization algorithms");
@@ -56,7 +55,6 @@ int main(int argc, const char* argv[])
         const bool has_loss = cmdline.has("loss");
         const bool has_task = cmdline.has("task");
         const bool has_layer = cmdline.has("layer");
-        const bool has_model = cmdline.has("model");
         const bool has_enhancer = cmdline.has("enhancer");
         const bool has_trainer = cmdline.has("trainer");
         const bool has_batch = cmdline.has("batch");
@@ -71,7 +69,6 @@ int main(int argc, const char* argv[])
         if (    !has_loss &&
                 !has_task &&
                 !has_layer &&
-                !has_model &&
                 !has_enhancer &&
                 !has_trainer &&
                 !has_batch &&
@@ -99,10 +96,6 @@ int main(int argc, const char* argv[])
         if (has_layer)
         {
                 print("layer", get_layers());
-        }
-        if (has_model)
-        {
-                print("model", get_models());
         }
         if (has_enhancer)
         {

@@ -13,7 +13,7 @@ namespace nano
                 explicit activation_layer_t(const string_t& params = string_t());
 
                 rlayer_t clone() const override;
-                bool configure(const tensor3d_dims_t& idims, const string_t& name) override;
+                bool config(const tensor3d_dims_t& idims, const string_t& name) override;
                 void output(const tensor4d_t& idata, const tensor1d_t& pdata, tensor4d_t& odata) override;
                 void ginput(tensor4d_t& idata, const tensor1d_t& pdata, const tensor4d_t& odata) override;
                 void gparam(const tensor4d_t& idata, tensor1d_t& pdata, const tensor4d_t& odata) override;
@@ -50,7 +50,7 @@ namespace nano
         }
 
         template <typename top>
-        bool activation_layer_t<top>::configure(const tensor3d_dims_t& idims, const string_t& name)
+        bool activation_layer_t<top>::config(const tensor3d_dims_t& idims, const string_t& name)
         {
                 m_xdims = idims;
                 m_probe_output = probe_t{name, name + "(output)", 10 * isize()};

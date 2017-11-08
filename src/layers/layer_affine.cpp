@@ -13,7 +13,7 @@ rlayer_t affine_layer_t::clone() const
         return std::make_unique<affine_layer_t>(*this);
 }
 
-bool affine_layer_t::configure(const tensor3d_dims_t& idims, const string_t& name)
+bool affine_layer_t::config(const tensor3d_dims_t& idims, const string_t& name)
 {
         const auto imaps = std::get<0>(idims);
         const auto irows = std::get<1>(idims);

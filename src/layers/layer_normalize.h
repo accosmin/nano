@@ -29,10 +29,12 @@ namespace nano
         ///
         struct normalize_layer_t final : public layer_t
         {
+                using configurable_t::config;
+
                 explicit normalize_layer_t(const string_t& params = string_t());
 
                 rlayer_t clone() const override;
-                bool configure(const tensor3d_dims_t& idims, const string_t& name) override;
+                bool config(const tensor3d_dims_t& idims, const string_t& name) override;
                 void output(const tensor4d_t& idata, const tensor1d_t& pdata, tensor4d_t& odata) override;
                 void ginput(tensor4d_t& idata, const tensor1d_t& pdata, const tensor4d_t& odata) override;
                 void gparam(const tensor4d_t& idata, tensor1d_t& pdata, const tensor4d_t& odata) override;
