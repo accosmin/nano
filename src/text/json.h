@@ -5,64 +5,110 @@
 namespace nano
 {
         ///
-        /// \brief limited ascii-based JSON encoder.
+        /// \brief limited ascii-based JSON writer.
         ///
-        template <char tbegin, char tend>
-        class json_encoder_t
+        class json_writer_t
         {
         public:
 
-                json_encoder_t(string_t& text) : m_text(text)
+                json_writer_t(const size_t tabsize = 4, const size_t spacing = 1, const bool newline = true) :
+                        m_tabsize(tabsize), m_spacing(spacing), m_newline(newline)
                 {
-                        m_text += tbegin;
                 }
 
-                ~json_encoder_t()
+                json_writer_t& name(const char* tag)
                 {
-                        m_text += tend;
-                }
-
-                void name(const char* tag)
-                {
-                        m_text += tag;
+                        quote(tag);
                         m_text += ':';
+                        return *this;
                 }
 
                 template <typename tvalue>
-                void pair(const char* tag, const tvalue& value)
+                json_writer_t& value(const tvalue& val)
                 {
-                        name(tag);
-                        m_text += to_string(value);
+                        m_text.append(to_string(val));
+                        return *this;
                 }
 
-                void next() { m_text += ','; }
-                void newline() { m_text += '\n'; }
-
-                auto array(const char* tag)
+                json_writer_t& value(const char* str)
                 {
-                        name(tag);
-                        return json_encoder_t<'[', ']'>(m_text);
+                        return quote(str);
                 }
 
-                auto object(const char* tag)
+                json_writer_t& value(const string_t& str)
+                {
+                        return quote(str);
+                }
+
+                template <typename tvalue>
+                json_writer_t& pair(const char* tag, const tvalue& val)
                 {
                         name(tag);
-                        return json_encoder_t<'{', '}'>(m_text);
+                        return value(val);
                 }
+
+                json_writer_t& next()
+                {
+                        m_text.append(1, ',');
+                        return *this;
+                }
+
+                template <typename... tvalues>
+                json_writer_t& array(const tvalues&... vals)
+                {
+                        begin_array();
+                        values(vals...);
+                        return end_array();
+                }
+
+                json_writer_t& begin_array() { return keyword('['); }
+                json_writer_t& begin_object() { return keyword('{'); }
+
+                json_writer_t& end_array() { return keyword(']'); }
+                json_writer_t& end_object() { return keyword('}'); }
+
+                const string_t& get() { return m_text; }
 
         private:
 
-                // attributes
-                string_t&       m_text;
-        };
+                json_writer_t& keyword(const char tag)
+                {
+                        m_text += tag;
+                        return *this;
+                }
 
-        ///
-        /// \brief create a JSON encoder object.
-        ///
-        inline auto make_json_encoder(string_t& text)
-        {
-                return json_encoder_t<'{', '}'>{text};
-        }
+                template <typename tstr>
+                json_writer_t& quote(const tstr& str)
+                {
+                        m_text += '\"';
+                        m_text += str;
+                        m_text += '\"';
+                        return *this;
+                }
+
+                template <typename tvalue>
+                void values(const tvalue& val)
+                {
+                        value(val);
+                }
+
+                template <typename tvalue, typename... tvalues>
+                void values(const tvalue& val, const tvalues&... vals)
+                {
+                        value(val);
+                        if (sizeof...(vals) > 0)
+                        {
+                                next();
+                        }
+                        values(vals...);
+                }
+
+                // attributes
+                string_t        m_text;
+                const size_t    m_tabsize;
+                const size_t    m_spacing;
+                const bool      m_newline;
+        };
 
         ///
         /// \brief limited ascii-based JSON decoder.
