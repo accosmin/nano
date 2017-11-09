@@ -141,6 +141,10 @@ namespace nano
                                 const auto& r = *ranges.rbegin();
                                 callback(substr(r), strlen(r));
                         }
+                        else
+                        {
+                                callback(&m_text[m_pos], 0);
+                        }
                 }
 
                 template <typename tcallback_null, typename tcallback_value>
