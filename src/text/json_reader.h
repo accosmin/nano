@@ -5,7 +5,7 @@
 namespace nano
 {
         ///
-        /// \brief limited ascii-based JSON reader.
+        /// \brief limited ascii-based JSON reader (e.g. no support for escaping special characters).
         ///
         class json_reader_t
         {
@@ -44,28 +44,46 @@ namespace nano
 
                         while (find(tokens()))
                         {
-                                const auto curr_pos = m_pos;
-                                const auto curr_range = trim(prev_pos, curr_pos);
-
-                                if (curr_range.first < curr_range.second)
+                                const auto range = trim(prev_pos, m_pos);
+                                if (range.first < range.second)
                                 {
-                                        const auto begin = curr_range.first;
-                                        const auto end = curr_range.second;
-                                        std::cout << "token = [" << m_text.substr(begin, end - begin) << "]" << std::endl;
-                                        ranges.push_back(curr_range);
+                                        ranges.push_back(range);
                                 }
 
-                                /*
                                 switch (m_text[m_pos])
                                 {
-                                case '{':       callback(m_text, curr, ++ m_pos, tag::begin_object); break;
-                                case '}':       callback(m_text, curr, ++ m_pos, tag::end_object); break;
-                                case '[':       callback(m_text, curr, ++ m_pos, tag::begin_array); break;
-                                case ']':       callback(m_text, curr, ++ m_pos, tag::end_array); break;
-                                case ',':       callback(m_text, curr, ++ m_pos, tag::next); break;
-                                case ':':       callback(m_text, curr, ++ m_pos, tag::pair); break;
-                                default:        assert(false);
-                                }*/
+                                case '{':
+                                        handle1(ranges, callback_begin_object);
+                                        ranges.clear();
+                                        break;
+
+                                case '}':
+                                        handle2(ranges, callback_null, callback_value);
+                                        callback_end_object();
+                                        ranges.clear();
+                                        break;
+
+                                case '[':
+                                        handle1(ranges, callback_begin_array);
+                                        ranges.clear();
+                                        break;
+
+                                case ']':
+                                        handle2(ranges, callback_null, callback_value);
+                                        callback_end_array();
+                                        ranges.clear();
+                                        break;
+
+                                case ',':
+                                        handle2(ranges, callback_null, callback_value);
+                                        break;
+
+                                case ':':
+                                        break;
+
+                                default:
+                                        assert(false);
+                                }
 
                                 prev_pos = ++ m_pos;
                                 skip(spaces());
@@ -100,6 +118,50 @@ namespace nano
                         }
 
                         return {begin, end};
+                }
+
+                const char* substr(const range_t& range) const
+                {
+                        assert(range.first < m_text.size());
+                        return &m_text[range.first];
+                }
+
+                size_t strlen(const range_t& range) const
+                {
+                        assert(range.first <= range.second);
+                        assert(range.second <= m_text.size());
+                        return range.second - range.first;
+                }
+
+                template <typename tcallback>
+                void handle1(const std::vector<range_t>& ranges, const tcallback& callback) const
+                {
+                        if (!ranges.empty())
+                        {
+                                const auto& r = *ranges.rbegin();
+                                callback(substr(r), strlen(r));
+                        }
+                }
+
+                template <typename tcallback_null, typename tcallback_value>
+                void handle2(const std::vector<range_t>& ranges,
+                        const tcallback_null& callback_null,
+                        const tcallback_value& callback_value) const
+                {
+                        if (ranges.size() >= 2)
+                        {
+                                const auto& r1 = ranges[ranges.size() - 2];
+                                const auto& r2 = ranges[ranges.size() - 1];
+
+                                if (m_text.compare(r2.first, r2.second - r2.first, null()) == 0)
+                                {
+                                        callback_null(substr(r1), strlen(r1));
+                                }
+                                else
+                                {
+                                        callback_value(substr(r1), strlen(r1), substr(r2), strlen(r2));
+                                }
+                        }
                 }
 
                 // attributes

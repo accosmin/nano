@@ -136,7 +136,7 @@ NANO_CASE(reader_complex)
         };
         const auto callback_end_array = [] ()
         {
-                std::cout << "}" << std::endl;
+                std::cout << "]" << std::endl;
         };
 
         const auto callback_null = [] (const char* name, const size_t size)
