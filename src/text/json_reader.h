@@ -56,50 +56,36 @@ namespace nano
                         skip(spaces());
 
                         auto prev_pos = m_pos;
-
-                        std::vector<range_t> ranges;
-                        ranges.emplace_back(0, 0);
-
                         while (find(tokens()))
                         {
                                 const auto range = trim(prev_pos, m_pos);
-                                if (range.first < range.second)
-                                {
-                                        ranges.push_back(range);
-                                }
 
                                 switch (m_text[m_pos])
                                 {
                                 case '{':
-                                        handle0(ranges, callback, json_tag::begin_object);
-                                        ranges.clear();
+                                        handle0(callback, json_tag::begin_object);
                                         break;
 
                                 case '}':
-                                        handle1(ranges, callback, json_tag::value);
-                                        ranges.clear();
-                                        handle0(ranges, callback, json_tag::end_object);
+                                        handle1(range, callback, json_tag::value);
+                                        handle0(callback, json_tag::end_object);
                                         break;
 
                                 case '[':
-                                        handle0(ranges, callback, json_tag::begin_array);
-                                        ranges.clear();
+                                        handle0(callback, json_tag::begin_array);
                                         break;
 
                                 case ']':
-                                        handle1(ranges, callback, json_tag::value);
-                                        ranges.clear();
-                                        handle0(ranges, callback, json_tag::end_array);
+                                        handle1(range, callback, json_tag::value);
+                                        handle0(callback, json_tag::end_array);
                                         break;
 
                                 case ',':
-                                        handle1(ranges, callback, json_tag::value);
-                                        ranges.clear();
+                                        handle1(range, callback, json_tag::value);
                                         break;
 
                                 case ':':
-                                        handle1(ranges, callback, json_tag::name);
-                                        ranges.clear();
+                                        handle1(range, callback, json_tag::name);
                                         break;
 
                                 default:
@@ -155,22 +141,20 @@ namespace nano
                 }
 
                 template <typename tcallback>
-                void handle0(const std::vector<range_t>&, const tcallback& callback, const json_tag tag) const
+                void handle0(const tcallback& callback, const json_tag tag) const
                 {
                         callback(&m_text[m_pos], 0, tag);
                 }
 
                 template <typename tcallback>
-                void handle1(const std::vector<range_t>& ranges, const tcallback& callback, const json_tag tag) const
+                void handle1(const range_t& range, const tcallback& callback, const json_tag tag) const
                 {
-                        if (!ranges.empty())
+                        if (range.first < range.second)
                         {
-                                const auto& r = *ranges.rbegin();
-
                                 const auto is_null =
                                         tag == json_tag::value &&
-                                        m_text.compare(r.first, r.second - r.first, null()) == 0;
-                                callback(substr(r), strlen(r), is_null ? json_tag::null : tag);
+                                        m_text.compare(range.first, range.second - range.first, null()) == 0;
+                                callback(substr(range), strlen(range), is_null ? json_tag::null : tag);
                         }
                 }
 
