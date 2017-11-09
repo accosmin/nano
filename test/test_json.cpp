@@ -1,9 +1,10 @@
 #include "utest.h"
-#include "text/json.h"
+#include "text/json_reader.h"
+#include "text/json_writer.h"
 
 NANO_BEGIN_MODULE(test_json)
 
-NANO_CASE(encode_simple)
+NANO_CASE(writer_simple)
 {
         const size_t tabsize = 0;
         const size_t spacing = 0;
@@ -21,7 +22,7 @@ NANO_CASE(encode_simple)
         "{\"param1\":\"v\",\"param2\":-42,\"array1\":[1,2,3],\"param3\":42}");
 }
 
-NANO_CASE(encode_complex)
+NANO_CASE(writer_complex)
 {
         const size_t tabsize = 0;
         const size_t spacing = 0;
@@ -51,7 +52,7 @@ NANO_CASE(encode_complex)
         "\"field1\":\"v1\",\"field2\":\"v2\"}}");
 }
 
-NANO_CASE(decode)
+NANO_CASE(reader_complex)
 {
         const nano::string_t json = R"XXX(
 {
@@ -120,20 +121,42 @@ NANO_CASE(decode)
 
         using namespace nano;
 
-        json_reader_t reader(json);
-        reader.parse([] (const string_t& text, const size_t begin, const size_t end, const json_reader_t::tag tag)
+        const auto callback_begin_object = [] (const char* name, const size_t size)
         {
-                NANO_REQUIRE_NOT_EQUAL(end, string_t::npos);
-                NANO_REQUIRE_NOT_EQUAL(begin, string_t::npos);
+                std::cout << string_t(name, size) << ": {" << std::endl;
+        };
+        const auto callback_end_object = [] ()
+        {
+                std::cout << "}" << std::endl;
+        };
 
-                NANO_REQUIRE_LESS(end, text.size());
-                NANO_REQUIRE_LESS(begin, text.size());
+        const auto callback_begin_array = [] (const char* name, const size_t size)
+        {
+                std::cout << string_t(name, size) << ": [" << std::endl;
+        };
+        const auto callback_end_array = [] ()
+        {
+                std::cout << "}" << std::endl;
+        };
 
-                NANO_REQUIRE_LESS(begin, end);
+        const auto callback_null = [] (const char* name, const size_t size)
+        {
+                std::cout << string_t(name, size) << ": null" << std::endl;
+        };
 
-                std::cout << "tag = " << static_cast<int>(tag)
-                          << ", token = [" << text.substr(begin, end - begin) << "]" << std::endl;
-        });
+        const auto callback_value = [] (const char* name, const size_t size_name, const char* value, const size_t size_value)
+        {
+                std::cout << string_t(name, size_name) << ": " << string_t(value, size_value) << std::endl;
+        };
+
+        json_reader_t reader(json);
+        reader.parse(
+                callback_begin_object,
+                callback_end_object,
+                callback_begin_array,
+                callback_end_array,
+                callback_null,
+                callback_value);
 }
 
 NANO_END_MODULE()
