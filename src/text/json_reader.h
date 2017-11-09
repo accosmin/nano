@@ -5,6 +5,35 @@
 namespace nano
 {
         ///
+        /// \brief JSON tags.
+        ///
+        enum class json_tag
+        {
+                begin_object,
+                end_object,
+                begin_array,
+                end_array,
+                name,
+                null,
+                value
+        };
+
+        template <>
+        inline enum_map_t<json_tag> enum_string<json_tag>()
+        {
+                return
+                {
+                        { json_tag::begin_object, "begin_object" },
+                        { json_tag::end_object, "end_object" },
+                        { json_tag::begin_array, "begin_array" },
+                        { json_tag::end_array, "end_array" },
+                        { json_tag::name, "name" },
+                        { json_tag::null, "null" },
+                        { json_tag::value, "value" }
+                };
+        }
+
+        ///
         /// \brief limited ascii-based JSON reader (e.g. no support for escaping special characters).
         ///
         class json_reader_t
@@ -20,20 +49,9 @@ namespace nano
 
                 template
                 <
-                        typename tcallback_begin_object,        ///< (const char* name, size)
-                        typename tcallback_end_object,          ///< ()
-                        typename tcallback_begin_array,         ///< (const char* name, size)
-                        typename tcallback_end_array,           ///< ()
-                        typename tcallback_null,                ///< (const char* name, size)
-                        typename tcallback_value                ///< (const char* name, size, const char* value, size)
+                        typename tcallback      ///< (const char* name, size, tag type)
                 >
-                void parse(
-                        const tcallback_begin_object& callback_begin_object,
-                        const tcallback_end_object& callback_end_object,
-                        const tcallback_begin_array& callback_begin_array,
-                        const tcallback_end_array& callback_end_array,
-                        const tcallback_null& callback_null,
-                        const tcallback_value& callback_value)
+                void parse(const tcallback& callback)
                 {
                         skip(spaces());
 
@@ -53,32 +71,35 @@ namespace nano
                                 switch (m_text[m_pos])
                                 {
                                 case '{':
-                                        handle1(ranges, callback_begin_object);
+                                        handle0(ranges, callback, json_tag::begin_object);
                                         ranges.clear();
                                         break;
 
                                 case '}':
-                                        handle2(ranges, callback_null, callback_value);
-                                        callback_end_object();
+                                        handle1(ranges, callback, json_tag::value);
                                         ranges.clear();
+                                        handle0(ranges, callback, json_tag::end_object);
                                         break;
 
                                 case '[':
-                                        handle1(ranges, callback_begin_array);
+                                        handle0(ranges, callback, json_tag::begin_array);
                                         ranges.clear();
                                         break;
 
                                 case ']':
-                                        handle2(ranges, callback_null, callback_value);
-                                        callback_end_array();
+                                        handle1(ranges, callback, json_tag::value);
                                         ranges.clear();
+                                        handle0(ranges, callback, json_tag::end_array);
                                         break;
 
                                 case ',':
-                                        handle2(ranges, callback_null, callback_value);
+                                        handle1(ranges, callback, json_tag::value);
+                                        ranges.clear();
                                         break;
 
                                 case ':':
+                                        handle1(ranges, callback, json_tag::name);
+                                        ranges.clear();
                                         break;
 
                                 default:
@@ -134,37 +155,22 @@ namespace nano
                 }
 
                 template <typename tcallback>
-                void handle1(const std::vector<range_t>& ranges, const tcallback& callback) const
+                void handle0(const std::vector<range_t>&, const tcallback& callback, const json_tag tag) const
+                {
+                        callback(&m_text[m_pos], 0, tag);
+                }
+
+                template <typename tcallback>
+                void handle1(const std::vector<range_t>& ranges, const tcallback& callback, const json_tag tag) const
                 {
                         if (!ranges.empty())
                         {
                                 const auto& r = *ranges.rbegin();
-                                callback(substr(r), strlen(r));
-                        }
-                        else
-                        {
-                                callback(&m_text[m_pos], 0);
-                        }
-                }
 
-                template <typename tcallback_null, typename tcallback_value>
-                void handle2(const std::vector<range_t>& ranges,
-                        const tcallback_null& callback_null,
-                        const tcallback_value& callback_value) const
-                {
-                        if (ranges.size() >= 2)
-                        {
-                                const auto& r1 = ranges[ranges.size() - 2];
-                                const auto& r2 = ranges[ranges.size() - 1];
-
-                                if (m_text.compare(r2.first, r2.second - r2.first, null()) == 0)
-                                {
-                                        callback_null(substr(r1), strlen(r1));
-                                }
-                                else
-                                {
-                                        callback_value(substr(r1), strlen(r1), substr(r2), strlen(r2));
-                                }
+                                const auto is_null =
+                                        tag == json_tag::value &&
+                                        m_text.compare(r.first, r.second - r.first, null()) == 0;
+                                callback(substr(r), strlen(r), is_null ? json_tag::null : tag);
                         }
                 }
 

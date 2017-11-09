@@ -53,6 +53,12 @@ namespace nano
                         return *this;
                 }
 
+                json_writer_t& null()
+                {
+                        m_text += "null";
+                        return *this;
+                }
+
                 template <typename... tvalues>
                 json_writer_t& array(const tvalues&... vals)
                 {
