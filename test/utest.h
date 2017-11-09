@@ -144,6 +144,13 @@ int main(int, char* []) \
 #define NANO_REQUIRE_EQUAL(left, right) \
         NANO_EVALUATE_EQUAL(left, right, true)
 
+#define NANO_EVALUATE_NOT_EQUAL(left, right, critical) \
+        NANO_EVALUATE_BINARY_OP(left, right, !=, critical)
+#define NANO_CHECK_NOT_EQUAL(left, right) \
+        NANO_EVALUATE_NOT_EQUAL(left, right, false)
+#define NANO_REQUIRE_NOT_EQUAL(left, right) \
+        NANO_EVALUATE_NOT_EQUAL(left, right, true)
+
 #define NANO_EVALUATE_LESS(left, right, critical) \
         NANO_EVALUATE_BINARY_OP(left, right, <, critical)
 #define NANO_CHECK_LESS(left, right) \

@@ -105,33 +105,105 @@ namespace nano
 
                 // attributes
                 string_t        m_text;
-                const size_t    m_tabsize;
-                const size_t    m_spacing;
-                const bool      m_newline;
+                const size_t    m_tabsize;      ///< todo
+                const size_t    m_spacing;      ///< todo
+                const bool      m_newline;      ///< todo
         };
 
         ///
-        /// \brief limited ascii-based JSON decoder.
+        /// \brief limited ascii-based JSON reader.
         ///
-        template <char tbegin, char tend>
-        class json_decoder_t
+        class json_reader_t
         {
         public:
 
-                json_decoder_t(const string_t& text, const size_t pos = 0) : m_text(text), m_pos(pos)
+                enum class tag
                 {
-                        m_pos = m_text.find(tbegin, m_pos);
+                        begin_object,
+                        end_object,
+                        begin_array,
+                        end_array,
+                        token,
+                        next,
+                        pair,
+                        null
+                };
+
+                json_reader_t(const string_t& text) :
+                        m_text(text)
+                {
+                        skip(spaces());
                 }
 
-                ~json_decoder_t()
+                template <typename tcallback>
+                void parse(const tcallback& callback)
                 {
-                        m_pos = m_text.find(tend, m_pos);
+                        auto prev = m_pos;
+                        while (find(tokens()))
+                        {
+                                const auto curr = m_pos;
+
+                                if (prev < curr)
+                                {
+                                        handle_token(prev, curr, callback);
+                                }
+
+                                switch (m_text[m_pos])
+                                {
+                                case '{':       callback(m_text, curr, ++ m_pos, tag::begin_object); break;
+                                case '}':       callback(m_text, curr, ++ m_pos, tag::end_object); break;
+                                case '[':       callback(m_text, curr, ++ m_pos, tag::begin_array); break;
+                                case ']':       callback(m_text, curr, ++ m_pos, tag::end_array); break;
+                                case ',':       callback(m_text, curr, ++ m_pos, tag::next); break;
+                                case ':':       callback(m_text, curr, ++ m_pos, tag::pair); break;
+                                default:        assert(false);
+                                }
+
+                                prev = ++ m_pos;
+                                skip(spaces());
+                        }
                 }
 
         private:
 
+                static const char* tokens() { return "{}[],:"; }
+                static const char* spaces() { return " \t\n\r"; }
+
+                bool find(const char* str)
+                {
+                        return (m_pos = m_text.find_first_of(str, m_pos)) != string_t::npos;
+                }
+
+                bool skip(const char* str)
+                {
+                        return (m_pos = m_text.find_first_not_of(str, m_pos)) != string_t::npos;
+                }
+
+                template <typename tcallback>
+                void handle_token(const size_t prev, const size_t curr, const tcallback& callback) const
+                {
+                        auto begin = m_text.find_first_not_of(spaces(), prev);
+                        auto end = std::min(curr, m_text.find_first_of(spaces(), begin));
+
+                        if (begin < end)
+                        {
+                                if (m_text.compare(begin, end, "null") == 0)
+                                {
+                                        callback(m_text, begin, end, tag::null);
+                                }
+                                else
+                                {
+                                        if (m_text[begin] == '\"') ++ begin;
+                                        if (m_text[end - 1] == '\"') --end;
+                                        callback(m_text, begin, end, tag::token);
+                                }
+                        }
+                }
+
                 // attributes
                 const string_t& m_text;
-                size_t          m_pos;
+                size_t          m_pos{0};
+                size_t          m_depth_object{0};
+                size_t          m_depth_array{0};
         };
 }

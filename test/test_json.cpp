@@ -117,6 +117,23 @@ NANO_CASE(decode)
         ]
 }
 )XXX";
+
+        using namespace nano;
+
+        json_reader_t reader(json);
+        reader.parse([] (const string_t& text, const size_t begin, const size_t end, const json_reader_t::tag tag)
+        {
+                NANO_REQUIRE_NOT_EQUAL(end, string_t::npos);
+                NANO_REQUIRE_NOT_EQUAL(begin, string_t::npos);
+
+                NANO_REQUIRE_LESS(end, text.size());
+                NANO_REQUIRE_LESS(begin, text.size());
+
+                NANO_REQUIRE_LESS(begin, end);
+
+                std::cout << "tag = " << static_cast<int>(tag)
+                          << ", token = [" << text.substr(begin, end - begin) << "]" << std::endl;
+        });
 }
 
 NANO_END_MODULE()
