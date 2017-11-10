@@ -40,9 +40,19 @@ namespace nano
                 indices_t incoming() const;
 
                 ///
+                /// \brief returns the incoming vertices of the given vertex id
+                ///
+                indices_t incoming(const tindex dst) const;
+
+                ///
                 /// \brief returns the vertices with no outgoing edge
                 ///
                 indices_t outgoing() const;
+
+                ///
+                /// \brief returns the outgoing vertices of the given vertex id
+                ///
+                indices_t outgoing(const tindex src) const;
 
                 ///
                 /// \brief depth-first search where the given operator is called with the current vertex id
@@ -150,8 +160,6 @@ namespace nano
         typename digraph_t<tindex>::indices_t digraph_t<tindex>::incoming() const
         {
                 indices_t srcs, dsts;
-                srcs.reserve(m_edges.size());
-                dsts.reserve(m_edges.size());
                 for (const auto& edge : m_edges)
                 {
                         srcs.emplace_back(edge.first);
@@ -162,11 +170,25 @@ namespace nano
         }
 
         template <typename tindex>
+        typename digraph_t<tindex>::indices_t digraph_t<tindex>::incoming(const tindex dst) const
+        {
+                indices_t srcs;
+                for (const auto& edge : m_edges)
+                {
+                        if (edge.second == dst)
+                        {
+                                srcs.emplace_back(edge.first);
+                        }
+                }
+
+                unique(srcs);
+                return srcs;
+        }
+
+        template <typename tindex>
         typename digraph_t<tindex>::indices_t digraph_t<tindex>::outgoing() const
         {
                 indices_t srcs, dsts;
-                srcs.reserve(m_edges.size());
-                dsts.reserve(m_edges.size());
                 for (const auto& edge : m_edges)
                 {
                         srcs.emplace_back(edge.first);
@@ -174,6 +196,22 @@ namespace nano
                 }
 
                 return difference(dsts, srcs);
+        }
+
+        template <typename tindex>
+        typename digraph_t<tindex>::indices_t digraph_t<tindex>::outgoing(const tindex src) const
+        {
+                indices_t dsts;
+                for (const auto& edge : m_edges)
+                {
+                        if (src == edge.first)
+                        {
+                                dsts.emplace_back(edge.second);
+                        }
+                }
+
+                unique(dsts);
+                return dsts;
         }
 
         template <typename tindex>

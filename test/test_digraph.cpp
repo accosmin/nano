@@ -84,8 +84,12 @@ NANO_CASE(incoming)
         NANO_CHECK(g.edge(1, 2));
         NANO_CHECK(g.edge(3, 4));
 
-        const auto incoming = make_indices(0u, 1u);
-        NANO_CHECK_EQUAL(g.incoming(), incoming);
+        NANO_CHECK_EQUAL(g.incoming(), make_indices(0u, 1u));
+        NANO_CHECK_EQUAL(g.incoming(0), make_indices());
+        NANO_CHECK_EQUAL(g.incoming(1), make_indices());
+        NANO_CHECK_EQUAL(g.incoming(2), make_indices(0u, 1u));
+        NANO_CHECK_EQUAL(g.incoming(3), make_indices(2u));
+        NANO_CHECK_EQUAL(g.incoming(4), make_indices(3u));
 }
 
 NANO_CASE(outgoing)
@@ -97,8 +101,12 @@ NANO_CASE(outgoing)
         NANO_CHECK(g.edge(1, 2));
         NANO_CHECK(g.edge(3, 4));
 
-        const auto outgoing = make_indices(4u);
-        NANO_CHECK_EQUAL(g.outgoing(), outgoing);
+        NANO_CHECK_EQUAL(g.outgoing(), make_indices(4u));
+        NANO_CHECK_EQUAL(g.outgoing(0), make_indices(2u));
+        NANO_CHECK_EQUAL(g.outgoing(1), make_indices(2u));
+        NANO_CHECK_EQUAL(g.outgoing(2), make_indices(3u));
+        NANO_CHECK_EQUAL(g.outgoing(3), make_indices(4u));
+        NANO_CHECK_EQUAL(g.outgoing(4), make_indices());
 }
 
 NANO_CASE(topological)
