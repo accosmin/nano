@@ -49,20 +49,10 @@ NANO_CASE(empty)
 
 NANO_CASE(vertices)
 {
-        digraph_t g(4);
-
-        NANO_CHECK(!g.empty());
-        NANO_REQUIRE(g.edges().empty());
-        NANO_REQUIRE_EQUAL(g.vertices(), 4u);
-}
-
-NANO_CASE(vertices_and_edges)
-{
-        digraph_t g(4);
+        digraph_t g;
 
         NANO_CHECK(g.edge(0, 2));
         NANO_CHECK(g.edge(2, 3));
-        NANO_CHECK(!g.edge(4, 3));   ///< invalid id
         NANO_CHECK(g.edge(1, 2));
         NANO_CHECK(!g.edge(1, 2));   ///< duplicated edge
 
@@ -77,7 +67,7 @@ NANO_CASE(vertices_and_edges)
 
 NANO_CASE(incoming)
 {
-        digraph_t g(5);
+        digraph_t g;
 
         NANO_CHECK(g.edge(0, 2));
         NANO_CHECK(g.edge(2, 3));
@@ -94,7 +84,7 @@ NANO_CASE(incoming)
 
 NANO_CASE(outgoing)
 {
-        digraph_t g(5);
+        digraph_t g;
 
         NANO_CHECK(g.edge(0, 2));
         NANO_CHECK(g.edge(2, 3));
@@ -118,13 +108,7 @@ NANO_CASE(topological)
                 NANO_CHECK_EQUAL(g.tsort(), make_indices());
         }
         {
-                digraph_t g(4);
-
-                NANO_CHECK(g.dag());
-                NANO_CHECK_EQUAL(g.tsort(), make_indices(3u, 2u, 1u, 0u));
-        }
-        {
-                digraph_t g(5);
+                digraph_t g;
 
                 NANO_CHECK(g.edge(0, 2));
                 NANO_CHECK(g.edge(2, 3));
@@ -135,7 +119,7 @@ NANO_CASE(topological)
                 NANO_CHECK_EQUAL(g.tsort(), make_indices(1u, 0u, 2u, 3u, 4u));
         }
         {
-                digraph_t g(4);
+                digraph_t g;
 
                 NANO_CHECK(g.edge(0, 2));
                 NANO_CHECK(g.edge(2, 3));
@@ -146,7 +130,7 @@ NANO_CASE(topological)
                 NANO_CHECK_EQUAL(g.tsort(), make_indices());
         }
         {
-                digraph_t g(3);
+                digraph_t g;
 
                 NANO_CHECK(g.edge(1, 2));
                 NANO_CHECK(g.edge(2, 0));
@@ -156,7 +140,7 @@ NANO_CASE(topological)
                 NANO_CHECK_EQUAL(g.tsort(), make_indices());
         }
         {
-                digraph_t g(3);
+                digraph_t g;
 
                 NANO_CHECK(g.edge(1, 2));
                 NANO_CHECK(g.edge(2, 0));
@@ -165,7 +149,7 @@ NANO_CASE(topological)
                 NANO_CHECK_EQUAL(g.tsort(), make_indices(1u, 2u, 0u));
         }
         {
-                digraph_t g(7);
+                digraph_t g;
 
                 NANO_CHECK(g.edge(0, 2));
                 NANO_CHECK(g.edge(1, 2));
@@ -178,7 +162,7 @@ NANO_CASE(topological)
                 NANO_CHECK_EQUAL(g.tsort(), make_indices());
         }
         {
-                digraph_t g(7);
+                digraph_t g;
 
                 NANO_CHECK(g.edge(0, 2));
                 NANO_CHECK(g.edge(1, 2));

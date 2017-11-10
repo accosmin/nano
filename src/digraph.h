@@ -19,18 +19,8 @@ namespace nano
                 using indices_t = std::vector<tindex>;
 
                 ///
-                /// \brief
-                ///
-                digraph_t() = default;
-
-                ///
-                /// \brief initialize the digraph with the given number of vertices
-                ///
-                digraph_t(const tindex vertices) : m_vertices(vertices) {}
-
-                ///
                 /// \brief create a directed edge between the src and the dst vertex ids
-                /// \return true if the vertex ids are valid
+                /// \return true if the edge was already added
                 ///
                 bool edge(const tindex src, const tindex dst);
 
@@ -143,9 +133,11 @@ namespace nano
         template <typename tindex>
         bool digraph_t<tindex>::edge(const tindex src, const tindex dst)
         {
-                if (    src < vertices() && dst < vertices() &&
-                        std::find_if(m_edges.begin(), m_edges.end(),
-                        [=] (const auto& edge) { return edge.first == src && edge.second == dst; }) == m_edges.end())
+                m_vertices = std::max(m_vertices, src + 1);
+                m_vertices = std::max(m_vertices, dst + 1);
+
+                const auto comp = [=] (const auto& edge) { return edge.first == src && edge.second == dst; };
+                if (std::find_if(m_edges.begin(), m_edges.end(), comp) == m_edges.end())
                 {
                         m_edges.emplace_back(src, dst);
                         return true;
