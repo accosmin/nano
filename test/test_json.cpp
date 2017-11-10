@@ -13,11 +13,7 @@ NANO_BEGIN_MODULE(test_json)
 
 NANO_CASE(writer_simple)
 {
-        const size_t tabsize = 0;
-        const size_t spacing = 0;
-        const bool newline = false;
-
-        auto writer = json_writer_t(tabsize, spacing, newline);
+        json_writer_t writer;
         writer.begin_object();
                 writer.pair("param1", "v").next();
                 writer.pair("param2", -42).next();
@@ -32,11 +28,7 @@ NANO_CASE(writer_simple)
 
 NANO_CASE(writer_complex)
 {
-        const size_t tabsize = 0;
-        const size_t spacing = 0;
-        const bool newline = false;
-
-        auto writer = json_writer_t(tabsize, spacing, newline);
+        json_writer_t writer;
         writer.begin_object();
                 writer.pair("param1", "v").next();
                 writer.name("object1").begin_object();

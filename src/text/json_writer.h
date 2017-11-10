@@ -11,11 +11,6 @@ namespace nano
         {
         public:
 
-                json_writer_t(const size_t tabsize = 4, const size_t spacing = 1, const bool newline = true) :
-                        m_tabsize(tabsize), m_spacing(spacing), m_newline(newline)
-                {
-                }
-
                 json_writer_t& name(const char* tag)
                 {
                         quote(tag);
@@ -111,8 +106,5 @@ namespace nano
 
                 // attributes
                 string_t        m_text;
-                const size_t    m_tabsize;      ///< todo
-                const size_t    m_spacing;      ///< todo
-                const bool      m_newline;      ///< todo
         };
 }
