@@ -52,6 +52,7 @@ namespace nano
 
                 ///
                 /// \brief parse the text and call with (const char* name, size, tag type) for each token
+                /// NB: the callback returns true if the parsing should continue or false otherwise.
                 ///
                 template <typename tcallback>
                 void parse(const tcallback& callback)
@@ -59,36 +60,38 @@ namespace nano
                         skip(spaces());
 
                         auto prev_pos = m_pos;
-                        while (find(tokens()))
+                        auto done = false;
+                        while (!done && find(tokens()))
                         {
                                 const auto range = trim(prev_pos, m_pos);
 
+                                done = false;
                                 switch (m_text[m_pos])
                                 {
                                 case '{':
-                                        handle0(callback, json_tag::begin_object);
+                                        done = !handle0(callback, json_tag::begin_object);
                                         break;
 
                                 case '}':
-                                        handle1(range, callback, json_tag::value);
-                                        handle0(callback, json_tag::end_object);
+                                        done = !handle1(range, callback, json_tag::value) ||
+                                               !handle0(callback, json_tag::end_object);
                                         break;
 
                                 case '[':
-                                        handle0(callback, json_tag::begin_array);
+                                        done = !handle0(callback, json_tag::begin_array);
                                         break;
 
                                 case ']':
-                                        handle1(range, callback, json_tag::value);
-                                        handle0(callback, json_tag::end_array);
+                                        done = !handle1(range, callback, json_tag::value) ||
+                                               !handle0(callback, json_tag::end_array);
                                         break;
 
                                 case ',':
-                                        handle1(range, callback, json_tag::value);
+                                        done = !handle1(range, callback, json_tag::value);
                                         break;
 
                                 case ':':
-                                        handle1(range, callback, json_tag::name);
+                                        done = !handle1(range, callback, json_tag::name);
                                         break;
 
                                 default:
@@ -98,6 +101,41 @@ namespace nano
                                 prev_pos = ++ m_pos;
                                 skip(spaces());
                         }
+                }
+
+                ///
+                /// \brief read a set of name:value pairs that compose a JSON object.
+                ///
+                template <typename... tnames_and_values>
+                void read_object(tnames_and_values&... nvs)
+                {
+                        const char* last_name = nullptr;
+                        size_t last_size = 0;
+
+                        const auto callback = [&] (const char* name, const size_t size, const json_tag tag)
+                        {
+                                switch (tag)
+                                {
+                                case json_tag::end_object:
+                                        // done!
+                                        return false;
+
+                                case json_tag::name:
+                                        last_name = name;
+                                        last_size = size;
+                                        return true;
+
+                                case json_tag::value:
+                                        set_pair(last_name, last_size, name, size, nvs...);
+                                        return true;
+
+                                default:
+                                        // continue
+                                        return true;
+                                }
+                        };
+
+                        parse(callback);
                 }
 
         private:
@@ -144,20 +182,43 @@ namespace nano
                 }
 
                 template <typename tcallback>
-                void handle0(const tcallback& callback, const json_tag tag) const
+                bool handle0(const tcallback& callback, const json_tag tag) const
                 {
-                        callback(&m_text[m_pos], 0, tag);
+                        return callback(&m_text[m_pos], 0, tag);
                 }
 
                 template <typename tcallback>
-                void handle1(const range_t& range, const tcallback& callback, const json_tag tag) const
+                bool handle1(const range_t& range, const tcallback& callback, const json_tag tag) const
                 {
                         if (range.first < range.second)
                         {
                                 const auto is_null =
                                         tag == json_tag::value &&
                                         m_text.compare(range.first, range.second - range.first, null()) == 0;
-                                callback(substr(range), strlen(range), is_null ? json_tag::null : tag);
+                                return callback(substr(range), strlen(range), is_null ? json_tag::null : tag);
+                        }
+                        return true;
+                }
+
+                static void set_pair(const char*, const size_t, const char*, const size_t)
+                {
+                }
+
+                template <typename tname, typename tvalue, typename... tnames_and_values>
+                static void set_pair(
+                        const char* name, const size_t name_size,
+                        const char* value, const size_t value_size,
+                        const tname& object_name, tvalue& object_value,
+                        tnames_and_values&... nvs)
+                {
+                        // todo: check if possible to do the comparison without creating a string copy
+                        if (string_t(object_name) == string_t(name, name_size))
+                        {
+                                object_value = from_string<tvalue>(string_t(value, value_size));
+                        }
+                        else
+                        {
+                                set_pair(name, name_size, value, value_size, nvs...);
                         }
                 }
 

@@ -52,6 +52,44 @@ NANO_CASE(writer_complex)
         "\"field1\":\"v1\",\"field2\":\"v2\"}}");
 }
 
+NANO_CASE(reader_object)
+{
+        const string_t json = R"XXX(
+{
+        "string":       "str",
+        "integer":      42,
+        "tag1":         "begin_object",
+        "tag2":         "value"
+}
+)XXX";
+
+        auto object_str = string_t{};
+        auto object_integer = 0;
+        auto object_tag1 = json_tag::null;
+        auto object_tag2 = json_tag::null;
+        auto unknown = 1;
+
+        json_reader_t reader(json);
+        reader.read_object(
+                "string", object_str, "integer", object_integer, "tag1", object_tag1, "tag2", object_tag2,
+                "unknown", unknown);
+
+        NANO_CHECK_EQUAL(object_str, "str");
+        NANO_CHECK_EQUAL(object_integer, 42);
+        NANO_CHECK_EQUAL(object_tag1, json_tag::begin_object);
+        NANO_CHECK_EQUAL(object_tag2, json_tag::value);
+        NANO_CHECK_EQUAL(unknown, 1);
+
+        // all tags should be accounted for
+        const auto callback = [&] (const char*, const size_t, const json_tag)
+        {
+                NANO_CHECK(false);
+                return true;
+        };
+
+        reader.parse(callback);
+}
+
 NANO_CASE(reader_complex)
 {
         const string_t json = R"XXX(
@@ -112,7 +150,8 @@ NANO_CASE(reader_complex)
                 NANO_CHECK_EQUAL(calls[index].second, tag);
                 ++ index;
 
-                std::cout << "token = [" << string_t(name, size) << "], tag = " << to_string(tag) << std::endl;
+                //std::cout << "token = [" << string_t(name, size) << "], tag = " << to_string(tag) << std::endl;
+                return true;
         };
 
         json_reader_t reader(json);
