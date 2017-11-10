@@ -110,7 +110,7 @@ int main(int, char* []) \
         ++ n_checks; \
         switch (check_throw<std::exception>([&] () { (void)(call); })) \
         { \
-        case exception_stats::none: \
+        case exception_status::none: \
                 break; \
         case exception_status::expected: \
         case exception_status::unexpected: \
