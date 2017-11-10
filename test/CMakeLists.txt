@@ -14,6 +14,7 @@ make_test(test_vision.cpp "")
 make_test(test_digraph.cpp "")
 make_test(test_factory.cpp "")
 make_test(test_json.cpp "")
+make_test(test_config.cpp "")
 
 make_test(test_stoch.cpp nano)
 make_test(test_batch.cpp nano)

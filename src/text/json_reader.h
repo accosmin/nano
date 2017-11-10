@@ -42,15 +42,18 @@ namespace nano
 
                 using range_t = std::pair<size_t, size_t>;
 
+                ///
+                /// \brief constructor
+                ///
                 json_reader_t(const string_t& text) :
                         m_text(text)
                 {
                 }
 
-                template
-                <
-                        typename tcallback      ///< (const char* name, size, tag type)
-                >
+                ///
+                /// \brief parse the text and call with (const char* name, size, tag type) for each token
+                ///
+                template <typename tcallback>
                 void parse(const tcallback& callback)
                 {
                         skip(spaces());
