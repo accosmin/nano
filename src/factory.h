@@ -17,7 +17,7 @@ namespace nano
 	{
         public:
                 using trobject = std::unique_ptr<tobject>;
-                using tmaker = std::function<trobject(const targs&...)>;
+                using tmaker = std::function<trobject(targs&&...)>;
 
                 ///
                 /// \brief register a new object with the given ID.
@@ -33,7 +33,7 @@ namespace nano
                 ///
                 /// \brief retrieve the object with the given ID.
                 ///
-                trobject get(const string_t& id, const targs&...) const;
+                trobject get(const string_t& id, targs&&...) const;
 
                 ///
                 /// \brief get the IDs of the registered objects matching the ID regex.

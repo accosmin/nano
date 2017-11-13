@@ -14,6 +14,24 @@ macro(to_parent)
         set(CMAKE_SHARED_LINKER_FLAGS ${CMAKE_SHARED_LINKER_FLAGS} PARENT_SCOPE)
 endmacro()
 
+macro(if_cxx_flag flag)
+        set(CMAKE_REQUIRED_FLAGS "${flag}")
+        CHECK_CXX_SOURCE_COMPILES("${TEST_PROGRAM}" COMPILER_SUPPORTS_${flag})
+
+        if(COMPILER_SUPPORTS_${flag})
+                set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${flag}")
+        endif()
+endmacro()
+
+function(if_linker_flag flag)
+        set(CMAKE_REQUIRED_FLAGS ${flag})
+        CHECK_CXX_SOURCE_COMPILES("${TEST_PROGRAM}" COMPILER_SUPPORTS_FLAG)
+
+        if(COMPILER_SUPPORTS_FLAG)
+                set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${flag}")
+        endif()
+endfunction()
+
 # require C++14 support
 function(require_cpp14)
         CHECK_CXX_COMPILER_FLAG(-std=c++14 COMPILER_SUPPORTS_CXX14)
@@ -25,95 +43,42 @@ endfunction()
 
 # setup libc++
 function(setup_libcpp)
-        set(CMAKE_CXX_FLAGS "-stdlib=libc++ ${CMAKE_CXX_FLAGS}")
-        set(CMAKE_EXE_LINKER_FLAGS "-lc++abi ${CMAKE_EXE_LINKER_FLAGS}")
-
+        if_cxx_flag("-stdlib=libc++")
+        if_linker_flag("-lc++abi")
         to_parent()
 endfunction()
 
 # setup sanitizers compatible with address sanitizer
 function(setup_asan)
-        set(CMAKE_REQUIRED_FLAGS "-fsanitize=address")
-        CHECK_CXX_SOURCE_COMPILES("${TEST_PROGRAM}" COMPILER_SUPPORTS_SANITIZE_ADDRESS)
-
-        set(CMAKE_REQUIRED_FLAGS "-fsanitize=undefined")
-        CHECK_CXX_SOURCE_COMPILES("${TEST_PROGRAM}" COMPILER_SUPPORTS_SANITIZE_UNDEFINED)
-
-        set(CMAKE_REQUIRED_FLAGS "-fsanitize=vptr")
-        CHECK_CXX_SOURCE_COMPILES("${TEST_PROGRAM}" COMPILER_SUPPORTS_SANITIZE_VPTR)
-
-        set(CMAKE_REQUIRED_FLAGS "-fsanitize=leak")
-        CHECK_CXX_SOURCE_COMPILES("${TEST_PROGRAM}" COMPILER_SUPPORTS_SANITIZE_LEAK)
-
-        set(CMAKE_REQUIRED_FLAGS "-fsanitize=integer")
-        CHECK_CXX_SOURCE_COMPILES("${TEST_PROGRAM}" COMPILER_SUPPORTS_SANITIZE_INTEGER)
-
-        set(CMAKE_REQUIRED_FLAGS "-fsanitize=bounds")
-        CHECK_CXX_SOURCE_COMPILES("${TEST_PROGRAM}" COMPILER_SUPPORTS_SANITIZE_BOUNDS)
-
-        set(CMAKE_REQUIRED_FLAGS "-fsanitize=bounds-strict")
-        CHECK_CXX_SOURCE_COMPILES("${TEST_PROGRAM}" COMPILER_SUPPORTS_SANITIZE_BOUNDS_STRICT)
-
-        if(COMPILER_SUPPORTS_SANITIZE_ADDRESS)
-                set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=address")
-        endif()
-        if(COMPILER_SUPPORTS_SANITIZE_UNDEFINED)
-                set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=undefined")
-        endif()
-        if(COMPILER_SUPPORTS_SANITIZE_VPTR)
-                set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-sanitize=vptr")
-        endif()
-        if(COMPILER_SUPPORTS_SANITIZE_LEAK)
-                set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=leak")
-        endif()
-        if(COMPILER_SUPPORTS_SANITIZE_INTEGER)
-                set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=integer")
-        endif()
-        if(COMPILER_SUPPORTS_SANITIZE_BOUNDS_STRICT)
-                set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=bounds-strict")
-        endif()
-        if(COMPILER_SUPPORTS_SANITIZE_BOUNDS)
-                set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=bounds")
-        endif()
-
+        if_cxx_flag("-fsanitize=address")
+        if_cxx_flag("-fsanitize=undefined")
+        if_cxx_flag("-fno-sanitize=vptr")
+        if_cxx_flag("-fsanitize=leak")
+        if_cxx_flag("-fsanitize=integer")
+        if_cxx_flag("-fsanitize=bounds")
+        if_cxx_flag("-fsanitize=bounds-strict")
         to_parent()
 endfunction()
 
 # setup thread sanitizer
 function(setup_tsan)
-        set(CMAKE_REQUIRED_FLAGS "-fsanitize=thread")
-        CHECK_CXX_SOURCE_COMPILES("${TEST_PROGRAM}" COMPILER_SUPPORTS_SANITIZE_THREAD)
-
-        if(COMPILER_SUPPORTS_SANITIZE_THREAD)
-                set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=thread")
-        endif()
-
+        if_cxx_flag("-fsanitize=thread")
         to_parent()
 endfunction()
 
 # setup memory sanitizer
 function(setup_msan)
-        set(CMAKE_REQUIRED_FLAGS "-fsanitize=memory")
-        CHECK_CXX_SOURCE_COMPILES("${TEST_PROGRAM}" COMPILER_SUPPORTS_SANITIZE_MEMORY)
-
-        if(COMPILER_SUPPORTS_SANITIZE_MEMORY)
-                set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=memory -fsanitize-memory-track-origins -fPIE")
-                set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -pie")
-        endif()
-
+        if_cxx_flag("-fsanitize=memory")
+        if_cxx_flag("-fsanitize-memory-track-origins")
+        if_cxx_flag("-fPIE")
+        if_linker_flag("-pie")
         to_parent()
 endfunction()
 
 # setup gold linker
 function(setup_gold)
-        set(CMAKE_REQUIRED_FLAGS "-fuse-ld=gold")
-        CHECK_CXX_SOURCE_COMPILES("${TEST_PROGRAM}" COMPILER_SUPPORTS_GOLD)
-
-        if(COMPILER_SUPPORTS_GOLD)
-                set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -fuse-ld=gold")
-                set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -fuse-ld=gold")
-        endif()
-
+        if_cxx_flag("-fuse-ld=gold")
+        if_linker_flag("-fuse-ld=gold")
         to_parent()
 endfunction()
 
@@ -182,6 +147,7 @@ endfunction()
 
 # setup LTO
 function(setup_lto)
+        # TODO: setup -flto=thin
         set(CMAKE_REQUIRED_FLAGS "-flto")
         CHECK_CXX_SOURCE_COMPILES("${TEST_PROGRAM}" COMPILER_SUPPORTS_LTO)
 
@@ -233,18 +199,11 @@ endfunction()
 
 # setup coverage
 function(setup_coverage)
-        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g ")
-        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O0")
-        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fprofile-arcs")
-        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -ftest-coverage")
-
-        set(CMAKE_REQUIRED_FLAGS "--coverage")
-        CHECK_CXX_SOURCE_COMPILES("${TEST_PROGRAM}" COMPILER_SUPPORTS_COVERAGE)
-
-        if (COMPILER_SUPPORTS_COVERAGE)
-                set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} --coverage")
-        endif()
-
+        if_cxx_flag("-g ")
+        if_cxx_flag("-O0")
+        if_cxx_flag("-fprofile-arcs")
+        if_cxx_flag("-ftest-coverage")
+        if_linker_flag("--coverage")
         to_parent()
 endfunction()
 
