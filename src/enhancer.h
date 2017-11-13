@@ -16,10 +16,17 @@ namespace nano
         ///
         /// \brief artificially augment the (training) samples, useful for improving the generalization error.
         ///
-        class NANO_PUBLIC enhancer_t : public configurable_t
+        class NANO_PUBLIC enhancer_t
         {
         public:
-                using configurable_t::configurable_t;
+
+                virtual ~enhancer_t() = default;
+
+                ///
+                /// \brief serialize the current parameters to json
+                ///
+                virtual void config(json_reader_t&) = 0;
+                virtual void config(json_writer_t&) const = 0;
 
                 ///
                 /// \brief retrieve the given [begin, end) samples as a minibatch

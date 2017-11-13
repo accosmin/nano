@@ -23,10 +23,17 @@ namespace nano
         ///
         /// \brief generic trainer: optimizes a model on a given compatible task.
         ///
-        class NANO_PUBLIC trainer_t : public configurable_t
+        class NANO_PUBLIC trainer_t
         {
         public:
-                using configurable_t::configurable_t;
+
+                virtual ~trainer_t() = default;
+
+                ///
+                /// \brief serialize the current parameters to json
+                ///
+                virtual bool config(json_reader_t&) = 0;
+                virtual void config(json_writer_t&) const = 0;
 
                 ///
                 /// \brief train the given model starting from the current model parameters

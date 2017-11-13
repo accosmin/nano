@@ -23,10 +23,11 @@ namespace nano
         /// the loss function upper-bounds/approximates
         /// the true (usually non-smooth) error function to minimize.
         ///
-        class NANO_PUBLIC loss_t : public configurable_t
+        class loss_t
         {
         public:
-                using configurable_t::configurable_t;
+
+                virtual ~loss_t() = default;
 
                 ///
                 /// \brief compute the error value

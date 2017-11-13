@@ -147,15 +147,15 @@ namespace nano
 
         template <typename tname>
         json_writer_t& add_conv3d_node(json_writer_t& writer, const tname& name,
-                const tensor_size_t omaps, const tensor_size_t krows, const tensor_size_t kcols, const tensor_size_t kconn,
-                const tensor_size_t kdrow = 1, const tensor_size_t kdcol = 1)
+                const tensor_size_t omaps, const tensor_size_t krows, const tensor_size_t kcols,
+                const tensor_size_t kconn = 1, const tensor_size_t kdrow = 1, const tensor_size_t kdcol = 1)
         {
                 return writer.object("name", name, "type", "conv3d",
                         "omaps", omaps, "krows", krows, "kcols", kcols, "kconn", kconn, "kdrow", kdrow, "kdcol", kdcol);
         }
 
         ///
-        /// \brief
+        /// \brief helper function to serialize a processing path of computation nodes given by their name.
         ///
         template <typename... tnames>
         json_writer_t& connect_nodes(json_writer_t& writer, const tnames&... names)

@@ -12,11 +12,9 @@ namespace nano
         ///
         /// \brief computation directed graph.
         ///
-        class NANO_PUBLIC model_t : public configurable_t
+        class NANO_PUBLIC model_t
         {
         public:
-
-                using configurable_t::config;
 
                 ///
                 /// \brief constructor
@@ -30,6 +28,9 @@ namespace nano
                 model_t(model_t&&) = default;
                 model_t& operator=(model_t&&) = default;
                 model_t& operator=(const model_t&) = delete;
+
+                bool config(json_reader_t&);
+                void config(json_writer_t&) const;
 
                 ///
                 /// \brief copy the current object

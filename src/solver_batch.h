@@ -16,12 +16,19 @@ namespace nano
         NANO_PUBLIC batch_solver_factory_t& get_batch_solvers();
 
         ///
-        /// \brief generic batch solver.
+        /// \brief generic batch solver that uses an adaptive line-search method.
         ///
-        class NANO_PUBLIC batch_solver_t : public configurable_t
+        class NANO_PUBLIC batch_solver_t
         {
         public:
-                using configurable_t::configurable_t;
+
+                virtual ~batch_solver_t() = default;
+
+                ///
+                /// \brief serialize the current parameters to json
+                ///
+                virtual void config(json_reader_t&) = 0;
+                virtual void config(json_writer_t&) const = 0;
 
                 ///
                 /// \brief minimize starting from the initial point x0

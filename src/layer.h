@@ -19,16 +19,17 @@ namespace nano
         ///
         /// \brief computation node.
         ///
-        class NANO_PUBLIC layer_t : public configurable_t
+        class NANO_PUBLIC layer_t
         {
         public:
 
-                using configurable_t::config;
+                virtual ~layer_t() = default;
 
                 ///
-                /// \brief constructor
+                /// \brief serialize the current parameters to json
                 ///
-                layer_t(const string_t& config = string_t());
+                virtual void config(json_reader_t&) = 0;
+                virtual void config(json_writer_t&) const = 0;
 
                 ///
                 /// \brief copy the current object
@@ -38,7 +39,7 @@ namespace nano
                 ///
                 /// \brief configure to process new tensors of the given size
                 ///
-                virtual bool config(const tensor3d_dims_t& idims, const string_t& name) = 0;
+                virtual bool config(const tensor3d_dims_t& idims) = 0;
 
                 ///
                 /// \brief change parameters

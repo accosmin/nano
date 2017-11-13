@@ -39,10 +39,17 @@ namespace nano
         ///     split into training, validation and testing datasets.
         /// NB: the samples may be organized in folds depending on the established protocol.
         ///
-        class NANO_PUBLIC task_t : public configurable_t
+        class NANO_PUBLIC task_t
         {
         public:
-                using configurable_t::configurable_t;
+
+                virtual ~task_t() = default;
+
+                ///
+                /// \brief serialize the current parameters to json
+                ///
+                virtual bool config(json_reader_t&) = 0;
+                virtual void config(json_writer_t&) const = 0;
 
                 ///
                 /// \brief populate task with samples
