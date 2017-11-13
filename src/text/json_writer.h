@@ -42,22 +42,6 @@ namespace nano
                         return value(val);
                 }
 
-                json_writer_t& pairs()
-                {
-                        return *this;
-                }
-
-                template <typename tvalue, typename... tvalues>
-                json_writer_t& pairs(const char* tag, const tvalue& val, const tvalues&... vals)
-                {
-                        pair(tag, val);
-                        if (sizeof...(vals))
-                        {
-                                next();
-                        }
-                        return pairs(vals...);
-                }
-
                 json_writer_t& next()
                 {
                         m_text.append(1, ',');
@@ -76,6 +60,30 @@ namespace nano
                         begin_array();
                         values(vals...);
                         return end_array();
+                }
+
+                json_writer_t& pairs()
+                {
+                        return *this;
+                }
+
+                template <typename tvalue, typename... tvalues>
+                json_writer_t& pairs(const char* tag, const tvalue& val, const tvalues&... vals)
+                {
+                        pair(tag, val);
+                        if (sizeof...(vals))
+                        {
+                                next();
+                        }
+                        return pairs(vals...);
+                }
+
+                template <typename... tvalues>
+                json_writer_t& object(const tvalues&... vals)
+                {
+                        begin_object();
+                        pairs(vals...);
+                        return end_object();
                 }
 
                 json_writer_t& begin_array() { return keyword('['); }

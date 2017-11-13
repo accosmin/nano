@@ -8,7 +8,7 @@
 using namespace nano;
 
 stoch_trainer_t::stoch_trainer_t(const string_t& params) :
-        trainer_t(to_params(params, "solver", "sg[" + concatenate(get_stoch_solvers().ids()) + "]",
+        trainer_t(to_params(params, "solver", "sg" + join(get_stoch_solvers().ids()),
         "epochs", "16[1,1024]", "batch", "32[32,1024]", "eps", 1e-6, "patience", 32))
 {
 }

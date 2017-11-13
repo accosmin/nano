@@ -204,11 +204,15 @@ NANO_CASE(replace)
         NANO_CHECK_EQUAL(nano::replace("token_", '-', '_'), "token_");
 }
 
-NANO_CASE(concatenate)
+NANO_CASE(join)
 {
-        NANO_CHECK_EQUAL(nano::concatenate(std::vector<int>({ 1, 2, 3 }), "-"),        "1-2-3");
-        NANO_CHECK_EQUAL(nano::concatenate(std::list<int>({ 1, 2, 3 }), "="),          "1=2=3");
-        NANO_CHECK_EQUAL(nano::concatenate(std::set<int>({ 1, 2, 3 }), ","),           "1,2,3");
+        NANO_CHECK_EQUAL(nano::join(std::vector<int>({ 1, 2, 3 }), "-", nullptr, nullptr),      "1-2-3");
+        NANO_CHECK_EQUAL(nano::join(std::list<int>({ 1, 2, 3 }), "=", nullptr, nullptr),        "1=2=3");
+        NANO_CHECK_EQUAL(nano::join(std::set<int>({ 1, 2, 3 }), ",", nullptr, nullptr),         "1,2,3");
+
+        NANO_CHECK_EQUAL(nano::join(std::vector<int>({ 1, 2, 3 }), "-", "{", "}"),              "{1-2-3}");
+        NANO_CHECK_EQUAL(nano::join(std::list<int>({ 1, 2, 3 }), "=", "XXX", "XXX"),            "XXX1=2=3XXX");
+        NANO_CHECK_EQUAL(nano::join(std::set<int>({ 1, 2, 3 }), ",", nullptr, ")"),             "1,2,3)");
 }
 
 NANO_CASE(from_params)

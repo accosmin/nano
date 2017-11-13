@@ -113,31 +113,23 @@ namespace nano
         ///
         /// \brief serialize computation nodes.
         ///
-        template <typename... tparams>
-        json_writer_t& add_node(json_writer_t& writer, tparams&... params_and_values)
-        {
-                writer.begin_object();
-                writer.pairs(params_and_values...);
-                return writer.end_object();
-        }
-
         template <typename tname>
         json_writer_t& add_norm_by_plane_node(json_writer_t& writer, const tname& name)
         {
-                return add_node(writer, "name", name, "type", "norm", "kind", "plane");
+                return writer.object("name", name, "type", "norm", "kind", "plane");
         }
 
         template <typename tname>
         json_writer_t& add_norm_globally_node(json_writer_t& writer, const tname& name)
         {
-                return add_node(writer, "name", name, "type", "norm", "kind", "global");
+                return writer.object("name", name, "type", "norm", "kind", "global");
         }
 
         template <typename tname>
         json_writer_t& add_affine_node(json_writer_t& writer, const tname& name,
                 const tensor_size_t omaps, const tensor_size_t orows, const tensor_size_t ocols)
         {
-                return add_node(writer, "name", name, "type", "affine", "omaps", omaps, "orows", orows, "ocols", ocols);
+                return writer.object("name", name, "type", "affine", "omaps", omaps, "orows", orows, "ocols", ocols);
         }
 
         template <typename tname>
@@ -150,7 +142,7 @@ namespace nano
         template <typename tname, typename ttype>
         json_writer_t& add_activation_node(json_writer_t& writer, const tname& name, const ttype& type)
         {
-                return add_node(writer, "name", name, "type", type);
+                return writer.object("name", name, "type", type);
         }
 
         template <typename tname>
@@ -158,7 +150,7 @@ namespace nano
                 const tensor_size_t omaps, const tensor_size_t krows, const tensor_size_t kcols, const tensor_size_t kconn,
                 const tensor_size_t kdrow = 1, const tensor_size_t kdcol = 1)
         {
-                return add_node(writer, "name", name, "type", "conv3d",
+                return writer.object("name", name, "type", "conv3d",
                         "omaps", omaps, "krows", krows, "kcols", kcols, "kconn", kconn, "kdrow", kdrow, "kdcol", kdcol);
         }
 

@@ -48,15 +48,15 @@ int main(int argc, const char *argv[])
 {
         // parse the command line
         cmdline_t cmdline("train a model");
-        cmdline.add("", "task",                 "[" + concatenate(get_tasks().ids()) + "]");
+        cmdline.add("", "task",                 join(get_tasks().ids()));
         cmdline.add("", "task-params",          "task parameters (if any)", "-");
         cmdline.add("", "task-fold",            "fold index to use for training", "0");
         cmdline.add("", "model-params",         "model parameters (if any)");
         cmdline.add("", "model-file",           "filepath to save the model to");
-        cmdline.add("", "trainer",              "[" + concatenate(get_trainers().ids()) + "]");
+        cmdline.add("", "trainer",              join(get_trainers().ids()));
         cmdline.add("", "trainer-params",       "trainer parameters (if any)");
-        cmdline.add("", "loss",                 "[" + concatenate(get_losses().ids()) + "]");
-        cmdline.add("", "enhancer",             "[" + concatenate(get_enhancers().ids()) + "]", "default");
+        cmdline.add("", "loss",                 join(get_losses().ids()));
+        cmdline.add("", "enhancer",             join(get_enhancers().ids()), "default");
         cmdline.add("", "enhancer-params",      "task enhancer parameters (if any)", "-");
         cmdline.add("", "threads",              "number of threads to use", physical_cpus());
 

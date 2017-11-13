@@ -98,7 +98,7 @@ tensor_size_t svhn_task_t::load_pixels(const mat5_section_t& section,
         const string_t& name, const std::vector<int32_t>& dims,
         istream_t& stream)
 {
-        log_info() << "SVHN: loading images: name = " << name << ", size = " << concatenate(dims, "x") << "...";
+        log_info() << "SVHN: loading images: name = " << name << ", size = " << join(dims, "x", "", "") << "...";
 
         const auto irows = std::get<1>(idims());
         const auto icols = std::get<2>(idims());
@@ -148,7 +148,7 @@ tensor_size_t svhn_task_t::load_labels(const mat5_section_t& section,
         const string_t& name, const std::vector<int32_t>& dims, const protocol p,
         istream_t& stream)
 {
-        log_info() << "SVHN: loading labels: name = " << name << ", size = " << concatenate(dims, "x") << "...";
+        log_info() << "SVHN: loading labels: name = " << name << ", size = " << join(dims, "x", "", "") << "...";
 
         // check input
         if (    dims.size() != 2 ||

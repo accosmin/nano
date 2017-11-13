@@ -10,7 +10,7 @@
 namespace nano
 {
         ///
-        /// \brief create objects of similar type that implement the configable_t interface.
+        /// \brief create objects of similar type that implement the configurable_t interface.
         ///
         template <typename tobject>
         struct factory_t

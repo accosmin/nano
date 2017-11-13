@@ -133,7 +133,7 @@ static void alpha_blend(const tensor3d_t& mask, const tensor3d_t& img1, const te
 static string_t append_config(const string_t& params)
 {
         return  to_params(params,
-                "type", to_string(charset_type::digit) + "[" + concatenate(enum_values<charset_type>()) + "]",
+                "type", to_string(charset_type::digit) + join(enum_values<charset_type>()),
                 "color", "rgb[luma,rgba]",
                 "irows", "32[12,256]", "icols", "32[12,256]", "count", "1000[32,1M]");
 }

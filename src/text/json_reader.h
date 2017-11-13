@@ -107,7 +107,7 @@ namespace nano
                 /// \brief read a set of name:value pairs that compose a JSON object.
                 ///
                 template <typename... tnames_and_values>
-                void read_object(tnames_and_values&... nvs)
+                void object(tnames_and_values&... nvs)
                 {
                         const char* last_name = nullptr;
                         size_t last_size = 0;

@@ -8,7 +8,7 @@
 using namespace nano;
 
 batch_trainer_t::batch_trainer_t(const string_t& params) :
-        trainer_t(to_params(params, "solver", "lbfgs[" + concatenate(get_batch_solvers().ids()) + "]",
+        trainer_t(to_params(params, "solver", "lbfgs" + join(get_batch_solvers().ids()),
         "epochs", "1024[4,4096]", "eps", 1e-6, "patience", 32))
 {
 }

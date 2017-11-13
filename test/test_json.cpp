@@ -93,7 +93,7 @@ NANO_CASE(reader_object)
         auto unknown = 1;
 
         json_reader_t reader(json);
-        reader.read_object(
+        reader.object(
                 "string", object_str, "integer", object_integer, "tag1", object_tag1, "tag2", object_tag2,
                 "unknown", unknown);
 

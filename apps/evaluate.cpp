@@ -11,10 +11,10 @@ int main(int argc, const char *argv[])
 
         // parse the command line
         cmdline_t cmdline("evaluate a model");
-        cmdline.add("", "task",                 "[" + concatenate(get_tasks().ids()) + "]");
+        cmdline.add("", "task",                 join(get_tasks().ids()));
         cmdline.add("", "task-params",          "task parameters (if any)", "-");
         cmdline.add("", "task-fold",            "fold index to use for testing", "0");
-        cmdline.add("", "loss",                 "[" + concatenate(get_losses().ids()) + "]");
+        cmdline.add("", "loss",                 join(get_losses().ids()));
         cmdline.add("", "model-file",           "filepath to load the model from");
         cmdline.add("", "threads",              "number of threads to use (0 - all available)", "0");
 

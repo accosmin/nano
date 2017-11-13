@@ -64,7 +64,7 @@ int main(int argc, const char *argv[])
 {
         // parse the command line
         cmdline_t cmdline("describe a task");
-        cmdline.add("", "task",                 "[" + concatenate(get_tasks().ids()) + "]");
+        cmdline.add("", "task",                 join(get_tasks().ids()));
         cmdline.add("", "task-params",          "task parameters (if any)", "-");
         cmdline.add("", "save-dir",             "directory to save samples to");
         cmdline.add("", "save-group-rows",      "number of samples to group in a row", "32");
