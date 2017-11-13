@@ -3,7 +3,8 @@
 *.kdev4
 *.geany
 *.txt.user
-build*
+build/*
+build*/
 install
 doxygen/html
 *~

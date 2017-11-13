@@ -52,6 +52,29 @@ NANO_CASE(writer_complex)
         "\"field1\":\"v1\",\"field2\":\"v2\"}}");
 }
 
+NANO_CASE(writer_complex_with_pairs)
+{
+        json_writer_t writer;
+        writer.begin_object();
+                writer.pair("param1", "v").next();
+                writer.name("object1").begin_object();
+                        writer.name("array1").begin_array();
+                                writer.begin_object();
+                                        writer.pairs("name11", 11, "name12", 12);
+                                writer.end_object().next();
+                                writer.begin_object();
+                                        writer.pairs("name21", 21, "name22", 22);
+                                writer.end_object();
+                        writer.end_array().next();
+                        writer.pairs("field1", "v1", "field2", "v2");
+                writer.end_object();
+        writer.end_object();
+
+        NANO_CHECK_EQUAL(writer.get(),
+        "{\"param1\":\"v\",\"object1\":{\"array1\":[{\"name11\":11,\"name12\":12},{\"name21\":21,\"name22\":22}],"\
+        "\"field1\":\"v1\",\"field2\":\"v2\"}}");
+}
+
 NANO_CASE(reader_object)
 {
         const string_t json = R"XXX(

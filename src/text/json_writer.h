@@ -42,6 +42,22 @@ namespace nano
                         return value(val);
                 }
 
+                json_writer_t& pairs()
+                {
+                        return *this;
+                }
+
+                template <typename tvalue, typename... tvalues>
+                json_writer_t& pairs(const char* tag, const tvalue& val, const tvalues&... vals)
+                {
+                        pair(tag, val);
+                        if (sizeof...(vals))
+                        {
+                                next();
+                        }
+                        return pairs(vals...);
+                }
+
                 json_writer_t& next()
                 {
                         m_text.append(1, ',');

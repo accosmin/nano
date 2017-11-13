@@ -1,5 +1,6 @@
 #include "layer.h"
 #include "utest.h"
+#include "layers/builder.h"
 #include "layers/make_layers.h"
 #include "layers/conv_params.h"
 #include "layers/affine_params.h"
@@ -15,6 +16,17 @@ NANO_CASE(affine)
         const auto lname = "name";
         const auto param = affine_params_t{idims, odims};
         NANO_CHECK(param.valid());
+
+        json_writer_t writer;
+        writer.begin_object();
+        writer.name("nodes");
+        add_affine_node(writer, "node1", odims);
+        writer.end_object();
+
+        std::cout << "writer: [" << writer.get() << "]" << std::endl;
+
+///        json_reader_t reader;
+        // todo:
 
         const auto layer = get_layers().get("affine", make_affine_layer(odims));
         NANO_CHECK(layer->config(idims, lname));
