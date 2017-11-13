@@ -67,9 +67,11 @@ namespace nano
                 protos_t                m_protos;       ///< registered object instances
         };
 
-        template <typename tobject> template<typename tobject_impl>
+        template <typename tobject> template <typename tobject_impl>
         bool factory_t<tobject>::add(const string_t& id, const string_t& description)
         {
+                static_assert(std::is_base_of<tobject, tobject_impl>::value, "");
+                static_assert(std::is_base_of<configurable_t, tobject>::value, "");
                 const auto maker = [] (const string_t& config) { return std::make_unique<tobject_impl>(config); };
                 return m_protos.emplace(id, proto_t{maker, description}).second;
         }
