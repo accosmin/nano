@@ -60,7 +60,7 @@ rlayer_t normalize_layer_t::clone() const
         return std::make_unique<normalize_layer_t>(*this);
 }
 
-bool normalize_layer_t::config(const tensor3d_dims_t& idims, const string_t& name)
+bool normalize_layer_t::resize(const tensor3d_dims_t& idims, const string_t& name)
 {
         m_xdims = idims;
         m_probe_output = probe_t{name, name + "(output)", 5 * isize()};

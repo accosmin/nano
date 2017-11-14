@@ -1,6 +1,7 @@
 #pragma once
 
 #include "cast.h"
+#include <cassert>
 
 namespace nano
 {

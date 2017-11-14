@@ -2,7 +2,7 @@
 #include "math/stats.h"
 #include "math/numeric.h"
 #include "thread/loopi.h"
-#include "function_state.h"
+#include "solver_state.h"
 #include "text/algorithm.h"
 #include <iostream>
 
@@ -65,7 +65,7 @@ namespace benchmark
         {
                 for (const auto& x0 : x0s)
                 {
-                        function_state_t state0(function.size());
+                        solver_state_t state0(function.size());
                         state0.update(function, x0);
                         const auto g0 = state0.convergence_criteria();
 

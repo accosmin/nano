@@ -1,7 +1,6 @@
 #include "cortex.h"
 #include "logger.h"
 #include "text/table.h"
-#include "text/config.h"
 #include "math/numeric.h"
 #include "text/cmdline.h"
 #include "chrono/measure.h"
@@ -46,7 +45,7 @@ namespace
                 const auto kflops_ginput = params.flops_ginput() / 1024;
                 const auto kflops_gparam = params.flops_gparam() / 1024;
 
-                const auto config = to_params("isize", isize, "osize", osize, "count", count);
+                const auto config = strcat("isize=", isize, ",osize=", osize, ",count=", count);
 
                 if (!params.valid())
                 {

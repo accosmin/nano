@@ -32,7 +32,7 @@ namespace nano
                 ///
                 /// \brief configure to process tensors of the given size
                 ///
-                virtual bool config(const tensor3d_dims_t& idims, const string_t& name) = 0;
+                virtual bool resize(const tensor3d_dims_t& idims, const string_t& name) = 0;
 
                 ///
                 /// \brief change parameters

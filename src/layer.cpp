@@ -6,11 +6,6 @@
 
 using namespace nano;
 
-layer_t::layer_t(const string_t& config) :
-        configurable_t(config)
-{
-}
-
 void layer_t::param(const tensor1d_cmap_t& pdata)
 {
         assert(pdata.dims() == pdims());

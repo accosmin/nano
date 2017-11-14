@@ -17,20 +17,12 @@ namespace nano
         public:
 
                 ///
-                /// \brief constructor
-                ///
-                model_t(const string_t& config = string_t());
-
-                ///
                 /// \brief
                 ///
                 model_t(const model_t&);
                 model_t(model_t&&) = default;
                 model_t& operator=(model_t&&) = default;
                 model_t& operator=(const model_t&) = delete;
-
-                bool config(json_reader_t&);
-                void config(json_writer_t&) const;
 
                 ///
                 /// \brief copy the current object

@@ -9,13 +9,7 @@
 
 using namespace nano;
 
-model_t::model_t(const string_t& params) :
-        configurable_t(!params.empty() ? params : "[layer_id[:layer_parameters];]+")
-{
-}
-
 model_t::model_t(const model_t& other) :
-        configurable_t(other),
         m_gdata(other.m_gdata),
         m_probe_output(other.m_probe_output),
         m_probe_ginput(other.m_probe_ginput),
