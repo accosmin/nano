@@ -46,9 +46,9 @@ namespace nano
                 size_t size() const { return m_protos.size(); }
 
                 ///
-                /// \brief get the descriptions of all registered objects.
+                /// \brief get the description of the object with the given ID.
                 ///
-                strings_t descriptions() const;
+                string_t description(const string_t& id) const;
 
 	private:
 
@@ -64,7 +64,7 @@ namespace nano
         };
 
         template <typename tobject, typename... targs> template <typename tobject_impl>
-        bool factory_t<tobject, targs>::add(const string_t& id, const string_t& description)
+        bool factory_t<tobject, targs...>::add(const string_t& id, const string_t& description)
         {
                 static_assert(std::is_base_of<tobject, tobject_impl>::value, "");
                 const auto maker = [] (const targs&... args)
@@ -75,14 +75,15 @@ namespace nano
         }
 
         template <typename tobject, typename... targs>
-        bool factory_t<tobject, targs>::has(const string_t& id) const
+        bool factory_t<tobject, targs...>::has(const string_t& id) const
         {
                 return m_protos.find(id) != m_protos.end();
         }
 
         template <typename tobject, typename... targs>
-        typename factory_t<tobject, targs>::trobject factory_t<tobject>::get(const string_t& id, const targs&... args) const
+        typename factory_t<tobject, targs...>::trobject factory_t<tobject, targs...>::get(const string_t& id, targs&&... args) const
         {
+                assert(has(id));
                 const auto it = m_protos.find(id);
                 if (it == m_protos.end())
                 {
@@ -93,7 +94,7 @@ namespace nano
         }
 
         template <typename tobject, typename... targs>
-        strings_t factory_t<tobject, targs>::ids(const std::regex& id_regex) const
+        strings_t factory_t<tobject, targs...>::ids(const std::regex& id_regex) const
         {
                 strings_t ret;
                 for (const auto& proto : m_protos)
@@ -107,13 +108,9 @@ namespace nano
         }
 
         template <typename tobject, typename... targs>
-        strings_t factory_t<tobject, targs>::descriptions() const
+        string_t factory_t<tobject, targs...>::description(const string_t& id) const
         {
-                strings_t ret;
-                for (const auto& proto : m_protos)
-                {
-                        ret.push_back(proto.second.m_description);
-                }
-                return ret;
+                assert(has(id));
+                return m_protos.at(id).m_description;
         }
 }
