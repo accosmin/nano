@@ -9,9 +9,9 @@ namespace nano
         ///     see "Minimizing Finite Sums with the Stochastic Average Gradient",
         ///     by Mark Schmidth, Nicolas Le Roux, Francis Bach
         ///
-        struct stoch_sg_t final : public stoch_solver_t
+        class stoch_sg_t final : public stoch_solver_t
         {
-                explicit stoch_sg_t(const string_t& params = string_t());
+        public:
 
                 function_state_t minimize(const stoch_params_t&, const function_t&, const vector_t& x0) const override;
 

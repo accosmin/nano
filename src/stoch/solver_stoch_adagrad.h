@@ -11,9 +11,9 @@ namespace nano
         ///
         ///     see http://xcorr.net/2014/01/23/adagrad-eliminating-learning-rates-in-stochastic-gradient-descent/
         ///
-        struct stoch_adagrad_t final : public stoch_solver_t
+        class stoch_adagrad_t final : public stoch_solver_t
         {
-                explicit stoch_adagrad_t(const string_t& params = string_t());
+        public:
 
                 function_state_t minimize(const stoch_params_t&, const function_t&, const vector_t& x0) const override;
 

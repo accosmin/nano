@@ -1,17 +1,12 @@
-#include "loop.h"
 #include "tensor/momentum.h"
+#include "text/json_writer.h"
 #include "solver_stoch_adadelta.h"
 
 using namespace nano;
 
-stoch_adadelta_t::stoch_adadelta_t(const string_t& params) :
-        stoch_solver_t(params)
-{
-}
-
 function_state_t stoch_adadelta_t::minimize(const stoch_params_t& param, const function_t& function, const vector_t& x0) const
 {
-        return stoch_tune(this, param, function, x0, make_momenta(), make_epsilons());
+        return tune(this, param, function, x0, make_momenta(), make_epsilons());
 }
 
 function_state_t stoch_adadelta_t::minimize(const stoch_params_t& param, const function_t& function, const vector_t& x0,
@@ -45,6 +40,6 @@ function_state_t stoch_adadelta_t::minimize(const stoch_params_t& param, const f
                 sstate.update(function, cstate.x);
         };
 
-        return  stoch_loop(param, function, x0, solver, snapshot,
-                to_params("momentum", momentum, "epsilon", epsilon));
+        return  loop(param, function, x0, solver, snapshot,
+                json_writer_t().object("momentum", momentum, "epsilon", epsilon).get());
 }

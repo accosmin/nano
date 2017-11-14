@@ -1,17 +1,12 @@
-#include "loop.h"
 #include "lrate.h"
+#include "text/json_writer.h"
 #include "solver_stoch_ngd.h"
 
 using namespace nano;
 
-stoch_ngd_t::stoch_ngd_t(const string_t& params) :
-        stoch_solver_t(params)
-{
-}
-
 function_state_t stoch_ngd_t::minimize(const stoch_params_t& param, const function_t& function, const vector_t& x0) const
 {
-        return stoch_tune(this, param, function, x0, make_alpha0s(), make_decays());
+        return tune(this, param, function, x0, make_alpha0s(), make_decays());
 }
 
 function_state_t stoch_ngd_t::minimize(const stoch_params_t& param, const function_t& function, const vector_t& x0,
@@ -40,6 +35,6 @@ function_state_t stoch_ngd_t::minimize(const stoch_params_t& param, const functi
                 sstate.update(function, cstate.x);
         };
 
-        return  stoch_loop(param, function, x0, solver, snapshot,
-                to_params("alpha0", alpha0, "decay", decay));
+        return  loop(param, function, x0, solver, snapshot,
+                json_writer_t().object("alpha0", alpha0, "decay", decay).get());
 }

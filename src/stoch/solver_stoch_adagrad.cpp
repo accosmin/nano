@@ -1,16 +1,11 @@
-#include "loop.h"
+#include "text/json_writer.h"
 #include "solver_stoch_adagrad.h"
 
 using namespace nano;
 
-stoch_adagrad_t::stoch_adagrad_t(const string_t& params) :
-        stoch_solver_t(params)
-{
-}
-
 function_state_t stoch_adagrad_t::minimize(const stoch_params_t& param, const function_t& function, const vector_t& x0) const
 {
-        return stoch_tune(this, param, function, x0, make_alpha0s(), make_epsilons());
+        return tune(this, param, function, x0, make_alpha0s(), make_epsilons());
 }
 
 function_state_t stoch_adagrad_t::minimize(const stoch_params_t& param, const function_t& function, const vector_t& x0,
@@ -40,6 +35,6 @@ function_state_t stoch_adagrad_t::minimize(const stoch_params_t& param, const fu
                 sstate.update(function, cstate.x);
         };
 
-        return  stoch_loop(param, function, x0, solver, snapshot,
-                to_params("alpha0", alpha0, "epsilon", epsilon));
+        return  loop(param, function, x0, solver, snapshot,
+                json_writer_t().object("alpha0", alpha0, "epsilon", epsilon).get());
 }

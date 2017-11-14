@@ -8,9 +8,9 @@ namespace nano
         /// \brief stochastic Adam,
         ///     see "Adam: A method for stochastic optimization", by Diederik P. Kingma & Jimmy Lei Ba
         ///
-        struct stoch_adam_t final : public stoch_solver_t
+        class stoch_adam_t final : public stoch_solver_t
         {
-                explicit stoch_adam_t(const string_t& params = string_t());
+        public:
 
                 function_state_t minimize(const stoch_params_t&, const function_t&, const vector_t& x0) const override;
 

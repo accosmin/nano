@@ -12,9 +12,9 @@ namespace nano
         /// NB: the first-order momentum of the past states is returned instead of the average as in the original paper
         ///     (using the average requires many more iterations).
         ///
-        struct stoch_asgd_t final : public stoch_solver_t
+        class stoch_asgd_t final : public stoch_solver_t
         {
-                explicit stoch_asgd_t(const string_t& params = string_t());
+        public:
 
                 function_state_t minimize(const stoch_params_t&, const function_t&, const vector_t& x0) const override;
 

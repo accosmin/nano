@@ -9,9 +9,9 @@ namespace nano
         ///     see Lecture 6.5 - rmsprop, COURSERA: Neural Networks for Machine Learning
         ///      by Tieleman, T. and Hinton, G. (2012)
         ///
-        struct stoch_rmsprop_t final : public stoch_solver_t
+        class stoch_rmsprop_t final : public stoch_solver_t
         {
-                explicit stoch_rmsprop_t(const string_t& params = string_t());
+        public:
 
                 function_state_t minimize(const stoch_params_t&, const function_t&, const vector_t& x0) const override;
 
