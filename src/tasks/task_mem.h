@@ -27,8 +27,7 @@ namespace nano
                 mem_task_t(
                         const tensor3d_dims_t& idims,
                         const tensor3d_dims_t& odims,
-                        const size_t fsize,
-                        const string_t& params = string_t());
+                        const size_t fsize);
 
                 bool load() final;
 
@@ -47,6 +46,16 @@ namespace nano
                 minibatch_t get(const fold_t&, const size_t begin, const size_t end) const final;
 
         protected:
+
+                void reconfig(const tensor3d_dims_t& idims, const tensor3d_dims_t& odims, const size_t fsize)
+                {
+                        m_idims = idims;
+                        m_odims = odims;
+                        m_fsize = fsize;
+
+                        m_chunks.clear();
+                        m_samples.clear();
+                }
 
                 void reserve_chunks(const size_t count)
                 {
@@ -134,9 +143,7 @@ namespace nano
         mem_task_t<tchunk, tsample>::mem_task_t(
                 const tensor3d_dims_t& idims,
                 const tensor3d_dims_t& odims,
-                const size_t fsize,
-                const string_t& params) :
-                task_t(params),
+                const size_t fsize) :
                 m_idims(idims), m_odims(odims),
                 m_fsize(fsize), m_frand(1, 10)
         {

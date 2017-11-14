@@ -1,6 +1,6 @@
 #pragma once
 
-#include "function_state.h"
+#include "solver_state.h"
 #include <functional>
 
 namespace nano
@@ -11,10 +11,10 @@ namespace nano
         struct stoch_params_t
         {
                 /// logging operator: op(state, params), returns true if the optimization should stop
-                using opulog_t = std::function<bool(const function_state_t&, const string_t&)>;
+                using opulog_t = std::function<bool(const solver_state_t&, const string_t&)>;
 
                 /// tunning operator: op(state, params)
-                using optlog_t = std::function<void(const function_state_t&, const string_t&)>;
+                using optlog_t = std::function<void(const solver_state_t&, const string_t&)>;
 
                 ///
                 /// \brief constructor
@@ -54,7 +54,7 @@ namespace nano
                 ///
                 /// \brief log the current optimization state
                 ///
-                bool ulog(const function_state_t& state, const string_t& config) const
+                bool ulog(const solver_state_t& state, const string_t& config) const
                 {
                         return m_ulog ? m_ulog(state, config) : true;
                 }
@@ -62,7 +62,7 @@ namespace nano
                 ///
                 /// \brief evaluate the current optimization state for tuning
                 ///
-                void tlog(const function_state_t& state, const string_t& config) const
+                void tlog(const solver_state_t& state, const string_t& config) const
                 {
                         if (m_tlog)
                         {

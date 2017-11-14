@@ -7,27 +7,27 @@
 
 using namespace nano;
 
-batch_trainer_t::batch_trainer_t(const string_t& params) :
-        trainer_t(to_params(params, "solver", "lbfgs" + join(get_batch_solvers().ids()),
-        "epochs", "1024[4,4096]", "eps", 1e-6, "patience", 32))
+json_reader_t& batch_trainer_t::config(json_reader_t& reader)
 {
+        return reader.object("solver", m_solver, "epochs", m_epochs, "eps", m_epsilon, "patience", m_patience);
+}
+
+json_writer_t& batch_trainer_t::config(json_writer_t& writer) const
+{
+        return writer.object(
+                "solver", m_solver, "solvers", join(get_batch_solvers().ids()),
+                "epochs", m_epochs, "eps", m_epsilon, "patience", m_patience);
 }
 
 trainer_result_t batch_trainer_t::train(
         const enhancer_t& enhancer, const task_t& task, const size_t fold, accumulator_t& acc) const
 {
-        // parameters
-        const auto epochs = clamp(from_params<size_t>(config(), "epochs"), 4, 4096);
-        const auto solver = from_params<string_t>(config(), "solver");
-        const auto epsilon = from_params<scalar_t>(config(), "eps");
-        const auto patience = from_params<size_t>(config(), "patience");
-
         const timer_t timer;
         size_t epoch = 0;
         trainer_result_t result;
 
         // logging operator
-        const auto fn_ulog = [&] (const function_state_t& state)
+        const auto fn_ulog = [&] (const solver_state_t& state)
         {
                 // evaluate the current state
                 // NB: the training state is already estimated!
@@ -47,10 +47,11 @@ trainer_result_t batch_trainer_t::train(
                 const auto milis = timer.milliseconds();
                 const auto xnorm = state.x.lpNorm<2>();
                 const auto gnorm = state.convergence_criteria();
-                const auto ret = result.update(state, {milis, ++epoch, xnorm, gnorm, train, valid, test}, string_t{}, patience);
+                const auto ret = result.update(state,
+                        {milis, ++epoch, xnorm, gnorm, train, valid, test}, string_t{}, m_patience);
 
                 log_info()
-                        << "[" << epoch << "/" << epochs
+                        << "[" << epoch << "/" << m_epochs
                         << ":train=" << train
                         << ",valid=" << valid << "|" << nano::to_string(ret)
                         << ",test=" << test
@@ -62,10 +63,10 @@ trainer_result_t batch_trainer_t::train(
 
         // assembly optimization function & train the model
         const auto function = batch_function_t(acc, enhancer, task, fold_t{fold, protocol::train});
-        const auto params = batch_params_t{epochs, epsilon, fn_ulog};
-        get_batch_solvers().get(solver)->minimize(params, function, acc.params());
+        const auto params = batch_params_t{m_epochs, m_epsilon, fn_ulog};
+        get_batch_solvers().get(m_solver)->minimize(params, function, acc.params());
 
-        log_info() << "<<< batch-" << solver << ": " << result << ",time=" << timer.elapsed() << ".";
+        log_info() << "<<< batch-" << m_solver << ": " << result << ",time=" << timer.elapsed() << ".";
 
         // OK
         return result;

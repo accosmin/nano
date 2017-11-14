@@ -7,36 +7,36 @@
 
 using namespace nano;
 
-stoch_trainer_t::stoch_trainer_t(const string_t& params) :
-        trainer_t(to_params(params, "solver", "sg" + join(get_stoch_solvers().ids()),
-        "epochs", "16[1,1024]", "batch", "32[32,1024]", "eps", 1e-6, "patience", 32))
+json_reader_t& stoch_trainer_t::config(json_reader_t& reader)
 {
+        return reader.object("solver", m_solver, "epochs", m_epochs, "batch", m_batch, "eps", m_epsilon,
+                "patience", m_patience);
+}
+
+json_writer_t& stoch_trainer_t::config(json_writer_t& writer) const
+{
+        return writer.object(
+                "solver", m_solver, "solvers", join(get_stoch_solvers().ids()),
+                "epochs", m_epochs, "batch", m_batch, "eps", m_epsilon, "patience", m_patience);
 }
 
 trainer_result_t stoch_trainer_t::train(
         const enhancer_t& enhancer, const task_t& task, const size_t fold, accumulator_t& acc) const
 {
-        // parameters
-        const auto epochs = clamp(from_params<size_t>(config(), "epochs"), 1, 1024);
-        const auto batch0 = clamp(from_params<size_t>(config(), "batch"), 1, 1024);
-        const auto solver = from_params<string_t>(config(), "solver");
-        const auto epsilon = from_params<scalar_t>(config(), "eps");
-        const auto patience = from_params<size_t>(config(), "patience");
-
         // minibatch iterator
         const auto train_size = task.size({fold, protocol::train});
-        const auto epoch_size = idiv(train_size, batch0);
+        const auto epoch_size = idiv(train_size, m_batch);
 
-        auto iterator = iterator_t(task, {fold, protocol::train}, batch0);
+        auto iterator = iterator_t(task, {fold, protocol::train}, m_batch);
 
-        log_info() << "setup:epochs=" << epochs << ",epoch_size=" << epoch_size << ",batch0=" << batch0;
+        log_info() << "setup:epochs=" << m_epochs << ",epoch_size=" << epoch_size << ",batch0=" << m_batch;
 
         const timer_t timer;
         size_t epoch = 0;
         trainer_result_t result;
 
         // tuning operator
-        const auto fn_tlog = [&] (const function_state_t& state, const string_t& config)
+        const auto fn_tlog = [&] (const solver_state_t& state, const string_t& config)
         {
                 // NB: the training state is already computed
                 const auto train = trainer_measurement_t{acc.vstats().avg(), acc.estats().avg()};
@@ -51,11 +51,11 @@ trainer_result_t stoch_trainer_t::train(
                         << "] " << timer.elapsed() << ".";
 
                 // NB: need to reset the minibatch size (changed during tuning)!
-                iterator.reset(batch0);
+                iterator.reset(m_batch);
         };
 
         // logging operator
-        const auto fn_ulog = [&] (const function_state_t& state, const string_t& config)
+        const auto fn_ulog = [&] (const solver_state_t& state, const string_t& config)
         {
                 // evaluate the current state
                 // NB: the training state is already estimated!
@@ -75,10 +75,11 @@ trainer_result_t stoch_trainer_t::train(
                 const auto milis = timer.milliseconds();
                 const auto xnorm = state.x.lpNorm<2>();
                 const auto gnorm = state.convergence_criteria();
-                const auto ret = result.update(state, {milis, ++epoch, xnorm, gnorm, train, valid, test}, config, patience);
+                const auto ret = result.update(state,
+                        {milis, ++epoch, xnorm, gnorm, train, valid, test}, config, m_patience);
 
                 log_info()
-                        << "[" << epoch << "/" << epochs
+                        << "[" << epoch << "/" << m_epochs
                         << ":train=" << train
                         << ",valid=" << valid << "|" << nano::to_string(ret)
                         << ",test=" << test
@@ -90,12 +91,12 @@ trainer_result_t stoch_trainer_t::train(
 
         // assembly optimization function & train the model
         const auto function = stoch_function_t(acc, enhancer, task,  iterator);
-        auto params = stoch_params_t{epochs, epoch_size, epsilon, fn_ulog, fn_tlog};
+        auto params = stoch_params_t{m_epochs, epoch_size, m_epsilon, fn_ulog, fn_tlog};
         params.m_tune_max_epochs = 1;
         params.m_tune_epoch_size = std::max(epoch_size / 10, size_t(10));
-        get_stoch_solvers().get(solver)->minimize(params, function, acc.params());
+        get_stoch_solvers().get(m_solver)->minimize(params, function, acc.params());
 
-        log_info() << "<<< stoch-" << solver << ": " << result << ",time=" << timer.elapsed() << ".";
+        log_info() << "<<< stoch-" << m_solver << ": " << result << ",time=" << timer.elapsed() << ".";
 
         // OK
         return result;

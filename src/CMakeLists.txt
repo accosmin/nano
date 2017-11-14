@@ -2,7 +2,6 @@
 set(libnano_sources
         ${CMAKE_CURRENT_SOURCE_DIR}/arch.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/function.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/function_state.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/accumulator.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/logger.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/loss.cpp
@@ -14,7 +13,8 @@ set(libnano_sources
         ${CMAKE_CURRENT_SOURCE_DIR}/task.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/enhancer.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/solver_batch.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/solver_stoch.cpp)
+        ${CMAKE_CURRENT_SOURCE_DIR}/solver_stoch.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/solver_state.cpp)
 
 add_subdirectory(io)
 add_subdirectory(math)

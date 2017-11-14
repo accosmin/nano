@@ -4,12 +4,10 @@
 #include "function.h"
 #include "math/tune.h"
 #include "stoch/params.h"
+#include "configurable.h"
 
 namespace nano
 {
-        ///
-        /// \brief stores registered prototypes
-        ///
         class stoch_solver_t;
         using stoch_solver_factory_t = factory_t<stoch_solver_t>;
         using rstoch_solver_t = stoch_solver_factory_t::trobject;
@@ -20,16 +18,20 @@ namespace nano
         /// \brief generic stochastic solver that used an apriori learning-rate schedule.
         /// NB: all its hyper-parameters are tuned automatically.
         ///
-        class NANO_PUBLIC stoch_solver_t
+        class NANO_PUBLIC stoch_solver_t : public configurable_t
         {
         public:
 
-                virtual ~stoch_solver_t() = default;
+                ///
+                /// \brief serialization to JSON not needed
+                ///
+                json_reader_t& config(json_reader_t& reader) override { return reader; }
+                json_writer_t& config(json_writer_t& writer) const override { return writer; }
 
                 ///
                 /// \brief minimize starting from the initial point x0.
                 ///
-                virtual function_state_t minimize(const stoch_params_t&, const function_t&, const vector_t& x0) const = 0;
+                virtual solver_state_t minimize(const stoch_params_t&, const function_t&, const vector_t& x0) const = 0;
 
         protected:
 

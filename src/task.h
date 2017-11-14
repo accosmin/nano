@@ -3,12 +3,10 @@
 #include "arch.h"
 #include "cortex.h"
 #include "factory.h"
+#include "configurable.h"
 
 namespace nano
 {
-        ///
-        /// \brief manage tasks (register new ones, query and clone them)
-        ///
         class task_t;
         using task_factory_t = factory_t<task_t>;
         using rtask_t = task_factory_t::trobject;
@@ -39,20 +37,12 @@ namespace nano
         ///     split into training, validation and testing datasets.
         /// NB: the samples may be organized in folds depending on the established protocol.
         ///
-        class NANO_PUBLIC task_t
+        class NANO_PUBLIC task_t : public configurable_t
         {
         public:
 
-                virtual ~task_t() = default;
-
                 ///
-                /// \brief serialize the current parameters to json
-                ///
-                virtual bool config(json_reader_t&) = 0;
-                virtual void config(json_writer_t&) const = 0;
-
-                ///
-                /// \brief populate task with samples
+                /// \brief populate the task with samples
                 ///
                 virtual bool load() = 0;
 

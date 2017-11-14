@@ -18,22 +18,30 @@ static const string_t tlabels[] =
         "digit9"
 };
 
-mnist_task_t::mnist_task_t(const string_t& config) :
-        mem_vision_task_t(tensor3d_dims_t{1, 28, 28}, tensor3d_dims_t{10, 1, 1}, 1,
-        to_params(config, "dir", string_t(std::getenv("HOME")) + "/experiments/databases/mnist"))
+mnist_task_t::mnist_task_t() :
+        mem_vision_task_t(tensor3d_dims_t{1, 28, 28}, tensor3d_dims_t{10, 1, 1}, 1),
+        m_dir(string_t(std::getenv("HOME")) + "/experiments/databases/mnist")
 {
+}
+
+json_reader_t& mnist_task_t::config(json_reader_t& reader)
+{
+        return reader.object("dir", m_dir);
+}
+
+json_writer_t& mnist_task_t::config(json_writer_t& writer) const
+{
+        return writer.object("dir", m_dir);
 }
 
 bool mnist_task_t::populate()
 {
-        const string_t dir = from_params<string_t>(config(), "dir");
-
-        const string_t test_ifile = dir + "/t10k-images-idx3-ubyte.gz";
-        const string_t test_gfile = dir + "/t10k-labels-idx1-ubyte.gz";
+        const string_t test_ifile = m_dir + "/t10k-images-idx3-ubyte.gz";
+        const string_t test_gfile = m_dir + "/t10k-labels-idx1-ubyte.gz";
         const size_t n_test_samples = 10000;
 
-        const string_t train_ifile = dir + "/train-images-idx3-ubyte.gz";
-        const string_t train_gfile = dir + "/train-labels-idx1-ubyte.gz";
+        const string_t train_ifile = m_dir + "/train-images-idx3-ubyte.gz";
+        const string_t train_gfile = m_dir + "/train-labels-idx1-ubyte.gz";
         const size_t n_train_samples = 60000;
 
         return  load_binary(train_ifile, train_gfile, protocol::train, n_train_samples) &&

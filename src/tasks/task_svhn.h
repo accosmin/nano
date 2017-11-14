@@ -15,15 +15,22 @@ namespace nano
         ///
         /// http://ufldl.stanford.edu/housenumbers/
         ///
-        struct svhn_task_t final : public mem_vision_task_t
+        class svhn_task_t final : public mem_vision_task_t
         {
-                explicit svhn_task_t(const string_t& params = string_t());
+        public:
 
+                svhn_task_t();
                 bool populate() override;
+                json_reader_t& config(json_reader_t&) final;
+                json_writer_t& config(json_writer_t&) const final;
+
+        private:
 
                 tensor_size_t load_binary(const string_t& path, const protocol);
                 tensor_size_t load_pixels(const mat5_section_t&, const string_t&, const std::vector<int32_t>&, istream_t&);
                 tensor_size_t load_labels(const mat5_section_t&, const string_t&, const std::vector<int32_t>&, const protocol, istream_t&);
+
+                // attributes
+                string_t                m_dir;  ///< directory where to load the task from
         };
 }
-

@@ -13,13 +13,16 @@ namespace nano
         ///
         /// http://www.stanford.edu/~acoates/stl10/
         ///
-        struct stl10_task_t final : public mem_vision_task_t
+        class stl10_task_t final : public mem_vision_task_t
         {
-                explicit stl10_task_t(const string_t& params = string_t());
+        public:
+
+                stl10_task_t();
+                bool populate() override;
+                json_reader_t& config(json_reader_t&) final;
+                json_writer_t& config(json_writer_t&) const final;
 
         private:
-
-                bool populate() override;
 
                 bool load_ifile(const string_t&, istream_t&, const bool unlabed, const size_t count);
                 bool load_gfile(const string_t&, istream_t&, const size_t count);
@@ -35,6 +38,7 @@ namespace nano
                 };
 
                 // attributes
+                string_t                m_dir;  ///< directory where to load the task from
                 std::vector<sample_t>   m_samples;
         };
 }

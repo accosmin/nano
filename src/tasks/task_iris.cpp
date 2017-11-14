@@ -2,15 +2,25 @@
 
 using namespace nano;
 
-iris_task_t::iris_task_t(const string_t& config) :
-        mem_csv_task_t(tensor3d_dims_t{4, 1, 1}, tensor3d_dims_t{3, 1, 1}, 1,
-        to_params(config, "dir", string_t(std::getenv("HOME")) + "/experiments/databases/iris"))
+iris_task_t::iris_task_t() :
+        mem_csv_task_t(tensor3d_dims_t{4, 1, 1}, tensor3d_dims_t{3, 1, 1}, 1),
+        m_dir(string_t(std::getenv("HOME")) + "/experiments/databases/iris")
 {
+}
+
+json_reader_t& iris_task_t::config(json_reader_t& reader)
+{
+        return reader.object("dir", m_dir);
+}
+
+json_writer_t& iris_task_t::config(json_writer_t& writer) const
+{
+        return writer.object("dir", m_dir);
 }
 
 bool iris_task_t::populate()
 {
-        const auto path = from_params<string_t>(config(), "dir") + "/iris.data";
+        const auto path = m_dir + "/iris.data";
         const auto task_name = "IRIS";
 
         const auto expected_samples = size_t(150);

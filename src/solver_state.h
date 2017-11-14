@@ -6,25 +6,25 @@
 
 namespace nano
 {
-        class function_state_t;
-        using ref_function_state_t = std::reference_wrapper<const function_state_t>;
+        class solver_state_t;
+        using ref_solver_state_t = std::reference_wrapper<const solver_state_t>;
 
         class function_t;
 
         ///
         /// \brief compare two optimization states
         ///
-        bool operator<(const function_state_t&, const function_state_t&);
+        bool operator<(const solver_state_t&, const solver_state_t&);
 
         ///
         /// \brief create an optimization state at the given point
         ///
-        function_state_t make_state(const function_t&, const vector_t& x);
+        solver_state_t make_state(const function_t&, const vector_t& x);
 
         ///
         /// \brief create an optimization state at the given point, using the stochastic approximation
         ///
-        function_state_t make_stoch_state(const function_t&, const vector_t& x);
+        solver_state_t make_stoch_state(const function_t&, const vector_t& x);
 
         ///
         /// \brief optimization status
@@ -56,13 +56,13 @@ namespace nano
         ///     descent direction (d) &
         ///     line-search step (t)
         ///
-        class NANO_PUBLIC function_state_t
+        class NANO_PUBLIC solver_state_t
         {
         public:
                 ///
                 /// \brief constructor
                 ///
-                explicit function_state_t(const tensor_size_t size = 0);
+                explicit solver_state_t(const tensor_size_t size = 0);
 
                 ///
                 /// \brief update current state (move to another position)
@@ -123,7 +123,7 @@ namespace nano
         ///
         /// \brief compare two optimization states
         ///
-        inline bool operator<(const function_state_t& one, const function_state_t& two)
+        inline bool operator<(const solver_state_t& one, const solver_state_t& two)
         {
                 const auto f1 = std::isfinite(one.f) ? one.f : std::numeric_limits<scalar_t>::max();
                 const auto f2 = std::isfinite(two.f) ? two.f : std::numeric_limits<scalar_t>::max();

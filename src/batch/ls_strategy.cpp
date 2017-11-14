@@ -14,7 +14,7 @@ ls_strategy_t::ls_strategy_t(
         assert(m_c2 > scalar_t(0) && m_c2 < scalar_t(1));
 }
 
-bool ls_strategy_t::operator()(const function_t& function, const scalar_t t0, function_state_t& state) const
+bool ls_strategy_t::operator()(const function_t& function, const scalar_t t0, solver_state_t& state) const
 {
         // check descent direction
         const scalar_t dg0 = state.d.dot(state.g);
@@ -59,12 +59,12 @@ bool ls_strategy_t::operator()(const function_t& function, const scalar_t t0, fu
         }
 }
 
-bool ls_strategy_t::setup(const function_t& function, const ls_step_t& step0, const ls_step_t& step, function_state_t& state) const
+bool ls_strategy_t::setup(const function_t& function, const ls_step_t& step0, const ls_step_t& step, solver_state_t& state) const
 {
         return step && step < step0 && setup(function, step, state);
 }
 
-bool ls_strategy_t::setup(const function_t& function, const ls_step_t& step, function_state_t& state) const
+bool ls_strategy_t::setup(const function_t& function, const ls_step_t& step, solver_state_t& state) const
 {
         state.update(function, step.alpha(), step.func(), step.grad());
         return true;

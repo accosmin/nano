@@ -4,12 +4,12 @@
 
 using namespace nano;
 
-function_state_t stoch_adadelta_t::minimize(const stoch_params_t& param, const function_t& function, const vector_t& x0) const
+solver_state_t stoch_adadelta_t::minimize(const stoch_params_t& param, const function_t& function, const vector_t& x0) const
 {
         return tune(this, param, function, x0, make_momenta(), make_epsilons());
 }
 
-function_state_t stoch_adadelta_t::minimize(const stoch_params_t& param, const function_t& function, const vector_t& x0,
+solver_state_t stoch_adadelta_t::minimize(const stoch_params_t& param, const function_t& function, const vector_t& x0,
         const scalar_t momentum, const scalar_t epsilon)
 {
         // second-order momentum of the gradient
@@ -19,7 +19,7 @@ function_state_t stoch_adadelta_t::minimize(const stoch_params_t& param, const f
         momentum_t<vector_t> davg(momentum, x0.size());
 
         // assembly the solver
-        const auto solver = [&] (function_state_t& cstate, const function_state_t&)
+        const auto solver = [&] (solver_state_t& cstate, const solver_state_t&)
         {
                 // descent direction
                 gavg.update(cstate.g.array().square());
@@ -35,7 +35,7 @@ function_state_t stoch_adadelta_t::minimize(const stoch_params_t& param, const f
                 cstate.stoch_update(function, 1);
         };
 
-        const auto snapshot = [&] (const function_state_t& cstate, function_state_t& sstate)
+        const auto snapshot = [&] (const solver_state_t& cstate, solver_state_t& sstate)
         {
                 sstate.update(function, cstate.x);
         };

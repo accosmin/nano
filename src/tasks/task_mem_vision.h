@@ -73,9 +73,10 @@ namespace nano
                 mem_vision_task_t(
                         const tensor3d_dims_t& idims,
                         const tensor3d_dims_t& odims,
-                        const size_t fsize,
-                        const string_t& config = string_t()) :
-                        mem_task_t<image_t, mem_vision_sample_t>(idims, odims, fsize, config) {}
+                        const size_t fsize) :
+                        mem_task_t<image_t, mem_vision_sample_t>(idims, odims, fsize)
+                {
+                }
 
                 ///
                 /// \brief constructor
@@ -83,11 +84,12 @@ namespace nano
                 mem_vision_task_t(
                         const color_mode color, const tensor_size_t irows, const tensor_size_t icols,
                         const tensor3d_dims_t& odims,
-                        const size_t fsize,
-                        const string_t& config = string_t()) :
+                        const size_t fsize) :
                         mem_vision_task_t(
-                        tensor3d_dims_t{color == color_mode::rgba ? 4 : (color == color_mode::rgb ? 3 : 1), irows, icols},
-                        odims, fsize, config) {}
+                                make_dims(color == color_mode::rgba ? 4 : (color == color_mode::rgb ? 3 : 1), irows, icols),
+                                odims, fsize)
+                {
+                }
 
                 ///
                 /// \brief retrieve the number of images
@@ -111,6 +113,20 @@ namespace nano
                         case 4:         return color_mode::rgba;
                         default:        return color_mode::luma;
                         }
+                }
+
+                ///
+                /// \brief reconfigure
+                ///
+                using mem_task_t<image_t, mem_vision_sample_t>::reconfig;
+                void reconfig(
+                        const color_mode color, const tensor_size_t irows, const tensor_size_t icols,
+                        const tensor3d_dims_t& odims,
+                        const size_t fsize)
+                {
+                        reconfig(
+                                make_dims(color == color_mode::rgba ? 4 : (color == color_mode::rgb ? 3 : 1), irows, icols),
+                                odims, fsize);
                 }
         };
 }

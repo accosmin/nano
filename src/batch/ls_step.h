@@ -1,7 +1,7 @@
 #pragma once
 
 #include "function.h"
-#include "function_state.h"
+#include "solver_state.h"
 
 namespace nano
 {
@@ -14,7 +14,7 @@ namespace nano
                 ///
                 /// \brief constructor
                 ///
-                ls_step_t(const function_t& function, const function_state_t& state0);
+                ls_step_t(const function_t& function, const solver_state_t& state0);
 
                 ///
                 /// \brief minimum allowed line-search step
@@ -101,11 +101,11 @@ namespace nano
 
                 // attributes
                 ref_function_t          m_function;
-                ref_function_state_t    m_state0;       ///< starting state for line-search
+                ref_solver_state_t      m_state0;       ///< starting state for line-search
                 scalar_t                m_gphi0;
 
                 scalar_t                m_alpha;        ///< line-search step (current estimate)
-                function_state_t        m_state;        ///< state at alpha
+                solver_state_t          m_state;        ///< state at alpha
                 scalar_t                m_gphi;         ///< line-search function gradient at alpha
         };
 

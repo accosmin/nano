@@ -5,12 +5,12 @@
 
 using namespace nano;
 
-function_state_t stoch_asgd_t::minimize(const stoch_params_t& param, const function_t& function, const vector_t& x0) const
+solver_state_t stoch_asgd_t::minimize(const stoch_params_t& param, const function_t& function, const vector_t& x0) const
 {
         return tune(this, param, function, x0, make_alpha0s(), make_decays(), make_momenta());
 }
 
-function_state_t stoch_asgd_t::minimize(const stoch_params_t& param, const function_t& function, const vector_t& x0,
+solver_state_t stoch_asgd_t::minimize(const stoch_params_t& param, const function_t& function, const vector_t& x0,
         const scalar_t alpha0, const scalar_t decay, const scalar_t momentum)
 {
         // learning rate schedule
@@ -20,7 +20,7 @@ function_state_t stoch_asgd_t::minimize(const stoch_params_t& param, const funct
         momentum_t<vector_t> xavg(momentum, x0.size());
 
         // assembly the solver
-        const auto solver = [&] (function_state_t& cstate, const function_state_t&)
+        const auto solver = [&] (solver_state_t& cstate, const solver_state_t&)
         {
                 // learning rate
                 const scalar_t alpha = lrate.get();
@@ -34,7 +34,7 @@ function_state_t stoch_asgd_t::minimize(const stoch_params_t& param, const funct
                 cstate.stoch_update(function, alpha);
         };
 
-        const auto snapshot = [&] (const function_state_t&, function_state_t& sstate)
+        const auto snapshot = [&] (const solver_state_t&, solver_state_t& sstate)
         {
                 sstate.update(function, xavg.value());
         };

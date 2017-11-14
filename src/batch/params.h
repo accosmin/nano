@@ -1,7 +1,7 @@
 #pragma once
 
 #include "types.h"
-#include "function_state.h"
+#include "solver_state.h"
 #include <functional>
 
 namespace nano
@@ -12,7 +12,7 @@ namespace nano
         struct batch_params_t
         {
                 /// logging operator: op(state), returns false if the optimization should stop
-                using opulog_t = std::function<bool(const function_state_t&)>;
+                using opulog_t = std::function<bool(const solver_state_t&)>;
 
                 ///
                 /// \brief constructor
@@ -33,7 +33,7 @@ namespace nano
                 ///
                 /// \brief log the current optimization state
                 ///
-                bool ulog(const function_state_t& state) const
+                bool ulog(const solver_state_t& state) const
                 {
                         return m_ulog ? m_ulog(state) : true;
                 }

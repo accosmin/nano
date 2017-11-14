@@ -20,19 +20,27 @@ static const string_t tlabels[] =
         "digit9"
 };
 
-svhn_task_t::svhn_task_t(const string_t& config) :
-        mem_vision_task_t(tensor3d_dims_t{3, 32, 32}, tensor3d_dims_t{10, 1, 1}, 1,
-        to_params(config, "dir", string_t(std::getenv("HOME")) + "/experiments/databases/svhn"))
+svhn_task_t::svhn_task_t() :
+        mem_vision_task_t(tensor3d_dims_t{3, 32, 32}, tensor3d_dims_t{10, 1, 1}, 1),
+        m_dir(string_t(std::getenv("HOME")) + "/experiments/databases/svhn")
 {
+}
+
+json_reader_t& svhn_task_t::config(json_reader_t& reader)
+{
+        return reader.object("dir", m_dir);
+}
+
+json_writer_t& svhn_task_t::config(json_writer_t& writer) const
+{
+        return writer.object("dir", m_dir);
 }
 
 bool svhn_task_t::populate()
 {
-        const string_t dir = nano::from_params<string_t>(config(), "dir");
-
-        const string_t train_file = dir + "/train_32x32.mat";
-        const string_t extra_file = dir + "/extra_32x32.mat";
-        const string_t test_file = dir + "/test_32x32.mat";
+        const string_t train_file = m_dir + "/train_32x32.mat";
+        const string_t extra_file = m_dir + "/extra_32x32.mat";
+        const string_t test_file = m_dir + "/test_32x32.mat";
 
         const tensor_size_t n_train_samples = 73257;
         const tensor_size_t n_extra_samples = 531131;

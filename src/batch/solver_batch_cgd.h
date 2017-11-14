@@ -6,20 +6,24 @@
 namespace nano
 {
         ///
-        /// \brief conjugate gradient descent
+        /// \brief conjugate gradient descent with line-search.
         ///
-        template
-        <
-                typename tcgd_update                    ///< CGD step update
-        >
-        struct batch_cgd_t final : public batch_solver_t
+        template <typename tcgd_update>
+        class batch_cgd_t final : public batch_solver_t
         {
-                explicit batch_cgd_t(const string_t& params = string_t());
+        public:
 
-                function_state_t minimize(const batch_params_t&, const function_t&, const vector_t& x0) const override;
+                json_reader_t& config(json_reader_t&) final;
+                json_writer_t& config(json_writer_t&) const final;
+                solver_state_t minimize(const batch_params_t&, const function_t&, const vector_t& x0) const override;
 
-                function_state_t minimize(const batch_params_t&, const function_t&, const vector_t& x0,
-                        const ls_initializer, const ls_strategy, const scalar_t c1, const scalar_t c2) const;
+        private:
+
+                // attributes
+                ls_initializer  m_ls_init{ls_initializer::quadratic};
+                ls_strategy     m_ls_strat{ls_strategy::interpolation};
+                scalar_t        m_c1{static_cast<scalar_t>(1e-4)};
+                scalar_t        m_c2{static_cast<scalar_t>(0.1)};
         };
 
         // create various CGD algorithms
@@ -33,4 +37,3 @@ namespace nano
         using batch_cgd_dycd_t = batch_cgd_t<cgd_step_DYCD>;
         using batch_cgd_dyhs_t = batch_cgd_t<cgd_step_DYHS>;
 }
-

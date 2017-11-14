@@ -1,6 +1,7 @@
 #pragma once
 
 #include "factory.h"
+#include "configurable.h"
 #include "trainer_result.h"
 
 namespace nano
@@ -11,9 +12,6 @@ namespace nano
         class enhancer_t;
         class accumulator_t;
 
-        ///
-        /// \brief stores registered prototypes
-        ///
         class trainer_t;
         using trainer_factory_t = factory_t<trainer_t>;
         using rtrainer_t = trainer_factory_t::trobject;
@@ -23,17 +21,9 @@ namespace nano
         ///
         /// \brief generic trainer: optimizes a model on a given compatible task.
         ///
-        class NANO_PUBLIC trainer_t
+        class NANO_PUBLIC trainer_t : public configurable_t
         {
         public:
-
-                virtual ~trainer_t() = default;
-
-                ///
-                /// \brief serialize the current parameters to json
-                ///
-                virtual bool config(json_reader_t&) = 0;
-                virtual void config(json_writer_t&) const = 0;
 
                 ///
                 /// \brief train the given model starting from the current model parameters

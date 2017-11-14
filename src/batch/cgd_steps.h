@@ -1,6 +1,6 @@
 #pragma once
 
-#include "function_state.h"
+#include "solver_state.h"
 #include <algorithm>
 
 namespace nano
@@ -23,7 +23,7 @@ namespace nano
                         return "hs";
                 }
 
-                scalar_t operator()(const function_state_t& prev, const function_state_t& curr) const
+                scalar_t operator()(const solver_state_t& prev, const solver_state_t& curr) const
                 {
                         return  curr.g.dot(curr.g - prev.g) /
                                 prev.d.dot(curr.g - prev.g);
@@ -40,7 +40,7 @@ namespace nano
                         return "fr";
                 }
 
-                scalar_t operator()(const function_state_t& prev, const function_state_t& curr) const
+                scalar_t operator()(const solver_state_t& prev, const solver_state_t& curr) const
                 {
                         return  curr.g.squaredNorm() /
                                 prev.g.squaredNorm();
@@ -57,7 +57,7 @@ namespace nano
                         return "prp";
                 }
 
-                scalar_t operator()(const function_state_t& prev, const function_state_t& curr) const
+                scalar_t operator()(const solver_state_t& prev, const solver_state_t& curr) const
                 {
                         return  std::max(scalar_t(0),                    // PRP(+)
                                 curr.g.dot(curr.g - prev.g) /
@@ -75,7 +75,7 @@ namespace nano
                         return "cd";
                 }
 
-                scalar_t operator()(const function_state_t& prev, const function_state_t& curr) const
+                scalar_t operator()(const solver_state_t& prev, const solver_state_t& curr) const
                 {
                         return -curr.g.squaredNorm() /
                                 prev.d.dot(prev.g);
@@ -92,7 +92,7 @@ namespace nano
                         return "ls";
                 }
 
-                scalar_t operator()(const function_state_t& prev, const function_state_t& curr) const
+                scalar_t operator()(const solver_state_t& prev, const solver_state_t& curr) const
                 {
                         return -curr.g.dot(curr.g - prev.g) /
                                 prev.d.dot(prev.g);
@@ -109,7 +109,7 @@ namespace nano
                         return "dy";
                 }
 
-                scalar_t operator()(const function_state_t& prev, const function_state_t& curr) const
+                scalar_t operator()(const solver_state_t& prev, const solver_state_t& curr) const
                 {
                         return  curr.g.squaredNorm() /
                                 prev.d.dot(curr.g - prev.g);
@@ -126,7 +126,7 @@ namespace nano
                         return "n";
                 }
 
-                scalar_t operator()(const function_state_t& prev, const function_state_t& curr) const
+                scalar_t operator()(const solver_state_t& prev, const solver_state_t& curr) const
                 {
                         const auto y = curr.g - prev.g;
                         const scalar_t div = +1 / prev.d.dot(y);
@@ -152,7 +152,7 @@ namespace nano
                         return "dyhs";
                 }
 
-                scalar_t operator()(const function_state_t& prev, const function_state_t& curr) const
+                scalar_t operator()(const solver_state_t& prev, const solver_state_t& curr) const
                 {
                         const scalar_t dy = cgd_step_DY()(prev, curr);
                         const scalar_t hs = cgd_step_HS()(prev, curr);
@@ -171,7 +171,7 @@ namespace nano
                         return "dycd";
                 }
 
-                scalar_t operator()(const function_state_t& prev, const function_state_t& curr) const
+                scalar_t operator()(const solver_state_t& prev, const solver_state_t& curr) const
                 {
                         return  curr.g.squaredNorm() /
                                 std::max(prev.d.dot(curr.g - prev.g), -prev.d.dot(prev.g));
