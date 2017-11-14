@@ -23,5 +23,14 @@ namespace nano
                 /// \brief serialize the current parameters to JSON
                 ///
                 virtual json_writer_t& config(json_writer_t&) const = 0;
+
+                ///
+                /// \brief convenience overload to deserialize and update the current parameters from string
+                ///
+                void config(const string_t& text)
+                {
+                        json_reader_t reader(text);
+                        config(reader);
+                }
         };
 }
