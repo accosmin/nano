@@ -45,10 +45,14 @@ static void gnorm(tiarray&& iarray, const toarray& oarray)
         assert(std::isfinite(iarray.maxCoeff()));
 }
 
-normalize_layer_t::normalize_layer_t(const string_t& params) :
-        layer_t(to_params(params, "type", to_string(norm_type::plane) + join(enum_values<norm_type>()))),
-        m_xdims({0, 0, 0})
+json_reader_t& normalize_layer_t::config(json_reader_t& reader)
 {
+        return reader.object("type", m_type);
+}
+
+json_writer_t& normalize_layer_t::config(json_writer_t& writer) const
+{
+        return writer.object("type", m_type, "types", join(enum_values<norm_type>()));
 }
 
 rlayer_t normalize_layer_t::clone() const
@@ -75,7 +79,7 @@ void normalize_layer_t::output(const tensor4d_t& idata, const tensor1d_t& pdata,
         const auto imaps = idata.size<1>();
         m_probe_output.measure([&] ()
         {
-                switch (from_params<norm_type>(config(), "type"))
+                switch (m_type)
                 {
                 case norm_type::global:
                         for (auto x = 0; x < count; ++ x)
@@ -106,7 +110,7 @@ void normalize_layer_t::ginput(tensor4d_t& idata, const tensor1d_t& pdata, const
         const auto imaps = idata.size<1>();
         m_probe_ginput.measure([&] ()
         {
-                switch (from_params<norm_type>(config(), "type"))
+                switch (m_type)
                 {
                 case norm_type::global:
                         for (auto x = 0; x < count; ++ x)

@@ -3,10 +3,16 @@
 
 using namespace nano;
 
-convolution_layer_t::convolution_layer_t(const string_t& params) :
-        layer_t(to_params(params, "omaps", "16[1,4096]", "krows", "8[1,32]", "kcols", "8[1,32]",
-        "kconn", "1[1,16]", "kdrow", "1[1,8]", "kdcol", "1[1,8]"))
+json_reader_t& convolution_layer_t::config(json_reader_t& reader)
 {
+        return reader.object("omaps", m_params.m_omaps, "krows", m_params.m_krows, "kcols", m_params.m_kcols,
+                "kconn", m_params.m_kconn, "kdrow", m_params.m_kdrow, "kdcol", m_params.m_kdcol);
+}
+
+json_writer_t& convolution_layer_t::config(json_writer_t& writer) const
+{
+        return writer.object("omaps", m_params.m_omaps, "krows", m_params.m_krows, "kcols", m_params.m_kcols,
+                "kconn", m_params.m_kconn, "kdrow", m_params.m_kdrow, "kdcol", m_params.m_kdcol);
 }
 
 rlayer_t convolution_layer_t::clone() const
@@ -16,35 +22,26 @@ rlayer_t convolution_layer_t::clone() const
 
 bool convolution_layer_t::config(const tensor3d_dims_t& idims, const string_t& name)
 {
-        const auto imaps = std::get<0>(idims);
-        const auto irows = std::get<1>(idims);
-        const auto icols = std::get<2>(idims);
+        m_params.m_imaps = std::get<0>(idims);
+        m_params.m_irows = std::get<1>(idims);
+        m_params.m_icols = std::get<2>(idims);
 
-        const auto omaps = clamp(from_params<tensor_size_t>(config(), "omaps"), 1, 4096);
-        const auto krows = clamp(from_params<tensor_size_t>(config(), "krows"), 1, 32);
-        const auto kcols = clamp(from_params<tensor_size_t>(config(), "kcols"), 1, 32);
-        const auto kconn = clamp(from_params<tensor_size_t>(config(), "kconn"), 1, 16);
-        const auto kdrow = clamp(from_params<tensor_size_t>(config(), "kdrow"), 1, 8);
-        const auto kdcol = clamp(from_params<tensor_size_t>(config(), "kdcol"), 1, 8);
-
-        const auto params = conv_params_t{imaps, irows, icols, omaps, kconn, krows, kcols, kdrow, kdcol};
-        if (!params.valid())
+        if (!m_params.valid())
         {
                 return false;
         }
 
-        m_kernel = conv4d_t{params};
+        m_kernel = conv4d_t{m_params};
 
-        m_probe_output = probe_t{name, name + "(output)", params.flops_output()};
-        m_probe_ginput = probe_t{name, name + "(ginput)", params.flops_ginput()};
-        m_probe_gparam = probe_t{name, name + "(gparam)", params.flops_gparam()};
+        m_probe_output = probe_t{name, name + "(output)", m_params.flops_output()};
+        m_probe_ginput = probe_t{name, name + "(ginput)", m_params.flops_ginput()};
+        m_probe_gparam = probe_t{name, name + "(gparam)", m_params.flops_gparam()};
         return true;
 }
 
 tensor_size_t convolution_layer_t::fanin() const
 {
-        const auto& params = m_kernel.params();
-        return params.krows() * params.kcols() * params.imaps() / params.kconn();
+        return m_params.krows() * m_params.kcols() * m_params.imaps() / m_params.kconn();
 }
 
 void convolution_layer_t::output(const tensor4d_t& idata, const tensor1d_t& pdata, tensor4d_t& odata)

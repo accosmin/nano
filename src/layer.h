@@ -4,6 +4,7 @@
 #include "tensor.h"
 #include "factory.h"
 #include "chrono/probe.h"
+#include "configurable.h"
 
 namespace nano
 {
@@ -19,17 +20,9 @@ namespace nano
         ///
         /// \brief computation node.
         ///
-        class NANO_PUBLIC layer_t
+        class NANO_PUBLIC layer_t : public configurable_t
         {
         public:
-
-                virtual ~layer_t() = default;
-
-                ///
-                /// \brief serialize the current parameters to json
-                ///
-                virtual void config(json_reader_t&) = 0;
-                virtual void config(json_writer_t&) const = 0;
 
                 ///
                 /// \brief copy the current object
@@ -37,9 +30,9 @@ namespace nano
                 virtual rlayer_t clone() const = 0;
 
                 ///
-                /// \brief configure to process new tensors of the given size
+                /// \brief configure to process tensors of the given size
                 ///
-                virtual bool config(const tensor3d_dims_t& idims) = 0;
+                virtual bool config(const tensor3d_dims_t& idims, const string_t& name) = 0;
 
                 ///
                 /// \brief change parameters

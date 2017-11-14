@@ -3,9 +3,14 @@
 
 using namespace nano;
 
-affine_layer_t::affine_layer_t(const string_t& params) :
-        layer_t(to_params(params, "omaps", "10[1,4096]", "orows", "1[1,4096]", "ocols", "1[1,4096]"))
+json_reader_t& affine_layer_t::config(json_reader_t& reader)
 {
+        return reader.object("omaps", m_params.m_omaps, "orows", m_params.m_orows, "ocols", m_params.m_ocols);
+}
+
+json_writer_t& affine_layer_t::config(json_writer_t& writer) const
+{
+        return writer.object("omaps", m_params.m_omaps, "orows", m_params.m_orows, "ocols", m_params.m_ocols);
 }
 
 rlayer_t affine_layer_t::clone() const
@@ -15,30 +20,26 @@ rlayer_t affine_layer_t::clone() const
 
 bool affine_layer_t::config(const tensor3d_dims_t& idims, const string_t& name)
 {
-        const auto imaps = std::get<0>(idims);
-        const auto irows = std::get<1>(idims);
-        const auto icols = std::get<2>(idims);
-        const auto omaps = nano::clamp(from_params<tensor_size_t>(config(), "omaps"), 1, 4096);
-        const auto orows = nano::clamp(from_params<tensor_size_t>(config(), "orows"), 1, 4096);
-        const auto ocols = nano::clamp(from_params<tensor_size_t>(config(), "ocols"), 1, 4096);
+        m_params.m_imaps = std::get<0>(idims);
+        m_params.m_irows = std::get<1>(idims);
+        m_params.m_icols = std::get<2>(idims);
 
-        const auto params = affine_params_t{imaps, irows, icols, omaps, orows, ocols};
-        if (!params.valid())
+        if (!m_params.valid())
         {
                 return false;
         }
 
-        m_kernel = affine4d_t{params};
+        m_kernel = affine4d_t{m_params};
 
-        m_probe_output = probe_t{name, name + "(output)", params.flops_output()};
-        m_probe_ginput = probe_t{name, name + "(ginput)", params.flops_ginput()};
-        m_probe_gparam = probe_t{name, name + "(gparam)", params.flops_gparam()};
+        m_probe_output = probe_t{name, name + "(output)", m_params.flops_output()};
+        m_probe_ginput = probe_t{name, name + "(ginput)", m_params.flops_ginput()};
+        m_probe_gparam = probe_t{name, name + "(gparam)", m_params.flops_gparam()};
         return true;
 }
 
 tensor_size_t affine_layer_t::fanin() const
 {
-        return m_kernel.params().isize();
+        return m_params.isize();
 }
 
 void affine_layer_t::output(const tensor4d_t& idata, const tensor1d_t& pdata, tensor4d_t& odata)

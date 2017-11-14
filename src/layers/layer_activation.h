@@ -8,40 +8,36 @@ namespace nano
         /// \brief activation layer: applies a non-linear scalar function to the each input.
         ///
         template <typename top>
-        struct activation_layer_t final : public layer_t
+        class activation_layer_t final : public layer_t
         {
-                explicit activation_layer_t(const string_t& params = string_t());
+        public:
 
-                rlayer_t clone() const override;
-                bool config(const tensor3d_dims_t& idims, const string_t& name) override;
-                void output(const tensor4d_t& idata, const tensor1d_t& pdata, tensor4d_t& odata) override;
-                void ginput(tensor4d_t& idata, const tensor1d_t& pdata, const tensor4d_t& odata) override;
-                void gparam(const tensor4d_t& idata, tensor1d_t& pdata, const tensor4d_t& odata) override;
+                rlayer_t clone() const final;
+                json_reader_t& config(json_reader_t& reader) final { return reader; }
+                json_writer_t& config(json_writer_t& writer) const final { return writer; }
 
-                tensor_size_t fanin() const override { return 1; }
-                tensor3d_dims_t idims() const override { return m_xdims; }
-                tensor3d_dims_t odims() const override { return m_xdims; }
-                tensor1d_dims_t pdims() const override { return {0}; }
+                bool config(const tensor3d_dims_t& idims, const string_t& name) final;
+                void output(const tensor4d_t& idata, const tensor1d_t& pdata, tensor4d_t& odata) final;
+                void ginput(tensor4d_t& idata, const tensor1d_t& pdata, const tensor4d_t& odata) final;
+                void gparam(const tensor4d_t& idata, tensor1d_t& pdata, const tensor4d_t& odata) final;
 
-                const probe_t& probe_output() const override { return m_probe_output; }
-                const probe_t& probe_ginput() const override { return m_probe_ginput; }
-                const probe_t& probe_gparam() const override { return m_probe_gparam; }
+                tensor_size_t fanin() const final { return 1; }
+                tensor3d_dims_t idims() const final { return m_xdims; }
+                tensor3d_dims_t odims() const final { return m_xdims; }
+                tensor1d_dims_t pdims() const final { return {0}; }
+
+                const probe_t& probe_output() const final { return m_probe_output; }
+                const probe_t& probe_ginput() const final { return m_probe_ginput; }
+                const probe_t& probe_gparam() const final { return m_probe_gparam; }
 
         private:
 
                 // attributes
-                tensor3d_dims_t m_xdims;        ///< input/output dimensions
+                tensor3d_dims_t m_xdims{0, 0, 0};       ///< input/output dimensions
                 probe_t         m_probe_output;
                 probe_t         m_probe_ginput;
                 probe_t         m_probe_gparam;
         };
-
-        template <typename top>
-        activation_layer_t<top>::activation_layer_t(const string_t& params) :
-                layer_t(params),
-                m_xdims({0, 0, 0})
-        {
-        }
 
         template <typename top>
         rlayer_t activation_layer_t<top>::clone() const
