@@ -30,9 +30,10 @@ namespace nano
                 rmodel_t clone() const;
 
                 ///
-                /// \brief resize to process new inputs
+                /// \brief resize to process the given input/output size
+                /// \params json model description in JSON (e.g. computation nodes, computation graph)
                 ///
-                bool config(const tensor3d_dims_t& idims, const tensor3d_dims_t& odims);
+                bool resize(const tensor3d_dims_t& idims, const tensor3d_dims_t& odims, const string_t& json);
 
                 ///
                 /// \brief serialize model to disk
@@ -126,12 +127,4 @@ namespace nano
 
         inline auto idims(const model_t& model, const tensor_size_t count) { return cat_dims(count, model.idims()); }
         inline auto odims(const model_t& model, const tensor_size_t count) { return cat_dims(count, model.odims()); }
-
-        ///
-        /// \brief convenience function to configure a model to process samples from the given task.
-        ///
-        inline bool config(model_t& model, const task_t& task)
-        {
-                return model.config(task.idims(), task.odims());
-        }
 }

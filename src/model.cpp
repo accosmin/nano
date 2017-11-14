@@ -177,7 +177,7 @@ void model_t::random()
         assert(pindex == psize());
 }
 
-bool model_t::config(const tensor3d_dims_t& idims, const tensor3d_dims_t& odims)
+bool model_t::config(const tensor3d_dims_t& idims, const tensor3d_dims_t& odims, const string_t& json)
 {
         m_nodes.clear();
 
@@ -187,6 +187,8 @@ bool model_t::config(const tensor3d_dims_t& idims, const tensor3d_dims_t& odims)
         int64_t flops_output = 0;
         int64_t flops_ginput = 0;
         int64_t flops_gparam = 0;
+
+        json_reader_t reader(json);
 
         // create layers
         const auto net_params = nano::split(config(), ";");
