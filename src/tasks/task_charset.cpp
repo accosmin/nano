@@ -130,7 +130,7 @@ static void alpha_blend(const tensor3d_t& mask, const tensor3d_t& img1, const te
 }
 
 charset_task_t::charset_task_t() :
-        mem_vision_task_t(m_color, m_irows, m_icols, tensor3d_dims_t{osize(m_type), 1, 1}, 1)
+        mem_vision_task_t(color_mode::rgb, 32, 32, tensor3d_dims_t{osize(charset_type::digit), 1, 1}, 1)
 {
 }
 
