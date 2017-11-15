@@ -54,7 +54,7 @@ auto make_wrt_inputs_function(const norm_params_t& params)
         return wrt_inputs_function_t<norm4d_t>(norm4d_t{params});
 }
 
-NANO_BEGIN_MODULE(test_normalize)
+NANO_BEGIN_MODULE(test_norm4d)
 
 NANO_CASE(globally)
 {

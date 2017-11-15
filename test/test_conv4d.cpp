@@ -101,7 +101,7 @@ auto make_wrt_inputs_function(const conv_params_t& params)
         return wrt_inputs_function_t<top>(top{params});
 }
 
-NANO_BEGIN_MODULE(test_conv)
+NANO_BEGIN_MODULE(test_conv4d)
 
 NANO_CASE(params_valid)
 {
