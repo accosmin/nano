@@ -48,14 +48,12 @@ NANO_BEGIN_MODULE(test_loss)
 
 NANO_CASE(evaluate)
 {
-        const strings_t loss_ids = get_losses().ids();
-
         const tensor_size_t cmd_min_dims = 2;
         const tensor_size_t cmd_max_dims = 10;
         const size_t cmd_tests = 128;
 
         // evaluate the analytical gradient vs. the finite difference approximation
-        for (const string_t& loss_id : loss_ids)
+        for (const auto& loss_id : get_losses().ids())
         {
                 for (tensor_size_t cmd_dims = cmd_min_dims; cmd_dims <= cmd_max_dims; ++ cmd_dims)
                 {

@@ -99,6 +99,12 @@ bool model_t::config(json_reader_t& reader)
 {
         clear();
 
+//        const char* const token_nodes = "nodes";
+  //      const char* const token_model = "model";
+   //     const char* const token_node_name = "name";
+    //    const char* const token_node_type = "type";
+     //   const char* const token_node_config = "config";
+
         NANO_UNUSED1(reader);
 
         // todo

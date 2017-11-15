@@ -21,15 +21,15 @@ namespace nano
         /// the loss function upper-bounds/approximates
         /// the true (usually non-smooth) error function to minimize.
         ///
-        class loss_t : public configurable_t
+        class NANO_PUBLIC loss_t : public configurable_t
         {
         public:
 
                 ///
                 /// \brief serialization to JSON not needed
                 ///
-                json_reader_t& config(json_reader_t& reader) override { return reader; }
-                json_writer_t& config(json_writer_t& writer) const override { return writer; }
+                json_reader_t& config(json_reader_t& reader) final { return reader; }
+                json_writer_t& config(json_writer_t& writer) const final { return writer; }
 
                 ///
                 /// \brief compute the error value
