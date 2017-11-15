@@ -1,5 +1,5 @@
 #include "utest.h"
-#include "text/config.h"
+#include "text/cast.h"
 #include "text/algorithm.h"
 #include <list>
 #include <set>
@@ -213,42 +213,6 @@ NANO_CASE(join)
         NANO_CHECK_EQUAL(nano::join(std::vector<int>({ 1, 2, 3 }), "-", "{", "}"),              "{1-2-3}");
         NANO_CHECK_EQUAL(nano::join(std::list<int>({ 1, 2, 3 }), "=", "XXX", "XXX"),            "XXX1=2=3XXX");
         NANO_CHECK_EQUAL(nano::join(std::set<int>({ 1, 2, 3 }), ",", nullptr, ")"),             "1,2,3)");
-}
-
-NANO_CASE(from_params)
-{
-        const auto config = "param1=1.7,param2=3,param3=-5[-inf,+inf],param4=alpha,param5=beta[description],param6=7";
-
-        NANO_CHECK_EQUAL(nano::from_params(config, "param1", 2.0), 1.7);
-        NANO_CHECK_EQUAL(nano::from_params(config, "param2", 42), 3);
-        NANO_CHECK_EQUAL(nano::from_params(config, "paramx", 2.4), 2.4);
-        NANO_CHECK_EQUAL(nano::from_params(config, "param3", -5), -5);
-        NANO_CHECK_EQUAL(nano::from_params(config, "param4", nano::string_t("ccc")), nano::string_t("alpha"));
-        NANO_CHECK_EQUAL(nano::from_params(config, "param5", nano::string_t("ddd")), nano::string_t("beta"));
-        NANO_CHECK_EQUAL(nano::from_params(config, "param6", 42), 7);
-}
-
-NANO_CASE(from_params_no_defaults)
-{
-        const auto config = "param1=1.7,param2=3,param3=-5[-inf,+inf],param4=alpha,param5=beta[description],param6=7";
-
-        NANO_CHECK_EQUAL(nano::from_params<double>(config, "param1"), 1.7);
-        NANO_CHECK_EQUAL(nano::from_params<int>(config, "param2"), 3);
-        NANO_CHECK_THROW(nano::from_params<double>(config, "paramx"), std::runtime_error);
-        NANO_CHECK_EQUAL(nano::from_params<int>(config, "param3"), -5);
-        NANO_CHECK_EQUAL(nano::from_params<nano::string_t>(config, "param4"), nano::string_t("alpha"));
-        NANO_CHECK_EQUAL(nano::from_params<nano::string_t>(config, "param5"), nano::string_t("beta"));
-        NANO_CHECK_EQUAL(nano::from_params<int>(config, "param6"), 7);
-}
-
-NANO_CASE(to_params)
-{
-        const auto param1 = 7;
-        const auto param2 = 42;
-        const auto config = nano::to_params("param1", param1, "param2", param2);
-
-        NANO_CHECK_EQUAL(nano::from_params(config, "param1", 34243), param1);
-        NANO_CHECK_EQUAL(nano::from_params(config, "param2", 32322), param2);
 }
 
 NANO_CASE(strcat)
