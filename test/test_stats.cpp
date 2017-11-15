@@ -31,7 +31,6 @@ namespace test
 
                 // check variance
                 NANO_CHECK_GREATER_EQUAL(stats.var(), 0.0);
-                NANO_CHECK_LESS_EQUAL(std::sqrt(stats.var()), var);
 
                 // check sum
                 NANO_CHECK_CLOSE(stats.sum(), std::accumulate(values.begin(), values.end(), 0.0), 1e-8);

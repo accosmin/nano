@@ -78,7 +78,7 @@ NANO_CASE(globally)
 
                 NANO_CHECK_EQUAL(stats.count(), static_cast<size_t>(xmaps * xrows * xcols));
                 NANO_CHECK_LESS(std::fabs(stats.avg() - scalar_t(0)), epsilon0<scalar_t>());
-                NANO_CHECK_LESS(std::fabs(stats.var() - scalar_t(1)), epsilon0<scalar_t>());
+                NANO_CHECK_LESS(std::fabs(stats.stdev() - scalar_t(1)), epsilon0<scalar_t>());
         }
 }
 
@@ -118,7 +118,7 @@ NANO_CASE(by_plane)
 
                         NANO_CHECK_EQUAL(stats.count(), static_cast<size_t>(xrows * xcols));
                         NANO_CHECK_LESS(std::fabs(stats.avg() - scalar_t(0)), epsilon0<scalar_t>());
-                        NANO_CHECK_LESS(std::fabs(stats.var() - scalar_t(1)), epsilon0<scalar_t>());
+                        NANO_CHECK_LESS(std::fabs(stats.stdev() - scalar_t(1)), epsilon0<scalar_t>());
                 }
         }
 }

@@ -75,6 +75,34 @@ namespace nano
                         m_max = std::numeric_limits<tscalar>::lowest();
                 }
 
+                ///
+                /// \brief returns average
+                ///
+                tscalar avg() const
+                {
+                        assert(count() > 0);
+                        return static_cast<tscalar>(sum() / count());
+                }
+
+                ///
+                /// \brief return variance
+                ///
+                tscalar var() const
+                {
+                        assert(count() > 0);
+                        return static_cast<tscalar>((m_sumsq - m_sum * m_sum / count()) / count());
+                }
+
+                ///
+                /// \brief returns population standard deviation
+                ///
+                tscalar stdev() const
+                {
+                        assert(count() > 0);
+                        return  std::sqrt(static_cast<tscalar>(m_sumsq * count() - m_sum * m_sum)) /
+                                static_cast<tscalar>(count());
+                }
+
                 // access functions
                 operator bool() const { return count() > 1; }
 
@@ -82,30 +110,6 @@ namespace nano
                 tscalar min() const { return m_min; }
                 tscalar max() const { return m_max; }
                 tstorage sum() const { return m_sum; }
-
-                tscalar avg() const
-                {
-                        assert(count() > 0);
-                        return static_cast<tscalar>(sum() / count());
-                }
-
-                tscalar var2() const
-                {
-                        assert(count() > 0);
-                        return static_cast<tscalar>(m_sumsq - m_sum * m_sum / count());
-                }
-
-                tscalar var() const
-                {
-                        assert(count() > 0);
-                        return static_cast<tscalar>((m_sumsq - m_sum * m_sum / count()) / count());
-                }
-
-                tscalar stdev() const
-                {
-                        assert(count() > 0);
-                        return static_cast<tscalar>((m_sumsq - m_sum * m_sum / count()) / (count() - 1));
-                }
 
         private:
 
