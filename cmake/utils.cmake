@@ -1,5 +1,7 @@
 include(CheckCXXCompilerFlag)
 
+set(TEST_PROGRAM "int main(int, char* []) { return 0; }")
+
 macro(to_parent)
         set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} PARENT_SCOPE)
         set(CMAKE_EXE_LINKER_FLAGS ${CMAKE_EXE_LINKER_FLAGS} PARENT_SCOPE)
@@ -11,7 +13,9 @@ macro(if_cxx_flag flag)
         string(REPLACE "=" "_" FLAGY ${FLAGX})
         string(TOUPPER ${FLAGY} FLAGZ)
 
-        CHECK_CXX_COMPILER_FLAG("${flag}" COMPILER_SUPPORTS${FLAGZ})
+        #CHECK_CXX_COMPILER_FLAG(${flag} COMPILER_SUPPORTS${FLAGZ})
+        set(CMAKE_REQUIRED_FLAGS "${flag}")
+        CHECK_CXX_SOURCE_COMPILES("${TEST_PROGRAM}" COMPILER_SUPPORTS${FLAGZ})
 
         if(COMPILER_SUPPORTS${FLAGZ})
                 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${flag}")
@@ -23,7 +27,9 @@ macro(if_linker_flag flag)
         string(REPLACE "=" "_" FLAGY ${FLAGX})
         string(TOUPPER ${FLAGY} FLAGZ)
 
-        CHECK_CXX_COMPILER_FLAG("${flag}" COMPILER_SUPPORTS${FLAGZ})
+        #CHECK_CXX_COMPILER_FLAG(${flag} COMPILER_SUPPORTS${FLAGZ})
+        set(CMAKE_REQUIRED_FLAGS "${flag}")
+        CHECK_CXX_SOURCE_COMPILES("${TEST_PROGRAM}" COMPILER_SUPPORTS${FLAGZ})
 
         if(COMPILER_SUPPORTS${FLAGZ})
                 set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${flag}")
