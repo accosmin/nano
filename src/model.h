@@ -30,10 +30,31 @@ namespace nano
                 rmodel_t clone() const;
 
                 ///
-                /// \brief resize to process the given input/output size
-                /// \params json model description in JSON (e.g. computation nodes, computation graph)
+                /// \brief remove all computation nodes
                 ///
-                bool resize(const tensor3d_dims_t& idims, const tensor3d_dims_t& odims, const string_t& json);
+                void clear();
+
+                ///
+                /// \brief add a new computation name given by its name, type and configuration
+                ///
+                bool add(const string_t& name, const string_t& type, json_reader_t&);
+                bool add(const string_t& name, const string_t& type, const string_t& json);
+
+                ///
+                /// \brief connect two computation nodes such that the first one is an input of the second one
+                ///
+                bool connect(const string_t& name1, const string_t& name2);
+
+                ///
+                /// \brief configure the computation graph using JSON
+                ///
+                bool config(json_reader_t&);
+                bool config(const string_t& json);
+
+                ///
+                /// \brief resize to process the given input/output size
+                ///
+                bool resize(const tensor3d_dims_t& idims, const tensor3d_dims_t& odims);
 
                 ///
                 /// \brief serialize model to disk
@@ -90,10 +111,12 @@ namespace nano
 
         private:
 
+                using dindex_t = uint16_t;
                 using rlayers_t = std::vector<rlayer_t>;
-                using digraph_t = nano::digraph_t<uint16_t>;
+                using digraph_t = nano::digraph_t<dindex_t>;
 
                 // attributes
+                strings_t       m_names;        ///< unique names for the computation nodes
                 rlayers_t       m_nodes;        ///< computation nodes
                 digraph_t       m_graph;        ///< computation graph (aka dependency between nodes)
                 tensor1d_t      m_gdata;        ///< gradient wrt parameters
@@ -114,6 +137,14 @@ namespace nano
         inline bool operator!=(const model_t& model, const task_t& task)
         {
                 return !(model == task);
+        }
+
+        ///
+        /// \brief resize the model to process samples from the given task
+        ///
+        inline bool resize(model_t& model, const task_t& task)
+        {
+                return model.resize(task.idims(), task.odims());
         }
 
         ///

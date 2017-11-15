@@ -10,6 +10,8 @@
 using namespace nano;
 
 model_t::model_t(const model_t& other) :
+        m_names(other.m_names),
+        m_graph(other.m_graph),
         m_gdata(other.m_gdata),
         m_probe_output(other.m_probe_output),
         m_probe_ginput(other.m_probe_ginput),
@@ -26,17 +28,107 @@ rmodel_t model_t::clone() const
         return std::make_unique<model_t>(*this);
 }
 
+void model_t::clear()
+{
+        m_names.clear();
+        m_nodes.clear();
+        m_graph.clear();
+}
+
+bool model_t::add(const string_t& type, const string_t& name, json_reader_t& reader)
+{
+        log_info() << "model: adding node " << name << " of type " << type << "...";
+
+        if (std::find(m_names.begin(), m_names.end(), name) != m_names.end())
+        {
+                log_error() << "model: duplicated name!";
+                return false;
+        }
+
+        auto node = get_layers().get(type);
+        if (!node)
+        {
+                log_error() << "model: invalid node type!";
+                return false;
+        }
+
+        node->config(reader);
+        m_names.push_back(name);
+        m_nodes.emplace_back(std::move(node));
+        return true;
+}
+
+bool model_t::add(const string_t& type, const string_t& name, const string_t& json)
+{
+        json_reader_t reader(json);
+        return add(type, name, reader);
+}
+
+bool model_t::connect(const string_t& name1, const string_t& name2)
+{
+        log_info() << "model: connecting nodes " << name1 << " -> " << name2 << "...";
+
+        const auto it1 = std::find(m_names.begin(), m_names.end(), name1);
+        const auto it2 = std::find(m_names.begin(), m_names.end(), name2);
+
+        if (it1 == m_names.end() || it2 == m_names.end())
+        {
+                log_error() << "model: unknown name(s)!";
+                return false;
+        }
+
+        if (!m_graph.edge(
+                static_cast<dindex_t>(std::distance(m_names.begin(), it1)),
+                static_cast<dindex_t>(std::distance(m_names.begin(), it2))))
+        {
+                log_error() << "model: duplicated edge!";
+                return false;
+        }
+
+        if (    m_graph.vertices() >= std::numeric_limits<dindex_t>::max() ||
+                m_graph.vertices() > static_cast<dindex_t>(m_nodes.size()))
+        {
+                log_error() << "model: overflow detected in the computation graph!";
+                return false;
+        }
+
+        return true;
+}
+
+bool model_t::config(json_reader_t& reader)
+{
+        clear();
+
+        NANO_UNUSED1(reader);
+
+        // todo
+
+        return false;
+}
+
+bool model_t::config(const string_t& json)
+{
+        json_reader_t reader(json);
+        return config(reader);
+}
+
 bool model_t::save(const string_t& path) const
 {
+        NANO_UNUSED1(path);
+        return false;
+        /*
         obstream_t ob(path);
         return  ob.write(idims()) &&
                 ob.write(odims()) &&
                 ob.write(config()) &&
-                ob.write_vector(params());
+                ob.write_vector(params());*/
 }
 
 bool model_t::load(const string_t& path)
 {
+        NANO_UNUSED1(path);
+        return false;
+        /*
         tensor3d_dims_t idims, odims;
         vector_t pdata;
         string_t param;
@@ -50,6 +142,7 @@ bool model_t::load(const string_t& path)
                 config(idims, odims) &&
                 pdata.size() == psize() &&
                 [&] () { params(pdata); return true; }();
+        */
 }
 
 vector_t model_t::params() const
@@ -177,10 +270,8 @@ void model_t::random()
         assert(pindex == psize());
 }
 
-bool model_t::config(const tensor3d_dims_t& idims, const tensor3d_dims_t& odims, const string_t& json)
+bool model_t::resize(const tensor3d_dims_t& idims, const tensor3d_dims_t& odims)
 {
-        m_nodes.clear();
-
         auto xdims = idims;
 
         tensor_size_t psize = 0;
@@ -188,8 +279,7 @@ bool model_t::config(const tensor3d_dims_t& idims, const tensor3d_dims_t& odims,
         int64_t flops_ginput = 0;
         int64_t flops_gparam = 0;
 
-        json_reader_t reader(json);
-
+        /*
         // create layers
         const auto net_params = nano::split(config(), ";");
         for (size_t l = 0; l < net_params.size(); ++ l)
@@ -228,12 +318,12 @@ bool model_t::config(const tensor3d_dims_t& idims, const tensor3d_dims_t& odims,
                 flops_gparam += layer->probe_gparam().flops();
 
                 m_nodes.emplace_back(std::move(layer));
-        }
+        }*/
 
         // check output size to match the target
         if (xdims != odims)
         {
-                log_error() << "forward network: miss-matching output size " << xdims << ", expecting " << odims << "!";
+                log_error() << "model: miss-matching output size " << xdims << ", expecting " << odims << "!";
                 return false;
         }
 
@@ -241,17 +331,16 @@ bool model_t::config(const tensor3d_dims_t& idims, const tensor3d_dims_t& odims,
         m_gdata.resize(psize);
 
         // setup probes
-        m_probe_output = probe_t{"network", "network(output)", flops_output};
-        m_probe_ginput = probe_t{"network", "network(ginput)", flops_ginput};
-        m_probe_gparam = probe_t{"network", "network(gparam)", flops_gparam};
+        m_probe_output = probe_t{"model", "model(output)", flops_output};
+        m_probe_ginput = probe_t{"model", "model(ginput)", flops_ginput};
+        m_probe_gparam = probe_t{"model", "model(gparam)", flops_gparam};
 
         return true;
 }
 
 tensor_size_t model_t::psize() const
 {
-        const auto acc = [] (const tensor_size_t sum, const rlayer_t& layer) { return sum + layer->psize(); };
-        return std::accumulate(m_nodes.begin(), m_nodes.end(), tensor_size_t(0), acc);
+        return m_gdata.size();
 }
 
 tensor3d_dims_t model_t::idims() const
@@ -266,7 +355,7 @@ tensor3d_dims_t model_t::odims() const
 
 void model_t::describe() const
 {
-        log_info() << "forward network [" << config() << "]";
+        /*log_info() << "forward network [" << config() << "]";
         for (const auto& layer : m_nodes)
         {
                 log_info()
@@ -275,7 +364,7 @@ void model_t::describe() const
                         << ", odims = " << layer->odims()
                         << ", pdims = " << layer->pdims() << ".";
         }
-        log_info() << "forward network: parameters = " << psize() << ".";
+        log_info() << "forward network: parameters = " << psize() << ".";*/
 }
 
 probes_t model_t::probes() const
@@ -294,11 +383,11 @@ probes_t model_t::probes() const
         append(m_probe_ginput);
         append(m_probe_gparam);
 
-        for (const auto& layer : m_nodes)
+        for (const auto& node : m_nodes)
         {
-                append(layer->probe_output());
-                append(layer->probe_ginput());
-                append(layer->probe_gparam());
+                append(node->probe_output());
+                append(node->probe_ginput());
+                append(node->probe_gparam());
         }
 
         return probes;

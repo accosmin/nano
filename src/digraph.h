@@ -9,6 +9,8 @@ namespace nano
 {
         ///
         /// \brief generic directed graph specified by a set of edges.
+        ///     todo: keep the edges sorted by the first index
+        ///     todo: use binary search to find the incoming (outgoing) vertices to a given vertex
         ///
         template <typename tindex>
         class digraph_t
@@ -23,6 +25,11 @@ namespace nano
                 /// \return true if the edge was already added
                 ///
                 bool edge(const tindex src, const tindex dst);
+
+                ///
+                /// \brief remove all edges
+                ///
+                void clear();
 
                 ///
                 /// \brief returns the vertices with no incoming edge
@@ -126,15 +133,22 @@ namespace nano
                 }
 
                 // attributes
-                edges_t         m_edges;
-                tindex          m_vertices{0};
+                edges_t         m_edges;        ///<
+                tindex          m_vertices{0};  ///< total number of vertices (maximum edge index + 1)
         };
+
+        template <typename tindex>
+        void digraph_t<tindex>::clear()
+        {
+                m_edges.clear();
+                m_vertices = 0;
+        }
 
         template <typename tindex>
         bool digraph_t<tindex>::edge(const tindex src, const tindex dst)
         {
-                m_vertices = std::max(m_vertices, src + 1);
-                m_vertices = std::max(m_vertices, dst + 1);
+                m_vertices = std::max(m_vertices, static_cast<tindex>(src + 1));
+                m_vertices = std::max(m_vertices, static_cast<tindex>(dst + 1));
 
                 const auto comp = [=] (const auto& edge) { return edge.first == src && edge.second == dst; };
                 if (std::find_if(m_edges.begin(), m_edges.end(), comp) == m_edges.end())
