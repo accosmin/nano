@@ -1,12 +1,4 @@
-# check some compiler flags
 include(CheckCXXCompilerFlag)
-
-#CHECK_CXX_COMPILER_FLAG(-fsanitize=address COMPILER_SUPPORTS_SANITIZE_ADDRESS)
-#CHECK_CXX_COMPILER_FLAG(-fsanitize=undefined COMPILER_SUPPORTS_SANITIZE_UNDEFINED)
-#CHECK_CXX_COMPILER_FLAG(-fsanitize=leak COMPILER_SUPPORTS_SANITIZE_LEAK)
-#CHECK_CXX_COMPILER_FLAG(-fsanitize=thread COMPILER_SUPPORTS_SANITIZE_THREAD)
-
-set(TEST_PROGRAM "int main(int, char* []) { return 0; }")
 
 macro(to_parent)
         set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} PARENT_SCOPE)
@@ -15,22 +7,28 @@ macro(to_parent)
 endmacro()
 
 macro(if_cxx_flag flag)
-        set(CMAKE_REQUIRED_FLAGS "${flag}")
-        CHECK_CXX_SOURCE_COMPILES("${TEST_PROGRAM}" COMPILER_SUPPORTS_${flag})
+        string(REPLACE "-" "_" FLAGX ${flag})
+        string(REPLACE "=" "_" FLAGY ${FLAGX})
+        string(TOUPPER ${FLAGY} FLAGZ)
 
-        if(COMPILER_SUPPORTS_${flag})
+        CHECK_CXX_COMPILER_FLAG("${flag}" COMPILER_SUPPORTS${FLAGZ})
+
+        if(COMPILER_SUPPORTS${FLAGZ})
                 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${flag}")
         endif()
 endmacro()
 
-function(if_linker_flag flag)
-        set(CMAKE_REQUIRED_FLAGS ${flag})
-        CHECK_CXX_SOURCE_COMPILES("${TEST_PROGRAM}" COMPILER_SUPPORTS_FLAG)
+macro(if_linker_flag flag)
+        string(REPLACE "-" "_" FLAGX ${flag})
+        string(REPLACE "=" "_" FLAGY ${FLAGX})
+        string(TOUPPER ${FLAGY} FLAGZ)
 
-        if(COMPILER_SUPPORTS_FLAG)
+        CHECK_CXX_COMPILER_FLAG("${flag}" COMPILER_SUPPORTS${FLAGZ})
+
+        if(COMPILER_SUPPORTS${FLAGZ})
                 set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${flag}")
         endif()
-endfunction()
+endmacro()
 
 # require C++14 support
 function(require_cpp14)
@@ -148,22 +146,19 @@ endfunction()
 # setup LTO
 function(setup_lto)
         # TODO: setup -flto=thin
-        set(CMAKE_REQUIRED_FLAGS "-flto")
-        CHECK_CXX_SOURCE_COMPILES("${TEST_PROGRAM}" COMPILER_SUPPORTS_LTO)
-
-        set(CMAKE_REQUIRED_FLAGS "-fno-fat-lto-objects")
-        CHECK_CXX_SOURCE_COMPILES("${TEST_PROGRAM}" COMPILER_SUPPORTS_NO_FAT_LTO_OBJECTS)
+        CHECK_CXX_COMPILER_FLAG("-flto" COMPILER_SUPPORTS_LTO)
+        CHECK_CXX_COMPILER_FLAG("-fno-fat-lto-objects" COMPILER_SUPPORTS_NO_FAT_LTO_OBJECTS)
 
         if(COMPILER_SUPPORTS_LTO)
                 get_filename_component(CMAKE_LTO_DIR ${CMAKE_CXX_COMPILER} DIRECTORY)
                 if(CMAKE_CXX_COMPILER_ID MATCHES GNU)
-                        find_program(CMAKE_LTO_AR NAMES ${_CMAKE_TOOLCHAIN_PREFIX}gcc-ar ${_CMAKE_TOOLCHAIN_SUFFIX} HINTS ${CMAKE_LTO_DIR})
-                        find_program(CMAKE_LTO_NM NAMES ${_CMAKE_TOOLCHAIN_PREFIX}gcc-nm HINTS ${CMAKE_LTO_DIR})
-                        find_program(CMAKE_LTO_RANLIB NAMES ${_CMAKE_TOOLCHAIN_PREFIX}gcc-ranlib HINTS ${CMAKE_LTO_DIR})
+                        find_program(CMAKE_LTO_AR NAMES ${CMAKE_TOOLCHAIN_PREFIX}gcc-ar ${CMAKE_TOOLCHAIN_SUFFIX} HINTS ${CMAKE_LTO_DIR})
+                        find_program(CMAKE_LTO_NM NAMES ${CMAKE_TOOLCHAIN_PREFIX}gcc-nm HINTS ${CMAKE_LTO_DIR})
+                        find_program(CMAKE_LTO_RANLIB NAMES ${CMAKE_TOOLCHAIN_PREFIX}gcc-ranlib HINTS ${CMAKE_LTO_DIR})
                 elseif(CMAKE_CXX_COMPILER_ID MATCHES Clang)
-                        find_program(CMAKE_LTO_AR NAMES ${_CMAKE_TOOLCHAIN_PREFIX}llvm-ar ${_CMAKE_TOOLCHAIN_SUFFIX} HINTS ${CMAKE_LTO_DIR})
-                        find_program(CMAKE_LTO_NM NAMES ${_CMAKE_TOOLCHAIN_PREFIX}llvm-nm HINTS ${CMAKE_LTO_DIR})
-                        find_program(CMAKE_LTO_RANLIB NAMES ${_CMAKE_TOOLCHAIN_PREFIX}llvm-ranlib HINTS ${CMAKE_LTO_DIR})
+                        find_program(CMAKE_LTO_AR NAMES ${CMAKE_TOOLCHAIN_PREFIX}llvm-ar ${CMAKE_TOOLCHAIN_SUFFIX} HINTS ${CMAKE_LTO_DIR})
+                        find_program(CMAKE_LTO_NM NAMES ${CMAKE_TOOLCHAIN_PREFIX}llvm-nm HINTS ${CMAKE_LTO_DIR})
+                        find_program(CMAKE_LTO_RANLIB NAMES ${CMAKE_TOOLCHAIN_PREFIX}llvm-ranlib HINTS ${CMAKE_LTO_DIR})
                 endif()
 
                 message("++ CMAKE_AR: ${CMAKE_LTO_AR}")
