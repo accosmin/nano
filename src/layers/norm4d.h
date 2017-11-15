@@ -53,7 +53,7 @@ namespace nano
                         const auto isum2 = iarray.square().sum();
                         const auto count = static_cast<scalar_t>(iarray.size());
                         const auto imean = isum1 / count;
-                        const auto istdv = std::sqrt((isum2 - isum1 * isum1 / count) / count);
+                        const auto istdv = std::sqrt(isum2 * count - isum1 * isum1) / count;
 
                         oarray = (iarray - imean) / istdv;
 
@@ -73,7 +73,7 @@ namespace nano
                         const auto isum2 = iarray.square().sum();
                         const auto count = static_cast<scalar_t>(iarray.size());
                         const auto imean = isum1 / count;
-                        const auto istdv = std::sqrt((isum2 - isum1 * isum1 / count) / count);
+                        const auto istdv = std::sqrt(isum2 * count - isum1 * isum1) / count;
 
                         const auto osum1 = oarray.sum();
                         const auto oisum = (oarray * (iarray - imean)).sum();

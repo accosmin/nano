@@ -37,9 +37,9 @@ struct wrt_inputs_function_t final : public function_t
                 m_op.output(m_idata, m_odata);
                 if (gx)
                 {
+                        m_op.ginput(m_idata, m_odata);
                         gx->resize(x.size());
-                        auto idata = map_tensor(gx->data(), m_idata.dims());
-                        m_op.ginput(idata, m_odata);
+                        map_vector(gx->data(), m_idata.size()) = m_idata.vector();
                 }
                 return m_odata.array().square().sum() / 2;
         }
