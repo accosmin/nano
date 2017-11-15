@@ -1,8 +1,7 @@
-#include "layer.h"
 #include "utest.h"
 #include "math/stats.h"
 #include "math/epsilon.h"
-#include "layers/layer_normalize.h"
+#include "layers/norm4d.h"
 
 using namespace nano;
 
@@ -23,16 +22,15 @@ NANO_CASE(globally)
         tensor4d_t idata(count, xmaps, xrows, xcols);
         idata.random(-1, +1);
 
-        const auto layer = get_layers().get("norm");
-        layer->config(json_writer_t().object("type", norm_type::global).get());
+        auto params = norm_params_t{xmaps, xrows, xcols, norm_type::global};
+        NANO_CHECK(params.valid());
 
-        NANO_CHECK_EQUAL(layer->resize(make_dims(xmaps, xrows, xcols), ""), true);
-        NANO_CHECK_EQUAL(make_dims(xmaps, xrows, xcols), layer->idims());
-        NANO_CHECK_EQUAL(make_dims(xmaps, xrows, xcols), layer->odims());
-        NANO_CHECK_EQUAL(0, layer->psize());
+        NANO_CHECK_EQUAL(make_dims(xmaps, xrows, xcols), params.xdims());
+        NANO_CHECK_EQUAL(0, params.psize());
 
-        const auto& odata = layer->output(idata);
-        NANO_CHECK_EQUAL(odata.dims(), make_dims(count, xmaps, xrows, xcols));
+        auto odata = idata;
+        norm4d_t norm(params);
+        norm.output(idata, odata);
 
         for (auto x = 0; x < count; ++ x)
         {
@@ -51,16 +49,15 @@ NANO_CASE(by_plane)
         tensor4d_t idata(count, xmaps, xrows, xcols);
         idata.random(-1, +1);
 
-        const auto layer = get_layers().get("norm");
-        layer->config(json_writer_t().object("type", norm_type::plane).get());
+        auto params = norm_params_t{xmaps, xrows, xcols, norm_type::plane};
+        NANO_CHECK(params.valid());
 
-        NANO_CHECK_EQUAL(layer->resize(make_dims(xmaps, xrows, xcols), ""), true);
-        NANO_CHECK_EQUAL(make_dims(xmaps, xrows, xcols), layer->idims());
-        NANO_CHECK_EQUAL(make_dims(xmaps, xrows, xcols), layer->odims());
-        NANO_CHECK_EQUAL(0, layer->psize());
+        NANO_CHECK_EQUAL(make_dims(xmaps, xrows, xcols), params.xdims());
+        NANO_CHECK_EQUAL(0, params.psize());
 
-        const auto& odata = layer->output(idata);
-        NANO_CHECK_EQUAL(odata.dims(), make_dims(count, xmaps, xrows, xcols));
+        auto odata = idata;
+        norm4d_t norm(params);
+        norm.output(idata, odata);
 
         for (auto x = 0; x < count; ++ x)
         {

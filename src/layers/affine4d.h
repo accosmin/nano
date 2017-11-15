@@ -17,8 +17,9 @@ namespace nano
         /// operation:
         ///     odata = wdata * idata + bdata
         ///
-        struct affine4d_t
+        class affine4d_t
         {
+        public:
                 ///
                 /// \brief constructor
                 ///

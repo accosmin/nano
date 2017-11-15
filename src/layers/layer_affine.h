@@ -27,9 +27,9 @@ namespace nano
                 void gparam(const tensor4d_t& idata, tensor1d_t& pdata, const tensor4d_t& odata) final;
 
                 tensor_size_t fanin() const final;
-                tensor3d_dims_t idims() const final { return m_kernel.params().idims(); }
-                tensor3d_dims_t odims() const final { return m_kernel.params().odims(); }
-                tensor1d_dims_t pdims() const final { return m_kernel.params().pdims(); }
+                tensor3d_dims_t idims() const final { return m_params.idims(); }
+                tensor3d_dims_t odims() const final { return m_params.odims(); }
+                tensor1d_dims_t pdims() const final { return m_params.pdims(); }
 
                 const probe_t& probe_output() const final { return m_probe_output; }
                 const probe_t& probe_ginput() const final { return m_probe_ginput; }

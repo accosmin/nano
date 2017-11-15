@@ -18,8 +18,9 @@ namespace nano
         /// operation:
         ///     odata(o) = sum(i, conv2d(idata(i), kdata(o, i))) + bdata(o)
         ///
-        struct conv3d_t
+        class conv3d_t
         {
+        public:
                 ///
                 /// \brief constructor
                 ///
