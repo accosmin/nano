@@ -3,23 +3,25 @@
 
 using namespace nano;
 
-struct object1_configurable_t : public configurable_t
+struct object_t
 {
-        explicit object1_configurable_t(const string_t& config = string_t()) :
-                configurable_t(config + ",p1=def1") {}
+        object_t() = default;
+        virtual ~object_t() = default;
+        virtual int get() const = 0;
 };
 
-struct object2_configurable_t : public configurable_t
+template <int tv>
+struct objectx_t final : public object_t
 {
-        explicit object2_configurable_t(const string_t& config = string_t()) :
-                configurable_t(config + ",p2=def2") {}
+        objectx_t() = default;
+        explicit objectx_t(const int v) : m_v(v) {}
+        int get() const final { return m_v; }
+        int m_v{tv};
 };
 
-struct object3_configurable_t : public configurable_t
-{
-        explicit object3_configurable_t(const string_t& config = string_t()) :
-                configurable_t(config + ",p3=def3") {}
-};
+using object1_t = objectx_t<1>;
+using object2_t = objectx_t<2>;
+using object3_t = objectx_t<3>;
 
 std::ostream& operator<<(std::ostream& os, const strings_t& strings)
 {
@@ -34,10 +36,9 @@ NANO_BEGIN_MODULE(test_manager)
 
 NANO_CASE(empty)
 {
-        factory_t<configurable_t> manager;
+        factory_t<object_t> manager;
 
         NANO_CHECK(manager.ids().empty());
-        NANO_CHECK(manager.descriptions().empty());
 
         NANO_CHECK(!manager.has("ds"));
         NANO_CHECK(!manager.has("ds1"));
@@ -47,33 +48,29 @@ NANO_CASE(empty)
 
 NANO_CASE(retrieval)
 {
-        factory_t<configurable_t> manager;
-
-        const object1_configurable_t obj1;
-        const object2_configurable_t obj2;
-        const object3_configurable_t obj3;
+        factory_t<object_t, int> manager;
 
         const string_t id1 = "obj1";
         const string_t id2 = "obj2";
         const string_t id3 = "obj3";
 
         // register objects
-        NANO_CHECK(manager.add<object1_configurable_t>(id1, "test obj1"));
-        NANO_CHECK(manager.add<object2_configurable_t>(id2, "test obj2"));
-        NANO_CHECK(manager.add<object3_configurable_t>(id3, "test obj3"));
+        NANO_CHECK(manager.add<object1_t>(id1, "test obj1"));
+        NANO_CHECK(manager.add<object2_t>(id2, "test obj2"));
+        NANO_CHECK(manager.add<object3_t>(id3, "test obj3"));
 
         // should not be able to register with the same id anymore
-        NANO_CHECK(!manager.add<object1_configurable_t>(id1, ""));
-        NANO_CHECK(!manager.add<object1_configurable_t>(id1, ""));
-        NANO_CHECK(!manager.add<object1_configurable_t>(id1, ""));
+        NANO_CHECK(!manager.add<object1_t>(id1, ""));
+        NANO_CHECK(!manager.add<object2_t>(id1, ""));
+        NANO_CHECK(!manager.add<object3_t>(id1, ""));
 
-        NANO_CHECK(!manager.add<object2_configurable_t>(id2, ""));
-        NANO_CHECK(!manager.add<object2_configurable_t>(id2, ""));
-        NANO_CHECK(!manager.add<object2_configurable_t>(id2, ""));
+        NANO_CHECK(!manager.add<object1_t>(id2, ""));
+        NANO_CHECK(!manager.add<object2_t>(id2, ""));
+        NANO_CHECK(!manager.add<object3_t>(id2, ""));
 
-        NANO_CHECK(!manager.add<object3_configurable_t>(id3, ""));
-        NANO_CHECK(!manager.add<object3_configurable_t>(id3, ""));
-        NANO_CHECK(!manager.add<object3_configurable_t>(id3, ""));
+        NANO_CHECK(!manager.add<object1_t>(id3, ""));
+        NANO_CHECK(!manager.add<object2_t>(id3, ""));
+        NANO_CHECK(!manager.add<object3_t>(id3, ""));
 
         // check retrieval
         NANO_REQUIRE(manager.has(id1));
@@ -84,21 +81,21 @@ NANO_CASE(retrieval)
         NANO_CHECK(!manager.has(id2 + id3));
         NANO_CHECK(!manager.has(id3 + id1));
 
-        NANO_CHECK_EQUAL(manager.get(id1)->config(), obj1.config());
-        NANO_CHECK_EQUAL(manager.get(id2)->config(), obj2.config());
-        NANO_CHECK_EQUAL(manager.get(id3)->config(), obj3.config());
+        NANO_REQUIRE(manager.get(id1, 0) != nullptr);
+        NANO_REQUIRE(manager.get(id2, 0) != nullptr);
+        NANO_REQUIRE(manager.get(id3, 0) != nullptr);
 
-        NANO_CHECK_EQUAL(manager.get(id1, "p1=v1")->config(), "p1=v1,p1=def1");
-        NANO_CHECK_EQUAL(manager.get(id2, "p2=v2")->config(), "p2=v2,p2=def2");
-        NANO_CHECK_EQUAL(manager.get(id3, "p3=v3")->config(), "p3=v3,p3=def3");
+        NANO_CHECK_EQUAL(manager.get(id1, 1)->get(), 1);
+        NANO_CHECK_EQUAL(manager.get(id2, 2)->get(), 2);
+        NANO_CHECK_EQUAL(manager.get(id3, 3)->get(), 3);
 
-        NANO_CHECK(manager.get(id1));
-        NANO_CHECK(manager.get(id2));
-        NANO_CHECK(manager.get(id3));
+        NANO_CHECK_EQUAL(manager.get(id1, 42)->get(), 42);
+        NANO_CHECK_EQUAL(manager.get(id2, 42)->get(), 42);
+        NANO_CHECK_EQUAL(manager.get(id3, 42)->get(), 42);
 
-        NANO_CHECK_THROW(manager.get(""), std::runtime_error);
-        NANO_CHECK_THROW(manager.get(id1 + id2 + "ddd"), std::runtime_error);
-        NANO_CHECK_THROW(manager.get("not there"), std::runtime_error);
+        NANO_CHECK(manager.get("", 0) == nullptr);
+        NANO_CHECK(manager.get(id1 + id2 + "ddd", 0) == nullptr);
+        NANO_CHECK(manager.get("not there", 0) == nullptr);
 
         // check retrieval by regex
         const auto ids0 = strings_t{};
@@ -113,6 +110,33 @@ NANO_CASE(retrieval)
         NANO_CHECK_EQUAL(manager.ids(std::regex("obj[0-9]")), ids123);
         NANO_CHECK_EQUAL(manager.ids(std::regex("obj[1|2]")), ids12);
         NANO_CHECK_EQUAL(manager.ids(std::regex("obj7")), ids0);
+}
+
+NANO_CASE(retrieval_default)
+{
+        factory_t<object_t> manager;
+
+        const string_t id1 = "obj1";
+        const string_t id2 = "obj2";
+        const string_t id3 = "obj3";
+
+        // register objects
+        NANO_CHECK(manager.add<object1_t>(id1, "test obj1"));
+        NANO_CHECK(manager.add<object2_t>(id2, "test obj2"));
+        NANO_CHECK(manager.add<object3_t>(id3, "test obj3"));
+
+        // check retrieval with the default arguments
+        NANO_REQUIRE(manager.has(id1));
+        NANO_REQUIRE(manager.has(id2));
+        NANO_REQUIRE(manager.has(id3));
+
+        NANO_REQUIRE(manager.get(id1) != nullptr);
+        NANO_REQUIRE(manager.get(id2) != nullptr);
+        NANO_REQUIRE(manager.get(id3) != nullptr);
+
+        NANO_CHECK_EQUAL(manager.get(id1)->get(), 1);
+        NANO_CHECK_EQUAL(manager.get(id2)->get(), 2);
+        NANO_CHECK_EQUAL(manager.get(id3)->get(), 3);
 }
 
 NANO_END_MODULE()

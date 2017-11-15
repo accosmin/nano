@@ -4,7 +4,6 @@
 #include <regex>
 #include <memory>
 #include "stringi.h"
-#include <stdexcept>
 #include <functional>
 
 namespace nano
@@ -67,7 +66,7 @@ namespace nano
         bool factory_t<tobject, targs...>::add(const string_t& id, const string_t& description)
         {
                 static_assert(std::is_base_of<tobject, tobject_impl>::value, "");
-                const auto maker = [] (const targs&... args)
+                const auto maker = [] (targs&&... args)
                 {
                         return std::make_unique<tobject_impl>(std::forward<targs>(args)...);
                 };
@@ -83,14 +82,8 @@ namespace nano
         template <typename tobject, typename... targs>
         typename factory_t<tobject, targs...>::trobject factory_t<tobject, targs...>::get(const string_t& id, targs&&... args) const
         {
-                assert(has(id));
                 const auto it = m_protos.find(id);
-                if (it == m_protos.end())
-                {
-                        throw std::runtime_error(
-                                "invalid object id <" + id + "> of type <" + typeid(tobject).name() + ">!");
-                }
-                return it->second.m_maker(std::forward<targs>(args)...);
+                return (it == m_protos.end()) ? nullptr : it->second.m_maker(std::forward<targs>(args)...);
         }
 
         template <typename tobject, typename... targs>
@@ -110,7 +103,7 @@ namespace nano
         template <typename tobject, typename... targs>
         string_t factory_t<tobject, targs...>::description(const string_t& id) const
         {
-                assert(has(id));
-                return m_protos.at(id).m_description;
+                const auto it = m_protos.find(id);
+                return (it == m_protos.end()) ? string_t() : m_protos.at(id).m_description;
         }
 }
