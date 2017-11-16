@@ -22,14 +22,18 @@ namespace nano
 
                 ///
                 /// \brief create a directed edge between the src and the dst vertex ids
-                /// \return true if the edge was already added
                 ///
-                bool edge(const tindex src, const tindex dst);
+                void edge(const tindex src, const tindex dst);
 
                 ///
                 /// \brief remove all edges
                 ///
                 void clear();
+
+                ///
+                /// \brief prepares internals once all the edges have been added
+                ///
+                void done();
 
                 ///
                 /// \brief returns the vertices with no incoming edge
@@ -85,12 +89,22 @@ namespace nano
                         permanent,
                 };
 
+                template <typename toperator>
+                auto foreach_outgoing(const tindex src, const toperator& top) const
+                {
+                        const auto sedge = edge_t{src, src};
+                        const auto ecomp = [] (const auto& e1, const auto& e2) { return e1.first < e2.first; };
+                        const auto range = std::equal_range(m_edges.begin(), m_edges.end(), sedge, ecomp);
+
+                        return std::find_if(range.first, range.second, top) == range.second;
+                }
+
                 template <typename tvcall>
-                bool visit(std::vector<flag>& flags, const tvcall& vcall, const tindex vindex) const
+                bool visit(std::vector<flag>& flags, const tvcall& vcall, const tindex src) const
                 {
                         assert(flags.size() == vertices());
 
-                        switch (flags[vindex])
+                        switch (flags[src])
                         {
                         case flag::temporary:
                                 return false;   // !DAG
@@ -100,21 +114,19 @@ namespace nano
 
                         case flag::none:
                         default:
-                                flags[vindex] = flag::temporary;
-                                for (const auto& edge : m_edges)
+                                flags[src] = flag::temporary;
+                                if (!foreach_outgoing(src, [&] (const auto& e) { return !visit(flags, vcall, e.second); }))
                                 {
-                                        if (edge.first == vindex && !visit(flags, vcall, edge.second))
-                                        {
-                                                return false;
-                                        }
+                                        return false;
                                 }
-                                flags[vindex] = flag::permanent;
-                                vcall(vindex);
+                                flags[src] = flag::permanent;
+                                vcall(src);
                                 return true;
                         }
                 }
 
-                static void unique(indices_t& set)
+                template <typename tvalue>
+                static void unique(std::vector<tvalue>& set)
                 {
                         std::sort(set.begin(), set.end());
                         set.erase(std::unique(set.begin(), set.end()), set.end());
@@ -145,21 +157,17 @@ namespace nano
         }
 
         template <typename tindex>
-        bool digraph_t<tindex>::edge(const tindex src, const tindex dst)
+        void digraph_t<tindex>::edge(const tindex src, const tindex dst)
         {
+                m_edges.emplace_back(src, dst);
                 m_vertices = std::max(m_vertices, static_cast<tindex>(src + 1));
                 m_vertices = std::max(m_vertices, static_cast<tindex>(dst + 1));
+        }
 
-                const auto comp = [=] (const auto& edge) { return edge.first == src && edge.second == dst; };
-                if (std::find_if(m_edges.begin(), m_edges.end(), comp) == m_edges.end())
-                {
-                        m_edges.emplace_back(src, dst);
-                        return true;
-                }
-                else
-                {
-                        return false;
-                }
+        template <typename tindex>
+        void digraph_t<tindex>::done()
+        {
+                unique(m_edges);
         }
 
         template <typename tindex>
@@ -208,13 +216,7 @@ namespace nano
         typename digraph_t<tindex>::indices_t digraph_t<tindex>::outgoing(const tindex src) const
         {
                 indices_t dsts;
-                for (const auto& edge : m_edges)
-                {
-                        if (src == edge.first)
-                        {
-                                dsts.emplace_back(edge.second);
-                        }
-                }
+                foreach_outgoing(src, [&] (const auto& e) { dsts.emplace_back(e.second); return true; });
 
                 unique(dsts);
                 return dsts;

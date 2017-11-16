@@ -77,13 +77,9 @@ bool model_t::connect(const string_t& name1, const string_t& name2)
                 return false;
         }
 
-        if (!m_graph.edge(
+        m_graph.edge(
                 static_cast<dindex_t>(std::distance(m_names.begin(), it1)),
-                static_cast<dindex_t>(std::distance(m_names.begin(), it2))))
-        {
-                log_error() << "model: duplicated edge!";
-                return false;
-        }
+                static_cast<dindex_t>(std::distance(m_names.begin(), it2)));
 
         if (    m_graph.vertices() >= std::numeric_limits<dindex_t>::max() ||
                 m_graph.vertices() > static_cast<dindex_t>(m_nodes.size()))
