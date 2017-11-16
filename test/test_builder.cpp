@@ -20,7 +20,7 @@ NANO_CASE(affine)
         config_affine_node(writer, odims);
 
         const auto layer = get_layers().get(affine_node_name());
-        layer->config(writer.get());
+        layer->config(writer.str());
         NANO_CHECK(layer->resize(idims, lname));
         NANO_CHECK_EQUAL(layer->idims(), idims);
         NANO_CHECK_EQUAL(layer->odims(), odims);
@@ -46,7 +46,7 @@ NANO_CASE(conv3d)
                 config_conv3d_node(writer, omaps, krows, kcols, kconn, kdrow, kdcol);
 
                 const auto layer = get_layers().get(conv3d_node_name());
-                layer->config(writer.get());
+                layer->config(writer.str());
                 NANO_CHECK(layer->resize(idims, lname));
                 NANO_CHECK_EQUAL(layer->idims(), idims);
                 NANO_CHECK_EQUAL(layer->odims(), param.odims());
@@ -68,7 +68,7 @@ NANO_CASE(norm3d)
                 config_norm3d_node(writer, type);
 
                 const auto layer = get_layers().get(norm3d_node_name());
-                layer->config(writer.get());
+                layer->config(writer.str());
                 NANO_CHECK(layer->resize(idims, lname));
                 NANO_CHECK_EQUAL(layer->idims(), idims);
                 NANO_CHECK_EQUAL(layer->odims(), idims);

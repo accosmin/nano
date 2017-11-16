@@ -14,14 +14,14 @@ namespace nano
                 json_writer_t& name(const char* tag)
                 {
                         quote(tag);
-                        m_text += ':';
+                        m_str += ':';
                         return *this;
                 }
 
                 template <typename tvalue>
                 json_writer_t& value(const tvalue& val)
                 {
-                        m_text.append(to_string(val));
+                        m_str.append(to_string(val));
                         return *this;
                 }
 
@@ -44,13 +44,13 @@ namespace nano
 
                 json_writer_t& next()
                 {
-                        m_text.append(1, ',');
+                        m_str.append(1, ',');
                         return *this;
                 }
 
                 json_writer_t& null()
                 {
-                        m_text += "null";
+                        m_str += "null";
                         return *this;
                 }
 
@@ -92,22 +92,22 @@ namespace nano
                 json_writer_t& new_object() { return keyword('{'); }
                 json_writer_t& end_object() { return keyword('}'); }
 
-                const string_t& get() { return m_text; }
+                const auto& str() { return m_str; }
 
         private:
 
                 json_writer_t& keyword(const char tag)
                 {
-                        m_text += tag;
+                        m_str += tag;
                         return *this;
                 }
 
                 template <typename tstr>
                 json_writer_t& quote(const tstr& str)
                 {
-                        m_text += '\"';
-                        m_text += str;
-                        m_text += '\"';
+                        m_str += '\"';
+                        m_str += str;
+                        m_str += '\"';
                         return *this;
                 }
 
@@ -129,6 +129,6 @@ namespace nano
                 }
 
                 // attributes
-                string_t        m_text;
+                string_t        m_str;
         };
 }

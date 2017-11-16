@@ -48,5 +48,5 @@ solver_state_t stoch_adam_t::minimize(const stoch_params_t& param, const functio
         };
 
         return  loop(param, function, x0, solver, snapshot,
-                json_writer_t().object("alpha0", alpha0, "decay", decay, "epsilon", epsilon, "beta1", beta1, "beta2", beta2).get());
+                json_writer_t().object("alpha0", alpha0, "decay", decay, "epsilon", epsilon, "beta1", beta1, "beta2", beta2).str());
 }

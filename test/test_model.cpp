@@ -34,7 +34,7 @@ NANO_CASE(config)
                 writer.array("act3", "aff1", "act4", "aff2", "act5", "aff3");
         writer.end_array().end_object();
 
-        std::cout << writer.get() << std::endl;
+        std::cout << writer.str() << std::endl;
 }
 
 NANO_CASE(evaluate)

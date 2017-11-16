@@ -22,7 +22,7 @@ NANO_CASE(writer_simple)
                 writer.name("null").null();
         writer.end_object();
 
-        NANO_CHECK_EQUAL(writer.get(),
+        NANO_CHECK_EQUAL(writer.str(),
         "{\"param1\":\"v\",\"param2\":-42,\"array1\":[1,2,3],\"param3\":42,\"null\":null}");
 }
 
@@ -47,7 +47,7 @@ NANO_CASE(writer_complex)
                 writer.end_object();
         writer.end_object();
 
-        NANO_CHECK_EQUAL(writer.get(),
+        NANO_CHECK_EQUAL(writer.str(),
         "{\"param1\":\"v\",\"object1\":{\"array1\":[{\"name11\":11,\"name12\":12},{\"name21\":21,\"name22\":22}],"\
         "\"field1\":\"v1\",\"field2\":\"v2\"}}");
 }
@@ -70,7 +70,7 @@ NANO_CASE(writer_complex_with_pairs)
                 writer.end_object();
         writer.end_object();
 
-        NANO_CHECK_EQUAL(writer.get(),
+        NANO_CHECK_EQUAL(writer.str(),
         "{\"param1\":\"v\",\"object1\":{\"array1\":[{\"name11\":11,\"name12\":12},{\"name21\":21,\"name22\":22}],"\
         "\"field1\":\"v1\",\"field2\":\"v2\"}}");
 }
@@ -104,13 +104,7 @@ NANO_CASE(reader_object)
         NANO_CHECK_EQUAL(unknown, 1);
 
         // all tags should be accounted for
-        const auto callback = [&] (const char*, const size_t, const json_tag)
-        {
-                NANO_CHECK(false);
-                return true;
-        };
-
-        reader.parse(callback);
+        NANO_CHECK(reader == reader.end());
 }
 
 NANO_CASE(reader_complex)
@@ -165,20 +159,22 @@ NANO_CASE(reader_complex)
                 { "", json_tag::end_object }
         };
 
+        json_reader_t reader(json);
+
         size_t index = 0;
-        const auto callback = [&] (const char* name, const size_t size, const json_tag tag)
+        for (const auto& token : reader)
         {
+                const auto name = std::get<0>(token);
+                const auto size = std::get<1>(token);
+                const auto jtag = std::get<2>(token);
+
                 NANO_REQUIRE_LESS(index, calls.size());
                 NANO_CHECK_EQUAL(calls[index].first, string_t(name, size));
-                NANO_CHECK_EQUAL(calls[index].second, tag);
+                NANO_CHECK_EQUAL(calls[index].second, jtag);
                 ++ index;
 
-                //std::cout << "token = [" << string_t(name, size) << "], tag = " << to_string(tag) << std::endl;
-                return true;
-        };
-
-        json_reader_t reader(json);
-        reader.parse(callback);
+                //std::cout << "token = [" << string_t(name, size) << "], tag = " << to_string(jtag) << std::endl;
+        }
 
         NANO_CHECK_EQUAL(index, calls.size());
 }

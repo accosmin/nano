@@ -91,7 +91,7 @@ solver_state_t stoch_ag_base_t<trestart>::minimize(const stoch_params_t& param, 
         };
 
         return  loop(param, function, x0, solver, snapshot,
-                json_writer_t().object("alpha0", alpha0, "q", q).get());
+                json_writer_t().object("alpha0", alpha0, "q", q).str());
 }
 
 template class nano::stoch_ag_base_t<ag_restart::none>;

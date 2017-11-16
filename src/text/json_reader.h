@@ -16,7 +16,8 @@ namespace nano
                 end_array,
                 name,
                 null,
-                value
+                value,
+                none
         };
 
         template <>
@@ -36,72 +37,87 @@ namespace nano
 
         ///
         /// \brief limited ascii-based JSON reader (e.g. no support for escaping special characters).
+        ///     the decoding is implemented ala STL iterators:
+        ///             for (const auto& token : json_reader_t(text))
+        ///             {
+        ///                     print(token); /// tuple of <text*, size, json_tag>
+        ///             }
         ///
         class json_reader_t
         {
         public:
 
                 using range_t = std::pair<size_t, size_t>;
+                using token_t = std::tuple<const char*, size_t, json_tag>;
 
                 ///
                 /// \brief constructor
                 ///
-                json_reader_t(const string_t& text) :
-                        m_text(text)
+                json_reader_t(const string_t& str, const size_t pos = 0, const range_t& range = {0, 0}) :
+                        m_str(str), m_pos(pos), m_range(range)
                 {
                 }
 
                 ///
-                /// \brief parse the text and call with (const char* name, size, tag type) for each token
-                /// NB: the callback returns true if the parsing should continue or false otherwise.
+                /// \brief returns the [begin, end) range of json tokens
                 ///
-                template <typename tcallback>
-                void parse(const tcallback& callback)
+                auto begin() const { return json_reader_t(m_str, m_pos, m_range); }
+                auto end() const { return json_reader_t(m_str, m_str.size(), m_range); }
+
+                ///
+                /// \brief retrieve the json token at the current position
+                ///
+                token_t operator*() const
+                {
+                        if (m_pos < m_str.size())
+                        {
+                                switch (m_str[m_pos])
+                                {
+                                case '{':       return handle0(json_tag::new_object);
+                                case '}':       return handle1(json_tag::value);
+                                                // return handle0(json_tag::end_object);
+                                case '[':       return handle0(json_tag::new_array);
+                                case ']':       return handle1(json_tag::value);
+                                                // return handle0(json_tag::end_array);
+                                case ',':       return handle1(json_tag::value);
+                                case ':':       return handle1(json_tag::name);
+                                default:        break;//assert(false);
+                                }
+                        }
+
+                        return {nullptr, 0, json_tag::none};
+                }
+
+                ///
+                /// \brief move to the next token
+                ///
+                json_reader_t& operator++()
                 {
                         skip(spaces());
-
-                        auto prev_pos = m_pos;
-                        auto done = false;
-                        while (!done && find(tokens()))
+                        const auto prev_pos = m_pos;
+                        if (find(tokens()))
                         {
-                                const auto range = trim(prev_pos, m_pos);
-
-                                done = false;
-                                switch (m_text[m_pos])
+                                m_range = trim(prev_pos, m_pos);
+                                switch (m_str[m_pos])
                                 {
-                                case '{':
-                                        done = !handle0(callback, json_tag::new_object);
-                                        break;
-
-                                case '}':
-                                        done = !handle1(range, callback, json_tag::value) ||
-                                               !handle0(callback, json_tag::end_object);
-                                        break;
-
-                                case '[':
-                                        done = !handle0(callback, json_tag::new_array);
-                                        break;
-
-                                case ']':
-                                        done = !handle1(range, callback, json_tag::value) ||
-                                               !handle0(callback, json_tag::end_array);
-                                        break;
-
-                                case ',':
-                                        done = !handle1(range, callback, json_tag::value);
-                                        break;
-
-                                case ':':
-                                        done = !handle1(range, callback, json_tag::name);
-                                        break;
-
-                                default:
-                                        assert(false);
+                                case '{': ++ m_pos; return *this;
+                                case '}': ++ m_pos; return *this;
+                                case '[': ++ m_pos; return *this;
+                                case ']': ++ m_pos; return *this;
+                                case ',': ++ m_pos; return *this;
+                                case ':': ++ m_pos; return *this;
+                                default:  assert(false);
                                 }
-
-                                prev_pos = ++ m_pos;
-                                skip(spaces());
                         }
+
+                        return *this;
+                }
+
+                json_reader_t operator++(int)
+                {
+                        const auto copy = *this;
+                        ++ *this;
+                        return copy;
                 }
 
                 ///
@@ -113,32 +129,42 @@ namespace nano
                         const char* last_name = nullptr;
                         size_t last_size = 0;
 
-                        const auto callback = [&] (const char* name, const size_t size, const json_tag tag)
+                        for (const auto& token : *this)
                         {
-                                switch (tag)
+                                const auto name = std::get<0>(token);
+                                const auto size = std::get<1>(token);
+                                const auto jtag = std::get<2>(token);
+
+                                switch (jtag)
                                 {
                                 case json_tag::end_object:
                                         // done!
-                                        return false;
+                                        return *this;
 
                                 case json_tag::name:
                                         last_name = name;
                                         last_size = size;
-                                        return true;
+                                        break;
 
                                 case json_tag::value:
                                         set_pair(last_name, last_size, name, size, nvs...);
-                                        return true;
+                                        break;
 
                                 default:
                                         // continue
-                                        return true;
+                                        break;
                                 }
-                        };
+                        }
 
-                        parse(callback);
                         return *this;
                 }
+
+                ///
+                /// \brief access functions
+                ///
+                auto pos() const { return m_pos; }
+                const auto& str() const { return m_str; }
+                const auto& range() const { return m_range; }
 
         private:
 
@@ -148,58 +174,51 @@ namespace nano
 
                 bool find(const char* str)
                 {
-                        return (m_pos = m_text.find_first_of(str, m_pos)) != string_t::npos;
+                        return (m_pos = m_str.find_first_of(str, m_pos)) != string_t::npos;
                 }
 
                 bool skip(const char* str)
                 {
-                        return (m_pos = m_text.find_first_not_of(str, m_pos)) != string_t::npos;
+                        return (m_pos = m_str.find_first_not_of(str, m_pos)) != string_t::npos;
                 }
 
                 range_t trim(size_t begin, size_t end) const
                 {
-                        begin = m_text.find_first_not_of(spaces(), begin);
-                        end = std::min(end, m_text.find_first_of(spaces(), begin));
+                        begin = m_str.find_first_not_of(spaces(), begin);
+                        end = std::min(end, m_str.find_first_of(spaces(), begin));
 
                         if (begin < end)
                         {
-                                if (m_text[begin] == '\"') ++ begin;
-                                if (m_text[end - 1] == '\"') --end;
+                                if (m_str[begin] == '\"') ++ begin;
+                                if (m_str[end - 1] == '\"') --end;
                         }
 
                         return {begin, end};
                 }
 
-                const char* substr(const range_t& range) const
+                const char* substr() const
                 {
-                        assert(range.first < m_text.size());
-                        return &m_text[range.first];
+                        assert(m_range.first < m_str.size());
+                        return &m_str[m_range.first];
                 }
 
-                size_t strlen(const range_t& range) const
+                size_t strlen() const
                 {
-                        assert(range.first <= range.second);
-                        assert(range.second <= m_text.size());
-                        return range.second - range.first;
+                        assert(m_range.first <= m_range.second);
+                        assert(m_range.second <= m_str.size());
+                        return m_range.second - m_range.first;
                 }
 
-                template <typename tcallback>
-                bool handle0(const tcallback& callback, const json_tag tag) const
+                token_t handle0(const json_tag tag) const
                 {
-                        return callback(&m_text[m_pos], 0, tag);
+                        return {&m_str[m_pos], 0, tag};
                 }
 
-                template <typename tcallback>
-                bool handle1(const range_t& range, const tcallback& callback, const json_tag tag) const
+                token_t handle1(const json_tag tag) const
                 {
-                        if (range.first < range.second)
-                        {
-                                const auto is_null =
-                                        tag == json_tag::value &&
-                                        m_text.compare(range.first, range.second - range.first, null()) == 0;
-                                return callback(substr(range), strlen(range), is_null ? json_tag::null : tag);
-                        }
-                        return true;
+                        assert(m_range.first < m_range.second);
+                        const auto none = (tag == json_tag::value) && !m_str.compare(m_range.first, strlen(), null());
+                        return {substr(), strlen(), none ? json_tag::null : tag};
                 }
 
                 static void set_pair(const char*, const size_t, const char*, const size_t)
@@ -225,7 +244,24 @@ namespace nano
                 }
 
                 // attributes
-                const string_t& m_text;
+                const string_t& m_str;
                 size_t          m_pos{0};
+                range_t         m_range{0, 0};
         };
+
+        ///
+        /// \brief comparison operators.
+        ///
+        inline bool operator==(const json_reader_t& reader1, const json_reader_t& reader2)
+        {
+                return  reader1.str() == reader2.str() &&
+                        reader1.pos() == reader2.pos() &&
+                        reader1.range() == reader2.range();
+        }
+        inline bool operator!=(const json_reader_t& reader1, const json_reader_t& reader2)
+        {
+                return  reader1.str() != reader2.str() ||
+                        reader1.pos() != reader2.pos() ||
+                        reader1.range() != reader2.range();
+        }
 }

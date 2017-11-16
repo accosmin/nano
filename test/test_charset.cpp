@@ -13,7 +13,7 @@ static auto get_task(const charset_type type, const color_mode color,
         auto task = get_tasks().get("synth-charset");
         NANO_REQUIRE(task);
         task->config(json_writer_t().object(
-                "type", type, "color", color, "irows", irows, "icols", icols, "count", count).get());
+                "type", type, "color", color, "irows", irows, "icols", icols, "count", count).str());
         return task;
 }
 

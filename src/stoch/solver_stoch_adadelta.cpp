@@ -41,5 +41,5 @@ solver_state_t stoch_adadelta_t::minimize(const stoch_params_t& param, const fun
         };
 
         return  loop(param, function, x0, solver, snapshot,
-                json_writer_t().object("momentum", momentum, "epsilon", epsilon).get());
+                json_writer_t().object("momentum", momentum, "epsilon", epsilon).str());
 }

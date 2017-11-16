@@ -41,5 +41,5 @@ solver_state_t stoch_rmsprop_t::minimize(const stoch_params_t& param, const func
         };
 
         return  loop(param, function, x0, solver, snapshot,
-                json_writer_t().object("alpha0", alpha0, "decay", decay, "momentum", momentum, "epsilon", epsilon).get());
+                json_writer_t().object("alpha0", alpha0, "decay", decay, "momentum", momentum, "epsilon", epsilon).str());
 }

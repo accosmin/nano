@@ -10,7 +10,7 @@ NANO_BEGIN_MODULE(test_iterator)
 NANO_CASE(fixed_batch_iterator)
 {
         const auto config = json_writer_t().object(
-                "type", charset_type::digit, "color", color_mode::rgba, "irows", 16, "icols", 16, "count", 100).get();
+                "type", charset_type::digit, "color", color_mode::rgba, "irows", 16, "icols", 16, "count", 100).str();
 
         auto task = get_tasks().get("synth-charset");
         task->config(config);
@@ -46,7 +46,7 @@ NANO_CASE(fixed_batch_iterator)
 NANO_CASE(increasing_batch_iterator)
 {
         const auto config = json_writer_t().object(
-                "type", charset_type::digit, "color", color_mode::rgba, "irows", 16, "icols", 16, "count", 100).get();
+                "type", charset_type::digit, "color", color_mode::rgba, "irows", 16, "icols", 16, "count", 100).str();
 
         auto task = get_tasks().get("synth-charset");
         task->config(config);
