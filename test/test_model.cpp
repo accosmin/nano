@@ -12,20 +12,34 @@ using namespace nano;
 
 NANO_BEGIN_MODULE(test_model)
 
-NANO_CASE(builder)
+NANO_CASE(config)
 {
         json_writer_t writer;
-        writer.begin_obkect
-        add_norm_layer
+        writer.new_object().name("nodes").new_array();
+                add_norm3d_node(writer, "norm", norm_type::plane).next();
+                add_conv3d_node(writer, "c5x5", 128, 5, 5, 1, 1, 1).next();
+                add_activation_node(writer, "act1", "act-snorm").next();
+                add_conv3d_node(writer, "c3x3", 128, 3, 3, 1, 1, 1).next();
+                add_activation_node(writer, "act2", "act-snorm").next();
+                add_conv3d_node(writer, "c1x1", 128, 1, 1, 1, 1, 1).next();
+                add_activation_node(writer, "act3", "act-snorm").next();
+                add_affine_node(writer, "aff1", 128, 1, 1).next();
+                add_activation_node(writer, "act4", "act-snorm").next();
+                add_affine_node(writer, "aff2", 128, 1, 1).next();
+                add_activation_node(writer, "act5", "act-snorm").next();
+                add_affine_node(writer, "aff3", 10, 1, 1);
+        writer.end_array().next().end_object().next();
+        writer.new_object().name("model").new_array();
+                writer.array("norm", "c5x5", "act1", "c3x3", "act2", "c1x1", "act3").next();
+                writer.array("act3", "aff1", "act4", "aff2", "act5", "aff3");
+        writer.end_array().end_object();
 
-
-        model_t model;
-        model.add(
-
+        std::cout << writer.get() << std::endl;
 }
 
 NANO_CASE(evaluate)
 {
+        /*
         const auto task = get_tasks().get("synth-charset");
         task->config(json_writer_t().object("type", "digit", "color", "luma", "irows", 16, "icols", 16, "count", 128).get());
 
@@ -113,6 +127,7 @@ NANO_CASE(evaluate)
                         std::remove(path.c_str());
                 }
         }
+        */
 }
 
 NANO_END_MODULE()

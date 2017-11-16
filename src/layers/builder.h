@@ -135,37 +135,33 @@ namespace nano
         ///
         /// \brief configure computation nodes.
         ///
-        template <typename... targs>
-        json_writer_t& config_node(json_writer_t& writer, const targs&... args)
+        inline void config_empty_node(json_writer_t& writer)
         {
-                return writer.object(args...);
+                writer.object();
         }
 
-        inline json_writer_t& config_norm3d_node(json_writer_t& writer, const norm_type type)
+        inline void config_norm3d_node(json_writer_t& writer, const norm_type type)
         {
-                return writer.object(
-                        "type", type);
+                writer.object("type", type);
         }
 
-        inline json_writer_t& config_conv3d_node(json_writer_t& writer,
+        inline void config_conv3d_node(json_writer_t& writer,
                 const tensor_size_t omaps, const tensor_size_t krows, const tensor_size_t kcols,
                 const tensor_size_t kconn = 1, const tensor_size_t kdrow = 1, const tensor_size_t kdcol = 1)
         {
-                return writer.object(
-                        "omaps", omaps, "krows", krows, "kcols", kcols, "kconn", kconn, "kdrow", kdrow, "kdcol", kdcol);
+                writer.object("omaps", omaps, "krows", krows, "kcols", kcols, "kconn", kconn, "kdrow", kdrow, "kdcol", kdcol);
         }
 
-        inline json_writer_t& config_affine_node(json_writer_t& writer,
+        inline void config_affine_node(json_writer_t& writer,
                 const tensor_size_t omaps, const tensor_size_t orows, const tensor_size_t ocols)
         {
-                return writer.object(
-                        "omaps", omaps, "orows", orows, "ocols", ocols);
+                writer.object("omaps", omaps, "orows", orows, "ocols", ocols);
         }
 
-        inline json_writer_t& config_affine_node(json_writer_t& writer,
+        inline void config_affine_node(json_writer_t& writer,
                 const tensor3d_dims_t& odims)
         {
-                return config_affine_node(writer, std::get<0>(odims), std::get<1>(odims), std::get<2>(odims));
+                config_affine_node(writer, std::get<0>(odims), std::get<1>(odims), std::get<2>(odims));
         }
 
         ///
@@ -203,7 +199,8 @@ namespace nano
                 const tensor_size_t omaps, const tensor_size_t orows, const tensor_size_t ocols)
         {
                 return add_node(writer, name, affine_node_name(),
-                        config_affine_node, omaps, orows, ocols);
+                        [] (auto& w, const auto m, const auto r, const auto c) { config_affine_node(w, m, r, c); },
+                        /*config_affine_node*/omaps, orows, ocols);
         }
 
         template <typename tname>
@@ -217,15 +214,6 @@ namespace nano
         json_writer_t& add_activation_node(json_writer_t& writer, const tname& name, const ttype& type)
         {
                 return add_node(writer, name, type,
-                        config_node);
-        }
-
-        ///
-        /// \brief helper function to serialize a processing path of computation nodes given by their name.
-        ///
-        template <typename... tnames>
-        json_writer_t& connect_nodes(json_writer_t& writer, const tnames&... names)
-        {
-                return writer.array(names...);
+                        config_empty_node);
         }
 }

@@ -216,7 +216,7 @@ namespace nano
         typename digraph_t<tindex>::indices_t digraph_t<tindex>::outgoing(const tindex src) const
         {
                 indices_t dsts;
-                foreach_outgoing(src, [&] (const auto& e) { dsts.emplace_back(e.second); return true; });
+                foreach_outgoing(src, [&] (const auto& edge) { dsts.emplace_back(edge.second); return true; });
 
                 unique(dsts);
                 return dsts;
