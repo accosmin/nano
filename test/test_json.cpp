@@ -14,7 +14,7 @@ NANO_BEGIN_MODULE(test_json)
 NANO_CASE(writer_simple)
 {
         json_writer_t writer;
-        writer.begin_object();
+        writer.new_object();
                 writer.pair("param1", "v").next();
                 writer.pair("param2", -42).next();
                 writer.name("array1").array(1, 2, 3).next();
@@ -29,15 +29,15 @@ NANO_CASE(writer_simple)
 NANO_CASE(writer_complex)
 {
         json_writer_t writer;
-        writer.begin_object();
+        writer.new_object();
                 writer.pair("param1", "v").next();
-                writer.name("object1").begin_object();
-                        writer.name("array1").begin_array();
-                                writer.begin_object();
+                writer.name("object1").new_object();
+                        writer.name("array1").new_array();
+                                writer.new_object();
                                         writer.pair("name11", 11).next();
                                         writer.pair("name12", 12);
                                 writer.end_object().next();
-                                writer.begin_object();
+                                writer.new_object();
                                         writer.pair("name21", 21).next();
                                         writer.pair("name22", 22);
                                 writer.end_object();
@@ -55,14 +55,14 @@ NANO_CASE(writer_complex)
 NANO_CASE(writer_complex_with_pairs)
 {
         json_writer_t writer;
-        writer.begin_object();
+        writer.new_object();
                 writer.pair("param1", "v").next();
-                writer.name("object1").begin_object();
-                        writer.name("array1").begin_array();
-                                writer.begin_object();
+                writer.name("object1").new_object();
+                        writer.name("array1").new_array();
+                                writer.new_object();
                                         writer.pairs("name11", 11, "name12", 12);
                                 writer.end_object().next();
-                                writer.begin_object();
+                                writer.new_object();
                                         writer.pairs("name21", 21, "name22", 22);
                                 writer.end_object();
                         writer.end_array().next();
@@ -81,7 +81,7 @@ NANO_CASE(reader_object)
 {
         "string":       "str",
         "integer":      42,
-        "tag1":         "begin_object",
+        "tag1":         "new_object",
         "tag2":         "value"
 }
 )XXX";
@@ -99,7 +99,7 @@ NANO_CASE(reader_object)
 
         NANO_CHECK_EQUAL(object_str, "str");
         NANO_CHECK_EQUAL(object_integer, 42);
-        NANO_CHECK_EQUAL(object_tag1, json_tag::begin_object);
+        NANO_CHECK_EQUAL(object_tag1, json_tag::new_object);
         NANO_CHECK_EQUAL(object_tag2, json_tag::value);
         NANO_CHECK_EQUAL(unknown, 1);
 
@@ -134,13 +134,13 @@ NANO_CASE(reader_complex)
 )XXX";
 
         const std::vector<std::pair<string_t, json_tag>> calls = {
-                { "", json_tag::begin_object },
+                { "", json_tag::new_object },
                 { "string", json_tag::name },
                 { "value1", json_tag::value },
                 { "integer", json_tag::name },
                 { "42", json_tag::value },
                 { "array", json_tag::name },
-                { "", json_tag::begin_array },
+                { "", json_tag::new_array },
                         { "1", json_tag::value },
                         { "2", json_tag::value },
                         { "3", json_tag::value },
@@ -148,14 +148,14 @@ NANO_CASE(reader_complex)
                 { "null", json_tag::name },
                 { "null", json_tag::null },
                 { "object_array", json_tag::name },
-                { "", json_tag::begin_array },
-                { "", json_tag::begin_object },
+                { "", json_tag::new_array },
+                { "", json_tag::new_object },
                         { "name", json_tag::name },
                         { "name1", json_tag::value },
                         { "int", json_tag::name },
                         { "1", json_tag::value },
                 { "", json_tag::end_object },
-                { "", json_tag::begin_object },
+                { "", json_tag::new_object },
                         { "name", json_tag::name },
                         { "name2", json_tag::value },
                         { "int", json_tag::name },

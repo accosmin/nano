@@ -175,7 +175,7 @@ namespace nano
         json_writer_t& add_node(json_writer_t& writer, const tname& name, const ttype& type,
                 const tconfigurer& configurer, const targs&... args)
         {
-                writer.begin_object()
+                writer.new_object()
                       .pairs("name", name, "type", type).next()
                       .name("config");
                       configurer(writer, args...);

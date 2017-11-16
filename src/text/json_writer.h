@@ -57,7 +57,7 @@ namespace nano
                 template <typename... tvalues>
                 json_writer_t& array(const tvalues&... vals)
                 {
-                        begin_array();
+                        new_array();
                         values(vals...);
                         return end_array();
                 }
@@ -81,15 +81,15 @@ namespace nano
                 template <typename... tvalues>
                 json_writer_t& object(const tvalues&... vals)
                 {
-                        begin_object();
+                        new_object();
                         pairs(vals...);
                         return end_object();
                 }
 
-                json_writer_t& begin_array() { return keyword('['); }
-                json_writer_t& begin_object() { return keyword('{'); }
-
+                json_writer_t& new_array() { return keyword('['); }
                 json_writer_t& end_array() { return keyword(']'); }
+
+                json_writer_t& new_object() { return keyword('{'); }
                 json_writer_t& end_object() { return keyword('}'); }
 
                 const string_t& get() { return m_text; }

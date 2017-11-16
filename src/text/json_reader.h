@@ -10,9 +10,9 @@ namespace nano
         ///
         enum class json_tag
         {
-                begin_object,
+                new_object,
                 end_object,
-                begin_array,
+                new_array,
                 end_array,
                 name,
                 null,
@@ -24,9 +24,9 @@ namespace nano
         {
                 return
                 {
-                        { json_tag::begin_object, "begin_object" },
+                        { json_tag::new_object, "new_object" },
                         { json_tag::end_object, "end_object" },
-                        { json_tag::begin_array, "begin_array" },
+                        { json_tag::new_array, "new_array" },
                         { json_tag::end_array, "end_array" },
                         { json_tag::name, "name" },
                         { json_tag::null, "null" },
@@ -70,7 +70,7 @@ namespace nano
                                 switch (m_text[m_pos])
                                 {
                                 case '{':
-                                        done = !handle0(callback, json_tag::begin_object);
+                                        done = !handle0(callback, json_tag::new_object);
                                         break;
 
                                 case '}':
@@ -79,7 +79,7 @@ namespace nano
                                         break;
 
                                 case '[':
-                                        done = !handle0(callback, json_tag::begin_array);
+                                        done = !handle0(callback, json_tag::new_array);
                                         break;
 
                                 case ']':
