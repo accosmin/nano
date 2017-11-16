@@ -1,13 +1,12 @@
 #include "layer.h"
 #include "utest.h"
 #include "layers/builder.h"
-#include "layers/make_layers.h"
-#include "layers/conv_params.h"
+#include "layers/conv3d_params.h"
 #include "layers/affine_params.h"
 
 using namespace nano;
 
-NANO_BEGIN_MODULE(test_build)
+NANO_BEGIN_MODULE(test_builder)
 
 NANO_CASE(affine)
 {
@@ -18,18 +17,11 @@ NANO_CASE(affine)
         NANO_CHECK(param.valid());
 
         json_writer_t writer;
-        writer.begin_object();
-        writer.name("nodes");
-        add_affine_node(writer, "node1", odims);
-        writer.end_object();
+        config_affine_node(writer, odims);
 
-        std::cout << "writer: [" << writer.get() << "]" << std::endl;
-
-///        json_reader_t reader;
-        // todo:
-
-        const auto layer = get_layers().get("affine", make_affine_layer(odims));
-        NANO_CHECK(layer->config(idims, lname));
+        const auto layer = get_layers().get(affine_node_name());
+        layer->config(writer.get());
+        NANO_CHECK(layer->resize(idims, lname));
         NANO_CHECK_EQUAL(layer->idims(), idims);
         NANO_CHECK_EQUAL(layer->odims(), odims);
         NANO_CHECK_EQUAL(layer->psize(), param.psize());
@@ -47,39 +39,41 @@ NANO_CASE(conv3d)
         for (auto kdcol = 1; kdcol <= 2; ++ kdcol)
         {
                 const auto omaps = 8;
-                const auto param = conv_params_t{idims, omaps, kconn, krows, kcols, kdrow, kdcol};
+                const auto param = conv3d_params_t{idims, omaps, kconn, krows, kcols, kdrow, kdcol};
                 NANO_CHECK(param.valid());
 
-                const auto layer = get_layers().get("conv3d", make_conv3d_layer(omaps, krows, kcols, kconn, "", kdrow, kdcol));
-                NANO_CHECK(layer->config(idims, lname));
+                json_writer_t writer;
+                config_conv3d_node(writer, omaps, krows, kcols, kconn, kdrow, kdcol);
+
+                const auto layer = get_layers().get(conv3d_node_name());
+                layer->config(writer.get());
+                NANO_CHECK(layer->resize(idims, lname));
                 NANO_CHECK_EQUAL(layer->idims(), idims);
                 NANO_CHECK_EQUAL(layer->odims(), param.odims());
                 NANO_CHECK_EQUAL(layer->psize(), param.psize());
         }
 }
 
-NANO_CASE(norm_by_plane)
+NANO_CASE(norm3d)
 {
         const auto idims = make_dims(4, 13, 11);
         const auto lname = "name";
 
-        const auto layer = get_layers().get("norm", make_norm_by_plane_layer());
-        NANO_CHECK(layer->config(idims, lname));
-        NANO_CHECK_EQUAL(layer->idims(), idims);
-        NANO_CHECK_EQUAL(layer->odims(), idims);
-        NANO_CHECK_EQUAL(layer->psize(), 0);
-}
+        for (auto type : enum_values<norm_type>())
+        {
+                const auto param = norm3d_params_t{idims, type};
+                NANO_CHECK(param.valid());
 
-NANO_CASE(norm_globally)
-{
-        const auto idims = make_dims(4, 13, 11);
-        const auto lname = "name";
+                json_writer_t writer;
+                config_norm3d_node(writer, type);
 
-        const auto layer = get_layers().get("norm", make_norm_globally_layer());
-        NANO_CHECK(layer->config(idims, lname));
-        NANO_CHECK_EQUAL(layer->idims(), idims);
-        NANO_CHECK_EQUAL(layer->odims(), idims);
-        NANO_CHECK_EQUAL(layer->psize(), 0);
+                const auto layer = get_layers().get(norm3d_node_name());
+                layer->config(writer.get());
+                NANO_CHECK(layer->resize(idims, lname));
+                NANO_CHECK_EQUAL(layer->idims(), idims);
+                NANO_CHECK_EQUAL(layer->odims(), idims);
+                NANO_CHECK_EQUAL(layer->psize(), 0);
+        }
 }
 
 NANO_CASE(activation)
@@ -87,12 +81,12 @@ NANO_CASE(activation)
         const auto idims = make_dims(4, 13, 11);
         const auto lname = "name";
 
-        for (const auto& layer_id : get_layers().ids())
+        for (const auto& node_id : get_layers().ids())
         {
-                if (is_activation_layer(layer_id))
+                if (is_activation_node(node_id))
                 {
-                        const auto layer = get_layers().get(layer_id);
-                        NANO_CHECK(layer->config(idims, lname));
+                        const auto layer = get_layers().get(node_id);
+                        NANO_CHECK(layer->resize(idims, lname));
                         NANO_CHECK_EQUAL(layer->idims(), idims);
                         NANO_CHECK_EQUAL(layer->odims(), idims);
                         NANO_CHECK_EQUAL(layer->psize(), 0);

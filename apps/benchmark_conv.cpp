@@ -41,7 +41,7 @@ namespace
         void benchmark(const int imaps, const int irows, const int icols, const int omaps,
                 const int ksize, const int kdelta, const int kconn, const int count, table_t& table)
         {
-                const auto params = conv_params_t
+                const auto params = conv3d_params_t
                 {
                         imaps, irows, icols,
                         omaps, kconn, ksize, ksize, kdelta, kdelta

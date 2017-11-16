@@ -1,7 +1,7 @@
 #pragma once
 
 #include "conv_utils.h"
-#include "conv_params.h"
+#include "conv3d_params.h"
 
 namespace nano
 {
@@ -27,7 +27,7 @@ namespace nano
                 ///
                 /// \brief constructor
                 ///
-                explicit conv4d_t(const conv_params_t& params = conv_params_t());
+                explicit conv4d_t(const conv3d_params_t& params = conv3d_params_t());
 
                 ///
                 /// \brief output
@@ -50,19 +50,19 @@ namespace nano
                 ///
                 /// \brief parameters
                 ///
-                const conv_params_t& params() const { return m_params; }
+                const conv3d_params_t& params() const { return m_params; }
 
         private:
 
                 // attributes
-                conv_params_t   m_params;
+                conv3d_params_t m_params;
                 matrix_t        m_okdata;       ///< buffer: (omaps, imaps x krows x kcols)
                 matrix_t        m_xkdata;       ///< buffer: (omaps, imaps x krows x kcols)
                 tensor3d_t      m_kodata;       ///< buffer: (count, imaps x krows x kcols, orows x ocols)
                 matrix_t        m_kxdata;       ///< buffer: (imaps x krows x kcols, orows x ocols)
         };
 
-        inline conv4d_t::conv4d_t(const conv_params_t& params) :
+        inline conv4d_t::conv4d_t(const conv3d_params_t& params) :
                 m_params(params)
         {
                 const auto imaps = m_params.imaps();

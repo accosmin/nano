@@ -1,7 +1,7 @@
 #pragma once
 
 #include "conv_utils.h"
-#include "conv_params.h"
+#include "conv3d_params.h"
 
 namespace nano
 {
@@ -24,7 +24,7 @@ namespace nano
                 ///
                 /// \brief constructor
                 ///
-                explicit conv3d_t(const conv_params_t& params = conv_params_t()) :
+                explicit conv3d_t(const conv3d_params_t& params = conv3d_params_t()) :
                         m_params(params) {}
 
                 ///
@@ -48,12 +48,12 @@ namespace nano
                 ///
                 /// \brief parameters
                 ///
-                const conv_params_t& params() const { return m_params; }
+                const conv3d_params_t& params() const { return m_params; }
 
         private:
 
                 // attributes
-                conv_params_t   m_params;
+                conv3d_params_t m_params;
         };
 
         template <typename tidata, typename tkdata, typename tbdata, typename todata>

@@ -1,5 +1,6 @@
 #pragma once
 
+#include "norm3d_params.h"
 #include "text/algorithm.h"
 #include "text/json_writer.h"
 
@@ -125,25 +126,84 @@ namespace nano
         }
 
         ///
+        /// \brief names for builtin computation nodes.
+        ///
+        inline const char* conv3d_node_name() { return "conv3d"; }
+        inline const char* norm3d_node_name() { return "norm3d"; }
+        inline const char* affine_node_name() { return "affine"; }
+
+        ///
+        /// \brief configure computation nodes.
+        ///
+        template <typename... targs>
+        json_writer_t& config_node(json_writer_t& writer, const targs&... args)
+        {
+                return writer.object(args...);
+        }
+
+        inline json_writer_t& config_norm3d_node(json_writer_t& writer, const norm_type type)
+        {
+                return writer.object(
+                        "type", type);
+        }
+
+        inline json_writer_t& config_conv3d_node(json_writer_t& writer,
+                const tensor_size_t omaps, const tensor_size_t krows, const tensor_size_t kcols,
+                const tensor_size_t kconn = 1, const tensor_size_t kdrow = 1, const tensor_size_t kdcol = 1)
+        {
+                return writer.object(
+                        "omaps", omaps, "krows", krows, "kcols", kcols, "kconn", kconn, "kdrow", kdrow, "kdcol", kdcol);
+        }
+
+        inline json_writer_t& config_affine_node(json_writer_t& writer,
+                const tensor_size_t omaps, const tensor_size_t orows, const tensor_size_t ocols)
+        {
+                return writer.object(
+                        "omaps", omaps, "orows", orows, "ocols", ocols);
+        }
+
+        inline json_writer_t& config_affine_node(json_writer_t& writer,
+                const tensor3d_dims_t& odims)
+        {
+                return config_affine_node(writer, std::get<0>(odims), std::get<1>(odims), std::get<2>(odims));
+        }
+
+        ///
         /// \brief serialize computation nodes.
         ///
-        template <typename tname>
-        json_writer_t& add_norm_by_plane_node(json_writer_t& writer, const tname& name)
+        template <typename tname, typename ttype, typename tconfigurer, typename... targs>
+        json_writer_t& add_node(json_writer_t& writer, const tname& name, const ttype& type,
+                const tconfigurer& configurer, const targs&... args)
         {
-                return writer.object("name", name, "type", "norm", "kind", "plane");
+                writer.begin_object()
+                      .pairs("name", name, "type", type).next()
+                      .name("config");
+                      configurer(writer, args...);
+                return writer.end_object();
         }
 
         template <typename tname>
-        json_writer_t& add_norm_globally_node(json_writer_t& writer, const tname& name)
+        json_writer_t& add_norm3d_node(json_writer_t& writer, const tname& name, const norm_type type)
         {
-                return writer.object("name", name, "type", "norm", "kind", "global");
+                return add_node(writer, name, norm3d_node_name(),
+                        config_norm3d_node, type);
+        }
+
+        template <typename tname>
+        json_writer_t& add_conv3d_node(json_writer_t& writer, const tname& name,
+                const tensor_size_t omaps, const tensor_size_t krows, const tensor_size_t kcols,
+                const tensor_size_t kconn = 1, const tensor_size_t kdrow = 1, const tensor_size_t kdcol = 1)
+        {
+                return add_node(writer, name, conv3d_node_name(),
+                        config_conv3d_node, omaps, krows, kcols, kconn, kdrow, kdcol);
         }
 
         template <typename tname>
         json_writer_t& add_affine_node(json_writer_t& writer, const tname& name,
                 const tensor_size_t omaps, const tensor_size_t orows, const tensor_size_t ocols)
         {
-                return writer.object("name", name, "type", "affine", "omaps", omaps, "orows", orows, "ocols", ocols);
+                return add_node(writer, name, affine_node_name(),
+                        config_affine_node, omaps, orows, ocols);
         }
 
         template <typename tname>
@@ -156,16 +216,8 @@ namespace nano
         template <typename tname, typename ttype>
         json_writer_t& add_activation_node(json_writer_t& writer, const tname& name, const ttype& type)
         {
-                return writer.object("name", name, "type", type);
-        }
-
-        template <typename tname>
-        json_writer_t& add_conv3d_node(json_writer_t& writer, const tname& name,
-                const tensor_size_t omaps, const tensor_size_t krows, const tensor_size_t kcols,
-                const tensor_size_t kconn = 1, const tensor_size_t kdrow = 1, const tensor_size_t kdcol = 1)
-        {
-                return writer.object("name", name, "type", "conv3d",
-                        "omaps", omaps, "krows", krows, "kcols", kcols, "kconn", kconn, "kdrow", kdrow, "kdcol", kdcol);
+                return add_node(writer, name, type,
+                        config_node);
         }
 
         ///

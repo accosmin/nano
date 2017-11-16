@@ -15,10 +15,10 @@ auto make_default_params(const tensor_size_t kconn = 1, const tensor_size_t drow
         const auto krows = 2;
         const auto kcols = 3;
 
-        return conv_params_t{imaps, irows, icols, omaps, kconn, krows, kcols, drows, dcols};
+        return conv3d_params_t{imaps, irows, icols, omaps, kconn, krows, kcols, drows, dcols};
 }
 
-auto make_buffers(const conv_params_t& params, const tensor_size_t count)
+auto make_buffers(const conv3d_params_t& params, const tensor_size_t count)
 {
         auto bdata = params.make_bdata(); bdata.setRandom();
         auto kdata = params.make_kdata(); kdata.setRandom();
@@ -90,13 +90,13 @@ struct wrt_inputs_function_t final : public function_t
 };
 
 template <typename top>
-auto make_wrt_params_function(const conv_params_t& params)
+auto make_wrt_params_function(const conv3d_params_t& params)
 {
         return wrt_params_function_t<top>(top{params});
 }
 
 template <typename top>
-auto make_wrt_inputs_function(const conv_params_t& params)
+auto make_wrt_inputs_function(const conv3d_params_t& params)
 {
         return wrt_inputs_function_t<top>(top{params});
 }
@@ -115,7 +115,7 @@ NANO_CASE(params_valid)
         const auto kdrow = 2;
         const auto kdcol = 1;
 
-        const auto params = conv_params_t{imaps, irows, icols, omaps, kconn, krows, kcols, kdrow, kdcol};
+        const auto params = conv3d_params_t{imaps, irows, icols, omaps, kconn, krows, kcols, kdrow, kdcol};
 
         NANO_CHECK(params.valid_kernel());
         NANO_CHECK(params.valid_connectivity());
@@ -144,7 +144,7 @@ NANO_CASE(params_invalid)
         const auto kdrow = 2;
         const auto kdcol = 7;
 
-        const auto params = conv_params_t{imaps, irows, icols, omaps, kconn, krows, kcols, kdrow, kdcol};
+        const auto params = conv3d_params_t{imaps, irows, icols, omaps, kconn, krows, kcols, kdrow, kdcol};
 
         NANO_CHECK(!params.valid_kernel());
         NANO_CHECK(!params.valid_connectivity());

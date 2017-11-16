@@ -1,6 +1,6 @@
 #pragma once
 
-#include "norm_params.h"
+#include "norm3d_params.h"
 
 namespace nano
 {
@@ -21,7 +21,7 @@ namespace nano
                 ///
                 /// \brief constructor
                 ///
-                explicit norm4d_t(const norm_params_t& params = norm_params_t()) :
+                explicit norm4d_t(const norm3d_params_t& params = norm3d_params_t()) :
                         m_params(params) {}
 
                 ///
@@ -39,7 +39,7 @@ namespace nano
                 ///
                 /// \brief parameters
                 ///
-                const norm_params_t& params() const { return m_params; }
+                const norm3d_params_t& params() const { return m_params; }
 
         private:
 
@@ -87,7 +87,7 @@ namespace nano
                 }
 
                 // attributes
-                norm_params_t   m_params;
+                norm3d_params_t m_params;
         };
 
         template <typename tidata, typename todata>

@@ -52,7 +52,7 @@ namespace nano
                 auto bdata(const tensor1d_t& pdata) const { return map_vector(pdata.data() + ksize(), bsize()); }
 
                 // attributes
-                conv_params_t   m_params;
+                conv3d_params_t   m_params;
                 conv4d_t        m_kernel;
                 probe_t         m_probe_output;
                 probe_t         m_probe_ginput;

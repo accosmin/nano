@@ -14,7 +14,7 @@ static auto get_stats(const ttensor& xdata)
         return stats;
 }
 
-auto make_buffers(const norm_params_t& params, const tensor_size_t count)
+auto make_buffers(const norm3d_params_t& params, const tensor_size_t count)
 {
         auto idata = params.make_xdata(count); idata.setRandom();
         auto odata = params.make_xdata(count); odata.setRandom();
@@ -49,7 +49,7 @@ struct wrt_inputs_function_t final : public function_t
         mutable tensor4d_t      m_odata;
 };
 
-auto make_wrt_inputs_function(const norm_params_t& params)
+auto make_wrt_inputs_function(const norm3d_params_t& params)
 {
         return wrt_inputs_function_t<norm4d_t>(norm4d_t{params});
 }
@@ -59,7 +59,7 @@ NANO_BEGIN_MODULE(test_norm4d)
 NANO_CASE(globally)
 {
         const auto count = 9, xmaps = 3, xrows = 7, xcols = 5;
-        const auto params = norm_params_t{xmaps, xrows, xcols, norm_type::global};
+        const auto params = norm3d_params_t{xmaps, xrows, xcols, norm_type::global};
 
         NANO_CHECK(params.valid());
         NANO_CHECK_EQUAL(params.xdims(), make_dims(xmaps, xrows, xcols));
@@ -85,7 +85,7 @@ NANO_CASE(globally)
 NANO_CASE(globally_ginput_accuracy)
 {
         const auto xmaps = 3, xrows = 7, xcols = 5;
-        const auto params = norm_params_t{xmaps, xrows, xcols, norm_type::global};
+        const auto params = norm3d_params_t{xmaps, xrows, xcols, norm_type::global};
         NANO_REQUIRE(params.valid());
 
         const auto ifunct = make_wrt_inputs_function(params);
@@ -97,7 +97,7 @@ NANO_CASE(globally_ginput_accuracy)
 NANO_CASE(by_plane)
 {
         const auto count = 9, xmaps = 3, xrows = 7, xcols = 5;
-        const auto params = norm_params_t{xmaps, xrows, xcols, norm_type::plane};
+        const auto params = norm3d_params_t{xmaps, xrows, xcols, norm_type::plane};
 
         NANO_CHECK(params.valid());
         NANO_CHECK_EQUAL(params.xdims(), make_dims(xmaps, xrows, xcols));
@@ -126,7 +126,7 @@ NANO_CASE(by_plane)
 NANO_CASE(by_plane_ginput_accuracy)
 {
         const auto xmaps = 3, xrows = 7, xcols = 5;
-        const auto params = norm_params_t{xmaps, xrows, xcols, norm_type::plane};
+        const auto params = norm3d_params_t{xmaps, xrows, xcols, norm_type::plane};
         NANO_REQUIRE(params.valid());
 
         const auto ifunct = make_wrt_inputs_function(params);

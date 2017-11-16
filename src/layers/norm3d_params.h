@@ -27,13 +27,18 @@ namespace nano
         ///
         /// \brief parametrizes the normalization of 3D tensors.
         ///
-        struct norm_params_t
+        struct norm3d_params_t
         {
-                norm_params_t(
+                norm3d_params_t(
                         const tensor_size_t xmaps = 0, const tensor_size_t xrows = 0, const tensor_size_t xcols = 0,
                         const norm_type type = norm_type::global) :
                         m_xmaps(xmaps), m_xrows(xrows), m_xcols(xcols),
                         m_ntype(type)
+                {
+                }
+
+                norm3d_params_t(const tensor3d_dims_t& xdims, const norm_type type) :
+                        norm3d_params_t(std::get<0>(xdims), std::get<1>(xdims), std::get<2>(xdims), type)
                 {
                 }
 
@@ -65,7 +70,7 @@ namespace nano
         };
 
         template <typename txdata>
-        inline bool norm_params_t::valid(const txdata& xdata) const
+        inline bool norm3d_params_t::valid(const txdata& xdata) const
         {
                 const auto count = xdata.template size<0>();
                 return  valid() &&
@@ -75,7 +80,7 @@ namespace nano
                         xdata.template size<3>() == xcols();
         }
 
-        inline bool operator==(const norm_params_t& params1, const norm_params_t& params2)
+        inline bool operator==(const norm3d_params_t& params1, const norm3d_params_t& params2)
         {
                 return  params1.m_xmaps == params2.m_xmaps &&
                         params1.m_xrows == params2.m_xrows &&

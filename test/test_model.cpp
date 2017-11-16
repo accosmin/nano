@@ -6,16 +6,28 @@
 #include "accumulator.h"
 #include "math/epsilon.h"
 #include "math/numeric.h"
-#include "layers/make_layers.h"
+#include "layers/builder.h"
 
 using namespace nano;
 
 NANO_BEGIN_MODULE(test_model)
 
+NANO_CASE(builder)
+{
+        json_writer_t writer;
+        writer.begin_obkect
+        add_norm_layer
+
+
+        model_t model;
+        model.add(
+
+}
+
 NANO_CASE(evaluate)
 {
-        const auto task = get_tasks().get("synth-charset",
-                to_params("type", "digit", "color", "luma", "irows", 16, "icols", 16, "count", 128));
+        const auto task = get_tasks().get("synth-charset");
+        task->config(json_writer_t().object("type", "digit", "color", "luma", "irows", 16, "icols", 16, "count", 128).get());
 
         NANO_CHECK(task->load());
 

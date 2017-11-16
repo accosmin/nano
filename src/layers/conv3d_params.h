@@ -7,9 +7,9 @@ namespace nano
         ///
         /// \brief parametrizes the 3D convolutions used by convolution networks.
         ///
-        struct conv_params_t
+        struct conv3d_params_t
         {
-                conv_params_t(
+                conv3d_params_t(
                         const tensor_size_t imaps = 0, const tensor_size_t irows = 0, const tensor_size_t icols = 0,
                         const tensor_size_t omaps = 1, const tensor_size_t kconn = 1,
                         const tensor_size_t krows = 1, const tensor_size_t kcols = 1,
@@ -20,11 +20,11 @@ namespace nano
                 {
                 }
 
-                conv_params_t(
+                conv3d_params_t(
                         const tensor3d_dims_t& idims,
                         const tensor_size_t omaps = 1, const tensor_size_t kconn = 1,
                         const tensor_size_t krows = 1, const tensor_size_t kcols = 1,
-                        const tensor_size_t kdrow = 1, const tensor_size_t kdcol = 1) : conv_params_t(
+                        const tensor_size_t kdrow = 1, const tensor_size_t kdcol = 1) : conv3d_params_t(
                         std::get<0>(idims), std::get<1>(idims), std::get<2>(idims),
                         omaps, kconn, krows, kcols, kdrow, kdcol)
                 {
@@ -81,7 +81,7 @@ namespace nano
         };
 
         template <typename tidata, typename tkdata, typename tbdata, typename todata>
-        inline bool conv_params_t::valid(
+        inline bool conv3d_params_t::valid(
                 const tidata& idata, const tkdata& kdata, const tbdata& bdata, const todata& odata) const
         {
                 const auto count = idata.template size<0>();
@@ -98,7 +98,7 @@ namespace nano
                         odata.template size<3>() == ocols();
         }
 
-        inline bool operator==(const conv_params_t& params1, const conv_params_t& params2)
+        inline bool operator==(const conv3d_params_t& params1, const conv3d_params_t& params2)
         {
                 return  params1.m_imaps == params2.m_imaps &&
                         params1.m_irows == params2.m_irows &&

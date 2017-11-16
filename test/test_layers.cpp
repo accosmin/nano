@@ -121,7 +121,7 @@ static tensor_size_t apsize(const tensor3d_dims_t& idims, const tensor3d_dims_t&
 static tensor_size_t cpsize(const tensor3d_dims_t& idims,
         const tensor_size_t omaps, const tensor_size_t krows, const tensor_size_t kcols, const tensor_size_t kconn)
 {
-        const auto params = conv_params_t{idims, omaps, kconn, krows, kcols};
+        const auto params = conv3d_params_t{idims, omaps, kconn, krows, kcols};
         NANO_CHECK(params.valid());
         return params.psize();
 }
