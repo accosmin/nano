@@ -21,8 +21,16 @@ namespace nano
                 template <typename tvalue>
                 json_writer_t& value(const tvalue& val)
                 {
-                        m_str.append(to_string(val));
-                        return *this;
+                        // todo: use if constexpr instead when moving to c++17
+                        if (std::is_enum<tvalue>::value)
+                        {
+                                return quote(to_string(val));
+                        }
+                        else
+                        {
+                                m_str.append(to_string(val));
+                                return *this;
+                        }
                 }
 
                 json_writer_t& value(const char* str)
