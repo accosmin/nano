@@ -56,38 +56,24 @@ namespace nano
                 ///
                 /// \brief constructor
                 ///
-                json_reader_t(const string_t& str, const size_t pos = 0, const range_t& range = {0, 0}) :
-                        m_str(str), m_pos(pos), m_range(range)
+                json_reader_t(const string_t& str, const size_t pos = 0) :
+                        m_str(str), m_pos(pos)
                 {
+                        next();
                 }
 
                 ///
                 /// \brief returns the [begin, end) range of json tokens
                 ///
-                auto begin() const { return json_reader_t(m_str, m_pos, m_range); }
-                auto end() const { return json_reader_t(m_str, m_str.size(), m_range); }
+                auto begin() const { return json_reader_t(m_str, m_pos); }
+                auto end() const { return json_reader_t(m_str, m_str.size()); }
 
                 ///
                 /// \brief retrieve the json token at the current position
                 ///
-                token_t operator*()
+                token_t operator*() const
                 {
-                        while (m_pos < m_str.size())
-                        {
-                                std::cout << "::operator*: token = " << string_t(substr(), strlen())
-                                          << ", pos = " << m_pos << "/" << m_str.size() << std::endl;
-                                switch (m_str[m_pos])
-                                {
-                                case '{': return handle0(json_tag::new_object);
-                                case '}': return strlen() ? handle1(json_tag::value) : handle0(json_tag::end_object);
-                                case '[': return handle0(json_tag::new_array);
-                                case ']': return strlen() ? handle1(json_tag::value) : handle0(json_tag::end_array);
-                                case ',': return handle1(json_tag::value);
-                                case ':': return handle1(json_tag::name);
-                                default:  ++*this; break;
-                                }
-                        }
-                        return {nullptr, 0, json_tag::none};
+                        return {substr(), strlen(), m_tag};
                 }
 
                 ///
@@ -95,32 +81,7 @@ namespace nano
                 ///
                 json_reader_t& operator++()
                 {
-                        skip(spaces());
-                        auto prev_pos = m_pos;
-                        while (find(tokens()))
-                        {
-                                std::cout << "::operator++: token = " << string_t(substr(), strlen())
-                                        << ", pos = " << m_pos << "/" << m_str.size() << std::endl;
-                                m_range = trim(prev_pos, m_pos);
-                                /*switch (m_str[m_pos])
-                                {
-                                case '{': ++ m_pos; return *this;
-                                case '}': return strlen() ? handle1(json_tag::value) : handle0(json_tag::end_object);
-                                case '[': return handle0(json_tag::new_array);
-                                case ']': return strlen() ? handle1(json_tag::value) : handle0(json_tag::end_array);
-                                case ',': return handle1(json_tag::value);
-                                case ':': return handle1(json_tag::name);
-                                default:  assert(false);
-                                }*/
-                                prev_pos = ++ m_pos;
-                                if (strlen() > 0)
-                                {
-                                        return *this;
-                                }
-                        }
-
-                        m_pos = m_str.size();
-                        return *this;
+                        return next();
                 }
 
                 json_reader_t operator++(int)
@@ -139,27 +100,21 @@ namespace nano
                         const char* last_name = nullptr;
                         size_t last_size = 0;
 
-                        for (const auto& token : *this)
+                        for ( ; m_pos < m_str.size(); ++ *this)
                         {
-                                const auto name = std::get<0>(token);
-                                const auto size = std::get<1>(token);
-                                const auto jtag = std::get<2>(token);
-
-                                std::cout << "token: " << string_t(name, size) << ", tag = " << to_string(jtag) << std::endl;
-
-                                switch (jtag)
+                                switch (m_tag)
                                 {
                                 case json_tag::end_object:
                                         // done!
                                         return *this;
 
                                 case json_tag::name:
-                                        last_name = name;
-                                        last_size = size;
+                                        last_name = substr();
+                                        last_size = strlen();
                                         break;
 
                                 case json_tag::value:
-                                        set_pair(last_name, last_size, name, size, nvs...);
+                                        set_pair(last_name, last_size, substr(), strlen(), nvs...);
                                         break;
 
                                 default:
@@ -184,6 +139,12 @@ namespace nano
                 static const char* tokens() { return "{}[],:"; }
                 static const char* spaces() { return " \t\n\r"; }
 
+                static bool is_space(const char c)
+                {
+                        assert(::strlen(spaces()) == 4);
+                        return spaces()[0] == c || spaces()[1] == c || spaces()[2] == c || spaces()[3] == c;
+                }
+
                 bool find(const char* str)
                 {
                         return (m_pos = m_str.find_first_of(str, m_pos)) != string_t::npos;
@@ -196,8 +157,8 @@ namespace nano
 
                 range_t trim(size_t begin, size_t end) const
                 {
-                        begin = m_str.find_first_not_of(spaces(), begin);
-                        end = std::min(end, m_str.find_first_of(spaces(), begin));
+                        while (begin < end && m_str.size() && is_space(m_str[begin])) ++ begin;
+                        while (end > begin && is_space(m_str[end - 1])) -- end;
 
                         if (begin < end)
                         {
@@ -221,31 +182,58 @@ namespace nano
                         return m_range.second - m_range.first;
                 }
 
-                token_t handle0(const json_tag tag) const
+                json_reader_t& next()
                 {
-                        return {substr(), strlen(), tag};
-                }
+                        skip(spaces());
+                        auto prev_pos = m_pos;
+                        while (find(tokens()))
+                        {
+                                m_range = trim(prev_pos, m_pos);
+                                switch (m_str[m_pos])
+                                {
+                                case '{': m_tag = json_tag::new_object; break;
+                                case '}': m_tag = strlen() ? json_tag::value : json_tag::end_object; if (strlen()) -- m_pos; break;
+                                case '[': m_tag = json_tag::new_array; break;
+                                case ']': m_tag = strlen() ? json_tag::value : json_tag::end_array; if (strlen()) -- m_pos; break;
+                                case ',': m_tag = json_tag::value; break;
+                                case ':': m_tag = json_tag::name; break;
+                                default:  assert(false);
+                                }
 
-                token_t handle1(const json_tag tag) const
-                {
-                        assert(m_range.first < m_range.second);
-                        const auto none = (tag == json_tag::value) && !m_str.compare(m_range.first, strlen(), null());
-                        return {substr(), strlen(), none ? json_tag::null : tag};
+                                prev_pos = ++ m_pos;
+                                break;
+                        }
+                        skip(spaces());
+
+                        if (m_pos == string_t::npos || m_pos > m_str.size())
+                        {
+                                m_pos = m_str.size();
+                        }
+                        else if (m_tag == json_tag::value && !m_str.compare(m_range.first, strlen(), null()))
+                        {
+                                m_tag = json_tag::null;
+                        }
+
+                        assert(m_pos <= m_str.size());
+
+                        std::cout << "::next(): token = " << string_t(substr(), strlen())
+                                << ", pos = " << m_pos << "/" << m_str.size()
+                                << ", tag = " << to_string(m_tag) << std::endl;
+                        return *this;
                 }
 
                 static void set_pair(const char*, const size_t, const char*, const size_t)
                 {
                 }
 
-                template <typename tname, typename tvalue, typename... tnames_and_values>
+                template <typename tvalue, typename... tnames_and_values>
                 static void set_pair(
                         const char* name, const size_t name_size,
                         const char* value, const size_t value_size,
-                        const tname& object_name, tvalue& object_value,
+                        const char* object_name, tvalue& object_value,
                         tnames_and_values&... nvs)
                 {
-                        // todo: check if possible to do the comparison without creating a string copy
-                        if (string_t(object_name) == string_t(name, name_size))
+                        if (strncmp(object_name, name, std::min(::strlen(object_name), name_size)) == 0)
                         {
                                 object_value = from_string<tvalue>(string_t(value, value_size));
                         }
@@ -259,6 +247,7 @@ namespace nano
                 const string_t& m_str;
                 size_t          m_pos{0};
                 range_t         m_range{0, 0};
+                json_tag        m_tag{json_tag::none};
         };
 
         ///

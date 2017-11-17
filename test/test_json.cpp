@@ -104,6 +104,8 @@ NANO_CASE(reader_object)
         NANO_CHECK_EQUAL(unknown, 1);
 
         // all tags should be accounted for
+        NANO_CHECK_EQUAL(reader.str(), json);
+        NANO_CHECK_EQUAL(reader.pos(), json.size());
         NANO_CHECK(reader == reader.end());
 }
 
