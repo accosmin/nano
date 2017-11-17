@@ -53,6 +53,11 @@ namespace nano
                 bool config(const string_t& json);
 
                 ///
+                /// \brief serialize the computation graph to JSON
+                ///
+                void config(json_writer_t&) const;
+
+                ///
                 /// \brief resize to process the given input/output size
                 ///
                 bool resize(const tensor3d_dims_t& idims, const tensor3d_dims_t& odims);
@@ -120,7 +125,8 @@ namespace nano
                 using digraph_t = nano::digraph_t<dindex_t>;
 
                 // attributes
-                strings_t       m_names;        ///< unique names for the computation nodes
+                strings_t       m_names;        ///< (unique) names for the computation nodes
+                strings_t       m_types;        ///< node types for the computation nodes
                 rlayers_t       m_nodes;        ///< computation nodes
                 digraph_t       m_graph;        ///< computation graph (aka dependency between nodes)
                 tensor1d_t      m_gdata;        ///< gradient wrt parameters

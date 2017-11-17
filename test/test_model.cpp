@@ -38,6 +38,13 @@ NANO_CASE(config)
 
         model_t model;
         NANO_CHECK(model.config(writer.str()));
+
+        json_writer_t mwriter;
+        model.config(mwriter);
+
+        std::cout << mwriter.str() << std::endl;
+
+        NANO_CHECK_EQUAL(mwriter.str(), writer.str());
 }
 
 NANO_CASE(evaluate)

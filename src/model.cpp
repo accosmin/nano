@@ -54,6 +54,7 @@ bool model_t::add(const string_t& name, const string_t& type, json_reader_t& rea
 
         node->config(reader);
         m_names.push_back(name);
+        m_types.push_back(type);
         m_nodes.emplace_back(std::move(node));
         return true;
 }
@@ -300,6 +301,44 @@ bool model_t::config(const string_t& json)
 {
         json_reader_t reader(json);
         return config(reader);
+}
+
+void model_t::config(json_writer_t& writer) const
+{
+        writer.new_object().name("nodes").new_array();
+        for (size_t i = 0; i < m_names.size(); ++ i)
+        {
+                const auto& name = m_names[i];
+                const auto& type = m_types[i];
+                const auto& node = m_nodes[i];
+
+                writer.new_object();
+                        writer.pairs("name", name, "type", type).next();
+                        writer.name("config"); node->config(writer);
+                writer.end_object();
+                if (i + 1 < m_names.size())
+                {
+                        writer.next();
+                }
+        }
+        writer.end_array().next();
+        writer.name("model").new_array();
+        for (size_t i = 0; i < m_graph.edges().size(); ++ i)
+        {
+                const auto& edge = m_graph.edges()[i];
+
+                assert(edge.first < m_names.size());
+                assert(edge.second < m_names.size());
+                const auto& name1 = m_names[edge.first];
+                const auto& name2 = m_names[edge.second];
+
+                writer.array(name1, name2);
+                if (i + 1 < m_graph.edges().size())
+                {
+                        writer.next();
+                }
+        }
+        writer.end_array().end_object();
 }
 
 bool model_t::save(const string_t& path) const
