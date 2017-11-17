@@ -191,7 +191,7 @@ bool model_t::config_nodes(json_reader_t& reader)
         log_info() << "model: configuring the computation nodes...";
 
         string_t last_name, last_type;
-        json_mode last_mode;
+        json_mode last_mode = json_mode::none;
 
         for (auto itend = reader.end(); reader != itend; )
         {
