@@ -3,8 +3,6 @@
 #include "cast.h"
 #include <cassert>
 
-#include <iostream>
-
 namespace nano
 {
         ///
@@ -39,6 +37,13 @@ namespace nano
         }
 
         ///
+        /// \brief comparison operators.
+        ///
+        class json_reader_t;
+        bool operator==(const json_reader_t& reader1, const json_reader_t& reader2);
+        bool operator!=(const json_reader_t& reader1, const json_reader_t& reader2);
+
+        ///
         /// \brief limited ascii-based JSON reader (e.g. no support for escaping special characters).
         ///     the decoding is implemented ala STL iterators:
         ///             for (const auto& token : json_reader_t(text))
@@ -65,7 +70,7 @@ namespace nano
                 ///
                 /// \brief returns the [begin, end) range of json tokens
                 ///
-                auto begin() const { return json_reader_t(m_str, m_pos); }
+                auto begin() const { return json_reader_t(m_str, 0); }
                 auto end() const { return json_reader_t(m_str, m_str.size()); }
 
                 ///
@@ -87,7 +92,7 @@ namespace nano
                 json_reader_t operator++(int)
                 {
                         const auto copy = *this;
-                        ++ *this;
+                        next();
                         return copy;
                 }
 
@@ -100,13 +105,13 @@ namespace nano
                         const char* last_name = nullptr;
                         size_t last_size = 0;
 
-                        for ( ; m_pos < m_str.size(); ++ *this)
+                        for (auto itend = end(); *this != itend; ++ *this)
                         {
                                 switch (m_tag)
                                 {
                                 case json_tag::end_object:
                                         // done!
-                                        return *this;
+                                        return next();
 
                                 case json_tag::name:
                                         last_name = substr();
@@ -130,6 +135,7 @@ namespace nano
                 /// \brief access functions
                 ///
                 auto pos() const { return m_pos; }
+                auto tag() const { return m_tag; }
                 const auto& str() const { return m_str; }
                 const auto& range() const { return m_range; }
 
@@ -186,39 +192,41 @@ namespace nano
                 {
                         skip(spaces());
                         auto prev_pos = m_pos;
+                        m_tag = json_tag::none;
                         while (find(tokens()))
                         {
                                 m_range = trim(prev_pos, m_pos);
+                                const auto some = strlen() > 0;
+
                                 switch (m_str[m_pos])
                                 {
                                 case '{': m_tag = json_tag::new_object; break;
-                                case '}': m_tag = strlen() ? json_tag::value : json_tag::end_object; if (strlen()) -- m_pos; break;
+                                case '}': m_tag = some ? json_tag::value : json_tag::end_object; if (some) -- m_pos; break;
                                 case '[': m_tag = json_tag::new_array; break;
-                                case ']': m_tag = strlen() ? json_tag::value : json_tag::end_array; if (strlen()) -- m_pos; break;
-                                case ',': m_tag = json_tag::value; break;
+                                case ']': m_tag = some ? json_tag::value : json_tag::end_array; if (some) -- m_pos; break;
+                                case ',': m_tag = some ? json_tag::value : json_tag::none; break;
                                 case ':': m_tag = json_tag::name; break;
                                 default:  assert(false);
                                 }
 
                                 prev_pos = ++ m_pos;
-                                break;
+
+                                if (m_tag == json_tag::value && !m_str.compare(m_range.first, strlen(), null()))
+                                {
+                                        m_tag = json_tag::null;
+                                }
+                                if (m_tag != json_tag::none)
+                                {
+                                        break;
+                                }
                         }
                         skip(spaces());
 
-                        if (m_pos == string_t::npos || m_pos > m_str.size())
+                        if (m_pos == string_t::npos)
                         {
                                 m_pos = m_str.size();
                         }
-                        else if (m_tag == json_tag::value && !m_str.compare(m_range.first, strlen(), null()))
-                        {
-                                m_tag = json_tag::null;
-                        }
 
-                        assert(m_pos <= m_str.size());
-
-                        std::cout << "::next(): token = " << string_t(substr(), strlen())
-                                << ", pos = " << m_pos << "/" << m_str.size()
-                                << ", tag = " << to_string(m_tag) << std::endl;
                         return *this;
                 }
 
@@ -250,17 +258,16 @@ namespace nano
                 json_tag        m_tag{json_tag::none};
         };
 
-        ///
-        /// \brief comparison operators.
-        ///
         inline bool operator==(const json_reader_t& reader1, const json_reader_t& reader2)
         {
-                return  reader1.str() == reader2.str() &&
-                        reader1.pos() == reader2.pos();
+                return  (&reader1.str() == &reader2.str() || reader1.str() == reader2.str()) &&
+                        reader1.pos() == reader2.pos() &&
+                        reader1.tag() == reader2.tag();
         }
         inline bool operator!=(const json_reader_t& reader1, const json_reader_t& reader2)
         {
-                return  reader1.str() != reader2.str() ||
-                        reader1.pos() != reader2.pos();
+                return  (&reader1.str() != &reader2.str() && reader1.str() != reader2.str())  ||
+                        reader1.pos() != reader2.pos() ||
+                        reader1.tag() != reader2.tag();
         }
 }

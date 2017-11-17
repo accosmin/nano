@@ -106,11 +106,83 @@ NANO_CASE(reader_object)
         // all tags should be accounted for
         NANO_CHECK_EQUAL(reader.str(), json);
         NANO_CHECK_EQUAL(reader.pos(), json.size());
+        NANO_CHECK_EQUAL(reader.tag(), json_tag::none);
         NANO_CHECK(reader == reader.end());
+}
+
+NANO_CASE(reader_simple)
+{
+        const string_t json = R"XXX(
+{
+        "string":       "str",
+        "integer":      42,
+        "tag1":         "new_object",
+        "tag2":         "value"
+}
+)XXX";
+
+        const std::vector<std::pair<string_t, json_tag>> calls = {
+                { "", json_tag::new_object },
+                { "string", json_tag::name },
+                { "str", json_tag::value },
+                { "integer", json_tag::name },
+                { "42", json_tag::value },
+                { "tag1", json_tag::name },
+                { "new_object", json_tag::value },
+                { "tag2", json_tag::name },
+                { "value", json_tag::value },
+                { "", json_tag::end_object }
+        };
+
+        // iterator version
+        {
+                json_reader_t reader(json);
+
+                size_t index = 0;
+                for (auto itend = reader.end(); reader != itend; ++ reader)
+                {
+                        const auto token = *reader;
+                        const auto name = std::get<0>(token);
+                        const auto size = std::get<1>(token);
+                        const auto jtag = std::get<2>(token);
+
+                        NANO_REQUIRE_LESS(index, calls.size());
+                        NANO_CHECK_EQUAL(calls[index].first, string_t(name, size));
+                        NANO_CHECK_EQUAL(calls[index].second, jtag);
+                        ++ index;
+                }
+
+                // all tags should be accounted for
+                NANO_CHECK_EQUAL(index, calls.size());
+                NANO_CHECK_EQUAL(reader.str(), json);
+                NANO_CHECK_EQUAL(reader.pos(), json.size());
+                NANO_CHECK_EQUAL(reader.tag(), json_tag::none);
+                NANO_CHECK(reader == reader.end());
+        }
+
+        // range-based loop version
+        {
+                size_t index = 0;
+                for (const auto& token : json_reader_t(json))
+                {
+                        const auto name = std::get<0>(token);
+                        const auto size = std::get<1>(token);
+                        const auto jtag = std::get<2>(token);
+
+                        NANO_REQUIRE_LESS(index, calls.size());
+                        NANO_CHECK_EQUAL(calls[index].first, string_t(name, size));
+                        NANO_CHECK_EQUAL(calls[index].second, jtag);
+                        ++ index;
+                }
+
+                // all tags should be accounted for
+                NANO_CHECK_EQUAL(index, calls.size());
+        }
 }
 
 NANO_CASE(reader_complex)
 {
+
         const string_t json = R"XXX(
 {
         "string":       "value1",
@@ -161,24 +233,50 @@ NANO_CASE(reader_complex)
                 { "", json_tag::end_object }
         };
 
-        json_reader_t reader(json);
-
-        size_t index = 0;
-        for (const auto& token : reader)
+        // iterator version
         {
-                const auto name = std::get<0>(token);
-                const auto size = std::get<1>(token);
-                const auto jtag = std::get<2>(token);
+                json_reader_t reader(json);
 
-                NANO_REQUIRE_LESS(index, calls.size());
-                NANO_CHECK_EQUAL(calls[index].first, string_t(name, size));
-                NANO_CHECK_EQUAL(calls[index].second, jtag);
-                ++ index;
+                size_t index = 0;
+                for (auto itend = reader.end(); reader != itend; ++ reader)
+                {
+                        const auto token = *reader;
+                        const auto name = std::get<0>(token);
+                        const auto size = std::get<1>(token);
+                        const auto jtag = std::get<2>(token);
 
-                //std::cout << "token = [" << string_t(name, size) << "], tag = " << to_string(jtag) << std::endl;
+                        NANO_REQUIRE_LESS(index, calls.size());
+                        NANO_CHECK_EQUAL(calls[index].first, string_t(name, size));
+                        NANO_CHECK_EQUAL(calls[index].second, jtag);
+                        ++ index;
+                }
+
+                // all tags should be accounted for
+                NANO_CHECK_EQUAL(index, calls.size());
+                NANO_CHECK_EQUAL(reader.str(), json);
+                NANO_CHECK_EQUAL(reader.pos(), json.size());
+                NANO_CHECK_EQUAL(reader.tag(), json_tag::none);
+                NANO_CHECK(reader == reader.end());
         }
 
-        NANO_CHECK_EQUAL(index, calls.size());
+        // range-based loop version
+        {
+                size_t index = 0;
+                for (const auto& token : json_reader_t(json))
+                {
+                        const auto name = std::get<0>(token);
+                        const auto size = std::get<1>(token);
+                        const auto jtag = std::get<2>(token);
+
+                        NANO_REQUIRE_LESS(index, calls.size());
+                        NANO_CHECK_EQUAL(calls[index].first, string_t(name, size));
+                        NANO_CHECK_EQUAL(calls[index].second, jtag);
+                        ++ index;
+                }
+
+                // all tags should be accounted for
+                NANO_CHECK_EQUAL(index, calls.size());
+        }
 }
 
 NANO_END_MODULE()
