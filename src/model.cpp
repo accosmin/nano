@@ -35,9 +35,9 @@ void model_t::clear()
         m_graph.clear();
 }
 
-bool model_t::add(const string_t& type, const string_t& name, json_reader_t& reader)
+bool model_t::add(const string_t& name, const string_t& type, json_reader_t& reader)
 {
-        log_info() << "model: adding node " << name << " of type " << type << "...";
+        log_info() << "model: adding node [" << name << "] of type [" << type << "]...";
 
         if (std::find(m_names.begin(), m_names.end(), name) != m_names.end())
         {
@@ -58,10 +58,10 @@ bool model_t::add(const string_t& type, const string_t& name, json_reader_t& rea
         return true;
 }
 
-bool model_t::add(const string_t& type, const string_t& name, const string_t& json)
+bool model_t::add(const string_t& name, const string_t& type, const string_t& json)
 {
         json_reader_t reader(json);
-        return add(type, name, reader);
+        return add(name, type, reader);
 }
 
 bool model_t::connect(const string_t& name1, const string_t& name2)
@@ -91,19 +91,207 @@ bool model_t::connect(const string_t& name1, const string_t& name2)
         return true;
 }
 
+namespace
+{
+        enum json_mode
+        {
+                none,
+                nodes,
+                model,
+                node_name,
+                node_type,
+                node_config
+        };
+
+        static const std::vector<std::pair<string_t, json_mode>> tokens2mode =
+        {
+                { "nodes", json_mode::nodes },
+                { "model", json_mode::model },
+                { "name", json_mode::node_name },
+                { "type", json_mode::node_type },
+                { "config", json_mode::node_config }
+        };
+
+        void handle_error(const json_reader_t& reader, const char* error_message)
+        {
+                log_error() << error_message << " @json..." << reader.str().substr(reader.pos(), 16) << "..." << to_string(reader.tag()) << "!";
+        }
+
+        auto handle_name(const char* token_name, const size_t token_size)
+        {
+                const auto it = std::find_if(tokens2mode.begin(), tokens2mode.end(), [&] (const auto& tm)
+                {
+                        return  tm.first.size() == token_size &&
+                                tm.first.compare(0, token_size, token_name, token_size) == 0;
+                });
+                return it == tokens2mode.end() ? json_mode::none : it->second;
+        }
+}
+
 bool model_t::config(json_reader_t& reader)
 {
+        log_info() << "model: configuring...";
+
         clear();
+        for (auto itend = reader.end(); reader != itend; )
+        {
+                const auto token = *reader;
+                const auto token_name = std::get<0>(token);
+                const auto token_size = std::get<1>(token);
 
-//        const char* const token_nodes = "nodes";
-  //      const char* const token_model = "model";
-   //     const char* const token_node_name = "name";
-    //    const char* const token_node_type = "type";
-     //   const char* const token_node_config = "config";
+                switch (std::get<2>(token))
+                {
+                case json_tag::new_object:
+                        // continue reading
+                        ++ reader;
+                        break;
 
-        NANO_UNUSED1(reader);
+                case json_tag::end_object:
+                        // done as all the other end_object tags should have been read by ::config_nodes
+                        m_graph.done();
+                        return true;
 
-        // todo
+                case json_tag::name:
+                        // part detected
+                        switch (handle_name(token_name, token_size))
+                        {
+                        case json_mode::nodes:
+                                if (!config_nodes(++ reader))
+                                {
+                                        return false;
+                                }
+                                break;
+
+                        case json_mode::model:
+                                if (!config_model(++ reader))
+                                {
+                                        return false;
+                                }
+                                break;
+
+                        default:
+                                handle_error(reader, "model: unexpected name");
+                                return false;
+                        }
+                        break;
+
+                default:
+                        handle_error(reader, "model: unexpected token");
+                        return false;
+                }
+        }
+
+        handle_error(reader, "model: unexpected ending");
+        return false;
+}
+
+bool model_t::config_nodes(json_reader_t& reader)
+{
+        log_info() << "model: configuring the computation nodes...";
+
+        string_t last_name, last_type;
+        json_mode last_mode;
+
+        for (auto itend = reader.end(); reader != itend; )
+        {
+                const auto token = *reader;
+                const auto token_name = std::get<0>(token);
+                const auto token_size = std::get<1>(token);
+
+                switch (std::get<2>(token))
+                {
+                case json_tag::new_object:
+                        if (last_mode != json_mode::node_config)
+                        {
+                                ++ reader;
+                        }
+                        else if (!add(last_name, last_type, reader))
+                        {
+                                return false;
+                        }
+                        else
+                        {
+                                last_mode = json_mode::none;
+                        }
+                        break;
+
+                case json_tag::name:
+                        switch (last_mode = handle_name(token_name, token_size))
+                        {
+                        case json_mode::node_name:   ++ reader; break;
+                        case json_mode::node_type:   ++ reader; break;
+                        case json_mode::node_config: ++ reader; break;
+                        default:                     handle_error(reader, "model: unexpected nodes name"); return false;
+                        }
+                        break;
+
+                case json_tag::value:
+                        switch (last_mode)
+                        {
+                        case json_mode::node_name:   last_name.assign(token_name, token_size); ++ reader; break;
+                        case json_mode::node_type:   last_type.assign(token_name, token_size); ++ reader; break;
+                        default:                     handle_error(reader, "model: unexpected nodes value"); return false;
+                        }
+                        break;
+
+                case json_tag::new_array:
+                        // go on, nodes starting
+                case json_tag::end_object:
+                        // go on, next node
+                        ++ reader;
+                        break;
+
+                case json_tag::end_array:
+                        // done with all nodes
+                        ++ reader;
+                        return true;
+
+                default:
+                        handle_error(reader, "model: unexpected nodes token");
+                        return false;
+                }
+        }
+
+        return false;
+}
+
+bool model_t::config_model(json_reader_t& reader)
+{
+        log_info() << "model: configuring the computation graph...";
+
+        string_t last_name;
+        for (auto itend = reader.end(); reader != itend; )
+        {
+                const auto token = *reader;
+                const auto token_name = std::get<0>(token);
+                const auto token_size = std::get<1>(token);
+
+                switch (std::get<2>(token))
+                {
+                case json_tag::new_array:
+                case json_tag::end_array:
+                        last_name.clear();
+                        ++ reader;
+                        break;
+
+                case json_tag::value:
+                        if (!last_name.empty() && !connect(last_name, string_t(token_name, token_size)))
+                        {
+                                return false;
+                        }
+                        last_name.assign(token_name, token_size);
+                        ++ reader;
+                        break;
+
+                case json_tag::end_object:
+                        // done
+                        return true;
+
+                default:
+                        handle_error(reader, "model: unexpected model token");
+                        return false;
+                }
+        }
 
         return false;
 }

@@ -19,6 +19,7 @@ namespace nano
                 ///
                 /// \brief
                 ///
+                model_t() = default;
                 model_t(const model_t&);
                 model_t(model_t&&) = default;
                 model_t& operator=(model_t&&) = default;
@@ -110,6 +111,9 @@ namespace nano
                 tensor_size_t psize() const;
 
         private:
+
+                bool config_nodes(json_reader_t&);
+                bool config_model(json_reader_t&);
 
                 using dindex_t = uint16_t;
                 using rlayers_t = std::vector<rlayer_t>;

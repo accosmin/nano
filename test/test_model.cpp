@@ -28,13 +28,16 @@ NANO_CASE(config)
                 add_affine_node(writer, "aff2", 128, 1, 1).next();
                 add_activation_node(writer, "act5", "act-snorm").next();
                 add_affine_node(writer, "aff3", 10, 1, 1);
-        writer.end_array().next().end_object().next();
-        writer.new_object().name("model").new_array();
+        writer.end_array().next();
+        writer.name("model").new_array();
                 writer.array("norm", "c5x5", "act1", "c3x3", "act2", "c1x1", "act3").next();
                 writer.array("act3", "aff1", "act4", "aff2", "act5", "aff3");
         writer.end_array().end_object();
 
         std::cout << writer.str() << std::endl;
+
+        model_t model;
+        NANO_CHECK(model.config(writer.str()));
 }
 
 NANO_CASE(evaluate)
