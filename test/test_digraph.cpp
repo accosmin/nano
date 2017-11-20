@@ -65,7 +65,7 @@ NANO_CASE(vertices)
         const auto e3 = make_edge(2u, 3u); NANO_CHECK_EQUAL(g.edges()[2], e3);
 }
 
-NANO_CASE(incoming)
+NANO_CASE(in)
 {
         digraph_t g;
         g.edge(0, 2);
@@ -74,15 +74,15 @@ NANO_CASE(incoming)
         g.edge(3, 4);
         g.done();
 
-        NANO_CHECK_EQUAL(g.incoming(), make_indices(0u, 1u));
-        NANO_CHECK_EQUAL(g.incoming(0), make_indices());
-        NANO_CHECK_EQUAL(g.incoming(1), make_indices());
-        NANO_CHECK_EQUAL(g.incoming(2), make_indices(0u, 1u));
-        NANO_CHECK_EQUAL(g.incoming(3), make_indices(2u));
-        NANO_CHECK_EQUAL(g.incoming(4), make_indices(3u));
+        NANO_CHECK_EQUAL(g.sources(), make_indices(0u, 1u));
+        NANO_CHECK_EQUAL(g.in(0), make_indices());
+        NANO_CHECK_EQUAL(g.in(1), make_indices());
+        NANO_CHECK_EQUAL(g.in(2), make_indices(0u, 1u));
+        NANO_CHECK_EQUAL(g.in(3), make_indices(2u));
+        NANO_CHECK_EQUAL(g.in(4), make_indices(3u));
 }
 
-NANO_CASE(outgoing)
+NANO_CASE(out)
 {
         digraph_t g;
         g.edge(0, 2);
@@ -91,12 +91,12 @@ NANO_CASE(outgoing)
         g.edge(3, 4);
         g.done();
 
-        NANO_CHECK_EQUAL(g.outgoing(), make_indices(4u));
-        NANO_CHECK_EQUAL(g.outgoing(0), make_indices(2u));
-        NANO_CHECK_EQUAL(g.outgoing(1), make_indices(2u));
-        NANO_CHECK_EQUAL(g.outgoing(2), make_indices(3u));
-        NANO_CHECK_EQUAL(g.outgoing(3), make_indices(4u));
-        NANO_CHECK_EQUAL(g.outgoing(4), make_indices());
+        NANO_CHECK_EQUAL(g.sinks(), make_indices(4u));
+        NANO_CHECK_EQUAL(g.out(0), make_indices(2u));
+        NANO_CHECK_EQUAL(g.out(1), make_indices(2u));
+        NANO_CHECK_EQUAL(g.out(2), make_indices(3u));
+        NANO_CHECK_EQUAL(g.out(3), make_indices(4u));
+        NANO_CHECK_EQUAL(g.out(4), make_indices());
 }
 
 NANO_CASE(topological)

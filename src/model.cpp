@@ -302,14 +302,14 @@ bool model_t::done()
 
         m_graph.done();
 
-        const auto sources = m_graph.incoming();
+        const auto sources = m_graph.sources();
         if (sources.size() != 1)
         {
                 log_error() << "model: expecting exactly one input mode!";
                 return false;
         }
 
-        const auto sinks = m_graph.outgoing();
+        const auto sinks = m_graph.sinks();
         if (sinks.size() != 1)
         {
                 // todo: may relax this condition (many outputs may be needed to solve reinforcement learning problems)

@@ -9,8 +9,7 @@ namespace nano
 {
         ///
         /// \brief generic directed graph specified by a set of edges.
-        ///     todo: keep the edges sorted by the first index
-        ///     todo: use binary search to find the incoming (outgoing) vertices to a given vertex
+        ///     todo: faster (aka lower complexity) for ::sink & ::sinks
         ///
         template <typename tindex>
         class digraph_t
@@ -36,24 +35,24 @@ namespace nano
                 void done();
 
                 ///
-                /// \brief returns the vertices with no incoming edge
+                /// \brief returns the source vertices (aka the vertices without incoming vertices)
                 ///
-                indices_t incoming() const;
+                indices_t sources() const;
 
                 ///
                 /// \brief returns the incoming vertices of the given vertex id
                 ///
-                indices_t incoming(const tindex dst) const;
+                indices_t in(const tindex dst) const;
 
                 ///
-                /// \brief returns the vertices with no outgoing edge
+                /// \brief returns the sink vertices (aka the vertices without outgoing vertices)
                 ///
-                indices_t outgoing() const;
+                indices_t sinks() const;
 
                 ///
                 /// \brief returns the outgoing vertices of the given vertex id
                 ///
-                indices_t outgoing(const tindex src) const;
+                indices_t out(const tindex src) const;
 
                 ///
                 /// \brief depth-first search where the given operator is called with the current vertex id
@@ -90,7 +89,7 @@ namespace nano
                 };
 
                 template <typename toperator>
-                auto foreach_outgoing(const tindex src, const toperator& top) const
+                auto foreach_out(const tindex src, const toperator& top) const
                 {
                         const auto sedge = edge_t{src, src};
                         const auto ecomp = [] (const auto& e1, const auto& e2) { return e1.first < e2.first; };
@@ -115,7 +114,7 @@ namespace nano
                         case flag::none:
                         default:
                                 flags[src] = flag::temporary;
-                                if (!foreach_outgoing(src, [&] (const auto& e) { return !visit(flags, vcall, e.second); }))
+                                if (!foreach_out(src, [&] (const auto& e) { return !visit(flags, vcall, e.second); }))
                                 {
                                         return false;
                                 }
@@ -171,7 +170,7 @@ namespace nano
         }
 
         template <typename tindex>
-        typename digraph_t<tindex>::indices_t digraph_t<tindex>::incoming() const
+        typename digraph_t<tindex>::indices_t digraph_t<tindex>::sources() const
         {
                 indices_t srcs, dsts;
                 for (const auto& edge : m_edges)
@@ -184,7 +183,7 @@ namespace nano
         }
 
         template <typename tindex>
-        typename digraph_t<tindex>::indices_t digraph_t<tindex>::incoming(const tindex dst) const
+        typename digraph_t<tindex>::indices_t digraph_t<tindex>::in(const tindex dst) const
         {
                 indices_t srcs;
                 for (const auto& edge : m_edges)
@@ -200,7 +199,7 @@ namespace nano
         }
 
         template <typename tindex>
-        typename digraph_t<tindex>::indices_t digraph_t<tindex>::outgoing() const
+        typename digraph_t<tindex>::indices_t digraph_t<tindex>::sinks() const
         {
                 indices_t srcs, dsts;
                 for (const auto& edge : m_edges)
@@ -213,10 +212,10 @@ namespace nano
         }
 
         template <typename tindex>
-        typename digraph_t<tindex>::indices_t digraph_t<tindex>::outgoing(const tindex src) const
+        typename digraph_t<tindex>::indices_t digraph_t<tindex>::out(const tindex src) const
         {
                 indices_t dsts;
-                foreach_outgoing(src, [&] (const auto& edge) { dsts.emplace_back(edge.second); return true; });
+                foreach_out(src, [&] (const auto& edge) { dsts.emplace_back(edge.second); return true; });
 
                 unique(dsts);
                 return dsts;
@@ -228,8 +227,8 @@ namespace nano
         {
                 std::vector<flag> flags(vertices(), flag::none);
 
-                // start from the vertices that don't have incoming edges
-                for (const auto src : incoming())
+                // start from the source vertices
+                for (const auto src : sources())
                 {
                         if (!visit(flags, vcall, src))
                         {
