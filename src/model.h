@@ -58,6 +58,11 @@ namespace nano
                 void config(json_writer_t&) const;
 
                 ///
+                /// \brief configuration done
+                ///
+                bool done();
+
+                ///
                 /// \brief resize to process the given input/output size
                 ///
                 bool resize(const tensor3d_dims_t& idims, const tensor3d_dims_t& odims);

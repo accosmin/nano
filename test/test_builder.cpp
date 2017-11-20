@@ -17,7 +17,7 @@ NANO_CASE(affine)
         NANO_CHECK(param.valid());
 
         json_writer_t writer;
-        config_affine_node(writer, odims);
+        config_affine_node(writer, std::get<0>(odims), std::get<1>(odims), std::get<2>(odims));
 
         const auto layer = get_layers().get(affine_node_name());
         layer->config(writer.str());

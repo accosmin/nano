@@ -74,7 +74,7 @@ bool model_t::connect(const string_t& name1, const string_t& name2)
 
         if (it1 == m_names.end() || it2 == m_names.end())
         {
-                log_error() << "model: unknown name(s)!";
+                log_error() << "model: unknown node name(s)!";
                 return false;
         }
 
@@ -149,8 +149,7 @@ bool model_t::config(json_reader_t& reader)
 
                 case json_tag::end_object:
                         // done as all the other end_object tags should have been read by ::config_nodes
-                        m_graph.done();
-                        return true;
+                        return done();
 
                 case json_tag::name:
                         // part detected
@@ -295,6 +294,34 @@ bool model_t::config_model(json_reader_t& reader)
         }
 
         return false;
+}
+
+bool model_t::done()
+{
+        log_info() << "model: checking the computation graph...";
+
+        m_graph.done();
+
+        const auto sources = m_graph.incoming();
+        if (sources.size() != 1)
+        {
+                log_error() << "model: expecting exactly one input mode!";
+                return false;
+        }
+
+        const auto sinks = m_graph.outgoing();
+        if (sinks.size() != 1)
+        {
+                // todo: may relax this condition (many outputs may be needed to solve reinforcement learning problems)
+                log_error() << "model: expecting exactly one output node!";
+                return false;
+        }
+
+        // todo: check if there is at least a path from the input to outputs
+
+        // todo: check if that all nodes are used for computation
+
+        return true;
 }
 
 bool model_t::config(const string_t& json)

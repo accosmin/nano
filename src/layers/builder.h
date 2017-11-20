@@ -158,12 +158,6 @@ namespace nano
                 writer.object("omaps", omaps, "orows", orows, "ocols", ocols);
         }
 
-        inline void config_affine_node(json_writer_t& writer,
-                const tensor3d_dims_t& odims)
-        {
-                config_affine_node(writer, std::get<0>(odims), std::get<1>(odims), std::get<2>(odims));
-        }
-
         ///
         /// \brief serialize computation nodes.
         ///
@@ -199,15 +193,7 @@ namespace nano
                 const tensor_size_t omaps, const tensor_size_t orows, const tensor_size_t ocols)
         {
                 return add_node(writer, name, affine_node_name(),
-                        [] (auto& w, const auto m, const auto r, const auto c) { config_affine_node(w, m, r, c); },
-                        /*config_affine_node*/omaps, orows, ocols);
-        }
-
-        template <typename tname>
-        json_writer_t& add_affine_node(json_writer_t& writer, const tname& name,
-                const tensor3d_dims_t& odims)
-        {
-                return add_affine_node(writer, name, std::get<0>(odims), std::get<1>(odims), std::get<2>(odims));
+                        config_affine_node, omaps, orows, ocols);
         }
 
         template <typename tname, typename ttype>
