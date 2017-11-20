@@ -124,12 +124,6 @@ namespace nano
                 bool config_nodes(json_reader_t&);
                 bool config_model(json_reader_t&);
 
-                size_t find_node(const string_t& name) const;
-                bool resize_node(const size_t index, const tensor3d_dims_t& idims) const;
-                void output_node(const size_t index, const tensor4d_t& idata) const;
-                void ginput_node(const size_t index, const tensor4d_t& odata) const;
-                void gparam_node(const size_t index, const tensor4d_t& odata) const;
-
                 ///
                 /// \brief computation node.
                 ///
@@ -144,10 +138,18 @@ namespace nano
 
                         string_t        m_name;
                         string_t        m_type;
-                        rlayer_t        m_node;
+                        rlayer_t        m_node;         ///< the computation node
                         indices_t       m_inodes;       ///< input computation nodes
                         indices_t       m_onodes;       ///< output computation nodes
                 };
+
+                const cnode_t& inode() const;
+                const cnode_t& onode() const;
+                size_t find_node(const string_t& name) const;
+                bool resize_node(const size_t index, const tensor3d_dims_t& idims) const;
+                void output_node(const size_t index, const tensor4d_t& idata) const;
+                void ginput_node(const size_t index, const tensor4d_t& odata) const;
+                void gparam_node(const size_t index, const tensor4d_t& odata) const;
 
                 using cnodes_t = std::vector<cnode_t>;
 

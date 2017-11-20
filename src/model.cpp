@@ -429,35 +429,31 @@ void model_t::config(json_writer_t& writer) const
 
 bool model_t::save(const string_t& path) const
 {
-        NANO_UNUSED1(path);
-        return false;
-        /*
+        json_writer_t writer;
+        config(writer);
+
         obstream_t ob(path);
         return  ob.write(idims()) &&
                 ob.write(odims()) &&
-                ob.write(config()) &&
-                ob.write_vector(params());*/
+                ob.write(writer.str()) &&
+                ob.write_vector(params());
 }
 
 bool model_t::load(const string_t& path)
 {
-        NANO_UNUSED1(path);
-        return false;
-        /*
         tensor3d_dims_t idims, odims;
         vector_t pdata;
-        string_t param;
+        string_t json;
 
         ibstream_t ib(path);
         return  ib.read(idims) &&
                 ib.read(odims) &&
-                ib.read(param) &&
+                ib.read(json) &&
                 ib.read_vector(pdata) &&
-                config(param) == param &&
-                config(idims, odims) &&
+                config(json) &&
+                resize(idims, odims) &&
                 pdata.size() == psize() &&
                 [&] () { params(pdata); return true; }();
-        */
 }
 
 vector_t model_t::params() const
@@ -498,42 +494,70 @@ void model_t::params(const vector_t& pdata)
         assert(pindex == psize());
 }
 
+const model_t::cnode_t& model_t::inode() const
+{
+        assert(m_inode < m_nodes.size());
+        return m_nodes[m_inode];
+}
+
+const model_t::cnode_t& model_t::onode() const
+{
+        assert(m_onode < m_nodes.size());
+        return m_nodes[m_onode];
+}
+
+void model_t::output_node(const size_t index, const tensor4d_t& idata) const
+{
+        assert(index < m_nodes.size());
+        const auto& node = m_nodes[index];
+        const auto& odata = node.m_node->output(idata);
+        for (const auto onode : node.m_onodes)
+        {
+                output_node(onode, odata);
+        }
+}
+
+void model_t::ginput_node(const size_t index, const tensor4d_t& odata) const
+{
+        assert(index < m_nodes.size());
+        const auto& node = m_nodes[index];
+        const auto& idata = node.m_node->ginput(odata);
+        for (const auto inode : node.m_inodes)
+        {
+                ginput_node(inode, idata);
+        }
+}
+
+void model_t::gparam_node(const size_t index, const tensor4d_t&) const
+{
+        assert(index < m_nodes.size());
+        /*
+        const auto& node = m_nodes[index];
+        const auto& idata = node.m_node->gparam(odata);
+        for (const auto inode : node.m_inodes)
+        {
+                gparam_node(inode, idata);
+        }*/
+}
+
 const tensor4d_t& model_t::output(const tensor4d_t& idata)
 {
         assert(idata.tensor(0).dims() == idims());
 
-        auto pidata = &idata;
+        const auto count = idata.size<0>();
+        m_probe_output.measure([&] () { output_node(m_inode, idata); }, count);
 
-        /*const auto count = idata.size<0>();
-        m_probe_output.measure([&] ()
-        {
-                // forward step
-                for (const auto& layer : m_nodes)
-                {
-                        pidata = &layer->output(*pidata);
-                }
-        }, count);*/
-
-        return *pidata;
+        return onode().m_node->output();
 }
 
 const tensor4d_t& model_t::ginput(const tensor4d_t& odata)
 {
         assert(odata.tensor(0).dims() == odims());
 
-        auto podata = &odata;
+        const auto count = odata.size<0>();
+        m_probe_ginput.measure([&] () { ginput_node(m_onode, odata); }, count);
 
-        /*const auto count = odata.size<0>();
-        m_probe_ginput.measure([&] ()
-        {
-                // backward step
-                for (auto it = m_nodes.rbegin(); it != m_nodes.rend(); ++ it)
-                {
-                        podata = &(*it)->ginput(*podata);
-                }
-        }, count);*/
-
-        return *podata;
+        return inode().m_node->input();
 }
 
 const tensor1d_t& model_t::gparam(const tensor4d_t& odata)
@@ -622,10 +646,9 @@ bool model_t::resize(const tensor3d_dims_t& idims, const tensor3d_dims_t& odims)
         }
 
         // check output size to match the target
-        const auto& onode = m_nodes[m_onode];
-        if (onode.m_node->odims() != odims)
+        if (onode().m_node->odims() != odims)
         {
-                log_error() << "model: miss-matching output size " << onode.m_node->odims() << ", expecting " << odims << "!";
+                log_error() << "model: miss-matching output size " << onode().m_node->odims() << ", expecting " << odims << "!";
                 return false;
         }
 
@@ -658,28 +681,25 @@ tensor_size_t model_t::psize() const
 
 tensor3d_dims_t model_t::idims() const
 {
-        assert(m_inode < m_nodes.size());
-        return m_nodes[m_inode].m_node->idims();
+        return inode().m_node->idims();
 }
 
 tensor3d_dims_t model_t::odims() const
 {
-        assert(m_onode < m_nodes.size());
-        return m_nodes[m_onode].m_node->odims();
+        return onode().m_node->odims();
 }
 
 void model_t::describe() const
 {
-        /*log_info() << "forward network [" << config() << "]";
-        for (const auto& layer : m_nodes)
+        for (const auto& node : m_nodes)
         {
                 log_info()
-                        << "forward network " << layer->probe_output().basename()
-                        << ": idims = " << layer->idims()
-                        << ", odims = " << layer->odims()
-                        << ", pdims = " << layer->pdims() << ".";
+                        << "model: " << node.m_name
+                        << ": idims = " << node.m_node->idims()
+                        << ", odims = " << node.m_node->odims()
+                        << ", pdims = " << node.m_node->pdims() << ".";
         }
-        log_info() << "forward network: parameters = " << psize() << ".";*/
+        log_info() << "model: parameters = " << psize() << ".";
 }
 
 probes_t model_t::probes() const
