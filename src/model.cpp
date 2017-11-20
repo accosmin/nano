@@ -61,7 +61,15 @@ bool model_t::add(const string_t& name, const string_t& type, json_reader_t& rea
                 return false;
         }
 
-        node->config(reader);
+        try
+        {
+                node->config(reader);
+        }
+        catch (std::exception& e)
+        {
+                log_error() << "model: failed to configure node [" << e.what() << "]!";
+                return false;
+        }
         m_nodes.emplace_back(name, type, std::move(node));
         return true;
 }
