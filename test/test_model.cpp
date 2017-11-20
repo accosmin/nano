@@ -88,7 +88,13 @@ NANO_CASE(config)
         NANO_CHECK_EQUAL(writer.str(), xwriter.str());
 }
 
-NANO_CASE(graph_multiple_sources)
+NANO_CASE(graph_empty)
+{
+        model_t model;
+        NANO_CHECK(!model.done());
+}
+
+NANO_CASE(graph_many_sources)
 {
         json_writer_t writer;
         writer.new_object().name("nodes").new_array();
@@ -110,7 +116,7 @@ NANO_CASE(graph_multiple_sources)
         NANO_CHECK(!model.config(writer.str()));
 }
 
-NANO_CASE(graph_multiple_sinks)
+NANO_CASE(graph_many_sinks)
 {
         json_writer_t writer;
         writer.new_object().name("nodes").new_array();
@@ -125,6 +131,27 @@ NANO_CASE(graph_multiple_sinks)
         writer.name("model").new_array();
                 writer.array("node1", "node4", "node5", "node6").next();
                 writer.array("node1", "node2", "node3");
+        writer.end_array().end_object();
+
+        model_t model;
+        NANO_CHECK(!model.config(writer.str()));
+}
+
+NANO_CASE(graph_cyclic)
+{
+        json_writer_t writer;
+        writer.new_object().name("nodes").new_array();
+                add_activation_node(writer, "node1", "act-snorm").next();
+                add_activation_node(writer, "node2", "act-snorm").next();
+                add_activation_node(writer, "node3", "act-snorm").next();
+                add_activation_node(writer, "node4", "act-snorm").next();
+                add_activation_node(writer, "node5", "act-snorm").next();
+                add_activation_node(writer, "node6", "act-snorm").next();
+        writer.end_array().next();
+
+        writer.name("model").new_array();
+                writer.array("node1", "node2", "node3", "node4", "node5", "node6").next();
+                writer.array("node5", "node2");
         writer.end_array().end_object();
 
         model_t model;

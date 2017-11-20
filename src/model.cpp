@@ -302,10 +302,16 @@ bool model_t::done()
 
         m_graph.done();
 
+        if (m_graph.vertices() < 1)
+        {
+                log_error() << "model: expecting at least a node!";
+                return false;
+        }
+
         const auto sources = m_graph.sources();
         if (sources.size() != 1)
         {
-                log_error() << "model: expecting exactly one input mode!";
+                log_error() << "model: expecting exactly one input node!";
                 return false;
         }
 
@@ -317,9 +323,40 @@ bool model_t::done()
                 return false;
         }
 
-        // todo: check if there is at least a path from the input to outputs
+        if (!m_graph.dag())
+        {
+                // todo: may relax this condition
+                log_error() << "model: cyclic computation graphs are not supported!";
+                return false;
+        }
 
-        // todo: check if that all nodes are used for computation
+        for (const auto sink : sinks)
+        {
+                const auto it = std::find_if(sources.begin(), sources.end(), [&] (const auto source)
+                {
+                        return m_graph.connected(source, sink);
+                });
+
+                if (it == sources.end())
+                {
+                        log_error() << "model: detected unreachable output node [" << m_names[sink] << "]!";
+                        return false;
+                }
+        }
+
+        for (const auto source : sources)
+        {
+                const auto it = std::find_if(sinks.begin(), sinks.end(), [&] (const auto sink)
+                {
+                        return m_graph.connected(source, sink);
+                });
+
+                if (it == sinks.end())
+                {
+                        log_error() << "model: detected unused input node [" << m_names[source] << "]!";
+                        return false;
+                }
+        }
 
         return true;
 }
