@@ -10,6 +10,25 @@
 
 using namespace nano;
 
+template <typename tnodes, typename tgetter, typename ttensor>
+static const ttensor& copy_params(const tnodes& nodes, const tgetter& getter, ttensor& pdata)
+{
+        tensor_size_t pindex = 0;
+        for (const auto& node : nodes)
+        {
+                const auto& comp = node.m_node;
+                if (comp->psize())
+                {
+                        assert(pindex + comp->psize() <= pdata.size());
+                        map_vector(pdata.data() + pindex, comp->psize()) = getter(*comp).vector();
+                        pindex += comp->psize();
+                }
+        }
+        assert(pindex == pdata.size());
+
+        return pdata;
+}
+
 model_t::cnode_t::cnode_t(const cnode_t& other) :
         m_name(other.m_name),
         m_type(other.m_type),
@@ -70,6 +89,7 @@ bool model_t::add(const string_t& name, const string_t& type, json_reader_t& rea
                 log_error() << "model: failed to configure node [" << e.what() << "]!";
                 return false;
         }
+
         m_nodes.emplace_back(name, type, std::move(node));
         return true;
 }
@@ -467,21 +487,7 @@ bool model_t::load(const string_t& path)
 vector_t model_t::params() const
 {
         vector_t pdata(psize());
-
-        tensor_size_t pindex = 0;
-        for (const auto& node : m_nodes)
-        {
-                const auto& comp = node.m_node;
-                if (comp->psize())
-                {
-                        assert(pindex + comp->psize() <= pdata.size());
-                        map_vector(pdata.data() + pindex, comp->psize()) = comp->param().vector();
-                        pindex += comp->psize();
-                }
-        }
-        assert(pindex == psize());
-
-        return pdata;
+        return copy_params(m_nodes, [] (const layer_t& node) { return node.param(); }, pdata);
 }
 
 void model_t::params(const vector_t& pdata)
@@ -536,21 +542,26 @@ void model_t::ginput_node(const size_t index, const tensor4d_t& odata) const
         }
 }
 
-void model_t::gparam_node(const size_t index, const tensor4d_t&) const
+void model_t::gparam_node(const size_t index, const tensor4d_t& odata) const
 {
         assert(index < m_nodes.size());
-        /*
         const auto& node = m_nodes[index];
-        const auto& idata = node.m_node->gparam(odata);
-        for (const auto inode : node.m_inodes)
+        node.m_node->gparam(odata);
+        if (!node.m_inodes.empty())
         {
-                gparam_node(inode, idata);
-        }*/
+                const auto& idata = node.m_node->ginput(odata);
+                for (const auto inode : node.m_inodes)
+                {
+                        gparam_node(inode, idata);
+                }
+        }
 }
 
 const tensor4d_t& model_t::output(const tensor4d_t& idata)
 {
         assert(idata.tensor(0).dims() == idims());
+        assert(m_inode < m_nodes.size());
+        assert(m_onode < m_nodes.size());
 
         const auto count = idata.size<0>();
         m_probe_output.measure([&] () { output_node(m_inode, idata); }, count);
@@ -561,6 +572,8 @@ const tensor4d_t& model_t::output(const tensor4d_t& idata)
 const tensor4d_t& model_t::ginput(const tensor4d_t& odata)
 {
         assert(odata.tensor(0).dims() == odims());
+        assert(m_inode < m_nodes.size());
+        assert(m_onode < m_nodes.size());
 
         const auto count = odata.size<0>();
         m_probe_ginput.measure([&] () { ginput_node(m_onode, odata); }, count);
@@ -571,29 +584,12 @@ const tensor4d_t& model_t::ginput(const tensor4d_t& odata)
 const tensor1d_t& model_t::gparam(const tensor4d_t& odata)
 {
         assert(odata.tensor(0).dims() == odims());
-
-        /*auto podata = &odata;
-        tensor_size_t pindex = m_gdata.size();
+        assert(m_inode < m_nodes.size());
+        assert(m_onode < m_nodes.size());
 
         const auto count = odata.size<0>();
-        m_probe_gparam.measure([&] ()
-        {
-                // backward step
-                for (size_t l = m_nodes.size(); l > 0; -- l)
-                {
-                        auto& layer = m_nodes[l - 1];
-                        const auto& gdata = layer->gparam(*podata);
-                        map_vector(m_gdata.data() + pindex - layer->psize(), layer->psize()) = gdata.vector();
-                        if (l > 1)
-                        {
-                                podata = &layer->ginput(*podata);
-                        }
-                        pindex -= layer->psize();
-                }
-        }, count);
-        assert(pindex == 0);*/
-
-        return m_gdata;
+        m_probe_gparam.measure([&] () { gparam_node(m_onode, odata); }, count);
+        return copy_params(m_nodes, [] (const layer_t& node) { return node.gparam(); }, m_gdata);
 }
 
 void model_t::random()

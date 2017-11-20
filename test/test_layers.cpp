@@ -235,7 +235,7 @@ NANO_CASE(conv3d4)
 NANO_CASE(conv3d_stride1)
 {
         model_t model;
-        NANO_CHECK(add_node(model, "1", conv3d_node_name(), config_conv3d_node, 3, 3, 3, 3, 2, 1));
+        NANO_CHECK(add_node(model, "1", conv3d_node_name(), config_conv3d_node, 3, 5, 3, 3, 2, 1));
         NANO_CHECK(add_node(model, "2", "act-unit", config_empty_node));
         NANO_CHECK(add_node(model, "3", affine_node_name(), config_affine_node, cmd_omaps, cmd_orows, cmd_ocols));
         NANO_CHECK(model.connect("1", "2", "3"));
