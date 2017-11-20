@@ -10,14 +10,6 @@
 
 using namespace nano;
 
-template <typename top, typename... targs>
-bool add_node(model_t& model, const string_t& name, const string_t& type, const top& op, targs&&... args)
-{
-        json_writer_t writer;
-        op(writer, std::forward<targs>(args)...);
-        return model.add(name, type, writer.str());
-}
-
 NANO_BEGIN_MODULE(test_model)
 
 NANO_CASE(config)
@@ -187,17 +179,8 @@ NANO_CASE(evaluate)
         NANO_CHECK(add_node(model, "act5", "act-snorm", config_empty_node));
         NANO_CHECK(add_node(model, "aff3", affine_node_name(), config_affine_node, omaps, orows, ocols));
 
-        NANO_CHECK(model.connect("norm", "c5x5"));
-        NANO_CHECK(model.connect("c5x5", "act1"));
-        NANO_CHECK(model.connect("act1", "c3x3"));
-        NANO_CHECK(model.connect("c3x3", "act2"));
-        NANO_CHECK(model.connect("act2", "c1x1"));
-        NANO_CHECK(model.connect("c1x1", "act3"));
-        NANO_CHECK(model.connect("act3", "aff1"));
-        NANO_CHECK(model.connect("aff1", "act4"));
-        NANO_CHECK(model.connect("act4", "aff2"));
-        NANO_CHECK(model.connect("aff2", "act5"));
-        NANO_CHECK(model.connect("act5", "aff3"));
+        NANO_CHECK(model.connect("norm", "c5x5", "act1", "c3x3", "act2", "c1x1", "act3"));
+        NANO_CHECK(model.connect("act3", "aff1", "act4", "aff2", "act5", "aff3"));
 
         NANO_CHECK(model.done());
         NANO_REQUIRE(model.resize(task->idims(), task->odims()));

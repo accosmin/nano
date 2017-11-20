@@ -202,4 +202,15 @@ namespace nano
                 return add_node(writer, name, type,
                         config_empty_node);
         }
+
+        ///
+        /// \brief add a computation node to the model.
+        ///
+        template <typename tmodel, typename top, typename... targs>
+        bool add_node(tmodel& model, const string_t& name, const string_t& type, const top& op, targs&&... args)
+        {
+                json_writer_t writer;
+                op(writer, std::forward<targs>(args)...);
+                return model.add(name, type, writer.str());
+        }
 }

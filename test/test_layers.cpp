@@ -9,8 +9,8 @@
 #include "math/epsilon.h"
 #include "tensor/numeric.h"
 #include "text/algorithm.h"
-#include "layers/make_layers.h"
-#include "layers/conv_params.h"
+#include "layers/builder.h"
+#include "layers/conv3d_params.h"
 #include "layers/affine_params.h"
 
 using namespace nano;
@@ -107,9 +107,10 @@ struct model_wrt_inputs_function_t final : public function_t
         tensor4d_t              m_targets;
 };
 
-const auto cmd_idims = tensor3d_dims_t{3, 6, 6};
-const auto cmd_odims = tensor3d_dims_t{3, 1, 1};
-const auto cmd_layer_output = make_output_layer(cmd_odims);
+const auto cmd_imaps = 3, cmd_irows = 6, cmd_icols = 6;
+const auto cmd_omaps = 3, cmd_orows = 1, cmd_ocols = 1;
+const auto cmd_idims = tensor3d_dims_t{cmd_imaps, cmd_irows, cmd_icols};
+const auto cmd_odims = tensor3d_dims_t{cmd_omaps, cmd_orows, cmd_ocols};
 
 static tensor_size_t apsize(const tensor3d_dims_t& idims, const tensor3d_dims_t& odims)
 {
@@ -126,32 +127,18 @@ static tensor_size_t cpsize(const tensor3d_dims_t& idims,
         return params.psize();
 }
 
-static auto get_loss()
-{
-        static auto iloss = make_rng<size_t>();
-        const auto loss_ids = get_losses().ids();
-        const auto loss_id = loss_ids[iloss() % loss_ids.size()];
-        return get_losses().get(loss_id);
-}
-
-static auto get_model(const string_t& description)
-{
-        model_t model(description + ";" + cmd_layer_output);
-        NANO_CHECK(model.config(cmd_idims, cmd_odims));
-        NANO_CHECK_EQUAL(model.idims(), cmd_idims);
-        NANO_CHECK_EQUAL(model.odims(), cmd_odims);
-        return model;
-}
-
-static void test_model(const string_t& model_description, const tensor_size_t expected_psize,
+static void test_model(model_t& model, const tensor_size_t expected_psize,
         const scalar_t epsilon = 3 * epsilon1<scalar_t>())
 {
-        auto model = get_model(model_description);
+        NANO_REQUIRE(model.done());
+        NANO_REQUIRE(model.resize(cmd_idims, cmd_odims));
+        NANO_CHECK_EQUAL(model.idims(), cmd_idims);
+        NANO_CHECK_EQUAL(model.odims(), cmd_odims);
         NANO_CHECK_EQUAL(model.psize(), expected_psize);
 
         for (auto count = 1; count <= 3; ++ count)
         {
-                const auto loss = get_loss();
+                const auto loss = get_losses().get("s-logistic");
                 const auto pfun = model_wrt_params_function_t{loss, model, count};
                 const auto ifun = model_wrt_inputs_function_t{loss, model, count};
 
@@ -170,12 +157,13 @@ NANO_BEGIN_MODULE(test_layers)
 
 NANO_CASE(affine)
 {
-        test_model(
-                "",
-                apsize(cmd_idims, cmd_odims));
+        model_t model;
+        NANO_CHECK(add_node(model, "1", affine_node_name(), config_affine_node, 7, 1, 1));
+        NANO_CHECK(add_node(model, "2", "act-snorm", config_empty_node));
+        NANO_CHECK(add_node(model, "3", affine_node_name(), config_affine_node, cmd_omaps, cmd_orows, cmd_ocols));
+        NANO_CHECK(model.connect("1", "2", "3"));
 
-        test_model(
-                make_affine_layer(7, 1, 1),
+        test_model(model,
                 apsize(cmd_idims, {7, 1, 1}) + apsize({7, 1, 1}, cmd_odims));
 }
 
@@ -183,96 +171,214 @@ NANO_CASE(activation)
 {
         for (const auto& layer_id : get_layers().ids())
         {
-                if (is_activation_layer(layer_id))
+                if (is_activation_node(layer_id))
                 {
-                        test_model(
-                                make_layer(layer_id),
+                        model_t model;
+                        NANO_CHECK(add_node(model, "1", "act-snorm", config_empty_node));
+                        NANO_CHECK(add_node(model, "2", affine_node_name(), config_affine_node, cmd_omaps, cmd_orows, cmd_ocols));
+                        NANO_CHECK(model.connect("1", "2"));
+
+                        test_model(model,
                                 apsize(cmd_idims, cmd_odims));
                 }
         }
 }
 
-NANO_CASE(conv3d)
+NANO_CASE(conv3d1)
 {
-        test_model(
-                make_conv3d_layer(3, 3, 3, 3, "act-unit"),
+        model_t model;
+        NANO_CHECK(add_node(model, "1", conv3d_node_name(), config_conv3d_node, 3, 3, 3, 3, 1, 1));
+        NANO_CHECK(add_node(model, "2", "act-unit", config_empty_node));
+        NANO_CHECK(add_node(model, "3", affine_node_name(), config_affine_node, cmd_omaps, cmd_orows, cmd_ocols));
+        NANO_CHECK(model.connect("1", "2", "3"));
+
+        test_model(model,
                 cpsize(cmd_idims, 3, 3, 3, 3) + apsize({3, 4, 4}, cmd_odims));
+}
 
-        test_model(
-                make_conv3d_layer(4, 3, 3, 1, "act-snorm"),
+NANO_CASE(conv3d2)
+{
+        model_t model;
+        NANO_CHECK(add_node(model, "1", conv3d_node_name(), config_conv3d_node, 4, 3, 3, 1, 1, 1));
+        NANO_CHECK(add_node(model, "2", "act-snorm", config_empty_node));
+        NANO_CHECK(add_node(model, "3", affine_node_name(), config_affine_node, cmd_omaps, cmd_orows, cmd_ocols));
+        NANO_CHECK(model.connect("1", "2", "3"));
+
+        test_model(model,
                 cpsize(cmd_idims, 4, 3, 3, 1) + apsize({4, 4, 4}, cmd_odims));
+}
 
-        test_model(
-                make_conv3d_layer(5, 3, 3, 1, "act-splus"),
+NANO_CASE(conv3d3)
+{
+        model_t model;
+        NANO_CHECK(add_node(model, "1", conv3d_node_name(), config_conv3d_node, 5, 3, 3, 1, 1, 1));
+        NANO_CHECK(add_node(model, "2", "act-splus", config_empty_node));
+        NANO_CHECK(add_node(model, "3", affine_node_name(), config_affine_node, cmd_omaps, cmd_orows, cmd_ocols));
+        NANO_CHECK(model.connect("1", "2", "3"));
+
+        test_model(model,
                 cpsize(cmd_idims, 5, 3, 3, 1) + apsize({5, 4, 4}, cmd_odims));
+}
 
-        test_model
-                (make_conv3d_layer(6, 3, 3, 3, "act-tanh"),
+NANO_CASE(conv3d4)
+{
+        model_t model;
+        NANO_CHECK(add_node(model, "1", conv3d_node_name(), config_conv3d_node, 6, 3, 3, 3, 1, 1));
+        NANO_CHECK(add_node(model, "2", "act-tanh", config_empty_node));
+        NANO_CHECK(add_node(model, "3", affine_node_name(), config_affine_node, cmd_omaps, cmd_orows, cmd_ocols));
+        NANO_CHECK(model.connect("1", "2", "3"));
+
+        test_model(model,
                 cpsize(cmd_idims, 6, 3, 3, 3) + apsize({6, 4, 4}, cmd_odims));
 }
 
-NANO_CASE(conv3d_stride)
+NANO_CASE(conv3d_stride1)
 {
-        test_model(
-                make_conv3d_layer(3, 5, 3, 3, "act-unit", 2, 1),
+        model_t model;
+        NANO_CHECK(add_node(model, "1", conv3d_node_name(), config_conv3d_node, 3, 3, 3, 3, 2, 1));
+        NANO_CHECK(add_node(model, "2", "act-unit", config_empty_node));
+        NANO_CHECK(add_node(model, "3", affine_node_name(), config_affine_node, cmd_omaps, cmd_orows, cmd_ocols));
+        NANO_CHECK(model.connect("1", "2", "3"));
+
+        test_model(model,
                 cpsize(cmd_idims, 3, 5, 3, 3) + apsize({3, 1, 4}, cmd_odims));
+}
 
-        test_model(
-                make_conv3d_layer(3, 3, 5, 3, "act-snorm", 1, 2),
+NANO_CASE(conv3d_stride2)
+{
+        model_t model;
+        NANO_CHECK(add_node(model, "1", conv3d_node_name(), config_conv3d_node, 3, 3, 5, 3, 1, 2));
+        NANO_CHECK(add_node(model, "2", "act-snorm", config_empty_node));
+        NANO_CHECK(add_node(model, "3", affine_node_name(), config_affine_node, cmd_omaps, cmd_orows, cmd_ocols));
+        NANO_CHECK(model.connect("1", "2", "3"));
+
+        test_model(model,
                 cpsize(cmd_idims, 3, 3, 5, 3) + apsize({3, 4, 1}, cmd_odims));
+}
 
-        test_model(
-                make_conv3d_layer(3, 5, 5, 3, "act-splus", 2, 2),
+NANO_CASE(conv3d_stride3)
+{
+        model_t model;
+        NANO_CHECK(add_node(model, "1", conv3d_node_name(), config_conv3d_node, 3, 5, 5, 3, 2, 2));
+        NANO_CHECK(add_node(model, "2", "act-splus", config_empty_node));
+        NANO_CHECK(add_node(model, "3", affine_node_name(), config_affine_node, cmd_omaps, cmd_orows, cmd_ocols));
+        NANO_CHECK(model.connect("1", "2", "3"));
+
+        test_model(model,
                 cpsize(cmd_idims, 3, 5, 5, 3) + apsize({3, 1, 1}, cmd_odims));
 }
 
 NANO_CASE(norm_global_layer)
 {
-        test_model(
-                make_norm_globally_layer(),
+        model_t model;
+        NANO_CHECK(add_node(model, "1", norm3d_node_name(), config_norm3d_node, norm_type::global));
+        NANO_CHECK(add_node(model, "2", "act-snorm", config_empty_node));
+        NANO_CHECK(add_node(model, "3", affine_node_name(), config_affine_node, cmd_omaps, cmd_orows, cmd_ocols));
+        NANO_CHECK(model.connect("1", "2", "3"));
+
+        test_model(model,
                 apsize(cmd_idims, cmd_odims));
 }
 
 NANO_CASE(norm_plane_layer)
 {
-        test_model(
-                make_norm_by_plane_layer(),
+        model_t model;
+        NANO_CHECK(add_node(model, "1", norm3d_node_name(), config_norm3d_node, norm_type::plane));
+        NANO_CHECK(add_node(model, "2", "act-snorm", config_empty_node));
+        NANO_CHECK(add_node(model, "3", affine_node_name(), config_affine_node, cmd_omaps, cmd_orows, cmd_ocols));
+        NANO_CHECK(model.connect("1", "2", "3"));
+
+        test_model(model,
                 apsize(cmd_idims, cmd_odims));
 }
 
-NANO_CASE(multi_layer)
+NANO_CASE(multi_layer0)
 {
-        test_model(
-                make_affine_layer(7, 1, 1, "act-snorm") +
-                make_affine_layer(5, 1, 1, "act-splus"),
+        model_t model;
+        NANO_CHECK(add_node(model, "1", affine_node_name(), config_affine_node, 7, 1, 1));
+        NANO_CHECK(add_node(model, "2", "act-snorm", config_empty_node));
+        NANO_CHECK(add_node(model, "3", affine_node_name(), config_affine_node, 5, 1, 1));
+        NANO_CHECK(add_node(model, "4", "act-splus", config_empty_node));
+        NANO_CHECK(add_node(model, "5", affine_node_name(), config_affine_node, cmd_omaps, cmd_orows, cmd_ocols));
+        NANO_CHECK(model.connect("1", "2", "3", "4", "5"));
+
+        test_model(model,
                 apsize(cmd_idims, {7, 1, 1}) + apsize({7, 1, 1}, {5, 1, 1}) + apsize({5, 1, 1}, cmd_odims));
+}
 
-        test_model(
-                make_conv3d_layer(7, 3, 3, 1, "act-snorm") +
-                make_conv3d_layer(4, 1, 1, 1, "act-splus"),
+NANO_CASE(multi_layer1)
+{
+        model_t model;
+        NANO_CHECK(add_node(model, "1", conv3d_node_name(), config_conv3d_node, 7, 3, 3, 1, 1, 1));
+        NANO_CHECK(add_node(model, "2", "act-snorm", config_empty_node));
+        NANO_CHECK(add_node(model, "3", conv3d_node_name(), config_conv3d_node, 4, 1, 1, 1, 1, 1));
+        NANO_CHECK(add_node(model, "4", "act-splus", config_empty_node));
+        NANO_CHECK(add_node(model, "5", affine_node_name(), config_affine_node, cmd_omaps, cmd_orows, cmd_ocols));
+        NANO_CHECK(model.connect("1", "2", "3", "4", "5"));
+
+        test_model(model,
                 cpsize(cmd_idims, 7, 3, 3, 1) + cpsize({7, 4, 4}, 4, 1, 1, 1) + apsize({4, 4, 4}, cmd_odims));
+}
 
-        test_model(
-                make_conv3d_layer(7, 3, 3, 1, "act-snorm") +
-                make_conv3d_layer(4, 3, 3, 1, "act-splus"),
+NANO_CASE(multi_layer2)
+{
+        model_t model;
+        NANO_CHECK(add_node(model, "1", conv3d_node_name(), config_conv3d_node, 7, 3, 3, 1, 1, 1));
+        NANO_CHECK(add_node(model, "2", "act-snorm", config_empty_node));
+        NANO_CHECK(add_node(model, "3", conv3d_node_name(), config_conv3d_node, 4, 3, 3, 1, 1, 1));
+        NANO_CHECK(add_node(model, "4", "act-splus", config_empty_node));
+        NANO_CHECK(add_node(model, "5", affine_node_name(), config_affine_node, cmd_omaps, cmd_orows, cmd_ocols));
+        NANO_CHECK(model.connect("1", "2", "3", "4", "5"));
+
+        test_model(model,
                 cpsize(cmd_idims, 7, 3, 3, 1) + cpsize({7, 4, 4}, 4, 3, 3, 1) + apsize({4, 2, 2}, cmd_odims));
+}
 
-        test_model(
-                make_conv3d_layer(7, 3, 3, 1, "act-snorm") +
-                make_conv3d_layer(5, 3, 3, 1, "act-splus") +
-                make_affine_layer(5, 1, 1, "act-splus"),
+NANO_CASE(multi_layer3)
+{
+        model_t model;
+        NANO_CHECK(add_node(model, "1", conv3d_node_name(), config_conv3d_node, 7, 3, 3, 1, 1, 1));
+        NANO_CHECK(add_node(model, "2", "act-snorm", config_empty_node));
+        NANO_CHECK(add_node(model, "3", conv3d_node_name(), config_conv3d_node, 5, 3, 3, 1, 1, 1));
+        NANO_CHECK(add_node(model, "4", "act-splus", config_empty_node));
+        NANO_CHECK(add_node(model, "5", affine_node_name(), config_affine_node, 5, 1, 1));
+        NANO_CHECK(add_node(model, "6", "act-splus", config_empty_node));
+        NANO_CHECK(add_node(model, "7", affine_node_name(), config_affine_node, cmd_omaps, cmd_orows, cmd_ocols));
+        NANO_CHECK(model.connect("1", "2", "3", "4", "5", "6", "7"));
+
+        test_model(model,
                 cpsize(cmd_idims, 7, 3, 3, 1) + cpsize({7, 4, 4}, 5, 3, 3, 1) + apsize({5, 2, 2}, {5, 1, 1}) + apsize({5, 1, 1}, cmd_odims));
+}
 
-        test_model(
-                make_conv3d_layer(8, 3, 3, 1, "act-snorm") +
-                make_conv3d_layer(6, 3, 3, 2, "act-splus") +
-                make_affine_layer(5, 1, 1, "act-splus"),
+NANO_CASE(multi_layer4)
+{
+        model_t model;
+        NANO_CHECK(add_node(model, "1", conv3d_node_name(), config_conv3d_node, 8, 3, 3, 1, 1, 1));
+        NANO_CHECK(add_node(model, "2", "act-snorm", config_empty_node));
+        NANO_CHECK(add_node(model, "3", conv3d_node_name(), config_conv3d_node, 6, 3, 3, 2, 1, 1));
+        NANO_CHECK(add_node(model, "4", "act-splus", config_empty_node));
+        NANO_CHECK(add_node(model, "5", affine_node_name(), config_affine_node, 5, 1, 1));
+        NANO_CHECK(add_node(model, "6", "act-splus", config_empty_node));
+        NANO_CHECK(add_node(model, "7", affine_node_name(), config_affine_node, cmd_omaps, cmd_orows, cmd_ocols));
+        NANO_CHECK(model.connect("1", "2", "3", "4", "5", "6", "7"));
+
+        test_model(model,
                 cpsize(cmd_idims, 8, 3, 3, 1) + cpsize({8, 4, 4}, 6, 3, 3, 2) + apsize({6, 2, 2}, {5, 1, 1}) + apsize({5, 1, 1}, cmd_odims));
+}
 
-        test_model(
-                make_conv3d_layer(9, 3, 3, 1, "act-snorm") +
-                make_conv3d_layer(6, 3, 3, 3, "act-splus") +
-                make_affine_layer(5, 1, 1, "act-splus"),
+NANO_CASE(multi_layer5)
+{
+        model_t model;
+        NANO_CHECK(add_node(model, "1", conv3d_node_name(), config_conv3d_node, 9, 3, 3, 1, 1, 1));
+        NANO_CHECK(add_node(model, "2", "act-snorm", config_empty_node));
+        NANO_CHECK(add_node(model, "3", conv3d_node_name(), config_conv3d_node, 6, 3, 3, 3, 1, 1));
+        NANO_CHECK(add_node(model, "4", "act-splus", config_empty_node));
+        NANO_CHECK(add_node(model, "5", affine_node_name(), config_affine_node, 5, 1, 1));
+        NANO_CHECK(add_node(model, "6", "act-splus", config_empty_node));
+        NANO_CHECK(add_node(model, "7", affine_node_name(), config_affine_node, cmd_omaps, cmd_orows, cmd_ocols));
+        NANO_CHECK(model.connect("1", "2", "3", "4", "5", "6", "7"));
+
+        test_model(model,
                 cpsize(cmd_idims, 9, 3, 3, 1) + cpsize({9, 4, 4}, 6, 3, 3, 3) + apsize({6, 2, 2}, {5, 1, 1}) + apsize({5, 1, 1}, cmd_odims));
 }
 
