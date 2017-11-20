@@ -142,7 +142,7 @@ namespace nano
         private:
 
                 static const char* null() { return "null"; }
-                static const char* tokens() { return "{}[],:"; }
+                static const char* tokens() { return "\"{}[],:"; }
                 static const char* spaces() { return " \t\n\r"; }
 
                 static bool is_space(const char c)
@@ -153,7 +153,15 @@ namespace nano
 
                 bool find(const char* str)
                 {
-                        return (m_pos = m_str.find_first_of(str, m_pos)) != string_t::npos;
+                        if (    (m_pos = m_str.find_first_of(str, m_pos)) != string_t::npos &&
+                                m_str[m_pos] == '\"')
+                        {
+                                // quotes detected, so skip the next one
+                                return  (m_pos = m_str.find_first_of("\"", ++ m_pos)) != string_t::npos &&
+                                        (m_pos = m_str.find_first_of(str,  ++ m_pos)) != string_t::npos;
+                        }
+                        return m_pos != string_t::npos;
+
                 }
 
                 bool skip(const char* str)

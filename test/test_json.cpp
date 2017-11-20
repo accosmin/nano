@@ -82,7 +82,8 @@ NANO_CASE(reader_object)
         "string":       "str",
         "integer":      42,
         "tag1":         "new_object",
-        "tag2":         "value"
+        "tag2":         "value",
+        "oups":         "[this,that]"
 }
 )XXX";
 
@@ -90,17 +91,19 @@ NANO_CASE(reader_object)
         auto object_integer = 0;
         auto object_tag1 = json_tag::null;
         auto object_tag2 = json_tag::null;
+        auto object_oups = string_t{};
         auto unknown = 1;
 
         json_reader_t reader(json);
         reader.object(
                 "string", object_str, "integer", object_integer, "tag1", object_tag1, "tag2", object_tag2,
-                "unknown", unknown);
+                "oups", object_oups, "unknown", unknown);
 
         NANO_CHECK_EQUAL(object_str, "str");
         NANO_CHECK_EQUAL(object_integer, 42);
         NANO_CHECK_EQUAL(object_tag1, json_tag::new_object);
         NANO_CHECK_EQUAL(object_tag2, json_tag::value);
+        NANO_CHECK_EQUAL(object_oups, "[this,that]");
         NANO_CHECK_EQUAL(unknown, 1);
 
         // all tags should be accounted for
@@ -196,7 +199,7 @@ NANO_CASE(reader_complex)
         },
         {
                 "name": "name2",
-                "int:   2
+                "int":  2
         }]
 }
 )XXX";
