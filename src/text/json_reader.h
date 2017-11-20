@@ -249,7 +249,7 @@ namespace nano
                         const char* object_name, tvalue& object_value,
                         tnames_and_values&... nvs)
                 {
-                        if (strncmp(object_name, name, std::min(::strlen(object_name), name_size)) == 0)
+                        if (::strlen(object_name) == name_size && strncmp(object_name, name, name_size) == 0)
                         {
                                 object_value = from_string<tvalue>(string_t(value, value_size));
                         }
