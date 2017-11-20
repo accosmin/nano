@@ -2,7 +2,7 @@
 #include "accumulator.h"
 #include "math/numeric.h"
 #include "math/epsilon.h"
-#include "layers/make_layers.h"
+#include "layers/builder.h"
 
 using namespace nano;
 
@@ -10,16 +10,25 @@ NANO_BEGIN_MODULE(test_accumulator)
 
 NANO_CASE(evaluate)
 {
-        const auto task = get_tasks().get("synth-charset", to_params("count", 64));
+        const auto task = get_tasks().get("synth-charset");
+        task->config(json_writer_t().object("count", 64).str());
         NANO_CHECK(task->load());
 
+        const auto omaps = std::get<0>(task->odims());
+        const auto orows = std::get<1>(task->odims());
+        const auto ocols = std::get<2>(task->odims());
         const auto fold = fold_t{0, protocol::train};
         const auto loss = nano::get_losses().get("s-logistic");
 
         // create model
-        model_t model(make_affine_layer(4, 1, 1) + make_output_layer(task->odims()));
+        model_t model;
+        NANO_CHECK(add_node(model, "1", affine_node_name(), config_affine_node, 4, 1, 1));
+        NANO_CHECK(add_node(model, "2", "act-snorm", config_empty_node));
+        NANO_CHECK(add_node(model, "3", affine_node_name(), config_affine_node, omaps, orows, ocols));
+        NANO_CHECK(model.connect("1", "2", "3"));
+        NANO_CHECK(model.done());
 
-        NANO_CHECK(model.config(task->idims(), task->odims()));
+        NANO_CHECK(model.resize(task->idims(), task->odims()));
         model.random();
 
         // accumulators using 1 thread
