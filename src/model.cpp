@@ -565,6 +565,8 @@ void model_t::random()
 
 bool model_t::resize(const tensor3d_dims_t& idims, const tensor3d_dims_t& odims)
 {
+        return false;
+
         auto xdims = idims;
 
         tensor_size_t psize = 0;
