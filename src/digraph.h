@@ -73,6 +73,11 @@ namespace nano
                 indices_t tsort() const;
 
                 ///
+                /// \brief check if there is a path between the source and the destination vertices
+                ///
+                bool connected(const tindex src, const tindex dst) const;
+
+                ///
                 /// \brief access functions
                 ///
                 auto vertices() const { return m_vertices; }
@@ -268,5 +273,24 @@ namespace nano
                         vindices.clear();       // !DAG
                 }
                 return vindices;
+        }
+
+        template <typename tindex>
+        bool digraph_t<tindex>::connected(const tindex src, const tindex dst) const
+        {
+                assert(dag());
+                assert(src < vertices() && dst < vertices());
+
+                if (src == dst)
+                {
+                        return std::find(m_edges.begin(), m_edges.end(), edge_t{src, dst}) != m_edges.end();
+                }
+                else
+                {
+                        std::vector<flag> flags(vertices(), flag::none);
+                        visit(flags, [] (const tindex) {}, src);
+
+                        return flags[dst] == flag::permanent;
+                }
         }
 }
