@@ -129,14 +129,19 @@ namespace nano
                 ///
                 /// \brief copy constructor
                 ///
-                tensor_t(const tensor_t&) = default;
-
                 template <typename tstorage2>
                 tensor_t(const tensor_t<tstorage2, trank>& other)
                 {
-                        static_assert(tstorage::resizable(), "tensor not resizable");
-                        resize(other.dims());
-                        array() = other.array();
+                        if (tstorage::resizable())
+                        {
+                                resize(other.dims());
+                                array() = other.array();
+                        }
+                        else
+                        {
+                                assert(dims() == other.dims());
+                                array() = other.array();
+                        }
                 }
 
                 ///
