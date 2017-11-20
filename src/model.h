@@ -2,7 +2,6 @@
 
 #include "task.h"
 #include "layer.h"
-#include "digraph.h"
 
 namespace nano
 {
@@ -17,10 +16,10 @@ namespace nano
         public:
 
                 ///
-                /// \brief
+                /// \brief constructors & asignment operators
                 ///
                 model_t() = default;
-                model_t(const model_t&);
+                model_t(const model_t&) = default;
                 model_t(model_t&&) = default;
                 model_t& operator=(model_t&&) = default;
                 model_t& operator=(const model_t&) = delete;
@@ -125,16 +124,38 @@ namespace nano
                 bool config_nodes(json_reader_t&);
                 bool config_model(json_reader_t&);
 
-                using dindex_t = uint16_t;
-                using rlayers_t = std::vector<rlayer_t>;
-                using digraph_t = nano::digraph_t<dindex_t>;
+                size_t find_node(const string_t& name) const;
+                bool resize_node(const size_t index, const tensor3d_dims_t& idims) const;
+                void output_node(const size_t index, const tensor4d_t& idata) const;
+                void ginput_node(const size_t index, const tensor4d_t& odata) const;
+                void gparam_node(const size_t index, const tensor4d_t& odata) const;
+
+                ///
+                /// \brief computation node.
+                ///
+                struct cnode_t
+                {
+                        cnode_t() = default;
+                        cnode_t(const cnode_t&);
+                        cnode_t(cnode_t&&) = default;
+                        cnode_t& operator=(const cnode_t&);
+                        cnode_t& operator=(cnode_t&&) = default;
+                        cnode_t(const string_t& name, const string_t& type, rlayer_t&&);
+
+                        string_t        m_name;
+                        string_t        m_type;
+                        rlayer_t        m_node;
+                        indices_t       m_inodes;       ///< input computation nodes
+                        indices_t       m_onodes;       ///< output computation nodes
+                };
+
+                using cnodes_t = std::vector<cnode_t>;
 
                 // attributes
-                strings_t       m_names;        ///< (unique) names for the computation nodes
-                strings_t       m_types;        ///< node types for the computation nodes
-                rlayers_t       m_nodes;        ///< computation nodes
-                digraph_t       m_graph;        ///< computation graph (aka dependency between nodes)
-                tensor1d_t      m_gdata;        ///< gradient wrt parameters
+                cnodes_t        m_nodes;
+                size_t          m_inode{0};             ///< input (source) node
+                size_t          m_onode{0};             ///< output (sink) node
+                tensor1d_t      m_gdata;                ///< gradient wrt parameters
                 probe_t         m_probe_output;
                 probe_t         m_probe_ginput;
                 probe_t         m_probe_gparam;
