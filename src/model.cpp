@@ -38,9 +38,9 @@ model_t::cnode_t::cnode_t(const cnode_t& other) :
 {
 }
 
-model_t::cnode_t::cnode_t(const string_t& name, const string_t& type, rlayer_t&& node) :
-        m_name(name),
-        m_type(type),
+model_t::cnode_t::cnode_t(string_t name, string_t type, rlayer_t&& node) :
+        m_name(std::move(name)),
+        m_type(std::move(type)),
         m_node(std::move(node))
 {
 }

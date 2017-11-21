@@ -144,7 +144,7 @@ namespace nano
                         cnode_t(cnode_t&&) = default;
                         cnode_t& operator=(const cnode_t&);
                         cnode_t& operator=(cnode_t&&) = default;
-                        cnode_t(const string_t& name, const string_t& type, rlayer_t&&);
+                        cnode_t(string_t name, string_t type, rlayer_t&&);
 
                         string_t        m_name;
                         string_t        m_type;
