@@ -53,21 +53,26 @@ NANO_CASE(evaluate)
         // check results with multiple threads
         for (size_t th = 2; th <= nano::logical_cpus(); ++ th)
         {
-                accumulator_t accx(model, *loss);
-                accx.threads(th);
+                // and different minibatch sizes
+                for (size_t bs = 2; bs <= 1024; bs *= 2)
+                {
+                        accumulator_t accx(model, *loss);
+                        accx.mode(accumulator_t::type::value);
+                        accx.minibatch(bs);
+                        accx.threads(th);
 
-                accx.mode(accumulator_t::type::value);
-                accx.update(*task, fold);
+                        accx.update(*task, fold);
 
-                NANO_CHECK_EQUAL(accx.vstats().count(), task->size(fold));
-                NANO_CHECK_CLOSE(accx.vstats().avg(), value1, nano::epsilon1<scalar_t>());
+                        NANO_CHECK_EQUAL(accx.vstats().count(), task->size(fold));
+                        NANO_CHECK_CLOSE(accx.vstats().avg(), value1, nano::epsilon1<scalar_t>());
 
-                accx.mode(accumulator_t::type::vgrad);
-                accx.update(*task, fold);
+                        accx.mode(accumulator_t::type::vgrad);
+                        accx.update(*task, fold);
 
-                NANO_CHECK_EQUAL(accx.vstats().count(), task->size(fold));
-                NANO_CHECK_CLOSE(accx.vstats().avg(), vgrad1, nano::epsilon1<scalar_t>());
-                NANO_CHECK_EIGEN_CLOSE(accx.vgrad(), pgrad1, nano::epsilon1<scalar_t>());
+                        NANO_CHECK_EQUAL(accx.vstats().count(), task->size(fold));
+                        NANO_CHECK_CLOSE(accx.vstats().avg(), vgrad1, nano::epsilon1<scalar_t>());
+                        NANO_CHECK_EIGEN_CLOSE(accx.vgrad(), pgrad1, nano::epsilon1<scalar_t>());
+                }
         }
 }
 

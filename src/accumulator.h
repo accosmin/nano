@@ -38,9 +38,10 @@ namespace nano
                 ///
                 /// \brief change settings (and resets accumulator)
                 ///
+                void mode(const type);
                 void threads(const size_t nthreads);
                 void params(const vector_t& params);
-                void mode(const type);
+                void minibatch(const size_t minibatch_size);
 
                 ///
                 /// \brief resets accumulator (but keeps settings)
@@ -119,5 +120,6 @@ namespace nano
                 mutable type            m_type;         ///<
                 const loss_t&           m_loss;         ///<
                 std::vector<tcache_t>   m_tcaches;      ///< cache / thread
+                size_t                  m_batch{128};   ///< number of samples to process at once / thread
         };
 }
