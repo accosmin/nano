@@ -15,18 +15,16 @@ using namespace nano;
 namespace
 {
         template <typename tobject>
-        void print(const string_t& name, const factory_t<tobject>& manager)
+        void print(const string_t& name, const factory_t<tobject>& factory)
         {
-                const auto ids = manager.ids();
-                const auto descriptions = manager.descriptions();
-                const auto configurations = manager.configs();
-
                 table_t table;
                 table.header() << name << "description" << "configuration";
                 table.delim();
-                for (size_t i = 0; i < ids.size(); ++ i)
+                for (const auto& id : factory.ids())
                 {
-                        table.append() << ids[i] << descriptions[i] << configurations[i];
+                        json_writer_t writer;
+                        factory.get(id)->config(writer);
+                        table.append() << id << factory.description(id) << writer.str();
                 }
                 std::cout << table;
         }
