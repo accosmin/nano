@@ -34,6 +34,7 @@ endif()
         if_cxx_flag("-Wshadow")
         if_cxx_flag("-pthread")
         if_cxx_flag("-Wno-unused-command-line-argument")
+        if_cxx_flag("-Wno-unknown-warning-option")
 
         set(CMAKE_CXX_FLAGS_DEBUG               "-g -fno-omit-frame-pointer")
         set(CMAKE_CXX_FLAGS_RELEASE             "-O3 -DNDEBUG -DEIGEN_NO_DEBUG")
