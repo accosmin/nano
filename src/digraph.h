@@ -119,7 +119,7 @@ namespace nano
                         case flag::none:
                         default:
                                 flags[src] = flag::temporary;
-                                if (!foreach_out(src, [&] (const auto& e) { return !visit(flags, vcall, e.second); }))
+                                if (!foreach_out(src, [&] (const edge_t& e) { return !visit(flags, vcall, e.second); }))
                                 {
                                         return false;
                                 }

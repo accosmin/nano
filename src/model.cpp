@@ -624,7 +624,7 @@ bool model_t::resize_node(const size_t index, const tensor3d_dims_t& idims) cons
         const auto& outs = m_nodes[index].m_onodes;
         assert(comp);
         return  comp->resize(idims, name) &&
-                std::accumulate(outs.begin(), outs.end(), true, [&] (const auto acc, const auto out)
+                std::accumulate(outs.begin(), outs.end(), true, [&] (const bool acc, const size_t out)
                 {
                         return acc && resize_node(out, comp->odims());
                 });
