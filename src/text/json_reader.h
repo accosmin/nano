@@ -78,7 +78,7 @@ namespace nano
                 ///
                 token_t operator*() const
                 {
-                        return {substr(), strlen(), m_tag};
+                        return std::make_tuple(substr(), strlen(), m_tag);
                 }
 
                 ///
