@@ -46,7 +46,7 @@ namespace benchmark
                                 << align(name, 36)
                                 << align(to_string(static_cast<size_t>(stat.m_fcalls.avg() + 2 * stat.m_gcalls.avg())), 12)
                                 << align(to_string(stat.m_crits.avg()), 12)
-                                << align(to_string(static_cast<size_t>(stat.m_fails.sum())), 12)
+                                << align(to_string(static_cast<size_t>(stat.m_fails.sum1())), 12)
                                 << align(to_string(static_cast<size_t>(stat.m_fcalls.avg())), 12)
                                 << align(to_string(static_cast<size_t>(stat.m_gcalls.avg())), 12)
                                 << align(to_string(stat.m_speeds.avg()), 12);

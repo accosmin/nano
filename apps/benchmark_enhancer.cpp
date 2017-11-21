@@ -46,9 +46,10 @@ int main(int argc, const char *argv[])
         for (size_t task_size = min_tasksize; task_size <= max_tasksize; task_size *= 2)
         {
                 // measure task generation
-                auto task = get_tasks().get("synth-charset", to_params(
+                auto task = get_tasks().get("synth-charset");
+                task->config(json_writer_t().object(
                         "type", charset_type::digit, "color", cmd_color,
-                        "irows", cmd_rows, "icols", cmd_cols, "count", task_size));
+                        "irows", cmd_rows, "icols", cmd_cols, "count", task_size).str());
 
                 // vary the minibatch size
                 for (size_t minibatch = min_minibatch; minibatch <= max_minibatch; minibatch *= 2)

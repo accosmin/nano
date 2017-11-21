@@ -120,6 +120,6 @@ namespace nano
                 mutable type            m_type;         ///<
                 const loss_t&           m_loss;         ///<
                 std::vector<tcache_t>   m_tcaches;      ///< cache / thread
-                size_t                  m_batch{128};   ///< number of samples to process at once / thread
+                size_t                  m_batch{1024};  ///< maximum number of samples to process at once / thread
         };
 }

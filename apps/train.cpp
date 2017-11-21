@@ -12,7 +12,7 @@
 
 using namespace nano;
 
-bool save(const string_t& path, const probes_t& probes)
+static bool save(const string_t& path, const probes_t& probes)
 {
         table_t table;
         table.header() << "name" << "#flops" << "gflop/s" << "min[us]" << "avg[us]" << "max[us]";
@@ -33,15 +33,7 @@ bool save(const string_t& path, const probes_t& probes)
         }
 
         std::ofstream os(path.c_str());
-        if (os.is_open())
-        {
-                os << table;
-                return true;
-        }
-        else
-        {
-                return false;
-        }
+        return os.is_open() && (os << table);
 }
 
 int main(int argc, const char *argv[])
@@ -51,7 +43,7 @@ int main(int argc, const char *argv[])
         cmdline.add("", "task",                 join(get_tasks().ids()));
         cmdline.add("", "task-params",          "task parameters (if any)", "-");
         cmdline.add("", "task-fold",            "fold index to use for training", "0");
-        cmdline.add("", "model-params",         "model parameters (if any)");
+        cmdline.add("", "model-params",         "filepath to load the model configuration from");
         cmdline.add("", "model-file",           "filepath to save the model to");
         cmdline.add("", "trainer",              join(get_trainers().ids()));
         cmdline.add("", "trainer-params",       "trainer parameters (if any)");
@@ -78,9 +70,8 @@ int main(int argc, const char *argv[])
         const auto cmd_threads = cmdline.get<size_t>("threads");
 
         // create task
-        const auto task = get_tasks().get(cmd_task, cmd_task_params);
-
-        // load task data
+        const auto task = get_tasks().get(cmd_task);
+        task->config(cmd_task_params);
         measure_critical_and_log(
                 [&] () { return task->load(); },
                 "load task <" + cmd_task + ">");
@@ -92,15 +83,14 @@ int main(int argc, const char *argv[])
         const auto loss = get_losses().get(cmd_loss);
 
         // create enhancer
-        const auto enhancer = get_enhancers().get(cmd_enhancer, cmd_enhancer_params);
+        const auto enhancer = get_enhancers().get(cmd_enhancer);
+        enhancer->config(cmd_enhancer_params);
 
         // create model
-        model_t model(cmd_model_params);
-        if (!model.config(task->idims(), task->odims()))
-        {
-                log_error() << "failed to configure model!";
-                return EXIT_FAILURE;
-        }
+        model_t model;
+        measure_critical_and_log(
+                [&] () { return model.config(cmd_model_params) && model.resize(task->idims(), task->odims()); },
+                "configure model");
         model.random();
         model.describe();
 
@@ -111,11 +101,15 @@ int main(int argc, const char *argv[])
         }
 
         // create trainer
-        const auto trainer = get_trainers().get(cmd_trainer, cmd_trainer_params);
+        const auto trainer = get_trainers().get(cmd_trainer);
+        trainer->config(cmd_trainer_params);
 
         // train model
         accumulator_t acc(model, *loss);
         acc.threads(cmd_threads);
+
+        // todo: setup the minibatch size
+        // todo: add --probes && --probes-detailed to print computation statistics
 
         trainer_result_t result;
         measure_critical_and_log([&] ()

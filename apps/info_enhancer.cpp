@@ -86,8 +86,8 @@ int main(int argc, const char *argv[])
         const auto cmd_save_gcols = clamp(cmdline.get<coord_t>("save-group-cols"), 1, 128);
 
         // create & load task
-        const auto task = get_tasks().get(cmd_task, cmd_task_params);
-
+        const auto task = get_tasks().get(cmd_task);
+        task->config(cmd_task_params);
         measure_critical_and_log(
                 [&] () { return task->load(); },
                 "load task <" + cmd_task + ">");
@@ -95,7 +95,8 @@ int main(int argc, const char *argv[])
         describe(*task, cmd_task);
 
         // create enhancer
-        const auto enhancer = get_enhancers().get(cmd_enhancer, cmd_enhancer_params);
+        const auto enhancer = get_enhancers().get(cmd_enhancer);
+        enhancer->config(cmd_enhancer_params);
 
         // save samples as images
         if (cmdline.has("save-dir"))

@@ -5,7 +5,7 @@ make_app(benchmark_stoch.cpp nano)
 make_app(benchmark_tpool.cpp nano)
 make_app(benchmark_conv.cpp nano)
 make_app(benchmark_affine.cpp nano)
-make_app(benchmark_models.cpp nano)
+#make_app(benchmark_models.cpp nano) deprecated (should be part of apps/evaluate)
 make_app(benchmark_enhancer.cpp nano)
 make_app(benchmark_functions.cpp nano)
 

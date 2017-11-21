@@ -29,9 +29,8 @@ int main(int argc, const char *argv[])
         const auto cmd_threads = cmdline.get<size_t>("threads");
 
         // create task
-        const auto task = get_tasks().get(cmd_task, cmd_task_params);
-
-        // load task data
+        const auto task = get_tasks().get(cmd_task);
+        task->config(cmd_task_params);
         measure_critical_and_log(
                 [&] () { return task->load(); },
                 "load task <" + cmd_task + ">");
@@ -44,8 +43,6 @@ int main(int argc, const char *argv[])
 
         // create model
         model_t model;
-
-        // load model
         measure_critical_and_log(
                 [&] () { return model.load(cmd_model_file); },
                 "load model from <" + cmd_model_file + ">");
@@ -54,6 +51,9 @@ int main(int argc, const char *argv[])
         accumulator_t lacc(model, *loss);
         lacc.mode(accumulator_t::type::value);
         lacc.threads(cmd_threads);
+
+        // todo: setup the minibatch size
+        // todo: add --probes && --probes-detailed to print computation statistics
 
         measure_and_log(
                 [&] () { lacc.update(*task, fold_t{cmd_task_fold, protocol::test}); },
