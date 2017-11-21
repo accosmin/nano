@@ -60,7 +60,7 @@ namespace nano
                 ///
                 /// \brief current parameters
                 ///
-                vector_t params() const;
+                const vector_t& params() const;
 
                 ///
                 /// \brief cumulated gradient

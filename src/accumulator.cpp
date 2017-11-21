@@ -132,7 +132,7 @@ void accumulator_t::update(tcache_t& tcache, const tensor4d_t& targets, const te
 
         if (m_type == type::vgrad)
         {
-                tcache.m_vgrad += tcache.m_model->gparam(m_loss.vgrad(targets, outputs)).vector();
+                tcache.m_vgrad += tcache.m_model->gparam(m_loss.vgrad(targets, outputs));
         }
 }
 
@@ -189,7 +189,7 @@ probes_t accumulator_t::probes() const
         return origin().m_model->probes();
 }
 
-vector_t accumulator_t::params() const
+const vector_t& accumulator_t::params() const
 {
         return origin().m_model->params();
 }

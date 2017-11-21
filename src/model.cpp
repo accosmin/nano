@@ -484,10 +484,9 @@ bool model_t::load(const string_t& path)
                 [&] () { params(pdata); return true; }();
 }
 
-vector_t model_t::params() const
+void model_t::update_params()
 {
-        vector_t pdata(psize());
-        return copy_params(m_nodes, [] (const layer_t& node) { return node.param(); }, pdata);
+        copy_params(m_nodes, [] (const layer_t& node) { return node.params(); }, m_pdata);
 }
 
 void model_t::params(const vector_t& pdata)
@@ -506,6 +505,8 @@ void model_t::params(const vector_t& pdata)
                 }
         }
         assert(pindex == psize());
+
+        update_params();
 }
 
 const model_t::cnode_t& model_t::inode() const
@@ -581,7 +582,7 @@ const tensor4d_t& model_t::ginput(const tensor4d_t& odata)
         return inode().m_node->input();
 }
 
-const tensor1d_t& model_t::gparam(const tensor4d_t& odata)
+const vector_t& model_t::gparam(const tensor4d_t& odata)
 {
         assert(odata.tensor(0).dims() == odims());
         assert(m_inode < m_nodes.size());
@@ -614,6 +615,8 @@ void model_t::random()
                 }
         }
         assert(pindex == psize());
+
+        update_params();
 }
 
 bool model_t::resize_node(const size_t index, const tensor3d_dims_t& idims) const
@@ -670,6 +673,7 @@ bool model_t::resize(const tensor3d_dims_t& idims, const tensor3d_dims_t& odims)
                 flops_gparam += node.m_node->probe_gparam().flops();
         }
 
+        m_pdata.resize(psize);
         m_gdata.resize(psize);
         m_probe_output = probe_t{"model", "model(output)", flops_output};
         m_probe_ginput = probe_t{"model", "model(ginput)", flops_ginput};

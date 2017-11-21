@@ -77,7 +77,7 @@ namespace nano
                 /// \brief access functions
                 ///
                 const tensor4d_t& input() const { return m_idata; }
-                const tensor1d_t& param() const { return m_pdata; }
+                const tensor1d_t& params() const { return m_pdata; }
                 const tensor4d_t& output() const { return m_odata; }
                 const tensor1d_t& gparam() const { return m_gdata; }
 

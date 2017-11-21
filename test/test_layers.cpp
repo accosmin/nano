@@ -47,10 +47,10 @@ struct model_wrt_params_function_t final : public function_t
                 {
                         const auto& gparam = m_model.gparam(m_loss->vgrad(m_targets, outputs));
                         NANO_CHECK_EQUAL(gx->size(), gparam.size());
-                        NANO_CHECK(std::isfinite(gparam.vector().minCoeff()));
-                        NANO_CHECK(std::isfinite(gparam.vector().maxCoeff()));
+                        NANO_CHECK(std::isfinite(gparam.minCoeff()));
+                        NANO_CHECK(std::isfinite(gparam.maxCoeff()));
 
-                        *gx = gparam.vector();
+                        *gx = gparam;
                 }
                 return m_loss->value(m_targets, outputs).vector().sum();
         }

@@ -85,7 +85,6 @@ namespace nano
                 ///
                 /// \brief serialize parameters to memory
                 ///
-                vector_t params() const;
                 void params(const vector_t&);
 
                 ///
@@ -101,7 +100,7 @@ namespace nano
                 ///
                 /// \brief compute the model's gradient wrt parameters given its output
                 ///
-                const tensor1d_t& gparam(const tensor4d_t& odata);
+                const vector_t& gparam(const tensor4d_t& odata);
 
                 ///
                 /// \brief compute the model's gradient wrt inputs given its output
@@ -125,14 +124,21 @@ namespace nano
                 tensor3d_dims_t odims() const;
 
                 ///
-                /// \brief number of parameters (to optimize)
+                /// \brief returns number of parameters (to optimize)
                 ///
                 tensor_size_t psize() const;
+
+                ///
+                /// \brief returns the current parameters and their gradient
+                ///
+                const vector_t& params() const { return m_pdata; }
+                const vector_t& gparam() const { return m_gdata; }
 
         private:
 
                 bool config_nodes(json_reader_t&);
                 bool config_model(json_reader_t&);
+                void update_params();
 
                 ///
                 /// \brief computation node.
@@ -167,7 +173,8 @@ namespace nano
                 cnodes_t        m_nodes;
                 size_t          m_inode{0};             ///< input (source) node
                 size_t          m_onode{0};             ///< output (sink) node
-                tensor1d_t      m_gdata;                ///< gradient wrt parameters
+                vector_t        m_pdata;                ///< current parameters
+                vector_t        m_gdata;                ///< current gradient wrt parameters
                 probe_t         m_probe_output;
                 probe_t         m_probe_ginput;
                 probe_t         m_probe_gparam;
