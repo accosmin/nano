@@ -31,8 +31,18 @@ namespace nano
         using tensor3d_map_t = tensor_map_t<scalar_t, 3>;
         using tensor4d_map_t = tensor_map_t<scalar_t, 4>;
 
+        using tensor1d_maps_t = std::vector<tensor1d_map_t>;
+        using tensor2d_maps_t = std::vector<tensor2d_map_t>;
+        using tensor3d_maps_t = std::vector<tensor3d_map_t>;
+        using tensor4d_maps_t = std::vector<tensor4d_map_t>;
+
         using tensor1d_cmap_t = tensor_cmap_t<scalar_t, 1>;
         using tensor2d_cmap_t = tensor_cmap_t<scalar_t, 2>;
         using tensor3d_cmap_t = tensor_cmap_t<scalar_t, 3>;
         using tensor4d_cmap_t = tensor_cmap_t<scalar_t, 4>;
+
+        using tensor1d_cmaps_t = std::vector<tensor1d_cmap_t>;
+        using tensor2d_cmaps_t = std::vector<tensor2d_cmap_t>;
+        using tensor3d_cmaps_t = std::vector<tensor3d_cmap_t>;
+        using tensor4d_cmaps_t = std::vector<tensor4d_cmap_t>;
 }

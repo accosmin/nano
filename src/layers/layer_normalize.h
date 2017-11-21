@@ -34,7 +34,7 @@ namespace nano
         private:
 
                 // attributes
-                norm3d_params_t   m_params;
+                norm3d_params_t m_params;
                 norm4d_t        m_kernel;
                 probe_t         m_probe_output;
                 probe_t         m_probe_ginput;

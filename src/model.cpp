@@ -487,6 +487,7 @@ bool model_t::load(const string_t& path)
 void model_t::update_params()
 {
         copy_params(m_nodes, [] (const layer_t& node) { return node.params(); }, m_pdata);
+        m_gdata.setZero();
 }
 
 void model_t::params(const vector_t& pdata)
