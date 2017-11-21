@@ -31,7 +31,6 @@ endif()
 
         if_cxx_flag("-Wmisleading-indentation")
         if_cxx_flag("-Wno-missing-braces")
-        if_cxx_flag("-Wshadow")
         if_cxx_flag("-pthread")
         if_cxx_flag("-Wno-unused-command-line-argument")
         if_cxx_flag("-Wno-unknown-warning-option")

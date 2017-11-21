@@ -373,7 +373,7 @@ bool model_t::done()
 
         for (const auto sink : sinks)
         {
-                const auto it = std::find_if(sources.begin(), sources.end(), [&] (const auto source)
+                const auto it = std::find_if(sources.begin(), sources.end(), [&] (const size_t source)
                 {
                         return graph.connected(source, sink);
                 });
@@ -387,7 +387,7 @@ bool model_t::done()
 
         for (const auto source : sources)
         {
-                const auto it = std::find_if(sinks.begin(), sinks.end(), [&] (const auto sink)
+                const auto it = std::find_if(sinks.begin(), sinks.end(), [&] (const size_t sink)
                 {
                         return graph.connected(source, sink);
                 });
