@@ -33,7 +33,7 @@ namespace nano
         private:
 
                 // attributes
-                tensor3d_dims_t m_xdims{0, 0, 0};       ///< input/output dimensions
+                tensor3d_dims_t m_xdims{{0, 0, 0}};     ///< input/output dimensions
                 probe_t         m_probe_output;
                 probe_t         m_probe_ginput;
                 probe_t         m_probe_gparam;

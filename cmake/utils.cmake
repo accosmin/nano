@@ -14,7 +14,7 @@ macro(if_cxx_flag flag)
         string(TOUPPER ${FLAGY} FLAGZ)
 
         #CHECK_CXX_COMPILER_FLAG(${flag} COMPILER_SUPPORTS${FLAGZ})
-        set(CMAKE_REQUIRED_FLAGS "${flag}")
+        set(CMAKE_REQUIRED_FLAGS "${flag} -Werror")
         CHECK_CXX_SOURCE_COMPILES("${TEST_PROGRAM}" COMPILER_SUPPORTS${FLAGZ})
 
         if(COMPILER_SUPPORTS${FLAGZ})
@@ -28,7 +28,7 @@ macro(if_linker_flag flag)
         string(TOUPPER ${FLAGY} FLAGZ)
 
         #CHECK_CXX_COMPILER_FLAG(${flag} COMPILER_SUPPORTS${FLAGZ})
-        set(CMAKE_REQUIRED_FLAGS "${flag}")
+        set(CMAKE_REQUIRED_FLAGS "${flag} -Werror")
         CHECK_CXX_SOURCE_COMPILES("${TEST_PROGRAM}" COMPILER_SUPPORTS${FLAGZ})
 
         if(COMPILER_SUPPORTS${FLAGZ})
