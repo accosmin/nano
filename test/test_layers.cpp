@@ -130,21 +130,19 @@ static void test_model(model_t& model, const tensor_size_t expected_psize,
         NANO_CHECK_EQUAL(model.odims(), cmd_odims);
         NANO_CHECK_EQUAL(model.psize(), expected_psize);
 
-        for (auto count = 1; count <= 3; ++ count)
-        {
-                const auto loss = get_losses().get("s-logistic");
-                const auto pfun = model_wrt_params_function_t{loss, model, count};
-                const auto ifun = model_wrt_inputs_function_t{loss, model, count};
+        const auto count = 3;
+        const auto loss = get_losses().get("s-logistic");
+        const auto pfun = model_wrt_params_function_t{loss, model, count};
+        const auto ifun = model_wrt_inputs_function_t{loss, model, count};
 
-                const vector_t px = pfun.m_model.params();
-                const vector_t ix = ifun.m_inputs.vector();
+        const vector_t px = pfun.m_model.params();
+        const vector_t ix = ifun.m_inputs.vector();
 
-                NANO_CHECK_EQUAL(px.size(), pfun.size());
-                NANO_CHECK_EQUAL(ix.size(), ifun.size());
+        NANO_CHECK_EQUAL(px.size(), pfun.size());
+        NANO_CHECK_EQUAL(ix.size(), ifun.size());
 
-                NANO_CHECK_LESS(pfun.grad_accuracy(px), epsilon);
-                NANO_CHECK_LESS(ifun.grad_accuracy(ix), epsilon);
-        }
+        NANO_CHECK_LESS(pfun.grad_accuracy(px), epsilon);
+        NANO_CHECK_LESS(ifun.grad_accuracy(ix), epsilon);
 }
 
 NANO_BEGIN_MODULE(test_layers)

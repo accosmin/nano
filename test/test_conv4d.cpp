@@ -9,8 +9,8 @@ using namespace nano;
 auto make_default_params(const tensor_size_t kconn = 1, const tensor_size_t drows = 2, const tensor_size_t dcols = 1)
 {
         const auto imaps = 6;
-        const auto irows = 9;
-        const auto icols = 8;
+        const auto irows = 5;
+        const auto icols = 6;
         const auto omaps = 6;
         const auto krows = 2;
         const auto kcols = 3;
