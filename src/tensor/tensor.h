@@ -222,13 +222,11 @@ namespace nano
                 template <typename... tsizes>
                 tensor_size_t resize(const tsizes... dims)
                 {
-                        static_assert(tstorage::resizable, "tensor not resizable");
                         return resize({{dims...}});
                 }
 
                 tensor_size_t resize(const tdims& dims)
                 {
-                        static_assert(tstorage::resizable, "tensor not resizable");
                         this->m_dims = dims;
                         this->m_storage.resize(this->size());
                         return this->size();

@@ -576,7 +576,7 @@ tensor4d_cmap_t model_t::output(const tensor4d_t& idata)
                 }
 
                 // forward step
-                inode().idata(m_xdata, count).array() = idata.array();
+                inode().idata(m_xdata, count) = idata;
                 for (const auto& cnode : m_nodes)
                 {
                         cnode.m_node->output(
@@ -606,7 +606,7 @@ tensor4d_cmap_t model_t::ginput(const tensor4d_t& odata)
                 assert(m_xdata.size() == xsize(count));
 
                 // backward step
-                onode().odata(m_xdata, count).array() = odata.array();
+                onode().odata(m_xdata, count) = odata;
                 for (auto it = m_nodes.rbegin(); it != m_nodes.rend(); ++ it)
                 {
                         const auto& cnode = *it;
@@ -637,7 +637,7 @@ const vector_t& model_t::gparam(const tensor4d_t& odata)
                 assert(m_xdata.size() == xsize(count));
 
                 // backward step
-                onode().odata(m_xdata, count).array() = odata.array();
+                onode().odata(m_xdata, count) = odata;
                 for (auto it = m_nodes.rbegin(); it != m_nodes.rend(); ++ it)
                 {
                         const auto& cnode = *it;
