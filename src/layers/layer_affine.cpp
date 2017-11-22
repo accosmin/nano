@@ -1,5 +1,4 @@
 #include "layer_affine.h"
-#include "math/numeric.h"
 
 using namespace nano;
 

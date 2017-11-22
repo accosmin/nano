@@ -1,23 +1,23 @@
-#include "layer_normalize.h"
+#include "layer_norm3d.h"
 
 using namespace nano;
 
-json_reader_t& normalize_layer_t::config(json_reader_t& reader)
+json_reader_t& norm3d_layer_t::config(json_reader_t& reader)
 {
         return reader.object("type", m_params.m_ntype);
 }
 
-json_writer_t& normalize_layer_t::config(json_writer_t& writer) const
+json_writer_t& norm3d_layer_t::config(json_writer_t& writer) const
 {
         return writer.object("type", m_params.m_ntype, "types", join(enum_values<norm_type>()));
 }
 
-rlayer_t normalize_layer_t::clone() const
+rlayer_t norm3d_layer_t::clone() const
 {
-        return std::make_unique<normalize_layer_t>(*this);
+        return std::make_unique<norm3d_layer_t>(*this);
 }
 
-bool normalize_layer_t::resize(const tensor3d_dims_t& idims, const string_t& name)
+bool norm3d_layer_t::resize(const tensor3d_dims_t& idims, const string_t& name)
 {
         m_params.m_xmaps = std::get<0>(idims);
         m_params.m_xrows = std::get<1>(idims);
@@ -36,7 +36,7 @@ bool normalize_layer_t::resize(const tensor3d_dims_t& idims, const string_t& nam
         return true;
 }
 
-void normalize_layer_t::output(const tensor4d_cmap_t& idata, const vector_cmap_t& pdata, tensor4d_map_t&& odata)
+void norm3d_layer_t::output(const tensor4d_cmap_t& idata, const vector_cmap_t& pdata, tensor4d_map_t&& odata)
 {
         assert(pdata.size() == psize());
         NANO_UNUSED1_RELEASE(pdata);
@@ -45,7 +45,7 @@ void normalize_layer_t::output(const tensor4d_cmap_t& idata, const vector_cmap_t
         m_probe_output.measure([&] () { m_kernel.output(idata, odata); }, count);
 }
 
-void normalize_layer_t::ginput(tensor4d_map_t&& idata, const vector_cmap_t& pdata, const tensor4d_cmap_t& odata)
+void norm3d_layer_t::ginput(tensor4d_map_t&& idata, const vector_cmap_t& pdata, const tensor4d_cmap_t& odata)
 {
         assert(pdata.size() == psize());
         NANO_UNUSED1_RELEASE(pdata);
@@ -54,7 +54,7 @@ void normalize_layer_t::ginput(tensor4d_map_t&& idata, const vector_cmap_t& pdat
         m_probe_ginput.measure([&] () { m_kernel.ginput(idata, odata); }, count);
 }
 
-void normalize_layer_t::gparam(const tensor4d_cmap_t& idata, vector_map_t&& pdata, const tensor4d_cmap_t& odata)
+void norm3d_layer_t::gparam(const tensor4d_cmap_t& idata, vector_map_t&& pdata, const tensor4d_cmap_t& odata)
 {
         assert(idata.dims() == odata.dims());
         assert(pdata.size() == psize());

@@ -16,7 +16,7 @@ namespace nano
         ///     kdrow   - stride factor for the vertical axis: default = 1
         ///     kdcol   - stride factor for the horizontal axis: default = 1
         ///
-        class convolution_layer_t final : public layer_t
+        class conv3d_layer_t final : public layer_t
         {
         public:
 

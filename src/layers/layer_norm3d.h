@@ -9,7 +9,7 @@ namespace nano
         /// \brief normalize layer: transforms the input tensor to have zero mean and one variance,
         ///     either globally or for each feature map.
         ///
-        class normalize_layer_t final : public layer_t
+        class norm3d_layer_t final : public layer_t
         {
         public:
 
