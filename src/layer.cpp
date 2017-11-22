@@ -3,6 +3,7 @@
 #include "layers/layer_affine.h"
 #include "layers/layer_norm3d.h"
 #include "layers/layer_conv3d.h"
+#include "layers/layer_plus4d.h"
 #include "layers/layer_activation.h"
 
 using namespace nano;
@@ -24,6 +25,7 @@ layer_factory_t& nano::get_layers()
                 manager.add<affine_layer_t>(affine_node_name(),         "transform:  L(x) = A * x + b");
                 manager.add<norm3d_layer_t>(norm3d_node_name(),         "zero-mean & one-variance transformation");
                 manager.add<conv3d_layer_t>(conv3d_node_name(),         "transform:  L(x) = conv3D(x, kernel) + b");
+                manager.add<plus4d_layer_t>(plus4d_node_name(),         "transform:  sum 4D inputs");
         });
 
         return manager;

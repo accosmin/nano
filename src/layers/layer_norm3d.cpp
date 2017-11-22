@@ -36,6 +36,11 @@ bool norm3d_layer_t::resize(const tensor3d_dims_t& idims, const string_t& name)
         return true;
 }
 
+bool norm3d_layer_t::resize(const std::vector<tensor3d_dims_t>& idims, const string_t& name)
+{
+        return idims.size() == 1 && resize(idims[0], name);
+}
+
 void norm3d_layer_t::output(const tensor4d_cmap_t& idata, const vector_cmap_t& pdata, tensor4d_map_t&& odata)
 {
         assert(pdata.size() == psize());
