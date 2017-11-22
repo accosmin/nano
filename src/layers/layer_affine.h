@@ -17,6 +17,8 @@ namespace nano
         {
         public:
 
+                using layer_t::resize;
+
                 rlayer_t clone() const final;
                 json_reader_t& config(json_reader_t&) final;
                 json_writer_t& config(json_writer_t&) const final;
