@@ -38,12 +38,7 @@ bool affine_layer_t::resize(const tensor3d_dims_t& idims, const string_t& name)
 
 bool affine_layer_t::resize(const std::vector<tensor3d_dims_t>& idims, const string_t& name)
 {
-        return idims.size() ==1 && resize(idims[0], name);
-}
-
-tensor_size_t affine_layer_t::fanin() const
-{
-        return m_params.isize();
+        return idims.size() == 1 && resize(idims[0], name);
 }
 
 void affine_layer_t::output(const tensor4d_cmap_t& idata, const vector_cmap_t& pdata, tensor4d_map_t&& odata)

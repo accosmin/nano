@@ -38,7 +38,6 @@ namespace nano
                 auto osize() const { return nano::size(odims()); }
 
                 auto psize() const { return isize() * osize() + osize(); }
-                auto pdims() const { return tensor1d_dims_t{psize()}; }
 
                 auto flops_output() const { return 2 * isize() * osize() + osize(); }
                 auto flops_ginput() const { return 2 * isize() * osize(); }

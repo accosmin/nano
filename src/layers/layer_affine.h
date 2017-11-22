@@ -28,10 +28,10 @@ namespace nano
                 void ginput(tensor4d_map_t&& idata, const vector_cmap_t& pdata, const tensor4d_cmap_t& odata) final;
                 void gparam(const tensor4d_cmap_t& idata, vector_map_t&& pdata, const tensor4d_cmap_t& odata) final;
 
-                tensor_size_t fanin() const final;
+                tensor_size_t fanin() const final { return m_params.isize(); }
+                tensor_size_t psize() const final { return m_params.psize(); }
                 tensor3d_dims_t idims() const final { return m_params.idims(); }
                 tensor3d_dims_t odims() const final { return m_params.odims(); }
-                tensor1d_dims_t pdims() const final { return m_params.pdims(); }
 
                 const probe_t& probe_output() const final { return m_probe_output; }
                 const probe_t& probe_ginput() const final { return m_probe_ginput; }

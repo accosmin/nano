@@ -54,7 +54,6 @@ namespace nano
                 auto bdims() const { return omaps(); }
 
                 auto psize() const { return imaps() * omaps() * krows() * kcols() / kconn() + omaps(); }
-                auto pdims() const { return tensor1d_dims_t{psize()}; }
 
                 auto flops_output() const { return 2 * imaps() * omaps() * orows() * ocols() * krows() * kcols() / kconn() + omaps() * orows() * ocols(); }
                 auto flops_ginput() const { return 2 * imaps() * omaps() * irows() * icols() * krows() * kcols() / kconn(); }

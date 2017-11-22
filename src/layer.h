@@ -60,7 +60,7 @@ namespace nano
                 ///
                 virtual tensor3d_dims_t idims() const = 0;
                 virtual tensor3d_dims_t odims() const = 0;
-                virtual tensor1d_dims_t pdims() const = 0;
+                virtual tensor_size_t psize() const = 0;
 
                 ///
                 /// \brief returns the timing probes for the three basic operations (output & its gradients)
@@ -74,6 +74,5 @@ namespace nano
                 ///
                 tensor_size_t isize() const { return nano::size(idims()); }
                 tensor_size_t osize() const { return nano::size(odims()); }
-                tensor_size_t psize() const { return nano::size(pdims()); }
         };
 }

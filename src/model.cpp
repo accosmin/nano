@@ -736,7 +736,7 @@ void model_t::describe() const
                         << "model: " << node.m_name
                         << ": idims = " << node.m_node->idims()
                         << ", odims = " << node.m_node->odims()
-                        << ", pdims = " << node.m_node->pdims() << ".";
+                        << ", psize = " << node.m_node->psize() << ".";
         }
         log_info() << "model: parameters = " << psize() << ".";
 }

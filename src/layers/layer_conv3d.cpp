@@ -43,11 +43,6 @@ bool conv3d_layer_t::resize(const std::vector<tensor3d_dims_t>& idims, const str
         return idims.size() == 1 && resize(idims[0], name);
 }
 
-tensor_size_t conv3d_layer_t::fanin() const
-{
-        return m_params.krows() * m_params.kcols() * m_params.imaps() / m_params.kconn();
-}
-
 void conv3d_layer_t::output(const tensor4d_cmap_t& idata, const vector_cmap_t& pdata, tensor4d_map_t&& odata)
 {
         const auto count = idata.size<0>();
