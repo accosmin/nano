@@ -53,8 +53,6 @@ rmodel_t model_t::clone() const
 void model_t::clear()
 {
         m_nodes.clear();
-        m_inode = string_t::npos;
-        m_onode = string_t::npos;
 }
 
 size_t model_t::find_node(const string_t& name) const
@@ -345,6 +343,7 @@ bool model_t::done()
         if (graph.vertices() < 1)
         {
                 log_error() << "model: expecting at least a node!";
+                clear();
                 return false;
         }
 
@@ -353,6 +352,7 @@ bool model_t::done()
         if (sources.size() != 1)
         {
                 log_error() << "model: expecting exactly one input node!";
+                clear();
                 return false;
         }
 
@@ -361,6 +361,7 @@ bool model_t::done()
         {
                 // todo: may relax this condition (many outputs may be needed to solve reinforcement learning problems)
                 log_error() << "model: expecting exactly one output node!";
+                clear();
                 return false;
         }
 
@@ -368,6 +369,7 @@ bool model_t::done()
         {
                 // todo: may relax this condition
                 log_error() << "model: cyclic computation graphs are not supported!";
+                clear();
                 return false;
         }
 
@@ -381,6 +383,7 @@ bool model_t::done()
                 if (it == sources.end())
                 {
                         log_error() << "model: detected unreachable output node [" << m_nodes[sink].m_name << "]!";
+                        clear();
                         return false;
                 }
         }
@@ -395,13 +398,24 @@ bool model_t::done()
                 if (it == sinks.end())
                 {
                         log_error() << "model: detected unused input node [" << m_nodes[source].m_name << "]!";
+                        clear();
                         return false;
                 }
         }
 
-        // OK, setup the input/output nodes
-        m_inode = sources[0];
-        m_onode = sinks[0];
+        // OK, reorder nodes using the topological sorting
+        const auto tsort = graph.tsort();
+        assert(tsort.size() == m_nodes.size());
+        for (size_t i = 0; i < tsort.size(); ++ i)
+        {
+                size_t orig = tsort[i];
+                while (i < orig)
+                {
+                        orig = tsort[orig];
+                }
+                std::swap(m_nodes[i], m_nodes[orig]);
+        }
+        describe();
         return true;
 }
 
@@ -512,14 +526,14 @@ void model_t::params(const vector_t& pdata)
 
 const model_t::cnode_t& model_t::inode() const
 {
-        assert(m_inode < m_nodes.size());
-        return m_nodes[m_inode];
+        assert(!m_nodes.empty());
+        return *m_nodes.begin();
 }
 
 const model_t::cnode_t& model_t::onode() const
 {
-        assert(m_onode < m_nodes.size());
-        return m_nodes[m_onode];
+        assert(!m_nodes.empty());
+        return *m_nodes.rbegin();
 }
 
 void model_t::output_node(const size_t index, const tensor4d_t& idata) const
@@ -562,11 +576,10 @@ void model_t::gparam_node(const size_t index, const tensor4d_t& odata) const
 const tensor4d_t& model_t::output(const tensor4d_t& idata)
 {
         assert(idata.tensor(0).dims() == idims());
-        assert(m_inode < m_nodes.size());
-        assert(m_onode < m_nodes.size());
+        assert(!m_nodes.empty());
 
         const auto count = idata.size<0>();
-        m_probe_output.measure([&] () { output_node(m_inode, idata); }, count);
+        m_probe_output.measure([&] () { output_node(0, idata); }, count);
 
         return onode().m_node->output();
 }
@@ -574,11 +587,10 @@ const tensor4d_t& model_t::output(const tensor4d_t& idata)
 const tensor4d_t& model_t::ginput(const tensor4d_t& odata)
 {
         assert(odata.tensor(0).dims() == odims());
-        assert(m_inode < m_nodes.size());
-        assert(m_onode < m_nodes.size());
+        assert(!m_nodes.empty());
 
         const auto count = odata.size<0>();
-        m_probe_ginput.measure([&] () { ginput_node(m_onode, odata); }, count);
+        m_probe_ginput.measure([&] () { ginput_node(m_nodes.size() - 1, odata); }, count);
 
         return inode().m_node->input();
 }
@@ -586,11 +598,10 @@ const tensor4d_t& model_t::ginput(const tensor4d_t& odata)
 const vector_t& model_t::gparam(const tensor4d_t& odata)
 {
         assert(odata.tensor(0).dims() == odims());
-        assert(m_inode < m_nodes.size());
-        assert(m_onode < m_nodes.size());
+        assert(!m_nodes.empty());
 
         const auto count = odata.size<0>();
-        m_probe_gparam.measure([&] () { gparam_node(m_onode, odata); }, count);
+        m_probe_gparam.measure([&] () { gparam_node(m_nodes.size() - 1, odata); }, count);
         return copy_params(m_nodes, [] (const layer_t& node) { return node.gparam(); }, m_gdata);
 }
 
@@ -638,16 +649,8 @@ bool model_t::resize(const tensor3d_dims_t& idims, const tensor3d_dims_t& odims)
 {
         log_info() << "model_t: resizing the computation nodes...";
 
-        // check if properly configured before
-        if (    m_inode >= m_nodes.size() ||
-                m_onode >= m_nodes.size())
-        {
-                log_info() << "model: please configure model before resizing!";
-                return false;
-        }
-
         // resize computation nodes starting from the input
-        if (!resize_node(m_inode, idims))
+        if (!resize_node(0, idims))
         {
                 log_error() << "model: failed to resize nodes!";
                 return false;

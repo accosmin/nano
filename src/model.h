@@ -155,8 +155,8 @@ namespace nano
                         string_t        m_name;
                         string_t        m_type;
                         rlayer_t        m_node;         ///< the computation node
-                        indices_t       m_inodes;       ///< input computation nodes
-                        indices_t       m_onodes;       ///< output computation nodes
+                        indices_t       m_inodes;       ///< input nodes
+                        indices_t       m_onodes;       ///< output nodes
                 };
 
                 const cnode_t& inode() const;
@@ -171,8 +171,6 @@ namespace nano
 
                 // attributes
                 cnodes_t        m_nodes;
-                size_t          m_inode{0};             ///< input (source) node
-                size_t          m_onode{0};             ///< output (sink) node
                 vector_t        m_pdata;                ///< current parameters
                 vector_t        m_gdata;                ///< current gradient wrt parameters
                 probe_t         m_probe_output;
