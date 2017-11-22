@@ -36,27 +36,27 @@ bool normalize_layer_t::resize(const tensor3d_dims_t& idims, const string_t& nam
         return true;
 }
 
-void normalize_layer_t::output(const tensor4d_t& idata, const tensor1d_t& pdata, tensor4d_t& odata)
+void normalize_layer_t::output(const tensor4d_cmap_t& idata, const vector_cmap_t& pdata, tensor4d_map_t&& odata)
 {
-        assert(pdata.dims() == pdims());
+        assert(pdata.size() == psize());
         NANO_UNUSED1_RELEASE(pdata);
 
         const auto count = idata.size<0>();
         m_probe_output.measure([&] () { m_kernel.output(idata, odata); }, count);
 }
 
-void normalize_layer_t::ginput(tensor4d_t& idata, const tensor1d_t& pdata, const tensor4d_t& odata)
+void normalize_layer_t::ginput(tensor4d_map_t&& idata, const vector_cmap_t& pdata, const tensor4d_cmap_t& odata)
 {
-        assert(pdata.dims() == pdims());
+        assert(pdata.size() == psize());
         NANO_UNUSED1_RELEASE(pdata);
 
         const auto count = idata.size<0>();
         m_probe_ginput.measure([&] () { m_kernel.ginput(idata, odata); }, count);
 }
 
-void normalize_layer_t::gparam(const tensor4d_t& idata, tensor1d_t& pdata, const tensor4d_t& odata)
+void normalize_layer_t::gparam(const tensor4d_cmap_t& idata, vector_map_t&& pdata, const tensor4d_cmap_t& odata)
 {
         assert(idata.dims() == odata.dims());
-        assert(pdata.dims() == pdims());
+        assert(pdata.size() == psize());
         NANO_UNUSED3_RELEASE(idata, pdata, odata);
 }

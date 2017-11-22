@@ -35,20 +35,17 @@ struct model_wrt_params_function_t final : public function_t
         scalar_t vgrad(const vector_t& x, vector_t* gx) const override
         {
                 NANO_CHECK_EQUAL(x.size(), m_model.psize());
-                NANO_CHECK(std::isfinite(x.minCoeff()));
-                NANO_CHECK(std::isfinite(x.maxCoeff()));
+                NANO_CHECK(nano::isfinite(x));
 
                 m_model.params(x);
                 const auto& outputs = m_model.output(m_inputs);
-                NANO_CHECK(std::isfinite(outputs.vector().minCoeff()));
-                NANO_CHECK(std::isfinite(outputs.vector().maxCoeff()));
+                NANO_CHECK(nano::isfinite(outputs));
 
                 if (gx)
                 {
                         const auto& gparam = m_model.gparam(m_loss->vgrad(m_targets, outputs));
                         NANO_CHECK_EQUAL(gx->size(), gparam.size());
-                        NANO_CHECK(std::isfinite(gparam.minCoeff()));
-                        NANO_CHECK(std::isfinite(gparam.maxCoeff()));
+                        NANO_CHECK(nano::isfinite(gparam));
 
                         *gx = gparam;
                 }
@@ -81,20 +78,17 @@ struct model_wrt_inputs_function_t final : public function_t
         scalar_t vgrad(const vector_t& x, vector_t* gx) const override
         {
                 NANO_CHECK_EQUAL(x.size(), m_inputs.size());
-                NANO_CHECK(std::isfinite(x.minCoeff()));
-                NANO_CHECK(std::isfinite(x.maxCoeff()));
+                NANO_CHECK(nano::isfinite(x));
 
                 m_inputs.vector() = x;
                 const auto& outputs = m_model.output(m_inputs);
-                NANO_CHECK(std::isfinite(outputs.vector().minCoeff()));
-                NANO_CHECK(std::isfinite(outputs.vector().maxCoeff()));
+                NANO_CHECK(nano::isfinite(outputs));
 
                 if (gx)
                 {
                         const auto& ginput = m_model.ginput(m_loss->vgrad(m_targets, outputs));
                         NANO_CHECK_EQUAL(gx->size(), ginput.size());
-                        NANO_CHECK(std::isfinite(ginput.vector().minCoeff()));
-                        NANO_CHECK(std::isfinite(ginput.vector().maxCoeff()));
+                        NANO_CHECK(nano::isfinite(ginput));
 
                         *gx = ginput.vector();
                 }

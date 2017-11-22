@@ -29,6 +29,25 @@ static const ttensor& copy_params(const tnodes& nodes, const tgetter& getter, tt
         return pdata;
 }
 
+template <typename tvalue>
+static void reorder(std::vector<tvalue>& values, const indices_t& order)
+{
+        assert(values.size() == order.size());
+
+        for (size_t i = 0; i < order.size(); ++ i)
+        {
+                size_t orig = order[i];
+                while (i < orig)
+                {
+                        orig = order[orig];
+                }
+                if (i != orig)
+                {
+                        std::swap(values[i], values[orig]);
+                }
+        }
+}
+
 model_t::cnode_t::cnode_t(const cnode_t& other) :
         m_name(other.m_name),
         m_type(other.m_type),
@@ -53,6 +72,34 @@ rmodel_t model_t::clone() const
 void model_t::clear()
 {
         m_nodes.clear();
+}
+
+tensor_size_t model_t::xsize(const tensor_size_t count) const
+{
+        assert(!m_nodes.empty());
+
+        tensor_size_t sum = inode().m_node->isize();
+        for (const auto& cnode : m_nodes)
+        {
+                sum += cnode.m_node->osize();
+        }
+        return sum * count;
+}
+
+void model_t::allocate(const tensor_size_t count)
+{
+        m_xdata.resize(xsize(count));
+
+        tensor_size_t obegin = count * inode().m_node->isize();
+        for (auto& cnode : m_nodes)
+        {
+                // todo: handle multiple inputs
+                cnode.m_ibegin = cnode.m_inodes.empty() ? 0 : m_nodes[*cnode.m_inodes.begin()].m_obegin;
+                cnode.m_obegin = obegin;
+                obegin += count * cnode.m_node->osize();
+        }
+
+        assert(obegin == m_xdata.size());
 }
 
 size_t model_t::find_node(const string_t& name) const
@@ -405,17 +452,7 @@ bool model_t::done()
 
         // OK, reorder nodes using the topological sorting
         const auto tsort = graph.tsort();
-        assert(tsort.size() == m_nodes.size());
-        for (size_t i = 0; i < tsort.size(); ++ i)
-        {
-                size_t orig = tsort[i];
-                while (i < orig)
-                {
-                        orig = tsort[orig];
-                }
-                std::swap(m_nodes[i], m_nodes[orig]);
-        }
-        describe();
+        reorder(m_nodes, tsort);
         return true;
 }
 
@@ -498,168 +535,165 @@ bool model_t::load(const string_t& path)
                 [&] () { params(pdata); return true; }();
 }
 
-void model_t::update_params()
-{
-        copy_params(m_nodes, [] (const layer_t& node) { return node.params(); }, m_pdata);
-        m_gdata.setZero();
-}
-
 void model_t::params(const vector_t& pdata)
 {
         assert(pdata.size() == psize());
-
-        tensor_size_t pindex = 0;
-        for (const auto& node : m_nodes)
-        {
-                const auto& comp = node.m_node;
-                if (comp->psize())
-                {
-                        assert(pindex + comp->psize() <= pdata.size());
-                        comp->param(map_tensor(pdata.data() + pindex, comp->pdims()));
-                        pindex += comp->psize();
-                }
-        }
-        assert(pindex == psize());
-
-        update_params();
-}
-
-const model_t::cnode_t& model_t::inode() const
-{
-        assert(!m_nodes.empty());
-        return *m_nodes.begin();
-}
-
-const model_t::cnode_t& model_t::onode() const
-{
-        assert(!m_nodes.empty());
-        return *m_nodes.rbegin();
-}
-
-void model_t::output_node(const size_t index, const tensor4d_t& idata) const
-{
-        assert(index < m_nodes.size());
-        const auto& node = m_nodes[index];
-        const auto& odata = node.m_node->output(idata);
-        for (const auto onode : node.m_onodes)
-        {
-                output_node(onode, odata);
-        }
-}
-
-void model_t::ginput_node(const size_t index, const tensor4d_t& odata) const
-{
-        assert(index < m_nodes.size());
-        const auto& node = m_nodes[index];
-        const auto& idata = node.m_node->ginput(odata);
-        for (const auto inode : node.m_inodes)
-        {
-                ginput_node(inode, idata);
-        }
-}
-
-void model_t::gparam_node(const size_t index, const tensor4d_t& odata) const
-{
-        assert(index < m_nodes.size());
-        const auto& node = m_nodes[index];
-        node.m_node->gparam(odata);
-        if (!node.m_inodes.empty())
-        {
-                const auto& idata = node.m_node->ginput(odata);
-                for (const auto inode : node.m_inodes)
-                {
-                        gparam_node(inode, idata);
-                }
-        }
-}
-
-const tensor4d_t& model_t::output(const tensor4d_t& idata)
-{
-        assert(idata.tensor(0).dims() == idims());
-        assert(!m_nodes.empty());
-
-        const auto count = idata.size<0>();
-        m_probe_output.measure([&] () { output_node(0, idata); }, count);
-
-        return onode().m_node->output();
-}
-
-const tensor4d_t& model_t::ginput(const tensor4d_t& odata)
-{
-        assert(odata.tensor(0).dims() == odims());
-        assert(!m_nodes.empty());
-
-        const auto count = odata.size<0>();
-        m_probe_ginput.measure([&] () { ginput_node(m_nodes.size() - 1, odata); }, count);
-
-        return inode().m_node->input();
-}
-
-const vector_t& model_t::gparam(const tensor4d_t& odata)
-{
-        assert(odata.tensor(0).dims() == odims());
-        assert(!m_nodes.empty());
-
-        const auto count = odata.size<0>();
-        m_probe_gparam.measure([&] () { gparam_node(m_nodes.size() - 1, odata); }, count);
-        return copy_params(m_nodes, [] (const layer_t& node) { return node.gparam(); }, m_gdata);
+        m_pdata = pdata;
+        m_gdata.setZero();
 }
 
 void model_t::random()
 {
-        tensor_size_t pindex = 0;
-        for (const auto& node : m_nodes)
+        for (const auto& cnode : m_nodes)
         {
-                const auto& comp = node.m_node;
-                if (comp->psize())
+                if (cnode.m_node->psize() > 0)
                 {
-                        const auto div = static_cast<scalar_t>(comp->fanin());
+                        const auto div = static_cast<scalar_t>(cnode.m_node->fanin());
                         const auto min = -std::sqrt(6 / (1 + div));
                         const auto max = +std::sqrt(6 / (1 + div));
-
-                        auto gdata = map_tensor(m_gdata.data() + pindex, comp->pdims());
-                        auto pdata = map_tensor(static_cast<const scalar_t*>(m_gdata.data()) + pindex, comp->pdims());
-
-                        nano::set_random(random_t<scalar_t>(min, max), gdata);
-                        comp->param(pdata);
-
-                        pindex += comp->psize();
+                        nano::set_random(random_t<scalar_t>(min, max), cnode.pdata(m_pdata));
                 }
         }
-        assert(pindex == psize());
+        m_gdata.setZero();
 
-        update_params();
+        assert(nano::isfinite(m_pdata));
 }
 
-bool model_t::resize_node(const size_t index, const tensor3d_dims_t& idims) const
+tensor4d_cmap_t model_t::output(const tensor4d_t& idata)
 {
-        assert(index < m_nodes.size());
-        const auto& comp = m_nodes[index].m_node;
-        const auto& name = m_nodes[index].m_name;
-        const auto& outs = m_nodes[index].m_onodes;
-        assert(comp);
-        return  comp->resize(idims, name) &&
-                std::accumulate(outs.begin(), outs.end(), true, [&] (const bool acc, const size_t out)
+        assert(idata.tensor(0).dims() == idims());
+        assert(nano::isfinite(m_pdata));
+        assert(nano::isfinite(idata));
+        assert(!m_nodes.empty());
+
+        const auto count = idata.size<0>();
+        m_probe_output.measure([&] ()
+        {
+                // allocate buffers if the count (aka the number of samples to process at once) changed
+                if (m_xdata.size() != xsize(count))
                 {
-                        return acc && resize_node(out, comp->odims());
-                });
+                        allocate(count);
+                }
+
+                // forward step
+                inode().idata(m_xdata, count).array() = idata.array();
+                for (const auto& cnode : m_nodes)
+                {
+                        cnode.m_node->output(
+                                cnode.idata(cxdata(), count),
+                                cnode.pdata(cpdata()),
+                                cnode.odata(m_xdata, count));
+                }
+        }, count);
+
+        assert(nano::isfinite(m_xdata));
+        assert(nano::isfinite(m_pdata));
+
+        return onode().odata(cxdata(), count);
+}
+
+tensor4d_cmap_t model_t::ginput(const tensor4d_t& odata)
+{
+        assert(nano::isfinite(odata));
+        assert(nano::isfinite(m_xdata));
+        assert(nano::isfinite(m_pdata));
+        assert(odata.tensor(0).dims() == odims());
+        assert(!m_nodes.empty());
+
+        const auto count = odata.size<0>();
+        m_probe_ginput.measure([&] ()
+        {
+                assert(m_xdata.size() == xsize(count));
+
+                // backward step
+                onode().odata(m_xdata, count).array() = odata.array();
+                for (auto it = m_nodes.rbegin(); it != m_nodes.rend(); ++ it)
+                {
+                        const auto& cnode = *it;
+                        cnode.m_node->ginput(
+                                cnode.idata(m_xdata, count),
+                                cnode.pdata(cpdata()),
+                                cnode.odata(cxdata(), count));
+                }
+        }, count);
+
+        assert(nano::isfinite(m_xdata));
+        assert(nano::isfinite(m_pdata));
+
+        return inode().idata(cxdata(), count);
+}
+
+const vector_t& model_t::gparam(const tensor4d_t& odata)
+{
+        assert(nano::isfinite(odata));
+        assert(nano::isfinite(m_xdata));
+        assert(nano::isfinite(m_pdata));
+        assert(odata.tensor(0).dims() == odims());
+        assert(!m_nodes.empty());
+
+        const auto count = odata.size<0>();
+        m_probe_gparam.measure([&] ()
+        {
+                assert(m_xdata.size() == xsize(count));
+
+                // backward step
+                onode().odata(m_xdata, count).array() = odata.array();
+                for (auto it = m_nodes.rbegin(); it != m_nodes.rend(); ++ it)
+                {
+                        const auto& cnode = *it;
+                        cnode.m_node->gparam(
+                                cnode.idata(cxdata(), count),
+                                cnode.pdata(m_gdata),
+                                cnode.odata(cxdata(), count));
+                        if (!cnode.m_inodes.empty())
+                        {
+                                cnode.m_node->ginput(
+                                        cnode.idata(m_xdata, count),
+                                        cnode.pdata(cpdata()),
+                                        cnode.odata(cxdata(), count));
+                        }
+                }
+        }, count);
+
+        assert(nano::isfinite(m_xdata));
+        assert(nano::isfinite(m_pdata));
+        assert(nano::isfinite(m_gdata));
+
+        return m_gdata;
 }
 
 bool model_t::resize(const tensor3d_dims_t& idims, const tensor3d_dims_t& odims)
 {
-        log_info() << "model_t: resizing the computation nodes...";
+        log_info() << "model: resizing the computation nodes...";
 
         // resize computation nodes starting from the input
-        if (!resize_node(0, idims))
+        for (const auto& cnode : m_nodes)
         {
-                log_error() << "model: failed to resize nodes!";
-                return false;
+                std::vector<tensor3d_dims_t> cidims;
+                if (cnode.m_inodes.empty())
+                {
+                        cidims.push_back(idims);
+                }
+                else
+                {
+                        for (const auto inode : cnode.m_inodes)
+                        {
+                                cidims.push_back(m_nodes[inode].m_node->odims());
+                        }
+                }
+
+                if (!cnode.m_node->resize(cidims, cnode.m_name))
+                {
+                        log_error() << "model: failed to resize node [" << cnode.m_name << "]!";
+                        return false;
+                }
         }
 
         // check output size to match the target
-        if (onode().m_node->odims() != odims)
+        if (m_nodes.rbegin()->m_node->odims() != odims)
         {
-                log_error() << "model: miss-matching output size " << onode().m_node->odims() << ", expecting " << odims << "!";
+                log_error() << "model: miss-matching output size "
+                        << m_nodes.rbegin()->m_node->odims() << ", expecting " << odims << "!";
                 return false;
         }
 
@@ -669,12 +703,12 @@ bool model_t::resize(const tensor3d_dims_t& idims, const tensor3d_dims_t& odims)
         int64_t flops_ginput = 0;
         int64_t flops_gparam = 0;
 
-        for (const auto& node : m_nodes)
+        for (const auto& cnode : m_nodes)
         {
-                psize += node.m_node->psize();
-                flops_output += node.m_node->probe_output().flops();
-                flops_ginput += node.m_node->probe_ginput().flops();
-                flops_gparam += node.m_node->probe_gparam().flops();
+                psize += cnode.m_node->psize();
+                flops_output += cnode.m_node->probe_output().flops();
+                flops_ginput += cnode.m_node->probe_ginput().flops();
+                flops_gparam += cnode.m_node->probe_gparam().flops();
         }
 
         m_pdata.resize(psize);
@@ -683,22 +717,15 @@ bool model_t::resize(const tensor3d_dims_t& idims, const tensor3d_dims_t& odims)
         m_probe_ginput = probe_t{"model", "model(ginput)", flops_ginput};
         m_probe_gparam = probe_t{"model", "model(gparam)", flops_gparam};
 
+        tensor_size_t pbegin = 0;
+        for (auto& cnode : m_nodes)
+        {
+                cnode.m_pbegin = pbegin;
+                pbegin += cnode.m_node->psize();
+        }
+        assert(pbegin == m_pdata.size());
+
         return true;
-}
-
-tensor_size_t model_t::psize() const
-{
-        return m_gdata.size();
-}
-
-tensor3d_dims_t model_t::idims() const
-{
-        return inode().m_node->idims();
-}
-
-tensor3d_dims_t model_t::odims() const
-{
-        return onode().m_node->odims();
 }
 
 void model_t::describe() const

@@ -22,9 +22,9 @@ namespace nano
                 json_writer_t& config(json_writer_t&) const final;
 
                 bool resize(const tensor3d_dims_t& idims, const string_t& name) final;
-                void output(const tensor4d_t& idata, const tensor1d_t& pdata, tensor4d_t& odata) final;
-                void ginput(tensor4d_t& idata, const tensor1d_t& pdata, const tensor4d_t& odata) final;
-                void gparam(const tensor4d_t& idata, tensor1d_t& pdata, const tensor4d_t& odata) final;
+                void output(const tensor4d_cmap_t& idata, const vector_cmap_t& pdata, tensor4d_map_t&& odata) final;
+                void ginput(tensor4d_map_t&& idata, const vector_cmap_t& pdata, const tensor4d_cmap_t& odata) final;
+                void gparam(const tensor4d_cmap_t& idata, vector_map_t&& pdata, const tensor4d_cmap_t& odata) final;
 
                 tensor_size_t fanin() const final;
                 tensor3d_dims_t idims() const final { return m_params.idims(); }
@@ -39,11 +39,11 @@ namespace nano
 
                 auto wsize() const { return osize() * isize(); }
 
-                auto wdata(tensor1d_t& pdata) const { return map_matrix(pdata.data(), osize(), isize()); }
-                auto bdata(tensor1d_t& pdata) const { return map_vector(pdata.data() + wsize(), osize()); }
+                template <typename tvector>
+                auto wdata(tvector&& pdata) const { return map_matrix(pdata.data(), osize(), isize()); }
 
-                auto wdata(const tensor1d_t& pdata) const { return map_matrix(pdata.data(), osize(), isize()); }
-                auto bdata(const tensor1d_t& pdata) const { return map_vector(pdata.data() + wsize(), osize()); }
+                template <typename tvector>
+                auto bdata(tvector&& pdata) const { return map_vector(pdata.data() + wsize(), osize()); }
 
                 // attributes
                 affine_params_t m_params;

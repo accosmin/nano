@@ -17,9 +17,8 @@ namespace nano
                 using treference = tscalar&;
                 using tconst_reference = const tscalar&;
 
-                static constexpr bool resizable() { return true; }
-                static constexpr bool owns_memory() { return true; }
-                static constexpr bool only_const() { return false; }
+                static constexpr bool resizable = true;
+                static constexpr bool owns_memory = true;
 
                 tensor_vstorage_t() = default;
                 tensor_vstorage_t(const tstorage& data) : m_data(data) {}
@@ -50,9 +49,8 @@ namespace nano
                 using treference = typename std::conditional<std::is_const<tscalar_>::value, const tscalar&, tscalar&>::type;
                 using tconst_reference = treference;
 
-                static constexpr bool resizable() { return false; }
-                static constexpr bool owns_memory() { return false; }
-                static constexpr bool only_const() { return true; }
+                static constexpr bool resizable = false;
+                static constexpr bool owns_memory = false;
 
                 tensor_pstorage_t() : m_data(nullptr) {}
                 tensor_pstorage_t(const tstorage& data) : m_data(data) {}

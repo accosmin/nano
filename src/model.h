@@ -83,7 +83,7 @@ namespace nano
                 bool load(const string_t& path);
 
                 ///
-                /// \brief serialize parameters to memory
+                /// \brief set parameters
                 ///
                 void params(const vector_t&);
 
@@ -95,7 +95,7 @@ namespace nano
                 ///
                 /// \brief compute the model's output given its input
                 ///
-                const tensor4d_t& output(const tensor4d_t& idata);
+                tensor4d_cmap_t output(const tensor4d_t& idata);
 
                 ///
                 /// \brief compute the model's gradient wrt parameters given its output
@@ -105,7 +105,7 @@ namespace nano
                 ///
                 /// \brief compute the model's gradient wrt inputs given its output
                 ///
-                const tensor4d_t& ginput(const tensor4d_t& odata);
+                tensor4d_cmap_t ginput(const tensor4d_t& odata);
 
                 ///
                 /// \brief retrieve timing information for all components
@@ -120,25 +120,30 @@ namespace nano
                 ///
                 /// \brief returns the input/output dimensions
                 ///
-                tensor3d_dims_t idims() const;
-                tensor3d_dims_t odims() const;
+                tensor3d_dims_t idims() const { return inode().m_node->idims(); }
+                tensor3d_dims_t odims() const { return onode().m_node->odims(); }
 
                 ///
                 /// \brief returns number of parameters (to optimize)
                 ///
-                tensor_size_t psize() const;
+                tensor_size_t psize() const { return m_pdata.size(); }
 
                 ///
                 /// \brief returns the current parameters and their gradient
                 ///
                 const vector_t& params() const { return m_pdata; }
-                const vector_t& gparam() const { return m_gdata; }
 
         private:
 
                 bool config_nodes(json_reader_t&);
                 bool config_model(json_reader_t&);
-                void update_params();
+
+                void allocate(const tensor_size_t count);
+                tensor_size_t xsize(const tensor_size_t count) const;
+
+                const vector_t& cxdata() { return m_xdata; }
+                const vector_t& cpdata() { return m_pdata; }
+                const vector_t& cgdata() { return m_gdata; }
 
                 ///
                 /// \brief computation node.
@@ -152,20 +157,42 @@ namespace nano
                         cnode_t& operator=(cnode_t&&) = default;
                         cnode_t(string_t name, string_t type, rlayer_t&&);
 
+                        template <typename tvector>
+                        auto pdata(tvector&& buffer) const
+                        {
+                                assert(m_pbegin >= 0 && m_pbegin + m_node->psize() <= buffer.size());
+                                return map_vector(buffer.data() + m_pbegin, m_node->psize());
+                        }
+
+                        template <typename tvector>
+                        auto idata(tvector&& buffer, const tensor_size_t count) const
+                        {
+                                // todo: handle multiple inputs
+                                assert(m_ibegin >= 0 && m_ibegin + count * m_node->isize() <= buffer.size());
+                                return map_tensor(buffer.data() + m_ibegin, cat_dims(count, m_node->idims()));
+                        }
+
+                        template <typename tvector>
+                        auto odata(tvector&& buffer, const tensor_size_t count) const
+                        {
+                                assert(m_obegin >= 0 && m_obegin + count * m_node->osize() <= buffer.size());
+                                return map_tensor(buffer.data() + m_obegin, cat_dims(count, m_node->odims()));
+                        }
+
+                        // attributes
                         string_t        m_name;
                         string_t        m_type;
                         rlayer_t        m_node;         ///< the computation node
                         indices_t       m_inodes;       ///< input nodes
                         indices_t       m_onodes;       ///< output nodes
+                        tensor_size_t   m_ibegin{0};    ///< offset of the input tensor
+                        tensor_size_t   m_obegin{0};    ///< offset of the output tensor
+                        tensor_size_t   m_pbegin{0};    ///< offset of the parameter vector
                 };
 
-                const cnode_t& inode() const;
-                const cnode_t& onode() const;
                 size_t find_node(const string_t& name) const;
-                bool resize_node(const size_t index, const tensor3d_dims_t& idims) const;
-                void output_node(const size_t index, const tensor4d_t& idata) const;
-                void ginput_node(const size_t index, const tensor4d_t& odata) const;
-                void gparam_node(const size_t index, const tensor4d_t& odata) const;
+                const cnode_t& inode() const { assert(!m_nodes.empty()); return *m_nodes.begin(); }
+                const cnode_t& onode() const { assert(!m_nodes.empty()); return *m_nodes.rbegin(); }
 
                 using cnodes_t = std::vector<cnode_t>;
 
@@ -173,6 +200,7 @@ namespace nano
                 cnodes_t        m_nodes;
                 vector_t        m_pdata;                ///< current parameters
                 vector_t        m_gdata;                ///< current gradient wrt parameters
+                vector_t        m_xdata;                ///< current input-output buffers
                 probe_t         m_probe_output;
                 probe_t         m_probe_ginput;
                 probe_t         m_probe_gparam;

@@ -4,6 +4,7 @@
 #include "function.h"
 #include "math/random.h"
 #include "math/epsilon.h"
+#include "tensor/numeric.h"
 
 using namespace nano;
 
@@ -28,15 +29,13 @@ struct loss_function_t final : public function_t
                 {
                         const auto grads = m_loss->vgrad(m_targets, scores);
                         NANO_CHECK_EQUAL(gx->size(), grads.size());
-                        NANO_CHECK(std::isfinite(grads.vector().minCoeff()));
-                        NANO_CHECK(std::isfinite(grads.vector().maxCoeff()));
+                        NANO_CHECK(nano::isfinite(grads));
 
                         *gx = grads.vector();
                 }
 
                 const auto values = m_loss->value(m_targets, scores);
-                NANO_CHECK(std::isfinite(values.vector().minCoeff()));
-                NANO_CHECK(std::isfinite(values.vector().maxCoeff()));
+                NANO_CHECK(nano::isfinite(values));
                 return values.vector().sum();
         }
 

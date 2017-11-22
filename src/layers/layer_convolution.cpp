@@ -44,19 +44,19 @@ tensor_size_t convolution_layer_t::fanin() const
         return m_params.krows() * m_params.kcols() * m_params.imaps() / m_params.kconn();
 }
 
-void convolution_layer_t::output(const tensor4d_t& idata, const tensor1d_t& pdata, tensor4d_t& odata)
+void convolution_layer_t::output(const tensor4d_cmap_t& idata, const vector_cmap_t& pdata, tensor4d_map_t&& odata)
 {
         const auto count = idata.size<0>();
         m_probe_output.measure([&] () { m_kernel.output(idata, kdata(pdata), bdata(pdata), odata); }, count);
 }
 
-void convolution_layer_t::ginput(tensor4d_t& idata, const tensor1d_t& pdata, const tensor4d_t& odata)
+void convolution_layer_t::ginput(tensor4d_map_t&& idata, const vector_cmap_t& pdata, const tensor4d_cmap_t& odata)
 {
         const auto count = idata.size<0>();
         m_probe_ginput.measure([&] () { m_kernel.ginput(idata, kdata(pdata), bdata(pdata), odata); }, count);
 }
 
-void convolution_layer_t::gparam(const tensor4d_t& idata, tensor1d_t& pdata, const tensor4d_t& odata)
+void convolution_layer_t::gparam(const tensor4d_cmap_t& idata, vector_map_t&& pdata, const tensor4d_cmap_t& odata)
 {
         const auto count = idata.size<0>();
         m_probe_gparam.measure([&] () { m_kernel.gparam(idata, kdata(pdata), bdata(pdata), odata); }, count);

@@ -18,9 +18,9 @@ namespace nano
                 json_writer_t& config(json_writer_t&) const final;
 
                 bool resize(const tensor3d_dims_t& idims, const string_t& name) final;
-                void output(const tensor4d_t& idata, const tensor1d_t& pdata, tensor4d_t& odata) final;
-                void ginput(tensor4d_t& idata, const tensor1d_t& pdata, const tensor4d_t& odata) final;
-                void gparam(const tensor4d_t& idata, tensor1d_t& pdata, const tensor4d_t& odata) final;
+                void output(const tensor4d_cmap_t& idata, const vector_cmap_t& pdata, tensor4d_map_t&& odata) final;
+                void ginput(tensor4d_map_t&& idata, const vector_cmap_t& pdata, const tensor4d_cmap_t& odata) final;
+                void gparam(const tensor4d_cmap_t& idata, vector_map_t&& pdata, const tensor4d_cmap_t& odata) final;
 
                 tensor_size_t fanin() const final { return 1; }
                 tensor3d_dims_t idims() const final { return m_params.xdims(); }

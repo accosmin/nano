@@ -1,6 +1,7 @@
 #pragma once
 
 #include "norm3d_params.h"
+#include "tensor/numeric.h"
 
 namespace nano
 {
@@ -46,8 +47,7 @@ namespace nano
                 template <typename tiarray, typename toarray>
                 static void onorm(const tiarray& iarray, toarray&& oarray)
                 {
-                        assert(std::isfinite(iarray.minCoeff()));
-                        assert(std::isfinite(iarray.maxCoeff()));
+                        assert(nano::isfinite(iarray));
 
                         const auto isum1 = iarray.sum();
                         const auto isum2 = iarray.square().sum();
@@ -57,17 +57,14 @@ namespace nano
 
                         oarray = (iarray - imean) / istdv;
 
-                        assert(std::isfinite(oarray.minCoeff()));
-                        assert(std::isfinite(oarray.maxCoeff()));
+                        assert(nano::isfinite(oarray));
                 }
 
                 template <typename tiarray, typename toarray>
                 static void gnorm(tiarray&& iarray, const toarray& oarray)
                 {
-                        assert(std::isfinite(iarray.minCoeff()));
-                        assert(std::isfinite(iarray.maxCoeff()));
-                        assert(std::isfinite(oarray.minCoeff()));
-                        assert(std::isfinite(oarray.maxCoeff()));
+                        assert(nano::isfinite(iarray));
+                        assert(nano::isfinite(oarray));
 
                         const auto isum1 = iarray.sum();
                         const auto isum2 = iarray.square().sum();
@@ -82,8 +79,7 @@ namespace nano
                                  osum1 / (count * istdv) -
                                  (iarray - imean) * oisum / (count * istdv * istdv * istdv);
 
-                        assert(std::isfinite(iarray.minCoeff()));
-                        assert(std::isfinite(iarray.maxCoeff()));
+                        assert(nano::isfinite(iarray));
                 }
 
                 // attributes

@@ -97,14 +97,14 @@ namespace nano
                         m_dims({dims...}),
                         m_storage(this->size())
                 {
-                        static_assert(tstorage::resizable(), "tensor not resizable");
+                        static_assert(tstorage::resizable, "tensor not resizable");
                 }
 
                 explicit tensor_t(const tdims& dims) :
                         m_dims(dims),
                         m_storage(this->size())
                 {
-                        static_assert(tstorage::resizable(), "tensor not resizable");
+                        static_assert(tstorage::resizable, "tensor not resizable");
                 }
 
                 ///
@@ -114,7 +114,7 @@ namespace nano
                         m_dims(dims),
                         m_storage(ptr)
                 {
-                        static_assert(!tstorage::resizable(), "tensor resizable");
+                        static_assert(!tstorage::resizable, "tensor resizable");
                         assert(ptr != nullptr || !size());
                 }
 
@@ -122,7 +122,7 @@ namespace nano
                         m_dims(dims),
                         m_storage(ptr)
                 {
-                        static_assert(!tstorage::resizable(), "tensor resizable");
+                        static_assert(!tstorage::resizable, "tensor resizable");
                         assert(ptr != nullptr || !size());
                 }
 
@@ -132,16 +132,12 @@ namespace nano
                 template <typename tstorage2>
                 tensor_t(const tensor_t<tstorage2, trank>& other)
                 {
-                        if (tstorage::resizable())
+                        if (tstorage::resizable)
                         {
                                 resize(other.dims());
-                                array() = other.array();
                         }
-                        else
-                        {
-                                assert(dims() == other.dims());
-                                array() = other.array();
-                        }
+                        assert(dims() == other.dims());
+                        array() = other.array();
                 }
 
                 ///
@@ -150,8 +146,11 @@ namespace nano
                 template <typename tstorage2>
                 tensor_t& operator=(const tensor_t<tstorage2, trank>& other)
                 {
-                        static_assert(tstorage::resizable(), "tensor not resizable");
-                        resize(other.dims());
+                        if (tstorage::resizable)
+                        {
+                                resize(other.dims());
+                        }
+                        assert(dims() == other.dims());
                         array() = other.array();
                         return *this;
                 }
@@ -223,13 +222,13 @@ namespace nano
                 template <typename... tsizes>
                 tensor_size_t resize(const tsizes... dims)
                 {
-                        static_assert(tstorage::resizable(), "tensor not resizable");
+                        static_assert(tstorage::resizable, "tensor not resizable");
                         return resize({{dims...}});
                 }
 
                 tensor_size_t resize(const tdims& dims)
                 {
-                        static_assert(tstorage::resizable(), "tensor not resizable");
+                        static_assert(tstorage::resizable, "tensor not resizable");
                         this->m_dims = dims;
                         this->m_storage.resize(this->size());
                         return this->size();

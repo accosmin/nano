@@ -7,44 +7,6 @@
 
 using namespace nano;
 
-void layer_t::param(const tensor1d_cmap_t& pdata)
-{
-        assert(pdata.dims() == pdims());
-
-        m_pdata = pdata;
-        m_gdata.resize(pdims());
-        m_gdata.zero();
-}
-
-const tensor4d_t& layer_t::output(const tensor4d_t& idata)
-{
-        const auto count = idata.size<0>();
-
-        assert(count > 0);
-        assert(idata.dims() == cat_dims(count, idims()));
-
-        m_idata = idata;
-        m_odata.resize(cat_dims(count, odims()));
-        output(m_idata, m_pdata, m_odata);
-        return m_odata;
-}
-
-const tensor4d_t& layer_t::ginput(const tensor4d_t& odata)
-{
-        assert(m_odata.dims() == odata.dims());
-
-        ginput(m_idata, m_pdata, odata);
-        return m_idata;
-}
-
-const tensor1d_t& layer_t::gparam(const tensor4d_t& odata)
-{
-        assert(m_odata.dims() == odata.dims());
-
-        gparam(m_idata, m_gdata, odata);
-        return m_gdata;
-}
-
 layer_factory_t& nano::get_layers()
 {
         static layer_factory_t manager;

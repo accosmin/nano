@@ -1,6 +1,7 @@
 #pragma once
 
 #include "layer.h"
+#include "tensor/numeric.h"
 
 namespace nano
 {
@@ -17,9 +18,9 @@ namespace nano
                 json_writer_t& config(json_writer_t& writer) const final { return writer; }
 
                 bool resize(const tensor3d_dims_t& idims, const string_t& name) final;
-                void output(const tensor4d_t& idata, const tensor1d_t& pdata, tensor4d_t& odata) final;
-                void ginput(tensor4d_t& idata, const tensor1d_t& pdata, const tensor4d_t& odata) final;
-                void gparam(const tensor4d_t& idata, tensor1d_t& pdata, const tensor4d_t& odata) final;
+                void output(const tensor4d_cmap_t& idata, const vector_cmap_t& pdata, tensor4d_map_t&& odata) final;
+                void ginput(tensor4d_map_t&& idata, const vector_cmap_t& pdata, const tensor4d_cmap_t& odata) final;
+                void gparam(const tensor4d_cmap_t& idata, vector_map_t&& pdata, const tensor4d_cmap_t& odata) final;
 
                 tensor_size_t fanin() const final { return 1; }
                 tensor3d_dims_t idims() const final { return m_xdims; }
@@ -56,47 +57,33 @@ namespace nano
         }
 
         template <typename top>
-        void activation_layer_t<top>::output(const tensor4d_t& idata, const tensor1d_t& pdata, tensor4d_t& odata)
+        void activation_layer_t<top>::output(const tensor4d_cmap_t& idata, const vector_cmap_t&, tensor4d_map_t&& odata)
         {
                 assert(idata.dims() == odata.dims());
-                assert(pdata.dims() == pdims());
-                NANO_UNUSED1_RELEASE(pdata);
-
-                assert(std::isfinite(idata.vector().minCoeff()));
-                assert(std::isfinite(idata.vector().maxCoeff()));
+                assert(nano::isfinite(idata));
 
                 const auto count = idata.size<0>();
                 m_probe_output.measure([&] () { top::output(idata.array(), odata.array()); }, count);
 
-                assert(std::isfinite(odata.vector().minCoeff()));
-                assert(std::isfinite(odata.vector().maxCoeff()));
+                assert(nano::isfinite(odata));
         }
 
         template <typename top>
-        void activation_layer_t<top>::ginput(tensor4d_t& idata, const tensor1d_t& pdata, const tensor4d_t& odata)
+        void activation_layer_t<top>::ginput(tensor4d_map_t&& idata, const vector_cmap_t&, const tensor4d_cmap_t& odata)
         {
                 assert(idata.dims() == odata.dims());
-                assert(pdata.dims() == pdims());
-                NANO_UNUSED1_RELEASE(pdata);
-
-                assert(std::isfinite(idata.vector().minCoeff()));
-                assert(std::isfinite(idata.vector().maxCoeff()));
-                assert(std::isfinite(odata.vector().minCoeff()));
-                assert(std::isfinite(odata.vector().maxCoeff()));
+                assert(nano::isfinite(idata));
+                assert(nano::isfinite(odata));
 
                 const auto count = idata.size<0>();
                 m_probe_ginput.measure([&] () { top::ginput(idata.array(), odata.array()); }, count);
 
-                assert(std::isfinite(idata.vector().minCoeff()));
-                assert(std::isfinite(idata.vector().maxCoeff()));
+                assert(nano::isfinite(idata));
         }
 
         template <typename top>
-        void activation_layer_t<top>::gparam(const tensor4d_t& idata, tensor1d_t& pdata, const tensor4d_t& odata)
+        void activation_layer_t<top>::gparam(const tensor4d_cmap_t&, vector_map_t&&, const tensor4d_cmap_t&)
         {
-                assert(idata.dims() == odata.dims());
-                assert(pdata.dims() == pdims());
-                NANO_UNUSED3_RELEASE(idata, pdata, odata);
         }
 
         ///
