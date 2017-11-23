@@ -48,6 +48,14 @@ static void reorder(std::vector<tvalue>& values, const indices_t& order)
         }
 }
 
+static void reindex(indices_t& indices, const indices_t& order)
+{
+        for (auto& index : indices)
+        {
+                index = order[index];
+        }
+}
+
 model_t::cnode_t::cnode_t(const cnode_t& other) :
         m_name(other.m_name),
         m_type(other.m_type),
@@ -452,11 +460,14 @@ bool model_t::done()
 
         // OK, reorder nodes using the topological sorting
         const auto tsort = graph.tsort();
-
         // todo: check that the inputs to a node are consecutive (to pass idata as a block)
-        // fixme: reordering the nodes should also reorder cnode_t::m_inodes/m_onodes!!!
-
         reorder(m_nodes, tsort);
+        for (auto& cnode : m_nodes)
+        {
+                // also reindex the inputs/outputs
+                reindex(cnode.m_inodes, tsort);
+                reindex(cnode.m_onodes, tsort);
+        }
         return true;
 }
 
