@@ -27,6 +27,16 @@ namespace nano
                 void edge(const tindex src, const tindex dst);
 
                 ///
+                /// \brief create the directed edges to connect the given chain of vertex ids
+                ///
+                template <typename... tindices>
+                void edge(const tindex src, const tindex dst, const tindices... rest)
+                {
+                        edge(src, dst);
+                        edge(dst, rest...);
+                }
+
+                ///
                 /// \brief remove all edges
                 ///
                 void clear();
@@ -104,13 +114,13 @@ namespace nano
                 using flags_t = std::vector<flag>;
 
                 template <typename toperator>
-                bool foreach_out(const tindex src, const toperator& top) const
+                void foreach_out(const tindex src, const toperator& top) const
                 {
                         const auto sedge = edge_t{src, src};
                         const auto ecomp = [] (const auto& e1, const auto& e2) { return e1.first < e2.first; };
                         const auto range = std::equal_range(m_edges.begin(), m_edges.end(), sedge, ecomp);
 
-                        return std::find_if_not(range.first, range.second, top) == range.second;
+                        std::for_each(range.first, range.second, top);
                 }
 
                 template <typename tvalue>
@@ -132,51 +142,21 @@ namespace nano
                         return diff;
                 }
 
-                template <typename tvcall, typename tqueuer>
-                static bool visit(flags_t& flags, const tvcall& vcall, const tqueuer& q, const tindex v)
-                {
-                        assert(v < flags.size());
-                        switch (flags[v])
-                        {
-                        case flag::none:
-                                q();
-                                flags[v] = flag::visited;
-                                vcall(v);
-                                return true;
-                        default:
-                                return false;
-                        }
-                }
-
-                template <typename tvcall>
-                static bool depth_visit(flags_t& flags, const tvcall& vcall, std::stack<tindex>& q, const tindex v)
-                {
-                        return visit(flags, vcall, [&] () { q.push(v); }, v);
-                }
-
-                template <typename tvcall>
-                static bool breadth_visit(flags_t& flags, const tvcall& vcall, std::deque<tindex>& q, const tindex v)
-                {
-                        return visit(flags, vcall, [&] () { q.push_back(v); }, v);
-                }
-
                 template <typename tvcall>
                 bool depth_first(flags_t& flags, const tvcall& vcall, const tindex src) const
                 {
                         std::stack<tindex> stack;
-                        if (!depth_visit(flags, vcall, stack, src))
-                        {
-                                return false;
-                        }
-
+                        stack.push(src);
                         while (!stack.empty())
                         {
                                 const auto u = stack.top();
                                 stack.pop();
 
-                                if (!foreach_out(u, [&] (const edge_t& e) { return depth_visit(flags, vcall, stack, e.second); }))
+                                if (flags[u] == flag::none)
                                 {
-                                        return false;
+                                        flags[u] = flag::visited;
+                                        vcall(u);
+                                        foreach_out(u, [&] (const edge_t& e) { stack.push(e.second); });
                                 }
                         }
                         return true;
@@ -186,19 +166,17 @@ namespace nano
                 bool breadth_first(flags_t& flags, const tvcall& vcall, const tindex src) const
                 {
                         std::deque<tindex> queue;
-                        if (!breadth_visit(flags, vcall, queue, src))
-                        {
-                                return false;
-                        }
-
+                        queue.push_back(src);
                         while (!queue.empty())
                         {
                                 const auto u = queue.front();
                                 queue.pop_front();
 
-                                if (!foreach_out(u, [&] (const edge_t& e) { return breadth_visit(flags, vcall, queue, e.second); }))
+                                if (flags[u] == flag::none)
                                 {
-                                        return false;
+                                        flags[u] = flag::visited;
+                                        vcall(u);
+                                        foreach_out(u, [&] (const edge_t& e) { queue.push_back(e.second); });
                                 }
                         }
                         return true;

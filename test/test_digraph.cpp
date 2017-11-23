@@ -150,7 +150,6 @@ NANO_CASE(topo1)
 
         NANO_CHECK(g.dag());
         NANO_CHECK_EQUAL(g.tsort(), make_indices());
-        check_tsort(g);
         NANO_CHECK_EQUAL(depth_first(g), make_indices());
         NANO_CHECK_EQUAL(breadth_first(g), make_indices());
 }
@@ -158,17 +157,11 @@ NANO_CASE(topo1)
 NANO_CASE(topo2)
 {
         digraph_t g;
-        g.edge(0, 2);
-        g.edge(2, 3);
-        g.edge(1, 2);
-        g.edge(3, 4);
+        g.edge(0u, 2u);
+        g.edge(1u, 2u, 3u, 4u);
         g.done();
 
-        NANO_CHECK(g.dag());
-        NANO_CHECK(!g.connected(0, 1));
-        NANO_CHECK(!g.connected(1, 0));
         NANO_CHECK(g.connected(0, 2));
-        NANO_CHECK(!g.connected(2, 0));
         NANO_CHECK(g.connected(0, 3));
         NANO_CHECK(g.connected(0, 4));
         NANO_CHECK(g.connected(1, 2));
@@ -177,75 +170,74 @@ NANO_CASE(topo2)
         NANO_CHECK(g.connected(2, 3));
         NANO_CHECK(g.connected(2, 4));
         NANO_CHECK(g.connected(3, 4));
-        NANO_CHECK_EQUAL(g.tsort(), make_indices(1u, 0u, 2u, 3u, 4u));
-        check_tsort(g);
-        NANO_CHECK_EQUAL(depth_first(g), make_indices(0u, 2u, 3u, 4u, 1u));
-        NANO_CHECK_EQUAL(breadth_first(g), make_indices(0u, 2u, 3u, 4u, 1u));
+
+        NANO_CHECK(!g.connected(0, 1));
+        NANO_CHECK(!g.connected(1, 0));
+        NANO_CHECK(!g.connected(2, 0));
+
+        NANO_CHECK(g.dag());
+        NANO_CHECK_EQUAL(g.tsort(), make_indices());
+        NANO_CHECK_EQUAL(depth_first(g), make_indices());
+        NANO_CHECK_EQUAL(breadth_first(g), make_indices());
 }
 
-/*NANO_CASE(topo3)
+NANO_CASE(topo3)
 {
         digraph_t g;
-        g.edge(0, 2);
-        g.edge(2, 3);
-        g.edge(1, 2);
-        g.edge(3, 0);
+        g.edge(0u, 2u, 3u, 0u);
+        g.edge(1u, 2u);
         g.done();
 
         NANO_CHECK(!g.dag());
         NANO_CHECK_EQUAL(g.tsort(), make_indices());
-        check_tsort(g);
+        NANO_CHECK_EQUAL(depth_first(g), make_indices());
+        NANO_CHECK_EQUAL(breadth_first(g), make_indices());
 }
 
 NANO_CASE(topo4)
 {
         digraph_t g;
-        g.edge(1, 2);
-        g.edge(2, 0);
-        g.edge(0, 1);
+        g.edge(0u, 1u, 2u, 0u);
         g.done();
 
         NANO_CHECK(!g.dag());
         NANO_CHECK_EQUAL(g.tsort(), make_indices());
-        check_tsort(g);
+        NANO_CHECK_EQUAL(depth_first(g), make_indices());
+        NANO_CHECK_EQUAL(breadth_first(g), make_indices());
 }
 
 NANO_CASE(topo5)
 {
         digraph_t g;
-        g.edge(1, 2);
-        g.edge(2, 0);
+        g.edge(1u, 2u, 0u);
         g.done();
 
         NANO_CHECK(g.dag());
-        NANO_CHECK_EQUAL(g.tsort(), make_indices(1u, 2u, 0u));
-        check_tsort(g);
+        NANO_CHECK_EQUAL(g.tsort(), make_indices());
+        NANO_CHECK_EQUAL(depth_first(g), make_indices());
+        NANO_CHECK_EQUAL(breadth_first(g), make_indices());
 }
 
 NANO_CASE(topo6)
 {
         digraph_t g;
-        g.edge(0, 2);
-        g.edge(1, 2);
-        g.edge(2, 3);
-        g.edge(4, 5);
-        g.edge(5, 6);
-        g.edge(6, 4);
+        g.edge(0u, 2u, 3u);
+        g.edge(1u, 2u);
+        g.edge(4u, 5u, 6u, 4u);
         g.done();
 
         NANO_CHECK(!g.dag());
         NANO_CHECK_EQUAL(g.tsort(), make_indices());
-        check_tsort(g);
+        NANO_CHECK_EQUAL(depth_first(g), make_indices());
+        NANO_CHECK_EQUAL(breadth_first(g), make_indices());
 }
 
 NANO_CASE(topo7)
 {
         digraph_t g;
-        g.edge(0, 2);
-        g.edge(1, 2);
-        g.edge(2, 3);
-        g.edge(4, 5);
-        g.edge(5, 6);
+        g.edge(0u, 2u, 3u);
+        g.edge(1u, 2u);
+        g.edge(4u, 5u, 6u);
         g.done();
 
         NANO_CHECK(g.dag());
@@ -264,57 +256,73 @@ NANO_CASE(topo7)
         NANO_CHECK(!g.connected(6, 6));
         NANO_CHECK(!g.connected(4, 2));
         NANO_CHECK_EQUAL(g.tsort(), make_indices(4u, 5u, 6u, 1u, 0u, 2u, 3u));
-        check_tsort(g);
+        NANO_CHECK_EQUAL(g.tsort(), make_indices());
+        NANO_CHECK_EQUAL(depth_first(g), make_indices());
+        NANO_CHECK_EQUAL(breadth_first(g), make_indices());
 }
 
 NANO_CASE(topo8)
 {
         // see: https://en.wikipedia.org/wiki/Topological_sorting#/media/File:Directed_acyclic_graph_2.svg
         digraph_t g;
-        g.edge(0, 3);
-        g.edge(1, 3);
-        g.edge(1, 4);
-        g.edge(2, 4);
-        g.edge(3, 5);
-        g.edge(3, 6);
-        g.edge(3, 7);
-        g.edge(2, 7);
-        g.edge(4, 6);
+        g.edge(0u, 3u, 5u);
+        g.edge(1u, 3u, 6u);
+        g.edge(1u, 4u, 6u);
+        g.edge(2u, 4u, 6u);
+        g.edge(3u, 7u);
+        g.edge(2u, 7u);
         g.done();
 
         NANO_CHECK(g.dag());
         NANO_CHECK_EQUAL(g.tsort(), make_indices(2u, 1u, 4u, 0u, 3u, 7u, 6u, 5u));
         check_tsort(g);
-}*/
+}
 
 NANO_CASE(topo9)
 {
         digraph_t g;
-        g.edge(0, 1);
-        g.edge(0, 2);
-        g.edge(0, 5);
-        g.edge(1, 3);
-        g.edge(2, 4);
-        g.edge(3, 6);
-        g.edge(4, 6);
-        g.edge(5, 6);
+        g.edge(0u, 1u, 3u, 6u);
+        g.edge(0u, 2u, 4u, 6u);
+        g.edge(0u, 5u, 6u);
         g.done();
 
-        NANO_CHECK(g.dag());
-        NANO_CHECK(!g.connected(0, 1));
-        NANO_CHECK(!g.connected(1, 0));
+        NANO_CHECK_EQUAL(g.sources(), make_indices(0u));
+        NANO_CHECK_EQUAL(g.in(0), make_indices());
+        NANO_CHECK_EQUAL(g.in(1), make_indices(0u));
+        NANO_CHECK_EQUAL(g.in(2), make_indices(0u));
+        NANO_CHECK_EQUAL(g.in(3), make_indices(1u));
+        NANO_CHECK_EQUAL(g.in(4), make_indices(2u));
+        NANO_CHECK_EQUAL(g.in(5), make_indices(0u));
+        NANO_CHECK_EQUAL(g.in(6), make_indices(3u, 4u, 5u));
+
+        NANO_CHECK_EQUAL(g.sinks(), make_indices(6u));
+        NANO_CHECK_EQUAL(g.out(0), make_indices(1u, 2u, 5u));
+        NANO_CHECK_EQUAL(g.out(1), make_indices(3u));
+        NANO_CHECK_EQUAL(g.out(2), make_indices(4u));
+        NANO_CHECK_EQUAL(g.out(3), make_indices(6u));
+        NANO_CHECK_EQUAL(g.out(4), make_indices(6u));
+        NANO_CHECK_EQUAL(g.out(5), make_indices(6u));
+        NANO_CHECK_EQUAL(g.out(6), make_indices());
+
+        NANO_CHECK(!g.connected(0, 0));
+        NANO_CHECK(g.connected(0, 1));
         NANO_CHECK(g.connected(0, 2));
-        NANO_CHECK(!g.connected(2, 0));
         NANO_CHECK(g.connected(0, 3));
         NANO_CHECK(g.connected(0, 4));
-        NANO_CHECK(g.connected(1, 2));
+        NANO_CHECK(g.connected(0, 5));
+        NANO_CHECK(g.connected(0, 6));
+
+        NANO_CHECK(!g.connected(1, 0));
+        NANO_CHECK(!g.connected(1, 1));
+        NANO_CHECK(!g.connected(1, 2));
         NANO_CHECK(g.connected(1, 3));
-        NANO_CHECK(g.connected(1, 4));
-        NANO_CHECK(g.connected(2, 3));
-        NANO_CHECK(g.connected(2, 4));
-        NANO_CHECK(g.connected(3, 4));
+        NANO_CHECK(!g.connected(1, 4));
+        NANO_CHECK(!g.connected(1, 5));
+        NANO_CHECK(g.connected(1, 6));
+
+        NANO_CHECK(g.dag());
         check_tsort(g);
-        NANO_CHECK_EQUAL(depth_first(g), make_indices(0u, 1u, 3u, 6u, 2u, 3u, 5u));
+        NANO_CHECK_EQUAL(depth_first(g), make_indices(0u, 5u, 6u, 2u, 4u, 1u, 3u));
         NANO_CHECK_EQUAL(breadth_first(g), make_indices(0u, 1u, 2u, 5u, 3u, 4u, 6u));
 }
 
