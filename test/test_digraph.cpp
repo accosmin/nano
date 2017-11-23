@@ -113,35 +113,92 @@ NANO_CASE(vertices)
 NANO_CASE(in)
 {
         digraph_t g;
-        g.edge(0, 2);
-        g.edge(2, 3);
-        g.edge(1, 2);
-        g.edge(3, 4);
+        g.edge(0u, 2u, 3u, 4u);
+        g.edge(1u, 3u, 5u);
         g.done();
 
+        NANO_CHECK(!g.empty());
+        NANO_CHECK_EQUAL(g.edges().size(), 5u);
+        NANO_CHECK_EQUAL(g.vertices(), 6u);
+
+        const auto e1 = make_edge(0u, 2u); NANO_CHECK_EQUAL(g.edges()[0], e1);
         NANO_CHECK_EQUAL(g.sources(), make_indices(0u, 1u));
         NANO_CHECK_EQUAL(g.in(0), make_indices());
         NANO_CHECK_EQUAL(g.in(1), make_indices());
-        NANO_CHECK_EQUAL(g.in(2), make_indices(0u, 1u));
-        NANO_CHECK_EQUAL(g.in(3), make_indices(2u));
+        NANO_CHECK_EQUAL(g.in(2), make_indices(0u));
+        NANO_CHECK_EQUAL(g.in(3), make_indices(1u, 2u));
         NANO_CHECK_EQUAL(g.in(4), make_indices(3u));
+        NANO_CHECK_EQUAL(g.in(5), make_indices(3u));
 }
 
 NANO_CASE(out)
 {
         digraph_t g;
-        g.edge(0, 2);
-        g.edge(2, 3);
-        g.edge(1, 2);
-        g.edge(3, 4);
+        g.edge(0u, 2u, 3u, 4u);
+        g.edge(1u, 3u, 5u);
         g.done();
 
-        NANO_CHECK_EQUAL(g.sinks(), make_indices(4u));
+        NANO_CHECK(!g.empty());
+        NANO_CHECK_EQUAL(g.edges().size(), 5u);
+        NANO_CHECK_EQUAL(g.vertices(), 6u);
+
+        NANO_CHECK_EQUAL(g.sinks(), make_indices(4u, 5u));
         NANO_CHECK_EQUAL(g.out(0), make_indices(2u));
-        NANO_CHECK_EQUAL(g.out(1), make_indices(2u));
+        NANO_CHECK_EQUAL(g.out(1), make_indices(3u));
         NANO_CHECK_EQUAL(g.out(2), make_indices(3u));
-        NANO_CHECK_EQUAL(g.out(3), make_indices(4u));
+        NANO_CHECK_EQUAL(g.out(3), make_indices(4u, 5u));
         NANO_CHECK_EQUAL(g.out(4), make_indices());
+        NANO_CHECK_EQUAL(g.out(5), make_indices());
+}
+
+NANO_CASE(conn)
+{
+        digraph_t g;
+        g.edge(0u, 2u, 3u, 4u);
+        g.edge(1u, 3u, 5u);
+        g.done();
+
+        NANO_CHECK(!g.connected(0, 0));
+        NANO_CHECK(!g.connected(0, 1));
+        NANO_CHECK(g.connected(0, 2));
+        NANO_CHECK(g.connected(0, 3));
+        NANO_CHECK(g.connected(0, 4));
+        NANO_CHECK(g.connected(0, 5));
+
+        NANO_CHECK(!g.connected(1, 0));
+        NANO_CHECK(!g.connected(1, 1));
+        NANO_CHECK(!g.connected(1, 2));
+        NANO_CHECK(g.connected(1, 3));
+        NANO_CHECK(g.connected(1, 4));
+        NANO_CHECK(g.connected(1, 5));
+
+        NANO_CHECK(!g.connected(2, 0));
+        NANO_CHECK(!g.connected(2, 1));
+        NANO_CHECK(!g.connected(2, 2));
+        NANO_CHECK(g.connected(2, 3));
+        NANO_CHECK(g.connected(2, 4));
+        NANO_CHECK(g.connected(2, 5));
+
+        NANO_CHECK(!g.connected(3, 0));
+        NANO_CHECK(!g.connected(3, 1));
+        NANO_CHECK(!g.connected(3, 2));
+        NANO_CHECK(!g.connected(3, 3));
+        NANO_CHECK(g.connected(3, 4));
+        NANO_CHECK(g.connected(3, 5));
+
+        NANO_CHECK(!g.connected(4, 0));
+        NANO_CHECK(!g.connected(4, 1));
+        NANO_CHECK(!g.connected(4, 2));
+        NANO_CHECK(!g.connected(4, 3));
+        NANO_CHECK(!g.connected(4, 4));
+        NANO_CHECK(!g.connected(4, 5));
+
+        NANO_CHECK(!g.connected(5, 0));
+        NANO_CHECK(!g.connected(5, 1));
+        NANO_CHECK(!g.connected(5, 2));
+        NANO_CHECK(!g.connected(5, 3));
+        NANO_CHECK(!g.connected(5, 4));
+        NANO_CHECK(!g.connected(5, 5));
 }
 
 NANO_CASE(topo1)
@@ -160,20 +217,6 @@ NANO_CASE(topo2)
         g.edge(0u, 2u);
         g.edge(1u, 2u, 3u, 4u);
         g.done();
-
-        NANO_CHECK(g.connected(0, 2));
-        NANO_CHECK(g.connected(0, 3));
-        NANO_CHECK(g.connected(0, 4));
-        NANO_CHECK(g.connected(1, 2));
-        NANO_CHECK(g.connected(1, 3));
-        NANO_CHECK(g.connected(1, 4));
-        NANO_CHECK(g.connected(2, 3));
-        NANO_CHECK(g.connected(2, 4));
-        NANO_CHECK(g.connected(3, 4));
-
-        NANO_CHECK(!g.connected(0, 1));
-        NANO_CHECK(!g.connected(1, 0));
-        NANO_CHECK(!g.connected(2, 0));
 
         NANO_CHECK(g.dag());
         NANO_CHECK_EQUAL(g.tsort(), make_indices());
@@ -241,21 +284,6 @@ NANO_CASE(topo7)
         g.done();
 
         NANO_CHECK(g.dag());
-        NANO_CHECK(!g.connected(0, 4));
-        NANO_CHECK(!g.connected(0, 5));
-        NANO_CHECK(!g.connected(0, 6));
-        NANO_CHECK(!g.connected(2, 4));
-        NANO_CHECK(!g.connected(2, 5));
-        NANO_CHECK(!g.connected(2, 6));
-        NANO_CHECK(g.connected(4, 5));
-        NANO_CHECK(!g.connected(5, 4));
-        NANO_CHECK(g.connected(4, 6));
-        NANO_CHECK(!g.connected(6, 4));
-        NANO_CHECK(g.connected(5, 6));
-        NANO_CHECK(!g.connected(6, 5));
-        NANO_CHECK(!g.connected(6, 6));
-        NANO_CHECK(!g.connected(4, 2));
-        NANO_CHECK_EQUAL(g.tsort(), make_indices(4u, 5u, 6u, 1u, 0u, 2u, 3u));
         NANO_CHECK_EQUAL(g.tsort(), make_indices());
         NANO_CHECK_EQUAL(depth_first(g), make_indices());
         NANO_CHECK_EQUAL(breadth_first(g), make_indices());
@@ -285,40 +313,6 @@ NANO_CASE(topo9)
         g.edge(0u, 2u, 4u, 6u);
         g.edge(0u, 5u, 6u);
         g.done();
-
-        NANO_CHECK_EQUAL(g.sources(), make_indices(0u));
-        NANO_CHECK_EQUAL(g.in(0), make_indices());
-        NANO_CHECK_EQUAL(g.in(1), make_indices(0u));
-        NANO_CHECK_EQUAL(g.in(2), make_indices(0u));
-        NANO_CHECK_EQUAL(g.in(3), make_indices(1u));
-        NANO_CHECK_EQUAL(g.in(4), make_indices(2u));
-        NANO_CHECK_EQUAL(g.in(5), make_indices(0u));
-        NANO_CHECK_EQUAL(g.in(6), make_indices(3u, 4u, 5u));
-
-        NANO_CHECK_EQUAL(g.sinks(), make_indices(6u));
-        NANO_CHECK_EQUAL(g.out(0), make_indices(1u, 2u, 5u));
-        NANO_CHECK_EQUAL(g.out(1), make_indices(3u));
-        NANO_CHECK_EQUAL(g.out(2), make_indices(4u));
-        NANO_CHECK_EQUAL(g.out(3), make_indices(6u));
-        NANO_CHECK_EQUAL(g.out(4), make_indices(6u));
-        NANO_CHECK_EQUAL(g.out(5), make_indices(6u));
-        NANO_CHECK_EQUAL(g.out(6), make_indices());
-
-        NANO_CHECK(!g.connected(0, 0));
-        NANO_CHECK(g.connected(0, 1));
-        NANO_CHECK(g.connected(0, 2));
-        NANO_CHECK(g.connected(0, 3));
-        NANO_CHECK(g.connected(0, 4));
-        NANO_CHECK(g.connected(0, 5));
-        NANO_CHECK(g.connected(0, 6));
-
-        NANO_CHECK(!g.connected(1, 0));
-        NANO_CHECK(!g.connected(1, 1));
-        NANO_CHECK(!g.connected(1, 2));
-        NANO_CHECK(g.connected(1, 3));
-        NANO_CHECK(!g.connected(1, 4));
-        NANO_CHECK(!g.connected(1, 5));
-        NANO_CHECK(g.connected(1, 6));
 
         NANO_CHECK(g.dag());
         check_tsort(g);
