@@ -47,6 +47,7 @@ void plus4d_layer_t::output(const tensor4d_cmap_t& idata, const vector_cmap_t& p
         assert(idata.dims() == cat_dims(count, idims()));
         assert(odata.dims() == cat_dims(count, odims()));
         assert(pdata.size() == psize());
+        NANO_UNUSED1_RELEASE(pdata);
 
         m_probe_output.measure([&] ()
         {
@@ -64,6 +65,7 @@ void plus4d_layer_t::ginput(tensor4d_map_t&& idata, const vector_cmap_t& pdata, 
         assert(idata.dims() == cat_dims(count, idims()));
         assert(odata.dims() == cat_dims(count, odims()));
         assert(pdata.size() == psize());
+        NANO_UNUSED1_RELEASE(pdata);
 
         m_probe_output.measure([&] ()
         {
