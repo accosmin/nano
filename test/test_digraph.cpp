@@ -211,4 +211,23 @@ NANO_CASE(topo7)
         NANO_CHECK_EQUAL(g.tsort(), make_indices(4u, 5u, 6u, 1u, 0u, 2u, 3u));
 }
 
+NANO_CASE(topo8)
+{
+        // see: https://en.wikipedia.org/wiki/Topological_sorting#/media/File:Directed_acyclic_graph_2.svg
+        digraph_t g;
+        g.edge(0, 3);
+        g.edge(1, 3);
+        g.edge(1, 4);
+        g.edge(2, 4);
+        g.edge(3, 5);
+        g.edge(3, 6);
+        g.edge(3, 7);
+        g.edge(2, 7);
+        g.edge(4, 6);
+        g.done();
+
+        NANO_CHECK(g.dag());
+        NANO_CHECK_EQUAL(g.tsort(), make_indices(2u, 1u, 4u, 0u, 3u, 7u, 6u, 5u));
+}
+
 NANO_END_MODULE()
