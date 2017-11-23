@@ -1,5 +1,7 @@
 #pragma once
 
+#include <deque>
+#include <stack>
 #include <vector>
 #include <cassert>
 #include <cstdint>
@@ -62,6 +64,13 @@ namespace nano
                 bool depth_first(const tvcall&) const;
 
                 ///
+                /// \brief breadth-first search where the given operator is called with the current vertex id
+                /// \return true if the graph is not a DAG
+                ///
+                template <typename tvcall>
+                bool breadth_first(const tvcall&) const;
+
+                ///
                 /// \brief checks if the graph is a DAG
                 ///
                 bool dag() const;
@@ -89,8 +98,7 @@ namespace nano
                 enum class flag : uint8_t
                 {
                         none,
-                        temporary,
-                        permanent,
+                        visited,
                 };
 
                 template <typename toperator>
@@ -101,32 +109,6 @@ namespace nano
                         const auto range = std::equal_range(m_edges.begin(), m_edges.end(), sedge, ecomp);
 
                         return std::find_if(range.first, range.second, top) == range.second;
-                }
-
-                template <typename tvcall>
-                bool visit(std::vector<flag>& flags, const tvcall& vcall, const tindex src) const
-                {
-                        assert(flags.size() == vertices());
-
-                        switch (flags[src])
-                        {
-                        case flag::temporary:
-                                return false;   // !DAG
-
-                        case flag::permanent:
-                                return true;
-
-                        case flag::none:
-                        default:
-                                flags[src] = flag::temporary;
-                                if (!foreach_out(src, [&] (const edge_t& e) { return !visit(flags, vcall, e.second); }))
-                                {
-                                        return false;
-                                }
-                                flags[src] = flag::permanent;
-                                vcall(src);
-                                return true;
-                        }
                 }
 
                 template <typename tvalue>
@@ -146,6 +128,98 @@ namespace nano
                                 set1.begin(), set1.end(), set2.begin(), set2.end(),
                                 std::inserter(diff, diff.begin()));
                         return diff;
+                }
+
+                template <typename tvcall>
+                bool depth_first(std::vector<flag>& flags, const tvcall& vcall, const tindex src) const
+                {
+                        std::stack<tindex> q;
+                        q.push(src);
+
+                        switch (flags[src])
+                        {
+                        case flag::none:
+                                break;
+                        default:
+                                return false;   // !DAG
+                        }
+                        flags[src] = flag::visited;
+                        vcall(src);
+
+                        while (!q.empty())
+                        {
+                                const auto v = q.top();
+                                q.pop();
+
+                                const auto visit = [&] (const edge_t& edge)
+                                {
+                                        assert(v == edge.first);
+                                        const auto w = edge.second;
+                                        switch (flags[w])
+                                        {
+                                        case flag::none:
+                                                q.push(w);
+                                                flags[w] = flag::visited;
+                                                vcall(src);
+                                                return true;
+                                        default:
+                                                return false;   // !DAG
+                                        }
+                                };
+
+                                if (!foreach_out(v, visit))
+                                {
+                                        return false;
+                                }
+                        }
+
+                        return true;
+                }
+
+                template <typename tvcall>
+                bool breadth_first(std::vector<flag>& flags, const tvcall& vcall, const tindex src) const
+                {
+                        switch (flags[src])
+                        {
+                        case flag::none:
+                                break;
+                        default:
+                                return false;   // !DAG
+                        }
+
+                        std::deque<tindex> q;
+                        q.push_back(src);
+                        flags[src] = flag::visited;
+                        vcall(src);
+
+                        while (!q.empty())
+                        {
+                                const auto v = q.front();
+                                q.pop_front();
+
+                                const auto visit = [&] (const edge_t& edge)
+                                {
+                                        assert(v == edge.first);
+                                        const auto w = edge.second;
+                                        switch (flags[w])
+                                        {
+                                        case flag::none:
+                                                q.push_back(w);
+                                                flags[w] = flag::visited;
+                                                vcall(src);
+                                                return true;
+                                        default:
+                                                return false;   // !DAG
+                                        }
+                                };
+
+                                if (!foreach_out(v, visit))
+                                {
+                                        return false;
+                                }
+                        }
+
+                        return true;
                 }
 
                 // attributes
@@ -231,20 +305,24 @@ namespace nano
         bool digraph_t<tindex>::depth_first(const tvcall& vcall) const
         {
                 std::vector<flag> flags(vertices(), flag::none);
-
-                // start from the source vertices
                 for (const auto src : sources())
                 {
-                        if (!visit(flags, vcall, src))
+                        if (!depth_first(flags, vcall, src))
                         {
                                 return false;
                         }
                 }
+                return true;
+        }
 
-                // check if any remaning not visited vertices (e.g. another cycle in the graph not connected)
-                for (tindex src = 0; src < flags.size(); ++ src)
+        template <typename tindex>
+        template <typename tvcall>
+        bool digraph_t<tindex>::breadth_first(const tvcall& vcall) const
+        {
+                std::vector<flag> flags(vertices(), flag::none);
+                for (const auto src : sources())
                 {
-                        if (flags[src] == flag::none && !visit(flags, vcall, src))
+                        if (!breadth_first(flags, vcall, src))
                         {
                                 return false;
                         }
@@ -261,14 +339,12 @@ namespace nano
         template <typename tindex>
         typename digraph_t<tindex>::indices_t digraph_t<tindex>::tsort() const
         {
-                indices_t vindices;
-                depth_first([&] (const tindex vindex) { vindices.push_back(vindex); });
+                // todo: have the input vertices consecutive!!!
+                indices_t vindices(vertices(), 0);
+                size_t index = vertices();
+                depth_first([&] (const tindex vindex) { assert(index > 0); vindices[-- index] = vindex; });
 
-                if (vindices.size() == vertices())
-                {
-                        std::reverse(vindices.begin(), vindices.end());
-                }
-                else
+                if (index != 0)
                 {
                         vindices.clear();       // !DAG
                 }
@@ -278,7 +354,6 @@ namespace nano
         template <typename tindex>
         bool digraph_t<tindex>::connected(const tindex src, const tindex dst) const
         {
-                assert(dag());
                 assert(src < vertices() && dst < vertices());
 
                 if (src == dst)
@@ -288,9 +363,9 @@ namespace nano
                 else
                 {
                         std::vector<flag> flags(vertices(), flag::none);
-                        visit(flags, [] (const tindex) {}, src);
+                        depth_first(flags, [] (const tindex) {}, src);
 
-                        return flags[dst] == flag::permanent;
+                        return flags[dst] == flag::visited;
                 }
         }
 }

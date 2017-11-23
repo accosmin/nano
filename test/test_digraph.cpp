@@ -36,6 +36,51 @@ indices_t make_indices(const tindices... indices)
         return {indices...};
 }
 
+void check_depth_first(const digraph_t& graph, const indices_t& expected)
+{
+        indices_t vertices;
+        graph.depth_first([&] (const index_t vertex) { vertices.push_back(vertex); });
+        NANO_CHECK_EQUAL(vertices, expected);
+}
+
+void check_breadth_first(const digraph_t& graph, const indices_t& expected)
+{
+        indices_t vertices;
+        graph.breadth_first([&] (const index_t vertex) { vertices.push_back(vertex); });
+        NANO_CHECK_EQUAL(vertices, expected);
+}
+
+void check_tsort(const digraph_t& graph)
+{
+        const auto tsort = graph.tsort();
+        for (size_t ivertex = 0; ivertex < tsort.size(); ++ ivertex)
+        {
+                const auto vertex = tsort[ivertex];
+
+                size_t min_isource = tsort.size();
+                size_t max_isource = 0;
+
+                const auto sources = graph.in(vertex);
+                for (const auto source : sources)
+                {
+                        const auto it = std::find(tsort.begin(), tsort.end(), source);
+                        const auto isource = static_cast<size_t>(std::distance(tsort.begin(), it));
+                        min_isource = std::min(min_isource, isource);
+                        max_isource = std::max(max_isource, isource);
+
+                        // the source vertices should be before the vertex in the topological order!
+                        NANO_CHECK_LESS_EQUAL(isource, ivertex);
+                }
+
+                // the source vertices should be consecutive in the topological order!
+                if (!sources.empty())
+                {
+                        std::cout << "vertex = " << vertex << ", [" << min_isource << ", " << max_isource << "]" << std::endl;
+                        NANO_CHECK_EQUAL(max_isource - min_isource + 1, sources.size());
+                }
+        }
+}
+
 NANO_BEGIN_MODULE(test_digraph)
 
 NANO_CASE(empty)
@@ -105,6 +150,9 @@ NANO_CASE(topo1)
 
         NANO_CHECK(g.dag());
         NANO_CHECK_EQUAL(g.tsort(), make_indices());
+        check_tsort(g);
+        check_depth_first(g, make_indices());
+        check_breadth_first(g, make_indices());
 }
 
 NANO_CASE(topo2)
@@ -130,6 +178,9 @@ NANO_CASE(topo2)
         NANO_CHECK(g.connected(2, 4));
         NANO_CHECK(g.connected(3, 4));
         NANO_CHECK_EQUAL(g.tsort(), make_indices(1u, 0u, 2u, 3u, 4u));
+        check_tsort(g);
+        check_depth_first(g, make_indices());
+        check_breadth_first(g, make_indices(0u, 1u, 2u, 3u, 4u));
 }
 
 NANO_CASE(topo3)
@@ -143,6 +194,7 @@ NANO_CASE(topo3)
 
         NANO_CHECK(!g.dag());
         NANO_CHECK_EQUAL(g.tsort(), make_indices());
+        check_tsort(g);
 }
 
 NANO_CASE(topo4)
@@ -155,6 +207,7 @@ NANO_CASE(topo4)
 
         NANO_CHECK(!g.dag());
         NANO_CHECK_EQUAL(g.tsort(), make_indices());
+        check_tsort(g);
 }
 
 NANO_CASE(topo5)
@@ -166,6 +219,7 @@ NANO_CASE(topo5)
 
         NANO_CHECK(g.dag());
         NANO_CHECK_EQUAL(g.tsort(), make_indices(1u, 2u, 0u));
+        check_tsort(g);
 }
 
 NANO_CASE(topo6)
@@ -181,6 +235,7 @@ NANO_CASE(topo6)
 
         NANO_CHECK(!g.dag());
         NANO_CHECK_EQUAL(g.tsort(), make_indices());
+        check_tsort(g);
 }
 
 NANO_CASE(topo7)
@@ -209,6 +264,7 @@ NANO_CASE(topo7)
         NANO_CHECK(!g.connected(6, 6));
         NANO_CHECK(!g.connected(4, 2));
         NANO_CHECK_EQUAL(g.tsort(), make_indices(4u, 5u, 6u, 1u, 0u, 2u, 3u));
+        check_tsort(g);
 }
 
 NANO_CASE(topo8)
@@ -228,6 +284,7 @@ NANO_CASE(topo8)
 
         NANO_CHECK(g.dag());
         NANO_CHECK_EQUAL(g.tsort(), make_indices(2u, 1u, 4u, 0u, 3u, 7u, 6u, 5u));
+        check_tsort(g);
 }
 
 NANO_END_MODULE()
