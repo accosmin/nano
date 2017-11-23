@@ -452,6 +452,10 @@ bool model_t::done()
 
         // OK, reorder nodes using the topological sorting
         const auto tsort = graph.tsort();
+
+        // todo: check that the inputs to a node are consecutive (to pass idata as a block)
+        // fixme: reordering the nodes should also reorder cnode_t::m_inodes/m_onodes!!!
+
         reorder(m_nodes, tsort);
         return true;
 }
