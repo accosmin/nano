@@ -123,7 +123,7 @@ namespace nano
                 }
 
                 template <typename tvcall>
-                void depth_first(flags_t& flags, const tvcall& vcall, size_t u) const
+                bool depth_first(flags_t& flags, const tvcall& vcall, size_t u) const
                 {
                         std::stack<size_t> q;
                         q.push(u);
@@ -138,13 +138,22 @@ namespace nano
 
                                 for (size_t v = 0; v < m_vertices; ++ v)
                                 {
-                                        if (get(u, v) && flags[v] == flag::white)
+                                        if (get(u, v))
                                         {
-                                                flags[v] = flag::gray;
-                                                q.push(v);
+                                                if (flags[v] == flag::white)
+                                                {
+                                                        flags[v] = flag::gray;
+                                                        q.push(v);
+                                                }
+                                                else if (flags[v] == flag::black)
+                                                {
+                                                        return false;
+                                                }
                                         }
                                 }
                         }
+
+                        return true;
                 }
 
                 template <typename tvcall>
@@ -260,7 +269,10 @@ namespace nano
                 flags_t flags(m_vertices, flag::white);
                 for (const auto u : sources())
                 {
-                        depth_first(flags, vcall, u);
+                        if (!depth_first(flags, vcall, u))
+                        {
+                                return false;
+                        }
                 }
                 return true;
         }
@@ -278,7 +290,7 @@ namespace nano
 
         inline bool digraph_t::dag() const
         {
-                return false;
+                return !depth_first([] (const size_t) {});
         }
 
         inline digraph_t::indices_t digraph_t::tsort() const
