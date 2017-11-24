@@ -385,7 +385,7 @@ bool model_t::done()
         log_info() << "model: checking the computation graph...";
 
         // create the computation graph
-        digraph_t<size_t> graph;
+        digraph_t graph(m_nodes.size());;
         for (size_t src = 0; src < m_nodes.size(); ++ src)
         {
                 for (const size_t dst : m_nodes[src].m_onodes)
@@ -394,8 +394,7 @@ bool model_t::done()
                 }
         }
 
-        graph.done();
-        if (graph.vertices() < 1)
+        if (m_nodes.empty())
         {
                 log_error() << "model: expecting at least a node!";
                 clear();

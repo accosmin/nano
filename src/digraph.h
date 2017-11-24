@@ -5,7 +5,6 @@
 #include <vector>
 #include <cassert>
 #include <cstdint>
-#include <algorithm>
 
 namespace nano
 {
@@ -13,38 +12,42 @@ namespace nano
         /// \brief generic directed graph specified by a set of edges.
         ///     todo: faster (aka lower complexity) for ::sink & ::sinks
         ///
-        template <typename tindex>
         class digraph_t
         {
         public:
-                using edge_t = std::pair<tindex, tindex>;
-                using edges_t = std::vector<edge_t>;
-                using indices_t = std::vector<tindex>;
+                using indices_t = std::vector<size_t>;
 
                 ///
-                /// \brief create a directed edge between the src and the dst vertex ids
+                /// \brief constructor
                 ///
-                void edge(const tindex src, const tindex dst);
+                explicit digraph_t(const size_t vertices);
+
+                ///
+                /// \brief disable copying
+                ///
+                digraph_t(const digraph_t&) = delete;
+                digraph_t& operator=(const digraph_t&) = delete;
+
+                ///
+                /// \brief enable moving
+                ///
+                digraph_t(digraph_t&&) = default;
+                digraph_t& operator=(digraph_t&&) = default;
+
+                ///
+                /// \brief create a directed edge (u, v)
+                ///
+                void edge(const size_t u, const size_t v);
 
                 ///
                 /// \brief create the directed edges to connect the given chain of vertex ids
                 ///
                 template <typename... tindices>
-                void edge(const tindex src, const tindex dst, const tindices... rest)
+                void edge(const size_t u, const size_t v, const tindices... rest)
                 {
-                        edge(src, dst);
-                        edge(dst, rest...);
+                        edge(u, v);
+                        edge(v, rest...);
                 }
-
-                ///
-                /// \brief remove all edges
-                ///
-                void clear();
-
-                ///
-                /// \brief prepares internals once all the edges have been added
-                ///
-                void done();
 
                 ///
                 /// \brief returns the source vertices (aka the vertices without incoming vertices)
@@ -54,7 +57,7 @@ namespace nano
                 ///
                 /// \brief returns the incoming vertices of the given vertex id
                 ///
-                indices_t in(const tindex dst) const;
+                indices_t in(const size_t v) const;
 
                 ///
                 /// \brief returns the sink vertices (aka the vertices without outgoing vertices)
@@ -64,7 +67,7 @@ namespace nano
                 ///
                 /// \brief returns the outgoing vertices of the given vertex id
                 ///
-                indices_t out(const tindex src) const;
+                indices_t out(const size_t u) const;
 
                 ///
                 /// \brief depth-first search where the given operator is called with the current vertex id
@@ -92,239 +95,221 @@ namespace nano
                 indices_t tsort() const;
 
                 ///
-                /// \brief check if there is a path between the source and the destination vertices
+                /// \brief check if there is a connected path from u to v
                 ///
-                bool connected(const tindex src, const tindex dst) const;
-
-                ///
-                /// \brief access functions
-                ///
-                auto vertices() const { return m_vertices; }
-                const auto& edges() const { return m_edges; }
-                auto empty() const { return m_edges.empty() && !m_vertices; }
+                bool connected(const size_t u, const size_t v) const;
 
         private:
 
                 enum class flag : uint8_t
                 {
-                        none,
-                        visited,
+                        white,
+                        gray,
+                        black
                 };
 
                 using flags_t = std::vector<flag>;
 
-                template <typename toperator>
-                void foreach_out(const tindex src, const toperator& top) const
+                bool get(const size_t u, const size_t v) const
                 {
-                        const auto sedge = edge_t{src, src};
-                        const auto ecomp = [] (const auto& e1, const auto& e2) { return e1.first < e2.first; };
-                        const auto range = std::equal_range(m_edges.begin(), m_edges.end(), sedge, ecomp);
-
-                        std::for_each(range.first, range.second, top);
+                        assert(u < m_vertices && v < m_vertices);
+                        return m_adjmat[u * m_vertices + v];
                 }
 
-                template <typename tvalue>
-                static void unique(std::vector<tvalue>& set)
+                void set(const size_t u, const size_t v, const bool connected)
                 {
-                        std::sort(set.begin(), set.end());
-                        set.erase(std::unique(set.begin(), set.end()), set.end());
-                }
-
-                static indices_t difference(indices_t& set1, indices_t& set2)
-                {
-                        unique(set1);
-                        unique(set2);
-
-                        indices_t diff;
-                        std::set_difference(
-                                set1.begin(), set1.end(), set2.begin(), set2.end(),
-                                std::inserter(diff, diff.begin()));
-                        return diff;
+                        assert(u < m_vertices && v < m_vertices);
+                        m_adjmat[u * m_vertices + v] = connected;
                 }
 
                 template <typename tvcall>
-                bool depth_first(flags_t& flags, const tvcall& vcall, const tindex src) const
+                void depth_first(flags_t& flags, const tvcall& vcall, size_t u) const
                 {
-                        std::stack<tindex> stack;
-                        stack.push(src);
-                        while (!stack.empty())
-                        {
-                                const auto u = stack.top();
-                                stack.pop();
+                        std::stack<size_t> q;
+                        q.push(u);
 
-                                if (flags[u] == flag::none)
+                        while (!q.empty())
+                        {
+                                u = q.top();
+                                q.pop();
+
+                                flags[u] = flag::black;
+                                vcall(u);
+
+                                for (size_t v = 0; v < m_vertices; ++ v)
                                 {
-                                        flags[u] = flag::visited;
-                                        vcall(u);
-                                        foreach_out(u, [&] (const edge_t& e) { stack.push(e.second); });
+                                        if (get(u, v) && flags[v] == flag::white)
+                                        {
+                                                flags[v] = flag::gray;
+                                                q.push(v);
+                                        }
                                 }
                         }
-                        return true;
                 }
 
                 template <typename tvcall>
-                bool breadth_first(flags_t& flags, const tvcall& vcall, const tindex src) const
+                void breadth_first(flags_t& flags, const tvcall& vcall, size_t u) const
                 {
-                        std::deque<tindex> queue;
-                        queue.push_back(src);
-                        while (!queue.empty())
-                        {
-                                const auto u = queue.front();
-                                queue.pop_front();
+                        flags[u] = flag::gray;
 
-                                if (flags[u] == flag::none)
+                        std::deque<size_t> q{u};
+                        while (!q.empty())
+                        {
+                                u = q.front();
+                                q.pop_front();
+
+                                for (size_t v = 0; v < m_vertices; ++ v)
                                 {
-                                        flags[u] = flag::visited;
-                                        vcall(u);
-                                        foreach_out(u, [&] (const edge_t& e) { queue.push_back(e.second); });
+                                        if (get(u, v) && flags[v] == flag::white)
+                                        {
+                                                flags[v] = flag::gray;
+                                                q.push_back(v);
+                                        }
                                 }
+
+                                flags[u] = flag::black;
+                                vcall(u);
                         }
-                        return true;
                 }
 
                 // attributes
-                edges_t         m_edges;        ///<
-                tindex          m_vertices{0};  ///< total number of vertices (maximum edge index + 1)
+                size_t                  m_vertices;     ///< number of vertices
+                std::vector<bool>       m_adjmat;       ///< adjacency matrix
         };
 
-        template <typename tindex>
-        void digraph_t<tindex>::clear()
+        inline digraph_t::digraph_t(const size_t vertices) :
+                m_vertices(vertices),
+                m_adjmat(vertices * vertices, false)
         {
-                m_edges.clear();
-                m_vertices = 0;
         }
 
-        template <typename tindex>
-        void digraph_t<tindex>::edge(const tindex src, const tindex dst)
+        inline void digraph_t::edge(const size_t u, const size_t v)
         {
-                m_edges.emplace_back(src, dst);
-                m_vertices = std::max(m_vertices, static_cast<tindex>(src + 1));
-                m_vertices = std::max(m_vertices, static_cast<tindex>(dst + 1));
+                set(u, v, true);
         }
 
-        template <typename tindex>
-        void digraph_t<tindex>::done()
-        {
-                unique(m_edges);
-        }
-
-        template <typename tindex>
-        typename digraph_t<tindex>::indices_t digraph_t<tindex>::sources() const
-        {
-                indices_t srcs, dsts;
-                for (const auto& edge : m_edges)
-                {
-                        srcs.emplace_back(edge.first);
-                        dsts.emplace_back(edge.second);
-                }
-
-                return difference(srcs, dsts);
-        }
-
-        template <typename tindex>
-        typename digraph_t<tindex>::indices_t digraph_t<tindex>::in(const tindex dst) const
+        inline digraph_t::indices_t digraph_t::sources() const
         {
                 indices_t srcs;
-                for (const auto& edge : m_edges)
+                for (size_t v = 0; v < m_vertices; ++ v)
                 {
-                        if (edge.second == dst)
+                        bool source = true;
+                        for (size_t u = 0; u < m_vertices && source; ++ u)
                         {
-                                srcs.emplace_back(edge.first);
+                                source = !get(u, v);
+                        }
+                        if (source)
+                        {
+                                srcs.push_back(v);
                         }
                 }
 
-                unique(srcs);
                 return srcs;
         }
 
-        template <typename tindex>
-        typename digraph_t<tindex>::indices_t digraph_t<tindex>::sinks() const
+        inline digraph_t::indices_t digraph_t::in(const size_t v) const
         {
-                indices_t srcs, dsts;
-                for (const auto& edge : m_edges)
+                indices_t srcs;
+                for (size_t u = 0; u < m_vertices; ++ u)
                 {
-                        srcs.emplace_back(edge.first);
-                        dsts.emplace_back(edge.second);
+                        if (get(u, v))
+                        {
+                                srcs.push_back(u);
+                        }
                 }
 
-                return difference(dsts, srcs);
+                return srcs;
         }
 
-        template <typename tindex>
-        typename digraph_t<tindex>::indices_t digraph_t<tindex>::out(const tindex src) const
+        inline digraph_t::indices_t digraph_t::sinks() const
         {
                 indices_t dsts;
-                foreach_out(src, [&] (const auto& edge) { dsts.emplace_back(edge.second); return true; });
+                for (size_t u = 0; u < m_vertices; ++ u)
+                {
+                        bool sink = true;
+                        for (size_t v = 0; v < m_vertices && sink; ++ v)
+                        {
+                                sink = !get(u, v);
+                        }
+                        if (sink)
+                        {
+                                dsts.push_back(u);
+                        }
+                }
 
-                unique(dsts);
                 return dsts;
         }
 
-        template <typename tindex>
-        template <typename tvcall>
-        bool digraph_t<tindex>::depth_first(const tvcall& vcall) const
+        inline digraph_t::indices_t digraph_t::out(const size_t u) const
         {
-                flags_t flags(vertices(), flag::none);
-                for (const auto src : sources())
+                indices_t dsts;
+                for (size_t v = 0; v < m_vertices; ++ v)
                 {
-                        if (!depth_first(flags, vcall, src))
+                        if (get(u, v))
                         {
-                                return false;
+                                dsts.push_back(v);
                         }
+                }
+
+                return dsts;
+        }
+
+        template <typename tvcall>
+        bool digraph_t::depth_first(const tvcall& vcall) const
+        {
+                flags_t flags(m_vertices, flag::white);
+                for (const auto u : sources())
+                {
+                        depth_first(flags, vcall, u);
                 }
                 return true;
         }
 
-        template <typename tindex>
         template <typename tvcall>
-        bool digraph_t<tindex>::breadth_first(const tvcall& vcall) const
+        bool digraph_t::breadth_first(const tvcall& vcall) const
         {
-                flags_t flags(vertices(), flag::none);
-                for (const auto src : sources())
+                flags_t flags(m_vertices, flag::white);
+                for (const auto u : sources())
                 {
-                        if (!breadth_first(flags, vcall, src))
-                        {
-                                return false;
-                        }
+                        breadth_first(flags, vcall, u);
                 }
                 return true;
         }
 
-        template <typename tindex>
-        bool digraph_t<tindex>::dag() const
+        inline bool digraph_t::dag() const
         {
-                return depth_first([] (const tindex vindex) { (void)vindex; });
+                return false;
         }
 
-        template <typename tindex>
-        typename digraph_t<tindex>::indices_t digraph_t<tindex>::tsort() const
+        inline digraph_t::indices_t digraph_t::tsort() const
         {
                 // todo: have the input vertices consecutive!!!
+                return indices_t{};
+                /*
                 indices_t vindices(vertices(), 0);
                 size_t index = vertices();
-                depth_first([&] (const tindex vindex) { assert(index > 0); vindices[-- index] = vindex; });
+                depth_first([&] (const size_t vindex) { assert(index > 0); vindices[-- index] = vindex; });
 
                 if (index != 0)
                 {
                         vindices.clear();       // !DAG
                 }
-                return vindices;
+                return vindices;*/
         }
 
-        template <typename tindex>
-        bool digraph_t<tindex>::connected(const tindex src, const tindex dst) const
+        inline bool digraph_t::connected(const size_t u, const size_t v) const
         {
-                assert(src < vertices() && dst < vertices());
+                assert(u < m_vertices && v < m_vertices);
 
-                if (src == dst)
+                if (get(u, v))
                 {
-                        return std::find(m_edges.begin(), m_edges.end(), edge_t{src, dst}) != m_edges.end();
+                        return true;
                 }
                 else
                 {
-                        flags_t flags(vertices(), flag::none);
-                        return  depth_first(flags, [] (const tindex) {}, src) &&
-                                flags[dst] == flag::visited;
+                        flags_t flags(m_vertices, flag::white);
+                        depth_first(flags, [] (const size_t) {}, u);
+                        return flags[v] == flag::black;
                 }
         }
 }
