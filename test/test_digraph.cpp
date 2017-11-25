@@ -3,6 +3,10 @@
 
 using namespace nano;
 using indices_t = digraph_t::indices_t;
+using info_t = std::pair<size_t, size_t>;
+using infos_t = std::vector<info_t>;
+
+using conn_t = std::vector<std::pair<size_t, size_t>>;
 
 std::ostream& operator<<(std::ostream& os, const indices_t& indices)
 {
@@ -13,9 +17,13 @@ std::ostream& operator<<(std::ostream& os, const indices_t& indices)
         return os;
 }
 
-indices_t make_indices()
+std::ostream& operator<<(std::ostream& os, const infos_t& infos)
 {
-        return {};
+        for (const auto info : infos)
+        {
+                os << info.first << ':' << info.second << ',';
+        }
+        return os;
 }
 
 template <typename... tindices>
@@ -24,246 +32,278 @@ indices_t make_indices(const tindices... indices)
         return {indices...};
 }
 
-indices_t depth_first(const digraph_t& graph)
+template <typename... tinfos>
+infos_t make_infos(const tinfos&... infos)
 {
-        indices_t vertices;
-        graph.depth_first([&] (const size_t vertex) { vertices.push_back(vertex); });
-        return vertices;
+        return {infos...};
 }
 
-indices_t breadth_first(const digraph_t& graph)
+infos_t depth_first(const digraph_t& graph)
 {
-        indices_t vertices;
-        graph.breadth_first([&] (const size_t vertex) { vertices.push_back(vertex); });
-        return vertices;
+        infos_t infos;
+        graph.depth_first([&] (const size_t vertex, const size_t depth) { infos.emplace_back(vertex, depth); });
+        return infos;
 }
 
-void check_tsort(const digraph_t& graph, const indices_t& tsort)
+infos_t breadth_first(const digraph_t& graph)
 {
-        for (size_t ivertex = 0; ivertex < tsort.size(); ++ ivertex)
+        infos_t infos;
+        graph.breadth_first([&] (const size_t vertex, const size_t depth) { infos.emplace_back(vertex, depth); });
+        return infos;
+}
+
+void check_conn(const digraph_t& g, const conn_t& conn)
+{
+        for (size_t u = 0; u < g.vertices(); ++ u)
         {
-                const auto vertex = tsort[ivertex];
-
-                size_t min_isource = tsort.size();
-                size_t max_isource = 0;
-
-                const auto sources = graph.in(vertex);
-                for (const auto source : sources)
+                for (size_t v = 0; v < g.vertices(); ++ v)
                 {
-                        const auto it = std::find(tsort.begin(), tsort.end(), source);
-                        const auto isource = static_cast<size_t>(std::distance(tsort.begin(), it));
-                        min_isource = std::min(min_isource, isource);
-                        max_isource = std::max(max_isource, isource);
-
-                        // the source vertices should be before the vertex in the topological order!
-                        NANO_CHECK_LESS_EQUAL(isource, ivertex);
-                }
-
-                // the source vertices should be consecutive in the topological order!
-                if (!sources.empty())
-                {
-                        NANO_CHECK_EQUAL(max_isource - min_isource + 1, sources.size());
+                        const bool connected = std::find(conn.begin(), conn.end(), std::make_pair(u, v)) != conn.end();
+                        NANO_CHECK_EQUAL(g.connected(u, v), connected);
                 }
         }
 }
 
-void check_tsort(const digraph_t& graph)
-{
-        check_tsort(graph, graph.tsort());
-}
-
 NANO_BEGIN_MODULE(test_digraph)
 
-NANO_CASE(in)
+NANO_CASE(graph0)
 {
-        digraph_t g(6);
-        g.edge(0u, 2u, 3u, 4u);
-        g.edge(1u, 3u, 5u);
+        digraph_t g(3);
+        g.edge(0u, 0u, 1u, 2u); // cycle here
+        NANO_CHECK_EQUAL(g.vertices(), 3u);
 
-        NANO_CHECK_EQUAL(g.sources(), make_indices(0u, 1u));
-        NANO_CHECK_EQUAL(g.in(0), make_indices());
-        NANO_CHECK_EQUAL(g.in(1), make_indices());
-        NANO_CHECK_EQUAL(g.in(2), make_indices(0u));
-        NANO_CHECK_EQUAL(g.in(3), make_indices(1u, 2u));
-        NANO_CHECK_EQUAL(g.in(4), make_indices(3u));
-        NANO_CHECK_EQUAL(g.in(5), make_indices(3u));
+        const conn_t conn =
+        {
+                {0u, 0u}, {0u, 1u}, {0u, 2u},
+                {1u, 2u}
+        };
+        check_conn(g, conn);
+
+        NANO_CHECK_EQUAL(g.sources(), make_indices());
+        NANO_CHECK_EQUAL(g.in(0), make_indices(0u));
+        NANO_CHECK_EQUAL(g.in(1), make_indices(0u));
+        NANO_CHECK_EQUAL(g.in(2), make_indices(1u));
+
+        NANO_CHECK_EQUAL(g.sinks(), make_indices(2u));
+        NANO_CHECK_EQUAL(g.out(0), make_indices(0u, 1u));
+        NANO_CHECK_EQUAL(g.out(1), make_indices(2u));
+        NANO_CHECK_EQUAL(g.out(2), make_indices());
+
+        NANO_CHECK(!g.dag());
 }
 
-NANO_CASE(out)
+NANO_CASE(graph1)
 {
-        digraph_t g(6);
-        g.edge(0u, 2u, 3u, 4u);
-        g.edge(1u, 3u, 5u);
+        digraph_t g(3);
+        g.edge(0u, 1u, 2u, 0u); // cycle here
+        NANO_CHECK_EQUAL(g.vertices(), 3u);
 
-        NANO_CHECK_EQUAL(g.sinks(), make_indices(4u, 5u));
-        NANO_CHECK_EQUAL(g.out(0), make_indices(2u));
-        NANO_CHECK_EQUAL(g.out(1), make_indices(3u));
-        NANO_CHECK_EQUAL(g.out(2), make_indices(3u));
-        NANO_CHECK_EQUAL(g.out(3), make_indices(4u, 5u));
-        NANO_CHECK_EQUAL(g.out(4), make_indices());
-        NANO_CHECK_EQUAL(g.out(5), make_indices());
+        const conn_t conn =
+        {
+                {0u, 1u}, {0u, 2u},
+                {1u, 2u}, {1u, 0u},
+                {2u, 0u}, {2u, 1u}
+        };
+        check_conn(g, conn);
+
+        NANO_CHECK_EQUAL(g.sources(), make_indices());
+        NANO_CHECK_EQUAL(g.in(0), make_indices(2u));
+        NANO_CHECK_EQUAL(g.in(1), make_indices(0u));
+        NANO_CHECK_EQUAL(g.in(2), make_indices(1u));
+
+        NANO_CHECK_EQUAL(g.sinks(), make_indices());
+        NANO_CHECK_EQUAL(g.out(0), make_indices(1u));
+        NANO_CHECK_EQUAL(g.out(1), make_indices(2u));
+        NANO_CHECK_EQUAL(g.out(2), make_indices(0u));
+
+        NANO_CHECK(!g.dag());
 }
 
-NANO_CASE(conn)
-{
-        digraph_t g(6);
-        g.edge(0u, 2u, 3u, 4u);
-        g.edge(1u, 3u, 5u);
-
-        NANO_CHECK(!g.connected(0, 0));
-        NANO_CHECK(!g.connected(0, 1));
-        NANO_CHECK(g.connected(0, 2));
-        NANO_CHECK(g.connected(0, 3));
-        NANO_CHECK(g.connected(0, 4));
-        NANO_CHECK(g.connected(0, 5));
-
-        NANO_CHECK(!g.connected(1, 0));
-        NANO_CHECK(!g.connected(1, 1));
-        NANO_CHECK(!g.connected(1, 2));
-        NANO_CHECK(g.connected(1, 3));
-        NANO_CHECK(g.connected(1, 4));
-        NANO_CHECK(g.connected(1, 5));
-
-        NANO_CHECK(!g.connected(2, 0));
-        NANO_CHECK(!g.connected(2, 1));
-        NANO_CHECK(!g.connected(2, 2));
-        NANO_CHECK(g.connected(2, 3));
-        NANO_CHECK(g.connected(2, 4));
-        NANO_CHECK(g.connected(2, 5));
-
-        NANO_CHECK(!g.connected(3, 0));
-        NANO_CHECK(!g.connected(3, 1));
-        NANO_CHECK(!g.connected(3, 2));
-        NANO_CHECK(!g.connected(3, 3));
-        NANO_CHECK(g.connected(3, 4));
-        NANO_CHECK(g.connected(3, 5));
-
-        NANO_CHECK(!g.connected(4, 0));
-        NANO_CHECK(!g.connected(4, 1));
-        NANO_CHECK(!g.connected(4, 2));
-        NANO_CHECK(!g.connected(4, 3));
-        NANO_CHECK(!g.connected(4, 4));
-        NANO_CHECK(!g.connected(4, 5));
-
-        NANO_CHECK(!g.connected(5, 0));
-        NANO_CHECK(!g.connected(5, 1));
-        NANO_CHECK(!g.connected(5, 2));
-        NANO_CHECK(!g.connected(5, 3));
-        NANO_CHECK(!g.connected(5, 4));
-        NANO_CHECK(!g.connected(5, 5));
-}
-
-NANO_CASE(topo1)
+NANO_CASE(graph2)
 {
         digraph_t g(5);
-        g.edge(0u, 2u);
-        g.edge(1u, 2u, 3u, 4u);
+        g.edge(0u, 1u, 2u);
+        g.edge(3u, 2u);
+        g.edge(3u, 4u);
+        NANO_CHECK_EQUAL(g.vertices(), 5u);
+
+        const conn_t conn =
+        {
+                {0u, 1u}, {0u, 2u},
+                {1u, 2u},
+                {3u, 2u}, {3u, 4u}
+        };
+        check_conn(g, conn);
+
+        NANO_CHECK_EQUAL(g.sources(), make_indices(0u, 3u));
+        NANO_CHECK_EQUAL(g.in(0), make_indices());
+        NANO_CHECK_EQUAL(g.in(1), make_indices(0u));
+        NANO_CHECK_EQUAL(g.in(2), make_indices(1u, 3u));
+        NANO_CHECK_EQUAL(g.in(3), make_indices());
+        NANO_CHECK_EQUAL(g.in(4), make_indices(3u));
+
+        NANO_CHECK_EQUAL(g.sinks(), make_indices(2u, 4u));
+        NANO_CHECK_EQUAL(g.out(0), make_indices(1u));
+        NANO_CHECK_EQUAL(g.out(1), make_indices(2u));
+        NANO_CHECK_EQUAL(g.out(2), make_indices());
+        NANO_CHECK_EQUAL(g.out(3), make_indices(2u, 4u));
+        NANO_CHECK_EQUAL(g.out(4), make_indices());
 
         NANO_CHECK(g.dag());
-        NANO_CHECK_EQUAL(g.tsort(), make_indices());
-        NANO_CHECK_EQUAL(depth_first(g), make_indices());
-        NANO_CHECK_EQUAL(breadth_first(g), make_indices());
+
+        NANO_CHECK(g.tsort(make_indices(0u, 3u, 4u, 1u, 2u)));
+        NANO_CHECK(g.tsort(make_indices(0u, 1u, 3u, 2u, 4u)));
+
+        NANO_CHECK(g.tsort_strong(make_indices(0u, 1u, 3u, 2u, 4u)));
+        NANO_CHECK(g.tsort_strong(make_indices(0u, 3u, 1u, 2u, 4u)));
+        NANO_CHECK(g.tsort_strong(make_indices(0u, 3u, 1u, 4u, 2u)));
 }
 
-NANO_CASE(topo2)
+NANO_CASE(graph3)
 {
-        digraph_t g(4);
-        g.edge(0u, 2u, 3u, 0u);
-        g.edge(1u, 2u);
+        digraph_t g(5);
+        g.edge(0u, 1u);
+        g.edge(3u, 1u, 2u);
+        g.edge(3u, 4u, 2u);
+        NANO_CHECK_EQUAL(g.vertices(), 5u);
 
-        NANO_CHECK(!g.dag());
-        NANO_CHECK_EQUAL(g.tsort(), make_indices());
-        NANO_CHECK_EQUAL(depth_first(g), make_indices());
-        NANO_CHECK_EQUAL(breadth_first(g), make_indices());
-}
+        const conn_t conn =
+        {
+                {0u, 1u}, {0u, 2u},
+                {1u, 2u},
+                {3u, 1u}, {3u, 2u}, {3u, 4u},
+                {4u, 2u}
+        };
+        check_conn(g, conn);
 
-NANO_CASE(topo3)
-{
-        digraph_t g(3);
-        g.edge(0u, 1u, 2u, 0u);
+        NANO_CHECK_EQUAL(g.sources(), make_indices(0u, 3u));
+        NANO_CHECK_EQUAL(g.in(0), make_indices());
+        NANO_CHECK_EQUAL(g.in(1), make_indices(0u, 3u));
+        NANO_CHECK_EQUAL(g.in(2), make_indices(1u, 4u));
+        NANO_CHECK_EQUAL(g.in(3), make_indices());
+        NANO_CHECK_EQUAL(g.in(4), make_indices(3u));
 
-        NANO_CHECK(!g.dag());
-        NANO_CHECK_EQUAL(g.tsort(), make_indices());
-        NANO_CHECK_EQUAL(depth_first(g), make_indices());
-        NANO_CHECK_EQUAL(breadth_first(g), make_indices());
-}
-
-NANO_CASE(topo4)
-{
-        digraph_t g(3);
-        g.edge(1u, 2u, 0u);
+        NANO_CHECK_EQUAL(g.sinks(), make_indices(2u));
+        NANO_CHECK_EQUAL(g.out(0), make_indices(1u));
+        NANO_CHECK_EQUAL(g.out(1), make_indices(2u));
+        NANO_CHECK_EQUAL(g.out(2), make_indices());
+        NANO_CHECK_EQUAL(g.out(3), make_indices(1u, 4u));
+        NANO_CHECK_EQUAL(g.out(4), make_indices(2u));
 
         NANO_CHECK(g.dag());
-        NANO_CHECK_EQUAL(g.tsort(), make_indices());
-        NANO_CHECK_EQUAL(depth_first(g), make_indices());
-        NANO_CHECK_EQUAL(breadth_first(g), make_indices());
 }
 
-NANO_CASE(topo5)
+NANO_CASE(graph4)
+{
+        digraph_t g(5);
+        g.edge(3u, 4u, 0u, 1u, 2u, 4u); // cycle here
+        NANO_CHECK_EQUAL(g.vertices(), 5u);
+
+        const conn_t conn =
+        {
+                {0u, 1u}, {0u, 2u}, {0u, 4u},
+                {1u, 2u}, {1u, 4u}, {1u, 0u},
+                {2u, 4u}, {2u, 0u}, {2u, 1u},
+                {3u, 4u}, {3u, 0u}, {3u, 1u}, {3u, 2u},
+                {4u, 0u}, {4u, 1u}, {4u, 2u}
+        };
+        check_conn(g, conn);
+
+        NANO_CHECK_EQUAL(g.sources(), make_indices(3u));
+        NANO_CHECK_EQUAL(g.in(0), make_indices(4u));
+        NANO_CHECK_EQUAL(g.in(1), make_indices(0u));
+        NANO_CHECK_EQUAL(g.in(2), make_indices(1u));
+        NANO_CHECK_EQUAL(g.in(3), make_indices());
+        NANO_CHECK_EQUAL(g.in(4), make_indices(2u, 3u));
+
+        NANO_CHECK_EQUAL(g.sinks(), make_indices());
+        NANO_CHECK_EQUAL(g.out(0), make_indices(1u));
+        NANO_CHECK_EQUAL(g.out(1), make_indices(2u));
+        NANO_CHECK_EQUAL(g.out(2), make_indices(4u));
+        NANO_CHECK_EQUAL(g.out(3), make_indices(4u));
+        NANO_CHECK_EQUAL(g.out(4), make_indices(0u));
+
+        NANO_CHECK(!g.dag());
+}
+
+NANO_CASE(graph5)
 {
         digraph_t g(7);
-        g.edge(0u, 2u, 3u);
-        g.edge(1u, 2u);
-        g.edge(4u, 5u, 6u, 4u);
+        g.edge(0u, 1u, 3u);
+        g.edge(2u, 1u, 3u);
+        g.edge(4u, 5u, 6u, 4u); // cycle here
+        NANO_CHECK_EQUAL(g.vertices(), 7u);
+
+        const conn_t conn =
+        {
+                {0u, 1u}, {0u, 3u},
+                {1u, 3u},
+                {2u, 1u}, {2u, 3u},
+                {4u, 5u}, {4u, 6u},
+                {5u, 6u}, {5u, 4u},
+                {6u, 4u}, {6u, 5u}
+        };
+        check_conn(g, conn);
+
+        NANO_CHECK_EQUAL(g.sources(), make_indices(0u, 2u));
+        NANO_CHECK_EQUAL(g.in(0), make_indices());
+        NANO_CHECK_EQUAL(g.in(1), make_indices(0u, 2u));
+        NANO_CHECK_EQUAL(g.in(2), make_indices());
+        NANO_CHECK_EQUAL(g.in(3), make_indices(1u));
+        NANO_CHECK_EQUAL(g.in(4), make_indices(6u));
+        NANO_CHECK_EQUAL(g.in(5), make_indices(4u));
+        NANO_CHECK_EQUAL(g.in(6), make_indices(5u));
+
+        NANO_CHECK_EQUAL(g.sinks(), make_indices(3u));
+        NANO_CHECK_EQUAL(g.out(0), make_indices(1u));
+        NANO_CHECK_EQUAL(g.out(1), make_indices(3u));
+        NANO_CHECK_EQUAL(g.out(2), make_indices(1u));
+        NANO_CHECK_EQUAL(g.out(3), make_indices());
+        NANO_CHECK_EQUAL(g.out(4), make_indices(5u));
+        NANO_CHECK_EQUAL(g.out(5), make_indices(6u));
+        NANO_CHECK_EQUAL(g.out(6), make_indices(4u));
 
         NANO_CHECK(!g.dag());
-        NANO_CHECK_EQUAL(g.tsort(), make_indices());
-        NANO_CHECK_EQUAL(depth_first(g), make_indices());
-        NANO_CHECK_EQUAL(breadth_first(g), make_indices());
 }
 
-NANO_CASE(topo6)
-{
-        digraph_t g(7);
-        g.edge(0u, 2u, 3u);
-        g.edge(1u, 2u);
-        g.edge(4u, 5u, 6u);
-
-        NANO_CHECK(g.dag());
-        NANO_CHECK_EQUAL(g.tsort(), make_indices());
-        NANO_CHECK_EQUAL(depth_first(g), make_indices());
-        NANO_CHECK_EQUAL(breadth_first(g), make_indices());
-}
-
-NANO_CASE(topo7)
-{
-        // see: https://en.wikipedia.org/wiki/Topological_sorting#/media/File:Directed_acyclic_graph_2.svg
-        digraph_t g(8);
-        g.edge(0u, 3u, 5u);
-        g.edge(1u, 3u, 6u);
-        g.edge(1u, 4u, 6u);
-        g.edge(2u, 4u, 6u);
-        g.edge(3u, 7u);
-        g.edge(2u, 7u);
-
-        NANO_CHECK(g.dag());
-        NANO_CHECK_EQUAL(g.tsort(), make_indices(2u, 1u, 4u, 0u, 3u, 7u, 6u, 5u));
-        check_tsort(g);
-}
-
-NANO_CASE(topo8)
+NANO_CASE(graph6)
 {
         digraph_t g(7);
         g.edge(0u, 1u, 3u, 6u);
         g.edge(0u, 2u, 4u, 6u);
         g.edge(0u, 5u, 6u);
+        NANO_CHECK_EQUAL(g.vertices(), 7u);
 
-        /*{0}, {1}
-        {0}, {2}
-        {0}, {5}
-        {1}, {3}
-        {2}, {4}
-        {3, 4, 5}, {6}
+        const conn_t conn =
+        {
+                {0u, 1u}, {0u, 2u}, {0u, 3u}, {0u, 4u}, {0u, 5u}, {0u, 6u},
+                {1u, 3u}, {1u, 6u},
+                {2u, 4u}, {2u, 6u},
+                {3u, 6u},
+                {4u, 6u},
+                {5u, 6u}
+        };
+        check_conn(g, conn);
 
-        {0}, {2}, {1}, {3, 4, 5}, {6}
-        {0}, {1}, {2}, {3, 4, 5}, {6}*/
+        NANO_CHECK_EQUAL(g.sources(), make_indices(0u));
+        NANO_CHECK_EQUAL(g.in(0), make_indices());
+        NANO_CHECK_EQUAL(g.in(1), make_indices(0u));
+        NANO_CHECK_EQUAL(g.in(2), make_indices(0u));
+        NANO_CHECK_EQUAL(g.in(3), make_indices(1u));
+        NANO_CHECK_EQUAL(g.in(4), make_indices(2u));
+        NANO_CHECK_EQUAL(g.in(5), make_indices(0u));
+        NANO_CHECK_EQUAL(g.in(6), make_indices(3u, 4u, 5u));
 
-        NANO_CHECK(g.dag());
-        //check_tsort(g);
-        check_tsort(g, make_indices(0u, 2u, 1u, 3u, 4u, 5u, 6u));
-        check_tsort(g, make_indices(0u, 1u, 2u, 3u, 4u, 5u, 6u));
-        NANO_CHECK_EQUAL(depth_first(g), make_indices(0u, 5u, 6u, 2u, 4u, 1u, 3u));
-        NANO_CHECK_EQUAL(breadth_first(g), make_indices(0u, 1u, 2u, 5u, 3u, 4u, 6u));
+        NANO_CHECK_EQUAL(g.sinks(), make_indices(6u));
+        NANO_CHECK_EQUAL(g.out(0), make_indices(1u, 2u, 5u));
+        NANO_CHECK_EQUAL(g.out(1), make_indices(3u));
+        NANO_CHECK_EQUAL(g.out(2), make_indices(4u));
+        NANO_CHECK_EQUAL(g.out(3), make_indices(6u));
+        NANO_CHECK_EQUAL(g.out(4), make_indices(6u));
+        NANO_CHECK_EQUAL(g.out(5), make_indices(6u));
+        NANO_CHECK_EQUAL(g.out(6), make_indices());
+
+        NANO_CHECK(!g.dag());
 }
 
 NANO_END_MODULE()
