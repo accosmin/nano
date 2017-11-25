@@ -2,10 +2,10 @@
 #include "digraph.h"
 
 using namespace nano;
-using indices_t = digraph_t::indices_t;
-using info_t = std::pair<size_t, size_t>;
-using infos_t = std::vector<info_t>;
 
+using color = digraph_t::color;
+using infos_t = digraph_t::infos_t;
+using indices_t = digraph_t::indices_t;
 using conn_t = std::vector<std::pair<size_t, size_t>>;
 
 std::ostream& operator<<(std::ostream& os, const indices_t& indices)
@@ -19,9 +19,15 @@ std::ostream& operator<<(std::ostream& os, const indices_t& indices)
 
 std::ostream& operator<<(std::ostream& os, const infos_t& infos)
 {
-        for (const auto info : infos)
+        for (const auto& info : infos)
         {
-                os << info.first << ':' << info.second << ',';
+                switch (info.m_color)
+                {
+                case color::white:      os << "white"; break;
+                case color::gray:       os << "gray"; break;
+                case color::black:      os << "black"; break;
+                }
+                os << ':' << info.m_depth << ':' << info.m_tree << ',';
         }
         return os;
 }
@@ -36,20 +42,6 @@ template <typename... tinfos>
 infos_t make_infos(const tinfos&... infos)
 {
         return {infos...};
-}
-
-infos_t depth_first(const digraph_t& graph)
-{
-        infos_t infos;
-        graph.depth_first([&] (const size_t vertex, const size_t depth) { infos.emplace_back(vertex, depth); });
-        return infos;
-}
-
-infos_t breadth_first(const digraph_t& graph)
-{
-        infos_t infos;
-        graph.breadth_first([&] (const size_t vertex, const size_t depth) { infos.emplace_back(vertex, depth); });
-        return infos;
 }
 
 void check_conn(const digraph_t& g, const conn_t& conn)
@@ -148,6 +140,16 @@ NANO_CASE(graph2)
         NANO_CHECK_EQUAL(g.out(2), make_indices());
         NANO_CHECK_EQUAL(g.out(3), make_indices(2u, 4u));
         NANO_CHECK_EQUAL(g.out(4), make_indices());
+
+        const infos_t infos =
+        {
+                {color::black, 0u, 0u},
+                {color::black, 1u, 0u},
+                {color::black, 2u, 0u},
+                {color::black, 1u, 1u},
+                {color::black, 2u, 1u},
+        };
+        NANO_CHECK_EQUAL(g.visit(), infos);
 
         NANO_CHECK(g.dag());
 
@@ -302,6 +304,18 @@ NANO_CASE(graph6)
         NANO_CHECK_EQUAL(g.out(4), make_indices(6u));
         NANO_CHECK_EQUAL(g.out(5), make_indices(6u));
         NANO_CHECK_EQUAL(g.out(6), make_indices());
+
+        const infos_t infos =
+        {
+                {color::black, 0u, 0u},
+                {color::black, 1u, 0u},
+                {color::black, 1u, 0u},
+                {color::black, 2u, 0u},
+                {color::black, 2u, 0u},
+                {color::black, 2u, 0u},
+                {color::black, 3u, 0u}
+        };
+        NANO_CHECK_EQUAL(g.visit(), infos);
 
         NANO_CHECK(!g.dag());
 }

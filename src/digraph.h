@@ -15,6 +15,25 @@ namespace nano
         class digraph_t
         {
         public:
+
+                enum class color : uint16_t
+                {
+                        white,
+                        gray,
+                        black
+                };
+
+                ///
+                /// \brief information gathered per vertex when visiting the graph.
+                ///
+                struct info_t
+                {
+                        color   m_color{color::white};  ///<
+                        size_t  m_depth{0};             ///< depth (starting from the deepest source)
+                        size_t  m_tree{0};              ///< tree index
+                };
+
+                using infos_t = std::vector<info_t>;
                 using indices_t = std::vector<size_t>;
 
                 ///
@@ -70,6 +89,11 @@ namespace nano
                 indices_t out(const size_t u) const;
 
                 ///
+                /// \brief visit all vertices of the graph
+                ///
+                infos_t visit() const;
+
+                ///
                 /// \brief depth-first search where the given operator is called with the current vertex id
                 /// \return true if the graph is not a DAG
                 ///
@@ -121,20 +145,6 @@ namespace nano
 
         private:
 
-                enum class color : uint8_t
-                {
-                        white,
-                        gray,
-                        black
-                };
-
-                struct info_t
-                {
-                        color   m_color;
-                        size_t  m_depth;
-                };
-                using infos_t = std::vector<info_t>;
-
                 bool get(const size_t u, const size_t v) const
                 {
                         assert(u < m_vertices && v < m_vertices);
@@ -145,6 +155,36 @@ namespace nano
                 {
                         assert(u < m_vertices && v < m_vertices);
                         m_adjmat[u * m_vertices + v] = connected;
+                }
+
+                void visit(infos_t& infos, size_t u, const size_t tree) const
+                {
+                        size_t depth = 0;
+
+                        std::vector<size_t> q{u};
+                        while (!q.empty())
+                        {
+                                u = q.back();
+                                q.pop_back();
+
+                                infos[u] = {color::black, depth ++, tree};
+
+                                for (size_t v = 0; v < m_vertices; ++ v)
+                                {
+                                        if (get(u, v))
+                                        {
+                                                switch (infos[v].m_color)
+                                                {
+                                                case color::white:
+                                                        infos[v].m_color = color::gray;
+                                                        q.push_back(v);
+                                                        break;
+                                                default:
+                                                        break;
+                                                }
+                                        }
+                                }
+                        }
                 }
 
                 template <typename tvcall>
@@ -289,6 +329,27 @@ namespace nano
                 }
 
                 return dsts;
+        }
+
+        digraph_t::infos_t digraph_t::visit() const
+        {
+                infos_t infos(m_vertices, {color::white, 0, 0});
+
+                size_t tree = 0;
+                for (const auto u : sources())
+                {
+                        visit(infos, u, tree ++);
+                }
+
+                for (size_t u = 0; u < m_vertices; ++ u)
+                {
+                        if (infos[u].m_color == color::white)
+                        {
+                                visit(infos, u, tree ++);
+                        }
+                }
+
+                return infos;
         }
 
         template <typename tvcall>
@@ -437,5 +498,12 @@ namespace nano
                 }
 
                 return tsort.size() == m_vertices;
+        }
+
+        inline bool operator==(const digraph_t::info_t& i1, const digraph_t::info_t& i2)
+        {
+                return  i1.m_color == i2.m_color &&
+                        i1.m_depth == i2.m_depth &&
+                        i1.m_tree == i2.m_tree;
         }
 }
