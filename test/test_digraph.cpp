@@ -4,6 +4,7 @@
 using namespace nano;
 
 using color = digraph_t::color;
+using cycle = digraph_t::cycle;
 using infos_t = digraph_t::infos_t;
 using indices_t = digraph_t::indices_t;
 using conn_t = std::vector<std::pair<size_t, size_t>>;
@@ -23,11 +24,16 @@ std::ostream& operator<<(std::ostream& os, const infos_t& infos)
         {
                 switch (info.m_color)
                 {
-                case color::white:      os << "white"; break;
-                case color::gray:       os << "gray"; break;
-                case color::black:      os << "black"; break;
+                case color::white:      os << "w:"; break;
+                case color::gray:       os << "g:"; break;
+                case color::black:      os << "b:"; break;
                 }
-                os << ':' << info.m_depth << ':' << info.m_tree << ',';
+                switch (info.m_cycle)
+                {
+                case cycle::none:       os << "n:"; break;
+                case cycle::detected:   os << "d:"; break;
+                }
+                os << info.m_comp << ':' << info.m_depth << ',';
         }
         return os;
 }
@@ -81,6 +87,14 @@ NANO_CASE(graph0)
         NANO_CHECK_EQUAL(g.out(1), make_indices(2u));
         NANO_CHECK_EQUAL(g.out(2), make_indices());
 
+        const infos_t infos =
+        {
+                {color::black, cycle::detected, 0u, 0u},
+                {color::black, cycle::none, 1u, 0u},
+                {color::black, cycle::none, 2u, 0u}
+        };
+        NANO_CHECK_EQUAL(g.visit(), infos);
+
         NANO_CHECK(!g.dag());
 }
 
@@ -107,6 +121,14 @@ NANO_CASE(graph1)
         NANO_CHECK_EQUAL(g.out(0), make_indices(1u));
         NANO_CHECK_EQUAL(g.out(1), make_indices(2u));
         NANO_CHECK_EQUAL(g.out(2), make_indices(0u));
+
+        const infos_t infos =
+        {
+                {color::black, cycle::detected, 0u, 0u},
+                {color::black, cycle::none, 1u, 0u},
+                {color::black, cycle::none, 2u, 0u}
+        };
+        NANO_CHECK_EQUAL(g.visit(), infos);
 
         NANO_CHECK(!g.dag());
 }
@@ -143,11 +165,11 @@ NANO_CASE(graph2)
 
         const infos_t infos =
         {
-                {color::black, 0u, 0u},
-                {color::black, 1u, 0u},
-                {color::black, 2u, 0u},
-                {color::black, 1u, 1u},
-                {color::black, 2u, 1u},
+                {color::black, cycle::none, 0u, 0u},
+                {color::black, cycle::none, 1u, 0u},
+                {color::black, cycle::none, 2u, 0u},
+                {color::black, cycle::none, 1u, 0u},
+                {color::black, cycle::none, 2u, 0u},
         };
         NANO_CHECK_EQUAL(g.visit(), infos);
 
@@ -155,10 +177,8 @@ NANO_CASE(graph2)
 
         NANO_CHECK(g.tsort(make_indices(0u, 3u, 4u, 1u, 2u)));
         NANO_CHECK(g.tsort(make_indices(0u, 1u, 3u, 2u, 4u)));
-
-        NANO_CHECK(g.tsort_strong(make_indices(0u, 1u, 3u, 2u, 4u)));
-        NANO_CHECK(g.tsort_strong(make_indices(0u, 3u, 1u, 2u, 4u)));
-        NANO_CHECK(g.tsort_strong(make_indices(0u, 3u, 1u, 4u, 2u)));
+        NANO_CHECK(g.tsort(make_indices(0u, 3u, 1u, 2u, 4u)));
+        NANO_CHECK(g.tsort(make_indices(0u, 3u, 1u, 4u, 2u)));
 }
 
 NANO_CASE(graph3)
@@ -192,6 +212,16 @@ NANO_CASE(graph3)
         NANO_CHECK_EQUAL(g.out(3), make_indices(1u, 4u));
         NANO_CHECK_EQUAL(g.out(4), make_indices(2u));
 
+        const infos_t infos =
+        {
+                {color::black, cycle::none, 0u, 0u},
+                {color::black, cycle::none, 1u, 0u},
+                {color::black, cycle::none, 2u, 0u},
+                {color::black, cycle::none, 0u, 0u},
+                {color::black, cycle::none, 1u, 0u}
+        };
+        NANO_CHECK_EQUAL(g.visit(), infos);
+
         NANO_CHECK(g.dag());
 }
 
@@ -224,6 +254,16 @@ NANO_CASE(graph4)
         NANO_CHECK_EQUAL(g.out(2), make_indices(4u));
         NANO_CHECK_EQUAL(g.out(3), make_indices(4u));
         NANO_CHECK_EQUAL(g.out(4), make_indices(0u));
+
+        const infos_t infos =
+        {
+                {color::black, cycle::none, 2u, 0u},
+                {color::black, cycle::none, 3u, 0u},
+                {color::black, cycle::none, 4u, 0u},
+                {color::black, cycle::none, 0u, 0u},
+                {color::black, cycle::detected, 1u, 0u}
+        };
+        NANO_CHECK_EQUAL(g.visit(), infos);
 
         NANO_CHECK(!g.dag());
 }
@@ -264,6 +304,18 @@ NANO_CASE(graph5)
         NANO_CHECK_EQUAL(g.out(4), make_indices(5u));
         NANO_CHECK_EQUAL(g.out(5), make_indices(6u));
         NANO_CHECK_EQUAL(g.out(6), make_indices(4u));
+
+        const infos_t infos =
+        {
+                {color::black, cycle::none, 0u, 0u},
+                {color::black, cycle::none, 1u, 0u},
+                {color::black, cycle::none, 0u, 0u},
+                {color::black, cycle::none, 2u, 0u},
+                {color::black, cycle::detected, 0u, 1u},
+                {color::black, cycle::none, 1u, 1u},
+                {color::black, cycle::none, 2u, 1u}
+        };
+        NANO_CHECK_EQUAL(g.visit(), infos);
 
         NANO_CHECK(!g.dag());
 }
@@ -307,13 +359,13 @@ NANO_CASE(graph6)
 
         const infos_t infos =
         {
-                {color::black, 0u, 0u},
-                {color::black, 1u, 0u},
-                {color::black, 1u, 0u},
-                {color::black, 2u, 0u},
-                {color::black, 2u, 0u},
-                {color::black, 2u, 0u},
-                {color::black, 3u, 0u}
+                {color::black, cycle::none, 0u, 0u},
+                {color::black, cycle::none, 1u, 0u},
+                {color::black, cycle::none, 1u, 0u},
+                {color::black, cycle::none, 2u, 0u},
+                {color::black, cycle::none, 2u, 0u},
+                {color::black, cycle::none, 2u, 0u},
+                {color::black, cycle::none, 3u, 0u}
         };
         NANO_CHECK_EQUAL(g.visit(), infos);
 

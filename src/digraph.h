@@ -1,6 +1,5 @@
 #pragma once
 
-#include <deque>
 #include <vector>
 #include <cassert>
 #include <cstdint>
@@ -23,14 +22,21 @@ namespace nano
                         black
                 };
 
+                enum class cycle : uint16_t
+                {
+                        none,
+                        detected
+                };
+
                 ///
                 /// \brief information gathered per vertex when visiting the graph.
                 ///
                 struct info_t
                 {
                         color   m_color{color::white};  ///<
+                        cycle   m_cycle{cycle::none};   ///<
                         size_t  m_depth{0};             ///< depth (starting from the deepest source)
-                        size_t  m_tree{0};              ///< tree index
+                        size_t  m_comp{0};              ///< component index
                 };
 
                 using infos_t = std::vector<info_t>;
@@ -94,19 +100,6 @@ namespace nano
                 infos_t visit() const;
 
                 ///
-                /// \brief depth-first search where the given operator is called with the current vertex id
-                /// \return true if the graph is not a DAG
-                ///
-                template <typename tvcall>
-                bool depth_first(const tvcall&) const;
-
-                ///
-                /// \brief breadth-first search where the given operator is called with the current vertex id
-                ///
-                template <typename tvcall>
-                void breadth_first(const tvcall&) const;
-
-                ///
                 /// \brief checks if the graph is a DAG
                 ///
                 bool dag() const;
@@ -133,12 +126,6 @@ namespace nano
                 bool tsort(const indices_t&) const;
 
                 ///
-                /// \brief check if the given vertices are sorted topologically and
-                ///     the inputs to any vertex are in the consecutive order
-                ///
-                bool tsort_strong(const indices_t&) const;
-
-                ///
                 /// \brief returns the number of vertices
                 ///
                 size_t vertices() const { return m_vertices; }
@@ -157,95 +144,65 @@ namespace nano
                         m_adjmat[u * m_vertices + v] = connected;
                 }
 
-                void visit(infos_t& infos, size_t u, const size_t tree) const
+                template <typename toperator>
+                size_t foreach_in(const size_t v, const toperator& op) const
                 {
-                        size_t depth = 0;
+                        size_t count = 0;
+                        for (size_t u = 0; u < m_vertices; ++ u)
+                        {
+                                if (get(u, v))
+                                {
+                                        op(u);
+                                        ++ count;
+                                }
+                        }
+                        return count;
+                }
 
-                        std::vector<size_t> q{u};
+                template <typename toperator>
+                size_t foreach_out(const size_t u, const toperator& op) const
+                {
+                        size_t count = 0;
+                        for (size_t v = 0; v < m_vertices; ++ v)
+                        {
+                                if (get(u, v))
+                                {
+                                        op(v);
+                                        ++ count;
+                                }
+                        }
+                        return count;
+                }
+
+                void visit(infos_t& infos, size_t u) const
+                {
+                        //todo: adjust the component index if connecting to another component: take its component index & -- comp
+                        //todo: adjust the depth if connecting to a vertex having an already set depth
+
+                        indices_t q{u};
                         while (!q.empty())
                         {
                                 u = q.back();
                                 q.pop_back();
 
-                                infos[u] = {color::black, depth ++, tree};
-
-                                for (size_t v = 0; v < m_vertices; ++ v)
+                                infos[u].m_color = color::gray;
+                                foreach_out(u, [&] (const size_t v)
                                 {
-                                        if (get(u, v))
+                                        switch (infos[v].m_color)
                                         {
-                                                switch (infos[v].m_color)
-                                                {
-                                                case color::white:
-                                                        infos[v].m_color = color::gray;
-                                                        q.push_back(v);
-                                                        break;
-                                                default:
-                                                        break;
-                                                }
-                                        }
-                                }
-                        }
-                }
-
-                template <typename tvcall>
-                bool depth_first(infos_t& infos, const tvcall& vcall, size_t u) const
-                {
-                        bool cyclic = false;
-                        size_t depth = 0;
-
-                        std::vector<size_t> q{u};
-                        while (!q.empty())
-                        {
-                                u = q.back();
-                                q.pop_back();
-
-                                infos[u] = {color::black, depth ++};
-                                vcall(u, infos[u].m_depth);
-
-                                for (size_t v = 0; v < m_vertices; ++ v)
-                                {
-                                        if (get(u, v))
-                                        {
-                                                switch (infos[v].m_color)
-                                                {
-                                                case color::white:
-                                                        infos[v].m_color = color::gray;
-                                                        q.push_back(v);
-                                                        break;
-                                                default:
-                                                        cyclic = true;
-                                                        break;
-                                                }
-                                        }
-                                }
-                        }
-
-                        return !cyclic;
-                }
-
-                template <typename tvcall>
-                void breadth_first(infos_t& infos, const tvcall& vcall, size_t u) const
-                {
-                        infos[u] = {color::gray, 0};
-
-                        std::deque<size_t> q{u};
-                        while (!q.empty())
-                        {
-                                u = q.front();
-                                q.pop_front();
-
-                                for (size_t v = 0; v < m_vertices; ++ v)
-                                {
-                                        if (get(u, v) && infos[v].m_color == color::white)
-                                        {
+                                        case color::white:
+                                                infos[v].m_depth = std::max(infos[v].m_depth, infos[u].m_depth + 1);
                                                 infos[v].m_color = color::gray;
-                                                infos[v].m_depth = infos[u].m_depth + 1;
                                                 q.push_back(v);
+                                                break;
+                                        case color::gray:
+                                                infos[v].m_cycle = cycle::detected;
+                                                break;
+                                        case color::black:
+                                                break;
                                         }
-                                }
-
+                                });
                                 infos[u].m_color = color::black;
-                                vcall(u, infos[u].m_depth);
                         }
                 }
 
@@ -270,12 +227,7 @@ namespace nano
                 indices_t srcs;
                 for (size_t v = 0; v < m_vertices; ++ v)
                 {
-                        bool source = true;
-                        for (size_t u = 0; u < m_vertices && source; ++ u)
-                        {
-                                source = !get(u, v);
-                        }
-                        if (source)
+                        if (!foreach_in(v, [&] (const size_t) {}))
                         {
                                 srcs.push_back(v);
                         }
@@ -287,13 +239,11 @@ namespace nano
         inline digraph_t::indices_t digraph_t::in(const size_t v) const
         {
                 indices_t srcs;
-                for (size_t u = 0; u < m_vertices; ++ u)
+                foreach_in(v, [&] (const size_t u)
                 {
-                        if (get(u, v))
-                        {
-                                srcs.push_back(u);
-                        }
-                }
+                        srcs.push_back(u);
+
+                });
 
                 return srcs;
         }
@@ -303,12 +253,7 @@ namespace nano
                 indices_t dsts;
                 for (size_t u = 0; u < m_vertices; ++ u)
                 {
-                        bool sink = true;
-                        for (size_t v = 0; v < m_vertices && sink; ++ v)
-                        {
-                                sink = !get(u, v);
-                        }
-                        if (sink)
+                        if (!foreach_out(u, [&] (const size_t) {}))
                         {
                                 dsts.push_back(u);
                         }
@@ -320,107 +265,43 @@ namespace nano
         inline digraph_t::indices_t digraph_t::out(const size_t u) const
         {
                 indices_t dsts;
-                for (size_t v = 0; v < m_vertices; ++ v)
+                foreach_out(u, [&] (const size_t v)
                 {
-                        if (get(u, v))
-                        {
-                                dsts.push_back(v);
-                        }
-                }
+                        dsts.push_back(v);
+                });
 
                 return dsts;
         }
 
         digraph_t::infos_t digraph_t::visit() const
         {
-                infos_t infos(m_vertices, {color::white, 0, 0});
-
-                size_t tree = 0;
+                infos_t infos(m_vertices);
                 for (const auto u : sources())
                 {
-                        visit(infos, u, tree ++);
+                        visit(infos, u);
                 }
 
                 for (size_t u = 0; u < m_vertices; ++ u)
                 {
                         if (infos[u].m_color == color::white)
                         {
-                                visit(infos, u, tree ++);
+                                visit(infos, u);
                         }
                 }
-
                 return infos;
-        }
-
-        template <typename tvcall>
-        bool digraph_t::depth_first(const tvcall& vcall) const
-        {
-                infos_t infos(m_vertices, {color::white, 0});
-
-                bool cyclic = false;
-                for (const auto u : sources())
-                {
-                        if (!depth_first(infos, vcall, u))
-                        {
-                                cyclic = true;
-                        }
-                }
-
-                for (size_t u = 0; u < m_vertices; ++ u)
-                {
-                        if (infos[u].m_color == color::white && !depth_first(infos, vcall, u))
-                        {
-                                cyclic = true;
-                        }
-                }
-
-                return !cyclic;
-        }
-
-        template <typename tvcall>
-        void digraph_t::breadth_first(const tvcall& vcall) const
-        {
-                infos_t infos(m_vertices, {color::white, 0});
-                for (const auto u : sources())
-                {
-                        breadth_first(infos, vcall, u);
-                }
-
-                for (size_t u = 0; u < m_vertices; ++ u)
-                {
-                        if (infos[u].m_color == color::white)
-                        {
-                                breadth_first(infos, vcall, u);
-                        }
-                }
         }
 
         inline bool digraph_t::dag() const
         {
-                return !depth_first([] (const size_t, const size_t) {});
+                const auto infos = visit();
+                const auto tester = [] (const info_t& info) { return info.m_cycle == cycle::detected; };
+                return std::find_if(infos.begin(), infos.end(), tester) == infos.end();
         }
 
         inline digraph_t::indices_t digraph_t::tsort() const
         {
-                indices_t indices;
-                if (dag())
-                {
-                        indices.resize(m_vertices, 0);
-                        size_t index = 0;
-                        depth_first([&] (const size_t u, const size_t)
-                        {
-                                assert(index < m_vertices);
-                                indices[index ++] = u;
-                        });
-                        assert(index == m_vertices);
-                }
-                return indices;
-        }
-
-        inline digraph_t::indices_t digraph_t::tsort_strong() const
-        {
                 // todo
-                return tsort();
+                return indices_t{};
         }
 
         inline bool digraph_t::connected(const size_t u, const size_t v) const
@@ -437,9 +318,9 @@ namespace nano
                 }
                 else
                 {
-                        infos_t infos(m_vertices, {color::white, 0});
-                        depth_first(infos, [] (const size_t, const size_t) {}, u);
-                        return infos[v].m_color == color::black;
+                        infos_t infos(m_vertices);
+                        visit(infos, u);
+                        return infos[v].m_color != color::white;
                 }
         }
 
@@ -466,44 +347,10 @@ namespace nano
                 return tsort.size() == m_vertices;
         }
 
-        inline bool digraph_t::tsort_strong(const indices_t& tsort) const
-        {
-                for (size_t ivertex = 0; ivertex < tsort.size(); ++ ivertex)
-                {
-                        const auto vertex = tsort[ivertex];
-
-                        size_t min_isource = tsort.size();
-                        size_t max_isource = 0;
-
-                        const auto sources = in(vertex);
-                        for (const auto source : sources)
-                        {
-                                const auto it = std::find(tsort.begin(), tsort.end(), source);
-                                const auto isource = static_cast<size_t>(std::distance(tsort.begin(), it));
-                                min_isource = std::min(min_isource, isource);
-                                max_isource = std::max(max_isource, isource);
-
-                                // the source vertices should be before the vertex in the topological order!
-                                if (isource > ivertex)
-                                {
-                                        return false;
-                                }
-                        }
-
-                        // the source vertices should be consecutive in the topological order!
-                        if (!sources.empty() && max_isource - min_isource + 1 != sources.size())
-                        {
-                                return false;
-                        }
-                }
-
-                return tsort.size() == m_vertices;
-        }
-
         inline bool operator==(const digraph_t::info_t& i1, const digraph_t::info_t& i2)
         {
                 return  i1.m_color == i2.m_color &&
                         i1.m_depth == i2.m_depth &&
-                        i1.m_tree == i2.m_tree;
+                        i1.m_comp == i2.m_comp;
         }
 }
