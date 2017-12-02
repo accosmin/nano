@@ -182,42 +182,46 @@ NANO_CASE(graph2)
 
 NANO_CASE(graph3)
 {
-        digraph_t g(5);
+        digraph_t g(6);
         g.edge(0u, 1u);
         g.edge(3u, 1u, 2u);
-        g.edge(3u, 4u, 2u);
-        NANO_CHECK_EQUAL(g.vertices(), 5u);
+        g.edge(3u, 4u, 5u, 2u);
+        NANO_CHECK_EQUAL(g.vertices(), 6u);
 
         const conn_t conn =
         {
                 {0u, 1u}, {0u, 2u},
                 {1u, 2u},
-                {3u, 1u}, {3u, 2u}, {3u, 4u},
-                {4u, 2u}
+                {3u, 1u}, {3u, 2u}, {3u, 4u}, {3u, 5u},
+                {4u, 5u}, {4u, 2u},
+                {5u, 2u}
         };
         check_conn(g, conn);
 
         NANO_CHECK_EQUAL(g.sources(), make_indices(0u, 3u));
         NANO_CHECK_EQUAL(g.in(0), make_indices());
         NANO_CHECK_EQUAL(g.in(1), make_indices(0u, 3u));
-        NANO_CHECK_EQUAL(g.in(2), make_indices(1u, 4u));
+        NANO_CHECK_EQUAL(g.in(2), make_indices(1u, 5u));
         NANO_CHECK_EQUAL(g.in(3), make_indices());
         NANO_CHECK_EQUAL(g.in(4), make_indices(3u));
+        NANO_CHECK_EQUAL(g.in(5), make_indices(4u));
 
         NANO_CHECK_EQUAL(g.sinks(), make_indices(2u));
         NANO_CHECK_EQUAL(g.out(0), make_indices(1u));
         NANO_CHECK_EQUAL(g.out(1), make_indices(2u));
         NANO_CHECK_EQUAL(g.out(2), make_indices());
         NANO_CHECK_EQUAL(g.out(3), make_indices(1u, 4u));
-        NANO_CHECK_EQUAL(g.out(4), make_indices(2u));
+        NANO_CHECK_EQUAL(g.out(4), make_indices(5u));
+        NANO_CHECK_EQUAL(g.out(5), make_indices(2u));
 
         const infos_t infos =
         {
-                {color::black, cycle::none, 0u, 0u},
                 {color::black, cycle::none, 1u, 0u},
                 {color::black, cycle::none, 2u, 0u},
+                {color::black, cycle::none, 3u, 0u},
                 {color::black, cycle::none, 0u, 0u},
-                {color::black, cycle::none, 1u, 0u}
+                {color::black, cycle::none, 1u, 0u},
+                {color::black, cycle::none, 2u, 0u}
         };
         NANO_CHECK_EQUAL(g.visit(), infos);
 
