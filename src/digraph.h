@@ -371,6 +371,7 @@ namespace nano
         inline bool operator==(const digraph_t::info_t& i1, const digraph_t::info_t& i2)
         {
                 return  i1.m_color == i2.m_color &&
+                        i1.m_cycle == i2.m_cycle &&
                         i1.m_depth == i2.m_depth &&
                         i1.m_comp == i2.m_comp;
         }
