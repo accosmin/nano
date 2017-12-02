@@ -304,7 +304,10 @@ namespace nano
                                         q.push_back(v);
                                         break;
                                 default:
-                                        infos[v].m_cycle = cycle::detected;
+                                        if (infos[v].m_depth < infos[u].m_depth + 1)
+                                        {
+                                                infos[v].m_cycle = cycle::detected;
+                                        }
                                         break;
                                 }
                         });
