@@ -15,14 +15,13 @@ namespace nano
         {
         public:
 
-                enum class color : uint16_t
+                enum class color : uint8_t
                 {
                         white,
-                        gray,
                         black
                 };
 
-                enum class cycle : uint16_t
+                enum class cycle : uint8_t
                 {
                         none,
                         detected
@@ -35,8 +34,8 @@ namespace nano
                 {
                         color   m_color{color::white};  ///<
                         cycle   m_cycle{cycle::none};   ///<
-                        size_t  m_depth{0};             ///< depth (starting from the deepest source)
-                        size_t  m_comp{0};              ///< component index
+                        uint8_t m_depth{0};             ///< depth (starting from the deepest source)
+                        uint8_t m_comp{0};              ///< component index
                 };
 
                 using infos_t = std::vector<info_t>;
@@ -80,7 +79,7 @@ namespace nano
                 indices_t sources() const;
 
                 ///
-                /// \brief returns the incoming vertices of the given vertex id
+                /// \brief returns the incoming vertices of the given vertex
                 ///
                 indices_t in(const size_t v) const;
 
@@ -90,7 +89,7 @@ namespace nano
                 indices_t sinks() const;
 
                 ///
-                /// \brief returns the outgoing vertices of the given vertex id
+                /// \brief returns the outgoing vertices of the given vertex
                 ///
                 indices_t out(const size_t u) const;
 
@@ -98,6 +97,11 @@ namespace nano
                 /// \brief visit all vertices of the graph
                 ///
                 infos_t visit() const;
+
+                ///
+                /// \brief visit the graph starting from the given vertex
+                ///
+                infos_t visit(size_t u) const;
 
                 ///
                 /// \brief checks if the graph is a DAG
@@ -108,12 +112,6 @@ namespace nano
                 /// \brief returns the topologically sorted list of vertices
                 ///
                 indices_t tsort() const;
-
-                ///
-                /// \brief returns the topologically sorted list of vertices with
-                ///     the inputs to any vertex being in the consecutive order
-                ///
-                indices_t tsort_strong() const;
 
                 ///
                 /// \brief check if there is a connected path from u to v
@@ -174,36 +172,30 @@ namespace nano
                         return count;
                 }
 
-                void visit(infos_t& infos, size_t u) const
+                void merge(const infos_t& infos, infos_t& accos) const
                 {
+                        assert(infos.size() == m_vertices);
+                        assert(accos.size() == m_vertices);
+
+                        for (size_t u = 0; u < m_vertices; ++ u)
+                        {
+                                switch (infos[u].m_color)
+                                {
+                                case color::black:      accos[u].m_color = color::black;
+                                default:                break;
+                                }
+
+                                switch (infos[u].m_cycle)
+                                {
+                                case cycle::detected:   accos[u].m_cycle = cycle::detected;
+                                default:                break;
+                                }
+
+                                accos[u].m_depth = std::max(accos[u].m_depth, infos[u].m_depth);
+                        }
+
                         //todo: adjust the component index if connecting to another component: take its component index & -- comp
                         //todo: adjust the depth if connecting to a vertex having an already set depth
-
-                        indices_t q{u};
-                        while (!q.empty())
-                        {
-                                u = q.back();
-                                q.pop_back();
-
-                                infos[u].m_color = color::gray;
-                                foreach_out(u, [&] (const size_t v)
-                                {
-                                        switch (infos[v].m_color)
-                                        {
-                                        case color::white:
-                                                infos[v].m_depth = std::max(infos[v].m_depth, infos[u].m_depth + 1);
-                                                infos[v].m_color = color::gray;
-                                                q.push_back(v);
-                                                break;
-                                        case color::gray:
-                                                infos[v].m_cycle = cycle::detected;
-                                                break;
-                                        case color::black:
-                                                break;
-                                        }
-                                });
-                                infos[u].m_color = color::black;
-                        }
                 }
 
                 // attributes
@@ -278,16 +270,46 @@ namespace nano
                 infos_t infos(m_vertices);
                 for (const auto u : sources())
                 {
-                        visit(infos, u);
+                        merge(visit(u), infos);
                 }
 
                 for (size_t u = 0; u < m_vertices; ++ u)
                 {
                         if (infos[u].m_color == color::white)
                         {
-                                visit(infos, u);
+                                merge(visit(u), infos);
                         }
                 }
+
+                return infos;
+        }
+
+        digraph_t::infos_t digraph_t::visit(size_t u) const
+        {
+                infos_t infos(m_vertices);
+
+                indices_t q{u};
+                while (!q.empty())
+                {
+                        u = q.back();
+                        q.pop_back();
+
+                        infos[u].m_color = color::black;
+                        foreach_out(u, [&] (const size_t v)
+                        {
+                                switch (infos[v].m_color)
+                                {
+                                case color::white:
+                                        infos[v].m_depth = infos[u].m_depth + 1;
+                                        q.push_back(v);
+                                        break;
+                                default:
+                                        infos[v].m_cycle = cycle::detected;
+                                        break;
+                                }
+                        });
+                }
+
                 return infos;
         }
 
@@ -318,8 +340,7 @@ namespace nano
                 }
                 else
                 {
-                        infos_t infos(m_vertices);
-                        visit(infos, u);
+                        const auto infos = visit(u);
                         return infos[v].m_color != color::white;
                 }
         }

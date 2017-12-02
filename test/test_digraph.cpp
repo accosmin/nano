@@ -25,7 +25,6 @@ std::ostream& operator<<(std::ostream& os, const infos_t& infos)
                 switch (info.m_color)
                 {
                 case color::white:      os << "w:"; break;
-                case color::gray:       os << "g:"; break;
                 case color::black:      os << "b:"; break;
                 }
                 switch (info.m_cycle)
@@ -33,7 +32,7 @@ std::ostream& operator<<(std::ostream& os, const infos_t& infos)
                 case cycle::none:       os << "n:"; break;
                 case cycle::detected:   os << "d:"; break;
                 }
-                os << info.m_comp << ':' << info.m_depth << ',';
+                os << static_cast<uint32_t>(info.m_comp) << ':' << static_cast<uint32_t>(info.m_depth) << ',';
         }
         return os;
 }
