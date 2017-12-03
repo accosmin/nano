@@ -168,8 +168,8 @@ NANO_CASE(graph2)
                 {color::black, cycle::none, 0u, 0u},
                 {color::black, cycle::none, 1u, 0u},
                 {color::black, cycle::none, 2u, 0u},
+                {color::black, cycle::none, 0u, 0u},
                 {color::black, cycle::none, 1u, 0u},
-                {color::black, cycle::none, 2u, 0u},
         };
         NANO_CHECK_EQUAL(g.visit(), infos);
 
@@ -217,8 +217,8 @@ NANO_CASE(graph3)
 
         const infos_t infos =
         {
+                {color::black, cycle::none, 0u, 0u},
                 {color::black, cycle::none, 1u, 0u},
-                {color::black, cycle::none, 2u, 0u},
                 {color::black, cycle::none, 3u, 0u},
                 {color::black, cycle::none, 0u, 0u},
                 {color::black, cycle::none, 1u, 0u},
@@ -368,12 +368,12 @@ NANO_CASE(graph6)
                 {color::black, cycle::none, 1u, 0u},
                 {color::black, cycle::none, 2u, 0u},
                 {color::black, cycle::none, 2u, 0u},
-                {color::black, cycle::none, 2u, 0u},
+                {color::black, cycle::none, 1u, 0u},
                 {color::black, cycle::none, 3u, 0u}
         };
         NANO_CHECK_EQUAL(g.visit(), infos);
 
-        NANO_CHECK(!g.dag());
+        NANO_CHECK(g.dag());
 }
 
 NANO_END_MODULE()
