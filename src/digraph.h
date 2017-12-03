@@ -364,8 +364,26 @@ namespace nano
 
         inline digraph_t::indices_t digraph_t::tsort() const
         {
-                // todo
-                return indices_t{};
+                const auto infos = visit();
+                const auto compi = [] (const info_t& i1, const info_t& i2) { return i1.m_depth < i2.m_depth; };
+                const auto depth = std::max_element(infos.begin(), infos.end(), compi)->m_depth;
+
+                indices_t indices;
+                indices.reserve(m_vertices);
+                for (depth_t d = 0; d <= depth; ++ d)
+                {
+                        for (size_t u = 0; u < m_vertices; ++ u)
+                        {
+                                if (infos[u].m_depth == d)
+                                {
+                                        indices.push_back(u);
+                                }
+                        }
+                }
+
+                assert(indices.size() == m_vertices);
+
+                return indices;
         }
 
         inline bool digraph_t::connected(const size_t u, const size_t v) const

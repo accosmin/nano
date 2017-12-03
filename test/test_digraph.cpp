@@ -174,6 +174,7 @@ NANO_CASE(graph2)
         NANO_CHECK_EQUAL(g.visit(), infos);
 
         NANO_CHECK(g.dag());
+        NANO_CHECK(g.tsort(g.tsort()));
 
         NANO_CHECK(g.tsort(make_indices(0u, 3u, 4u, 1u, 2u)));
         NANO_CHECK(g.tsort(make_indices(0u, 1u, 3u, 2u, 4u)));
@@ -227,6 +228,7 @@ NANO_CASE(graph3)
         NANO_CHECK_EQUAL(g.visit(), infos);
 
         NANO_CHECK(g.dag());
+        NANO_CHECK(g.tsort(g.tsort()));
 }
 
 NANO_CASE(graph4)
@@ -374,6 +376,7 @@ NANO_CASE(graph6)
         NANO_CHECK_EQUAL(g.visit(), infos);
 
         NANO_CHECK(g.dag());
+        NANO_CHECK(g.tsort(g.tsort()));
 }
 
 NANO_END_MODULE()
