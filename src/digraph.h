@@ -172,30 +172,91 @@ namespace nano
                         return count;
                 }
 
+                struct diff_t
+                {
+                        uint8_t m_comp{0};              ///< component index for newly discovered nodes
+                        uint8_t m_didepth{0};           ///< depth difference for the newly discovered nodes
+                        uint8_t m_dadepth{0};           ///< depth difference for the already discovered nodes
+                };
+
+                diff_t compare(const infos_t& infos, const infos_t& accos) const
+                {
+                        assert(infos.size() == m_vertices);
+                        assert(accos.size() == m_vertices);
+
+                        diff_t diff;
+
+                        size_t common = 0;
+                        size_t visited = 0;
+                        uint8_t max_comp = 0;
+
+                        for (size_t u = 0; u < m_vertices; ++ u)
+                        {
+                                max_comp = std::max(max_comp, accos[u].m_comp);
+
+                                if (accos[u].m_color == color::black)
+                                {
+                                        ++ visited;
+                                        if (infos[u].m_color == color::black)
+                                        {
+                                                ++ common;
+                                                diff.m_comp = accos[u].m_comp;
+
+                                                // setup the depth difference
+                                                //      between the already and the newly discovered nodes
+                                                if (infos[u].m_depth > accos[u].m_depth)
+                                                {
+                                                        diff.m_dadepth = infos[u].m_depth - accos[u].m_depth;
+                                                }
+                                                else if (infos[u].m_depth < accos[u].m_depth)
+                                                {
+                                                        diff.m_didepth = accos[u].m_depth - infos[u].m_depth;
+                                                }
+                                        }
+                                }
+                        }
+
+                        // setup the component index if no intersection
+                        if (common == 0 && visited > 0)
+                        {
+                                diff.m_comp = max_comp + 1;
+                        }
+
+                        return diff;
+                }
+
                 void merge(const infos_t& infos, infos_t& accos) const
                 {
                         assert(infos.size() == m_vertices);
                         assert(accos.size() == m_vertices);
 
+                        const auto diff = compare(infos, accos);
                         for (size_t u = 0; u < m_vertices; ++ u)
                         {
-                                switch (infos[u].m_color)
+                                if (infos[u].m_color == color::black)
                                 {
-                                case color::black:      accos[u].m_color = color::black;
-                                default:                break;
-                                }
+                                        if (accos[u].m_color == color::white)
+                                        {
+                                                // newly discovered node
+                                                accos[u].m_color = color::black;
+                                                accos[u].m_depth = infos[u].m_depth + diff.m_didepth;
+                                        }
+                                        else
+                                        {
+                                                // already discovered node, may update the depth
+                                                accos[u].m_depth += diff.m_dadepth;
+                                        }
 
-                                switch (infos[u].m_cycle)
-                                {
-                                case cycle::detected:   accos[u].m_cycle = cycle::detected;
-                                default:                break;
-                                }
+                                        // setup the component index
+                                        accos[u].m_comp = diff.m_comp;
 
-                                accos[u].m_depth = std::max(accos[u].m_depth, infos[u].m_depth);
+                                        // setup the cycle flag (if detected)
+                                        if (infos[u].m_cycle == cycle::detected)
+                                        {
+                                                accos[u].m_cycle = cycle::detected;
+                                        }
+                                }
                         }
-
-                        //todo: adjust the component index if connecting to another component: take its component index & -- comp
-                        //todo: adjust the depth if connecting to a vertex having an already set depth
                 }
 
                 // attributes

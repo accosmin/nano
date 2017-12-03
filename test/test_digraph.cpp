@@ -20,6 +20,7 @@ std::ostream& operator<<(std::ostream& os, const indices_t& indices)
 
 std::ostream& operator<<(std::ostream& os, const infos_t& infos)
 {
+        os << std::endl;
         for (const auto& info : infos)
         {
                 switch (info.m_color)
@@ -34,7 +35,7 @@ std::ostream& operator<<(std::ostream& os, const infos_t& infos)
                 }
                 os << static_cast<uint32_t>(info.m_comp) << ':' << static_cast<uint32_t>(info.m_depth) << ',';
         }
-        return os;
+        return os << std::endl;
 }
 
 template <typename... tindices>
