@@ -742,6 +742,17 @@ bool model_t::resize(const tensor3d_dims_t& idims, const tensor3d_dims_t& odims)
         return true;
 }
 
+strings_t model_t::node_names(const indices_t& indices) const
+{
+        strings_t names;
+        for (const auto index : indices)
+        {
+                names.push_back(m_nodes[index].m_name);
+        }
+
+        return names;
+}
+
 void model_t::describe() const
 {
         for (const auto& node : m_nodes)
@@ -750,7 +761,9 @@ void model_t::describe() const
                         << "model: " << node.m_name
                         << ": idims = " << node.m_node->idims()
                         << ", odims = " << node.m_node->odims()
-                        << ", psize = " << node.m_node->psize() << ".";
+                        << ", psize = " << node.m_node->psize()
+                        << ", inodes = " << join(node_names(node.m_inodes))
+                        << ", onodes = " << join(node_names(node.m_onodes)) << ".";
         }
         log_info() << "model: parameters = " << psize() << ".";
 }

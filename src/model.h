@@ -145,6 +145,8 @@ namespace nano
                 const vector_t& cpdata() { return m_pdata; }
                 const vector_t& cgdata() { return m_gdata; }
 
+                strings_t node_names(const indices_t& indices) const;
+
                 ///
                 /// \brief computation node.
                 ///
