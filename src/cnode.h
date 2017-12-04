@@ -8,6 +8,16 @@ namespace nano
         using cnodes_t = std::vector<cnode_t>;
 
         ///
+        /// \brief verify if the computation nodes form a valid graph:
+        ///     - no cycles
+        ///     - exactly one input
+        ///     - exactly one output (for now)
+        ///
+        /// NB: if all the conditions are met, the computation nodes are sorted topologically.
+        ///
+        bool check_nodes(cnodes_t&);
+
+        ///
         /// \brief computation node.
         ///
         class cnode_t

@@ -1,6 +1,5 @@
 #include "model.h"
 #include "logger.h"
-#include "digraph.h"
 #include "io/ibstream.h"
 #include "io/obstream.h"
 #include "math/random.h"
@@ -9,33 +8,6 @@
 #include "text/algorithm.h"
 
 using namespace nano;
-
-template <typename tvalue>
-static void reorder(std::vector<tvalue>& values, const indices_t& order)
-{
-        assert(values.size() == order.size());
-
-        for (size_t i = 0; i < order.size(); ++ i)
-        {
-                size_t orig = order[i];
-                while (i < orig)
-                {
-                        orig = order[orig];
-                }
-                if (i != orig)
-                {
-                        std::swap(values[i], values[orig]);
-                }
-        }
-}
-
-static void reindex(indices_t& indices, const indices_t& order)
-{
-        for (auto& index : indices)
-        {
-                index = order[index];
-        }
-}
 
 rmodel_t model_t::clone() const
 {
@@ -347,92 +319,15 @@ bool model_t::config_model(json_reader_t& reader)
 
 bool model_t::done()
 {
-        log_info() << "model: checking the computation graph...";
-
-        // create the computation graph
-        digraph_t graph(m_nodes.size());;
-        for (size_t src = 0; src < m_nodes.size(); ++ src)
+        if (!check_nodes(m_nodes))
         {
-                for (const size_t dst : m_nodes[src].m_onodes)
-                {
-                        graph.edge(src, dst);
-                }
-        }
-
-        if (m_nodes.empty())
-        {
-                log_error() << "model: expecting at least a node!";
                 clear();
                 return false;
         }
-
-        // and check it
-        const auto sources = graph.sources();
-        if (sources.size() != 1)
+        else
         {
-                log_error() << "model: expecting exactly one input node!";
-                clear();
-                return false;
+                return true;
         }
-
-        const auto sinks = graph.sinks();
-        if (sinks.size() != 1)
-        {
-                // todo: may relax this condition (many outputs may be needed to solve reinforcement learning problems)
-                log_error() << "model: expecting exactly one output node!";
-                clear();
-                return false;
-        }
-
-        if (!graph.dag())
-        {
-                // todo: may relax this condition
-                log_error() << "model: cyclic computation graphs are not supported!";
-                clear();
-                return false;
-        }
-
-        for (const auto sink : sinks)
-        {
-                const auto it = std::find_if(sources.begin(), sources.end(), [&] (const size_t source)
-                {
-                        return graph.connected(source, sink);
-                });
-
-                if (it == sources.end())
-                {
-                        log_error() << "model: detected unreachable output node [" << m_nodes[sink].m_name << "]!";
-                        clear();
-                        return false;
-                }
-        }
-
-        for (const auto source : sources)
-        {
-                const auto it = std::find_if(sinks.begin(), sinks.end(), [&] (const size_t sink)
-                {
-                        return graph.connected(source, sink);
-                });
-
-                if (it == sinks.end())
-                {
-                        log_error() << "model: detected unused input node [" << m_nodes[source].m_name << "]!";
-                        clear();
-                        return false;
-                }
-        }
-
-        // OK, reorder nodes using the topological sorting
-        const auto tsort = graph.tsort();
-        // todo: check that the inputs to a node are consecutive (to pass idata as a block)
-        reorder(m_nodes, tsort);
-        for (auto& cnode : m_nodes)
-        {
-                // also reindex the inputs/outputs
-                reindex(cnode.m_inodes, tsort);
-                reindex(cnode.m_onodes, tsort);
-        }
-        return true;
 }
 
 bool model_t::config(const string_t& json)
