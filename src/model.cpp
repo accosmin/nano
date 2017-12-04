@@ -10,25 +10,6 @@
 
 using namespace nano;
 
-template <typename tnodes, typename tgetter, typename ttensor>
-static const ttensor& copy_params(const tnodes& nodes, const tgetter& getter, ttensor& pdata)
-{
-        tensor_size_t pindex = 0;
-        for (const auto& node : nodes)
-        {
-                const auto& comp = node.m_node;
-                if (comp->psize())
-                {
-                        assert(pindex + comp->psize() <= pdata.size());
-                        map_vector(pdata.data() + pindex, comp->psize()) = getter(*comp).vector();
-                        pindex += comp->psize();
-                }
-        }
-        assert(pindex == pdata.size());
-
-        return pdata;
-}
-
 template <typename tvalue>
 static void reorder(std::vector<tvalue>& values, const indices_t& order)
 {
