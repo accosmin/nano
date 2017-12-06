@@ -13,7 +13,7 @@ bool plus4d_layer_t::resize(const tensor3d_dim_t&, const string_t&)
         return false;
 }
 
-bool plus4d_layer_t::resize(const std::vector<tensor3d_dim_t>& idims, const string_t& name)
+bool plus4d_layer_t::resize(const tensor3d_dims_t& idims, const string_t& name)
 {
         if (idims.size() < 2)
         {

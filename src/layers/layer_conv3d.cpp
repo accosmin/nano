@@ -38,7 +38,7 @@ bool conv3d_layer_t::resize(const tensor3d_dim_t& idims, const string_t& name)
         return true;
 }
 
-bool conv3d_layer_t::resize(const std::vector<tensor3d_dim_t>& idims, const string_t& name)
+bool conv3d_layer_t::resize(const tensor3d_dims_t& idims, const string_t& name)
 {
         return idims.size() == 1 && resize(idims[0], name);
 }
