@@ -17,12 +17,16 @@ rlayer_t affine_layer_t::clone() const
         return std::make_unique<affine_layer_t>(*this);
 }
 
-bool affine_layer_t::resize(const tensor3d_dim_t& idims, const string_t& name)
+bool affine_layer_t::resize(const tensor3d_dims_t& idims, const string_t& name)
 {
-        m_params.m_imaps = std::get<0>(idims);
-        m_params.m_irows = std::get<1>(idims);
-        m_params.m_icols = std::get<2>(idims);
+        if (idims.size() != 1)
+        {
+                return false;
+        }
 
+        m_params.m_imaps = std::get<0>(idims[0]);
+        m_params.m_irows = std::get<1>(idims[0]);
+        m_params.m_icols = std::get<2>(idims[0]);
         if (!m_params.valid())
         {
                 return false;
@@ -34,11 +38,6 @@ bool affine_layer_t::resize(const tensor3d_dim_t& idims, const string_t& name)
         m_probe_ginput = probe_t{name, name + "(ginput)", m_params.flops_ginput()};
         m_probe_gparam = probe_t{name, name + "(gparam)", m_params.flops_gparam()};
         return true;
-}
-
-bool affine_layer_t::resize(const tensor3d_dims_t& idims, const string_t& name)
-{
-        return idims.size() == 1 && resize(idims[0], name);
 }
 
 void affine_layer_t::output(const tensor4d_cmap_t& idata, const vector_cmap_t& pdata, tensor4d_map_t&& odata)

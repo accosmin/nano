@@ -17,7 +17,6 @@ namespace nano
                 json_reader_t& config(json_reader_t& reader) final { return reader; }
                 json_writer_t& config(json_writer_t& writer) const final { return writer; }
 
-                bool resize(const tensor3d_dim_t& idims, const string_t& name) final;
                 bool resize(const tensor3d_dims_t& idims, const string_t& name) final;
 
                 void output(const tensor4d_cmap_t& idata, const vector_cmap_t& pdata, tensor4d_map_t&& odata) final;
@@ -49,19 +48,18 @@ namespace nano
         }
 
         template <typename top>
-        bool activation_layer_t<top>::resize(const tensor3d_dim_t& idims, const string_t& name)
+        bool activation_layer_t<top>::resize(const tensor3d_dims_t& idims, const string_t& name)
         {
-                m_xdims = idims;
+                if (idims.size() != 1)
+                {
+                        return false;
+                }
+
+                m_xdims = idims[0];
                 m_probe_output = probe_t{name, name + "(output)", 10 * isize()};
                 m_probe_ginput = probe_t{name, name + "(ginput)", 10 * isize()};
                 m_probe_gparam = probe_t{name, name + "(gparam)", 0};
                 return true;
-        }
-
-        template <typename top>
-        bool activation_layer_t<top>::resize(const tensor3d_dims_t& idims, const string_t& name)
-        {
-                return idims.size() == 1 && resize(idims[0], name);
         }
 
         template <typename top>
