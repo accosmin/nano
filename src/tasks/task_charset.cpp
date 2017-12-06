@@ -130,14 +130,14 @@ static void alpha_blend(const tensor3d_t& mask, const tensor3d_t& img1, const te
 }
 
 charset_task_t::charset_task_t() :
-        mem_vision_task_t(color_mode::rgb, 32, 32, tensor3d_dims_t{osize(charset_type::digit), 1, 1}, 1)
+        mem_vision_task_t(color_mode::rgb, 32, 32, tensor3d_dim_t{osize(charset_type::digit), 1, 1}, 1)
 {
 }
 
 json_reader_t& charset_task_t::config(json_reader_t& reader)
 {
         reader.object("type", m_type, "color", m_color, "irows", m_irows, "icols", m_icols, "count", m_count);
-        reconfig(m_color, m_irows, m_icols, tensor3d_dims_t{osize(m_type), 1, 1}, 1);
+        reconfig(m_color, m_irows, m_icols, tensor3d_dim_t{osize(m_type), 1, 1}, 1);
         return reader;
 }
 

@@ -19,7 +19,7 @@ static const string_t tlabels[] =
 };
 
 cifar10_task_t::cifar10_task_t() :
-        mem_vision_task_t(tensor3d_dims_t{3, 32, 32}, tensor3d_dims_t{10, 1, 1}, 1),
+        mem_vision_task_t(tensor3d_dim_t{3, 32, 32}, tensor3d_dim_t{10, 1, 1}, 1),
         m_dir(string_t(std::getenv("HOME")) + "/experiments/databases/cifar10")
 {
 }

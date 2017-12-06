@@ -49,12 +49,12 @@ namespace nano
                 ///
                 /// \brief input size
                 ///
-                virtual tensor3d_dims_t idims() const = 0;
+                virtual tensor3d_dim_t idims() const = 0;
 
                 ///
                 /// \brief output size
                 ///
-                virtual tensor3d_dims_t odims() const = 0;
+                virtual tensor3d_dim_t odims() const = 0;
 
                 ///
                 /// \brief number of folds

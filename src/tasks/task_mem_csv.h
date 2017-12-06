@@ -17,8 +17,8 @@ namespace nano
                 /// \brief constructor
                 ///
                 mem_csv_task_t(
-                        const tensor3d_dims_t& idims,
-                        const tensor3d_dims_t& odims,
+                        const tensor3d_dim_t& idims,
+                        const tensor3d_dim_t& odims,
                         const size_t fsize) :
                         mem_tensor_task_t(idims, odims, fsize)
                 {

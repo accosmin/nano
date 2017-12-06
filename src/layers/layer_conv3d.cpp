@@ -19,7 +19,7 @@ rlayer_t conv3d_layer_t::clone() const
         return std::make_unique<conv3d_layer_t>(*this);
 }
 
-bool conv3d_layer_t::resize(const tensor3d_dims_t& idims, const string_t& name)
+bool conv3d_layer_t::resize(const tensor3d_dim_t& idims, const string_t& name)
 {
         m_params.m_imaps = std::get<0>(idims);
         m_params.m_irows = std::get<1>(idims);
@@ -38,7 +38,7 @@ bool conv3d_layer_t::resize(const tensor3d_dims_t& idims, const string_t& name)
         return true;
 }
 
-bool conv3d_layer_t::resize(const std::vector<tensor3d_dims_t>& idims, const string_t& name)
+bool conv3d_layer_t::resize(const std::vector<tensor3d_dim_t>& idims, const string_t& name)
 {
         return idims.size() == 1 && resize(idims[0], name);
 }

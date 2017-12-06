@@ -37,7 +37,7 @@ namespace nano
                 {
                 }
 
-                norm3d_params_t(const tensor3d_dims_t& xdims, const norm_type type) :
+                norm3d_params_t(const tensor3d_dim_t& xdims, const norm_type type) :
                         norm3d_params_t(std::get<0>(xdims), std::get<1>(xdims), std::get<2>(xdims), type)
                 {
                 }
@@ -45,8 +45,8 @@ namespace nano
                 auto xmaps() const { return m_xmaps; }
                 auto xrows() const { return m_xrows; }
                 auto xcols() const { return m_xcols; }
-                auto xdims() const { return tensor3d_dims_t{xmaps(), xrows(), xcols()}; }
-                auto xdims(const tensor_size_t count) const { return tensor4d_dims_t{count, xmaps(), xrows(), xcols()}; }
+                auto xdims() const { return make_dims(xmaps(), xrows(), xcols()); }
+                auto xdims(const tensor_size_t count) const { return make_dims(count, xmaps(), xrows(), xcols()); }
                 auto xsize() const { return nano::size(xdims()); }
 
                 auto psize() const { return 0; }

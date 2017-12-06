@@ -3,7 +3,7 @@
 using namespace nano;
 
 iris_task_t::iris_task_t() :
-        mem_csv_task_t(tensor3d_dims_t{4, 1, 1}, tensor3d_dims_t{3, 1, 1}, 1),
+        mem_csv_task_t(tensor3d_dim_t{4, 1, 1}, tensor3d_dim_t{3, 1, 1}, 1),
         m_dir(string_t(std::getenv("HOME")) + "/experiments/databases/iris")
 {
 }

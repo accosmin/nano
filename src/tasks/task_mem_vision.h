@@ -71,8 +71,8 @@ namespace nano
                 /// \brief constructor
                 ///
                 mem_vision_task_t(
-                        const tensor3d_dims_t& idims,
-                        const tensor3d_dims_t& odims,
+                        const tensor3d_dim_t& idims,
+                        const tensor3d_dim_t& odims,
                         const size_t fsize) :
                         mem_task_t<image_t, mem_vision_sample_t>(idims, odims, fsize)
                 {
@@ -83,7 +83,7 @@ namespace nano
                 ///
                 mem_vision_task_t(
                         const color_mode color, const tensor_size_t irows, const tensor_size_t icols,
-                        const tensor3d_dims_t& odims,
+                        const tensor3d_dim_t& odims,
                         const size_t fsize) :
                         mem_vision_task_t(
                                 make_dims(color == color_mode::rgba ? 4 : (color == color_mode::rgb ? 3 : 1), irows, icols),
@@ -121,7 +121,7 @@ namespace nano
                 using mem_task_t<image_t, mem_vision_sample_t>::reconfig;
                 void reconfig(
                         const color_mode color, const tensor_size_t irows, const tensor_size_t icols,
-                        const tensor3d_dims_t& odims,
+                        const tensor3d_dim_t& odims,
                         const size_t fsize)
                 {
                         reconfig(

@@ -74,7 +74,7 @@ namespace nano
                 ///
                 /// \brief resize to process the given input/output size
                 ///
-                bool resize(const tensor3d_dims_t& idims, const tensor3d_dims_t& odims);
+                bool resize(const tensor3d_dim_t& idims, const tensor3d_dim_t& odims);
 
                 ///
                 /// \brief serialize model to disk
@@ -120,8 +120,8 @@ namespace nano
                 ///
                 /// \brief returns the input/output dimensions
                 ///
-                tensor3d_dims_t idims() const { return inode().m_node->idims(); }
-                tensor3d_dims_t odims() const { return onode().m_node->odims(); }
+                tensor3d_dim_t idims() const { return inode().m_node->idims(); }
+                tensor3d_dim_t odims() const { return onode().m_node->odims(); }
 
                 ///
                 /// \brief returns number of parameters (to optimize)

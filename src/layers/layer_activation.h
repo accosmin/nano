@@ -17,8 +17,8 @@ namespace nano
                 json_reader_t& config(json_reader_t& reader) final { return reader; }
                 json_writer_t& config(json_writer_t& writer) const final { return writer; }
 
-                bool resize(const tensor3d_dims_t& idims, const string_t& name) final;
-                bool resize(const std::vector<tensor3d_dims_t>& idims, const string_t& name) final;
+                bool resize(const tensor3d_dim_t& idims, const string_t& name) final;
+                bool resize(const std::vector<tensor3d_dim_t>& idims, const string_t& name) final;
 
                 void output(const tensor4d_cmap_t& idata, const vector_cmap_t& pdata, tensor4d_map_t&& odata) final;
                 void ginput(tensor4d_map_t&& idata, const vector_cmap_t& pdata, const tensor4d_cmap_t& odata) final;
@@ -26,8 +26,8 @@ namespace nano
 
                 tensor_size_t fanin() const final { return 1; }
                 tensor_size_t psize() const final { return 0; }
-                tensor3d_dims_t idims() const final { return m_xdims; }
-                tensor3d_dims_t odims() const final { return m_xdims; }
+                tensor3d_dim_t idims() const final { return m_xdims; }
+                tensor3d_dim_t odims() const final { return m_xdims; }
 
                 const probe_t& probe_output() const final { return m_probe_output; }
                 const probe_t& probe_ginput() const final { return m_probe_ginput; }
@@ -36,7 +36,7 @@ namespace nano
         private:
 
                 // attributes
-                tensor3d_dims_t m_xdims{{0, 0, 0}};     ///< input/output dimensions
+                tensor3d_dim_t m_xdims{{0, 0, 0}};     ///< input/output dimensions
                 probe_t         m_probe_output;
                 probe_t         m_probe_ginput;
                 probe_t         m_probe_gparam;
@@ -49,7 +49,7 @@ namespace nano
         }
 
         template <typename top>
-        bool activation_layer_t<top>::resize(const tensor3d_dims_t& idims, const string_t& name)
+        bool activation_layer_t<top>::resize(const tensor3d_dim_t& idims, const string_t& name)
         {
                 m_xdims = idims;
                 m_probe_output = probe_t{name, name + "(output)", 10 * isize()};
@@ -59,7 +59,7 @@ namespace nano
         }
 
         template <typename top>
-        bool activation_layer_t<top>::resize(const std::vector<tensor3d_dims_t>& idims, const string_t& name)
+        bool activation_layer_t<top>::resize(const std::vector<tensor3d_dim_t>& idims, const string_t& name)
         {
                 return idims.size() == 1 && resize(idims[0], name);
         }

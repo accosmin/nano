@@ -24,8 +24,8 @@ namespace nano
                 json_reader_t& config(json_reader_t& reader) final;
                 json_writer_t& config(json_writer_t& writer) const final;
 
-                bool resize(const tensor3d_dims_t& idims, const string_t& name) final;
-                bool resize(const std::vector<tensor3d_dims_t>& idims, const string_t& name) final;
+                bool resize(const tensor3d_dim_t& idims, const string_t& name) final;
+                bool resize(const std::vector<tensor3d_dim_t>& idims, const string_t& name) final;
 
                 void output(const tensor4d_cmap_t& idata, const vector_cmap_t& pdata, tensor4d_map_t&& odata) final;
                 void ginput(tensor4d_map_t&& idata, const vector_cmap_t& pdata, const tensor4d_cmap_t& odata) final;
@@ -33,8 +33,8 @@ namespace nano
 
                 tensor_size_t fanin() const final { return m_params.krows() * m_params.kcols() * imaps() / kconn(); }
                 tensor_size_t psize() const final { return m_kernel.params().psize(); }
-                tensor3d_dims_t idims() const final { return m_kernel.params().idims(); }
-                tensor3d_dims_t odims() const final { return m_kernel.params().odims(); }
+                tensor3d_dim_t idims() const final { return m_kernel.params().idims(); }
+                tensor3d_dim_t odims() const final { return m_kernel.params().odims(); }
 
                 const probe_t& probe_output() const final { return m_probe_output; }
                 const probe_t& probe_ginput() const final { return m_probe_ginput; }

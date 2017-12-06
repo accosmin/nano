@@ -21,7 +21,7 @@ namespace nano
                 }
 
                 conv3d_params_t(
-                        const tensor3d_dims_t& idims,
+                        const tensor3d_dim_t& idims,
                         const tensor_size_t omaps = 1, const tensor_size_t kconn = 1,
                         const tensor_size_t krows = 1, const tensor_size_t kcols = 1,
                         const tensor_size_t kdrow = 1, const tensor_size_t kdcol = 1) : conv3d_params_t(
@@ -33,8 +33,8 @@ namespace nano
                 auto imaps() const { return m_imaps; }
                 auto irows() const { return m_irows; }
                 auto icols() const { return m_icols; }
-                auto idims() const { return tensor3d_dims_t{imaps(), irows(), icols()}; }
-                auto idims(const tensor_size_t count) const { return tensor4d_dims_t{count, imaps(), irows(), icols()}; }
+                auto idims() const { return make_dims(imaps(), irows(), icols()); }
+                auto idims(const tensor_size_t count) const { return make_dims(count, imaps(), irows(), icols()); }
                 auto isize() const { return nano::size(idims()); }
 
                 auto krows() const { return m_krows; }
@@ -46,11 +46,11 @@ namespace nano
                 auto omaps() const { return m_omaps; }
                 auto orows() const { return (irows() - krows() + 1) / kdrow(); }
                 auto ocols() const { return (icols() - kcols() + 1) / kdcol(); }
-                auto odims() const { return tensor3d_dims_t{omaps(), orows(), ocols()}; }
-                auto odims(const tensor_size_t count) const { return tensor4d_dims_t{count, omaps(), orows(), ocols()}; }
+                auto odims() const { return make_dims(omaps(), orows(), ocols()); }
+                auto odims(const tensor_size_t count) const { return make_dims(count, omaps(), orows(), ocols()); }
                 auto osize() const { return nano::size(odims()); }
 
-                auto kdims() const { return tensor4d_dims_t{omaps(), imaps() / kconn(), krows(), kcols()}; }
+                auto kdims() const { return make_dims(omaps(), imaps() / kconn(), krows(), kcols()); }
                 auto bdims() const { return omaps(); }
 
                 auto psize() const { return imaps() * omaps() * krows() * kcols() / kconn() + omaps(); }

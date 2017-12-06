@@ -103,17 +103,17 @@ struct model_wrt_inputs_function_t final : public function_t
 
 const auto cmd_imaps = 3, cmd_irows = 6, cmd_icols = 6;
 const auto cmd_omaps = 3, cmd_orows = 1, cmd_ocols = 1;
-const auto cmd_idims = tensor3d_dims_t{cmd_imaps, cmd_irows, cmd_icols};
-const auto cmd_odims = tensor3d_dims_t{cmd_omaps, cmd_orows, cmd_ocols};
+const auto cmd_idims = tensor3d_dim_t{cmd_imaps, cmd_irows, cmd_icols};
+const auto cmd_odims = tensor3d_dim_t{cmd_omaps, cmd_orows, cmd_ocols};
 
-static tensor_size_t apsize(const tensor3d_dims_t& idims, const tensor3d_dims_t& odims)
+static tensor_size_t apsize(const tensor3d_dim_t& idims, const tensor3d_dim_t& odims)
 {
         const auto params = affine_params_t{idims, odims};
         NANO_CHECK(params.valid());
         return params.psize();
 }
 
-static tensor_size_t cpsize(const tensor3d_dims_t& idims,
+static tensor_size_t cpsize(const tensor3d_dim_t& idims,
         const tensor_size_t omaps, const tensor_size_t krows, const tensor_size_t kcols, const tensor_size_t kconn)
 {
         const auto params = conv3d_params_t{idims, omaps, kconn, krows, kcols};

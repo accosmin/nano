@@ -21,10 +21,15 @@ namespace nano
         using tensor3ds_t = std::vector<tensor3d_t>;
         using tensor4ds_t = std::vector<tensor4d_t>;
 
-        using tensor1d_dims_t = tensor1d_t::tdims;
-        using tensor2d_dims_t = tensor2d_t::tdims;
-        using tensor3d_dims_t = tensor3d_t::tdims;
-        using tensor4d_dims_t = tensor4d_t::tdims;
+        using tensor1d_dim_t = tensor1d_t::tdims;
+        using tensor2d_dim_t = tensor2d_t::tdims;
+        using tensor3d_dim_t = tensor3d_t::tdims;
+        using tensor4d_dim_t = tensor4d_t::tdims;
+
+        using tensor1d_dims_t = std::vector<tensor1d_dim_t>;
+        using tensor2d_dims_t = std::vector<tensor2d_dim_t>;
+        using tensor3d_dims_t = std::vector<tensor3d_dim_t>;
+        using tensor4d_dims_t = std::vector<tensor4d_dim_t>;
 
         using tensor1d_map_t = tensor_map_t<scalar_t, 1>;
         using tensor2d_map_t = tensor_map_t<scalar_t, 2>;

@@ -19,7 +19,7 @@ static const string_t tlabels[] =
 };
 
 stl10_task_t::stl10_task_t() :
-        mem_vision_task_t(tensor3d_dims_t{3, 96, 96}, tensor3d_dims_t{10, 1, 1}, 10),
+        mem_vision_task_t(tensor3d_dim_t{3, 96, 96}, tensor3d_dim_t{10, 1, 1}, 10),
         m_dir(string_t(std::getenv("HOME")) + "/experiments/databases/stl10")
 {
 }

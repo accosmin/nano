@@ -394,7 +394,7 @@ bool model_t::save(const string_t& path) const
 
 bool model_t::load(const string_t& path)
 {
-        tensor3d_dims_t idims, odims;
+        tensor3d_dim_t idims, odims;
         vector_t pdata;
         string_t json;
 
@@ -536,14 +536,14 @@ const vector_t& model_t::gparam(const tensor4d_t& odata)
         return m_gdata;
 }
 
-bool model_t::resize(const tensor3d_dims_t& idims, const tensor3d_dims_t& odims)
+bool model_t::resize(const tensor3d_dim_t& idims, const tensor3d_dim_t& odims)
 {
         log_info() << "model: resizing the computation nodes...";
 
         // resize computation nodes starting from the input
         for (const auto& cnode : m_nodes)
         {
-                std::vector<tensor3d_dims_t> cidims;
+                std::vector<tensor3d_dim_t> cidims;
                 if (cnode.m_inodes.empty())
                 {
                         cidims.push_back(idims);

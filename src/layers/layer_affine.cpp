@@ -17,7 +17,7 @@ rlayer_t affine_layer_t::clone() const
         return std::make_unique<affine_layer_t>(*this);
 }
 
-bool affine_layer_t::resize(const tensor3d_dims_t& idims, const string_t& name)
+bool affine_layer_t::resize(const tensor3d_dim_t& idims, const string_t& name)
 {
         m_params.m_imaps = std::get<0>(idims);
         m_params.m_irows = std::get<1>(idims);
@@ -36,7 +36,7 @@ bool affine_layer_t::resize(const tensor3d_dims_t& idims, const string_t& name)
         return true;
 }
 
-bool affine_layer_t::resize(const std::vector<tensor3d_dims_t>& idims, const string_t& name)
+bool affine_layer_t::resize(const std::vector<tensor3d_dim_t>& idims, const string_t& name)
 {
         return idims.size() == 1 && resize(idims[0], name);
 }

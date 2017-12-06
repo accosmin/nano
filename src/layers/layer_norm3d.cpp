@@ -17,7 +17,7 @@ rlayer_t norm3d_layer_t::clone() const
         return std::make_unique<norm3d_layer_t>(*this);
 }
 
-bool norm3d_layer_t::resize(const tensor3d_dims_t& idims, const string_t& name)
+bool norm3d_layer_t::resize(const tensor3d_dim_t& idims, const string_t& name)
 {
         m_params.m_xmaps = std::get<0>(idims);
         m_params.m_xrows = std::get<1>(idims);
@@ -36,7 +36,7 @@ bool norm3d_layer_t::resize(const tensor3d_dims_t& idims, const string_t& name)
         return true;
 }
 
-bool norm3d_layer_t::resize(const std::vector<tensor3d_dims_t>& idims, const string_t& name)
+bool norm3d_layer_t::resize(const std::vector<tensor3d_dim_t>& idims, const string_t& name)
 {
         return idims.size() == 1 && resize(idims[0], name);
 }

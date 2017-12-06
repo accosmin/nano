@@ -25,14 +25,14 @@ namespace nano
                 /// \brief constructor
                 ///
                 mem_task_t(
-                        const tensor3d_dims_t& idims,
-                        const tensor3d_dims_t& odims,
+                        const tensor3d_dim_t& idims,
+                        const tensor3d_dim_t& odims,
                         const size_t fsize);
 
                 bool load() final;
 
-                tensor3d_dims_t idims() const final { return m_idims; }
-                tensor3d_dims_t odims() const final { return m_odims; }
+                tensor3d_dim_t idims() const final { return m_idims; }
+                tensor3d_dim_t odims() const final { return m_odims; }
 
                 size_t size() const final;
                 size_t size(const fold_t&) const final;
@@ -47,7 +47,7 @@ namespace nano
 
         protected:
 
-                void reconfig(const tensor3d_dims_t& idims, const tensor3d_dims_t& odims, const size_t fsize)
+                void reconfig(const tensor3d_dim_t& idims, const tensor3d_dim_t& odims, const size_t fsize)
                 {
                         m_idims = idims;
                         m_odims = odims;
@@ -130,8 +130,8 @@ namespace nano
         private:
 
                 // attributes
-                tensor3d_dims_t                 m_idims;        ///< input size
-                tensor3d_dims_t                 m_odims;        ///< output size
+                tensor3d_dim_t                 m_idims;        ///< input size
+                tensor3d_dim_t                 m_odims;        ///< output size
                 size_t                          m_fsize;        ///< number of folds
                 mutable random_t<size_t>        m_frand;        ///< rng for training-validation fold assignment
                 std::vector<tchunk>             m_chunks;       ///<
@@ -141,8 +141,8 @@ namespace nano
 
         template <typename tchunk, typename tsample>
         mem_task_t<tchunk, tsample>::mem_task_t(
-                const tensor3d_dims_t& idims,
-                const tensor3d_dims_t& odims,
+                const tensor3d_dim_t& idims,
+                const tensor3d_dim_t& odims,
                 const size_t fsize) :
                 m_idims(idims), m_odims(odims),
                 m_fsize(fsize), m_frand(1, 10)

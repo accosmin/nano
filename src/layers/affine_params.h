@@ -17,7 +17,7 @@ namespace nano
                 {
                 }
 
-                affine_params_t(const tensor3d_dims_t& idims, const tensor3d_dims_t& odims) : affine_params_t(
+                affine_params_t(const tensor3d_dim_t& idims, const tensor3d_dim_t& odims) : affine_params_t(
                         std::get<0>(idims), std::get<1>(idims), std::get<2>(idims),
                         std::get<0>(odims), std::get<1>(odims), std::get<2>(odims))
                 {
@@ -26,15 +26,15 @@ namespace nano
                 auto imaps() const { return m_imaps; }
                 auto irows() const { return m_irows; }
                 auto icols() const { return m_icols; }
-                auto idims() const { return tensor3d_dims_t{imaps(), irows(), icols()}; }
-                auto idims(const tensor_size_t count) const { return tensor4d_dims_t{count, imaps(), irows(), icols()}; }
+                auto idims() const { return make_dims(imaps(), irows(), icols()); }
+                auto idims(const tensor_size_t count) const { return make_dims(count, imaps(), irows(), icols()); }
                 auto isize() const { return nano::size(idims()); }
 
                 auto omaps() const { return m_omaps; }
                 auto orows() const { return m_orows; }
                 auto ocols() const { return m_ocols; }
-                auto odims() const { return tensor3d_dims_t{omaps(), orows(), ocols()}; }
-                auto odims(const tensor_size_t count) const { return tensor4d_dims_t{count, omaps(), orows(), ocols()}; }
+                auto odims() const { return make_dims(omaps(), orows(), ocols()); }
+                auto odims(const tensor_size_t count) const { return make_dims(count, omaps(), orows(), ocols()); }
                 auto osize() const { return nano::size(odims()); }
 
                 auto psize() const { return isize() * osize() + osize(); }

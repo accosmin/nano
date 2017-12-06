@@ -32,8 +32,8 @@ namespace nano
                 ///
                 /// \brief configure to process tensors of the given size
                 ///
-                virtual bool resize(const tensor3d_dims_t& idims, const string_t& name) = 0;
-                virtual bool resize(const std::vector<tensor3d_dims_t>& idims, const string_t& name) = 0;
+                virtual bool resize(const tensor3d_dim_t& idims, const string_t& name) = 0;
+                virtual bool resize(const std::vector<tensor3d_dim_t>& idims, const string_t& name) = 0;
 
                 ///
                 /// \brief compute the output (given the input & the parameters)
@@ -58,8 +58,8 @@ namespace nano
                 ///
                 /// \brief returns the input/output/parameters dimensions
                 ///
-                virtual tensor3d_dims_t idims() const = 0;
-                virtual tensor3d_dims_t odims() const = 0;
+                virtual tensor3d_dim_t idims() const = 0;
+                virtual tensor3d_dim_t odims() const = 0;
                 virtual tensor_size_t psize() const = 0;
 
                 ///
