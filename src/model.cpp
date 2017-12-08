@@ -23,10 +23,10 @@ tensor_size_t model_t::xsize(const tensor_size_t count) const
 {
         assert(!m_nodes.empty());
 
-        tensor_size_t sum = inode().m_node->isize();
+        tensor_size_t sum = nano::size(m_idims);
         for (const auto& cnode : m_nodes)
         {
-                sum += cnode.m_node->osize();
+                sum += nano::osize(cnode.m_node);
         }
         return sum * count;
 }
@@ -35,13 +35,11 @@ void model_t::allocate(const tensor_size_t count)
 {
         m_xdata.resize(xsize(count));
 
-        tensor_size_t obegin = count * inode().m_node->isize();
+        tensor_size_t obegin = count * nano::size(m_idims);
         for (auto& cnode : m_nodes)
         {
-                // todo: handle multiple inputs
-                cnode.m_ibegin = cnode.m_inodes.empty() ? 0 : m_nodes[*cnode.m_inodes.begin()].m_obegin;
                 cnode.m_obegin = obegin;
-                obegin += count * cnode.m_node->osize();
+                obegin += count * nano::osize(cnode.m_node);
         }
 
         assert(obegin == m_xdata.size());
@@ -450,11 +448,11 @@ tensor4d_cmap_t model_t::output(const tensor4d_t& idata)
                 }
 
                 // forward step
-                inode().idata(m_xdata, count) = idata;
+                cnode_t::idata(m_xdata, count, m_idims) = idata;
                 for (auto& cnode : m_nodes)
                 {
                         cnode.output(
-                                cnode.idata(cxdata(), count),
+                                cnode.idata(cxdata(), count, m_nodes, m_idims),
                                 cnode.pdata(cpdata()),
                                 cnode.odata(m_xdata, count));
                 }
@@ -485,7 +483,7 @@ tensor4d_cmap_t model_t::ginput(const tensor4d_t& odata)
                 {
                         auto& cnode = *it;
                         cnode.ginput(
-                                cnode.idata(m_xdata, count),
+                                cnode.idata(m_xdata, count, m_nodes, m_idims),
                                 cnode.pdata(cpdata()),
                                 cnode.odata(cxdata(), count));
                 }
@@ -494,7 +492,7 @@ tensor4d_cmap_t model_t::ginput(const tensor4d_t& odata)
         assert(nano::isfinite(m_xdata));
         assert(nano::isfinite(m_pdata));
 
-        return inode().idata(cxdata(), count);
+        return cnode_t::idata(cxdata(), count, m_idims);
 }
 
 const vector_t& model_t::gparam(const tensor4d_t& odata)
@@ -516,13 +514,13 @@ const vector_t& model_t::gparam(const tensor4d_t& odata)
                 {
                         auto& cnode = *it;
                         cnode.gparam(
-                                cnode.idata(cxdata(), count),
+                                cnode.idata(cxdata(), count, m_nodes, m_idims),
                                 cnode.pdata(m_gdata),
                                 cnode.odata(cxdata(), count));
                         if (!cnode.m_inodes.empty())
                         {
                                 cnode.m_node->ginput(
-                                        cnode.idata(m_xdata, count),
+                                        cnode.idata(m_xdata, count, m_nodes, m_idims),
                                         cnode.pdata(cpdata()),
                                         cnode.odata(cxdata(), count));
                         }
@@ -575,6 +573,9 @@ bool model_t::resize(const tensor3d_dim_t& idims, const tensor3d_dim_t& odims)
                 return false;
         }
 
+        m_idims = idims;
+        m_odims = odims;
+
         // allocate buffers & setup probes
         tensor_size_t psize = 0;
         int64_t flops_output = 0;
@@ -623,13 +624,13 @@ void model_t::describe() const
         {
                 log_info()
                         << "model: " << node.m_name
-                        << ": idims = " << node.m_node->idims()
                         << ", odims = " << node.m_node->odims()
                         << ", psize = " << node.m_node->psize()
                         << ", inodes = " << join(node_names(node.m_inodes))
                         << ", onodes = " << join(node_names(node.m_onodes)) << ".";
         }
         log_info() << "model: parameters = " << psize() << ".";
+        // todo: print the graph in nice text format (e.g. inputs/outputs per node)
 }
 
 probes_t model_t::probes() const

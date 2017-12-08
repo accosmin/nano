@@ -40,33 +40,61 @@ namespace nano
                 }
 
                 template <typename tvector>
-                auto idata(tvector&& buffer, const tensor_size_t count) const
+                static auto idata(tvector&& buffer, const tensor_size_t count, const tensor3d_dim_t& idims)
                 {
-                        // todo: handle multiple inputs
-                        assert(m_ibegin >= 0 && m_ibegin + count * m_node->isize() <= buffer.size());
-                        return map_tensor(buffer.data() + m_ibegin, cat_dims(count, m_node->idims()));
+                        assert(count * nano::size(idims) <= buffer.size());
+                        return map_tensor(buffer.data(), cat_dims(count, idims));
+                }
+
+                template <typename tvector>
+                auto idata(tvector&& buffer, const tensor_size_t count,
+                        const cnodes_t& nodes, const tensor3d_dim_t& idims) const
+                {
+                        std::vector<decltype(map_tensor(buffer.data(), make_dims(0, 0, 0, 0)))> imaps;
+                        if (m_inodes.empty())
+                        {
+                                imaps.push_back(idata(buffer, count, idims));
+                        }
+                        else
+                        {
+                                for (const auto inode : m_inodes)
+                                {
+                                        imaps.push_back(nodes[inode].odata(buffer, count));
+                                }
+                        }
+                        assert(!imaps.empty());
+                        return imaps;
                 }
 
                 template <typename tvector>
                 auto odata(tvector&& buffer, const tensor_size_t count) const
                 {
-                        assert(m_obegin >= 0 && m_obegin + count * m_node->osize() <= buffer.size());
+                        assert(m_obegin >= 0 && m_obegin + count * osize(m_node) <= buffer.size());
                         return map_tensor(buffer.data() + m_obegin, cat_dims(count, m_node->odims()));
                 }
 
-                void output(tensor4d_cmap_t idata, vector_cmap_t pdata, tensor4d_map_t odata)
+                ///
+                /// \brief compute the output (given the input & the parameters)
+                ///
+                void output(tensor4d_cmaps_t idata, vector_cmap_t pdata, tensor4d_map_t odata)
                 {
-                        m_probe_output.measure([=] () { m_node->output(idata, pdata, odata); }, idata.size<0>());
+                        m_probe_output.measure([=] () { m_node->output(idata, pdata, odata); }, odata.size<0>());
                 }
 
-                void ginput(tensor4d_map_t idata, vector_cmap_t pdata, tensor4d_cmap_t odata)
+                ///
+                /// \brief compute the gradient wrt the inputs (given the output & the parameters)
+                ///
+                void ginput(tensor4d_maps_t idata, vector_cmap_t pdata, tensor4d_cmap_t odata)
                 {
-                        m_probe_ginput.measure([=] () { m_node->ginput(idata, pdata, odata); }, idata.size<0>());
+                        m_probe_ginput.measure([=] () { m_node->ginput(idata, pdata, odata); }, odata.size<0>());
                 }
 
-                void gparam(tensor4d_cmap_t idata, vector_map_t pdata, tensor4d_cmap_t odata)
+                ///
+                /// \brief compute the (cumulated) gradient wrt the parameters (given the output & the input)
+                ///
+                void gparam(tensor4d_cmaps_t idata, vector_map_t pdata, tensor4d_cmap_t odata)
                 {
-                        m_probe_gparam.measure([=] () { m_node->gparam(idata, pdata, odata); }, idata.size<0>());
+                        m_probe_gparam.measure([=] () { m_node->gparam(idata, pdata, odata); }, odata.size<0>());
                 }
 
                 // attributes
@@ -75,7 +103,6 @@ namespace nano
                 rlayer_t        m_node;         ///< the computation node
                 indices_t       m_inodes;       ///< input nodes
                 indices_t       m_onodes;       ///< output nodes
-                tensor_size_t   m_ibegin{0};    ///< offset of the input tensor
                 tensor_size_t   m_obegin{0};    ///< offset of the output tensor
                 tensor_size_t   m_pbegin{0};    ///< offset of the parameter vector
                 probe_t         m_probe_output;

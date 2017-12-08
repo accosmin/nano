@@ -118,15 +118,14 @@ namespace nano
                 void describe() const;
 
                 ///
-                /// \brief returns the input/output dimensions
+                /// \brief returns the input/output/parameters dimensions
                 ///
-                tensor3d_dim_t idims() const { return inode().m_node->idims(); }
-                tensor3d_dim_t odims() const { return onode().m_node->odims(); }
+                tensor3d_dim_t idims() const { return m_idims; }
+                tensor3d_dim_t odims() const { return m_odims; }
 
-                ///
-                /// \brief returns number of parameters (to optimize)
-                ///
                 tensor_size_t psize() const { return m_pdata.size(); }
+                tensor_size_t isize() const { return nano::size(idims()); }
+                tensor_size_t osize() const { return nano::size(odims()); }
 
                 ///
                 /// \brief returns the current parameters and their gradient
@@ -152,7 +151,9 @@ namespace nano
                 const cnode_t& onode() const { assert(!m_nodes.empty()); return *m_nodes.rbegin(); }
 
                 // attributes
-                cnodes_t        m_nodes;
+                tensor3d_dim_t  m_idims{0, 0, 0};       ///< input dimensions
+                tensor3d_dim_t  m_odims{0, 0, 0};       ///< output dimensions
+                cnodes_t        m_nodes;                ///< computation nodes
                 vector_t        m_pdata;                ///< current parameters
                 vector_t        m_gdata;                ///< current gradient wrt parameters
                 vector_t        m_xdata;                ///< current input-output buffers

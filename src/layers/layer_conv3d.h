@@ -26,24 +26,22 @@ namespace nano
 
                 bool resize(const tensor3d_dims_t& idims) final;
 
-                void output(tensor4d_cmap_t idata, vector_cmap_t pdata, tensor4d_map_t odata) final;
-                void ginput(tensor4d_map_t idata, vector_cmap_t pdata, tensor4d_cmap_t odata) final;
-                void gparam(tensor4d_cmap_t idata, vector_map_t pdata, tensor4d_cmap_t odata) final;
-
-                tensor3d_dim_t idims() const final { return m_params.idims(); }
-                tensor3d_dim_t odims() const final { return m_params.odims(); }
+                void output(tensor4d_cmaps_t idata, vector_cmap_t pdata, tensor4d_map_t odata) final;
+                void ginput(tensor4d_maps_t idata, vector_cmap_t pdata, tensor4d_cmap_t odata) final;
+                void gparam(tensor4d_cmaps_t idata, vector_map_t pdata, tensor4d_cmap_t odata) final;
 
                 tensor_size_t fanin() const final { return m_params.isize(); }
                 tensor_size_t psize() const final { return m_params.psize(); }
+                tensor3d_dim_t odims() const final { return m_params.odims(); }
                 tensor_size_t flops_output() const final { return m_params.flops_output(); }
                 tensor_size_t flops_ginput() const final { return m_params.flops_ginput(); }
                 tensor_size_t flops_gparam() const final { return m_params.flops_gparam(); }
 
         private:
 
-                auto kdims() const { return m_kernel.params().kdims(); }
-                auto ksize() const { return nano::size(kdims()); }
-                auto bsize() const { return m_kernel.params().bdims(); }
+                auto kdims() const { return m_params.kdims(); }
+                auto ksize() const { return m_params.ksize(); }
+                auto bsize() const { return m_params.bdims(); }
 
                 tensor_size_t imaps() const { return m_params.imaps(); }
                 tensor_size_t kconn() const { return m_params.kconn(); }

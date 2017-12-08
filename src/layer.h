@@ -36,17 +36,17 @@ namespace nano
                 ///
                 /// \brief compute the output (given the input & the parameters)
                 ///
-                virtual void output(tensor4d_cmap_t idata, vector_cmap_t pdata, tensor4d_map_t odata) = 0;
+                virtual void output(tensor4d_cmaps_t idata, vector_cmap_t pdata, tensor4d_map_t odata) = 0;
 
                 ///
                 /// \brief compute the gradient wrt the inputs (given the output & the parameters)
                 ///
-                virtual void ginput(tensor4d_map_t idata, vector_cmap_t pdata, tensor4d_cmap_t odata) = 0;
+                virtual void ginput(tensor4d_maps_t idata, vector_cmap_t pdata, tensor4d_cmap_t odata) = 0;
 
                 ///
                 /// \brief compute the (cumulated) gradient wrt the parameters (given the output & the input)
                 ///
-                virtual void gparam(tensor4d_cmap_t idata, vector_map_t pdata, tensor4d_cmap_t odata) = 0;
+                virtual void gparam(tensor4d_cmaps_t idata, vector_map_t pdata, tensor4d_cmap_t odata) = 0;
 
                 ///
                 /// \brief number of inputs per processing unit (e.g. neuron, convolution kernel)
@@ -56,9 +56,8 @@ namespace nano
                 ///
                 /// \brief returns the input/output/parameters dimensions
                 ///
-                virtual tensor3d_dim_t idims() const = 0;
-                virtual tensor3d_dim_t odims() const = 0;
                 virtual tensor_size_t psize() const = 0;
+                virtual tensor3d_dim_t odims() const = 0;
 
                 ///
                 /// \brief returns the number of flops for the output/gparam/ginput operations
@@ -66,11 +65,11 @@ namespace nano
                 virtual tensor_size_t flops_output() const = 0;
                 virtual tensor_size_t flops_gparam() const = 0;
                 virtual tensor_size_t flops_ginput() const = 0;
-
-                ///
-                /// \brief convenience functions
-                ///
-                tensor_size_t isize() const { return nano::size(idims()); }
-                tensor_size_t osize() const { return nano::size(odims()); }
         };
+
+        ///
+        /// \brief convenience function to compute the size of the outputs of the given layer.
+        ///
+        inline auto osize(const layer_t& layer) { return nano::size(layer.odims()); }
+        inline auto osize(const rlayer_t& layer) { return osize(*layer); }
 }

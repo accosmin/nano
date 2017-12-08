@@ -36,25 +36,27 @@ bool norm3d_layer_t::resize(const tensor3d_dims_t& idims)
         return true;
 }
 
-void norm3d_layer_t::output(tensor4d_cmap_t idata, vector_cmap_t pdata, tensor4d_map_t odata)
+void norm3d_layer_t::output(tensor4d_cmaps_t idata, vector_cmap_t pdata, tensor4d_map_t odata)
 {
+        assert(idata.size() == 1);
         assert(pdata.size() == psize());
         NANO_UNUSED1_RELEASE(pdata);
 
-        m_kernel.output(idata, odata);
+        m_kernel.output(idata[0], odata);
 }
 
-void norm3d_layer_t::ginput(tensor4d_map_t idata, vector_cmap_t pdata, tensor4d_cmap_t odata)
+void norm3d_layer_t::ginput(tensor4d_maps_t idata, vector_cmap_t pdata, tensor4d_cmap_t odata)
 {
+        assert(idata.size() == 1);
         assert(pdata.size() == psize());
         NANO_UNUSED1_RELEASE(pdata);
 
-        m_kernel.ginput(idata, odata);
+        m_kernel.ginput(idata[0], odata);
 }
 
-void norm3d_layer_t::gparam(tensor4d_cmap_t idata, vector_map_t pdata, tensor4d_cmap_t odata)
+void norm3d_layer_t::gparam(tensor4d_cmaps_t idata, vector_map_t pdata, tensor4d_cmap_t odata)
 {
-        assert(idata.dims() == odata.dims());
+        assert(idata.size() == 1);
         assert(pdata.size() == psize());
         NANO_UNUSED3_RELEASE(idata, pdata, odata);
 }

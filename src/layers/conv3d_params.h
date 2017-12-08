@@ -53,6 +53,8 @@ namespace nano
                 auto kdims() const { return make_dims(omaps(), imaps() / kconn(), krows(), kcols()); }
                 auto bdims() const { return omaps(); }
 
+                auto ksize() const { return nano::size(kdims()); }
+
                 auto psize() const { return imaps() * omaps() * krows() * kcols() / kconn() + omaps(); }
 
                 auto flops_output() const { return 2 * imaps() * omaps() * orows() * ocols() * krows() * kcols() / kconn() + omaps() * orows() * ocols(); }

@@ -19,20 +19,20 @@ namespace nano
 
                 bool resize(const tensor3d_dims_t& idims) final;
 
-                void output(tensor4d_cmap_t idata, vector_cmap_t pdata, tensor4d_map_t odata) final;
-                void ginput(tensor4d_map_t idata, vector_cmap_t pdata, tensor4d_cmap_t odata) final;
-                void gparam(tensor4d_cmap_t idata, vector_map_t pdata, tensor4d_cmap_t odata) final;
-
-                tensor3d_dim_t idims() const final { return m_xdims; }
-                tensor3d_dim_t odims() const final { return m_xdims; }
+                void output(tensor4d_cmaps_t idata, vector_cmap_t pdata, tensor4d_map_t odata) final;
+                void ginput(tensor4d_maps_t idata, vector_cmap_t pdata, tensor4d_cmap_t odata) final;
+                void gparam(tensor4d_cmaps_t idata, vector_map_t pdata, tensor4d_cmap_t odata) final;
 
                 tensor_size_t fanin() const final { return 1; }
                 tensor_size_t psize() const final { return 0; }
-                tensor_size_t flops_output() const final { return 10 * isize(); }
-                tensor_size_t flops_ginput() const final { return 10 * isize(); }
+                tensor3d_dim_t odims() const final { return m_xdims; }
+                tensor_size_t flops_output() const final { return 10 * nano::size(odims()); }
+                tensor_size_t flops_ginput() const final { return 10 * nano::size(odims()); }
                 tensor_size_t flops_gparam() const final { return 0; }
 
         private:
+
+                auto xsize() const { return nano::size(odims()); }
 
                 // attributes
                 tensor3d_dim_t m_xdims{{0, 0, 0}};     ///< input/output dimensions
@@ -57,36 +57,39 @@ namespace nano
         }
 
         template <typename top>
-        void activation_layer_t<top>::output(tensor4d_cmap_t idata, vector_cmap_t pdata, tensor4d_map_t odata)
+        void activation_layer_t<top>::output(tensor4d_cmaps_t idata, vector_cmap_t pdata, tensor4d_map_t odata)
         {
-                assert(idata.dims() == odata.dims());
+                assert(idata.size() == 1);
+                assert(idata[0].dims() == odata.dims());
                 assert(pdata.size() == psize());
-                assert(nano::isfinite(idata));
+                assert(nano::isfinite(idata[0]));
 
-                top::output(idata.array(), odata.array());
+                top::output(idata[0].array(), odata.array());
 
                 assert(nano::isfinite(odata));
                 NANO_UNUSED1_RELEASE(pdata);
         }
 
         template <typename top>
-        void activation_layer_t<top>::ginput(tensor4d_map_t idata, vector_cmap_t pdata, tensor4d_cmap_t odata)
+        void activation_layer_t<top>::ginput(tensor4d_maps_t idata, vector_cmap_t pdata, tensor4d_cmap_t odata)
         {
-                assert(idata.dims() == odata.dims());
+                assert(idata.size() == 1);
+                assert(idata[0].dims() == odata.dims());
                 assert(pdata.size() == psize());
-                assert(nano::isfinite(idata));
+                assert(nano::isfinite(idata[0]));
                 assert(nano::isfinite(odata));
 
-                top::ginput(idata.array(), odata.array());
+                top::ginput(idata[0].array(), odata.array());
 
-                assert(nano::isfinite(idata));
+                assert(nano::isfinite(idata[0]));
                 NANO_UNUSED1_RELEASE(pdata);
         }
 
         template <typename top>
-        void activation_layer_t<top>::gparam(tensor4d_cmap_t idata, vector_map_t pdata, tensor4d_cmap_t odata)
+        void activation_layer_t<top>::gparam(tensor4d_cmaps_t idata, vector_map_t pdata, tensor4d_cmap_t odata)
         {
-                assert(idata.dims() == odata.dims());
+                assert(idata.size() == 1);
+                assert(idata[0].dims() == odata.dims());
                 assert(pdata.size() == psize());
                 NANO_UNUSED3_RELEASE(idata, pdata, odata);
         }

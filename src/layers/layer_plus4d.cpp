@@ -22,50 +22,58 @@ bool plus4d_layer_t::resize(const tensor3d_dims_t& idims)
                 }
         }
 
-        // output dimensions: a single input
+        m_idims = idims;
         m_odims = idims[0];
 
-        // input dimensions: all the inputs concatenated
-        const auto count = static_cast<tensor_size_t>(idims.size());
-        m_idims = make_dims(count * std::get<0>(m_odims), std::get<1>(m_odims), std::get<2>(m_odims));
+        m_fanin = static_cast<tensor_size_t>(idims.size());
+        m_isize = m_fanin * nano::size(m_odims);
         return true;
 }
 
-void plus4d_layer_t::output(tensor4d_cmap_t idata, vector_cmap_t pdata, tensor4d_map_t odata)
+void plus4d_layer_t::output(tensor4d_cmaps_t idata, vector_cmap_t pdata, tensor4d_map_t odata)
 {
-        const auto count = idata.size<0>();
-        assert(idata.dims() == cat_dims(count, idims()));
+        const auto count = odata.size<0>();
         assert(odata.dims() == cat_dims(count, odims()));
         assert(pdata.size() == psize());
         NANO_UNUSED1_RELEASE(pdata);
 
-        // todo: copy the first input & then add the rest
-        odata.zero();
-        for (auto i = 0; i < count; ++ i)
+        assert(m_fanin > 0);
+        assert(idata.size() == static_cast<size_t>(m_fanin));
+        assert(idata[0].dims() == odata.dims());
+
+        odata = idata[0];
+        for (size_t i = 1; i < idata.size(); ++ i)
         {
-                odata.vector() += map_vector(idata.data() + i * odata.size(), odata.size());
+                assert(idata[i].dims() == odata.dims());
+                odata.array() += idata[i].array();
         }
 }
 
-void plus4d_layer_t::ginput(tensor4d_map_t idata, vector_cmap_t pdata, tensor4d_cmap_t odata)
+void plus4d_layer_t::ginput(tensor4d_maps_t idata, vector_cmap_t pdata, tensor4d_cmap_t odata)
 {
-        const auto count = idata.size<0>();
-        assert(idata.dims() == cat_dims(count, idims()));
+        const auto count = odata.size<0>();
         assert(odata.dims() == cat_dims(count, odims()));
         assert(pdata.size() == psize());
         NANO_UNUSED1_RELEASE(pdata);
 
-        for (auto i = 0; i < count; ++ i)
+        assert(idata.size() == static_cast<size_t>(m_fanin));
+        assert(idata[0].dims() == odata.dims());
+
+        for (size_t i = 0; i < idata.size(); ++ i)
         {
-                map_vector(idata.data() + i * odata.size(), odata.size()) = odata.vector();
+                assert(idata[i].dims() == odata.dims());
+                idata[i] = odata;
         }
 }
 
-void plus4d_layer_t::gparam(tensor4d_cmap_t idata, vector_map_t pdata, tensor4d_cmap_t odata)
+void plus4d_layer_t::gparam(tensor4d_cmaps_t idata, vector_map_t pdata, tensor4d_cmap_t odata)
 {
-        const auto count = idata.size<0>();
-        assert(idata.dims() == cat_dims(count, idims()));
+        const auto count = odata.size<0>();
         assert(odata.dims() == cat_dims(count, odims()));
         assert(pdata.size() == psize());
-        NANO_UNUSED3_RELEASE(count, pdata, odata);
+        NANO_UNUSED3_RELEASE(idata, pdata, odata);
+
+        assert(m_fanin > 0);
+        assert(idata.size() == static_cast<size_t>(m_fanin));
+        assert(idata[0].dims() == odata.dims());
 }

@@ -38,17 +38,20 @@ bool conv3d_layer_t::resize(const tensor3d_dims_t& idims)
         return true;
 }
 
-void conv3d_layer_t::output(tensor4d_cmap_t idata, vector_cmap_t pdata, tensor4d_map_t odata)
+void conv3d_layer_t::output(tensor4d_cmaps_t idata, vector_cmap_t pdata, tensor4d_map_t odata)
 {
-        m_kernel.output(idata, kdata(pdata), bdata(pdata), odata);
+        assert(idata.size() == 1);
+        m_kernel.output(idata[0], kdata(pdata), bdata(pdata), odata);
 }
 
-void conv3d_layer_t::ginput(tensor4d_map_t idata, vector_cmap_t pdata, tensor4d_cmap_t odata)
+void conv3d_layer_t::ginput(tensor4d_maps_t idata, vector_cmap_t pdata, tensor4d_cmap_t odata)
 {
-        m_kernel.ginput(idata, kdata(pdata), bdata(pdata), odata);
+        assert(idata.size() == 1);
+        m_kernel.ginput(idata[0], kdata(pdata), bdata(pdata), odata);
 }
 
-void conv3d_layer_t::gparam(tensor4d_cmap_t idata, vector_map_t pdata, tensor4d_cmap_t odata)
+void conv3d_layer_t::gparam(tensor4d_cmaps_t idata, vector_map_t pdata, tensor4d_cmap_t odata)
 {
-        m_kernel.gparam(idata, kdata(pdata), bdata(pdata), odata);
+        assert(idata.size() == 1);
+        m_kernel.gparam(idata[0], kdata(pdata), bdata(pdata), odata);
 }
