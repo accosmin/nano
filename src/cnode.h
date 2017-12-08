@@ -56,20 +56,17 @@ namespace nano
 
                 void output(tensor4d_cmap_t idata, vector_cmap_t pdata, tensor4d_map_t odata)
                 {
-                        const auto count = idata.size<0>();
-                        m_probe_output.measure([=] () { m_node->output(idata, pdata, odata); }, count);
+                        m_probe_output.measure([=] () { m_node->output(idata, pdata, odata); }, idata.size<0>());
                 }
 
                 void ginput(tensor4d_map_t idata, vector_cmap_t pdata, tensor4d_cmap_t odata)
                 {
-                        const auto count = idata.size<0>();
-                        m_probe_ginput.measure([=] () { m_node->ginput(idata, pdata, odata); }, count);
+                        m_probe_ginput.measure([=] () { m_node->ginput(idata, pdata, odata); }, idata.size<0>());
                 }
 
                 void gparam(tensor4d_cmap_t idata, vector_map_t pdata, tensor4d_cmap_t odata)
                 {
-                        const auto count = idata.size<0>();
-                        m_probe_gparam.measure([=] () { m_node->gparam(idata, pdata, odata); }, count);
+                        m_probe_gparam.measure([=] () { m_node->gparam(idata, pdata, odata); }, idata.size<0>());
                 }
 
                 // attributes
