@@ -17,28 +17,25 @@ namespace nano
                 json_reader_t& config(json_reader_t&) final;
                 json_writer_t& config(json_writer_t&) const final;
 
-                bool resize(const tensor3d_dims_t& idims, const string_t& name) final;
+                bool resize(const tensor3d_dims_t& idims) final;
 
-                void output(const tensor4d_cmap_t& idata, const vector_cmap_t& pdata, tensor4d_map_t&& odata) final;
-                void ginput(tensor4d_map_t&& idata, const vector_cmap_t& pdata, const tensor4d_cmap_t& odata) final;
-                void gparam(const tensor4d_cmap_t& idata, vector_map_t&& pdata, const tensor4d_cmap_t& odata) final;
+                void output(tensor4d_cmap_t idata, vector_cmap_t pdata, tensor4d_map_t odata) final;
+                void ginput(tensor4d_map_t idata, vector_cmap_t pdata, tensor4d_cmap_t odata) final;
+                void gparam(tensor4d_cmap_t idata, vector_map_t pdata, tensor4d_cmap_t odata) final;
 
-                tensor_size_t fanin() const final { return 1; }
-                tensor_size_t psize() const final { return 0; }
                 tensor3d_dim_t idims() const final { return m_params.xdims(); }
                 tensor3d_dim_t odims() const final { return m_params.xdims(); }
 
-                const probe_t& probe_output() const final { return m_probe_output; }
-                const probe_t& probe_ginput() const final { return m_probe_ginput; }
-                const probe_t& probe_gparam() const final { return m_probe_gparam; }
+                tensor_size_t fanin() const final { return 1; }
+                tensor_size_t psize() const final { return 0; }
+                tensor_size_t flops_output() const final { return m_params.flops_output(); }
+                tensor_size_t flops_ginput() const final { return m_params.flops_ginput(); }
+                tensor_size_t flops_gparam() const final { return m_params.flops_gparam(); }
 
         private:
 
                 // attributes
                 norm3d_params_t m_params;
                 norm4d_t        m_kernel;
-                probe_t         m_probe_output;
-                probe_t         m_probe_ginput;
-                probe_t         m_probe_gparam;
         };
 }

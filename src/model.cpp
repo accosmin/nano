@@ -451,9 +451,9 @@ tensor4d_cmap_t model_t::output(const tensor4d_t& idata)
 
                 // forward step
                 inode().idata(m_xdata, count) = idata;
-                for (const auto& cnode : m_nodes)
+                for (auto& cnode : m_nodes)
                 {
-                        cnode.m_node->output(
+                        cnode.output(
                                 cnode.idata(cxdata(), count),
                                 cnode.pdata(cpdata()),
                                 cnode.odata(m_xdata, count));
@@ -483,8 +483,8 @@ tensor4d_cmap_t model_t::ginput(const tensor4d_t& odata)
                 onode().odata(m_xdata, count) = odata;
                 for (auto it = m_nodes.rbegin(); it != m_nodes.rend(); ++ it)
                 {
-                        const auto& cnode = *it;
-                        cnode.m_node->ginput(
+                        auto& cnode = *it;
+                        cnode.ginput(
                                 cnode.idata(m_xdata, count),
                                 cnode.pdata(cpdata()),
                                 cnode.odata(cxdata(), count));
@@ -514,8 +514,8 @@ const vector_t& model_t::gparam(const tensor4d_t& odata)
                 onode().odata(m_xdata, count) = odata;
                 for (auto it = m_nodes.rbegin(); it != m_nodes.rend(); ++ it)
                 {
-                        const auto& cnode = *it;
-                        cnode.m_node->gparam(
+                        auto& cnode = *it;
+                        cnode.gparam(
                                 cnode.idata(cxdata(), count),
                                 cnode.pdata(m_gdata),
                                 cnode.odata(cxdata(), count));
@@ -541,7 +541,7 @@ bool model_t::resize(const tensor3d_dim_t& idims, const tensor3d_dim_t& odims)
         log_info() << "model: resizing the computation nodes...";
 
         // resize computation nodes starting from the input
-        for (const auto& cnode : m_nodes)
+        for (auto& cnode : m_nodes)
         {
                 std::vector<tensor3d_dim_t> cidims;
                 if (cnode.m_inodes.empty())
@@ -556,11 +556,15 @@ bool model_t::resize(const tensor3d_dim_t& idims, const tensor3d_dim_t& odims)
                         }
                 }
 
-                if (!cnode.m_node->resize(cidims, cnode.m_name))
+                if (!cnode.m_node->resize(cidims))
                 {
                         log_error() << "model: failed to resize node [" << cnode.m_name << "]!";
                         return false;
                 }
+
+                cnode.m_probe_output = probe_t{cnode.m_name, cnode.m_name + "(output)", cnode.m_node->flops_output()};
+                cnode.m_probe_ginput = probe_t{cnode.m_name, cnode.m_name + "(ginput)", cnode.m_node->flops_ginput()};
+                cnode.m_probe_gparam = probe_t{cnode.m_name, cnode.m_name + "(gparam)", cnode.m_node->flops_gparam()};
         }
 
         // check output size to match the target
@@ -580,9 +584,9 @@ bool model_t::resize(const tensor3d_dim_t& idims, const tensor3d_dim_t& odims)
         for (const auto& cnode : m_nodes)
         {
                 psize += cnode.m_node->psize();
-                flops_output += cnode.m_node->probe_output().flops();
-                flops_ginput += cnode.m_node->probe_ginput().flops();
-                flops_gparam += cnode.m_node->probe_gparam().flops();
+                flops_output += cnode.m_node->flops_output();
+                flops_ginput += cnode.m_node->flops_ginput();
+                flops_gparam += cnode.m_node->flops_gparam();
         }
 
         m_pdata.resize(psize);
@@ -646,9 +650,9 @@ probes_t model_t::probes() const
 
         for (const auto& node : m_nodes)
         {
-                append(node.m_node->probe_output());
-                append(node.m_node->probe_ginput());
-                append(node.m_node->probe_gparam());
+                append(node.m_probe_output);
+                append(node.m_probe_ginput);
+                append(node.m_probe_gparam);
         }
 
         return probes;

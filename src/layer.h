@@ -3,7 +3,6 @@
 #include "arch.h"
 #include "tensor.h"
 #include "factory.h"
-#include "chrono/probe.h"
 #include "configurable.h"
 
 namespace nano
@@ -32,22 +31,22 @@ namespace nano
                 ///
                 /// \brief configure to process tensors of the given size
                 ///
-                virtual bool resize(const tensor3d_dims_t& idims, const string_t& name) = 0;
+                virtual bool resize(const tensor3d_dims_t& idims) = 0;
 
                 ///
                 /// \brief compute the output (given the input & the parameters)
                 ///
-                virtual void output(const tensor4d_cmap_t& idata, const vector_cmap_t& pdata, tensor4d_map_t&& odata) = 0;
+                virtual void output(tensor4d_cmap_t idata, vector_cmap_t pdata, tensor4d_map_t odata) = 0;
 
                 ///
                 /// \brief compute the gradient wrt the inputs (given the output & the parameters)
                 ///
-                virtual void ginput(tensor4d_map_t&& idata, const vector_cmap_t& pdata, const tensor4d_cmap_t& odata) = 0;
+                virtual void ginput(tensor4d_map_t idata, vector_cmap_t pdata, tensor4d_cmap_t odata) = 0;
 
                 ///
                 /// \brief compute the (cumulated) gradient wrt the parameters (given the output & the input)
                 ///
-                virtual void gparam(const tensor4d_cmap_t& idata, vector_map_t&& pdata, const tensor4d_cmap_t& odata) = 0;
+                virtual void gparam(tensor4d_cmap_t idata, vector_map_t pdata, tensor4d_cmap_t odata) = 0;
 
                 ///
                 /// \brief number of inputs per processing unit (e.g. neuron, convolution kernel)
@@ -62,11 +61,11 @@ namespace nano
                 virtual tensor_size_t psize() const = 0;
 
                 ///
-                /// \brief returns the timing probes for the three basic operations (output & its gradients)
+                /// \brief returns the number of flops for the output/gparam/ginput operations
                 ///
-                virtual const probe_t& probe_output() const = 0;
-                virtual const probe_t& probe_ginput() const = 0;
-                virtual const probe_t& probe_gparam() const = 0;
+                virtual tensor_size_t flops_output() const = 0;
+                virtual tensor_size_t flops_gparam() const = 0;
+                virtual tensor_size_t flops_ginput() const = 0;
 
                 ///
                 /// \brief convenience functions

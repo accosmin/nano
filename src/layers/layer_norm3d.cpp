@@ -17,7 +17,7 @@ rlayer_t norm3d_layer_t::clone() const
         return std::make_unique<norm3d_layer_t>(*this);
 }
 
-bool norm3d_layer_t::resize(const tensor3d_dims_t& idims, const string_t& name)
+bool norm3d_layer_t::resize(const tensor3d_dims_t& idims)
 {
         if (idims.size() != 1)
         {
@@ -33,32 +33,26 @@ bool norm3d_layer_t::resize(const tensor3d_dims_t& idims, const string_t& name)
         }
 
         m_kernel = norm4d_t{m_params};
-
-        m_probe_output = probe_t{name, name + "(output)", m_params.flops_output()};
-        m_probe_ginput = probe_t{name, name + "(ginput)", m_params.flops_ginput()};
-        m_probe_gparam = probe_t{name, name + "(gparam)", m_params.flops_gparam()};
         return true;
 }
 
-void norm3d_layer_t::output(const tensor4d_cmap_t& idata, const vector_cmap_t& pdata, tensor4d_map_t&& odata)
+void norm3d_layer_t::output(tensor4d_cmap_t idata, vector_cmap_t pdata, tensor4d_map_t odata)
 {
         assert(pdata.size() == psize());
         NANO_UNUSED1_RELEASE(pdata);
 
-        const auto count = idata.size<0>();
-        m_probe_output.measure([&] () { m_kernel.output(idata, odata); }, count);
+        m_kernel.output(idata, odata);
 }
 
-void norm3d_layer_t::ginput(tensor4d_map_t&& idata, const vector_cmap_t& pdata, const tensor4d_cmap_t& odata)
+void norm3d_layer_t::ginput(tensor4d_map_t idata, vector_cmap_t pdata, tensor4d_cmap_t odata)
 {
         assert(pdata.size() == psize());
         NANO_UNUSED1_RELEASE(pdata);
 
-        const auto count = idata.size<0>();
-        m_probe_ginput.measure([&] () { m_kernel.ginput(idata, odata); }, count);
+        m_kernel.ginput(idata, odata);
 }
 
-void norm3d_layer_t::gparam(const tensor4d_cmap_t& idata, vector_map_t&& pdata, const tensor4d_cmap_t& odata)
+void norm3d_layer_t::gparam(tensor4d_cmap_t idata, vector_map_t pdata, tensor4d_cmap_t odata)
 {
         assert(idata.dims() == odata.dims());
         assert(pdata.size() == psize());

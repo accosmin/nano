@@ -1,6 +1,7 @@
 #pragma once
 
 #include "layer.h"
+#include "chrono/probe.h"
 
 namespace nano
 {
@@ -53,6 +54,24 @@ namespace nano
                         return map_tensor(buffer.data() + m_obegin, cat_dims(count, m_node->odims()));
                 }
 
+                void output(tensor4d_cmap_t idata, vector_cmap_t pdata, tensor4d_map_t odata)
+                {
+                        const auto count = idata.size<0>();
+                        m_probe_output.measure([=] () { m_node->output(idata, pdata, odata); }, count);
+                }
+
+                void ginput(tensor4d_map_t idata, vector_cmap_t pdata, tensor4d_cmap_t odata)
+                {
+                        const auto count = idata.size<0>();
+                        m_probe_ginput.measure([=] () { m_node->ginput(idata, pdata, odata); }, count);
+                }
+
+                void gparam(tensor4d_cmap_t idata, vector_map_t pdata, tensor4d_cmap_t odata)
+                {
+                        const auto count = idata.size<0>();
+                        m_probe_gparam.measure([=] () { m_node->gparam(idata, pdata, odata); }, count);
+                }
+
                 // attributes
                 string_t        m_name;
                 string_t        m_type;
@@ -62,5 +81,8 @@ namespace nano
                 tensor_size_t   m_ibegin{0};    ///< offset of the input tensor
                 tensor_size_t   m_obegin{0};    ///< offset of the output tensor
                 tensor_size_t   m_pbegin{0};    ///< offset of the parameter vector
+                probe_t         m_probe_output;
+                probe_t         m_probe_ginput;
+                probe_t         m_probe_gparam;
         };
 }
