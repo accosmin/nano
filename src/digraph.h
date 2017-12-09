@@ -15,20 +15,17 @@ namespace nano
         {
         public:
 
-                enum class color : uint8_t
+                enum class color
                 {
                         white,
                         black
                 };
 
-                enum class cycle : uint8_t
+                enum class cycle
                 {
                         none,
                         detected
                 };
-
-                using depth_t = uint8_t;
-                using compi_t = uint8_t;
 
                 ///
                 /// \brief information gathered per vertex when visiting the graph.
@@ -37,8 +34,8 @@ namespace nano
                 {
                         color   m_color{color::white};  ///<
                         cycle   m_cycle{cycle::none};   ///<
-                        depth_t m_depth{0};             ///< depth (starting from the deepest source)
-                        compi_t m_comp{0};              ///< component index
+                        size_t  m_depth{0};             ///< depth (starting from the deepest source)
+                        size_t  m_comp{0};              ///< component index
                 };
 
                 using infos_t = std::vector<info_t>;
@@ -175,7 +172,7 @@ namespace nano
                         return count;
                 }
 
-                compi_t get_comp(const infos_t& infos, const infos_t& accos) const
+                size_t get_comp(const infos_t& infos, const infos_t& accos) const
                 {
                         assert(infos.size() == m_vertices);
                         assert(accos.size() == m_vertices);
@@ -183,8 +180,8 @@ namespace nano
                         size_t common = 0;
                         size_t visited = 0;
 
-                        compi_t comp = 0;
-                        compi_t max_comp = 0;
+                        size_t comp = 0;
+                        size_t max_comp = 0;
 
                         for (size_t u = 0; u < m_vertices; ++ u)
                         {
@@ -331,7 +328,7 @@ namespace nano
                         infos[u].m_color = color::black;
                         foreach_out(u, [&] (const size_t v)
                         {
-                                const auto uvdepth = static_cast<depth_t>(infos[u].m_depth + 1);
+                                const auto uvdepth = infos[u].m_depth + 1;
                                 switch (infos[v].m_color)
                                 {
                                 case color::white:
@@ -370,7 +367,7 @@ namespace nano
 
                 indices_t indices;
                 indices.reserve(m_vertices);
-                for (depth_t d = 0; d <= depth; ++ d)
+                for (size_t d = 0; d <= depth; ++ d)
                 {
                         for (size_t u = 0; u < m_vertices; ++ u)
                         {
