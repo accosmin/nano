@@ -151,8 +151,8 @@ namespace nano
                 const cnode_t& onode() const { assert(!m_nodes.empty()); return *m_nodes.rbegin(); }
 
                 // attributes
-                tensor3d_dim_t  m_idims{0, 0, 0};       ///< input dimensions
-                tensor3d_dim_t  m_odims{0, 0, 0};       ///< output dimensions
+                tensor3d_dim_t  m_idims{{0, 0, 0}};     ///< input dimensions
+                tensor3d_dim_t  m_odims{{0, 0, 0}};     ///< output dimensions
                 cnodes_t        m_nodes;                ///< computation nodes
                 vector_t        m_pdata;                ///< current parameters
                 vector_t        m_gdata;                ///< current gradient wrt parameters
