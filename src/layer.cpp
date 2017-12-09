@@ -4,6 +4,7 @@
 #include "layers/layer_norm3d.h"
 #include "layers/layer_conv3d.h"
 #include "layers/layer_plus4d.h"
+#include "layers/layer_tcat4d.h"
 #include "layers/layer_activation.h"
 
 using namespace nano;
@@ -23,9 +24,10 @@ layer_factory_t& nano::get_layers()
                 manager.add<activation_layer_sigm_t>("act-sigm",        "activation: a(x) = exp(x) / (1 + exp(x))");
                 manager.add<activation_layer_pwave_t>("act-pwave",      "activation: a(x) = x / (1 + x^2)");
                 manager.add<affine_layer_t>(affine_node_name(),         "transform:  L(x) = A * x + b");
-                manager.add<norm3d_layer_t>(norm3d_node_name(),         "zero-mean & one-variance transformation");
                 manager.add<conv3d_layer_t>(conv3d_node_name(),         "transform:  L(x) = conv3D(x, kernel) + b");
-                manager.add<plus4d_layer_t>(plus4d_node_name(),         "transform:  sum 4D inputs");
+                manager.add<norm3d_layer_t>(norm3d_node_name(),         "transform: zero-mean & unit-variance");
+                manager.add<plus4d_layer_t>(mix_plus4d_node_name(),     "combine: sum 4D inputs");
+                manager.add<tcat4d_layer_t>(mix_tcat4d_node_name(),     "combine: concat 4D inputs across feature planes");
         });
 
         return manager;

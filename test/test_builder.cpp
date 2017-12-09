@@ -19,10 +19,12 @@ NANO_CASE(affine)
         config_affine_node(writer, std::get<0>(odims), std::get<1>(odims), std::get<2>(odims));
 
         const auto layer = get_layers().get(affine_node_name());
+        NANO_REQUIRE(layer);
         layer->config(writer.str());
         NANO_CHECK(layer->resize({idims}));
         NANO_CHECK_EQUAL(layer->odims(), odims);
         NANO_CHECK_EQUAL(layer->psize(), param.psize());
+        NANO_CHECK_EQUAL(layer->fanin(), param.isize());
 }
 
 NANO_CASE(conv3d)
@@ -43,10 +45,12 @@ NANO_CASE(conv3d)
                 config_conv3d_node(writer, omaps, krows, kcols, kconn, kdrow, kdcol);
 
                 const auto layer = get_layers().get(conv3d_node_name());
+                NANO_REQUIRE(layer);
                 layer->config(writer.str());
                 NANO_CHECK(layer->resize({idims}));
                 NANO_CHECK_EQUAL(layer->odims(), param.odims());
                 NANO_CHECK_EQUAL(layer->psize(), param.psize());
+                NANO_CHECK_EQUAL(layer->fanin(), param.imaps() * krows * kcols / kconn);
         }
 }
 
@@ -63,10 +67,12 @@ NANO_CASE(norm3d)
                 config_norm3d_node(writer, type);
 
                 const auto layer = get_layers().get(norm3d_node_name());
+                NANO_REQUIRE(layer);
                 layer->config(writer.str());
                 NANO_CHECK(layer->resize({idims}));
                 NANO_CHECK_EQUAL(layer->odims(), idims);
                 NANO_CHECK_EQUAL(layer->psize(), 0);
+                NANO_CHECK_EQUAL(layer->fanin(), 1);
         }
 }
 
@@ -79,11 +85,41 @@ NANO_CASE(activation)
                 if (is_activation_node(node_id))
                 {
                         const auto layer = get_layers().get(node_id);
+                        NANO_REQUIRE(layer);
                         NANO_CHECK(layer->resize({idims}));
                         NANO_CHECK_EQUAL(layer->odims(), idims);
                         NANO_CHECK_EQUAL(layer->psize(), 0);
+                        NANO_CHECK_EQUAL(layer->fanin(), 1);
                 }
         }
+}
+
+NANO_CASE(mix-plus4d)
+{
+        const auto idim1 = make_dims(4, 13, 11);
+        const auto idim2 = make_dims(4, 13, 11);
+        const auto idim3 = make_dims(4, 13, 11);
+
+        const auto layer = get_layers().get(mix_plus4d_node_name());
+        NANO_REQUIRE(layer);
+        NANO_CHECK(layer->resize({idim1, idim2, idim3}));
+        NANO_CHECK_EQUAL(layer->odims(), idim1);
+        NANO_CHECK_EQUAL(layer->psize(), 0);
+        NANO_CHECK_EQUAL(layer->fanin(), 3);
+}
+
+NANO_CASE(mix-tcat4d)
+{
+        const auto idim1 = make_dims(2, 13, 11);
+        const auto idim2 = make_dims(3, 13, 11);
+        const auto idim3 = make_dims(4, 13, 11);
+
+        const auto layer = get_layers().get(mix_tcat4d_node_name());
+        NANO_REQUIRE(layer);
+        NANO_CHECK(layer->resize({idim1, idim2, idim3}));
+        NANO_CHECK_EQUAL(layer->odims(), make_dims(9, 13, 11));
+        NANO_CHECK_EQUAL(layer->psize(), 0);
+        NANO_CHECK_EQUAL(layer->fanin(), 1);
 }
 
 NANO_END_MODULE()
