@@ -67,7 +67,11 @@ namespace nano
                 void config(json_writer_t&) const;
 
                 ///
-                /// \brief configuration done
+                /// \brief mark the configuration done and verifies if the computation node form a valid graph:
+                ///     - no cycles
+                ///     - exactly one output (for now)
+                ///
+                /// NB: if all the conditions are met, the computation nodes are sorted topologically.
                 ///
                 bool done();
 
@@ -101,11 +105,6 @@ namespace nano
                 /// \brief compute the model's gradient wrt parameters given its output
                 ///
                 const vector_t& gparam(const tensor4d_t& odata);
-
-                ///
-                /// \brief compute the model's gradient wrt inputs given its output
-                ///
-                tensor4d_cmap_t ginput(const tensor4d_t& odata);
 
                 ///
                 /// \brief retrieve timing information for all components

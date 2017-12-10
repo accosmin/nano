@@ -9,28 +9,41 @@ namespace nano
         using cnodes_t = std::vector<cnode_t>;
 
         ///
-        /// \brief verify if the computation nodes form a valid graph:
-        ///     - no cycles
-        ///     - exactly one input
-        ///     - exactly one output (for now)
-        ///
-        /// NB: if all the conditions are met, the computation nodes are sorted topologically.
-        ///
-        bool check_nodes(cnodes_t&);
-
-        ///
         /// \brief computation node.
         ///
         class cnode_t
         {
         public:
 
+                ///
+                /// \brief constructor
+                ///
+                cnode_t(string_t name, string_t type, rlayer_t&& node) :
+                        m_name(std::move(name)),
+                        m_type(std::move(type)),
+                        m_node(std::move(node))
+                {
+                }
+
+                ///
+                /// \brief copy constructor
+                ///
+                cnode_t(const cnode_t& other) :
+                        m_name(other.m_name),
+                        m_type(other.m_type),
+                        m_node(other.m_node->clone()),
+                        m_inodes(other.m_inodes),
+                        m_onodes(other.m_onodes)
+                {
+                }
+
+                ///
+                /// \brief defaults
+                ///
                 cnode_t() = default;
-                cnode_t(const cnode_t&);
                 cnode_t(cnode_t&&) = default;
-                cnode_t& operator=(const cnode_t&);
                 cnode_t& operator=(cnode_t&&) = default;
-                cnode_t(string_t name, string_t type, rlayer_t&&);
+                cnode_t& operator=(const cnode_t&) = delete;
 
                 template <typename tvector>
                 auto pdata(tvector&& buffer) const

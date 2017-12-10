@@ -58,49 +58,6 @@ struct model_wrt_params_function_t final : public function_t
         tensor4d_t              m_targets;
 };
 
-struct model_wrt_inputs_function_t final : public function_t
-{
-        explicit model_wrt_inputs_function_t(const rloss_t& loss, model_t& model, const tensor_size_t count) :
-                function_t("model", isize(model, count), isize(model, count), isize(model, count), convexity::no, 1e+6),
-                m_loss(loss),
-                m_model(model),
-                m_inputs(idims(model, count)),
-                m_targets(odims(model, count))
-        {
-                m_model.random();
-                m_inputs.random(0, 1);
-                for (auto x = 0; x < count; ++ x)
-                {
-                        m_targets.vector(x) = class_target(x % osize(model), osize(model));
-                }
-        }
-
-        scalar_t vgrad(const vector_t& x, vector_t* gx) const override
-        {
-                NANO_CHECK_EQUAL(x.size(), m_inputs.size());
-                NANO_CHECK(nano::isfinite(x));
-
-                m_inputs.vector() = x;
-                const auto& outputs = m_model.output(m_inputs);
-                NANO_CHECK(nano::isfinite(outputs));
-
-                if (gx)
-                {
-                        const auto& ginput = m_model.ginput(m_loss->vgrad(m_targets, outputs));
-                        NANO_CHECK_EQUAL(gx->size(), ginput.size());
-                        NANO_CHECK(nano::isfinite(ginput));
-
-                        *gx = ginput.vector();
-                }
-                return m_loss->value(m_targets, outputs).vector().sum();
-        }
-
-        const rloss_t&          m_loss;
-        model_t&                m_model;
-        mutable tensor4d_t      m_inputs;
-        tensor4d_t              m_targets;
-};
-
 const auto cmd_imaps = 3, cmd_irows = 6, cmd_icols = 6;
 const auto cmd_omaps = 3, cmd_orows = 1, cmd_ocols = 1;
 const auto cmd_idims = tensor3d_dim_t{cmd_imaps, cmd_irows, cmd_icols};
@@ -133,16 +90,10 @@ static void test_model(model_t& model, const tensor_size_t expected_psize,
         const auto count = 3;
         const auto loss = get_losses().get("s-logistic");
         const auto pfun = model_wrt_params_function_t{loss, model, count};
-        const auto ifun = model_wrt_inputs_function_t{loss, model, count};
 
         const vector_t px = pfun.m_model.params();
-        const vector_t ix = ifun.m_inputs.vector();
-
         NANO_CHECK_EQUAL(px.size(), pfun.size());
-        NANO_CHECK_EQUAL(ix.size(), ifun.size());
-
         NANO_CHECK_LESS(pfun.grad_accuracy(px), epsilon);
-        NANO_CHECK_LESS(ifun.grad_accuracy(ix), epsilon);
 }
 
 NANO_BEGIN_MODULE(test_layers)
