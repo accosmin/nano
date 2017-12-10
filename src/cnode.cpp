@@ -69,12 +69,6 @@ bool nano::check_nodes(cnodes_t& nodes)
 
         // and check it
         const auto sources = graph.sources();
-        if (sources.size() != 1)
-        {
-                log_error() << "model: expecting exactly one input node!";
-                return false;
-        }
-
         const auto sinks = graph.sinks();
         if (sinks.size() != 1)
         {

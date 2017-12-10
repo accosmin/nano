@@ -377,7 +377,6 @@ NANO_CASE(multi_layer5)
 NANO_CASE(multi_mix_plus4d)
 {
         model_t model;
-        NANO_CHECK(add_node(model, "00", norm3d_node_name(), config_norm3d_node, norm_type::plane));
         NANO_CHECK(add_node(model, "11", conv3d_node_name(), config_conv3d_node, 4, 5, 5, 1, 1, 1));
         NANO_CHECK(add_node(model, "12", "act-snorm", config_empty_node));
         NANO_CHECK(add_node(model, "21", conv3d_node_name(), config_conv3d_node, 3, 3, 3, 1, 1, 1));
@@ -389,8 +388,8 @@ NANO_CASE(multi_mix_plus4d)
         NANO_CHECK(add_node(model, "x2", affine_node_name(), config_affine_node, 5, 1, 1));
         NANO_CHECK(add_node(model, "x3", "act-splus", config_empty_node));
         NANO_CHECK(add_node(model, "x4", affine_node_name(), config_affine_node, cmd_omaps, cmd_orows, cmd_ocols));
-        NANO_CHECK(model.connect("00", "11", "12", "xx"));
-        NANO_CHECK(model.connect("00", "21", "22", "23", "24", "xx"));
+        NANO_CHECK(model.connect("11", "12", "xx"));
+        NANO_CHECK(model.connect("21", "22", "23", "24", "xx"));
         NANO_CHECK(model.connect("xx", "x1", "x2", "x3", "x4"));
 
         test_model(model,
@@ -402,7 +401,6 @@ NANO_CASE(multi_mix_plus4d)
 NANO_CASE(multi_mix_tcat4d)
 {
         model_t model;
-        NANO_CHECK(add_node(model, "00", norm3d_node_name(), config_norm3d_node, norm_type::plane));
         NANO_CHECK(add_node(model, "11", conv3d_node_name(), config_conv3d_node, 4, 5, 5, 1, 1, 1));
         NANO_CHECK(add_node(model, "12", "act-snorm", config_empty_node));
         NANO_CHECK(add_node(model, "21", conv3d_node_name(), config_conv3d_node, 3, 3, 3, 1, 1, 1));
@@ -414,8 +412,8 @@ NANO_CASE(multi_mix_tcat4d)
         NANO_CHECK(add_node(model, "x2", affine_node_name(), config_affine_node, 5, 1, 1));
         NANO_CHECK(add_node(model, "x3", "act-splus", config_empty_node));
         NANO_CHECK(add_node(model, "x4", affine_node_name(), config_affine_node, cmd_omaps, cmd_orows, cmd_ocols));
-        NANO_CHECK(model.connect("00", "11", "12", "xx"));
-        NANO_CHECK(model.connect("00", "21", "22", "23", "24", "xx"));
+        NANO_CHECK(model.connect("11", "12", "xx"));
+        NANO_CHECK(model.connect("21", "22", "23", "24", "xx"));
         NANO_CHECK(model.connect("xx", "x1", "x2", "x3", "x4"));
 
         test_model(model,
