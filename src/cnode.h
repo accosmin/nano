@@ -32,8 +32,7 @@ namespace nano
                         m_name(other.m_name),
                         m_type(other.m_type),
                         m_node(other.m_node->clone()),
-                        m_inodes(other.m_inodes),
-                        m_onodes(other.m_onodes)
+                        m_inodes(other.m_inodes)
                 {
                 }
 
@@ -115,11 +114,10 @@ namespace nano
                 string_t        m_type;
                 rlayer_t        m_node;         ///< the computation node
                 indices_t       m_inodes;       ///< input nodes
-                indices_t       m_onodes;       ///< output nodes
                 tensor_size_t   m_obegin{0};    ///< offset of the output tensor
                 tensor_size_t   m_pbegin{0};    ///< offset of the parameter vector
-                probe_t         m_probe_output;
-                probe_t         m_probe_ginput;
-                probe_t         m_probe_gparam;
+                probe_t         m_probe_output; ///< measure ::output() calls
+                probe_t         m_probe_ginput; ///< measure ::ginput() calls
+                probe_t         m_probe_gparam; ///< measure ::gparam() calls
         };
 }

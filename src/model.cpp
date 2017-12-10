@@ -134,7 +134,6 @@ bool model_t::connect(const string_t& name1, const string_t& name2)
                 return false;
         }
 
-        m_nodes[src].m_onodes.push_back(dst);
         m_nodes[dst].m_inodes.push_back(src);
         return true;
 }
@@ -349,9 +348,9 @@ bool model_t::done()
 
         // create the computation graph
         digraph_t graph(m_nodes.size());
-        for (size_t src = 0; src < m_nodes.size(); ++ src)
+        for (size_t dst = 0; dst < m_nodes.size(); ++ dst)
         {
-                for (const size_t dst : m_nodes[src].m_onodes)
+                for (const size_t src : m_nodes[dst].m_inodes)
                 {
                         graph.edge(src, dst);
                 }
@@ -418,9 +417,8 @@ bool model_t::done()
         reorder(m_nodes, tsort);
         for (auto& cnode : m_nodes)
         {
-                // also reindex their inputs/outputs
+                // also reindex their inputs
                 reindex(cnode.m_inodes, tsort);
-                reindex(cnode.m_onodes, tsort);
         }
         return true;
 }
@@ -452,9 +450,9 @@ void model_t::config(json_writer_t& writer) const
         writer.end_array().next();
         writer.name("model").new_array();
         std::vector<std::pair<size_t, size_t>> edges;
-        for (size_t src = 0; src < m_nodes.size(); ++ src)
+        for (size_t dst = 0; dst < m_nodes.size(); ++ dst)
         {
-                for (const auto dst : m_nodes[src].m_onodes)
+                for (const auto src : m_nodes[dst].m_inodes)
                 {
                         edges.emplace_back(src, dst);
                 }
@@ -692,8 +690,7 @@ void model_t::describe() const
                         << "model: " << node.m_name
                         << ", odims = " << node.m_node->odims()
                         << ", psize = " << node.m_node->psize()
-                        << ", inodes = " << join(node_names(node.m_inodes))
-                        << ", onodes = " << join(node_names(node.m_onodes)) << ".";
+                        << ", inodes = " << join(node_names(node.m_inodes)) << ".";
         }
         log_info() << "model: parameters = " << psize() << ".";
         // todo: print the graph in nice text format (e.g. inputs/outputs per node)
