@@ -147,7 +147,6 @@ namespace nano
                 strings_t node_names(const indices_t& indices) const;
 
                 size_t find_node(const string_t& name) const;
-                const cnode_t& inode() const { assert(!m_nodes.empty()); return *m_nodes.begin(); }
                 const cnode_t& onode() const { assert(!m_nodes.empty()); return *m_nodes.rbegin(); }
 
                 // attributes

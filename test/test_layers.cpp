@@ -374,4 +374,54 @@ NANO_CASE(multi_layer5)
                 cpsize(cmd_idims, 9, 3, 3, 1) + cpsize({9, 4, 4}, 6, 3, 3, 3) + apsize({6, 2, 2}, {5, 1, 1}) + apsize({5, 1, 1}, cmd_odims));
 }
 
+NANO_CASE(multi_mix_plus4d)
+{
+        model_t model;
+        NANO_CHECK(add_node(model, "00", norm3d_node_name(), config_norm3d_node, norm_type::plane));
+        NANO_CHECK(add_node(model, "11", conv3d_node_name(), config_conv3d_node, 4, 5, 5, 1, 1, 1));
+        NANO_CHECK(add_node(model, "12", "act-snorm", config_empty_node));
+        NANO_CHECK(add_node(model, "21", conv3d_node_name(), config_conv3d_node, 3, 3, 3, 1, 1, 1));
+        NANO_CHECK(add_node(model, "22", "act-snorm", config_empty_node));
+        NANO_CHECK(add_node(model, "23", conv3d_node_name(), config_conv3d_node, 4, 3, 3, 1, 1, 1));
+        NANO_CHECK(add_node(model, "24", "act-snorm", config_empty_node));
+        NANO_CHECK(add_node(model, "xx", mix_plus4d_node_name(), config_empty_node));
+        NANO_CHECK(add_node(model, "x1", "act-splus", config_empty_node));
+        NANO_CHECK(add_node(model, "x2", affine_node_name(), config_affine_node, 5, 1, 1));
+        NANO_CHECK(add_node(model, "x3", "act-splus", config_empty_node));
+        NANO_CHECK(add_node(model, "x4", affine_node_name(), config_affine_node, cmd_omaps, cmd_orows, cmd_ocols));
+        NANO_CHECK(model.connect("00", "11", "12", "xx"));
+        NANO_CHECK(model.connect("00", "21", "22", "23", "24", "xx"));
+        NANO_CHECK(model.connect("xx", "x1", "x2", "x3", "x4"));
+
+        test_model(model,
+                cpsize(cmd_idims, 4, 5, 5, 1) +
+                cpsize(cmd_idims, 3, 3, 3, 1) + cpsize({3, 4, 4}, 4, 3, 3, 1) +
+                apsize({4, 2, 2}, {5, 1, 1}) + apsize({5, 1, 1}, cmd_odims));
+}
+
+NANO_CASE(multi_mix_tcat4d)
+{
+        model_t model;
+        NANO_CHECK(add_node(model, "00", norm3d_node_name(), config_norm3d_node, norm_type::plane));
+        NANO_CHECK(add_node(model, "11", conv3d_node_name(), config_conv3d_node, 4, 5, 5, 1, 1, 1));
+        NANO_CHECK(add_node(model, "12", "act-snorm", config_empty_node));
+        NANO_CHECK(add_node(model, "21", conv3d_node_name(), config_conv3d_node, 3, 3, 3, 1, 1, 1));
+        NANO_CHECK(add_node(model, "22", "act-snorm", config_empty_node));
+        NANO_CHECK(add_node(model, "23", conv3d_node_name(), config_conv3d_node, 4, 3, 3, 1, 1, 1));
+        NANO_CHECK(add_node(model, "24", "act-snorm", config_empty_node));
+        NANO_CHECK(add_node(model, "xx", mix_tcat4d_node_name(), config_empty_node));
+        NANO_CHECK(add_node(model, "x1", "act-splus", config_empty_node));
+        NANO_CHECK(add_node(model, "x2", affine_node_name(), config_affine_node, 5, 1, 1));
+        NANO_CHECK(add_node(model, "x3", "act-splus", config_empty_node));
+        NANO_CHECK(add_node(model, "x4", affine_node_name(), config_affine_node, cmd_omaps, cmd_orows, cmd_ocols));
+        NANO_CHECK(model.connect("00", "11", "12", "xx"));
+        NANO_CHECK(model.connect("00", "21", "22", "23", "24", "xx"));
+        NANO_CHECK(model.connect("xx", "x1", "x2", "x3", "x4"));
+
+        test_model(model,
+                cpsize(cmd_idims, 4, 5, 5, 1) +
+                cpsize(cmd_idims, 3, 3, 3, 1) + cpsize({3, 4, 4}, 4, 3, 3, 1) +
+                apsize({8, 2, 2}, {5, 1, 1}) + apsize({5, 1, 1}, cmd_odims));
+}
+
 NANO_END_MODULE()
