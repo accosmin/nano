@@ -58,5 +58,6 @@ void norm3d_layer_t::gparam(tensor4d_cmaps_t idata, vector_map_t pdata, tensor4d
 {
         assert(idata.size() == 1);
         assert(pdata.size() == psize());
+        assert(idata[0].dims() == odata.dims());
         NANO_UNUSED3_RELEASE(idata, pdata, odata);
 }

@@ -103,5 +103,6 @@ void tcat4d_layer_t::gparam(tensor4d_cmaps_t idata, vector_map_t pdata, tensor4d
         const auto count = odata.size<0>();
         assert(odata.dims() == cat_dims(count, odims()));
         assert(pdata.size() == psize());
-        NANO_UNUSED3_RELEASE(idata, pdata, odata);
+        NANO_UNUSED1(idata);
+        NANO_UNUSED2_RELEASE(pdata, odata);
 }
