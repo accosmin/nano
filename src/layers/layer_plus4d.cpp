@@ -59,10 +59,10 @@ void plus4d_layer_t::ginput(tensor4d_maps_t idata, vector_cmap_t pdata, tensor4d
         assert(idata.size() == static_cast<size_t>(m_fanin));
         assert(idata[0].dims() == odata.dims());
 
-        for (size_t i = 0; i < idata.size(); ++ i)
+        for (auto& itensor : idata)
         {
-                assert(idata[i].dims() == odata.dims());
-                idata[i] = odata;
+                assert(itensor.dims() == odata.dims());
+                itensor = odata;
         }
 }
 

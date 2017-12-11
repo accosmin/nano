@@ -674,6 +674,7 @@ bool model_t::resize(const tensor3d_dim_t& idims, const tensor3d_dim_t& odims)
 strings_t model_t::node_names(const indices_t& indices) const
 {
         strings_t names;
+        names.reserve(indices.size());
         for (const auto index : indices)
         {
                 names.push_back(m_nodes[index].m_name);
