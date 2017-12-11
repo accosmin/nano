@@ -1,6 +1,7 @@
 #include "model.h"
 #include "logger.h"
 #include "digraph.h"
+#include "text/table.h"
 #include "io/ibstream.h"
 #include "io/obstream.h"
 #include "math/random.h"
@@ -685,16 +686,22 @@ strings_t model_t::node_names(const indices_t& indices) const
 
 void model_t::describe() const
 {
-        for (const auto& node : m_nodes)
+        table_t table;
+        table.header() << "" << "name" << "type" << "odims" << "psize" << "#kflops" << "inputs";
+        table.delim();
+        for (size_t i = 0; i < m_nodes.size(); ++ i)
         {
-                log_info()
-                        << "model: " << node.m_name
-                        << ", odims = " << node.m_node->odims()
-                        << ", psize = " << node.m_node->psize()
-                        << ", inodes = " << join(node_names(node.m_inodes)) << ".";
+                const auto& node = m_nodes[i];
+                auto& row = table.append();
+                row     << (i + 1) << node.m_name << node.m_type
+                        << node.m_node->odims()
+                        << node.m_node->psize()
+                        << node.m_probe_output.kflops()
+                        << join(node_names(node.m_inodes));
         }
-        log_info() << "model: parameters = " << psize() << ".";
-        // todo: print the graph in nice text format (e.g. inputs/outputs per node)
+        table.delim();
+        table.append() << "" << "" << "" << odims() << psize() << m_probe_output.kflops() << "";
+        log_info() << std::endl << table;
 }
 
 probes_t model_t::probes() const

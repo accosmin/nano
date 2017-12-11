@@ -20,13 +20,14 @@ NANO_CASE(probe)
 {
         const auto basename = "base";
         const auto fullname = "full";
-        const auto flops = 256;
+        const auto flops = 2048;
 
         nano::probe_t probe(basename, fullname, flops);
 
         NANO_CHECK_EQUAL(probe.basename(), basename);
         NANO_CHECK_EQUAL(probe.fullname(), fullname);
         NANO_CHECK_EQUAL(probe.flops(), flops);
+        NANO_CHECK_EQUAL(probe.kflops(), flops / 1024);
         NANO_CHECK(!probe);
 
         probe.measure([] () {});
