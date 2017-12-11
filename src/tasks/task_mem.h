@@ -21,13 +21,7 @@ namespace nano
         template <typename tchunk, typename tsample>
         struct mem_task_t : public task_t
         {
-                ///
-                /// \brief constructor
-                ///
-                mem_task_t(
-                        const tensor3d_dim_t& idims,
-                        const tensor3d_dim_t& odims,
-                        const size_t fsize);
+                mem_task_t(const tensor3d_dim_t& idims, const tensor3d_dim_t& odims, const size_t fsize);
 
                 bool load() final;
 
@@ -130,8 +124,8 @@ namespace nano
         private:
 
                 // attributes
-                tensor3d_dim_t                 m_idims;        ///< input size
-                tensor3d_dim_t                 m_odims;        ///< output size
+                tensor3d_dim_t                  m_idims;        ///< input size
+                tensor3d_dim_t                  m_odims;        ///< output size
                 size_t                          m_fsize;        ///< number of folds
                 mutable random_t<size_t>        m_frand;        ///< rng for training-validation fold assignment
                 std::vector<tchunk>             m_chunks;       ///<
@@ -144,7 +138,8 @@ namespace nano
                 const tensor3d_dim_t& idims,
                 const tensor3d_dim_t& odims,
                 const size_t fsize) :
-                m_idims(idims), m_odims(odims),
+                m_idims(idims),
+                m_odims(odims),
                 m_fsize(fsize), m_frand(1, 10)
         {
         }

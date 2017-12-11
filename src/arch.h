@@ -30,10 +30,12 @@
         #define NANO_UNUSED1_RELEASE(x)
         #define NANO_UNUSED2_RELEASE(x, y)
         #define NANO_UNUSED3_RELEASE(x, y, z)
+        #define NANO_UNUSED4_RELEASE(x, y, z, u)
 #else
         #define NANO_UNUSED1_RELEASE(x) NANO_UNUSED1(x)
         #define NANO_UNUSED2_RELEASE(x, y) NANO_UNUSED2(x, y)
         #define NANO_UNUSED3_RELEASE(x, y, z) NANO_UNUSED3(x, y, z)
+        #define NANO_UNUSED4_RELEASE(x, y, z, u) NANO_UNUSED4(x, y, z, u)
 #endif
 
 // stringify a given variable

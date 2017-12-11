@@ -35,7 +35,7 @@ void plus4d_layer_t::output(tensor4d_cmaps_t idata, vector_cmap_t pdata, tensor4
         const auto count = odata.size<0>();
         assert(odata.dims() == cat_dims(count, odims()));
         assert(pdata.size() == psize());
-        NANO_UNUSED1_RELEASE(pdata);
+        NANO_UNUSED2_RELEASE(pdata, count);
 
         assert(m_fanin > 0);
         assert(idata.size() == static_cast<size_t>(m_fanin));
@@ -54,7 +54,7 @@ void plus4d_layer_t::ginput(tensor4d_maps_t idata, vector_cmap_t pdata, tensor4d
         const auto count = odata.size<0>();
         assert(odata.dims() == cat_dims(count, odims()));
         assert(pdata.size() == psize());
-        NANO_UNUSED1_RELEASE(pdata);
+        NANO_UNUSED2_RELEASE(pdata, count);
 
         assert(idata.size() == static_cast<size_t>(m_fanin));
         assert(idata[0].dims() == odata.dims());
@@ -71,7 +71,7 @@ void plus4d_layer_t::gparam(tensor4d_cmaps_t idata, vector_map_t pdata, tensor4d
         const auto count = odata.size<0>();
         assert(odata.dims() == cat_dims(count, odims()));
         assert(pdata.size() == psize());
-        NANO_UNUSED3_RELEASE(idata, pdata, odata);
+        NANO_UNUSED4_RELEASE(idata, pdata, odata, count);
 
         assert(m_fanin > 0);
         assert(idata.size() == static_cast<size_t>(m_fanin));

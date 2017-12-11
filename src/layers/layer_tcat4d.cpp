@@ -41,7 +41,7 @@ void tcat4d_layer_t::output(tensor4d_cmaps_t idata, vector_cmap_t pdata, tensor4
 
         assert(odata.dims() == cat_dims(count, odims()));
         assert(pdata.size() == psize());
-        NANO_UNUSED1_RELEASE(pdata);
+        NANO_UNUSED2_RELEASE(pdata, omaps);
 
         tensor_size_t imaps_offset = 0, odata_offset = 0;
         for (const auto& itensor : idata)
@@ -74,7 +74,7 @@ void tcat4d_layer_t::ginput(tensor4d_maps_t idata, vector_cmap_t pdata, tensor4d
 
         assert(odata.dims() == cat_dims(count, odims()));
         assert(pdata.size() == psize());
-        NANO_UNUSED1_RELEASE(pdata);
+        NANO_UNUSED2_RELEASE(pdata, omaps);
 
         tensor_size_t imaps_offset = 0, odata_offset = 0;
         for (const auto& itensor : idata)
@@ -104,5 +104,5 @@ void tcat4d_layer_t::gparam(tensor4d_cmaps_t idata, vector_map_t pdata, tensor4d
         assert(odata.dims() == cat_dims(count, odims()));
         assert(pdata.size() == psize());
         NANO_UNUSED1(idata);
-        NANO_UNUSED2_RELEASE(pdata, odata);
+        NANO_UNUSED3_RELEASE(pdata, odata, count);
 }
