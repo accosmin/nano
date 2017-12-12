@@ -1,5 +1,6 @@
 #include "model.h"
 #include "logger.h"
+#include <iostream>
 #include "digraph.h"
 #include "text/table.h"
 #include "io/ibstream.h"
@@ -701,7 +702,7 @@ void model_t::describe() const
         }
         table.delim();
         table.append() << "" << "" << "" << odims() << psize() << m_probe_output.kflops() << "";
-        log_info() << std::endl << table;
+        std::cout << table;
 }
 
 probes_t model_t::probes() const
