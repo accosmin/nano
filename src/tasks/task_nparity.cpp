@@ -52,8 +52,6 @@ bool nparity_task_t::populate()
 
                 add_chunk(bitset, hash);
                 add_sample(make_fold(0), i, target, label);
-
-                std::cout << "input = [" << bitset.vector().transpose() << "], target = " << target.transpose() << ", label = " << label << std::endl;
         }
 
         return true;
