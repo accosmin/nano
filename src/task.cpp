@@ -1,4 +1,3 @@
-#include <mutex>
 #include "tasks/task_mnist.h"
 #include "tasks/task_cifar10.h"
 #include "tasks/task_cifar100.h"
@@ -7,6 +6,7 @@
 #include "tasks/task_charset.h"
 #include "tasks/task_iris.h"
 #include "tasks/task_wine.h"
+#include "tasks/task_nparity.h"
 #include "logger.h"
 
 using namespace nano;
@@ -26,6 +26,7 @@ task_factory_t& nano::get_tasks()
                 manager.add<iris_task_t>("iris", "IRIS (iris flower classification)");
                 manager.add<wine_task_t>("wine", "WINE (wine classification)");
                 manager.add<charset_task_t>("synth-charset", "synthetic character classification");
+                manager.add<nparity_task_t>("synth-nparity", "synthetic n-parity binary classification");
         });
 
         return manager;

@@ -6,14 +6,14 @@
 namespace nano
 {
         ///
-        /// \brief synthetic task to classify characters
+        /// \brief synthetic task to classify characters.
         ///
         /// parameters:
         ///     type    - character set
         ///     irows   - sample size in pixels (rows)
         ///     icols   - sample size in pixels (columns)
         ///     color   - color mode
-        ///     count   - number of samples (training + validation)
+        ///     count   - number of samples (training + validation + test)
         ///
         class charset_task_t final : public mem_vision_task_t
         {

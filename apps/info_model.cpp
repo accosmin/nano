@@ -22,6 +22,9 @@ int main(int argc, const char *argv[])
                 "load model");
         model.describe();
 
+        // todo: print L2 stats per layer & per processing unit (aka neuron)
+        // todo: print correlation factors per layer (aka how correlated the processing units are per layer)
+
         // OK
         log_info() << done;
         return EXIT_SUCCESS;
