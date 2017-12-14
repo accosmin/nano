@@ -2,6 +2,7 @@
 #include "logger.h"
 #include "text/cmdline.h"
 #include "layers/builder.h"
+#include <fstream>
 
 int main(int argc, const char *argv[])
 {
@@ -17,16 +18,17 @@ int main(int argc, const char *argv[])
         }
 
         // parse the command line
-        cmdline_t cmdline("construct models");
-        cmdline.add("", "mlp",                  "construct a MLP (multi-layer perceptron) network");
-        cmdline.add("", "mlp-params",           "number of feature maps per affine layer (e.g. 128,256,128)");
-        cmdline.add("", "act-type",             "activation type " + join(activations), "act-snorm");
-        cmdline.add("", "imaps",                "number of input feature maps", 3);
-        cmdline.add("", "irows",                "number of input rows", 32);
-        cmdline.add("", "icols",                "number of input cols", 32);
-        cmdline.add("", "omaps",                "number of output feature maps", 10);
-        cmdline.add("", "orows",                "number of output rows", 1);
-        cmdline.add("", "ocols",                "number of output cols", 1);
+        cmdline_t cmdline("construct and export models using predefined architectures");
+        cmdline.add("", "mlp",          "construct a MLP (multi-layer perceptron) network");
+        cmdline.add("", "mlp-params",   "number of feature maps per affine layer (e.g. 128,256,128)");
+        cmdline.add("", "act-type",     "activation type " + join(activations), "act-snorm");
+        cmdline.add("", "imaps",        "number of input feature maps", 3);
+        cmdline.add("", "irows",        "number of input rows", 32);
+        cmdline.add("", "icols",        "number of input cols", 32);
+        cmdline.add("", "omaps",        "number of output feature maps", 10);
+        cmdline.add("", "orows",        "number of output rows", 1);
+        cmdline.add("", "ocols",        "number of output cols", 1);
+        cmdline.add("", "json",         "path where to save the model description (.json)");
 
         cmdline.process(argc, argv);
 
@@ -38,7 +40,8 @@ int main(int argc, const char *argv[])
         const auto cmd_orows = cmdline.get<tensor_size_t>("orows");
         const auto cmd_ocols = cmdline.get<tensor_size_t>("ocols");
 
-        if (!cmdline.has("mlp"))
+        if (    !cmdline.has("mlp") ||
+                !cmdline.has("json"))
         {
                 cmdline.usage();
         }
@@ -66,7 +69,19 @@ int main(int argc, const char *argv[])
         }
         model.describe();
 
-        // todo: save model description to json
+        // save model description to file
+        json_writer_t writer;
+        model.config(writer);
+
+        std::ofstream out(cmdline.get<string_t>("json"));
+        if (!out.is_open())
+        {
+                log_error() << "failed to open output file!";
+                return EXIT_FAILURE;
+        }
+
+        out << writer.str();
+        out.close();
 
         // OK
         log_info() << done;
