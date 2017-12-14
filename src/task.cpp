@@ -8,6 +8,7 @@
 #include "tasks/task_wine.h"
 #include "tasks/task_nparity.h"
 #include "logger.h"
+#include <mutex>
 
 using namespace nano;
 
