@@ -12,24 +12,9 @@ namespace nano
         {
         public:
 
-                enum class format
-                {
-                        compact,
-                        humanx4
-                };
-
-                ///
-                /// \brief constructor
-                ///
-                json_writer_t(const format fmt = format::compact) : m_format(fmt)
-                {
-                }
-
                 json_writer_t& name(const char* tag)
                 {
-                        quote(tag);
-                        m_str += ':';
-                        return *this;
+                        return quote(tag).append(':');
                 }
 
                 template <typename tvalue>
@@ -42,8 +27,7 @@ namespace nano
                         }
                         else
                         {
-                                m_str.append(to_string(val));
-                                return *this;
+                                return append(to_string(val));
                         }
                 }
 
@@ -60,27 +44,23 @@ namespace nano
                 template <typename tvalue>
                 json_writer_t& pair(const char* tag, const tvalue& val)
                 {
-                        return prefix().name(tag).value(val);
+                        return name(tag).value(val);
                 }
 
                 json_writer_t& next()
                 {
-                        m_str.append(1, ',');
-                        return newline();
+                        return append(',');
                 }
 
                 json_writer_t& null()
                 {
-                        m_str += "null";
-                        return *this;
+                        return append("null");
                 }
 
                 template <typename... tvalues>
                 json_writer_t& array(const tvalues&... vals)
                 {
-                        new_array();
-                        values(vals...);
-                        return end_array();
+                        return new_array().values(vals...).end_array();
                 }
 
                 json_writer_t& pairs()
@@ -102,16 +82,21 @@ namespace nano
                 template <typename... tvalues>
                 json_writer_t& object(const tvalues&... vals)
                 {
-                        new_object();
-                        pairs(vals...);
-                        return end_object();
+                        return new_object().pairs(vals...).end_object();
                 }
 
-                json_writer_t& new_array() { return keyword('[').newline(); }
-                json_writer_t& end_array() { return keyword(']').newline(); }
+                template <typename tstr>
+                json_writer_t& append(const tstr& str)
+                {
+                        m_str += str;
+                        return *this;
+                }
 
-                json_writer_t& new_object() { return newline().prefix().keyword('{').newline().increase_prefix(); }
-                json_writer_t& end_object() { return newline().keyword('}').decrease_prefix(); }
+                json_writer_t& new_array() { return append('['); }
+                json_writer_t& end_array() { return append(']'); }
+
+                json_writer_t& new_object() { return append('{'); }
+                json_writer_t& end_object() { return append('}'); }
 
                 ///
                 /// \brief returns the current JSON string
@@ -120,67 +105,21 @@ namespace nano
 
         private:
 
-                json_writer_t& newline()
-                {
-                        switch (m_format)
-                        {
-                        case format::compact:   return *this;
-                        default:                return keyword('\n');
-                        }
-                }
-
-                json_writer_t& prefix()
-                {
-                        switch (m_format)
-                        {
-                        case format::compact:   return *this;
-                        default:                m_str += m_prefix; return *this;
-                        }
-                }
-
-                json_writer_t& increase_prefix()
-                {
-                        switch (m_format)
-                        {
-                        case format::compact:   return *this;
-                        case format::humanx4:   m_prefix += "    "; return *this;
-                        default:                assert(false); return *this;
-                        }
-                }
-
-                json_writer_t& decrease_prefix()
-                {
-                        switch (m_format)
-                        {
-                        case format::compact:   return *this;
-                        case format::humanx4:   m_prefix.erase(m_prefix.size() - 4, 4); return *this;
-                        default:                assert(false); return *this;
-                        }
-                }
-
-                json_writer_t& keyword(const char tag)
-                {
-                        m_str += tag;
-                        return *this;
-                }
-
                 template <typename tstr>
                 json_writer_t& quote(const tstr& str)
                 {
-                        m_str += '\"';
-                        m_str += str;
-                        m_str += '\"';
-                        return *this;
+                        return append('\"').append(str).append('\"');
                 }
 
                 template <typename tvalue>
-                void values(const tvalue& val)
+                json_writer_t& values(const tvalue& val)
                 {
                         value(val);
+                        return *this;
                 }
 
                 template <typename tvalue, typename... tvalues>
-                void values(const tvalue& val, const tvalues&... vals)
+                json_writer_t& values(const tvalue& val, const tvalues&... vals)
                 {
                         value(val);
                         if (sizeof...(vals) > 0)
@@ -188,11 +127,10 @@ namespace nano
                                 next();
                         }
                         values(vals...);
+                        return *this;
                 }
 
                 // attributes
                 string_t        m_str;          ///< current JSON string
-                format          m_format;       ///< formatting options
-                string_t        m_prefix;       ///< current prefix given
         };
 }

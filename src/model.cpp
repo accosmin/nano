@@ -391,7 +391,7 @@ bool model_t::done()
                         return graph.connected(source, sink);
                 });
 
-                if (it == sources.end())
+                if (it == sources.end() && graph.vertices() > 1)
                 {
                         log_error() << "model: detected unreachable output node [" << m_nodes[sink].m_name << "]!";
                         clear();
@@ -406,7 +406,7 @@ bool model_t::done()
                         return graph.connected(source, sink);
                 });
 
-                if (it == sinks.end())
+                if (it == sinks.end() && graph.vertices() > 1)
                 {
                         log_error() << "model: detected unused input node [" << m_nodes[source].m_name << "]!";
                         clear();
@@ -433,7 +433,12 @@ bool model_t::config(const string_t& json)
 
 void model_t::config(json_writer_t& writer) const
 {
-        writer.new_object().name("nodes").new_array();
+        const auto prefix0 = "\n";
+        const auto prefix1 = "\n  ";
+        const auto prefix2 = "\n    ";
+        const auto prefix3 = "\n      ";
+
+        writer.new_object().append(prefix1).name("nodes").new_array();
         for (size_t i = 0; i < m_nodes.size(); ++ i)
         {
                 const auto& name = m_nodes[i].m_name;
@@ -441,16 +446,18 @@ void model_t::config(json_writer_t& writer) const
                 const auto& node = m_nodes[i].m_node;
 
                 writer.new_object();
-                        writer.pairs("name", name, "type", type).next();
-                        writer.name("config"); node->config(writer);
-                writer.end_object();
+                        writer.append(prefix3).pair("name", name).next();
+                        writer.append(prefix3).pair("type", type).next();
+                        writer.append(prefix3).name("config"); node->config(writer);
+                writer.append(prefix2).end_object();
                 if (i + 1 < m_nodes.size())
                 {
                         writer.next();
                 }
         }
-        writer.end_array().next();
-        writer.name("model").new_array();
+        writer.append(prefix1).end_array().next();
+
+        writer.append(prefix1).name("model").new_array();
         std::vector<std::pair<size_t, size_t>> edges;
         for (size_t dst = 0; dst < m_nodes.size(); ++ dst)
         {
@@ -466,13 +473,13 @@ void model_t::config(json_writer_t& writer) const
 
                 const auto& name1 = m_nodes[src].m_name;
                 const auto& name2 = m_nodes[dst].m_name;
-                writer.array(name1, name2);
+                writer.append(prefix3).array(name1, name2);
                 if (i + 1 < edges.size())
                 {
                         writer.next();
                 }
         }
-        writer.end_array().end_object();
+        writer.append(prefix1).end_array().append(prefix0).end_object();
 }
 
 bool model_t::save(const string_t& path) const

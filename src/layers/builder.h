@@ -151,6 +151,9 @@ namespace nano
                 }
 
                 add_node(model, "output", affine_node_name(), config_affine_node, omaps, orows, ocols);
-                model.connect(last_activation_name, "output");
+                if (!last_activation_name.empty())
+                {
+                        model.connect(last_activation_name, "output");
+                }
         }
 }

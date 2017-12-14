@@ -20,7 +20,7 @@ int main(int argc, const char *argv[])
         // parse the command line
         cmdline_t cmdline("construct and export models using predefined architectures");
         cmdline.add("", "mlp",          "construct a MLP (multi-layer perceptron) network");
-        cmdline.add("", "mlp-params",   "number of feature maps per affine layer (e.g. 128,256,128)");
+        cmdline.add("", "mlp-params",   "number of feature maps per affine layer (e.g. 128,256,128)", ",");
         cmdline.add("", "act-type",     "activation type " + join(activations), "act-snorm");
         cmdline.add("", "imaps",        "number of input feature maps", 3);
         cmdline.add("", "irows",        "number of input rows", 32);
@@ -54,7 +54,13 @@ int main(int argc, const char *argv[])
                 std::vector<tensor_size_t> cmd_mlp_params;
                 for (const auto& token : nano::split(cmdline.get<string_t>("mlp-params"), ","))
                 {
-                        cmd_mlp_params.push_back(from_string<tensor_size_t>(token));
+                        try
+                        {
+                                cmd_mlp_params.push_back(from_string<tensor_size_t>(token));
+                        }
+                        catch (std::exception&)
+                        {
+                        }
                 }
 
                 make_mlp(model, cmd_mlp_params, cmd_omaps, cmd_orows, cmd_ocols, cmd_act_type);
@@ -70,7 +76,7 @@ int main(int argc, const char *argv[])
         model.describe();
 
         // save model description to file
-        json_writer_t writer(json_writer_t::format::humanx4);
+        json_writer_t writer;
         model.config(writer);
 
         std::ofstream out(cmdline.get<string_t>("json"));
