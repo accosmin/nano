@@ -70,7 +70,7 @@ int main(int argc, const char *argv[])
         model.describe();
 
         // save model description to file
-        json_writer_t writer;
+        json_writer_t writer(json_writer_t::format::humanx4);
         model.config(writer);
 
         std::ofstream out(cmdline.get<string_t>("json"));
