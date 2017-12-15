@@ -107,6 +107,33 @@ namespace nano
         }
 
         ///
+        /// \brief adds an affine module to a computation graph.
+        ///     - a fully connected affine node followed by
+        ///     - a non-linearity node.
+        ///
+        template <typename tmodel>
+        void add_affine_module(tmodel& model,
+                const string_t& affine_name, const tensor_size_t maps, const tensor_size_t rows, const tensor_size_t cols,
+                const string_t& activation_name, const string_t& activation_type,
+                const string_t& previous_node_name)
+        {
+                // affine node: fully connected
+                add_node(model, affine_name, affine_node_name(), config_affine_node, maps, rows, cols);
+                if (!previous_node_name.empty())
+                {
+                        model.connect(previous_node_name, affine_name);
+                }
+
+                // activation node: non-linearity (if given)
+                if (!activation_name.empty())
+                {
+                        assert(is_activation_node(activation_type));
+                        add_node(model, activation_name, activation_type, config_empty_node);
+                        model.connect(affine_name, activation_name);
+                }
+        }
+
+        ///
         /// \brief create a MLP (multi-layer perceptron) network given
         /// \param affine_maps the number of outputs (aka feature maps) for each affine layer
         /// \param omaps the number of feature maps of the output layer
@@ -115,7 +142,7 @@ namespace nano
         /// \param activation_type the type of the activation layer inserted after each affine layer
         ///
         /// structure:
-        ///     affine0 -> activation0 -> affine1 -> activation1 -> ... -> activationN -> output
+        ///     aff0 -> act0 -> aff1 -> act1 -> aff2 -> act2 -> aff3 -> act3 -> ... -> actN -> out
         ///
         template <typename tmodel, typename tmaps>
         void make_mlp(tmodel& model, const tmaps& affine_maps,
@@ -124,36 +151,84 @@ namespace nano
         {
                 assert(is_activation_node(activation_type));
 
-                string_t last_affine_name;
-                string_t last_activation_name;
+                string_t prev_affine_name;
+                string_t prev_activation_name;
 
                 tensor_size_t n = 0;
                 for (const tensor_size_t maps : affine_maps)
                 {
-                        const string_t affine_name = "affine" + to_string(n);
-                        const string_t activation_name = "activation" + to_string(n);
+                        const string_t affine_name = "aff" + to_string(n);
+                        const string_t activation_name = "act" + to_string(n);
 
                         const tensor_size_t rows = 1;
                         const tensor_size_t cols = 1;
 
-                        add_node(model, affine_name, affine_node_name(), config_affine_node, maps, rows, cols);
-                        add_node(model, activation_name, activation_type, config_empty_node);
-                        model.connect(affine_name, activation_name);
-
-                        if (n > 0)
-                        {
-                                model.connect(last_activation_name, affine_name);
-                        }
+                        add_affine_module(model, affine_name, maps, rows, cols,
+                                activation_name, activation_type,
+                                prev_activation_name);
 
                         ++ n;
-                        last_affine_name = affine_name;
-                        last_activation_name = activation_name;
+                        prev_affine_name = affine_name;
+                        prev_activation_name = activation_name;
                 }
 
-                add_node(model, "output", affine_node_name(), config_affine_node, omaps, orows, ocols);
-                if (!last_activation_name.empty())
+                add_affine_module(model, "out", omaps, orows, ocols, string_t(), string_t(), prev_activation_name);
+        }
+
+        ///
+        /// \brief create a residual MLP (multi-layer perceptron) network given
+        /// \param affine_maps the number of outputs (aka feature maps) for each affine layer
+        /// \param omaps the number of feature maps of the output layer
+        /// \param orows the number of rows of the output layer
+        /// \param ocols the number of columns of the output layer
+        /// \param activation_type the type of the activation layer inserted after each affine layer
+        ///
+        /// structure:
+        ///     aff0 -> act0 -> aff1 ->  act1 -> aff2 ->  act2 -> aff3 ->  act3 -> ... ->  actN   -> out
+        ///                             +act0            +act1            +act2           +actN-1
+        ///
+        ///
+        template <typename tmodel, typename tmaps>
+        void make_residual_mlp(tmodel& model, const tmaps& affine_maps,
+                const tensor_size_t omaps, const tensor_size_t orows, const tensor_size_t ocols,
+                const string_t& activation_type)
+        {
+                assert(is_activation_node(activation_type));
+
+                string_t prev_affine_name;
+                string_t prev_activation_name, prev_prev_activation_name;
+
+                tensor_size_t n = 0;
+                for (const tensor_size_t maps : affine_maps)
                 {
-                        model.connect(last_activation_name, "output");
+                        const string_t affine_name = "aff" + to_string(n);
+                        const string_t activation_name = "act" + to_string(n);
+                        const string_t mix_plus4d_name = "add" + to_string(n);
+
+                        const string_t* prev_name = &prev_activation_name;
+                        if (!prev_prev_activation_name.empty())
+                        {
+                                // mix previous two affine modules
+                                add_node(model, mix_plus4d_name, mix_plus4d_node_name(), config_empty_node);
+                                model.connect(prev_activation_name, mix_plus4d_name);
+                                model.connect(prev_prev_activation_name, mix_plus4d_name);
+
+                                prev_name = &mix_plus4d_name;
+                        }
+
+                        const tensor_size_t rows = 1;
+                        const tensor_size_t cols = 1;
+
+                        add_affine_module(model, affine_name, maps, rows, cols,
+                                activation_name, activation_type,
+                                *prev_name);
+
+                        ++ n;
+                        prev_affine_name = affine_name;
+                        prev_prev_activation_name = prev_activation_name;
+                        prev_activation_name = activation_name;
                 }
+
+                add_affine_module(model, "out", omaps, orows, ocols, string_t(), string_t(), prev_activation_name);
         }
 }

@@ -20,6 +20,7 @@ int main(int argc, const char *argv[])
         // parse the command line
         cmdline_t cmdline("construct and export models using predefined architectures");
         cmdline.add("", "mlp",          "construct a MLP (multi-layer perceptron) network");
+        cmdline.add("", "res-mlp",      "construct a residual MLP (multi-layer perceptron) network");
         cmdline.add("", "mlp-params",   "number of feature maps per affine layer (e.g. 128,256,128)", ",");
         cmdline.add("", "act-type",     "activation type " + join(activations), "act-snorm");
         cmdline.add("", "imaps",        "number of input feature maps", 3);
@@ -40,7 +41,7 @@ int main(int argc, const char *argv[])
         const auto cmd_orows = cmdline.get<tensor_size_t>("orows");
         const auto cmd_ocols = cmdline.get<tensor_size_t>("ocols");
 
-        if (    !cmdline.has("mlp") ||
+        if (    (!cmdline.has("mlp") && !cmdline.has("res-mlp")) ||
                 !cmdline.has("json"))
         {
                 cmdline.usage();
@@ -49,10 +50,10 @@ int main(int argc, const char *argv[])
         // construct model
         model_t model;
 
-        if (cmdline.has("mlp"))
+        if (cmdline.has("mlp") || cmdline.has("res-mlp"))
         {
                 std::vector<tensor_size_t> cmd_mlp_params;
-                for (const auto& token : nano::split(cmdline.get<string_t>("mlp-params"), ","))
+                for (const auto& token : split(cmdline.get<string_t>("mlp-params"), ","))
                 {
                         try
                         {
@@ -63,7 +64,14 @@ int main(int argc, const char *argv[])
                         }
                 }
 
-                make_mlp(model, cmd_mlp_params, cmd_omaps, cmd_orows, cmd_ocols, cmd_act_type);
+                if (cmdline.has("mlp"))
+                {
+                        make_mlp(model, cmd_mlp_params, cmd_omaps, cmd_orows, cmd_ocols, cmd_act_type);
+                }
+                else if (cmdline.has("res-mlp"))
+                {
+                        make_residual_mlp(model, cmd_mlp_params, cmd_omaps, cmd_orows, cmd_ocols, cmd_act_type);
+                }
         }
 
         // check model
@@ -78,6 +86,8 @@ int main(int argc, const char *argv[])
         // save model description to file
         json_writer_t writer;
         model.config(writer);
+
+        log_info() << std::endl << writer.str();
 
         if (!nano::save_string(cmdline.get<string_t>("json"), writer.str()))
         {
