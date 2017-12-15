@@ -1,8 +1,8 @@
+#include "io/io.h"
 #include "model.h"
 #include "logger.h"
 #include "text/cmdline.h"
 #include "layers/builder.h"
-#include <fstream>
 
 int main(int argc, const char *argv[])
 {
@@ -79,15 +79,11 @@ int main(int argc, const char *argv[])
         json_writer_t writer;
         model.config(writer);
 
-        std::ofstream out(cmdline.get<string_t>("json"));
-        if (!out.is_open())
+        if (!nano::save_string(cmdline.get<string_t>("json"), writer.str()))
         {
                 log_error() << "failed to open output file!";
                 return EXIT_FAILURE;
         }
-
-        out << writer.str();
-        out.close();
 
         // OK
         log_info() << done;
