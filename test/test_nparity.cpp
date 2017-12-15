@@ -59,7 +59,7 @@ NANO_CASE(construction)
                                 }
                         }
 
-                        const auto expected_target = (ones % 2) ? neg_target() : pos_target();
+                        const auto expected_target = (ones % 2) ? pos_target() : neg_target();
                         NANO_CHECK_CLOSE(target(0), expected_target, epsilon0<scalar_t>());
                 }
         }

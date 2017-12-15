@@ -48,7 +48,7 @@ bool nparity_task_t::populate()
 
                 const auto hash = i;
                 const auto label = (ones % 2) ? "odd" : "even";
-                const auto target = class_target(ones % 2, 1);
+                const auto target = class_target(1 - (ones % 2), 1);
 
                 add_chunk(bitset, hash);
                 add_sample(make_fold(0), i, target, label);
