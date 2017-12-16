@@ -58,6 +58,10 @@ void check_conn(const digraph_t& g, const conn_t& conn)
                 {
                         const bool connected = std::find(conn.begin(), conn.end(), std::make_pair(u, v)) != conn.end();
                         NANO_CHECK_EQUAL(g.connected(u, v), connected);
+                        if (g.connected(u, v) != connected)
+                        {
+                                std::cout << u << "," << v << std::endl;
+                        }
                 }
         }
 }
@@ -371,6 +375,75 @@ NANO_CASE(graph6)
                 {color::black, cycle::none, 2u, 0u},
                 {color::black, cycle::none, 2u, 0u},
                 {color::black, cycle::none, 1u, 0u},
+                {color::black, cycle::none, 3u, 0u}
+        };
+        NANO_CHECK_EQUAL(g.visit(), infos);
+
+        NANO_CHECK(g.dag());
+        NANO_CHECK(g.tsort(g.tsort()));
+}
+
+NANO_CASE(graph7)
+{
+        // residual MLP with 4 affine layers before the output
+        digraph_t g(11);
+        g.edge(0u, 1u, 2u, 3u, 4u, 5u, 6u, 7u, 8u, 9u, 10u);
+        g.edge(1u, 4u, 7u);
+        NANO_CHECK_EQUAL(g.vertices(), 11u);
+
+        const conn_t conn =
+        {
+                {0u, 1u}, {0u, 2u}, {0u, 3u}, {0u, 4u}, {0u, 5u}, {0u, 6u}, {0u, 7u}, {0u, 8u}, {0u, 9u}, {0u, 10u},
+                {1u, 2u}, {1u, 3u}, {1u, 4u}, {1u, 5u}, {1u, 6u}, {1u, 7u}, {1u, 8u}, {1u, 9u}, {1u, 10u},
+                {2u, 3u}, {2u, 4u}, {2u, 5u}, {2u, 6u}, {2u, 7u}, {2u, 8u}, {2u, 9u}, {2u, 10u},
+                {3u, 4u}, {3u, 5u}, {3u, 6u}, {3u, 7u}, {3u, 8u}, {3u, 9u}, {3u, 10u},
+                {4u, 5u}, {4u, 6u}, {4u, 7u}, {4u, 8u}, {4u, 9u}, {4u, 10u},
+                {5u, 6u}, {5u, 7u}, {5u, 8u}, {5u, 9u}, {5u, 10u},
+                {6u, 7u}, {6u, 8u}, {6u, 9u}, {6u, 10u},
+                {7u, 8u}, {7u, 9u}, {7u, 10u},
+                {8u, 9u}, {8u, 10u},
+                {9u, 10u},
+        };
+        check_conn(g, conn);
+
+        NANO_CHECK_EQUAL(g.sources(), make_indices(0u));
+        NANO_CHECK_EQUAL(g.in(0), make_indices());
+        NANO_CHECK_EQUAL(g.in(1), make_indices(0u));
+        NANO_CHECK_EQUAL(g.in(2), make_indices(1u));
+        NANO_CHECK_EQUAL(g.in(3), make_indices(2u));
+        NANO_CHECK_EQUAL(g.in(4), make_indices(1u, 3u));
+        NANO_CHECK_EQUAL(g.in(5), make_indices(4u));
+        NANO_CHECK_EQUAL(g.in(6), make_indices(5u));
+        NANO_CHECK_EQUAL(g.in(7), make_indices(4u, 6u));
+        NANO_CHECK_EQUAL(g.in(8), make_indices(7u));
+        NANO_CHECK_EQUAL(g.in(9), make_indices(8u));
+        NANO_CHECK_EQUAL(g.in(10), make_indices(9u));
+
+        NANO_CHECK_EQUAL(g.sinks(), make_indices(10u));
+        NANO_CHECK_EQUAL(g.out(0), make_indices(1u));
+        NANO_CHECK_EQUAL(g.out(1), make_indices(2u, 4u));
+        NANO_CHECK_EQUAL(g.out(2), make_indices(3u));
+        NANO_CHECK_EQUAL(g.out(3), make_indices(4u));
+        NANO_CHECK_EQUAL(g.out(4), make_indices(5u, 7u));
+        NANO_CHECK_EQUAL(g.out(5), make_indices(6u));
+        NANO_CHECK_EQUAL(g.out(6), make_indices(7u));
+        NANO_CHECK_EQUAL(g.out(7), make_indices(8u));
+        NANO_CHECK_EQUAL(g.out(8), make_indices(9u));
+        NANO_CHECK_EQUAL(g.out(9), make_indices(10u));
+        NANO_CHECK_EQUAL(g.out(10), make_indices());
+
+        const infos_t infos =
+        {
+                {color::black, cycle::none, 0u, 0u},
+                {color::black, cycle::none, 1u, 0u},
+                {color::black, cycle::none, 1u, 0u},
+                {color::black, cycle::none, 2u, 0u},
+                {color::black, cycle::none, 2u, 0u},
+                {color::black, cycle::none, 1u, 0u},
+                {color::black, cycle::none, 3u, 0u},
+                {color::black, cycle::none, 3u, 0u},
+                {color::black, cycle::none, 3u, 0u},
+                {color::black, cycle::none, 3u, 0u},
                 {color::black, cycle::none, 3u, 0u}
         };
         NANO_CHECK_EQUAL(g.visit(), infos);
