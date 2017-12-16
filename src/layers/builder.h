@@ -196,24 +196,25 @@ namespace nano
                 assert(is_activation_node(activation_type));
 
                 string_t prev_affine_name;
-                string_t prev_activation_name, prev_prev_activation_name;
+                string_t prev_activation_name, prev_prev_activation_name, prev_plus4d_name;
 
                 tensor_size_t n = 0;
                 for (const tensor_size_t maps : affine_maps)
                 {
                         const string_t affine_name = "aff" + to_string(n);
                         const string_t activation_name = "act" + to_string(n);
-                        const string_t mix_plus4d_name = "add" + to_string(n);
+                        const string_t plus4d_name = "add" + to_string(n);
 
                         const string_t* prev_name = &prev_activation_name;
                         if (!prev_prev_activation_name.empty())
                         {
                                 // mix previous two affine modules
-                                add_node(model, mix_plus4d_name, mix_plus4d_node_name(), config_empty_node);
-                                model.connect(prev_activation_name, mix_plus4d_name);
-                                model.connect(prev_prev_activation_name, mix_plus4d_name);
+                                add_node(model, plus4d_name, mix_plus4d_node_name(), config_empty_node);
+                                model.connect(prev_activation_name, plus4d_name);
+                                model.connect(prev_plus4d_name.empty() ? prev_prev_activation_name : prev_plus4d_name, plus4d_name);
 
-                                prev_name = &mix_plus4d_name;
+                                prev_name = &plus4d_name;
+                                prev_plus4d_name = plus4d_name;
                         }
 
                         const tensor_size_t rows = 1;
