@@ -58,10 +58,6 @@ void check_conn(const digraph_t& g, const conn_t& conn)
                 {
                         const bool connected = std::find(conn.begin(), conn.end(), std::make_pair(u, v)) != conn.end();
                         NANO_CHECK_EQUAL(g.connected(u, v), connected);
-                        if (g.connected(u, v) != connected)
-                        {
-                                std::cout << u << "," << v << std::endl;
-                        }
                 }
         }
 }
@@ -436,15 +432,15 @@ NANO_CASE(graph7)
         {
                 {color::black, cycle::none, 0u, 0u},
                 {color::black, cycle::none, 1u, 0u},
-                {color::black, cycle::none, 1u, 0u},
                 {color::black, cycle::none, 2u, 0u},
-                {color::black, cycle::none, 2u, 0u},
-                {color::black, cycle::none, 1u, 0u},
                 {color::black, cycle::none, 3u, 0u},
-                {color::black, cycle::none, 3u, 0u},
-                {color::black, cycle::none, 3u, 0u},
-                {color::black, cycle::none, 3u, 0u},
-                {color::black, cycle::none, 3u, 0u}
+                {color::black, cycle::none, 4u, 0u},
+                {color::black, cycle::none, 5u, 0u},
+                {color::black, cycle::none, 6u, 0u},
+                {color::black, cycle::none, 7u, 0u},
+                {color::black, cycle::none, 8u, 0u},
+                {color::black, cycle::none, 9u, 0u},
+                {color::black, cycle::none, 10u, 0u}
         };
         NANO_CHECK_EQUAL(g.visit(), infos);
 
