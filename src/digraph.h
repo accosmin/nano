@@ -328,21 +328,20 @@ namespace nano
                         infos[u].m_color = color::black;
                         foreach_out(u, [&] (const size_t v)
                         {
-                                const auto uvdepth = infos[u].m_depth + 1;
                                 switch (infos[v].m_color)
                                 {
                                 case color::white:
-                                        infos[v].m_depth = std::max(infos[v].m_depth, uvdepth);
+                                        infos[v].m_depth = infos[u].m_depth + 1;
                                         q.push_back(v);
                                         break;
                                 default:
-                                        if (infos[v].m_depth < infos[u].m_depth || u == v)
+                                        if (infos[v].m_depth + 1 < infos[u].m_depth || u == v)
                                         {
                                                 infos[v].m_cycle = cycle::detected;
                                         }
                                         else
                                         {
-                                                infos[v].m_depth = std::max(infos[v].m_depth, uvdepth);
+                                                infos[v].m_depth = std::max(infos[v].m_depth, infos[u].m_depth + 1);
                                         }
                                         break;
                                 }

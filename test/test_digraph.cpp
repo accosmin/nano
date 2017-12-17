@@ -446,6 +446,7 @@ NANO_CASE(graph7)
 
         NANO_CHECK(g.dag());
         NANO_CHECK(g.tsort(g.tsort()));
+        NANO_CHECK(g.tsort(make_indices(0u, 1u, 2u, 3u, 4u, 5u, 6u, 7u, 8u, 9u, 10u)));
 }
 
 NANO_END_MODULE()
