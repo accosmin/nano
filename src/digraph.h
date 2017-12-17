@@ -348,6 +348,38 @@ namespace nano
                         });
                 }
 
+                // adjust depths to match when visiting from multiple paths
+                bool changed = true;
+                while (changed)
+                {
+                        changed = false;
+                        std::vector<color> colors(m_vertices, color::white);
+
+                        q.push_back(u);
+                        while (!q.empty())
+                        {
+                                u = q.back();
+                                q.pop_back();
+
+                                colors[u] = color::black;
+                                foreach_out(u, [&] (const size_t v)
+                                {
+                                        if (    infos[v].m_cycle != cycle::detected &&
+                                                infos[v].m_depth < infos[u].m_depth + 1)
+                                        {
+                                                infos[v].m_depth = infos[u].m_depth + 1;
+                                                changed = true;
+                                        }
+
+                                        switch (colors[v])
+                                        {
+                                        case color::white:      q.push_back(v); break;
+                                        default:                break;
+                                        }
+                                });
+                        }
+                }
+
                 return infos;
         }
 
