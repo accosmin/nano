@@ -175,6 +175,26 @@ namespace nano
         using activation_layer_sigm_t = activation_layer_t<activation_sigm_t>;
 
         ///
+        /// \brief x/(1+abs(x)) soft-sign activation function.
+        ///
+        struct activation_ssign_t
+        {
+                template <typename tiarray, typename toarray>
+                static void output(const tiarray& idata, toarray&& odata)
+                {
+                        odata = idata / (1 + idata.abs());
+                }
+
+                template <typename tiarray, typename toarray>
+                static void ginput(tiarray&& idata, const toarray& odata)
+                {
+                        idata = odata / (1 + idata.abs()).square();
+                }
+        };
+
+        using activation_layer_ssign_t = activation_layer_t<activation_ssign_t>;
+
+        ///
         /// \brief log(1 + exp(x)) soft-plus activation function.
         ///
         struct activation_splus_t
