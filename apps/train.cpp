@@ -1,6 +1,7 @@
 #include "loss.h"
 #include "task.h"
 #include "model.h"
+#include "io/io.h"
 #include <fstream>
 #include "trainer.h"
 #include "enhancer.h"
@@ -11,6 +12,28 @@
 #include "measure_and_log.h"
 
 using namespace nano;
+
+typename <typename tfactory, typename trobject = typename tfactory::trobject>
+static trobject load_object(const tfactory& factory, const cmdline_t& cmdline, const char* name, string_t& json)
+{
+        const auto json_path = cmdline.get<string_t>(name);
+
+        measure_critical_and_log(
+                [&] () { return io::load_string(json_path, json); },
+                strcat("load json <", json_path, ">"));
+
+        string_t id;
+        measure_critical_and_log(
+                [&] () { json_reader_t(json).object(name, id); return !id.empty(); },
+                strcat("load json name <", name, ">"));
+
+        trobject object;
+        measure_critical_and_log(
+                [&] () { return (object = factory.get(id)) != nullptr; },
+                strcat("load ", name, " <", id, ">"));
+
+        return object;
+}
 
 static bool save(const string_t& path, const probes_t& probes)
 {
@@ -40,53 +63,45 @@ int main(int argc, const char *argv[])
 {
         // parse the command line
         cmdline_t cmdline("train a model");
-        cmdline.add("", "task",                 join(get_tasks().ids()));
-        cmdline.add("", "task-params",          "task parameters (if any)", "-");
-        cmdline.add("", "task-fold",            "fold index to use for training", "0");
-        cmdline.add("", "model-params",         "filepath to load the model configuration from");
-        cmdline.add("", "model-file",           "filepath to save the model to");
-        cmdline.add("", "trainer",              join(get_trainers().ids()));
-        cmdline.add("", "trainer-params",       "trainer parameters (if any)");
-        cmdline.add("", "loss",                 join(get_losses().ids()));
-        cmdline.add("", "enhancer",             join(get_enhancers().ids()), "default");
-        cmdline.add("", "enhancer-params",      "task enhancer parameters (if any)", "-");
-        cmdline.add("", "threads",              "number of threads to use", physical_cpus());
+        cmdline.add("", "task",         join(get_tasks().ids()) + " (.json)");
+        cmdline.add("", "fold",         "fold index to use for training", "0");
+        cmdline.add("", "model",        "model configuration (.json)");
+        cmdline.add("", "trainer",      join(get_trainers().ids()) + " (.json)");
+        cmdline.add("", "loss",         join(get_losses().ids()));
+        cmdline.add("", "enhancer",     join(get_enhancers().ids()) + " (.json)");
+        cmdline.add("", "basepath",     "basepath where to save results (e.g. model, logs, history)");
+        cmdline.add("", "threads",      "number of threads to use", physical_cpus());
 
         cmdline.process(argc, argv);
 
         // check arguments and options
-        const auto cmd_task = cmdline.get<string_t>("task");
-        const auto cmd_task_params = cmdline.get<string_t>("task-params");
-        const auto cmd_task_fold = cmdline.get<size_t>("task-fold");
+        const auto cmd_fold = cmdline.get<size_t>("fold");
         const auto cmd_model_params = cmdline.get<string_t>("model-params");
         const auto cmd_model_file = cmdline.get<string_t>("model-file");
         const auto cmd_state_file = dirname(cmd_model_file) + stem(cmd_model_file) + ".state";
         const auto cmd_probe_file = dirname(cmd_model_file) + stem(cmd_model_file) + ".probes";
-        const auto cmd_trainer = cmdline.get<string_t>("trainer");
-        const auto cmd_trainer_params = cmdline.get<string_t>("trainer-params");
-        const auto cmd_loss = cmdline.get<string_t>("loss");
-        const auto cmd_enhancer = cmdline.get<string_t>("enhancer");
-        const auto cmd_enhancer_params = cmdline.get<string_t>("enhancer-params");
         const auto cmd_threads = cmdline.get<size_t>("threads");
 
-        // create task
-        const auto task = get_tasks().get(cmd_task);
+        // load task
+        string_t task_params;
+        const auto task = load_object(get_tasks(), cmdline, "task", task_params);
         task->config(cmd_task_params);
         measure_critical_and_log(
                 [&] () { return task->load(); },
                 "load task <" + cmd_task + ">");
-
-        // describe task
         describe(*task, cmd_task);
 
-        // create loss
-        const auto loss = get_losses().get(cmd_loss);
+        // load loss
+        string_t loss_params;
+        const auto loss = load_object(get_losses(), cmdline, "loss", loss_params);
 
-        // create enhancer
-        const auto enhancer = get_enhancers().get(cmd_enhancer);
-        enhancer->config(cmd_enhancer_params);
+        // load enhancer
+        string_t enhancer_params;
+        const auto enhancer = load_object(get_enhancers(), cmdline, "enhancer", enhancer_params);
+        enhancer->config(enhancer_params);
 
-        // create model
+        // load model
+        string_t
         model_t model;
         measure_critical_and_log(
                 [&] () { return model.config(cmd_model_params) && model.resize(task->idims(), task->odims()); },
