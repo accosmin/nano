@@ -31,8 +31,16 @@ class config:
                         "warp",
                         "noclass"]
 
-                        "noclass" : "--enhancer noclass"
-                }
+        # available activations
+        def activations(self):
+                return ["act-unit",
+                        "act-sin",      # [-1, +1]
+                        "act-tanh",     # [-1, +1]
+                        "act-splus",    # [ 0,  1]
+                        "act-snorm",    # [-1, +1]
+                        "act-ssign",    # [-1, +1]
+                        "act-sigm",     # [ 0,  1]
+                        "act-pwave"]    # [-1, +1]
 
         # available stochastic solvers
         def stoch_solvers(self):
@@ -71,7 +79,8 @@ class config:
                 return self.task("wine")
 
         def task_synth_charset(self, ctype = "digit", color = "rgb", irows = 16, icols = 16, count = 10000):
-                return json.dumps({"task": "synth-charset", "type": ctype, "color": color, "irows": irows, "icols": icols, "count": count})
+                return json.dumps({
+                        "task": "synth-charset", "type": ctype, "color": color, "irows": irows, "icols": icols, "count": count})
 
         def task_synth_nparity(self, n = 32, count = 10000):
                 return json.dumps({"task": "synth-nparity", "n": n, "count": count})
