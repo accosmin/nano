@@ -47,7 +47,7 @@ namespace nano
         NANO_PUBLIC bool is_done(const trainer_status);
 
         ///
-        /// \brief track the current/optimum model state
+        /// \brief track the current/optimum model state.
         ///
         class NANO_PUBLIC trainer_result_t
         {
@@ -64,12 +64,14 @@ namespace nano
                 trainer_status update(const trainer_result_t& other);
 
                 ///
-                /// \brief check if valid result
+                /// \brief check if a valid result
                 ///
                 bool valid() const
                 {
                         return !m_history.empty() && m_opt_params.size() > 0;
                 }
+
+                operator bool() const { return valid(); }
 
                 ///
                 /// \brief optimum training state

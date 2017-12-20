@@ -5,34 +5,23 @@
 #include <fstream>
 #include "trainer.h"
 #include "enhancer.h"
+#include "checkpoint.h"
 #include "text/table.h"
 #include "accumulator.h"
 #include "text/cmdline.h"
 #include "text/filesystem.h"
-#include "measure_and_log.h"
 
 using namespace nano;
 
-typename <typename tfactory, typename trobject = typename tfactory::trobject>
-static trobject load_object(const tfactory& factory, const cmdline_t& cmdline, const char* name, string_t& json)
+static bool load_json(const string_t& path, const char* name, string_t& json, string_t& id)
 {
-        const auto json_path = cmdline.get<string_t>(name);
+        if (!load_string(path, json) || json.empty())
+        {
+                return false;
+        }
 
-        measure_critical_and_log(
-                [&] () { return io::load_string(json_path, json); },
-                strcat("load json <", json_path, ">"));
-
-        string_t id;
-        measure_critical_and_log(
-                [&] () { json_reader_t(json).object(name, id); return !id.empty(); },
-                strcat("load json name <", name, ">"));
-
-        trobject object;
-        measure_critical_and_log(
-                [&] () { return (object = factory.get(id)) != nullptr; },
-                strcat("load ", name, " <", id, ">"));
-
-        return object;
+        json_reader_t(json).object(name, id);
+        return !id.empty();
 }
 
 static bool save(const string_t& path, const probes_t& probes)
@@ -75,82 +64,88 @@ int main(int argc, const char *argv[])
         cmdline.process(argc, argv);
 
         // check arguments and options
+        const auto cmd_task = cmdline.get<string_t>("task");
         const auto cmd_fold = cmdline.get<size_t>("fold");
-        const auto cmd_model_params = cmdline.get<string_t>("model-params");
-        const auto cmd_model_file = cmdline.get<string_t>("model-file");
-        const auto cmd_state_file = dirname(cmd_model_file) + stem(cmd_model_file) + ".state";
-        const auto cmd_probe_file = dirname(cmd_model_file) + stem(cmd_model_file) + ".probes";
+        const auto cmd_model = cmdline.get<string_t>("model");
+        const auto cmd_trainer = cmdline.get<string_t>("trainer");
+        const auto cmd_loss = cmdline.get<string_t>("loss");
+        const auto cmd_enhancer = cmdline.get<string_t>("enhancer");
+        const auto cmd_basepath = cmdline.get<string_t>("basepath");
         const auto cmd_threads = cmdline.get<size_t>("threads");
 
+        checkpoint_t checkpoint;
+        string_t params, id;
+
         // load task
-        string_t task_params;
-        const auto task = load_object(get_tasks(), cmdline, "task", task_params);
-        task->config(cmd_task_params);
-        measure_critical_and_log(
-                [&] () { return task->load(); },
-                "load task <" + cmd_task + ">");
-        describe(*task, cmd_task);
+        checkpoint.step(strcat("load task configuration from <", cmd_task, ">"));
+        checkpoint.critical(load_json(cmd_task, "task", params, id));
+
+        rtask_t task;
+        checkpoint.step(strcat("search task <", id, ">"));
+        checkpoint.critical((task = get_tasks().get(id)) != nullptr);
+
+        task->config(params);
+        checkpoint.step(strcat("load task <", id, ">"));
+        checkpoint.measure(task->load());
+
+        describe(*task, id);
 
         // load loss
-        string_t loss_params;
-        const auto loss = load_object(get_losses(), cmdline, "loss", loss_params);
+        checkpoint.step(strcat("load loss configuration from <", cmd_loss, ">"));
+        checkpoint.critical(load_json(cmd_loss, "loss", params, id));
+
+        rloss_t loss;
+        checkpoint.step(strcat("search loss <", id, ">"));
+        checkpoint.critical((loss = get_losses().get(id)) != nullptr);
 
         // load enhancer
-        string_t enhancer_params;
-        const auto enhancer = load_object(get_enhancers(), cmdline, "enhancer", enhancer_params);
-        enhancer->config(enhancer_params);
+        checkpoint.step(strcat("load enhancer configuration from <", cmd_enhancer, ">"));
+        checkpoint.critical(load_json(cmd_enhancer, "enhancer", params, id));
+
+        renhancer_t enhancer;
+        checkpoint.step(strcat("search enhancer <", id, ">"));
+        checkpoint.critical((enhancer = get_enhancers().get(id)) != nullptr);
+
+        enhancer->config(params);
+
+        // load trainer
+        checkpoint.step(strcat("load trainer configuration from <", cmd_trainer, ">"));
+        checkpoint.critical(load_json(cmd_trainer, "trainer", params, id));
+
+        rtrainer_t trainer;
+        checkpoint.step(strcat("search trainer <", id, ">"));
+        checkpoint.critical((trainer = get_trainers().get(id)) != nullptr);
+
+        trainer->config(params);
 
         // load model
-        string_t
+        checkpoint.step(strcat("load model configuration from <", cmd_model, ">"));
+        checkpoint.critical(load_string(cmd_model, params));
+
         model_t model;
-        measure_critical_and_log(
-                [&] () { return model.config(cmd_model_params) && model.resize(task->idims(), task->odims()); },
-                "configure model");
+        checkpoint.step("configure model");
+        checkpoint.measure(model.config(params) && model.resize(task->idims(), task->odims()));
+
         model.random();
         model.describe();
-
-        if (model != *task)
-        {
-                log_error() << "mis-matching model and task!";
-                return EXIT_FAILURE;
-        }
-
-        // create trainer
-        const auto trainer = get_trainers().get(cmd_trainer);
-        trainer->config(cmd_trainer_params);
+        assert(model == *task);
 
         // train model
         accumulator_t acc(model, *loss);
         acc.threads(cmd_threads);
 
-        // todo: setup the minibatch size
-        // todo: add --probes && --probes-detailed to print computation statistics
-
         trainer_result_t result;
-        measure_critical_and_log([&] ()
-                {
-                        result = trainer->train(*enhancer, *task, cmd_task_fold, acc);
-                        return result.valid();
-                },
-                "train model");
+        checkpoint.step("train model");
+        checkpoint.measure((result = trainer->train(*enhancer, *task, cmd_fold, acc)) == true);
 
-        if (result.valid())
-        {
-                model.params(result.optimum_params());
-        }
+        model.params(result.optimum_params());
 
-        // save the model & its optimization history
-        measure_critical_and_log(
-                [&] () { return model.save(cmd_model_file); },
-                "save model to <" + cmd_model_file + ">");
-
-        measure_critical_and_log(
-                [&] () { return save(cmd_state_file, result.optimum_states()); },
-                "save state to <" + cmd_state_file + ">");
-
-        measure_critical_and_log(
-                [&] () { return save(cmd_probe_file, acc.probes()); },
-                "save probes to <" + cmd_probe_file + ">");
+        // save the model
+        checkpoint.step("save model");
+        checkpoint.critical(
+                model.save(cmd_basepath + ".model") &&
+                save(cmd_basepath + ".state", result.optimum_states()) &&
+                save(cmd_basepath + ".probe", acc.probes()));
 
         // OK
         log_info() << done;

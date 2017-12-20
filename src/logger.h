@@ -6,7 +6,7 @@
 namespace nano
 {
         ///
-        /// \brief logging object that can use any std::ostream (standard streaming & text files)
+        /// \brief logging object that can use any std::ostream (standard streaming & text files).
         ///
         class NANO_PUBLIC logger_t
         {

@@ -7,7 +7,7 @@
 namespace nano
 {
         ///
-        /// \brief measure function call
+        /// \brief measure function call.
         ///
         template <typename toperator, typename tstring>
         void measure_and_log(const toperator& op, const tstring& message)
@@ -18,7 +18,7 @@ namespace nano
         }
 
         ///
-        /// \brief measure function call (and exit if any error)
+        /// \brief measure function call (and exit if any error).
         ///
         template <typename toperator, typename tstring>
         void measure_critical_and_log(const toperator& op, const tstring& message)
