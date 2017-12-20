@@ -2,17 +2,18 @@ import os
 import json
 
 class config:
-        def __init__(self):
+        def __init__(self, build_folder = "../build-release"):
                 # useful paths
                 homedir = os.path.expanduser('~')
-                self.expdir = homedir + "/experiments/results"
-                self.dbdir = homedir + "/experiments/databases"
+                self.expdir = os.path.join(homedir, "experiments", "results")
+                self.dbdir = os.path.join(homedir, "experiments", "databases")
 
                 crtpath = os.path.dirname(os.path.realpath(__file__))
-                self.app_info = crtpath + "/../build-release/apps/info"
-                self.app_train = crtpath + "/../build-release/apps/train"
-                self.app_stats = crtpath + "/../build-release/apps/stats"
-                self.app_tabulate = crtpath + "/../build-release/apps/tabulate"
+                self.app_info = os.path.join(crtpath, build_folder, "apps", "info")
+                self.app_train = os.path.join(crtpath, build_folder, "apps", "train")
+                self.app_stats = os.path.join(crtpath, build_folder, "apps", "stats")
+                self.app_builder = os.path.join(crtpath, build_folder, "apps", "builder")
+                self.app_tabulate = os.path.join(crtpath, build_folder, "apps", "tabulate")
 
         # available losses
         def losses(self):
@@ -52,15 +53,27 @@ class config:
         def batch_solvers(self):
                 return ["gd", "cgd", "lbfgs"]
 
-        # configure stochastic trainer
+        # configure stochastic trainers
         def trainer_stoch(self, solver, epochs = 100, patience = 32, epsilon = 1e-6, batch = 32):
+                assert(solver in self.stoch_solvers())
                 return json.dumps({
                         "solver": solver, "epochs": epochs, "patience": patience, "epsilon": epsilon, "batch": batch})
 
-        # configure batch trainer
+        # configure batch trainers
         def trainer_batch(self, solver, epochs = 100, patience = 32, epsilon = 1e-6):
+                assert(solver in self.batch_solvers())
                 return json.dumps({
                         "solver": solver, "epochs": epochs, "patience": patience, "epsilon": epsilon})
+
+        # configure losses
+        def loss(self, loss):
+                assert(loss in self.losses())
+                return json.dumps({"loss": loss})
+
+        # configure enhancers
+        def enhancer(self, enhancer):
+                assert(enhancer in self.enhancers())
+                return json.dumps({"enhancer": enhancer})
 
         # configure tasks
         def task(self, name):

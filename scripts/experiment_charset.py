@@ -11,35 +11,42 @@ exp = experiment.experiment(
         trials = 10)
 
 # loss functions
-exp.add_loss("classnll")
+exp.add_loss("classnll", cfg.loss("classnll"))
 
 # enhancers
-exp.add_enhancer("default")
+exp.add_enhancer("default", cfg.enhancer("default"))
 
 # trainers
-batch_params = "epochs=100,patience=32,epsilon=1e-6"
-stoch_params = "epochs=100,patience=32,epsilon=1e-6,batch=32"
+batch = 32
+epochs = 100
+patience = 32
+epsilon = 1e-6
 
-exp.add_trainer("batch_gd", batch_params)
-exp.add_trainer("batch_cgd", batch_params)
-exp.add_trainer("batch_lbfgs", batch_params)
+exp.add_trainer("batch_gd", cfg.batch_trainer("gd", epochs=epochs, patience=patience, epsilon=epsilon))
+exp.add_trainer("batch_cgd", cfg.batch_trainer("cgd", epochs=epochs, patience=patience, epsilon=epsilon))
+exp.add_trainer("batch_lbfgs", cfg.batch_trainer("lbfgs", epochs=epochs, patience=patience, epsilon=epsilon))
 
-exp.add_trainer("stoch_ag", stoch_params)
-exp.add_trainer("stoch_agfr", stoch_params)
-exp.add_trainer("stoch_aggr", stoch_params)
+exp.add_trainer("stoch_ag", cfg.batch_trainer("ag", epochs=epochs, patience=patience, epsilon=epsilon, batch=batch))
+exp.add_trainer("stoch_agfr", cfg.batch_trainer("agfr", epochs=epochs, patience=patience, epsilon=epsilon, batch=batch))
+exp.add_trainer("stoch_aggr", cfg.batch_trainer("aggr", epochs=epochs, patience=patience, epsilon=epsilon, batch=batch))
 
-exp.add_trainer("stoch_sg", stoch_params)
-exp.add_trainer("stoch_sgm", stoch_params)
-exp.add_trainer("stoch_ngd", stoch_params)
-exp.add_trainer("stoch_asgd", stoch_params)
-exp.add_trainer("stoch_svrg", stoch_params)
-exp.add_trainer("stoch_rmsprop", stoch_params)
+exp.add_trainer("stoch_sg", cfg.batch_trainer("sg", epochs=epochs, patience=patience, epsilon=epsilon, batch=batch))
+exp.add_trainer("stoch_sgm", cfg.batch_trainer("sgm", epochs=epochs, patience=patience, epsilon=epsilon, batch=batch))
+exp.add_trainer("stoch_ngd", cfg.batch_trainer("ngd", epochs=epochs, patience=patience, epsilon=epsilon, batch=batch))
+exp.add_trainer("stoch_asgd", cfg.batch_trainer("asgd", epochs=epochs, patience=patience, epsilon=epsilon, batch=batch))
+exp.add_trainer("stoch_svrg", cfg.batch_trainer("svrg", epochs=epochs, patience=patience, epsilon=epsilon, batch=batch))
+exp.add_trainer("stoch_rmsprop", cfg.batch_trainer("rmsprop", epochs=epochs, patience=patience, epsilon=epsilon, batch=batch))
 
-exp.add_trainer("stoch_adam", stoch_params)
-exp.add_trainer("stoch_adagrad", stoch_params)
-exp.add_trainer("stoch_adadelta", stoch_params)
+exp.add_trainer("stoch_adam", cfg.batch_trainer("adam", epochs=epochs, patience=patience, epsilon=epsilon, batch=batch))
+exp.add_trainer("stoch_adagrad", cfg.batch_trainer("adagrad", epochs=epochs, patience=patience, epsilon=epsilon, batch=batch))
+exp.add_trainer("stoch_adadelta", cfg.batch_trainer("adadelta", epochs=epochs, patience=patience, epsilon=epsilon, batch=batch))
 
 # models
+
+todo: construct models here
+todo: experiment.py: save configurations (json) to file
+todo: experiment.py: properly call trainer with these json files
+
 mlp0 = "--model forward-network --model-params "
 mlp1 = mlp0 + "affine:dims=128;act-snorm;"
 mlp2 = mlp1 + "affine:dims=64;act-snorm;"
