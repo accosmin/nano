@@ -213,30 +213,60 @@ NANO_CASE(evaluate)
         std::remove(path.c_str());
 }
 
-NANO_CASE(make_mlps)
+NANO_CASE(make_mlp0)
 {
-        using tensor_sizes_t = std::vector<tensor_size_t>;
-
-        for (const auto layers : {tensor_sizes_t{}, tensor_sizes_t{32}, tensor_sizes_t{32, 64}})
-        {
-                model_t model;
-                NANO_CHECK(make_mlp(model, layers, 3, 13, 11, "act-snorm"));
-                NANO_CHECK(model.done());
-                NANO_CHECK(model.resize({3, 32, 32}, {3, 13, 11}));
-        }
+        model_t model;
+        NANO_CHECK(make_mlp(model, {}, 3, 13, 11, "act-snorm"));
+        NANO_REQUIRE(model.done());
+        NANO_CHECK(model.resize({3, 32, 32}, {3, 13, 11}));
 }
 
-NANO_CASE(make_residual_mlps)
+NANO_CASE(make_mlp1)
 {
-        using tensor_sizes_t = std::vector<tensor_size_t>;
+        model_t model;
+        NANO_CHECK(make_mlp(model, {32}, 3, 13, 11, "act-snorm"));
+        NANO_REQUIRE(model.done());
+        NANO_CHECK(model.resize({3, 32, 32}, {3, 13, 11}));
+}
 
-        for (const auto layers : {tensor_sizes_t{128, 128, 128}, tensor_sizes_t{128, 128, 128, 128}})
-        {
-                model_t model;
-                NANO_CHECK(make_residual_mlp(model, layers, 3, 13, 11, "act-snorm"));
-                NANO_CHECK(model.done());
-                NANO_CHECK(model.resize({3, 32, 32}, {3, 13, 11}));
-        }
+NANO_CASE(make_mlp2)
+{
+        model_t model;
+        NANO_CHECK(make_mlp(model, {32, 64}, 3, 13, 11, "act-snorm"));
+        NANO_REQUIRE(model.done());
+        NANO_CHECK(model.resize({3, 32, 32}, {3, 13, 11}));
+}
+
+NANO_CASE(make_cnn1_mlp0)
+{
+        model_t model;
+        NANO_CHECK(make_cnn(model, {{32, 7, 7, 1, 1, 1}}, {}, 3, 13, 11, "act-snorm"));
+        NANO_REQUIRE(model.done());
+        NANO_CHECK(model.resize({3, 32, 32}, {3, 13, 11}));
+}
+
+NANO_CASE(make_cnn1_mlp1)
+{
+        model_t model;
+        NANO_CHECK(make_cnn(model, {{32, 7, 7, 1, 1, 1}}, {23}, 3, 13, 11, "act-snorm"));
+        NANO_REQUIRE(model.done());
+        NANO_CHECK(model.resize({3, 32, 32}, {3, 13, 11}));
+}
+
+NANO_CASE(make_cnn2_mlp1)
+{
+        model_t model;
+        NANO_CHECK(make_cnn(model, {{32, 7, 7, 1, 1, 1}, {42, 5, 5, 2, 1, 2}}, {23}, 3, 13, 11, "act-snorm"));
+        NANO_REQUIRE(model.done());
+        NANO_CHECK(model.resize({3, 32, 32}, {3, 13, 11}));
+}
+
+NANO_CASE(make_residual_mlp4)
+{
+        model_t model;
+        NANO_CHECK(make_residual_mlp(model, {128, 128, 128, 128}, 3, 13, 11, "act-snorm"));
+        NANO_REQUIRE(model.done());
+        NANO_CHECK(model.resize({3, 32, 32}, {3, 13, 11}));
 }
 
 NANO_END_MODULE()

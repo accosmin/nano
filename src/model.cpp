@@ -120,7 +120,7 @@ bool model_t::add(const string_t& name, const string_t& type, const string_t& js
 
 bool model_t::connect(const string_t& name1, const string_t& name2)
 {
-        log_info() << "model: connecting nodes " << name1 << " -> " << name2 << "...";
+        log_info() << "model: connecting nodes [" << name1 << "] -> [" << name2 << "]...";
 
         const auto src = find_node(name1);
         if (src == string_t::npos)
