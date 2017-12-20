@@ -213,4 +213,30 @@ NANO_CASE(evaluate)
         std::remove(path.c_str());
 }
 
+NANO_CASE(make_mlps)
+{
+        using tensor_sizes_t = std::vector<tensor_size_t>;
+
+        for (const auto layers : {tensor_sizes_t{}, tensor_sizes_t{32}, tensor_sizes_t{32, 64}})
+        {
+                model_t model;
+                NANO_CHECK(make_mlp(model, layers, 3, 13, 11, "act-snorm"));
+                NANO_CHECK(model.done());
+                NANO_CHECK(model.resize({3, 32, 32}, {3, 13, 11}));
+        }
+}
+
+NANO_CASE(make_residual_mlps)
+{
+        using tensor_sizes_t = std::vector<tensor_size_t>;
+
+        for (const auto layers : {tensor_sizes_t{128, 128, 128}, tensor_sizes_t{128, 128, 128, 128}})
+        {
+                model_t model;
+                NANO_CHECK(make_residual_mlp(model, layers, 3, 13, 11, "act-snorm"));
+                NANO_CHECK(model.done());
+                NANO_CHECK(model.resize({3, 32, 32}, {3, 13, 11}));
+        }
+}
+
 NANO_END_MODULE()

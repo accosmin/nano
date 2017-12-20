@@ -107,30 +107,39 @@ namespace nano
         }
 
         ///
-        /// \brief adds an affine module to a computation graph.
+        /// \brief adds an affine module to a computation graph:
         ///     - a fully connected affine node followed by
-        ///     - a non-linearity node.
+        ///     - a non-linearity node (if given).
         ///
         template <typename tmodel>
-        void add_affine_module(tmodel& model,
+        bool add_affine_module(tmodel& model,
                 const string_t& affine_name, const tensor_size_t maps, const tensor_size_t rows, const tensor_size_t cols,
                 const string_t& activation_name, const string_t& activation_type,
-                const string_t& previous_node_name)
+                const string_t& previous_name)
         {
-                // affine node: fully connected
-                add_node(model, affine_name, affine_node_name(), config_affine_node, maps, rows, cols);
-                if (!previous_node_name.empty())
-                {
-                        model.connect(previous_node_name, affine_name);
-                }
+                const auto has_activation = !activation_name.empty();
+                const auto has_previous = !previous_name.empty();
 
-                // activation node: non-linearity (if given)
-                if (!activation_name.empty())
-                {
-                        assert(is_activation_node(activation_type));
-                        add_node(model, activation_name, activation_type, config_empty_node);
-                        model.connect(affine_name, activation_name);
-                }
+                assert(!has_activation || is_activation_node(activation_type));
+
+                return  add_node(model, affine_name, affine_node_name(), config_affine_node, maps, rows, cols) &&
+                        (!has_activation || add_node(model, activation_name, activation_type, config_empty_node)) &&
+                        (!has_activation || model.connect(affine_name, activation_name)) &&
+                        (!has_previous || model.connect(previous_name, affine_name));
+        }
+
+        ///
+        /// \brief adds a plus mixing module to a computation graph:
+        ///     - a node that sums two input nodes
+        ///
+        template <typename tmodel>
+        bool add_plus4d_module(tmodel& model,
+                const string_t& plus4d_name,
+                const string_t& input1_name, const string_t& input2_name)
+        {
+                return  add_node(model, plus4d_name, mix_plus4d_node_name(), config_empty_node) &&
+                        model.connect(input1_name, plus4d_name) &&
+                        model.connect(input2_name, plus4d_name);
         }
 
         ///
@@ -145,7 +154,7 @@ namespace nano
         ///     aff0 -> act0 -> aff1 -> act1 -> aff2 -> act2 -> aff3 -> act3 -> ... -> actN -> out
         ///
         template <typename tmodel, typename tmaps>
-        void make_mlp(tmodel& model, const tmaps& affine_maps,
+        bool make_mlp(tmodel& model, const tmaps& affine_maps,
                 const tensor_size_t omaps, const tensor_size_t orows, const tensor_size_t ocols,
                 const string_t& activation_type)
         {
@@ -154,6 +163,7 @@ namespace nano
                 string_t prev_affine_name;
                 string_t prev_activation_name;
 
+                bool ok = true;
                 tensor_size_t n = 0;
                 for (const tensor_size_t maps : affine_maps)
                 {
@@ -163,16 +173,21 @@ namespace nano
                         const tensor_size_t rows = 1;
                         const tensor_size_t cols = 1;
 
-                        add_affine_module(model, affine_name, maps, rows, cols,
+                        if (!(ok = add_affine_module(
+                                model, affine_name, maps, rows, cols,
                                 activation_name, activation_type,
-                                prev_activation_name);
+                                prev_activation_name)))
+                        {
+                                break;
+                        }
 
                         ++ n;
                         prev_affine_name = affine_name;
                         prev_activation_name = activation_name;
                 }
 
-                add_affine_module(model, "out", omaps, orows, ocols, string_t(), string_t(), prev_activation_name);
+                return  ok &&
+                        add_affine_module(model, "out", omaps, orows, ocols, string_t(), string_t(), prev_activation_name);
         }
 
         ///
@@ -189,7 +204,7 @@ namespace nano
         ///
         ///
         template <typename tmodel, typename tmaps>
-        void make_residual_mlp(tmodel& model, const tmaps& affine_maps,
+        bool make_residual_mlp(tmodel& model, const tmaps& affine_maps,
                 const tensor_size_t omaps, const tensor_size_t orows, const tensor_size_t ocols,
                 const string_t& activation_type)
         {
@@ -198,6 +213,7 @@ namespace nano
                 string_t prev_affine_name;
                 string_t prev_activation_name, prev_prev_activation_name, prev_plus4d_name;
 
+                bool ok = true;
                 tensor_size_t n = 0;
                 for (const tensor_size_t maps : affine_maps)
                 {
@@ -209,9 +225,12 @@ namespace nano
                         if (!prev_prev_activation_name.empty())
                         {
                                 // mix previous two affine modules
-                                add_node(model, plus4d_name, mix_plus4d_node_name(), config_empty_node);
-                                model.connect(prev_activation_name, plus4d_name);
-                                model.connect(prev_plus4d_name.empty() ? prev_prev_activation_name : prev_plus4d_name, plus4d_name);
+                                if (!(ok = add_plus4d_module(
+                                        model, plus4d_name, prev_activation_name,
+                                        prev_plus4d_name.empty() ? prev_prev_activation_name : prev_plus4d_name)))
+                                {
+                                        break;
+                                }
 
                                 prev_name = &plus4d_name;
                                 prev_plus4d_name = plus4d_name;
@@ -220,9 +239,13 @@ namespace nano
                         const tensor_size_t rows = 1;
                         const tensor_size_t cols = 1;
 
-                        add_affine_module(model, affine_name, maps, rows, cols,
+                        if (!(ok = add_affine_module(
+                                model, affine_name, maps, rows, cols,
                                 activation_name, activation_type,
-                                *prev_name);
+                                *prev_name)))
+                        {
+                                break;
+                        }
 
                         ++ n;
                         prev_affine_name = affine_name;
@@ -230,6 +253,7 @@ namespace nano
                         prev_activation_name = activation_name;
                 }
 
-                add_affine_module(model, "out", omaps, orows, ocols, string_t(), string_t(), prev_activation_name);
+                return  ok &&
+                        add_affine_module(model, "out", omaps, orows, ocols, string_t(), string_t(), prev_activation_name);
         }
 }
