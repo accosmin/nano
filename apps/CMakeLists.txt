@@ -11,14 +11,14 @@ make_app(benchmark_functions.cpp nano)
 
 make_app(info.cpp nano)
 make_app(info_mat5.cpp nano)
-make_app(info_task.cpp nano)
-make_app(info_model.cpp nano)
+#make_app(info_task.cpp nano)
+#make_app(info_model.cpp nano)
 make_app(info_archive.cpp nano)
-make_app(info_enhancer.cpp nano)
+#make_app(info_enhancer.cpp nano)
 
 make_app(train.cpp nano)
 make_app(builder.cpp nano)
-make_app(evaluate.cpp nano)
+#make_app(evaluate.cpp nano)
 
 make_app(embed.cpp nano)
 make_app(stats.cpp "")
@@ -28,12 +28,12 @@ make_app(tabulate.cpp nano)
 set(programs
         info
         info_mat5
-        info_task
-        info_model
+        #info_task
+        #info_model
         info_archive
-        info_enhancer
+        #info_enhancer
         train
-        evaluate
+        #evaluate
         embed
         stats
         tabulate)

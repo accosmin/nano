@@ -1,7 +1,7 @@
 #include "enhancer.h"
+#include "checkpoint.h"
 #include "text/cmdline.h"
 #include "math/numeric.h"
-#include "measure_and_log.h"
 #include "vision/image_grid.h"
 
 using namespace nano;

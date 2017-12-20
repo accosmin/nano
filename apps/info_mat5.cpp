@@ -1,7 +1,7 @@
 #include "stringi.h"
 #include "io/mat5.h"
+#include "checkpoint.h"
 #include "text/cmdline.h"
-#include "measure_and_log.h"
 
 int main(int argc, const char *argv[])
 {
@@ -33,9 +33,9 @@ int main(int argc, const char *argv[])
         };
 
         // load file
-        measure_critical_and_log(
-                [&] () { return nano::load_mat5(cmd_input, hcallback, scallback, ecallback); },
-                "load mat5 <" + cmd_input + ">");
+        checkpoint_t checkpoint;
+        checkpoint.step(strcat("load mat5 from <", cmd_input, ">"));
+        checkpoint.measure(load_mat5(cmd_input, hcallback, scallback, ecallback));
 
         // OK
         log_info() << done;

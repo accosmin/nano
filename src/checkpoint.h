@@ -19,6 +19,9 @@ namespace nano
                         m_timer.reset();
                 }
 
+                ///
+                /// \brief check if a critical step failed
+                ///
                 void critical(const bool ok) const
                 {
                         if (ok)
@@ -32,11 +35,17 @@ namespace nano
                         }
                 }
 
+                ///
+                /// \brief measure a non-critical step
+                ///
                 void measure() const
                 {
                         log_info() << m_step_name << " [" << m_timer.elapsed() << "].";
                 }
 
+                ///
+                /// \brief measure a critical step (exit if failed)
+                ///
                 void measure(const bool ok) const
                 {
                         if (ok)
