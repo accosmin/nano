@@ -1,4 +1,6 @@
+#include "math/random.h"
 #include "layer_conv3d.h"
+#include "tensor/numeric.h"
 
 using namespace nano;
 
@@ -36,6 +38,21 @@ bool conv3d_layer_t::resize(const tensor3d_dims_t& idims)
 
         m_kernel = conv4d_t{m_params};
         return true;
+}
+
+void conv3d_layer_t::random(vector_map_t pdata) const
+{
+        assert(pdata.size() == psize());
+
+        const auto fanin = static_cast<scalar_t>(imaps() * m_params.krows() * m_params.kcols() / kconn());
+        const auto kmin = -std::sqrt(1 / (1 + fanin));
+        const auto kmax = +std::sqrt(1 / (1 + fanin));
+
+        const auto bmin = scalar_t(-0.1);
+        const auto bmax = scalar_t(+0.1);
+
+        nano::set_random(make_rng<scalar_t>(kmin, kmax), kdata(pdata));
+        nano::set_random(make_rng<scalar_t>(bmin, bmax), bdata(pdata));
 }
 
 void conv3d_layer_t::output(tensor4d_cmaps_t idata, vector_cmap_t pdata, tensor4d_map_t odata)

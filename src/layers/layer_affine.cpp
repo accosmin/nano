@@ -1,4 +1,6 @@
+#include "math/random.h"
 #include "layer_affine.h"
+#include "tensor/numeric.h"
 
 using namespace nano;
 
@@ -34,6 +36,21 @@ bool affine_layer_t::resize(const tensor3d_dims_t& idims)
 
         m_kernel = affine4d_t{m_params};
         return true;
+}
+
+void affine_layer_t::random(vector_map_t pdata) const
+{
+        assert(pdata.size() == psize());
+
+        const auto fanin = static_cast<scalar_t>(m_params.isize());
+        const auto wmin = -std::sqrt(1 / (1 + fanin));
+        const auto wmax = +std::sqrt(1 / (1 + fanin));
+
+        const auto bmin = scalar_t(-0.1);
+        const auto bmax = scalar_t(+0.1);
+
+        nano::set_random(make_rng<scalar_t>(wmin, wmax), wdata(pdata));
+        nano::set_random(make_rng<scalar_t>(bmin, bmax), bdata(pdata));
 }
 
 void affine_layer_t::output(tensor4d_cmaps_t idata, vector_cmap_t pdata, tensor4d_map_t odata)

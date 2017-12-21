@@ -49,9 +49,9 @@ namespace nano
                 virtual void gparam(tensor4d_cmaps_t idata, vector_map_t pdata, tensor4d_cmap_t odata) = 0;
 
                 ///
-                /// \brief number of inputs per processing unit (e.g. neuron, convolution kernel)
+                /// \brief set parameters to random values
                 ///
-                virtual tensor_size_t fanin() const = 0;
+                virtual void random(vector_map_t pdata) const = 0;
 
                 ///
                 /// \brief returns the input/output/parameters dimensions

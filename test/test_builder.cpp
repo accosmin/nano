@@ -24,7 +24,6 @@ NANO_CASE(affine)
         NANO_CHECK(layer->resize({idims}));
         NANO_CHECK_EQUAL(layer->odims(), odims);
         NANO_CHECK_EQUAL(layer->psize(), param.psize());
-        NANO_CHECK_EQUAL(layer->fanin(), param.isize());
 }
 
 NANO_CASE(conv3d)
@@ -50,7 +49,6 @@ NANO_CASE(conv3d)
                 NANO_CHECK(layer->resize({idims}));
                 NANO_CHECK_EQUAL(layer->odims(), param.odims());
                 NANO_CHECK_EQUAL(layer->psize(), param.psize());
-                NANO_CHECK_EQUAL(layer->fanin(), param.imaps() * krows * kcols / kconn);
         }
 }
 
@@ -72,7 +70,6 @@ NANO_CASE(norm3d)
                 NANO_CHECK(layer->resize({idims}));
                 NANO_CHECK_EQUAL(layer->odims(), idims);
                 NANO_CHECK_EQUAL(layer->psize(), 0);
-                NANO_CHECK_EQUAL(layer->fanin(), 1);
         }
 }
 
@@ -89,7 +86,6 @@ NANO_CASE(activation)
                         NANO_CHECK(layer->resize({idims}));
                         NANO_CHECK_EQUAL(layer->odims(), idims);
                         NANO_CHECK_EQUAL(layer->psize(), 0);
-                        NANO_CHECK_EQUAL(layer->fanin(), 1);
                 }
         }
 }
@@ -105,7 +101,6 @@ NANO_CASE(mix-plus4d)
         NANO_CHECK(layer->resize({idim1, idim2, idim3}));
         NANO_CHECK_EQUAL(layer->odims(), idim1);
         NANO_CHECK_EQUAL(layer->psize(), 0);
-        NANO_CHECK_EQUAL(layer->fanin(), 3);
 }
 
 NANO_CASE(mix-tcat4d)
@@ -119,7 +114,6 @@ NANO_CASE(mix-tcat4d)
         NANO_CHECK(layer->resize({idim1, idim2, idim3}));
         NANO_CHECK_EQUAL(layer->odims(), make_dims(9, 13, 11));
         NANO_CHECK_EQUAL(layer->psize(), 0);
-        NANO_CHECK_EQUAL(layer->fanin(), 1);
 }
 
 NANO_END_MODULE()

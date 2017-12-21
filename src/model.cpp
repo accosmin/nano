@@ -5,7 +5,6 @@
 #include "text/table.h"
 #include "io/ibstream.h"
 #include "io/obstream.h"
-#include "math/random.h"
 #include "math/numeric.h"
 #include "tensor/numeric.h"
 #include "text/algorithm.h"
@@ -524,10 +523,7 @@ void model_t::random()
         {
                 if (cnode.m_node->psize() > 0)
                 {
-                        const auto div = static_cast<scalar_t>(cnode.m_node->fanin());
-                        const auto min = -std::sqrt(6 / (1 + div));
-                        const auto max = +std::sqrt(6 / (1 + div));
-                        nano::set_random(random_t<scalar_t>(min, max), cnode.pdata(m_pdata));
+                        cnode.m_node->random(cnode.pdata(m_pdata));
                 }
         }
         m_gdata.setZero();

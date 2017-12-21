@@ -32,6 +32,12 @@ bool tcat4d_layer_t::resize(const tensor3d_dims_t& idims)
         return true;
 }
 
+void tcat4d_layer_t::random(vector_map_t pdata) const
+{
+        assert(pdata.size() == psize());
+        NANO_UNUSED1_RELEASE(pdata);
+}
+
 void tcat4d_layer_t::output(tensor4d_cmaps_t idata, vector_cmap_t pdata, tensor4d_map_t odata)
 {
         const auto count = odata.size<0>();

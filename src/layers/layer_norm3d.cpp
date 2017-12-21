@@ -17,6 +17,12 @@ rlayer_t norm3d_layer_t::clone() const
         return std::make_unique<norm3d_layer_t>(*this);
 }
 
+void norm3d_layer_t::random(vector_map_t pdata) const
+{
+        assert(pdata.size() == psize());
+        NANO_UNUSED1_RELEASE(pdata);
+}
+
 bool norm3d_layer_t::resize(const tensor3d_dims_t& idims)
 {
         if (idims.size() != 1)
