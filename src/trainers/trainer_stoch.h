@@ -19,6 +19,7 @@ namespace nano
 
                 // attributes
                 string_t        m_solver{"sg"};
+                size_t          m_tune_epochs{8};
                 size_t          m_epochs{128};
                 size_t          m_batch{32};
                 size_t          m_patience{32};

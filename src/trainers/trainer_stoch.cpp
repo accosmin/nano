@@ -9,15 +9,17 @@ using namespace nano;
 
 json_reader_t& stoch_trainer_t::config(json_reader_t& reader)
 {
-        return reader.object("solver", m_solver, "epochs", m_epochs, "batch", m_batch, "eps", m_epsilon,
-                "patience", m_patience);
+        return reader.object("solver", m_solver,
+                "tune_epochs", m_tune_epochs, "epochs", m_epochs,
+                "batch", m_batch, "eps", m_epsilon, "patience", m_patience);
 }
 
 json_writer_t& stoch_trainer_t::config(json_writer_t& writer) const
 {
         return writer.object(
                 "solver", m_solver, "solvers", join(get_stoch_solvers().ids()),
-                "epochs", m_epochs, "batch", m_batch, "eps", m_epsilon, "patience", m_patience);
+                "tune_epochs", m_tune_epochs, "epochs", m_epochs,
+                "batch", m_batch, "eps", m_epsilon, "patience", m_patience);
 }
 
 trainer_result_t stoch_trainer_t::train(
@@ -92,8 +94,7 @@ trainer_result_t stoch_trainer_t::train(
         // assembly optimization function & train the model
         const auto function = stoch_function_t(acc, enhancer, task,  iterator);
         auto params = stoch_params_t{m_epochs, epoch_size, m_epsilon, fn_ulog, fn_tlog};
-        params.m_tune_max_epochs = 1;
-        params.m_tune_epoch_size = std::max(epoch_size / 10, size_t(10));
+        params.m_tune_max_epochs = m_tune_epochs;
         get_stoch_solvers().get(m_solver)->minimize(params, function, acc.params());
 
         log_info() << "<<< stoch-" << m_solver << ": " << result << ",time=" << timer.elapsed() << ".";

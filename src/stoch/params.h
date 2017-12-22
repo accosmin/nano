@@ -30,8 +30,7 @@ namespace nano
                         m_epsilon(epsilon),
                         m_ulog(ulog),
                         m_tlog(tlog),
-                        m_tune_max_epochs(1),
-                        m_tune_epoch_size(epoch_size)
+                        m_tune_max_epochs(1)
                 {
                 }
 
@@ -40,7 +39,7 @@ namespace nano
                 ///
                 auto tunable() const
                 {
-                        return stoch_params_t{m_tune_max_epochs, m_tune_epoch_size, m_epsilon, nullptr, m_tlog};
+                        return stoch_params_t{m_tune_max_epochs, m_epoch_size, m_epsilon, nullptr, m_tlog};
                 }
 
                 ///
@@ -77,6 +76,5 @@ namespace nano
                 opulog_t        m_ulog;                 ///< update log: (the current_state_after_each_epoch)
                 optlog_t        m_tlog;                 ///< tuning log: (the current_state_after_each_epoch)
                 size_t          m_tune_max_epochs;      ///< maximum number of epochs (when tuning)
-                size_t          m_tune_epoch_size;      ///< number of iterations per epoch (when tuning)
         };
 }
