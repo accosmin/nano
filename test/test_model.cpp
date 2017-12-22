@@ -224,7 +224,7 @@ NANO_CASE(make_mlp0)
 NANO_CASE(make_mlp1)
 {
         model_t model;
-        NANO_CHECK(make_mlp(model, {32}, 3, 13, 11, "act-snorm"));
+        NANO_CHECK(make_mlp(model, {{32, 1, 1}}, 3, 13, 11, "act-snorm"));
         NANO_REQUIRE(model.done());
         NANO_CHECK(model.resize({3, 32, 32}, {3, 13, 11}));
 }
@@ -232,7 +232,7 @@ NANO_CASE(make_mlp1)
 NANO_CASE(make_mlp2)
 {
         model_t model;
-        NANO_CHECK(make_mlp(model, {32, 64}, 3, 13, 11, "act-snorm"));
+        NANO_CHECK(make_mlp(model, {{32, 1, 1}, {64, 1, 1}}, 3, 13, 11, "act-snorm"));
         NANO_REQUIRE(model.done());
         NANO_CHECK(model.resize({3, 32, 32}, {3, 13, 11}));
 }
@@ -248,7 +248,7 @@ NANO_CASE(make_cnn1_mlp0)
 NANO_CASE(make_cnn1_mlp1)
 {
         model_t model;
-        NANO_CHECK(make_cnn(model, {{32, 7, 7, 1, 1, 1}}, {23}, 3, 13, 11, "act-snorm"));
+        NANO_CHECK(make_cnn(model, {{32, 7, 7, 1, 1, 1}}, {{23, 1, 1}}, 3, 13, 11, "act-snorm"));
         NANO_REQUIRE(model.done());
         NANO_CHECK(model.resize({3, 32, 32}, {3, 13, 11}));
 }
@@ -256,7 +256,7 @@ NANO_CASE(make_cnn1_mlp1)
 NANO_CASE(make_cnn2_mlp1)
 {
         model_t model;
-        NANO_CHECK(make_cnn(model, {{32, 7, 7, 1, 1, 1}, {42, 5, 5, 2, 1, 2}}, {23}, 3, 13, 11, "act-snorm"));
+        NANO_CHECK(make_cnn(model, {{32, 7, 7, 1, 1, 1}, {42, 5, 5, 2, 1, 2}}, {{23, 1, 1}}, 3, 13, 11, "act-snorm"));
         NANO_REQUIRE(model.done());
         NANO_CHECK(model.resize({3, 32, 32}, {3, 13, 11}));
 }
@@ -264,7 +264,7 @@ NANO_CASE(make_cnn2_mlp1)
 NANO_CASE(make_residual_mlp4)
 {
         model_t model;
-        NANO_CHECK(make_residual_mlp(model, {128, 128, 128, 128}, 3, 13, 11, "act-snorm"));
+        NANO_CHECK(make_residual_mlp(model, {{128, 1, 1}, {128, 1, 1}, {128, 1, 1}, {128, 1, 1}}, 3, 13, 11, "act-snorm"));
         NANO_REQUIRE(model.done());
         NANO_CHECK(model.resize({3, 32, 32}, {3, 13, 11}));
 }

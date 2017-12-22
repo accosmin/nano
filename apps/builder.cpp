@@ -4,10 +4,68 @@
 #include "text/cmdline.h"
 #include "layers/builder.h"
 
+using namespace nano;
+
+std::vector<tensor_size_t> parse_config(const string_t& str)
+{
+        std::vector<tensor_size_t> config;
+        if (!str.empty() && str != ",")
+        {
+                for (const auto& token : split(str, ","))
+                {
+                        try
+                        {
+                                config.push_back(from_string<tensor_size_t>(token));
+                        }
+                        catch (std::exception&)
+                        {
+                                log_error() << "invalid token [" << token << "] in [" << str << "]!";
+                                exit(EXIT_FAILURE);
+                        }
+                }
+        }
+
+        return config;
+}
+
+affine_node_configs_t affine_config(const string_t& str)
+{
+        const auto values = parse_config(str);
+        if ((values.size() % 3) != 0)
+        {
+                log_error() << "invalid configuration for the affine nodes!";
+                exit(EXIT_FAILURE);
+        }
+
+        affine_node_configs_t config;
+        for (size_t i = 0; i < values.size(); i += 3)
+        {
+                config.push_back({values[i + 0], values[i + 1], values[i + 2]});
+        }
+
+        return config;
+}
+
+conv3d_node_configs_t conv3d_config(const string_t& str)
+{
+        const auto values = parse_config(str);
+        if ((values.size() % 6) != 0)
+        {
+                log_error() << "invalid configuration for the convolution nodes!";
+                exit(EXIT_FAILURE);
+        }
+
+        conv3d_node_configs_t config;
+        for (size_t i = 0; i < values.size(); i += 6)
+        {
+                config.push_back({values[i + 0], values[i + 1], values[i + 2], values[i + 3], values[i + 4], values[i + 5]});
+        }
+
+        return config;
+}
+
 int main(int argc, const char *argv[])
 {
-        using namespace nano;
-
         strings_t activations;
         for (const auto& layer_id : get_layers().ids())
         {
@@ -19,9 +77,12 @@ int main(int argc, const char *argv[])
 
         // parse the command line
         cmdline_t cmdline("construct and export models using predefined architectures");
-        cmdline.add("", "mlp",          "construct a MLP (multi-layer perceptron) network");
-        cmdline.add("", "res-mlp",      "construct a residual MLP (multi-layer perceptron) network");
-        cmdline.add("", "mlp-params",   "number of feature maps per affine layer (e.g. 128,256,128)", ",");
+        cmdline.add("", "cnn",          "construct a convolution network");
+        cmdline.add("", "mlp",          "construct a multi-layer perceptron network");
+        cmdline.add("", "linear",       "construct a linear model");
+        cmdline.add("", "res-mlp",      "construct a residual MLP (multi-layer perceptron) network (*beta*)");
+        cmdline.add("", "conv3d-nodes", "conv3d nodes like [omaps,krows,kcols,kconn,kdrow,kdcol,]+", ",");
+        cmdline.add("", "affine-nodes", "affine nodes like [omaps,orows,ocols,]+", ",");
         cmdline.add("", "act-type",     "activation type " + join(activations), "act-snorm");
         cmdline.add("", "imaps",        "number of input feature maps", 3);
         cmdline.add("", "irows",        "number of input rows", 32);
@@ -41,7 +102,7 @@ int main(int argc, const char *argv[])
         const auto cmd_orows = cmdline.get<tensor_size_t>("orows");
         const auto cmd_ocols = cmdline.get<tensor_size_t>("ocols");
 
-        if (    (!cmdline.has("mlp") && !cmdline.has("res-mlp")) ||
+        if (    (!cmdline.has("cnn") && !cmdline.has("mlp") && !cmdline.has("linear") && !cmdline.has("res-mlp")) ||
                 !cmdline.has("json"))
         {
                 cmdline.usage();
@@ -50,28 +111,24 @@ int main(int argc, const char *argv[])
         // construct model
         model_t model;
 
-        if (cmdline.has("mlp") || cmdline.has("res-mlp"))
-        {
-                std::vector<tensor_size_t> cmd_mlp_params;
-                for (const auto& token : split(cmdline.get<string_t>("mlp-params"), ","))
-                {
-                        try
-                        {
-                                cmd_mlp_params.push_back(from_string<tensor_size_t>(token));
-                        }
-                        catch (std::exception&)
-                        {
-                        }
-                }
+        const auto conv3d_nodes = conv3d_config(cmdline.get<string_t>("conv3d-nodes"));
+        const auto affine_nodes = affine_config(cmdline.get<string_t>("affine-nodes"));
 
-                if (cmdline.has("mlp"))
-                {
-                        make_mlp(model, cmd_mlp_params, cmd_omaps, cmd_orows, cmd_ocols, cmd_act_type);
-                }
-                else if (cmdline.has("res-mlp"))
-                {
-                        make_residual_mlp(model, cmd_mlp_params, cmd_omaps, cmd_orows, cmd_ocols, cmd_act_type);
-                }
+        if (cmdline.has("linear"))
+        {
+                make_linear(model, cmd_omaps, cmd_orows, cmd_ocols, cmd_act_type);
+        }
+        else if(cmdline.has("mlp"))
+        {
+                make_mlp(model, affine_nodes, cmd_omaps, cmd_orows, cmd_ocols, cmd_act_type);
+        }
+        else if (cmdline.has("cnn"))
+        {
+                make_cnn(model, conv3d_nodes, affine_nodes, cmd_omaps, cmd_orows, cmd_ocols, cmd_act_type);
+        }
+        else if (cmdline.has("res-mlp"))
+        {
+                make_residual_mlp(model, affine_nodes, cmd_omaps, cmd_orows, cmd_ocols, cmd_act_type);
         }
 
         // check model

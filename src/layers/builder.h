@@ -196,6 +196,18 @@ namespace nano
         }
 
         ///
+        /// \brief configuration for an affine node: omaps, orows, ocols
+        ///
+        using affine_node_config_t = std::array<tensor_size_t, 3>;
+        using affine_node_configs_t = std::vector<affine_node_config_t>;
+
+        ///
+        /// \brief configuration for a 3D convolution node: omaps, krows, kcols, kconn, kdrow, kdcol
+        ///
+        using conv3d_node_config_t = std::array<tensor_size_t, 6>;
+        using conv3d_node_configs_t = std::vector<conv3d_node_config_t>;
+
+        ///
         /// \brief create a residual MLP (multi-layer perceptron) network given
         /// \param affine_nodes the number of outputs (aka feature maps) for each affine layer
         /// \param omaps the number of feature maps of the output layer
@@ -209,7 +221,7 @@ namespace nano
         ///
         template <typename tmodel>
         bool make_residual_mlp(tmodel& model,
-                const std::vector<tensor_size_t>& affine_nodes,
+                const affine_node_configs_t& affine_nodes,
                 const tensor_size_t omaps, const tensor_size_t orows, const tensor_size_t ocols,
                 const string_t& activation_type)
         {
@@ -218,12 +230,16 @@ namespace nano
                 string_t prev_activation_name, prev_prev_activation_name, prev_plus4d_name;
 
                 bool ok = true;
-                tensor_size_t n = 0;
-                for (const tensor_size_t maps : affine_nodes)
+                tensor_size_t depth = 0;
+                for (const auto& affine_node : affine_nodes)
                 {
-                        const string_t affine_name = "aff" + to_string(n);
-                        const string_t activation_name = "act" + to_string(n);
-                        const string_t plus4d_name = "add" + to_string(n);
+                        const string_t affine_name = "affine" + to_string(depth);
+                        const string_t activation_name = "nonlin" + to_string(depth);
+                        const string_t plus4d_name = "mixadd" + to_string(depth);
+
+                        const auto maps = std::get<0>(affine_node);
+                        const auto rows = std::get<1>(affine_node);
+                        const auto cols = std::get<2>(affine_node);
 
                         const string_t* prev_name = &prev_activation_name;
                         if (!prev_prev_activation_name.empty())
@@ -240,9 +256,6 @@ namespace nano
                                 prev_plus4d_name = plus4d_name;
                         }
 
-                        const tensor_size_t rows = 1;
-                        const tensor_size_t cols = 1;
-
                         if (!(ok = add_affine_module(
                                 model, affine_name, maps, rows, cols,
                                 activation_name, activation_type,
@@ -251,7 +264,7 @@ namespace nano
                                 break;
                         }
 
-                        ++ n;
+                        ++ depth;
                         prev_prev_activation_name = prev_activation_name;
                         prev_activation_name = activation_name;
                 }
@@ -278,8 +291,8 @@ namespace nano
         ///
         template <typename tmodel>
         bool make_cnn(tmodel& model,
-                const std::vector<std::array<tensor_size_t, 6>>& conv3d_nodes,
-                const std::vector<tensor_size_t>& affine_nodes,
+                const conv3d_node_configs_t& conv3d_nodes,
+                const affine_node_configs_t& affine_nodes,
                 const tensor_size_t omaps, const tensor_size_t orows, const tensor_size_t ocols,
                 const string_t& activation_type)
         {
@@ -317,9 +330,9 @@ namespace nano
                         const string_t affine_name = "affine" + to_string(depth);
                         const string_t activation_name = "nonlin" + to_string(depth);
 
-                        const auto maps = affine_node;
-                        const auto rows = 1;
-                        const auto cols = 1;
+                        const auto maps = std::get<0>(affine_node);
+                        const auto rows = std::get<1>(affine_node);
+                        const auto cols = std::get<2>(affine_node);
 
                         if (!add_affine_module(model,
                                 affine_name, maps, rows, cols,
@@ -338,7 +351,7 @@ namespace nano
 
         template <typename tmodel>
         bool make_mlp(tmodel& model,
-                const std::vector<tensor_size_t>& affine_nodes,
+                const affine_node_configs_t& affine_nodes,
                 const tensor_size_t omaps, const tensor_size_t orows, const tensor_size_t ocols,
                 const string_t& activation_type)
         {
