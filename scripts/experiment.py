@@ -8,16 +8,65 @@ import matplotlib.mlab as mlab
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_pdf import PdfPages
 
+class experiment_run:
+        """ an experiment run consists of:
+                - a trial (fold index or None if cumulating results from multiple trials)
+                - a model (name + command line parameters to apps/builder)
+                - a trainer (name + json parameters)
+                - an enhancer (name + json parameters)
+                - a loss function (name)
+        """
+        def __init__(self, trial, mname, mparam, tname, tparam, ename, eparam, lname, lparam, dirname):
+                self.trial = trial
+                self.mname = mname
+                self.tname = tname
+                self.ename = ename
+                self.lname = lname
+                self.mparam = mparam
+                self.tparam = tparam
+                self.eparam = eparam
+                self.lparam = lparam
+                self.dirname = os.path.join(dirname, "/trial{}/".format(trial) if not (trial is None) else "/result/")
+                os.makedirs(self.dirname, exist_ok = True)
+
+        def path(self, extension):
+                return os.path.join(self.dirname, "{}{}{}{}".format(
+                        "_M" + mname if mname else "",
+                        "_T" + tname if tname else "",
+                        "_E" + ename if ename else "",
+                        "_L" + lname if lname else ""), extension)
+
+        def mpath(self):
+                return self.path(".model")
+
+        def spath(self):
+                return self.path(".state")
+
+        def lpath(self):
+                return self.path(".log")
+
+        def ppath(self):
+                return self.path(".pdf")
+
+        def filter(self, trial, mname_reg, tname_reg, ename_reg, lname_reg):
+                return  self.trial == trial and
+                        re.match(mname_reg, self.mname) and
+                        re.match(tname_reg, self.tname) and
+                        re.match(ename_reg, self.ename) and
+                        re.match(lname_reg, self.lname)
+
 class experiment:
+        """ """
         def __init__(self, task, outdir, trials = 10):
                 self.cfg = config.config()
                 self.task = task
                 self.dir = outdir
+                self.trials = trials
+                self.runs = []
+                self.losses = []
                 self.models = []
                 self.trainers = []
                 self.enhancers = []
-                self.losses = []
-                self.trials = trials
 
         def log(self, *messages):
                 print(time.strftime("[%Y-%m-%d %H:%M:%S]"), ' '.join(messages))
@@ -26,13 +75,13 @@ class experiment:
                 self.models.append([name, parameters])
 
         def add_trainer(self, name, parameters, config_name = None):
-                self.trainers.append([config_name if config_name else name, self.cfg.config_trainer(name, parameters)])
+                self.trainers.append([config_name if config_name else name, parameters])
 
         def add_loss(self, name, parameters = "", config_name = None):
-                self.losses.append([config_name if config_name else name, self.cfg.config_loss(name, parameters)])
+                self.losses.append([config_name if config_name else name, parameters])
 
         def add_enhancer(self, name, parameters = "", config_name = None):
-                self.enhancers.append([config_name if config_name else name, self.cfg.config_enhancer(name, parameters)])
+                self.enhancers.append([config_name if config_name else name, parameters])
 
         def path(self, trial, mname, tname, ename, lname, extension):
                 basepath = self.dir
