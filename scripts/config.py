@@ -43,6 +43,20 @@ class config:
                         "act-sigm",     # [ 0,  1]
                         "act-pwave"]    # [-1, +1]
 
+        # helper utilities to create models
+        def model(model_type, conv3d_param, affine_param, imaps, irows, icols, omaps, orows, ocols, act_type):
+                return  "--{} --act-type {} ".format(model_type, act_type) +
+                        "--conv3d-param {} ".format(','.join(conv3d_param)) +
+                        "--affine-param {} ".format(','.join(affine_param)) +
+                        "--imaps {} --irows {} --icols {} ".format(imaps, irows, icols) +
+                        "--omaps {} --orows {} --ocols {} ".format(omaps, orows, ocols)
+
+        def mlp(affine_param, imaps, irows, icols, omaps, orows, ocols, act_type="act-snorm"):
+                return model("mlp", affine_param, [], imaps, irows, icols, omaps, orows, ocols, act_type)
+
+        def cnn(conv3d_param, affine_param, imaps, irows, icols, omaps, orows, ocols, act_type="act-snorm"):
+                return model("cnn", conv3d_param, affine_param, imaps, irows, icols, omaps, orows, ocols, act_type)
+
         # available stochastic solvers
         def stoch_solvers(self):
                 return ["ag", "agfr", "aggr",

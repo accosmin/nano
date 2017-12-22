@@ -81,8 +81,8 @@ int main(int argc, const char *argv[])
         cmdline.add("", "mlp",          "construct a multi-layer perceptron network");
         cmdline.add("", "linear",       "construct a linear model");
         cmdline.add("", "res-mlp",      "construct a residual MLP (multi-layer perceptron) network (*beta*)");
-        cmdline.add("", "conv3d-nodes", "conv3d nodes like [omaps,krows,kcols,kconn,kdrow,kdcol,]+", ",");
-        cmdline.add("", "affine-nodes", "affine nodes like [omaps,orows,ocols,]+", ",");
+        cmdline.add("", "conv3d-param", "conv3d nodes like [omaps,krows,kcols,kconn,kdrow,kdcol,]+", ",");
+        cmdline.add("", "affine-param", "affine nodes like [omaps,orows,ocols,]+", ",");
         cmdline.add("", "act-type",     "activation type " + join(activations), "act-snorm");
         cmdline.add("", "imaps",        "number of input feature maps", 3);
         cmdline.add("", "irows",        "number of input rows", 32);
@@ -111,8 +111,8 @@ int main(int argc, const char *argv[])
         // construct model
         model_t model;
 
-        const auto conv3d_nodes = conv3d_config(cmdline.get<string_t>("conv3d-nodes"));
-        const auto affine_nodes = affine_config(cmdline.get<string_t>("affine-nodes"));
+        const auto conv3d_param = conv3d_config(cmdline.get<string_t>("conv3d-param"));
+        const auto affine_param = affine_config(cmdline.get<string_t>("affine-param"));
 
         if (cmdline.has("linear"))
         {
@@ -120,15 +120,15 @@ int main(int argc, const char *argv[])
         }
         else if(cmdline.has("mlp"))
         {
-                make_mlp(model, affine_nodes, cmd_omaps, cmd_orows, cmd_ocols, cmd_act_type);
+                make_mlp(model, affine_param, cmd_omaps, cmd_orows, cmd_ocols, cmd_act_type);
         }
         else if (cmdline.has("cnn"))
         {
-                make_cnn(model, conv3d_nodes, affine_nodes, cmd_omaps, cmd_orows, cmd_ocols, cmd_act_type);
+                make_cnn(model, conv3d_param, affine_param, cmd_omaps, cmd_orows, cmd_ocols, cmd_act_type);
         }
         else if (cmdline.has("res-mlp"))
         {
-                make_residual_mlp(model, affine_nodes, cmd_omaps, cmd_orows, cmd_ocols, cmd_act_type);
+                make_residual_mlp(model, affine_param, cmd_omaps, cmd_orows, cmd_ocols, cmd_act_type);
         }
 
         // check model

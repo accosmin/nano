@@ -209,11 +209,6 @@ namespace nano
 
         ///
         /// \brief create a residual MLP (multi-layer perceptron) network given
-        /// \param affine_nodes the number of outputs (aka feature maps) for each affine layer
-        /// \param omaps the number of feature maps of the output layer
-        /// \param orows the number of rows of the output layer
-        /// \param ocols the number of columns of the output layer
-        /// \param activation_type the type of the activation layer inserted after each affine layer
         ///
         /// structure:
         ///     aff0 -> act0 -> aff1 ->  act1 -> aff2 ->  act2 -> aff3 ->  act3 -> ... ->  actN   -> out
@@ -221,7 +216,7 @@ namespace nano
         ///
         template <typename tmodel>
         bool make_residual_mlp(tmodel& model,
-                const affine_node_configs_t& affine_nodes,
+                const affine_node_configs_t& affine_param,
                 const tensor_size_t omaps, const tensor_size_t orows, const tensor_size_t ocols,
                 const string_t& activation_type)
         {
@@ -231,7 +226,7 @@ namespace nano
 
                 bool ok = true;
                 tensor_size_t depth = 0;
-                for (const auto& affine_node : affine_nodes)
+                for (const auto& affine_node : affine_param)
                 {
                         const string_t affine_name = "affine" + to_string(depth);
                         const string_t activation_name = "nonlin" + to_string(depth);
@@ -273,17 +268,9 @@ namespace nano
         }
 
         ///
-        /// \brief create a convolution neural network (CNN) given:
-        /// \param conv3d_nodes the convolution parameters for each 3D convolution layer
-        /// \param affine_nodes the number of outputs (aka feature maps) for each affine layer
-        /// \param omaps the number of feature maps of the output layer
-        /// \param orows the number of rows of the output layer
-        /// \param ocols the number of columns of the output layer
-        /// \param activation_type the type of the activation layer inserted after each affine layer
-        ///
-        /// a CNN is a feed-forward computation graph consisting of:
-        ///     the convolution nodes: [convX -> actX]+
-        ///     followed by the affine (fully connected) nodes: [affY -> actY]+
+        /// \brief create a convolution neural network (CNN) consisting of:
+        ///     (optional) the convolution nodes: [convX -> actX]+
+        ///     (optional) followed by the affine (fully connected) nodes: [affY -> actY]+
         ///     followed by the output (affine) node: -> out
         ///
         /// NB: a linear model is obtained if the convolution and the affine layers are empty
@@ -291,8 +278,8 @@ namespace nano
         ///
         template <typename tmodel>
         bool make_cnn(tmodel& model,
-                const conv3d_node_configs_t& conv3d_nodes,
-                const affine_node_configs_t& affine_nodes,
+                const conv3d_node_configs_t& conv3d_param,
+                const affine_node_configs_t& affine_param,
                 const tensor_size_t omaps, const tensor_size_t orows, const tensor_size_t ocols,
                 const string_t& activation_type)
         {
@@ -301,7 +288,7 @@ namespace nano
                 tensor_size_t depth = 0;
                 string_t prev_activation_name;
 
-                for (const auto& conv3d_node : conv3d_nodes)
+                for (const auto& conv3d_node : conv3d_param)
                 {
                         const string_t conv3d_name = "conv3d" + to_string(depth);
                         const string_t activation_name = "nonlin" + to_string(depth);
@@ -325,7 +312,7 @@ namespace nano
                         prev_activation_name = activation_name;
                 }
 
-                for (const auto& affine_node : affine_nodes)
+                for (const auto& affine_node : affine_param)
                 {
                         const string_t affine_name = "affine" + to_string(depth);
                         const string_t activation_name = "nonlin" + to_string(depth);
@@ -349,15 +336,21 @@ namespace nano
                 return add_output_module(model, "output", omaps, orows, ocols, prev_activation_name);
         }
 
+        ///
+        /// \brief create a multi-layer perceptron (MLP) model: a CNN without convolution nodes.
+        ///
         template <typename tmodel>
         bool make_mlp(tmodel& model,
-                const affine_node_configs_t& affine_nodes,
+                const affine_node_configs_t& affine_param,
                 const tensor_size_t omaps, const tensor_size_t orows, const tensor_size_t ocols,
                 const string_t& activation_type)
         {
-                return make_cnn(model, {}, affine_nodes, omaps, orows, ocols, activation_type);
+                return make_cnn(model, {}, affine_param, omaps, orows, ocols, activation_type);
         }
 
+        ///
+        /// \brief create a linear model: a CNN without convolution and affine nodes.
+        ///
         template <typename tmodel>
         bool make_linear(tmodel& model,
                 const tensor_size_t omaps, const tensor_size_t orows, const tensor_size_t ocols,
