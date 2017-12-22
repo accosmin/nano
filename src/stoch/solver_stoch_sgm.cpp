@@ -14,7 +14,7 @@ solver_state_t stoch_sgm_t::minimize(const stoch_params_t& param, const function
         const scalar_t alpha0, const scalar_t decay, const scalar_t momentum)
 {
         // learning rate schedule
-        lrate_t lrate(alpha0, decay);
+        lrate_t lrate(alpha0, decay, param.m_epoch_size);
 
         // first-order momentum of the gradient
         momentum_t<vector_t> gsum1(momentum, x0.size());

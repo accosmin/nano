@@ -40,12 +40,12 @@ namespace nano
                 ///
                 static auto make_alpha0s()
                 {
-                        return make_finite_space(scalar_t(1e-3), scalar_t(1e-2), scalar_t(1e-1));
+                        return make_finite_space(scalar_t(1e-4), scalar_t(1e-3), scalar_t(1e-2), scalar_t(1e-1));
                 }
 
                 static auto make_decays()
                 {
-                        return make_finite_space(scalar_t(0.50), scalar_t(0.75), scalar_t(0.90));
+                        return make_finite_space(scalar_t(0.75), scalar_t(1.00));
                 }
 
                 static auto make_momenta()
@@ -55,7 +55,7 @@ namespace nano
 
                 static auto make_epsilons()
                 {
-                        return make_finite_space(scalar_t(1e-6), scalar_t(1e-5), scalar_t(1e-4));
+                        return make_finite_space(scalar_t(1e-6), scalar_t(1e-5), scalar_t(1e-4), scalar_t(1e-3));
                 }
 
                 /// reference: http://www.cppsamples.com/common-tasks/apply-tuple-to-function.html
