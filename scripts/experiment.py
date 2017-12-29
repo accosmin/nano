@@ -1,5 +1,6 @@
 import os
 import re
+import json
 import time
 import config
 import plotter
@@ -26,21 +27,31 @@ class experiment:
                 self.models = []
                 self.trainers = []
                 self.enhancers = []
+                os.makedirs(self.dir, exist_ok = True)
+                self.save_json("config_task", task)
+
+        def save_json(self, basename, parameters):
+                with open(os.path.join(self.dir, basename + ".json"), "w") as output:
+                        output.write(json.dumps(parameters, indent = 4))
 
         def log(self, *messages):
                 print(time.strftime("[%Y-%m-%d %H:%M:%S]"), ' '.join(messages))
 
         def add_model(self, name, parameters):
+                parameters += " --json {}".format(os.path.join(self.dir, "config_model_" + name + ".json"))
                 self.models.append([name, parameters])
+                subprocess.check_call((self.cfg.app_builder + " " + parameters).split(), stdout=subprocess.DEVNULL)
 
-        def add_trainer(self, name, parameters, config_name = None):
-                self.trainers.append([config_name if config_name else name, parameters])
+        def add_trainer(self, name, parameters):
+                self.trainers.append([name, parameters])
+                self.save_json("config_trainer_" + name, parameters)
 
-        def add_loss(self, name, parameters = "", config_name = None):
-                self.losses.append([config_name if config_name else name, parameters])
+        def add_loss(self, name, parameters = ""):
+                self.losses.append([name, parameters])
 
-        def add_enhancer(self, name, parameters = "", config_name = None):
-                self.enhancers.append([config_name if config_name else name, parameters])
+        def add_enhancer(self, name, parameters):
+                self.enhancers.append([name, parameters])
+                self.save_json("config_enhancer_" + name, parameters)
 
         def path(self, trial, mname, tname, ename, lname, extension):
                 basepath = self.dir
@@ -115,7 +126,6 @@ class experiment:
         def train_trials(self, mname, mparam, tname, tparam, ename, eparam, lname, lparam):
                 # train the given configuration for multiple trials
                 for trial in range(self.trials):
-                        os.makedirs(self.dir, exist_ok = True)
                         mpath = self.path(trial, mname, tname, ename, lname, ".model")
                         spath = self.path(trial, mname, tname, ename, lname, ".state")
                         lpath = self.path(trial, mname, tname, ename, lname, ".log")
