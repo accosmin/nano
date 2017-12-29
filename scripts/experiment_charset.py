@@ -26,20 +26,20 @@ exp.add_trainer("batch_gd", cfg.batch_trainer("gd", epochs=epochs, patience=pati
 exp.add_trainer("batch_cgd", cfg.batch_trainer("cgd", epochs=epochs, patience=patience, epsilon=epsilon))
 exp.add_trainer("batch_lbfgs", cfg.batch_trainer("lbfgs", epochs=epochs, patience=patience, epsilon=epsilon))
 
-exp.add_trainer("stoch_ag", cfg.batch_trainer("ag", epochs=epochs, patience=patience, epsilon=epsilon, batch=batch))
-exp.add_trainer("stoch_agfr", cfg.batch_trainer("agfr", epochs=epochs, patience=patience, epsilon=epsilon, batch=batch))
-exp.add_trainer("stoch_aggr", cfg.batch_trainer("aggr", epochs=epochs, patience=patience, epsilon=epsilon, batch=batch))
+exp.add_trainer("stoch_ag", cfg.stoch_trainer("ag", epochs=epochs, patience=patience, epsilon=epsilon, batch=batch))
+exp.add_trainer("stoch_agfr", cfg.stoch_trainer("agfr", epochs=epochs, patience=patience, epsilon=epsilon, batch=batch))
+exp.add_trainer("stoch_aggr", cfg.stoch_trainer("aggr", epochs=epochs, patience=patience, epsilon=epsilon, batch=batch))
 
-exp.add_trainer("stoch_sg", cfg.batch_trainer("sg", epochs=epochs, patience=patience, epsilon=epsilon, batch=batch))
-exp.add_trainer("stoch_sgm", cfg.batch_trainer("sgm", epochs=epochs, patience=patience, epsilon=epsilon, batch=batch))
-exp.add_trainer("stoch_ngd", cfg.batch_trainer("ngd", epochs=epochs, patience=patience, epsilon=epsilon, batch=batch))
-exp.add_trainer("stoch_asgd", cfg.batch_trainer("asgd", epochs=epochs, patience=patience, epsilon=epsilon, batch=batch))
-exp.add_trainer("stoch_svrg", cfg.batch_trainer("svrg", epochs=epochs, patience=patience, epsilon=epsilon, batch=batch))
-exp.add_trainer("stoch_rmsprop", cfg.batch_trainer("rmsprop", epochs=epochs, patience=patience, epsilon=epsilon, batch=batch))
+exp.add_trainer("stoch_sg", cfg.stoch_trainer("sg", epochs=epochs, patience=patience, epsilon=epsilon, batch=batch))
+exp.add_trainer("stoch_sgm", cfg.stoch_trainer("sgm", epochs=epochs, patience=patience, epsilon=epsilon, batch=batch))
+exp.add_trainer("stoch_ngd", cfg.stoch_trainer("ngd", epochs=epochs, patience=patience, epsilon=epsilon, batch=batch))
+exp.add_trainer("stoch_asgd", cfg.stoch_trainer("asgd", epochs=epochs, patience=patience, epsilon=epsilon, batch=batch))
+exp.add_trainer("stoch_svrg", cfg.stoch_trainer("svrg", epochs=epochs, patience=patience, epsilon=epsilon, batch=batch))
+exp.add_trainer("stoch_rmsprop", cfg.stoch_trainer("rmsprop", epochs=epochs, patience=patience, epsilon=epsilon, batch=batch))
 
-exp.add_trainer("stoch_adam", cfg.batch_trainer("adam", epochs=epochs, patience=patience, epsilon=epsilon, batch=batch))
-exp.add_trainer("stoch_adagrad", cfg.batch_trainer("adagrad", epochs=epochs, patience=patience, epsilon=epsilon, batch=batch))
-exp.add_trainer("stoch_adadelta", cfg.batch_trainer("adadelta", epochs=epochs, patience=patience, epsilon=epsilon, batch=batch))
+exp.add_trainer("stoch_adam", cfg.stoch_trainer("adam", epochs=epochs, patience=patience, epsilon=epsilon, batch=batch))
+exp.add_trainer("stoch_adagrad", cfg.stoch_trainer("adagrad", epochs=epochs, patience=patience, epsilon=epsilon, batch=batch))
+exp.add_trainer("stoch_adadelta", cfg.stoch_trainer("adadelta", epochs=epochs, patience=patience, epsilon=epsilon, batch=batch))
 
 # models
 mlp0 = []
