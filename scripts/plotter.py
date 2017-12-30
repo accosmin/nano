@@ -3,14 +3,16 @@ import matplotlib.mlab as mlab
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_pdf import PdfPages
 
-# load state file with the following format:
-#  (epoch, {train, valid, test} x {criterion, loss{average, variance, maximum}, error{average, variance, maximum}}, time)+
+""" load (training) §state file with the following format:
+(epoch, {train, valid, test} x {criterion, loss{average, variance, maximum}, error{average, variance, maximum}}, time)+
+"""
 def get_state_csv(path):
         name = os.path.basename(path).replace(".state", "")
         name = name.replace(name[0 : name.find("_") + 1], "")
         data = mlab.csv2rec(path, delimiter = ' ', names = None)
         return name, data
 
+""" load multiple state files """
 def get_state_csvs(paths):
         datas = []
         names = []
@@ -20,14 +22,16 @@ def get_state_csvs(paths):
                 names.append(name)
         return names, datas
 
-# load trial file with the following format:
-#  (model name, trainer name, enhancer name, loss name, test value, test error, #epochs, convergence speed, training time)+
+""" load trial file with the following format:
+(model name, trainer name, enhancer name, loss name, test value, test error, #epochs, convergence speed, training time)+
+"""
 def get_trial_csv(path):
         name = os.path.basename(path).replace(".csv", "")
         name = name.replace(name[0 : name.find("_") + 1], "")
         data = mlab.csv2rec(path, delimiter = ';', names = None)
         return name, data
 
+""" load multiple trial fiels """
 def get_trial_csvs(paths):
         datas = []
         names = []
@@ -37,7 +41,7 @@ def get_trial_csvs(paths):
                 names.append(name)
         return names, datas
 
-# plot the training evolution of a model
+""" plot the training evolution of a model """
 def plot_state_one(spath, ppath):
         title, data = get_state_csv(spath)
         with PdfPages(ppath) as pdf:
@@ -80,7 +84,7 @@ def plot_state_one(spath, ppath):
                         pdf.savefig()
                         plt.close()
 
-# plot the training evolution of multiple models on the same plot
+""" plot the training evolution of multiple models on the same plot """
 def plot_state_many_wrt(names, datas, pdf, xcol, ycol):
         colnames = datas[0].dtype.names
         title = colnames[ycol + 1]
@@ -110,7 +114,7 @@ def plot_state_many(spaths, ppath):
                         # plot wrt time
                         plot_state_many_wrt(names, datas, pdf, 7, col)
 
-# plot the test results of multiple models on the sample plot
+""" plot the test results of multiple models on the sample plot """
 def plot_trial_many_wrt(title, names, datas, pdf, ycol):
         colnames = datas[0].dtype.names
         # x axis -
