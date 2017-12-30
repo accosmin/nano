@@ -130,12 +130,12 @@ matrix:
         - bash ../scripts/ci_ctest.sh
 
     - os: linux
-      compiler: g++-6
+      compiler: clang++-5.0
       env:
-        - TEST="clang-tidy (g++-6.0)"
+        - TEST="clang-tidy (clang++-5.0)"
       script:
-        - sudo apt-get install -y g++-6 clang-tidy-5.0
-        - cmake -G "Ninja" -DCMAKE_CXX_COMPILER="g++-6" -DCMAKE_BUILD_TYPE=Debug -DNANO_WITH_WERROR=ON -DNANO_WITH_CLANG_TIDY=ON ..
+        - sudo apt-get install -y clang-5.0 g++-6 clang-tidy-5.0
+        - cmake -G "Ninja" -DCMAKE_CXX_COMPILER="clang++-5.0" -DCMAKE_BUILD_TYPE=Debug -DNANO_WITH_WERROR=ON -DNANO_WITH_CLANG_TIDY=ON ..
         - bash ../scripts/ci_clang_tidy.sh
 
     - os: linux
