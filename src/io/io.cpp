@@ -59,12 +59,14 @@ bool nano::save_string(const std::string& path, const string_t& string)
 
 bool nano::load_buffer(const std::string& path, buffer_t& buffer)
 {
+        buffer.clear();
         std::ifstream stream(path.c_str(), std::ios::binary | std::ios::in);
         return stream.is_open() && load(stream, buffer);
 }
 
 bool nano::load_string(const std::string& path, string_t& string)
 {
+        string.clear();
         std::ifstream stream(path.c_str(), std::ios::binary | std::ios::in);
         return stream.is_open() && load(stream, string);
 }

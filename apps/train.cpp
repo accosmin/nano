@@ -56,7 +56,7 @@ int main(int argc, const char *argv[])
         cmdline.add("", "fold",         "fold index to use for training", "0");
         cmdline.add("", "model",        "model configuration (.json)");
         cmdline.add("", "trainer",      join(get_trainers().ids()) + " (.json)");
-        cmdline.add("", "loss",         join(get_losses().ids()));
+        cmdline.add("", "loss",         join(get_losses().ids()) + " (.json)");
         cmdline.add("", "enhancer",     join(get_enhancers().ids()) + " (.json)");
         cmdline.add("", "basepath",     "basepath where to save results (e.g. model, logs, history)");
         cmdline.add("", "threads",      "number of threads to use", physical_cpus());
