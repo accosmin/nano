@@ -1,7 +1,6 @@
 import os
 import re
-import json
-import time
+import utils
 import config
 import plotter
 import subprocess
@@ -17,10 +16,10 @@ class experiment:
                 - an enhancer (name + json parameters)
                 - a loss function (name)
         """
-        def __init__(self, task, outdir, trials = 10):
+        def __init__(self, outdir, trials = 10):
                 self.cfg = config.config()
-                self.task = task
                 self.dir = outdir
+                self.dir_config = outdir + "/config"
                 self.trials = trials
                 self.runs = []
                 self.losses = []
@@ -28,34 +27,42 @@ class experiment:
                 self.trainers = []
                 self.enhancers = []
                 os.makedirs(self.dir, exist_ok = True)
-                self.save_json("config_task", task)
+                os.makedirs(self.dir_config, exist_ok = True)
 
-        def save_json(self, basename, parameters):
-                with open(os.path.join(self.dir, basename + ".json"), "w") as output:
-                        output.write(json.dumps(parameters, indent = 4))
+        """ register the task (.json config created from serializing parameters) """
+        def set_task(self, parameters):
+                json_path = os.path.join(self.dir_config, "task.json")
+                utils.save_json(json_path, parameters)
+                self.task = json_path
 
-        def log(self, *messages):
-                print(time.strftime("[%Y-%m-%d %H:%M:%S]"), ' '.join(messages))
-
+        """ register a new model (.json config created using apps/builder) """
         def add_model(self, name, parameters):
-                parameters += " --json {}".format(os.path.join(self.dir, "config_model_" + name + ".json"))
-                self.models.append([name, parameters])
+                json_path = os.path.join(self.dir_config, "model_" + name + ".json")
+                parameters += " --json {}".format(json_path)
                 subprocess.check_call((self.cfg.app_builder + " " + parameters).split(), stdout=subprocess.DEVNULL)
+                self.models.append([name, json_path])
 
+        """ register a new loss function (.json config created from serializing parameters) """
+        def add_loss(self, name, parameters):
+                json_path = os.path.join(self.dir_config, "loss_" + name + ".json")
+                utils.save_json(json_path, parameters)
+                self.losses.append([name, json_path])
+
+        """ register a new trainer (.json config created from serializing parameters) """
         def add_trainer(self, name, parameters):
-                self.trainers.append([name, parameters])
-                self.save_json("config_trainer_" + name, parameters)
+                json_path = os.path.join(self.dir_config, "trainer_" + name + ".json")
+                utils.save_json(json_path, parameters)
+                self.trainers.append([name, json_path])
 
-        def add_loss(self, name, parameters = ""):
-                self.losses.append([name, parameters])
-
+        """ register a new task enhancer (.json config created from serializing parameters) """
         def add_enhancer(self, name, parameters):
-                self.enhancers.append([name, parameters])
-                self.save_json("config_enhancer_" + name, parameters)
+                json_path = os.path.join(self.dir_config, "enhancer_" + name + ".json")
+                utils.save_json(json_path, parameters)
+                self.enhancers.append([name, json_path])
 
         def path(self, trial, mname, tname, ename, lname, extension):
                 basepath = self.dir
-                basepath += "trial{}".format(trial) if not (trial is None) else "result"
+                basepath += "/trial{}".format(trial) if not (trial is None) else "result"
                 basepath += "_M" + mname if mname else ""
                 basepath += "_T" + tname if tname else ""
                 basepath += "_E" + ename if ename else ""
@@ -63,16 +70,16 @@ class experiment:
                 basepath += extension
                 return basepath
 
-        def name(self, name_config):
+        def get_name(self, name_config):
                 return name_config[0]
 
-        def config(self, name_config):
+        def get_config(self, name_config):
                 return name_config[1]
 
-        def names(self, names_configs, name_reg = None):
+        def get_names(self, names_configs, name_reg = None):
                 names = []
                 for name_config in names_configs:
-                        name = self.name(name_config)
+                        name = self.get_name(name_config)
                         if name_reg == None or re.match(name_reg, name):
                                 names.append(name)
                 return names
@@ -91,33 +98,30 @@ class experiment:
                         paths.append(self.path(trial, mname, tname, ename, lname, extension))
                 return paths
 
-        def reg2str(self, reg):
-                return reg.replace(".*", "all").replace("*", "").replace(".", "") if reg else "all"
-
         def train_one(self, param, lpath):
                 with open(lpath, "w") as lfile:
-                        self.log("running <", param, ">...")
+                        utils.log("running <", param, ">...")
                         subprocess.check_call((self.cfg.app_train + " " + param).split(), stdout = lfile)
-                self.log("|--->training done, see <", lpath, ">")
+                utils.log("|--->training done, see <", lpath, ">")
 
         def plot_one(self, spath, ppath):
                 plotter.plot_state_one(spath, ppath)
-                self.log("|--->plotting done, see <", ppath, ">")
+                utils.log("|--->plotting done, see <", ppath, ">")
 
         def plot_many(self, spaths, ppath):
                 plotter.plot_state_many(spaths, ppath)
-                self.log("|--->plotting done, see <", ppath, ">")
+                utils.log("|--->plotting done, see <", ppath, ">")
 
         def plot_trial(self, spaths, ppath, names):
                 plotter.plot_trial_many(spaths, ppath, names)
-                self.log("|--->plotting done, see <", ppath, ">")
+                utils.log("|--->plotting done, see <", ppath, ">")
 
         def tabulate(self, cpath, lpath):
                 with open(lpath, "w") as lfile:
                         subprocess.check_call((self.cfg.app_tabulate + " -i " + cpath + " -d \";\"").split(), stdout = lfile)
 
                 with open(lpath, "r") as lfile:
-                        self.log()
+                        utils.log()
                         print(lfile.read())
 
         def summarize_by_models(self, mname_reg = ".*"):
@@ -126,15 +130,21 @@ class experiment:
         def train_trials(self, mname, mparam, tname, tparam, ename, eparam, lname, lparam):
                 # train the given configuration for multiple trials
                 for trial in range(self.trials):
-                        mpath = self.path(trial, mname, tname, ename, lname, ".model")
+                        mpath = self.path(trial, mname, tname, ename, lname, "")
                         spath = self.path(trial, mname, tname, ename, lname, ".state")
                         lpath = self.path(trial, mname, tname, ename, lname, ".log")
                         ppath = self.path(trial, mname, tname, ename, lname, ".pdf")
 
-                        param = self.task + " " + mparam + " " + tparam + " " + eparam + " " + lparam + " --model-file " + mpath
+                        param = "  --task " + self.task
+                        param += " --model " + mparam
+                        param += " --trainer " + tparam
+                        param += " --enhancer " + eparam
+                        param += " --loss " + lparam
+                        param += " --basepath " + mpath
+
                         self.train_one(param, lpath)
                         self.plot_one(spath, ppath)
-                        self.log()
+                        utils.log()
 
                 # export the results from multiple trials as csv
                 cpath = self.path(None, mname, tname, ename, lname, ".csv")
@@ -160,10 +170,10 @@ class experiment:
                 ldatas = self.losses
                 for mdata, tdata, edata, ldata in [(u, x, y, z) for u in mdatas for x in tdatas for y in edatas for z in ldatas]:
                         self.train_trials(
-                                self.name(mdata), self.config(mdata),
-                                self.name(tdata), self.config(tdata),
-                                self.name(edata), self.config(edata),
-                                self.name(ldata), self.config(ldata))
+                                self.get_name(mdata), self.get_config(mdata),
+                                self.get_name(tdata), self.get_config(tdata),
+                                self.get_name(edata), self.get_config(edata),
+                                self.get_name(ldata), self.get_config(ldata))
 
         def summarize_trials(self, mname, mname_reg, tname, tname_reg, ename, ename_reg, lname, lname_reg, names):
                 # compare configurations for each trial: plot the training state evaluation
@@ -215,42 +225,6 @@ class experiment:
                 mnames, tnames, enames, lnames = self.filter_names(None, None, None, lname_reg)
                 for mname, tname, ename in [(x, y, z) for x in mnames for y in tnames for z in enames]:
                         self.summarize_trials(mname, mname, tname, tname, ename, ename, lname, lname_reg, lnames)
-
-        def get_token(self, line, begin_delim, end_delim, start = 0):
-                begin = line.find(begin_delim, start) + len(begin_delim)
-                end = line.find(end_delim, begin)
-                return line[begin : end], end
-
-        def get_seconds(self, delta):
-                delta = delta.replace("ms", "/1000")
-                delta = delta.replace("s:", "+")
-                delta = delta.replace("m:", "*60*60+")
-                delta = delta.replace("h:", "*60*60*60+")
-                delta = delta.replace("d:", "*24*60*60*60+")
-                while (len(delta) > 0) and (delta[0] == '0'):
-                        delta = delta[1:]
-                delta = delta.replace("+00*", "1*")
-                delta = delta.replace("+00", "")
-                delta = delta.replace("+0", "+")
-                return str(eval(delta))
-
-        def get_log(self, lpath):
-                with open(lpath, "r") as lfile:
-                        for line in lfile:
-                                if line.find("speed=") < 0:
-                                        continue
-                                # search for the test loss value
-                                value, index = self.get_token(line, "test=", "|", 0)
-                                # search for the test error
-                                error, index = self.get_token(line, "|", ",", index)
-                                # search for the optimum number of epochs
-                                epoch, index = self.get_token(line, "epoch=", ",", index)
-                                # search for the convergence speed
-                                speed, index = self.get_token(line, "speed=", "/s", index)
-                                # duration
-                                delta, index = self.get_token(line, "time=", ".", index)
-                                return value, error, epoch, speed, self.get_seconds(delta)
-                print("invalid log file <", lpath, ">")
 
         def get_logs(self, mname, tname, ename, lname):
                 values = []

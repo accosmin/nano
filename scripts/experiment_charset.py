@@ -5,10 +5,9 @@ import experiment
 # - single-class classification problem using a synthetic task
 # - the model should predict the digit of a synthetic image
 cfg = config.config()
-exp = experiment.experiment(
-        cfg.task_synth_charset(ctype = "digit", color = "rgb", irows = 16, icols = 16, count = 10000),
-        cfg.expdir + "/charset",
-        trials = 10)
+exp = experiment.experiment(cfg.expdir + "/charset", trials = 10)
+
+exp.set_task(cfg.task_synth_charset(ctype = "digit", color = "rgb", irows = 16, icols = 16, count = 10000))
 
 # loss functions
 exp.add_loss("classnll", cfg.loss("classnll"))
@@ -66,7 +65,7 @@ exp.add_model("cnn3", cfg.cnn(cnn3, mlp0, imaps=3, irows=16, icols=16, omaps=10,
 exp.add_model("cnn4", cfg.cnn(cnn4, mlp0, imaps=3, irows=16, icols=16, omaps=10, orows=1, ocols=1))
 
 # train all configurations
-exp.run_all()
+exp.train_all()
 
 # compare configurations
 exp.summarize_by_models(".*")

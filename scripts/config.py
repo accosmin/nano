@@ -68,12 +68,12 @@ class config:
         # configure stochastic trainers
         def stoch_trainer(self, solver, epochs = 100, patience = 32, epsilon = 1e-6, batch = 32):
                 assert(solver in self.stoch_solvers())
-                return {"solver": solver, "epochs": epochs, "patience": patience, "epsilon": epsilon, "batch": batch}
+                return {"trainer": "stoch", "solver": solver, "epochs": epochs, "patience": patience, "epsilon": epsilon, "batch": batch}
 
         # configure batch trainers
         def batch_trainer(self, solver, epochs = 100, patience = 32, epsilon = 1e-6):
                 assert(solver in self.batch_solvers())
-                return {"solver": solver, "epochs": epochs, "patience": patience, "epsilon": epsilon}
+                return {"trainer": "batch", "solver": solver, "epochs": epochs, "patience": patience, "epsilon": epsilon}
 
         # configure losses
         def loss(self, loss):
