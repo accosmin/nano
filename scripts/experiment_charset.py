@@ -18,7 +18,7 @@ exp.add_enhancer("default", cfg.enhancer("default"))
 # trainers
 batch = 32
 epochs = 100
-patience = 32
+patience = 100
 epsilon = 1e-6
 
 exp.add_trainer("batch_gd", cfg.batch_trainer("gd", epochs=epochs, patience=patience, epsilon=epsilon))
@@ -56,13 +56,13 @@ cnn5 = cnn4 + [128,3,3,1,1,1]
 exp.add_model("mlp0", cfg.mlp(mlp0, imaps=3, irows=16, icols=16, omaps=10, orows=1, ocols=1))
 exp.add_model("mlp1", cfg.mlp(mlp1, imaps=3, irows=16, icols=16, omaps=10, orows=1, ocols=1))
 exp.add_model("mlp2", cfg.mlp(mlp2, imaps=3, irows=16, icols=16, omaps=10, orows=1, ocols=1))
-exp.add_model("mlp3", cfg.mlp(mlp3, imaps=3, irows=16, icols=16, omaps=10, orows=1, ocols=1))
-exp.add_model("mlp4", cfg.mlp(mlp4, imaps=3, irows=16, icols=16, omaps=10, orows=1, ocols=1))
+#exp.add_model("mlp3", cfg.mlp(mlp3, imaps=3, irows=16, icols=16, omaps=10, orows=1, ocols=1))
+#exp.add_model("mlp4", cfg.mlp(mlp4, imaps=3, irows=16, icols=16, omaps=10, orows=1, ocols=1))
 
-exp.add_model("cnn1", cfg.cnn(cnn1, mlp0, imaps=3, irows=16, icols=16, omaps=10, orows=1, ocols=1))
-exp.add_model("cnn2", cfg.cnn(cnn2, mlp0, imaps=3, irows=16, icols=16, omaps=10, orows=1, ocols=1))
-exp.add_model("cnn3", cfg.cnn(cnn3, mlp0, imaps=3, irows=16, icols=16, omaps=10, orows=1, ocols=1))
-exp.add_model("cnn4", cfg.cnn(cnn4, mlp0, imaps=3, irows=16, icols=16, omaps=10, orows=1, ocols=1))
+#exp.add_model("cnn1", cfg.cnn(cnn1, mlp0, imaps=3, irows=16, icols=16, omaps=10, orows=1, ocols=1))
+#exp.add_model("cnn2", cfg.cnn(cnn2, mlp0, imaps=3, irows=16, icols=16, omaps=10, orows=1, ocols=1))
+#exp.add_model("cnn3", cfg.cnn(cnn3, mlp0, imaps=3, irows=16, icols=16, omaps=10, orows=1, ocols=1))
+#exp.add_model("cnn4", cfg.cnn(cnn4, mlp0, imaps=3, irows=16, icols=16, omaps=10, orows=1, ocols=1))
 
 # train all configurations
 exp.train_all()

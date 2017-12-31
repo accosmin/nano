@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 from matplotlib.backends.backend_pdf import PdfPages
 
 class experiment:
-        """ an experiment run consists of:
+        """ an experiment run/trial consists of:
                 - a trial (fold index or None if cumulating results from multiple trials)
                 - a model (name + command line parameters to apps/builder)
                 - a trainer (name + json parameters)
@@ -26,8 +26,14 @@ class experiment:
                 self.models = []
                 self.trainers = []
                 self.enhancers = []
+                self.makedirs()
+
+        """ create output directories """
+        def makedirs(self):
                 os.makedirs(self.dir, exist_ok = True)
                 os.makedirs(self.dir_config, exist_ok = True)
+                for trial in range(self.trials):
+                        os.makedirs(self.dir + "/trial{}/".format(trial), exist_ok = True)
 
         """ register the task (.json config created from serializing parameters) """
         def set_task(self, parameters):
@@ -62,8 +68,9 @@ class experiment:
 
         def path(self, trial, mname, tname, ename, lname, extension):
                 basepath = self.dir
-                basepath += "/trial{}".format(trial) if not (trial is None) else "result"
-                basepath += "_M" + mname if mname else ""
+                if not (trial is None):
+                        basepath += "/trial{}/".format(trial)
+                basepath += "M" + mname if mname else ""
                 basepath += "_T" + tname if tname else ""
                 basepath += "_E" + ename if ename else ""
                 basepath += "_L" + lname if lname else ""
@@ -234,7 +241,7 @@ class experiment:
                 deltas = []
                 for trial in range(self.trials):
                         lpath = self.path(trial, mname, tname, ename, lname, ".log")
-                        value, error, epoch, speed, delta = self.get_log(lpath)
+                        value, error, epoch, speed, delta = utils.get_log(lpath)
                         values.append(value)
                         errors.append(error)
                         epochs.append(epoch)
@@ -243,7 +250,7 @@ class experiment:
                 return values, errors, epochs, speeds, deltas
 
         def get_log_stats(self, values, errors, epochs, speeds, deltas):
-                cmdline = self.cfg.app_stats + " -p 4"
+                cmdline = self.cfg.app_stats + " -p 3"
                 value_stats = subprocess.check_output(cmdline.split() + values).decode('utf-8').strip()
                 error_stats = subprocess.check_output(cmdline.split() + errors).decode('utf-8').strip()
                 epoch_stats = subprocess.check_output(cmdline.split() + epochs).decode('utf-8').strip()
