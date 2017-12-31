@@ -1,6 +1,7 @@
 #pragma once
 
 #include "affine_params.h"
+#include "tensor/numeric.h"
 
 namespace nano
 {
@@ -17,8 +18,9 @@ namespace nano
         /// operation:
         ///     odata = wdata * idata + bdata
         ///
-        struct affine4d_t
+        class affine4d_t
         {
+        public:
                 ///
                 /// \brief constructor
                 ///
@@ -58,6 +60,9 @@ namespace nano
         void affine4d_t::output(const tidata& idata, const twdata& wdata, const tbdata& bdata, todata&& odata) const
         {
                 assert(m_params.valid(idata, wdata, bdata, odata));
+                assert(nano::isfinite(idata));
+                assert(nano::isfinite(wdata));
+                assert(nano::isfinite(bdata));
 
                 const auto count = idata.template size<0>();
                 const auto isize = m_params.isize();
@@ -73,7 +78,10 @@ namespace nano
         void affine4d_t::ginput(tidata&& idata, const twdata& wdata, const tbdata& bdata, const todata& odata) const
         {
                 assert(m_params.valid(idata, wdata, bdata, odata));
-                NANO_UNUSED1(bdata);
+                assert(nano::isfinite(odata));
+                assert(nano::isfinite(wdata));
+                assert(nano::isfinite(bdata));
+                NANO_UNUSED1_RELEASE(bdata);
 
                 const auto count = idata.template size<0>();
                 const auto isize = m_params.isize();
@@ -89,6 +97,8 @@ namespace nano
         void affine4d_t::gparam(const tidata& idata, twdata&& wdata, tbdata&& bdata, const todata& odata) const
         {
                 assert(m_params.valid(idata, wdata, bdata, odata));
+                assert(nano::isfinite(idata));
+                assert(nano::isfinite(odata));
 
                 const auto count = idata.template size<0>();
                 const auto isize = m_params.isize();

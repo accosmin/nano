@@ -1,4 +1,3 @@
-#include "charset.h"
 #include "math/random.h"
 #include "math/numeric.h"
 #include "task_charset.h"
@@ -130,29 +129,28 @@ static void alpha_blend(const tensor3d_t& mask, const tensor3d_t& img1, const te
         imgb.matrix(3).setConstant(1);
 }
 
-static string_t append_config(const string_t& params)
+charset_task_t::charset_task_t() :
+        mem_vision_task_t(color_mode::rgb, 32, 32, tensor3d_dim_t{osize(charset_type::digit), 1, 1}, 1)
 {
-        return  to_params(params,
-                "type", to_string(charset_type::digit) + "[" + concatenate(enum_values<charset_type>()) + "]",
-                "color", "rgb[luma,rgba]",
-                "irows", "32[12,256]", "icols", "32[12,256]", "count", "1000[32,1M]");
 }
 
-charset_task_t::charset_task_t(const string_t& params) : mem_vision_task_t(
-        from_params<color_mode>(append_config(params), "color"),
-        clamp(from_params<tensor_size_t>(append_config(params), "irows", 32), 12, 256),
-        clamp(from_params<tensor_size_t>(append_config(params), "icols", 32), 12, 256),
-        tensor3d_dims_t{osize(from_params<charset_type>(append_config(params), "type")), 1, 1},
-        1, append_config(params))
+json_reader_t& charset_task_t::config(json_reader_t& reader)
 {
+        reader.object("type", m_type, "color", m_color, "irows", m_irows, "icols", m_icols, "count", m_count);
+        reconfig(m_color, m_irows, m_icols, tensor3d_dim_t{osize(m_type), 1, 1}, 1);
+        return reader;
+}
+
+json_writer_t& charset_task_t::config(json_writer_t& writer) const
+{
+        return writer.object(
+                "type", m_type, "types", join(enum_values<charset_type>()),
+                "color", m_color, "colors", join(enum_values<color_mode>()),
+                "irows", m_irows, "icols", m_icols, "count", m_count);
 }
 
 bool charset_task_t::populate()
 {
-        const auto charset = from_params<charset_type>(config(), "type");
-        const auto color = from_params<color_mode>(config(), "color");
-        const auto count = clamp(from_params<size_t>(config(), "count"), 16, 1024 * 1024);
-
         const string_t characters =
                 "0123456789" \
                 "abcdefghijklmnopqrstuvwxyz" \
@@ -182,7 +180,7 @@ bool charset_task_t::populate()
 
         const size_t n_fonts = char_patches.size();
 
-        auto rng_output = make_rng<tensor_size_t>(obegin(charset), oend(charset) - 1);
+        auto rng_output = make_rng<tensor_size_t>(obegin(m_type), oend(m_type) - 1);
         auto rng_font = make_rng<size_t>(1, n_fonts);
         auto rng_gauss = make_rng<scalar_t>(0, 2);
         auto rng_rgba = make_rng<luma_t>(0, 255);
@@ -204,7 +202,7 @@ bool charset_task_t::populate()
         tensor3d_t fpatch(4, irows, icols);
 
         // generate samples
-        for (size_t i = 0; i < count; ++ i)
+        for (size_t i = 0; i < m_count; ++ i)
         {
                 // random target: character
                 const auto o = rng_output();
@@ -241,7 +239,7 @@ bool charset_task_t::populate()
 
                 image_t image;
                 image.from_tensor(fpatch);
-                switch (color)
+                switch (m_color)
                 {
                 case color_mode::luma:  image.make_luma(); break;
                 case color_mode::rgba:  image.make_rgba(); break;
@@ -253,7 +251,7 @@ bool charset_task_t::populate()
 
                 // generate sample
                 const auto fold = make_fold(0);
-                const auto target = class_target(o - obegin(charset), osize(charset));
+                const auto target = class_target(o - obegin(m_type), osize(m_type));
                 const auto label = string_t("char") + characters[static_cast<size_t>(o)];
                 add_sample(fold, n_chunks() - 1, target, label);
         }

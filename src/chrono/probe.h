@@ -38,6 +38,7 @@ namespace nano
                 const auto& fullname() const { return m_fullname; }
 
                 auto flops() const { return m_flops; }
+                auto kflops() const { return m_flops / 1024; }
                 auto gflops() const { return nano::gflops(flops(), nanoseconds_t(timings().min())); }
 
                 // attributes

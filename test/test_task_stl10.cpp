@@ -9,8 +9,8 @@ NANO_CASE(construction)
 {
         using namespace nano;
 
-        const auto idims = tensor3d_dims_t{3, 96, 96};
-        const auto odims = tensor3d_dims_t{10, 1, 1};
+        const auto idims = tensor3d_dim_t{3, 96, 96};
+        const auto odims = tensor3d_dim_t{10, 1, 1};
         const auto target_sum = scalar_t(2) - static_cast<scalar_t>(nano::size(odims));
 
         const auto folds = size_t(10);
@@ -64,8 +64,8 @@ NANO_CASE(construction)
 
                                 if (label.empty())
                                 {
-                                        NANO_CHECK_EQUAL(target.vector().minCoeff(), 0);
-                                        NANO_CHECK_EQUAL(target.vector().maxCoeff(), 0);
+                                        NANO_CHECK_EQUAL(target.vector().minCoeff(), scalar_t(0));
+                                        NANO_CHECK_EQUAL(target.vector().maxCoeff(), scalar_t(0));
                                         continue;
                                 }
 

@@ -6,8 +6,9 @@
 
 namespace nano
 {
-        struct ls_strategy_t
+        class ls_strategy_t
         {
+        public:
                 ///
                 /// \brief constructor
                 ///
@@ -17,12 +18,12 @@ namespace nano
                 ///
                 /// \brief update the current state
                 ///
-                bool operator()(const function_t& function, const scalar_t t0, function_state_t& state) const;
+                bool operator()(const function_t& function, const scalar_t t0, solver_state_t& state) const;
 
         private:
 
-                bool setup(const function_t&, const ls_step_t& step0, const ls_step_t& step, function_state_t& state) const;
-                bool setup(const function_t&, const ls_step_t& step, function_state_t& state) const;
+                bool setup(const function_t&, const ls_step_t& step0, const ls_step_t& step, solver_state_t& state) const;
+                bool setup(const function_t&, const ls_step_t& step, solver_state_t& state) const;
 
                 // attributes
                 ls_strategy                     m_strategy;     ///<

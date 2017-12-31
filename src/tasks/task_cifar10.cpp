@@ -18,17 +18,25 @@ static const string_t tlabels[] =
         "truck"
 };
 
-cifar10_task_t::cifar10_task_t(const string_t& config) :
-        mem_vision_task_t(tensor3d_dims_t{3, 32, 32}, tensor3d_dims_t{10, 1, 1}, 1,
-        to_params(config, "dir", string_t(std::getenv("HOME")) + "/experiments/databases/cifar10"))
+cifar10_task_t::cifar10_task_t() :
+        mem_vision_task_t(tensor3d_dim_t{3, 32, 32}, tensor3d_dim_t{10, 1, 1}, 1),
+        m_dir(string_t(std::getenv("HOME")) + "/experiments/databases/cifar10")
 {
+}
+
+json_reader_t& cifar10_task_t::config(json_reader_t& reader)
+{
+        return reader.object("dir", m_dir);
+}
+
+json_writer_t& cifar10_task_t::config(json_writer_t& writer) const
+{
+        return writer.object("dir", m_dir);
 }
 
 bool cifar10_task_t::populate()
 {
-        const string_t dir = nano::from_params<string_t>(config(), "dir");
-
-        const string_t bfile = dir + "/cifar-10-binary.tar.gz";
+        const string_t bfile = m_dir + "/cifar-10-binary.tar.gz";
 
         const string_t train_bfile1 = "data_batch_1.bin";
         const string_t train_bfile2 = "data_batch_2.bin";

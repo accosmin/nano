@@ -4,6 +4,7 @@
 #include "function.h"
 #include "math/random.h"
 #include "math/epsilon.h"
+#include "tensor/numeric.h"
 
 using namespace nano;
 
@@ -28,15 +29,13 @@ struct loss_function_t final : public function_t
                 {
                         const auto grads = m_loss->vgrad(m_targets, scores);
                         NANO_CHECK_EQUAL(gx->size(), grads.size());
-                        NANO_CHECK(std::isfinite(grads.vector().minCoeff()));
-                        NANO_CHECK(std::isfinite(grads.vector().maxCoeff()));
+                        NANO_CHECK(nano::isfinite(grads));
 
                         *gx = grads.vector();
                 }
 
                 const auto values = m_loss->value(m_targets, scores);
-                NANO_CHECK(std::isfinite(values.vector().minCoeff()));
-                NANO_CHECK(std::isfinite(values.vector().maxCoeff()));
+                NANO_CHECK(nano::isfinite(values));
                 return values.vector().sum();
         }
 
@@ -48,14 +47,12 @@ NANO_BEGIN_MODULE(test_loss)
 
 NANO_CASE(evaluate)
 {
-        const strings_t loss_ids = get_losses().ids();
-
         const tensor_size_t cmd_min_dims = 2;
         const tensor_size_t cmd_max_dims = 10;
         const size_t cmd_tests = 128;
 
         // evaluate the analytical gradient vs. the finite difference approximation
-        for (const string_t& loss_id : loss_ids)
+        for (const auto& loss_id : get_losses().ids())
         {
                 for (tensor_size_t cmd_dims = cmd_min_dims; cmd_dims <= cmd_max_dims; ++ cmd_dims)
                 {
@@ -67,7 +64,7 @@ NANO_CASE(evaluate)
                                 tensor1d_t x(3 * cmd_dims);
                                 x.random(scalar_t(-0.1), scalar_t(+0.1));
 
-                                NANO_CHECK_GREATER(function.eval(x.vector()), 0);
+                                NANO_CHECK_GREATER(function.eval(x.vector()), scalar_t(0));
                                 NANO_CHECK_LESS(function.grad_accuracy(x.vector()), epsilon1<scalar_t>());
                         }
                 }

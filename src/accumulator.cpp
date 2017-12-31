@@ -3,8 +3,6 @@
 
 using namespace nano;
 
-static const size_t max_minibatch_size = 1024;
-
 accumulator_t::accumulator_t(const model_t& model, const loss_t& loss) :
         m_type(type::value), m_loss(loss)
 {
@@ -48,6 +46,11 @@ void accumulator_t::threads(const size_t nthreads)
         thread_pool_t::instance().activate(nthreads);
 }
 
+void accumulator_t::minibatch(const size_t minibatch_size)
+{
+        m_batch = minibatch_size;
+}
+
 void accumulator_t::update(const task_t& task, const fold_t& fold)
 {
         update(task, fold, 0, task.size(fold));
@@ -58,7 +61,7 @@ void accumulator_t::update(const task_t& task, const fold_t& fold, const size_t 
         switch (thread_pool_t::instance().active_workers())
         {
         case 1:
-                for (size_t chunk = std::min(end - begin, max_minibatch_size), ibegin = begin; ibegin < end; )
+                for (size_t chunk = std::min(end - begin, m_batch), ibegin = begin; ibegin < end; )
                 {
                         const auto iend = std::min(ibegin + chunk, end);
                         update(origin(), task.get(fold, ibegin, iend));
@@ -67,7 +70,7 @@ void accumulator_t::update(const task_t& task, const fold_t& fold, const size_t 
                 break;
 
         default:
-                loopit(end - begin, max_minibatch_size, [&] (const size_t ibegin, const size_t iend, const size_t thread)
+                loopit(end - begin, m_batch, [&] (const size_t ibegin, const size_t iend, const size_t thread)
                 {
                         assert(thread < m_tcaches.size());
                         assert(begin <= ibegin && ibegin < iend && iend <= end);
@@ -89,7 +92,7 @@ void accumulator_t::update(const enhancer_t& enhancer, const task_t& task, const
         switch (thread_pool_t::instance().active_workers())
         {
         case 1:
-                for (size_t chunk = std::min(end - begin, max_minibatch_size), ibegin = begin; ibegin < end; )
+                for (size_t chunk = std::min(end - begin, m_batch), ibegin = begin; ibegin < end; )
                 {
                         const auto iend = std::min(ibegin + chunk, end);
                         update(origin(), enhancer.get(task, fold, ibegin, iend));
@@ -98,7 +101,7 @@ void accumulator_t::update(const enhancer_t& enhancer, const task_t& task, const
                 break;
 
         default:
-                loopit(end - begin, max_minibatch_size, [&] (const size_t ibegin, const size_t iend, const size_t thread)
+                loopit(end - begin, m_batch, [&] (const size_t ibegin, const size_t iend, const size_t thread)
                 {
                         assert(thread < m_tcaches.size());
                         assert(begin <= ibegin && ibegin < iend && iend <= end);
@@ -129,7 +132,7 @@ void accumulator_t::update(tcache_t& tcache, const tensor4d_t& targets, const te
 
         if (m_type == type::vgrad)
         {
-                tcache.m_vgrad += tcache.m_model->gparam(m_loss.vgrad(targets, outputs)).vector();
+                tcache.m_vgrad += tcache.m_model->gparam(m_loss.vgrad(targets, outputs));
         }
 }
 
@@ -186,7 +189,7 @@ probes_t accumulator_t::probes() const
         return origin().m_model->probes();
 }
 
-vector_t accumulator_t::params() const
+const vector_t& accumulator_t::params() const
 {
         return origin().m_model->params();
 }

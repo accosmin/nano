@@ -7,7 +7,7 @@
 
 namespace nano
 {
-        class function_state_t;
+        class solver_state_t;
 
         ///
         /// \brief training history (configuration, optimization states)
@@ -47,7 +47,7 @@ namespace nano
         NANO_PUBLIC bool is_done(const trainer_status);
 
         ///
-        /// \brief track the current/optimum model state
+        /// \brief track the current/optimum model state.
         ///
         class NANO_PUBLIC trainer_result_t
         {
@@ -55,7 +55,7 @@ namespace nano
                 ///
                 /// \brief update the current/optimum state with a possible better state
                 ///
-                trainer_status update(const function_state_t&, const trainer_state_t&,
+                trainer_status update(const solver_state_t&, const trainer_state_t&,
                         const string_t& config, const size_t patience);
 
                 ///
@@ -64,12 +64,14 @@ namespace nano
                 trainer_status update(const trainer_result_t& other);
 
                 ///
-                /// \brief check if valid result
+                /// \brief check if a valid result
                 ///
                 bool valid() const
                 {
                         return !m_history.empty() && m_opt_params.size() > 0;
                 }
+
+                operator bool() const { return valid(); }
 
                 ///
                 /// \brief optimum training state

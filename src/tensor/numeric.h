@@ -35,4 +35,15 @@ namespace nano
                 add_random(rgen, tensor);
                 add_random(rgen, others...);
         }
+
+        ///
+        /// \brief check if all coefficients of the given tensor are finite.
+        ///
+        template <typename ttensor>
+        bool isfinite(const ttensor& tensor)
+        {
+                const auto op = [] (const typename ttensor::Scalar v) { return !std::isfinite(v); };
+                return  std::find_if(tensor.data(), tensor.data() + tensor.size(), op) ==
+                        tensor.data() + tensor.size();
+        }
 }

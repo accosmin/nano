@@ -5,19 +5,20 @@ make_app(benchmark_stoch.cpp nano)
 make_app(benchmark_tpool.cpp nano)
 make_app(benchmark_conv.cpp nano)
 make_app(benchmark_affine.cpp nano)
-make_app(benchmark_models.cpp nano)
+#make_app(benchmark_models.cpp nano) deprecated (should be part of apps/evaluate)
 make_app(benchmark_enhancer.cpp nano)
 make_app(benchmark_functions.cpp nano)
 
 make_app(info.cpp nano)
 make_app(info_mat5.cpp nano)
-make_app(info_task.cpp nano)
-make_app(info_model.cpp nano)
+#make_app(info_task.cpp nano)
+#make_app(info_model.cpp nano)
 make_app(info_archive.cpp nano)
-make_app(info_enhancer.cpp nano)
+#make_app(info_enhancer.cpp nano)
 
 make_app(train.cpp nano)
-make_app(evaluate.cpp nano)
+make_app(builder.cpp nano)
+#make_app(evaluate.cpp nano)
 
 make_app(embed.cpp nano)
 make_app(stats.cpp "")
@@ -27,12 +28,12 @@ make_app(tabulate.cpp nano)
 set(programs
         info
         info_mat5
-        info_task
-        info_model
+        #info_task
+        #info_model
         info_archive
-        info_enhancer
+        #info_enhancer
         train
-        evaluate
+        #evaluate
         embed
         stats
         tabulate)

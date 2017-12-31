@@ -1,5 +1,5 @@
-#include "loop.h"
 #include "solver_stoch_ag.h"
+#include "text/json_writer.h"
 
 using namespace nano;
 
@@ -18,21 +18,15 @@ static scalar_t get_beta(const scalar_t ptheta, const scalar_t ctheta)
 }
 
 template <ag_restart trestart>
-stoch_ag_base_t<trestart>::stoch_ag_base_t(const string_t& params) :
-        stoch_solver_t(params)
-{
-}
-
-template <ag_restart trestart>
-function_state_t stoch_ag_base_t<trestart>::minimize(const stoch_params_t& param,
+solver_state_t stoch_ag_base_t<trestart>::minimize(const stoch_params_t& param,
         const function_t& function, const vector_t& x0) const
 {
         const auto qs = make_finite_space(scalar_t(0.0));
-        return stoch_tune(this, param, function, x0, make_alpha0s(), qs);
+        return tune(this, param, function, x0, make_alpha0s(), qs);
 }
 
 template <ag_restart trestart>
-function_state_t stoch_ag_base_t<trestart>::minimize(const stoch_params_t& param, const function_t& function, const vector_t& x0,
+solver_state_t stoch_ag_base_t<trestart>::minimize(const stoch_params_t& param, const function_t& function, const vector_t& x0,
         const scalar_t alpha0, const scalar_t q)
 {
         // current & previous iterations
@@ -48,7 +42,7 @@ function_state_t stoch_ag_base_t<trestart>::minimize(const stoch_params_t& param
         scalar_t ctheta = 1;
 
         // assembly the solver
-        const auto solver = [&] (function_state_t& cstate, const function_state_t&)
+        const auto solver = [&] (solver_state_t& cstate, const solver_state_t&)
         {
                 // learning rate
                 const scalar_t alpha = alpha0;
@@ -91,15 +85,15 @@ function_state_t stoch_ag_base_t<trestart>::minimize(const stoch_params_t& param
                 ptheta = ctheta;
         };
 
-        const auto snapshot = [&] (const function_state_t& cstate, function_state_t& sstate)
+        const auto snapshot = [&] (const solver_state_t& cstate, solver_state_t& sstate)
         {
                 sstate.update(function, cstate.x);
         };
 
-        return  stoch_loop(param, function, x0, solver, snapshot,
-                to_params("alpha0", alpha0, "q", q));
+        return  loop(param, function, x0, solver, snapshot,
+                json_writer_t().object("alpha0", alpha0, "q", q).str());
 }
 
-template struct nano::stoch_ag_base_t<ag_restart::none>;
-template struct nano::stoch_ag_base_t<ag_restart::function>;
-template struct nano::stoch_ag_base_t<ag_restart::gradient>;
+template class nano::stoch_ag_base_t<ag_restart::none>;
+template class nano::stoch_ag_base_t<ag_restart::function>;
+template class nano::stoch_ag_base_t<ag_restart::gradient>;

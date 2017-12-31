@@ -51,7 +51,7 @@ namespace nano
         struct minibatch_t
         {
                 minibatch_t() = default;
-                minibatch_t(const tensor_size_t count, const tensor3d_dims_t& idims, const tensor3d_dims_t& odims) :
+                minibatch_t(const tensor_size_t count, const tensor3d_dim_t& idims, const tensor3d_dim_t& odims) :
                         m_idata(cat_dims(count, idims)),
                         m_odata(cat_dims(count, odims)),
                         m_labels(static_cast<size_t>(count))

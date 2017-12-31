@@ -94,31 +94,6 @@ namespace nano
                 return to_string_t<tvalue>::cast(value);
         }
 
-        ///
-        /// \brief compact a list of values into a string using the given "glue" string.
-        ///
-        template <typename titerator>
-        string_t concatenate(titerator begin, const titerator end, const char* glue = ",")
-        {
-                string_t ret;
-                for (; begin != end; )
-                {
-                        ret += to_string(*begin);
-                        if (++ begin != end)
-                        {
-                                ret += glue;
-                        }
-                }
-
-                return ret;
-        }
-
-        template <typename tcontainer>
-        string_t concatenate(const tcontainer& values, const char* glue = ",")
-        {
-                return concatenate(values.begin(), values.end(), glue);
-        }
-
         template <typename, typename = void>
         struct from_string_t;
 
@@ -329,5 +304,40 @@ namespace nano
                 string_t str;
                 detail::strcat(str, values...);
                 return str;
+        }
+
+        ///
+        /// \brief compact a list of values into a string using the given "glue" string.
+        ///
+        template <typename titerator>
+        string_t join(titerator begin, const titerator end, const char* glue = ",",
+                const char* prefix = "[", const char* suffix = "]")
+        {
+                string_t ret;
+                if (prefix)
+                {
+                        ret += prefix;
+                }
+                for (; begin != end; )
+                {
+                        detail::strcat(ret, *begin);
+                        if (++ begin != end)
+                        {
+                                ret += glue;
+                        }
+                }
+                if (suffix)
+                {
+                        ret += suffix;
+                }
+
+                return ret;
+        }
+
+        template <typename tcontainer>
+        string_t join(const tcontainer& values, const char* glue = ",",
+                const char* prefix = "[", const char* suffix = "]")
+        {
+                return join(values.begin(), values.end(), glue, prefix, suffix);
         }
 }

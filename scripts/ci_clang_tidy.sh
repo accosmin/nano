@@ -49,6 +49,7 @@ do
         count=$(cat $log | grep warning: | sort -u | wc -l)
         if [[ -z $(echo $optional_checks | grep $check) ]]
         then
+                grep warning: $log
                 warnings=$((warnings + $count))
         fi
 done

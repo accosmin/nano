@@ -10,13 +10,12 @@ namespace nano
         ///     the L1-distance between target and score/output.
         ///
         template <typename top>
-        struct regression_t final : public loss_t
+        class regression_t final : public loss_t
         {
-                explicit regression_t(const string_t& params = string_t()) : loss_t(params) {}
-
-                virtual scalar_t error(const vector_cmap_t& targets, const vector_cmap_t& scores) const override;
-                virtual scalar_t value(const vector_cmap_t& targets, const vector_cmap_t& scores) const override;
-                virtual void vgrad(const vector_cmap_t& targets, const vector_cmap_t& scores, vector_map_t&&) const override;
+        public:
+                scalar_t error(const vector_cmap_t& targets, const vector_cmap_t& scores) const override;
+                scalar_t value(const vector_cmap_t& targets, const vector_cmap_t& scores) const override;
+                void vgrad(const vector_cmap_t& targets, const vector_cmap_t& scores, vector_map_t&&) const override;
         };
 
         template <typename top>

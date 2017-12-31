@@ -12,8 +12,9 @@ namespace nano
         /// \brief computes statistics: average, standard deviation etc.
         ///
         template <typename tscalar = long double>
-        struct stats_t
+        class stats_t
         {
+        public:
                 using tstorage = long double;
 
                 ///
@@ -25,18 +26,25 @@ namespace nano
                 }
 
                 ///
-                /// \brief update statistics with a new value
+                /// \brief update statistics with new values
                 ///
                 void operator()(const tscalar value)
                 {
                         if (std::isfinite(value))
                         {
-                                m_count ++;
-                                m_sum += value;
-                                m_sumsq += value * value;
+                                m_avg1 += (value - m_avg1) / (m_count + 1);
+                                m_avg2 += (value * value - m_avg2) / (m_count + 1);
                                 m_min = std::min(m_min, value);
                                 m_max = std::max(m_max, value);
+                                m_count ++;
                         }
+                }
+
+                template <typename... tscalars>
+                void operator()(const tscalar value, const tscalars... values)
+                {
+                        operator()(value);
+                        operator()(values...);
                 }
 
                 ///
@@ -44,9 +52,9 @@ namespace nano
                 ///
                 void operator()(const stats_t& other)
                 {
+                        m_avg1 = (m_avg1 * m_count + other.m_avg1 * other.m_count) / (m_count + other.m_count);
+                        m_avg2 = (m_avg2 * m_count + other.m_avg2 * other.m_count) / (m_count + other.m_count);
                         m_count += other.m_count;
-                        m_sum += other.m_sum;
-                        m_sumsq += other.m_sumsq;
                         m_min = std::min(m_min, other.m_min);
                         m_max = std::max(m_max, other.m_max);
                 }
@@ -54,7 +62,7 @@ namespace nano
                 ///
                 /// \brief update statistics with the given [begin, end) range
                 ///
-                template <typename titerator>
+                template <typename titerator, typename = typename std::iterator_traits<titerator>::value_type>
                 void operator()(titerator begin, const titerator end)
                 {
                         for ( ; begin != end; ++ begin)
@@ -69,10 +77,36 @@ namespace nano
                 void clear()
                 {
                         m_count = 0;
-                        m_sum = 0;
-                        m_sumsq = 0;
+                        m_avg1 = 0;
+                        m_avg2 = 0;
                         m_min = std::numeric_limits<tscalar>::max();
                         m_max = std::numeric_limits<tscalar>::lowest();
+                }
+
+                ///
+                /// \brief returns average
+                ///
+                tscalar avg() const
+                {
+                        assert(count() > 0);
+                        return static_cast<tscalar>(m_avg1);
+                }
+
+                ///
+                /// \brief return variance
+                ///
+                tscalar var() const
+                {
+                        assert(count() > 0);
+                        return static_cast<tscalar>(m_avg2 - m_avg1 * m_avg1);
+                }
+
+                ///
+                /// \brief returns population standard deviation
+                ///
+                tscalar stdev() const
+                {
+                        return std::sqrt(var());
                 }
 
                 // access functions
@@ -81,37 +115,14 @@ namespace nano
                 std::size_t count() const { return m_count; }
                 tscalar min() const { return m_min; }
                 tscalar max() const { return m_max; }
-                tstorage sum() const { return m_sum; }
-
-                tscalar avg() const
-                {
-                        assert(count() > 0);
-                        return static_cast<tscalar>(sum() / count());
-                }
-
-                tscalar var2() const
-                {
-                        assert(count() > 0);
-                        return static_cast<tscalar>(m_sumsq - m_sum * m_sum / count());
-                }
-
-                tscalar var() const
-                {
-                        assert(count() > 0);
-                        return static_cast<tscalar>((m_sumsq - m_sum * m_sum / count()) / count());
-                }
-
-                tscalar stdev() const
-                {
-                        assert(count() > 0);
-                        return static_cast<tscalar>((m_sumsq - m_sum * m_sum / count()) / (count() - 1));
-                }
+                tscalar sum1() const { return static_cast<tscalar>(m_avg1 * m_count); }
+                tscalar sum2() const { return static_cast<tscalar>(m_avg2 * m_count); }
 
         private:
 
                 // attributes
-                std::size_t     m_count;
-                tstorage        m_sum, m_sumsq;
+                std::size_t     m_count{0};
+                tstorage        m_avg1{0}, m_avg2{0};
                 tscalar         m_min, m_max;
         };
 

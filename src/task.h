@@ -3,12 +3,10 @@
 #include "arch.h"
 #include "cortex.h"
 #include "factory.h"
+#include "configurable.h"
 
 namespace nano
 {
-        ///
-        /// \brief manage tasks (register new ones, query and clone them)
-        ///
         class task_t;
         using task_factory_t = factory_t<task_t>;
         using rtask_t = task_factory_t::trobject;
@@ -42,22 +40,21 @@ namespace nano
         class NANO_PUBLIC task_t : public configurable_t
         {
         public:
-                using configurable_t::configurable_t;
 
                 ///
-                /// \brief populate task with samples
+                /// \brief populate the task with samples
                 ///
                 virtual bool load() = 0;
 
                 ///
                 /// \brief input size
                 ///
-                virtual tensor3d_dims_t idims() const = 0;
+                virtual tensor3d_dim_t idims() const = 0;
 
                 ///
                 /// \brief output size
                 ///
-                virtual tensor3d_dims_t odims() const = 0;
+                virtual tensor3d_dim_t odims() const = 0;
 
                 ///
                 /// \brief number of folds

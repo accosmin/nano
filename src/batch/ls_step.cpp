@@ -2,7 +2,7 @@
 
 using namespace nano;
 
-ls_step_t::ls_step_t(const function_t& function, const function_state_t& state0) :
+ls_step_t::ls_step_t(const function_t& function, const solver_state_t& state0) :
         m_function(function),
         m_state0(state0),
         m_gphi0(state0.d.dot(state0.g)),

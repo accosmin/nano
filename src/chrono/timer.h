@@ -14,12 +14,21 @@ namespace nano
 
         using timepoint_t = std::chrono::high_resolution_clock::time_point;
 
-        struct timer_t
+        ///
+        /// \brief utility to measure duration.
+        ///
+        class timer_t
         {
+        public:
                 ///
                 /// \brief constructor
                 ///
-                timer_t();
+                timer_t() : m_start(now()) {}
+
+                ///
+                /// \brief reset the current time point
+                ///
+                void reset() { m_start = now(); }
 
                 ///
                 /// \brief retrieve the elapsed time as a string
@@ -29,22 +38,22 @@ namespace nano
                 ///
                 /// \brief retrieve the elapsed time in seconds
                 ///
-                seconds_t seconds() const;
+                seconds_t seconds() const { return duration<seconds_t>(); }
 
                 ///
                 /// \brief retrieve the elapsed time in milliseconds
                 ///
-                milliseconds_t milliseconds() const;
+                milliseconds_t milliseconds() const { return duration<milliseconds_t>(); }
 
                 ///
                 /// \brief retrieve the elapsed time in microseconds
                 ///
-                microseconds_t microseconds() const;
+                microseconds_t microseconds() const { return duration<microseconds_t>(); }
 
                 ///
                 /// \brief retrieve the elapsed time in nanoseconds
                 ///
-                nanoseconds_t nanoseconds() const;
+                nanoseconds_t nanoseconds() const { return duration<nanoseconds_t>(); }
 
         private:
 
@@ -60,34 +69,15 @@ namespace nano
                         str.append(buffer);
                 }
 
+                template <typename tduration>
+                tduration duration() const
+                {
+                        return std::chrono::duration_cast<tduration>(now() - m_start);
+                }
+
                 // attributes
                 timepoint_t     m_start;        ///< starting time point
         };
-
-        inline timer_t::timer_t() :
-                m_start(now())
-        {
-        }
-
-        inline seconds_t timer_t::seconds() const
-        {
-                return std::chrono::duration_cast<seconds_t>(nanoseconds());
-        }
-
-        inline milliseconds_t timer_t::milliseconds() const
-        {
-                return std::chrono::duration_cast<milliseconds_t>(nanoseconds());
-        }
-
-        inline microseconds_t timer_t::microseconds() const
-        {
-                return std::chrono::duration_cast<microseconds_t>(nanoseconds());
-        }
-
-        inline nanoseconds_t timer_t::nanoseconds() const
-        {
-                return std::chrono::duration_cast<nanoseconds_t>(now() - m_start);
-        }
 
         inline std::string timer_t::elapsed() const
         {

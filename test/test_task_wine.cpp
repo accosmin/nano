@@ -9,12 +9,12 @@ NANO_CASE(construction)
 {
         using namespace nano;
 
-        const auto idims = tensor3d_dims_t{13, 1, 1};
-        const auto odims = tensor3d_dims_t{3, 1, 1};
+        const auto idims = tensor3d_dim_t{13, 1, 1};
+        const auto odims = tensor3d_dim_t{3, 1, 1};
         const auto target_sum = scalar_t(2) - static_cast<scalar_t>(nano::size(odims));
 
         const auto folds = size_t(1);
-        const auto samples = 178;
+        const auto samples = size_t(178);
         const auto train_fold = fold_t{0, protocol::train};
         const auto valid_fold = fold_t{0, protocol::valid};
         const auto test_fold = fold_t{0, protocol::test};

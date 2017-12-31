@@ -1,12 +1,21 @@
 #include "task.h"
 #include "utest.h"
 #include "enhancer.h"
-#include "text/config.h"
 #include "vision/color.h"
 #include "math/epsilon.h"
 #include "tasks/charset.h"
 
 using namespace nano;
+
+static auto get_task(const charset_type type, const color_mode color,
+        const tensor_size_t irows, const tensor_size_t icols, const size_t count)
+{
+        auto task = get_tasks().get("synth-charset");
+        NANO_REQUIRE(task);
+        task->config(json_writer_t().object(
+                "type", type, "color", color, "irows", irows, "icols", icols, "count", count).str());
+        return task;
+}
 
 NANO_BEGIN_MODULE(test_charset)
 
@@ -30,11 +39,10 @@ NANO_CASE(construction)
                 const auto count = size_t(2 * osize);
                 const auto fsize = size_t(1);   // folds
 
-                const auto idims = tensor3d_dims_t{(mode == color_mode::rgba) ? 4 : 1, irows, icols};
-                const auto odims = tensor3d_dims_t{osize, 1, 1};
+                const auto idims = tensor3d_dim_t{(mode == color_mode::rgba) ? 4 : 1, irows, icols};
+                const auto odims = tensor3d_dim_t{osize, 1, 1};
 
-                auto task = get_tasks().get("synth-charset", to_params(
-                        "type", type, "color", mode, "irows", irows, "icols", icols, "count", count));
+                auto task = get_task(type, mode, irows, icols, count);
 
                 NANO_CHECK_EQUAL(task->load(), true);
                 NANO_CHECK_EQUAL(task->idims(), idims);
@@ -46,11 +54,11 @@ NANO_CASE(construction)
 
 NANO_CASE(from_params)
 {
-        auto task = get_tasks().get("synth-charset", "type=alpha,color=rgb,irows=13,icols=12,count=102");
+        auto task = get_task(charset_type::alpha, color_mode::rgb, 13, 12, 102);
         NANO_CHECK(task->load());
 
-        const auto idims = tensor3d_dims_t{3, 13, 12};
-        const auto odims = tensor3d_dims_t{52, 1, 1};
+        const auto idims = tensor3d_dim_t{3, 13, 12};
+        const auto odims = tensor3d_dim_t{52, 1, 1};
         const auto target_sum = scalar_t(2) - static_cast<scalar_t>(nano::size(odims));
 
         NANO_CHECK_EQUAL(task->idims(), idims);
@@ -86,7 +94,7 @@ NANO_CASE(from_params)
 
 NANO_CASE(shuffle)
 {
-        auto task = get_tasks().get("synth-charset", "type=alpha,color=rgb,irows=12,icols=13,count=102");
+        auto task = get_task(charset_type::alpha, color_mode::rgb, 12, 13, 102);
         NANO_CHECK(task->load());
 
         for (const auto p : {protocol::train, protocol::valid, protocol::test})
@@ -120,7 +128,7 @@ NANO_CASE(shuffle)
 
 NANO_CASE(minibatch)
 {
-        auto task = get_tasks().get("synth-charset", "type=alpha,color=rgb,irows=12,icols=12,count=102");
+        auto task = get_task(charset_type::alpha, color_mode::rgb, 12, 12, 102);
         NANO_CHECK(task->load());
 
         for (const auto p : {protocol::train, protocol::valid, protocol::test})
@@ -141,7 +149,7 @@ NANO_CASE(minibatch)
 
 NANO_CASE(enhancers)
 {
-        auto task = get_tasks().get("synth-charset", "type=alpha,color=rgb,irows=12,icols=12,count=102");
+        auto task = get_task(charset_type::alpha, color_mode::rgb, 12, 12, 102);
         NANO_CHECK(task->load());
 
         for (const auto& id : get_enhancers().ids())

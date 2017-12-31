@@ -110,7 +110,7 @@ int main(int, char* []) \
         ++ n_checks; \
         switch (check_throw<std::exception>([&] () { (void)(call); })) \
         { \
-        case exception_stats::none: \
+        case exception_status::none: \
                 break; \
         case exception_status::expected: \
         case exception_status::unexpected: \
@@ -124,14 +124,18 @@ int main(int, char* []) \
         NANO_NOTHROW(call, true)
 
 #define NANO_EVALUATE_BINARY_OP(left, right, op, critical) \
+{ \
         ++ n_checks; \
-        if (!((left) op (right))) \
+        const auto res_left = (left); /* NOLINT */ \
+        const auto res_right = (right); /* NOLINT */ \
+        if (!(res_left op res_right)) \
         { \
                 NANO_HANDLE_FAILURE() \
                         << "]: check {" << NANO_STRINGIFY(left op right) \
-                        << "} failed {" << (left) << " " << NANO_STRINGIFY(op) << " " << (right) << "}!" << std::endl; \
+                        << "} failed {" << res_left << " " << NANO_STRINGIFY(op) << " " << res_right << "}!" << std::endl; \
                 NANO_HANDLE_CRITICAL(critical) \
-        }
+        } \
+}
 
 #define NANO_EVALUATE_EQUAL(left, right, critical) \
         NANO_EVALUATE_BINARY_OP(left, right, ==, critical)
@@ -139,6 +143,13 @@ int main(int, char* []) \
         NANO_EVALUATE_EQUAL(left, right, false)
 #define NANO_REQUIRE_EQUAL(left, right) \
         NANO_EVALUATE_EQUAL(left, right, true)
+
+#define NANO_EVALUATE_NOT_EQUAL(left, right, critical) \
+        NANO_EVALUATE_BINARY_OP(left, right, !=, critical)
+#define NANO_CHECK_NOT_EQUAL(left, right) \
+        NANO_EVALUATE_NOT_EQUAL(left, right, false)
+#define NANO_REQUIRE_NOT_EQUAL(left, right) \
+        NANO_EVALUATE_NOT_EQUAL(left, right, true)
 
 #define NANO_EVALUATE_LESS(left, right, critical) \
         NANO_EVALUATE_BINARY_OP(left, right, <, critical)

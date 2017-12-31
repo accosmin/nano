@@ -3,12 +3,10 @@
 #include "arch.h"
 #include "tensor.h"
 #include "factory.h"
+#include "configurable.h"
 
 namespace nano
 {
-        ///
-        /// \brief stores registered prototypes
-        ///
         class loss_t;
         using loss_factory_t = factory_t<loss_t>;
         using rloss_t = loss_factory_t::trobject;
@@ -26,7 +24,12 @@ namespace nano
         class NANO_PUBLIC loss_t : public configurable_t
         {
         public:
-                using configurable_t::configurable_t;
+
+                ///
+                /// \brief serialization to JSON not needed
+                ///
+                json_reader_t& config(json_reader_t& reader) final { return reader; }
+                json_writer_t& config(json_writer_t& writer) const final { return writer; }
 
                 ///
                 /// \brief compute the error value

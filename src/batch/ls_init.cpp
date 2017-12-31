@@ -12,7 +12,7 @@ ls_init_t::ls_init_t(const ls_initializer type) :
 {
 }
 
-scalar_t ls_init_t::operator()(const function_state_t& cstate)
+scalar_t ls_init_t::operator()(const solver_state_t& cstate)
 {
         const auto unit = scalar_t(1.0);
 

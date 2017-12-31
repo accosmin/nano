@@ -64,7 +64,7 @@ int main(int argc, const char *argv[])
 {
         // parse the command line
         cmdline_t cmdline("describe a task");
-        cmdline.add("", "task",                 "[" + concatenate(get_tasks().ids()) + "]");
+        cmdline.add("", "task",                 join(get_tasks().ids()));
         cmdline.add("", "task-params",          "task parameters (if any)", "-");
         cmdline.add("", "save-dir",             "directory to save samples to");
         cmdline.add("", "save-group-rows",      "number of samples to group in a row", "32");
@@ -84,8 +84,8 @@ int main(int argc, const char *argv[])
         const auto cmd_save_gcols = clamp(cmdline.get<coord_t>("save-group-cols"), 1, 128);
 
         // create & load task
-        const auto task = get_tasks().get(cmd_task, cmd_task_params);
-
+        const auto task = get_tasks().get(cmd_task);
+        task->config(cmd_task_params);
         measure_critical_and_log(
                 [&] () { return task->load(); },
                 "load task <" + cmd_task + ">");

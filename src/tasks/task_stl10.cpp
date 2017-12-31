@@ -18,19 +18,27 @@ static const string_t tlabels[] =
         "truck"
 };
 
-stl10_task_t::stl10_task_t(const string_t& config) :
-        mem_vision_task_t(tensor3d_dims_t{3, 96, 96}, tensor3d_dims_t{10, 1, 1}, 10,
-        to_params(config, "dir", string_t(std::getenv("HOME")) + "/experiments/databases/stl10"))
+stl10_task_t::stl10_task_t() :
+        mem_vision_task_t(tensor3d_dim_t{3, 96, 96}, tensor3d_dim_t{10, 1, 1}, 10),
+        m_dir(string_t(std::getenv("HOME")) + "/experiments/databases/stl10")
 {
+}
+
+json_reader_t& stl10_task_t::config(json_reader_t& reader)
+{
+        return reader.object("dir", m_dir);
+}
+
+json_writer_t& stl10_task_t::config(json_writer_t& writer) const
+{
+        return writer.object("dir", m_dir);
 }
 
 bool stl10_task_t::populate()
 {
         m_samples.clear();
 
-        const string_t dir = nano::from_params<string_t>(config(), "dir");
-
-        const string_t bfile = dir + "/stl10_binary.tar.gz";
+        const string_t bfile = m_dir + "/stl10_binary.tar.gz";
 
         const string_t train_ifile = "train_X.bin";
         const string_t train_gfile = "train_y.bin";

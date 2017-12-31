@@ -1,47 +1,42 @@
 #pragma once
 
 #include "layer.h"
+#include "tensor/numeric.h"
 
 namespace nano
 {
         ///
-        /// \brief activation layer: applies a non-linear scalar function to the each input.
+        /// \brief activation layer: applies a non-linear scalar function to the each scalar input.
         ///
         template <typename top>
-        struct activation_layer_t final : public layer_t
+        class activation_layer_t final : public layer_t
         {
-                explicit activation_layer_t(const string_t& params = string_t());
+        public:
 
-                rlayer_t clone() const override;
-                bool configure(const tensor3d_dims_t& idims, const string_t& name) override;
-                void output(const tensor4d_t& idata, const tensor1d_t& pdata, tensor4d_t& odata) override;
-                void ginput(tensor4d_t& idata, const tensor1d_t& pdata, const tensor4d_t& odata) override;
-                void gparam(const tensor4d_t& idata, tensor1d_t& pdata, const tensor4d_t& odata) override;
+                rlayer_t clone() const final;
+                json_reader_t& config(json_reader_t& reader) final { return reader; }
+                json_writer_t& config(json_writer_t& writer) const final { return writer; }
 
-                tensor_size_t fanin() const override { return 1; }
-                tensor3d_dims_t idims() const override { return m_xdims; }
-                tensor3d_dims_t odims() const override { return m_xdims; }
-                tensor1d_dims_t pdims() const override { return {0}; }
+                bool resize(const tensor3d_dims_t& idims) final;
 
-                const probe_t& probe_output() const override { return m_probe_output; }
-                const probe_t& probe_ginput() const override { return m_probe_ginput; }
-                const probe_t& probe_gparam() const override { return m_probe_gparam; }
+                void random(vector_map_t pdata) const final;
+                void output(tensor4d_cmaps_t idata, vector_cmap_t pdata, tensor4d_map_t odata) final;
+                void ginput(tensor4d_maps_t idata, vector_cmap_t pdata, tensor4d_cmap_t odata) final;
+                void gparam(tensor4d_cmaps_t idata, vector_map_t pdata, tensor4d_cmap_t odata) final;
+
+                tensor_size_t psize() const final { return 0; }
+                tensor3d_dim_t odims() const final { return m_xdims; }
+                tensor_size_t flops_output() const final { return 10 * nano::size(odims()); }
+                tensor_size_t flops_ginput() const final { return 10 * nano::size(odims()); }
+                tensor_size_t flops_gparam() const final { return 0; }
 
         private:
 
-                // attributes
-                tensor3d_dims_t m_xdims;        ///< input/output dimensions
-                probe_t         m_probe_output;
-                probe_t         m_probe_ginput;
-                probe_t         m_probe_gparam;
-        };
+                auto xsize() const { return nano::size(odims()); }
 
-        template <typename top>
-        activation_layer_t<top>::activation_layer_t(const string_t& params) :
-                layer_t(params),
-                m_xdims({0, 0, 0})
-        {
-        }
+                // attributes
+                tensor3d_dim_t m_xdims{{0, 0, 0}};     ///< input/output dimensions
+        };
 
         template <typename top>
         rlayer_t activation_layer_t<top>::clone() const
@@ -50,56 +45,59 @@ namespace nano
         }
 
         template <typename top>
-        bool activation_layer_t<top>::configure(const tensor3d_dims_t& idims, const string_t& name)
+        bool activation_layer_t<top>::resize(const tensor3d_dims_t& idims)
         {
-                m_xdims = idims;
-                m_probe_output = probe_t{name, name + "(output)", 10 * isize()};
-                m_probe_ginput = probe_t{name, name + "(ginput)", 10 * isize()};
-                m_probe_gparam = probe_t{name, name + "(gparam)", 0};
+                if (idims.size() != 1)
+                {
+                        return false;
+                }
+
+                m_xdims = idims[0];
                 return true;
         }
 
         template <typename top>
-        void activation_layer_t<top>::output(const tensor4d_t& idata, const tensor1d_t& pdata, tensor4d_t& odata)
+        void activation_layer_t<top>::random(vector_map_t pdata) const
         {
-                assert(idata.dims() == odata.dims());
-                assert(pdata.dims() == pdims());
+                assert(pdata.size() == psize());
                 NANO_UNUSED1_RELEASE(pdata);
-
-                assert(std::isfinite(idata.vector().minCoeff()));
-                assert(std::isfinite(idata.vector().maxCoeff()));
-
-                const auto count = idata.size<0>();
-                m_probe_output.measure([&] () { top::output(idata.array(), odata.array()); }, count);
-
-                assert(std::isfinite(odata.vector().minCoeff()));
-                assert(std::isfinite(odata.vector().maxCoeff()));
         }
 
         template <typename top>
-        void activation_layer_t<top>::ginput(tensor4d_t& idata, const tensor1d_t& pdata, const tensor4d_t& odata)
+        void activation_layer_t<top>::output(tensor4d_cmaps_t idata, vector_cmap_t pdata, tensor4d_map_t odata)
         {
-                assert(idata.dims() == odata.dims());
-                assert(pdata.dims() == pdims());
+                assert(idata.size() == 1);
+                assert(idata[0].dims() == odata.dims());
+                assert(pdata.size() == psize());
+                assert(nano::isfinite(idata[0]));
+
+                top::output(idata[0].array(), odata.array());
+
+                assert(nano::isfinite(odata));
                 NANO_UNUSED1_RELEASE(pdata);
-
-                assert(std::isfinite(idata.vector().minCoeff()));
-                assert(std::isfinite(idata.vector().maxCoeff()));
-                assert(std::isfinite(odata.vector().minCoeff()));
-                assert(std::isfinite(odata.vector().maxCoeff()));
-
-                const auto count = idata.size<0>();
-                m_probe_ginput.measure([&] () { top::ginput(idata.array(), odata.array()); }, count);
-
-                assert(std::isfinite(idata.vector().minCoeff()));
-                assert(std::isfinite(idata.vector().maxCoeff()));
         }
 
         template <typename top>
-        void activation_layer_t<top>::gparam(const tensor4d_t& idata, tensor1d_t& pdata, const tensor4d_t& odata)
+        void activation_layer_t<top>::ginput(tensor4d_maps_t idata, vector_cmap_t pdata, tensor4d_cmap_t odata)
         {
-                assert(idata.dims() == odata.dims());
-                assert(pdata.dims() == pdims());
+                assert(idata.size() == 1);
+                assert(idata[0].dims() == odata.dims());
+                assert(pdata.size() == psize());
+                assert(nano::isfinite(idata[0]));
+                assert(nano::isfinite(odata));
+
+                top::ginput(idata[0].array(), odata.array());
+
+                assert(nano::isfinite(idata[0]));
+                NANO_UNUSED1_RELEASE(pdata);
+        }
+
+        template <typename top>
+        void activation_layer_t<top>::gparam(tensor4d_cmaps_t idata, vector_map_t pdata, tensor4d_cmap_t odata)
+        {
+                assert(idata.size() == 1);
+                assert(idata[0].dims() == odata.dims());
+                assert(pdata.size() == psize());
                 NANO_UNUSED3_RELEASE(idata, pdata, odata);
         }
 
@@ -182,6 +180,26 @@ namespace nano
         };
 
         using activation_layer_sigm_t = activation_layer_t<activation_sigm_t>;
+
+        ///
+        /// \brief x/(1+abs(x)) soft-sign activation function.
+        ///
+        struct activation_ssign_t
+        {
+                template <typename tiarray, typename toarray>
+                static void output(const tiarray& idata, toarray&& odata)
+                {
+                        odata = idata / (1 + idata.abs());
+                }
+
+                template <typename tiarray, typename toarray>
+                static void ginput(tiarray&& idata, const toarray& odata)
+                {
+                        idata = odata / (1 + idata.abs()).square();
+                }
+        };
+
+        using activation_layer_ssign_t = activation_layer_t<activation_ssign_t>;
 
         ///
         /// \brief log(1 + exp(x)) soft-plus activation function.

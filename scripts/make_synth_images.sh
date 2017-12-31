@@ -23,16 +23,12 @@ convert -list font | grep -i mono | grep -vi italic | grep -vi oblique | grep -i
 while read fname
 do
     font=${fname/Font: /}
-    echo "using font ${font} ..."    
-        
+    echo "using font ${font} ..."
+
     ipath="synth_${font}.png"
-    
+
     rm -f ${ipath}
-    convert ${params} -font ${font} label:${text} ${ipath}   
+    convert ${params} -font ${font} label:${text} ${ipath}
 done < ${flist}
 
 rm -f ${flist}
-
-
-
-

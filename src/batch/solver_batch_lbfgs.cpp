@@ -1,4 +1,3 @@
-#include "loop.h"
 #include "ls_init.h"
 #include "ls_strategy.h"
 #include "solver_batch_lbfgs.h"
@@ -6,39 +5,34 @@
 
 using namespace nano;
 
-batch_lbfgs_t::batch_lbfgs_t(const string_t& params) :
-        batch_solver_t(to_params(params,
-        "ls_init", ls_initializer::quadratic,
-        "ls_strat", ls_strategy::interpolation,
-        "c1", 1e-4, "c2", 0.9))
+json_reader_t& batch_lbfgs_t::config(json_reader_t& reader)
 {
+        return reader.object("ls_init", m_ls_init, "ls_strat", m_ls_strat, "c1", m_c1, "c2", m_c2);
 }
 
-function_state_t batch_lbfgs_t::minimize(const batch_params_t& param, const function_t& function, const vector_t& x0) const
+json_writer_t& batch_lbfgs_t::config(json_writer_t& writer) const
 {
-        return  minimize(param, function, x0,
-                from_params<ls_initializer>(config(), "ls_init"),
-                from_params<ls_strategy>(config(), "ls_strat"),
-                from_params<scalar_t>(config(), "c1"),
-                from_params<scalar_t>(config(), "c2"));
+        return writer.object(
+                "ls_init", m_ls_init, "ls_inits", join(enum_values<ls_initializer>()),
+                "ls_strat", m_ls_strat, "ls_strats", join(enum_values<ls_strategy>()),
+                "c1", m_c1, "c2", m_c2);
 }
 
-function_state_t batch_lbfgs_t::minimize(const batch_params_t& param, const function_t& function, const vector_t& x0,
-        const ls_initializer linit, const ls_strategy lstrat, const scalar_t c1, const scalar_t c2) const
+solver_state_t batch_lbfgs_t::minimize(const batch_params_t& param, const function_t& function, const vector_t& x0) const
 {
         // previous state
-        function_state_t pstate(function.size());
+        solver_state_t pstate(function.size());
 
         std::deque<vector_t> ss, ys;
         vector_t q, r;
 
         // line-search initial step length
-        ls_init_t ls_init(linit);
+        ls_init_t ls_init(m_ls_init);
 
         // line-search step
-        ls_strategy_t ls_step(lstrat, c1, c2);
+        ls_strategy_t ls_step(m_ls_strat, m_c1, m_c2);
 
-        const auto op = [&] (function_state_t& cstate, const std::size_t i)
+        const auto op = [&] (solver_state_t& cstate, const std::size_t i)
         {
                 // descent direction
                 //      (see "Numerical optimization", Nocedal & Wright, 2nd edition, p.178)
@@ -104,5 +98,5 @@ function_state_t batch_lbfgs_t::minimize(const batch_params_t& param, const func
         };
 
         // assembly the solver
-        return batch_loop(param, function, x0, op);
+        return loop(param, function, x0, op);
 }

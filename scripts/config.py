@@ -1,82 +1,93 @@
 import os
 
 class config:
-        def __init__(self):
+        def __init__(self, build_folder = "../build-release"):
                 # useful paths
                 homedir = os.path.expanduser('~')
-                self.expdir = homedir + "/experiments/results"
-                self.dbdir = homedir + "/experiments/databases"
+                self.expdir = os.path.join(homedir, "experiments", "results")
+                self.dbdir = os.path.join(homedir, "experiments", "databases")
 
                 crtpath = os.path.dirname(os.path.realpath(__file__))
-                self.app_info = crtpath + "/../build-release/apps/info"
-                self.app_train = crtpath + "/../build-release/apps/train"
-                self.app_stats = crtpath + "/../build-release/apps/stats"
-                self.app_tabulate = crtpath + "/../build-release/apps/tabulate"
+                self.app_info = os.path.join(crtpath, build_folder, "apps", "info")
+                self.app_train = os.path.join(crtpath, build_folder, "apps", "train")
+                self.app_stats = os.path.join(crtpath, build_folder, "apps", "stats")
+                self.app_builder = os.path.join(crtpath, build_folder, "apps", "builder")
+                self.app_tabulate = os.path.join(crtpath, build_folder, "apps", "tabulate")
 
-        # available losses: {name, command line parameters}+
+        # available losses
         def losses(self):
-                return {
-                        "cauchy" : "--loss cauchy",
-                        "classnll" : "--loss classnll",
-                        "sexponential" : "--loss s-exponential",
-                        "mexponential" : "--loss m-exponential",
-                        "slogistic" : "--loss s-logistic",
-                        "mlogistic" : "--loss m-logistic",
-                        "square" : "--loss square"
-                }
+                return ["cauchy",
+                        "square",
+                        "classnll",
+                        "s-logistic",
+                        "m-logistic",
+                        "s-exponential",
+                        "m-exponential"]
 
-        # configure enhancer with the given name and parameters
-        def config_loss(self, name, parameters = ""):
-                return self.losses().get(name)
-
-        # available enhancers: {name, command line parameters}+
+        # available enhancers
         def enhancers(self):
-                return {
-                        "default" : "--enhancer default",
-                        "noise" : "--enhancer noise",
-                        "warp" : "--enhancer warp",
-                        "noclass" : "--enhancer noclass"
-                }
+                return ["default",
+                        "noise",
+                        "warp",
+                        "noclass"]
 
-        # configure enhancer with the given name and parameters
-        def config_enhancer(self, name, parameters = "none"):
-                return self.enhancers().get(name) + " --enhancer-params " + parameters
+        # available activations
+        def activations(self):
+                return ["act-unit",
+                        "act-sin",      # [-1, +1]
+                        "act-tanh",     # [-1, +1]
+                        "act-splus",    # [ 0,  1]
+                        "act-snorm",    # [-1, +1]
+                        "act-ssign",    # [-1, +1]
+                        "act-sigm",     # [ 0,  1]
+                        "act-pwave"]    # [-1, +1]
 
-        # training methods: {name, command line parameters}+
-        def trainers(self):
-                return {
-                        "stoch_ag" : "--trainer stoch --trainer-params solver=ag",
-                        "stoch_agfr" : "--trainer stoch --trainer-params solver=agfr",
-                        "stoch_aggr" : "--trainer stoch --trainer-params solver=aggr",
-                        "stoch_sg" : "--trainer stoch --trainer-params solver=sg",
-                        "stoch_sgm" : "--trainer stoch --trainer-params solver=sgm",
-                        "stoch_ngd" : "--trainer stoch --trainer-params solver=ngd",
-                        "stoch_svrg" : "--trainer stoch --trainer-params solver=svrg",
-                        "stoch_asgd" : "--trainer stoch --trainer-params solver=asgd",
-                        "stoch_adagrad" : "--trainer stoch --trainer-params solver=adagrad",
-                        "stoch_adadelta" : "--trainer stoch --trainer-params solver=adadelta",
-                        "stoch_adam" : "--trainer stoch --trainer-params solver=adam",
-                        "stoch_rmsprop" : "--trainer stoch --trainer-params solver=rmsprop",
+        # helper utilities to create models
+        def model(self, model_type, conv3d_param, affine_param, imaps, irows, icols, omaps, orows, ocols, act_type):
+                return  "--{} --act-type {} --conv3d-param {} --affine-param {} "\
+                        "--imaps {} --irows {} --icols {} --omaps {} --orows {} --ocols {} ".format(
+                        model_type, act_type, ','.join(map(str, conv3d_param)), ','.join(map(str, affine_param)),
+                        imaps, irows, icols, omaps, orows, ocols)
 
-                        "batch_lbfgs" : "--trainer batch --trainer-params solver=lbfgs",
-                        "batch_cgd" : "--trainer batch --trainer-params solver=cgd",
-                        "batch_gd" : "--trainer batch --trainer-params solver=gd"
-                }
+        def mlp(self, affine_param, imaps, irows, icols, omaps, orows, ocols, act_type="act-snorm"):
+                return self.model("mlp", [], affine_param, imaps, irows, icols, omaps, orows, ocols, act_type)
 
-        # configure trainer with the given name and parameters
-        def config_trainer(self, name, parameters = ""):
-                return self.trainers().get(name) + "," + parameters
+        def cnn(self, conv3d_param, affine_param, imaps, irows, icols, omaps, orows, ocols, act_type="act-snorm"):
+                return self.model("cnn", conv3d_param, affine_param, imaps, irows, icols, omaps, orows, ocols, act_type)
 
-        # configure synthetic tasks
-        def task_synth(self, name, params):
-                return "--task synth-{0} --task-params {1}".format(name, params)
+        # available stochastic solvers
+        def stoch_solvers(self):
+                return ["ag", "agfr", "aggr",
+                        "sg", "sgm", "ngd", "svrg", "asgd",
+                        "adagrad", "adadelta", "adam", "rmsprop"]
 
-        def task_synth_charset(self, ctype = "digit", color = "rgb", irows = 16, icols = 16, count = 10000):
-                return self.task_synth("charset", "type={0},color={1},irows={2},icols={3},count={4}".format(ctype, color, irows, icols, count))
+        # available batch solvers
+        def batch_solvers(self):
+                return ["gd", "cgd", "lbfgs"]
+
+        # configure stochastic trainers
+        def stoch_trainer(self, solver, epochs = 100, patience = 32, epsilon = 1e-6, batch = 32):
+                assert(solver in self.stoch_solvers())
+                return {"trainer": "stoch", "solver": solver, "epochs": epochs, "patience": patience, "epsilon": epsilon, "batch": batch}
+
+        # configure batch trainers
+        def batch_trainer(self, solver, epochs = 100, patience = 32, epsilon = 1e-6):
+                assert(solver in self.batch_solvers())
+                return {"trainer": "batch", "solver": solver, "epochs": epochs, "patience": patience, "epsilon": epsilon}
+
+        # configure losses
+        def loss(self, loss):
+                assert(loss in self.losses())
+                return {"loss": loss}
+
+        # configure enhancers
+        def enhancer(self, enhancer):
+                assert(enhancer in self.enhancers())
+                return {"enhancer": enhancer}
 
         # configure tasks
         def task(self, name):
-                return "--task {0} --task-params dir={1}".format(name, self.dbdir + "/" + name)
+                return {"task": name, "dir": os.path.join(self.dbdir, name)}
 
         def task_mnist(self):
                 return self.task("mnist")
@@ -89,3 +100,9 @@ class config:
 
         def task_wine(self):
                 return self.task("wine")
+
+        def task_synth_charset(self, ctype = "digit", color = "rgb", irows = 16, icols = 16, count = 10000):
+                return {"task": "synth-charset", "type": ctype, "color": color, "irows": irows, "icols": icols, "count": count}
+
+        def task_synth_nparity(self, n = 32, count = 10000):
+                return {"task": "synth-nparity", "n": n, "count": count}

@@ -1,45 +1,36 @@
 #pragma once
 
-#include "text/config.h"
+#include "text/json_reader.h"
+#include "text/json_writer.h"
 
 namespace nano
 {
         ///
-        /// \brief configurable object with parameters represented as a string.
+        /// \brief interface for JSON-based configurable objects.
         ///
         class configurable_t
         {
         public:
-                ///
-                /// \brief constructor
-                ///
-                explicit configurable_t(const string_t& config = string_t()) :
-                        m_config(config) {}
 
-                ///
-                /// \brief destructor
-                ///
                 virtual ~configurable_t() = default;
 
                 ///
-                /// \brief current config (aka parameters).
+                /// \brief deserialize and update the current parameters from JSON
                 ///
-                const string_t& config() const
+                virtual json_reader_t& config(json_reader_t&) = 0;
+
+                ///
+                /// \brief serialize the current parameters to JSON
+                ///
+                virtual json_writer_t& config(json_writer_t&) const = 0;
+
+                ///
+                /// \brief convenience overload to deserialize and update the current parameters from string
+                ///
+                void config(const string_t& text)
                 {
-                        return m_config;
+                        json_reader_t reader(text);
+                        config(reader);
                 }
-
-                ///
-                /// \brief configure with new parameters.
-                ///
-                const string_t& config(const string_t& config)
-                {
-                        return (m_config = config);
-                }
-
-        private:
-
-                // attributes
-                string_t         m_config;
         };
 }

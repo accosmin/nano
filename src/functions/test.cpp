@@ -2,25 +2,16 @@
 
 #include "trid.h"
 #include "qing.h"
-#include "beale.h"
-#include "booth.h"
 #include "cauchy.h"
 #include "sphere.h"
-#include "matyas.h"
 #include "powell.h"
 #include "sargan.h"
-#include "colville.h"
 #include "zakharov.h"
-#include "mccormick.h"
-#include "himmelblau.h"
 #include "rosenbrock.h"
 #include "exponential.h"
-#include "3hump_camel.h"
 #include "dixon_price.h"
-#include "bohachevsky.h"
 #include "axis_ellipsoid.h"
 #include "chung_reynolds.h"
-#include "goldstein_price.h"
 #include "styblinski_tang.h"
 #include "rotated_ellipsoid.h"
 #include "schumer_steiglitz.h"
@@ -43,18 +34,6 @@ rfunctions_t nano::make_functions(const tensor_size_t min_size, const tensor_siz
         rfunctions_t funcs;
         for (tensor_size_t dims = min_size; dims <= max_size; )
         {
-                append(std::make_unique<function_beale_t>(), dims, funcs);
-                append(std::make_unique<function_booth_t>(), dims, funcs);
-                append(std::make_unique<function_matyas_t>(), dims, funcs);
-                append(std::make_unique<function_colville_t>(), dims, funcs);
-                append(std::make_unique<function_mccormick_t>(), dims, funcs);
-                append(std::make_unique<function_3hump_camel_t>(), dims, funcs);
-                append(std::make_unique<function_goldstein_price_t>(), dims, funcs);
-                append(std::make_unique<function_himmelblau_t>(), dims, funcs);
-                append(std::make_unique<function_bohachevsky1_t>(), dims, funcs);
-                append(std::make_unique<function_bohachevsky2_t>(), dims, funcs);
-                append(std::make_unique<function_bohachevsky3_t>(), dims, funcs);
-
                 append(std::make_unique<function_trid_t>(dims), dims, funcs);
                 append(std::make_unique<function_qing_t>(dims), dims, funcs);
                 append(std::make_unique<function_cauchy_t>(dims), dims, funcs);

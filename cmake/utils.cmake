@@ -1,10 +1,4 @@
-# check some compiler flags
 include(CheckCXXCompilerFlag)
-
-#CHECK_CXX_COMPILER_FLAG(-fsanitize=address COMPILER_SUPPORTS_SANITIZE_ADDRESS)
-#CHECK_CXX_COMPILER_FLAG(-fsanitize=undefined COMPILER_SUPPORTS_SANITIZE_UNDEFINED)
-#CHECK_CXX_COMPILER_FLAG(-fsanitize=leak COMPILER_SUPPORTS_SANITIZE_LEAK)
-#CHECK_CXX_COMPILER_FLAG(-fsanitize=thread COMPILER_SUPPORTS_SANITIZE_THREAD)
 
 set(TEST_PROGRAM "int main(int, char* []) { return 0; }")
 
@@ -12,6 +6,22 @@ macro(to_parent)
         set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} PARENT_SCOPE)
         set(CMAKE_EXE_LINKER_FLAGS ${CMAKE_EXE_LINKER_FLAGS} PARENT_SCOPE)
         set(CMAKE_SHARED_LINKER_FLAGS ${CMAKE_SHARED_LINKER_FLAGS} PARENT_SCOPE)
+endmacro()
+
+# add a flag if available to the toolchain
+macro(if_flag flag output)
+        string(REPLACE "-" "_" FLAG1 ${flag})
+        string(REPLACE "=" "_" FLAG2 ${FLAG1})
+        string(REPLACE "+" "p" FLAG3 ${FLAG2})
+        string(TOUPPER ${FLAG3} FLAGZ)
+
+        #CHECK_CXX_COMPILER_FLAG(${flag} COMPILER_SUPPORTS${FLAGZ})
+        set(CMAKE_REQUIRED_FLAGS "${flag}")
+        CHECK_CXX_SOURCE_COMPILES("${TEST_PROGRAM}" COMPILER_SUPPORTS${FLAGZ})
+
+        if(COMPILER_SUPPORTS${FLAGZ})
+                set(${output} "${${output}} ${flag}")
+        endif()
 endmacro()
 
 # require C++14 support
@@ -25,95 +35,44 @@ endfunction()
 
 # setup libc++
 function(setup_libcpp)
-        set(CMAKE_CXX_FLAGS "-stdlib=libc++ ${CMAKE_CXX_FLAGS}")
-        set(CMAKE_EXE_LINKER_FLAGS "-lc++abi ${CMAKE_EXE_LINKER_FLAGS}")
-
+        if_flag("-stdlib=libc++" CMAKE_CXX_FLAGS)
+        if_flag("-lc++abi" CMAKE_EXE_LINKER_FLAGS)
         to_parent()
 endfunction()
 
 # setup sanitizers compatible with address sanitizer
 function(setup_asan)
-        set(CMAKE_REQUIRED_FLAGS "-fsanitize=address")
-        CHECK_CXX_SOURCE_COMPILES("${TEST_PROGRAM}" COMPILER_SUPPORTS_SANITIZE_ADDRESS)
-
-        set(CMAKE_REQUIRED_FLAGS "-fsanitize=undefined")
-        CHECK_CXX_SOURCE_COMPILES("${TEST_PROGRAM}" COMPILER_SUPPORTS_SANITIZE_UNDEFINED)
-
-        set(CMAKE_REQUIRED_FLAGS "-fsanitize=vptr")
-        CHECK_CXX_SOURCE_COMPILES("${TEST_PROGRAM}" COMPILER_SUPPORTS_SANITIZE_VPTR)
-
-        set(CMAKE_REQUIRED_FLAGS "-fsanitize=leak")
-        CHECK_CXX_SOURCE_COMPILES("${TEST_PROGRAM}" COMPILER_SUPPORTS_SANITIZE_LEAK)
-
-        set(CMAKE_REQUIRED_FLAGS "-fsanitize=integer")
-        CHECK_CXX_SOURCE_COMPILES("${TEST_PROGRAM}" COMPILER_SUPPORTS_SANITIZE_INTEGER)
-
-        set(CMAKE_REQUIRED_FLAGS "-fsanitize=bounds")
-        CHECK_CXX_SOURCE_COMPILES("${TEST_PROGRAM}" COMPILER_SUPPORTS_SANITIZE_BOUNDS)
-
-        set(CMAKE_REQUIRED_FLAGS "-fsanitize=bounds-strict")
-        CHECK_CXX_SOURCE_COMPILES("${TEST_PROGRAM}" COMPILER_SUPPORTS_SANITIZE_BOUNDS_STRICT)
-
-        if(COMPILER_SUPPORTS_SANITIZE_ADDRESS)
-                set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=address")
-        endif()
-        if(COMPILER_SUPPORTS_SANITIZE_UNDEFINED)
-                set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=undefined")
-        endif()
-        if(COMPILER_SUPPORTS_SANITIZE_VPTR)
-                set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-sanitize=vptr")
-        endif()
-        if(COMPILER_SUPPORTS_SANITIZE_LEAK)
-                set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=leak")
-        endif()
-        if(COMPILER_SUPPORTS_SANITIZE_INTEGER)
-                set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=integer")
-        endif()
-        if(COMPILER_SUPPORTS_SANITIZE_BOUNDS_STRICT)
-                set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=bounds-strict")
-        endif()
-        if(COMPILER_SUPPORTS_SANITIZE_BOUNDS)
-                set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=bounds")
-        endif()
-
+        if_flag("-fsanitize=address" CMAKE_CXX_FLAGS)
+        if_flag("-fsanitize=undefined" CMAKE_CXX_FLAGS)
+        if_flag("-fsanitize=leak" CMAKE_CXX_FLAGS)
+        if_flag("-fsanitize=integer" CMAKE_CXX_FLAGS)
+        if_flag("-fsanitize=nullability" CMAKE_CXX_FLAGS)
+        if_flag("-fsanitize=unsigned-integer-overflow" CMAKE_CXX_FLAGS)
+        if_flag("-fno-sanitize=vptr" CMAKE_CXX_FLAGS)
+        if_flag("-O1" CMAKE_CXX_FLAGS)
+        if_flag("-fno-optimize-sibling-calls" CMAKE_CXX_FLAGS)
         to_parent()
 endfunction()
 
 # setup thread sanitizer
 function(setup_tsan)
-        set(CMAKE_REQUIRED_FLAGS "-fsanitize=thread")
-        CHECK_CXX_SOURCE_COMPILES("${TEST_PROGRAM}" COMPILER_SUPPORTS_SANITIZE_THREAD)
-
-        if(COMPILER_SUPPORTS_SANITIZE_THREAD)
-                set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=thread")
-        endif()
-
+        if_flag("-fsanitize=thread" CMAKE_CXX_FLAGS)
         to_parent()
 endfunction()
 
 # setup memory sanitizer
 function(setup_msan)
-        set(CMAKE_REQUIRED_FLAGS "-fsanitize=memory")
-        CHECK_CXX_SOURCE_COMPILES("${TEST_PROGRAM}" COMPILER_SUPPORTS_SANITIZE_MEMORY)
-
-        if(COMPILER_SUPPORTS_SANITIZE_MEMORY)
-                set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=memory -fsanitize-memory-track-origins -fPIE")
-                set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -pie")
-        endif()
-
+        if_flag("-fsanitize=memory" CMAKE_CXX_FLAGS)
+        if_flag("-fsanitize-memory-track-origins" CMAKE_CXX_FLAGS)
+        if_flag("-fPIE" CMAKE_CXX_FLAGS)
+        if_flag("-pie" CMAKE_EXE_LINKER_FLAGS)
         to_parent()
 endfunction()
 
 # setup gold linker
 function(setup_gold)
-        set(CMAKE_REQUIRED_FLAGS "-fuse-ld=gold")
-        CHECK_CXX_SOURCE_COMPILES("${TEST_PROGRAM}" COMPILER_SUPPORTS_GOLD)
-
-        if(COMPILER_SUPPORTS_GOLD)
-                set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -fuse-ld=gold")
-                set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -fuse-ld=gold")
-        endif()
-
+        if_flag("-fuse-ld=gold" CMAKE_CXX_FLAGS)
+        if_flag("-fuse-ld=gold" CMAKE_EXE_LINKER_FLAGS)
         to_parent()
 endfunction()
 
@@ -182,22 +141,20 @@ endfunction()
 
 # setup LTO
 function(setup_lto)
-        set(CMAKE_REQUIRED_FLAGS "-flto")
-        CHECK_CXX_SOURCE_COMPILES("${TEST_PROGRAM}" COMPILER_SUPPORTS_LTO)
-
-        set(CMAKE_REQUIRED_FLAGS "-fno-fat-lto-objects")
-        CHECK_CXX_SOURCE_COMPILES("${TEST_PROGRAM}" COMPILER_SUPPORTS_NO_FAT_LTO_OBJECTS)
+        # TODO: setup -flto=thin
+        CHECK_CXX_COMPILER_FLAG("-flto" COMPILER_SUPPORTS_LTO)
+        CHECK_CXX_COMPILER_FLAG("-fno-fat-lto-objects" COMPILER_SUPPORTS_NO_FAT_LTO_OBJECTS)
 
         if(COMPILER_SUPPORTS_LTO)
                 get_filename_component(CMAKE_LTO_DIR ${CMAKE_CXX_COMPILER} DIRECTORY)
                 if(CMAKE_CXX_COMPILER_ID MATCHES GNU)
-                        find_program(CMAKE_LTO_AR NAMES ${_CMAKE_TOOLCHAIN_PREFIX}gcc-ar ${_CMAKE_TOOLCHAIN_SUFFIX} HINTS ${CMAKE_LTO_DIR})
-                        find_program(CMAKE_LTO_NM NAMES ${_CMAKE_TOOLCHAIN_PREFIX}gcc-nm HINTS ${CMAKE_LTO_DIR})
-                        find_program(CMAKE_LTO_RANLIB NAMES ${_CMAKE_TOOLCHAIN_PREFIX}gcc-ranlib HINTS ${CMAKE_LTO_DIR})
+                        find_program(CMAKE_LTO_AR NAMES ${CMAKE_TOOLCHAIN_PREFIX}gcc-ar ${CMAKE_TOOLCHAIN_SUFFIX} HINTS ${CMAKE_LTO_DIR})
+                        find_program(CMAKE_LTO_NM NAMES ${CMAKE_TOOLCHAIN_PREFIX}gcc-nm HINTS ${CMAKE_LTO_DIR})
+                        find_program(CMAKE_LTO_RANLIB NAMES ${CMAKE_TOOLCHAIN_PREFIX}gcc-ranlib HINTS ${CMAKE_LTO_DIR})
                 elseif(CMAKE_CXX_COMPILER_ID MATCHES Clang)
-                        find_program(CMAKE_LTO_AR NAMES ${_CMAKE_TOOLCHAIN_PREFIX}llvm-ar ${_CMAKE_TOOLCHAIN_SUFFIX} HINTS ${CMAKE_LTO_DIR})
-                        find_program(CMAKE_LTO_NM NAMES ${_CMAKE_TOOLCHAIN_PREFIX}llvm-nm HINTS ${CMAKE_LTO_DIR})
-                        find_program(CMAKE_LTO_RANLIB NAMES ${_CMAKE_TOOLCHAIN_PREFIX}llvm-ranlib HINTS ${CMAKE_LTO_DIR})
+                        find_program(CMAKE_LTO_AR NAMES ${CMAKE_TOOLCHAIN_PREFIX}llvm-ar ${CMAKE_TOOLCHAIN_SUFFIX} HINTS ${CMAKE_LTO_DIR})
+                        find_program(CMAKE_LTO_NM NAMES ${CMAKE_TOOLCHAIN_PREFIX}llvm-nm HINTS ${CMAKE_LTO_DIR})
+                        find_program(CMAKE_LTO_RANLIB NAMES ${CMAKE_TOOLCHAIN_PREFIX}llvm-ranlib HINTS ${CMAKE_LTO_DIR})
                 endif()
 
                 message("++ CMAKE_AR: ${CMAKE_LTO_AR}")
@@ -233,12 +190,11 @@ endfunction()
 
 # setup coverage
 function(setup_coverage)
-        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g ")
-        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O0")
-        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fprofile-arcs")
-        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -ftest-coverage")
-        set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} --coverage")
-
+        if_flag("-g" CMAKE_CXX_FLAGS)
+        if_flag("-O0" CMAKE_CXX_FLAGS)
+        if_flag("-fprofile-arcs" CMAKE_CXX_FLAGS)
+        if_flag("-ftest-coverage" CMAKE_CXX_FLAGS)
+        if_flag("--coverage" CMAKE_EXE_LINKER_FLAGS)
         to_parent()
 endfunction()
 

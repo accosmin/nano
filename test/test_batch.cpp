@@ -28,7 +28,10 @@ static void check_function(const function_t& function)
         const auto ids = get_batch_solvers().ids();
         for (const auto& id : ids)
         {
-                const auto solver = get_batch_solvers().get(id, to_params("c1", epsilon0<scalar_t>()));
+                const auto config = json_writer_t().object("c1", epsilon0<scalar_t>()).str();
+
+                const auto solver = get_batch_solvers().get(id);
+                solver->config(config);
 
                 size_t out_of_domain = 0;
 

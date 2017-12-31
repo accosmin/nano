@@ -19,7 +19,6 @@ namespace nano
         class NANO_PUBLIC enhancer_t : public configurable_t
         {
         public:
-                using configurable_t::configurable_t;
 
                 ///
                 /// \brief retrieve the given [begin, end) samples as a minibatch

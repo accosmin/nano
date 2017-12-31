@@ -6,46 +6,48 @@
 namespace nano
 {
         ///
-        /// \brief fully-connected affine layer  (as in MLP models).
+        /// \brief fully-connected affine layer (as in MLP models).
         ///
         /// parameters:
         ///     omaps   - number of output feature maps
         ///     orows   - number of output rows (=1)
         ///     ocols   - number of output cols (=1)
         ///
-        struct affine_layer_t final : public layer_t
+        class affine_layer_t final : public layer_t
         {
-                explicit affine_layer_t(const string_t& params = string_t());
+        public:
 
-                rlayer_t clone() const override;
-                bool configure(const tensor3d_dims_t& idims, const string_t& name) override;
-                void output(const tensor4d_t& idata, const tensor1d_t& pdata, tensor4d_t& odata) override;
-                void ginput(tensor4d_t& idata, const tensor1d_t& pdata, const tensor4d_t& odata) override;
-                void gparam(const tensor4d_t& idata, tensor1d_t& pdata, const tensor4d_t& odata) override;
+                rlayer_t clone() const final;
+                json_reader_t& config(json_reader_t&) final;
+                json_writer_t& config(json_writer_t&) const final;
 
-                tensor_size_t fanin() const override;
-                tensor3d_dims_t idims() const override { return m_kernel.params().idims(); }
-                tensor3d_dims_t odims() const override { return m_kernel.params().odims(); }
-                tensor1d_dims_t pdims() const override { return m_kernel.params().pdims(); }
+                bool resize(const tensor3d_dims_t& idims) final;
 
-                const probe_t& probe_output() const override { return m_probe_output; }
-                const probe_t& probe_ginput() const override { return m_probe_ginput; }
-                const probe_t& probe_gparam() const override { return m_probe_gparam; }
+                void random(vector_map_t pdata) const final;
+                void output(tensor4d_cmaps_t idata, vector_cmap_t pdata, tensor4d_map_t odata) final;
+                void ginput(tensor4d_maps_t idata, vector_cmap_t pdata, tensor4d_cmap_t odata) final;
+                void gparam(tensor4d_cmaps_t idata, vector_map_t pdata, tensor4d_cmap_t odata) final;
+
+                tensor_size_t psize() const final { return m_params.psize(); }
+                tensor3d_dim_t odims() const final { return m_params.odims(); }
+                tensor_size_t flops_output() const final { return m_params.flops_output(); }
+                tensor_size_t flops_ginput() const final { return m_params.flops_ginput(); }
+                tensor_size_t flops_gparam() const final { return m_params.flops_gparam(); }
 
         private:
 
+                auto isize() const { return m_params.isize(); }
+                auto osize() const { return m_params.osize(); }
                 auto wsize() const { return osize() * isize(); }
 
-                auto wdata(tensor1d_t& pdata) const { return map_matrix(pdata.data(), osize(), isize()); }
-                auto bdata(tensor1d_t& pdata) const { return map_vector(pdata.data() + wsize(), osize()); }
+                template <typename tvector>
+                auto wdata(tvector&& pdata) const { return map_matrix(pdata.data(), osize(), isize()); }
 
-                auto wdata(const tensor1d_t& pdata) const { return map_matrix(pdata.data(), osize(), isize()); }
-                auto bdata(const tensor1d_t& pdata) const { return map_vector(pdata.data() + wsize(), osize()); }
+                template <typename tvector>
+                auto bdata(tvector&& pdata) const { return map_vector(pdata.data() + wsize(), osize()); }
 
                 // attributes
+                affine_params_t m_params;
                 affine4d_t      m_kernel;
-                probe_t         m_probe_output;
-                probe_t         m_probe_ginput;
-                probe_t         m_probe_gparam;
         };
 }

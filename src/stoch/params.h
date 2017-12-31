@@ -1,6 +1,6 @@
 #pragma once
 
-#include "function_state.h"
+#include "solver_state.h"
 #include <functional>
 
 namespace nano
@@ -11,10 +11,10 @@ namespace nano
         struct stoch_params_t
         {
                 /// logging operator: op(state, params), returns true if the optimization should stop
-                using opulog_t = std::function<bool(const function_state_t&, const string_t&)>;
+                using opulog_t = std::function<bool(const solver_state_t&, const string_t&)>;
 
                 /// tunning operator: op(state, params)
-                using optlog_t = std::function<void(const function_state_t&, const string_t&)>;
+                using optlog_t = std::function<void(const solver_state_t&, const string_t&)>;
 
                 ///
                 /// \brief constructor
@@ -30,8 +30,7 @@ namespace nano
                         m_epsilon(epsilon),
                         m_ulog(ulog),
                         m_tlog(tlog),
-                        m_tune_max_epochs(1),
-                        m_tune_epoch_size(epoch_size)
+                        m_tune_max_epochs(1)
                 {
                 }
 
@@ -40,7 +39,7 @@ namespace nano
                 ///
                 auto tunable() const
                 {
-                        return stoch_params_t{m_tune_max_epochs, m_tune_epoch_size, m_epsilon, nullptr, m_tlog};
+                        return stoch_params_t{m_tune_max_epochs, m_epoch_size, m_epsilon, nullptr, m_tlog};
                 }
 
                 ///
@@ -54,7 +53,7 @@ namespace nano
                 ///
                 /// \brief log the current optimization state
                 ///
-                bool ulog(const function_state_t& state, const string_t& config) const
+                bool ulog(const solver_state_t& state, const string_t& config) const
                 {
                         return m_ulog ? m_ulog(state, config) : true;
                 }
@@ -62,7 +61,7 @@ namespace nano
                 ///
                 /// \brief evaluate the current optimization state for tuning
                 ///
-                void tlog(const function_state_t& state, const string_t& config) const
+                void tlog(const solver_state_t& state, const string_t& config) const
                 {
                         if (m_tlog)
                         {
@@ -77,6 +76,5 @@ namespace nano
                 opulog_t        m_ulog;                 ///< update log: (the current_state_after_each_epoch)
                 optlog_t        m_tlog;                 ///< tuning log: (the current_state_after_each_epoch)
                 size_t          m_tune_max_epochs;      ///< maximum number of epochs (when tuning)
-                size_t          m_tune_epoch_size;      ///< number of iterations per epoch (when tuning)
         };
 }

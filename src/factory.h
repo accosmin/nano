@@ -3,20 +3,20 @@
 #include <map>
 #include <regex>
 #include <memory>
-#include <stdexcept>
+#include "stringi.h"
 #include <functional>
-#include "configurable.h"
 
 namespace nano
 {
         ///
-        /// \brief create objects of similar type that implement the configable_t interface.
+        /// \brief implements the factory pattern: create objects of similar type.
         ///
-        template <typename tobject>
-        struct factory_t
+        template <typename tobject, typename... targs>
+        class factory_t
 	{
+        public:
                 using trobject = std::unique_ptr<tobject>;
-                using tmaker = std::function<trobject(const string_t&)>;
+                using tmaker = std::function<trobject(targs&&...)>;
 
                 ///
                 /// \brief register a new object with the given ID.
@@ -30,9 +30,9 @@ namespace nano
                 bool has(const string_t& id) const;
 
                 ///
-                /// \brief retrieve the object with the given ID, constructed from the given parameters (if any).
+                /// \brief retrieve the object with the given ID.
                 ///
-                trobject get(const string_t& id, const string_t& params = string_t()) const;
+                trobject get(const string_t& id, targs&&...) const;
 
                 ///
                 /// \brief get the IDs of the registered objects matching the ID regex.
@@ -45,14 +45,9 @@ namespace nano
                 size_t size() const { return m_protos.size(); }
 
                 ///
-                /// \brief get the descriptions of all registered objects.
+                /// \brief get the description of the object with the given ID.
                 ///
-                strings_t descriptions() const;
-
-                ///
-                /// \brief get the default configurations of all registered objects.
-                ///
-                strings_t configs() const;
+                string_t description(const string_t& id) const;
 
 	private:
 
@@ -67,33 +62,32 @@ namespace nano
                 protos_t                m_protos;       ///< registered object instances
         };
 
-        template <typename tobject> template<typename tobject_impl>
-        bool factory_t<tobject>::add(const string_t& id, const string_t& description)
+        template <typename tobject, typename... targs> template <typename tobject_impl>
+        bool factory_t<tobject, targs...>::add(const string_t& id, const string_t& description)
         {
-                const auto maker = [] (const string_t& config) { return std::make_unique<tobject_impl>(config); };
+                static_assert(std::is_base_of<tobject, tobject_impl>::value, "");
+                const auto maker = [] (targs&&... args)
+                {
+                        return std::make_unique<tobject_impl>(std::forward<targs>(args)...);
+                };
                 return m_protos.emplace(id, proto_t{maker, description}).second;
         }
 
-        template <typename tobject>
-        bool factory_t<tobject>::has(const string_t& id) const
+        template <typename tobject, typename... targs>
+        bool factory_t<tobject, targs...>::has(const string_t& id) const
         {
                 return m_protos.find(id) != m_protos.end();
         }
 
-        template <typename tobject>
-        typename factory_t<tobject>::trobject factory_t<tobject>::get(const string_t& id, const string_t& configuration) const
+        template <typename tobject, typename... targs>
+        typename factory_t<tobject, targs...>::trobject factory_t<tobject, targs...>::get(const string_t& id, targs&&... args) const
         {
                 const auto it = m_protos.find(id);
-                if (it == m_protos.end())
-                {
-                        throw std::runtime_error(
-                                "invalid object id <" + id + "> of type <" + typeid(tobject).name() + ">!");
-                }
-                return it->second.m_maker(configuration);
+                return (it == m_protos.end()) ? nullptr : it->second.m_maker(std::forward<targs>(args)...);
         }
 
-        template <typename tobject>
-        strings_t factory_t<tobject>::ids(const std::regex& id_regex) const
+        template <typename tobject, typename... targs>
+        strings_t factory_t<tobject, targs...>::ids(const std::regex& id_regex) const
         {
                 strings_t ret;
                 for (const auto& proto : m_protos)
@@ -106,25 +100,10 @@ namespace nano
                 return ret;
         }
 
-        template <typename tobject>
-        strings_t factory_t<tobject>::descriptions() const
+        template <typename tobject, typename... targs>
+        string_t factory_t<tobject, targs...>::description(const string_t& id) const
         {
-                strings_t ret;
-                for (const auto& proto : m_protos)
-                {
-                        ret.push_back(proto.second.m_description);
-                }
-                return ret;
-        }
-
-        template <typename tobject>
-        strings_t factory_t<tobject>::configs() const
-        {
-                strings_t ret;
-                for (const auto& proto : m_protos)
-                {
-                        ret.push_back(proto.second.m_maker(string_t())->config());
-                }
-                return ret;
+                const auto it = m_protos.find(id);
+                return (it == m_protos.end()) ? string_t() : m_protos.at(id).m_description;
         }
 }
