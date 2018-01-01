@@ -92,10 +92,10 @@ class experiment:
                 return names
 
         def filter_names(self, mname_reg, tname_reg, ename_reg, lname_reg):
-                mnames = self.names(self.models, mname_reg)
-                tnames = self.names(self.trainers, tname_reg)
-                enames = self.names(self.enhancers, ename_reg)
-                lnames = self.names(self.losses, lname_reg)
+                mnames = self.get_names(self.models, mname_reg)
+                tnames = self.get_names(self.trainers, tname_reg)
+                enames = self.get_names(self.enhancers, ename_reg)
+                lnames = self.get_names(self.losses, lname_reg)
                 return mnames, tnames, enames, lnames
 
         def filter_paths(self, trial, mname_reg, tname_reg, ename_reg, lname_reg, extension):
@@ -210,25 +210,25 @@ class experiment:
                 self.tabulate(spath, lpath)
 
         def summarize_by_models(self, mname_reg = ".*"):
-                mname = self.reg2str(mname_reg)
+                mname = utils.reg2str(mname_reg)
                 mnames, tnames, enames, lnames = self.filter_names(mname_reg, None, None, None)
                 for tname, ename, lname in [(x, y, z) for x in tnames for y in enames for z in lnames]:
                         self.summarize_trials(mname, mname_reg, tname, tname, ename, ename, lname, lname, mnames)
 
         def summarize_by_trainers(self, tname_reg = ".*"):
-                tname = self.reg2str(tname_reg)
+                tname = utils.reg2str(tname_reg)
                 mnames, tnames, enames, lnames = self.filter_names(None, tname_reg, None, None)
                 for mname, ename, lname in [(x, y, z) for x in mnames for y in enames for z in lnames]:
                         self.summarize_trials(mname, mname, tname, tname_reg, ename, ename, lname, lname, tnames)
 
         def summarize_by_enhancers(self, ename_reg = ".*"):
-                ename = self.reg2str(ename_reg)
+                ename = utils.reg2str(ename_reg)
                 mnames, tnames, enames, lnames = self.filter_names(None, None, ename_reg, None)
                 for mname, tname, lname in [(x, y, z) for x in mnames for y in tnames for z in lnames]:
                         self.summarize_trials(mname, mname, tname, tname, ename, ename_reg, lname, lname, enames)
 
         def summarize_by_losses(self, lname_reg = ".*"):
-                lname = self.reg2str(lname_reg)
+                lname = utils.reg2str(lname_reg)
                 mnames, tnames, enames, lnames = self.filter_names(None, None, None, lname_reg)
                 for mname, tname, ename in [(x, y, z) for x in mnames for y in tnames for z in enames]:
                         self.summarize_trials(mname, mname, tname, tname, ename, ename, lname, lname_reg, lnames)
