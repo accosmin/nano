@@ -24,9 +24,9 @@ def get_token(line, begin_delim, end_delim, start = 0):
 def get_seconds(delta):
         delta = delta.replace("ms", "/1000")
         delta = delta.replace("s:", "+")
-        delta = delta.replace("m:", "*60*60+")
-        delta = delta.replace("h:", "*60*60*60+")
-        delta = delta.replace("d:", "*24*60*60*60+")
+        delta = delta.replace("m:", "*60+")
+        delta = delta.replace("h:", "*60*60+")
+        delta = delta.replace("d:", "*24*60*60+")
         while (len(delta) > 0) and (delta[0] == '0'):
                 delta = delta[1:]
         delta = delta.replace("+00*", "1*")

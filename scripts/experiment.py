@@ -132,7 +132,7 @@ class experiment:
                         print(lfile.read())
 
         def summarize_by_models(self, mname_reg = ".*"):
-                mname = self.reg2str(mname_reg)
+                mname = utils.reg2str(mname_reg)
 
         def train_trials(self, mname, mparam, tname, tparam, ename, eparam, lname, lparam):
                 # train the given configuration for multiple trials
