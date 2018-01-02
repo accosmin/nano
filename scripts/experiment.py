@@ -70,6 +70,8 @@ class experiment:
                 basepath = self.dir
                 if not (trial is None):
                         basepath += "/trial{}/".format(trial)
+                else:
+                        basepath += "/"
                 basepath += "M" + mname if mname else ""
                 basepath += "_T" + tname if tname else ""
                 basepath += "_E" + ename if ename else ""

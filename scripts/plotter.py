@@ -8,7 +8,6 @@ from matplotlib.backends.backend_pdf import PdfPages
 """
 def get_state_csv(path):
         name = os.path.basename(path).replace(".state", "")
-        name = name.replace(name[0 : name.find("_") + 1], "")
         data = mlab.csv2rec(path, delimiter = ' ', names = None)
         return name, data
 
@@ -27,7 +26,6 @@ def get_state_csvs(paths):
 """
 def get_trial_csv(path):
         name = os.path.basename(path).replace(".csv", "")
-        name = name.replace(name[0 : name.find("_") + 1], "")
         data = mlab.csv2rec(path, delimiter = ';', names = None)
         return name, data
 

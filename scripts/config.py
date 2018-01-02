@@ -66,9 +66,10 @@ class config:
                 return ["gd", "cgd", "lbfgs"]
 
         # configure stochastic trainers
-        def stoch_trainer(self, solver, epochs = 100, patience = 32, epsilon = 1e-6, batch = 32):
+        def stoch_trainer(self, solver, epochs = 100, patience = 32, epsilon = 1e-6, batch = 32, tune_epochs = 8):
                 assert(solver in self.stoch_solvers())
-                return {"trainer": "stoch", "solver": solver, "epochs": epochs, "patience": patience, "epsilon": epsilon, "batch": batch}
+                return {"trainer": "stoch", "solver": solver, "epochs": epochs, "patience": patience, "epsilon": epsilon,
+                        "batch": batch, "tune_epochs": tune_epochs}
 
         # configure batch trainers
         def batch_trainer(self, solver, epochs = 100, patience = 32, epsilon = 1e-6):
