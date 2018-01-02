@@ -88,7 +88,9 @@ NANO_CASE(single_class)
                 tensor4d_t scores(1, n_classes, 1, 1);
                 for (auto i = 0; i < n_classes; ++ i)
                 {
-                        scores.vector(0)(i) = (i + 1) * (i == i_label ? pos_target() : neg_target());
+                        scores.vector(0)(i) =
+                                static_cast<scalar_t>(i + 1) *
+                                (i == i_label ? pos_target() : neg_target());
                 }
 
                 const auto error = loss->error(target, scores);
@@ -114,7 +116,9 @@ NANO_CASE(multi_class)
                 tensor4d_t scores(1, n_classes, 1, 1);
                 for (auto i = 0; i < n_classes; ++ i)
                 {
-                        scores.vector(0)(i) = (i + 1) * ((i == i_label1 || i == i_label2) ? pos_target() : neg_target());
+                        scores.vector(0)(i) =
+                                static_cast<scalar_t>(i + 1) *
+                                ((i == i_label1 || i == i_label2) ? pos_target() : neg_target());
                 }
 
                 const auto error = loss->error(target, scores);
