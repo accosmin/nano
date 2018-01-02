@@ -7,9 +7,10 @@ using namespace nano;
 
 solver_state_t stoch_adam_t::minimize(const stoch_params_t& param, const function_t& function, const vector_t& x0) const
 {
+        const auto decays = make_finite_space(scalar_t(0.500));
         const auto beta1s = make_finite_space(scalar_t(0.900));
         const auto beta2s = make_finite_space(scalar_t(0.999));
-        return tune(this, param, function, x0, make_alpha0s(), make_decays(), make_epsilons(), beta1s, beta2s);
+        return tune(this, param, function, x0, make_alpha0s(), decays, make_epsilons(), beta1s, beta2s);
 }
 
 solver_state_t stoch_adam_t::minimize(const stoch_params_t& param, const function_t& function, const vector_t& x0,
