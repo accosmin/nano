@@ -45,7 +45,7 @@ struct loss_function_t final : public function_t
 
 NANO_BEGIN_MODULE(test_loss)
 
-NANO_CASE(evaluate)
+NANO_CASE(gradient)
 {
         const tensor_size_t cmd_min_dims = 2;
         const tensor_size_t cmd_max_dims = 10;
@@ -68,6 +68,57 @@ NANO_CASE(evaluate)
                                 NANO_CHECK_LESS(function.grad_accuracy(x.vector()), epsilon1<scalar_t>());
                         }
                 }
+        }
+}
+
+NANO_CASE(single_class)
+{
+        for (const auto& loss_id : {"classnll", "s-logistic", "s-exponential", "m-logistic", "m-exponential"})
+        {
+                const auto loss = get_losses().get(loss_id);
+                NANO_REQUIRE(loss);
+
+                const auto n_classes = 13;
+                const auto i_label = 11;
+
+                tensor4d_t target(1, n_classes, 1, 1);
+                target.vector(0).setConstant(neg_target());
+                target.vector(0)(i_label) = pos_target();
+
+                tensor4d_t scores(1, n_classes, 1, 1);
+                for (auto i = 0; i < n_classes; ++ i)
+                {
+                        scores.vector(0)(i) = (i + 1) * (i == i_label ? pos_target() : neg_target());
+                }
+
+                const auto error = loss->error(target, scores);
+                NANO_CHECK_LESS(error(0), epsilon0<scalar_t>());
+        }
+}
+
+NANO_CASE(multi_class)
+{
+        for (const auto& loss_id : {"m-logistic", "m-exponential"})
+        {
+                const auto loss = get_losses().get(loss_id);
+                NANO_REQUIRE(loss);
+
+                const auto n_classes = 13;
+                const auto i_label1 = 7, i_label2 = 11;
+
+                tensor4d_t target(1, n_classes, 1, 1);
+                target.vector(0).setConstant(neg_target());
+                target.vector(0)(i_label1) = pos_target();
+                target.vector(0)(i_label2) = pos_target();
+
+                tensor4d_t scores(1, n_classes, 1, 1);
+                for (auto i = 0; i < n_classes; ++ i)
+                {
+                        scores.vector(0)(i) = (i + 1) * ((i == i_label1 || i == i_label2) ? pos_target() : neg_target());
+                }
+
+                const auto error = loss->error(target, scores);
+                NANO_CHECK_LESS(error(0), epsilon0<scalar_t>());
         }
 }
 
