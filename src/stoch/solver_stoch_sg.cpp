@@ -13,7 +13,7 @@ solver_state_t stoch_sg_t::minimize(const stoch_params_t& param, const function_
         const scalar_t alpha0, const scalar_t decay)
 {
         // learning rate schedule
-        lrate_t lrate(alpha0, decay, param.m_epoch_size);
+        lrate_t lrate(alpha0, decay);
 
         // assembly the solver
         const auto solver = [&] (solver_state_t& cstate, const solver_state_t&)

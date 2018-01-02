@@ -55,7 +55,7 @@ namespace nano
 
                 static auto make_epsilons()
                 {
-                        return make_finite_space(scalar_t(1e-6), scalar_t(1e-5), scalar_t(1e-4), scalar_t(1e-3));
+                        return make_finite_space(scalar_t(1e-6), scalar_t(1e-5), scalar_t(1e-4));
                 }
 
                 /// reference: http://www.cppsamples.com/common-tasks/apply-tuple-to-function.html
