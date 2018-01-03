@@ -27,6 +27,25 @@ buffer_t load_buffer(istream_t& stream, const std::size_t buff_size)
 
 NANO_BEGIN_MODULE(test_io)
 
+NANO_CASE(string)
+{
+        const std::string path = "string.test";
+        const std::string ref_str = "secret sauce 42";
+
+        NANO_CHECK(save_string(path, ref_str));
+
+        std::string str = "testing";
+
+        NANO_CHECK(load_string(path, str));
+        NANO_CHECK_EQUAL(str, ref_str);
+
+        NANO_CHECK(load_string(path, str));
+        NANO_CHECK_EQUAL(str, ref_str);
+
+        // cleanup
+        std::remove(path.c_str());
+}
+
 NANO_CASE(istream)
 {
         const size_t min_size = 3;
