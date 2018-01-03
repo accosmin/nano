@@ -50,7 +50,10 @@ do
         if [[ -z $(echo $optional_checks | grep $check) ]]
         then
                 #grep warning: $log
-                cat $log
+                if [[ $count -gt 0 ]]
+                then
+                        cat $log
+                fi
                 warnings=$((warnings + $count))
         fi
 done

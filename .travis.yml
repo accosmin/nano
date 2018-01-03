@@ -15,13 +15,8 @@ before_script:
   - |
     if [ "$TRAVIS_OS_NAME" = "linux" ]; then
       sudo add-apt-repository ppa:nschloe/eigen-backports -y
-      sudo add-apt-repository "deb http://apt.llvm.org/trusty/ llvm-toolchain-trusty main" -y
-      sudo add-apt-repository "deb http://apt.llvm.org/trusty/ llvm-toolchain-trusty-4.0 main" -y
-      sudo add-apt-repository "deb http://apt.llvm.org/trusty/ llvm-toolchain-trusty-5.0 main" -y
-      sudo add-apt-repository ppa:ubuntu-toolchain-r/test -y
-      wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | sudo apt-key add -
       sudo apt-get update -qq
-      sudo apt-get install -y --allow-unauthenticated cmake cmake-data ninja-build libdevil-dev libeigen3-dev libarchive-dev
+      sudo apt-get install -y --allow-unauthenticated libeigen3-dev
       export CCACHE_CPP2=true
     fi
   - mkdir build
@@ -30,161 +25,184 @@ before_script:
 matrix:
   include:
     - os: linux
-      compiler: g++-5
-      env:
-        - TEST="build (g++-5)"
+      compiler: gcc
+      env: TEST="build (gcc-5)"
+      addons:
+        apt:
+          packages: ['gcc-5', 'g++-5', 'libdevil-dev', 'libarchive-dev', 'ninja-build']
+          sources: &sources
+            - ubuntu-toolchain-r-test
       script:
-        - sudo apt-get install -y g++-5
-        - cmake -G "Ninja" -DCMAKE_CXX_COMPILER="g++-5" -DCMAKE_BUILD_TYPE=Debug -DNANO_WITH_GOLD=OFF -DNANO_WITH_WERROR=ON ..
+        - cmake -G "Ninja" -DCMAKE_CXX_COMPILER=g++-5 -DCMAKE_BUILD_TYPE=Debug -DNANO_WITH_GOLD=OFF -DNANO_WITH_WERROR=ON ..
         - ninja
         - bash ../scripts/ci_ctest.sh
 
     - os: linux
-      compiler: g++-6
-      env:
-        - TEST="build (g++-6)"
+      compiler: gcc
+      env: TEST="build (gcc-6)"
+      addons:
+        apt:
+          packages: ['gcc-6', 'g++-6', 'libdevil-dev', 'libarchive-dev', 'ninja-build']
+          sources: &sources
+            - ubuntu-toolchain-r-test
       script:
-        - sudo apt-get install -y g++-6
-        - cmake -G "Ninja" -DCMAKE_CXX_COMPILER="g++-6" -DCMAKE_BUILD_TYPE=Debug -DNANO_WITH_GOLD=OFF -DNANO_WITH_WERROR=ON ..
+        - cmake -G "Ninja" -DCMAKE_CXX_COMPILER=g++-6 -DCMAKE_BUILD_TYPE=Debug -DNANO_WITH_GOLD=OFF -DNANO_WITH_WERROR=ON ..
         - ninja
         - bash ../scripts/ci_ctest.sh
 
     - os: linux
-      compiler: g++-7
-      env:
-        - TEST="build (g++-7)"
+      compiler: gcc
+      env: TEST="build (gcc-7)"
+      addons:
+        apt:
+          packages: ['gcc-7', 'g++-7', 'libdevil-dev', 'libarchive-dev', 'ninja-build']
+          sources: &sources
+            - ubuntu-toolchain-r-test
       script:
-        - sudo apt-get install -y g++-7
-        - cmake -G "Ninja" -DCMAKE_CXX_COMPILER="g++-7" -DCMAKE_BUILD_TYPE=Debug -DNANO_WITH_GOLD=OFF -DNANO_WITH_WERROR=ON ..
+        - cmake -G "Ninja" -DCMAKE_CXX_COMPILER=g++-7 -DCMAKE_BUILD_TYPE=Debug -DNANO_WITH_GOLD=OFF -DNANO_WITH_WERROR=ON ..
         - ninja
         - bash ../scripts/ci_ctest.sh
 
     - os: linux
-      compiler: clang++-3.8
-      env:
-        - TEST="build (clang++-3.8)"
+      compiler: clang
+      env: TEST="build (clang-3.8)"
+      addons:
+        apt:
+          packages: ['clang-3.8', 'libdevil-dev', 'libarchive-dev', 'libc++-dev', 'libc++abi-dev', 'ninja-build']
+          sources: &sources
+            - llvm-toolchain-trusty-3.8
       script:
-        - sudo apt-get install -y clang-3.8 g++-6
-        - cmake -G "Ninja" -DCMAKE_CXX_COMPILER="clang++-3.8" -DCMAKE_BUILD_TYPE=Debug -DNANO_WITH_WERROR=ON ..
+        - cmake -G "Ninja" -DCMAKE_CXX_COMPILER=clang++-3.8 -DCMAKE_BUILD_TYPE=Debug -DNANO_WITH_WERROR=ON -DNANO_WITH_LIBCPP=ON ..
         - ninja
         - bash ../scripts/ci_ctest.sh
 
     - os: linux
-      compiler: clang++-3.9
-      env:
-        - TEST="build (clang++-3.9)"
+      compiler: clang
+      env: TEST="build (clang-4.0)"
+      addons:
+        apt:
+          packages: ['clang-4.0', 'libdevil-dev', 'libarchive-dev', 'libc++-dev', 'libc++abi-dev', 'ninja-build']
+          sources: &sources
+            - llvm-toolchain-trusty-4.0
       script:
-        - sudo apt-get install -y clang-3.9 g++-6
-        - cmake -G "Ninja" -DCMAKE_CXX_COMPILER="clang++-3.9" -DCMAKE_BUILD_TYPE=Debug -DNANO_WITH_WERROR=ON ..
+        - cmake -G "Ninja" -DCMAKE_CXX_COMPILER=clang++-4.0 -DCMAKE_BUILD_TYPE=Debug -DNANO_WITH_WERROR=ON -DNANO_WITH_LIBCPP=ON ..
         - ninja
         - bash ../scripts/ci_ctest.sh
 
     - os: linux
-      compiler: clang++-4.0
-      env:
-        - TEST="build (clang++-4.0)"
+      compiler: clang
+      env: TEST="build (clang-5.0)"
+      addons:
+        apt:
+          packages: ['clang-5.0', 'libdevil-dev', 'libarchive-dev', 'libc++-dev', 'libc++abi-dev', 'ninja-build']
+          sources: &sources
+            - llvm-toolchain-trusty-5.0
       script:
-        - sudo apt-get install -y clang-4.0 g++-6
-        - cmake -G "Ninja" -DCMAKE_CXX_COMPILER="clang++-4.0" -DCMAKE_BUILD_TYPE=Debug -DNANO_WITH_WERROR=ON ..
+        - cmake -G "Ninja" -DCMAKE_CXX_COMPILER=clang++-5.0 -DCMAKE_BUILD_TYPE=Debug -DNANO_WITH_WERROR=ON -DNANO_WITH_LIBCPP=ON ..
         - ninja
         - bash ../scripts/ci_ctest.sh
 
     - os: linux
-      compiler: clang++-5.0
-      env:
-        - TEST="build (clang++-5.0)"
+      compiler: gcc
+      env: TEST="ASAN (gcc-7)"
+      addons:
+        apt:
+          packages: ['gcc-7', 'g++-7', 'libdevil-dev', 'libarchive-dev', 'ninja-build']
+          sources: &sources
+            - ubuntu-toolchain-r-test
       script:
-        - sudo apt-get install -y clang-5.0 g++-6
-        - cmake -G "Ninja" -DCMAKE_CXX_COMPILER="clang++-5.0" -DCMAKE_BUILD_TYPE=Debug -DNANO_WITH_WERROR=ON ..
+        - cmake -G "Ninja" -DCMAKE_CXX_COMPILER=g++-7 -DCMAKE_BUILD_TYPE=Debug -DNANO_WITH_WERROR=ON -DNANO_WITH_ASAN=ON ..
         - ninja
         - bash ../scripts/ci_ctest.sh
 
     - os: linux
-      compiler: clang++-5.0
-      env:
-        - TEST="ASAN (clang++-5.0)"
+      compiler: gcc
+      env: TEST="MSAN (gcc-7)"
+      addons:
+        apt:
+          packages: ['gcc-7', 'g++-7', 'libdevil-dev', 'libarchive-dev', 'ninja-build']
+          sources: &sources
+            - ubuntu-toolchain-r-test
       script:
-        - sudo apt-get install -y clang-5.0 g++-6
-        - cmake -G "Ninja" -DCMAKE_CXX_COMPILER="clang++-5.0" -DCMAKE_BUILD_TYPE=Debug -DNANO_WITH_WERROR=ON -DNANO_WITH_ASAN=ON ..
-        - ninja
-        - bash ../scripts/ci_ctest.sh
-
-#    - os: linux
-#      compiler: clang++-5.0
-#      env:
-#        - TEST="MSAN (clang++-5.0)"
-#      script:
-#        - sudo apt-get install -y clang-5.0 g++-6
-#        - cmake -G "Ninja" -DCMAKE_CXX_COMPILER="clang++-5.0" -DCMAKE_BUILD_TYPE=Debug -DNANO_WITH_WERROR=ON -DNANO_WITH_MSAN=ON ..
-#        - ninja
-#        - bash ../scripts/ci_ctest.sh
-
-    - os: linux
-      compiler: clang++-5.0
-      env:
-        - TEST="TSAN (clang++-5.0)"
-      script:
-        - sudo apt-get install -y clang-5.0 g++-6
-        - cmake -G "Ninja" -DCMAKE_CXX_COMPILER="clang++-5.0" -DCMAKE_BUILD_TYPE=Debug -DNANO_WITH_WERROR=ON -DNANO_WITH_TSAN=ON ..
+        - cmake -G "Ninja" -DCMAKE_CXX_COMPILER=g++-7 -DCMAKE_BUILD_TYPE=Debug -DNANO_WITH_WERROR=ON -DNANO_WITH_MSAN=ON ..
         - ninja
         - bash ../scripts/ci_ctest.sh
 
     - os: linux
-      compiler: clang++-5.0
-      env:
-        - TEST="clang-tidy (clang++-5.0)"
+      compiler: gcc
+      env: TEST="TSAN (gcc-7)"
+      addons:
+        apt:
+          packages: ['gcc-7', 'g++-7', 'libdevil-dev', 'libarchive-dev', 'ninja-build']
+          sources: &sources
+            - ubuntu-toolchain-r-test
       script:
-        - sudo apt-get install -y clang-5.0 g++-6 clang-tidy-5.0
-        - cmake -G "Ninja" -DCMAKE_CXX_COMPILER="clang++-5.0" -DCMAKE_BUILD_TYPE=Debug -DNANO_WITH_WERROR=ON -DNANO_WITH_CLANG_TIDY=ON ..
+        - cmake -G "Ninja" -DCMAKE_CXX_COMPILER=g++-7 -DCMAKE_BUILD_TYPE=Debug -DNANO_WITH_WERROR=ON -DNANO_WITH_TSAN=ON ..
+        - ninja
+        - bash ../scripts/ci_ctest.sh
+
+    - os: linux
+      compiler: clang
+      env: TEST="clang-tidy (clang-5.0)"
+      addons:
+        apt:
+          packages: ['clang-5.0', 'clang-tidy-5.0', 'libdevil-dev', 'libarchive-dev', 'libc++-dev', 'libc++abi-dev', 'ninja-build']
+          sources: &sources
+            - llvm-toolchain-trusty-5.0
+      script:
+        - cmake -G "Ninja" -DCMAKE_CXX_COMPILER=clang++-5.0 -DCMAKE_BUILD_TYPE=Debug -DNANO_WITH_WERROR=ON -DNANO_WITH_LIBCPP=ON -DNANO_WITH_CLANG_TIDY=ON ..
         - bash ../scripts/ci_clang_tidy.sh
 
     - os: linux
-      compiler: clang++-5.0
-      env:
-        - TEST="valgrind (clang++-5.0)"
+      compiler: clang
+      env: TEST="valgrind (clang-5.0)"
+      addons:
+        apt:
+          packages: ['clang-5.0', 'valgrind', 'libdevil-dev', 'libarchive-dev', 'libc++-dev', 'libc++abi-dev', 'ninja-build']
+          sources: &sources
+            - llvm-toolchain-trusty-5.0
       script:
-        - sudo apt-get install -y clang-5.0 g++-6 valgrind
-        - cmake -G "Ninja" -DCMAKE_CXX_COMPILER="clang++-5.0" -DCMAKE_BUILD_TYPE=Release -DNANO_WITH_WERROR=ON -DNANO_WITH_TUNE_NATIVE=OFF ..
+        - cmake -G "Ninja" -DCMAKE_CXX_COMPILER=clang++-5.0 -DCMAKE_BUILD_TYPE=Release -DNANO_WITH_WERROR=ON -DNANO_WITH_LIBCPP=ON -DNANO_WITH_TUNE_NATIVE=OFF ..
         - ninja
         - bash ../scripts/ci_valgrind.sh
 
     - os: linux
-      compiler: g++-6
-      env:
-        - TEST="codecov (g++-6)"
+      compiler: gcc
+      env: TEST="codecov (gcc-7)"
+      addons:
+        apt:
+          packages: ['gcc-7', 'g++-7', 'gcovr', 'libdevil-dev', 'libarchive-dev', 'ninja-build']
+          sources: &sources
+            - ubuntu-toolchain-r-test
       script:
         - sudo -H pip install --upgrade pip
         - sudo -H pip install coverage
-        - sudo apt-get install -y g++-6
-        - cmake -G "Ninja" -DCMAKE_CXX_COMPILER="g++-6" -DCMAKE_BUILD_TYPE=Release -DNANO_WITH_WERROR=ON -DNANO_WITH_COVERAGE=ON -DNANO_WITH_GOLD=OFF ..
+        - cmake -G "Ninja" -DCMAKE_CXX_COMPILER=g++-7 -DCMAKE_BUILD_TYPE=Release -DNANO_WITH_WERROR=ON -DNANO_WITH_COVERAGE=ON -DNANO_WITH_GOLD=OFF ..
         - ninja
         - bash ../scripts/ci_codecov.sh
 
     - os: osx
-      compiler: clang++
+      compiler: clang
       osx_image: xcode7.3
-      env:
-        - TEST="build (xcode7.3)"
+      env: TEST="build (xcode7.3)"
       script:
         - cmake -G "Ninja" -DCMAKE_BUILD_TYPE=Debug -DNANO_WITH_WERROR=ON ..
         - ninja
         - bash ../scripts/ci_ctest.sh
 
     - os: osx
-      compiler: clang++
+      compiler: clang
       osx_image: xcode8.3
-      env:
-        - TEST="build (xcode8.3)"
+      env: TEST="build (xcode8.3)"
       script:
         - cmake -G "Ninja" -DCMAKE_BUILD_TYPE=Debug -DNANO_WITH_WERROR=ON ..
         - ninja
         - bash ../scripts/ci_ctest.sh
 
     - os: osx
-      compiler: clang++
+      compiler: clang
       osx_image: xcode9.1
-      env:
-        - TEST="build (xcode9.1)"
+      env: TEST="build (xcode9.1)"
       script:
         - cmake -G "Ninja" -DCMAKE_BUILD_TYPE=Debug -DNANO_WITH_WERROR=ON ..
         - ninja
