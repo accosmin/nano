@@ -117,7 +117,7 @@ NANO_CASE(activation)
                 if (is_activation_node(layer_id))
                 {
                         model_t model;
-                        NANO_CHECK(add_node(model, "1", "act-snorm", config_empty_node));
+                        NANO_CHECK(add_node(model, "1", layer_id, config_empty_node));
                         NANO_CHECK(add_node(model, "2", affine_node_name(), config_affine_node, cmd_omaps, cmd_orows, cmd_ocols));
                         NANO_CHECK(model.connect("1", "2"));
 
