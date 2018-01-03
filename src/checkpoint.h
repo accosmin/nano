@@ -63,6 +63,6 @@ namespace nano
 
                 // attributes
                 timer_t         m_timer;
-                string_t        m_step_name;
+                std::string     m_step_name;
         };
 }

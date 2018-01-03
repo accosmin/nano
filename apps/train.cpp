@@ -9,7 +9,6 @@
 #include "text/table.h"
 #include "accumulator.h"
 #include "text/cmdline.h"
-#include "text/filesystem.h"
 
 using namespace nano;
 
