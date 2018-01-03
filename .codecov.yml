@@ -5,3 +5,4 @@ coverage:
   ignore:
     - ".*/apps/.*"
     - ".*/test/.*"
+    - "test_*.cpp"
