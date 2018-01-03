@@ -27,6 +27,7 @@ static bool save(const string_t& path, const probes_t& probes)
 {
         table_t table;
         table.header() << "name" << "#flops" << "gflop/s" << "min[us]" << "avg[us]" << "max[us]";
+        table.delim();
 
         for (const auto& probe : probes)
         {
