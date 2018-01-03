@@ -40,9 +40,10 @@ NANO_CASE(resize)
         NANO_CHECK_EQUAL(nano::align("text", 10, nano::alignment::left, '='),   "text======");
         NANO_CHECK_EQUAL(nano::align("text", 10, nano::alignment::right, '='),  "======text");
         NANO_CHECK_EQUAL(nano::align("text", 10, nano::alignment::left, '='),   "text======");
+        NANO_CHECK_EQUAL(nano::align("text", 10, nano::alignment::center, '='), "===text===");
 }
 
-NANO_CASE(split)
+NANO_CASE(split_str)
 {
         const auto tokens = nano::split("= -token1 token2 something ", " =-");
 
@@ -50,6 +51,23 @@ NANO_CASE(split)
         NANO_CHECK_EQUAL(tokens[0], "token1");
         NANO_CHECK_EQUAL(tokens[1], "token2");
         NANO_CHECK_EQUAL(tokens[2], "something");
+}
+
+NANO_CASE(split_char)
+{
+        const auto tokens = nano::split("= -token1 token2 something ", '-');
+
+        NANO_REQUIRE(tokens.size() == 2);
+        NANO_CHECK_EQUAL(tokens[0], "= ");
+        NANO_CHECK_EQUAL(tokens[1], "token1 token2 something ");
+}
+
+NANO_CASE(split_none)
+{
+        const auto tokens = nano::split("= -token1 token2 something ", "@");
+
+        NANO_REQUIRE(tokens.size() == 1);
+        NANO_CHECK_EQUAL(tokens[0], "= -token1 token2 something ");
 }
 
 NANO_CASE(lower)
@@ -196,7 +214,13 @@ NANO_CASE(enum_string)
         NANO_CHECK_THROW(nano::from_string<enum_type>("type2"), std::invalid_argument);
 }
 
-NANO_CASE(replace)
+NANO_CASE(replace_str)
+{
+        NANO_CHECK_EQUAL(nano::replace("token-", "en-", "_"), "tok_");
+        NANO_CHECK_EQUAL(nano::replace("t-ken-", "ken", "_"), "t-_-");
+}
+
+NANO_CASE(replace_char)
 {
         NANO_CHECK_EQUAL(nano::replace("token-", '-', '_'), "token_");
         NANO_CHECK_EQUAL(nano::replace("t-ken-", '-', '_'), "t_ken_");

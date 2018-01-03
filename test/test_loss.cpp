@@ -126,4 +126,21 @@ NANO_CASE(multi_class)
         }
 }
 
+NANO_CASE(regression)
+{
+        for (const auto& loss_id : {"square", "cauchy"})
+        {
+                const auto loss = get_losses().get(loss_id);
+                NANO_REQUIRE(loss);
+
+                tensor4d_t target(3, 4, 1, 1);
+                target.vector().setRandom();
+
+                tensor4d_t scores = target;
+
+                const auto error = loss->error(target, scores);
+                NANO_CHECK_LESS(error(0), epsilon0<scalar_t>());
+        }
+}
+
 NANO_END_MODULE()
