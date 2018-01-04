@@ -2,7 +2,6 @@
 #include "task.h"
 #include "model.h"
 #include "io/io.h"
-#include <fstream>
 #include "trainer.h"
 #include "enhancer.h"
 #include "checkpoint.h"
@@ -21,31 +20,6 @@ static bool load_json(const string_t& path, const char* name, string_t& json, st
 
         json_reader_t(json).object(name, id);
         return !id.empty();
-}
-
-static bool save(const string_t& path, const probes_t& probes)
-{
-        table_t table;
-        table.header() << "name" << "#flops" << "gflop/s" << "min[us]" << "avg[us]" << "max[us]";
-        table.delim();
-
-        for (const auto& probe : probes)
-        {
-                auto& row = table.append();
-                row << probe.fullname() << probe.flops();
-                if (probe.timings().min() < int64_t(1))
-                {
-                        row << "-";
-                }
-                else
-                {
-                        row << probe.gflops();
-                }
-                row << probe.timings().min() << probe.timings().avg() << probe.timings().max();
-        }
-
-        std::ofstream os(path.c_str());
-        return os.is_open() && (os << table);
 }
 
 int main(int argc, const char *argv[])
@@ -128,7 +102,11 @@ int main(int argc, const char *argv[])
 
         model.random();
         model.describe();
-        assert(model == *task);
+        if (model != *task)
+        {
+                log_error() << "model not compatible with the task!";
+                return EXIT_FAILURE;
+        }
 
         // train model
         accumulator_t acc(model, *loss);
@@ -144,8 +122,7 @@ int main(int argc, const char *argv[])
         checkpoint.step("save model");
         checkpoint.critical(
                 model.save(cmd_basepath + ".model") &&
-                save(cmd_basepath + ".state", result.optimum_states()) &&
-                save(cmd_basepath + ".probe", acc.probes()));
+                save(cmd_basepath + ".state", result.optimum_states()));
 
         // OK
         log_info() << done;

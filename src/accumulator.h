@@ -82,12 +82,6 @@ namespace nano
                 ///
                 tensor_size_t psize() const;
 
-                ///
-                /// \brief retrieve timing information (in microseconds) regarding various components
-                ///     for the three basic operations (output, gradient wrt parameters, gradient wrt inputs)
-                ///
-                probes_t probes() const;
-
         private:
 
                 using tstats_t = stats_t<scalar_t>;

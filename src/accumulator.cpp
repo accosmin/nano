@@ -184,11 +184,6 @@ tensor_size_t accumulator_t::psize() const
         return origin().m_model->psize();
 }
 
-probes_t accumulator_t::probes() const
-{
-        return origin().m_model->probes();
-}
-
 const vector_t& accumulator_t::params() const
 {
         return origin().m_model->params();

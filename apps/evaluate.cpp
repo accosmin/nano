@@ -69,7 +69,11 @@ int main(int argc, const char *argv[])
 
         model.random();
         model.describe();
-        assert(model == *task);
+        if (model != *task)
+        {
+                log_error() << "model not compatible with the task!";
+                return EXIT_FAILURE;
+        }
 
         // test model
         accumulator_t acc(model, *loss);
@@ -79,9 +83,6 @@ int main(int argc, const char *argv[])
         checkpoint.step("evaluate model");
         acc.update(*task, fold_t{cmd_fold, protocol::test});
         checkpoint.measure();
-
-        // todo: setup the minibatch size
-        // todo: add --probes && --probes-detailed to print computation statistics
 
         log_info() << "test=" << acc.vstats().avg() << "|" << acc.estats().avg() << "+/-" << acc.estats().var() << ".";
 
