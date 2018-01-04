@@ -1,8 +1,7 @@
 #include "io/io.h"
-#include "model.h"
 #include "logger.h"
+#include "builder.h"
 #include "text/cmdline.h"
-#include "layers/builder.h"
 
 using namespace nano;
 
@@ -75,6 +74,9 @@ int main(int argc, const char *argv[])
                 }
         }
 
+        const auto default_mix_type = mix_plus4d_node_name();
+        const auto mix_types = strcat(mix_plus4d_node_name(), ",", mix_tcat4d_node_name());
+
         // parse the command line
         cmdline_t cmdline("construct and export models using predefined architectures");
         cmdline.add("", "cnn",          "construct a convolution network");
@@ -84,6 +86,7 @@ int main(int argc, const char *argv[])
         cmdline.add("", "conv3d-param", "conv3d nodes like [omaps,krows,kcols,kconn,kdrow,kdcol,]+", ",");
         cmdline.add("", "affine-param", "affine nodes like [omaps,orows,ocols,]+", ",");
         cmdline.add("", "act-type",     "activation type " + join(activations), "act-snorm");
+        cmdline.add("", "mix-type",     "mixing node type [" + mix_types + "]", default_mix_type);
         cmdline.add("", "imaps",        "number of input feature maps", 3);
         cmdline.add("", "irows",        "number of input rows", 32);
         cmdline.add("", "icols",        "number of input cols", 32);
@@ -95,6 +98,7 @@ int main(int argc, const char *argv[])
         cmdline.process(argc, argv);
 
         const auto cmd_act_type = cmdline.get<string_t>("act-type");
+        const auto cmd_mix_type = cmdline.get<string_t>("mix-type");
         const auto cmd_imaps = cmdline.get<tensor_size_t>("imaps");
         const auto cmd_irows = cmdline.get<tensor_size_t>("irows");
         const auto cmd_icols = cmdline.get<tensor_size_t>("icols");
@@ -128,7 +132,7 @@ int main(int argc, const char *argv[])
         }
         else if (cmdline.has("res-mlp"))
         {
-                make_residual_mlp(model, affine_param, cmd_omaps, cmd_orows, cmd_ocols, cmd_act_type);
+                make_residual_mlp(model, affine_param, cmd_omaps, cmd_orows, cmd_ocols, cmd_act_type, cmd_mix_type);
         }
 
         // check model

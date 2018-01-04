@@ -1,12 +1,10 @@
 #include "loss.h"
 #include "task.h"
-#include "layer.h"
-#include "model.h"
 #include "utest.h"
+#include "builder.h"
 #include "accumulator.h"
 #include "math/epsilon.h"
 #include "math/numeric.h"
-#include "layers/builder.h"
 
 using namespace nano;
 

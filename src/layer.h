@@ -17,6 +17,15 @@ namespace nano
         NANO_PUBLIC layer_factory_t& get_layers();
 
         ///
+        /// \brief names for builtin computation nodes.
+        ///
+        inline const char* conv3d_node_name() { return "conv3d"; }
+        inline const char* norm3d_node_name() { return "norm3d"; }
+        inline const char* affine_node_name() { return "affine"; }
+        inline const char* mix_plus4d_node_name() { return "mix-plus"; }
+        inline const char* mix_tcat4d_node_name() { return "mix-tcat"; }
+
+        ///
         /// \brief computation node.
         ///
         class NANO_PUBLIC layer_t : public configurable_t

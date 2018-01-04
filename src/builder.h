@@ -1,8 +1,8 @@
 #pragma once
 
-#include "norm3d_params.h"
+#include "model.h"
 #include "text/algorithm.h"
-#include "text/json_writer.h"
+#include "layers/norm3d_params.h"
 
 namespace nano
 {
@@ -13,15 +13,6 @@ namespace nano
         {
                 return nano::starts_with(node_id, "act-");
         }
-
-        ///
-        /// \brief names for builtin computation nodes.
-        ///
-        inline const char* conv3d_node_name() { return "conv3d"; }
-        inline const char* norm3d_node_name() { return "norm3d"; }
-        inline const char* affine_node_name() { return "affine"; }
-        inline const char* mix_plus4d_node_name() { return "mix-plus"; }
-        inline const char* mix_tcat4d_node_name() { return "mix-tcat"; }
 
         ///
         /// \brief configure computation nodes.
@@ -98,8 +89,8 @@ namespace nano
         ///
         /// \brief add a computation node to the model.
         ///
-        template <typename tmodel, typename top, typename... targs>
-        bool add_node(tmodel& model, const string_t& name, const string_t& type, const top& op, targs&&... args)
+        template <typename top, typename... targs>
+        bool add_node(model_t& model, const string_t& name, const string_t& type, const top& op, targs&&... args)
         {
                 if (name.empty())
                 {
@@ -115,16 +106,16 @@ namespace nano
 
         ///
         /// \brief connect computation nodes in a model.
+        ///     node1 -> node2 -> ... -> nodeN
         ///
-        template <typename tmodel>
-        bool connect_nodes(tmodel& model, const string_t& node1, const string_t& node2)
+        inline bool connect_nodes(model_t& model, const string_t& node1, const string_t& node2)
         {
                 assert(!node2.empty());
                 return node1.empty() || model.connect(node1, node2);
         }
 
-        template <typename tmodel, typename... tnames>
-        bool connect_nodes(tmodel& model, const string_t& node1, const string_t& node2, const tnames&... nodes)
+        template <typename... tnames>
+        bool connect_nodes(model_t& model, const string_t& node1, const string_t& node2, const tnames&... nodes)
         {
                 return  connect_nodes(model, node1, node2) &&
                         connect_nodes(model, node2, nodes...);
@@ -135,8 +126,7 @@ namespace nano
         ///     - a fully connected affine node followed by
         ///     - a non-linearity node (if given).
         ///
-        template <typename tmodel>
-        bool add_affine_module(tmodel& model,
+        inline bool add_affine_module(model_t& model,
                 const string_t& affine_name, const tensor_size_t omaps, const tensor_size_t orows, const tensor_size_t ocols,
                 const string_t& activation_name, const string_t& activation_type,
                 const string_t& previous_name)
@@ -153,8 +143,7 @@ namespace nano
         ///     - a fully connected affine node followed by
         ///     - a non-linearity node (if given).
         ///
-        template <typename tmodel>
-        bool add_conv3d_module(tmodel& model,
+        inline bool add_conv3d_module(model_t& model,
                 const string_t& conv3d_name,
                 const tensor_size_t omaps, const tensor_size_t krows, const tensor_size_t kcols,
                 const tensor_size_t kconn, const tensor_size_t kdrow, const tensor_size_t kdcol,
@@ -169,25 +158,23 @@ namespace nano
         }
 
         ///
-        /// \brief adds a plus mixing module to a computation graph:
-        ///     - a node that sums two input nodes
+        /// \brief adds a mixing module to a computation graph:
+        ///     - a node that combines two inputs (e.g. by summing or by concatenation)
         ///
-        template <typename tmodel>
-        bool add_plus4d_module(tmodel& model,
-                const string_t& plus4d_name,
+        inline bool add_mixing_module(model_t& model,
+                const string_t& mix_name, const string_t& mix_type,
                 const string_t& input1_name, const string_t& input2_name)
         {
-                return  add_node(model, plus4d_name, mix_plus4d_node_name(), config_empty_node) &&
-                        model.connect(input1_name, plus4d_name) &&
-                        model.connect(input2_name, plus4d_name);
+                return  add_node(model, mix_name, mix_type, config_empty_node) &&
+                        model.connect(input1_name, mix_name) &&
+                        model.connect(input2_name, mix_name);
         }
 
         ///
         /// \brief adds an output module to a computation graph:
         ///     - a fully connected affine node.
         ///
-        template <typename tmodel>
-        bool add_output_module(tmodel& model,
+        inline bool add_output_module(model_t& model,
                 const string_t& output_name, const tensor_size_t omaps, const tensor_size_t orows, const tensor_size_t ocols,
                 const string_t& previous_name)
         {
@@ -208,66 +195,6 @@ namespace nano
         using conv3d_node_configs_t = std::vector<conv3d_node_config_t>;
 
         ///
-        /// \brief create a residual MLP (multi-layer perceptron) network given
-        ///
-        /// structure:
-        ///     aff0 -> act0 -> aff1 ->  act1 -> aff2 ->  act2 -> aff3 ->  act3 -> ... ->  actN   -> out
-        ///                             +act0            +act1            +act2           +actN-1
-        ///
-        template <typename tmodel>
-        bool make_residual_mlp(tmodel& model,
-                const affine_node_configs_t& affine_param,
-                const tensor_size_t omaps, const tensor_size_t orows, const tensor_size_t ocols,
-                const string_t& activation_type)
-        {
-                assert(is_activation_node(activation_type));
-
-                string_t prev_activation_name, prev_prev_activation_name, prev_plus4d_name;
-
-                bool ok = true;
-                tensor_size_t depth = 0;
-                for (const auto& affine_node : affine_param)
-                {
-                        const string_t affine_name = "affine" + to_string(depth);
-                        const string_t activation_name = "nonlin" + to_string(depth);
-                        const string_t plus4d_name = "mixadd" + to_string(depth);
-
-                        const auto maps = std::get<0>(affine_node);
-                        const auto rows = std::get<1>(affine_node);
-                        const auto cols = std::get<2>(affine_node);
-
-                        const string_t* prev_name = &prev_activation_name;
-                        if (!prev_prev_activation_name.empty())
-                        {
-                                // mix previous two affine modules
-                                if (!(ok = add_plus4d_module(
-                                        model, plus4d_name, prev_activation_name,
-                                        prev_plus4d_name.empty() ? prev_prev_activation_name : prev_plus4d_name)))
-                                {
-                                        break;
-                                }
-
-                                prev_name = &plus4d_name;
-                                prev_plus4d_name = plus4d_name;
-                        }
-
-                        if (!(ok = add_affine_module(
-                                model, affine_name, maps, rows, cols,
-                                activation_name, activation_type,
-                                *prev_name)))
-                        {
-                                break;
-                        }
-
-                        ++ depth;
-                        prev_prev_activation_name = prev_activation_name;
-                        prev_activation_name = activation_name;
-                }
-
-                return ok && add_output_module(model, "out", omaps, orows, ocols, prev_activation_name);
-        }
-
-        ///
         /// \brief create a convolution neural network (CNN) consisting of:
         ///     (optional) the convolution nodes: [convX -> actX]+
         ///     (optional) followed by the affine (fully connected) nodes: [affY -> actY]+
@@ -276,86 +203,37 @@ namespace nano
         /// NB: a linear model is obtained if the convolution and the affine layers are empty
         /// NB: a multi-layer perceptron (MLP) model is obtained if the convolution layers are empty
         ///
-        template <typename tmodel>
-        bool make_cnn(tmodel& model,
+        NANO_PUBLIC bool make_cnn(model_t& model,
                 const conv3d_node_configs_t& conv3d_param,
                 const affine_node_configs_t& affine_param,
                 const tensor_size_t omaps, const tensor_size_t orows, const tensor_size_t ocols,
-                const string_t& activation_type)
-        {
-                assert(is_activation_node(activation_type));
-
-                tensor_size_t depth = 0;
-                string_t prev_activation_name;
-
-                for (const auto& conv3d_node : conv3d_param)
-                {
-                        const string_t conv3d_name = "conv3d" + to_string(depth);
-                        const string_t activation_name = "nonlin" + to_string(depth);
-
-                        const auto maps = std::get<0>(conv3d_node);
-                        const auto rows = std::get<1>(conv3d_node);
-                        const auto cols = std::get<2>(conv3d_node);
-                        const auto conn = std::get<3>(conv3d_node);
-                        const auto drow = std::get<4>(conv3d_node);
-                        const auto dcol = std::get<5>(conv3d_node);
-
-                        if (!add_conv3d_module(model,
-                                conv3d_name, maps, rows, cols, conn, drow, dcol,
-                                activation_name, activation_type,
-                                prev_activation_name))
-                        {
-                                return false;
-                        }
-
-                        ++ depth;
-                        prev_activation_name = activation_name;
-                }
-
-                for (const auto& affine_node : affine_param)
-                {
-                        const string_t affine_name = "affine" + to_string(depth);
-                        const string_t activation_name = "nonlin" + to_string(depth);
-
-                        const auto maps = std::get<0>(affine_node);
-                        const auto rows = std::get<1>(affine_node);
-                        const auto cols = std::get<2>(affine_node);
-
-                        if (!add_affine_module(model,
-                                affine_name, maps, rows, cols,
-                                activation_name, activation_type,
-                                prev_activation_name))
-                        {
-                                return false;
-                        }
-
-                        ++ depth;
-                        prev_activation_name = activation_name;
-                }
-
-                return add_output_module(model, "output", omaps, orows, ocols, prev_activation_name);
-        }
+                const string_t& activation_type);
 
         ///
         /// \brief create a multi-layer perceptron (MLP) model: a CNN without convolution nodes.
         ///
-        template <typename tmodel>
-        bool make_mlp(tmodel& model,
+        NANO_PUBLIC bool make_mlp(model_t& model,
                 const affine_node_configs_t& affine_param,
                 const tensor_size_t omaps, const tensor_size_t orows, const tensor_size_t ocols,
-                const string_t& activation_type)
-        {
-                return make_cnn(model, {}, affine_param, omaps, orows, ocols, activation_type);
-        }
+                const string_t& activation_type);
 
         ///
         /// \brief create a linear model: a CNN without convolution and affine nodes.
         ///
-        template <typename tmodel>
-        bool make_linear(tmodel& model,
+        NANO_PUBLIC bool make_linear(model_t& model,
                 const tensor_size_t omaps, const tensor_size_t orows, const tensor_size_t ocols,
-                const string_t& activation_type)
-        {
-                return make_cnn(model, {}, {}, omaps, orows, ocols, activation_type);
-        }
+                const string_t& activation_type);
+
+        ///
+        /// \brief create a residual MLP (multi-layer perceptron) network given
+        ///
+        /// structure:
+        ///     aff0 -> act0 -> aff1 ->  act1 -> aff2 ->  act2 -> aff3 ->  act3 -> ... ->  actN   -> out
+        ///                             +act0            +act1            +act2           +actN-1
+        ///
+        NANO_PUBLIC bool make_residual_mlp(model_t& model,
+                const affine_node_configs_t& affine_param,
+                const tensor_size_t omaps, const tensor_size_t orows, const tensor_size_t ocols,
+                const string_t& activation_type,
+                const string_t& mixing_type = mix_plus4d_node_name());
 }

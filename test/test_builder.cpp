@@ -1,6 +1,5 @@
-#include "layer.h"
 #include "utest.h"
-#include "layers/builder.h"
+#include "builder.h"
 #include "layers/conv3d_params.h"
 #include "layers/affine_params.h"
 

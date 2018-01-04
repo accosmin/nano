@@ -7,6 +7,7 @@ set(libnano_sources
         ${CMAKE_CURRENT_SOURCE_DIR}/loss.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/layer.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/model.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/builder.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/trainer.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/trainer_state.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/trainer_result.cpp

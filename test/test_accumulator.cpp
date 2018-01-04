@@ -1,8 +1,8 @@
 #include "utest.h"
+#include "builder.h"
 #include "accumulator.h"
 #include "math/numeric.h"
 #include "math/epsilon.h"
-#include "layers/builder.h"
 
 using namespace nano;
 
