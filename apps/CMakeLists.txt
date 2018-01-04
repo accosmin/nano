@@ -33,7 +33,7 @@ set(programs
         info_archive
         #info_enhancer
         train
-        #evaluate
+        evaluate
         embed
         stats
         tabulate)

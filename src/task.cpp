@@ -7,6 +7,7 @@
 #include "tasks/task_iris.h"
 #include "tasks/task_wine.h"
 #include "tasks/task_nparity.h"
+#include "tasks/task_fashion_mnist.h"
 #include "logger.h"
 #include <mutex>
 
@@ -20,6 +21,7 @@ task_factory_t& nano::get_tasks()
         std::call_once(flag, [] ()
         {
                 manager.add<mnist_task_t>("mnist", "MNIST (1x28x28 digit classification)");
+                manager.add<fashion_mnist_task_t>("fashion-mnist", "Fashion-MNIST (1x28x28 fashion article classification)");
                 manager.add<cifar10_task_t>("cifar10", "CIFAR-10 (3x32x32 object classification)");
                 manager.add<cifar100_task_t>("cifar100", "CIFAR-100 (3x32x32 object classification)");
                 manager.add<stl10_task_t>("stl10", "STL-10 (3x96x96 semi-supervised object classification)");

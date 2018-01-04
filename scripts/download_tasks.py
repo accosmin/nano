@@ -56,6 +56,13 @@ def download_cifar100():
         dbdir = mkdir("cifar100")
         download("http://www.cs.toronto.edu/~kriz/cifar-100-binary.tar.gz", dbdir)
 
+def download_fashion_mnist():
+        dbdir = mkdir("fashion-mnist")
+        download("http://fashion-mnist.s3-website.eu-central-1.amazonaws.com/train-images-idx3-ubyte.gz", dbdir)
+        download("http://fashion-mnist.s3-website.eu-central-1.amazonaws.com/train-labels-idx1-ubyte.gz", dbdir)
+        download("http://fashion-mnist.s3-website.eu-central-1.amazonaws.com/t10k-images-idx3-ubyte.gz", dbdir)
+        download("http://fashion-mnist.s3-website.eu-central-1.amazonaws.com/t10k-labels-idx1-ubyte.gz", dbdir)
+
 download_iris()
 download_wine()
 download_svhn()
@@ -63,3 +70,4 @@ download_mnist()
 download_stl10()
 download_cifar10()
 download_cifar100()
+download_fashion_mnist()
