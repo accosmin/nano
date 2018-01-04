@@ -44,10 +44,6 @@ def download_mnist():
         download("http://yann.lecun.com/exdb/mnist/t10k-images-idx3-ubyte.gz", dbdir)
         download("http://yann.lecun.com/exdb/mnist/t10k-labels-idx1-ubyte.gz", dbdir)
 
-def download_stl10():
-        dbdir = mkdir("stl10")
-        download("http://ai.stanford.edu/~acoates/stl10/stl10_binary.tar.gz", dbdir)
-
 def download_cifar10():
         dbdir = mkdir("cifar10")
         download("http://www.cs.toronto.edu/~kriz/cifar-10-binary.tar.gz", dbdir)
@@ -67,7 +63,6 @@ download_iris()
 download_wine()
 download_svhn()
 download_mnist()
-download_stl10()
 download_cifar10()
 download_cifar100()
 download_fashion_mnist()

@@ -1,7 +1,6 @@
 #include "tasks/task_mnist.h"
 #include "tasks/task_cifar10.h"
 #include "tasks/task_cifar100.h"
-#include "tasks/task_stl10.h"
 #include "tasks/task_svhn.h"
 #include "tasks/task_charset.h"
 #include "tasks/task_iris.h"
@@ -24,7 +23,6 @@ task_factory_t& nano::get_tasks()
                 manager.add<fashion_mnist_task_t>("fashion-mnist", "Fashion-MNIST (1x28x28 fashion article classification)");
                 manager.add<cifar10_task_t>("cifar10", "CIFAR-10 (3x32x32 object classification)");
                 manager.add<cifar100_task_t>("cifar100", "CIFAR-100 (3x32x32 object classification)");
-                manager.add<stl10_task_t>("stl10", "STL-10 (3x96x96 semi-supervised object classification)");
                 manager.add<svhn_task_t>("svhn", "SVHN (3x32x32 digit classification in the wild)");
                 manager.add<iris_task_t>("iris", "IRIS (iris flower classification)");
                 manager.add<wine_task_t>("wine", "WINE (wine classification)");

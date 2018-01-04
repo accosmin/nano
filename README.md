@@ -95,7 +95,6 @@ A **task** describes a classification or regression problem consisting of separa
 | cifar10       | CIFAR-10 (3x32x32 object classification)               | dir=.                                                                                                               |
 | cifar100      | CIFAR-100 (3x32x32 object classification)              | dir=.                                                                                                               |
 | mnist         | MNIST (1x28x28 digit classification)                   | dir=.                                                                                                               |
-| stl10         | STL-10 (3x96x96 semi-supervised object classification) | dir=.                                                                                                               |
 | svhn          | SVHN (3x32x32 digit classification in the wild)        | dir=.                                                                                                               |
 | synth-charset | synthetic character classification                     | type=digit[lalpha,ualpha,alpha,alphanum],color=rgb[,luma,rgba],irows=32[12,128],icols=32[12,128],count=1000[100,1M] |
 |---------------|--------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------|
