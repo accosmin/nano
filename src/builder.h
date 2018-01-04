@@ -105,20 +105,20 @@ namespace nano
         }
 
         ///
-        /// \brief connect computation nodes in a model.
+        /// \brief chain multiple computation nodes in a model:
         ///     node1 -> node2 -> ... -> nodeN
         ///
-        inline bool connect_nodes(model_t& model, const string_t& node1, const string_t& node2)
+        inline bool chain_nodes(model_t& model, const string_t& node1, const string_t& node2)
         {
                 assert(!node2.empty());
                 return node1.empty() || model.connect(node1, node2);
         }
 
         template <typename... tnames>
-        bool connect_nodes(model_t& model, const string_t& node1, const string_t& node2, const tnames&... nodes)
+        bool chain_nodes(model_t& model, const string_t& node1, const string_t& node2, const tnames&... nodes)
         {
-                return  connect_nodes(model, node1, node2) &&
-                        connect_nodes(model, node2, nodes...);
+                return  chain_nodes(model, node1, node2) &&
+                        chain_nodes(model, node2, nodes...);
         }
 
         ///
@@ -135,7 +135,7 @@ namespace nano
 
                 return  add_node(model, affine_name, affine_node_name(), config_affine_node, omaps, orows, ocols) &&
                         add_node(model, activation_name, activation_type, config_empty_node) &&
-                        connect_nodes(model, previous_name, affine_name, activation_name);
+                        chain_nodes(model, previous_name, affine_name, activation_name);
         }
 
         ///
@@ -154,20 +154,36 @@ namespace nano
 
                 return  add_node(model, conv3d_name, conv3d_node_name(), config_conv3d_node, omaps, krows, kcols, kconn, kdrow, kdcol) &&
                         add_node(model, activation_name, activation_type, config_empty_node) &&
-                        connect_nodes(model, previous_name, conv3d_name, activation_name);
+                        chain_nodes(model, previous_name, conv3d_name, activation_name);
         }
 
         ///
         /// \brief adds a mixing module to a computation graph:
-        ///     - a node that combines two inputs (e.g. by summing or by concatenation)
+        ///     - a node that combines multiple inputs (e.g. by summing or by concatenation)
         ///
-        inline bool add_mixing_module(model_t& model,
+        inline bool connect_mixing_nodes(model_t& model,
+                const string_t& mix_name,
+                const string_t& input_name)
+        {
+                return model.connect(input_name, mix_name);
+        }
+
+        template <typename... tnames>
+        bool connect_mixing_nodes(model_t& model,
+                const string_t& mix_name,
+                const string_t& input_name, const tnames&... input_names)
+        {
+                return  model.connect(input_name, mix_name) &&
+                        connect_mixing_nodes(model, mix_name, input_names...);
+        }
+
+        template <typename... tnames>
+        bool add_mixing_module(model_t& model,
                 const string_t& mix_name, const string_t& mix_type,
-                const string_t& input1_name, const string_t& input2_name)
+                const tnames&... input_names)
         {
                 return  add_node(model, mix_name, mix_type, config_empty_node) &&
-                        model.connect(input1_name, mix_name) &&
-                        model.connect(input2_name, mix_name);
+                        connect_mixing_nodes(model, mix_name, input_names...);
         }
 
         ///
@@ -179,7 +195,7 @@ namespace nano
                 const string_t& previous_name)
         {
                 return  add_node(model, output_name, affine_node_name(), config_affine_node, omaps, orows, ocols) &&
-                        connect_nodes(model, previous_name, output_name);
+                        chain_nodes(model, previous_name, output_name);
         }
 
         ///
