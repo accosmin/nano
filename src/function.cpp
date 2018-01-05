@@ -68,8 +68,8 @@ scalar_t function_t::grad_accuracy(const vector_t& x) const
         {
                 for (auto i = 0; i < n; i ++)
                 {
-                        xp = x; xp(i) += dx;
-                        xn = x; xn(i) -= dx;
+                        xp = x; xp(i) += dx * (1 + std::fabs(x(i)));
+                        xn = x; xn(i) -= dx * (1 + std::fabs(x(i)));
 
                         const auto dfi = vgrad(xp, nullptr) - vgrad(xn, nullptr);
                         const auto dxi = xp(i) - xn(i);
