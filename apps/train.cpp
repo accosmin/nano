@@ -22,6 +22,31 @@ static bool load_json(const string_t& path, const char* name, string_t& json, st
         return !id.empty();
 }
 
+static bool save(const string_t& path, const trainer_states_t& states)
+{
+        table_t table;
+
+        auto&& header = table.header();
+        header  << "epoch"
+                << "train_loss" << "train_error"
+                << "valid_loss" << "valid_error"
+                << "test_loss" << "test_error"
+                << "seconds" << "xnorm" << "gnorm";
+
+        size_t index = 0;
+        for (const auto& state : states)
+        {
+                auto&& row = table.append();
+                row     << (index ++)
+                        << state.m_train.m_value << state.m_train.m_error
+                        << state.m_valid.m_value << state.m_valid.m_error
+                        << state.m_test.m_value << state.m_test.m_error
+                        << idiv(state.m_milis.count(), 1000) << state.m_xnorm << state.m_gnorm;
+        }
+
+        return table.save(path, "    ");
+}
+
 int main(int argc, const char *argv[])
 {
         // parse the command line
@@ -122,7 +147,7 @@ int main(int argc, const char *argv[])
         checkpoint.step("save model");
         checkpoint.critical(
                 model.save(cmd_basepath + ".model") &&
-                save(cmd_basepath + ".state", result.optimum_states()));
+                save(cmd_basepath + ".state", result.history()));
 
         // OK
         log_info() << done;

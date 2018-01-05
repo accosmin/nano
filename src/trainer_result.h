@@ -1,6 +1,6 @@
 #pragma once
 
-#include <map>
+#include "arch.h"
 #include "tensor.h"
 #include "text/cast.h"
 #include "trainer_state.h"
@@ -8,11 +8,6 @@
 namespace nano
 {
         class solver_state_t;
-
-        ///
-        /// \brief training history (configuration, optimization states)
-        ///
-        using trainer_history_t = std::map<string_t, trainer_states_t>;
 
         ///
         /// \brief
@@ -66,55 +61,47 @@ namespace nano
                 ///
                 /// \brief check if a valid result
                 ///
-                bool valid() const
+                operator bool() const
                 {
                         return !m_history.empty() && m_opt_params.size() > 0;
                 }
 
-                operator bool() const { return valid(); }
-
                 ///
                 /// \brief optimum training state
                 ///
-                trainer_state_t optimum_state() const;
-
-                ///
-                /// \brief training history for the optimum configuration
-                ///
-                trainer_states_t optimum_states() const;
+                const auto& optimum_state() const { return m_opt_state; }
 
                 ///
                 /// \brief optimum model parameters
                 ///
-                vector_t optimum_params() const;
-
-                ///
-                /// \brief optimum hyper-parameter configuration
-                ///
-                string_t optimum_config() const;
+                const auto& optimum_params() const { return m_opt_params; }
 
                 ///
                 /// \brief optimum epoch
                 ///
-                size_t optimum_epoch() const;
+                size_t optimum_epoch() const { return optimum_state().m_epoch; }
+
+                ///
+                /// \brief training/optimization configuration
+                ///
+                const auto& config() const { return m_config; }
+
+                ///
+                /// \brief optimization history
+                ///
+                const auto& history() const { return m_history; }
 
         private:
 
                 // attributes
                 vector_t                m_opt_params;           ///< optimum model parameters
                 trainer_state_t         m_opt_state;            ///< optimum training state
-                string_t                m_opt_config;           ///< optimum configuration
-                trainer_history_t       m_history;              ///< optimization history
+                string_t                m_config;               ///< optimization configuration
+                trainer_states_t        m_history;              ///< optimization history
         };
-
-        ///
-        /// \brief compare two trainer results
-        ///
-        NANO_PUBLIC bool operator<(const trainer_result_t& one, const trainer_result_t& other);
 
         ///
         /// \brief streaming training results
         ///
         NANO_PUBLIC std::ostream& operator<<(std::ostream&, const trainer_result_t&);
 }
-
