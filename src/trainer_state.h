@@ -10,21 +10,8 @@ namespace nano
         ///
         /// \brief training state after a training epoch.
         ///
-        struct NANO_PUBLIC trainer_state_t
+        struct trainer_state_t
         {
-                ///
-                /// \brief constructor
-                ///
-                trainer_state_t();
-
-                ///
-                /// \brief constructor
-                ///
-                trainer_state_t(const milliseconds_t, const size_t epoch, const scalar_t xnorm, const scalar_t gnorm,
-                                const trainer_measurement_t& train,
-                                const trainer_measurement_t& valid,
-                                const trainer_measurement_t& test);
-
                 ///
                 /// \brief check validity
                 ///
@@ -34,10 +21,10 @@ namespace nano
                 }
 
                 // attributes
-                milliseconds_t          m_milis;        ///< (cumulated) elapsed time since the optimization started
-                size_t                  m_epoch;        ///<
-                scalar_t                m_xnorm;        ///< L2-norm of the parameters
-                scalar_t                m_gnorm;        ///< L2-norm of the parameters' gradient
+                milliseconds_t          m_milis{0};     ///< (cumulated) elapsed time since the optimization started
+                size_t                  m_epoch{0};     ///<
+                scalar_t                m_xnorm{0};     ///< L2-norm of the parameters
+                scalar_t                m_gnorm{0};     ///< L2-norm of the parameters' gradient
                 trainer_measurement_t   m_train;        ///< measurement on the training dataset
                 trainer_measurement_t   m_valid;        ///< measurement on the validation dataset
                 trainer_measurement_t   m_test;         ///< measurement on the test dataset

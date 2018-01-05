@@ -8,32 +8,6 @@
 
 using namespace nano;
 
-trainer_state_t::trainer_state_t() :
-        m_milis(0),
-        m_epoch(0),
-        m_xnorm(0),
-        m_gnorm(0)
-{
-}
-
-trainer_state_t::trainer_state_t(
-        const milliseconds_t milis,
-        const size_t epoch,
-        const scalar_t xnorm,
-        const scalar_t gnorm,
-        const trainer_measurement_t& train,
-        const trainer_measurement_t& valid,
-        const trainer_measurement_t& test) :
-        m_milis(milis),
-        m_epoch(epoch),
-        m_xnorm(xnorm),
-        m_gnorm(gnorm),
-        m_train(train),
-        m_valid(valid),
-        m_test(test)
-{
-}
-
 scalar_t nano::convergence_speed(const trainer_states_t& states)
 {
         const auto op = [](const trainer_state_t& prv, const trainer_state_t& crt)

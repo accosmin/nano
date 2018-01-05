@@ -12,17 +12,6 @@ namespace nano
         struct trainer_measurement_t
         {
                 ///
-                /// \brief constructor
-                ///
-                trainer_measurement_t(
-                        const scalar_t value = std::numeric_limits<scalar_t>::max(),
-                        const scalar_t error = std::numeric_limits<scalar_t>::max()) :
-                        m_value(value),
-                        m_error(error)
-                {
-                }
-
-                ///
                 /// \brief check validity of measurements (detect divergence)
                 ///
                 operator bool() const
@@ -31,8 +20,8 @@ namespace nano
                 }
 
                 // attributes
-                scalar_t        m_value;        ///< average loss value
-                scalar_t        m_error;        ///< average error
+                scalar_t        m_value{std::numeric_limits<scalar_t>::max()};  ///< average loss value
+                scalar_t        m_error{std::numeric_limits<scalar_t>::max()};  ///< average error
         };
 
         inline std::ostream& operator<<(std::ostream& os, const trainer_measurement_t& measure)
