@@ -6,6 +6,8 @@
 #include "text/table.h"
 #include "accumulator.h"
 #include "text/cmdline.h"
+#include "text/algorithm.h"
+#include <iostream>
 
 using namespace nano;
 
@@ -18,55 +20,6 @@ static bool load_json(const string_t& path, const char* name, string_t& json, st
 
         json_reader_t(json).object(name, id);
         return !id.empty();
-}
-
-static bool save(const string_t& path, const probes_t& probes)
-{
-        table_t table;
-        table.header() << "name" << "#flops" << "gflop/s" << "min[us]" << "avg[us]" << "max[us]";
-        table.delim();
-
-        for (const auto& probe : probes)
-        {
-                auto& row = table.append();
-                row << probe.fullname() << probe.flops();
-                if (probe.timings().min() < int64_t(1))
-                {
-                        row << "-";
-                }
-                else
-                {
-                        row << probe.gflops();
-                }
-                row << probe.timings().min() << probe.timings().avg() << probe.timings().max();
-        }
-
-        std::ofstream os(path.c_str());
-        return os.is_open() && (os << table);
-}
-
-static void append(table_t& table, const string_t& name, const tensor_size_t params, const size_t minibatch,
-        const probes_t& probes, const bool detailed)
-{
-        for (const auto& probe : probes)
-        {
-                if (!starts_with(probe.fullname(), "network") && !detailed)
-                {
-                        continue;
-                }
-
-                auto& row = table.append();
-                row << (name + " " + probe.fullname()) << params << probe.flops() << minibatch;
-                if (probe.timings().min() < int64_t(1))
-                {
-                        row << "-";
-                }
-                else
-                {
-                        row << probe.gflops();
-                }
-                row << probe.timings().min() << probe.timings().avg() << probe.timings().max();
-        }
 }
 
 int main(int argc, const char *argv[])
@@ -142,58 +95,84 @@ int main(int argc, const char *argv[])
                 return EXIT_FAILURE;
         }
 
-        // construct tables to compare models
-        table_t table;
-        table.header() << "network" << "#params" << "#flops" << "batch" << "gflop/s" << "min[us]" << "avg[us]" << "max[us]";
-        table.delim();
-
-        // evaluate models
-        for (const auto& config : networks)
+        // benchmark model for different batch sizes
+        std::vector<probes_t> batch2probes;
+        for (size_t count = cmd_min_count; count <= cmd_max_count; count *= 2)
         {
-                const auto cmd_network = config.first;
-                const auto cmd_name = config.second;
-
-                // create feed-forward network
-                model_t model(cmd_network);
-                model.config(task->idims(), task->odims());
-                model.random();
-                model.describe();
-
                 const auto fold = fold_t{0, protocol::train};
                 const auto size = task->size(fold);
 
-                for (size_t count = cmd_min_count; count <= cmd_max_count; count *= 2)
+                // measure processing
+                accumulator_t acc(model, *loss);
+                acc.threads(cmd_threads);
+                acc.mode((cmd_forward && !cmd_backward) ? accumulator_t::type::value : accumulator_t::type::vgrad);
+
+                for (size_t i = 0; i + count < size; i += count)
                 {
-                        // measure processing
-                        accumulator_t acc(model, *loss);
-                        acc.threads(1);
-                        acc.mode((cmd_forward && !cmd_backward) ? accumulator_t::type::value : accumulator_t::type::vgrad);
-
-                        for (size_t i = 0; i + count < size; i += count)
-                        {
-                                acc.update(*task, fold, i, i + count);
-                        }
-
-                        log_info()
-                                << "<<< processed [" << size << "] samples using "
-                                << cmd_name << " and minibatch of " << count << ".";
-
-                        append(table, cmd_name, model.psize(), count, acc.probes(), cmd_detailed);
-
-                        if (cmd_detailed && count * 2 <= cmd_max_count)
-                        {
-                                table.delim();
-                        }
+                        acc.update(*task, fold, i, i + count);
                 }
 
-                const auto last = config == *networks.rbegin();
-                if (!cmd_detailed && !last)
-                {
-                        table.delim();
-                }
+                log_info() << "<<< processed [" << size << "] samples using minibatches of size " << count << ".";
+
+                // filter probes
+                auto probes = acc.probes();
+                probes.erase(
+                        std::remove_if(probes.begin(), probes.end(), [&] (const probe_t& probe)
+                        {
+                                return !starts_with(probe.fullname(), "model") && !cmd_detailed;
+                        }),
+                        probes.end());
+
+                batch2probes.push_back(probes);
         }
 
         // print results
+        table_t table;
+        {
+                auto&& header = table.header();
+                header << "" << "";
+                for (size_t count = cmd_min_count; count <= cmd_max_count; count *= 2)
+                {
+                        header << colspan(4) << alignment::center << strcat("minibatch x", count);
+                }
+        }
+        table.delim();
+        {
+                auto&& header = table.header();
+                header << "name" << "#flops";
+                for (size_t count = cmd_min_count; count <= cmd_max_count; count *= 2)
+                {
+                        header << "gflop/s" << "min[us]" << "avg[us]" << "max[us]";
+                }
+        }
+        table.delim();
+        for (const auto& probe0 : batch2probes[0])
+        {
+                auto&& row = table.append();
+                row << probe0.fullname() << probe0.flops();
+
+                for (const auto& probes : batch2probes)
+                {
+                        for (const auto& probe : probes)
+                        {
+                                if (probe.fullname() != probe0.fullname())
+                                {
+                                        continue;
+                                }
+
+                                if (probe.timings().min() < int64_t(1))
+                                {
+                                        row << "-";
+                                }
+                                else
+                                {
+                                        row << probe.gflops();
+                                }
+                                row << probe.timings().min() << probe.timings().avg() << probe.timings().max();
+                        }
+                }
+        }
+
         std::cout << table;
 
         // OK

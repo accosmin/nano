@@ -588,7 +588,7 @@ const vector_t& model_t::gparam(const tensor4d_t& odata)
                                 cnode.odata(cxdata(), count));
                         if (!cnode.m_inodes.empty())
                         {
-                                cnode.m_node->ginput(
+                                cnode.ginput(
                                         cnode.idata(m_xdata, count, m_nodes, m_idims),
                                         cnode.pdata(cpdata()),
                                         cnode.odata(cxdata(), count));

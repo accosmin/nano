@@ -82,6 +82,11 @@ namespace nano
                 ///
                 tensor_size_t psize() const;
 
+                ///
+                /// \brief measurement probes
+                ///
+                probes_t probes() const;
+
         private:
 
                 using tstats_t = stats_t<scalar_t>;

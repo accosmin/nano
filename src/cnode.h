@@ -32,7 +32,12 @@ namespace nano
                         m_name(other.m_name),
                         m_type(other.m_type),
                         m_node(other.m_node->clone()),
-                        m_inodes(other.m_inodes)
+                        m_inodes(other.m_inodes),
+                        m_obegin(other.m_obegin),
+                        m_pbegin(other.m_pbegin),
+                        m_probe_output(other.m_probe_output),
+                        m_probe_ginput(other.m_probe_ginput),
+                        m_probe_gparam(other.m_probe_gparam)
                 {
                 }
 
