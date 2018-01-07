@@ -22,7 +22,7 @@ static bool load_json(const string_t& path, const char* name, string_t& json, st
         return !id.empty();
 }
 
-static bool save(const string_t& path, const trainer_states_t& states)
+static bool save(const string_t& path, const trainer_result_t& result)
 {
         table_t table;
 
@@ -34,7 +34,7 @@ static bool save(const string_t& path, const trainer_states_t& states)
                 << "seconds" << "xnorm" << "gnorm";
 
         size_t index = 0;
-        for (const auto& state : states)
+        for (const auto& state : result.history())
         {
                 auto&& row = table.append();
                 row     << (index ++)
@@ -59,6 +59,7 @@ int main(int argc, const char *argv[])
         cmdline.add("", "enhancer",     join(get_enhancers().ids()) + " (.json)");
         cmdline.add("", "basepath",     "basepath where to save results (e.g. model, logs, history)");
         cmdline.add("", "threads",      "number of threads to use", physical_cpus());
+        cmdline.add("", "trials",       "number of trials", 10);
 
         cmdline.process(argc, argv);
 
@@ -71,6 +72,7 @@ int main(int argc, const char *argv[])
         const auto cmd_enhancer = cmdline.get<string_t>("enhancer");
         const auto cmd_basepath = cmdline.get<string_t>("basepath");
         const auto cmd_threads = cmdline.get<size_t>("threads");
+        const auto cmd_trials = cmdline.get<size_t>("trials");
 
         checkpoint_t checkpoint;
         string_t params, id;
@@ -125,7 +127,6 @@ int main(int argc, const char *argv[])
         checkpoint.step("configure model");
         checkpoint.measure(model.config(params) && model.resize(task->idims(), task->odims()));
 
-        model.random();
         model.describe();
         if (model != *task)
         {
@@ -133,21 +134,29 @@ int main(int argc, const char *argv[])
                 return EXIT_FAILURE;
         }
 
-        // train model
-        accumulator_t acc(model, *loss);
-        acc.threads(cmd_threads);
+        // todo: tune once the trainer
 
-        trainer_result_t result;
-        checkpoint.step("train model");
-        checkpoint.measure((result = trainer->train(*enhancer, *task, cmd_fold, acc)) == true);
+        // train & save the model using multiple trials
+        for (size_t trial = 0; trial < cmd_trials; ++ trial)
+        {
+                accumulator_t acc(model, *loss);
+                acc.threads(cmd_threads);
 
-        model.params(result.optimum_params());
+                model.random();
 
-        // save the model
-        checkpoint.step("save model");
-        checkpoint.critical(
-                model.save(cmd_basepath + ".model") &&
-                save(cmd_basepath + ".state", result.history()));
+                trainer_result_t result;
+                checkpoint.step("train model");
+                checkpoint.measure((result = trainer->train(*enhancer, *task, cmd_fold, acc)) == true);
+
+                model.params(result.optimum_params());
+
+                const auto basepath = strcat(cmd_basepath, "_trial", trial + 1);
+
+                checkpoint.step("save model");
+                checkpoint.critical(
+                        model.save(strcat(basepath, ".model")) &&
+                        save(strcat(cmd_basepath, ".state"), result));
+        }
 
         // OK
         log_info() << done;

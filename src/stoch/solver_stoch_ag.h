@@ -26,10 +26,16 @@ namespace nano
         {
         public:
 
-                solver_state_t minimize(const stoch_params_t&, const function_t&, const vector_t& x0) const override;
+                strings_t configs() const final;
+                json_reader_t& config(json_reader_t& reader) final;
+                json_writer_t& config(json_writer_t& writer) const final;
+                solver_state_t minimize(const stoch_params_t&, const function_t&, const vector_t& x0) const final;
 
-                static solver_state_t minimize(const stoch_params_t&, const function_t&, const vector_t& x0,
-                        const scalar_t alpha0, const scalar_t q);
+        private:
+
+                // attributes
+                scalar_t        m_alpha0{1e-2};
+                scalar_t        m_q{0.0};
         };
 
         using stoch_ag_t = stoch_ag_base_t<ag_restart::none>;

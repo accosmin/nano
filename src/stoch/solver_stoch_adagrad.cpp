@@ -3,13 +3,28 @@
 
 using namespace nano;
 
-solver_state_t stoch_adagrad_t::minimize(const stoch_params_t& param, const function_t& function, const vector_t& x0) const
+strings_t stoch_adagrad_t::configs() const
 {
-        return tune(this, param, function, x0, make_alpha0s(), make_epsilons());
+        strings_t configs;
+        for (const auto alpha0 : {1e-1, 1e-2, 1e-3, 1e-4})
+        for (const auto epsilon : {1e-4, 1e-6})
+        {
+                configs.push_back(json_writer().object("alpha0", alpha0, "epsilon", epsilon).str());
+        }
+        return configs;
 }
 
-solver_state_t stoch_adagrad_t::minimize(const stoch_params_t& param, const function_t& function, const vector_t& x0,
-        const scalar_t alpha0, const scalar_t epsilon)
+json_reader_t& stoch_adagrad_t::config(json_reader_t& reader)
+{
+        return reader.object("alpha0", m_alpha0, "epsilon", m_epsilon);
+}
+
+json_writer_t& stoch_adagrad_t::config(json_writer_t& writer) const
+{
+        return writer.object("alpha0", m_alpha0, "epsilon", m_epsilon);
+}
+
+solver_state_t stoch_adagrad_t::minimize(const stoch_params_t& param, const function_t& function, const vector_t& x0) const
 {
         // second-order gradient momentum
         vector_t gsum2 = vector_t::Zero(x0.size());
@@ -18,12 +33,12 @@ solver_state_t stoch_adagrad_t::minimize(const stoch_params_t& param, const func
         const auto solver = [&] (solver_state_t& cstate, const solver_state_t&)
         {
                 // learning rate
-                const scalar_t alpha = alpha0;
+                const scalar_t alpha = m_alpha0;
 
                 // descent direction
                 gsum2.array() += cstate.g.array().square();
 
-                cstate.d = -cstate.g.array() / (epsilon + gsum2.array().sqrt());
+                cstate.d = -cstate.g.array() / (m_epsilon + gsum2.array().sqrt());
 
                 // update solution
                 function.stoch_next();
@@ -35,6 +50,5 @@ solver_state_t stoch_adagrad_t::minimize(const stoch_params_t& param, const func
                 sstate.update(function, cstate.x);
         };
 
-        return  loop(param, function, x0, solver, snapshot,
-                json_writer_t().object("alpha0", alpha0, "epsilon", epsilon).str());
+        return loop(param, function, x0, solver, snapshot);
 }

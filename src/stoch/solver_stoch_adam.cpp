@@ -5,16 +5,32 @@
 
 using namespace nano;
 
-solver_state_t stoch_adam_t::minimize(const stoch_params_t& param, const function_t& function, const vector_t& x0) const
+strings_t stoch_adam_t::configs() const
 {
-        const auto decays = make_finite_space(scalar_t(0.500));
-        const auto beta1s = make_finite_space(scalar_t(0.900));
-        const auto beta2s = make_finite_space(scalar_t(0.999));
-        return tune(this, param, function, x0, make_alpha0s(), decays, make_epsilons(), beta1s, beta2s);
+        strings_t configs;
+        for (const alpha0 : {1e-1, 1e-2, 1e-3, 1e-4})
+        for (const decay : {0.75, 1.00})
+        for (const epsilon : {1e-4, 1e-6})
+        for (const beta1 : {0.900})
+        for (const beta2 : {0.999})
+        {
+                configs.push_back(json_writer().object(
+                        "alpha0", alpha0, "decay", decay, "epsilon", epsilon, "beta1", beta1, "beta2", beta2).str());
+        }
+        return configs;
 }
 
-solver_state_t stoch_adam_t::minimize(const stoch_params_t& param, const function_t& function, const vector_t& x0,
-        const scalar_t alpha0, const scalar_t decay, const scalar_t epsilon, const scalar_t beta1, const scalar_t beta2)
+json_reader_t& stoch_adam_t::config(json_reader_t& reader)
+{
+        return reader.object("alpha0", m_alpha0, "decay", m_decay, "epsilon", m_epsilon, "beta1", m_beta1, "beta2", m_beta2);
+}
+
+json_writer_t& stoch_adam_t::config(json_writer_t& writer) const
+{
+        return writer.object("alpha0", m_alpha0, "decay", m_decay, "epsilon", m_epsilon, "beta1", m_beta1, "beta2", m_beta2);
+}
+
+solver_state_t stoch_adam_t::minimize(const stoch_params_t& param, const function_t& function, const vector_t& x0) const
 {
         // learning rate schedule
         lrate_t lrate(alpha0, decay);
@@ -47,6 +63,5 @@ solver_state_t stoch_adam_t::minimize(const stoch_params_t& param, const functio
                 sstate.update(function, cstate.x);
         };
 
-        return  loop(param, function, x0, solver, snapshot,
-                json_writer_t().object("alpha0", alpha0, "decay", decay, "epsilon", epsilon, "beta1", beta1, "beta2", beta2).str());
+        return loop(param, function, x0, solver, snapshot);
 }

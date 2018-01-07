@@ -11,9 +11,16 @@ namespace nano
         {
         public:
 
-                solver_state_t minimize(const stoch_params_t&, const function_t&, const vector_t& x0) const override;
+                strings_t configs() const final;
+                json_reader_t& config(json_reader_t& reader) final;
+                json_writer_t& config(json_writer_t& writer) const final;
+                solver_state_t minimize(const stoch_params_t&, const function_t&, const vector_t& x0) const final;
 
-                static solver_state_t minimize(const stoch_params_t&, const function_t&, const vector_t& x0,
-                        const scalar_t alpha0, const scalar_t decay, const scalar_t momentum);
+        private:
+
+                // attributes
+                scalar_t        m_alpha0{1e-2};
+                scalar_t        m_decay{0.75};
+                scalar_t        m_momentum{0.90};
         };
 }

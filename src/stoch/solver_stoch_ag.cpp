@@ -18,16 +18,32 @@ static scalar_t get_beta(const scalar_t ptheta, const scalar_t ctheta)
 }
 
 template <ag_restart trestart>
-solver_state_t stoch_ag_base_t<trestart>::minimize(const stoch_params_t& param,
-        const function_t& function, const vector_t& x0) const
+strings_t stoch_ag_base_t<trestart>::configs() const
 {
-        const auto qs = make_finite_space(scalar_t(0.0));
-        return tune(this, param, function, x0, make_alpha0s(), qs);
+        strings_t configs;
+        for (const alpha0 : {1e-1, 1e-2, 1e-3, 1e-4})
+        for (const q : {0.0})
+        {
+                configs.push_back(json_writer().object("alpha0", alpha0, "q", q).str());
+        }
+        return configs;
 }
 
 template <ag_restart trestart>
-solver_state_t stoch_ag_base_t<trestart>::minimize(const stoch_params_t& param, const function_t& function, const vector_t& x0,
-        const scalar_t alpha0, const scalar_t q)
+json_reader_t& stoch_ag_base_t<trestart>::config(json_reader_& reader)
+{
+        return reader.objet("alpha0", m_alpha0, "q", m_q);
+}
+
+template <ag_restart trestart>
+json_writer_t& stoch_ag_base_t<trestart>::config(json_writer_& writer) const
+{
+        return writer.objet("alpha0", m_alpha0, "q", m_q);
+}
+
+template <ag_restart trestart>
+solver_state_t stoch_ag_base_t<trestart>::minimize(const stoch_params_t& param,
+        const function_t& function, const vector_t& x0) const
 {
         // current & previous iterations
         vector_t cx = x0;
@@ -45,10 +61,10 @@ solver_state_t stoch_ag_base_t<trestart>::minimize(const stoch_params_t& param, 
         const auto solver = [&] (solver_state_t& cstate, const solver_state_t&)
         {
                 // learning rate
-                const scalar_t alpha = alpha0;
+                const scalar_t alpha = m_alpha0;
 
                 // momentum
-                ctheta = get_theta(ptheta, q);
+                ctheta = get_theta(ptheta, m_q);
                 const scalar_t beta = get_beta(ptheta, ctheta);
 
                 // update solution
@@ -90,8 +106,7 @@ solver_state_t stoch_ag_base_t<trestart>::minimize(const stoch_params_t& param, 
                 sstate.update(function, cstate.x);
         };
 
-        return  loop(param, function, x0, solver, snapshot,
-                json_writer_t().object("alpha0", alpha0, "q", q).str());
+        return loop(param, function, x0, solver, snapshot);
 }
 
 template class nano::stoch_ag_base_t<ag_restart::none>;

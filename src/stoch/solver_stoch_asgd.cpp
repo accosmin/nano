@@ -5,19 +5,29 @@
 
 using namespace nano;
 
-solver_state_t stoch_asgd_t::minimize(const stoch_params_t& param, const function_t& function, const vector_t& x0) const
+strings_t stoch_asgd_t::configs() const
 {
-        return tune(this, param, function, x0, make_alpha0s(), make_decays(), make_momenta());
+        strings_t configs;
+        return configs;
 }
 
-solver_state_t stoch_asgd_t::minimize(const stoch_params_t& param, const function_t& function, const vector_t& x0,
-        const scalar_t alpha0, const scalar_t decay, const scalar_t momentum)
+json_reader_t& stoch_asgd_t::config(json_reader_t& reader)
+{
+        return reader.object("alpha0", m_alpha0, "decay", m_decay, "momentum", m_momentum);
+}
+
+json_writer_t& stoch_asgd_t::config(json_writer_t& writer) const
+{
+        return writer.object("alpha0", m_alpha0, "decay", m_decay, "momentum", m_momentum);
+}
+
+solver_state_t stoch_asgd_t::minimize(const stoch_params_t& param, const function_t& function, const vector_t& x0) const
 {
         // learning rate schedule
-        lrate_t lrate(alpha0, decay);
+        lrate_t lrate(m_alpha0, m_decay);
 
         // average state
-        momentum_t<vector_t> xavg(momentum, x0.size());
+        momentum_t<vector_t> xavg(m_momentum, x0.size());
 
         // assembly the solver
         const auto solver = [&] (solver_state_t& cstate, const solver_state_t&)
@@ -39,6 +49,5 @@ solver_state_t stoch_asgd_t::minimize(const stoch_params_t& param, const functio
                 sstate.update(function, xavg.value());
         };
 
-        return  loop(param, function, x0, solver, snapshot,
-                json_writer_t().object("alpha0", alpha0, "decay", decay, "momentum", momentum).str());
+        return loop(param, function, x0, solver, snapshot);
 }
