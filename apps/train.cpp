@@ -139,25 +139,23 @@ int main(int argc, const char *argv[])
         acc.threads(cmd_threads);
 
         // tune the trainer (once!)
+        acc.random();
         trainer->tune(*enhancer, *task, cmd_fold, acc);
 
         // train & save the model using multiple trials
         for (size_t trial = 0; trial < cmd_trials; ++ trial)
         {
-                model.random();
-
+                acc.random();
                 trainer_result_t result;
                 checkpoint.step("train model");
                 checkpoint.measure((result = trainer->train(*enhancer, *task, cmd_fold, acc)) == true);
 
                 model.params(result.optimum_params());
 
-                const auto basepath = strcat(cmd_basepath, "_trial", trial + 1);
-
                 checkpoint.step("save model");
                 checkpoint.critical(
-                        model.save(strcat(basepath, ".model")) &&
-                        save(strcat(cmd_basepath, ".state"), result));
+                        model.save(strcat(cmd_basepath, "_trial", trial + 1, ".model")) &&
+                        save(strcat(cmd_basepath, "_trial", trial + 1, ".state"), result));
         }
 
         // OK

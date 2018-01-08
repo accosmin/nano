@@ -38,6 +38,7 @@ namespace nano
                 ///
                 /// \brief change settings (and resets accumulator)
                 ///
+                void random();
                 void mode(const type);
                 void threads(const size_t nthreads);
                 void params(const vector_t& params);

@@ -26,6 +26,12 @@ void accumulator_t::clear()
         }
 }
 
+void accumulator_t::random()
+{
+        origin().m_model->random();
+        params(origin().m_model->params());
+}
+
 void accumulator_t::params(const vector_t& params)
 {
         for (auto& tcache : m_tcaches)

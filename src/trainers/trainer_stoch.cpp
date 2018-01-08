@@ -145,7 +145,6 @@ trainer_result_t stoch_trainer_t::train(
         const auto function = stoch_function_t(acc, enhancer, task,  iterator);
         const auto params = stoch_params_t{m_epochs, epoch_size, m_epsilon, fn_ulog};
         auto solver = get_stoch_solvers().get(m_solver);
-        solver->config(m_solver_config);
         solver->minimize(params, function, acc.params());
 
         log_info() << std::setprecision(4)
