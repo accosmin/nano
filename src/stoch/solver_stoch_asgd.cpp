@@ -1,6 +1,5 @@
 #include "lrate.h"
 #include "tensor/momentum.h"
-#include "text/json_writer.h"
 #include "solver_stoch_asgd.h"
 
 using namespace nano;

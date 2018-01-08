@@ -1,17 +1,10 @@
-#include "text/json_writer.h"
 #include "solver_stoch_adagrad.h"
 
 using namespace nano;
 
 strings_t stoch_adagrad_t::configs() const
 {
-        strings_t configs;
-        for (const auto alpha0 : {1e-1, 1e-2, 1e-3, 1e-4})
-        for (const auto epsilon : {1e-4, 1e-6})
-        {
-                configs.push_back(json_writer().object("alpha0", alpha0, "epsilon", epsilon).str());
-        }
-        return configs;
+        return {};
 }
 
 json_reader_t& stoch_adagrad_t::config(json_reader_t& reader)

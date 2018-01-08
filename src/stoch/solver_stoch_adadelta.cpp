@@ -1,18 +1,11 @@
 #include "tensor/momentum.h"
-#include "text/json_writer.h"
 #include "solver_stoch_adadelta.h"
 
 using namespace nano;
 
-strings_t stoch_adadelta_t::configs()
+strings_t stoch_adadelta_t::configs() const
 {
-        strings_t configs;
-        for (const auto momentum : {0.10, 0.50, 0.90})
-        for (const auto epsilon : {1e-4, 1e-6})
-        {
-                configs.push_back(json_writer_t().object("momentum", momentum, "epsilon", epsilon).str());
-        }
-        return configs;
+        return {};
 }
 
 json_reader_t& stoch_adadelta_t::config(json_reader_t& reader)

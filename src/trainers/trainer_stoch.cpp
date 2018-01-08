@@ -37,7 +37,8 @@ trainer_result_t stoch_trainer_t::train(
         size_t epoch = 0;
         trainer_result_t result;
 
-        // tuning operator
+
+/*        // tuning operator
         const auto fn_tlog = [&] (const solver_state_t& state, const string_t& config)
         {
                 // NB: the training state is already computed
@@ -54,10 +55,10 @@ trainer_result_t stoch_trainer_t::train(
 
                 // NB: need to reset the minibatch size (changed during tuning)!
                 iterator.reset(m_batch);
-        };
+        };*/
 
         // logging operator
-        const auto fn_ulog = [&] (const solver_state_t& state, const string_t& config)
+        const auto fn_ulog = [&] (const solver_state_t& state)
         {
                 // evaluate the current state
                 // NB: the training state is already estimated!
@@ -78,14 +79,14 @@ trainer_result_t stoch_trainer_t::train(
                 const auto xnorm = state.x.lpNorm<2>();
                 const auto gnorm = state.convergence_criteria();
                 const auto ret = result.update(state,
-                        {milis, ++epoch, xnorm, gnorm, train, valid, test}, config, m_patience);
+                        {milis, ++epoch, xnorm, gnorm, train, valid, test}, string_t{}/*config*/, m_patience);
 
                 log_info()
                         << "[" << epoch << "/" << m_epochs
                         << ":train=" << train
                         << ",valid=" << valid << "|" << nano::to_string(ret)
                         << ",test=" << test
-                        << "," << config << ",batch=" << iterator.size() << ",g=" << gnorm << ",x=" << xnorm
+                        //<< "," << config << ",batch=" << iterator.size() << ",g=" << gnorm << ",x=" << xnorm
                         << "] " << timer.elapsed() << ".";
 
                 return !nano::is_done(ret);
@@ -93,8 +94,7 @@ trainer_result_t stoch_trainer_t::train(
 
         // assembly optimization function & train the model
         const auto function = stoch_function_t(acc, enhancer, task,  iterator);
-        auto params = stoch_params_t{m_epochs, epoch_size, m_epsilon, fn_ulog, fn_tlog};
-        params.m_tune_max_epochs = m_tune_epochs;
+        auto params = stoch_params_t{m_epochs, epoch_size, m_epsilon, fn_ulog};
         get_stoch_solvers().get(m_solver)->minimize(params, function, acc.params());
 
         log_info() << "<<< stoch-" << m_solver << ": " << result << ",time=" << timer.elapsed() << ".";

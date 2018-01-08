@@ -1,23 +1,12 @@
 #include "lrate.h"
 #include "tensor/momentum.h"
-#include "text/json_writer.h"
 #include "solver_stoch_adam.h"
 
 using namespace nano;
 
 strings_t stoch_adam_t::configs() const
 {
-        strings_t configs;
-        for (const alpha0 : {1e-1, 1e-2, 1e-3, 1e-4})
-        for (const decay : {0.75, 1.00})
-        for (const epsilon : {1e-4, 1e-6})
-        for (const beta1 : {0.900})
-        for (const beta2 : {0.999})
-        {
-                configs.push_back(json_writer().object(
-                        "alpha0", alpha0, "decay", decay, "epsilon", epsilon, "beta1", beta1, "beta2", beta2).str());
-        }
-        return configs;
+        return {};
 }
 
 json_reader_t& stoch_adam_t::config(json_reader_t& reader)
@@ -33,13 +22,13 @@ json_writer_t& stoch_adam_t::config(json_writer_t& writer) const
 solver_state_t stoch_adam_t::minimize(const stoch_params_t& param, const function_t& function, const vector_t& x0) const
 {
         // learning rate schedule
-        lrate_t lrate(alpha0, decay);
+        lrate_t lrate(m_alpha0, m_decay);
 
         // first-order momentum of the gradient
-        momentum_t<vector_t> m(beta1, x0.size());
+        momentum_t<vector_t> m(m_beta1, x0.size());
 
         // second-order momentum of the gradient
-        momentum_t<vector_t> v(beta2, x0.size());
+        momentum_t<vector_t> v(m_beta2, x0.size());
 
         // assembly the solver
         const auto solver = [&] (solver_state_t& cstate, const solver_state_t&)
@@ -51,7 +40,7 @@ solver_state_t stoch_adam_t::minimize(const stoch_params_t& param, const functio
                 m.update(cstate.g);
                 v.update(cstate.g.array().square());
 
-                cstate.d = -m.value().array() / (epsilon + v.value().array().sqrt());
+                cstate.d = -m.value().array() / (m_epsilon + v.value().array().sqrt());
 
                 // update solution
                 function.stoch_next();

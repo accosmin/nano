@@ -1,5 +1,4 @@
 #include "solver_stoch_ag.h"
-#include "text/json_writer.h"
 
 using namespace nano;
 
@@ -20,25 +19,19 @@ static scalar_t get_beta(const scalar_t ptheta, const scalar_t ctheta)
 template <ag_restart trestart>
 strings_t stoch_ag_base_t<trestart>::configs() const
 {
-        strings_t configs;
-        for (const alpha0 : {1e-1, 1e-2, 1e-3, 1e-4})
-        for (const q : {0.0})
-        {
-                configs.push_back(json_writer().object("alpha0", alpha0, "q", q).str());
-        }
-        return configs;
+        return {};
 }
 
 template <ag_restart trestart>
-json_reader_t& stoch_ag_base_t<trestart>::config(json_reader_& reader)
+json_reader_t& stoch_ag_base_t<trestart>::config(json_reader_t& reader)
 {
-        return reader.objet("alpha0", m_alpha0, "q", m_q);
+        return reader.object("alpha0", m_alpha0, "q", m_q);
 }
 
 template <ag_restart trestart>
-json_writer_t& stoch_ag_base_t<trestart>::config(json_writer_& writer) const
+json_writer_t& stoch_ag_base_t<trestart>::config(json_writer_t& writer) const
 {
-        return writer.objet("alpha0", m_alpha0, "q", m_q);
+        return writer.object("alpha0", m_alpha0, "q", m_q);
 }
 
 template <ag_restart trestart>
