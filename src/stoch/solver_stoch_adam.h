@@ -20,10 +20,10 @@ namespace nano
         private:
 
                 // attributes
-                scalar_t        m_alpha0{1e-2};
-                scalar_t        m_decay{0.50};
-                scalar_t        m_epsilon{1e-6};
-                scalar_t        m_beta1{0.900};
-                scalar_t        m_beta2{0.999};
+                scalar_t        m_alpha0{static_cast<scalar_t>(1e-2)};
+                scalar_t        m_decay{static_cast<scalar_t>(0.50)};
+                scalar_t        m_epsilon{static_cast<scalar_t>(1e-6)};
+                scalar_t        m_beta1{static_cast<scalar_t>(0.900)};
+                scalar_t        m_beta2{static_cast<scalar_t>(0.999)};
         };
 }

@@ -2,7 +2,6 @@
 
 #include "tune_result.h"
 #include "tune_grid_space.h"
-#include "tune_finite_space.h"
 
 namespace nano
 {

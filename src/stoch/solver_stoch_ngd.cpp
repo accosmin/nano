@@ -4,8 +4,15 @@ using namespace nano;
 
 strings_t stoch_ngd_t::configs() const
 {
-        // todo
-        return strings_t{};
+        strings_t configs;
+
+        for (const auto alpha0 : make_scalars(1e-6, 1e-5, 1e-4, 1e-3, 1e-2, 1e-1))
+        {
+                configs.push_back(json_writer_t().object(
+                        "alpha0", alpha0).str());
+        }
+
+        return configs;
 }
 
 json_reader_t& stoch_ngd_t::config(json_reader_t& reader)

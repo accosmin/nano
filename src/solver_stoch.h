@@ -27,6 +27,11 @@ namespace nano
                 virtual strings_t configs() const = 0;
 
                 ///
+                /// \brief tune its hyper-parameters to minimize the given function.
+                ///
+                solver_state_t tune(const stoch_params_t&, const function_t&, const vector_t& x0);
+
+                ///
                 /// \brief minimize starting from the initial point x0.
                 ///
                 virtual solver_state_t minimize(const stoch_params_t&, const function_t&, const vector_t& x0) const = 0;

@@ -19,7 +19,16 @@ static scalar_t get_beta(const scalar_t ptheta, const scalar_t ctheta)
 template <ag_restart trestart>
 strings_t stoch_ag_base_t<trestart>::configs() const
 {
-        return {};
+        strings_t configs;
+
+        for (const auto alpha0 : make_scalars(1e-3, 1e-2, 1e-1, 1e+0))
+        for (const auto q : make_scalars(0.0))
+        {
+                configs.push_back(json_writer_t().object(
+                        "alpha0", alpha0, "q", q).str());
+        }
+
+        return configs;
 }
 
 template <ag_restart trestart>

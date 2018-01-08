@@ -20,7 +20,7 @@ namespace nano
         private:
 
                 // attributes
-                scalar_t        m_momentum{0.90};
-                scalar_t        m_epsilon{1e-6};
+                scalar_t        m_momentum{static_cast<scalar_t>(0.90)};
+                scalar_t        m_epsilon{static_cast<scalar_t>(1e-6)};
         };
 }

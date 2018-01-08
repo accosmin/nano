@@ -6,7 +6,17 @@ using namespace nano;
 
 strings_t stoch_sgm_t::configs() const
 {
-        return {};
+        strings_t configs;
+
+        for (const auto alpha0 : make_scalars(1e-3, 1e-2, 1e-1, 1e+0))
+        for (const auto decay : make_scalars(0.50, 0.75, 1.00))
+        for (const auto momentum : make_scalars(0.10, 0.50, 0.90))
+        {
+                configs.push_back(json_writer_t().object(
+                        "alpha0", alpha0, "decay", decay, "momentum", momentum).str());
+        }
+
+        return configs;
 }
 
 json_reader_t& stoch_sgm_t::config(json_reader_t& reader)

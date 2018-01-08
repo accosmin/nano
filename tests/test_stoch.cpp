@@ -9,8 +9,8 @@ using namespace nano;
 
 static void check_function(const function_t& function)
 {
-        const auto epochs = size_t(1000);
-        const auto epoch_size = size_t(1000);
+        const auto epochs = size_t(100);
+        const auto epoch_size = size_t(100);
         const auto trials = size_t(10);
 
         const auto dims = function.size();
@@ -40,7 +40,7 @@ static void check_function(const function_t& function)
 
                         // optimize
                         const auto params = stoch_params_t(epochs, epoch_size, epsilon3<scalar_t>());
-                        const auto state = solver->minimize(params, function, x0);
+                        const auto state = solver->tune(params, function, x0);
 
                         const auto x = state.x;
                         const auto f = state.f;
