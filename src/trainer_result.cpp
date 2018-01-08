@@ -1,3 +1,4 @@
+#include "text/table.h"
 #include "math/stats.h"
 #include "math/numeric.h"
 #include "math/epsilon.h"
@@ -97,6 +98,30 @@ scalar_t trainer_result_t::convergence_speed() const
         return static_cast<scalar_t>(speeds.avg());
 }
 
+bool trainer_result_t::save(const string_t& path) const
+{
+        table_t table;
+
+        auto&& header = table.header();
+        header  << "epoch"
+                << "train_loss" << "train_error"
+                << "valid_loss" << "valid_error"
+                << "test_loss" << "test_error"
+                << "seconds" << "xnorm" << "gnorm";
+
+        size_t index = 0;
+        for (const auto& state : history())
+        {
+                auto&& row = table.append();
+                row     << (index ++)
+                        << state.m_train.m_value << state.m_train.m_error
+                        << state.m_valid.m_value << state.m_valid.m_error
+                        << state.m_test.m_value << state.m_test.m_error
+                        << idiv(state.m_milis.count(), 1000) << state.m_xnorm << state.m_gnorm;
+        }
+
+        return table.save(path, "    ");
+}
 bool nano::is_done(const trainer_status code)
 {
         return  code == trainer_status::diverge ||

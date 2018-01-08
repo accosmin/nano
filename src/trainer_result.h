@@ -73,6 +73,11 @@ namespace nano
                 scalar_t convergence_speed() const;
 
                 ///
+                /// \brief save the training history as csv
+                ///
+                bool save(const string_t& path) const;
+
+                ///
                 /// \brief optimum training state
                 ///
                 const auto& optimum_state() const { return m_opt_state; }

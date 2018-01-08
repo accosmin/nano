@@ -22,31 +22,6 @@ static bool load_json(const string_t& path, const char* name, string_t& json, st
         return !id.empty();
 }
 
-static bool save(const string_t& path, const trainer_result_t& result)
-{
-        table_t table;
-
-        auto&& header = table.header();
-        header  << "epoch"
-                << "train_loss" << "train_error"
-                << "valid_loss" << "valid_error"
-                << "test_loss" << "test_error"
-                << "seconds" << "xnorm" << "gnorm";
-
-        size_t index = 0;
-        for (const auto& state : result.history())
-        {
-                auto&& row = table.append();
-                row     << (index ++)
-                        << state.m_train.m_value << state.m_train.m_error
-                        << state.m_valid.m_value << state.m_valid.m_error
-                        << state.m_test.m_value << state.m_test.m_error
-                        << idiv(state.m_milis.count(), 1000) << state.m_xnorm << state.m_gnorm;
-        }
-
-        return table.save(path, "    ");
-}
-
 int main(int argc, const char *argv[])
 {
         // parse the command line
@@ -142,6 +117,14 @@ int main(int argc, const char *argv[])
         acc.random();
         trainer->tune(*enhancer, *task, cmd_fold, acc);
 
+        table_t table;
+        table.header()
+                << "trial" << "epoch"
+                << "train_loss" << "train_error"
+                << "valid_loss" << "valid_error"
+                << "test_loss" << "test_error"
+                << "seconds" << "speed";
+
         // train & save the model using multiple trials
         for (size_t trial = 0; trial < cmd_trials; ++ trial)
         {
@@ -152,11 +135,24 @@ int main(int argc, const char *argv[])
 
                 model.params(result.optimum_params());
 
+                const auto& state = result.optimum_state();
+                table.append()
+                        << (trial + 1) << state.m_epoch
+                        << state.m_train.m_value << state.m_train.m_error
+                        << state.m_valid.m_value << state.m_valid.m_error
+                        << state.m_test.m_value << state.m_test.m_error
+                        << result.convergence_speed()
+                        << idiv(state.m_milis.count(), 1000);
+
                 checkpoint.step("save model");
                 checkpoint.critical(
                         model.save(strcat(cmd_basepath, "_trial", trial + 1, ".model")) &&
-                        save(strcat(cmd_basepath, "_trial", trial + 1, ".state"), result));
+                        result.save(strcat(cmd_basepath, "_trial", trial + 1, ".csv")));
         }
+
+        checkpoint.step("save stats");
+        checkpoint.critical(
+                table.save(strcat(cmd_basepath, ".csv"), "    "));
 
         // OK
         log_info() << done;
