@@ -7,7 +7,7 @@ strings_t stoch_adagrad_t::configs() const
         strings_t configs;
 
         for (const auto alpha0 : make_scalars(1e-3, 1e-2, 1e-1, 1e+0))
-        for (const auto epsilon : make_scalars(1e-4, 1e-6))
+        for (const auto epsilon : make_scalars(1e-2, 1e-4, 1e-6))
         {
                 configs.push_back(json_writer_t().object(
                         "alpha0", alpha0, "epsilon", epsilon).str());

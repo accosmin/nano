@@ -10,7 +10,7 @@ using namespace nano;
 static void check_function(const function_t& function)
 {
         const auto epochs = size_t(100);
-        const auto epoch_size = size_t(100);
+        const auto epoch_size = size_t(30);
         const auto trials = size_t(10);
 
         const auto dims = function.size();
