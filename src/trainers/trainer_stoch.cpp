@@ -23,6 +23,12 @@ json_writer_t& stoch_trainer_t::config(json_writer_t& writer) const
                 "batch", m_batch, "eps", m_epsilon, "patience", m_patience);
 }
 
+size_t stoch_trainer_t::epoch_size(const task_t& task, const size_t fold) const
+{
+        const auto train_size = task.size({fold, protocol::train});
+        return idiv(train_size, m_batch);
+}
+
 void stoch_trainer_t::tune(
         const enhancer_t& enhancer, const task_t& task, const size_t fold, accumulator_t& acc)
 {
@@ -38,9 +44,6 @@ void stoch_trainer_t::tune(
         for (const auto& config : solver->configs())
         {
                 // minibatch iterator
-                const auto train_size = task.size({fold, protocol::train});
-                const auto epoch_size = idiv(train_size, m_batch);
-
                 auto iterator = iterator_t(task, {fold, protocol::train}, m_batch);
 
                 size_t epoch = 0;
@@ -78,7 +81,7 @@ void stoch_trainer_t::tune(
 
                 // assembly optimization function & train the model
                 const auto function = stoch_function_t(acc, enhancer, task,  iterator);
-                auto params = stoch_params_t{m_tune_epochs, epoch_size, m_epsilon, fn_ulog};
+                auto params = stoch_params_t{m_tune_epochs, epoch_size(task, fold), m_epsilon, fn_ulog};
                 solver->minimize(params, function, param0);
 
                 // check if an improvement
@@ -97,9 +100,6 @@ trainer_result_t stoch_trainer_t::train(
         const enhancer_t& enhancer, const task_t& task, const size_t fold, accumulator_t& acc) const
 {
         // minibatch iterator
-        const auto train_size = task.size({fold, protocol::train});
-        const auto epoch_size = idiv(train_size, m_batch);
-
         auto iterator = iterator_t(task, {fold, protocol::train}, m_batch);
 
         const timer_t timer;
@@ -143,7 +143,7 @@ trainer_result_t stoch_trainer_t::train(
 
         // assembly optimization function & train the model
         const auto function = stoch_function_t(acc, enhancer, task,  iterator);
-        const auto params = stoch_params_t{m_epochs, epoch_size, m_epsilon, fn_ulog};
+        const auto params = stoch_params_t{m_epochs, epoch_size(task, fold), m_epsilon, fn_ulog};
         auto solver = get_stoch_solvers().get(m_solver);
         solver->minimize(params, function, acc.params());
 

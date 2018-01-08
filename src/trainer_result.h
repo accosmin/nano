@@ -68,6 +68,11 @@ namespace nano
                 }
 
                 ///
+                /// \brief computes the convergence speed (aka. loss decrease ratio per unit time)
+                ///
+                scalar_t convergence_speed() const;
+
+                ///
                 /// \brief optimum training state
                 ///
                 const auto& optimum_state() const { return m_opt_state; }
@@ -106,5 +111,23 @@ namespace nano
                 return result1.optimum_state() < result2.optimum_state();
         }
 
-        NANO_PUBLIC std::ostream& operator<<(std::ostream&, const trainer_result_t&);
+        inline std::ostream& operator<<(std::ostream& os, const trainer_result_t& result)
+        {
+                const auto& state = result.optimum_state();
+
+                os      << "train=" << state.m_train
+                        << ",valid=" << state.m_valid
+                        << ",test=" << state.m_test
+                        << "," << result.config() << ",epoch=" << result.optimum_epoch();
+                if (result.history().size() > 1)
+                {
+                        os << ",speed=" << result.convergence_speed() << "/s";
+                }
+                else
+                {
+                        os << ",speed=" << "0.0/s";
+                }
+
+                return os;
+        }
 }

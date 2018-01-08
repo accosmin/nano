@@ -6,34 +6,6 @@
 
 using namespace nano;
 
-static scalar_t convergence_speed(const trainer_states_t& states)
-{
-        const auto op = [](const trainer_state_t& prv, const trainer_state_t& crt)
-        {
-                assert(crt.m_train.m_value >= scalar_t(0));
-                assert(prv.m_train.m_value >= scalar_t(0));
-                assert(crt.m_milis >= prv.m_milis);
-
-                const auto ratio_eps = nano::epsilon0<scalar_t>();
-                const auto ratio = (ratio_eps + crt.m_train.m_value) / (ratio_eps + prv.m_train.m_value);
-                const auto delta = 1 + crt.m_milis.count() - prv.m_milis.count();
-
-                // convergence speed ~ loss decrease ratio / second
-                const auto ret = static_cast<scalar_t>(std::pow(
-                        static_cast<double>(ratio),
-                        static_cast<double>(1000) / static_cast<double>(delta)));
-                return std::isfinite(ret) ? nano::clamp(ret, scalar_t(0), scalar_t(1)) : scalar_t(1);
-        };
-
-        nano::stats_t<scalar_t> speeds;
-        for (size_t i = 0; i + 1 < states.size(); ++ i)
-        {
-                speeds(op(states[i], states[i + 1]));
-        }
-
-        return static_cast<scalar_t>(speeds.avg());
-}
-
 trainer_result_t::trainer_result_t(const string_t& config) :
         m_config(config)
 {
@@ -97,30 +69,38 @@ trainer_status trainer_result_t::update(const solver_state_t& opt_state, const t
         }
 }
 
+scalar_t trainer_result_t::convergence_speed() const
+{
+        const auto op = [](const trainer_state_t& prv, const trainer_state_t& crt)
+        {
+                assert(crt.m_train.m_value >= scalar_t(0));
+                assert(prv.m_train.m_value >= scalar_t(0));
+                assert(crt.m_milis >= prv.m_milis);
+
+                const auto ratio_eps = nano::epsilon0<scalar_t>();
+                const auto ratio = (ratio_eps + crt.m_train.m_value) / (ratio_eps + prv.m_train.m_value);
+                const auto delta = 1 + crt.m_milis.count() - prv.m_milis.count();
+
+                // convergence speed ~ loss decrease ratio / second
+                const auto ret = static_cast<scalar_t>(std::pow(
+                        static_cast<double>(ratio),
+                        static_cast<double>(1000) / static_cast<double>(delta)));
+                return std::isfinite(ret) ? nano::clamp(ret, scalar_t(0), scalar_t(1)) : scalar_t(1);
+        };
+
+        nano::stats_t<scalar_t> speeds;
+        for (size_t i = 0; i + 1 < m_history.size(); ++ i)
+        {
+                speeds(op(m_history[i], m_history[i + 1]));
+        }
+
+        return static_cast<scalar_t>(speeds.avg());
+}
+
 bool nano::is_done(const trainer_status code)
 {
         return  code == trainer_status::diverge ||
                 code == trainer_status::overfit ||
                 code == trainer_status::solved ||
                 code == trainer_status::failed;
-}
-
-std::ostream& nano::operator<<(std::ostream& os, const trainer_result_t& result)
-{
-        const auto& state = result.optimum_state();
-
-        os      << "train=" << state.m_train
-                << ",valid=" << state.m_valid
-                << ",test=" << state.m_test
-                << "," << result.config() << ",epoch=" << result.optimum_epoch();
-        if (result.history().size() > 1)
-        {
-                os << ",speed=" << convergence_speed(result.history()) << "/s";
-        }
-        else
-        {
-                os << ",speed=" << "0.0/s";
-        }
-
-        return os;
 }

@@ -19,6 +19,8 @@ namespace nano
 
         private:
 
+                size_t epoch_size(const task_t&, const size_t fold) const;
+
                 // attributes
                 string_t        m_solver{"sg"};
                 size_t          m_tune_epochs{8};
