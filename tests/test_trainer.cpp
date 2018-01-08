@@ -25,8 +25,7 @@ static auto update_result(trainer_result_t& result, const opt_status status, con
         solver_state_t opt_state;
         opt_state.m_status = status;
 
-        const auto config = string_t{};
-        return result.update(opt_state, make_trainer_state(value, 0, static_cast<size_t>(epoch)), config, patience);
+        return result.update(opt_state, make_trainer_state(value, 0, static_cast<size_t>(epoch)), patience);
 }
 
 NANO_BEGIN_MODULE(test_trainer)

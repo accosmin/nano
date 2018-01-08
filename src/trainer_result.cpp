@@ -34,8 +34,12 @@ static scalar_t convergence_speed(const trainer_states_t& states)
         return static_cast<scalar_t>(speeds.avg());
 }
 
-trainer_status trainer_result_t::update(const solver_state_t& opt_state,
-        const trainer_state_t& state, const string_t& config, const size_t patience)
+trainer_result_t::trainer_result_t(const string_t& config) :
+        m_config(config)
+{
+}
+
+trainer_status trainer_result_t::update(const solver_state_t& opt_state, const trainer_state_t& state, const size_t patience)
 {
         // out-of-bounds values (e.g. caused by invalid line-search steps)
         if (!state)
@@ -43,7 +47,6 @@ trainer_status trainer_result_t::update(const solver_state_t& opt_state,
                 return trainer_status::diverge;
         }
 
-        m_config = config;
         m_history.push_back(state);
 
         const auto updater = [&] ()
@@ -91,20 +94,6 @@ trainer_status trainer_result_t::update(const solver_state_t& opt_state,
         else
         {
                 return trainer_status::overfit;
-        }
-}
-
-trainer_status trainer_result_t::update(const trainer_result_t& other)
-{
-        if (*this < other)
-        {
-                *this = other;
-                return trainer_status::better;
-        }
-
-        else
-        {
-                return trainer_status::worse;
         }
 }
 

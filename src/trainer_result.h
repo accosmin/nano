@@ -47,16 +47,17 @@ namespace nano
         class NANO_PUBLIC trainer_result_t
         {
         public:
+
                 ///
-                /// \brief update the current/optimum state with a possible better state
+                /// \brief constructor
                 ///
-                trainer_status update(const solver_state_t&, const trainer_state_t&,
-                        const string_t& config, const size_t patience);
+                trainer_result_t() = default;
+                explicit trainer_result_t(const string_t& config);
 
                 ///
                 /// \brief update the current/optimum state with a possible better state
                 ///
-                trainer_status update(const trainer_result_t& other);
+                trainer_status update(const solver_state_t&, const trainer_state_t&, const size_t patience);
 
                 ///
                 /// \brief check if a valid result

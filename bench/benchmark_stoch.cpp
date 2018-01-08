@@ -31,6 +31,7 @@ static void check_function(const function_t& function, const strings_t& solvers,
                 const auto params = stoch_params_t(epochs, epoch_size, epsilon);
                 const auto& name = id;
 
+                solver->tune(params, function, x0s[0]);
                 benchmark::benchmark_function(solver, params, function, x0s, name, stats, gstats);
         }
 

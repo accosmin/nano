@@ -22,6 +22,13 @@ json_writer_t& stoch_trainer_t::config(json_writer_t& writer) const
                 "batch", m_batch, "eps", m_epsilon, "patience", m_patience);
 }
 
+void stoch_trainer_t::tune(
+        const enhancer_t& enhancer, const task_t& task, const size_t fold, accumulator_t& acc)
+{
+        // tune the hyper-parameters
+        // todo: tune the batch factor (that geometrically increases the minibatch size)
+}
+
 trainer_result_t stoch_trainer_t::train(
         const enhancer_t& enhancer, const task_t& task, const size_t fold, accumulator_t& acc) const
 {
@@ -78,8 +85,7 @@ trainer_result_t stoch_trainer_t::train(
                 const auto milis = timer.milliseconds();
                 const auto xnorm = state.x.lpNorm<2>();
                 const auto gnorm = state.convergence_criteria();
-                const auto ret = result.update(state,
-                        {milis, ++epoch, xnorm, gnorm, train, valid, test}, string_t{}/*config*/, m_patience);
+                const auto ret = result.update(state, {milis, ++epoch, xnorm, gnorm, train, valid, test}, m_patience);
 
                 log_info()
                         << "[" << epoch << "/" << m_epochs
