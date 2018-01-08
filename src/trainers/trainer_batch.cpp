@@ -4,6 +4,7 @@
 #include "function_batch.h"
 #include "solver_batch.h"
 #include "logger.h"
+#include <iomanip>
 
 using namespace nano;
 
@@ -54,13 +55,13 @@ trainer_result_t batch_trainer_t::train(
                 const auto gnorm = state.convergence_criteria();
                 const auto ret = result.update(state, {milis, ++epoch, xnorm, gnorm, train, valid, test}, m_patience);
 
-                log_info()
+                log_info() << std::setprecision(4)
                         << "[" << epoch << "/" << m_epochs
                         << ":train=" << train
                         << ",valid=" << valid << "|" << nano::to_string(ret)
                         << ",test=" << test
                         << ",g=" << gnorm << ",x=" << xnorm
-                        << "] " << timer.elapsed() << ".";
+                        << "]" << timer.elapsed() << ".";
 
                 return !nano::is_done(ret);
         };
@@ -70,7 +71,8 @@ trainer_result_t batch_trainer_t::train(
         const auto params = batch_params_t{m_epochs, m_epsilon, fn_ulog};
         get_batch_solvers().get(m_solver)->minimize(params, function, acc.params());
 
-        log_info() << "<<< batch-" << m_solver << ": " << result << ",time=" << timer.elapsed() << ".";
+        log_info() << std::setprecision(4)
+                << "<<< batch-" << m_solver << ": " << result << "," << timer.elapsed() << ".";
 
         // OK
         return result;

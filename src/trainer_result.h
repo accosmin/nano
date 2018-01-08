@@ -101,8 +101,10 @@ namespace nano
                 trainer_states_t        m_history;              ///< optimization history
         };
 
-        ///
-        /// \brief streaming training results
-        ///
+        inline bool operator<(const trainer_result_t& result1, const trainer_result_t& result2)
+        {
+                return result1.optimum_state() < result2.optimum_state();
+        }
+
         NANO_PUBLIC std::ostream& operator<<(std::ostream&, const trainer_result_t&);
 }

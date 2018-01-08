@@ -134,14 +134,16 @@ int main(int argc, const char *argv[])
                 return EXIT_FAILURE;
         }
 
-        // todo: tune once the trainer
+        // setup accumulator
+        accumulator_t acc(model, *loss);
+        acc.threads(cmd_threads);
+
+        // tune the trainer (once!)
+        trainer->tune(*enhancer, *task, cmd_fold, acc);
 
         // train & save the model using multiple trials
         for (size_t trial = 0; trial < cmd_trials; ++ trial)
         {
-                accumulator_t acc(model, *loss);
-                acc.threads(cmd_threads);
-
                 model.random();
 
                 trainer_result_t result;

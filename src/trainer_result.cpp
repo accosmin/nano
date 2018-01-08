@@ -107,7 +107,7 @@ bool nano::is_done(const trainer_status code)
 
 std::ostream& nano::operator<<(std::ostream& os, const trainer_result_t& result)
 {
-        const auto state = result.optimum_state();
+        const auto& state = result.optimum_state();
 
         os      << "train=" << state.m_train
                 << ",valid=" << state.m_valid
