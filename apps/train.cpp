@@ -144,7 +144,7 @@ int main(int argc, const char *argv[])
                         << state.m_valid.m_value << state.m_valid.m_error
                         << state.m_test.m_value << state.m_test.m_error
                         << state.m_xnorm << state.m_gnorm
-                        << idiv(state.m_milis.count(), 1000);
+                        << idiv(state.m_milis.count(), 1000)
                         << result.convergence_speed();
 
                 checkpoint.step("save model");
