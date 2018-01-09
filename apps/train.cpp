@@ -8,6 +8,7 @@
 #include "text/table.h"
 #include "accumulator.h"
 #include "text/cmdline.h"
+#include <iostream>
 
 using namespace nano;
 
@@ -123,6 +124,7 @@ int main(int argc, const char *argv[])
                 << "train_loss" << "train_error"
                 << "valid_loss" << "valid_error"
                 << "test_loss" << "test_error"
+                << "xnorm" << "gnorm"
                 << "seconds" << "speed";
 
         // train & save the model using multiple trials
@@ -141,8 +143,9 @@ int main(int argc, const char *argv[])
                         << state.m_train.m_value << state.m_train.m_error
                         << state.m_valid.m_value << state.m_valid.m_error
                         << state.m_test.m_value << state.m_test.m_error
-                        << result.convergence_speed()
+                        << state.m_xnorm << state.m_gnorm
                         << idiv(state.m_milis.count(), 1000);
+                        << result.convergence_speed();
 
                 checkpoint.step("save model");
                 checkpoint.critical(
@@ -153,6 +156,8 @@ int main(int argc, const char *argv[])
         checkpoint.step("save stats");
         checkpoint.critical(
                 table.save(strcat(cmd_basepath, ".csv"), "    "));
+
+        std::cout << table << std::endl;
 
         // OK
         log_info() << done;
