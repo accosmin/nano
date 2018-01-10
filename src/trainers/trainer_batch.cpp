@@ -23,6 +23,12 @@ json_writer_t& batch_trainer_t::config(json_writer_t& writer) const
 void batch_trainer_t::tune(
         const enhancer_t&, const task_t&, const size_t, accumulator_t&)
 {
+        const auto solver = get_batch_solvers().get(m_solver);
+        if (!solver)
+        {
+                assert(solver);
+                log_error() << "unknown solver [" << m_solver << "]!";
+        }
 }
 
 trainer_result_t batch_trainer_t::train(
@@ -69,11 +75,17 @@ trainer_result_t batch_trainer_t::train(
         // assembly optimization function & train the model
         const auto function = batch_function_t(acc, enhancer, task, fold_t{fold, protocol::train});
         const auto params = batch_params_t{m_epochs, m_epsilon, fn_ulog};
-        get_batch_solvers().get(m_solver)->minimize(params, function, acc.params());
+        const auto solver = get_batch_solvers().get(m_solver);
+        if (!solver)
+        {
+                assert(solver);
+                log_error() << "unknown solver [" << m_solver << "]!";
+        }
+        else
+        {
+                solver->minimize(params, function, acc.params());
+        }
 
-        log_info() << std::setprecision(4)
-                << "<<< batch-" << m_solver << ": " << result << "," << timer.elapsed() << ".";
-
-        // OK
+        log_info() << std::setprecision(4) << "<<< batch-" << m_solver << ": " << result << "," << timer.elapsed() << ".";
         return result;
 }

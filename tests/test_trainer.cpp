@@ -144,11 +144,4 @@ NANO_CASE(result_not_finite)
         NANO_CHECK_EQUAL(result.optimum_epoch(), best_epoch);
 }
 
-NANO_CASE(batch_trainer)
-{
-        // check the batch trainer for all batch solvers on a synthetic dataset
-        //const auto trainer = get_trainers().get("batch");
-
-}
-
 NANO_END_MODULE()

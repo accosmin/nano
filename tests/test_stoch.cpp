@@ -26,10 +26,10 @@ static void check_function(const function_t& function)
         }
 
         // solvers to try
-        const auto ids = get_stoch_solvers().ids();
-        for (const auto& id : ids)
+        for (const auto& id : get_stoch_solvers().ids())
         {
                 const auto solver = get_stoch_solvers().get(id);
+                NANO_REQUIRE(solver);
 
                 size_t out_of_domain = 0;
                 for (size_t t = 0; t < trials; ++ t)

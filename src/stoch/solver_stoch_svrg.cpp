@@ -7,7 +7,7 @@ strings_t stoch_svrg_t::configs() const
 {
         strings_t configs;
 
-        for (const auto alpha0 : make_scalars(1e-3, 1e-2, 1e-1, 1e+0))
+        for (const auto alpha0 : make_scalars(1e-3, 1e-2, 1e-1))
         for (const auto decay : make_scalars(0.00, 0.50, 0.75, 1.00))
         {
                 configs.push_back(json_writer_t().object(

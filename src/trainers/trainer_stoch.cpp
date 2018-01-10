@@ -32,15 +32,19 @@ size_t stoch_trainer_t::epoch_size(const task_t& task, const size_t fold) const
 void stoch_trainer_t::tune(
         const enhancer_t& enhancer, const task_t& task, const size_t fold, accumulator_t& acc)
 {
-        // tune the hyper-parameters
-        // todo: also tune the batch factor (that geometrically increases the minibatch size)
+        const auto solver = get_stoch_solvers().get(m_solver);
+        if (!solver)
+        {
+                assert(solver);
+                log_error() << "unknown solver [" << m_solver << "]!";
+        }
 
         const timer_t timer;
-
         trainer_result_t opt_result;
-
         const auto param0 = acc.params();
-        const auto solver = get_stoch_solvers().get(m_solver);
+
+        // tune the hyper-parameters
+        // todo: also tune the batch factor (that geometrically increases the minibatch size)
         for (const auto& config : solver->configs())
         {
                 // minibatch iterator
@@ -81,7 +85,7 @@ void stoch_trainer_t::tune(
 
                 // assembly optimization function & train the model
                 const auto function = stoch_function_t(acc, enhancer, task,  iterator);
-                auto params = stoch_params_t{m_tune_epochs, epoch_size(task, fold), m_epsilon, fn_ulog};
+                const auto params = stoch_params_t{m_tune_epochs, epoch_size(task, fold), m_epsilon, fn_ulog};
                 solver->minimize(params, function, param0);
 
                 // check if an improvement
@@ -93,7 +97,7 @@ void stoch_trainer_t::tune(
         }
 
         log_info() << std::setprecision(4)
-                << "<<< stoch-" << m_solver << ": *tune*:" << opt_result << "," << timer.elapsed() << ".";
+                << "<<< stoch-" << m_solver << "[tuned]: " << opt_result << "," << timer.elapsed() << ".";
 }
 
 trainer_result_t stoch_trainer_t::train(
@@ -144,12 +148,17 @@ trainer_result_t stoch_trainer_t::train(
         // assembly optimization function & train the model
         const auto function = stoch_function_t(acc, enhancer, task,  iterator);
         const auto params = stoch_params_t{m_epochs, epoch_size(task, fold), m_epsilon, fn_ulog};
-        auto solver = get_stoch_solvers().get(m_solver);
-        solver->minimize(params, function, acc.params());
+        const auto solver = get_stoch_solvers().get(m_solver);
+        if (!solver)
+        {
+                assert(solver);
+                log_error() << "unknown solver [" << m_solver << "]!";
+        }
+        else
+        {
+                solver->minimize(params, function, acc.params());
+        }
 
-        log_info() << std::setprecision(4)
-                << "<<< stoch-" << m_solver << ": " << result << "," << timer.elapsed() << ".";
-
-        // OK
+        log_info() << std::setprecision(4) << "<<< stoch-" << m_solver << ": " << result << "," << timer.elapsed() << ".";
         return result;
 }
