@@ -8,7 +8,7 @@ strings_t stoch_adaratio_t::configs() const
 {
         strings_t configs;
 
-        for (const auto alpha0 : make_scalars(1e-3, 1e-2, 1e-1))
+        for (const auto alpha0 : make_scalars(1e-3, 1e-2, 1e-1, 1e+0))
         for (const auto momentum : make_scalars(0.10, 0.50, 0.90))
         for (const auto ratio0 : make_scalars(0.90, 0.95, 0.99))
         for (const auto poly : make_scalars(1, 2, 3))
