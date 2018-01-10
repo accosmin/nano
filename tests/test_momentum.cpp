@@ -1,29 +1,32 @@
 #include "utest.h"
+#include "tensor.h"
 #include "math/epsilon.h"
+#include "math/momentum.h"
 #include "tensor/momentum.h"
 
-namespace test
-{
-        template
-        <
-                typename tvector,
-                typename tscalar = typename tvector::Scalar,
-                typename tsize = typename tvector::Index
-        >
-        void check_momentum(const tsize dims, const tscalar momentum, const tsize range)
-        {
-                nano::momentum_t<tvector> mom00(momentum, dims);
-                nano::momentum_t<tvector> mom01(momentum, dims);
-                nano::momentum_t<tvector> mom10(1 - momentum, dims);
-                nano::momentum_t<tvector> mom11(1 - momentum, dims);
+using namespace nano;
 
-                const auto epsilon = nano::epsilon1<tscalar>();
-                for (tsize i = 1; i <= range; ++ i)
+NANO_BEGIN_MODULE(test_momentum)
+
+NANO_CASE(vector)
+{
+        for (const auto momentum : make_scalars(0.1, 0.5, 0.9))
+        {
+                const auto dims = 13;
+                const auto range = 98;
+
+                momentum_t<vector_t> mom00(momentum, dims);
+                momentum_t<vector_t> mom01(momentum, dims);
+                momentum_t<vector_t> mom10(1 - momentum, dims);
+                momentum_t<vector_t> mom11(1 - momentum, dims);
+
+                const auto epsilon = epsilon1<scalar_t>();
+                for (auto i = 1; i <= range; ++ i)
                 {
-                        const auto base00 = tvector::Constant(dims, momentum);
-                        const auto base01 = tvector::Constant(dims, 1 - momentum);
-                        const auto base10 = tvector::Constant(dims, momentum);
-                        const auto base11 = tvector::Constant(dims, 1 - momentum);
+                        const auto base00 = vector_t::Constant(dims, momentum);
+                        const auto base01 = vector_t::Constant(dims, 1 - momentum);
+                        const auto base10 = vector_t::Constant(dims, momentum);
+                        const auto base11 = vector_t::Constant(dims, 1 - momentum);
 
                         mom00.update(base00);
                         mom01.update(base01);
@@ -38,13 +41,36 @@ namespace test
         }
 }
 
-NANO_BEGIN_MODULE(test_momentum)
-
-NANO_CASE(vector)
+NANO_CASE(scalar)
 {
-        test::check_momentum<Eigen::VectorXf>(13, 0.1f, 98);
-        test::check_momentum<Eigen::VectorXd>(17, 0.5, 75);
-        test::check_momentum<Eigen::VectorXd>(11, 0.9, 54);
+        for (const auto momentum : make_scalars(0.1, 0.5, 0.9))
+        {
+                const auto range = 98;
+
+                momentum1_t<scalar_t> mom00(momentum);
+                momentum1_t<scalar_t> mom01(momentum);
+                momentum1_t<scalar_t> mom10(1 - momentum);
+                momentum1_t<scalar_t> mom11(1 - momentum);
+
+                const auto epsilon = epsilon1<scalar_t>();
+                for (auto i = 1; i <= range; ++ i)
+                {
+                        const auto base00 = momentum;
+                        const auto base01 = 1 - momentum;
+                        const auto base10 = momentum;
+                        const auto base11 = 1 - momentum;
+
+                        mom00.update(base00);
+                        mom01.update(base01);
+                        mom10.update(base10);
+                        mom11.update(base11);
+
+                        NANO_CHECK_CLOSE(mom00.value(), base00, epsilon);
+                        NANO_CHECK_CLOSE(mom01.value(), base01, epsilon);
+                        NANO_CHECK_CLOSE(mom10.value(), base10, epsilon);
+                        NANO_CHECK_CLOSE(mom11.value(), base11, epsilon);
+                }
+        }
 }
 
 NANO_END_MODULE()

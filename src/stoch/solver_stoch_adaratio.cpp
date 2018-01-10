@@ -1,5 +1,5 @@
 #include "math/epsilon.h"
-#include "tensor/momentum.h"
+#include "math/momentum.h"
 #include "solver_stoch_adaratio.h"
 
 using namespace nano;
@@ -8,7 +8,7 @@ strings_t stoch_adaratio_t::configs() const
 {
         strings_t configs;
 
-        for (const auto alpha0 : make_scalars(1e-3, 1e-2, 1e-1, 1e+0))
+        for (const auto alpha0 : make_scalars(1e-3, 1e-2, 1e-1))
         for (const auto momentum : make_scalars(0.10, 0.50, 0.90))
         for (const auto ratio0 : make_scalars(0.90, 0.95, 0.99))
         for (const auto poly : make_scalars(1, 2, 3))
@@ -35,6 +35,9 @@ solver_state_t stoch_adaratio_t::minimize(const stoch_params_t& param, const fun
         // current learning rate
         scalar_t alpha = m_alpha0;
 
+        // first-order momentum of the loss decrease ratio
+        momentum1_t<scalar_t> ratio(m_momentum);
+
         // assembly the solver
         const auto solver = [&] (solver_state_t& cstate, const solver_state_t&)
         {
@@ -53,10 +56,9 @@ solver_state_t stoch_adaratio_t::minimize(const stoch_params_t& param, const fun
                 const auto nextf = sstate.f;
 
                 // update learning rate towards reaching the optimum function value decrease ratio (m_ratio0)
-                // todo: use momentum to smooth the ratio estimation
                 const auto eps = epsilon0<scalar_t>();
-                const auto ratio = (eps + std::fabs(nextf)) / (eps + std::fabs(prevf));
-                alpha = alpha * std::pow(scalar_t(1) + ratio - m_ratio0, m_poly);
+                ratio.update((eps + std::fabs(nextf)) / (eps + std::fabs(prevf)));
+                alpha = alpha * std::pow(scalar_t(1) + ratio.value() - m_ratio0, m_poly);
         };
 
         return loop(param, function, x0, solver, snapshot);
