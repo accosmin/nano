@@ -5,6 +5,7 @@
 #include "tasks/task_charset.h"
 #include "tasks/task_iris.h"
 #include "tasks/task_wine.h"
+#include "tasks/task_affine.h"
 #include "tasks/task_nparity.h"
 #include "tasks/task_fashion_mnist.h"
 #include "logger.h"
@@ -28,6 +29,7 @@ task_factory_t& nano::get_tasks()
                 manager.add<wine_task_t>("wine", "WINE (wine classification)");
                 manager.add<charset_task_t>("synth-charset", "synthetic character classification");
                 manager.add<nparity_task_t>("synth-nparity", "synthetic n-parity binary classification");
+                manager.add<affine_task_t>("synth-affine", "synthetic regression of a noisy affine transformation");
         });
 
         return manager;

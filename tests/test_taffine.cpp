@@ -4,23 +4,23 @@
 
 using namespace nano;
 
-static auto get_task(const tensor_size_t dims, const size_t count)
+static auto get_task(const tensor_size_t isize, const tensor_size_t osize, const scalar_t noise, const size_t count)
 {
-        auto task = get_tasks().get("synth-nparity");
+        auto task = get_tasks().get("synth-affine");
         NANO_REQUIRE(task);
-        task->config(json_writer_t().object("n", dims, "count", count).str());
+        task->config(json_writer_t().object("isize", isize, "osize", osize, "noise", noise, "count", count).str());
         return task;
 }
 
-NANO_BEGIN_MODULE(test_task_nparity)
+NANO_BEGIN_MODULE(test_task_affine)
 
 NANO_CASE(construction)
 {
-        auto task = get_task(11, 132);
+        auto task = get_task(11, 13, 0, 132);
         NANO_CHECK(task->load());
 
         const auto idims = tensor3d_dim_t{11, 1, 1};
-        const auto odims = tensor3d_dim_t{1, 1, 1};
+        const auto odims = tensor3d_dim_t{13, 1, 1};
 
         NANO_CHECK_EQUAL(task->idims(), idims);
         NANO_CHECK_EQUAL(task->odims(), odims);
@@ -44,23 +44,6 @@ NANO_CASE(construction)
 
                         NANO_CHECK_EQUAL(input.dims(), idims);
                         NANO_CHECK_EQUAL(target.dims(), odims);
-
-                        size_t ones = 0;
-                        for (auto x = 0; x < input.size(); ++ x)
-                        {
-                                if (input(x) > scalar_t(0.5))
-                                {
-                                        NANO_CHECK_CLOSE(input(x), scalar_t(1), epsilon0<scalar_t>());
-                                        ++ ones;
-                                }
-                                else
-                                {
-                                        NANO_CHECK_CLOSE(input(x), scalar_t(0), epsilon0<scalar_t>());
-                                }
-                        }
-
-                        const auto expected_target = (ones % 2) ? pos_target() : neg_target();
-                        NANO_CHECK_CLOSE(target(0), expected_target, epsilon0<scalar_t>());
                 }
         }
 

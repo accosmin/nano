@@ -17,7 +17,7 @@ static auto get_task(const charset_type type, const color_mode color,
         return task;
 }
 
-NANO_BEGIN_MODULE(test_charset)
+NANO_BEGIN_MODULE(test_task_charset)
 
 NANO_CASE(construction)
 {

@@ -1,7 +1,5 @@
 #include "task_nparity.h"
 
-#include <iostream>
-
 using namespace nano;
 
 nparity_task_t::nparity_task_t() :
@@ -27,9 +25,8 @@ bool nparity_task_t::populate()
 
         tensor3d_t bitset(m_dims, 1, 1);
 
-        reserve_chunks(m_count);
-
         // generate samples
+        reserve_chunks(m_count);
         for (size_t i = 0; i < m_count; ++ i)
         {
                 size_t ones = 0;
