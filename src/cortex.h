@@ -120,10 +120,15 @@ namespace nano
         ///
         /// \brief target value for multi-class single-label classification problems with [n_labels] classes
         ///
+        inline vector_t class_target(const tensor_size_t n_labels)
+        {
+                return vector_t::Constant(n_labels, neg_target());
+        }
+
         inline vector_t class_target(const tensor_size_t ilabel, const tensor_size_t n_labels)
         {
-                vector_t target = vector_t::Constant(n_labels, neg_target());
-                if (ilabel < n_labels)
+                auto target = class_target(n_labels);
+                if (ilabel >= 0 && ilabel < n_labels)
                 {
                         target(ilabel) = pos_target();
                 }
