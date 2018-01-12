@@ -11,13 +11,13 @@ namespace nano
         {
                 static auto value(const vector_cmap_t& targets, const vector_cmap_t& scores)
                 {
-                        return  std::log(scores.array().exp().sum()) -
+                        return  scores.size() * std::log(scores.array().exp().sum()) -
                                 scalar_t(0.5) * ((1 + targets.array()) * scores.array()).sum();
                 }
 
                 static auto vgrad(const vector_cmap_t& targets, const vector_cmap_t& scores)
                 {
-                        return  scores.array().exp() / (scores.array().exp().sum()) -
+                        return  scores.size() * scores.array().exp() / (scores.array().exp().sum()) -
                                 scalar_t(0.5) * (1 + targets.array());
                 }
         };
