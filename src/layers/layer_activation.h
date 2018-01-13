@@ -129,13 +129,13 @@ namespace nano
                 template <typename tiarray, typename toarray>
                 static void output(const tiarray& idata, toarray&& odata)
                 {
-                        odata = idata / (1 + idata.square()).sqrt();
+                        odata = idata * (1 + idata.square()).rsqrt();
                 }
 
                 template <typename tiarray, typename toarray>
                 static void ginput(tiarray&& idata, const toarray& odata)
                 {
-                        idata = odata / (1 + idata.square()).cube().sqrt();
+                        idata = odata * (1 + idata.square()).cube().rsqrt();
                 }
         };
 
