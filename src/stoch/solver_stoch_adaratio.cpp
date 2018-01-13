@@ -1,3 +1,4 @@
+#include "math/numeric.h"
 #include "math/epsilon.h"
 #include "math/momentum.h"
 #include "solver_stoch_adaratio.h"
@@ -57,7 +58,8 @@ solver_state_t stoch_adaratio_t::minimize(const stoch_params_t& param, const fun
 
                 // update learning rate towards reaching the optimum function value decrease ratio (m_ratio0)
                 const auto eps = epsilon0<scalar_t>();
-                ratio.update((eps + std::fabs(nextf)) / (eps + std::fabs(prevf)));
+                const auto ratiof = (eps + std::fabs(nextf)) / (eps + std::fabs(prevf));
+                ratio.update(clamp(ratiof, scalar_t(0), scalar_t(1)));
                 alpha = alpha * std::pow(scalar_t(1) + ratio.value() - m_ratio0, m_poly);
         };
 
