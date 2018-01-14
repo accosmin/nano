@@ -1,9 +1,9 @@
 #include "utest.h"
+#include "function.h"
 #include "math/random.h"
 #include "math/numeric.h"
 #include "math/epsilon.h"
 #include "solver_batch.h"
-#include "functions/test.h"
 
 using namespace nano;
 
@@ -77,7 +77,10 @@ NANO_BEGIN_MODULE(test_batch_solvers)
 
 NANO_CASE(evaluate)
 {
-        foreach_test_function(make_convex_functions(1, 4), check_function);
+        for (const auto& function : get_convex_functions(1, 4))
+        {
+                check_function(*function);
+        }
 }
 
 NANO_END_MODULE()

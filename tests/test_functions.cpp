@@ -1,7 +1,7 @@
 #include "utest.h"
+#include "function.h"
 #include "math/random.h"
 #include "math/epsilon.h"
-#include "functions/test.h"
 #include "tensor/numeric.h"
 
 using namespace nano;
@@ -10,8 +10,9 @@ NANO_BEGIN_MODULE(test_functions)
 
 NANO_CASE(evaluate)
 {
-        foreach_test_function(make_functions(1, 4), [] (const function_t& function)
+        for (const auto& rfunction : get_functions(1, 4, std::regex(".+")))
         {
+                const auto& function = *rfunction;
                 std::cout << function.name() << std::endl;
 
                 const auto dims = function.size();
@@ -39,7 +40,7 @@ NANO_CASE(evaluate)
                                 }
                         }
                 }
-        });
+        }
 }
 
 NANO_END_MODULE()

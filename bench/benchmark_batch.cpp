@@ -1,7 +1,7 @@
+#include "function.h"
 #include "math/random.h"
 #include "text/cmdline.h"
 #include "math/epsilon.h"
-#include "functions/test.h"
 #include "solver_batch.h"
 #include "benchmark_solvers.h"
 
@@ -48,6 +48,7 @@ int main(int argc, const char* argv[])
         // parse the command line
         cmdline_t cmdline("benchmark batch solvers");
         cmdline.add("", "solvers",      "use this regex to select the solvers to benchmark", ".+");
+        cmdline.add("", "functions",    "use this regex to select the functions to benchmark", ".+");
         cmdline.add("", "min-dims",     "minimum number of dimensions for each test function (if feasible)", "100");
         cmdline.add("", "max-dims",     "maximum number of dimensions for each test function (if feasible)", "1000");
         cmdline.add("", "trials",       "number of random trials for each test function", "100");
@@ -68,14 +69,14 @@ int main(int argc, const char* argv[])
         const auto c1 = cmdline.get<scalar_t>("c1");
 
         const auto solvers = get_batch_solvers().ids(std::regex(cmdline.get<string_t>("solvers")));
+        const auto functions = std::regex(cmdline.get<string_t>("functions"));
 
         std::map<std::string, benchmark::solver_stat_t> gstats;
 
-        const auto functions = (is_convex ? make_convex_functions : make_functions)(min_dims, max_dims);
-        foreach_test_function(functions, [&] (const function_t& function)
+        for (const auto& function : (is_convex ? get_convex_functions : get_functions)(min_dims, max_dims, functions))
         {
-                check_function(function, solvers, trials, iterations, epsilon, c1, gstats);
-        });
+                check_function(*function, solvers, trials, iterations, epsilon, c1, gstats);
+        }
 
         // show global statistics
         benchmark::show_table(std::string(), gstats);

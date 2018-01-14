@@ -1,7 +1,7 @@
+#include "function.h"
 #include "math/stats.h"
 #include "text/table.h"
 #include "text/cmdline.h"
-#include "functions/test.h"
 #include "chrono/measure.h"
 #include <iostream>
 
@@ -51,10 +51,10 @@ int main(int argc, const char* argv[])
         table_t table;
         table.header() << "function" << "f(x) [ns]" << "f(x, g) [ns]";
         table.delim();
-        foreach_test_function(make_functions(min_dims, max_dims), [&] (const function_t& function)
+        for (const auto& function : get_functions(min_dims, max_dims))
         {
-                eval_func(function, table);
-        });
+                eval_func(*function, table);
+        }
 
         std::cout << table;
 

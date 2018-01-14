@@ -11,7 +11,7 @@ strings_t stoch_adaratio_t::configs() const
 
         for (const auto alpha0 : make_scalars(1e-3, 1e-2, 1e-1, 1e+0))
         for (const auto momentum : make_scalars(0.10, 0.50, 0.90))
-        for (const auto ratio0 : make_scalars(0.90, 0.95, 0.99))
+        for (const auto ratio0 : make_scalars(0.10, 0.50, 0.90, 0.95))
         for (const auto poly : make_scalars(1, 2, 3))
         {
                 configs.push_back(json_writer_t().object(
@@ -60,6 +60,9 @@ solver_state_t stoch_adaratio_t::minimize(const stoch_params_t& param, const fun
                 const auto eps = epsilon0<scalar_t>();
                 const auto ratiof = (eps + std::fabs(nextf)) / (eps + std::fabs(prevf));
                 ratio.update(clamp(ratiof, scalar_t(0), scalar_t(1)));
+                //todo: app --function regexp for benchmark_stoch & benchmark_batch
+                //todo: this fails dramatically for the raynolds function
+                //todo: double check that alpha or ratio don't grow too big
                 alpha = alpha * std::pow(scalar_t(1) + ratio.value() - m_ratio0, m_poly);
         };
 

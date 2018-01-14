@@ -1,5 +1,7 @@
 #pragma once
 
+#include <regex>
+#include <memory>
 #include "arch.h"
 #include "tensor.h"
 #include "stringi.h"
@@ -8,6 +10,8 @@ namespace nano
 {
         class function_t;
         using ref_function_t = std::reference_wrapper<const function_t>;
+        using rfunction_t = std::unique_ptr<function_t>;
+        using rfunctions_t = std::vector<rfunction_t>;
 
         enum class convexity
         {
@@ -15,6 +19,20 @@ namespace nano
                 no,
                 unknown,
         };
+
+        ///
+        /// \brief construct test functions having the number of dimensions within the given range.
+        ///
+        NANO_PUBLIC rfunctions_t get_functions(
+                const tensor_size_t min_dims, const tensor_size_t max_dims,
+                const std::regex& name_regex = std::regex(".+"));
+
+        ///
+        /// \brief construct convex test functions having the number of dimensions within the given range.
+        ///
+        NANO_PUBLIC rfunctions_t get_convex_functions(
+                const tensor_size_t min_dims, const tensor_size_t max_dims,
+                const std::regex& name_regex = std::regex(".+"));
 
         ///
         /// \brief generic multi-dimensional optimization problem that

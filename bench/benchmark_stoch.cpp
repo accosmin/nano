@@ -1,7 +1,7 @@
 #include "text/cmdline.h"
 #include "math/random.h"
+#include "function.h"
 #include "math/epsilon.h"
-#include "functions/test.h"
 #include "solver_stoch.h"
 #include "benchmark_solvers.h"
 
@@ -46,6 +46,7 @@ int main(int argc, const char* argv[])
         // parse the command line
         cmdline_t cmdline("benchmark stochastic solvers");
         cmdline.add("", "solvers",      "use this regex to select the solvers to benchmark", ".+");
+        cmdline.add("", "functions",    "use this regex to select the functions to benchmark", ".+");
         cmdline.add("", "min-dims",     "minimum number of dimensions for each test function (if feasible)", "10");
         cmdline.add("", "max-dims",     "maximum number of dimensions for each test function (if feasible)", "100");
         cmdline.add("", "trials",       "number of random trials for each test function", "100");
@@ -68,14 +69,15 @@ int main(int argc, const char* argv[])
         const auto is_convex = cmdline.has("convex");
 
         const auto solvers = get_stoch_solvers().ids(std::regex(cmdline.get<string_t>("solvers")));
+        const auto names = std::regex(cmdline.get<string_t>("functions"));
 
         std::map<std::string, benchmark::solver_stat_t> gstats;
 
-        const auto functions = (is_convex ? make_convex_functions : make_functions)(min_dims, max_dims);
-        foreach_test_function(functions, [&] (const function_t& function)
+        const auto functions = (is_convex ? get_convex_functions : get_functions)(min_dims, max_dims, names);
+        for (const auto& function : functions)
         {
-                check_function(function, solvers, trials, epochs, tune_epochs, epoch_size, epsilon, gstats);
-        });
+                check_function(*function, solvers, trials, epochs, tune_epochs, epoch_size, epsilon, gstats);
+        }
 
         // show global statistics
         benchmark::show_table(std::string(), gstats);
