@@ -85,7 +85,7 @@ NANO_CASE(tune_and_train_classification)
 
         // create model
         model_t model;
-        NANO_REQUIRE(make_mlp(model, affine_node_configs_t{{isize, 1, 1}}, osize, 1, 1, "act-snorm"));
+        NANO_REQUIRE(make_linear(model, osize, 1, 1, "act-snorm"));
         NANO_REQUIRE(model.done());
         NANO_REQUIRE(model.resize(make_dims(isize, 1, 1), make_dims(osize, 1, 1)));
 
