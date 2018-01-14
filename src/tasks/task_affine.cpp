@@ -10,14 +10,15 @@ affine_task_t::affine_task_t() :
 
 json_reader_t& affine_task_t::config(json_reader_t& reader)
 {
-        reader.object("isize", m_isize, "osize", m_osize, "noise", m_noise, "count", m_count);
+        reader.object("isize", m_isize, "osize", m_osize, "noise", m_noise, "count", m_count, "type", m_type);
         reconfig(make_dims(m_isize, 1, 1), make_dims(m_osize, 1, 1), 1);
         return reader;
 }
 
 json_writer_t& affine_task_t::config(json_writer_t& writer) const
 {
-        return writer.object("isize", m_isize, "osize", m_osize, "noise", m_noise, "count", m_count);
+        return writer.object("isize", m_isize, "osize", m_osize, "noise", m_noise, "count", m_count,
+                "type", m_type, "types", join(enum_values<affine_task_type>() ));
 }
 
 bool affine_task_t::populate()
@@ -37,8 +38,22 @@ bool affine_task_t::populate()
         for (size_t i = 0; i < m_count; ++ i)
         {
                 input.random();
-                target.vector() = weights.matrix() * input.vector() + bias.vector();
-                add_random(rng_noise, target);
+                switch (m_type)
+                {
+                case affine_task_type::regression:
+                        target.vector() = weights.matrix() * input.vector() + bias.vector();
+                        add_random(rng_noise, target);
+                        break;
+
+                case affine_task_type::classification:
+                        target.vector() = weights.matrix() * input.vector() + bias.vector();
+                        add_random(rng_noise, target);
+                        target.vector() = class_target(target.vector());
+                        break;
+
+                default:
+                        assert(false);
+                }
 
                 const auto hash = i;
                 const auto label = string_t();
