@@ -52,18 +52,18 @@ solver_state_t stoch_adaratio_t::minimize(const stoch_params_t& param, const fun
 
         const auto snapshot = [&] (const solver_state_t& cstate, solver_state_t& sstate)
         {
-                const auto prevf = sstate.f;
+                //const auto prevf = sstate.f;
                 sstate.update(function, cstate.x);
-                const auto nextf = sstate.f;
+                //const auto nextf = sstate.f;
 
                 // update learning rate towards reaching the optimum function value decrease ratio (m_ratio0)
-                const auto eps = epsilon0<scalar_t>();
-                const auto ratiof = (eps + std::fabs(nextf)) / (eps + std::fabs(prevf));
-                ratio.update(clamp(ratiof, scalar_t(0), scalar_t(1)));
+                //const auto eps = epsilon0<scalar_t>();
+                //const auto ratiof = (eps + std::fabs(nextf)) / (eps + std::fabs(prevf));
+                //ratio.update(clamp(ratiof, scalar_t(0), scalar_t(1)));
                 //todo: app --function regexp for benchmark_stoch & benchmark_batch
                 //todo: this fails dramatically for the raynolds function
                 //todo: double check that alpha or ratio don't grow too big
-                alpha = alpha * std::pow(scalar_t(1) + ratio.value() - m_ratio0, m_poly);
+                //alpha = alpha * std::pow(scalar_t(1) + ratio.value() - m_ratio0, m_poly);
         };
 
         return loop(param, function, x0, solver, snapshot);

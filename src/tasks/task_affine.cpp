@@ -37,15 +37,16 @@ bool affine_task_t::populate()
         reserve_chunks(m_count);
         for (size_t i = 0; i < m_count; ++ i)
         {
-                input.random();
                 switch (m_type)
                 {
                 case affine_task_type::regression:
+                        input.random(-1, +1);
                         target.vector() = weights.matrix() * input.vector() + bias.vector();
                         add_random(rng_noise, target);
                         break;
 
                 case affine_task_type::classification:
+                        input.random(-5, +5);
                         target.vector() = weights.matrix() * input.vector() + bias.vector();
                         add_random(rng_noise, target);
                         target.vector() = class_target(target.vector());
