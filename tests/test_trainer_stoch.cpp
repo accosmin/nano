@@ -44,19 +44,8 @@ NANO_CASE(tune_and_train_regression)
         // check that the trainer works for all compatible solvers
         for (const auto& solver : get_stoch_solvers().ids())
         {
-                if (    solver != "ag" &&
-                        solver != "agfr" &&
-                        solver != "aggr" &&
-                        solver != "ngd" &&
-                        solver != "adagrad" &&
-                        solver != "adaratio")
-                {
-                        // todo: make the other solvers useful for this regression problem!
-                        continue;
-                }
-
                 trainer->config(json_writer_t().object(
-                        "tune_epochs", 8, "epochs", 1024, "batch", 16, "solver", solver,
+                        "tune_epochs", 8, "epochs", 1024, "batch", 1, "solver", solver,
                         "eps", epsilon1<scalar_t>()).str());
 
                 accumulator_t acc(model, *loss);
@@ -108,19 +97,8 @@ NANO_CASE(tune_and_train_classification)
         // check that the trainer works for all compatible solvers
         for (const auto& solver : get_stoch_solvers().ids())
         {
-                if (    solver != "ag" &&
-                        solver != "agfr" &&
-                        solver != "aggr" &&
-                        solver != "ngd" &&
-                        solver != "adagrad" &&
-                        solver != "adaratio")
-                {
-                        // todo: make the other solvers useful for this regression problem!
-                        continue;
-                }
-
                 trainer->config(json_writer_t().object(
-                        "tune_epochs", 8, "epochs", 1024, "batch", 16, "solver", solver,
+                        "tune_epochs", 8, "epochs", 1024, "batch", 1, "solver", solver,
                         "eps", epsilon1<scalar_t>()).str());
 
                 accumulator_t acc(model, *loss);

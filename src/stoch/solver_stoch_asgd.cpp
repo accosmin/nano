@@ -32,7 +32,7 @@ json_writer_t& stoch_asgd_t::config(json_writer_t& writer) const
 solver_state_t stoch_asgd_t::minimize(const stoch_params_t& param, const function_t& function, const vector_t& x0) const
 {
         // learning rate schedule
-        lrate_t lrate(m_alpha0, m_decay);
+        lrate_t lrate(m_alpha0, m_decay, param.m_epoch_size);
 
         // average state
         momentum_t<vector_t> xavg(m_momentum, x0.size());
