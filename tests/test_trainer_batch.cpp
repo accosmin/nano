@@ -20,7 +20,8 @@ NANO_CASE(tune_and_train_regression)
         const auto task = get_tasks().get("synth-affine");
         NANO_REQUIRE(task);
         task->config(json_writer_t().object(
-                "isize", isize, "osize", osize, "noise", 0, "count", 100, "type", affine_task_type::regression).str());
+                "isize", isize, "osize", osize,
+                "noise", 0, "count", 100, "type", affine_task_type::regression).str());
         NANO_REQUIRE(task->load());
 
         // create default enhancer (use task as it is)
@@ -56,8 +57,9 @@ NANO_CASE(tune_and_train_regression)
                 acc.random();
                 const auto result = trainer->train(*enhancer, *task, fold, acc);
                 NANO_REQUIRE(result);
-                const auto state = result.optimum_state();
 
+                const auto state = *result.history().rbegin();
+                NANO_CHECK_LESS(state.m_train.m_value, epsilon0<scalar_t>());
                 NANO_CHECK_LESS(state.m_train.m_error, epsilon1<scalar_t>());
         }
 }
@@ -72,7 +74,8 @@ NANO_CASE(tune_and_train_classification)
         const auto task = get_tasks().get("synth-affine");
         NANO_REQUIRE(task);
         task->config(json_writer_t().object(
-                "isize", isize, "osize", osize, "noise", 0, "count", 100, "type", affine_task_type::classification).str());
+                "isize", isize, "osize", osize,
+                "noise", 0, "count", 100, "type", affine_task_type::classification).str());
         NANO_REQUIRE(task->load());
 
         // create default enhancer (use task as it is)
@@ -80,7 +83,7 @@ NANO_CASE(tune_and_train_classification)
         NANO_REQUIRE(enhancer);
 
         // create loss
-        const auto loss = get_losses().get("m-exponential");
+        const auto loss = get_losses().get("m-logistic");
         NANO_REQUIRE(loss);
 
         // create model
@@ -108,9 +111,9 @@ NANO_CASE(tune_and_train_classification)
                 acc.random();
                 const auto result = trainer->train(*enhancer, *task, fold, acc);
                 NANO_REQUIRE(result);
-                const auto state = result.optimum_state();
 
-                NANO_CHECK_LESS(state.m_train.m_error, epsilon1<scalar_t>());
+                const auto state = *result.history().rbegin();
+                NANO_CHECK_LESS(state.m_train.m_error, epsilon0<scalar_t>());
         }
 }
 
