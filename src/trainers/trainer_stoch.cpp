@@ -12,15 +12,16 @@ json_reader_t& stoch_trainer_t::config(json_reader_t& reader)
 {
         return reader.object("solver", m_solver,
                 "tune_epochs", m_tune_epochs, "epochs", m_epochs,
-                "batch", m_batch, "eps", m_epsilon, "patience", m_patience);
+                "batch", m_batch, "batch_ratio", m_batch_ratio,
+                "eps", m_epsilon, "patience", m_patience);
 }
 
 json_writer_t& stoch_trainer_t::config(json_writer_t& writer) const
 {
-        return writer.object(
-                "solver", m_solver, "solvers", join(get_stoch_solvers().ids()),
+        return writer.object("solver", m_solver, "solvers", join(get_stoch_solvers().ids()),
                 "tune_epochs", m_tune_epochs, "epochs", m_epochs,
-                "batch", m_batch, "eps", m_epsilon, "patience", m_patience);
+                "batch", m_batch, "batch_ratio", m_batch_ratio,
+                "eps", m_epsilon, "patience", m_patience);
 }
 
 size_t stoch_trainer_t::epoch_size(const task_t& task, const size_t fold) const
@@ -48,7 +49,7 @@ void stoch_trainer_t::tune(
         for (const auto& config : solver->configs())
         {
                 // minibatch iterator
-                auto iterator = iterator_t(task, {fold, protocol::train}, m_batch);
+                auto iterator = iterator_t(task, {fold, protocol::train}, m_batch, m_batch_ratio);
 
                 size_t epoch = 0;
                 trainer_result_t result(config);
