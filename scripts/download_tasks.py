@@ -1,8 +1,8 @@
 import os
+import re
 import config
 import urllib3
-
-cfg = config.config()
+import argparse
 
 def download(url, dbdir):
         http = urllib3.PoolManager()
@@ -19,6 +19,7 @@ def download(url, dbdir):
         r.release_conn()
 
 def mkdir(dbname):
+        cfg = config.config()
         dbdir = cfg.dbdir + "/" + dbname + "/"
         os.makedirs(dbdir, exist_ok = True)
         return dbdir
@@ -59,10 +60,23 @@ def download_fashion_mnist():
         download("http://fashion-mnist.s3-website.eu-central-1.amazonaws.com/t10k-images-idx3-ubyte.gz", dbdir)
         download("http://fashion-mnist.s3-website.eu-central-1.amazonaws.com/t10k-labels-idx1-ubyte.gz", dbdir)
 
-download_iris()
-download_wine()
-download_svhn()
-download_mnist()
-download_cifar10()
-download_cifar100()
-download_fashion_mnist()
+def download_tasks(task_name_regex):
+        tasks = {
+                "iris": download_iris,
+                "wine": download_wine,
+                "svhn": download_svhn,
+                "mnist": download_mnist,
+                "cifar10": download_cifar10,
+                "cifar100": download_cifar100,
+                "fashion-mnist": download_fashion_mnist
+        }
+        for name, func in tasks.items():
+                if re.match(task_name_regex, name):
+                        func()
+
+if __name__ == '__main__':
+        parser = argparse.ArgumentParser(description="download tasks")
+        parser.add_argument("--tasks", action="store", help="regex of the task names to download", type=str)
+
+        args = parser.parse_args()
+        download_tasks(args.tasks)
