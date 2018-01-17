@@ -58,7 +58,7 @@ solver_state_t stoch_adaratio_t::minimize(const stoch_params_t& param, const fun
 
                 const auto ratio = clamp((prevf - nextf) / (eps + std::fabs(prevf)), min_ratio, max_ratio);
 
-                alpha = alpha * std::pow(scalar_t(1) + ratio - m_ratio0, m_poly);
+                alpha *= std::pow(scalar_t(1) + m_ratio0 - ratio, m_poly);
         };
 
         return loop(param, function, x0, solver, snapshot);

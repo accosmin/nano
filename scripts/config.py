@@ -59,7 +59,7 @@ class config:
         def stoch_solvers(self):
                 return ["ag", "agfr", "aggr",
                         "sg", "sgm", "ngd", "svrg", "asgd",
-                        "adagrad", "adadelta", "adam", "rmsprop"]
+                        "adagrad", "adadelta", "adam", "adaratio", "rmsprop"]
 
         # available batch solvers
         def batch_solvers(self):
