@@ -86,6 +86,8 @@ solver_state_t batch_lbfgs_t::minimize(const batch_params_t& param, const functi
                         return false;
                 }
 
+                // todo: may skip the update if the curvature condition is not satisfied
+                // see: "A Multi-Batch L-BFGS Method for Machine Learning", page 6 - the non-convex case
                 ss.emplace_back(cstate.x - pstate.x);
                 ys.emplace_back(cstate.g - pstate.g);
                 if (ss.size() > param.m_lbfgs_hsize)
