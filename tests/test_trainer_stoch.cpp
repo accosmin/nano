@@ -82,7 +82,7 @@ NANO_CASE(tune_and_train_classification)
         NANO_REQUIRE(task);
         task->config(json_writer_t().object(
                 "isize", isize, "osize", osize,
-                "noise", 0, "count", 100, "type", affine_task_type::classification).str());
+                "noise", 0, "count", 1000, "type", affine_task_type::classification).str());
         NANO_REQUIRE(task->load());
 
         // create default enhancer (use task as it is)
@@ -106,7 +106,7 @@ NANO_CASE(tune_and_train_classification)
         // check that the trainer works for all compatible solvers
         for (const auto& solver : get_stoch_solvers().ids())
         {
-                if (solver != "unknown")
+                if (solver != "adam")
                 {
                         // todo: have all stochastic solvers work properly!
                         continue;
@@ -127,7 +127,7 @@ NANO_CASE(tune_and_train_classification)
                 NANO_REQUIRE(result);
 
                 const auto state = *result.history().rbegin();
-                NANO_CHECK_LESS(state.m_train.m_error, epsilon1<scalar_t>());
+                NANO_CHECK_LESS(state.m_train.m_error, epsilon3<scalar_t>());
         }
 }
 
