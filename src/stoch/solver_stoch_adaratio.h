@@ -21,7 +21,6 @@ namespace nano
 
                 // attributes
                 scalar_t        m_alpha0{static_cast<scalar_t>(1e-2)};
-                scalar_t        m_momentum{static_cast<scalar_t>(0.90)};
                 scalar_t        m_ratio0{static_cast<scalar_t>(0.95)};
                 scalar_t        m_poly{2};
         };
