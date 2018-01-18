@@ -1,6 +1,5 @@
 import os
 import re
-import config
 import urllib3
 import argparse
 
@@ -18,9 +17,12 @@ def download(url, dbdir):
                         out.write(data)
         r.release_conn()
 
+def get_dbdir():
+        homedir = os.path.expanduser('~')
+        return os.path.join(homedir, "experiments", "databases")
+
 def mkdir(dbname):
-        cfg = config.config()
-        dbdir = cfg.dbdir + "/" + dbname + "/"
+        dbdir = get_dbdir() + "/" + dbname + "/"
         os.makedirs(dbdir, exist_ok = True)
         return dbdir
 
