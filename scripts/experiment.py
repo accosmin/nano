@@ -5,8 +5,8 @@ import argparse
 import subprocess
 
 # todo: remove these and make it self-contained
-import utils
-import plotter
+#import utils
+#import plotter
 
 class config:
         """ utility to manage the configuration needed for an experiment:
