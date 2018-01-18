@@ -29,7 +29,7 @@ matrix:
       env: TEST="build (gcc-5)"
       addons:
         apt:
-          packages: ['gcc-5', 'g++-5', 'libdevil-dev', 'libarchive-dev', 'ninja-build']
+          packages: ['gcc-5', 'g++-5', 'libdevil-dev', 'libarchive-dev', 'ninja-build', 'python3-pip']
           sources: &sources
             - ubuntu-toolchain-r-test
       script:
@@ -42,7 +42,7 @@ matrix:
       env: TEST="build (gcc-6)"
       addons:
         apt:
-          packages: ['gcc-6', 'g++-6', 'libdevil-dev', 'libarchive-dev', 'ninja-build']
+          packages: ['gcc-6', 'g++-6', 'libdevil-dev', 'libarchive-dev', 'ninja-build', 'python3-pip']
           sources: &sources
             - ubuntu-toolchain-r-test
       script:
@@ -55,7 +55,7 @@ matrix:
       env: TEST="build (gcc-7)"
       addons:
         apt:
-          packages: ['gcc-7', 'g++-7', 'libdevil-dev', 'libarchive-dev', 'ninja-build']
+          packages: ['gcc-7', 'g++-7', 'libdevil-dev', 'libarchive-dev', 'ninja-build', 'python3-pip']
           sources: &sources
             - ubuntu-toolchain-r-test
       script:
@@ -68,7 +68,7 @@ matrix:
       env: TEST="build (clang-3.8)"
       addons:
         apt:
-          packages: ['clang-3.8', 'libdevil-dev', 'libarchive-dev', 'libc++-dev', 'libc++abi-dev', 'ninja-build']
+          packages: ['clang-3.8', 'libdevil-dev', 'libarchive-dev', 'libc++-dev', 'libc++abi-dev', 'ninja-build', 'python3-pip']
           sources: &sources
             - llvm-toolchain-trusty-3.8
       script:
@@ -81,7 +81,7 @@ matrix:
       env: TEST="build (clang-4.0)"
       addons:
         apt:
-          packages: ['clang-4.0', 'libdevil-dev', 'libarchive-dev', 'libc++-dev', 'libc++abi-dev', 'ninja-build']
+          packages: ['clang-4.0', 'libdevil-dev', 'libarchive-dev', 'libc++-dev', 'libc++abi-dev', 'ninja-build', 'python3-pip']
           sources: &sources
             - llvm-toolchain-trusty-4.0
       script:
@@ -94,7 +94,7 @@ matrix:
       env: TEST="build (clang-5.0)"
       addons:
         apt:
-          packages: ['clang-5.0', 'libdevil-dev', 'libarchive-dev', 'libc++-dev', 'libc++abi-dev', 'ninja-build']
+          packages: ['clang-5.0', 'libdevil-dev', 'libarchive-dev', 'libc++-dev', 'libc++abi-dev', 'ninja-build', 'python3-pip']
           sources: &sources
             - llvm-toolchain-trusty-5.0
       script:
@@ -107,7 +107,7 @@ matrix:
       env: TEST="ASAN (gcc-7)"
       addons:
         apt:
-          packages: ['gcc-7', 'g++-7', 'libdevil-dev', 'libarchive-dev', 'ninja-build']
+          packages: ['gcc-7', 'g++-7', 'libdevil-dev', 'libarchive-dev', 'ninja-build', 'python3-pip']
           sources: &sources
             - ubuntu-toolchain-r-test
       script:
@@ -120,7 +120,7 @@ matrix:
       env: TEST="MSAN (gcc-7)"
       addons:
         apt:
-          packages: ['gcc-7', 'g++-7', 'libdevil-dev', 'libarchive-dev', 'ninja-build']
+          packages: ['gcc-7', 'g++-7', 'libdevil-dev', 'libarchive-dev', 'ninja-build', 'python3-pip']
           sources: &sources
             - ubuntu-toolchain-r-test
       script:
@@ -133,7 +133,7 @@ matrix:
       env: TEST="TSAN (gcc-7)"
       addons:
         apt:
-          packages: ['gcc-7', 'g++-7', 'libdevil-dev', 'libarchive-dev', 'ninja-build']
+          packages: ['gcc-7', 'g++-7', 'libdevil-dev', 'libarchive-dev', 'ninja-build', 'python3-pip']
           sources: &sources
             - ubuntu-toolchain-r-test
       script:
@@ -146,7 +146,7 @@ matrix:
       env: TEST="clang-tidy (clang-5.0)"
       addons:
         apt:
-          packages: ['clang-5.0', 'clang-tidy-5.0', 'libdevil-dev', 'libarchive-dev', 'libc++-dev', 'libc++abi-dev', 'ninja-build']
+          packages: ['clang-5.0', 'clang-tidy-5.0', 'libdevil-dev', 'libarchive-dev', 'libc++-dev', 'libc++abi-dev', 'ninja-build', 'python3-pip']
           sources: &sources
             - llvm-toolchain-trusty-5.0
       script:
@@ -158,7 +158,7 @@ matrix:
       env: TEST="valgrind (clang-5.0)"
       addons:
         apt:
-          packages: ['clang-5.0', 'valgrind', 'libdevil-dev', 'libarchive-dev', 'libc++-dev', 'libc++abi-dev', 'ninja-build']
+          packages: ['clang-5.0', 'valgrind', 'libdevil-dev', 'libarchive-dev', 'libc++-dev', 'libc++abi-dev', 'ninja-build', 'python3-pip']
           sources: &sources
             - llvm-toolchain-trusty-5.0
       script:
@@ -171,7 +171,7 @@ matrix:
       env: TEST="codecov (gcc-7)"
       addons:
         apt:
-          packages: ['gcc-7', 'g++-7', 'gcovr', 'libdevil-dev', 'libarchive-dev', 'ninja-build']
+          packages: ['gcc-7', 'g++-7', 'gcovr', 'libdevil-dev', 'libarchive-dev', 'ninja-build', 'python3-pip']
           sources: &sources
             - ubuntu-toolchain-r-test
       script:
