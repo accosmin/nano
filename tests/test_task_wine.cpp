@@ -3,12 +3,21 @@
 #include "utest.h"
 #include "math/epsilon.h"
 
-NANO_BEGIN_MODULE(test_iris)
+using namespace nano;
 
-NANO_CASE(construction)
+NANO_BEGIN_MODULE(test_wine)
+
+NANO_CASE(failed)
 {
-        using namespace nano;
+        const auto task = get_tasks().get("wine");
+        NANO_REQUIRE(task);
 
+        task->config(json_writer_t().object("dir", "/dev/null?!").str());
+        NANO_CHECK(!task->load());
+}
+
+NANO_CASE(loading)
+{
         const auto idims = tensor3d_dim_t{13, 1, 1};
         const auto odims = tensor3d_dim_t{3, 1, 1};
         const auto target_sum = scalar_t(2) - static_cast<scalar_t>(nano::size(odims));

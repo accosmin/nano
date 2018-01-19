@@ -3,12 +3,21 @@
 #include "utest.h"
 #include "math/epsilon.h"
 
+using namespace nano;
+
 NANO_BEGIN_MODULE(test_mnist)
 
-NANO_CASE(construction)
+NANO_CASE(failed)
 {
-        using namespace nano;
+        const auto task = get_tasks().get("mnist");
+        NANO_REQUIRE(task);
 
+        task->config(json_writer_t().object("dir", "/dev/null?!").str());
+        NANO_CHECK(!task->load());
+}
+
+NANO_CASE(loading)
+{
         const auto idims = tensor3d_dim_t{1, 28, 28};
         const auto odims = tensor3d_dim_t{10, 1, 1};
         const auto target_sum = scalar_t(2) - static_cast<scalar_t>(nano::size(odims));
