@@ -126,6 +126,7 @@ int main(int argc, const char *argv[])
                 << "test_loss" << "test_error"
                 << "xnorm" << "gnorm"
                 << "seconds" << "speed";
+        table.delim();
 
         // train & save the model using multiple trials
         for (size_t trial = 0; trial < cmd_trials; ++ trial)
@@ -155,7 +156,7 @@ int main(int argc, const char *argv[])
 
         checkpoint.step("save stats");
         checkpoint.critical(
-                table.save(strcat(cmd_basepath, ".csv"), "    "));
+                table.save(strcat(cmd_basepath, ".csv"), ";"));
 
         std::cout << table << std::endl;
 

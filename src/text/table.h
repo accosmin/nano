@@ -129,7 +129,7 @@ namespace nano
                 string_t mark(const size_t col) const;
 
                 auto type() const { return m_type; }
-                char colfill() const { return m_colfill;}
+                char colfill() const { return m_colfill; }
                 size_t colspan() const { return m_colspan; }
                 alignment align() const { return m_alignment; }
 

@@ -126,7 +126,11 @@ bool table_t::save(const string_t& path, const string_t& delim) const
                                 os << delim;
                         }
                 }
-                os << std::endl;
+
+                if (!row.cells().empty())
+                {
+                        os << std::endl;
+                }
         }
 
         return true;
