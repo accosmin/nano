@@ -52,6 +52,7 @@ bool nano::load_archive(const std::string& path,
         {
                 error_callback("failed to open archive <" + path + ">!");
                 error_callback(std::string("error <") + archive_error_string(ar) + ">!");
+                archive_read_free(ar);
                 return false;
         }
 
