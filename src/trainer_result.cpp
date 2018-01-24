@@ -107,7 +107,7 @@ bool trainer_result_t::save(const string_t& path) const
                 << "train_loss" << "train_error"
                 << "valid_loss" << "valid_error"
                 << "test_loss" << "test_error"
-                << "seconds" << "xnorm" << "gnorm";
+                << "xnorm" << "gnorm" << "seconds";
 
         size_t index = 0;
         for (const auto& state : history())
@@ -117,10 +117,10 @@ bool trainer_result_t::save(const string_t& path) const
                         << state.m_train.m_value << state.m_train.m_error
                         << state.m_valid.m_value << state.m_valid.m_error
                         << state.m_test.m_value << state.m_test.m_error
-                        << idiv(state.m_milis.count(), 1000) << state.m_xnorm << state.m_gnorm;
+                        << state.m_xnorm << state.m_gnorm << idiv(state.m_milis.count(), 1000);
         }
 
-        return table.save(path, "    ");
+        return table.save(path);
 }
 bool nano::is_done(const trainer_status code)
 {

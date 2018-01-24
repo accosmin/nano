@@ -3,6 +3,8 @@
 #include "text/cast.h"
 #include "math/stats.h"
 
+using namespace nano;
+
 int main(int argc, const char* argv[])
 {
         if (argc == 1)
@@ -15,17 +17,17 @@ int main(int argc, const char* argv[])
         {
                 int precision = 6;
 
-                nano::stats_t<double> stats;
+                stats_t<double> stats;
                 for (int i = 1; i < argc; ++ i)
                 {
                         if (std::string(argv[i]) == "-p" && i + 1 < argc)
                         {
-                                precision = nano::from_string<int>(argv[i + 1]);
+                                precision = from_string<int>(argv[i + 1]);
                                 ++ i;
                         }
                         else
                         {
-                                stats(nano::from_string<double>(argv[i]));
+                                stats(from_string<double>(argv[i]));
                         }
                 }
 
@@ -33,7 +35,7 @@ int main(int argc, const char* argv[])
         }
         catch (std::exception& e)
         {
-                std::cout << "failed with error <" << e.what() << ">, check arguments\n";
+                std::cout << "failed with error <" << e.what() << ">, check arguments!\n";
                 return EXIT_FAILURE;
         }
 

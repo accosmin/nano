@@ -3,6 +3,7 @@
 #include "accumulator.h"
 #include "accumulator.h"
 #include "text/cmdline.h"
+#include <iomanip>
 
 using namespace nano;
 
@@ -84,7 +85,8 @@ int main(int argc, const char *argv[])
         acc.update(*task, fold_t{cmd_fold, protocol::test});
         checkpoint.measure();
 
-        log_info() << "test=" << acc.vstats().avg() << "|" << acc.estats().avg() << "+/-" << acc.estats().var() << ".";
+        log_info() << std::fixed << std::setprecision(3)
+                << "test=" << acc.vstats().avg() << "|" << acc.estats().avg() << "+/-" << acc.estats().var() << ".";
 
         // OK
         log_info() << done;

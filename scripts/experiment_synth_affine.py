@@ -12,7 +12,6 @@ exp.set_task(cfg.task_synth_affine_regression(isize = isize, osize = osize, nois
 
 # loss functions
 exp.add_loss("cauchy", cfg.loss("cauchy"))
-exp.add_loss("square", cfg.loss("square"))
 
 # enhancers
 exp.add_enhancer("default", cfg.enhancer("default"))
@@ -34,14 +33,14 @@ exp.add_trainer("batch_lbfgs", cfg.batch_trainer("lbfgs", epochs, patience, epsi
 
 exp.add_trainer("stoch_sg", cfg.stoch_trainer("sg", epochs, patience, epsilon, batch, tune_epochs))
 exp.add_trainer("stoch_sgm", cfg.stoch_trainer("sgm", epochs, patience, epsilon, batch, tune_epochs))
-exp.add_trainer("stoch_ngd", cfg.stoch_trainer("ngd", epochs, patience, epsilon, batch, tune_epochs))
-exp.add_trainer("stoch_asgd", cfg.stoch_trainer("asgd", epochs, patience, epsilon, batch, tune_epochs))
-exp.add_trainer("stoch_svrg", cfg.stoch_trainer("svrg", epochs, patience, epsilon, batch, tune_epochs))
-exp.add_trainer("stoch_rmsprop", cfg.stoch_trainer("rmsprop", epochs, patience, epsilon, batch, tune_epochs))
+#exp.add_trainer("stoch_ngd", cfg.stoch_trainer("ngd", epochs, patience, epsilon, batch, tune_epochs))
+#exp.add_trainer("stoch_asgd", cfg.stoch_trainer("asgd", epochs, patience, epsilon, batch, tune_epochs))
+#exp.add_trainer("stoch_svrg", cfg.stoch_trainer("svrg", epochs, patience, epsilon, batch, tune_epochs))
+#exp.add_trainer("stoch_rmsprop", cfg.stoch_trainer("rmsprop", epochs, patience, epsilon, batch, tune_epochs))
 
-exp.add_trainer("stoch_adam", cfg.stoch_trainer("adam", epochs, patience, epsilon, batch, tune_epochs))
-exp.add_trainer("stoch_adagrad", cfg.stoch_trainer("adagrad", epochs, patience, epsilon, batch, tune_epochs))
-exp.add_trainer("stoch_adadelta", cfg.stoch_trainer("adadelta", epochs, patience, epsilon, batch, tune_epochs))
+#exp.add_trainer("stoch_adam", cfg.stoch_trainer("adam", epochs, patience, epsilon, batch, tune_epochs))
+#exp.add_trainer("stoch_adagrad", cfg.stoch_trainer("adagrad", epochs, patience, epsilon, batch, tune_epochs))
+#exp.add_trainer("stoch_adadelta", cfg.stoch_trainer("adadelta", epochs, patience, epsilon, batch, tune_epochs))
 
 # models
 exp.add_model("linear", cfg.linear(imaps=isize, irows=1, icols=1, omaps=osize, orows=1, ocols=1))
@@ -50,7 +49,6 @@ exp.add_model("linear", cfg.linear(imaps=isize, irows=1, icols=1, omaps=osize, o
 exp.train_all()
 
 # compare configurations
-exp.summarize_by_models(".*")
 exp.summarize_by_trainers("stoch*")
 exp.summarize_by_trainers("batch*")
 exp.summarize_by_trainers(".*")

@@ -3,45 +3,33 @@ import matplotlib.mlab as mlab
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_pdf import PdfPages
 
-""" load (training) §state file with the following format:
-(epoch, {train, valid, test} x {criterion, loss{average, variance, maximum}, error{average, variance, maximum}}, time)+
-"""
-def get_state_csv(path):
-        name = os.path.basename(path).replace(".state", "")
-        data = mlab.csv2rec(path, delimiter = ' ', names = None)
-        return name, data
-
-""" load multiple state files """
-def get_state_csvs(paths):
-        datas = []
-        names = []
-        for path in paths:
-                name, data = get_state_csv(path)
-                datas.append(data)
-                names.append(name)
-        return names, datas
-
-""" load trial file with the following format:
-(model name, trainer name, enhancer name, loss name, test value, test error, #epochs, convergence speed, training time)+
-"""
-def get_trial_csv(path):
+def load_trial_csv(path, delimiter = ";"):
+        """ load csv file for a configuration trial with the following format:
+        (epoch, [train|valid|test] x [loss|error], xnorm, gnorm, seconds)+
+        """
         name = os.path.basename(path).replace(".csv", "")
-        data = mlab.csv2rec(path, delimiter = ';', names = None)
+        data = mlab.csv2rec(path, delimiter=delimiter, names=None)
         return name, data
 
-""" load multiple trial fiels """
-def get_trial_csvs(paths):
-        datas = []
-        names = []
+def load_config_csv(path, delimiter = ";"):
+        """ load csv file for a configuration summary with the following format:
+        (trial, optimum epoch, [train|valid|test] x [loss|error], xnorm, gnorm, seconds, speed)+
+        """
+        name = os.path.basename(path).replace(".csv", "")
+        data = mlab.csv2rec(path, delimiter=delimiter, names=None)
+        return name, data
+
+def load_csvs(paths, loader, delimiter = ";"):
+        names, datas = [], []
         for path in paths:
-                name, data = get_trial_csv(path)
-                datas.append(data)
+                name, data = loader(path, delimiter)
                 names.append(name)
+                datas.append(data)
         return names, datas
 
-""" plot the training evolution of a model """
-def plot_state_one(spath, ppath):
-        title, data = get_state_csv(spath)
+def plot_trial(spath, ppath):
+        """ plot the training evolution of a model """
+        title, data = load_trial_csv(spath)
         with PdfPages(ppath) as pdf:
                 # (train, validation, test) loss value and error
                 for col in (0, 1):
@@ -82,15 +70,15 @@ def plot_state_one(spath, ppath):
                         pdf.savefig()
                         plt.close()
 
-""" plot the training evolution of multiple models on the same plot """
-def plot_state_many_wrt(names, datas, pdf, xcol, ycol):
+def plot_trials_wrt(names, datas, pdf, xcol, ycol):
+        """ plot the training evolution of multiple models on the same plot """
         colnames = datas[0].dtype.names
-        title = colnames[ycol + 1]
+        title = colnames[ycol]
         # x axis - epoch/iteration index
         xname = colnames[xcol]
         xlabel = xname
         # y axis - train/validation/test datasets
-        yname = colnames[ycol + 1]
+        yname = colnames[ycol]
         ylabel = yname.replace("train_", "").replace("valid_", "").replace("test_", "")
         # plot
         plt.xlabel(xlabel, fontsize = "smaller")
@@ -103,17 +91,17 @@ def plot_state_many_wrt(names, datas, pdf, xcol, ycol):
         pdf.savefig()
         plt.close()
 
-def plot_state_many(spaths, ppath):
-        names, datas = get_state_csvs(spaths)
+def plot_trials(spaths, ppath):
+        names, datas = load_csvs(spaths, load_trial_csv)
         with PdfPages(ppath) as pdf:
-                for col in (0, 1, 2, 3, 4, 5, 7, 8):
+                for col in (1, 2, 3, 4, 5, 6, 8, 9):
                         # plot wrt epoch/iteration number
-                        plot_state_many_wrt(names, datas, pdf, 0, col)
+                        plot_trials_wrt(names, datas, pdf, 0, col)
                         # plot wrt time
-                        plot_state_many_wrt(names, datas, pdf, 7, col)
+                        plot_trials_wrt(names, datas, pdf, 7, col)
 
-""" plot the test results of multiple models on the sample plot """
-def plot_trial_many_wrt(title, names, datas, pdf, ycol):
+def plot_configs_wrt(title, names, datas, pdf, ycol):
+        """ plot the test results of multiple models on the sample plot """
         colnames = datas[0].dtype.names
         # x axis -
         xlabels = names
@@ -131,9 +119,10 @@ def plot_trial_many_wrt(title, names, datas, pdf, ycol):
         pdf.savefig()
         plt.close()
 
-def plot_trial_many(spaths, ppath, names):
-        __, datas = get_trial_csvs(spaths)
+def plot_configs(spaths, ppath, names):
+        __, datas = load_csvs(spaths, load_config_csv)
+        assert(len(names) == len(datas))
         title = os.path.basename(ppath).replace(".pdf", "").replace("result_", "")
         with PdfPages(ppath) as pdf:
-                for col in (4, 5, 6, 7, 8):
-                        plot_trial_many_wrt(title, names, datas, pdf, col)
+                for col in (1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11):
+                        plot_configs_wrt(title, names, datas, pdf, col)

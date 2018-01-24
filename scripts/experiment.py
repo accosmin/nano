@@ -2,6 +2,7 @@ import os
 import re
 import json
 import time
+import plotter
 import urllib3
 import argparse
 import subprocess
@@ -140,7 +141,6 @@ class downloader():
                 pass
 
         def get(self, url, dbdir):
-                """ download the file at the given url to the given directory (by keeping its filename) """
                 http = urllib3.PoolManager()
                 r = http.request('GET', url, preload_content = False)
                 path = dbdir + url.split('/')[-1]
@@ -155,7 +155,6 @@ class downloader():
                 r.release_conn()
 
         def mkdir(self, dbname):
-                """ constructs and creates the directory to store a particular dataset """
                 cfg = config()
                 dbdir = cfg.dbdir + "/" + dbname + "/"
                 os.makedirs(dbdir, exist_ok = True)
@@ -198,13 +197,14 @@ class downloader():
                 self.get("http://fashion-mnist.s3-website.eu-central-1.amazonaws.com/t10k-labels-idx1-ubyte.gz", dbdir)
 
 class experiment:
-        """ utility to manage an experiment consisting of a task and various models, trainers, enhancers and losses
-                specified using json configurations
+        """ utility to manage an experiment consisting of a task and
+                various models, trainers, enhancers and loss functions configured using JSON
         """
         def __init__(self, outdir, trials = 10):
                 self.cfg = config()
                 self.dir = outdir
                 self.dir_config = outdir + "/config"
+                self.dir_models = outdir + "/models"
                 self.trials = trials
                 self.runs = []
                 self.losses = []
@@ -230,6 +230,7 @@ class experiment:
                 """ create output directories """
                 os.makedirs(self.dir, exist_ok = True)
                 os.makedirs(self.dir_config, exist_ok = True)
+                os.makedirs(self.dir_models, exist_ok = True)
 
         def set_task(self, parameters):
                 """ register the task (.json config created from serializing parameters) """
@@ -262,14 +263,14 @@ class experiment:
                 self.save_json(json_path, parameters)
                 self.enhancers.append([name, json_path])
 
-        def path(self, mname, tname, ename, lname, extension):
-                basepath = self.dir + "/"
-                basepath += "M" + mname if mname else ""
-                basepath += "_T" + tname if tname else ""
-                basepath += "_E" + ename if ename else ""
-                basepath += "_L" + lname if lname else ""
-                basepath += extension
-                return basepath
+        def path(self, dirname, mname, tname, ename, lname, extension, trial=None):
+                basename = "M" + mname if mname else ""
+                basename += "_T" + tname if tname else ""
+                basename += "_E" + ename if ename else ""
+                basename += "_L" + lname if lname else ""
+                basename += "" if trial is None else "_trial{}".format(trial + 1)
+                basename += extension
+                return os.path.join(dirname, basename)
 
         def get_name(self, name_config):
                 return name_config[0]
@@ -292,54 +293,60 @@ class experiment:
                 lnames = self.get_names(self.losses, lname_reg)
                 return mnames, tnames, enames, lnames
 
-        def filter_paths(self, trial, mname_reg, tname_reg, ename_reg, lname_reg, extension):
+        def filter_paths(self, dirname, mname_reg, tname_reg, ename_reg, lname_reg, extension, trial=None):
                 paths = []
                 mnames, tnames, enames, lnames = self.filter_names(mname_reg, tname_reg, ename_reg, lname_reg)
                 for mname, tname, ename, lname in [(u, x, y, z) for u in mnames for x in tnames for y in enames for z in lnames]:
-                        paths.append(self.path(trial, mname, tname, ename, lname, extension))
+                        paths.append(self.path(dirname, mname, tname, ename, lname, extension, trial))
                 return paths
 
-        def plot_one(self, spath, ppath):
-                plotter.plot_state_one(spath, ppath)
+        def plot_trial(self, cpath, ppath):
+                plotter.plot_trial(cpath, ppath)
                 self.log("|--->plotting done, see <", ppath, ">")
 
-        def plot_many(self, spaths, ppath):
-                plotter.plot_state_many(spaths, ppath)
+        def plot_trials(self, cpaths, ppath):
+                plotter.plot_trials(cpaths, ppath)
                 self.log("|--->plotting done, see <", ppath, ">")
 
-        def plot_trial(self, spaths, ppath, names):
-                plotter.plot_trial_many(spaths, ppath, names)
+        def plot_configs(self, cpaths, ppath, names):
+                plotter.plot_configs(cpaths, ppath, names)
                 self.log("|--->plotting done, see <", ppath, ">")
 
-        def tabulate(self, cpath, lpath):
-                with open(lpath, "w") as lfile:
-                        subprocess.check_call((self.cfg.app_tabulate + " -i " + cpath + " -d \";\"").split(), stdout = lfile)
-
-                with open(lpath, "r") as lfile:
-                        self.log()
-                        print(lfile.read())
-
-        def summarize_by_models(self, mname_reg = ".*"):
-                mname = self.reg2str(mname_reg)
-
-        def train_trials(self, mname, mparam, tname, tparam, ename, eparam, lname, lparam):
+        def train_one(self, mname, mparam, tname, tparam, ename, eparam, lname, lparam):
                 # train the given configuration for multiple trials
-                mpath = self.path(mname, tname, ename, lname, "")
-                lpath = self.path(mname, tname, ename, lname, ".log")
+                mpath = self.path(self.dir_models, mname, tname, ename, lname, "")
+                cpath = self.path(self.dir_models, mname, tname, ename, lname, ".csv")
+                lpath = self.path(self.dir_models, mname, tname, ename, lname, ".log")
 
-                param = "  --task " + self.task
-                param += " --model " + mparam
-                param += " --trainer " + tparam
-                param += " --enhancer " + eparam
-                param += " --loss " + lparam
-                param += " --basepath " + mpath
+                param = "\n --task " + self.task + "\n"
+                param += " --loss " + lparam + "\n"
+                param += " --model " + mparam + "\n"
+                param += " --trainer " + tparam + "\n"
+                param += " --enhancer " + eparam + "\n"
+                param += " --basepath " + mpath + "\n"
                 param += " --trials " + str(self.trials)
 
                 with open(lpath, "w") as lfile:
                         self.log("running <", param, ">...")
                         subprocess.check_call((self.cfg.app_train + " " + param).split(), stdout = lfile)
                 self.log("|--->training done, see <", lpath, ">")
-                self.log()
+
+                # summarize this configuration
+                #subprocess.check_call((self.cfg.app_tabulate + " -i " +  cpath + " -p 3 -d ';' --stats").split())
+
+                # plot the training history for each trial
+                for trial in range(self.trials):
+                        cpath = self.path(self.dir_models, mname, tname, ename, lname, ".csv", trial)
+                        ppath = self.path(self.dir_models, mname, tname, ename, lname, ".pdf", trial)
+                        self.plot_trial(cpath, ppath)
+
+                # plot the training history for all trials on the same plot
+                cpaths = []
+                for trial in range(self.trials):
+                        cpath = self.path(self.dir_models, mname, tname, ename, lname, ".csv", trial)
+                        cpaths.append(cpath)
+                ppath = self.path(self.dir_models, mname, tname, ename, lname, ".pdf")
+                self.plot_trials(cpaths, ppath)
 
         def train_all(self):
                 # run all possible configurations
@@ -348,93 +355,48 @@ class experiment:
                 edatas = self.enhancers
                 ldatas = self.losses
                 for mdata, tdata, edata, ldata in [(u, x, y, z) for u in mdatas for x in tdatas for y in edatas for z in ldatas]:
-                        self.train_trials(
+                        self.train_one(
                                 self.get_name(mdata), self.get_config(mdata),
                                 self.get_name(tdata), self.get_config(tdata),
                                 self.get_name(edata), self.get_config(edata),
                                 self.get_name(ldata), self.get_config(ldata))
+                        self.log()
 
-        def summarize_trials(self, mname, mname_reg, tname, tname_reg, ename, ename_reg, lname, lname_reg, names):
+        def summarize(self, mname, mname_reg, tname, tname_reg, ename, ename_reg, lname, lname_reg, names):
                 # compare configurations for each trial: plot the training state evaluation
                 for trial in range(self.trials):
-                        self.plot_many(
-                                self.filter_paths(trial, mname_reg, tname_reg, ename_reg, lname_reg, ".state"),
-                                self.path(trial, mname, tname, ename, lname, ".pdf"))
+                        paths = self.filter_paths(self.dir_models, mname_reg, tname_reg, ename_reg, lname_reg, ".csv", trial)
+                        ppath = self.path(self.dir, mname, tname, ename, lname, ".pdf", trial)
+                        self.plot_trials(paths, ppath)
 
                 # compare configurations across all trials: boxplot the results
-                ppath = self.path(None, mname, tname, ename, lname, ".pdf")
-
-                self.plot_trial(
-                        self.filter_paths(None, mname_reg, tname_reg, ename_reg, lname_reg, ".csv"),
-                        ppath, names)
-
-                # compare configurations across all trials: display basic statistics
-                spath = self.path(None, mname, tname, ename, lname, ".stats")
-                with open(spath, "w") as sfile:
-                        print(self.get_csv_header(), file = sfile)
-                        mnames, tnames, enames, lnames = self.filter_names(mname_reg, tname_reg, ename_reg, lname_reg)
-                        for mname, tname, ename, lname in [(u, x, y, z) for u in mnames for x in tnames for y in enames for z in lnames]:
-                                values, errors, epochs, speeds, deltas = self.get_logs(mname, tname, ename, lname)
-                                value_stats, error_stats, epoch_stats, speed_stats, delta_stats = self.get_log_stats(values, errors, epochs, speeds, deltas)
-                                print(self.get_csv_row(mname, tname, ename, lname, value_stats, error_stats, epoch_stats, speed_stats, delta_stats), file = sfile)
-
-                lpath = self.path(None, mname, tname, ename, lname, ".log")
-                self.tabulate(spath, lpath)
+                paths = self.filter_paths(self.dir_models, mname_reg, tname_reg, ename_reg, lname_reg, ".csv")
+                ppath = self.path(self.dir, mname, tname, ename, lname, ".pdf")
+                self.plot_configs(paths, ppath, names)
 
         def summarize_by_models(self, mname_reg = ".*"):
                 mname = self.reg2str(mname_reg)
                 mnames, tnames, enames, lnames = self.filter_names(mname_reg, None, None, None)
                 for tname, ename, lname in [(x, y, z) for x in tnames for y in enames for z in lnames]:
-                        self.summarize_trials(mname, mname_reg, tname, tname, ename, ename, lname, lname, mnames)
+                        self.summarize(mname, mname_reg, tname, tname, ename, ename, lname, lname, mnames)
 
         def summarize_by_trainers(self, tname_reg = ".*"):
                 tname = self.reg2str(tname_reg)
                 mnames, tnames, enames, lnames = self.filter_names(None, tname_reg, None, None)
                 for mname, ename, lname in [(x, y, z) for x in mnames for y in enames for z in lnames]:
-                        self.summarize_trials(mname, mname, tname, tname_reg, ename, ename, lname, lname, tnames)
+                        self.summarize(mname, mname, tname, tname_reg, ename, ename, lname, lname, tnames)
 
         def summarize_by_enhancers(self, ename_reg = ".*"):
                 ename = self.reg2str(ename_reg)
                 mnames, tnames, enames, lnames = self.filter_names(None, None, ename_reg, None)
                 for mname, tname, lname in [(x, y, z) for x in mnames for y in tnames for z in lnames]:
-                        self.summarize_trials(mname, mname, tname, tname, ename, ename_reg, lname, lname, enames)
+                        self.summarize(mname, mname, tname, tname, ename, ename_reg, lname, lname, enames)
 
         def summarize_by_losses(self, lname_reg = ".*"):
                 lname = self.reg2str(lname_reg)
                 mnames, tnames, enames, lnames = self.filter_names(None, None, None, lname_reg)
                 for mname, tname, ename in [(x, y, z) for x in mnames for y in tnames for z in enames]:
-                        self.summarize_trials(mname, mname, tname, tname, ename, ename, lname, lname_reg, lnames)
-
-        def get_logs(self, mname, tname, ename, lname):
-                values = []
-                errors = []
-                epochs = []
-                speeds = []
-                deltas = []
-                for trial in range(self.trials):
-                        lpath = self.path(trial, mname, tname, ename, lname, ".log")
-                        value, error, epoch, speed, delta = self.get_log(lpath)
-                        values.append(value)
-                        errors.append(error)
-                        epochs.append(epoch)
-                        speeds.append(speed)
-                        deltas.append(delta)
-                return values, errors, epochs, speeds, deltas
-
-        def get_log_stats(self, values, errors, epochs, speeds, deltas):
-                cmdline = self.cfg.app_stats + " -p 3"
-                value_stats = subprocess.check_output(cmdline.split() + values).decode('utf-8').strip()
-                error_stats = subprocess.check_output(cmdline.split() + errors).decode('utf-8').strip()
-                epoch_stats = subprocess.check_output(cmdline.split() + epochs).decode('utf-8').strip()
-                speed_stats = subprocess.check_output(cmdline.split() + speeds).decode('utf-8').strip()
-                delta_stats = subprocess.check_output(cmdline.split() + deltas).decode('utf-8').strip()
-                return value_stats, error_stats, epoch_stats, speed_stats, delta_stats
-
-        def get_csv_header(self, delim = ";"):
-                return delim.join(["model", "trainer", "enhancer", "loss", "test value", "test error", "epochs", "convergence speed", "duration (sec)"])
-
-        def get_csv_row(self, mname, tname, ename, lname, value, error, epoch, speed, delta, delim = ";"):
-                return delim.join([mname, tname, ename, lname, value, error, epoch, speed, delta])
+                        self.summarize(mname, mname, tname, tname, ename, ename, lname, lname_reg, lnames)
 
 if __name__ == '__main__':
         parser = argparse.ArgumentParser(description="command line wrapper over the experimentation scripts")

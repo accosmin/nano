@@ -1,6 +1,8 @@
 #include "table.h"
+#include <sstream>
 #include <numeric>
 #include <fstream>
+#include <iomanip>
 #include "algorithm.h"
 #include "math/numeric.h"
 
@@ -136,7 +138,7 @@ bool table_t::save(const string_t& path, const string_t& delim) const
         return true;
 }
 
-bool table_t::load(const string_t& path, const string_t& delim, const bool load_header)
+bool table_t::load(const string_t& path, const string_t& delimiter, const bool load_header)
 {
         std::ifstream is(path.c_str());
         if (!is.is_open())
@@ -152,12 +154,13 @@ bool table_t::load(const string_t& path, const string_t& delim, const bool load_
         size_t count = 0;
         for (string_t line; std::getline(is, line); ++ count)
         {
-                const auto tokens = nano::split(line, delim.c_str());
+                const auto tokens = nano::split(line, delimiter.c_str());
                 if (!tokens.empty() && !line.empty())
                 {
                         if (!count && load_header)
                         {
                                 header() << tokens;
+                                delim();
                         }
                         else if (tokens.size() != cols() && cols())
                         {
@@ -173,6 +176,26 @@ bool table_t::load(const string_t& path, const string_t& delim, const bool load_
         return is.eof();
 }
 
+static string_t format(const std::ostream& os, const string_t& data)
+{
+        try
+        {
+                // format floating point values to use the oubles to use
+                std::stringstream stream;
+                stream << std::setprecision(static_cast<int>(os.precision()));
+                if (os.flags() & std::ios_base::fixed)
+                {
+                        stream << std::fixed;
+                }
+                stream << from_string<double>(data);
+                return stream.str();
+        }
+        catch (std::exception&)
+        {
+                return data;
+        }
+}
+
 std::ostream& table_t::print(std::ostream& os) const
 {
         // size of the value columns (in characters)
@@ -183,7 +206,7 @@ std::ostream& table_t::print(std::ostream& os) const
                 for (const auto& cell : row.cells())
                 {
                         const auto span = cell.m_span;
-                        const auto size = cell.m_data.size() + cell.m_mark.size();
+                        const auto size = format(os, cell.m_data).size() + cell.m_mark.size();
                         for (size_t c = 0; c < span; ++ c, ++ icol)
                         {
                                 colsizes[icol] = std::max(colsizes[icol], idiv(size, span));
@@ -217,8 +240,8 @@ std::ostream& table_t::print(std::ostream& os) const
                                 const auto colspan = static_cast<std::ptrdiff_t>(cell.m_span);
                                 const auto colsize = std::accumulate(it, it + colspan, size_t(0));
                                 const auto extsize = (cell.m_span - 1) * 3;
-                                const auto coltext = cell.m_data + cell.m_mark;
-                                os << "| " << nano::align(coltext, colsize + extsize, cell.m_alignment, cell.m_fill) << " ";
+                                const auto coltext = format(os, cell.m_data) + cell.m_mark;
+                                os << "| " << align(coltext, colsize + extsize, cell.m_alignment, cell.m_fill) << " ";
                                 std::advance(it, colspan);
                         }
                         os << "|" << std::endl;

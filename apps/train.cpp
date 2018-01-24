@@ -8,6 +8,7 @@
 #include "text/table.h"
 #include "accumulator.h"
 #include "text/cmdline.h"
+#include <iomanip>
 #include <iostream>
 
 using namespace nano;
@@ -155,10 +156,9 @@ int main(int argc, const char *argv[])
         }
 
         checkpoint.step("save stats");
-        checkpoint.critical(
-                table.save(strcat(cmd_basepath, ".csv"), ";"));
+        checkpoint.critical(table.save(strcat(cmd_basepath, ".csv")));
 
-        std::cout << table << std::endl;
+        std::cout << std::fixed << std::setprecision(3) << table;
 
         // OK
         log_info() << done;
