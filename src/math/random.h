@@ -10,11 +10,7 @@ namespace nano
         ///
         /// \brief uniform random number generator in the [min, max] range.
         ///
-        template
-        <
-                typename tscalar,
-                typename tvalid = typename std::is_arithmetic<tscalar>::type
-        >
+        template <typename tscalar, typename tvalid = typename std::is_arithmetic<tscalar>::type>
         struct random_t
         {
                 using result_type = tscalar;
@@ -42,10 +38,7 @@ namespace nano
                 ///
                 /// \brief fill the [begin, end) range with random values
                 ///
-                template
-                <
-                        class titerator
-                >
+                template <class titerator>
                 void operator()(titerator begin, titerator end)
                 {
                         for (; begin != end; ++ begin)
@@ -84,11 +77,7 @@ namespace nano
         ///
         /// \brief create a random number generator in the given [min, max] range
         ///
-        template
-        <
-                typename tscalar,
-                typename tvalid = typename std::is_arithmetic<tscalar>::type
-        >
+        template <typename tscalar, typename tvalid = typename std::is_arithmetic<tscalar>::type>
         random_t<tscalar> make_rng(
                 const tscalar min = std::numeric_limits<tscalar>::lowest(),
                 const tscalar max = std::numeric_limits<tscalar>::max())
@@ -99,11 +88,7 @@ namespace nano
         ///
         /// \brief create a random index generator in the given [0, size) range
         ///
-        template
-        <
-                typename tsize,
-                typename tvalid = typename std::is_unsigned<tsize>::type
-        >
+        template <typename tsize, typename tvalid = typename std::is_unsigned<tsize>::type>
         random_t<tsize> make_index_rng(const tsize size)
         {
                 assert(size > 0);
