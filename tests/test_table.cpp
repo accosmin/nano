@@ -28,11 +28,12 @@ NANO_CASE(table)
 {
         nano::table_t t1;
         t1.header() << "head" << "col1" << "col2";
+        t1.delim();
         t1.append() << "row1" << "v11" << "v12";
         t1.append() << "row2" << "v21" << "v22";
         t1.append() << "row3" << "v21" << "v22";
 
-        NANO_CHECK_EQUAL(t1.rows(), 4u);
+        NANO_CHECK_EQUAL(t1.rows(), 5u);
         NANO_CHECK_EQUAL(t1.cols(), 3u);
 
         const auto path = "table.csv";
