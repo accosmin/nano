@@ -7,7 +7,7 @@ before_script:
   - |
     if [ "$TRAVIS_OS_NAME" = "osx" ]; then
       brew update
-      brew install cmake ninja eigen devil libarchive
+      brew install cmake ninja eigen devil libarchive python3
       brew link libarchive --force
       export PATH="/usr/local/opt/ccache/libexec:$PATH"
       export CCACHE_CPP2=true
