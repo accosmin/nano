@@ -61,7 +61,7 @@ trainer_result_t batch_trainer_t::train(
                 const auto gnorm = state.convergence_criteria();
                 const auto ret = result.update(state, {milis, ++epoch, xnorm, gnorm, train, valid, test}, m_patience);
 
-                log_info() << std::setprecision(4)
+                log_info() << std::setprecision(3)
                         << "[" << epoch << "/" << m_epochs
                         << ":train=" << train
                         << ",valid=" << valid << "|" << nano::to_string(ret)
@@ -86,6 +86,6 @@ trainer_result_t batch_trainer_t::train(
                 solver->minimize(params, function, acc.params());
         }
 
-        log_info() << std::setprecision(4) << "<<< batch-" << m_solver << ": " << result << "," << timer.elapsed() << ".";
+        log_info() << std::setprecision(3) << "<<< batch-" << m_solver << ": " << result << "," << timer.elapsed() << ".";
         return result;
 }

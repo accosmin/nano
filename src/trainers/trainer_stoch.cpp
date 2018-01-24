@@ -74,7 +74,7 @@ void stoch_trainer_t::tune(
                         const auto gnorm = state.convergence_criteria();
                         const auto ret = result.update(state, {milis, ++epoch, xnorm, gnorm, train, valid, test}, m_patience);
 
-                        log_info() << std::setprecision(4)
+                        log_info() << std::setprecision(3)
                                 << "tune[" << epoch << "/" << m_tune_epochs
                                 << ":train=" << train
                                 << ",valid=" << valid << "|" << nano::to_string(ret)
@@ -97,7 +97,7 @@ void stoch_trainer_t::tune(
                 }
         }
 
-        log_info() << std::setprecision(4)
+        log_info() << std::setprecision(3)
                 << "<<< stoch-" << m_solver << "[tuned]: " << opt_result << "," << timer.elapsed() << ".";
 }
 
@@ -135,7 +135,7 @@ trainer_result_t stoch_trainer_t::train(
                 const auto gnorm = state.convergence_criteria();
                 const auto ret = result.update(state, {milis, ++epoch, xnorm, gnorm, train, valid, test}, m_patience);
 
-                log_info() << std::setprecision(4)
+                log_info() << std::setprecision(3)
                         << "[" << epoch << "/" << m_epochs
                         << ":train=" << train
                         << ",valid=" << valid << "|" << nano::to_string(ret)
@@ -160,6 +160,6 @@ trainer_result_t stoch_trainer_t::train(
                 solver->minimize(params, function, acc.params());
         }
 
-        log_info() << std::setprecision(4) << "<<< stoch-" << m_solver << ": " << result << "," << timer.elapsed() << ".";
+        log_info() << std::setprecision(3) << "<<< stoch-" << m_solver << ": " << result << "," << timer.elapsed() << ".";
         return result;
 }
