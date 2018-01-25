@@ -9,6 +9,8 @@ before_script:
       brew update
       brew install cmake ninja eigen devil libarchive python3
       brew link libarchive --force
+      brew postinstall python3
+      pip3 install urllib3
       export PATH="/usr/local/opt/ccache/libexec:$PATH"
       export CCACHE_CPP2=true
     fi
