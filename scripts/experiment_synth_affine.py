@@ -1,8 +1,9 @@
+from config import *
 from experiment import *
 
 # initialize experiment:
 # - regression problem: predict the output of an affine transformation
-cfg = config()
+cfg = config.config()
 exp = experiment(cfg.expdir + "/synth_affine_regression", trials = 10)
 
 isize = 32
