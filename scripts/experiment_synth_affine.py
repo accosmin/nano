@@ -3,13 +3,14 @@ from experiment import *
 
 # initialize experiment:
 # - regression problem: predict the output of an affine transformation
+# - classification problem: predict the sign of a linear transformation
 cfg = config.config()
 exp = experiment(cfg.expdir + "/synth_affine_regression", trials = 10)
 
-isize = 32
-osize = 32
+isize = 16
+osize = 8
 
-exp.set_task(cfg.task_synth_affine_regression(isize = isize, osize = osize, noise = 0.0, count = 10000))
+exp.set_task(cfg.task_synth_affine_regression(isize = isize, osize = osize, noise = 0.0, count = 4000))
 
 # loss functions
 exp.add_loss("cauchy", cfg.loss("cauchy"))
@@ -18,7 +19,7 @@ exp.add_loss("cauchy", cfg.loss("cauchy"))
 exp.add_enhancer("default", cfg.enhancer("default"))
 
 # trainers
-batch = 1
+batch = 8
 epochs = 100
 patience = 100
 epsilon = 1e-6

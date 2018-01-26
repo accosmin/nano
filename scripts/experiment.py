@@ -1,9 +1,9 @@
 import os
 import re
 import json
-import time
 import config
 import plotter
+import logging
 import subprocess
 
 class experiment:
@@ -23,13 +23,21 @@ class experiment:
                 self.enhancers = []
                 self.makedirs()
 
+                logging.basicConfig(
+                        format="%(asctime)s %(message)s",
+                        level=logging.DEBUG,
+                        handlers=[
+                                logging.FileHandler(os.path.join(outdir, "log")),
+                                logging.StreamHandler()
+                        ])
+
         def reg2str(self, reg):
                 """ construct a string representation from a regular expression """
                 return reg.replace(".*", "all").replace("*", "").replace(".", "") if reg else "all"
 
         def log(self, *messages):
                 """ log messages in a nice format """
-                print(time.strftime("[%Y-%m-%d %H:%M:%S]"), ' '.join(messages))
+                logging.info(' '.join(messages))
 
         def save_json(self, path, parameters, indent=4):
                 """ save the given parameters as json """
@@ -122,6 +130,19 @@ class experiment:
                 plotter.plot_configs(cpaths, ppath, names)
                 self.log("|--->plotting done, see <", ppath, ">")
 
+        def print_stats(self, cpaths):
+                self.log("{}{}{}{}".format("-" * 42, "-" * 24, "-" * 36, "-" * 36))
+                self.log("{}{}{}{}".format("".ljust(42), "test error".rjust(24), "epochs".rjust(36), "seconds".rjust(36)))
+                self.log("{}{}{}{}".format("-" * 42, "-" * 24, "-" * 36, "-" * 36))
+                for cpath in cpaths:
+                        name = os.path.basename(cpath).replace(".csv", "").ljust(42)
+                        basecmd = self.cfg.app_tabulate + " -i " + cpath + " -p 3 -d ';' --stats "
+                        error_stats = subprocess.check_output(basecmd + " -c 7", shell=True).decode('ascii').rstrip().rjust(24)
+                        epoch_stats = subprocess.check_output(basecmd + " -c 1", shell=True).decode('ascii').rstrip().rjust(36)
+                        time_stats = subprocess.check_output(basecmd + " -c 10", shell=True).decode('ascii').rstrip().rjust(36)
+                        self.log("{}{}{}{}".format(name, error_stats, epoch_stats, time_stats))
+                self.log("{}{}{}{}".format("-" * 42, "-" * 24, "-" * 36, "-" * 36))
+
         def train_one(self, mname, mparam, tname, tparam, ename, eparam, lname, lparam):
                 # train the given configuration for multiple trials
                 mpath = self.path(self.dir_models, mname, tname, ename, lname, "")
@@ -142,7 +163,7 @@ class experiment:
                 self.log("|--->training done, see <", lpath, ">")
 
                 # summarize this configuration
-                #subprocess.check_call((self.cfg.app_tabulate + " -i " +  cpath + " -p 3 -d ';' --stats").split())
+                self.print_stats([cpath])
 
                 # plot the training history for each trial
                 for trial in range(self.trials):
@@ -157,6 +178,7 @@ class experiment:
                         cpaths.append(cpath)
                 ppath = self.path(self.dir_models, mname, tname, ename, lname, ".pdf")
                 self.plot_trials(cpaths, ppath)
+                self.log()
 
         def train_all(self):
                 # run all possible configurations
@@ -170,9 +192,12 @@ class experiment:
                                 self.get_name(tdata), self.get_config(tdata),
                                 self.get_name(edata), self.get_config(edata),
                                 self.get_name(ldata), self.get_config(ldata))
-                        self.log()
 
         def summarize(self, mname, mname_reg, tname, tname_reg, ename, ename_reg, lname, lname_reg, names):
+                # sumarize these configurations
+                paths = self.filter_paths(self.dir_models, mname_reg, tname_reg, ename_reg, lname_reg, ".csv")
+                self.print_stats(paths)
+
                 # compare configurations for each trial: plot the training state evaluation
                 for trial in range(self.trials):
                         paths = self.filter_paths(self.dir_models, mname_reg, tname_reg, ename_reg, lname_reg, ".csv", trial)
@@ -183,6 +208,7 @@ class experiment:
                 paths = self.filter_paths(self.dir_models, mname_reg, tname_reg, ename_reg, lname_reg, ".csv")
                 ppath = self.path(self.dir, mname, tname, ename, lname, ".pdf")
                 self.plot_configs(paths, ppath, names)
+                self.log()
 
         def summarize_by_models(self, mname_reg = ".*"):
                 mname = self.reg2str(mname_reg)

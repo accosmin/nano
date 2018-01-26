@@ -1,8 +1,10 @@
+#include <numeric>
 #include <iomanip>
 #include <iostream>
 #include "math/stats.h"
 #include "text/table.h"
 #include "text/cmdline.h"
+#include "text/algorithm.h"
 
 using namespace nano;
 
@@ -31,6 +33,7 @@ int main(int argc, const char *argv[])
         cmdline.add("d", "delim",       "delimiting character(s)");
         cmdline.add("p", "precision",   "precision for floating point values", 6);
         cmdline.add("s", "stats",       "print statistics for each column (except the first one)");
+        cmdline.add("c", "cols",        "use these colums to print statistics (e.g. 1,2,3)", "-");
 
         cmdline.process(argc, argv);
 
@@ -39,6 +42,7 @@ int main(int argc, const char *argv[])
         const auto cmd_delim = cmdline.get("delim");
         const auto cmd_stats = cmdline.has("stats");
         const auto cmd_precision = cmdline.get<int>("precision");
+        const auto cmd_cols = cmdline.get("cols");
 
         // tabulate
         table_t table;
@@ -57,32 +61,42 @@ int main(int argc, const char *argv[])
                 }
                 else
                 {
-                        size_t row_header = 0;
-                        for (size_t row = 0; row < table.rows(); ++ row)
+                        // select columns
+                        std::vector<size_t> cols;
+                        if (cmd_cols.empty() || cmd_cols == "-")
                         {
-                                if (table.row(row).type() == row_t::mode::header)
+                                cols.resize(table.cols() - 1);
+                                std::iota(cols.begin(), cols.end(), size_t(1));
+                        }
+                        else
+                        {
+                                const auto tokens = split(cmd_cols, ",");
+                                if (tokens.empty())
                                 {
-                                        row_header = row;
-                                        break;
+                                        std::cerr << "invalid columns!\n";
+                                        return EXIT_FAILURE;
+                                }
+
+                                for (const auto& token : tokens)
+                                {
+                                        try
+                                        {
+                                                cols.push_back(from_string<size_t>(token));
+                                        }
+                                        catch (std::exception&)
+                                        {
+                                                std::cerr << "invalid column <" << token << "!>\n";
+                                                return EXIT_FAILURE;
+                                        }
                                 }
                         }
 
-                        const auto& header = table.row(row_header);
-
-                        // compute statistics for each column
-                        table_t stats_table;
-                        stats_table.header() << "" << "avg" << "var" << "stdev" << "min" << "max";
-                        stats_table.delim();
-                        for (size_t col = 1; col < table.cols(); ++ col)
+                        // compute statistics for each of the selected columns
+                        for (const auto col : cols)
                         {
                                 const auto stats = get_stats(table, col);
-
-                                auto&& row = stats_table.append();
-                                row << header.data(col) << stats.avg() << stats.var() << stats.stdev()
-                                    << stats.min() << stats.max();
+                                std::cout << stats << std::endl;
                         }
-
-                        std::cout << stats_table;
                 }
 
                 return EXIT_SUCCESS;
