@@ -11,6 +11,7 @@ set(libnano_sources
         ${CMAKE_CURRENT_SOURCE_DIR}/trainer.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/trainer_result.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/task.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/tuner.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/enhancer.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/solver_batch.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/solver_stoch.cpp

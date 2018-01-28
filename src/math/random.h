@@ -1,7 +1,5 @@
 #pragma once
 
-#include <cmath>
-#include <vector>
 #include <random>
 #include <limits>
 #include <cassert>
@@ -95,22 +93,5 @@ namespace nano
         {
                 assert(size > 0);
                 return random_t<tsize>(0, size - 1);
-        }
-
-        ///
-        /// \brief create a set of uniformly distributed values in the [base^min, base^max) range.
-        ///
-        template <typename tscalar, typename = typename std::is_floating_point<tscalar>::type>
-        std::vector<tscalar> get_random_values(const size_t count, const tscalar min, const tscalar max, const tscalar base = 1)
-        {
-                auto rng = make_rng(min, max);
-
-                std::vector<tscalar> values(count);
-                for (auto& value : values)
-                {
-                        value = std::pow(base, rng());
-                }
-
-                return values;
         }
 }
