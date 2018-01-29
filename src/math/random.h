@@ -1,98 +1,58 @@
 #pragma once
 
 #include <random>
-#include <limits>
 #include <cassert>
 #include <type_traits>
 
 namespace nano
 {
-        ///
-        /// \brief uniform random number generator in the [min, max] range.
-        ///
+        using rng_t = std::minstd_rand;
+
         template <typename tscalar, typename = typename std::is_arithmetic<tscalar>::type>
-        class random_t
-        {
-        public:
-                using result_type = tscalar;
-
-                ///
-                /// \brief constructor
-                ///
-                explicit random_t(
-                        tscalar min = std::numeric_limits<tscalar>::lowest(),
-                        tscalar max = std::numeric_limits<tscalar>::max()) :
-                        m_gen(std::random_device()()),
-                        m_die(std::min(min, max),
-                        std::max(min, max))
-                {
-                }
-
-                ///
-                /// \brief generate a random value
-                ///
-                tscalar operator()()
-                {
-                        return m_die(m_gen);
-                }
-
-                ///
-                /// \brief fill the [begin, end) range with random values
-                ///
-                template <class titerator>
-                void operator()(titerator begin, titerator end)
-                {
-                        for (; begin != end; ++ begin)
-                        {
-                                *begin = this->operator ()();
-                        }
-                }
-
-                ///
-                /// \brief minimum
-                ///
-                tscalar min() const { return m_die.min(); }
-
-                ///
-                /// \brief maximum
-                ///
-                tscalar max() const { return m_die.max(); }
-
-        private:
-
-                using gen_t = std::minstd_rand;
-
-                using die_t = typename std::conditional
-                <
-                        std::is_arithmetic<tscalar>::value &&
-                        std::is_integral<tscalar>::value,
-                        std::uniform_int_distribution<tscalar>,
-                        std::uniform_real_distribution<tscalar>
-                >::type;
-
-                // attributes
-                gen_t           m_gen;
-                die_t           m_die;
-        };
+        using udist_t = typename std::conditional<
+                std::is_integral<tscalar>::value,
+                std::uniform_int_distribution<tscalar>,
+                std::uniform_real_distribution<tscalar>>::type;
 
         ///
-        /// \brief create a random number generator in the given [min, max] range.
+        /// \brief create & initialize a random number generator.
         ///
-        template <typename tscalar, typename = typename std::is_arithmetic<tscalar>::type>
-        random_t<tscalar> make_rng(
-                const tscalar min = std::numeric_limits<tscalar>::lowest(),
-                const tscalar max = std::numeric_limits<tscalar>::max())
+        inline auto make_rng()
         {
-                return random_t<tscalar>(min, max);
+                rng_t rng{std::random_device{}()};
+                return rng;
         }
 
         ///
-        /// \brief create a random index generator in the given [0, size) range.
+        /// \brief create an uniform distribution for the [min, max] range.
         ///
-        template <typename tsize, typename = typename std::is_unsigned<tsize>::type>
-        random_t<tsize> make_index_rng(const tsize size)
+        template <typename tscalar, typename = typename std::is_arithmetic<tscalar>::type>
+        inline auto make_udist(const tscalar min, const tscalar max)
         {
-                assert(size > 0);
-                return random_t<tsize>(0, size - 1);
+                assert(min <= max);
+                return udist_t<tscalar>(min, max);
+        }
+
+        ///
+        /// \brief generate a random value uniformaly distributed in the [min, max] range.
+        ///
+        template <typename tscalar, typename trng, typename = typename std::is_arithmetic<tscalar>::type>
+        tscalar urand(const tscalar min, const tscalar max, trng&& rng)
+        {
+                auto udist = make_udist<tscalar>(min, max);
+                return udist(rng);
+        }
+
+        ///
+        /// \brief fill the [begin, range) range of elements with random values uniformaly distributed in the [min, max] range.
+        ///
+        template <typename tscalar, typename titerator, typename trng, typename = typename std::is_arithmetic<tscalar>::type>
+        void urand(const tscalar min, const tscalar max, titerator begin, const titerator end, trng&& rng)
+        {
+                auto udist = make_udist<tscalar>(min, max);
+                for ( ; begin != end; ++ begin)
+                {
+                        *begin = udist(rng);
+                }
         }
 }
