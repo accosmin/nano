@@ -97,4 +97,3 @@ namespace nano
                         (value > static_cast<tscalar>(max_value) ? static_cast<tscalar>(max_value) : value);
         }
 }
-

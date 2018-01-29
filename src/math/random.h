@@ -11,8 +11,9 @@ namespace nano
         /// \brief uniform random number generator in the [min, max] range.
         ///
         template <typename tscalar, typename = typename std::is_arithmetic<tscalar>::type>
-        struct random_t
+        class random_t
         {
+        public:
                 using result_type = tscalar;
 
                 ///
