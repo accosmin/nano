@@ -73,7 +73,7 @@ namespace nano
                 fold_t make_fold(const size_t fold) const
                 {
                         assert(fold < fsize());
-                        const size_t p = m_frand();
+                        const auto p = urand<size_t>(1, 10, m_rng);
                         // 60% training, 20% validation, 20% testing
                         return {fold, p < 7 ? protocol::train : (p < 9 ? protocol::valid : protocol::test)};
                 }
@@ -81,7 +81,7 @@ namespace nano
                 fold_t make_fold(const size_t fold, const protocol proto) const
                 {
                         assert(fold < fsize());
-                        const size_t p = m_frand();
+                        const auto p = urand<size_t>(1, 10, m_rng);
                         // split training into {80% training, 20% validation}, leave the testing as it is
                         return {fold, proto == protocol::train ? (p < 9 ? protocol::train : protocol::valid) : proto};
                 }
@@ -127,7 +127,7 @@ namespace nano
                 tensor3d_dim_t                  m_idims;        ///< input size
                 tensor3d_dim_t                  m_odims;        ///< output size
                 size_t                          m_fsize;        ///< number of folds
-                mutable random_t<size_t>        m_frand;        ///< rng for training-validation fold assignment
+                mutable rng_t                   m_rng;          ///< rng for [train|valid|test] fold assignment
                 std::vector<tchunk>             m_chunks;       ///<
                 std::vector<size_t>             m_hashes;       ///< hash / chunk
                 mutable tsamples                m_samples;      ///< stored samples (training, validation, test)
@@ -140,7 +140,8 @@ namespace nano
                 const size_t fsize) :
                 m_idims(idims),
                 m_odims(odims),
-                m_fsize(fsize), m_frand(1, 10)
+                m_fsize(fsize),
+                m_rng(make_rng())
         {
         }
 

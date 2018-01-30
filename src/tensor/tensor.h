@@ -7,7 +7,7 @@
 namespace nano
 {
         template <typename tstorage, std::size_t trank>
-        struct tensor_t;
+        class tensor_t;
 
         ///
         /// \brief tensor that owns the allocated memory.
@@ -66,11 +66,21 @@ namespace nano
         }
 
         ///
+        /// \brief check if all coefficients of the given tensor are finite.
+        ///
+        template <typename tstorage, std::size_t trank>
+        bool isfinite(const tensor_t<tstorage, trank>& tensor)
+        {
+                return tensor.array().isFinite().all();
+        }
+
+        ///
         /// \brief tensor.
         ///
         template <typename tstorage, std::size_t trank>
-        struct tensor_t
+        class tensor_t
         {
+        public:
                 using tdims = tensor_dims_t<trank>;
                 using tscalar = typename tstorage::tscalar;
                 using treference = typename tstorage::treference;

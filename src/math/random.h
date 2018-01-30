@@ -55,4 +55,17 @@ namespace nano
                         *begin = udist(rng);
                 }
         }
+
+        ///
+        /// \brief add to the [begin, range) range of elements random values uniformaly distributed in the [min, max] range.
+        ///
+        template <typename tscalar, typename titerator, typename trng, typename = typename std::is_arithmetic<tscalar>::type>
+        void add_urand(const tscalar min, const tscalar max, titerator begin, const titerator end, trng&& rng)
+        {
+                auto udist = make_udist<tscalar>(min, max);
+                for ( ; begin != end; ++ begin)
+                {
+                        *begin += udist(rng);
+                }
+        }
 }
