@@ -15,9 +15,6 @@ exp.set_task(cfg.task_synth_affine_regression(isize = isize, osize = osize, nois
 # loss functions
 exp.add_loss("cauchy", cfg.loss("cauchy"))
 
-# enhancers
-exp.add_enhancer("default", cfg.enhancer("default"))
-
 # trainers
 batch = 8
 epochs = 100

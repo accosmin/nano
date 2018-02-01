@@ -24,10 +24,6 @@ NANO_CASE(tune_and_train_regression)
                 "noise", 0, "count", 100, "type", affine_task_type::regression).str());
         NANO_REQUIRE(task->load());
 
-        // create default enhancer (use task as it is)
-        const auto enhancer = get_enhancers().get("default");
-        NANO_REQUIRE(enhancer);
-
         // create loss
         const auto loss = get_losses().get("square");
         NANO_REQUIRE(loss);
@@ -59,10 +55,10 @@ NANO_CASE(tune_and_train_regression)
                 acc.threads(1);
 
                 acc.random();
-                trainer->tune(*enhancer, *task, fold, acc);
+                trainer->tune(*task, fold, acc);
 
                 acc.random();
-                const auto result = trainer->train(*enhancer, *task, fold, acc);
+                const auto result = trainer->train(*task, fold, acc);
                 NANO_REQUIRE(result);
 
                 const auto state = *result.history().rbegin();
@@ -84,10 +80,6 @@ NANO_CASE(tune_and_train_classification)
                 "isize", isize, "osize", osize,
                 "noise", 0, "count", 1000, "type", affine_task_type::classification).str());
         NANO_REQUIRE(task->load());
-
-        // create default enhancer (use task as it is)
-        const auto enhancer = get_enhancers().get("default");
-        NANO_REQUIRE(enhancer);
 
         // create loss
         const auto loss = get_losses().get("m-logistic");
@@ -120,10 +112,10 @@ NANO_CASE(tune_and_train_classification)
                 acc.threads(1);
 
                 acc.random();
-                trainer->tune(*enhancer, *task, fold, acc);
+                trainer->tune(*task, fold, acc);
 
                 acc.random();
-                const auto result = trainer->train(*enhancer, *task, fold, acc);
+                const auto result = trainer->train(*task, fold, acc);
                 NANO_REQUIRE(result);
 
                 const auto state = *result.history().rbegin();

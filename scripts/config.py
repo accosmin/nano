@@ -27,13 +27,6 @@ class config:
                         "s-exponential",        # classification (single label)
                         "m-exponential"]        # classification (multi label)
 
-        def enhancers(self):
-                """ available data enhancing methods """
-                return ["default",
-                        "noise",
-                        "warp",
-                        "noclass"]
-
         def activations(self):
                 """ available activation functions """
                 return ["act-unit",
@@ -91,11 +84,6 @@ class config:
                 """ create a loss """
                 assert(loss in self.losses())
                 return {"loss": loss}
-
-        def enhancer(self, enhancer):
-                """ create a data enhancer """
-                assert(enhancer in self.enhancers())
-                return {"enhancer": enhancer}
 
         def task(self, name):
                 """ create a task """

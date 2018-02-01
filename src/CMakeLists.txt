@@ -12,7 +12,6 @@ set(libnano_sources
         ${CMAKE_CURRENT_SOURCE_DIR}/trainer_result.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/task.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/tuner.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/enhancer.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/solver_batch.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/solver_stoch.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/solver_state.cpp)
@@ -27,7 +26,6 @@ add_subdirectory(losses)
 add_subdirectory(layers)
 add_subdirectory(tasks)
 add_subdirectory(trainers)
-add_subdirectory(enhancers)
 add_subdirectory(tensor)
 add_subdirectory(thread)
 add_subdirectory(chrono)

@@ -1,6 +1,5 @@
 #include "task.h"
 #include "utest.h"
-#include "enhancer.h"
 #include "vision/color.h"
 #include "math/epsilon.h"
 #include "tasks/charset.h"
@@ -139,29 +138,6 @@ NANO_CASE(minibatch)
                 for (size_t count = 1; count < std::min(size_t(8), size); ++ count)
                 {
                         const auto minibatch = task->get(fold, size_t(0), count);
-
-                        NANO_CHECK_EQUAL(minibatch.idims(), task->idims());
-                        NANO_CHECK_EQUAL(minibatch.odims(), task->odims());
-                        NANO_CHECK_EQUAL(minibatch.count(), static_cast<tensor_size_t>(count));
-                }
-        }
-}
-
-NANO_CASE(enhancers)
-{
-        auto task = get_task(charset_type::alpha, color_mode::rgb, 12, 12, 102);
-        NANO_CHECK(task->load());
-
-        for (const auto& id : get_enhancers().ids())
-        {
-                const auto enhancer = get_enhancers().get(id);
-
-                const auto fold = fold_t{0, protocol::train};
-                const auto size = task->size(fold);
-
-                for (size_t count = 1; count < std::min(size_t(8), size); ++ count)
-                {
-                        const auto minibatch = enhancer->get(*task, fold, size_t(0), count);
 
                         NANO_CHECK_EQUAL(minibatch.idims(), task->idims());
                         NANO_CHECK_EQUAL(minibatch.odims(), task->odims());

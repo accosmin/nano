@@ -20,8 +20,7 @@ json_writer_t& batch_trainer_t::config(json_writer_t& writer) const
                 "epochs", m_epochs, "eps", m_epsilon, "patience", m_patience);
 }
 
-void batch_trainer_t::tune(
-        const enhancer_t&, const task_t&, const size_t, accumulator_t&)
+void batch_trainer_t::tune(const task_t&, const size_t, accumulator_t&)
 {
         const auto solver = get_batch_solvers().get(m_solver);
         if (!solver)
@@ -31,8 +30,7 @@ void batch_trainer_t::tune(
         }
 }
 
-trainer_result_t batch_trainer_t::train(
-        const enhancer_t& enhancer, const task_t& task, const size_t fold, accumulator_t& acc) const
+trainer_result_t batch_trainer_t::train(const task_t& task, const size_t fold, accumulator_t& acc) const
 {
         const timer_t timer;
         size_t epoch = 0;
@@ -73,7 +71,7 @@ trainer_result_t batch_trainer_t::train(
         };
 
         // assembly optimization function & train the model
-        const auto function = batch_function_t(acc, enhancer, task, fold_t{fold, protocol::train});
+        const auto function = batch_function_t(acc, task, fold_t{fold, protocol::train});
         const auto params = batch_params_t{m_epochs, m_epsilon, fn_ulog};
         const auto solver = get_batch_solvers().get(m_solver);
         if (!solver)

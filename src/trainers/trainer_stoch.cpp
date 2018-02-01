@@ -30,8 +30,7 @@ size_t stoch_trainer_t::epoch_size(const task_t& task, const size_t fold) const
         return idiv(train_size, m_batch);
 }
 
-void stoch_trainer_t::tune(
-        const enhancer_t& enhancer, const task_t& task, const size_t fold, accumulator_t& acc)
+void stoch_trainer_t::tune(const task_t& task, const size_t fold, accumulator_t& acc)
 {
         const auto solver = get_stoch_solvers().get(m_solver);
         if (!solver)
@@ -85,7 +84,7 @@ void stoch_trainer_t::tune(
                 };
 
                 // assembly optimization function & train the model
-                const auto function = stoch_function_t(acc, enhancer, task,  iterator);
+                const auto function = stoch_function_t(acc, task,  iterator);
                 const auto params = stoch_params_t{m_tune_epochs, epoch_size(task, fold), m_epsilon, fn_ulog};
                 solver->minimize(params, function, param0);
 
@@ -101,8 +100,7 @@ void stoch_trainer_t::tune(
                 << "<<< stoch-" << m_solver << "[tuned]: " << opt_result << "," << timer.elapsed() << ".";
 }
 
-trainer_result_t stoch_trainer_t::train(
-        const enhancer_t& enhancer, const task_t& task, const size_t fold, accumulator_t& acc) const
+trainer_result_t stoch_trainer_t::train(const task_t& task, const size_t fold, accumulator_t& acc) const
 {
         // minibatch iterator
         auto iterator = iterator_t(task, {fold, protocol::train}, m_batch);
@@ -147,7 +145,7 @@ trainer_result_t stoch_trainer_t::train(
         };
 
         // assembly optimization function & train the model
-        const auto function = stoch_function_t(acc, enhancer, task,  iterator);
+        const auto function = stoch_function_t(acc, task,  iterator);
         const auto params = stoch_params_t{m_epochs, epoch_size(task, fold), m_epsilon, fn_ulog};
         const auto solver = get_stoch_solvers().get(m_solver);
         if (!solver)

@@ -1,8 +1,8 @@
 #pragma once
 
 #include "loss.h"
+#include "task.h"
 #include "model.h"
-#include "enhancer.h"
 
 namespace nano
 {
@@ -54,9 +54,6 @@ namespace nano
                 ///
                 void update(const task_t&, const fold_t&);
                 void update(const task_t&, const fold_t&, const size_t begin, const size_t end);
-
-                void update(const enhancer_t&, const task_t&, const fold_t&);
-                void update(const enhancer_t&, const task_t&, const fold_t&, const size_t begin, const size_t end);
 
                 ///
                 /// \brief current parameters

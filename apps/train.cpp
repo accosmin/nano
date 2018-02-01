@@ -3,7 +3,6 @@
 #include "model.h"
 #include "io/io.h"
 #include "trainer.h"
-#include "enhancer.h"
 #include "checkpoint.h"
 #include "text/table.h"
 #include "accumulator.h"
@@ -33,7 +32,6 @@ int main(int argc, const char *argv[])
         cmdline.add("", "model",        "model configuration (.json)");
         cmdline.add("", "trainer",      join(get_trainers().ids()) + " (.json)");
         cmdline.add("", "loss",         join(get_losses().ids()) + " (.json)");
-        cmdline.add("", "enhancer",     join(get_enhancers().ids()) + " (.json)");
         cmdline.add("", "basepath",     "basepath where to save results (e.g. model, logs, history)");
         cmdline.add("", "threads",      "number of threads to use", physical_cpus());
         cmdline.add("", "trials",       "number of trials", 10);
@@ -46,7 +44,6 @@ int main(int argc, const char *argv[])
         const auto cmd_model = cmdline.get<string_t>("model");
         const auto cmd_trainer = cmdline.get<string_t>("trainer");
         const auto cmd_loss = cmdline.get<string_t>("loss");
-        const auto cmd_enhancer = cmdline.get<string_t>("enhancer");
         const auto cmd_basepath = cmdline.get<string_t>("basepath");
         const auto cmd_threads = cmdline.get<size_t>("threads");
         const auto cmd_trials = cmdline.get<size_t>("trials");
@@ -75,16 +72,6 @@ int main(int argc, const char *argv[])
         rloss_t loss;
         checkpoint.step(strcat("search loss <", id, ">"));
         checkpoint.critical((loss = get_losses().get(id)) != nullptr);
-
-        // load enhancer
-        checkpoint.step(strcat("load enhancer configuration from <", cmd_enhancer, ">"));
-        checkpoint.critical(load_json(cmd_enhancer, "enhancer", params, id));
-
-        renhancer_t enhancer;
-        checkpoint.step(strcat("search enhancer <", id, ">"));
-        checkpoint.critical((enhancer = get_enhancers().get(id)) != nullptr);
-
-        enhancer->config(params);
 
         // load trainer
         checkpoint.step(strcat("load trainer configuration from <", cmd_trainer, ">"));
@@ -117,7 +104,7 @@ int main(int argc, const char *argv[])
 
         // tune the trainer (once!)
         acc.random();
-        trainer->tune(*enhancer, *task, cmd_fold, acc);
+        trainer->tune(*task, cmd_fold, acc);
 
         table_t table;
         table.header()
@@ -135,7 +122,7 @@ int main(int argc, const char *argv[])
                 acc.random();
                 trainer_result_t result;
                 checkpoint.step("train model");
-                checkpoint.measure((result = trainer->train(*enhancer, *task, cmd_fold, acc)) == true);
+                checkpoint.measure((result = trainer->train(*task, cmd_fold, acc)) == true);
 
                 model.params(result.optimum_params());
 
