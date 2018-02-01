@@ -1,5 +1,4 @@
 #include "function.h"
-#include "math/random.h"
 #include "text/cmdline.h"
 #include "math/epsilon.h"
 #include "solver_batch.h"
@@ -11,14 +10,11 @@ template <typename tostats>
 static void check_function(const function_t& function, const strings_t& solvers,
         const size_t trials, const size_t iterations, const scalar_t epsilon, const scalar_t c1, tostats& gstats)
 {
-        auto rgen = make_rng(scalar_t(-1), scalar_t(+1));
-
         // generate fixed random trials
         std::vector<vector_t> x0s(trials);
         for (auto& x0 : x0s)
         {
-                x0.resize(function.size());
-                rgen(x0.data(), x0.data() + x0.size());
+                x0 = vector_t::Random(function.size());
         }
 
         // per-problem statistics

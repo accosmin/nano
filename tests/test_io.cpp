@@ -51,8 +51,9 @@ NANO_CASE(istream)
         const size_t min_size = 3;
         const size_t max_size = 679 * 1024;
 
-        random_t<char> rng_value;
-        random_t<std::streamsize> rng_skip(1, 1024);
+        auto rng = make_rng();
+        auto udist_value = make_udist<char>(-127, +127);
+        auto udist_skip = make_udist<std::streamsize>(1, 1024);
 
         for (size_t size = min_size; size <= max_size; size *= 2)
         {
@@ -62,7 +63,7 @@ NANO_CASE(istream)
 
                 for (auto& value : ref_buffer)
                 {
-                        value = rng_value();
+                        value = udist_value(rng);
                 }
 
                 // check saving to file
@@ -111,7 +112,7 @@ NANO_CASE(istream)
                         while (stream)
                         {
                                 NANO_REQUIRE_GREATER(remaining, 0);
-                                const std::streamsize skip_size = std::min(remaining, rng_skip());
+                                const std::streamsize skip_size = std::min(remaining, udist_skip(rng));
                                 NANO_CHECK(stream.skip(skip_size));
                                 remaining -= skip_size;
                         }
@@ -143,8 +144,7 @@ NANO_CASE(bstream)
         auto var_matrix = matrix_t(17, 5);
         auto var_tensor = tensor3d_t(3, 4, 5);
 
-        auto rng = make_rng<scalar_t>(-1, +1);
-        nano::set_random(rng, var_vector, var_matrix, var_tensor);
+        nano::set_random(make_udist<scalar_t>(-1, +1), make_rng(), var_vector, var_matrix, var_tensor);
 
         const std::string path = "bstream.test";
 

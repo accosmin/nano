@@ -69,11 +69,9 @@ namespace nano
                 assert(idata.size() == 1);
                 assert(idata[0].dims() == odata.dims());
                 assert(pdata.size() == psize());
-                assert(nano::isfinite(idata[0]));
 
                 top::output(idata[0].array(), odata.array());
 
-                assert(nano::isfinite(odata));
                 NANO_UNUSED1_RELEASE(pdata);
         }
 
@@ -83,12 +81,9 @@ namespace nano
                 assert(idata.size() == 1);
                 assert(idata[0].dims() == odata.dims());
                 assert(pdata.size() == psize());
-                assert(nano::isfinite(idata[0]));
-                assert(nano::isfinite(odata));
 
                 top::ginput(idata[0].array(), odata.array());
 
-                assert(nano::isfinite(idata[0]));
                 NANO_UNUSED1_RELEASE(pdata);
         }
 

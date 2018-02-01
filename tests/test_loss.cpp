@@ -29,13 +29,13 @@ struct loss_function_t final : public function_t
                 {
                         const auto grads = m_loss->vgrad(m_targets, scores);
                         NANO_CHECK_EQUAL(gx->size(), grads.size());
-                        NANO_CHECK(nano::isfinite(grads));
+                        NANO_CHECK(grads.array().isFinite().all());
 
                         *gx = grads.vector();
                 }
 
                 const auto values = m_loss->value(m_targets, scores);
-                NANO_CHECK(nano::isfinite(values));
+                NANO_CHECK(values.array().isFinite().all());
                 return values.vector().sum();
         }
 

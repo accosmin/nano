@@ -4,16 +4,17 @@
 #include "vision/image.h"
 #include <cstdio>
 
+using namespace nano;
+
 NANO_BEGIN_MODULE(test_image)
 
 NANO_CASE(construction)
 {
-        using namespace nano;
+        auto rng = make_rng();
+        auto udist = make_udist<coord_t>(16, 64);
 
-        nano::random_t<coord_t> rng(16, 64);
-
-        const auto rows = rng();
-        const auto cols = rng();
+        const auto rows = udist(rng);
+        const auto cols = udist(rng);
 
         image_t image(rows, cols, color_mode::luma);
         NANO_CHECK_EQUAL(image.is_luma(), true);
@@ -40,12 +41,11 @@ NANO_CASE(construction)
 
 NANO_CASE(transform)
 {
-        using namespace nano;
+        auto rng = make_rng();
+        auto udist = make_udist<coord_t>(16, 64);
 
-        nano::random_t<coord_t> rng(16, 64);
-
-        const auto rows = rng();
-        const auto cols = rng();
+        const auto rows = udist(rng);
+        const auto cols = udist(rng);
 
         const auto color_rgb = rgb_t{54, 3, 217};
         const auto color_rgba = rgba_t{color_rgb(0), color_rgb(1), color_rgb(2), 45};
@@ -83,12 +83,11 @@ NANO_CASE(transform)
 
 NANO_CASE(io_tensor)
 {
-        using namespace nano;
+        auto rng = make_rng();
+        auto udist = make_udist<coord_t>(16, 64);
 
-        nano::random_t<coord_t> rng(16, 64);
-
-        const auto rows = rng();
-        const auto cols = rng();
+        const auto rows = udist(rng);
+        const auto cols = udist(rng);
 
         const auto color_rgb = rgb_t{54, 3, 217};
         const auto color_rgba = rgba_t{color_rgb(0), color_rgb(1), color_rgb(2), 45};
@@ -116,12 +115,11 @@ NANO_CASE(io_tensor)
 
 NANO_CASE(io_luma)
 {
-        using namespace nano;
+        auto rng = make_rng();
+        auto udist = make_udist<coord_t>(16, 64);
 
-        nano::random_t<coord_t> rng(16, 64);
-
-        const auto rows = rng();
-        const auto cols = rng();
+        const auto rows = udist(rng);
+        const auto cols = udist(rng);
 
         const auto dcols = cols / 2;
         const auto drows = rows / 4;
@@ -175,12 +173,11 @@ NANO_CASE(io_luma)
 
 NANO_CASE(io_file)
 {
-        using namespace nano;
+        auto rng = make_rng();
+        auto udist = make_udist<coord_t>(16, 64);
 
-        nano::random_t<coord_t> rng(16, 64);
-
-        const auto rows = rng();
-        const auto cols = rng();
+        const auto rows = udist(rng);
+        const auto cols = udist(rng);
 
         const auto color_rgb = rgb_t{54, 3, 217};
         const auto color_rgba = rgba_t{color_rgb(0), color_rgb(1), color_rgb(2), 45};

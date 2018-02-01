@@ -77,28 +77,6 @@ NANO_CASE(index3d)
         NANO_CHECK_EQUAL(nano::dims0(dims, 2, 4), nano::make_dims(5));
 }
 
-NANO_CASE(isfinite)
-{
-        using tensor3d_t = nano::tensor_mem_t<float, 3>;
-
-        const auto dims = 7;
-        const auto rows = 3;
-        const auto cols = 4;
-
-        tensor3d_t tensor;
-        tensor.resize(dims, rows, cols);
-
-        tensor.zero();
-        NANO_CHECK(isfinite(tensor));
-
-        tensor(1, 2, 3) = NAN;
-        NANO_CHECK(!isfinite(tensor));
-
-        tensor.zero();
-        tensor(1, 2, 3) = INFINITY;
-        NANO_CHECK(!isfinite(tensor));
-}
-
 NANO_CASE(tensor3d)
 {
         using tensor3d_t = nano::tensor_mem_t<int, 3>;

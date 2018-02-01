@@ -30,8 +30,7 @@ NANO_CASE(enqueue)
                 NANO_CHECK_EQUAL(pool.active_workers(), active_workers);
                 NANO_CHECK_EQUAL(pool.tasks(), 0u);
 
-                nano::random_t<size_t> rnd(1, max_tasks);
-                const size_t tasks = rnd();
+                const auto tasks = urand<size_t>(1u, max_tasks, make_rng());
 
                 std::vector<size_t> tasks_done;
 
@@ -42,7 +41,7 @@ NANO_CASE(enqueue)
                         {
                                 futures.push_back(pool.enqueue([=, &mutex, &tasks_done]()
                                 {
-                                        const size_t sleep1 = nano::random_t<size_t>(1, 5)();
+                                        const auto sleep1 = urand<size_t>(1, 5, make_rng());
                                         std::this_thread::sleep_for(std::chrono::milliseconds(sleep1));
 
                                         {

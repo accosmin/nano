@@ -8,31 +8,30 @@ NANO_BEGIN_MODULE(test_cubic)
 
 NANO_CASE(evaluate)
 {
-        const size_t tests = 127;
-
-        for (size_t t = 0; t < tests; ++ t)
+        for (auto t = 0; t < 127; ++ t)
         {
-                auto rnd = nano::make_rng<double>(-1.0, +1.0);
+                auto rng = nano::make_rng();
+                auto rnd = nano::make_udist<double>(-1.0, +1.0);
 
                 // build random valid cubic
                 double a, b, c, d;
                 do
                 {
-                        a = rnd();
-                        b = rnd();
-                        c = rnd();
-                        d = rnd();
+                        a = rnd(rng);
+                        b = rnd(rng);
+                        c = rnd(rng);
+                        d = rnd(rng);
                 }
                 while (!nano::cubic_t<double>(a, b, c, d));
 
                 const nano::cubic_t<double> q(a, b, c, d);
                 NANO_CHECK(q);
 
-                const double x0 = rnd();
+                const double x0 = rnd(rng);
                 const double f0 = q.value(x0);
                 const double g0 = q.gradient(x0);
 
-                const double x1 = x0 + rnd() + 1.0;
+                const double x1 = x0 + rnd(rng) + 1.0;
                 const double f1 = q.value(x1);
                 const double g1 = q.gradient(x1);
 
@@ -66,11 +65,10 @@ NANO_CASE(evaluate)
                 NANO_CHECK_LESS(nano::abs(iq.gradient(extremum1)), nano::epsilon1<double>());
                 NANO_CHECK_LESS(nano::abs(iq.gradient(extremum2)), nano::epsilon1<double>());
 
-                const size_t etests = 143;
-                for (size_t e = 0; e < etests; ++ e)
+                for (auto e = 0; e < 143; ++ e)
                 {
-                        NANO_CHECK_GREATER(nano::abs(iq.gradient(rnd())), nano::abs(iq.gradient(extremum1)));
-                        NANO_CHECK_GREATER(nano::abs(iq.gradient(rnd())), nano::abs(iq.gradient(extremum2)));
+                        NANO_CHECK_GREATER(nano::abs(iq.gradient(rnd(rng))), nano::abs(iq.gradient(extremum1)));
+                        NANO_CHECK_GREATER(nano::abs(iq.gradient(rnd(rng))), nano::abs(iq.gradient(extremum2)));
                 }
         }
 }

@@ -73,7 +73,7 @@ string_t tuner_t::get()
                                 break;
 
                         case param_type::finite:
-                                assert(!params.m_values.empty());
+                                assert(!param.m_values.empty());
                                 trial.m_values.push_back(ptrial.m_values[i]);
                                 break;
 
@@ -98,7 +98,7 @@ string_t tuner_t::get()
                                 break;
 
                         case param_type::finite:
-                                assert(!params.m_values.empty());
+                                assert(!param.m_values.empty());
                                 trial.m_values.push_back(urand(param.m_values, m_rng));
                                 break;
 
@@ -128,7 +128,7 @@ string_t tuner_t::optimum() const
 
 string_t tuner_t::json(const trial_t& trial) const
 {
-        assert(trial.m_values.size() == m_values.size());
+        assert(trial.m_values.size() == m_params.size());
 
         json_writer_t writer;
         writer.new_object();

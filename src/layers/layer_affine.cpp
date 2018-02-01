@@ -49,8 +49,8 @@ void affine_layer_t::random(vector_map_t pdata) const
         const auto bmin = scalar_t(-0.1);
         const auto bmax = scalar_t(+0.1);
 
-        nano::set_random(make_rng<scalar_t>(wmin, wmax), wdata(pdata));
-        nano::set_random(make_rng<scalar_t>(bmin, bmax), bdata(pdata));
+        nano::set_random(make_udist<scalar_t>(wmin, wmax), make_rng(), wdata(pdata));
+        nano::set_random(make_udist<scalar_t>(bmin, bmax), make_rng(), bdata(pdata));
 }
 
 void affine_layer_t::output(tensor4d_cmaps_t idata, vector_cmap_t pdata, tensor4d_map_t odata)

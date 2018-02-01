@@ -47,8 +47,6 @@ namespace nano
                 template <typename tiarray, typename toarray>
                 static void onorm(const tiarray& iarray, toarray&& oarray)
                 {
-                        assert(nano::isfinite(iarray));
-
                         const auto isum1 = iarray.sum();
                         const auto isum2 = iarray.square().sum();
                         const auto count = static_cast<scalar_t>(iarray.size());
@@ -56,16 +54,11 @@ namespace nano
                         const auto istdv = std::sqrt(isum2 * count - isum1 * isum1) / count;
 
                         oarray = (iarray - imean) / istdv;
-
-                        assert(nano::isfinite(oarray));
                 }
 
                 template <typename tiarray, typename toarray>
                 static void gnorm(tiarray&& iarray, const toarray& oarray)
                 {
-                        assert(nano::isfinite(iarray));
-                        assert(nano::isfinite(oarray));
-
                         const auto isum1 = iarray.sum();
                         const auto isum2 = iarray.square().sum();
                         const auto count = static_cast<scalar_t>(iarray.size());
@@ -78,8 +71,6 @@ namespace nano
                         iarray = oarray / (istdv) -
                                  osum1 / (count * istdv) -
                                  (iarray - imean) * oisum / (count * istdv * istdv * istdv);
-
-                        assert(nano::isfinite(iarray));
                 }
 
                 // attributes

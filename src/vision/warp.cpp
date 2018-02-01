@@ -23,14 +23,17 @@ namespace nano
         static void make_random_fields(const scalar_t noise,
                 matrix_t& fieldx, matrix_t& fieldy, trng&& rng)
         {
-                nano::set_random([&] () { return rng() * noise; }, fieldx, fieldy);
+                auto udist = make_udist<scalar_t>(-noise, +noise);
+                nano::set_random(udist, rng, fieldx, fieldy);
         }
 
         template <typename trng>
         static void make_translation_fields(const scalar_t noise, const scalar_t delta,
                 matrix_t& fieldx, matrix_t& fieldy, trng&& rng)
         {
-                nano::set_random([&] () { return rng() * noise + delta; }, fieldx, fieldy);
+                make_random_fields(noise, fieldx, fieldy, rng);
+                fieldx.array() += delta;
+                fieldy.array() += delta;
         }
 
         template <typename trng>
@@ -47,14 +50,16 @@ namespace nano
                 const auto cos_theta = std::cos(theta);
                 const auto sin_theta = std::sin(theta);
 
+                auto udist = make_udist<scalar_t>(-noise, +noise);
+
                 for (tensor_size_t r = 0; r < rows; ++ r)
                 {
                         for (tensor_size_t c = 0; c < cols; ++ c)
                         {
                                 const auto dist = nano::square(scalar_t(r) - cy) + nano::square(scalar_t(c) - cx);
 
-                                fieldx(r, c) = id * dist * cos_theta + rng() * noise + delta;
-                                fieldy(r, c) = id * dist * sin_theta + rng() * noise + delta;
+                                fieldx(r, c) = id * dist * cos_theta + udist(rng) + delta;
+                                fieldy(r, c) = id * dist * sin_theta + udist(rng) + delta;
                         }
                 }
         }
@@ -71,8 +76,9 @@ namespace nano
                 const auto icols = iodata.template size<2>();
 
                 // generate random fields
-                const auto delta = rng() * one;
-                const auto theta = rng() * pi / 8;
+                auto udist = make_udist<scalar_t>(-1, +1);
+                const auto delta = udist(rng) * one;
+                const auto theta = udist(rng) * pi / 8;
 
                 matrix_t fieldx(irows, icols);
                 matrix_t fieldy(irows, icols);
@@ -102,9 +108,9 @@ namespace nano
                 nano::convolve(gauss, fieldy);
 
                 // mix input image with field-weighted gradients
-                const auto alphax = rng() * alpha;
-                const auto alphay = rng() * alpha;
-                const auto betamx = rng() * beta;
+                const auto alphax = udist(rng) * alpha;
+                const auto alphay = udist(rng) * alpha;
+                const auto betamx = udist(rng) * beta;
 
                 for (auto d = 0; d < imaps; ++ d)
                 {
@@ -115,31 +121,31 @@ namespace nano
                 }
         }
 
-        template <typename ttensor, typename trng>
+        template <typename ttensor>
         void warp4d(ttensor&& iodata, const warp_type wtype,
-                const scalar_t noise, const scalar_t sigma, const scalar_t alpha, const scalar_t beta, trng&& rng)
+                const scalar_t noise, const scalar_t sigma, const scalar_t alpha, const scalar_t beta)
         {
                 for (auto plane = 0; plane < iodata.template size<0>(); ++ plane)
                 {
-                        warp3d(iodata.tensor(plane), wtype, noise, sigma, alpha, beta, rng);
+                        warp3d(iodata.tensor(plane), wtype, noise, sigma, alpha, beta, make_rng());
                 }
         }
 
         void warp(tensor3d_t& iodata, const warp_type wtype,
                 const scalar_t noise, const scalar_t sigma, const scalar_t alpha, const scalar_t beta)
         {
-                warp3d(iodata, wtype, noise, sigma, alpha, beta, make_rng<scalar_t>(-1, +1));
+                warp3d(iodata, wtype, noise, sigma, alpha, beta, make_rng());
         }
 
         void warp(tensor4d_t& iodata, const warp_type wtype,
                 const scalar_t noise, const scalar_t sigma, const scalar_t alpha, const scalar_t beta)
         {
-                warp4d(iodata, wtype, noise, sigma, alpha, beta, make_rng<scalar_t>(-1, +1));
+                warp4d(iodata, wtype, noise, sigma, alpha, beta);
         }
 
         void warp(tensor4d_map_t&& iodata, const warp_type wtype,
                 const scalar_t noise, const scalar_t sigma, const scalar_t alpha, const scalar_t beta)
         {
-                warp4d(iodata, wtype, noise, sigma, alpha, beta, make_rng<scalar_t>(-1, +1));
+                warp4d(iodata, wtype, noise, sigma, alpha, beta);
         }
 }

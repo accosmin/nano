@@ -528,14 +528,14 @@ void model_t::random()
         }
         m_gdata.setZero();
 
-        assert(nano::isfinite(m_pdata));
+        assert(m_pdata.array().isFinite().all());
 }
 
 tensor4d_cmap_t model_t::output(const tensor4d_t& idata)
 {
         assert(idata.tensor(0).dims() == idims());
-        assert(nano::isfinite(m_pdata));
-        assert(nano::isfinite(idata));
+        assert(m_pdata.array().isFinite().all());
+        assert(idata.array().isFinite().all());
         assert(!m_nodes.empty());
 
         const auto count = idata.size<0>();
@@ -558,17 +558,17 @@ tensor4d_cmap_t model_t::output(const tensor4d_t& idata)
                 }
         }, count);
 
-        assert(nano::isfinite(m_xdata));
-        assert(nano::isfinite(m_pdata));
+        assert(m_xdata.array().isFinite().all());
+        assert(m_pdata.array().isFinite().all());
 
         return onode().odata(cxdata(), count);
 }
 
 const vector_t& model_t::gparam(const tensor4d_t& odata)
 {
-        assert(nano::isfinite(odata));
-        assert(nano::isfinite(m_xdata));
-        assert(nano::isfinite(m_pdata));
+        assert(odata.array().isFinite().all());
+        assert(m_xdata.array().isFinite().all());
+        assert(m_pdata.array().isFinite().all());
         assert(odata.tensor(0).dims() == odims());
         assert(!m_nodes.empty());
 
@@ -596,9 +596,9 @@ const vector_t& model_t::gparam(const tensor4d_t& odata)
                 }
         }, count);
 
-        assert(nano::isfinite(m_xdata));
-        assert(nano::isfinite(m_pdata));
-        assert(nano::isfinite(m_gdata));
+        assert(m_xdata.array().isFinite().all());
+        assert(m_pdata.array().isFinite().all());
+        assert(m_gdata.array().isFinite().all());
 
         return m_gdata;
 }

@@ -1,8 +1,7 @@
-#include "text/cmdline.h"
-#include "math/random.h"
 #include "function.h"
 #include "math/epsilon.h"
 #include "solver_stoch.h"
+#include "text/cmdline.h"
 #include "benchmark_solvers.h"
 
 using namespace nano;
@@ -12,14 +11,11 @@ static void check_function(const function_t& function, const strings_t& solvers,
         const size_t epochs, const size_t tune_epochs, const size_t epoch_size, const scalar_t epsilon,
         tostats& gstats)
 {
-        auto rgen = make_rng(scalar_t(-1), scalar_t(+1));
-
         // generate fixed random trials
         std::vector<vector_t> x0s(trials);
         for (auto& x0 : x0s)
         {
-                x0.resize(function.size());
-                rgen(x0.data(), x0.data() + x0.size());
+                x0 = vector_t::Random(function.size());
         }
 
         // per-problem statistics

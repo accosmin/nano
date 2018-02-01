@@ -22,21 +22,21 @@
 
 using namespace nano;
 
-template <typename trng>
-static rgba_t make_random_rgba(trng& rng)
+template <typename tdistribution, typename trng>
+static rgba_t make_random_rgba(tdistribution&& dist, trng&& rng)
 {
-        return rgba_t{rng(), rng(), rng(), rng()};
+        return rgba_t{dist(rng), dist(rng), dist(rng), dist(rng)};
 }
 
-template <typename trng>
-static rgba_t make_random_opposite_rgba(const rgba_t& rgba, trng& rng)
+template <typename tdistribution, typename trng>
+static rgba_t make_random_opposite_rgba(const rgba_t& rgba, tdistribution&& dist, trng&& rng)
 {
         return  rgba_t
         {
-                static_cast<luma_t>(clamp(255 - static_cast<int>(rgba(0)) + rng(), 0, 255)),
-                static_cast<luma_t>(clamp(255 - static_cast<int>(rgba(1)) + rng(), 0, 255)),
-                static_cast<luma_t>(clamp(255 - static_cast<int>(rgba(2)) + rng(), 0, 255)),
-                static_cast<luma_t>(clamp(255 - static_cast<int>(rgba(3)) + rng(), 0, 255))
+                static_cast<luma_t>(clamp(255 - static_cast<int>(rgba(0)) + dist(rng), 0, 255)),
+                static_cast<luma_t>(clamp(255 - static_cast<int>(rgba(1)) + dist(rng), 0, 255)),
+                static_cast<luma_t>(clamp(255 - static_cast<int>(rgba(2)) + dist(rng), 0, 255)),
+                static_cast<luma_t>(clamp(255 - static_cast<int>(rgba(3)) + dist(rng), 0, 255))
         };
 }
 
@@ -71,9 +71,9 @@ static tensor_size_t osize(const charset_type cs)
         return oend(cs) - obegin(cs);
 }
 
-template <typename tindex, typename tsize, typename trng>
+template <typename tindex, typename tsize, typename tdistribution, typename trng>
 static void get_object_patch(const image_tensor_t& image,
-        const tindex object_index, const tsize objects, trng& rng, tensor3d_t& patch)
+        const tindex object_index, const tsize objects, tdistribution&& distribution, trng&& rng, tensor3d_t& patch)
 {
         const auto icols = static_cast<int>(image.cols());
         const auto irows = static_cast<int>(image.rows());
@@ -83,10 +83,10 @@ static void get_object_patch(const image_tensor_t& image,
         const auto x = dx * static_cast<scalar_t>(object_index) + rng();
 
         const auto ppx = nano::clamp(std::lround(x), 0, icols - 1);
-        const auto ppw = nano::clamp(std::lround(dx + rng()), 0, icols - ppx);
+        const auto ppw = nano::clamp(std::lround(dx + distribution(rng)), 0, icols - ppx);
 
         const auto ppy = nano::clamp(std::lround(rng()), 0, irows - 1);
-        const auto pph = nano::clamp(std::lround(static_cast<scalar_t>(irows) + rng()), 0, irows - ppy);
+        const auto pph = nano::clamp(std::lround(static_cast<scalar_t>(irows) + distribution(rng)), 0, irows - ppy);
 
         patch.resize(4, pph, ppw);
         patch.matrix(0) = image.matrix(0).block(ppy, ppx, pph, ppw).template cast<scalar_t>() / scalar_t(255);
@@ -95,9 +95,9 @@ static void get_object_patch(const image_tensor_t& image,
         patch.matrix(3) = image.matrix(3).block(ppy, ppx, pph, ppw).template cast<scalar_t>() / scalar_t(255);
 }
 
-template <typename trng>
+template <typename tdistribution, typename trng>
 static void make_random_rgba_image(const tensor_size_t rows, const tensor_size_t cols,
-        const rgba_t& back_color, const scalar_t sigma, trng& rng_noise, tensor3d_t& image)
+        const rgba_t& back_color, const scalar_t sigma, tdistribution&& udist_noise, trng&& rng, tensor3d_t& image)
 {
         // noisy background
         image.resize(4, rows, cols);
@@ -106,7 +106,7 @@ static void make_random_rgba_image(const tensor_size_t rows, const tensor_size_t
         image.matrix(2).setConstant(back_color(2) / scalar_t(255));
         image.matrix(3).setConstant(1);
 
-        nano::add_random(rng_noise, image.matrix(0), image.matrix(1), image.matrix(2));
+        nano::add_random(udist_noise, rng, image.matrix(0), image.matrix(1), image.matrix(2));
 
         // smooth background
         const auto back_gauss = nano::make_gauss_kernel(sigma);
@@ -178,20 +178,20 @@ bool charset_task_t::populate()
         INSERT_IMAGE(synth_oxygen_mono)
 #undef INSERT_IMAGE
 
-        const size_t n_fonts = char_patches.size();
-
-        auto rng_output = make_rng<tensor_size_t>(obegin(m_type), oend(m_type) - 1);
-        auto rng_font = make_rng<size_t>(1, n_fonts);
-        auto rng_gauss = make_rng<scalar_t>(0, 2);
-        auto rng_rgba = make_rng<luma_t>(0, 255);
-        auto rng_opposite_rgba = make_rng<int>(-55, +55);
-        auto rng_offset = make_rng<scalar_t>(-1, +1);
-
+        const auto n_fonts = char_patches.size();
         const auto bnoise = scalar_t(0.1);
         const auto fnoise = scalar_t(0.1);
 
-        auto rng_bnoise = make_rng<scalar_t>(-bnoise, +bnoise);
-        auto rng_fnoise = make_rng<scalar_t>(-fnoise, +fnoise);
+        auto rng = make_rng();
+
+        auto udist_output = make_udist<tensor_size_t>(obegin(m_type), oend(m_type) - 1);
+        auto udist_font = make_udist<size_t>(1, n_fonts);
+        auto udist_gauss = make_udist<scalar_t>(0, 2);
+        auto udist_rgba = make_udist<luma_t>(0, 255);
+        auto udist_opposite_rgba = make_udist<int>(-55, +55);
+        auto udist_offset = make_udist<scalar_t>(-1, +1);
+        auto udist_bnoise = make_udist<scalar_t>(-bnoise, +bnoise);
+        auto udist_fnoise = make_udist<scalar_t>(-fnoise, +fnoise);
 
         const auto irows = std::get<1>(idims());
         const auto icols = std::get<2>(idims());
@@ -205,10 +205,10 @@ bool charset_task_t::populate()
         for (size_t i = 0; i < m_count; ++ i)
         {
                 // random target: character
-                const auto o = rng_output();
+                const auto o = udist_output(rng);
 
                 // image: original object patch
-                get_object_patch(char_patches[rng_font() - 1], o, n_chars, rng_offset, opatch);
+                get_object_patch(char_patches[udist_font(rng) - 1], o, n_chars, udist_offset, rng, opatch);
 
                 // image: resize to the input size
                 mpatch.resize(4, irows, icols);
@@ -225,14 +225,14 @@ bool charset_task_t::populate()
                 warp(mpatch, warp_type::mixed, wnoise, wsigma, walpha, wbeta);
 
                 // image: background & foreground layer
-                const auto bcolor = make_random_rgba(rng_rgba);
-                const auto fcolor = make_random_opposite_rgba(bcolor, rng_opposite_rgba);
+                const auto bcolor = make_random_rgba(udist_rgba, rng);
+                const auto fcolor = make_random_opposite_rgba(bcolor, udist_opposite_rgba, rng);
 
-                const auto bsigma = rng_gauss();
-                const auto fsigma = rng_gauss();
+                const auto bsigma = udist_gauss(rng);
+                const auto fsigma = udist_gauss(rng);
 
-                make_random_rgba_image(irows, icols, bcolor, bsigma, rng_bnoise, bpatch);
-                make_random_rgba_image(irows, icols, fcolor, fsigma, rng_fnoise, fpatch);
+                make_random_rgba_image(irows, icols, bcolor, bsigma, udist_bnoise, rng, bpatch);
+                make_random_rgba_image(irows, icols, fcolor, fsigma, udist_fnoise, rng, fpatch);
 
                 // image: alpha-blend the background & foreground layer
                 alpha_blend(mpatch, bpatch, fpatch, fpatch);

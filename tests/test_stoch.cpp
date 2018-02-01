@@ -1,6 +1,5 @@
 #include "utest.h"
 #include "function.h"
-#include "math/random.h"
 #include "math/numeric.h"
 #include "math/epsilon.h"
 #include "solver_stoch.h"
@@ -14,16 +13,11 @@ static void check_function(const function_t& function)
         const auto epoch_size = size_t(128);
         const auto trials = size_t(10);
 
-        const auto dims = function.size();
-
-        auto rgen = make_rng(scalar_t(-1), scalar_t(+1));
-
         // generate fixed random trials
         std::vector<vector_t> x0s(trials);
         for (auto& x0 : x0s)
         {
-                x0.resize(dims);
-                rgen(x0.data(), x0.data() + x0.size());
+                x0 = vector_t::Random(function.size());
         }
 
         // solvers to try

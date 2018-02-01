@@ -17,6 +17,7 @@ namespace nano
         using tensor_vector_t = Eigen::Matrix<tscalar, trows, 1, Eigen::ColMajor>;
 
         ///
+        ///
         /// \brief map non-constant data to vectors
         ///
         template

@@ -23,7 +23,8 @@ json_writer_t& affine_task_t::config(json_writer_t& writer) const
 
 bool affine_task_t::populate()
 {
-        auto rng_noise = make_rng<scalar_t>(-m_noise, +m_noise);
+        auto rng = make_rng();
+        auto udist_noise = make_udist<scalar_t>(-m_noise, +m_noise);
 
         tensor2d_t weights(m_osize, m_isize);
         tensor1d_t bias(m_osize);
@@ -42,12 +43,12 @@ bool affine_task_t::populate()
                 {
                 case affine_task_type::regression:
                         target.vector() = weights.matrix() * input.vector() + bias.vector();
-                        add_random(rng_noise, target);
+                        add_random(udist_noise, rng, target);
                         break;
 
                 case affine_task_type::classification:
                         target.vector() = weights.matrix() * input.vector();
-                        add_random(rng_noise, target);
+                        add_random(udist_noise, rng, target);
                         target.vector() = class_target(target.vector());
                         break;
 

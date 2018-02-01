@@ -21,7 +21,8 @@ json_writer_t& nparity_task_t::config(json_writer_t& writer) const
 
 bool nparity_task_t::populate()
 {
-        auto rng_bit = make_rng<tensor_size_t>();
+        auto rng = make_rng();
+        auto udist_bit = make_udist<tensor_size_t>(1, 1024);
 
         tensor3d_t bitset(m_dims, 1, 1);
 
@@ -32,7 +33,7 @@ bool nparity_task_t::populate()
                 size_t ones = 0;
                 for (tensor_size_t x = 0; x < m_dims; ++ x)
                 {
-                        if ((rng_bit() & 0x01))
+                        if ((udist_bit(rng) & 0x01))
                         {
                                 bitset(x) = 1;
                                 ++ ones;

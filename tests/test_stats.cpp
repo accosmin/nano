@@ -47,13 +47,14 @@ NANO_CASE(random)
         const auto var = 0.47;
         const auto count = size_t(37);
 
-        auto rgen = nano::make_rng<double>(-var, +var);
+        auto rng = make_rng();
+        auto udist = make_udist<double>(-var, +var);
 
         // generate random values
         std::vector<double> values;
         for (size_t i = 0; i < count; ++ i)
         {
-                values.push_back(avg + rgen());
+                values.push_back(avg + udist(rng));
         }
 
         const auto min = *std::min_element(values.begin(), values.end());

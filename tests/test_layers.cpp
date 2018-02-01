@@ -33,17 +33,17 @@ struct model_wrt_params_function_t final : public function_t
         scalar_t vgrad(const vector_t& x, vector_t* gx) const override
         {
                 NANO_CHECK_EQUAL(x.size(), m_model.psize());
-                NANO_CHECK(nano::isfinite(x));
+                NANO_CHECK(x.array().isFinite().all());
 
                 m_model.params(x);
                 const auto& outputs = m_model.output(m_inputs);
-                NANO_CHECK(nano::isfinite(outputs));
+                NANO_CHECK(outputs.array().isFinite().all());
 
                 if (gx)
                 {
                         const auto& gparam = m_model.gparam(m_loss->vgrad(m_targets, outputs));
                         NANO_CHECK_EQUAL(gx->size(), gparam.size());
-                        NANO_CHECK(nano::isfinite(gparam));
+                        NANO_CHECK(gparam.array().isFinite().all());
 
                         *gx = gparam;
                 }

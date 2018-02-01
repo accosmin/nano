@@ -10,24 +10,25 @@ namespace
 {
         using namespace nano;
 
-        auto rng_value = nano::make_rng(scalar_t(-1e-3), scalar_t(+1e-3));
+        auto rng = make_rng();
+        auto udist = make_udist<scalar_t>(scalar_t(-1e-3), scalar_t(+1e-3));
 
         scalar_t make_scalar()
         {
-                return rng_value();
+                return udist(rng);
         }
 
         vector_t make_vector(const tensor_size_t dims)
         {
                 vector_t x(dims);
-                nano::set_random(rng_value, x);
+                nano::set_random(udist, rng, x);
                 return x;
         }
 
         matrix_t make_matrix(const tensor_size_t rows, const tensor_size_t cols)
         {
                 matrix_t x(rows, cols);
-                nano::set_random(rng_value, x);
+                nano::set_random(udist, rng, x);
                 return x;
         }
 
