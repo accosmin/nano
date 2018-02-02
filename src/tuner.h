@@ -89,6 +89,9 @@ namespace nano
 
         private:
 
+                trial_t explore();
+                trial_t exploit();
+                trial_t exploit(const size_t itrial);
                 string_t json(const trial_t& trial) const;
 
                 // attributes

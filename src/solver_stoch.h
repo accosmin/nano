@@ -1,5 +1,6 @@
 #pragma once
 
+#include "tuner.h"
 #include "factory.h"
 #include "function.h"
 #include "stoch/params.h"

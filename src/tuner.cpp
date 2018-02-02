@@ -38,6 +38,40 @@ string_t tuner_t::get()
 {
         assert(!m_params.empty());
 
+        const auto trial = explore();
+        m_trials.push_back(trial);
+        return json(trial);
+}
+
+tuner_t::trial_t tuner_t::explore()
+{
+        trial_t trial;
+        trial.m_values.reserve(m_params.size());
+
+        for (const auto& param : m_params)
+        {
+                switch (param.m_type)
+                {
+                case param_type::linear:
+                case param_type::base10:
+                        trial.m_values.push_back(urand(param.m_min, param.m_max, m_rng));
+                        break;
+
+                case param_type::finite:
+                        assert(!param.m_values.empty());
+                        trial.m_values.push_back(urand(param.m_values, m_rng));
+                        break;
+
+                default:
+                        assert(false);
+                }
+        }
+
+        return trial;
+}
+
+tuner_t::trial_t tuner_t::exploit()
+{
         scalars_t scores;
         for (const auto& trial : m_trials)
         {
@@ -55,61 +89,46 @@ string_t tuner_t::get()
         std::discrete_distribution<size_t> dist(scores.begin(), scores.end());
         const auto itrial = dist(m_rng);
 
-        trial_t trial;
         if (itrial < m_trials.size())
         {
                 // refine a previous trial
-                const auto& ptrial = m_trials[itrial];
-
-                const auto scale = std::pow(scalar_t(0.5), static_cast<scalar_t>(ptrial.m_depth));
-                for (size_t i = 0; i < m_params.size(); ++ i)
-                {
-                        const auto& param = m_params[i];
-                        switch (param.m_type)
-                        {
-                        case param_type::linear:
-                        case param_type::base10:
-                                trial.m_values.push_back(urand(param.m_min, param.m_max, ptrial.m_values[i], scale, m_rng));
-                                break;
-
-                        case param_type::finite:
-                                assert(!param.m_values.empty());
-                                trial.m_values.push_back(ptrial.m_values[i]);
-                                break;
-
-                        default:
-                                assert(false);
-                        }
-                }
-
-                trial.m_depth = ptrial.m_depth + 1;
+                return exploit(itrial);
         }
-
         else
         {
                 // create a new trial from scratch
-                for (const auto& param : m_params)
+                return explore();
+        }
+}
+
+tuner_t::trial_t tuner_t::exploit(const size_t itrial)
+{
+        trial_t trial;
+
+        const auto& ptrial = m_trials[itrial];
+        const auto scale = std::pow(scalar_t(0.5), static_cast<scalar_t>(ptrial.m_depth));
+
+        for (size_t i = 0; i < m_params.size(); ++ i)
+        {
+                const auto& param = m_params[i];
+                switch (param.m_type)
                 {
-                        switch (param.m_type)
-                        {
-                        case param_type::linear:
-                        case param_type::base10:
-                                trial.m_values.push_back(urand(param.m_min, param.m_max, m_rng));
-                                break;
+                case param_type::linear:
+                case param_type::base10:
+                        trial.m_values.push_back(urand(param.m_min, param.m_max, ptrial.m_values[i], scale, m_rng));
+                        break;
 
-                        case param_type::finite:
-                                assert(!param.m_values.empty());
-                                trial.m_values.push_back(urand(param.m_values, m_rng));
-                                break;
+                case param_type::finite:
+                        assert(!param.m_values.empty());
+                        trial.m_values.push_back(ptrial.m_values[i]);
+                        break;
 
-                        default:
-                                assert(false);
-                        }
+                default:
+                        assert(false);
                 }
         }
 
-        m_trials.push_back(trial);
-        return json(trial);
+        return trial;
 }
 
 void tuner_t::score(const scalar_t score)
