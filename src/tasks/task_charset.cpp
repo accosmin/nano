@@ -80,7 +80,7 @@ static void get_object_patch(const image_tensor_t& image,
 
         const auto dx = static_cast<scalar_t>(icols) / static_cast<scalar_t>(objects);
 
-        const auto x = dx * static_cast<scalar_t>(object_index) + rng();
+        const auto x = dx * static_cast<scalar_t>(object_index) + distribution(rng);
 
         const auto ppx = nano::clamp(std::lround(x), 0, icols - 1);
         const auto ppw = nano::clamp(std::lround(dx + distribution(rng)), 0, icols - ppx);
