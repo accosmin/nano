@@ -2,10 +2,9 @@ from config import *
 from experiment import *
 
 # initialize experiment:
-# - regression problem: predict the output of an affine transformation
 # - classification problem: predict the sign of a linear transformation
 cfg = config.config()
-exp = experiment(cfg.expdir + "/synth_affine_regression", trials = 10)
+exp = experiment(cfg.expdir + "/synth_affine_classification", trials = 10)
 
 isize = 16
 osize = 8
@@ -13,7 +12,7 @@ osize = 8
 exp.set_task(cfg.task_synth_affine_regression(isize = isize, osize = osize, noise = 0.0, count = 4000))
 
 # loss functions
-exp.add_loss("cauchy", cfg.loss("cauchy"))
+exp.add_loss("mlogistic", cfg.loss("m-logistic"))
 
 # trainers
 batch = 8
