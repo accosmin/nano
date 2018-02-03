@@ -21,24 +21,24 @@ patience = 100
 epsilon = 1e-6
 tune_epochs = 16
 
-exp.add_trainer("batch_gd", cfg.batch_trainer("gd", epochs, patience, epsilon))
-exp.add_trainer("batch_cgd", cfg.batch_trainer("cgd", epochs, patience, epsilon))
-exp.add_trainer("batch_lbfgs", cfg.batch_trainer("lbfgs", epochs, patience, epsilon))
+exp.add_trainer("gd", cfg.batch_trainer("gd", epochs, patience, epsilon))
+exp.add_trainer("cgd", cfg.batch_trainer("cgd", epochs, patience, epsilon))
+exp.add_trainer("lbfgs", cfg.batch_trainer("lbfgs", epochs, patience, epsilon))
 
-#exp.add_trainer("stoch_ag", cfg.stoch_trainer("ag", epochs, patience, epsilon, batch, tune_epochs))
-#exp.add_trainer("stoch_agfr", cfg.stoch_trainer("agfr", epochs, patience, epsilon, batch, tune_epochs))
-#exp.add_trainer("stoch_aggr", cfg.stoch_trainer("aggr", epochs, patience, epsilon, batch, tune_epochs))
+exp.add_trainer("ag", cfg.stoch_trainer("ag", epochs, patience, epsilon, batch, tune_epochs))
+exp.add_trainer("agfr", cfg.stoch_trainer("agfr", epochs, patience, epsilon, batch, tune_epochs))
+exp.add_trainer("aggr", cfg.stoch_trainer("aggr", epochs, patience, epsilon, batch, tune_epochs))
 
-exp.add_trainer("stoch_sg", cfg.stoch_trainer("sg", epochs, patience, epsilon, batch, tune_epochs))
-exp.add_trainer("stoch_sgm", cfg.stoch_trainer("sgm", epochs, patience, epsilon, batch, tune_epochs))
-#exp.add_trainer("stoch_ngd", cfg.stoch_trainer("ngd", epochs, patience, epsilon, batch, tune_epochs))
-#exp.add_trainer("stoch_asgd", cfg.stoch_trainer("asgd", epochs, patience, epsilon, batch, tune_epochs))
-#exp.add_trainer("stoch_svrg", cfg.stoch_trainer("svrg", epochs, patience, epsilon, batch, tune_epochs))
-#exp.add_trainer("stoch_rmsprop", cfg.stoch_trainer("rmsprop", epochs, patience, epsilon, batch, tune_epochs))
+exp.add_trainer("sg", cfg.stoch_trainer("sg", epochs, patience, epsilon, batch, tune_epochs))
+exp.add_trainer("sgm", cfg.stoch_trainer("sgm", epochs, patience, epsilon, batch, tune_epochs))
+exp.add_trainer("ngd", cfg.stoch_trainer("ngd", epochs, patience, epsilon, batch, tune_epochs))
+exp.add_trainer("asgd", cfg.stoch_trainer("asgd", epochs, patience, epsilon, batch, tune_epochs))
+exp.add_trainer("svrg", cfg.stoch_trainer("svrg", epochs, patience, epsilon, batch, tune_epochs))
+exp.add_trainer("rmsprop", cfg.stoch_trainer("rmsprop", epochs, patience, epsilon, batch, tune_epochs))
 
-#exp.add_trainer("stoch_adam", cfg.stoch_trainer("adam", epochs, patience, epsilon, batch, tune_epochs))
-#exp.add_trainer("stoch_adagrad", cfg.stoch_trainer("adagrad", epochs, patience, epsilon, batch, tune_epochs))
-#exp.add_trainer("stoch_adadelta", cfg.stoch_trainer("adadelta", epochs, patience, epsilon, batch, tune_epochs))
+exp.add_trainer("adam", cfg.stoch_trainer("adam", epochs, patience, epsilon, batch, tune_epochs))
+exp.add_trainer("adagrad", cfg.stoch_trainer("adagrad", epochs, patience, epsilon, batch, tune_epochs))
+exp.add_trainer("adadelta", cfg.stoch_trainer("adadelta", epochs, patience, epsilon, batch, tune_epochs))
 
 # models
 exp.add_model("linear", cfg.linear(imaps=isize, irows=1, icols=1, omaps=osize, orows=1, ocols=1))
@@ -47,6 +47,6 @@ exp.add_model("linear", cfg.linear(imaps=isize, irows=1, icols=1, omaps=osize, o
 exp.train_all()
 
 # compare configurations
-exp.summarize_by_trainers("stoch*")
-exp.summarize_by_trainers("batch*")
-exp.summarize_by_trainers(".*")
+exp.summarize_by_trainers("stoch", "sg|sgm|ngd|asgd|svrg|rmsprop|adam|adagrad|adadelta")
+exp.summarize_by_trainers("batch", "gd|cgd|lbfgs")
+exp.summarize_by_trainers("all", ".*")

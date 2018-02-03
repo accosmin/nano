@@ -30,10 +30,6 @@ class experiment:
                                 logging.StreamHandler()
                         ])
 
-        def reg2str(self, reg):
-                """ construct a string representation from a regular expression """
-                return reg.replace(".*", "all").replace("*", "").replace(".", "") if reg else "all"
-
         def log(self, *messages):
                 """ log messages in a nice format """
                 logging.info(' '.join(messages))
@@ -198,20 +194,17 @@ class experiment:
                 self.plot_configs(paths, ppath, names)
                 self.log()
 
-        def summarize_by_models(self, mname_reg = ".*"):
-                mname = self.reg2str(mname_reg)
+        def summarize_by_models(self, mname, mname_reg = ".*"):
                 mnames, tnames, lnames = self.filter_names(mname_reg, None, None)
                 for tname, lname in [(x, y) for x in tnames for y in lnames]:
                         self.summarize(mname, mname_reg, tname, tname, lname, lname, mnames)
 
-        def summarize_by_trainers(self, tname_reg = ".*"):
-                tname = self.reg2str(tname_reg)
+        def summarize_by_trainers(self, tname, tname_reg = ".*"):
                 mnames, tnames, lnames = self.filter_names(None, tname_reg, None)
                 for mname, lname in [(x, y) for x in mnames for y in lnames]:
                         self.summarize(mname, mname, tname, tname_reg, lname, lname, tnames)
 
-        def summarize_by_losses(self, lname_reg = ".*"):
-                lname = self.reg2str(lname_reg)
+        def summarize_by_losses(self, lname, lname_reg = ".*"):
                 mnames, tnames, lnames = self.filter_names(None, None, lname_reg)
                 for mname, tname in [(x, y) for x in mnames for y in tnames]:
                         self.summarize(mname, mname, tname, tname, lname, lname_reg, lnames)
