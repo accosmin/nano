@@ -53,7 +53,7 @@ def plot_trial(spath, ppath):
                         pdf.savefig()
                         plt.close()
                 # xnorm and gnorm
-                for col in (7, 8):
+                for col in (6, 7):
                         # x axis - epoch/iteration index
                         xname = data.dtype.names[0]
                         xlabel = xname
