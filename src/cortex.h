@@ -48,8 +48,9 @@ namespace nano
         ///
         /// \brief dataset samples composing a minibatch.
         ///
-        struct minibatch_t
+        class minibatch_t
         {
+        public:
                 minibatch_t() = default;
                 minibatch_t(const tensor_size_t count, const tensor3d_dim_t& idims, const tensor3d_dim_t& odims) :
                         m_idata(cat_dims(count, idims)),

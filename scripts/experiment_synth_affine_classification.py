@@ -9,7 +9,7 @@ exp = experiment(cfg.expdir + "/synth_affine_classification", trials = 10)
 isize = 16
 osize = 8
 
-exp.set_task(cfg.task_synth_affine_regression(isize = isize, osize = osize, noise = 0.0, count = 4000))
+exp.set_task(cfg.task_synth_affine_classification(isize = isize, osize = osize, noise = 0.0, count = 4000))
 
 # loss functions
 exp.add_loss("mlogistic", cfg.loss("m-logistic"))
