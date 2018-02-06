@@ -5,22 +5,15 @@
 
 using namespace nano;
 
-strings_t stoch_adam_t::configs() const
+tuner_t stoch_adam_t::configs() const
 {
-        strings_t configs;
-
-        for (const auto alpha0 : make_scalars(1e-3, 1e-2, 1e-1))
-        for (const auto decay : make_scalars(0.50))
-        for (const auto epsilon : make_scalars(1e-6, 1e-5, 1e-4, 1e-3, 1e-2, 1e-1))
-        for (const auto beta1 : make_scalars(0.900))
-        for (const auto beta2 : make_scalars(0.999))
-                if (nano::square(beta1) < std::sqrt(beta2))
-        {
-                configs.push_back(json_writer_t().object(
-                        "alpha0", alpha0, "decay", decay, "epsilon", epsilon, "beta1", beta1, "beta2", beta2).str());
-        }
-
-        return configs;
+        tuner_t tuner;
+        tuner.add_base10("alpha0", -4, -1);
+        tuner.add_linear("decay", 0, 1);
+        tuner.add_base10("epsilon", -6, -2);
+        tuner.add_finite("beta1", make_scalars(0.900));
+        tuner.add_finite("beta2", make_scalars(0.990, 0.999));
+        return tuner;
 }
 
 json_reader_t& stoch_adam_t::config(json_reader_t& reader)

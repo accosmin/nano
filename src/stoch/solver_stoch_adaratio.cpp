@@ -4,19 +4,13 @@
 
 using namespace nano;
 
-strings_t stoch_adaratio_t::configs() const
+tuner_t stoch_adaratio_t::configs() const
 {
-        strings_t configs;
-
-        for (const auto alpha0 : make_scalars(1e-3, 1e-2, 1e-1, 1e+0))
-        for (const auto ratio0 : make_scalars(0.01, 0.02, 0.05, 0.10))
-        for (const auto poly : make_scalars(1, 2, 3))
-        {
-                configs.push_back(json_writer_t().object(
-                        "alpha0", alpha0, "ratio0", ratio0, "poly", poly).str());
-        }
-
-        return configs;
+        tuner_t tuner;
+        tuner.add_base10("alpha0", -4, -1);
+        tuner.add_finite("ratio0", make_scalars(0.01, 0.02, 0.05, 0.10));
+        tuner.add_finite("poly", make_scalars(1, 2, 3));
+        return tuner;
 }
 
 json_reader_t& stoch_adaratio_t::config(json_reader_t& reader)

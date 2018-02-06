@@ -23,14 +23,14 @@ namespace nano
         public:
 
                 ///
-                /// \brief generate sets of hyper-parameters to tune.
+                /// \brief generate the hyper-parameters to tune.
                 ///
-                virtual strings_t configs() const = 0;
+                virtual tuner_t configs() const = 0;
 
                 ///
                 /// \brief tune its hyper-parameters to minimize the given function.
                 ///
-                solver_state_t tune(const stoch_params_t&, const function_t&, const vector_t& x0);
+                solver_state_t tune(const stoch_params_t&, const function_t&, const vector_t& x0, const size_t trials = 20);
 
                 ///
                 /// \brief minimize starting from the initial point x0.

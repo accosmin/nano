@@ -45,8 +45,12 @@ void stoch_trainer_t::tune(const task_t& task, const size_t fold, accumulator_t&
 
         // tune the hyper-parameters
         // todo: also tune the batch factor (that geometrically increases the minibatch size)
-        for (const auto& config : solver->configs())
+        // todo: also tune the L2-regularization term
+        auto tuner = solver->configs();
+        for (auto trial = 0; trial < 20; ++ trial)
         {
+                const auto config = tuner.get();
+
                 // minibatch iterator
                 auto iterator = iterator_t(task, {fold, protocol::train}, m_batch, m_batch_ratio);
 

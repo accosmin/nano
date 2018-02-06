@@ -19,7 +19,7 @@ batch = 8
 epochs = 100
 patience = 100
 epsilon = 1e-6
-tune_epochs = 10
+tune_epochs = 20
 
 exp.add_trainer("gd", cfg.batch_trainer("gd", epochs, patience, epsilon))
 exp.add_trainer("cgd", cfg.batch_trainer("cgd", epochs, patience, epsilon))

@@ -2,17 +2,11 @@
 
 using namespace nano;
 
-strings_t stoch_ngd_t::configs() const
+tuner_t stoch_ngd_t::configs() const
 {
-        strings_t configs;
-
-        for (const auto alpha0 : make_scalars(1e-6, 1e-5, 1e-4, 1e-3, 1e-2, 1e-1, 1e+0))
-        {
-                configs.push_back(json_writer_t().object(
-                        "alpha0", alpha0).str());
-        }
-
-        return configs;
+        tuner_t tuner;
+        tuner.add_base10("alpha0", -6, -1);
+        return tuner;
 }
 
 json_reader_t& stoch_ngd_t::config(json_reader_t& reader)

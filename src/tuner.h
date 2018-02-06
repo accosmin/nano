@@ -59,17 +59,22 @@ namespace nano
                 ///
                 /// \brief add a new hyper-parameter to tune
                 ///
-                void add_linear(const char* name, const scalar_t min, const scalar_t max)
+                template <typename tscalar>
+                void add_linear(const char* name, const tscalar min, const tscalar max)
                 {
-                        m_params.emplace_back(name, min, max, param_type::linear);
+                        m_params.emplace_back(
+                                name, static_cast<tscalar>(min), static_cast<tscalar>(max), param_type::linear);
                 }
-                void add_base10(const char* name, const scalar_t min, const scalar_t max)
+                template <typename tscalar>
+                void add_base10(const char* name, const tscalar min, const tscalar max)
                 {
-                        m_params.emplace_back(name, min, max, param_type::base10);
+                        m_params.emplace_back(
+                                name, static_cast<tscalar>(min), static_cast<tscalar>(max), param_type::base10);
                 }
                 void add_finite(const char* name, scalars_t values)
                 {
-                        m_params.emplace_back(name, std::move(values));
+                        m_params.emplace_back(
+                                name, std::move(values));
                 }
 
                 ///

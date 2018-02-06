@@ -3,18 +3,12 @@
 
 using namespace nano;
 
-strings_t stoch_svrg_t::configs() const
+tuner_t stoch_svrg_t::configs() const
 {
-        strings_t configs;
-
-        for (const auto alpha0 : make_scalars(1e-3, 1e-2, 1e-1, 1e+0))
-        for (const auto decay : make_scalars(0.50, 0.75, 1.00))
-        {
-                configs.push_back(json_writer_t().object(
-                        "alpha0", alpha0, "decay", decay).str());
-        }
-
-        return configs;
+        tuner_t tuner;
+        tuner.add_base10("alpha0", -4, -1);
+        tuner.add_linear("decay", 0, 1);
+        return tuner;
 }
 
 json_reader_t& stoch_svrg_t::config(json_reader_t& reader)
