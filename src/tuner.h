@@ -27,15 +27,17 @@ namespace nano
                 struct param_t
                 {
                         param_t() = default;
-                        param_t(const char* name, const scalar_t min, const scalar_t max, const param_type type) :
-                                m_name(name), m_min(min), m_max(max), m_type(type) {}
-                        param_t(const char* name, scalars_t&& values) :
-                                m_name(name), m_values(std::move(values)), m_type(param_type::finite) {}
+                        param_t(const char* name, const scalar_t min, const scalar_t max, const scalar_t offset,
+                                scalars_t&& values, param_type type) :
+                                m_name(name), m_min(min), m_max(max), m_offset(offset), m_values(values), m_type(type)
+                        {
+                        }
 
                         // attributes
                         const char*     m_name{nullptr};
                         scalar_t        m_min{0};
                         scalar_t        m_max{0};
+                        scalar_t        m_offset{0};
                         scalars_t       m_values;
                         param_type      m_type{param_type::linear};
                 };
@@ -62,19 +64,18 @@ namespace nano
                 template <typename tscalar>
                 void add_linear(const char* name, const tscalar min, const tscalar max)
                 {
-                        m_params.emplace_back(
-                                name, static_cast<tscalar>(min), static_cast<tscalar>(max), param_type::linear);
+                        m_params.emplace_back(name, static_cast<scalar_t>(min), static_cast<scalar_t>(max),
+                                scalar_t(0), scalars_t{}, param_type::linear);
                 }
                 template <typename tscalar>
-                void add_base10(const char* name, const tscalar min, const tscalar max)
+                void add_base10(const char* name, const tscalar min, const tscalar max, const tscalar offset = tscalar(0))
                 {
-                        m_params.emplace_back(
-                                name, static_cast<tscalar>(min), static_cast<tscalar>(max), param_type::base10);
+                        m_params.emplace_back(name, static_cast<scalar_t>(min), static_cast<scalar_t>(max),
+                                static_cast<scalar_t>(offset), scalars_t{}, param_type::base10);
                 }
                 void add_finite(const char* name, scalars_t values)
                 {
-                        m_params.emplace_back(
-                                name, std::move(values));
+                        m_params.emplace_back(name, 0, 0, 0, std::move(values), param_type::finite);
                 }
 
                 ///

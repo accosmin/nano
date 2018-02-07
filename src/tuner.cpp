@@ -160,7 +160,7 @@ string_t tuner_t::json(const trial_t& trial) const
                 {
                 case param_type::linear:        writer.pair(param.m_name, value); break;
                 case param_type::finite:        writer.pair(param.m_name, value); break;
-                case param_type::base10:        writer.pair(param.m_name, std::pow(scalar_t(10), value)); break;
+                case param_type::base10:        writer.pair(param.m_name, param.m_offset + std::pow(scalar_t(10), value)); break;
                 default:                        assert(false);
                 }
 
