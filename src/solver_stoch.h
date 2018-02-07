@@ -94,7 +94,7 @@ namespace nano
                                 }
 
                                 // check if the function value actually decreases (e.g. parameters need more tuning)
-                                else if (prevf < fstate.f + param.m_epsilon)
+                                else if (prevf < fstate.f)
                                 {
                                         fstate.m_status = opt_status::failed;
                                         break;
