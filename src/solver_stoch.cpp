@@ -14,14 +14,16 @@
 using namespace nano;
 
 solver_state_t stoch_solver_t::tune(const stoch_params_t& params, const function_t& function, const vector_t& x0,
-        const size_t trials)
+        const size_t trials_per_parameter)
 {
         solver_state_t best_state;
         string_t best_config;
 
+        auto tuner = this->configs();
+        const auto trials = trials_per_parameter * tuner.n_params();
+
         // try all possible configurations
         // todo: put back in place the previous coarse-to-fine approach to tuning (e.g. search in log10-space)
-        auto tuner = this->configs();
         for (size_t trial = 0; trial < trials; ++ trial)
         {
                 const auto config = tuner.get();

@@ -30,7 +30,8 @@ namespace nano
                 ///
                 /// \brief tune its hyper-parameters to minimize the given function.
                 ///
-                solver_state_t tune(const stoch_params_t&, const function_t&, const vector_t& x0, const size_t trials = 20);
+                solver_state_t tune(const stoch_params_t&, const function_t&, const vector_t& x0,
+                        const size_t trials_per_parameter = 10);
 
                 ///
                 /// \brief minimize starting from the initial point x0.
@@ -83,11 +84,19 @@ namespace nano
                                 }
 
                                 // check convergence (using the full gradient)
+                                const auto prevf = fstate.f;
                                 snapshot(cstate, fstate);
                                 if (fstate.converged(param.m_epsilon))
                                 {
                                         fstate.m_status = opt_status::converged;
                                         param.ulog(fstate);
+                                        break;
+                                }
+
+                                // check if the function value actually decreases (e.g. parameters need more tuning)
+                                else if (prevf < fstate.f + param.m_epsilon)
+                                {
+                                        fstate.m_status = opt_status::failed;
                                         break;
                                 }
 

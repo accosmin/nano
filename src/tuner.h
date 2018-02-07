@@ -92,6 +92,11 @@ namespace nano
                 ///
                 string_t optimum() const;
 
+                ///
+                /// \brief returns the number of parameters to tune
+                ///
+                auto n_params() const { return m_params.size(); }
+
         private:
 
                 trial_t explore();
