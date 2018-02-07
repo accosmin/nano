@@ -47,6 +47,6 @@ exp.add_model("linear", cfg.linear(imaps=isize, irows=1, icols=1, omaps=osize, o
 exp.train_all()
 
 # compare configurations
-exp.summarize_by_trainers("stoch", "sg|sgm|ngd|asgd|svrg|rmsprop|adam|adagrad|adadelta")
+exp.summarize_by_trainers("stoch", "ag|agfr|aggr|sg|sgm|ngd|asgd|svrg|rmsprop|adam|adagrad|adadelta")
 exp.summarize_by_trainers("batch", "gd|cgd|lbfgs")
 exp.summarize_by_trainers("all", ".*")
