@@ -11,8 +11,8 @@ tuner_t stoch_adam_t::configs() const
         tuner.add_base10("alpha0", -4, -1);
         tuner.add_linear("decay", 0, 1);
         tuner.add_base10("epsilon", -6, -2);
-        tuner.add_linear("beta1", 0.1, 0.9);
-        tuner.add_base10("beta2", -6.0, -0.1, 0.9);
+        tuner.add_finite("beta1", make_scalars(0.900));
+        tuner.add_finite("beta2", make_scalars(0.990, 0.999));
         return tuner;
 }
 
