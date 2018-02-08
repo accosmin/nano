@@ -70,6 +70,7 @@ void accumulator_t::update(const task_t& task, const fold_t& fold)
 
 void accumulator_t::update(const task_t& task, const fold_t& fold, const size_t begin, const size_t end)
 {
+        assert(begin <= end);
         switch (thread_pool_t::instance().active_workers())
         {
         case 1:
@@ -85,8 +86,8 @@ void accumulator_t::update(const task_t& task, const fold_t& fold, const size_t 
                 loopit(end - begin, m_batch, [&] (const size_t ibegin, const size_t iend, const size_t thread)
                 {
                         assert(thread < m_tcaches.size());
-                        assert(begin <= ibegin && ibegin < iend && iend <= end);
-                        update(m_tcaches[thread], task.get(fold, ibegin, iend));
+                        assert(ibegin < iend && iend + begin <= end);
+                        update(m_tcaches[thread], task.get(fold, begin + ibegin, begin + iend));
                 });
                 accumulate();
                 break;
