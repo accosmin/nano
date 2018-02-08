@@ -47,6 +47,12 @@ void accumulator_t::mode(const accumulator_t::type t)
         clear();
 }
 
+void accumulator_t::lambda(const scalar_t lambda)
+{
+        m_lambda = lambda;
+        clear();
+}
+
 void accumulator_t::threads(const size_t nthreads)
 {
         thread_pool_t::instance().activate(nthreads);
@@ -148,10 +154,16 @@ const stats_t<scalar_t>& accumulator_t::estats() const
         return origin().m_estats;
 }
 
+scalar_t accumulator_t::value() const
+{
+        assert(vstats().count() > 0);
+        return vstats().avg() + (m_lambda / 2) * params().squaredNorm();
+}
+
 vector_t accumulator_t::vgrad() const
 {
         assert(vstats().count() > 0);
-        return origin().m_vgrad / vstats().count();
+        return origin().m_vgrad / vstats().count() + m_lambda * params();
 }
 
 tensor_size_t accumulator_t::psize() const

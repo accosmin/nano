@@ -40,6 +40,7 @@ namespace nano
                 ///
                 void random();
                 void mode(const type);
+                void lambda(const scalar_t l2reg);
                 void threads(const size_t nthreads);
                 void params(const vector_t& params);
                 void minibatch(const size_t minibatch_size);
@@ -59,6 +60,11 @@ namespace nano
                 /// \brief current parameters
                 ///
                 const vector_t& params() const;
+
+                ///
+                /// \brief cumulate loss value
+                ///
+                scalar_t value() const;
 
                 ///
                 /// \brief cumulated gradient
@@ -118,5 +124,6 @@ namespace nano
                 const loss_t&           m_loss;         ///<
                 std::vector<tcache_t>   m_tcaches;      ///< cache / thread
                 size_t                  m_batch{1024};  ///< maximum number of samples to process at once / thread
+                scalar_t                m_lambda;       ///< L2-regularization term
         };
 }
