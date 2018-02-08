@@ -13,7 +13,7 @@ json_reader_t& stoch_trainer_t::config(json_reader_t& reader)
         return reader.object("solver", m_solver,
                 "tune_epochs", m_tune_epochs, "epochs", m_epochs,
                 "batch", m_batch, "batch_ratio", m_batch_ratio,
-                "eps", m_epsilon, "patience", m_patience);
+                "epsilon", m_epsilon, "patience", m_patience);
 }
 
 json_writer_t& stoch_trainer_t::config(json_writer_t& writer) const
@@ -21,7 +21,7 @@ json_writer_t& stoch_trainer_t::config(json_writer_t& writer) const
         return writer.object("solver", m_solver, "solvers", join(get_stoch_solvers().ids()),
                 "tune_epochs", m_tune_epochs, "epochs", m_epochs,
                 "batch", m_batch, "batch_ratio", m_batch_ratio,
-                "eps", m_epsilon, "patience", m_patience);
+                "epsilon", m_epsilon, "patience", m_patience);
 }
 
 size_t stoch_trainer_t::epoch_size(const task_t& task, const size_t fold) const
@@ -43,11 +43,13 @@ void stoch_trainer_t::tune(const task_t& task, const size_t fold, accumulator_t&
         trainer_result_t opt_result;
         const auto param0 = acc.params();
 
+        auto tuner = solver->configs();
+        const auto trials = 10 * tuner.n_params();
+
         // tune the hyper-parameters
         // todo: also tune the batch factor (that geometrically increases the minibatch size)
         // todo: also tune the L2-regularization term
-        auto tuner = solver->configs();
-        for (auto trial = 0; trial < 20; ++ trial)
+        for (size_t trial = 0; trial < trials; ++ trial)
         {
                 const auto config = tuner.get();
 

@@ -48,8 +48,8 @@ NANO_CASE(tune_and_train_regression)
                 }
 
                 trainer->config(json_writer_t().object(
-                        "tune_epochs", 8, "epochs", 128, "batch", 1, "solver", solver,
-                        "eps", epsilon1<scalar_t>()).str());
+                        "tune_epochs", 10, "epochs", 100, "batch", 1, "solver", solver,
+                        "epsilon", epsilon1<scalar_t>()).str());
 
                 accumulator_t acc(model, *loss);
                 acc.threads(1);
@@ -105,8 +105,8 @@ NANO_CASE(tune_and_train_classification)
                 }
 
                 trainer->config(json_writer_t().object(
-                        "tune_epochs", 8, "epochs", 128, "batch", 1, "solver", solver,
-                        "eps", epsilon1<scalar_t>()).str());
+                        "tune_epochs", 10, "epochs", 100, "batch", 1, "solver", solver,
+                        "epsilon", epsilon1<scalar_t>()).str());
 
                 accumulator_t acc(model, *loss);
                 acc.threads(1);

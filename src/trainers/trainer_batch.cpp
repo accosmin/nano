@@ -10,14 +10,14 @@ using namespace nano;
 
 json_reader_t& batch_trainer_t::config(json_reader_t& reader)
 {
-        return reader.object("solver", m_solver, "epochs", m_epochs, "eps", m_epsilon, "patience", m_patience);
+        return reader.object("solver", m_solver, "epochs", m_epochs, "epsilon", m_epsilon, "patience", m_patience);
 }
 
 json_writer_t& batch_trainer_t::config(json_writer_t& writer) const
 {
         return writer.object(
                 "solver", m_solver, "solvers", join(get_batch_solvers().ids()),
-                "epochs", m_epochs, "eps", m_epsilon, "patience", m_patience);
+                "epochs", m_epochs, "epsilon", m_epsilon, "patience", m_patience);
 }
 
 void batch_trainer_t::tune(const task_t&, const size_t, accumulator_t&)
