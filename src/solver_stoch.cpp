@@ -3,7 +3,6 @@
 #include "stoch/solver_stoch_adam.h"
 #include "stoch/solver_stoch_adagrad.h"
 #include "stoch/solver_stoch_adadelta.h"
-#include "stoch/solver_stoch_adaratio.h"
 #include "stoch/solver_stoch_ngd.h"
 #include "stoch/solver_stoch_sg.h"
 #include "stoch/solver_stoch_sgm.h"
@@ -60,7 +59,6 @@ stoch_solver_factory_t& nano::get_stoch_solvers()
                 manager.add<stoch_adagrad_t>("adagrad", "AdaGrad (see citation)");
                 manager.add<stoch_adadelta_t>("adadelta", "AdaDelta (see citation)");
                 manager.add<stoch_rmsprop_t>("rmsprop", "RMSProp (see citation)");
-                manager.add<stoch_adaratio_t>("adaratio", "AdaRatio (!)");
         });
 
         return manager;
