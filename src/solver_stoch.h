@@ -97,6 +97,7 @@ namespace nano
                                 else if (prevf < fstate.f)
                                 {
                                         fstate.m_status = opt_status::failed;
+                                        param.ulog(fstate);
                                         break;
                                 }
 
