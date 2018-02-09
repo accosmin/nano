@@ -129,11 +129,9 @@ NANO_CASE(graph_cyclic)
 NANO_CASE(evaluate)
 {
         // setup synthetic task
-        json_writer_t writer;
-        writer.object("type", "digit", "color", "luma", "irows", 16, "icols", 16, "count", 128);
-
-        const auto task = get_tasks().get("synth-charset");
-        task->config(writer.str());
+        const auto task = get_tasks().get("synth-peak2d");
+        NANO_REQUIRE(task);
+        task->config(json_writer_t().object("type", "classification", "irows", 16, "icols", 16, "count", 128).str());
         NANO_CHECK(task->load());
 
         const auto omaps = std::get<0>(task->odims());

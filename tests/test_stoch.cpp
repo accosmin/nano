@@ -37,7 +37,7 @@ static void check_function(const function_t& function)
                         const auto params = stoch_params_t(epochs, epoch_size, epsilon3<scalar_t>());
                         const auto tune_params = stoch_params_t(tune_epochs, epoch_size, epsilon3<scalar_t>());
 
-                        const auto tstate = solver->tune(tune_params, function, x0, 20u);
+                        const auto tstate = solver->tune(tune_params, function, x0);
                         const auto state = solver->minimize(params, function, tstate.x);
 
                         const auto x = state.x;

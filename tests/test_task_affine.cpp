@@ -4,34 +4,32 @@
 
 using namespace nano;
 
-static auto get_task(const tensor_size_t isize, const tensor_size_t osize, const scalar_t noise, const size_t count)
-{
-        auto task = get_tasks().get("synth-affine");
-        NANO_REQUIRE(task);
-        task->config(json_writer_t().object("isize", isize, "osize", osize, "noise", noise, "count", count).str());
-        return task;
-}
-
 NANO_BEGIN_MODULE(test_task_affine)
 
-NANO_CASE(construction)
+NANO_CASE(regression)
 {
-        auto task = get_task(11, 13, 0, 132);
+        const auto isize = 11;
+        const auto osize = 13;
+        const auto count = 132;
+
+        const auto config = json_writer_t().object(
+                "type", "regression", "isize", isize, "osize", osize, "noise", 0, "count", count).str();
+
+        auto task = get_tasks().get("synth-affine");
+        NANO_REQUIRE(task);
+        task->config(config);
         NANO_CHECK(task->load());
 
-        const auto idims = tensor3d_dim_t{11, 1, 1};
-        const auto odims = tensor3d_dim_t{13, 1, 1};
-
-        NANO_CHECK_EQUAL(task->idims(), idims);
-        NANO_CHECK_EQUAL(task->odims(), odims);
+        NANO_CHECK_EQUAL(task->idims(), make_dims(isize, 1, 1));
+        NANO_CHECK_EQUAL(task->odims(), make_dims(osize, 1, 1));
         NANO_CHECK_EQUAL(task->fsize(), size_t(1));
-        NANO_CHECK_EQUAL(task->size(), size_t(132));
+        NANO_CHECK_EQUAL(task->size(), size_t(count));
 
         NANO_CHECK_EQUAL(
                 task->size({0, protocol::train}) +
                 task->size({0, protocol::valid}) +
                 task->size({0, protocol::test}),
-                size_t(132));
+                size_t(count));
 
         for (const auto p : {protocol::train, protocol::valid, protocol::test})
         {
@@ -42,8 +40,8 @@ NANO_CASE(construction)
                         const auto& input = sample.idata(0);
                         const auto& target = sample.odata(0);
 
-                        NANO_CHECK_EQUAL(input.dims(), idims);
-                        NANO_CHECK_EQUAL(target.dims(), odims);
+                        NANO_CHECK_EQUAL(input.dims(), make_dims(isize, 1, 1));
+                        NANO_CHECK_EQUAL(target.dims(), make_dims(osize, 1, 1));
                 }
         }
 

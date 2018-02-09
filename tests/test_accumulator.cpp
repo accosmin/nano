@@ -10,8 +10,9 @@ NANO_BEGIN_MODULE(test_accumulator)
 
 NANO_CASE(evaluate)
 {
-        const auto task = get_tasks().get("synth-charset");
-        task->config(json_writer_t().object("count", 64).str());
+        const auto task = get_tasks().get("synth-affine");
+        NANO_REQUIRE(task);
+        task->config(json_writer_t().object("isize", 7, "osize", 3, "count", 64).str());
         NANO_CHECK(task->load());
 
         const auto omaps = std::get<0>(task->odims());
@@ -80,8 +81,9 @@ NANO_CASE(evaluate)
 
 NANO_CASE(regularization)
 {
-        const auto task = get_tasks().get("synth-charset");
-        task->config(json_writer_t().object("count", 64).str());
+        const auto task = get_tasks().get("synth-affine");
+        NANO_REQUIRE(task);
+        task->config(json_writer_t().object("isize", 7, "osize", 3, "count", 64).str());
         NANO_CHECK(task->load());
 
         const auto omaps = std::get<0>(task->odims());
