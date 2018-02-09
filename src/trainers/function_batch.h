@@ -28,7 +28,7 @@ namespace nano
                         {
                                 *gx = m_accumulator.vgrad();
                         }
-                        return m_accumulator.vstats().avg();
+                        return m_accumulator.value();
                 }
 
         private:
