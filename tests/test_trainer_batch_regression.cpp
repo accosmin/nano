@@ -23,6 +23,8 @@ NANO_CASE(tune_and_train)
                 "isize", isize, "osize", osize,
                 "noise", 0, "count", 100, "type", affine_task_type::regression).str());
         NANO_REQUIRE(task->load());
+        NANO_REQUIRE_EQUAL(task->idims(), make_dims(isize, 1, 1));
+        NANO_REQUIRE_EQUAL(task->odims(), make_dims(osize, 1, 1));
 
         // create loss
         const auto loss = get_losses().get("square");
