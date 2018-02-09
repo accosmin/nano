@@ -124,6 +124,6 @@ namespace nano
                 const loss_t&           m_loss;         ///<
                 std::vector<tcache_t>   m_tcaches;      ///< cache / thread
                 size_t                  m_batch{1024};  ///< maximum number of samples to process at once / thread
-                scalar_t                m_lambda;       ///< L2-regularization term
+                scalar_t                m_lambda{0};    ///< L2-regularization term
         };
 }
