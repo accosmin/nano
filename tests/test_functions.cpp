@@ -34,7 +34,7 @@ NANO_CASE(evaluate)
                         if (    function.is_valid(x0) && std::isfinite(function.eval(x0)) &&
                                 function.is_valid(x1) && std::isfinite(function.eval(x1)))
                         {
-                                NANO_CHECK_LESS(function.grad_accuracy(x0), epsilon3<scalar_t>());
+                                NANO_CHECK_LESS(function.grad_accuracy(x0), 10 * epsilon2<scalar_t>());
                                 if (function.is_convex())
                                 {
                                         NANO_CHECK(function.is_convex(x0, x1, 20));
