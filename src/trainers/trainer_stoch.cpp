@@ -102,6 +102,7 @@ void stoch_trainer_t::tune(const task_t& task, const size_t fold, accumulator_t&
                 }
         }
 
+        assert(opt_result);
         log_info() << std::setprecision(3)
                 << "<<< stoch-" << m_solver << "[tuned]: " << opt_result << "," << timer.elapsed() << ".";
 }
@@ -164,6 +165,7 @@ trainer_result_t stoch_trainer_t::train(const task_t& task, const size_t fold, a
                 solver->minimize(params, function, acc.params());
         }
 
+        assert(result);
         log_info() << std::setprecision(3) << "<<< stoch-" << m_solver << ": " << result << "," << timer.elapsed() << ".";
         return result;
 }

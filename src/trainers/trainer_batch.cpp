@@ -84,6 +84,7 @@ trainer_result_t batch_trainer_t::train(const task_t& task, const size_t fold, a
                 solver->minimize(params, function, acc.params());
         }
 
+        assert(result);
         log_info() << std::setprecision(3) << "<<< batch-" << m_solver << ": " << result << "," << timer.elapsed() << ".";
         return result;
 }
