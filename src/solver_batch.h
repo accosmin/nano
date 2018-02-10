@@ -52,6 +52,7 @@ namespace nano
                                 if (!solver(cstate, i) || !cstate)
                                 {
                                         cstate.m_status = opt_status::failed;
+                                        params.ulog(cstate);
                                         break;
                                 }
 

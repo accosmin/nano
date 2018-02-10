@@ -80,6 +80,7 @@ namespace nano
                                 if (!cstate)
                                 {
                                         fstate.m_status = opt_status::failed;
+                                        param.ulog(fstate);
                                         break;
                                 }
 
