@@ -7,8 +7,8 @@
 
 using namespace nano;
 
-trainer_result_t::trainer_result_t(const string_t& config) :
-        m_config(config)
+trainer_result_t::trainer_result_t(string_t config) :
+        m_config(std::move(config))
 {
 }
 

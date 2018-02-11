@@ -16,14 +16,11 @@ spinner()
         printf "      \r"
 }
 
-checks="clang-tidy-cert
-        clang-tidy-misc
+checks="clang-tidy-misc
         clang-tidy-bugprone
         clang-tidy-modernize
         clang-tidy-performance
-        clang-tidy-readability
-        clang-tidy-clang-analyzer
-        clang-tidy-cppcoreguidelines"
+        clang-tidy-clang-analyzer"
 #        clang-tidy-cert
 #        clang-tidy-readability
 #        clang-tidy-cppcoreguidelines"

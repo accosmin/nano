@@ -52,7 +52,7 @@ namespace nano
                 /// \brief constructor
                 ///
                 trainer_result_t() = default;
-                explicit trainer_result_t(const string_t& config);
+                explicit trainer_result_t(string_t config);
 
                 ///
                 /// \brief update the current/optimum state with a possible better state
