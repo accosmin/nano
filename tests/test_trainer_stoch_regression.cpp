@@ -65,7 +65,6 @@ NANO_CASE(tune_and_train)
                 NANO_REQUIRE(result);
 
                 const auto state = *result.history().rbegin();
-                NANO_CHECK_LESS(state.m_train.m_value, epsilon1<scalar_t>());
                 NANO_CHECK_LESS(state.m_train.m_error, epsilon2<scalar_t>());
         }
 }
