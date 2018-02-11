@@ -54,6 +54,7 @@ NANO_CASE(tune_and_train)
                         "epsilon", epsilon1<scalar_t>()).str());
 
                 accumulator_t acc(model, *loss);
+                acc.mode(accumulator_t::type::vgrad);
                 acc.threads(1);
 
                 acc.random();
