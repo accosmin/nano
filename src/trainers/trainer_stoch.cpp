@@ -1,4 +1,5 @@
 #include "model.h"
+#include "utils.h"
 #include "math/numeric.h"
 #include "solver_stoch.h"
 #include "trainer_stoch.h"
@@ -37,6 +38,7 @@ void stoch_trainer_t::tune(const task_t& task, const size_t fold, accumulator_t&
         {
                 assert(solver);
                 log_error() << "unknown solver [" << m_solver << "]!";
+                return;
         }
 
         const timer_t timer;
@@ -64,14 +66,9 @@ void stoch_trainer_t::tune(const task_t& task, const size_t fold, accumulator_t&
                 {
                         // evaluate the current state
                         // NB: the training state is already estimated!
-                        const auto train = trainer_measurement_t{acc.vstats().avg(), acc.estats().avg()};
-
-                        acc.params(state.x);
-                        acc.mode(accumulator_t::type::value);
-                        acc.update(task, {fold, protocol::valid});
-                        const auto valid = trainer_measurement_t{acc.vstats().avg(), acc.estats().avg()};
-
-                        const auto test = valid;
+                        const auto train = measure(acc);
+                        const auto valid = measure(state.x, task, {fold, protocol::valid}, acc);
+                        const auto test  = valid;
 
                         // OK, update the optimum solution
                         const auto milis = timer.milliseconds();
@@ -122,17 +119,9 @@ trainer_result_t stoch_trainer_t::train(const task_t& task, const size_t fold, a
         {
                 // evaluate the current state
                 // NB: the training state is already estimated!
-                const auto train = trainer_measurement_t{acc.vstats().avg(), acc.estats().avg()};
-
-                acc.params(state.x);
-                acc.mode(accumulator_t::type::value);
-                acc.update(task, {fold, protocol::valid});
-                const auto valid = trainer_measurement_t{acc.vstats().avg(), acc.estats().avg()};
-
-                acc.params(state.x);
-                acc.mode(accumulator_t::type::value);
-                acc.update(task, {fold, protocol::test});
-                const auto test = trainer_measurement_t{acc.vstats().avg(), acc.estats().avg()};
+                const auto train = measure(acc);
+                const auto valid = measure(state.x, task, {fold, protocol::valid}, acc);
+                const auto test  = measure(state.x, task, {fold, protocol::test}, acc);
 
                 // OK, update the optimum solution
                 const auto milis = timer.milliseconds();

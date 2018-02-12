@@ -1,8 +1,9 @@
 #include "model.h"
+#include "utils.h"
 #include "math/numeric.h"
+#include "solver_batch.h"
 #include "trainer_batch.h"
 #include "function_batch.h"
-#include "solver_batch.h"
 #include "logger.h"
 #include <iomanip>
 
@@ -41,17 +42,9 @@ trainer_result_t batch_trainer_t::train(const task_t& task, const size_t fold, a
         {
                 // evaluate the current state
                 // NB: the training state is already estimated!
-                const auto train = trainer_measurement_t{acc.vstats().avg(), acc.estats().avg()};
-
-                acc.params(state.x);
-                acc.mode(accumulator_t::type::value);
-                acc.update(task, {fold, protocol::valid});
-                const auto valid = trainer_measurement_t{acc.vstats().avg(), acc.estats().avg()};
-
-                acc.params(state.x);
-                acc.mode(accumulator_t::type::value);
-                acc.update(task, {fold, protocol::test});
-                const auto test = trainer_measurement_t{acc.vstats().avg(), acc.estats().avg()};
+                const auto train = measure(acc);
+                const auto valid = measure(state.x, task, {fold, protocol::valid}, acc);
+                const auto test  = measure(state.x, task, {fold, protocol::test}, acc);
 
                 // OK, update the optimum solution
                 const auto milis = timer.milliseconds();
