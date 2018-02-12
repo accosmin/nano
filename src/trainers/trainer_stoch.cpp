@@ -46,6 +46,7 @@ static trainer_result_t train(const task_t& task, const size_t fold, accumulator
                         << (tuning ? "tune[" : "[") << epoch << "/" << epochs
                         << ":train=" << train
                         << ",valid=" << valid << "|" << nano::to_string(ret)
+                        << ",test=" << test
                         << "," << config << ",g=" << gnorm << ",x=" << xnorm
                         << "]" << timer.elapsed() << ".";
 
@@ -64,15 +65,13 @@ static trainer_result_t train(const task_t& task, const size_t fold, accumulator
 json_reader_t& stoch_trainer_t::config(json_reader_t& reader)
 {
         return reader.object("solver", m_solver,
-                "tune_epochs", m_tune_epochs, "epochs", m_epochs,
-                "epsilon", m_epsilon, "patience", m_patience);
+                "epochs", m_epochs, "epsilon", m_epsilon, "patience", m_patience);
 }
 
 json_writer_t& stoch_trainer_t::config(json_writer_t& writer) const
 {
         return writer.object("solver", m_solver, "solvers", join(get_stoch_solvers().ids()),
-                "tune_epochs", m_tune_epochs, "epochs", m_epochs,
-                "epsilon", m_epsilon, "patience", m_patience);
+                "epochs", m_epochs, "epsilon", m_epsilon, "patience", m_patience);
 }
 
 void stoch_trainer_t::tune(const task_t& task, const size_t fold, accumulator_t& acc)
@@ -93,7 +92,7 @@ void stoch_trainer_t::tune(const task_t& task, const size_t fold, accumulator_t&
         {
                 acc.params(params);
                 const auto config = tuner.get();
-                const auto epochs = m_tune_epochs;
+                const auto epochs = m_epochs;
                 const auto result = ::train(task, fold, acc, solver, config, epochs, m_epsilon, m_patience, timer, true);
 
                 // check if an improvement

@@ -69,13 +69,12 @@ class config:
                 """ available batch (line-search) solvers """
                 return ["gd", "cgd", "lbfgs"]
 
-        def stoch_trainer(self, solver, epochs = 100, patience = 32, epsilon = 1e-6, batch = 32, tune_epochs = 8):
+        def stoch_trainer(self, solver, epochs = 100, patience = 10, epsilon = 1e-6):
                 """ create a stochastic trainer """
                 assert(solver in self.stoch_solvers())
-                return {"trainer": "stoch", "solver": solver, "epochs": epochs, "patience": patience, "epsilon": epsilon,
-                        "batch": batch, "tune_epochs": tune_epochs}
+                return {"trainer": "stoch", "solver": solver, "epochs": epochs, "patience": patience, "epsilon": epsilon}
 
-        def batch_trainer(self, solver, epochs = 100, patience = 32, epsilon = 1e-6):
+        def batch_trainer(self, solver, epochs = 100, patience = 10, epsilon = 1e-6):
                 """ create a batch trainer """
                 assert(solver in self.batch_solvers())
                 return {"trainer": "batch", "solver": solver, "epochs": epochs, "patience": patience, "epsilon": epsilon}

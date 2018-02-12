@@ -24,5 +24,6 @@ namespace nano
                 size_t          m_epochs{1024};
                 size_t          m_patience{32};
                 scalar_t        m_epsilon{static_cast<scalar_t>(1e-6)};
+                string_t        m_tuned_config;         ///< tuned hyper-parameters (solver + minibatch)
         };
 }

@@ -50,8 +50,7 @@ NANO_CASE(tune_and_train)
                 }
 
                 trainer->config(json_writer_t().object(
-                        "tune_epochs", 10, "epochs", 100, "batch", 1, "solver", solver,
-                        "epsilon", epsilon1<scalar_t>()).str());
+                        "epochs", 100, "solver", solver, "epsilon", epsilon1<scalar_t>()).str());
 
                 accumulator_t acc(model, *loss);
                 acc.mode(accumulator_t::type::vgrad);
