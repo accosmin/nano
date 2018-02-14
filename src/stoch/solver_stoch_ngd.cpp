@@ -6,7 +6,7 @@ using namespace nano;
 tuner_t stoch_ngd_t::configs() const
 {
         tuner_t tuner;
-        tuner.add_base10("alpha0", -6, -1);
+        tuner.add_base10("alpha0", -6, 0);
         tuner.add_linear("decay", 0, 1);
         return tuner;
 }
