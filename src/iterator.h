@@ -23,17 +23,6 @@ namespace nano
                 }
 
                 ///
-                /// \brief change minibatch size
-                ///
-                void reset(const size_t batch0, const scalar_t factor = scalar_t(1))
-                {
-                        m_batch = static_cast<scalar_t>(batch0);
-                        m_factor = factor;
-                        m_begin = m_end = 0;
-                        next();
-                }
-
-                ///
                 /// \brief advance to the next minibatch by wrapping the fold if the end is reached
                 /// NB: shuffles the task if the end is reached
                 ///

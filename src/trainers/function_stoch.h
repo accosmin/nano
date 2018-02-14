@@ -58,6 +58,6 @@ namespace nano
                 accumulator_t&          m_accumulator;  ///< function value and gradient accumulator
                 const task_t&           m_task;         ///<
                 const fold_t            m_fold;         ///<
-                iterator_t&             m_iterator;    ///<
+                iterator_t&             m_iterator;     ///<
         };
 }
