@@ -12,7 +12,7 @@ using namespace nano;
 static trainer_result_t train(const task_t& task, const size_t fold, accumulator_t& acc,
         const rstoch_solver_t& solver, const string_t& config,
         const size_t epochs, const scalar_t epsilon, const size_t patience,
-        const timer_t& timer, const bool tuning)
+        const nano::timer_t& timer, const bool tuning)
 {
         assert(solver);
 
@@ -55,7 +55,7 @@ static trainer_result_t train(const task_t& task, const size_t fold, accumulator
 
         // assembly optimization function & train the model
         const auto function = stoch_function_t(acc, task, iterator);
-        const auto params = stoch_params_t{epochs, epoch_size(task, fold, batch), epsilon, fn_ulog};
+        const auto params = stoch_params_t{epochs, epsilon, fn_ulog};
         solver->minimize(params, function, acc.params());
 
         // OK
@@ -87,7 +87,7 @@ void stoch_trainer_t::tune(const task_t& task, const size_t fold, accumulator_t&
         tuner.add_finite("batch", make_scalars(1 * cores, 2 * cores, 4 * cores, 8 * cores, 16 * cores, 32 * cores));
         const auto trials = 10 * tuner.n_params();
 
-        // tune the hyper-parameters: solver + minibatch
+        // tune the hyper-parameters: solver + minibatch increase ratio
         for (size_t trial = 0; trial < trials; ++ trial)
         {
                 acc.params(params);

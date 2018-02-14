@@ -71,7 +71,8 @@ namespace nano
                         for (size_t e = 0; e < param.m_max_epochs; ++ e)
                         {
                                 // for each iteration ...
-                                for (size_t i = 0; i < param.m_epoch_size && cstate; ++ i)
+                                const auto gcalls = function.gcalls();
+                                while (function.gcalls() <= gcalls && cstate)
                                 {
                                         solver(cstate, fstate);
                                 }
@@ -85,19 +86,10 @@ namespace nano
                                 }
 
                                 // check convergence (using the full gradient)
-                                const auto prevf = fstate.f;
                                 snapshot(cstate, fstate);
                                 if (fstate.converged(param.m_epsilon))
                                 {
                                         fstate.m_status = opt_status::converged;
-                                        param.ulog(fstate);
-                                        break;
-                                }
-
-                                // check if the function value actually decreases (e.g. parameters need more tuning)
-                                else if (prevf < fstate.f)
-                                {
-                                        fstate.m_status = opt_status::failed;
                                         param.ulog(fstate);
                                         break;
                                 }

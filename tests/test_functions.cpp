@@ -18,9 +18,10 @@ NANO_CASE(evaluate)
                 const auto dims = function.size();
                 NANO_CHECK_LESS_EQUAL(dims, 4);
                 NANO_CHECK_GREATER_EQUAL(dims, 1);
-                NANO_CHECK_EQUAL(function.stoch_ratio(), 1u);
                 NANO_CHECK_GREATER_EQUAL(dims, function.min_size());
                 NANO_CHECK_GREATER_EQUAL(function.max_size(), dims);
+                NANO_CHECK_EQUAL(function.fcalls(), 0u);
+                NANO_CHECK_EQUAL(function.gcalls(), 0u);
 
                 auto rng = make_rng();
                 auto udist = make_udist<scalar_t>(-10, +10);

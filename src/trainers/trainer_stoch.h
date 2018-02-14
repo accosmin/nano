@@ -7,6 +7,10 @@ namespace nano
         ///
         /// \brief stochastic trainer: each gradient update is computed for a random sub-set of samples.
         ///
+        /// NB: the minibatch size if increased geometrically as described here:
+        ///     "Optimization Methods for Large-Scale Machine Learning",
+        ///             by Bottou, Curtis & Nocedal, p. 40
+        ///
         class stoch_trainer_t final : public trainer_t
         {
         public:

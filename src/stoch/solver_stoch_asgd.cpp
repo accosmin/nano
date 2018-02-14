@@ -7,7 +7,7 @@ using namespace nano;
 tuner_t stoch_asgd_t::configs() const
 {
         tuner_t tuner;
-        tuner.add_base10("alpha0", -4, -1);
+        tuner.add_base10("alpha0", -4, 0);
         tuner.add_linear("decay", 0, 1);
         tuner.add_linear("momentum", 0.1, 0.9);
         return tuner;
@@ -26,7 +26,7 @@ json_writer_t& stoch_asgd_t::config(json_writer_t& writer) const
 solver_state_t stoch_asgd_t::minimize(const stoch_params_t& param, const function_t& function, const vector_t& x0) const
 {
         // learning rate schedule
-        lrate_t lrate(m_alpha0, m_decay, param.m_epoch_size);
+        lrate_t lrate(m_alpha0, m_decay);
 
         // average state
         momentum_t<vector_t> xavg(m_momentum, x0.size());

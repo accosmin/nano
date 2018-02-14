@@ -8,9 +8,8 @@ using namespace nano;
 
 static void check_function(const function_t& function)
 {
-        const auto epochs = size_t(100);
-        const auto tune_epochs = size_t(10);
-        const auto epoch_size = size_t(100);
+        const auto epochs = size_t(1000);
+        const auto tune_epochs = size_t(100);
         const auto trials = size_t(10);
 
         // generate fixed random trials
@@ -34,8 +33,8 @@ static void check_function(const function_t& function)
                         const auto g_thres = epsilon3<scalar_t>();
 
                         // optimize
-                        const auto params = stoch_params_t(epochs, epoch_size, epsilon3<scalar_t>());
-                        const auto tune_params = stoch_params_t(tune_epochs, epoch_size, epsilon3<scalar_t>());
+                        const auto params = stoch_params_t(epochs, epsilon2<scalar_t>());
+                        const auto tune_params = stoch_params_t(tune_epochs, epsilon2<scalar_t>());
 
                         const auto tstate = solver->tune(tune_params, function, x0);
                         const auto state = solver->minimize(params, function, tstate.x);
@@ -53,9 +52,10 @@ static void check_function(const function_t& function)
 
                         std::cout << function.name() << ", " << id
                                   << " [" << (t + 1) << "/" << trials << "]"
-                                  << ": x = [" << x0.transpose() << "]/[" << x.transpose() << "]"
-                                  << ", f = " << f0 << "/" << f
-                                  << ", g = " << g << ".\n";
+                                  << ": x=[" << x0.transpose() << "]/[" << x.transpose() << "]"
+                                  << ",f=" << f0 << "/" << f
+                                  << ",g=" << g
+                                  << ",calls=" << function.fcalls() << "/" << function.gcalls() << ".\n";
 
                         // check function value decrease
                         NANO_CHECK_LESS_EQUAL(f, f0);

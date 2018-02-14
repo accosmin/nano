@@ -7,8 +7,8 @@ using namespace nano;
 tuner_t stoch_rmsprop_t::configs() const
 {
         tuner_t tuner;
-        tuner.add_base10("alpha0", -4, -1);
-        tuner.add_linear("decay", 0, 1);
+        tuner.add_base10("alpha0", -4, 0);
+        tuner.add_linear("decay", 0.5, 1.0);
         tuner.add_linear("momentum", 0.10, 0.90);
         tuner.add_base10("epsilon", -6, -2);
         return tuner;
@@ -27,7 +27,7 @@ json_writer_t& stoch_rmsprop_t::config(json_writer_t& writer) const
 solver_state_t stoch_rmsprop_t::minimize(const stoch_params_t& param, const function_t& function, const vector_t& x0) const
 {
         // learning rate schedule
-        lrate_t lrate(m_alpha0, m_decay, param.m_epoch_size);
+        lrate_t lrate(m_alpha0, m_decay);
 
         // second-order momentum of the gradient
         momentum_t<vector_t> gsum2(m_momentum, x0.size());

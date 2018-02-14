@@ -96,11 +96,6 @@ namespace nano
                 scalar_t stoch_eval(const vector_t& x, vector_t* gx = nullptr) const;
 
                 ///
-                /// \brief number of stochastic calls per batch call (e.g. ~ minibatch size)
-                ///
-                virtual size_t stoch_ratio() const { return 1; }
-
-                ///
                 /// \brief select another random minibatch
                 ///
                 virtual void stoch_next() const {}
@@ -123,9 +118,10 @@ namespace nano
         protected:
 
                 virtual scalar_t vgrad(const vector_t& x, vector_t* gx) const = 0;
-                virtual scalar_t stoch_vgrad(const vector_t& x, vector_t* gx) const
+                virtual scalar_t stoch_vgrad(const vector_t& x, vector_t* gx, scalar_t& stoch_ratio) const
                 {
                         // no stochastic approximation by default
+                        stoch_ratio = 1;
                         return vgrad(x, gx);
                 }
 
@@ -136,7 +132,7 @@ namespace nano
                 tensor_size_t   m_size, m_min_size, m_max_size; ///< #dimensions
                 convexity       m_convex;                       ///<
                 scalar_t        m_domain;                       ///< domain = hyper-ball{0, m_domain}
-                mutable size_t  m_fcalls, m_stoch_fcalls;       ///< #function value evaluations
-                mutable size_t  m_gcalls, m_stoch_gcalls;       ///< #function gradient evaluations
+                mutable scalar_t m_fcalls{0};                   ///< #function value evaluations
+                mutable scalar_t m_gcalls{0};                   ///< #function gradient evaluations
         };
 }

@@ -18,11 +18,9 @@ namespace nano
                 ///
                 stoch_params_t(
                         const size_t max_epochs,
-                        const size_t epoch_size,
                         const scalar_t epsilon,
                         const opulog_t& ulog = opulog_t()) :
                         m_max_epochs(max_epochs),
-                        m_epoch_size(epoch_size),
                         m_epsilon(epsilon),
                         m_ulog(ulog)
                 {
@@ -38,7 +36,6 @@ namespace nano
 
                 // attributes
                 size_t          m_max_epochs;           ///< maximum number of epochs
-                size_t          m_epoch_size;           ///< number of iterations per epoch
                 scalar_t        m_epsilon;              ///< convergence precision
                 opulog_t        m_ulog;                 ///< update log: (the current_state_after_each_epoch)
         };

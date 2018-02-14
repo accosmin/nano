@@ -44,7 +44,7 @@ void conv3d_layer_t::random(vector_map_t pdata) const
 {
         assert(pdata.size() == psize());
 
-        const auto fanin = static_cast<scalar_t>(imaps() * m_params.krows() * m_params.kcols() / kconn());
+        const auto fanin = static_cast<scalar_t>(imaps() * m_params.krows() * m_params.kcols()) / static_cast<scalar_t>(kconn());
         const auto kmin = -std::sqrt(1 / (1 + fanin));
         const auto kmax = +std::sqrt(1 / (1 + fanin));
 

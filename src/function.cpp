@@ -25,9 +25,7 @@ function_t::function_t(const char* name,
         m_name(name),
         m_size(size), m_min_size(min_size), m_max_size(max_size),
         m_convex(convex),
-        m_domain(domain),
-        m_fcalls(0), m_stoch_fcalls(0),
-        m_gcalls(0), m_stoch_gcalls(0)
+        m_domain(domain)
 {
 }
 
@@ -35,15 +33,17 @@ scalar_t function_t::eval(const vector_t& x, vector_t* gx) const
 {
         assert(x.size() == size());
 
-        m_fcalls ++;
         if (gx)
         {
-                m_gcalls ++;
                 gx->resize(size());
         }
 
         const auto f = vgrad(x, gx);
         assert(!gx || gx->size() == size());
+
+        m_fcalls += 1;
+        m_gcalls += 1;
+
         return f;
 }
 
@@ -51,15 +51,18 @@ scalar_t function_t::stoch_eval(const vector_t& x, vector_t* gx) const
 {
         assert(x.size() == size());
 
-        m_stoch_fcalls ++;
         if (gx)
         {
-                m_stoch_gcalls ++;
                 gx->resize(size());
         }
 
-        const auto f = stoch_vgrad(x, gx);
+        scalar_t stoch_ratio = 0;
+        const auto f = stoch_vgrad(x, gx, stoch_ratio);
         assert(!gx || gx->size() == size());
+
+        m_fcalls += stoch_ratio;
+        m_gcalls += gx ? stoch_ratio : 0;
+
         return f;
 }
 
@@ -130,12 +133,12 @@ bool function_t::is_convex(const vector_t& x1, const vector_t& x2, const int ste
 
 size_t function_t::fcalls() const
 {
-        return m_fcalls + m_stoch_fcalls / stoch_ratio();
+        return static_cast<size_t>(m_fcalls);
 }
 
 size_t function_t::gcalls() const
 {
-        return m_gcalls + m_stoch_gcalls / stoch_ratio();
+        return static_cast<size_t>(m_gcalls);
 }
 
 string_t function_t::name() const

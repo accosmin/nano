@@ -13,7 +13,7 @@ using namespace nano;
 static trainer_result_t train(const task_t& task, const size_t fold, accumulator_t& acc,
         const rbatch_solver_t& solver, const string_t& config,
         const size_t epochs, const scalar_t epsilon, const size_t patience,
-        const timer_t& timer, const bool tuning)
+        const nano::timer_t& timer, const bool tuning)
 {
         assert(solver);
 
