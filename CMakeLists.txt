@@ -7,7 +7,11 @@ enable_language(CXX)
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_SOURCE_DIR}/cmake)
+# use Eigen3 from submodule
+set(ENV{EIGEN3_ROOT} "${CMAKE_SOURCE_DIR}/deps")
+set(ENV{EIGEN3_ROOT_DIR} "${CMAKE_SOURCE_DIR}/deps/")
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/deps/eigen3/cmake")
+
 include(cmake/utils.cmake)
 include(cmake/options.cmake)
 include(cmake/configure.cmake)
@@ -22,8 +26,8 @@ set(NANO_MINOR_VERSION 4)
 exec_program("git" ${CMAKE_CURRENT_SOURCE_DIR} ARGS "rev-parse HEAD" OUTPUT_VARIABLE NANO_GIT_COMMIT_HASH)
 
 configure_file(
-        ${CMAKE_MODULE_PATH}/version.h.in
-        ${CMAKE_SOURCE_DIR}/src/version.h)
+        "${CMAKE_SOURCE_DIR}/cmake/version.h.in"
+        "${CMAKE_SOURCE_DIR}/src/version.h")
 
 message("++ -----------------------------------------------------------------------------" "")
 message("++ SYSTEM:                        " "${CMAKE_SYSTEM_NAME}")

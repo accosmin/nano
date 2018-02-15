@@ -1,0 +1,4 @@
+[submodule "eigen3"]
+	path = deps/eigen3
+	url = https://github.com/eigenteam/eigen-git-mirror.git
+	branch = branches/3.3
