@@ -63,8 +63,8 @@ NANO_CASE(tune_and_train)
                 const auto result = trainer->train(*task, fold, acc);
                 NANO_REQUIRE(result);
 
-                const auto state = *result.history().rbegin();
-                NANO_CHECK_LESS(state.m_train.m_error, epsilon2<scalar_t>());
+                const auto state = result.optimum_state();
+                NANO_CHECK_LESS(state.m_valid.m_error, epsilon2<scalar_t>());
         }
 }
 

@@ -7,25 +7,25 @@ using namespace nano;
 const auto epochs = 200;
 const auto best_epoch = 50;
 const auto patience = size_t(32);
-const auto optimum_value = static_cast<scalar_t>(epochs - best_epoch);
+const auto optimum_error = static_cast<scalar_t>(epochs - best_epoch);
 
-template <typename tvalue>
-static trainer_state_t make_trainer_state(const tvalue valid_value, const size_t ms = 0, const size_t epoch = 0)
+template <typename terror>
+static trainer_state_t make_trainer_state(const terror valid_error, const size_t ms = 0, const size_t epoch = 0)
 {
-        const auto v = static_cast<scalar_t>(valid_value);
+        const auto e = static_cast<scalar_t>(valid_error);
         return {milliseconds_t(ms), epoch, 0, 0,
                 trainer_measurement_t{0, 0},
-                trainer_measurement_t{v, 0},
+                trainer_measurement_t{0, e},
                 trainer_measurement_t{0, 0}};
 }
 
-template <typename tvalue, typename tepoch>
-static auto update_result(trainer_result_t& result, const opt_status status, const tvalue value, const tepoch epoch)
+template <typename terror, typename tepoch>
+static auto update_result(trainer_result_t& result, const opt_status status, const terror error, const tepoch epoch)
 {
         solver_state_t opt_state;
         opt_state.m_status = status;
 
-        return result.update(opt_state, make_trainer_state(value, 0, static_cast<size_t>(epoch)), patience);
+        return result.update(opt_state, make_trainer_state(error, 0, static_cast<size_t>(epoch)), patience);
 }
 
 NANO_BEGIN_MODULE(test_trainer)
@@ -48,15 +48,15 @@ NANO_CASE(result_max_iters)
         for (int i = epochs; i >= 0; --i)
         {
                 const auto epoch = epochs - i;
-                const auto value = i;
+                const auto error = i;
 
-                const auto status = update_result(result, opt_status::max_iters, value, epoch);
+                const auto status = update_result(result, opt_status::max_iters, error, epoch);
 
                 NANO_CHECK(status == trainer_status::better);
                 NANO_CHECK(false == nano::is_done(status));
         }
 
-        NANO_CHECK_EQUAL(result.optimum_state().m_valid.m_value, scalar_t(0));
+        NANO_CHECK_EQUAL(result.optimum_state().m_valid.m_error, scalar_t(0));
         NANO_CHECK_EQUAL(result.optimum_epoch(), epochs);
 }
 
@@ -67,10 +67,10 @@ NANO_CASE(result_solved)
         {
                 const auto epoch = epochs - i;
                 const auto done = epoch >= best_epoch;
-                const auto value = i;
+                const auto error = i;
 
                 const auto status = update_result(result,
-                        done ? opt_status::converged : opt_status::max_iters, value, epoch);
+                        done ? opt_status::converged : opt_status::max_iters, error, epoch);
 
                 NANO_CHECK((done ? trainer_status::solved : trainer_status::better) == status);
                 NANO_CHECK((done ? true : false) == nano::is_done(status));
@@ -81,7 +81,7 @@ NANO_CASE(result_solved)
                 }
         }
 
-        NANO_CHECK_EQUAL(result.optimum_state().m_valid.m_value, optimum_value);
+        NANO_CHECK_EQUAL(result.optimum_state().m_valid.m_error, optimum_error);
         NANO_CHECK_EQUAL(result.optimum_epoch(), best_epoch);
 }
 
@@ -91,9 +91,9 @@ NANO_CASE(result_overfitting)
         for (int i = epochs; i >= 0; --i)
         {
                 const auto epoch = epochs - i;
-                const auto value = (epoch <= best_epoch) ? i : (2 * (epochs - best_epoch) - i);
+                const auto error = (epoch <= best_epoch) ? i : (2 * (epochs - best_epoch) - i);
 
-                const auto status = update_result(result, opt_status::max_iters, value, epoch);
+                const auto status = update_result(result, opt_status::max_iters, error, epoch);
 
                 if (epoch <= best_epoch)
                 {
@@ -113,7 +113,7 @@ NANO_CASE(result_overfitting)
                 }
         }
 
-        NANO_CHECK_EQUAL(result.optimum_state().m_valid.m_value, optimum_value);
+        NANO_CHECK_EQUAL(result.optimum_state().m_valid.m_error, optimum_error);
         NANO_CHECK_EQUAL(result.optimum_epoch(), best_epoch);
 }
 
@@ -123,9 +123,9 @@ NANO_CASE(result_not_finite)
         for (int i = epochs; i >= 0; --i)
         {
                 const auto epoch = epochs - i;
-                const auto value = (epoch <= best_epoch) ? scalar_t(i) : scalar_t(NAN);
+                const auto error = (epoch <= best_epoch) ? scalar_t(i) : scalar_t(NAN);
 
-                const auto status = update_result(result, opt_status::max_iters, value, epoch);
+                const auto status = update_result(result, opt_status::max_iters, error, epoch);
 
                 if (epoch <= best_epoch)
                 {
@@ -140,7 +140,7 @@ NANO_CASE(result_not_finite)
                 }
         }
 
-        NANO_CHECK_EQUAL(result.optimum_state().m_valid.m_value, optimum_value);
+        NANO_CHECK_EQUAL(result.optimum_state().m_valid.m_error, optimum_error);
         NANO_CHECK_EQUAL(result.optimum_epoch(), best_epoch);
 }
 

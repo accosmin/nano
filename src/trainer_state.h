@@ -33,8 +33,8 @@ namespace nano
 
         inline bool operator<(const trainer_measurement_t& one, const trainer_measurement_t& two)
         {
-                return  ((one) ? one.m_value : std::numeric_limits<scalar_t>::max()) <
-                        ((two) ? two.m_value : std::numeric_limits<scalar_t>::max());
+                return  ((one) ? one.m_error : std::numeric_limits<scalar_t>::max()) <
+                        ((two) ? two.m_error : std::numeric_limits<scalar_t>::max());
         }
 
         ///
