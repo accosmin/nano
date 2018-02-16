@@ -180,7 +180,7 @@ static string_t format(const std::ostream& os, const string_t& data)
 {
         try
         {
-                // format floating point values to use the oubles to use
+                // format floating point values to use the current formatting flags
                 std::stringstream stream;
                 stream << std::setprecision(static_cast<int>(os.precision()));
                 if (os.flags() & std::ios_base::fixed)

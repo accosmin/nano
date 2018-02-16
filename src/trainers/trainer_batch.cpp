@@ -13,7 +13,7 @@ using namespace nano;
 static trainer_result_t train(const task_t& task, const size_t fold, accumulator_t& acc,
         const rbatch_solver_t& solver, const string_t& config,
         const size_t epochs, const scalar_t epsilon, const size_t patience,
-        const nano::timer_t& timer, const bool tuning)
+        const nano::timer_t& timer)
 {
         assert(solver);
 
@@ -35,7 +35,7 @@ static trainer_result_t train(const task_t& task, const size_t fold, accumulator
                 // NB: the training state is already estimated!
                 const auto train = measure(acc);
                 const auto valid = measure(state.x, task, {fold, protocol::valid}, acc);
-                const auto test  = tuning ? valid : measure(state.x, task, {fold, protocol::test}, acc);
+                const auto test  = measure(state.x, task, {fold, protocol::test}, acc);
 
                 // OK, update the optimum solution
                 const auto milis = timer.milliseconds();
@@ -44,7 +44,7 @@ static trainer_result_t train(const task_t& task, const size_t fold, accumulator
                 const auto ret = result.update(state, {milis, ++epoch, xnorm, gnorm, train, valid, test}, patience);
 
                 log_info() << std::setprecision(3)
-                        << (tuning ? "tune[" : "[") << epoch << "/" << epochs
+                        << "[" << epoch << "/" << epochs
                         << ":train=" << train
                         << ",valid=" << valid << "|" << nano::to_string(ret)
                         << ",test=" << test
@@ -74,10 +74,10 @@ json_writer_t& batch_trainer_t::config(json_writer_t& writer) const
                 "epochs", m_epochs, "epsilon", m_epsilon, "patience", m_patience);
 }
 
-void batch_trainer_t::tune(const task_t& task, const size_t fold, accumulator_t& acc)
+trainer_result_t batch_trainer_t::train(const task_t& task, const size_t fold, accumulator_t& acc) const
 {
         const timer_t timer;
-        trainer_result_t opt_result;
+        trainer_result_t result;
 
         const auto params = acc.params();
         const auto solver = get_batch_solvers().get(m_solver);
@@ -89,35 +89,16 @@ void batch_trainer_t::tune(const task_t& task, const size_t fold, accumulator_t&
         // tune the hyper-parameters: solver + L2-regularizer
         for (size_t trial = 0; trial < trials; ++ trial)
         {
-                acc.params(params);
                 const auto config = tuner.get();
                 const auto epochs = m_epochs;
-                const auto result = ::train(task, fold, acc, solver, config, epochs, m_epsilon, m_patience, timer, true);
+                const auto epsilon = m_epsilon;
+                const auto patience = m_patience;
 
-                // check if an improvement
-                if (result < opt_result)
-                {
-                        opt_result = result;
-                        m_tuned_config = config;
-                }
+                acc.params(params);
+                result = std::min(result, ::train(task, fold, acc, solver, config, epochs, epsilon, patience, timer));
         }
 
-        assert(opt_result);
-        log_info() << std::setprecision(3)
-                << "<<< batch-" << m_solver << "[tuned]: " << opt_result << "," << timer.elapsed() << ".";
-}
-
-trainer_result_t batch_trainer_t::train(const task_t& task, const size_t fold, accumulator_t& acc) const
-{
-        const timer_t timer;
-
-        const auto solver = get_batch_solvers().get(m_solver);
-        const auto config = m_tuned_config;
-        const auto epochs = m_epochs;
-        const auto result = ::train(task, fold, acc, solver, config, epochs, m_epsilon, m_patience, timer, false);
-
         assert(result);
-        log_info() << std::setprecision(3)
-                << "<<< batch-" << m_solver << ": " << result << "," << timer.elapsed() << ".";
+        log_info() << std::setprecision(3) << "<<< batch-" << m_solver << ": " << result << "," << timer.elapsed() << ".";
         return result;
 }

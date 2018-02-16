@@ -25,11 +25,6 @@ namespace nano
         public:
 
                 ///
-                /// \brief tune its hyper-parameters to address the given task
-                ///
-                virtual void tune(const task_t&, const size_t fold, accumulator_t&) = 0;
-
-                ///
                 /// \brief train the given model starting from the current model parameters
                 ///
                 virtual trainer_result_t train(const task_t&, const size_t fold, accumulator_t&) const = 0;

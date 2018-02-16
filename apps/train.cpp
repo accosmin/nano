@@ -100,12 +100,7 @@ int main(int argc, const char *argv[])
 
         // setup accumulator
         accumulator_t acc(model, *loss);
-        acc.mode(accumulator_t::type::vgrad);
         acc.threads(cmd_threads);
-
-        // tune the trainer (once!)
-        acc.random();
-        trainer->tune(*task, cmd_fold, acc);
 
         table_t table;
         table.header()

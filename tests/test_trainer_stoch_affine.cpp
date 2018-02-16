@@ -51,17 +51,16 @@ NANO_CASE(tune_and_train)
                         "epochs", 100, "solver", solver, "epsilon", epsilon1<scalar_t>()).str());
 
                 accumulator_t acc(model, *loss);
-                acc.mode(accumulator_t::type::vgrad);
                 acc.threads(1);
 
                 acc.random();
-                trainer->tune(*task, fold, acc);
-
                 const auto result = trainer->train(*task, fold, acc);
                 NANO_REQUIRE(result);
 
                 const auto state = result.optimum_state();
+                NANO_CHECK_LESS(state.m_train.m_error, epsilon2<scalar_t>());
                 NANO_CHECK_LESS(state.m_valid.m_error, epsilon2<scalar_t>());
+                NANO_CHECK_LESS(state.m_test.m_error, epsilon2<scalar_t>());
         }
 }
 
