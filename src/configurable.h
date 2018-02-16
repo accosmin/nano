@@ -32,5 +32,15 @@ namespace nano
                         json_reader_t reader(text);
                         config(reader);
                 }
+
+                ///
+                /// \brief convenience overload to serialize and retrieve the current parameters as string
+                ///
+                string_t config() const
+                {
+                        json_writer_t writer;
+                        config(writer);
+                        return writer.str();
+                }
         };
 }

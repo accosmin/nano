@@ -75,6 +75,7 @@ namespace nano
                                 while (function.gcalls() <= gcalls && cstate)
                                 {
                                         solver(cstate, fstate);
+                                        break;
                                 }
 
                                 // check divergence

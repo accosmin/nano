@@ -106,10 +106,5 @@ class config:
         def task_synth_nparity(self, n = 32, count = 10000):
                 return {"task": "synth-nparity", "n": n, "count": count}
 
-        def task_synth_affine_regression(self, isize = 32, osize = 32, noise = 0.0, count = 10000):
-                return {"task": "synth-affine", "isize": isize, "osize": osize, "noise": noise, "count": count,
-                        "type": "regression" }
-
-        def task_synth_affine_classification(self, isize = 32, osize = 32, noise = 0.0, count = 10000):
-                return {"task": "synth-affine", "isize": isize, "osize": osize, "noise": noise, "count": count,
-                        "type": "classification" }
+        def task_synth_affine(self, isize = 32, osize = 32, noise = 0.0, count = 10000):
+                return {"task": "synth-affine", "isize": isize, "osize": osize, "noise": noise, "count": count}

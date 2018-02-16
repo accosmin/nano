@@ -132,7 +132,7 @@ namespace nano
                 tensor_size_t   m_size, m_min_size, m_max_size; ///< #dimensions
                 convexity       m_convex;                       ///<
                 scalar_t        m_domain;                       ///< domain = hyper-ball{0, m_domain}
-                mutable scalar_t m_fcalls{0};                   ///< #function value evaluations
-                mutable scalar_t m_gcalls{0};                   ///< #function gradient evaluations
+                mutable double  m_fcalls{0};                   ///< #function value evaluations
+                mutable double  m_gcalls{0};                   ///< #function gradient evaluations
         };
 }

@@ -12,8 +12,7 @@ NANO_CASE(regression)
         const auto osize = 13;
         const auto count = 132;
 
-        const auto config = json_writer_t().object(
-                "type", "regression", "isize", isize, "osize", osize, "noise", 0, "count", count).str();
+        const auto config = json_writer_t().object("isize", isize, "osize", osize, "noise", 0, "count", count).str();
 
         auto task = get_tasks().get("synth-affine");
         NANO_REQUIRE(task);

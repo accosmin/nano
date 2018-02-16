@@ -9,7 +9,7 @@
 
 using namespace nano;
 
-NANO_BEGIN_MODULE(trainer_batch_regression)
+NANO_BEGIN_MODULE(trainer_batch_affine)
 
 NANO_CASE(function)
 {
@@ -20,9 +20,7 @@ NANO_CASE(function)
         // create synthetic task
         const auto task = get_tasks().get("synth-affine");
         NANO_REQUIRE(task);
-        task->config(json_writer_t().object(
-                "isize", isize, "osize", osize,
-                "noise", 0, "count", 100, "type", affine_task_type::regression).str());
+        task->config(json_writer_t().object("isize", isize, "osize", osize, "noise", 0, "count", 100).str());
         NANO_REQUIRE(task->load());
         NANO_REQUIRE_EQUAL(task->idims(), make_dims(isize, 1, 1));
         NANO_REQUIRE_EQUAL(task->odims(), make_dims(osize, 1, 1));
@@ -60,9 +58,7 @@ NANO_CASE(tune_and_train)
         // create synthetic task
         const auto task = get_tasks().get("synth-affine");
         NANO_REQUIRE(task);
-        task->config(json_writer_t().object(
-                "isize", isize, "osize", osize,
-                "noise", 0, "count", 100, "type", affine_task_type::regression).str());
+        task->config(json_writer_t().object("isize", isize, "osize", osize, "noise", 0, "count", 100).str());
         NANO_REQUIRE(task->load());
         NANO_REQUIRE_EQUAL(task->idims(), make_dims(isize, 1, 1));
         NANO_REQUIRE_EQUAL(task->odims(), make_dims(osize, 1, 1));

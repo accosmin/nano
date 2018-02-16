@@ -8,6 +8,7 @@ static scalar_t get_theta(const scalar_t ptheta, const scalar_t q)
         const auto b = ptheta * ptheta - q;
         const auto c = - ptheta * ptheta;
 
+        assert(b * b >= 4 * a * c);
         return (-b + std::sqrt(b * b - 4 * a * c)) / (2 * a);
 }
 

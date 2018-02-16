@@ -4,12 +4,12 @@ from experiment import *
 # initialize experiment:
 # - regression problem: predict the output of an affine transformation
 cfg = config.config()
-exp = experiment(cfg.expdir + "/synth_affine_regression", trials = 10)
+exp = experiment(cfg.expdir + "/synth_affine", trials = 10)
 
 isize = 16
 osize = 8
 
-exp.set_task(cfg.task_synth_affine_regression(isize = isize, osize = osize, noise = 0.0, count = 4000))
+exp.set_task(cfg.task_synth_affine(isize = isize, osize = osize, noise = 0.0, count = 4000))
 
 # loss functions
 exp.add_loss("cauchy", cfg.loss("cauchy"))

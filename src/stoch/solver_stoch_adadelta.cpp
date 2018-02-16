@@ -8,7 +8,7 @@ tuner_t stoch_adadelta_t::configs() const
         tuner_t tuner;
         tuner.add_base10("alpha0", -4, 0);
         tuner.add_base10("epsilon", -6, -2);
-        tuner.add_linear("momentum", 0.10, 0.90);
+        tuner.add_linear("momentum", 0.01, 0.99);
         return tuner;
 }
 

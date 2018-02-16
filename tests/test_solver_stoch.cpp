@@ -6,18 +6,18 @@
 
 using namespace nano;
 
+namespace nano
+{
+        std::ostream& operator<<(std::ostream& os, const opt_status status)
+        {
+                return os << to_string(status);
+        }
+}
+
 static void check_function(const function_t& function)
 {
         const auto epochs = size_t(1000);
-        const auto tune_epochs = size_t(1000);
         const auto trials = size_t(10);
-
-        // generate fixed random trials
-        std::vector<vector_t> x0s(trials);
-        for (auto& x0 : x0s)
-        {
-                x0 = vector_t::Random(function.size());
-        }
 
         // solvers to try
         for (const auto& id : get_stoch_solvers().ids())
@@ -28,16 +28,12 @@ static void check_function(const function_t& function)
                 size_t out_of_domain = 0;
                 for (size_t t = 0; t < trials; ++ t)
                 {
-                        const auto& x0 = x0s[t];
+                        const auto x0 = vector_t::Random(function.size());
                         const auto f0 = function.eval(x0);
-                        const auto g_thres = epsilon3<scalar_t>();
 
                         // optimize
                         const auto params = stoch_params_t(epochs, epsilon2<scalar_t>());
-                        const auto tune_params = stoch_params_t(tune_epochs, epsilon2<scalar_t>());
-
-                        const auto tstate = solver->tune(tune_params, function, x0);
-                        const auto state = solver->minimize(params, function, x0);
+                        const auto state = solver->tune(params, function, x0);
 
                         const auto x = state.x;
                         const auto f = state.f;
@@ -53,15 +49,15 @@ static void check_function(const function_t& function)
                         std::cout << function.name() << ", " << id
                                   << " [" << (t + 1) << "/" << trials << "]"
                                   << ": x=[" << x0.transpose() << "]/[" << x.transpose() << "]"
-                                  << ",f=" << f0 << "/" << f
-                                  << ",g=" << g
+                                  << ",f=" << f0 << "/" << f << ",g=" << g << "[" << to_string(state.m_status) << "]"
                                   << ",calls=" << function.fcalls() << "/" << function.gcalls() << ".\n";
 
                         // check function value decrease
-                        NANO_CHECK_LESS_EQUAL(f, f0);
+                        NANO_CHECK_LESS_EQUAL(f, f0 + epsilon1<scalar_t>());
 
                         // check convergence
-                        NANO_CHECK_LESS_EQUAL(g, g_thres);
+                        NANO_CHECK_LESS_EQUAL(g, epsilon2<scalar_t>());
+                        NANO_CHECK_EQUAL(state.m_status, opt_status::converged);
                 }
 
                 std::cout << function.name() << ", " << id

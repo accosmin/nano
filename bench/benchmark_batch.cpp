@@ -30,7 +30,12 @@ static void check_function(const function_t& function, const strings_t& solvers,
                 const auto params = batch_params_t(iterations, epsilon);
                 const auto name = id + "[" + to_string(ls_init) + "][" + to_string(ls_strat) + "]";
 
-                benchmark::benchmark_function(solver, params, function, x0s, name, stats, gstats);
+                for (const auto& x0 : x0s)
+                {
+                        benchmark::benchmark_function(
+                                [&] () { return solver->minimize(params, function, x0); },
+                                function, x0, name, stats, gstats);
+                }
         }
 
         // show per-problem statistics

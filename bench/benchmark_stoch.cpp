@@ -7,9 +7,8 @@
 using namespace nano;
 
 template <typename tostats>
-static void check_function(const function_t& function, const strings_t& solvers, const size_t trials,
-        const size_t epochs, const size_t tune_epochs, const scalar_t epsilon,
-        tostats& gstats)
+static void check_function(const function_t& function, const strings_t& solvers,
+        const size_t trials, const size_t epochs, const scalar_t epsilon, tostats& gstats)
 {
         // generate fixed random trials
         std::vector<vector_t> x0s(trials);
@@ -25,12 +24,15 @@ static void check_function(const function_t& function, const strings_t& solvers,
         for (const auto& id : solvers)
         {
                 const auto solver = get_stoch_solvers().get(id);
-                const auto tune_params = stoch_params_t(tune_epochs, epsilon);
                 const auto params = stoch_params_t(epochs, epsilon);
                 const auto& name = id;
 
-                solver->tune(tune_params, function, x0s[0]);
-                benchmark::benchmark_function(solver, params, function, x0s, name, stats, gstats);
+                for (const auto& x0 : x0s)
+                {
+                        benchmark::benchmark_function(
+                                [&] () { return solver->tune(params, function, x0); },
+                                function, x0, name, stats, gstats);
+                }
         }
 
         // show per-problem statistics
@@ -47,7 +49,6 @@ int main(int argc, const char* argv[])
         cmdline.add("", "max-dims",     "maximum number of dimensions for each test function (if feasible)", "100");
         cmdline.add("", "trials",       "number of random trials for each test function", "100");
         cmdline.add("", "epochs",       "optimization: number of epochs", "1000");
-        cmdline.add("", "tune-epochs",  "optimization: number of epochs to use for tuning", "100");
         cmdline.add("", "epsilon",      "convergence criteria", 1e-4);
         cmdline.add("", "convex",       "use only convex test functions");
 
@@ -58,7 +59,6 @@ int main(int argc, const char* argv[])
         const auto max_dims = cmdline.get<tensor_size_t>("max-dims");
         const auto trials = cmdline.get<size_t>("trials");
         const auto epochs = cmdline.get<size_t>("epochs");
-        const auto tune_epochs = cmdline.get<size_t>("tune-epochs");
         const auto epsilon = cmdline.get<scalar_t>("epsilon");
         const auto is_convex = cmdline.has("convex");
 
@@ -70,7 +70,7 @@ int main(int argc, const char* argv[])
         const auto functions = (is_convex ? get_convex_functions : get_functions)(min_dims, max_dims, names);
         for (const auto& function : functions)
         {
-                check_function(*function, solvers, trials, epochs, tune_epochs, epsilon, gstats);
+                check_function(*function, solvers, trials, epochs, epsilon, gstats);
         }
 
         // show global statistics

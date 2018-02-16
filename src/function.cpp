@@ -42,7 +42,7 @@ scalar_t function_t::eval(const vector_t& x, vector_t* gx) const
         assert(!gx || gx->size() == size());
 
         m_fcalls += 1;
-        m_gcalls += 1;
+        m_gcalls += gx ? 1 : 0;
 
         return f;
 }

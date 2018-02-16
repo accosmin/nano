@@ -4,6 +4,7 @@
 #include "thread/loopi.h"
 #include "solver_state.h"
 #include "text/algorithm.h"
+#include <iomanip>
 #include <iostream>
 
 namespace benchmark
@@ -43,13 +44,13 @@ namespace benchmark
                         if (stat.m_fcalls)
                         {
                                 table.append()
-                                << align(name, 36)
-                                << align(to_string(static_cast<size_t>(stat.m_fcalls.avg() + 2 * stat.m_gcalls.avg())), 12)
-                                << align(to_string(stat.m_crits.avg()), 12)
-                                << align(to_string(static_cast<size_t>(stat.m_fails.sum1())), 12)
-                                << align(to_string(static_cast<size_t>(stat.m_fcalls.avg())), 12)
-                                << align(to_string(static_cast<size_t>(stat.m_gcalls.avg())), 12)
-                                << align(to_string(stat.m_speeds.avg()), 12);
+                                << name
+                                << static_cast<size_t>(stat.m_fcalls.avg() + 2 * stat.m_gcalls.avg())
+                                << stat.m_crits.avg()
+                                << static_cast<size_t>(stat.m_fails.sum1())
+                                << static_cast<size_t>(stat.m_fcalls.avg())
+                                << static_cast<size_t>(stat.m_gcalls.avg())
+                                << stat.m_speeds.avg();
                         }
                 }
 
@@ -57,52 +58,48 @@ namespace benchmark
                 std::cout << table;
         }
 
-        template <typename tsolver, typename tparams, typename tostats>
-        static void benchmark_function(
-                const tsolver& solver, const tparams& params,
-                const function_t& function, const std::vector<vector_t>& x0s, const string_t& name,
+        template <typename tsolver, typename tostats>
+        static void benchmark_function(const tsolver& solver,
+                const function_t& function, const vector_t& x0, const string_t& name,
                 tostats& stats, tostats& gstats)
         {
-                for (const auto& x0 : x0s)
+                solver_state_t state0(function.size());
+                state0.update(function, x0);
+                const auto g0 = state0.convergence_criteria();
+
+                // optimize
+                const auto old_fcalls = function.fcalls();
+                const auto old_gcalls = function.gcalls();
+
+                const auto state = solver();
+
+                const auto fcalls = function.fcalls() - old_fcalls;
+                const auto gcalls = function.gcalls() - old_gcalls;
+
+                const auto g = state.convergence_criteria();
+                const auto speed = std::pow(
+                        static_cast<double>(epsilon0<scalar_t>() + g) /
+                        static_cast<double>(epsilon0<scalar_t>() + g0),
+                        double(1) / double(gcalls));
+
+                // ignore out-of-domain solutions
+                if (state && function.is_valid(state.x))
                 {
-                        solver_state_t state0(function.size());
-                        state0.update(function, x0);
-                        const auto g0 = state0.convergence_criteria();
+                        // update per-function statistics
+                        solver_stat_t& stat = stats[name];
+                        stat.m_crits(g);
+                        stat.m_fails(state.m_status != opt_status::converged ? 1 : 0);
+                        stat.m_fcalls(static_cast<scalar_t>(fcalls));
+                        stat.m_gcalls(static_cast<scalar_t>(gcalls));
+                        stat.m_speeds(static_cast<scalar_t>(speed));
 
-                        // optimize
-                        const auto old_fcalls = function.fcalls();
-                        const auto old_gcalls = function.gcalls();
-
-                        const auto state = solver->minimize(params, function, x0);
-
-                        const auto fcalls = function.fcalls() - old_fcalls;
-                        const auto gcalls = function.gcalls() - old_gcalls;
-
-                        const auto g = state.convergence_criteria();
-                        const auto speed = std::pow(
-                                static_cast<double>(epsilon0<scalar_t>() + g) /
-                                static_cast<double>(epsilon0<scalar_t>() + g0),
-                                double(1) / double(gcalls));
-
-                        // ignore out-of-domain solutions
-                        if (state && function.is_valid(state.x))
-                        {
-                                // update per-function statistics
-                                solver_stat_t& stat = stats[name];
-                                stat.m_crits(g);
-                                stat.m_fails(state.m_status != opt_status::converged ? 1 : 0);
-                                stat.m_fcalls(static_cast<scalar_t>(fcalls));
-                                stat.m_gcalls(static_cast<scalar_t>(gcalls));
-                                stat.m_speeds(static_cast<scalar_t>(speed));
-
-                                // update global statistics
-                                solver_stat_t& gstat = gstats[name];
-                                gstat.m_crits(g);
-                                gstat.m_fails(state.m_status != opt_status::converged ? 1 : 0);
-                                gstat.m_fcalls(static_cast<scalar_t>(fcalls));
-                                gstat.m_gcalls(static_cast<scalar_t>(gcalls));
-                                gstat.m_speeds(static_cast<scalar_t>(speed));
-                        }
+                        // update global statistics
+                        solver_stat_t& gstat = gstats[name];
+                        gstat.m_crits(g);
+                        gstat.m_fails(state.m_status != opt_status::converged ? 1 : 0);
+                        gstat.m_fcalls(static_cast<scalar_t>(fcalls));
+                        gstat.m_gcalls(static_cast<scalar_t>(gcalls));
+                        gstat.m_speeds(static_cast<scalar_t>(speed));
                 }
         }
 }
