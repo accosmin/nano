@@ -6,10 +6,7 @@ from experiment import *
 cfg = config.config()
 exp = experiment(cfg.expdir + "/synth_affine", trials = 10)
 
-isize = 16
-osize = 8
-
-exp.set_task(cfg.task_synth_affine(isize = isize, osize = osize, noise = 0.0, count = 4000))
+exp.set_task(cfg.task_synth_affine(isize = 16, osize = 8, noise = 0.0, count = 4000))
 
 # loss functions
 exp.add_loss("cauchy", cfg.loss("cauchy"))
@@ -39,7 +36,7 @@ exp.add_trainer("adagrad", cfg.stoch_trainer("adagrad", epochs, patience, epsilo
 exp.add_trainer("adadelta", cfg.stoch_trainer("adadelta", epochs, patience, epsilon))
 
 # models
-exp.add_model("linear", cfg.linear(imaps=isize, irows=1, icols=1, omaps=osize, orows=1, ocols=1))
+exp.add_model("linear", cfg.linear(imaps=16, irows=1, icols=1, omaps=8, orows=1, ocols=1))
 
 # train all configurations
 exp.train_all()

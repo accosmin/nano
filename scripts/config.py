@@ -108,3 +108,6 @@ class config:
 
         def task_synth_affine(self, isize = 32, osize = 32, noise = 0.0, count = 10000):
                 return {"task": "synth-affine", "isize": isize, "osize": osize, "noise": noise, "count": count}
+
+        def task_synth_peak2d(self, irows = 32, icols = 32, noise = 0.0, count = 10000):
+                return {"task": "synth-peak2d", "irows": irows, "icols": icols, "noise": noise, "count": count}
