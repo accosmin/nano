@@ -26,7 +26,7 @@ static trainer_result_t train(const task_t& task, const size_t fold, accumulator
         scalar_t batch_factor = 1;
         json_reader_t(config).object("batchr", batch_factor);
 
-        const size_t batch0 = physical_cpus();
+        const size_t batch0 = 1;
         auto iterator = iterator_t(task, {fold, protocol::train}, batch0, batch_factor);
 
         // logging operator
@@ -85,7 +85,7 @@ trainer_result_t stoch_trainer_t::train(const task_t& task, const size_t fold, a
         const auto solver = get_stoch_solvers().get(m_solver);
 
         auto tuner = solver->configs();
-        tuner.add_base10("batchr", -6, -2, 1);
+        tuner.add_base10("batchr", -6, -1, 1);
         const auto trials = 10 * tuner.n_params();
 
         // tune the hyper-parameters: solver + minibatch increase factor
