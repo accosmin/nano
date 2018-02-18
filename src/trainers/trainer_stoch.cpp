@@ -85,7 +85,7 @@ trainer_result_t stoch_trainer_t::train(const task_t& task, const size_t fold, a
         const auto solver = get_stoch_solvers().get(m_solver);
 
         auto tuner = solver->configs();
-        tuner.add_base10("batchr", -6, -1, 1);
+        tuner.add_finite("batchr", make_scalars(1.1, 1.2, 1.5, 2.0));
         const auto trials = 10 * tuner.n_params();
 
         // tune the hyper-parameters: solver + minibatch increase factor
