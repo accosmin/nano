@@ -28,10 +28,14 @@ namespace nano
                 {
                         param_t() = default;
                         param_t(const char* name, const scalar_t min, const scalar_t max, const scalar_t offset,
-                                scalars_t&& values, param_type type) :
-                                m_name(name), m_min(min), m_max(max), m_offset(offset), m_values(values), m_type(type)
+                                scalars_t&& values, const param_type type) :
+                                m_name(name), m_min(min), m_max(max), m_offset(offset), m_values(values),
+                                m_type(type)
                         {
                         }
+
+                        int precision() const { return m_precision; }
+                        void precision(const int p) { m_precision = p; }
 
                         // attributes
                         const char*     m_name{nullptr};
@@ -39,6 +43,7 @@ namespace nano
                         scalar_t        m_max{0};
                         scalar_t        m_offset{0};
                         scalars_t       m_values;
+                        int             m_precision{6};
                         param_type      m_type{param_type::linear};
                 };
 
@@ -62,20 +67,28 @@ namespace nano
                 /// \brief add a new hyper-parameter to tune
                 ///
                 template <typename tscalar>
-                void add_linear(const char* name, const tscalar min, const tscalar max)
+                param_t& add_linear(const char* name, const tscalar min, const tscalar max)
                 {
-                        m_params.emplace_back(name, static_cast<scalar_t>(min), static_cast<scalar_t>(max),
+                        m_params.emplace_back(
+                                name, static_cast<scalar_t>(min), static_cast<scalar_t>(max),
                                 scalar_t(0), scalars_t{}, param_type::linear);
+                        return *m_params.rbegin();
                 }
+
                 template <typename tscalar>
-                void add_base10(const char* name, const tscalar min, const tscalar max, const tscalar offset = tscalar(0))
+                param_t& add_base10(const char* name, const tscalar min, const tscalar max, const tscalar offset = tscalar(0))
                 {
-                        m_params.emplace_back(name, static_cast<scalar_t>(min), static_cast<scalar_t>(max),
+                        m_params.emplace_back(
+                                name, static_cast<scalar_t>(min), static_cast<scalar_t>(max),
                                 static_cast<scalar_t>(offset), scalars_t{}, param_type::base10);
+                        return *m_params.rbegin();
                 }
-                void add_finite(const char* name, scalars_t values)
+
+                param_t& add_finite(const char* name, scalars_t values)
                 {
-                        m_params.emplace_back(name, 0, 0, 0, std::move(values), param_type::finite);
+                        m_params.emplace_back(
+                                name, 0, 0, 0, std::move(values), param_type::finite);
+                        return *m_params.rbegin();
                 }
 
                 ///

@@ -41,19 +41,8 @@ NANO_CASE(tune_and_train)
         // check that the trainer works for all compatible solvers
         for (const auto& solver : get_stoch_solvers().ids())
         {
-                if (    solver != "ag" &&
-                        solver != "agfr" &&
-                        solver != "aggr" &&
-                        solver != "adagrad" &&
-                        solver != "sg" &&
-                        solver != "sgm")
-                {
-                        // todo: have all stochastic solvers work properly!
-                        continue;
-                }
-
                 trainer->config(json_writer_t().object(
-                        "epochs", 100, "solver", solver, "epsilon", epsilon1<scalar_t>()).str());
+                        "epochs", 200, "solver", solver, "epsilon", epsilon1<scalar_t>()).str());
 
                 accumulator_t acc(model, *loss);
                 acc.threads(1);

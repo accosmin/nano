@@ -6,20 +6,19 @@ using namespace nano;
 tuner_t stoch_adadelta_t::configs() const
 {
         tuner_t tuner;
-        tuner.add_base10("alpha0", -4, 0);
-        tuner.add_base10("epsilon", -6, -2);
-        tuner.add_linear("momentum", 0.01, 0.99);
+        tuner.add_finite("epsilon", make_scalars(1e-6, 3e-6, 1e-5, 3e-5, 1e-4, 3e-4, 1e-3, 3e-3, 1e-2)).precision(6);
+        tuner.add_finite("momentum", make_scalars(0.10, 0.20, 0.50, 0.90)).precision(2);
         return tuner;
 }
 
 json_reader_t& stoch_adadelta_t::config(json_reader_t& reader)
 {
-        return reader.object("alpha0", m_alpha0, "momentum", m_momentum, "epsilon", m_epsilon);
+        return reader.object("momentum", m_momentum, "epsilon", m_epsilon);
 }
 
 json_writer_t& stoch_adadelta_t::config(json_writer_t& writer) const
 {
-        return writer.object("alpha0", m_alpha0, "momentum", m_momentum, "epsilon", m_epsilon);
+        return writer.object("momentum", m_momentum, "epsilon", m_epsilon);
 }
 
 solver_state_t stoch_adadelta_t::minimize(const stoch_params_t& param, const function_t& function, const vector_t& x0) const
@@ -33,9 +32,6 @@ solver_state_t stoch_adadelta_t::minimize(const stoch_params_t& param, const fun
         // assembly the solver
         const auto solver = [&] (solver_state_t& cstate, const solver_state_t&)
         {
-                // learning rate
-                const auto alpha = m_alpha0;
-
                 // descent direction
                 gavg.update(cstate.g.array().square());
 
@@ -47,7 +43,7 @@ solver_state_t stoch_adadelta_t::minimize(const stoch_params_t& param, const fun
 
                 // update solution
                 function.stoch_next();
-                cstate.stoch_update(function, alpha);
+                cstate.stoch_update(function, 1);
         };
 
         const auto snapshot = [&] (const solver_state_t& cstate, solver_state_t& sstate)

@@ -21,7 +21,7 @@ template <ag_restart trestart>
 tuner_t stoch_ag_base_t<trestart>::configs() const
 {
         tuner_t tuner;
-        tuner.add_base10("alpha0", -4, 0);
+        tuner.add_finite("alpha0", make_scalars(1e-4, 3e-4, 1e-3, 3e-3, 1e-2, 3e-2, 1e-1, 3e-1, 1e+0)).precision(4);
         tuner.add_linear("q", 0, 1);
         return tuner;
 }

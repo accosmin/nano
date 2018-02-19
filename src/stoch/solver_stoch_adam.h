@@ -21,7 +21,7 @@ namespace nano
 
                 // attributes
                 scalar_t        m_alpha0{static_cast<scalar_t>(1e-2)};
-                scalar_t        m_decay{static_cast<scalar_t>(0.50)};
+                scalar_t        m_decay{static_cast<scalar_t>(0.5)};
                 scalar_t        m_tnorm{1};
                 scalar_t        m_epsilon{static_cast<scalar_t>(1e-6)};
                 scalar_t        m_beta1{static_cast<scalar_t>(0.900)};

@@ -22,7 +22,7 @@ namespace nano
 
                 // attributes
                 scalar_t        m_alpha0{static_cast<scalar_t>(1e-2)};
-                scalar_t        m_decay{static_cast<scalar_t>(0.75)};
+                scalar_t        m_decay{static_cast<scalar_t>(0.5)};
                 scalar_t        m_tnorm{1};
         };
 }

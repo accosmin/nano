@@ -1,4 +1,6 @@
 #include "tuner.h"
+#include <sstream>
+#include <iomanip>
 #include "math/numeric.h"
 #include "text/json_writer.h"
 
@@ -156,14 +158,17 @@ string_t tuner_t::json(const trial_t& trial) const
                 const auto& param = m_params[i];
                 const auto& value = trial.m_values[i];
 
+                std::stringstream stream;
+                stream << std::fixed << std::setprecision(param.m_precision);
                 switch (param.m_type)
                 {
-                case param_type::linear:        writer.pair(param.m_name, value); break;
-                case param_type::finite:        writer.pair(param.m_name, value); break;
-                case param_type::base10:        writer.pair(param.m_name, param.m_offset + std::pow(scalar_t(10), value)); break;
+                case param_type::linear:        stream << value; break;
+                case param_type::finite:        stream << value; break;
+                case param_type::base10:        stream << (param.m_offset + std::pow(scalar_t(10), value)); break;
                 default:                        assert(false);
                 }
 
+                writer.pair(param.m_name, stream.str());
                 if (i + 1 < m_params.size())
                 {
                         writer.next();
