@@ -17,7 +17,7 @@ namespace nano
 static void check_function(const function_t& function)
 {
         const auto iterations = size_t(1000);
-        const auto trials = size_t(10);
+        const auto trials = size_t(100);
 
         // solvers to try
         for (const auto& id : get_batch_solvers().ids())
