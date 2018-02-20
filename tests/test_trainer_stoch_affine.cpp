@@ -42,7 +42,7 @@ NANO_CASE(tune_and_train)
         for (const auto& solver : get_stoch_solvers().ids())
         {
                 trainer->config(json_writer_t().object(
-                        "epochs", 300, "solver", solver, "epsilon", epsilon1<scalar_t>()).str());
+                        "epochs", 100, "solver", solver, "epsilon", epsilon1<scalar_t>()).str());
 
                 accumulator_t acc(model, *loss);
                 acc.threads(1);
