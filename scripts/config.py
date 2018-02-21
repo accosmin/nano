@@ -63,7 +63,7 @@ class config:
                 """ available stochastic solvers """
                 return ["ag", "agfr", "aggr",
                         "sg", "sgm", "ngd", "svrg", "asgd",
-                        "adagrad", "adadelta", "adam", "rmsprop"]
+                        "adagrad", "adadelta", "adam", "rmsprop", "amsgrad"]
 
         def batch_solvers(self):
                 """ available batch (line-search) solvers """
