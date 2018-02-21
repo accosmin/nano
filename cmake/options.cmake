@@ -4,6 +4,7 @@ option(NANO_WITH_TSAN                   "build with thread sanitizer suppport (i
 option(NANO_WITH_LIBCPP                 "use libc++ instead of default libstdc++ (if applicable)"       OFF)
 option(NANO_WITH_GOLD                   "use gold linker (if available)"                                ON)
 option(NANO_WITH_LTO                    "use link time optimization (if available)"                     OFF)
+option(NANO_WITH_THIN_LTO               "use link time optimization (if available)"                     OFF)
 option(NANO_WITH_WERROR                 "stop compilation at first warning"                             OFF)
 option(NANO_WITH_CCACHE                 "use ccache (if available)"                                     OFF)
 option(NANO_WITH_FLOAT_SCALAR           "use float as the default scalar"                               ON)

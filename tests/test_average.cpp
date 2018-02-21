@@ -62,4 +62,3 @@ NANO_CASE(vector)
 }
 
 NANO_END_MODULE()
-

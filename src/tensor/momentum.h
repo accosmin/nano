@@ -10,12 +10,12 @@ namespace nano
         ///     see "Adam: A method for stochastic optimization", by Diederik P. Kingma & Jimmy Lei Ba
         ///
         template <typename tvector, typename tscalar = typename tvector::Scalar>
-        struct momentum_t
+        class momentum_t
         {
+        public:
                 template <typename tsize>
                 momentum_t(const tscalar momentum, const tsize dimensions) :
                         m_momentum(momentum),
-                        m_correction(1),
                         m_value(std::move(tvector::Zero(dimensions)))
                 {
                         assert(momentum > 0);
@@ -38,9 +38,9 @@ namespace nano
 
         private:
 
-                tscalar         m_momentum;     ///<
-                tscalar         m_correction;   ///< zero-bias correction
-                tvector         m_value;        ///< running exponential average
+                tscalar         m_momentum{0};          ///<
+                tscalar         m_correction{1};        ///< zero-bias correction
+                tvector         m_value;                ///< running exponential average
         };
 }
 

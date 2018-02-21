@@ -62,6 +62,8 @@ endif()
         # set LTO
         if(NANO_WITH_LTO)
                 setup_lto()
+        elseif(NANO_WITH_THIN_LTO)
+                setup_thin_lto()
         endif()
 
 # setup compiler (unsupported)

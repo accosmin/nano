@@ -6,11 +6,11 @@ namespace nano
         /// \brief running average for Eigen vectors.
         ///
         template <typename tvector, typename tscalar = typename tvector::Scalar>
-        struct average_t
+        class average_t
         {
+        public:
                 template <typename tsize>
                 explicit average_t(const tsize dimensions) :
-                        m_count(0),
                         m_value(std::move(tvector::Zero(dimensions)))
                 {
                 }
@@ -29,7 +29,7 @@ namespace nano
 
         private:
 
-                tscalar         m_count;
+                tscalar         m_count{0};
                 tvector         m_value;        ///< running average
         };
 }

@@ -27,7 +27,7 @@ matrix:
           sources: &sources
             - ubuntu-toolchain-r-test
       script:
-        - cmake -G "Ninja" -DCMAKE_CXX_COMPILER=g++-5 -DCMAKE_BUILD_TYPE=Debug -DNANO_WITH_GOLD=OFF -DNANO_WITH_WERROR=ON ..
+        - cmake -G "Ninja" -DCMAKE_CXX_COMPILER=g++-5 -DNANO_WITH_GOLD=OFF -DNANO_WITH_WERROR=ON ..
         - ninja
         - bash ../scripts/ci_ctest.sh
 
@@ -40,7 +40,7 @@ matrix:
           sources: &sources
             - ubuntu-toolchain-r-test
       script:
-        - cmake -G "Ninja" -DCMAKE_CXX_COMPILER=g++-6 -DCMAKE_BUILD_TYPE=Debug -DNANO_WITH_GOLD=OFF -DNANO_WITH_WERROR=ON ..
+        - cmake -G "Ninja" -DCMAKE_CXX_COMPILER=g++-6 -DNANO_WITH_GOLD=OFF -DNANO_WITH_WERROR=ON ..
         - ninja
         - bash ../scripts/ci_ctest.sh
 
@@ -53,7 +53,7 @@ matrix:
           sources: &sources
             - ubuntu-toolchain-r-test
       script:
-        - cmake -G "Ninja" -DCMAKE_CXX_COMPILER=g++-7 -DCMAKE_BUILD_TYPE=Debug -DNANO_WITH_GOLD=OFF -DNANO_WITH_WERROR=ON ..
+        - cmake -G "Ninja" -DCMAKE_CXX_COMPILER=g++-7 -DNANO_WITH_GOLD=OFF -DNANO_WITH_WERROR=ON ..
         - ninja
         - bash ../scripts/ci_ctest.sh
 
@@ -66,7 +66,7 @@ matrix:
           sources: &sources
             - llvm-toolchain-trusty-3.8
       script:
-        - cmake -G "Ninja" -DCMAKE_CXX_COMPILER=clang++-3.8 -DCMAKE_BUILD_TYPE=Debug -DNANO_WITH_WERROR=ON -DNANO_WITH_LIBCPP=ON ..
+        - cmake -G "Ninja" -DCMAKE_CXX_COMPILER=clang++-3.8 -DNANO_WITH_WERROR=ON -DNANO_WITH_LIBCPP=ON ..
         - ninja
         - bash ../scripts/ci_ctest.sh
 
@@ -79,7 +79,7 @@ matrix:
           sources: &sources
             - llvm-toolchain-trusty-4.0
       script:
-        - cmake -G "Ninja" -DCMAKE_CXX_COMPILER=clang++-4.0 -DCMAKE_BUILD_TYPE=Debug -DNANO_WITH_WERROR=ON -DNANO_WITH_LIBCPP=ON ..
+        - cmake -G "Ninja" -DCMAKE_CXX_COMPILER=clang++-4.0 -DNANO_WITH_WERROR=ON -DNANO_WITH_LIBCPP=ON ..
         - ninja
         - bash ../scripts/ci_ctest.sh
 
@@ -92,46 +92,49 @@ matrix:
           sources: &sources
             - llvm-toolchain-trusty-5.0
       script:
-        - cmake -G "Ninja" -DCMAKE_CXX_COMPILER=clang++-5.0 -DCMAKE_BUILD_TYPE=Debug -DNANO_WITH_WERROR=ON -DNANO_WITH_LIBCPP=ON ..
+        - cmake -G "Ninja" -DCMAKE_CXX_COMPILER=clang++-5.0 -DNANO_WITH_WERROR=ON -DNANO_WITH_LIBCPP=ON ..
         - ninja
         - bash ../scripts/ci_ctest.sh
 
     - os: linux
-      compiler: gcc
-      env: TEST="ASAN (gcc-7)"
+      compiler: clang
+      env: TEST="ASAN (clang-5.0)"
       addons:
         apt:
-          packages: ['gcc-7', 'g++-7', 'libdevil-dev', 'libarchive-dev', 'ninja-build', 'python3-pip']
+          packages: ['clang-5.0', 'libdevil-dev', 'libarchive-dev', 'libc++-dev', 'libc++abi-dev', 'ninja-build', 'python3-pip']
           sources: &sources
-            - ubuntu-toolchain-r-test
+            - llvm-toolchain-trusty-5.0
       script:
-        - cmake -G "Ninja" -DCMAKE_CXX_COMPILER=g++-7 -DCMAKE_BUILD_TYPE=Debug -DNANO_WITH_WERROR=ON -DNANO_WITH_ASAN=ON ..
+        - PATH=$PATH:/usr/lib/llvm-5.0/bin/
+        - cmake -G "Ninja" -DCMAKE_CXX_COMPILER=clang++-5.0 -DNANO_WITH_WERROR=ON -DNANO_WITH_ASAN=ON -DNANO_WITH_LIBCPP=ON ..
         - ninja
         - bash ../scripts/ci_ctest.sh
 
-    - os: linux
-      compiler: gcc
-      env: TEST="MSAN (gcc-7)"
-      addons:
-        apt:
-          packages: ['gcc-7', 'g++-7', 'libdevil-dev', 'libarchive-dev', 'ninja-build', 'python3-pip']
-          sources: &sources
-            - ubuntu-toolchain-r-test
-      script:
-        - cmake -G "Ninja" -DCMAKE_CXX_COMPILER=g++-7 -DCMAKE_BUILD_TYPE=Debug -DNANO_WITH_WERROR=ON -DNANO_WITH_MSAN=ON ..
-        - ninja
-        - bash ../scripts/ci_ctest.sh
+    #- os: linux
+    #  compiler: clang
+    #  env: TEST="MSAN (clang-5.0)"
+    #  addons:
+    #    apt:
+    #      packages: ['clang-5.0', 'libdevil-dev', 'libarchive-dev', 'libc++-dev', 'libc++abi-dev', 'ninja-build', 'python3-pip']
+    #      sources: &sources
+    #        - llvm-toolchain-trusty-5.0
+    #  script:
+    #    - PATH=$PATH:/usr/lib/llvm-5.0/bin/
+    #    - cmake -G "Ninja" -DCMAKE_CXX_COMPILER=clang++-5.0 -DNANO_WITH_WERROR=ON -DNANO_WITH_MSAN=ON -DNANO_WITH_LIBCPP=ON ..
+    #    - ninja
+    #    - bash ../scripts/ci_ctest.sh
 
     - os: linux
-      compiler: gcc
-      env: TEST="TSAN (gcc-7)"
+      compiler: clang
+      env: TEST="TSAN (clang-5.0)"
       addons:
         apt:
-          packages: ['gcc-7', 'g++-7', 'libdevil-dev', 'libarchive-dev', 'ninja-build', 'python3-pip']
+          packages: ['clang-5.0', 'libdevil-dev', 'libarchive-dev', 'libc++-dev', 'libc++abi-dev', 'ninja-build', 'python3-pip']
           sources: &sources
-            - ubuntu-toolchain-r-test
+            - llvm-toolchain-trusty-5.0
       script:
-        - cmake -G "Ninja" -DCMAKE_CXX_COMPILER=g++-7 -DCMAKE_BUILD_TYPE=Debug -DNANO_WITH_WERROR=ON -DNANO_WITH_TSAN=ON ..
+        - PATH=$PATH:/usr/lib/llvm-5.0/bin/
+        - cmake -G "Ninja" -DCMAKE_CXX_COMPILER=clang++-5.0 -DNANO_WITH_WERROR=ON -DNANO_WITH_TSAN=ON -DNANO_WITH_LIBCPP=ON ..
         - ninja
         - bash ../scripts/ci_ctest.sh
 
@@ -144,7 +147,8 @@ matrix:
           sources: &sources
             - llvm-toolchain-trusty-5.0
       script:
-        - cmake -G "Ninja" -DCMAKE_CXX_COMPILER=clang++-5.0 -DCMAKE_BUILD_TYPE=Debug -DNANO_WITH_WERROR=ON -DNANO_WITH_LIBCPP=ON -DNANO_WITH_CLANG_TIDY=ON ..
+        - PATH=$PATH:/usr/lib/llvm-5.0/bin/
+        - cmake -G "Ninja" -DCMAKE_CXX_COMPILER=clang++-5.0 -DNANO_WITH_WERROR=ON -DNANO_WITH_LIBCPP=ON -DNANO_WITH_CLANG_TIDY=ON ..
         - bash ../scripts/ci_clang_tidy.sh
 
     - os: linux
@@ -180,7 +184,7 @@ matrix:
       osx_image: xcode7.3
       env: TEST="build (xcode7.3)"
       script:
-        - cmake -G "Ninja" -DCMAKE_BUILD_TYPE=Debug -DNANO_WITH_WERROR=ON ..
+        - cmake -G "Ninja" -DNANO_WITH_WERROR=ON ..
         - ninja
         - bash ../scripts/ci_ctest.sh
 
@@ -189,7 +193,7 @@ matrix:
       osx_image: xcode8.3
       env: TEST="build (xcode8.3)"
       script:
-        - cmake -G "Ninja" -DCMAKE_BUILD_TYPE=Debug -DNANO_WITH_WERROR=ON ..
+        - cmake -G "Ninja" -DNANO_WITH_WERROR=ON ..
         - ninja
         - bash ../scripts/ci_ctest.sh
 
@@ -198,6 +202,6 @@ matrix:
       osx_image: xcode9.1
       env: TEST="build (xcode9.1)"
       script:
-        - cmake -G "Ninja" -DCMAKE_BUILD_TYPE=Debug -DNANO_WITH_WERROR=ON ..
+        - cmake -G "Ninja" -DNANO_WITH_WERROR=ON ..
         - ninja
         - bash ../scripts/ci_ctest.sh

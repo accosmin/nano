@@ -21,6 +21,10 @@ if(NANO_WITH_CCACHE)
         setup_ccache()
 endif()
 
+if(NOT CMAKE_BUILD_TYPE)
+        set(CMAKE_BUILD_TYPE "Debug")
+endif()
+
 set(NANO_MAJOR_VERSION 0)
 set(NANO_MINOR_VERSION 4)
 exec_program("git" ${CMAKE_CURRENT_SOURCE_DIR} ARGS "rev-parse HEAD" OUTPUT_VARIABLE NANO_GIT_COMMIT_HASH)
@@ -32,6 +36,7 @@ configure_file(
 message("++ -----------------------------------------------------------------------------" "")
 message("++ SYSTEM:                        " "${CMAKE_SYSTEM_NAME}")
 message("++ PROCESSOR:                     " "${CMAKE_HOST_SYSTEM_PROCESSOR}")
+message("++ LINKER:                        " "${CMAKE_LINKER}")
 message("++ COMPILER:                      " "${CMAKE_CXX_COMPILER_ID} ${CMAKE_CXX_COMPILER_VERSION}")
 message("++ ------------------------------------------------------------------------------" "")
 message("++ CXX FLAGS:                     " "${CMAKE_CXX_FLAGS}")
