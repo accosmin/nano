@@ -81,7 +81,7 @@ NANO_CASE(tune_and_train)
         for (const auto& solver : get_batch_solvers().ids())
         {
                 trainer->config(json_writer_t().object(
-                        "epochs", 20, "solver", solver, "epsilon", epsilon1<scalar_t>()).str());
+                        "epochs", 20, "solver", solver, "epsilon", epsilon2<scalar_t>()).str());
 
                 accumulator_t acc(model, *loss);
                 acc.threads(1);
@@ -91,9 +91,9 @@ NANO_CASE(tune_and_train)
                 NANO_REQUIRE(result);
 
                 const auto state = result.optimum_state();
-                NANO_CHECK_LESS(state.m_train.m_error, epsilon2<scalar_t>());
-                NANO_CHECK_LESS(state.m_valid.m_error, epsilon2<scalar_t>());
-                NANO_CHECK_LESS(state.m_test.m_error, epsilon2<scalar_t>());
+                NANO_CHECK_LESS(state.m_train.m_value, epsilon2<scalar_t>());
+                NANO_CHECK_LESS(state.m_valid.m_value, epsilon2<scalar_t>());
+                NANO_CHECK_LESS(state.m_test.m_value, epsilon2<scalar_t>());
         }
 }
 
