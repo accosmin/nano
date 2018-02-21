@@ -1,5 +1,6 @@
 #include "lrate.h"
 #include "math/numeric.h"
+#include "math/epsilon.h"
 #include "tensor/momentum.h"
 #include "solver_stoch_adam.h"
 
@@ -10,20 +11,17 @@ tuner_t stoch_adam_t::configs() const
         tuner_t tuner;
         tuner.add_finite("alpha0", make_scalars(1e-3, 3e-3, 1e-2, 3e-2, 1e-1, 3e-1, 1e+0)).precision(3);
         tuner.add_finite("tnorm", make_scalars(1, 10, 100)).precision(0);
-        tuner.add_finite("epsilon", make_scalars(1e-6, 3e-6, 1e-5, 3e-5, 1e-4, 3e-4, 1e-3, 3e-3, 1e-2)).precision(6);
         return tuner;
 }
 
 json_reader_t& stoch_adam_t::config(json_reader_t& reader)
 {
-        return reader.object("alpha0", m_alpha0, "decay", m_decay, "tnorm", m_tnorm,
-                "epsilon", m_epsilon, "beta1", m_beta1, "beta2", m_beta2);
+        return reader.object("alpha0", m_alpha0, "decay", m_decay, "tnorm", m_tnorm, "beta1", m_beta1, "beta2", m_beta2);
 }
 
 json_writer_t& stoch_adam_t::config(json_writer_t& writer) const
 {
-        return writer.object("alpha0", m_alpha0, "decay", m_decay, "tnorm", m_tnorm,
-                "epsilon", m_epsilon, "beta1", m_beta1, "beta2", m_beta2);
+        return writer.object("alpha0", m_alpha0, "decay", m_decay, "tnorm", m_tnorm, "beta1", m_beta1, "beta2", m_beta2);
 }
 
 solver_state_t stoch_adam_t::minimize(const stoch_params_t& param, const function_t& function, const vector_t& x0) const
@@ -47,7 +45,7 @@ solver_state_t stoch_adam_t::minimize(const stoch_params_t& param, const functio
                 m.update(cstate.g);
                 v.update(cstate.g.array().square());
 
-                cstate.d = -m.value().array() / (m_epsilon + v.value().array().sqrt());
+                cstate.d = -m.value().array() / (epsilon1<scalar_t>() + v.value().array().sqrt());
 
                 // update solution
                 function.stoch_next();

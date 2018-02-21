@@ -1,5 +1,6 @@
 #include "lrate.h"
 #include "math/numeric.h"
+#include "math/epsilon.h"
 #include "tensor/momentum.h"
 #include "solver_stoch_amsgrad.h"
 
@@ -48,7 +49,7 @@ solver_state_t stoch_amsgrad_t::minimize(const stoch_params_t& param, const func
                 v.update(cstate.g.array().square());
                 vhat = vhat.array().max(v.value().array());
 
-                cstate.d = -m.value().array() / vhat.array().sqrt();
+                cstate.d = -m.value().array() / (epsilon1<scalar_t>() + vhat.array().sqrt());
 
                 // update solution
                 function.stoch_next();
