@@ -27,9 +27,8 @@ namespace benchmark
                 // show global statistics
                 table_t table;
                 table.header()
-                        << nano::align(table_name.empty() ? "solver" : table_name, 32)
-                        << "cost"
-                        << "|g|/(1+|f|)"
+                        << nano::align(table_name.empty() ? "solver" : table_name, 42)
+                        << "gnorm"
                         << "#fails"
                         << "#fcalls"
                         << "#gcalls"
@@ -45,7 +44,6 @@ namespace benchmark
                         {
                                 table.append()
                                 << name
-                                << static_cast<size_t>(stat.m_fcalls.avg() + 2 * stat.m_gcalls.avg())
                                 << stat.m_crits.avg()
                                 << static_cast<size_t>(stat.m_fails.sum1())
                                 << static_cast<size_t>(stat.m_fcalls.avg())
@@ -54,7 +52,7 @@ namespace benchmark
                         }
                 }
 
-                table.sort(nano::make_less_from_string<scalar_t>(), {2, 0});
+                table.sort(nano::make_less_from_string<scalar_t>(), {1});
                 std::cout << table;
         }
 
