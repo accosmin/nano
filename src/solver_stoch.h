@@ -71,11 +71,9 @@ namespace nano
                         for (size_t e = 0; e < param.m_max_epochs; ++ e)
                         {
                                 // for each iteration ...
-                                const auto gcalls = function.gcalls();
-                                while (function.gcalls() <= gcalls && cstate)
+                                for (const auto gcalls = function.gcalls(); function.gcalls() <= gcalls && cstate; )
                                 {
                                         solver(cstate, fstate);
-                                        break;
                                 }
 
                                 // check divergence

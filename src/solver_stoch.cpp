@@ -10,6 +10,7 @@
 #include "stoch/solver_stoch_asgd.h"
 #include "stoch/solver_stoch_rmsprop.h"
 #include "stoch/solver_stoch_amsgrad.h"
+#include "stoch/solver_stoch_cocob.h"
 
 using namespace nano;
 
@@ -61,6 +62,7 @@ stoch_solver_factory_t& nano::get_stoch_solvers()
                 manager.add<stoch_adadelta_t>("adadelta", "AdaDelta (see citation)");
                 manager.add<stoch_rmsprop_t>("rmsprop", "RMSProp (see citation)");
                 manager.add<stoch_amsgrad_t>("amsgrad", "AMSGrad (see citation)");
+                manager.add<stoch_cocob_t>("cocob", "COCOB-Backprop (see citation)");
         });
 
         return manager;

@@ -30,6 +30,8 @@ static void check_function(const function_t& function)
                 {
                         const auto x0 = vector_t::Random(function.size());
                         const auto f0 = function.eval(x0);
+                        const auto fcalls0 = function.fcalls();
+                        const auto gcalls0 = function.gcalls();
 
                         // optimize
                         const auto params = stoch_params_t(epochs, epsilon2<scalar_t>());
@@ -50,7 +52,8 @@ static void check_function(const function_t& function)
                                   << " [" << (t + 1) << "/" << trials << "]"
                                   << ": x=[" << x0.transpose() << "]/[" << x.transpose() << "]"
                                   << ",f=" << f0 << "/" << f << ",g=" << g << "[" << to_string(state.m_status) << "]"
-                                  << ",calls=" << function.fcalls() << "/" << function.gcalls() << ".\n";
+                                  << ",calls=" << (function.fcalls() - fcalls0)
+                                  << "/" << (function.gcalls() - gcalls0) << ".\n";
 
                         // check function value decrease
                         NANO_CHECK_LESS_EQUAL(f, f0 + epsilon1<scalar_t>());

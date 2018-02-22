@@ -9,6 +9,7 @@ list(APPEND libnano_sources
         ${CMAKE_CURRENT_SOURCE_DIR}/solver_stoch_svrg.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/solver_stoch_asgd.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/solver_stoch_rmsprop.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/solver_stoch_amsgrad.cpp)
+        ${CMAKE_CURRENT_SOURCE_DIR}/solver_stoch_amsgrad.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/solver_stoch_cocob.cpp)
 
 set(libnano_sources "${libnano_sources}" PARENT_SCOPE)
