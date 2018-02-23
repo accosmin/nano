@@ -17,29 +17,36 @@ using namespace nano;
 solver_state_t stoch_solver_t::tune(const stoch_params_t& params, const function_t& function, const vector_t& x0,
         const size_t trials_per_parameter)
 {
-        solver_state_t best_state;
-        string_t best_config;
-
         auto tuner = this->configs();
-        const auto trials = trials_per_parameter * tuner.n_params();
 
-        // try all possible configurations
-        // todo: put back in place the previous coarse-to-fine approach to tuning (e.g. search in log10-space)
-        for (size_t trial = 0; trial < trials; ++ trial)
+        if (tuner.n_params() == size_t(0))
         {
-                const auto config = tuner.get();
-                this->config(config);
-
-                const auto state = minimize(params, function, x0);
-                if (state < best_state)
-                {
-                        best_state = state;
-                        best_config = config;
-                }
+                // no tuning required (e.g. parameter-free optimization)
+                return minimize(params, function, x0);
         }
+        else
+        {
+                // tuning required: the number of trials is proportional with the number of parameters to tune
+                string_t best_config;
+                solver_state_t best_state;
 
-        this->config(best_config);
-        return best_state;
+                const auto trials = trials_per_parameter * tuner.n_params();
+                for (size_t trial = 0; trial < trials; ++ trial)
+                {
+                        const auto config = tuner.get();
+                        this->config(config);
+
+                        const auto state = minimize(params, function, x0);
+                        if (state < best_state)
+                        {
+                                best_state = state;
+                                best_config = config;
+                        }
+                }
+
+                this->config(best_config);
+                return best_state;
+        }
 }
 
 stoch_solver_factory_t& nano::get_stoch_solvers()
