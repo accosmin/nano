@@ -25,7 +25,7 @@ static void check_function(const function_t& function)
                 const auto solver = get_batch_solvers().get(id);
                 NANO_REQUIRE(solver);
 
-                solver->config(json_writer_t().object("c1", epsilon0<scalar_t>()).str());
+                solver->config(json_writer_t().object("c1", epsilon2<scalar_t>()).str());
 
                 size_t out_of_domain = 0;
 

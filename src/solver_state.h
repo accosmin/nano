@@ -103,7 +103,7 @@ namespace nano
                 ///
                 scalar_t convergence_criteria() const
                 {
-                        return g.lpNorm<Eigen::Infinity>();
+                        return g.lpNorm<Eigen::Infinity>() / (1 + std::fabs(f));
                 }
 
                 ///
