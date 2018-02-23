@@ -25,7 +25,6 @@ solver_state_t stoch_cocob_t::minimize(const stoch_params_t& param, const functi
         vector_t theta = vector_t::Zero(x0.size());
         vector_t reward = vector_t::Zero(x0.size());
 
-        // assembly the solver
         const auto solver = [&] (solver_state_t& cstate, const solver_state_t&)
         {
                 // descent direction

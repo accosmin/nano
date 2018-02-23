@@ -6,7 +6,7 @@ using namespace nano;
 tuner_t stoch_adadelta_t::configs() const
 {
         tuner_t tuner;
-        tuner.add_finite("epsilon", make_scalars(1e-6, 3e-6, 1e-5, 3e-5, 1e-4, 3e-4, 1e-3, 3e-3, 1e-2)).precision(6);
+        tuner.add_finite("epsilon", make_scalars(1e-6, 1e-5, 1e-4, 1e-3, 1e-2)).precision(6);
         tuner.add_finite("momentum", make_scalars(0.10, 0.20, 0.50, 0.90)).precision(2);
         return tuner;
 }
@@ -23,13 +23,9 @@ json_writer_t& stoch_adadelta_t::config(json_writer_t& writer) const
 
 solver_state_t stoch_adadelta_t::minimize(const stoch_params_t& param, const function_t& function, const vector_t& x0) const
 {
-        // second-order momentum of the gradient
         momentum_t<vector_t> gavg(m_momentum, x0.size());
-
-        // second-order momentum of the step updates
         momentum_t<vector_t> davg(m_momentum, x0.size());
 
-        // assembly the solver
         const auto solver = [&] (solver_state_t& cstate, const solver_state_t&)
         {
                 // descent direction

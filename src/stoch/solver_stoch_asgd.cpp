@@ -8,42 +8,36 @@ tuner_t stoch_asgd_t::configs() const
 {
         tuner_t tuner;
         tuner.add_finite("alpha0", make_scalars(1e-3, 3e-3, 1e-2, 3e-2, 1e-1, 3e-1, 1e+0)).precision(3);
-        tuner.add_finite("tnorm", make_scalars(1, 10, 100)).precision(0);
+        tuner.add_finite("decay", make_scalars(0.0, 0.1, 0.2, 0.5, 0.9)).precision(1);
         tuner.add_finite("momentum", make_scalars(0.10, 0.20, 0.50, 0.90)).precision(2);
         return tuner;
 }
 
 json_reader_t& stoch_asgd_t::config(json_reader_t& reader)
 {
-        return reader.object("alpha0", m_alpha0, "decay", m_decay, "tnorm", m_tnorm, "momentum", m_momentum);
+        return reader.object("alpha0", m_alpha0, "decay", m_decay, "momentum", m_momentum);
 }
 
 json_writer_t& stoch_asgd_t::config(json_writer_t& writer) const
 {
-        return writer.object("alpha0", m_alpha0, "decay", m_decay, "tnorm", m_tnorm, "momentum", m_momentum);
+        return writer.object("alpha0", m_alpha0, "decay", m_decay, "momentum", m_momentum);
 }
 
 solver_state_t stoch_asgd_t::minimize(const stoch_params_t& param, const function_t& function, const vector_t& x0) const
 {
-        // learning rate schedule
-        lrate_t lrate(m_alpha0, m_decay, m_tnorm);
+        lrate_t lrate(m_alpha0, m_decay);
 
-        // average state
         momentum_t<vector_t> xavg(m_momentum, x0.size());
 
-        // assembly the solver
         const auto solver = [&] (solver_state_t& cstate, const solver_state_t&)
         {
-                // learning rate
-                const scalar_t alpha = lrate.get();
-
                 // descent direction
                 xavg.update(cstate.x);
                 cstate.d = -cstate.g;
 
                 // update solution
                 function.stoch_next();
-                cstate.stoch_update(function, alpha);
+                cstate.stoch_update(function, lrate.get());
         };
 
         const auto snapshot = [&] (const solver_state_t&, solver_state_t& sstate)

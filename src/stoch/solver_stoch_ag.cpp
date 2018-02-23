@@ -54,12 +54,8 @@ solver_state_t stoch_ag_base_t<trestart>::minimize(const stoch_params_t& param,
         scalar_t ptheta = 1;
         scalar_t ctheta = 1;
 
-        // assembly the solver
         const auto solver = [&] (solver_state_t& cstate, const solver_state_t&)
         {
-                // learning rate
-                const scalar_t alpha = m_alpha0;
-
                 // momentum
                 ctheta = get_theta(ptheta, m_q);
                 const scalar_t beta = get_beta(ptheta, ctheta);
@@ -67,7 +63,7 @@ solver_state_t stoch_ag_base_t<trestart>::minimize(const stoch_params_t& param,
                 // update solution
                 function.stoch_next();
                 cstate.stoch_update(function, py);
-                cx = py - alpha * cstate.g;
+                cx = py - m_alpha0 * cstate.g;
                 cy = cx + beta * (cx - px);
                 cstate.x = cx; // NB: to propagate the current parameters!
 
