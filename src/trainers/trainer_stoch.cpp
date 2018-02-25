@@ -85,13 +85,11 @@ trainer_result_t stoch_trainer_t::train(const task_t& task, const size_t fold, a
         const auto solver = get_stoch_solvers().get(m_solver);
 
         auto tuner = solver->configs();
-        tuner.add_finite("batchr", make_scalars(1.005, 1.010, 1.020, 1.050, 1.100)).precision(3);
-        const auto trials = 10 * tuner.n_params();
+        tuner.add("batchr", make_scalars(1.005, 1.010, 1.020, 1.050, 1.100)).precision(3);
 
         // tune the hyper-parameters: solver + minibatch increase factor
-        for (size_t trial = 0; trial < trials; ++ trial)
+        for (const auto& config : tuner.get(10 * tuner.n_params()))
         {
-                const auto config = tuner.get();
                 const auto epochs = m_epochs;
                 const auto epsilon = m_epsilon;
                 const auto patience = m_patience;

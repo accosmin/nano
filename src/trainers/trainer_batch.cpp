@@ -83,13 +83,11 @@ trainer_result_t batch_trainer_t::train(const task_t& task, const size_t fold, a
         const auto solver = get_batch_solvers().get(m_solver);
 
         tuner_t tuner;
-        tuner.add_base10("lambda", -6, -1);
-        const auto trials = 10 * tuner.n_params();
+        tuner.add("lambda", make_pow10_scalars(0, -6, -1));
 
         // tune the hyper-parameters: solver + L2-regularizer
-        for (size_t trial = 0; trial < trials; ++ trial)
+        for (const auto& config : tuner.get(10 * tuner.n_params()))
         {
-                const auto config = tuner.get();
                 const auto epochs = m_epochs;
                 const auto epsilon = m_epsilon;
                 const auto patience = m_patience;

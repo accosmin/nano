@@ -19,8 +19,7 @@ namespace nano
         ///
         inline auto make_rng()
         {
-                rng_t rng{std::random_device{}()};
-                return rng;
+                return rng_t{std::random_device{}()};
         }
 
         ///

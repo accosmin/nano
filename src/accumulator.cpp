@@ -164,6 +164,7 @@ scalar_t accumulator_t::value() const
 vector_t accumulator_t::vgrad() const
 {
         assert(vstats().count() > 0);
+        assert(m_type == type::vgrad);
         return origin().m_vgrad / vstats().count() + m_lambda * params();
 }
 

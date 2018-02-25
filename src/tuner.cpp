@@ -1,172 +1,105 @@
 #include "tuner.h"
 #include <sstream>
 #include <iomanip>
+#include "math/random.h"
 #include "math/numeric.h"
 #include "text/json_writer.h"
 
 using namespace nano;
 
-namespace
+scalars_t nano::make_pow10_scalars(const scalar_t offset, const int min_power, const int max_power)
 {
-        template <typename trng>
-        scalar_t urand(const scalar_t min, const scalar_t max, trng&& rng)
+        assert(min_power <= max_power);
+
+        scalars_t values;
+        for (int power = min_power; power <= max_power; ++ power)
         {
-                std::uniform_real_distribution<scalar_t> dist(min, max);
-                return dist(rng);
+                values.push_back(offset + scalar_t(1) * std::pow(scalar_t(10), power));
+                values.push_back(offset + scalar_t(3) * std::pow(scalar_t(10), power));
         }
 
-        template <typename trng>
-        scalar_t urand(const scalar_t min, const scalar_t max, const scalar_t value, const scalar_t scale, trng&& rng)
-        {
-                const auto delta = scale * (max - min);
-                std::normal_distribution<scalar_t> dist(value, delta);
-                return clamp(dist(rng), min, max);
-        }
-
-        template <typename trng>
-        scalar_t urand(const scalars_t& values, trng&& rng)
-        {
-                std::uniform_int_distribution<size_t> dist(0, values.size() - 1);
-                return values[dist(rng)];
-        }
+        return values;
 }
 
-tuner_t::tuner_t() :
-        m_rng(std::random_device{}())
+strings_t tuner_t::get(const size_t max_configs) const
 {
-}
+        indices_t indices(1u, 0u);
+        scalars_t values(m_params.size(), scalar_t(0));
 
-string_t tuner_t::get()
-{
-        assert(!m_params.empty());
-
-        const auto trial = explore();
-        m_trials.push_back(trial);
-        return json(trial);
-}
-
-tuner_t::trial_t tuner_t::explore()
-{
-        trial_t trial;
-        trial.m_values.reserve(m_params.size());
-
-        for (const auto& param : m_params)
+        // generate all possible hyper-parameter combinations
+        strings_t configs;
+        while (n_params() > 0)
         {
-                switch (param.m_type)
+                assert(!indices.empty());
+
+                if (indices.size() == n_params())
                 {
-                case param_type::linear:
-                case param_type::base10:
-                        trial.m_values.push_back(urand(param.m_min, param.m_max, m_rng));
-                        break;
+                        auto i = indices.size() - 1;
+                        for ( ; indices[i] < m_params[i].size(); ++ indices[i])
+                        {
+                                map(indices, values);
+                                configs.push_back(json(values));
+                        }
 
-                case param_type::finite:
-                        assert(!param.m_values.empty());
-                        trial.m_values.push_back(urand(param.m_values, m_rng));
-                        break;
+                        for ( ; i > 0; )
+                        {
+                                -- i;
+                                indices.pop_back();
+                                if (indices[i] + 1 < m_params[i].size())
+                                {
+                                        ++ indices[i];
+                                        break;
+                                }
+                                else
+                                {
+                                        ++ indices[i];
+                                }
 
-                default:
-                        assert(false);
+                        }
+
+                        if (i == 0 && indices[i] == m_params[i].size())
+                                break;
+                }
+                else
+                {
+                        indices.push_back(0u);
                 }
         }
 
-        return trial;
+        assert(configs.size() == n_configs());
+
+        // randomly return the required number of hyper-parameter combinations
+        std::shuffle(configs.begin(), configs.end(), make_rng());
+        return {configs.begin(), configs.begin() + std::min(configs.size(), max_configs)};
 }
 
-tuner_t::trial_t tuner_t::exploit()
+void tuner_t::map(const indices_t& indices, scalars_t& values) const
 {
-        scalars_t scores;
-        for (const auto& trial : m_trials)
-        {
-                scores.push_back(trial.m_score);
-        }
-
-        // NB: the score for the world (aka exploration)!
-//        scores.push_back(scores.empty() ?
-//               scalar_t(1) :
-//                *std::max_element(scores.begin(), scores.end()) + std::numeric_limits<scalar_t>::epsilon());
-        scores.push_back(
-                std::accumulate(scores.begin(), scores.end(), std::numeric_limits<scalar_t>::epsilon()));
-
-        // sample a new trial based on previous trials' scores
-        std::discrete_distribution<size_t> dist(scores.begin(), scores.end());
-        const auto itrial = dist(m_rng);
-
-        if (itrial < m_trials.size())
-        {
-                // refine a previous trial
-                return exploit(itrial);
-        }
-        else
-        {
-                // create a new trial from scratch
-                return explore();
-        }
-}
-
-tuner_t::trial_t tuner_t::exploit(const size_t itrial)
-{
-        trial_t trial;
-
-        const auto& ptrial = m_trials[itrial];
-        const auto scale = std::pow(scalar_t(0.5), static_cast<scalar_t>(ptrial.m_depth));
+        assert(indices.size() == m_params.size());
+        assert(values.size() == m_params.size());
 
         for (size_t i = 0; i < m_params.size(); ++ i)
         {
                 const auto& param = m_params[i];
-                switch (param.m_type)
-                {
-                case param_type::linear:
-                case param_type::base10:
-                        trial.m_values.push_back(urand(param.m_min, param.m_max, ptrial.m_values[i], scale, m_rng));
-                        break;
 
-                case param_type::finite:
-                        assert(!param.m_values.empty());
-                        trial.m_values.push_back(ptrial.m_values[i]);
-                        break;
-
-                default:
-                        assert(false);
-                }
+                assert(indices[i] < param.m_values.size());
+                values[i] = param.m_values[indices[i]];
         }
-
-        return trial;
 }
 
-void tuner_t::score(const scalar_t score)
+string_t tuner_t::json(const scalars_t& values) const
 {
-        assert(!m_trials.empty());
-        m_trials.rbegin()->m_score = score;
-}
-
-string_t tuner_t::optimum() const
-{
-        assert(!m_trials.empty());
-        const auto comp = [] (const auto& t1, const auto& t2) { return t1.m_score < t2.m_score; };
-        const auto it = std::max_element(m_trials.begin(), m_trials.end(), comp);
-        return json(*it);
-}
-
-string_t tuner_t::json(const trial_t& trial) const
-{
-        assert(trial.m_values.size() == m_params.size());
+        assert(values.size() == m_params.size());
 
         json_writer_t writer;
         writer.new_object();
         for (size_t i = 0; i < m_params.size(); ++ i)
         {
                 const auto& param = m_params[i];
-                const auto& value = trial.m_values[i];
+                const auto& value = values[i];
 
                 std::stringstream stream;
-                stream << std::fixed << std::setprecision(param.m_precision);
-                switch (param.m_type)
-                {
-                case param_type::linear:        stream << value; break;
-                case param_type::finite:        stream << value; break;
-                case param_type::base10:        stream << (param.m_offset + std::pow(scalar_t(10), value)); break;
-                default:                        assert(false);
-                }
+                stream << std::fixed << std::setprecision(param.m_precision) << value;
 
                 writer.pair(param.m_name, stream.str());
                 if (i + 1 < m_params.size())
@@ -177,4 +110,15 @@ string_t tuner_t::json(const trial_t& trial) const
         writer.end_object();
 
         return writer.str();
+}
+
+size_t tuner_t::n_configs() const
+{
+        size_t count = 1;
+        for (const auto& param : m_params)
+        {
+                count *= param.m_values.size();
+        }
+
+        return count;
 }

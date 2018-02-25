@@ -26,95 +26,87 @@ static void get(const string_t& json, scalar_t& x, scalar_t& y, scalar_t& z)
         reader.object("x", x, "y", y, "z", z);
 }
 
+static bool is_unique(strings_t configs)
+{
+        std::sort(configs.begin(), configs.end());
+        return std::unique(configs.begin(), configs.end()) == configs.end();
+}
+
 NANO_BEGIN_MODULE(test_tuner)
 
 NANO_CASE(tuner1d)
 {
-        const auto eval = [] (const scalar_t x)
-        {
-                return (x - 1) * (x - 1);
-        };
-
         tuner_t tuner;
-        tuner.add_linear("x", -3, +3);
+        tuner.add("x", make_scalars(-3, +3));
+
+        NANO_CHECK_EQUAL(tuner.n_params(), 1u);
+        NANO_CHECK_EQUAL(tuner.n_configs(), 2u);
+
+        const auto configs = tuner.get(100);
+        NANO_CHECK(is_unique(configs));
+        NANO_CHECK_EQUAL(configs.size(), 2u);
 
         scalar_t x = 0;
-        for (int trial = 0; trial < 100; ++ trial)
+        for (const auto& config : configs)
         {
-                get(tuner.get(), x);
+                get(config, x);
 
-                NANO_CHECK_LESS(x, scalar_t(+3));
-                NANO_CHECK_GREATER(x, scalar_t(-3));
-
-                tuner.score(1 / (1 + eval(x)));
+                const auto prodx = (x - 3) * (x + 3);
+                NANO_CHECK_CLOSE(prodx, 0, epsilon0<scalar_t>());
         }
-
-        //get(tuner.optimum(), x);
-        //NANO_CHECK_LESS(eval(x), epsilon2<scalar_t>());
-        //NANO_CHECK_CLOSE(x, 1, epsilon3<scalar_t>());
 }
 
 NANO_CASE(tuner2d)
 {
-        const auto eval = [] (const scalar_t x, const scalar_t y)
-        {
-                return (x - 1) * (x - 1) + std::fabs(y - 2);
-        };
-
         tuner_t tuner;
-        tuner.add_linear("x", -3, +3);
-        tuner.add_base10("y", 0, 1);
+        tuner.add("x", make_scalars(-3, +3, +2));
+        tuner.add("y", make_pow10_scalars(-1, 0, 1));
+
+        NANO_CHECK_EQUAL(tuner.n_params(), 2u);
+        NANO_CHECK_EQUAL(tuner.n_configs(), 12u);
+
+        const auto configs = tuner.get(10);
+        NANO_CHECK(is_unique(configs));
+        NANO_CHECK_EQUAL(configs.size(), 10u);
 
         scalar_t x = 0, y = 0;
-        for (int trial = 0; trial < 100; ++ trial)
+        for (const auto& config : configs)
         {
-                get(tuner.get(), x, y);
+                get(config, x, y);
 
-                NANO_CHECK_LESS(x, scalar_t(+3));
-                NANO_CHECK_LESS(y, scalar_t(10));
-                NANO_CHECK_GREATER(x, scalar_t(-3));
-                NANO_CHECK_GREATER(y, scalar_t(1));
-
-                tuner.score(1 / (1 + eval(x, y)));
+                const auto prodx = (x - 3) * (x + 3) * (x - 2);
+                const auto prody = (y + 1 - 1) * (y + 1 - 3) * (y + 1 - 10) * (y + 1 - 30);
+                NANO_CHECK_CLOSE(prodx, 0, epsilon0<scalar_t>());
+                NANO_CHECK_CLOSE(prody, 0, epsilon0<scalar_t>());
         }
-
-        //get(tuner.optimum(), x, y);
-        //NANO_CHECK_LESS(eval(x, y), epsilon2<scalar_t>());
-        //NANO_CHECK_CLOSE(x, 1, epsilon3<scalar_t>());
-        //NANO_CHECK_CLOSE(y, 2, epsilon3<scalar_t>());
 }
 
 NANO_CASE(tuner3d)
 {
-        const auto eval = [] (const scalar_t x, const scalar_t y, const scalar_t z)
-        {
-                return (x - 1) * (x - 1) + std::fabs(y - 2) + (z - x) * (z - x);
-        };
-
         tuner_t tuner;
-        tuner.add_linear("x", -2, +2);
-        tuner.add_base10("y", 0, 1);
-        tuner.add_finite("z", make_scalars(-2, 0, 1));
+        tuner.add("x", make_scalars(-3, +3, +2));
+        tuner.add("y", make_pow10_scalars(-1, 0, 1));
+        tuner.add("z", make_scalars(0, 1));
+
+        NANO_CHECK_EQUAL(tuner.n_params(), 3u);
+        NANO_CHECK_EQUAL(tuner.n_configs(), 24u);
+
+        const auto configs = tuner.get(20);
+        NANO_CHECK(is_unique(configs));
+        NANO_CHECK_EQUAL(configs.size(), 20u);
 
         scalar_t x = 0, y = 0, z = 0;
-        for (int trial = 0; trial < 100; ++ trial)
+        for (const auto& config : configs)
         {
-                get(tuner.get(), x, y, z);
+                get(config, x, y, z);
 
-                NANO_CHECK_LESS(x, scalar_t(+3));
-                NANO_CHECK_LESS(y, scalar_t(10));
-                NANO_CHECK_GREATER(x, scalar_t(-3));
-                NANO_CHECK_GREATER(y, scalar_t(1));
-                NANO_CHECK_CLOSE((z + 2) * z * (z - 1), scalar_t(0), epsilon0<scalar_t>());
-
-                tuner.score(1 / (1 + eval(x, y, z)));
+                const auto prodx = (x - 3) * (x + 3) * (x - 2);
+                const auto prody = (y + 1 - 1) * (y + 1 - 3) * (y + 1 - 10) * (y + 1 - 30);
+                const auto prodz = (z - 0) * (z - 1);
+                NANO_CHECK_CLOSE(prodx, 0, epsilon0<scalar_t>());
+                NANO_CHECK_CLOSE(prody, 0, epsilon0<scalar_t>());
+                NANO_CHECK_CLOSE(prodz, 0, epsilon0<scalar_t>());
         }
-
-        //get(tuner.optimum(), x, y, z);
-        //NANO_CHECK_LESS(eval(x, y, z), epsilon3<scalar_t>());
-        //NANO_CHECK_CLOSE(x, 1, epsilon3<scalar_t>());
-        //NANO_CHECK_CLOSE(y, 2, epsilon3<scalar_t>());
-        //NANO_CHECK_CLOSE(z, x, epsilon3<scalar_t>());
 }
 
 NANO_END_MODULE()

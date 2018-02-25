@@ -7,10 +7,9 @@ using namespace nano;
 tuner_t stoch_rmsprop_t::configs() const
 {
         tuner_t tuner;
-        tuner.add_finite("alpha0", make_scalars(1e-3, 3e-3, 1e-2, 3e-2, 1e-1, 3e-1, 1e+0)).precision(3);
-        tuner.add_finite("decay", make_scalars(0.0, 0.1, 0.2, 0.5, 0.9)).precision(1);
-        tuner.add_finite("epsilon", make_scalars(1e-6, 1e-5, 1e-4, 1e-3, 1e-2)).precision(6);
-        tuner.add_finite("momentum", make_scalars(0.10, 0.20, 0.50, 0.90)).precision(2);
+        tuner.add("alpha0", make_pow10_scalars(0, -3, +0)).precision(3);
+        tuner.add("decay", make_scalars(0.0, 0.1, 0.2, 0.5, 0.9)).precision(1);
+        tuner.add("momentum", make_scalars(0.10, 0.20, 0.50, 0.90)).precision(2);
         return tuner;
 }
 

@@ -30,10 +30,8 @@ solver_state_t stoch_solver_t::tune(const stoch_params_t& params, const function
                 string_t best_config;
                 solver_state_t best_state;
 
-                const auto trials = trials_per_parameter * tuner.n_params();
-                for (size_t trial = 0; trial < trials; ++ trial)
+                for (const auto& config : tuner.get(trials_per_parameter * tuner.n_params()))
                 {
-                        const auto config = tuner.get();
                         this->config(config);
 
                         const auto state = minimize(params, function, x0);
