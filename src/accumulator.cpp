@@ -71,6 +71,7 @@ void accumulator_t::update(const task_t& task, const fold_t& fold)
 void accumulator_t::update(const task_t& task, const fold_t& fold, const size_t begin, const size_t end)
 {
         assert(begin <= end);
+        const auto old_count = vstats().count();
         switch (thread_pool_t::instance().active_workers())
         {
         case 1:
@@ -92,6 +93,8 @@ void accumulator_t::update(const task_t& task, const fold_t& fold, const size_t 
                 accumulate();
                 break;
         }
+        NANO_UNUSED1_RELEASE(old_count);
+        assert(old_count + end == begin + vstats().count());
 }
 
 void accumulator_t::update(tcache_t& tcache, const minibatch_t& minibatch)

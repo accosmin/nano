@@ -30,14 +30,11 @@ namespace nano
                 ///
                 void operator()(const tscalar value)
                 {
-                        if (std::isfinite(value))
-                        {
-                                m_avg1 += (value - m_avg1) / (m_count + 1);
-                                m_avg2 += (value * value - m_avg2) / (m_count + 1);
-                                m_min = std::min(m_min, value);
-                                m_max = std::max(m_max, value);
-                                m_count ++;
-                        }
+                        m_avg1 += (value - m_avg1) / (m_count + 1);
+                        m_avg2 += (value * value - m_avg2) / (m_count + 1);
+                        m_min = std::min(m_min, value);
+                        m_max = std::max(m_max, value);
+                        m_count ++;
                 }
 
                 template <typename... tscalars>
