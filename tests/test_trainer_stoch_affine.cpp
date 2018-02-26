@@ -41,11 +41,8 @@ NANO_CASE(tune_and_train)
         // check that the trainer works for all compatible solvers
         for (const auto& solver : get_stoch_solvers().ids())
         {
-                if (solver != "ag")
-                        continue;
-
                 trainer->config(json_writer_t().object(
-                        "epochs", 100, "solver", solver, "epsilon", epsilon2<scalar_t>()).str());
+                        "epochs", 20, "solver", solver, "epsilon", epsilon2<scalar_t>()).str());
 
                 accumulator_t acc(model, *loss);
                 acc.threads(1);

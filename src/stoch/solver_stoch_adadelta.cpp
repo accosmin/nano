@@ -6,8 +6,8 @@ using namespace nano;
 tuner_t stoch_adadelta_t::configs() const
 {
         tuner_t tuner;
-        tuner.add("momentum", make_scalars(0.10, 0.20, 0.50, 0.90)).precision(2);
-        tuner.add("epsilon", make_pow10_scalars(0, -6, -2)).precision(6);
+        tuner.add("momentum", make_scalars(0.1, 0.2, 0.5, 0.9)).precision(1);
+        tuner.add("epsilon", make_pow10_scalars(0, -7, -2)).precision(7);
         return tuner;
 }
 

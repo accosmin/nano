@@ -7,7 +7,7 @@ tuner_t stoch_ngd_t::configs() const
 {
         tuner_t tuner;
         tuner.add("alpha0", make_pow10_scalars(0, -3, -1)).precision(3);
-        tuner.add("decay", make_scalars(0.0, 0.1, 0.2, 0.5, 0.9)).precision(1);
+        tuner.add("decay", make_scalars(0.1, 0.2, 0.5, 0.9)).precision(1);
         return tuner;
 }
 

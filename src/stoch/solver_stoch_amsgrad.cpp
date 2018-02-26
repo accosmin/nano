@@ -9,7 +9,10 @@ tuner_t stoch_amsgrad_t::configs() const
 {
         tuner_t tuner;
         tuner.add("alpha0", make_pow10_scalars(0, -3, -1)).precision(3);
-        tuner.add("decay", make_scalars(0.0, 0.1, 0.2, 0.5, 0.9)).precision(1);
+        tuner.add("decay", make_scalars(0.1, 0.2, 0.5, 0.9)).precision(1);
+        tuner.add("epsilon", make_pow10_scalars(0, -7, -2)).precision(7);
+        tuner.add("beta1", make_scalars(0.90, 0.95, 0.99)).precision(2);
+        tuner.add("beta2", make_scalars(0.990, 0.999)).precision(3);
         return tuner;
 }
 

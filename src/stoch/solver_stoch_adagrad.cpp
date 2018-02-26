@@ -5,8 +5,8 @@ using namespace nano;
 tuner_t stoch_adagrad_t::configs() const
 {
         tuner_t tuner;
-        tuner.add("alpha0", make_pow10_scalars(0, -3, -1)).precision(3);
-        tuner.add("epsilon", make_pow10_scalars(0, -6, -2)).precision(6);
+        tuner.add("alpha0", make_pow10_scalars(0, -1, +0)).precision(3);
+        tuner.add("epsilon", make_pow10_scalars(0, -7, -2)).precision(7);
         return tuner;
 }
 
