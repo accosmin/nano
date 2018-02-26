@@ -16,7 +16,7 @@ namespace nano
 
 static void check_function(const function_t& function)
 {
-        const auto epochs = size_t(1000);
+        const auto epochs = size_t(300);
         const auto trials = size_t(10);
 
         // solvers to try
@@ -79,4 +79,3 @@ NANO_CASE(evaluate)
 }
 
 NANO_END_MODULE()
-

@@ -5,7 +5,9 @@ using namespace nano;
 
 tuner_t stoch_cocob_t::configs() const
 {
-        return tuner_t{};
+        tuner_t tuner;
+        tuner.add("alpha", make_pow10_scalars(0, +1, +3)).precision(0);
+        return tuner;
 }
 
 json_reader_t& stoch_cocob_t::config(json_reader_t& reader)

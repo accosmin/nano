@@ -7,6 +7,7 @@ tuner_t stoch_adadelta_t::configs() const
 {
         tuner_t tuner;
         tuner.add("momentum", make_scalars(0.10, 0.20, 0.50, 0.90)).precision(2);
+        tuner.add("epsilon", make_pow10_scalars(0, -6, -2)).precision(6);
         return tuner;
 }
 
