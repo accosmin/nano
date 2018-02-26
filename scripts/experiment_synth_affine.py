@@ -30,6 +30,7 @@ exp.add_trainer("ngd", cfg.stoch_trainer("ngd", epochs, patience, epsilon))
 exp.add_trainer("asgd", cfg.stoch_trainer("asgd", epochs, patience, epsilon))
 exp.add_trainer("svrg", cfg.stoch_trainer("svrg", epochs, patience, epsilon))
 exp.add_trainer("rmsprop", cfg.stoch_trainer("rmsprop", epochs, patience, epsilon))
+exp.add_trainer("cocob", cfg.stoch_trainer("cocob", epochs, patience, epsilon))
 
 exp.add_trainer("adam", cfg.stoch_trainer("adam", epochs, patience, epsilon))
 exp.add_trainer("adagrad", cfg.stoch_trainer("adagrad", epochs, patience, epsilon))
@@ -43,6 +44,6 @@ exp.add_model("linear", cfg.linear(imaps=16, irows=1, icols=1, omaps=8, orows=1,
 exp.train_all()
 
 # compare configurations
-exp.summarize_by_trainers("stoch", "ag|agfr|aggr|sg|sgm|ngd|asgd|svrg|rmsprop|adam|adagrad|amsgrad|adadelta")
+exp.summarize_by_trainers("stoch", "ag|agfr|aggr|sg|sgm|ngd|asgd|svrg|rmsprop|adam|adagrad|amsgrad|adadelta|cocob")
 exp.summarize_by_trainers("batch", "gd|cgd|lbfgs")
 exp.summarize_by_trainers("all", ".*")

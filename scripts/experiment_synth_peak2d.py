@@ -30,6 +30,7 @@ exp.add_trainer("ngd", cfg.stoch_trainer("ngd", epochs, patience, epsilon))
 exp.add_trainer("asgd", cfg.stoch_trainer("asgd", epochs, patience, epsilon))
 exp.add_trainer("svrg", cfg.stoch_trainer("svrg", epochs, patience, epsilon))
 exp.add_trainer("rmsprop", cfg.stoch_trainer("rmsprop", epochs, patience, epsilon))
+exp.add_trainer("cocob", cfg.stoch_trainer("cocob", epochs, patience, epsilon))
 
 exp.add_trainer("adam", cfg.stoch_trainer("adam", epochs, patience, epsilon))
 exp.add_trainer("adagrad", cfg.stoch_trainer("adagrad", epochs, patience, epsilon))
@@ -38,15 +39,15 @@ exp.add_trainer("adadelta", cfg.stoch_trainer("adadelta", epochs, patience, epsi
 
 # models
 mlp0 = []
-mlp1 = mlp0 + [128,1,1]
-mlp2 = mlp1 + [256,1,1]
-mlp3 = mlp2 + [512,1,1]
-mlp4 = mlp3 + [1024,1,1]
+mlp1 = mlp0 + [32,1,1]
+mlp2 = mlp1 + [64,1,1]
+mlp3 = mlp2 + [128,1,1]
+mlp4 = mlp3 + [256,1,1]
 
-cnn1 = [32,5,5,1,2,2]
-cnn2 = cnn1 + [64,3,3,1,1,1]
-cnn3 = cnn2 + [128,3,3,1,1,1]
-cnn4 = cnn3 + [256,3,3,1,1,1]
+cnn1 = [16,5,5,1,2,2]
+cnn2 = cnn1 + [32,3,3,1,1,1]
+cnn3 = cnn2 + [64,3,3,1,1,1]
+cnn4 = cnn3 + [128,3,3,1,1,1]
 
 exp.add_model("mlp0", cfg.mlp(mlp0, imaps=1, irows=16, icols=16, omaps=2, orows=1, ocols=1))
 exp.add_model("mlp1", cfg.mlp(mlp1, imaps=1, irows=16, icols=16, omaps=2, orows=1, ocols=1))
@@ -63,6 +64,6 @@ exp.add_model("cnn4", cfg.cnn(cnn4, mlp0, imaps=1, irows=16, icols=16, omaps=2, 
 exp.train_all()
 
 # compare configurations
-exp.summarize_by_trainers("stoch", "ag|agfr|aggr|sg|sgm|ngd|asgd|svrg|rmsprop|adam|adagrad|amsgrad|adadelta")
+exp.summarize_by_trainers("stoch", "ag|agfr|aggr|sg|sgm|ngd|asgd|svrg|rmsprop|adam|adagrad|amsgrad|adadelta|cocob")
 exp.summarize_by_trainers("batch", "gd|cgd|lbfgs")
 exp.summarize_by_trainers("all", ".*")
