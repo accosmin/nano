@@ -95,7 +95,11 @@ trainer_result_t stoch_trainer_t::train(const task_t& task, const size_t fold, a
                 const auto patience = m_patience;
 
                 acc.params(params);
-                result = std::min(result, ::train(task, fold, acc, solver, config, epochs, epsilon, patience, timer));
+                const auto cresult = ::train(task, fold, acc, solver, config, epochs, epsilon, patience, timer);
+                if (cresult < result)
+                {
+                        result = cresult;
+                }
         }
 
         assert(result);
