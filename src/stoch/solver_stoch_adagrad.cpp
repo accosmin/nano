@@ -5,7 +5,7 @@ using namespace nano;
 tuner_t stoch_adagrad_t::configs() const
 {
         tuner_t tuner;
-        tuner.add("alpha0", make_pow10_scalars(0, -3, +0)).precision(3);
+        tuner.add("alpha0", make_pow10_scalars(0, -3, -1)).precision(3);
         return tuner;
 }
 
