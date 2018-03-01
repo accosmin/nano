@@ -124,13 +124,13 @@ int main(int argc, const char *argv[])
 
                 const auto& state = result.optimum_state();
                 table.append()
-                        << (trial + 1) << state.m_epoch
-                        << state.m_train.m_value << state.m_train.m_error
-                        << state.m_valid.m_value << state.m_valid.m_error
-                        << state.m_test.m_value << state.m_test.m_error
-                        << state.m_xnorm << state.m_gnorm
-                        << idiv(state.m_milis.count(), 1000)
-                        << result.convergence_speed();
+                        << precision(0) << (trial + 1) << state.m_epoch
+                        << precision(3) << state.m_train.m_value << state.m_train.m_error
+                        << precision(3) << state.m_valid.m_value << state.m_valid.m_error
+                        << precision(3) << state.m_test.m_value << state.m_test.m_error
+                        << precision(3) << state.m_xnorm << state.m_gnorm
+                        << precision(0) << idiv(state.m_milis.count(), 1000)
+                        << precision(6) << result.convergence_speed();
 
                 checkpoint.step("save model");
                 checkpoint.critical(
@@ -141,7 +141,7 @@ int main(int argc, const char *argv[])
         checkpoint.step("save stats");
         checkpoint.critical(table.save(strcat(cmd_basepath, ".csv")));
 
-        std::cout << std::fixed << std::setprecision(3) << table;
+        std::cout << table;
 
         // OK
         log_info() << done;

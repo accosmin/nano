@@ -8,9 +8,30 @@
 
 using namespace nano;
 
-cell_t::cell_t(string_t data, const size_t span, const alignment align, const char fill) :
-        m_data(std::move(data)), m_span(span), m_fill(fill), m_alignment(align)
+cell_t::cell_t(string_t data, const size_t span, const alignment align, const char fill, const int precision) :
+        m_data(std::move(data)), m_span(span), m_fill(fill), m_alignment(align), m_precision(precision)
 {
+}
+
+string_t cell_t::format() const
+{
+        try
+        {
+                if (m_precision > 0)
+                {
+                        std::stringstream stream;
+                        stream << std::fixed << std::setprecision(m_precision) << from_string<double>(m_data);
+                        return stream.str();
+                }
+                else
+                {
+                        return m_data;
+                }
+        }
+        catch (std::exception&)
+        {
+                return m_data;
+        }
 }
 
 row_t::row_t(const mode t) :
@@ -176,26 +197,6 @@ bool table_t::load(const string_t& path, const string_t& delimiter, const bool l
         return is.eof();
 }
 
-static string_t format(const std::ostream& os, const string_t& data)
-{
-        try
-        {
-                // format floating point values to use the current formatting flags
-                std::stringstream stream;
-                stream << std::setprecision(static_cast<int>(os.precision()));
-                if (os.flags() & std::ios_base::fixed)
-                {
-                        stream << std::fixed;
-                }
-                stream << from_string<double>(data);
-                return stream.str();
-        }
-        catch (std::exception&)
-        {
-                return data;
-        }
-}
-
 std::ostream& table_t::print(std::ostream& os) const
 {
         // size of the value columns (in characters)
@@ -206,7 +207,7 @@ std::ostream& table_t::print(std::ostream& os) const
                 for (const auto& cell : row.cells())
                 {
                         const auto span = cell.m_span;
-                        const auto size = format(os, cell.m_data).size() + cell.m_mark.size();
+                        const auto size = cell.format().size() + cell.m_mark.size();
                         for (size_t c = 0; c < span; ++ c, ++ icol)
                         {
                                 colsizes[icol] = std::max(colsizes[icol], idiv(size, span));
@@ -240,7 +241,7 @@ std::ostream& table_t::print(std::ostream& os) const
                                 const auto colspan = static_cast<std::ptrdiff_t>(cell.m_span);
                                 const auto colsize = std::accumulate(it, it + colspan, size_t(0));
                                 const auto extsize = (cell.m_span - 1) * 3;
-                                const auto coltext = format(os, cell.m_data) + cell.m_mark;
+                                const auto coltext = cell.format() + cell.m_mark;
                                 os << "| " << align(coltext, colsize + extsize, cell.m_alignment, cell.m_fill) << " ";
                                 std::advance(it, colspan);
                         }

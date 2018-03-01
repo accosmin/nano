@@ -14,7 +14,9 @@ namespace nano
         struct NANO_PUBLIC cell_t
         {
                 cell_t() = default;
-                cell_t(string_t data, const size_t span, const alignment, const char fill);
+                cell_t(string_t data, const size_t span, const alignment, const char fill, const int precision);
+
+                string_t format() const;
 
                 // attributes
                 string_t        m_data;         ///<
@@ -22,6 +24,7 @@ namespace nano
                 size_t          m_span{1};      ///< column spanning
                 char            m_fill{' '};    ///< filling character for aligning cells
                 alignment       m_alignment{alignment::left};    ///<
+                int             m_precision{0}; ///< precision (#digits) for floating point values
         };
 
         ///
@@ -40,8 +43,17 @@ namespace nano
                 char            m_fill{' '};
         };
 
+        ///
+        /// \brief control precision for floating point cell values.
+        ///
+        struct precision_t
+        {
+                int             m_precision{0};
+        };
+
         inline colspan_t colspan(const size_t span) { return {span}; }
         inline colfill_t colfill(const char fill) { return {fill}; }
+        inline precision_t precision(const int precision) { return {precision}; }
 
         ///
         /// \brief row in a table.
@@ -65,7 +77,7 @@ namespace nano
                 template <typename tscalar>
                 row_t& operator<<(const tscalar value)
                 {
-                        m_cells.emplace_back(to_string(value), colspan(), align(), colfill());
+                        m_cells.emplace_back(to_string(value), colspan(), align(), colfill(), precision());
                         return colspan(1).align(alignment::left);
                 }
                 template <typename tscalar>
@@ -88,6 +100,10 @@ namespace nano
                 row_t& operator<<(const colfill_t c)
                 {
                         return colfill(c.m_fill);
+                }
+                row_t& operator<<(const precision_t c)
+                {
+                        return precision(c.m_precision);
                 }
 
                 ///
@@ -131,11 +147,13 @@ namespace nano
                 auto type() const { return m_type; }
                 char colfill() const { return m_colfill; }
                 size_t colspan() const { return m_colspan; }
+                int precision() const { return m_precision; }
                 alignment align() const { return m_alignment; }
 
                 row_t& colfill(const char fill) { m_colfill = fill; return *this; }
                 row_t& colspan(const size_t span) { m_colspan = span; return *this; }
                 row_t& align(const alignment align) { m_alignment = align; return *this; }
+                row_t& precision(const int precision) { m_precision = precision; return *this; }
 
         private:
 
@@ -143,6 +161,7 @@ namespace nano
                 mode                    m_type{mode::data};             ///< row type
                 char                    m_colfill{' '};                 ///< current cell fill character
                 size_t                  m_colspan{1};                   ///< current cell column span
+                int                     m_precision{0};                 ///< current floating point precision
                 alignment               m_alignment{alignment::left};   ///< current cell alignment
                 std::vector<cell_t>     m_cells;
         };
