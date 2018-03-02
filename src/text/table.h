@@ -17,6 +17,7 @@ namespace nano
                 cell_t(string_t data, const size_t span, const alignment, const char fill, const int precision);
 
                 string_t format() const;
+                cell_t& precision(const int precision) { m_precision = precision; return *this; }
 
                 // attributes
                 string_t        m_data;         ///<
@@ -139,6 +140,7 @@ namespace nano
                 /// \brief access functions
                 ///
                 const auto& cells() const { return m_cells; }
+                auto& cell(const size_t icell) { return m_cells.at(icell); }
                 const auto& cell(const size_t icell) const { return m_cells.at(icell); }
 
                 string_t data(const size_t col) const;
@@ -236,6 +238,7 @@ namespace nano
                 ///
                 size_t cols() const;
                 size_t rows() const;
+                row_t& row(const size_t r) { return m_rows.at(r); }
                 const row_t& row(const size_t r) const { return m_rows.at(r); }
 
         private:

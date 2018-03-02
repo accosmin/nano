@@ -53,10 +53,17 @@ int main(int argc, const char *argv[])
         }
         else
         {
-                std::cout << std::fixed << std::setprecision(cmd_precision);
-
                 if (!cmd_stats)
                 {
+                        for (size_t r = 0, rows = table.rows(); r < rows; ++ r)
+                        {
+                                auto& row = table.row(r);
+                                for (size_t c = 1, cols = row.cells().size(); c < cols; ++ c)
+                                {
+                                        row.cell(c).precision(cmd_precision);
+                                }
+                        }
+
                         std::cout << table;
                 }
                 else
@@ -95,7 +102,7 @@ int main(int argc, const char *argv[])
                         for (const auto col : cols)
                         {
                                 const auto stats = get_stats(table, col);
-                                std::cout << stats << std::endl;
+                                std::cout << std::fixed << std::setprecision(cmd_precision) << stats << std::endl;
                         }
                 }
 
