@@ -15,7 +15,7 @@ namespace nano
 
                 rlayer_t clone() const final;
                 json_reader_t& config(json_reader_t& reader) final { return reader; }
-                json_writer_t& config(json_writer_t& writer) const final { return writer; }
+                json_writer_t& config(json_writer_t& writer) const final { return writer.object(); }
 
                 bool resize(const tensor3d_dims_t& idims) final;
 
