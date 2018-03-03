@@ -39,6 +39,10 @@ solver_state_t stoch_solver_t::tune(const stoch_params_t& params, const function
                         {
                                 best_state = state;
                                 best_config = config;
+                                if (state.m_status == opt_status::converged)
+                                {
+                                        break;
+                                }
                         }
                 }
 
