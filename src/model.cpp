@@ -86,14 +86,14 @@ bool model_t::add(const string_t& name, const string_t& type, json_reader_t& rea
 
         if (find_node(name) != string_t::npos)
         {
-                log_error() << "model: duplicated name!";
+                log_error() << "model: duplicated node name [" << name << "]!";
                 return false;
         }
 
         auto node = get_layers().get(type);
         if (!node)
         {
-                log_error() << "model: invalid node type!";
+                log_error() << "model: invalid node type [" << type << "]!";
                 return false;
         }
 
