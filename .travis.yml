@@ -9,6 +9,7 @@ before_script:
       brew update
       brew install cmake ninja devil libarchive python3
       brew link libarchive --force
+      brew upgrade python
       brew postinstall python3
       pip3 install urllib3
       export PATH="/usr/local/opt/ccache/libexec:$PATH"
