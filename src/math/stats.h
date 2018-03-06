@@ -95,7 +95,7 @@ namespace nano
                 tscalar var() const
                 {
                         assert(count() > 0);
-                        return static_cast<tscalar>(m_avg2 - m_avg1 * m_avg1);
+                        return std::max(static_cast<tscalar>(m_avg2 - m_avg1 * m_avg1), tscalar(0));
                 }
 
                 ///
