@@ -16,26 +16,11 @@ epochs = 100
 patience = 100
 epsilon = 1e-6
 
-exp.add_trainer("gd", cfg.batch_trainer("gd", epochs, patience, epsilon))
-exp.add_trainer("cgd", cfg.batch_trainer("cgd", epochs, patience, epsilon))
-exp.add_trainer("lbfgs", cfg.batch_trainer("lbfgs", epochs, patience, epsilon))
+for solver in cfg.batch_solvers():
+        exp.add_trainer("batch_{}".format(solver), cfg.batch_trainer(solver, epochs, patience, epsilon))
 
-exp.add_trainer("ag", cfg.stoch_trainer("ag", epochs, patience, epsilon))
-exp.add_trainer("agfr", cfg.stoch_trainer("agfr", epochs, patience, epsilon))
-exp.add_trainer("aggr", cfg.stoch_trainer("aggr", epochs, patience, epsilon))
-
-exp.add_trainer("sg", cfg.stoch_trainer("sg", epochs, patience, epsilon))
-exp.add_trainer("sgm", cfg.stoch_trainer("sgm", epochs, patience, epsilon))
-exp.add_trainer("ngd", cfg.stoch_trainer("ngd", epochs, patience, epsilon))
-exp.add_trainer("asgd", cfg.stoch_trainer("asgd", epochs, patience, epsilon))
-exp.add_trainer("svrg", cfg.stoch_trainer("svrg", epochs, patience, epsilon))
-exp.add_trainer("rmsprop", cfg.stoch_trainer("rmsprop", epochs, patience, epsilon))
-
-exp.add_trainer("adam", cfg.stoch_trainer("adam", epochs, patience, epsilon))
-exp.add_trainer("adagrad", cfg.stoch_trainer("adagrad", epochs, patience, epsilon))
-exp.add_trainer("amsgrad", cfg.stoch_trainer("amsgrad", epochs, patience, epsilon))
-exp.add_trainer("adadelta", cfg.stoch_trainer("adadelta", epochs, patience, epsilon))
-exp.add_trainer("cocob", cfg.stoch_trainer("cocob", epochs, patience, epsilon))
+for solver in cfg.stoch_solvers():
+        exp.add_trainer("stoch_{}".format(solver), cfg.stoch_trainer(solver, epochs, patience, epsilon))
 
 # models
 output = {"name":"output","type":"affine","config":{"omaps":1,"orows":1,"ocols":1}}
@@ -62,8 +47,8 @@ exp.add_model("mlp3", mlp3)
 exp.train_all()
 
 # compare configurations
-exp.summarize_by_trainers("stoch", "ag|agfr|aggr|sg|sgm|ngd|asgd|svrg|rmsprop|adam|adagrad|amsgrad|adadelta|cocob")
-exp.summarize_by_trainers("batch", "gd|cgd|lbfgs")
+exp.summarize_by_trainers("stoch", "stoch_*")
+exp.summarize_by_trainers("batch", "batch_*")
 exp.summarize_by_trainers("all", ".*")
 
 exp.summarize_by_models("all", ".*")
