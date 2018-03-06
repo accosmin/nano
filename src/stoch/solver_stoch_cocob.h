@@ -21,5 +21,6 @@ namespace nano
 
                 // attributes
                 scalar_t        m_alpha{100};
+                scalar_t        m_epsilon{static_cast<scalar_t>(1e-6)};
         };
 }

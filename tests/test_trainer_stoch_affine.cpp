@@ -45,7 +45,7 @@ NANO_CASE(tune_and_train)
                         continue;
 
                 trainer->config(json_writer_t().object(
-                        "epochs", 20, "solver", solver, "epsilon", epsilon2<scalar_t>()).str());
+                        "epochs", 50, "solver", solver, "epsilon", epsilon2<scalar_t>()).str());
 
                 accumulator_t acc(model, *loss);
                 acc.threads(1);
