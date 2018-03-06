@@ -65,3 +65,5 @@ exp.train_all()
 exp.summarize_by_trainers("stoch", "ag|agfr|aggr|sg|sgm|ngd|asgd|svrg|rmsprop|adam|adagrad|amsgrad|adadelta|cocob")
 exp.summarize_by_trainers("batch", "gd|cgd|lbfgs")
 exp.summarize_by_trainers("all", ".*")
+
+exp.summarize_by_models("all", ".*")
