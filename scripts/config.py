@@ -14,7 +14,6 @@ class config:
                 self.app_info = os.path.join(crtpath, build_folder, "apps", "info")
                 self.app_train = os.path.join(crtpath, build_folder, "apps", "train")
                 self.app_stats = os.path.join(crtpath, build_folder, "apps", "stats")
-                self.app_builder = os.path.join(crtpath, build_folder, "apps", "builder")
                 self.app_tabulate = os.path.join(crtpath, build_folder, "apps", "tabulate")
 
         def losses(self):
@@ -37,27 +36,6 @@ class config:
                         "act-ssign",    # [-1, +1]
                         "act-sigm",     # [ 0,  1]
                         "act-pwave"]    # [-1, +1]
-
-        def model(self, model_type, conv3d_param, affine_param, imaps, irows, icols, omaps, orows, ocols, act_type):
-                """ create a model using the built-in command line utility apps/builder """
-                return  "--{} --act-type {} --conv3d-param {} --affine-param {} "\
-                        "--imaps {} --irows {} --icols {} --omaps {} --orows {} --ocols {} ".format(
-                        model_type, act_type, ','.join(map(str, conv3d_param)), ','.join(map(str, affine_param)),
-                        imaps, irows, icols, omaps, orows, ocols)
-
-        def linear(self, imaps, irows, icols, omaps, orows, ocols):
-                """ create a linear model """
-                return  "--linear "\
-                        "--imaps {} --irows {} --icols {} --omaps {} --orows {} --ocols {} ".format(
-                        imaps, irows, icols, omaps, orows, ocols)
-
-        def mlp(self, affine_param, imaps, irows, icols, omaps, orows, ocols, act_type="act-snorm"):
-                """ create a MLP (multi-layer perceptron) """
-                return self.model("mlp", [], affine_param, imaps, irows, icols, omaps, orows, ocols, act_type)
-
-        def cnn(self, conv3d_param, affine_param, imaps, irows, icols, omaps, orows, ocols, act_type="act-snorm"):
-                """ create a CNN (convolution neural network) """
-                return self.model("cnn", conv3d_param, affine_param, imaps, irows, icols, omaps, orows, ocols, act_type)
 
         def stoch_solvers(self):
                 """ available stochastic solvers """

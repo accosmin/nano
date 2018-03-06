@@ -1,3 +1,4 @@
+import json
 from config import *
 from experiment import *
 
@@ -38,7 +39,11 @@ exp.add_trainer("amsgrad", cfg.stoch_trainer("amsgrad", epochs, patience, epsilo
 exp.add_trainer("adadelta", cfg.stoch_trainer("adadelta", epochs, patience, epsilon))
 
 # models
-exp.add_model("linear", cfg.linear(imaps=16, irows=1, icols=1, omaps=8, orows=1, ocols=1))
+output = {"name":"output","type":"affine","config":{"omaps":8,"orows":1,"ocols":1}}
+
+mlp0 = {"nodes": [output], "model": []}
+
+exp.add_model("mlp0", mlp0)
 
 # train all configurations
 exp.train_all()

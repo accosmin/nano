@@ -54,8 +54,7 @@ class experiment:
         def add_model(self, name, parameters):
                 """ register a new model (.json config created using apps/builder) """
                 json_path = os.path.join(self.dir_config, "model_" + name + ".json")
-                parameters += " --json {}".format(json_path)
-                subprocess.check_call((self.cfg.app_builder + " " + parameters).split(), stdout=subprocess.DEVNULL)
+                self.save_json(json_path, parameters)
                 self.models.append([name, json_path])
 
         def add_loss(self, name, parameters):
