@@ -16,54 +16,37 @@ epochs = 100
 patience = 100
 epsilon = 1e-6
 
-exp.add_trainer("gd", cfg.batch_trainer("gd", epochs, patience, epsilon))
-exp.add_trainer("cgd", cfg.batch_trainer("cgd", epochs, patience, epsilon))
-exp.add_trainer("lbfgs", cfg.batch_trainer("lbfgs", epochs, patience, epsilon))
+for solver in cfg.batch_solvers():
+        exp.add_trainer("batch_{}".format(solver), cfg.batch_trainer(solver, epochs, patience, epsilon))
 
-exp.add_trainer("ag", cfg.stoch_trainer("ag", epochs, patience, epsilon))
-exp.add_trainer("agfr", cfg.stoch_trainer("agfr", epochs, patience, epsilon))
-exp.add_trainer("aggr", cfg.stoch_trainer("aggr", epochs, patience, epsilon))
-
-exp.add_trainer("sg", cfg.stoch_trainer("sg", epochs, patience, epsilon))
-exp.add_trainer("sgm", cfg.stoch_trainer("sgm", epochs, patience, epsilon))
-exp.add_trainer("ngd", cfg.stoch_trainer("ngd", epochs, patience, epsilon))
-exp.add_trainer("asgd", cfg.stoch_trainer("asgd", epochs, patience, epsilon))
-exp.add_trainer("svrg", cfg.stoch_trainer("svrg", epochs, patience, epsilon))
-exp.add_trainer("rmsprop", cfg.stoch_trainer("rmsprop", epochs, patience, epsilon))
-exp.add_trainer("cocob", cfg.stoch_trainer("cocob", epochs, patience, epsilon))
-
-exp.add_trainer("adam", cfg.stoch_trainer("adam", epochs, patience, epsilon))
-exp.add_trainer("adagrad", cfg.stoch_trainer("adagrad", epochs, patience, epsilon))
-exp.add_trainer("amsgrad", cfg.stoch_trainer("amsgrad", epochs, patience, epsilon))
-exp.add_trainer("adadelta", cfg.stoch_trainer("adadelta", epochs, patience, epsilon))
+for solver in cfg.stoch_solvers():
+        exp.add_trainer("stoch_{}".format(solver), cfg.stoch_trainer(solver, epochs, patience, epsilon))
 
 # models
-mlp0 = []
-mlp1 = mlp0 + [32,1,1]
-mlp2 = mlp1 + [64,1,1]
-mlp3 = mlp2 + [128,1,1]
-mlp4 = mlp3 + [256,1,1]
+output = {"name":"output","type":"affine","config":{"omaps":2,"orows":1,"ocols":1}}
 
-cnn1 = [16,5,5,1,2,2]
-cnn2 = cnn1 + [32,3,3,1,1,1]
-cnn3 = cnn2 + [64,3,3,1,1,1]
-cnn4 = cnn3 + [128,3,3,1,1,1]
+cn1 = {"name":"cn1","type":"conv2d","config":{"omaps":16,"krows":5,"kcols":5,"kconn":1,"kdrow":1,"kdcol":1}}
+cn2 = {"name":"cn2","type":"conv2d","config":{"omaps":32,"krows":5,"kcols":5,"kconn":1,"kdrow":1,"kdcol":1}}
+cn3 = {"name":"cn3","type":"conv2d","config":{"omaps":64,"krows":5,"kcols":5,"kconn":1,"kdrow":1,"kdcol":1}}
 
-exp.add_model("mlp0", cfg.mlp(mlp0, imaps=1, irows=16, icols=16, omaps=2, orows=1, ocols=1))
-exp.add_model("mlp1", cfg.mlp(mlp1, imaps=1, irows=16, icols=16, omaps=2, orows=1, ocols=1))
-exp.add_model("mlp2", cfg.mlp(mlp2, imaps=1, irows=16, icols=16, omaps=2, orows=1, ocols=1))
-exp.add_model("mlp3", cfg.mlp(mlp3, imaps=1, irows=16, icols=16, omaps=2, orows=1, ocols=1))
-exp.add_model("mlp4", cfg.mlp(mlp4, imaps=1, irows=16, icols=16, omaps=2, orows=1, ocols=1))
+ac1 = {"name":"ac1","type":"act-snorm","config":{}}
+ac2 = {"name":"ac2","type":"act-snorm","config":{}}
+ac3 = {"name":"ac3","type":"act-snorm","config":{}}
 
-exp.add_model("cnn1", cfg.cnn(cnn1, mlp0, imaps=1, irows=16, icols=16, omaps=2, orows=1, ocols=1))
-exp.add_model("cnn2", cfg.cnn(cnn2, mlp0, imaps=1, irows=16, icols=16, omaps=2, orows=1, ocols=1))
-exp.add_model("cnn3", cfg.cnn(cnn3, mlp0, imaps=1, irows=16, icols=16, omaps=2, orows=1, ocols=1))
-exp.add_model("cnn4", cfg.cnn(cnn4, mlp0, imaps=1, irows=16, icols=16, omaps=2, orows=1, ocols=1))
+cnn1 = {"nodes": [cn1, ac1, output], "model": ["cn1", "ac1", "output"]}
+cnn2 = {"nodes": [cn1, ac1, cn2, ac2, output], "model": ["cn1", "ac1", "cn2", "ac2", "output"]}
+cnn3 = {"nodes": [cn1, ac1, cn2, ac2, cn3, ac3, output], "model": ["cn1", "ac1", "cn2", "ac2", "cn3", "ac3", "output"]}
+
+exp.add_model("cnn1", cnn1)
+exp.add_model("cnn2", cnn2)
+exp.add_model("cnn3", cnn3)
 
 # train all configurations
 exp.train_all()
 
 # compare configurations
-exp.summarize_by_trainers("stoch", "ag|agfr|aggr|sg|sgm|ngd|asgd|svrg|rmsprop|adam|adagrad|amsgrad|adadelta|cocob")
-exp.summarize_by_trainers("batch", "gd|cgd|lbfgs")
+exp.summarize_by_trainers("stoch", "stoch_*")
+exp.summarize_by_trainers("batch", "batch_*")
 exp.summarize_by_trainers("all", ".*")
+
+exp.summarize_by_models("all", ".*")
