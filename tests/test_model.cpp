@@ -78,6 +78,38 @@ NANO_CASE(config)
         NANO_CHECK_EQUAL(writer.str(), xwriter.str());
 }
 
+NANO_CASE(config_model_before_nodes)
+{
+        const string_t config = R"XXX(
+{
+        "model": [],
+        "nodes": [{
+                "name": "output",
+                "type": "affine",
+                "config": {"omaps": 8, "orows": 1, "ocols": 1 }
+        }]
+})XXX";
+
+        model_t model;
+        NANO_CHECK(model.config(config));
+}
+
+NANO_CASE(config_nodes_before_model)
+{
+        const string_t config = R"XXX(
+{
+        "nodes": [{
+                "name": "output",
+                "type": "affine",
+                "config": {"omaps": 8, "orows": 1, "ocols": 1 }
+        }],
+        "model": []
+})XXX";
+
+        model_t model;
+        NANO_CHECK(model.config(config));
+}
+
 NANO_CASE(graph_empty)
 {
         model_t model;
