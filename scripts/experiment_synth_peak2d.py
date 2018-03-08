@@ -33,9 +33,9 @@ ac1 = {"name":"ac1","type":"act-snorm","config":{}}
 ac2 = {"name":"ac2","type":"act-snorm","config":{}}
 ac3 = {"name":"ac3","type":"act-snorm","config":{}}
 
-cnn1 = {"nodes": [cn1, ac1, output], "model": ["cn1", "ac1", "output"]}
-cnn2 = {"nodes": [cn1, ac1, cn2, ac2, output], "model": ["cn1", "ac1", "cn2", "ac2", "output"]}
-cnn3 = {"nodes": [cn1, ac1, cn2, ac2, cn3, ac3, output], "model": ["cn1", "ac1", "cn2", "ac2", "cn3", "ac3", "output"]}
+cnn1 = {"nodes": [cn1, ac1, output], "model": [["cn1", "ac1", "output"]]}
+cnn2 = {"nodes": [cn1, ac1, cn2, ac2, output], "model": [["cn1", "ac1", "cn2", "ac2", "output"]]}
+cnn3 = {"nodes": [cn1, ac1, cn2, ac2, cn3, ac3, output], "model": [["cn1", "ac1", "cn2", "ac2", "cn3", "ac3", "output"]]}
 
 exp.add_model("cnn1", cnn1)
 exp.add_model("cnn2", cnn2)

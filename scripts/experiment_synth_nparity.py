@@ -34,9 +34,9 @@ ac2 = {"name":"ac2","type":"act-snorm","config":{}}
 ac3 = {"name":"ac3","type":"act-snorm","config":{}}
 
 mlp0 = {"nodes": [output], "model": []}
-mlp1 = {"nodes": [fc1, ac1, output], "model": ["fc1", "ac1", "output"]}
-mlp2 = {"nodes": [fc1, ac1, fc2, ac2, output], "model": ["fc1", "ac1", "fc2", "ac2", "output"]}
-mlp3 = {"nodes": [fc1, ac1, fc2, ac2, fc3, ac3, output], "model": ["fc1", "ac1", "fc2", "ac2", "fc3", "ac3", "output"]}
+mlp1 = {"nodes": [fc1, ac1, output], "model": [["fc1", "ac1", "output"]]}
+mlp2 = {"nodes": [fc1, ac1, fc2, ac2, output], "model": [["fc1", "ac1", "fc2", "ac2", "output"]]}
+mlp3 = {"nodes": [fc1, ac1, fc2, ac2, fc3, ac3, output], "model": [["fc1", "ac1", "fc2", "ac2", "fc3", "ac3", "output"]]}
 
 exp.add_model("mlp0", mlp0)
 exp.add_model("mlp1", mlp1)
