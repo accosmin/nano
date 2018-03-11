@@ -75,6 +75,30 @@ NANO_CASE(writer_complex_with_pairs)
         "\"field1\":\"v1\",\"field2\":\"v2\"}}");
 }
 
+NANO_CASE(reader_array)
+{
+        const string_t json = R"XXX(
+{
+        ["this", "that"]
+}
+)XXX";
+
+        strings_t values(13);
+
+        json_reader_t reader(json);
+        reader.array(values);
+        ++ reader;
+
+        NANO_REQUIRE_EQUAL(values.size(), 2u);
+        NANO_CHECK_EQUAL(values[0], "this");
+        NANO_CHECK_EQUAL(values[1], "that");
+
+        // all tags should be accounted for
+        NANO_CHECK_EQUAL(reader.str(), json);
+        NANO_CHECK_EQUAL(reader.pos(), json.size());
+        NANO_CHECK_EQUAL(reader.tag(), json_tag::none);
+}
+
 NANO_CASE(reader_object)
 {
         const string_t json = R"XXX(

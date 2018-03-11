@@ -97,7 +97,7 @@ namespace nano
                 }
 
                 ///
-                /// \brief read a set of name:value pairs that compose a JSON object.
+                /// \brief read a set of name:value pairs that compose a simple JSON object.
                 ///
                 template <typename... tnames_and_values>
                 json_reader_t& object(tnames_and_values&... nvs)
@@ -110,7 +110,6 @@ namespace nano
                                 switch (m_tag)
                                 {
                                 case json_tag::end_object:
-                                        // done!
                                         return next();
 
                                 case json_tag::name:
@@ -123,7 +122,33 @@ namespace nano
                                         break;
 
                                 default:
-                                        // continue
+                                        break;
+                                }
+                        }
+
+                        return *this;
+                }
+
+                ///
+                /// \brief read a simple JSON array.
+                ///
+                json_reader_t& array(strings_t& values)
+                {
+                        // todo: use string_view to store these values when switching to C++17
+
+                        values.clear();
+                        for (auto itend = end(); *this != itend; ++ *this)
+                        {
+                                switch (m_tag)
+                                {
+                                case json_tag::end_array:
+                                        return next();
+
+                                case json_tag::value:
+                                        values.emplace_back(substr(), strlen());
+                                        break;
+
+                                default:
                                         break;
                                 }
                         }
