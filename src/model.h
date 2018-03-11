@@ -47,13 +47,15 @@ namespace nano
 
                 ///
                 /// \brief connect a chain of computation nodes: name1->name2->names...
-                ///     (useful for quickly creating feed-forward networks)
+                ///     (e.g. useful for quickly creating feed-forward chains)
                 ///
                 template <typename... tnames>
                 bool connect(const string_t& name1, const string_t& name2, const tnames&... names)
                 {
                         return connect(name1, name2) && connect(name2, names...);
                 }
+
+                bool connect(const strings_t& names);
 
                 ///
                 /// \brief configure the computation graph using JSON

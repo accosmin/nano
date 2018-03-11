@@ -139,6 +139,18 @@ bool model_t::connect(const string_t& name1, const string_t& name2)
         return true;
 }
 
+bool model_t::connect(const strings_t& names)
+{
+        for (size_t i = 0; i + 1 < names.size(); ++ i)
+        {
+                if (!connect(names[i], names[i + 1]))
+                {
+                        return false;
+                }
+        }
+        return true;
+}
+
 namespace
 {
         enum json_mode

@@ -12,7 +12,7 @@ NANO_BEGIN_MODULE(test_model)
 
 NANO_CASE(config)
 {
-        model_t model;
+        model_t umodel;
         {
                 json_writer_t writer;
                 writer.new_object().name("nodes").new_array();
@@ -34,7 +34,7 @@ NANO_CASE(config)
                         writer.array("act3", "aff1", "act4", "aff2", "act5", "aff3");
                 writer.end_array().end_object();
 
-                NANO_CHECK(model.config(writer.str()));
+                NANO_CHECK(umodel.config(writer.str()));
         }
 
         model_t xmodel;
@@ -71,11 +71,34 @@ NANO_CASE(config)
                 NANO_CHECK(xmodel.done());
         }
 
-        json_writer_t writer, xwriter;
-        model.config(writer);
-        xmodel.config(xwriter);
+        model_t ymodel;
+        {
+                NANO_CHECK(add_node(ymodel, "norm", norm3d_node_name(), config_norm3d_node, norm_type::plane));
+                NANO_CHECK(add_node(ymodel, "c5x5", conv3d_node_name(), config_conv3d_node, 128, 5, 5, 1, 1, 1));
+                NANO_CHECK(add_node(ymodel, "act1", "act-snorm", config_empty_node));
+                NANO_CHECK(add_node(ymodel, "c3x3", conv3d_node_name(), config_conv3d_node, 128, 3, 3, 1, 1, 1));
+                NANO_CHECK(add_node(ymodel, "act2", "act-snorm", config_empty_node));
+                NANO_CHECK(add_node(ymodel, "c1x1", conv3d_node_name(), config_conv3d_node, 128, 1, 1, 1, 1, 1));
+                NANO_CHECK(add_node(ymodel, "act3", "act-snorm", config_empty_node));
+                NANO_CHECK(add_node(ymodel, "aff1", affine_node_name(), config_affine_node, 128, 1, 1));
+                NANO_CHECK(add_node(ymodel, "act4", "act-snorm", config_empty_node));
+                NANO_CHECK(add_node(ymodel, "aff2", affine_node_name(), config_affine_node, 128, 1, 1));
+                NANO_CHECK(add_node(ymodel, "act5", "act-snorm", config_empty_node));
+                NANO_CHECK(add_node(ymodel, "aff3", affine_node_name(), config_affine_node, 10, 1, 1));
 
-        NANO_CHECK_EQUAL(writer.str(), xwriter.str());
+                NANO_CHECK(ymodel.connect(strings_t{"norm", "c5x5"}));
+                NANO_CHECK(ymodel.connect(strings_t{"c5x5", "act1", "c3x3", "act2", "c1x1", "act3", "aff1", "act4", "aff2", "act5", "aff3"}));
+
+                NANO_CHECK(ymodel.done());
+        }
+
+        json_writer_t uwriter, xwriter, ywriter;
+        umodel.config(uwriter);
+        xmodel.config(xwriter);
+        ymodel.config(ywriter);
+
+        NANO_CHECK_EQUAL(uwriter.str(), xwriter.str());
+        NANO_CHECK_EQUAL(uwriter.str(), ywriter.str());
 }
 
 NANO_CASE(config_model_before_nodes)
