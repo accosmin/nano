@@ -2,9 +2,7 @@
 	path = deps/eigen3
 	url = https://github.com/eigenteam/eigen-git-mirror.git
 	branch = branches/3.3
-        shallow = true
-[submodule "json"]
+[submodule "deps/json"]
 	path = deps/json
 	url = https://github.com/nlohmann/json.git
-        branch = release/3.1.1
-        shallow = true
+	branch = release/3.1.1
