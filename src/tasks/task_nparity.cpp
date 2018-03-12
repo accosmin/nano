@@ -7,16 +7,15 @@ nparity_task_t::nparity_task_t() :
 {
 }
 
-json_reader_t& nparity_task_t::config(json_reader_t& reader)
+void nparity_task_t::from_json(const json_t& json)
 {
-        reader.object("n", m_dims, "count", m_count);
+        nano::from_json(json, "n", m_dims, "count", m_count);
         reconfig(make_dims(m_dims, 1, 1), make_dims(1, 1, 1), 1);
-        return reader;
 }
 
-json_writer_t& nparity_task_t::config(json_writer_t& writer) const
+void nparity_task_t::to_json(json_t& json) const
 {
-        return writer.object("n", m_dims, "count", m_count);
+        nano::to_json(json, "n", m_dims, "count", m_count);
 }
 
 bool nparity_task_t::populate()

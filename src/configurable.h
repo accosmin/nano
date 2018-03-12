@@ -1,7 +1,7 @@
 #pragma once
 
-#include "text/json_reader.h"
-#include "text/json_writer.h"
+#include "stringi.h"
+#include "text/json.h"
 
 namespace nano
 {
@@ -15,32 +15,9 @@ namespace nano
                 virtual ~configurable_t() = default;
 
                 ///
-                /// \brief deserialize and update the current parameters from JSON
+                /// \brief serialize to JSON
                 ///
-                virtual json_reader_t& config(json_reader_t&) = 0;
-
-                ///
-                /// \brief serialize the current parameters to JSON
-                ///
-                virtual json_writer_t& config(json_writer_t&) const = 0;
-
-                ///
-                /// \brief convenience overload to deserialize and update the current parameters from string
-                ///
-                void config(const string_t& text)
-                {
-                        json_reader_t reader(text);
-                        config(reader);
-                }
-
-                ///
-                /// \brief convenience overload to serialize and retrieve the current parameters as string
-                ///
-                string_t config() const
-                {
-                        json_writer_t writer;
-                        config(writer);
-                        return writer.str();
-                }
+                virtual void to_json(json_t&) const = 0;
+                virtual void from_json(const json_t&) = 0;
         };
 }

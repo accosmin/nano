@@ -38,7 +38,6 @@ highlight ColorColumn ctermbg=darkgray
 highlight Search cterm=NONE ctermfg=NONE ctermbg=darkgray
 
 set path+=src
-set path+=src/criteria
 set path+=src/layers
 set path+=src/losses
 set path+=src/models
@@ -55,7 +54,9 @@ set path+=src/functions
 set path+=src/io
 set path+=src/chrono
 set path+=apps
-set path+=test
+set path+=tests
+set path+=deps/eigen3
+set path+=deps/json/single_include
 
 " Trim trailing whitespaces when saving
 function! StripTrailingWhitespaces()

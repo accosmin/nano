@@ -16,14 +16,14 @@ tuner_t stoch_amsgrad_t::configs() const
         return tuner;
 }
 
-json_reader_t& stoch_amsgrad_t::config(json_reader_t& reader)
+void stoch_amsgrad_t::from_json(const json_t& json)
 {
-        return reader.object("alpha0", m_alpha0, "decay", m_decay, "beta1", m_beta1, "beta2", m_beta2, "epsilon", m_epsilon);
+        nano::from_json(json, "alpha0", m_alpha0, "decay", m_decay, "beta1", m_beta1, "beta2", m_beta2, "epsilon", m_epsilon);
 }
 
-json_writer_t& stoch_amsgrad_t::config(json_writer_t& writer) const
+void stoch_amsgrad_t::to_json(json_t& json) const
 {
-        return writer.object("alpha0", m_alpha0, "decay", m_decay, "beta1", m_beta1, "beta2", m_beta2, "epsilon", m_epsilon);
+        nano::to_json(json, "alpha0", m_alpha0, "decay", m_decay, "beta1", m_beta1, "beta2", m_beta2, "epsilon", m_epsilon);
 }
 
 solver_state_t stoch_amsgrad_t::minimize(const stoch_params_t& param, const function_t& function, const vector_t& x0) const

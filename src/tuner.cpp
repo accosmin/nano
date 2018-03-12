@@ -1,9 +1,9 @@
 #include "tuner.h"
 #include <sstream>
 #include <iomanip>
+#include "text/json.h"
 #include "math/random.h"
 #include "math/numeric.h"
-#include "text/json_writer.h"
 
 using namespace nano;
 
@@ -21,13 +21,13 @@ scalars_t nano::make_pow10_scalars(const scalar_t offset, const int min_power, c
         return values;
 }
 
-strings_t tuner_t::get(const size_t max_configs) const
+jsons_t tuner_t::get(const size_t max_configs) const
 {
         indices_t indices(1u, 0u);
         scalars_t values(m_params.size(), scalar_t(0));
 
         // generate all possible hyper-parameter combinations
-        strings_t configs;
+        jsons_t configs;
         while (n_params() > 0)
         {
                 assert(!indices.empty());
@@ -70,7 +70,8 @@ strings_t tuner_t::get(const size_t max_configs) const
 
         // randomly return the required number of hyper-parameter combinations
         std::shuffle(configs.begin(), configs.end(), make_rng());
-        return {configs.begin(), configs.begin() + std::min(configs.size(), max_configs)};
+        configs.erase(configs.begin() + std::min(configs.size(), max_configs), configs.end());
+        return configs;
 }
 
 void tuner_t::map(const indices_t& indices, scalars_t& values) const
@@ -87,12 +88,11 @@ void tuner_t::map(const indices_t& indices, scalars_t& values) const
         }
 }
 
-string_t tuner_t::json(const scalars_t& values) const
+json_t tuner_t::json(const scalars_t& values) const
 {
         assert(values.size() == m_params.size());
 
-        json_writer_t writer;
-        writer.new_object();
+        json_t json;
         for (size_t i = 0; i < m_params.size(); ++ i)
         {
                 const auto& param = m_params[i];
@@ -101,15 +101,10 @@ string_t tuner_t::json(const scalars_t& values) const
                 std::stringstream stream;
                 stream << std::fixed << std::setprecision(param.m_precision) << value;
 
-                writer.pair(param.m_name, stream.str());
-                if (i + 1 < m_params.size())
-                {
-                        writer.next();
-                }
+                json[param.m_name] = stream.str();
         }
-        writer.end_object();
 
-        return writer.str();
+        return json;
 }
 
 size_t tuner_t::n_configs() const

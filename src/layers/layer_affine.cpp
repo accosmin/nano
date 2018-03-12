@@ -4,14 +4,14 @@
 
 using namespace nano;
 
-json_reader_t& affine_layer_t::config(json_reader_t& reader)
+void affine_layer_t::from_json(const json_t& json)
 {
-        return reader.object("omaps", m_params.m_omaps, "orows", m_params.m_orows, "ocols", m_params.m_ocols);
+        nano::from_json(json, "omaps", m_params.m_omaps, "orows", m_params.m_orows, "ocols", m_params.m_ocols);
 }
 
-json_writer_t& affine_layer_t::config(json_writer_t& writer) const
+void affine_layer_t::to_json(json_t& json) const
 {
-        return writer.object("omaps", m_params.m_omaps, "orows", m_params.m_orows, "ocols", m_params.m_ocols);
+        nano::to_json(json, "omaps", m_params.m_omaps, "orows", m_params.m_orows, "ocols", m_params.m_ocols);
 }
 
 rlayer_t affine_layer_t::clone() const

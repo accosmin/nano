@@ -27,15 +27,15 @@ tuner_t stoch_ag_base_t<trestart>::configs() const
 }
 
 template <ag_restart trestart>
-json_reader_t& stoch_ag_base_t<trestart>::config(json_reader_t& reader)
+void stoch_ag_base_t<trestart>::from_json(const json_t& json)
 {
-        return reader.object("alpha0", m_alpha0, "q", m_q);
+        nano::from_json(json, "alpha0", m_alpha0, "q", m_q);
 }
 
 template <ag_restart trestart>
-json_writer_t& stoch_ag_base_t<trestart>::config(json_writer_t& writer) const
+void stoch_ag_base_t<trestart>::to_json(json_t& json) const
 {
-        return writer.object("alpha0", m_alpha0, "q", m_q);
+        nano::to_json(json, "alpha0", m_alpha0, "q", m_q);
 }
 
 template <ag_restart trestart>

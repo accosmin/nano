@@ -37,8 +37,7 @@ namespace nano
                 ///
                 /// \brief add a new computation name given by its name, type and configuration
                 ///
-                bool add(const string_t& name, const string_t& type, json_reader_t&);
-                bool add(const string_t& name, const string_t& type, const string_t& json);
+                bool add(const string_t& name, const json_t&);
 
                 ///
                 /// \brief connect two computation nodes such that the first one is an input of the second one
@@ -60,13 +59,8 @@ namespace nano
                 ///
                 /// \brief configure the computation graph using JSON
                 ///
-                bool config(json_reader_t&);
-                bool config(const string_t& json);
-
-                ///
-                /// \brief serialize the computation graph to JSON
-                ///
-                void config(json_writer_t&) const;
+                void to_json(json_t&) const;
+                bool from_json(const json_t&);
 
                 ///
                 /// \brief mark the configuration done and verifies if the computation node form a valid graph:
@@ -134,9 +128,6 @@ namespace nano
                 const vector_t& params() const { return m_pdata; }
 
         private:
-
-                bool config_nodes(json_reader_t&);
-                bool config_model(json_reader_t&);
 
                 void allocate(const tensor_size_t count);
                 tensor_size_t xsize(const tensor_size_t count) const;

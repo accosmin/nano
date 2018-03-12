@@ -3,6 +3,7 @@
 #include "arch.h"
 #include "scalar.h"
 #include "stringi.h"
+#include "text/json.h"
 
 namespace nano
 {
@@ -52,7 +53,7 @@ namespace nano
                 ///
                 /// \brief returns up to *max_configs* JSON configurations to evaluate
                 ///
-                strings_t get(const size_t max_configs) const;
+                jsons_t get(const size_t max_configs) const;
 
                 ///
                 /// \brief returns the number of parameters to tune
@@ -66,7 +67,7 @@ namespace nano
 
         private:
 
-                string_t json(const scalars_t&) const;
+                json_t json(const scalars_t&) const;
                 void map(const indices_t&, scalars_t&) const;
 
                 // attributes

@@ -5,15 +5,15 @@
 using namespace nano;
 
 template <typename tcgd_update>
-json_reader_t& batch_cgd_t<tcgd_update>::config(json_reader_t& reader)
+void batch_cgd_t<tcgd_update>::from_json(const json_t& json)
 {
-        return reader.object("ls_init", m_ls_init, "ls_strat", m_ls_strat, "c1", m_c1, "c2", m_c2);
+        nano::from_json(json, "ls_init", m_ls_init, "ls_strat", m_ls_strat, "c1", m_c1, "c2", m_c2);
 }
 
 template <typename tcgd_update>
-json_writer_t& batch_cgd_t<tcgd_update>::config(json_writer_t& writer) const
+void batch_cgd_t<tcgd_update>::to_json(json_t& json) const
 {
-        return writer.object(
+        nano::to_json(json,
                 "ls_init", m_ls_init, "ls_inits", join(enum_values<ls_initializer>()),
                 "ls_strat", m_ls_strat, "ls_strats", join(enum_values<ls_strategy>()),
                 "c1", m_c1, "c2", m_c2);

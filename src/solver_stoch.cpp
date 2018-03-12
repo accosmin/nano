@@ -27,12 +27,12 @@ solver_state_t stoch_solver_t::tune(const stoch_params_t& params, const function
         else
         {
                 // tuning required: the number of trials is proportional with the number of parameters to tune
-                string_t best_config;
+                json_t best_config;
                 solver_state_t best_state;
 
                 for (const auto& config : tuner.get(trials_per_parameter * tuner.n_params()))
                 {
-                        this->config(config);
+                        this->from_json(config);
 
                         const auto state = minimize(params, function, x0);
                         if (state < best_state)
@@ -46,7 +46,7 @@ solver_state_t stoch_solver_t::tune(const stoch_params_t& params, const function
                         }
                 }
 
-                this->config(best_config);
+                this->from_json(best_config);
                 return best_state;
         }
 }

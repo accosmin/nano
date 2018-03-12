@@ -8,16 +8,15 @@ peak2d_task_t::peak2d_task_t() :
 {
 }
 
-json_reader_t& peak2d_task_t::config(json_reader_t& reader)
+void peak2d_task_t::from_json(const json_t& json)
 {
-        reader.object("irows", m_irows, "icols", m_icols, "noise", m_noise, "count", m_count, "type", m_type);
+        nano::from_json(json, "irows", m_irows, "icols", m_icols, "noise", m_noise, "count", m_count, "type", m_type);
         reconfig(make_dims(1, m_irows, m_icols), make_dims(2, 1, 1), 1);
-        return reader;
 }
 
-json_writer_t& peak2d_task_t::config(json_writer_t& writer) const
+void peak2d_task_t::to_json(json_t& json) const
 {
-        return writer.object("irows", m_irows, "icols", m_icols, "noise", m_noise, "count", m_count,
+        nano::to_json(json, "irows", m_irows, "icols", m_icols, "noise", m_noise, "count", m_count,
                 "type", m_type, "types", join(enum_values<peak2d_task_type>() ));
 }
 

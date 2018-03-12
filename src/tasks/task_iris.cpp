@@ -8,14 +8,14 @@ iris_task_t::iris_task_t() :
 {
 }
 
-json_reader_t& iris_task_t::config(json_reader_t& reader)
+void iris_task_t::from_json(const json_t& json)
 {
-        return reader.object("dir", m_dir);
+        nano::from_json(json, "dir", m_dir);
 }
 
-json_writer_t& iris_task_t::config(json_writer_t& writer) const
+void iris_task_t::to_json(json_t& json) const
 {
-        return writer.object("dir", m_dir);
+        nano::to_json(json, "dir", m_dir);
 }
 
 bool iris_task_t::populate()

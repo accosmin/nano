@@ -4,14 +4,14 @@
 
 using namespace nano;
 
-json_reader_t& batch_gd_t::config(json_reader_t& reader)
+void batch_gd_t::from_json(const json_t& json)
 {
-        return reader.object("ls_init", m_ls_init, "ls_strat", m_ls_strat, "c1", m_c1, "c2", m_c2);
+        nano::from_json(json, "ls_init", m_ls_init, "ls_strat", m_ls_strat, "c1", m_c1, "c2", m_c2);
 }
 
-json_writer_t& batch_gd_t::config(json_writer_t& writer) const
+void batch_gd_t::to_json(json_t& json) const
 {
-        return writer.object(
+        nano::to_json(json,
                 "ls_init", m_ls_init, "ls_inits", join(enum_values<ls_initializer>()),
                 "ls_strat", m_ls_strat, "ls_strats", join(enum_values<ls_strategy>()),
                 "c1", m_c1, "c2", m_c2);

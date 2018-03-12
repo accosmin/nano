@@ -57,7 +57,8 @@ message("++ NANOX                          " "${NANO_WITH_NANOX}")
 message("++ CCACHE                         " "${NANO_WITH_CCACHE}")
 message("++ ------------------------------------------------------------------------------" "")
 
-include_directories(${nano_SOURCE_DIR}/src)
+include_directories(${CMAKE_SOURCE_DIR}/src)
+include_directories(${CMAKE_SOURCE_DIR}/deps/json/single_include)
 
 add_subdirectory(src)
 add_subdirectory(apps)

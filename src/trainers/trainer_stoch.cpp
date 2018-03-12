@@ -64,13 +64,13 @@ static trainer_result_t train(const task_t& task, const size_t fold, accumulator
         return result;
 }
 
-json_reader_t& stoch_trainer_t::config(json_reader_t& reader)
+void stoch_trainer_t::from_json(const json_t& json)
 {
-        return reader.object("solver", m_solver,
+        nano::from_json(json, "solver", m_solver,
                 "epochs", m_epochs, "epsilon", m_epsilon, "patience", m_patience);
 }
 
-json_writer_t& stoch_trainer_t::config(json_writer_t& writer) const
+void stoch_trainer_t::to_json(json_t& json) const
 {
         return writer.object("solver", m_solver, "solvers", join(get_stoch_solvers().ids()),
                 "epochs", m_epochs, "epsilon", m_epsilon, "patience", m_patience);

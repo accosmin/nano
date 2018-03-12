@@ -11,8 +11,9 @@ namespace nano
         {
         public:
 
-                json_reader_t& config(json_reader_t&) final;
-                json_writer_t& config(json_writer_t&) const final;
+                void to_json(json_t&) const final;
+                void from_json(const json_t&) final;
+
                 solver_state_t minimize(const batch_params_t&, const function_t&, const vector_t& x0) const override;
 
         private:

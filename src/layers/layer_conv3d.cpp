@@ -4,15 +4,15 @@
 
 using namespace nano;
 
-json_reader_t& conv3d_layer_t::config(json_reader_t& reader)
+void conv3d_layer_t::from_json(const json_t& json)
 {
-        return reader.object("omaps", m_params.m_omaps, "krows", m_params.m_krows, "kcols", m_params.m_kcols,
+        nano::from_json(json, "omaps", m_params.m_omaps, "krows", m_params.m_krows, "kcols", m_params.m_kcols,
                 "kconn", m_params.m_kconn, "kdrow", m_params.m_kdrow, "kdcol", m_params.m_kdcol);
 }
 
-json_writer_t& conv3d_layer_t::config(json_writer_t& writer) const
+void conv3d_layer_t::to_json(json_t& json) const
 {
-        return writer.object("omaps", m_params.m_omaps, "krows", m_params.m_krows, "kcols", m_params.m_kcols,
+        nano::to_json(json, "omaps", m_params.m_omaps, "krows", m_params.m_krows, "kcols", m_params.m_kcols,
                 "kconn", m_params.m_kconn, "kdrow", m_params.m_kdrow, "kdcol", m_params.m_kdcol);
 }
 

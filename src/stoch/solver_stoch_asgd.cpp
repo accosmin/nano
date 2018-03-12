@@ -13,14 +13,14 @@ tuner_t stoch_asgd_t::configs() const
         return tuner;
 }
 
-json_reader_t& stoch_asgd_t::config(json_reader_t& reader)
+void stoch_asgd_t::from_json(const json_t& json)
 {
-        return reader.object("alpha0", m_alpha0, "decay", m_decay, "momentum", m_momentum);
+        nano::from_json(json, "alpha0", m_alpha0, "decay", m_decay, "momentum", m_momentum);
 }
 
-json_writer_t& stoch_asgd_t::config(json_writer_t& writer) const
+void stoch_asgd_t::to_json(json_t& json) const
 {
-        return writer.object("alpha0", m_alpha0, "decay", m_decay, "momentum", m_momentum);
+        nano::to_json(json, "alpha0", m_alpha0, "decay", m_decay, "momentum", m_momentum);
 }
 
 solver_state_t stoch_asgd_t::minimize(const stoch_params_t& param, const function_t& function, const vector_t& x0) const

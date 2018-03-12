@@ -11,14 +11,14 @@ tuner_t stoch_adadelta_t::configs() const
         return tuner;
 }
 
-json_reader_t& stoch_adadelta_t::config(json_reader_t& reader)
+void stoch_adadelta_t::from_json(const json_t& json)
 {
-        return reader.object("momentum", m_momentum, "epsilon", m_epsilon);
+        nano::from_json(json, "momentum", m_momentum, "epsilon", m_epsilon);
 }
 
-json_writer_t& stoch_adadelta_t::config(json_writer_t& writer) const
+void stoch_adadelta_t::to_json(json_t& json) const
 {
-        return writer.object("momentum", m_momentum, "epsilon", m_epsilon);
+        nano::to_json(json, "momentum", m_momentum, "epsilon", m_epsilon);
 }
 
 solver_state_t stoch_adadelta_t::minimize(const stoch_params_t& param, const function_t& function, const vector_t& x0) const

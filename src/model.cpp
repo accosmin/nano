@@ -80,41 +80,36 @@ size_t model_t::find_node(const string_t& name) const
         return (it == m_nodes.end()) ? string_t::npos : static_cast<size_t>(std::distance(m_nodes.begin(), it));
 }
 
-bool model_t::add(const string_t& name, const string_t& type, json_reader_t& reader)
+bool model_t::add(const string_t& name, const json_t& json)
 {
-        log_info() << "model: adding node [" << name << "] of type [" << type << "]...";
-
-        if (find_node(name) != string_t::npos)
-        {
-                log_error() << "model: duplicated node name [" << name << "]!";
-                return false;
-        }
-
-        auto node = get_layers().get(type);
-        if (!node)
-        {
-                log_error() << "model: invalid node type [" << type << "]!";
-                return false;
-        }
-
         try
         {
-                node->config(reader);
+                const auto type = json.at("type").get<string_t>();
+
+                log_info() << "model: adding node [" << name << "] of type [" << type << "]...";
+
+                if (find_node(name) != string_t::npos)
+                {
+                        log_error() << "model: duplicated node name [" << name << "]!";
+                        return false;
+                }
+
+                auto node = get_layers().get(type);
+                if (!node)
+                {
+                        log_error() << "model: invalid node type [" << type << "]!";
+                        return false;
+                }
+                node->from_json(json);
+
+                m_nodes.emplace_back(name, type, std::move(node));
+                return true;
         }
         catch (std::exception& e)
         {
                 log_error() << "model: failed to configure node [" << e.what() << "]!";
                 return false;
         }
-
-        m_nodes.emplace_back(name, type, std::move(node));
-        return true;
-}
-
-bool model_t::add(const string_t& name, const string_t& type, const string_t& json)
-{
-        json_reader_t reader(json);
-        return add(name, type, reader);
 }
 
 bool model_t::connect(const string_t& name1, const string_t& name2)
@@ -151,48 +146,12 @@ bool model_t::connect(const strings_t& names)
         return true;
 }
 
-namespace
-{
-        enum json_mode
-        {
-                none,
-                nodes,
-                model,
-                node_name,
-                node_type,
-                node_config
-        };
-
-        static const std::vector<std::pair<string_t, json_mode>> tokens2mode =
-        {
-                { "nodes", json_mode::nodes },
-                { "model", json_mode::model },
-                { "name", json_mode::node_name },
-                { "type", json_mode::node_type },
-                { "config", json_mode::node_config }
-        };
-
-        void handle_error(const json_reader_t& reader, const char* error_message)
-        {
-                log_error() << error_message << " @json..." << reader.str().substr(reader.pos(), 16) << "..." << to_string(reader.tag()) << "!";
-        }
-
-        auto handle_name(const char* token_name, const size_t token_size)
-        {
-                const auto it = std::find_if(tokens2mode.begin(), tokens2mode.end(), [&] (const auto& tm)
-                {
-                        return  tm.first.size() == token_size &&
-                                tm.first.compare(0, token_size, token_name, token_size) == 0;
-                });
-                return it == tokens2mode.end() ? json_mode::none : it->second;
-        }
-}
-
-bool model_t::config(json_reader_t& reader)
+bool model_t::from_json(const json_t& json)
 {
         log_info() << "model: configuring...";
 
         clear();
+        /*
         for (auto itend = reader.end(); reader != itend; )
         {
                 const auto token = *reader;
@@ -241,117 +200,7 @@ bool model_t::config(json_reader_t& reader)
         }
 
         handle_error(reader, "model: unexpected ending");
-        return false;
-}
-
-bool model_t::config_nodes(json_reader_t& reader)
-{
-        log_info() << "model: configuring the computation nodes...";
-
-        string_t last_name, last_type;
-        json_mode last_mode = json_mode::none;
-
-        for (auto itend = reader.end(); reader != itend; )
-        {
-                const auto token = *reader;
-                const auto token_name = std::get<0>(token);
-                const auto token_size = std::get<1>(token);
-
-                switch (std::get<2>(token))
-                {
-                case json_tag::new_object:
-                        if (last_mode != json_mode::node_config)
-                        {
-                                ++ reader;
-                        }
-                        else if (!add(last_name, last_type, reader))
-                        {
-                                return false;
-                        }
-                        else
-                        {
-                                last_mode = json_mode::none;
-                        }
-                        break;
-
-                case json_tag::name:
-                        switch (last_mode = handle_name(token_name, token_size))
-                        {
-                        case json_mode::node_name:   ++ reader; break;
-                        case json_mode::node_type:   ++ reader; break;
-                        case json_mode::node_config: ++ reader; break;
-                        default:                     handle_error(reader, "model: unexpected nodes name"); return false;
-                        }
-                        break;
-
-                case json_tag::value:
-                        switch (last_mode)
-                        {
-                        case json_mode::node_name:   last_name.assign(token_name, token_size); ++ reader; break;
-                        case json_mode::node_type:   last_type.assign(token_name, token_size); ++ reader; break;
-                        default:                     handle_error(reader, "model: unexpected nodes value"); return false;
-                        }
-                        break;
-
-                case json_tag::new_array:
-                        // go on, nodes starting
-                case json_tag::end_object:
-                        // go on, next node
-                        ++ reader;
-                        break;
-
-                case json_tag::end_array:
-                        // done with all nodes
-                        ++ reader;
-                        return true;
-
-                default:
-                        handle_error(reader, "model: unexpected nodes token");
-                        return false;
-                }
-        }
-
-        return false;
-}
-
-bool model_t::config_model(json_reader_t& reader)
-{
-        log_info() << "model: configuring the computation graph...";
-
-        string_t last_name;
-        for (auto itend = reader.end(); reader != itend; )
-        {
-                const auto token = *reader;
-                const auto token_name = std::get<0>(token);
-                const auto token_size = std::get<1>(token);
-
-                switch (std::get<2>(token))
-                {
-                case json_tag::new_array:
-                case json_tag::end_array:
-                        last_name.clear();
-                        ++ reader;
-                        break;
-
-                case json_tag::value:
-                        if (!last_name.empty() && !connect(last_name, string_t(token_name, token_size)))
-                        {
-                                return false;
-                        }
-                        last_name.assign(token_name, token_size);
-                        ++ reader;
-                        break;
-
-                case json_tag::end_object:
-                        // done
-                        return true;
-
-                default:
-                        handle_error(reader, "model: unexpected model token");
-                        return false;
-                }
-        }
-
+        */
         return false;
 }
 
@@ -436,39 +285,21 @@ bool model_t::done()
         return true;
 }
 
-bool model_t::config(const string_t& json)
+void model_t::to_json(json_t& json) const
 {
-        json_reader_t reader(json);
-        return config(reader);
-}
-
-void model_t::config(json_writer_t& writer) const
-{
-        const auto prefix0 = "\n";
-        const auto prefix1 = "\n  ";
-        const auto prefix2 = "\n    ";
-        const auto prefix3 = "\n      ";
-
-        writer.new_object().append(prefix1).name("nodes").new_array();
+        auto&& json_nodes = json["nodes"];
         for (size_t i = 0; i < m_nodes.size(); ++ i)
         {
                 const auto& name = m_nodes[i].m_name;
                 const auto& type = m_nodes[i].m_type;
                 const auto& node = m_nodes[i].m_node;
 
-                writer.new_object();
-                        writer.append(prefix3).pair("name", name).next();
-                        writer.append(prefix3).pair("type", type).next();
-                        writer.append(prefix3).name("config"); node->config(writer);
-                writer.append(prefix2).end_object();
-                if (i + 1 < m_nodes.size())
-                {
-                        writer.next();
-                }
+                auto&& json_node = json_nodes[name];
+                json_node["type"] = type;
+                node->to_json(json_node);
         }
-        writer.append(prefix1).end_array().next();
 
-        writer.append(prefix1).name("model").new_array();
+        auto&& json_model = json["model"];
         std::vector<std::pair<size_t, size_t>> edges;
         for (size_t dst = 0; dst < m_nodes.size(); ++ dst)
         {
@@ -484,24 +315,19 @@ void model_t::config(json_writer_t& writer) const
 
                 const auto& name1 = m_nodes[src].m_name;
                 const auto& name2 = m_nodes[dst].m_name;
-                writer.append(prefix3).array(name1, name2);
-                if (i + 1 < edges.size())
-                {
-                        writer.next();
-                }
+                json_model[i] = {name1, name2};
         }
-        writer.append(prefix1).end_array().append(prefix0).end_object();
 }
 
 bool model_t::save(const string_t& path) const
 {
-        json_writer_t writer;
-        config(writer);
+        json_t json;
+        to_json(json);
 
         obstream_t ob(path);
         return  ob.write(idims()) &&
                 ob.write(odims()) &&
-                ob.write(writer.str()) &&
+                ob.write(json.dump()) &&
                 ob.write_vector(params());
 }
 
@@ -516,7 +342,7 @@ bool model_t::load(const string_t& path)
                 ib.read(odims) &&
                 ib.read(json) &&
                 ib.read_vector(pdata) &&
-                config(json) &&
+                from_json(json_t::parse(json)) &&
                 resize(idims, odims) &&
                 pdata.size() == psize() &&
                 [&] () { params(pdata); return true; }();

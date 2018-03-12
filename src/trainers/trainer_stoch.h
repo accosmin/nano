@@ -15,8 +15,8 @@ namespace nano
         {
         public:
 
-                json_reader_t& config(json_reader_t&) final;
-                json_writer_t& config(json_writer_t&) const final;
+                void to_json(json_t&) const final;
+                void from_json(const json_t&) final;
 
                 trainer_result_t train(const task_t&, const size_t fold, accumulator_t&) const final;
 

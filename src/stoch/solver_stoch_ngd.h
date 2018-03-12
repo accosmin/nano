@@ -14,8 +14,9 @@ namespace nano
         public:
 
                 tuner_t configs() const final;
-                json_reader_t& config(json_reader_t& reader) final;
-                json_writer_t& config(json_writer_t& writer) const final;
+                void to_json(json_t&) const final;
+                void from_json(const json_t&) final;
+
                 solver_state_t minimize(const stoch_params_t&, const function_t&, const vector_t& x0) const final;
 
         private:
