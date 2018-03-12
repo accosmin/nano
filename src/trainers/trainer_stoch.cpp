@@ -10,21 +10,21 @@
 using namespace nano;
 
 static trainer_result_t train(const task_t& task, const size_t fold, accumulator_t& acc,
-        const rstoch_solver_t& solver, const string_t& config,
+        const rstoch_solver_t& solver, const json_t& json,
         const size_t epochs, const scalar_t epsilon, const size_t patience,
         const nano::timer_t& timer)
 {
         assert(solver);
 
         size_t epoch = 0;
-        trainer_result_t result(config);
+        trainer_result_t result(json.dump());
 
         // setup solver
-        solver->config(config);
+        solver->from_json(json);
 
         // setup minibatch iterator
         scalar_t batch_factor = 1;
-        json_reader_t(config).object("batchr", batch_factor);
+        nano::from_json(json, "batchr", batch_factor);
 
         const size_t batch0 = 1;
         auto iterator = iterator_t(task, {fold, protocol::train}, batch0, batch_factor);
@@ -49,7 +49,7 @@ static trainer_result_t train(const task_t& task, const size_t fold, accumulator
                         << ":train=" << train
                         << ",valid=" << valid << "|" << nano::to_string(ret)
                         << ",test=" << test
-                        << "," << config << ",b=" << iterator.size() << ",g=" << gnorm << ",x=" << xnorm
+                        << "," << json.dump() << ",b=" << iterator.size() << ",g=" << gnorm << ",x=" << xnorm
                         << "]" << timer.elapsed() << ".";
 
                 return !nano::is_done(ret);
@@ -72,7 +72,7 @@ void stoch_trainer_t::from_json(const json_t& json)
 
 void stoch_trainer_t::to_json(json_t& json) const
 {
-        return writer.object("solver", m_solver, "solvers", join(get_stoch_solvers().ids()),
+        nano::to_json(json, "solver", m_solver, "solvers", join(get_stoch_solvers().ids()),
                 "epochs", m_epochs, "epsilon", m_epsilon, "patience", m_patience);
 }
 
@@ -88,14 +88,14 @@ trainer_result_t stoch_trainer_t::train(const task_t& task, const size_t fold, a
         tuner.add("batchr", make_scalars(1.005, 1.010, 1.020, 1.050, 1.100)).precision(3);
 
         // tune the hyper-parameters: solver + minibatch increase factor
-        for (const auto& config : tuner.get(10 * tuner.n_params()))
+        for (const auto& json : tuner.get(10 * tuner.n_params()))
         {
                 const auto epochs = m_epochs;
                 const auto epsilon = m_epsilon;
                 const auto patience = m_patience;
 
                 acc.params(params);
-                const auto cresult = ::train(task, fold, acc, solver, config, epochs, epsilon, patience, timer);
+                const auto cresult = ::train(task, fold, acc, solver, json, epochs, epsilon, patience, timer);
                 if (cresult < result)
                 {
                         result = cresult;

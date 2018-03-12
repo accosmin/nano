@@ -11,21 +11,21 @@
 using namespace nano;
 
 static trainer_result_t train(const task_t& task, const size_t fold, accumulator_t& acc,
-        const rbatch_solver_t& solver, const string_t& config,
+        const rbatch_solver_t& solver, const json_t& json,
         const size_t epochs, const scalar_t epsilon, const size_t patience,
         const nano::timer_t& timer)
 {
         assert(solver);
 
         size_t epoch = 0;
-        trainer_result_t result(config);
+        trainer_result_t result(json.dump());
 
         // setup solver
-        solver->config(config);
+        solver->from_json(json);
 
         // setup L2-regularization
         scalar_t lambda = 0;
-        json_reader_t(config).object("lambda", lambda);
+        nano::from_json(json, "lambda", lambda);
         acc.lambda(lambda);
 
         // logging operator
@@ -48,7 +48,7 @@ static trainer_result_t train(const task_t& task, const size_t fold, accumulator
                         << ":train=" << train
                         << ",valid=" << valid << "|" << nano::to_string(ret)
                         << ",test=" << test
-                        << "," << config << ",g=" << gnorm << ",x=" << xnorm
+                        << "," << json.dump() << ",g=" << gnorm << ",x=" << xnorm
                         << "]" << timer.elapsed() << ".";
 
                 return !nano::is_done(ret);
@@ -86,14 +86,14 @@ trainer_result_t batch_trainer_t::train(const task_t& task, const size_t fold, a
         tuner.add("lambda", make_pow10_scalars(0, -6, -1));
 
         // tune the hyper-parameters: solver + L2-regularizer
-        for (const auto& config : tuner.get(10 * tuner.n_params()))
+        for (const auto& json : tuner.get(10 * tuner.n_params()))
         {
                 const auto epochs = m_epochs;
                 const auto epsilon = m_epsilon;
                 const auto patience = m_patience;
 
                 acc.params(params);
-                const auto cresult = ::train(task, fold, acc, solver, config, epochs, epsilon, patience, timer);
+                const auto cresult = ::train(task, fold, acc, solver, json, epochs, epsilon, patience, timer);
                 if (cresult < result)
                 {
                         result = cresult;
