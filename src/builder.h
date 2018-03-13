@@ -1,6 +1,7 @@
 #pragma once
 
 #include "model.h"
+#include "text/json.h"
 #include "text/algorithm.h"
 #include "layers/norm3d_params.h"
 
@@ -15,237 +16,51 @@ namespace nano
         }
 
         ///
-        /// \brief configure computation nodes.
+        /// \brief serialize computation nodes to JSON.
         ///
-        inline void config_empty_node(json_t&)
+        template <typename tname>
+        json_t config_norm3d_node(const tname& name, const norm_type type)
         {
+                return to_json(
+                        "name", name, "type", norm3d_node_name(),
+                        "norm", type);
         }
 
-        inline void config_norm3d_node(json_t& json, const norm_type type)
-        {
-                to_json(json, "norm", type);
-        }
-
-        inline void config_conv3d_node(json_t& json,
+        template <typename tname>
+        json_t config_conv3d_node(const tname& name,
                 const tensor_size_t omaps, const tensor_size_t krows, const tensor_size_t kcols,
                 const tensor_size_t kconn = 1, const tensor_size_t kdrow = 1, const tensor_size_t kdcol = 1)
         {
-                to_json(json, "omaps", omaps, "krows", krows, "kcols", kcols, "kconn", kconn, "kdrow", kdrow, "kdcol", kdcol);
+                return to_json(
+                        "name", name, "type", conv3d_node_name(),
+                        "omaps", omaps, "krows", krows, "kcols", kcols, "kconn", kconn, "kdrow", kdrow, "kdcol", kdcol);
         }
 
-        inline void config_affine_node(json_t& json,
+        template <typename tname>
+        json_t config_affine_node(const tname& name,
                 const tensor_size_t omaps, const tensor_size_t orows, const tensor_size_t ocols)
         {
-                to_json(json, "omaps", omaps, "orows", orows, "ocols", ocols);
-        }
-
-        ///
-        /// \brief serialize computation nodes.
-        ///
-        template <typename tname, typename ttype, typename tconfigurer, typename... targs>
-        void add_node(json_t& json, const tname& name, const ttype& type,
-                const tconfigurer& configurer, const targs&... args)
-        {
-                to_json(json["name"] = name, "type", type);
-                configurer(json["name"], args...);
-        }
-
-        template <typename tname>
-        void add_norm3d_node(json_t& json, const tname& name, const norm_type type)
-        {
-                return add_node(json, name, norm3d_node_name(),
-                        config_norm3d_node, type);
-        }
-
-        template <typename tname>
-        void add_conv3d_node(json_t& json, const tname& name,
-                const tensor_size_t omaps, const tensor_size_t krows, const tensor_size_t kcols,
-                const tensor_size_t kconn = 1, const tensor_size_t kdrow = 1, const tensor_size_t kdcol = 1)
-        {
-                return add_node(json, name, conv3d_node_name(),
-                        config_conv3d_node, omaps, krows, kcols, kconn, kdrow, kdcol);
-        }
-
-        template <typename tname>
-        void add_affine_node(json_t& json, const tname& name,
-                const tensor_size_t omaps, const tensor_size_t orows, const tensor_size_t ocols)
-        {
-                return add_node(json, name, affine_node_name(),
-                        config_affine_node, omaps, orows, ocols);
+                return to_json(
+                        "name", name, "type", affine_node_name(),
+                        "omaps", omaps, "orows", orows, "ocols", ocols);
         }
 
         template <typename tname, typename ttype>
-        void add_activation_node(json_t& json, const tname& name, const ttype& type)
+        json_t config_activation_node(const tname& name, const ttype& type)
         {
                 assert(is_activation_node(type));
-                return add_node(json, name, type,
-                        config_empty_node);
+                return to_json("name", name, "type", type);
         }
 
-        ///
-        /// \brief add a computation node to the model.
-        ///
-        template <typename top, typename... targs>
-        bool add_node(model_t& model, const string_t& name, const string_t& type, const top& op, targs&&... args)
+        template <typename tname>
+        json_t config_plus4d_node(const tname& name)
         {
-                if (name.empty())
-                {
-                        return true;
-                }
-                else
-                {
-                        json_t json;
-                        op(json, std::forward<targs>(args)...);
-                        return model.add(name, type, json.str());
-                }
+                return to_json("name", name, "type", plus4d_node_name());
         }
 
-        ///
-        /// \brief chain multiple computation nodes in a model:
-        ///     node1 -> node2 -> ... -> nodeN
-        ///
-        inline bool chain_nodes(model_t& model, const string_t& node1, const string_t& node2)
+        template <typename tname>
+        json_t config_tcat4d_node(const tname& name)
         {
-                assert(!node2.empty());
-                return node1.empty() || model.connect(node1, node2);
+                return to_json("name", name, "type", tcat4d_node_name());
         }
-
-        template <typename... tnames>
-        bool chain_nodes(model_t& model, const string_t& node1, const string_t& node2, const tnames&... nodes)
-        {
-                return  chain_nodes(model, node1, node2) &&
-                        chain_nodes(model, node2, nodes...);
-        }
-
-        ///
-        /// \brief adds an affine module to a computation graph:
-        ///     - a fully connected affine node followed by
-        ///     - a non-linearity node (if given).
-        ///
-        inline bool add_affine_module(model_t& model,
-                const string_t& affine_name, const tensor_size_t omaps, const tensor_size_t orows, const tensor_size_t ocols,
-                const string_t& activation_name, const string_t& activation_type,
-                const string_t& previous_name)
-        {
-                assert(activation_name.empty() || is_activation_node(activation_type));
-
-                return  add_node(model, affine_name, affine_node_name(), config_affine_node, omaps, orows, ocols) &&
-                        add_node(model, activation_name, activation_type, config_empty_node) &&
-                        chain_nodes(model, previous_name, affine_name, activation_name);
-        }
-
-        ///
-        /// \brief adds an affine module to a computation graph:
-        ///     - a fully connected affine node followed by
-        ///     - a non-linearity node (if given).
-        ///
-        inline bool add_conv3d_module(model_t& model,
-                const string_t& conv3d_name,
-                const tensor_size_t omaps, const tensor_size_t krows, const tensor_size_t kcols,
-                const tensor_size_t kconn, const tensor_size_t kdrow, const tensor_size_t kdcol,
-                const string_t& activation_name, const string_t& activation_type,
-                const string_t& previous_name)
-        {
-                assert(activation_name.empty() || is_activation_node(activation_type));
-
-                return  add_node(model, conv3d_name, conv3d_node_name(), config_conv3d_node, omaps, krows, kcols, kconn, kdrow, kdcol) &&
-                        add_node(model, activation_name, activation_type, config_empty_node) &&
-                        chain_nodes(model, previous_name, conv3d_name, activation_name);
-        }
-
-        ///
-        /// \brief adds a mixing module to a computation graph:
-        ///     - a node that combines multiple inputs (e.g. by summing or by concatenation)
-        ///
-        inline bool connect_mixing_nodes(model_t& model,
-                const string_t& mix_name,
-                const string_t& input_name)
-        {
-                return model.connect(input_name, mix_name);
-        }
-
-        template <typename... tnames>
-        bool connect_mixing_nodes(model_t& model,
-                const string_t& mix_name,
-                const string_t& input_name, const tnames&... input_names)
-        {
-                return  model.connect(input_name, mix_name) &&
-                        connect_mixing_nodes(model, mix_name, input_names...);
-        }
-
-        template <typename... tnames>
-        bool add_mixing_module(model_t& model,
-                const string_t& mix_name, const string_t& mix_type,
-                const tnames&... input_names)
-        {
-                return  add_node(model, mix_name, mix_type, config_empty_node) &&
-                        connect_mixing_nodes(model, mix_name, input_names...);
-        }
-
-        ///
-        /// \brief adds an output module to a computation graph:
-        ///     - a fully connected affine node.
-        ///
-        inline bool add_output_module(model_t& model,
-                const string_t& output_name, const tensor_size_t omaps, const tensor_size_t orows, const tensor_size_t ocols,
-                const string_t& previous_name)
-        {
-                return  add_node(model, output_name, affine_node_name(), config_affine_node, omaps, orows, ocols) &&
-                        chain_nodes(model, previous_name, output_name);
-        }
-
-        ///
-        /// \brief configuration for an affine node: omaps, orows, ocols
-        ///
-        using affine_node_config_t = std::array<tensor_size_t, 3>;
-        using affine_node_configs_t = std::vector<affine_node_config_t>;
-
-        ///
-        /// \brief configuration for a 3D convolution node: omaps, krows, kcols, kconn, kdrow, kdcol
-        ///
-        using conv3d_node_config_t = std::array<tensor_size_t, 6>;
-        using conv3d_node_configs_t = std::vector<conv3d_node_config_t>;
-
-        ///
-        /// \brief create a convolution neural network (CNN) consisting of:
-        ///     (optional) the convolution nodes: [convX -> actX]+
-        ///     (optional) followed by the affine (fully connected) nodes: [affY -> actY]+
-        ///     followed by the output (affine) node: -> out
-        ///
-        /// NB: a linear model is obtained if the convolution and the affine layers are empty
-        /// NB: a multi-layer perceptron (MLP) model is obtained if the convolution layers are empty
-        ///
-        NANO_PUBLIC bool make_cnn(model_t& model,
-                const conv3d_node_configs_t& conv3d_param,
-                const affine_node_configs_t& affine_param,
-                const tensor_size_t omaps, const tensor_size_t orows, const tensor_size_t ocols,
-                const string_t& activation_type);
-
-        ///
-        /// \brief create a multi-layer perceptron (MLP) model: a CNN without convolution nodes.
-        ///
-        NANO_PUBLIC bool make_mlp(model_t& model,
-                const affine_node_configs_t& affine_param,
-                const tensor_size_t omaps, const tensor_size_t orows, const tensor_size_t ocols,
-                const string_t& activation_type);
-
-        ///
-        /// \brief create a linear model: a CNN without convolution and affine nodes.
-        ///
-        NANO_PUBLIC bool make_linear(model_t& model,
-                const tensor_size_t omaps, const tensor_size_t orows, const tensor_size_t ocols,
-                const string_t& activation_type);
-
-        ///
-        /// \brief create a residual MLP (multi-layer perceptron) network given
-        ///
-        /// structure:
-        ///     aff0 -> act0 -> aff1 ->  act1 -> aff2 ->  act2 -> aff3 ->  act3 -> ... ->  actN   -> out
-        ///                             +act0            +act1            +act2           +actN-1
-        ///
-        NANO_PUBLIC bool make_residual_mlp(model_t& model,
-                const affine_node_configs_t& affine_param,
-                const tensor_size_t omaps, const tensor_size_t orows, const tensor_size_t ocols,
-                const string_t& activation_type,
-                const string_t& mixing_type = mix_plus4d_node_name());
 }

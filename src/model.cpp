@@ -80,14 +80,14 @@ size_t model_t::find_node(const string_t& name) const
         return (it == m_nodes.end()) ? string_t::npos : static_cast<size_t>(std::distance(m_nodes.begin(), it));
 }
 
-bool model_t::add(const string_t& name, const json_t& json)
+bool model_t::add(const json_t& json)
 {
         try
         {
+                const auto name = json.at("name").get<string_t>();
                 const auto type = json.at("type").get<string_t>();
 
                 log_info() << "model: adding node [" << name << "] of type [" << type << "]...";
-
                 if (find_node(name) != string_t::npos)
                 {
                         log_error() << "model: duplicated node name [" << name << "]!";
@@ -151,57 +151,38 @@ bool model_t::from_json(const json_t& json)
         log_info() << "model: configuring...";
 
         clear();
-        /*
-        for (auto itend = reader.end(); reader != itend; )
+
+        try
         {
-                const auto token = *reader;
-                const auto token_name = std::get<0>(token);
-                const auto token_size = std::get<1>(token);
+                const auto& json_nodes = json.at("nodes");
+                const auto& json_model = json.at("model");
 
-                switch (std::get<2>(token))
+                for (const auto& json_node : json_nodes)
                 {
-                case json_tag::new_object:
-                        // continue reading
-                        ++ reader;
-                        break;
-
-                case json_tag::end_object:
-                        // done as all the other end_object tags should have been read by ::config_nodes
-                        return done();
-
-                case json_tag::name:
-                        // part detected
-                        switch (handle_name(token_name, token_size))
+                        if (!add(json_node))
                         {
-                        case json_mode::nodes:
-                                if (!config_nodes(++ reader))
-                                {
-                                        return false;
-                                }
-                                break;
-
-                        case json_mode::model:
-                                if (!config_model(++ reader))
-                                {
-                                        return false;
-                                }
-                                break;
-
-                        default:
-                                handle_error(reader, "model: unexpected name");
                                 return false;
                         }
-                        break;
+                }
 
-                default:
-                        handle_error(reader, "model: unexpected token");
-                        return false;
+                for (const auto& json_conn : json_model)
+                {
+                        for (size_t i = 0; i + 1 < json_conn.size(); ++ i)
+                        {
+                                if (!connect(json_conn[i].get<string_t>(), json_conn[i + 1].get<string_t>()))
+                                {
+                                        return false;
+                                }
+                        }
                 }
         }
+        catch (std::exception& e)
+        {
+                log_error() << "model: failed to configure node [" << e.what() << "]!";
+                return false;
+        }
 
-        handle_error(reader, "model: unexpected ending");
-        */
-        return false;
+        return done();
 }
 
 bool model_t::done()

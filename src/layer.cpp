@@ -26,8 +26,8 @@ layer_factory_t& nano::get_layers()
                 manager.add<affine_layer_t>(affine_node_name(),         "transform:  L(x) = A * x + b");
                 manager.add<conv3d_layer_t>(conv3d_node_name(),         "transform:  L(x) = conv3D(x, kernel) + b");
                 manager.add<norm3d_layer_t>(norm3d_node_name(),         "transform: zero-mean & unit-variance");
-                manager.add<plus4d_layer_t>(mix_plus4d_node_name(),     "combine: sum 4D inputs");
-                manager.add<tcat4d_layer_t>(mix_tcat4d_node_name(),     "combine: concat 4D inputs across feature planes");
+                manager.add<plus4d_layer_t>(plus4d_node_name(),         "combine: sum 4D inputs");
+                manager.add<tcat4d_layer_t>(tcat4d_node_name(),         "combine: concat 4D inputs across feature planes");
         });
 
         return manager;

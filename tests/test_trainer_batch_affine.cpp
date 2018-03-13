@@ -20,7 +20,7 @@ NANO_CASE(function)
         // create synthetic task
         const auto task = get_tasks().get("synth-affine");
         NANO_REQUIRE(task);
-        task->config(json_writer_t().object("isize", isize, "osize", osize, "noise", 0, "count", 100).str());
+        task->from_json(to_json("isize", isize, "osize", osize, "noise", 0, "count", 100));
         NANO_REQUIRE(task->load());
         NANO_REQUIRE_EQUAL(task->idims(), make_dims(isize, 1, 1));
         NANO_REQUIRE_EQUAL(task->odims(), make_dims(osize, 1, 1));
@@ -31,7 +31,7 @@ NANO_CASE(function)
 
         // create model
         model_t model;
-        NANO_REQUIRE(make_linear(model, osize, 1, 1, "act-snorm"));
+        NANO_REQUIRE(model.add(config_affine_node("fc", osize, 1, 1)));
         NANO_REQUIRE(model.done());
         NANO_REQUIRE(model.resize(make_dims(isize, 1, 1), make_dims(osize, 1, 1)));
 
@@ -58,7 +58,7 @@ NANO_CASE(tune_and_train)
         // create synthetic task
         const auto task = get_tasks().get("synth-affine");
         NANO_REQUIRE(task);
-        task->config(json_writer_t().object("isize", isize, "osize", osize, "noise", 0, "count", 100).str());
+        task->from_json(to_json("isize", isize, "osize", osize, "noise", 0, "count", 100));
         NANO_REQUIRE(task->load());
         NANO_REQUIRE_EQUAL(task->idims(), make_dims(isize, 1, 1));
         NANO_REQUIRE_EQUAL(task->odims(), make_dims(osize, 1, 1));
@@ -69,7 +69,7 @@ NANO_CASE(tune_and_train)
 
         // create model
         model_t model;
-        NANO_REQUIRE(make_linear(model, osize, 1, 1, "act-snorm"));
+        NANO_REQUIRE(model.add(config_affine_node("fc", osize, 1, 1)));
         NANO_REQUIRE(model.done());
         NANO_REQUIRE(model.resize(make_dims(isize, 1, 1), make_dims(osize, 1, 1)));
 
@@ -80,8 +80,7 @@ NANO_CASE(tune_and_train)
         // check that the trainer works for all compatible solvers
         for (const auto& solver : get_batch_solvers().ids())
         {
-                trainer->config(json_writer_t().object(
-                        "epochs", 20, "solver", solver, "epsilon", epsilon2<scalar_t>()).str());
+                trainer->from_json(to_json("epochs", 20, "solver", solver, "epsilon", epsilon2<scalar_t>()));
 
                 accumulator_t acc(model, *loss);
                 acc.threads(1);

@@ -22,8 +22,8 @@ namespace nano
         inline const char* conv3d_node_name() { return "conv3d"; }
         inline const char* norm3d_node_name() { return "norm3d"; }
         inline const char* affine_node_name() { return "affine"; }
-        inline const char* mix_plus4d_node_name() { return "mix-plus"; }
-        inline const char* mix_tcat4d_node_name() { return "mix-tcat"; }
+        inline const char* plus4d_node_name() { return "mix-plus"; }
+        inline const char* tcat4d_node_name() { return "mix-tcat"; }
 
         ///
         /// \brief computation node.

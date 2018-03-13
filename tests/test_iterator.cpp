@@ -9,7 +9,7 @@ NANO_CASE(fixed_batch)
 {
         auto task = get_tasks().get("synth-affine");
         NANO_REQUIRE(task);
-        task->config(json_writer_t().object("isize", 3, "osize", 3, "count", 100).str());
+        task->from_json(to_json("isize", 3, "osize", 3, "count", 100));
         NANO_CHECK(task->load());
 
         const auto batch = size_t(23);
@@ -42,7 +42,7 @@ NANO_CASE(increasing_batch)
 {
         auto task = get_tasks().get("synth-affine");
         NANO_REQUIRE(task);
-        task->config(json_writer_t().object("isize", 3, "osize", 3, "count", 100).str());
+        task->from_json(to_json("isize", 3, "osize", 3, "count", 100));
         NANO_CHECK(task->load());
 
         const auto batch0 = size_t(3);
@@ -72,7 +72,7 @@ NANO_CASE(shuffle)
 {
         auto task = get_tasks().get("synth-affine");
         NANO_REQUIRE(task);
-        task->config(json_writer_t().object("isize", 3, "osize", 3, "count", 102).str());
+        task->from_json(to_json("isize", 3, "osize", 3, "count", 102));
         NANO_CHECK(task->load());
 
         for (const auto p : {protocol::train, protocol::valid, protocol::test})
@@ -108,7 +108,7 @@ NANO_CASE(minibatch)
 {
         auto task = get_tasks().get("synth-affine");
         NANO_REQUIRE(task);
-        task->config(json_writer_t().object("isize", 3, "osize", 3, "count", 102).str());
+        task->from_json(to_json("isize", 3, "osize", 3, "count", 102));
         NANO_CHECK(task->load());
 
         for (const auto p : {protocol::train, protocol::valid, protocol::test})

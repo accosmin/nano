@@ -21,9 +21,9 @@ namespace
                 table.delim();
                 for (const auto& id : factory.ids())
                 {
-                        json_writer_t writer;
-                        factory.get(id)->config(writer);
-                        table.append() << id << factory.description(id) << writer.str();
+                        json_t json;
+                        factory.get(id)->to_json(json);
+                        table.append() << id << factory.description(id) << json.dump();
                 }
                 std::cout << table;
         }

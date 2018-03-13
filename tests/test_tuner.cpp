@@ -1,32 +1,28 @@
 #include "utest.h"
 #include "tuner.h"
 #include "math/epsilon.h"
-#include "text/json_reader.h"
 
 using namespace nano;
 
-static void get(const string_t& json, scalar_t& x)
+static void get(const json_t& json, scalar_t& x)
 {
         x = 100;
-        json_reader_t reader(json);
-        reader.object("x", x);
+        from_json(json, "x", x);
 }
 
-static void get(const string_t& json, scalar_t& x, scalar_t& y)
+static void get(const json_t& json, scalar_t& x, scalar_t& y)
 {
         x = y = 100;
-        json_reader_t reader(json);
-        reader.object("x", x, "y", y);
+        from_json(json, "x", x, "y", y);
 }
 
-static void get(const string_t& json, scalar_t& x, scalar_t& y, scalar_t& z)
+static void get(const json_t& json, scalar_t& x, scalar_t& y, scalar_t& z)
 {
         x = y = z = 100;
-        json_reader_t reader(json);
-        reader.object("x", x, "y", y, "z", z);
+        from_json(json, "x", x, "y", y, "z", z);
 }
 
-static bool is_unique(strings_t configs)
+static bool is_unique(jsons_t configs)
 {
         std::sort(configs.begin(), configs.end());
         return std::unique(configs.begin(), configs.end()) == configs.end();

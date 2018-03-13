@@ -12,7 +12,7 @@ NANO_CASE(evaluate)
 {
         const auto task = get_tasks().get("synth-affine");
         NANO_REQUIRE(task);
-        task->config(json_writer_t().object("isize", 7, "osize", 3, "count", 64).str());
+        task->from_json(to_json("isize", 7, "osize", 3, "count", 64));
         NANO_CHECK(task->load());
 
         const auto omaps = std::get<0>(task->odims());
@@ -23,9 +23,9 @@ NANO_CASE(evaluate)
 
         // create model
         model_t model;
-        NANO_CHECK(add_node(model, "1", affine_node_name(), config_affine_node, 4, 1, 1));
-        NANO_CHECK(add_node(model, "2", "act-snorm", config_empty_node));
-        NANO_CHECK(add_node(model, "3", affine_node_name(), config_affine_node, omaps, orows, ocols));
+        NANO_CHECK(model.add(config_affine_node("1", 4, 1, 1)));
+        NANO_CHECK(model.add(config_activation_node("2", "act-snorm")));
+        NANO_CHECK(model.add(config_affine_node("3", omaps, orows, ocols)));
         NANO_CHECK(model.connect("1", "2", "3"));
         NANO_CHECK(model.done());
 
@@ -83,7 +83,7 @@ NANO_CASE(regularization)
 {
         const auto task = get_tasks().get("synth-affine");
         NANO_REQUIRE(task);
-        task->config(json_writer_t().object("isize", 7, "osize", 3, "count", 64).str());
+        task->from_json(to_json("isize", 7, "osize", 3, "count", 64));
         NANO_CHECK(task->load());
 
         const auto omaps = std::get<0>(task->odims());
@@ -94,9 +94,9 @@ NANO_CASE(regularization)
 
         // create model
         model_t model;
-        NANO_CHECK(add_node(model, "1", affine_node_name(), config_affine_node, 4, 1, 1));
-        NANO_CHECK(add_node(model, "2", "act-snorm", config_empty_node));
-        NANO_CHECK(add_node(model, "3", affine_node_name(), config_affine_node, omaps, orows, ocols));
+        NANO_CHECK(model.add(config_affine_node("1", 4, 1, 1)));
+        NANO_CHECK(model.add(config_activation_node("2", "act-snorm")));
+        NANO_CHECK(model.add(config_affine_node("3", omaps, orows, ocols)));
         NANO_CHECK(model.connect("1", "2", "3"));
         NANO_CHECK(model.done());
 

@@ -12,7 +12,7 @@ NANO_CASE(failed)
         const auto task = get_tasks().get("fashion-mnist");
         NANO_REQUIRE(task);
 
-        task->config(json_writer_t().object("dir", "/dev/null?!").str());
+        task->from_json(to_json("dir", "/dev/null?!"));
         NANO_CHECK(!task->load());
 }
 

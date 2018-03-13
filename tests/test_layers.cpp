@@ -99,9 +99,9 @@ NANO_BEGIN_MODULE(test_layers)
 NANO_CASE(affine)
 {
         model_t model;
-        NANO_CHECK(add_node(model, "1", affine_node_name(), config_affine_node, 7, 1, 1));
-        NANO_CHECK(add_node(model, "2", "act-snorm", config_empty_node));
-        NANO_CHECK(add_node(model, "3", affine_node_name(), config_affine_node, cmd_omaps, cmd_orows, cmd_ocols));
+        NANO_CHECK(model.add(config_affine_node("1", 7, 1, 1)));
+        NANO_CHECK(model.add(config_activation_node("2", "act-snorm")));
+        NANO_CHECK(model.add(config_affine_node("3", cmd_omaps, cmd_orows, cmd_ocols)));
         NANO_CHECK(model.connect("1", "2", "3"));
 
         test_model(model,
@@ -115,8 +115,8 @@ NANO_CASE(activation)
                 if (is_activation_node(layer_id))
                 {
                         model_t model;
-                        NANO_CHECK(add_node(model, "1", layer_id, config_empty_node));
-                        NANO_CHECK(add_node(model, "2", affine_node_name(), config_affine_node, cmd_omaps, cmd_orows, cmd_ocols));
+                        NANO_CHECK(model.add(config_activation_node("1", layer_id)));
+                        NANO_CHECK(model.add(config_affine_node("2", cmd_omaps, cmd_orows, cmd_ocols)));
                         NANO_CHECK(model.connect("1", "2"));
 
                         test_model(model,
@@ -128,9 +128,9 @@ NANO_CASE(activation)
 NANO_CASE(conv3d1)
 {
         model_t model;
-        NANO_CHECK(add_node(model, "1", conv3d_node_name(), config_conv3d_node, 3, 3, 3, 3, 1, 1));
-        NANO_CHECK(add_node(model, "2", "act-unit", config_empty_node));
-        NANO_CHECK(add_node(model, "3", affine_node_name(), config_affine_node, cmd_omaps, cmd_orows, cmd_ocols));
+        NANO_CHECK(model.add(config_conv3d_node("1", 3, 3, 3, 3, 1, 1)));
+        NANO_CHECK(model.add(config_activation_node("2", "act-unit")));
+        NANO_CHECK(model.add(config_affine_node("3", cmd_omaps, cmd_orows, cmd_ocols)));
         NANO_CHECK(model.connect("1", "2", "3"));
 
         test_model(model,
@@ -140,9 +140,9 @@ NANO_CASE(conv3d1)
 NANO_CASE(conv3d2)
 {
         model_t model;
-        NANO_CHECK(add_node(model, "1", conv3d_node_name(), config_conv3d_node, 4, 3, 3, 1, 1, 1));
-        NANO_CHECK(add_node(model, "2", "act-snorm", config_empty_node));
-        NANO_CHECK(add_node(model, "3", affine_node_name(), config_affine_node, cmd_omaps, cmd_orows, cmd_ocols));
+        NANO_CHECK(model.add(config_conv3d_node("1", 4, 3, 3, 1, 1, 1)));
+        NANO_CHECK(model.add(config_activation_node("2", "act-snorm")));
+        NANO_CHECK(model.add(config_affine_node("3", cmd_omaps, cmd_orows, cmd_ocols)));
         NANO_CHECK(model.connect("1", "2", "3"));
 
         test_model(model,
@@ -152,9 +152,9 @@ NANO_CASE(conv3d2)
 NANO_CASE(conv3d3)
 {
         model_t model;
-        NANO_CHECK(add_node(model, "1", conv3d_node_name(), config_conv3d_node, 5, 3, 3, 1, 1, 1));
-        NANO_CHECK(add_node(model, "2", "act-splus", config_empty_node));
-        NANO_CHECK(add_node(model, "3", affine_node_name(), config_affine_node, cmd_omaps, cmd_orows, cmd_ocols));
+        NANO_CHECK(model.add(config_conv3d_node("1", 5, 3, 3, 1, 1, 1)));
+        NANO_CHECK(model.add(config_activation_node("2", "act-splus")));
+        NANO_CHECK(model.add(config_affine_node("3", cmd_omaps, cmd_orows, cmd_ocols)));
         NANO_CHECK(model.connect("1", "2", "3"));
 
         test_model(model,
@@ -164,9 +164,9 @@ NANO_CASE(conv3d3)
 NANO_CASE(conv3d4)
 {
         model_t model;
-        NANO_CHECK(add_node(model, "1", conv3d_node_name(), config_conv3d_node, 6, 3, 3, 3, 1, 1));
-        NANO_CHECK(add_node(model, "2", "act-tanh", config_empty_node));
-        NANO_CHECK(add_node(model, "3", affine_node_name(), config_affine_node, cmd_omaps, cmd_orows, cmd_ocols));
+        NANO_CHECK(model.add(config_conv3d_node("1", 6, 3, 3, 3, 1, 1)));
+        NANO_CHECK(model.add(config_activation_node("2", "act-tanh")));
+        NANO_CHECK(model.add(config_affine_node("3", cmd_omaps, cmd_orows, cmd_ocols)));
         NANO_CHECK(model.connect("1", "2", "3"));
 
         test_model(model,
@@ -176,9 +176,9 @@ NANO_CASE(conv3d4)
 NANO_CASE(conv3d_stride1)
 {
         model_t model;
-        NANO_CHECK(add_node(model, "1", conv3d_node_name(), config_conv3d_node, 3, 5, 3, 3, 2, 1));
-        NANO_CHECK(add_node(model, "2", "act-unit", config_empty_node));
-        NANO_CHECK(add_node(model, "3", affine_node_name(), config_affine_node, cmd_omaps, cmd_orows, cmd_ocols));
+        NANO_CHECK(model.add(config_conv3d_node("1", 3, 5, 3, 3, 2, 1)));
+        NANO_CHECK(model.add(config_activation_node("2", "act-unit")));
+        NANO_CHECK(model.add(config_affine_node("3", cmd_omaps, cmd_orows, cmd_ocols)));
         NANO_CHECK(model.connect("1", "2", "3"));
 
         test_model(model,
@@ -188,9 +188,9 @@ NANO_CASE(conv3d_stride1)
 NANO_CASE(conv3d_stride2)
 {
         model_t model;
-        NANO_CHECK(add_node(model, "1", conv3d_node_name(), config_conv3d_node, 3, 3, 5, 3, 1, 2));
-        NANO_CHECK(add_node(model, "2", "act-snorm", config_empty_node));
-        NANO_CHECK(add_node(model, "3", affine_node_name(), config_affine_node, cmd_omaps, cmd_orows, cmd_ocols));
+        NANO_CHECK(model.add(config_conv3d_node("1", 3, 3, 5, 3, 1, 2)));
+        NANO_CHECK(model.add(config_activation_node("2", "act-snorm")));
+        NANO_CHECK(model.add(config_affine_node("3", cmd_omaps, cmd_orows, cmd_ocols)));
         NANO_CHECK(model.connect("1", "2", "3"));
 
         test_model(model,
@@ -200,9 +200,9 @@ NANO_CASE(conv3d_stride2)
 NANO_CASE(conv3d_stride3)
 {
         model_t model;
-        NANO_CHECK(add_node(model, "1", conv3d_node_name(), config_conv3d_node, 3, 5, 5, 3, 2, 2));
-        NANO_CHECK(add_node(model, "2", "act-splus", config_empty_node));
-        NANO_CHECK(add_node(model, "3", affine_node_name(), config_affine_node, cmd_omaps, cmd_orows, cmd_ocols));
+        NANO_CHECK(model.add(config_conv3d_node("1", 3, 5, 5, 3, 2, 2)));
+        NANO_CHECK(model.add(config_activation_node("2", "act-splus")));
+        NANO_CHECK(model.add(config_affine_node("3", cmd_omaps, cmd_orows, cmd_ocols)));
         NANO_CHECK(model.connect("1", "2", "3"));
 
         test_model(model,
@@ -212,9 +212,9 @@ NANO_CASE(conv3d_stride3)
 NANO_CASE(norm_global_layer)
 {
         model_t model;
-        NANO_CHECK(add_node(model, "1", norm3d_node_name(), config_norm3d_node, norm_type::global));
-        NANO_CHECK(add_node(model, "2", "act-snorm", config_empty_node));
-        NANO_CHECK(add_node(model, "3", affine_node_name(), config_affine_node, cmd_omaps, cmd_orows, cmd_ocols));
+        NANO_CHECK(model.add(config_norm3d_node("1", norm_type::global)));
+        NANO_CHECK(model.add(config_activation_node("2", "act-snorm")));
+        NANO_CHECK(model.add(config_affine_node("3", cmd_omaps, cmd_orows, cmd_ocols)));
         NANO_CHECK(model.connect("1", "2", "3"));
 
         test_model(model,
@@ -224,9 +224,9 @@ NANO_CASE(norm_global_layer)
 NANO_CASE(norm_plane_layer)
 {
         model_t model;
-        NANO_CHECK(add_node(model, "1", norm3d_node_name(), config_norm3d_node, norm_type::plane));
-        NANO_CHECK(add_node(model, "2", "act-snorm", config_empty_node));
-        NANO_CHECK(add_node(model, "3", affine_node_name(), config_affine_node, cmd_omaps, cmd_orows, cmd_ocols));
+        NANO_CHECK(model.add(config_norm3d_node("1", norm_type::plane)));
+        NANO_CHECK(model.add(config_activation_node("2", "act-snorm")));
+        NANO_CHECK(model.add(config_affine_node("3", cmd_omaps, cmd_orows, cmd_ocols)));
         NANO_CHECK(model.connect("1", "2", "3"));
 
         test_model(model,
@@ -236,11 +236,11 @@ NANO_CASE(norm_plane_layer)
 NANO_CASE(multi_layer0)
 {
         model_t model;
-        NANO_CHECK(add_node(model, "1", affine_node_name(), config_affine_node, 7, 1, 1));
-        NANO_CHECK(add_node(model, "2", "act-snorm", config_empty_node));
-        NANO_CHECK(add_node(model, "3", affine_node_name(), config_affine_node, 5, 1, 1));
-        NANO_CHECK(add_node(model, "4", "act-splus", config_empty_node));
-        NANO_CHECK(add_node(model, "5", affine_node_name(), config_affine_node, cmd_omaps, cmd_orows, cmd_ocols));
+        NANO_CHECK(model.add(config_affine_node("1", 7, 1, 1)));
+        NANO_CHECK(model.add(config_activation_node("2", "act-snorm")));
+        NANO_CHECK(model.add(config_affine_node("3", 5, 1, 1)));
+        NANO_CHECK(model.add(config_activation_node("4", "act-splus")));
+        NANO_CHECK(model.add(config_affine_node("5", cmd_omaps, cmd_orows, cmd_ocols)));
         NANO_CHECK(model.connect("1", "2", "3", "4", "5"));
 
         test_model(model,
@@ -250,11 +250,11 @@ NANO_CASE(multi_layer0)
 NANO_CASE(multi_layer1)
 {
         model_t model;
-        NANO_CHECK(add_node(model, "1", conv3d_node_name(), config_conv3d_node, 7, 3, 3, 1, 1, 1));
-        NANO_CHECK(add_node(model, "2", "act-snorm", config_empty_node));
-        NANO_CHECK(add_node(model, "3", conv3d_node_name(), config_conv3d_node, 4, 1, 1, 1, 1, 1));
-        NANO_CHECK(add_node(model, "4", "act-splus", config_empty_node));
-        NANO_CHECK(add_node(model, "5", affine_node_name(), config_affine_node, cmd_omaps, cmd_orows, cmd_ocols));
+        NANO_CHECK(model.add(config_conv3d_node("1", 7, 3, 3, 1, 1, 1)));
+        NANO_CHECK(model.add(config_activation_node("2", "act-snorm")));
+        NANO_CHECK(model.add(config_conv3d_node("3", 4, 1, 1, 1, 1, 1)));
+        NANO_CHECK(model.add(config_activation_node("4", "act-splus")));
+        NANO_CHECK(model.add(config_affine_node("5", cmd_omaps, cmd_orows, cmd_ocols)));
         NANO_CHECK(model.connect("1", "2", "3", "4", "5"));
 
         test_model(model,
@@ -264,11 +264,11 @@ NANO_CASE(multi_layer1)
 NANO_CASE(multi_layer2)
 {
         model_t model;
-        NANO_CHECK(add_node(model, "1", conv3d_node_name(), config_conv3d_node, 7, 3, 3, 1, 1, 1));
-        NANO_CHECK(add_node(model, "2", "act-snorm", config_empty_node));
-        NANO_CHECK(add_node(model, "3", conv3d_node_name(), config_conv3d_node, 4, 3, 3, 1, 1, 1));
-        NANO_CHECK(add_node(model, "4", "act-splus", config_empty_node));
-        NANO_CHECK(add_node(model, "5", affine_node_name(), config_affine_node, cmd_omaps, cmd_orows, cmd_ocols));
+        NANO_CHECK(model.add(config_conv3d_node("1", 7, 3, 3, 1, 1, 1)));
+        NANO_CHECK(model.add(config_activation_node("2", "act-snorm")));
+        NANO_CHECK(model.add(config_conv3d_node("3", 4, 3, 3, 1, 1, 1)));
+        NANO_CHECK(model.add(config_activation_node("4", "act-splus")));
+        NANO_CHECK(model.add(config_affine_node("5", cmd_omaps, cmd_orows, cmd_ocols)));
         NANO_CHECK(model.connect("1", "2", "3", "4", "5"));
 
         test_model(model,
@@ -278,13 +278,13 @@ NANO_CASE(multi_layer2)
 NANO_CASE(multi_layer3)
 {
         model_t model;
-        NANO_CHECK(add_node(model, "1", conv3d_node_name(), config_conv3d_node, 7, 3, 3, 1, 1, 1));
-        NANO_CHECK(add_node(model, "2", "act-snorm", config_empty_node));
-        NANO_CHECK(add_node(model, "3", conv3d_node_name(), config_conv3d_node, 5, 3, 3, 1, 1, 1));
-        NANO_CHECK(add_node(model, "4", "act-splus", config_empty_node));
-        NANO_CHECK(add_node(model, "5", affine_node_name(), config_affine_node, 5, 1, 1));
-        NANO_CHECK(add_node(model, "6", "act-splus", config_empty_node));
-        NANO_CHECK(add_node(model, "7", affine_node_name(), config_affine_node, cmd_omaps, cmd_orows, cmd_ocols));
+        NANO_CHECK(model.add(config_conv3d_node("1", 7, 3, 3, 1, 1, 1)));
+        NANO_CHECK(model.add(config_activation_node("2", "act-snorm")));
+        NANO_CHECK(model.add(config_conv3d_node("3", 5, 3, 3, 1, 1, 1)));
+        NANO_CHECK(model.add(config_activation_node("4", "act-splus")));
+        NANO_CHECK(model.add(config_affine_node("5", 5, 1, 1)));
+        NANO_CHECK(model.add(config_activation_node("6", "act-splus")));
+        NANO_CHECK(model.add(config_affine_node("7", cmd_omaps, cmd_orows, cmd_ocols)));
         NANO_CHECK(model.connect("1", "2", "3", "4", "5", "6", "7"));
 
         test_model(model,
@@ -294,13 +294,13 @@ NANO_CASE(multi_layer3)
 NANO_CASE(multi_layer4)
 {
         model_t model;
-        NANO_CHECK(add_node(model, "1", conv3d_node_name(), config_conv3d_node, 8, 3, 3, 1, 1, 1));
-        NANO_CHECK(add_node(model, "2", "act-snorm", config_empty_node));
-        NANO_CHECK(add_node(model, "3", conv3d_node_name(), config_conv3d_node, 6, 3, 3, 2, 1, 1));
-        NANO_CHECK(add_node(model, "4", "act-splus", config_empty_node));
-        NANO_CHECK(add_node(model, "5", affine_node_name(), config_affine_node, 5, 1, 1));
-        NANO_CHECK(add_node(model, "6", "act-splus", config_empty_node));
-        NANO_CHECK(add_node(model, "7", affine_node_name(), config_affine_node, cmd_omaps, cmd_orows, cmd_ocols));
+        NANO_CHECK(model.add(config_conv3d_node("1", 8, 3, 3, 1, 1, 1)));
+        NANO_CHECK(model.add(config_activation_node("2", "act-snorm")));
+        NANO_CHECK(model.add(config_conv3d_node("3", 6, 3, 3, 2, 1, 1)));
+        NANO_CHECK(model.add(config_activation_node("4", "act-splus")));
+        NANO_CHECK(model.add(config_affine_node("5", 5, 1, 1)));
+        NANO_CHECK(model.add(config_activation_node("6", "act-splus")));
+        NANO_CHECK(model.add(config_affine_node("7", cmd_omaps, cmd_orows, cmd_ocols)));
         NANO_CHECK(model.connect("1", "2", "3", "4", "5", "6", "7"));
 
         test_model(model,
@@ -310,13 +310,13 @@ NANO_CASE(multi_layer4)
 NANO_CASE(multi_layer5)
 {
         model_t model;
-        NANO_CHECK(add_node(model, "1", conv3d_node_name(), config_conv3d_node, 9, 3, 3, 1, 1, 1));
-        NANO_CHECK(add_node(model, "2", "act-snorm", config_empty_node));
-        NANO_CHECK(add_node(model, "3", conv3d_node_name(), config_conv3d_node, 6, 3, 3, 3, 1, 1));
-        NANO_CHECK(add_node(model, "4", "act-splus", config_empty_node));
-        NANO_CHECK(add_node(model, "5", affine_node_name(), config_affine_node, 5, 1, 1));
-        NANO_CHECK(add_node(model, "6", "act-splus", config_empty_node));
-        NANO_CHECK(add_node(model, "7", affine_node_name(), config_affine_node, cmd_omaps, cmd_orows, cmd_ocols));
+        NANO_CHECK(model.add(config_conv3d_node("1", 9, 3, 3, 1, 1, 1)));
+        NANO_CHECK(model.add(config_activation_node("2", "act-snorm")));
+        NANO_CHECK(model.add(config_conv3d_node("3", 6, 3, 3, 3, 1, 1)));
+        NANO_CHECK(model.add(config_activation_node("4", "act-splus")));
+        NANO_CHECK(model.add(config_affine_node("5", 5, 1, 1)));
+        NANO_CHECK(model.add(config_activation_node("6", "act-splus")));
+        NANO_CHECK(model.add(config_affine_node("7", cmd_omaps, cmd_orows, cmd_ocols)));
         NANO_CHECK(model.connect("1", "2", "3", "4", "5", "6", "7"));
 
         test_model(model,
@@ -326,17 +326,17 @@ NANO_CASE(multi_layer5)
 NANO_CASE(multi_mix_plus4d)
 {
         model_t model;
-        NANO_CHECK(add_node(model, "11", conv3d_node_name(), config_conv3d_node, 4, 5, 5, 1, 1, 1));
-        NANO_CHECK(add_node(model, "12", "act-snorm", config_empty_node));
-        NANO_CHECK(add_node(model, "21", conv3d_node_name(), config_conv3d_node, 3, 3, 3, 1, 1, 1));
-        NANO_CHECK(add_node(model, "22", "act-snorm", config_empty_node));
-        NANO_CHECK(add_node(model, "23", conv3d_node_name(), config_conv3d_node, 4, 3, 3, 1, 1, 1));
-        NANO_CHECK(add_node(model, "24", "act-snorm", config_empty_node));
-        NANO_CHECK(add_node(model, "xx", mix_plus4d_node_name(), config_empty_node));
-        NANO_CHECK(add_node(model, "x1", "act-splus", config_empty_node));
-        NANO_CHECK(add_node(model, "x2", affine_node_name(), config_affine_node, 5, 1, 1));
-        NANO_CHECK(add_node(model, "x3", "act-splus", config_empty_node));
-        NANO_CHECK(add_node(model, "x4", affine_node_name(), config_affine_node, cmd_omaps, cmd_orows, cmd_ocols));
+        NANO_CHECK(model.add(config_conv3d_node("11", 4, 5, 5, 1, 1, 1)));
+        NANO_CHECK(model.add(config_activation_node("12", "act-snorm")));
+        NANO_CHECK(model.add(config_conv3d_node("21", 3, 3, 3, 1, 1, 1)));
+        NANO_CHECK(model.add(config_activation_node("22", "act-snorm")));
+        NANO_CHECK(model.add(config_conv3d_node("23", 4, 3, 3, 1, 1, 1)));
+        NANO_CHECK(model.add(config_activation_node("24", "act-snorm")));
+        NANO_CHECK(model.add(config_plus4d_node("xx")));
+        NANO_CHECK(model.add(config_activation_node("x1", "act-splus")));
+        NANO_CHECK(model.add(config_affine_node("x2", 5, 1, 1)));
+        NANO_CHECK(model.add(config_activation_node("x3", "act-splus")));
+        NANO_CHECK(model.add(config_affine_node("x4", cmd_omaps, cmd_orows, cmd_ocols)));
         NANO_CHECK(model.connect("11", "12", "xx"));
         NANO_CHECK(model.connect("21", "22", "23", "24", "xx"));
         NANO_CHECK(model.connect("xx", "x1", "x2", "x3", "x4"));
@@ -350,17 +350,17 @@ NANO_CASE(multi_mix_plus4d)
 NANO_CASE(multi_mix_tcat4d)
 {
         model_t model;
-        NANO_CHECK(add_node(model, "11", conv3d_node_name(), config_conv3d_node, 4, 5, 5, 1, 1, 1));
-        NANO_CHECK(add_node(model, "12", "act-snorm", config_empty_node));
-        NANO_CHECK(add_node(model, "21", conv3d_node_name(), config_conv3d_node, 3, 3, 3, 1, 1, 1));
-        NANO_CHECK(add_node(model, "22", "act-snorm", config_empty_node));
-        NANO_CHECK(add_node(model, "23", conv3d_node_name(), config_conv3d_node, 4, 3, 3, 1, 1, 1));
-        NANO_CHECK(add_node(model, "24", "act-snorm", config_empty_node));
-        NANO_CHECK(add_node(model, "xx", mix_tcat4d_node_name(), config_empty_node));
-        NANO_CHECK(add_node(model, "x1", "act-splus", config_empty_node));
-        NANO_CHECK(add_node(model, "x2", affine_node_name(), config_affine_node, 5, 1, 1));
-        NANO_CHECK(add_node(model, "x3", "act-splus", config_empty_node));
-        NANO_CHECK(add_node(model, "x4", affine_node_name(), config_affine_node, cmd_omaps, cmd_orows, cmd_ocols));
+        NANO_CHECK(model.add(config_conv3d_node("11", 4, 5, 5, 1, 1, 1)));
+        NANO_CHECK(model.add(config_activation_node("12", "act-snorm")));
+        NANO_CHECK(model.add(config_conv3d_node("21", 3, 3, 3, 1, 1, 1)));
+        NANO_CHECK(model.add(config_activation_node("22", "act-snorm")));
+        NANO_CHECK(model.add(config_conv3d_node("23", 4, 3, 3, 1, 1, 1)));
+        NANO_CHECK(model.add(config_activation_node("24", "act-snorm")));
+        NANO_CHECK(model.add(config_tcat4d_node("xx")));
+        NANO_CHECK(model.add(config_activation_node("x1", "act-splus")));
+        NANO_CHECK(model.add(config_affine_node("x2", 5, 1, 1)));
+        NANO_CHECK(model.add(config_activation_node("x3", "act-splus")));
+        NANO_CHECK(model.add(config_affine_node("x4", cmd_omaps, cmd_orows, cmd_ocols)));
         NANO_CHECK(model.connect("11", "12", "xx"));
         NANO_CHECK(model.connect("21", "22", "23", "24", "xx"));
         NANO_CHECK(model.connect("xx", "x1", "x2", "x3", "x4"));

@@ -6,17 +6,15 @@ using namespace nano;
 
 NANO_BEGIN_MODULE(test_task_affine)
 
-NANO_CASE(regression)
+NANO_CASE(construction)
 {
         const auto isize = 11;
         const auto osize = 13;
         const auto count = 132;
 
-        const auto config = json_writer_t().object("isize", isize, "osize", osize, "noise", 0, "count", count).str();
-
         auto task = get_tasks().get("synth-affine");
         NANO_REQUIRE(task);
-        task->config(config);
+        task->from_json(to_json("isize", isize, "osize", osize, "noise", 0, "count", count));
         NANO_CHECK(task->load());
 
         NANO_CHECK_EQUAL(task->idims(), make_dims(isize, 1, 1));

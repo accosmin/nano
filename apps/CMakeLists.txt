@@ -4,7 +4,6 @@ make_app(info_mat5.cpp nano)
 make_app(info_archive.cpp nano)
 
 make_app(train.cpp nano)
-make_app(builder.cpp nano)
 make_app(evaluate.cpp nano)
 
 make_app(embed.cpp nano)

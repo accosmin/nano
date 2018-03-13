@@ -10,14 +10,13 @@ peak2d_task_t::peak2d_task_t() :
 
 void peak2d_task_t::from_json(const json_t& json)
 {
-        nano::from_json(json, "irows", m_irows, "icols", m_icols, "noise", m_noise, "count", m_count, "type", m_type);
+        nano::from_json(json, "irows", m_irows, "icols", m_icols, "noise", m_noise, "count", m_count);
         reconfig(make_dims(1, m_irows, m_icols), make_dims(2, 1, 1), 1);
 }
 
 void peak2d_task_t::to_json(json_t& json) const
 {
-        nano::to_json(json, "irows", m_irows, "icols", m_icols, "noise", m_noise, "count", m_count,
-                "type", m_type, "types", join(enum_values<peak2d_task_type>() ));
+        nano::to_json(json, "irows", m_irows, "icols", m_icols, "noise", m_noise, "count", m_count);
 }
 
 bool peak2d_task_t::populate()
@@ -48,21 +47,8 @@ bool peak2d_task_t::populate()
                         }
                 }
 
-                switch (m_type)
-                {
-                case peak2d_task_type::regression:
-                        target(0) = static_cast<scalar_t>(peakx) / static_cast<scalar_t>(m_icols);
-                        target(1) = static_cast<scalar_t>(peaky) / static_cast<scalar_t>(m_irows);
-                        break;
-
-                case peak2d_task_type::classification:
-                        target(0) = (peakx < m_icols / 2) ? neg_target() : pos_target();
-                        target(1) = (peaky < m_irows / 2) ? neg_target() : pos_target();
-                        break;
-
-                default:
-                        assert(false);
-                }
+                target(0) = static_cast<scalar_t>(peakx) / static_cast<scalar_t>(m_icols);
+                target(1) = static_cast<scalar_t>(peaky) / static_cast<scalar_t>(m_irows);
 
                 const auto hash = i;
                 const auto label = string_t();

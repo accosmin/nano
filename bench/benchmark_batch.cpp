@@ -26,7 +26,7 @@ static void check_function(const function_t& function, const strings_t& solvers,
                         for (const ls_strategy ls_strat : enum_values<ls_strategy>())
         {
                 const auto solver = get_batch_solvers().get(id);
-                solver->config(json_writer_t().object("ls_init", ls_init, "ls_strat", ls_strat, "c1", c1).str());
+                solver->from_json(to_json("ls_init", ls_init, "ls_strat", ls_strat, "c1", c1));
                 const auto params = batch_params_t(iterations, epsilon);
                 const auto name = id + "[" + to_string(ls_init) + "][" + to_string(ls_strat) + "]";
 

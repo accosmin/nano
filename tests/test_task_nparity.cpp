@@ -4,19 +4,13 @@
 
 using namespace nano;
 
-static auto get_task(const tensor_size_t dims, const size_t count)
-{
-        auto task = get_tasks().get("synth-nparity");
-        NANO_REQUIRE(task);
-        task->config(json_writer_t().object("n", dims, "count", count).str());
-        return task;
-}
-
 NANO_BEGIN_MODULE(test_task_nparity)
 
 NANO_CASE(construction)
 {
-        auto task = get_task(11, 132);
+        auto task = get_tasks().get("synth-nparity");
+        NANO_REQUIRE(task);
+        task->from_json(to_json("n", 11, "count", 132));
         NANO_CHECK(task->load());
 
         const auto idims = tensor3d_dim_t{11, 1, 1};

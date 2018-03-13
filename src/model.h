@@ -35,9 +35,9 @@ namespace nano
                 void clear();
 
                 ///
-                /// \brief add a new computation name given by its name, type and configuration
+                /// \brief add a new computation node (the "name" and the "type" fields must be present)
                 ///
-                bool add(const string_t& name, const json_t&);
+                bool add(const json_t&);
 
                 ///
                 /// \brief connect two computation nodes such that the first one is an input of the second one
