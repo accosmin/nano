@@ -59,7 +59,7 @@ namespace nano
                 ///
                 /// \brief configure the computation graph using JSON
                 ///
-                void to_json(json_t&) const;
+                json_t to_json() const;
                 bool from_json(const json_t&);
 
                 ///

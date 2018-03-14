@@ -12,15 +12,17 @@
 
 using namespace nano;
 
-static bool load_json(const string_t& path, const char* name, string_t& json, string_t& id)
+static bool load_json(const string_t& path, json_t& json)
 {
-        if (!load_string(path, json) || json.empty())
-        {
-                return false;
-        }
+        string_t config;
+        return  load_string(path, config) &&
+                (json == json_t::parse(config));
+}
 
-        json_reader_t(json).object(name, id);
-        return !id.empty();
+static bool load_json(const string_t& path, json_t& json, string_t& id)
+{
+        return  load_json(path, json) &&
+                from_json(json, "type", id);
 }
 
 int main(int argc, const char *argv[])
@@ -49,17 +51,18 @@ int main(int argc, const char *argv[])
         const auto cmd_trials = cmdline.get<size_t>("trials");
 
         checkpoint_t checkpoint;
-        string_t params, id;
+        json_t json;
+        string_t id;
 
         // load task
         checkpoint.step(strcat("load task configuration from <", cmd_task, ">"));
-        checkpoint.critical(load_json(cmd_task, "task", params, id));
+        checkpoint.critical(load_json(cmd_task, json, id));
 
         rtask_t task;
         checkpoint.step(strcat("search task <", id, ">"));
         checkpoint.critical((task = get_tasks().get(id)) != nullptr);
 
-        task->config(params);
+        task->from_json(json);
         checkpoint.step(strcat("load task <", id, ">"));
         checkpoint.measure(task->load());
 
@@ -67,7 +70,7 @@ int main(int argc, const char *argv[])
 
         // load loss
         checkpoint.step(strcat("load loss configuration from <", cmd_loss, ">"));
-        checkpoint.critical(load_json(cmd_loss, "loss", params, id));
+        checkpoint.critical(load_json(cmd_loss, json, id));
 
         rloss_t loss;
         checkpoint.step(strcat("search loss <", id, ">"));
@@ -75,21 +78,21 @@ int main(int argc, const char *argv[])
 
         // load trainer
         checkpoint.step(strcat("load trainer configuration from <", cmd_trainer, ">"));
-        checkpoint.critical(load_json(cmd_trainer, "trainer", params, id));
+        checkpoint.critical(load_json(cmd_trainer, json, id));
 
         rtrainer_t trainer;
         checkpoint.step(strcat("search trainer <", id, ">"));
         checkpoint.critical((trainer = get_trainers().get(id)) != nullptr);
 
-        trainer->config(params);
+        trainer->from_json(json);
 
         // load model
         checkpoint.step(strcat("load model configuration from <", cmd_model, ">"));
-        checkpoint.critical(load_string(cmd_model, params));
+        checkpoint.critical(load_json(cmd_model, json));
 
         model_t model;
         checkpoint.step("configure model");
-        checkpoint.measure(model.config(params) && model.resize(task->idims(), task->odims()));
+        checkpoint.measure(model.from_json(json) && model.resize(task->idims(), task->odims()));
 
         model.describe();
         if (model != *task)

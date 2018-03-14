@@ -1,6 +1,5 @@
 #pragma once
 
-#include "stringi.h"
 #include "text/json.h"
 
 namespace nano

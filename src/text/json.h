@@ -33,17 +33,20 @@ namespace nano
         ///
         /// \brief deserialize attributes from JSON if present.
         ///
-        inline void from_json(const json_t&)
+        inline size_t from_json(const json_t&)
         {
+                return 0u;
         }
 
         template <typename tvalue, typename... tothers>
-        void from_json(const json_t& json, const char* name, tvalue& value, tothers&&... nvs)
+        size_t from_json(const json_t& json, const char* name, tvalue& value, tothers&&... nvs)
         {
+                size_t count = 0;
                 if (json.count(name))
                 {
                         value = from_string<tvalue>(json[name].get<string_t>());
+                        ++ count;
                 }
-                from_json(json, nvs...);
+                return count + from_json(json, nvs...);
         }
 }

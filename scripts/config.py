@@ -50,21 +50,21 @@ class config:
         def stoch_trainer(self, solver, epochs = 100, patience = 10, epsilon = 1e-6):
                 """ create a stochastic trainer """
                 assert(solver in self.stoch_solvers())
-                return {"trainer": "stoch", "solver": solver, "epochs": epochs, "patience": patience, "epsilon": epsilon}
+                return {"type": "stoch", "solver": solver, "epochs": epochs, "patience": patience, "epsilon": epsilon}
 
         def batch_trainer(self, solver, epochs = 100, patience = 10, epsilon = 1e-6):
                 """ create a batch trainer """
                 assert(solver in self.batch_solvers())
-                return {"trainer": "batch", "solver": solver, "epochs": epochs, "patience": patience, "epsilon": epsilon}
+                return {"type": "batch", "solver": solver, "epochs": epochs, "patience": patience, "epsilon": epsilon}
 
         def loss(self, loss):
                 """ create a loss """
                 assert(loss in self.losses())
-                return {"loss": loss}
+                return {"type": loss}
 
         def task(self, name):
                 """ create a task """
-                return {"task": name, "dir": os.path.join(self.dbdir, name)}
+                return {"type": name, "dir": os.path.join(self.dbdir, name)}
 
         def task_mnist(self):
                 return self.task("mnist")
@@ -78,14 +78,11 @@ class config:
         def task_wine(self):
                 return self.task("wine")
 
-        def task_synth_charset(self, ctype = "digit", color = "rgb", irows = 16, icols = 16, count = 10000):
-                return {"task": "synth-charset", "type": ctype, "color": color, "irows": irows, "icols": icols, "count": count}
-
         def task_synth_nparity(self, n = 32, count = 10000):
-                return {"task": "synth-nparity", "n": n, "count": count}
+                return {"type": "synth-nparity", "n": n, "count": count}
 
         def task_synth_affine(self, isize = 32, osize = 32, noise = 0.0, count = 10000):
-                return {"task": "synth-affine", "isize": isize, "osize": osize, "noise": noise, "count": count}
+                return {"type": "synth-affine", "isize": isize, "osize": osize, "noise": noise, "count": count}
 
         def task_synth_peak2d(self, irows = 32, icols = 32, noise = 0.0, count = 10000):
-                return {"task": "synth-peak2d", "irows": irows, "icols": icols, "noise": noise, "count": count}
+                return {"type": "synth-peak2d", "irows": irows, "icols": icols, "noise": noise, "count": count}

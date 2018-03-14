@@ -7,15 +7,17 @@
 
 using namespace nano;
 
-static bool load_json(const string_t& path, const char* name, string_t& json, string_t& id)
+static bool load_json(const string_t& path, json_t& json)
 {
-        if (!load_string(path, json) || json.empty())
-        {
-                return false;
-        }
+        string_t config;
+        return  load_string(path, config) &&
+                (json == json_t::parse(config));
+}
 
-        json_reader_t(json).object(name, id);
-        return !id.empty();
+static bool load_json(const string_t& path, json_t& json, string_t& id)
+{
+        return  load_json(path, json) &&
+                from_json(json, "type", id);
 }
 
 int main(int argc, const char *argv[])
@@ -23,7 +25,7 @@ int main(int argc, const char *argv[])
         // parse the command line
         cmdline_t cmdline("evaluate a model");
         cmdline.add("", "task",         join(get_tasks().ids()) + " (.json)");
-        cmdline.add("", "fold",         "fold index to use for training", "0");
+        cmdline.add("", "fold",         "fold index to use for evaluation", "0");
         cmdline.add("", "loss",         join(get_losses().ids()) + " (.json)");
         cmdline.add("", "model",        "path to the trained model (.model)");
         cmdline.add("", "threads",      "number of threads to use", physical_cpus());
@@ -38,17 +40,18 @@ int main(int argc, const char *argv[])
         const auto cmd_threads = cmdline.get<size_t>("threads");
 
         checkpoint_t checkpoint;
-        string_t params, id;
+        json_t json;
+        string_t id;
 
         // load task
         checkpoint.step(strcat("load task configuration from <", cmd_task, ">"));
-        checkpoint.critical(load_json(cmd_task, "task", params, id));
+        checkpoint.critical(load_json(cmd_task, json, id));
 
         rtask_t task;
         checkpoint.step(strcat("search task <", id, ">"));
         checkpoint.critical((task = get_tasks().get(id)) != nullptr);
 
-        task->config(params);
+        task->from_json(json);
         checkpoint.step(strcat("load task <", id, ">"));
         checkpoint.measure(task->load());
 
@@ -56,7 +59,7 @@ int main(int argc, const char *argv[])
 
         // load loss
         checkpoint.step(strcat("load loss configuration from <", cmd_loss, ">"));
-        checkpoint.critical(load_json(cmd_loss, "loss", params, id));
+        checkpoint.critical(load_json(cmd_loss, json, id));
 
         rloss_t loss;
         checkpoint.step(strcat("search loss <", id, ">"));

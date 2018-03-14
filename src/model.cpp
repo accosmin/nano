@@ -266,8 +266,10 @@ bool model_t::done()
         return true;
 }
 
-void model_t::to_json(json_t& json) const
+json_t model_t::to_json() const
 {
+        json_t json;
+
         auto&& json_nodes = json["nodes"];
         for (size_t i = 0; i < m_nodes.size(); ++ i)
         {
@@ -298,12 +300,13 @@ void model_t::to_json(json_t& json) const
                 const auto& name2 = m_nodes[dst].m_name;
                 json_model[i] = {name1, name2};
         }
+
+        return json;
 }
 
 bool model_t::save(const string_t& path) const
 {
-        json_t json;
-        to_json(json);
+        const auto json = to_json();
 
         obstream_t ob(path);
         return  ob.write(idims()) &&

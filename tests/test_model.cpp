@@ -14,45 +14,47 @@ NANO_CASE(config)
 {
         model_t umodel;
         {
-                json_writer_t writer;
-                writer.new_object().name("nodes").new_array();
-                        add_norm3d_node(writer, "norm", norm_type::plane).next();
-                        add_conv3d_node(writer, "c5x5", 128, 5, 5, 1, 1, 1).next();
-                        add_activation_node(writer, "act1", "act-snorm").next();
-                        add_conv3d_node(writer, "c3x3", 128, 3, 3, 1, 1, 1).next();
-                        add_activation_node(writer, "act2", "act-snorm").next();
-                        add_conv3d_node(writer, "c1x1", 128, 1, 1, 1, 1, 1).next();
-                        add_activation_node(writer, "act3", "act-snorm").next();
-                        add_affine_node(writer, "aff1", 128, 1, 1).next();
-                        add_activation_node(writer, "act4", "act-snorm").next();
-                        add_affine_node(writer, "aff2", 128, 1, 1).next();
-                        add_activation_node(writer, "act5", "act-snorm").next();
-                        add_affine_node(writer, "aff3", 10, 1, 1);
-                writer.end_array().next();
-                writer.name("model").new_array();
-                        writer.array("norm", "c5x5", "act1", "c3x3", "act2", "c1x1", "act3").next();
-                        writer.array("act3", "aff1", "act4", "aff2", "act5", "aff3");
-                writer.end_array().end_object();
+                json_t json;
+                json["nodes"] =
+                {
+                        config_norm3d_node("norm", norm_type::plane),
+                        config_conv3d_node("c5x5", 128, 5, 5, 1, 1, 1),
+                        config_activation_node("act1", "act-snorm"),
+                        config_conv3d_node("c3x3", 128, 3, 3, 1, 1, 1),
+                        config_activation_node("act2", "act-snorm"),
+                        config_conv3d_node("c1x1", 128, 1, 1, 1, 1, 1),
+                        config_activation_node("act3", "act-snorm"),
+                        config_affine_node("aff1", 128, 1, 1),
+                        config_activation_node("act4", "act-snorm"),
+                        config_affine_node("aff2", 128, 1, 1),
+                        config_activation_node("act5", "act-snorm"),
+                        config_affine_node("aff3", 10, 1, 1)
+                };
+                json["model"] =
+                {
+                        { "norm", "c5x5", "act1", "c3x3", "act2", "c1x1", "act3" },
+                        { "act3", "aff1", "act4", "aff2", "act5", "aff3" }
+                };
 
-                NANO_CHECK(umodel.config(writer.str()));
+                NANO_CHECK(umodel.from_json(json));
         }
 
         model_t xmodel;
         {
-                NANO_CHECK(add_node(xmodel, "norm", norm3d_node_name(), config_norm3d_node, norm_type::plane));
-                NANO_CHECK(add_node(xmodel, "c5x5", conv3d_node_name(), config_conv3d_node, 128, 5, 5, 1, 1, 1));
-                NANO_CHECK(add_node(xmodel, "act1", "act-snorm", config_empty_node));
-                NANO_CHECK(add_node(xmodel, "c3x3", conv3d_node_name(), config_conv3d_node, 128, 3, 3, 1, 1, 1));
-                NANO_CHECK(add_node(xmodel, "act2", "act-snorm", config_empty_node));
-                NANO_CHECK(add_node(xmodel, "c1x1", conv3d_node_name(), config_conv3d_node, 128, 1, 1, 1, 1, 1));
-                NANO_CHECK(add_node(xmodel, "act3", "act-snorm", config_empty_node));
-                NANO_CHECK(add_node(xmodel, "aff1", affine_node_name(), config_affine_node, 128, 1, 1));
-                NANO_CHECK(add_node(xmodel, "act4", "act-snorm", config_empty_node));
-                NANO_CHECK(add_node(xmodel, "aff2", affine_node_name(), config_affine_node, 128, 1, 1));
-                NANO_CHECK(add_node(xmodel, "act5", "act-snorm", config_empty_node));
-                NANO_CHECK(add_node(xmodel, "aff3", affine_node_name(), config_affine_node, 10, 1, 1));
+                NANO_CHECK(xmodel.add(config_norm3d_node("norm", norm_type::plane)));
+                NANO_CHECK(xmodel.add(config_conv3d_node("c5x5", 128, 5, 5, 1, 1, 1)));
+                NANO_CHECK(xmodel.add(config_activation_node("act1", "act-snorm")));
+                NANO_CHECK(xmodel.add(config_conv3d_node("c3x3", 128, 3, 3, 1, 1, 1)));
+                NANO_CHECK(xmodel.add(config_activation_node("act2", "act-snorm")));
+                NANO_CHECK(xmodel.add(config_conv3d_node("c1x1", 128, 1, 1, 1, 1, 1)));
+                NANO_CHECK(xmodel.add(config_activation_node("act3", "act-snorm")));
+                NANO_CHECK(xmodel.add(config_affine_node("aff1", 128, 1, 1)));
+                NANO_CHECK(xmodel.add(config_activation_node("act4", "act-snorm")));
+                NANO_CHECK(xmodel.add(config_affine_node("aff2", 128, 1, 1)));
+                NANO_CHECK(xmodel.add(config_activation_node("act5", "act-snorm")));
+                NANO_CHECK(xmodel.add(config_affine_node("aff3", 10, 1, 1)));
 
-                NANO_CHECK(!add_node(xmodel, "xxx", "this node type does not exist", config_empty_node));
+                NANO_CHECK(!xmodel.add(config_activation_node("xxx", "act-this activation type does not exist")));
 
                 NANO_CHECK(xmodel.connect("norm", "c5x5"));
                 NANO_CHECK(xmodel.connect("c5x5", "act1"));
@@ -73,18 +75,18 @@ NANO_CASE(config)
 
         model_t ymodel;
         {
-                NANO_CHECK(add_node(ymodel, "norm", norm3d_node_name(), config_norm3d_node, norm_type::plane));
-                NANO_CHECK(add_node(ymodel, "c5x5", conv3d_node_name(), config_conv3d_node, 128, 5, 5, 1, 1, 1));
-                NANO_CHECK(add_node(ymodel, "act1", "act-snorm", config_empty_node));
-                NANO_CHECK(add_node(ymodel, "c3x3", conv3d_node_name(), config_conv3d_node, 128, 3, 3, 1, 1, 1));
-                NANO_CHECK(add_node(ymodel, "act2", "act-snorm", config_empty_node));
-                NANO_CHECK(add_node(ymodel, "c1x1", conv3d_node_name(), config_conv3d_node, 128, 1, 1, 1, 1, 1));
-                NANO_CHECK(add_node(ymodel, "act3", "act-snorm", config_empty_node));
-                NANO_CHECK(add_node(ymodel, "aff1", affine_node_name(), config_affine_node, 128, 1, 1));
-                NANO_CHECK(add_node(ymodel, "act4", "act-snorm", config_empty_node));
-                NANO_CHECK(add_node(ymodel, "aff2", affine_node_name(), config_affine_node, 128, 1, 1));
-                NANO_CHECK(add_node(ymodel, "act5", "act-snorm", config_empty_node));
-                NANO_CHECK(add_node(ymodel, "aff3", affine_node_name(), config_affine_node, 10, 1, 1));
+                NANO_CHECK(ymodel.add(config_norm3d_node("norm", norm_type::plane)));
+                NANO_CHECK(ymodel.add(config_conv3d_node("c5x5", 128, 5, 5, 1, 1, 1)));
+                NANO_CHECK(ymodel.add(config_activation_node("act1", "act-snorm")));
+                NANO_CHECK(ymodel.add(config_conv3d_node("c3x3", 128, 3, 3, 1, 1, 1)));
+                NANO_CHECK(ymodel.add(config_activation_node("act2", "act-snorm")));
+                NANO_CHECK(ymodel.add(config_conv3d_node("c1x1", 128, 1, 1, 1, 1, 1)));
+                NANO_CHECK(ymodel.add(config_activation_node("act3", "act-snorm")));
+                NANO_CHECK(ymodel.add(config_affine_node("aff1", 128, 1, 1)));
+                NANO_CHECK(ymodel.add(config_activation_node("act4", "act-snorm")));
+                NANO_CHECK(ymodel.add(config_affine_node("aff2", 128, 1, 1)));
+                NANO_CHECK(ymodel.add(config_activation_node("act5", "act-snorm")));
+                NANO_CHECK(ymodel.add(config_affine_node("aff3", 10, 1, 1)));
 
                 NANO_CHECK(ymodel.connect(strings_t{"norm", "c5x5"}));
                 NANO_CHECK(ymodel.connect(strings_t{"c5x5", "act1", "c3x3", "act2", "c1x1", "act3", "aff1", "act4", "aff2", "act5", "aff3"}));
@@ -92,13 +94,8 @@ NANO_CASE(config)
                 NANO_CHECK(ymodel.done());
         }
 
-        json_writer_t uwriter, xwriter, ywriter;
-        umodel.config(uwriter);
-        xmodel.config(xwriter);
-        ymodel.config(ywriter);
-
-        NANO_CHECK_EQUAL(uwriter.str(), xwriter.str());
-        NANO_CHECK_EQUAL(uwriter.str(), ywriter.str());
+        NANO_CHECK_EQUAL(umodel.to_json().dump(), xmodel.to_json().dump());
+        NANO_CHECK_EQUAL(umodel.to_json().dump(), ymodel.to_json().dump());
 }
 
 NANO_CASE(config_model_before_nodes)
@@ -106,31 +103,27 @@ NANO_CASE(config_model_before_nodes)
         const string_t config = R"XXX(
 {
         "model": [],
-        "nodes": [{
-                "name": "output",
-                "type": "affine",
-                "config": {"omaps": 8, "orows": 1, "ocols": 1 }
-        }]
+        "nodes": [
+                {"name": "output", "type": "affine", "omaps": 8, "orows": 1, "ocols": 1}
+        ]
 })XXX";
 
         model_t model;
-        NANO_CHECK(model.config(config));
+        NANO_CHECK(model.from_json(json_t::parse(config)));
 }
 
 NANO_CASE(config_nodes_before_model)
 {
         const string_t config = R"XXX(
 {
-        "nodes": [{
-                "name": "output",
-                "type": "affine",
-                "config": {"omaps": 8, "orows": 1, "ocols": 1 }
-        }],
+        "nodes": [
+                {"name": "output", "type": "affine", "omaps": 8, "orows": 1, "ocols": 1}
+        ],
         "model": []
 })XXX";
 
         model_t model;
-        NANO_CHECK(model.config(config));
+        NANO_CHECK(model.from_json(json_t::parse(config)));
 }
 
 NANO_CASE(graph_empty)
@@ -141,44 +134,46 @@ NANO_CASE(graph_empty)
 
 NANO_CASE(graph_many_sinks)
 {
-        json_writer_t writer;
-        writer.new_object().name("nodes").new_array();
-                add_activation_node(writer, "node1", "act-snorm").next();
-                add_activation_node(writer, "node2", "act-snorm").next();
-                add_activation_node(writer, "node3", "act-snorm").next();
-                add_activation_node(writer, "node4", "act-snorm").next();
-                add_activation_node(writer, "node5", "act-snorm").next();
-                add_activation_node(writer, "node6", "act-snorm").next();
-        writer.end_array().next();
-
-        writer.name("model").new_array();
-                writer.array("node1", "node4", "node5", "node6").next();
-                writer.array("node1", "node2", "node3");
-        writer.end_array().end_object();
+        json_t json;
+        json["nodes"] =
+        {
+                config_activation_node("node1", "act-snorm"),
+                config_activation_node("node2", "act-snorm"),
+                config_activation_node("node3", "act-snorm"),
+                config_activation_node("node4", "act-snorm"),
+                config_activation_node("node5", "act-snorm"),
+                config_activation_node("node6", "act-snorm")
+        };
+        json["model"] =
+        {
+                { "node1", "node4", "node5", "node6" },
+                { "node1", "node2", "node3" }
+        };
 
         model_t model;
-        NANO_CHECK(!model.config(writer.str()));
+        NANO_CHECK(!model.from_json(json));
 }
 
 NANO_CASE(graph_cyclic)
 {
-        json_writer_t writer;
-        writer.new_object().name("nodes").new_array();
-                add_activation_node(writer, "node1", "act-snorm").next();
-                add_activation_node(writer, "node2", "act-snorm").next();
-                add_activation_node(writer, "node3", "act-snorm").next();
-                add_activation_node(writer, "node4", "act-snorm").next();
-                add_activation_node(writer, "node5", "act-snorm").next();
-                add_activation_node(writer, "node6", "act-snorm").next();
-        writer.end_array().next();
-
-        writer.name("model").new_array();
-                writer.array("node1", "node2", "node3", "node4", "node5", "node6").next();
-                writer.array("node5", "node2");
-        writer.end_array().end_object();
+        json_t json;
+        json["nodes"] =
+        {
+                config_activation_node("node1", "act-snorm"),
+                config_activation_node("node2", "act-snorm"),
+                config_activation_node("node3", "act-snorm"),
+                config_activation_node("node4", "act-snorm"),
+                config_activation_node("node5", "act-snorm"),
+                config_activation_node("node6", "act-snorm")
+        };
+        json["model"] =
+        {
+                { "node1", "node2", "node3", "node4", "node5", "node6" },
+                { "node5", "node2" }
+        };
 
         model_t model;
-        NANO_CHECK(!model.config(writer.str()));
+        NANO_CHECK(!model.from_json(json));
 }
 
 NANO_CASE(evaluate)
@@ -186,7 +181,7 @@ NANO_CASE(evaluate)
         // setup synthetic task
         const auto task = get_tasks().get("synth-peak2d");
         NANO_REQUIRE(task);
-        task->config(json_writer_t().object("type", "classification", "irows", 16, "icols", 16, "count", 128).str());
+        task->from_json(to_json("irows", 16, "icols", 16, "count", 128));
         NANO_CHECK(task->load());
 
         const auto omaps = std::get<0>(task->odims());
@@ -195,18 +190,18 @@ NANO_CASE(evaluate)
 
         // create & configure feed-forward network
         model_t model;
-        NANO_CHECK(add_node(model, "norm", norm3d_node_name(), config_norm3d_node, norm_type::plane));
-        NANO_CHECK(add_node(model, "c5x5", conv3d_node_name(), config_conv3d_node, 8, 5, 5, 1, 1, 1));
-        NANO_CHECK(add_node(model, "act1", "act-snorm", config_empty_node));
-        NANO_CHECK(add_node(model, "c3x3", conv3d_node_name(), config_conv3d_node, 8, 3, 3, 1, 1, 1));
-        NANO_CHECK(add_node(model, "act2", "act-snorm", config_empty_node));
-        NANO_CHECK(add_node(model, "c1x1", conv3d_node_name(), config_conv3d_node, 8, 1, 1, 1, 1, 1));
-        NANO_CHECK(add_node(model, "act3", "act-snorm", config_empty_node));
-        NANO_CHECK(add_node(model, "aff1", affine_node_name(), config_affine_node, 8, 1, 1));
-        NANO_CHECK(add_node(model, "act4", "act-snorm", config_empty_node));
-        NANO_CHECK(add_node(model, "aff2", affine_node_name(), config_affine_node, 8, 1, 1));
-        NANO_CHECK(add_node(model, "act5", "act-snorm", config_empty_node));
-        NANO_CHECK(add_node(model, "aff3", affine_node_name(), config_affine_node, omaps, orows, ocols));
+        NANO_CHECK(model.add(config_norm3d_node("norm", norm_type::plane)));
+        NANO_CHECK(model.add(config_conv3d_node("c5x5", 8, 5, 5, 1, 1, 1)));
+        NANO_CHECK(model.add(config_activation_node("act1", "act-snorm")));
+        NANO_CHECK(model.add(config_conv3d_node("c3x3", 8, 3, 3, 1, 1, 1)));
+        NANO_CHECK(model.add(config_activation_node("act2", "act-snorm")));
+        NANO_CHECK(model.add(config_conv3d_node("c1x1", 8, 1, 1, 1, 1, 1)));
+        NANO_CHECK(model.add(config_activation_node("act3", "act-snorm")));
+        NANO_CHECK(model.add(config_affine_node("aff1", 8, 1, 1)));
+        NANO_CHECK(model.add(config_activation_node("act4", "act-snorm")));
+        NANO_CHECK(model.add(config_affine_node("aff2", 8, 1, 1)));
+        NANO_CHECK(model.add(config_activation_node("act5", "act-snorm")));
+        NANO_CHECK(model.add(config_affine_node("aff3", omaps, orows, ocols)));
 
         NANO_CHECK(model.connect("norm", "c5x5", "act1", "c3x3", "act2", "c1x1", "act3"));
         NANO_CHECK(model.connect("act3", "aff1", "act4", "aff2", "act5", "aff3"));
@@ -262,62 +257,6 @@ NANO_CASE(evaluate)
 
         // cleanup
         std::remove(path.c_str());
-}
-
-NANO_CASE(make_mlp0)
-{
-        model_t model;
-        NANO_CHECK(make_mlp(model, {}, 3, 13, 11, "act-snorm"));
-        NANO_REQUIRE(model.done());
-        NANO_CHECK(model.resize({3, 32, 32}, {3, 13, 11}));
-}
-
-NANO_CASE(make_mlp1)
-{
-        model_t model;
-        NANO_CHECK(make_mlp(model, {{32, 1, 1}}, 3, 13, 11, "act-snorm"));
-        NANO_REQUIRE(model.done());
-        NANO_CHECK(model.resize({3, 32, 32}, {3, 13, 11}));
-}
-
-NANO_CASE(make_mlp2)
-{
-        model_t model;
-        NANO_CHECK(make_mlp(model, {{32, 1, 1}, {64, 1, 1}}, 3, 13, 11, "act-snorm"));
-        NANO_REQUIRE(model.done());
-        NANO_CHECK(model.resize({3, 32, 32}, {3, 13, 11}));
-}
-
-NANO_CASE(make_cnn1_mlp0)
-{
-        model_t model;
-        NANO_CHECK(make_cnn(model, {{32, 7, 7, 1, 1, 1}}, {}, 3, 13, 11, "act-snorm"));
-        NANO_REQUIRE(model.done());
-        NANO_CHECK(model.resize({3, 32, 32}, {3, 13, 11}));
-}
-
-NANO_CASE(make_cnn1_mlp1)
-{
-        model_t model;
-        NANO_CHECK(make_cnn(model, {{32, 7, 7, 1, 1, 1}}, {{23, 1, 1}}, 3, 13, 11, "act-snorm"));
-        NANO_REQUIRE(model.done());
-        NANO_CHECK(model.resize({3, 32, 32}, {3, 13, 11}));
-}
-
-NANO_CASE(make_cnn2_mlp1)
-{
-        model_t model;
-        NANO_CHECK(make_cnn(model, {{32, 7, 7, 1, 1, 1}, {42, 5, 5, 2, 1, 2}}, {{23, 1, 1}}, 3, 13, 11, "act-snorm"));
-        NANO_REQUIRE(model.done());
-        NANO_CHECK(model.resize({3, 32, 32}, {3, 13, 11}));
-}
-
-NANO_CASE(make_residual_mlp4)
-{
-        model_t model;
-        NANO_CHECK(make_residual_mlp(model, {{128, 1, 1}, {128, 1, 1}, {128, 1, 1}, {128, 1, 1}}, 3, 13, 11, "act-snorm"));
-        NANO_REQUIRE(model.done());
-        NANO_CHECK(model.resize({3, 32, 32}, {3, 13, 11}));
 }
 
 NANO_END_MODULE()
