@@ -18,13 +18,13 @@ patience = 100
 epsilon = 1e-6
 
 for solver in cfg.batch_solvers():
-        exp.add_trainer("batch_{}".format(solver), cfg.batch_trainer(solver, epochs, patience, epsilon))
+        exp.add_trainer(solver, cfg.batch_trainer(solver, epochs, patience, epsilon))
 
 for solver in cfg.stoch_solvers():
-        exp.add_trainer("stoch_{}".format(solver), cfg.stoch_trainer(solver, epochs, patience, epsilon))
+        exp.add_trainer(solver, cfg.stoch_trainer(solver, epochs, patience, epsilon))
 
 # models
-output = {"name":"output","type":"affine","config":{"omaps":8,"orows":1,"ocols":1}}
+output = {"name":"output","type":"affine","omaps":8,"orows":1,"ocols":1}
 
 mlp0 = {"nodes": [output], "model": []}
 
@@ -34,6 +34,6 @@ exp.add_model("mlp0", mlp0)
 exp.train_all()
 
 # compare configurations
-exp.summarize_by_trainers("stoch", "stoch_*")
-exp.summarize_by_trainers("batch", "batch_*")
+exp.summarize_by_trainers("stoch", "|".join(cfg.stoch_solvers()))
+exp.summarize_by_trainers("batch", "|".join(cfg.batch_solvers()))
 exp.summarize_by_trainers("all", ".*")

@@ -23,15 +23,15 @@ for solver in cfg.stoch_solvers():
         exp.add_trainer("stoch_{}".format(solver), cfg.stoch_trainer(solver, epochs, patience, epsilon))
 
 # models
-output = {"name":"output","type":"affine","config":{"omaps":2,"orows":1,"ocols":1}}
+output = {"name":"output","type":"affine","omaps":2,"orows":1,"ocols":1}
 
-cn1 = {"name":"cn1","type":"conv2d","config":{"omaps":16,"krows":5,"kcols":5,"kconn":1,"kdrow":1,"kdcol":1}}
-cn2 = {"name":"cn2","type":"conv2d","config":{"omaps":32,"krows":5,"kcols":5,"kconn":1,"kdrow":1,"kdcol":1}}
-cn3 = {"name":"cn3","type":"conv2d","config":{"omaps":64,"krows":5,"kcols":5,"kconn":1,"kdrow":1,"kdcol":1}}
+cn1 = {"name":"cn1","type":"conv2d","omaps":16,"krows":5,"kcols":5,"kconn":1,"kdrow":1,"kdcol":1}
+cn2 = {"name":"cn2","type":"conv2d","omaps":32,"krows":5,"kcols":5,"kconn":1,"kdrow":1,"kdcol":1}
+cn3 = {"name":"cn3","type":"conv2d","omaps":64,"krows":5,"kcols":5,"kconn":1,"kdrow":1,"kdcol":1}
 
-ac1 = {"name":"ac1","type":"act-snorm","config":{}}
-ac2 = {"name":"ac2","type":"act-snorm","config":{}}
-ac3 = {"name":"ac3","type":"act-snorm","config":{}}
+ac1 = {"name":"ac1","type":"act-snorm"}
+ac2 = {"name":"ac2","type":"act-snorm"}
+ac3 = {"name":"ac3","type":"act-snorm"}
 
 cnn1 = {"nodes": [cn1, ac1, output], "model": [["cn1", "ac1", "output"]]}
 cnn2 = {"nodes": [cn1, ac1, cn2, ac2, output], "model": [["cn1", "ac1", "cn2", "ac2", "output"]]}

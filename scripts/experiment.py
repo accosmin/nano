@@ -117,17 +117,17 @@ class experiment:
                 self.log("|--->plotting done, see <", ppath, ">")
 
         def print_stats(self, cpaths):
-                self.log("{}{}{}{}".format("-" * 42, "-" * 24, "-" * 36, "-" * 36))
-                self.log("{}{}{}{}".format("".ljust(42), "test error".rjust(24), "epochs".rjust(36), "seconds".rjust(36)))
-                self.log("{}{}{}{}".format("-" * 42, "-" * 24, "-" * 36, "-" * 36))
+                self.log("{}{}{}{}".format("-" * 36, "-" * 24, "-" * 24, "-" * 24))
+                self.log("{}{}{}{}".format("configuration".ljust(36), "test error".rjust(24), "epochs".rjust(24), "seconds".rjust(24)))
+                self.log("{}{}{}{}".format("-" * 36, "-" * 24, "-" * 24, "-" * 24))
                 for cpath in cpaths:
-                        name = os.path.basename(cpath).replace(".csv", "").ljust(42)
-                        basecmd = self.cfg.app_tabulate + " -i " + cpath + " -p 3 -d ';' --stats "
-                        error_stats = subprocess.check_output(basecmd + " -c 7", shell=True).decode('ascii').rstrip().rjust(24)
-                        epoch_stats = subprocess.check_output(basecmd + " -c 1", shell=True).decode('ascii').rstrip().rjust(36)
-                        time_stats = subprocess.check_output(basecmd + " -c 10", shell=True).decode('ascii').rstrip().rjust(36)
+                        name = os.path.basename(cpath).replace(".csv", "").ljust(36)
+                        basecmd = self.cfg.app_tabulate + " -i " + cpath + " -d ';' --stats "
+                        error_stats = subprocess.check_output(basecmd + " -p 2 -c 7", shell=True).decode('ascii').rstrip().rjust(24)
+                        epoch_stats = subprocess.check_output(basecmd + " -p 0 -c 1", shell=True).decode('ascii').rstrip().rjust(24)
+                        time_stats = subprocess.check_output(basecmd + " -p 0 -c 10", shell=True).decode('ascii').rstrip().rjust(24)
                         self.log("{}{}{}{}".format(name, error_stats, epoch_stats, time_stats))
-                self.log("{}{}{}{}".format("-" * 42, "-" * 24, "-" * 36, "-" * 36))
+                self.log("{}{}{}{}".format("-" * 36, "-" * 24, "-" * 24, "-" * 24))
 
         def train_one(self, mname, mparam, tname, tparam, lname, lparam):
                 # train the given configuration for multiple trials
