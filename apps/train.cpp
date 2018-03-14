@@ -7,7 +7,6 @@
 #include "text/table.h"
 #include "accumulator.h"
 #include "text/cmdline.h"
-#include <iomanip>
 #include <iostream>
 
 using namespace nano;
@@ -15,8 +14,9 @@ using namespace nano;
 static bool load_json(const string_t& path, json_t& json)
 {
         string_t config;
-        return  load_string(path, config) &&
-                (json == json_t::parse(config));
+        const auto ret = load_string(path, config);
+        json = json_t::parse(config);
+        return ret;
 }
 
 static bool load_json(const string_t& path, json_t& json, string_t& id)
