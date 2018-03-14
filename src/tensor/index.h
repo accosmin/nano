@@ -1,6 +1,7 @@
 #pragma once
 
 #include <array>
+#include <vector>
 #include <cassert>
 #include <ostream>
 #include <eigen3/Eigen/Core>
