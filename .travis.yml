@@ -99,6 +99,19 @@ matrix:
 
     - os: linux
       compiler: clang
+      env: TEST="build (clang-6.0)"
+      addons:
+        apt:
+          packages: ['clang-6.0', 'libdevil-dev', 'libarchive-dev', 'libc++-dev', 'libc++abi-dev', 'ninja-build', 'python3-pip']
+          sources: &sources
+            - llvm-toolchain-trusty-6.0
+      script:
+        - cmake -G "Ninja" -DCMAKE_CXX_COMPILER=clang++-6.0 -DNANO_WITH_WERROR=ON -DNANO_WITH_LIBCPP=ON ..
+        - ninja
+        - bash ../scripts/ci_ctest.sh
+
+    - os: linux
+      compiler: clang
       env: TEST="ASAN (clang-5.0)"
       addons:
         apt:
