@@ -6,5 +6,5 @@
 [submodule "deps/json"]
 	path = deps/json
 	url = https://github.com/nlohmann/json.git
-	branch = release/3.1.1
+	branch = release/3.1.2
         shallow = true
