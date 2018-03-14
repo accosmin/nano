@@ -12,29 +12,26 @@
 using namespace nano;
 
 template <typename tvalue>
-static void reorder(std::vector<tvalue>& values, const indices_t& order)
+static std::vector<tvalue> reorder(const std::vector<tvalue>& values, const indices_t& order)
 {
         assert(values.size() == order.size());
 
-        for (size_t i = 0; i < order.size(); ++ i)
+        std::vector<tvalue> ordered_values;
+        for (size_t i = 0; i < values.size(); ++ i)
         {
-                size_t orig = order[i];
-                while (i < orig)
-                {
-                        orig = order[orig];
-                }
-                if (i != orig)
-                {
-                        std::swap(values[i], values[orig]);
-                }
+                ordered_values.push_back(values[order[i]]);
         }
+
+        return ordered_values;
 }
 
 static void reindex(indices_t& indices, const indices_t& order)
 {
         for (auto& index : indices)
         {
-                index = order[index];
+                const auto it = std::find(order.begin(), order.end(), index);
+                assert(it != order.end());
+                index = std::distance(order.begin(), it);
         }
 }
 
@@ -167,6 +164,7 @@ bool model_t::from_json(const json_t& json)
 
                 for (const auto& json_conn : json_model)
                 {
+                        assert(json_conn.is_array());
                         for (size_t i = 0; i + 1 < json_conn.size(); ++ i)
                         {
                                 if (!connect(json_conn[i].get<string_t>(), json_conn[i + 1].get<string_t>()))
@@ -257,7 +255,7 @@ bool model_t::done()
 
         // OK, reorder nodes using the topological sorting
         const auto tsort = graph.tsort();
-        reorder(m_nodes, tsort);
+        m_nodes = reorder(m_nodes, tsort);
         for (auto& cnode : m_nodes)
         {
                 // also reindex their inputs
@@ -278,6 +276,7 @@ json_t model_t::to_json() const
                 const auto& node = m_nodes[i].m_node;
 
                 auto&& json_node = json_nodes[name];
+                json_node["name"] = name;
                 json_node["type"] = type;
                 node->to_json(json_node);
         }
@@ -427,12 +426,12 @@ const vector_t& model_t::gparam(const tensor4d_t& odata)
 
 bool model_t::resize(const tensor3d_dim_t& idims, const tensor3d_dim_t& odims)
 {
-        log_info() << "model: resizing the computation nodes...";
+        log_info() << "model: resizing the computation nodes [" << idims << "->" << odims << "]...";
 
         // resize computation nodes starting from the input
         for (auto& cnode : m_nodes)
         {
-                std::vector<tensor3d_dim_t> cidims;
+                tensor3d_dims_t cidims;
                 if (cnode.m_inodes.empty())
                 {
                         cidims.push_back(idims);
@@ -445,9 +444,10 @@ bool model_t::resize(const tensor3d_dim_t& idims, const tensor3d_dim_t& odims)
                         }
                 }
 
+                log_info() << "model: resizing node [" << cnode.m_name << "] to " << cidims << "...";
                 if (!cnode.m_node->resize(cidims))
                 {
-                        log_error() << "model: failed to resize node [" << cnode.m_name << "]!";
+                        log_error() << "model: failed to resize node [" << cnode.m_name << "] to " << cidims << "!";
                         return false;
                 }
 

@@ -44,7 +44,15 @@ namespace nano
                 size_t count = 0;
                 if (json.count(name))
                 {
-                        value = from_string<tvalue>(json[name].get<string_t>());
+                        auto&& json_token = json[name];
+                        if (json_token.is_string())
+                        {
+                                value = from_string<tvalue>(json_token.get<string_t>());
+                        }
+                        else
+                        {
+                                value = json_token.get<tvalue>();
+                        }
                         ++ count;
                 }
                 return count + from_json(json, nvs...);

@@ -9,7 +9,7 @@ void norm3d_layer_t::from_json(const json_t& json)
 
 void norm3d_layer_t::to_json(json_t& json) const
 {
-        nano::to_json(json, "norm", m_params.m_ntype, "norm", join(enum_values<norm_type>()));
+        nano::to_json(json, "norm", m_params.m_ntype, "norms", join(enum_values<norm_type>()));
 }
 
 rlayer_t norm3d_layer_t::clone() const

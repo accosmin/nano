@@ -48,6 +48,12 @@ namespace nano
                         { opt_status::stopped,     "stopped" }
                 };
         }
+
+        inline std::ostream& operator<<(std::ostream& os, const opt_status status)
+        {
+                return os << to_string(status);
+        }
+
         ///
         /// \brief optimization state described as:
         ///     current point (x),

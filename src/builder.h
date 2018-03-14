@@ -21,8 +21,7 @@ namespace nano
         template <typename tname>
         json_t config_norm3d_node(const tname& name, const norm_type type)
         {
-                return to_json(
-                        "name", name, "type", norm3d_node_name(),
+                return to_json("name", name, "type", norm3d_node_name(),
                         "norm", type);
         }
 
@@ -31,8 +30,7 @@ namespace nano
                 const tensor_size_t omaps, const tensor_size_t krows, const tensor_size_t kcols,
                 const tensor_size_t kconn = 1, const tensor_size_t kdrow = 1, const tensor_size_t kdcol = 1)
         {
-                return to_json(
-                        "name", name, "type", conv3d_node_name(),
+                return to_json("name", name, "type", conv3d_node_name(),
                         "omaps", omaps, "krows", krows, "kcols", kcols, "kconn", kconn, "kdrow", kdrow, "kdcol", kdcol);
         }
 
@@ -40,8 +38,7 @@ namespace nano
         json_t config_affine_node(const tname& name,
                 const tensor_size_t omaps, const tensor_size_t orows, const tensor_size_t ocols)
         {
-                return to_json(
-                        "name", name, "type", affine_node_name(),
+                return to_json("name", name, "type", affine_node_name(),
                         "omaps", omaps, "orows", orows, "ocols", ocols);
         }
 

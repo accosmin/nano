@@ -6,14 +6,6 @@
 
 using namespace nano;
 
-namespace nano
-{
-        std::ostream& operator<<(std::ostream& os, const opt_status status)
-        {
-                return os << to_string(status);
-        }
-}
-
 NANO_BEGIN_MODULE(test_stoch_solvers)
 
 NANO_CASE(evaluate)
