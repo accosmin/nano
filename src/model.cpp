@@ -268,17 +268,14 @@ json_t model_t::to_json() const
 {
         json_t json;
 
-        auto&& json_nodes = json["nodes"];
-        for (size_t i = 0; i < m_nodes.size(); ++ i)
+        auto&& json_nodes = (json["nodes"] = json_t::array());
+        for (const auto& node : m_nodes)
         {
-                const auto& name = m_nodes[i].m_name;
-                const auto& type = m_nodes[i].m_type;
-                const auto& node = m_nodes[i].m_node;
-
-                auto&& json_node = json_nodes[name];
-                json_node["name"] = name;
-                json_node["type"] = type;
-                node->to_json(json_node);
+                json_nodes.push_back(json_t::object());
+                auto&& json_node = *json_nodes.rbegin();
+                json_node["name"] = node.m_name;
+                json_node["type"] = node.m_type;
+                node.m_node->to_json(json_node);
         }
 
         auto&& json_model = json["model"];
