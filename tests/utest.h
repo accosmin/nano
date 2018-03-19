@@ -1,6 +1,7 @@
 #pragma once
 
 #include "arch.h"
+#include <atomic>
 #include <string>
 #include <iostream>
 #include "math/numeric.h"
@@ -9,8 +10,8 @@
 static std::string module_name;
 static std::string case_name;
 static std::size_t n_cases = 0;
-static std::size_t n_checks = 0;
-static std::size_t n_failures = 0;
+static std::atomic<std::size_t> n_checks;
+static std::atomic<std::size_t> n_failures;
 
 enum class exception_status
 {
