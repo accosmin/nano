@@ -8,8 +8,9 @@ namespace nano
         /// \brief RAII object to wait for a given set of futures (aka barrier).
         ///
         template <typename tfuture>
-        struct section_t
+        class section_t
         {
+        public:
                 ///
                 /// \brief destructor
                 ///
