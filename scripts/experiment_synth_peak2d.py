@@ -6,7 +6,7 @@ from experiment import *
 cfg = config.config()
 exp = experiment(cfg.expdir + "/synth_peak2d", trials = 10)
 
-exp.set_task(cfg.task_synth_peak2d(irows = 16, icols = 16, noise = 0.0, count = 4000))
+exp.set_task(cfg.task_synth_peak2d(irows = 16, icols = 16, noise = 0.1, count = 10000))
 
 # loss functions
 exp.add_loss("cauchy", cfg.loss("cauchy"))
@@ -14,7 +14,7 @@ exp.add_loss("cauchy", cfg.loss("cauchy"))
 # trainers
 epochs = 100
 patience = 100
-epsilon = 1e-6
+epsilon = 1e-4
 
 for solver in cfg.batch_solvers():
         exp.add_trainer("batch_{}".format(solver), cfg.batch_trainer(solver, epochs, patience, epsilon))
@@ -25,9 +25,9 @@ for solver in cfg.stoch_solvers():
 # models
 output = {"name":"output","type":"affine","omaps":2,"orows":1,"ocols":1}
 
-cn1 = {"name":"cn1","type":"conv2d","omaps":16,"krows":5,"kcols":5,"kconn":1,"kdrow":1,"kdcol":1}
-cn2 = {"name":"cn2","type":"conv2d","omaps":32,"krows":5,"kcols":5,"kconn":1,"kdrow":1,"kdcol":1}
-cn3 = {"name":"cn3","type":"conv2d","omaps":64,"krows":5,"kcols":5,"kconn":1,"kdrow":1,"kdcol":1}
+cn1 = {"name":"cn1","type":"conv3d","omaps":16,"krows":5,"kcols":5,"kconn":1,"kdrow":1,"kdcol":1}
+cn2 = {"name":"cn2","type":"conv3d","omaps":32,"krows":5,"kcols":5,"kconn":1,"kdrow":1,"kdcol":1}
+cn3 = {"name":"cn3","type":"conv3d","omaps":64,"krows":5,"kcols":5,"kconn":1,"kdrow":1,"kdcol":1}
 
 ac1 = {"name":"ac1","type":"act-snorm"}
 ac2 = {"name":"ac2","type":"act-snorm"}
