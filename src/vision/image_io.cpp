@@ -1,7 +1,6 @@
+#include <IL/il.h>
 #include "image_io.h"
 #include "text/algorithm.h"
-#include <map>
-#include <IL/il.h>
 
 using namespace nano;
 
@@ -84,15 +83,9 @@ static bool load_image(const string_t& path, const color_mode mode, image_tensor
         return ret;
 }
 
-static bool load_image(const string_t& name, const char* buffer, const size_t buffer_size,
-        const color_mode mode, image_tensor_t& image)
+static ILenum get_type(const string_t& name)
 {
-        ilInit();
-
-        const ILuint id = ilGenImage();
-        ilBindImage(id);
-
-        const std::map<string_t, ILenum> extensions =
+        const std::vector<std::pair<const char*, ILenum>> extensions =
         {
                 { ".pgm",       IL_PNM },
                 { ".ppm",       IL_PNM },
@@ -104,22 +97,32 @@ static bool load_image(const string_t& name, const char* buffer, const size_t bu
                 { ".bmp",       IL_BMP },
         };
 
-        ILenum type = IL_TYPE_UNKNOWN;
         for (const auto& extension : extensions)
         {
                 if (nano::iends_with(name, extension.first))
                 {
-                        type = extension.second;
+                        return extension.second;
                 }
         }
+        return IL_TYPE_UNKNOWN;
+}
 
-        const bool ret =
+static bool load_image(const string_t& name, const char* buffer, const size_t buffer_size,
+        const color_mode mode, image_tensor_t& image)
+{
+        ilInit();
+
+        const auto id = ilGenImage();
+        ilBindImage(id);
+
+        const auto type = get_type(name);
+        const auto code =
                 ilLoadL(type, buffer, static_cast<unsigned int>(buffer_size)) &&
                 load_image(mode, image);
 
         ilDeleteImage(id);
 
-        return ret;
+        return code;
 }
 
 bool nano::save_image(const string_t& path, const image_tensor_t& image)

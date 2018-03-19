@@ -13,8 +13,9 @@ namespace nano
         ///     - loading and saving from and to files
         ///     - scaling to/from [0, 1] 3D tensors
         ///
-        struct NANO_PUBLIC image_t
+        class NANO_PUBLIC image_t
         {
+        public:
                 ///
                 /// \brief constructor
                 ///
