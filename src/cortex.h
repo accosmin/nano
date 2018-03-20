@@ -139,12 +139,12 @@ namespace nano
         ///
         /// \brief target value for multi-class multi-label classification problems based on the sign of the target
         ///
-        inline vector_t class_target(const vector_t& scores)
+        inline vector_t class_target(const vector_t& outputs)
         {
-                vector_t target(scores.size());
-                for (auto i = 0; i < scores.size(); ++ i)
+                vector_t target(outputs.size());
+                for (auto i = 0; i < outputs.size(); ++ i)
                 {
-                        target(i) = is_pos_target(scores(i)) ? pos_target() : neg_target();
+                        target(i) = is_pos_target(outputs(i)) ? pos_target() : neg_target();
                 }
                 return target;
         }

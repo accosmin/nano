@@ -34,22 +34,22 @@ namespace nano
                 ///
                 /// \brief compute the error value
                 ///
-                tensor1d_t error(const tensor4d_t& targets, const tensor4d_t& scores) const;
+                tensor1d_t error(const tensor4d_t& targets, const tensor4d_t& outputs) const;
 
                 ///
                 /// \brief compute the loss value (an upper bound of the usually non-continuous error function)
                 ///
-                tensor1d_t value(const tensor4d_t& targets, const tensor4d_t& scores) const;
+                tensor1d_t value(const tensor4d_t& targets, const tensor4d_t& outputs) const;
 
                 ///
-                /// \brief compute the loss gradient (wrt the scores)
+                /// \brief compute the loss gradient (wrt the outputs)
                 ///
-                tensor4d_t vgrad(const tensor4d_t& targets, const tensor4d_t& scores) const;
+                tensor4d_t vgrad(const tensor4d_t& targets, const tensor4d_t& outputs) const;
 
         protected:
 
-                virtual scalar_t error(const vector_cmap_t& targets, const vector_cmap_t& scores) const = 0;
-                virtual scalar_t value(const vector_cmap_t& targets, const vector_cmap_t& scores) const = 0;
-                virtual void vgrad(const vector_cmap_t& targets, const vector_cmap_t& scores, vector_map_t&&) const = 0;
+                virtual scalar_t error(const vector_cmap_t& targets, const vector_cmap_t& outputs) const = 0;
+                virtual scalar_t value(const vector_cmap_t& targets, const vector_cmap_t& outputs) const = 0;
+                virtual void vgrad(const vector_cmap_t& targets, const vector_cmap_t& outputs, vector_map_t&&) const = 0;
         };
 }

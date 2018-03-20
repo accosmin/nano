@@ -48,7 +48,7 @@ NANO_BEGIN_MODULE(test_loss)
 NANO_CASE(gradient)
 {
         const tensor_size_t cmd_min_dims = 2;
-        const tensor_size_t cmd_max_dims = 10;
+        const tensor_size_t cmd_max_dims = 8;
         const size_t cmd_tests = 128;
 
         // evaluate the analytical gradient vs. the finite difference approximation
@@ -73,7 +73,7 @@ NANO_CASE(gradient)
 
 NANO_CASE(single_class)
 {
-        for (const auto& loss_id : {"classnll", "s-logistic", "s-exponential"})
+        for (const auto& loss_id : {"classnll", "s-logistic", "s-exponential", "s-square", "s-cauchy"})
         {
                 const auto loss = get_losses().get(loss_id);
                 NANO_REQUIRE(loss);
@@ -116,7 +116,7 @@ NANO_CASE(single_class)
 
 NANO_CASE(multi_class)
 {
-        for (const auto& loss_id : {"m-logistic", "m-exponential"})
+        for (const auto& loss_id : {"m-logistic", "m-exponential", "m-square", "m-cauchy"})
         {
                 const auto loss = get_losses().get(loss_id);
                 NANO_REQUIRE(loss);

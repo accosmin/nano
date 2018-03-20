@@ -5,19 +5,19 @@
 namespace nano
 {
         ///
-        /// \brief multi-class logistic loss: sum(log(1 + exp(-targets_k * scores_k)), k).
+        /// \brief multi-class logistic loss: sum(log(1 + exp(-targets_k * outputs_k)), k).
         ///
         struct logistic_t
         {
-                static auto value(const vector_cmap_t& targets, const vector_cmap_t& scores)
+                static auto value(const vector_cmap_t& targets, const vector_cmap_t& outputs)
                 {
-                        return  (1 + (-targets.array() * scores.array()).exp()).log().sum();
+                        return  (1 + (-targets.array() * outputs.array()).exp()).log().sum();
                 }
 
-                static auto vgrad(const vector_cmap_t& targets, const vector_cmap_t& scores)
+                static auto vgrad(const vector_cmap_t& targets, const vector_cmap_t& outputs)
                 {
-                        return  -targets.array() * (-targets.array() * scores.array()).exp() /
-                                (1 + (-targets.array() * scores.array()).exp());
+                        return  -targets.array() * (-targets.array() * outputs.array()).exp() /
+                                (1 + (-targets.array() * outputs.array()).exp());
                 }
         };
 

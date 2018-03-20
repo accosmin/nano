@@ -9,15 +9,15 @@ namespace nano
         ///
         struct classnll_t
         {
-                static auto value(const vector_cmap_t& targets, const vector_cmap_t& scores)
+                static auto value(const vector_cmap_t& targets, const vector_cmap_t& outputs)
                 {
-                        return  std::log(scores.array().exp().sum()) -
-                                scalar_t(0.5) * ((1 + targets.array()) * scores.array()).sum();
+                        return  std::log(outputs.array().exp().sum()) -
+                                scalar_t(0.5) * ((1 + targets.array()) * outputs.array()).sum();
                 }
 
-                static auto vgrad(const vector_cmap_t& targets, const vector_cmap_t& scores)
+                static auto vgrad(const vector_cmap_t& targets, const vector_cmap_t& outputs)
                 {
-                        return  scores.array().exp() / (scores.array().exp().sum()) -
+                        return  outputs.array().exp() / (outputs.array().exp().sum()) -
                                 scalar_t(0.5) * (1 + targets.array());
                 }
         };
