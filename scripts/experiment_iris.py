@@ -5,37 +5,45 @@ import experiment
 # - single-class classification problem using the IRIS flower dataset
 # - the model should predict the iris species
 cfg = config.config()
-exp = experiment.experiment(
-        cfg.task_iris(),
-        cfg.expdir + "/iris",
-        trials = 10)
+exp = experiment.experiment(cfg.expdir + "/iris", trials = 10)
+
+exp.set_task(cfg.task_iris())
 
 # loss functions
-exp.add_loss("classnll")
-
-# enhancers
-exp.add_enhancer("default")
+exp.add_loss("logistic", cfg.loss("s-logistic"))
 
 # trainers
-exp.add_trainer("batch_cgd", "epochs=1000,patience=100")
+epochs = 100
+patience = 100
+epsilon = 1e-4
+
+for solver in cfg.batch_solvers():
+        exp.add_trainer(solver, cfg.batch_trainer(solver, epochs, patience, epsilon))
 
 # models
-outlayer = "affine:dims=3;act-snorm;"
+output = {"name":"output","type":"affine","omaps":3,"orows":1,"ocols":1}
 
-mlp0 = "--model forward-network --model-params "
-mlp1 = mlp0 + "affine:dims=128;act-snorm;"
-mlp2 = mlp1 + "affine:dims=128;act-snorm;"
-mlp3 = mlp2 + "affine:dims=128;act-snorm;"
-mlp4 = mlp3 + "affine:dims=128;act-snorm;"
+fc1 = {"name":"fc1","type":"affine","omaps":16,"orows":1,"ocols":1}
+fc2 = {"name":"fc2","type":"affine","omaps":32,"orows":1,"ocols":1}
+fc3 = {"name":"fc3","type":"affine","omaps":64,"orows":1,"ocols":1}
 
-exp.add_model("mlp0", mlp0 + outlayer)
-exp.add_model("mlp1", mlp1 + outlayer)
-exp.add_model("mlp2", mlp2 + outlayer)
-exp.add_model("mlp3", mlp3 + outlayer)
-exp.add_model("mlp4", mlp4 + outlayer)
+ac1 = {"name":"ac1","type":"act-snorm"}
+ac2 = {"name":"ac2","type":"act-snorm"}
+ac3 = {"name":"ac3","type":"act-snorm"}
+
+mlp0 = {"nodes": [output], "model": []}
+mlp1 = {"nodes": [fc1, ac1, output], "model": [["fc1", "ac1", "output"]]}
+mlp2 = {"nodes": [fc1, ac1, fc2, ac2, output], "model": [["fc1", "ac1", "fc2", "ac2", "output"]]}
+mlp3 = {"nodes": [fc1, ac1, fc2, ac2, fc3, ac3, output], "model": [["fc1", "ac1", "fc2", "ac2", "fc3", "ac3", "output"]]}
+
+exp.add_model("mlp0", mlp0)
+exp.add_model("mlp1", mlp1)
+exp.add_model("mlp2", mlp2)
+exp.add_model("mlp3", mlp3)
 
 # train all configurations
-exp.run_all()
+exp.train_all()
 
 # compare configurations
-exp.summarize_by_models(".*")
+exp.summarize_by_trainers("all", ".*")
+exp.summarize_by_models("all", ".*")

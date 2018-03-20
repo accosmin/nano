@@ -23,15 +23,15 @@ for solver in cfg.stoch_solvers():
         exp.add_trainer("stoch_{}".format(solver), cfg.stoch_trainer(solver, epochs, patience, epsilon))
 
 # models
-output = {"name":"output","type":"affine","config":{"omaps":1,"orows":1,"ocols":1}}
+output = {"name":"output","type":"affine","omaps":1,"orows":1,"ocols":1}
 
-fc1 = {"name":"fc1","type":"affine","config":{"omaps":16,"orows":1,"ocols":1}}
-fc2 = {"name":"fc2","type":"affine","config":{"omaps":32,"orows":1,"ocols":1}}
-fc3 = {"name":"fc3","type":"affine","config":{"omaps":64,"orows":1,"ocols":1}}
+fc1 = {"name":"fc1","type":"affine","omaps":16,"orows":1,"ocols":1}
+fc2 = {"name":"fc2","type":"affine","omaps":32,"orows":1,"ocols":1}
+fc3 = {"name":"fc3","type":"affine","omaps":64,"orows":1,"ocols":1}
 
-ac1 = {"name":"ac1","type":"act-snorm","config":{}}
-ac2 = {"name":"ac2","type":"act-snorm","config":{}}
-ac3 = {"name":"ac3","type":"act-snorm","config":{}}
+ac1 = {"name":"ac1","type":"act-snorm"}
+ac2 = {"name":"ac2","type":"act-snorm"}
+ac3 = {"name":"ac3","type":"act-snorm"}
 
 mlp0 = {"nodes": [output], "model": []}
 mlp1 = {"nodes": [fc1, ac1, output], "model": [["fc1", "ac1", "output"]]}
