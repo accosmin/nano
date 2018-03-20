@@ -166,6 +166,14 @@ matrix:
         - bash ../scripts/ci_clang_tidy.sh
 
     - os: linux
+      env: TEST="cppcheck"
+      addons:
+        apt:
+          packages: ['cppcheck']
+      script:
+        - bash ../scripts/ci_cppcheck.sh
+
+    - os: linux
       compiler: clang
       env: TEST="valgrind (clang-5.0)"
       addons:

@@ -86,7 +86,7 @@ namespace nano
                 static constexpr long long size_hour = 60 * size_minute;
                 static constexpr long long size_day = 24 * size_hour;
 
-                auto milliseconds = this->milliseconds().count();
+                long long milliseconds = this->milliseconds().count();
                 const auto days = milliseconds / size_day; milliseconds -= days * size_day;
                 const auto hours = milliseconds / size_hour; milliseconds -= hours * size_hour;
                 const auto minutes = milliseconds / size_minute; milliseconds -= minutes * size_minute;

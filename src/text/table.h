@@ -70,7 +70,7 @@ namespace nano
                         header,         ///< header (not considered for operations like sorting or marking)
                 };
 
-                row_t(const mode t = mode::data);
+                explicit row_t(const mode t = mode::data);
 
                 ///
                 /// \brief insert cells into the row or change its formatting

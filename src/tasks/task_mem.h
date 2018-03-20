@@ -19,8 +19,9 @@ namespace nano
         ///     ::label()                       - associated label (if any)
         ///
         template <typename tchunk, typename tsample>
-        struct mem_task_t : public task_t
+        class mem_task_t : public task_t
         {
+        public:
                 mem_task_t(const tensor3d_dim_t& idims, const tensor3d_dim_t& odims, const size_t fsize);
 
                 bool load() final;
