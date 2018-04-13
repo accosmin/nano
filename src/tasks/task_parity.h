@@ -14,11 +14,11 @@ namespace nano
         ///     n       - dimension of the input vectors
         ///     count   - number of samples (training + validation + test)
         ///
-        class nparity_task_t final : public mem_tensor_task_t
+        class parity_task_t final : public mem_tensor_task_t
         {
         public:
 
-                nparity_task_t();
+                parity_task_t();
                 bool populate() override;
                 void to_json(json_t&) const final;
                 void from_json(const json_t&) final;

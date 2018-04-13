@@ -1,24 +1,24 @@
-#include "task_nparity.h"
+#include "task_parity.h"
 
 using namespace nano;
 
-nparity_task_t::nparity_task_t() :
+parity_task_t::parity_task_t() :
         mem_tensor_task_t(make_dims(32, 1, 1), make_dims(1, 1, 1), 1)
 {
 }
 
-void nparity_task_t::from_json(const json_t& json)
+void parity_task_t::from_json(const json_t& json)
 {
         nano::from_json(json, "n", m_dims, "count", m_count);
         reconfig(make_dims(m_dims, 1, 1), make_dims(1, 1, 1), 1);
 }
 
-void nparity_task_t::to_json(json_t& json) const
+void parity_task_t::to_json(json_t& json) const
 {
         nano::to_json(json, "n", m_dims, "count", m_count);
 }
 
-bool nparity_task_t::populate()
+bool parity_task_t::populate()
 {
         auto rng = make_rng();
         auto udist_bit = make_udist<tensor_size_t>(1, 1024);

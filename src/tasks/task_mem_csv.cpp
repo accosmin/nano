@@ -137,15 +137,18 @@ bool mem_csv_task_t::populate()
         }
 
         // setup task
+        for (size_t i = 0; i < samples.size(); ++ i)
+        {
+                const auto hash = i;
+                add_chunk(samples[i], hash);
+        }
+
         for (size_t f = 0; f < m_folds; ++ f)
         {
                 for (size_t i = 0; i < samples.size(); ++ i)
                 {
-                        const auto hash = i;
                         const auto fold = make_fold(f, m_train_percentage, m_valid_percentage);
                         const auto target = class_target(class_indices[i], nano::size(odims()));
-
-                        add_chunk(samples[i], hash);
                         add_sample(fold, i, target, labels[static_cast<size_t>(class_indices[i])]);
                 }
         }

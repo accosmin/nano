@@ -4,11 +4,11 @@
 
 using namespace nano;
 
-NANO_BEGIN_MODULE(test_task_nparity)
+NANO_BEGIN_MODULE(test_task_parity)
 
 NANO_CASE(construction)
 {
-        auto task = get_tasks().get("synth-nparity");
+        auto task = get_tasks().get("synth-parity");
         NANO_REQUIRE(task);
         task->from_json(to_json("n", 11, "count", 132));
         NANO_CHECK(task->load());
