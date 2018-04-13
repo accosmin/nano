@@ -71,20 +71,31 @@ namespace nano
                         m_samples[fold].emplace_back(ts...);
                 }
 
-                fold_t make_fold(const size_t fold) const
+                protocol make_protocol(const size_t train_percentage, const size_t valid_percentage) const
                 {
-                        assert(fold < fsize());
-                        const auto p = urand<size_t>(1, 10, m_rng);
-                        // 60% training, 20% validation, 20% testing
-                        return {fold, p < 7 ? protocol::train : (p < 9 ? protocol::valid : protocol::test)};
+                        assert(train_percentage > 0 && train_percentage < 100);
+                        assert(valid_percentage > 0 && train_percentage + valid_percentage <= 100);
+                        const auto p = urand<size_t>(0, 99, m_rng);
+                        return  p < train_percentage ? protocol::train :
+                                (p < train_percentage + valid_percentage ? protocol::valid : protocol::test);
                 }
 
-                fold_t make_fold(const size_t fold, const protocol proto) const
+                ///
+                /// \brief assign an example to a [training, validation, testing] split
+                ///
+                fold_t make_fold(const size_t fold, const size_t train_percentage = 60, const size_t valid_percentage = 20) const
                 {
                         assert(fold < fsize());
-                        const auto p = urand<size_t>(1, 10, m_rng);
-                        // split training into {80% training, 20% validation}, leave the testing as it is
-                        return {fold, proto == protocol::train ? (p < 9 ? protocol::train : protocol::valid) : proto};
+                        return {fold, make_protocol(train_percentage, valid_percentage)};
+                }
+
+                ///
+                /// \brief assign an example to a [training, validation] split if not already assigned to testing
+                ///
+                fold_t make_fold(const size_t fold, const protocol proto, const size_t train_percentage = 80) const
+                {
+                        assert(fold < fsize());
+                        return {fold, proto != protocol::test ? make_protocol(train_percentage, 100 - train_percentage) : protocol::test};
                 }
 
                 virtual bool populate() = 0;

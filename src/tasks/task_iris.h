@@ -16,14 +16,13 @@ namespace nano
         {
         public:
 
-                iris_task_t();
-                bool populate() override;
-                void to_json(json_t&) const final;
-                void from_json(const json_t&) final;
+                iris_task_t() :
+                        mem_csv_task_t(name(), path(), label_column())
+                {
+                }
 
-        private:
-
-                // attributes
-                string_t        m_dir;  ///< directory where to load the task from
+                static string_t name() { return "IRIS"; }
+                static string_t path() { return string_t(std::getenv("HOME")) + "/experiments/databases/iris/iris.data"; }
+                static size_t label_column() { return 4; }
         };
 }

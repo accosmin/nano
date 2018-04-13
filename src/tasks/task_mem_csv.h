@@ -13,29 +13,20 @@ namespace nano
         {
         public:
 
-                ///
-                /// \brief constructor
-                ///
-                mem_csv_task_t(
-                        const tensor3d_dim_t& idims,
-                        const tensor3d_dim_t& odims,
-                        const size_t fsize) :
-                        mem_tensor_task_t(idims, odims, fsize)
-                {
-                }
+                mem_csv_task_t(const string_t& name, const string_t& path, const size_t label_column);
 
-                ///
-                /// \brief load CSV for classification
-                ///
-                bool load_classification(const string_t& path, const string_t& task_name,
-                        const size_t expected_samples,
-                        const strings_t& labels, const size_t label_column);
+                bool populate() final;
+                void to_json(json_t&) const final;
+                void from_json(const json_t&) final;
 
-                ///
-                /// \brief load CSV for regression
-                ///
-                bool load_regression(const string_t& path, const string_t& task_name,
-                        const size_t expected_samples,
-                        const size_t target_column);
+        private:
+
+                // attributes
+                string_t        m_name;                 ///< task name
+                string_t        m_path;                 ///< path where to load the task from
+                size_t          m_label_column{0};      ///< index of the label column
+                size_t          m_folds{10};            ///< #folds
+                size_t          m_train_percentage{60}; ///< percentage of training samples / fold
+                size_t          m_valid_percentage{20}; ///< percentage of validation samples / fold
         };
 }

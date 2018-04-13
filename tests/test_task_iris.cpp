@@ -12,7 +12,7 @@ NANO_CASE(failed)
         const auto task = get_tasks().get("iris");
         NANO_REQUIRE(task);
 
-        task->from_json(to_json("dir", "/dev/null?!"));
+        task->from_json(to_json("path", "/dev/null?!"));
         NANO_CHECK(!task->load());
 }
 
@@ -30,6 +30,7 @@ NANO_CASE(loading)
 
         const auto task = nano::get_tasks().get("iris");
         NANO_REQUIRE(task);
+        task->from_json(to_json("folds", folds, "train_percentage", 60, "valid_percentage", 20));
         NANO_REQUIRE(task->load());
 
         // check dimensions
@@ -40,7 +41,7 @@ NANO_CASE(loading)
         NANO_CHECK_EQUAL(task->fsize(), folds);
         NANO_CHECK_EQUAL(task->size(), samples);
 
-        NANO_CHECK_GREATER(task->size(train_fold), samples / 10);
+        NANO_CHECK_GREATER(task->size(train_fold), 5 * samples / 10);
         NANO_CHECK_GREATER(task->size(valid_fold), samples / 10);
         NANO_CHECK_GREATER(task->size(test_fold), samples / 10);
         NANO_CHECK_EQUAL(task->size(train_fold) + task->size(valid_fold) + task->size(test_fold), samples);
