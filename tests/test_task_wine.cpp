@@ -24,13 +24,10 @@ NANO_CASE(loading)
 
         const auto folds = size_t(10);
         const auto samples = size_t(178);
-        const auto train_fold = fold_t{0, protocol::train};
-        const auto valid_fold = fold_t{0, protocol::valid};
-        const auto test_fold = fold_t{0, protocol::test};
 
         const auto task = nano::get_tasks().get("wine");
         NANO_REQUIRE(task);
-        task->from_json(to_json("folds", folds, "train_percentage", 60, "valid_percentage", 20));
+        task->from_json(to_json("folds", folds));
         NANO_REQUIRE(task->load());
 
         // check dimensions
@@ -68,7 +65,7 @@ NANO_CASE(loading)
                         const auto size = task->size(fold);
                         for (size_t i = 0; i < size; ++ i)
                         {
-                                const auto sample = task->get(fold, i, i +1);
+                                const auto sample = task->get(fold, i, i + 1);
                                 const auto& input = sample.idata(0);
                                 const auto& label = sample.label(0);
                                 const auto& target = sample.odata(0);

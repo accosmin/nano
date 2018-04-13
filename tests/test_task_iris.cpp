@@ -27,7 +27,7 @@ NANO_CASE(loading)
 
         const auto task = nano::get_tasks().get("iris");
         NANO_REQUIRE(task);
-        task->from_json(to_json("folds", folds, "train_percentage", 60, "valid_percentage", 20));
+        task->from_json(to_json("folds", folds));
         NANO_REQUIRE(task->load());
 
         // check dimensions

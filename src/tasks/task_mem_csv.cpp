@@ -71,14 +71,12 @@ mem_csv_task_t::mem_csv_task_t(const string_t& name, const string_t& path, const
 
 void mem_csv_task_t::from_json(const json_t& json)
 {
-        nano::from_json(json, "path", m_path, "folds", m_folds,
-                "train_percentage", m_train_percentage, "valid_percentage", m_valid_percentage);
+        nano::from_json(json, "path", m_path, "folds", m_folds);
 }
 
 void mem_csv_task_t::to_json(json_t& json) const
 {
-        nano::to_json(json, "path", m_path, "folds", m_folds,
-                "train_percentage", m_train_percentage, "valid_percentage", m_valid_percentage);
+        nano::to_json(json, "path", m_path, "folds", m_folds);
 }
 
 bool mem_csv_task_t::populate()
