@@ -55,6 +55,7 @@ set path+=src/io
 set path+=src/chrono
 set path+=apps
 set path+=tests
+set path+=bench
 set path+=deps/eigen3
 set path+=deps/json/single_include
 
