@@ -30,19 +30,17 @@ int main(int argc, const char *argv[])
         // parse the command line
         cmdline_t cmdline("train a model");
         cmdline.add("", "task",         join(get_tasks().ids()) + " (.json)");
-        cmdline.add("", "fold",         "fold index to use for training", "0");
         cmdline.add("", "model",        "model configuration (.json)");
         cmdline.add("", "trainer",      join(get_trainers().ids()) + " (.json)");
         cmdline.add("", "loss",         join(get_losses().ids()) + " (.json)");
         cmdline.add("", "basepath",     "basepath where to save results (e.g. model, logs, history)");
         cmdline.add("", "threads",      "number of threads to use", physical_cpus());
-        cmdline.add("", "trials",       "number of trials", 10);
+        cmdline.add("", "trials",       "number of trials/folds", 10);
 
         cmdline.process(argc, argv);
 
         // check arguments and options
         const auto cmd_task = cmdline.get<string_t>("task");
-        const auto cmd_fold = cmdline.get<size_t>("fold");
         const auto cmd_model = cmdline.get<string_t>("model");
         const auto cmd_trainer = cmdline.get<string_t>("trainer");
         const auto cmd_loss = cmdline.get<string_t>("loss");
@@ -121,7 +119,7 @@ int main(int argc, const char *argv[])
                 acc.random();
                 trainer_result_t result;
                 checkpoint.step("train model");
-                checkpoint.measure((result = trainer->train(*task, cmd_fold, acc)) == true);
+                checkpoint.measure((result = trainer->train(*task, trial % task->fsize(), acc)) == true);
 
                 model.params(result.optimum_params());
 
