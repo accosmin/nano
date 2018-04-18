@@ -77,7 +77,7 @@ namespace nano
                         assert(valid_percentage > 0 && train_percentage + valid_percentage <= 100);
                         const auto train_threshold = train_percentage;
                         const auto valid_threshold = train_threshold + valid_percentage;
-                        const auto p = urand<int>(0, 99, m_rng);
+                        const auto p = m_udist(m_rng);
                         return  p < train_threshold ? protocol::train :
                                 (p < valid_threshold ? protocol::valid : protocol::test);
                 }
@@ -141,7 +141,8 @@ namespace nano
                 tensor3d_dim_t                  m_idims;        ///< input size
                 tensor3d_dim_t                  m_odims;        ///< output size
                 size_t                          m_fsize;        ///< number of folds
-                mutable rng_t                   m_rng;          ///< rng for [train|valid|test] fold assignment
+                mutable rng_t                   m_rng;          ///< rng for the [train|valid|test] fold assignment
+                mutable udist_t<int>            m_udist;        ///< uniform distribution for the fold assignment
                 std::vector<tchunk>             m_chunks;       ///<
                 std::vector<size_t>             m_hashes;       ///< hash / chunk
                 mutable tsamples                m_samples;      ///< stored samples (training, validation, test)
@@ -155,7 +156,8 @@ namespace nano
                 m_idims(idims),
                 m_odims(odims),
                 m_fsize(fsize),
-                m_rng(make_rng())
+                m_rng(make_rng()),
+                m_udist(0, 99)
         {
         }
 
