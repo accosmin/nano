@@ -44,7 +44,7 @@ NANO_CASE(loading)
                 const auto valid_fold = fold_t{f, protocol::valid};
                 const auto test_fold = fold_t{f, protocol::test};
 
-                NANO_CHECK_GREATER(task->size(train_fold), 5 * samples / 10);
+                NANO_CHECK_GREATER(task->size(train_fold), 1 * samples / 10);
                 NANO_CHECK_GREATER(task->size(valid_fold), 1 * samples / 10);
                 NANO_CHECK_GREATER(task->size(test_fold),  1 * samples / 10);
 
