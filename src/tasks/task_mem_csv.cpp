@@ -8,7 +8,7 @@ static void scale(const string_t& name, tensor3ds_t& samples)
 {
         const auto dims = samples.begin()->size();
 
-        vector_t maximums = vector_t::Zero(dims);
+        vector_t maximums = vector_t::Constant(dims, 1);
         for (const auto& sample : samples)
         {
                 assert(maximums.size() == sample.array().size());

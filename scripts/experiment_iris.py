@@ -23,9 +23,9 @@ for solver in cfg.batch_solvers():
 # models
 output = {"name":"output","type":"affine","omaps":3,"orows":1,"ocols":1}
 
-fc1 = {"name":"fc1","type":"affine","omaps":16,"orows":1,"ocols":1}
+fc1 = {"name":"fc1","type":"affine","omaps":64,"orows":1,"ocols":1}
 fc2 = {"name":"fc2","type":"affine","omaps":32,"orows":1,"ocols":1}
-fc3 = {"name":"fc3","type":"affine","omaps":64,"orows":1,"ocols":1}
+fc3 = {"name":"fc3","type":"affine","omaps":16,"orows":1,"ocols":1}
 
 ac1 = {"name":"ac1","type":"act-snorm"}
 ac2 = {"name":"ac2","type":"act-snorm"}
