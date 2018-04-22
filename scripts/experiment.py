@@ -123,7 +123,7 @@ class experiment:
                 for cpath in cpaths:
                         name = os.path.basename(cpath).replace(".csv", "").ljust(36)
                         basecmd = self.cfg.app_tabulate + " -i " + cpath + " -d ';' --stats "
-                        error_stats = subprocess.check_output(basecmd + " -p 2 -c 7", shell=True).decode('ascii').rstrip().rjust(24)
+                        error_stats = subprocess.check_output(basecmd + " -p 3 -c 7", shell=True).decode('ascii').rstrip().rjust(24)
                         epoch_stats = subprocess.check_output(basecmd + " -p 0 -c 1", shell=True).decode('ascii').rstrip().rjust(24)
                         time_stats = subprocess.check_output(basecmd + " -p 0 -c 10", shell=True).decode('ascii').rstrip().rjust(24)
                         self.log("{}{}{}{}".format(name, error_stats, epoch_stats, time_stats))
