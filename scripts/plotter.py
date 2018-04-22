@@ -73,17 +73,17 @@ def plot_trials(spaths, ppath):
         """ plot the training evolution of multiple models on the same plot """
         names, datas = load_csvs(spaths, load_trial_csv)
         with PdfPages(ppath) as pdf:
-                for yname in ("train_loss", "train_error", "valid_loss", "valid_error", "test_loss", "test_error", "xnorm", "gnorm"):
-                        for xname in ("epoch", "seconds"):
-                                for data, name in zip(datas, names):
-                                        plt.plot(data[xname], data[yname], label = name)
-                                plt.xlabel(xname, fontsize = "smaller")
-                                plt.ylabel(yname.replace("train_", "").replace("valid_", "").replace("test_", ""), fontsize = "smaller")
-                                plt.title(yname, weight = "bold")
-                                plt.legend(fontsize = "smaller")
-                                plt.grid(True, linestyle='--')
-                                pdf.savefig()
-                                plt.close()
+                for yname in ("train_loss", "train_error", "valid_loss", "valid_error", "test_loss", "test_error", "xnorm", "gnorm", "seconds"):
+                        xname = "epoch"
+                        for data, name in zip(datas, names):
+                                plt.plot(data[xname], data[yname], label = name)
+                        plt.xlabel(xname, fontsize = "smaller")
+                        plt.ylabel(yname.replace("train_", "").replace("valid_", "").replace("test_", ""), fontsize = "smaller")
+                        plt.title(yname, weight = "bold")
+                        plt.legend(fontsize = "smaller")
+                        plt.grid(True, linestyle='--')
+                        pdf.savefig()
+                        plt.close()
 
 def plot_configs(spaths, ppath, names):
         """ plot the test results of multiple models on the sample plot """
