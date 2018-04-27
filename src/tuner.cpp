@@ -15,7 +15,9 @@ scalars_t nano::make_pow10_scalars(const scalar_t offset, const int min_power, c
         for (int power = min_power; power <= max_power; ++ power)
         {
                 values.push_back(offset + scalar_t(1) * std::pow(scalar_t(10), power));
+                values.push_back(offset + scalar_t(2) * std::pow(scalar_t(10), power));
                 values.push_back(offset + scalar_t(3) * std::pow(scalar_t(10), power));
+                values.push_back(offset + scalar_t(5) * std::pow(scalar_t(10), power));
         }
 
         return values;
