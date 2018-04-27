@@ -53,7 +53,6 @@ message("++ MSAN                           " "${NANO_WITH_MSAN}")
 message("++ TSAN                           " "${NANO_WITH_TSAN}")
 message("++ TESTS                          " "${NANO_WITH_TESTS}")
 message("++ BENCH                          " "${NANO_WITH_BENCH}")
-message("++ NANOX                          " "${NANO_WITH_NANOX}")
 message("++ CCACHE                         " "${NANO_WITH_CCACHE}")
 message("++ ------------------------------------------------------------------------------" "")
 
@@ -71,8 +70,4 @@ endif()
 
 if(NANO_WITH_BENCH)
         add_subdirectory(bench)
-endif()
-
-if(NANO_WITH_NANOX)
-        add_subdirectory(nanox)
 endif()

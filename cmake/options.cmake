@@ -16,4 +16,3 @@ option(NANO_WITH_TUNE_NATIVE            "tune for the native platform (-mtune=na
 option(NANO_WITH_COVERAGE               "build with support for code coverage"                          OFF)
 option(NANO_WITH_TESTS                  "build the unit tests"                                          ON)
 option(NANO_WITH_BENCH                  "build benchmark command line utilities"                        OFF)
-option(NANO_WITH_NANOX                  "build Qt5 visualization utilities"                             OFF)
