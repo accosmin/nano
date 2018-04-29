@@ -23,10 +23,7 @@ NANO_CASE(evaluate)
                         const auto solver = get_batch_solvers().get(id);
                         NANO_REQUIRE(solver);
 
-                        solver->from_json(to_json("c1", epsilon2<scalar_t>()));
-
                         size_t out_of_domain = 0;
-
                         for (size_t t = 0; t < trials; ++ t)
                         {
                                 const auto x0 = vector_t::Random(function->size());
@@ -64,7 +61,7 @@ NANO_CASE(evaluate)
                                 NANO_CHECK_EQUAL(state.m_status, opt_status::converged);
                         }
 
-                        std::cout << function->name() << ", " << id
+                        std::cout << function->name() << " " << id
                                   << ": out of domain " << out_of_domain << "/" << trials << ".\n";
                 }
         }

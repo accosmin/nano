@@ -61,7 +61,7 @@ NANO_CASE(evaluate)
                                 NANO_CHECK_EQUAL(state.m_status, opt_status::converged);
                         }
 
-                        std::cout << function->name() << ", " << id
+                        std::cout << function->name() << " " << id
                                   << ": out of domain " << out_of_domain << "/" << trials << ".\n";
                 }
         }

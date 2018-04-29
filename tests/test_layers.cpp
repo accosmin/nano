@@ -77,7 +77,7 @@ static tensor_size_t cpsize(const tensor3d_dim_t& idims,
 }
 
 static void test_model(model_t& model, const tensor_size_t expected_psize,
-        const scalar_t epsilon = 3 * epsilon1<scalar_t>())
+        const scalar_t epsilon = epsilon2<scalar_t>())
 {
         NANO_REQUIRE(model.done());
         NANO_REQUIRE(model.resize(cmd_idims, cmd_odims));

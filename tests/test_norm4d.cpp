@@ -91,7 +91,7 @@ NANO_CASE(globally_ginput_accuracy)
         const auto ifunct = make_wrt_inputs_function(params);
 
         vector_t ix(ifunct.size()); ix.setRandom();
-        NANO_CHECK_LESS(ifunct.grad_accuracy(ix), epsilon1<scalar_t>());
+        NANO_CHECK_LESS(ifunct.grad_accuracy(ix), epsilon2<scalar_t>());
 }
 
 NANO_CASE(by_plane)
@@ -132,7 +132,7 @@ NANO_CASE(by_plane_ginput_accuracy)
         const auto ifunct = make_wrt_inputs_function(params);
 
         vector_t ix(ifunct.size()); ix.setRandom();
-        NANO_CHECK_LESS(ifunct.grad_accuracy(ix), epsilon1<scalar_t>());
+        NANO_CHECK_LESS(ifunct.grad_accuracy(ix), epsilon2<scalar_t>());
 }
 
  NANO_END_MODULE()

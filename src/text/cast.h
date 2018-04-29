@@ -2,6 +2,7 @@
 
 #include <limits>
 #include <utility>
+#include <sstream>
 #include <typeinfo>
 #include <stdexcept>
 #include "stringi.h"
@@ -40,7 +41,10 @@ namespace nano
         {
                 static string_t cast(const tvalue value)
                 {
-                        return std::to_string(value);
+                        std::ostringstream ss;
+                        ss.precision(16);
+                        ss << value;
+                        return ss.str();
                 }
         };
 
