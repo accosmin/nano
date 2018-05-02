@@ -24,18 +24,18 @@ namespace nano
         tscalar epsilon1()
         {
                 const auto cb = std::cbrt(epsilon<tscalar>());
-                return 2 * cb * cb;
+                return 10 * cb * cb;
         }
 
         template <typename tscalar>
         tscalar epsilon2()
         {
-                return 2 * std::sqrt(epsilon<tscalar>());
+                return 10 * std::sqrt(epsilon<tscalar>());
         }
 
         template <typename tscalar>
         tscalar epsilon3()
         {
-                return 2 * std::cbrt(epsilon<tscalar>());
+                return 10 * std::cbrt(epsilon<tscalar>());
         }
 }
