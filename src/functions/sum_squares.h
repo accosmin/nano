@@ -12,7 +12,7 @@ namespace nano
         class function_sum_squares_t final : public function_t
         {
         public:
-                explicit function_sum_squares_t(const tensor_size_t dims, const size_t N, const scalar_t lambda2);
+                explicit function_sum_squares_t(const tensor_size_t dims, const size_t N, const scalar_t lambda2 = 0);
 
                 scalar_t vgrad(const vector_t& x, vector_t* gx) const override;
                 scalar_t stoch_vgrad(const vector_t& x, vector_t* gx, scalar_t& stoch_ratio) const override;

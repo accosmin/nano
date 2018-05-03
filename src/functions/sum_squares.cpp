@@ -40,14 +40,12 @@ scalar_t function_sum_squares_t::vgrad(const vector_t& x, vector_t* gx) const
 scalar_t function_sum_squares_t::stoch_vgrad(const vector_t& x, vector_t* gx, scalar_t& stoch_ratio) const
 {
         const auto i = m_udist(m_rng);
-        assert(i < m_xis.size());
-
         const auto& xi = m_xis[i];
 
-        const auto fx = (x - xi).dot(x - xi) / 2;
+        const auto fx = (x - xi).dot(x - xi) / 2 + m_lambda2 * x.dot(x) / scalar_t(2 * m_xis.size());
         if (gx)
         {
-                *gx = x - xi;
+                *gx = x - xi + m_lambda2 * x / scalar_t(m_xis.size());
         }
         stoch_ratio = scalar_t(1) / scalar_t(m_xis.size());
 
