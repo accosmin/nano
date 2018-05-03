@@ -16,6 +16,8 @@
 #include "functions/rotated_ellipsoid.h"
 #include "functions/schumer_steiglitz.h"
 
+#include "functions/sum_squares.h"
+
 using namespace nano;
 
 function_t::function_t(const char* name,
@@ -185,6 +187,8 @@ rfunctions_t nano::get_functions(const tensor_size_t min_size, const tensor_size
                 append(std::make_unique<function_sphere_t>(dims), dims, regex, funcs);
                 append(std::make_unique<function_schumer_steiglitz_t>(dims), dims, regex, funcs);
                 append(std::make_unique<function_rotated_ellipsoid_t>(dims), dims, regex, funcs);
+
+                append(std::make_unique<function_sum_squares_t>(dims, 10 * dims, scalar_t(0)), dims, regex, funcs);
 
                 if (dims <= 8)
                 {
