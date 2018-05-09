@@ -86,7 +86,7 @@ struct cmdline_t::impl_t
                 usage();
         }
 
-        void usage() const
+        [[noreturn]] void usage() const
         {
                 std::cout << m_title << std::endl;
 
@@ -101,10 +101,9 @@ struct cmdline_t::impl_t
                 {
                         std::cout << "  " << nano::align(option.concatenate(), max_option_size)
                                   << option.m_description << std::endl;
-               }
+                }
 
                 std::cout << std::endl;
-
                 exit(EXIT_FAILURE);
         }
 
