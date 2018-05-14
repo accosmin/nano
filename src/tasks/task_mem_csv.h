@@ -26,7 +26,7 @@ namespace nano
                 string_t        m_path;                 ///< path where to load the task from
                 size_t          m_label_column{0};      ///< index of the label column
                 size_t          m_folds{10};            ///< #folds
-                int             m_train_percentage{35}; ///< percentage of training samples / fold
-                int             m_valid_percentage{35}; ///< percentage of validation samples / fold
+                int             m_train_percentage{40}; ///< percentage of training samples / fold
+                int             m_valid_percentage{30}; ///< percentage of validation samples / fold
         };
 }

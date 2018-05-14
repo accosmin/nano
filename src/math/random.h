@@ -2,6 +2,8 @@
 
 #include <random>
 #include <cassert>
+#include <numeric>
+#include <algorithm>
 #include <type_traits>
 
 namespace nano
@@ -66,5 +68,53 @@ namespace nano
                 {
                         *begin += udist(rng);
                 }
+        }
+
+        ///
+        /// \brief randomly split count elements in percentage_value1% having value1 and the rest value2.
+        ///
+        template <typename tvalue>
+        auto split2(const size_t count,
+                const tvalue value1, const size_t percentage_value1,
+                const tvalue value2)
+        {
+                assert(percentage_value1 <= 100);
+
+                const auto begin0 = size_t(0);
+                const auto begin1 = begin0 + count * percentage_value1 / 100;
+                const auto begin2 = count;
+
+                std::vector<tvalue> values(count);
+                std::fill(values.begin() + begin0, values.begin() + begin1, value1);
+                std::fill(values.begin() + begin1, values.begin() + begin2, value2);
+
+                std::shuffle(values.begin(), values.end(), make_rng());
+                return values;
+        }
+
+        ///
+        /// \brief randomly split count elements in percentage_value1% having value1,
+        ///     percentage_value2% having value2 and the rest value3.
+        ///
+        template <typename tvalue>
+        auto split3(const size_t count,
+                const tvalue value1, const size_t percentage_value1,
+                const tvalue value2, const size_t percentage_value2,
+                const tvalue value3)
+        {
+                assert(percentage_value1 + percentage_value2 <= 100);
+
+                const auto begin0 = size_t(0);
+                const auto begin1 = begin0 + count * percentage_value1 / 100;
+                const auto begin2 = begin1 + count * percentage_value2 / 100;
+                const auto begin3 = count;
+
+                std::vector<tvalue> values(count);
+                std::fill(values.begin() + begin0, values.begin() + begin1, value1);
+                std::fill(values.begin() + begin1, values.begin() + begin2, value2);
+                std::fill(values.begin() + begin2, values.begin() + begin3, value3);
+
+                std::shuffle(values.begin(), values.end(), make_rng());
+                return values;
         }
 }

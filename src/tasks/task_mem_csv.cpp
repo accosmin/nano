@@ -143,9 +143,12 @@ bool mem_csv_task_t::populate()
 
         for (size_t f = 0; f < m_folds; ++ f)
         {
+                const auto protocols = split3(samples.size(),
+                        protocol::train, m_train_percentage, protocol::valid, m_valid_percentage, protocol::test);
+
                 for (size_t i = 0; i < samples.size(); ++ i)
                 {
-                        const auto fold = make_fold(f, m_train_percentage, m_valid_percentage);
+                        const auto fold = fold_t{f, protocols[i]};
                         const auto target = class_target(class_indices[i], nano::size(odims()));
                         add_sample(fold, i, target, labels[static_cast<size_t>(class_indices[i])]);
                 }

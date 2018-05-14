@@ -126,23 +126,23 @@ void cifar100_task_t::to_json(json_t& json) const
 
 bool cifar100_task_t::populate()
 {
-        const string_t bfile = m_dir + "/cifar-100-binary.tar.gz";
+        const auto bfile = m_dir + "/cifar-100-binary.tar.gz";
 
-        const string_t train_bfile = "train.bin";
+        const auto train_bfile = "train.bin";
         const size_t n_train_samples = 50000;
 
-        const string_t test_bfile = "test.bin";
+        const auto test_bfile = "test.bin";
         const size_t n_test_samples = 10000;
 
         const auto op = [&] (const string_t& filename, istream_t& stream)
         {
                 if (nano::ends_with(filename, train_bfile))
                 {
-                        return load_binary(filename, stream, protocol::train, n_train_samples);
+                        return load_binary(filename, stream, split2(n_train_samples, protocol::train, 80, protocol::valid));
                 }
                 else if (nano::ends_with(filename, test_bfile))
                 {
-                        return load_binary(filename, stream, protocol::test, n_test_samples);
+                        return load_binary(filename, stream, std::vector<protocol>(n_test_samples, protocol::test));
                 }
                 else
                 {
@@ -159,7 +159,7 @@ bool cifar100_task_t::populate()
         return nano::load_archive(bfile, op, error_op);
 }
 
-bool cifar100_task_t::load_binary(const string_t& filename, istream_t& stream, const protocol p, const size_t count)
+bool cifar100_task_t::load_binary(const string_t& filename, istream_t& stream, const std::vector<protocol>& protocols)
 {
         log_info() << "CIFAR-100: loading file <" << filename << "> ...";
 
@@ -172,7 +172,8 @@ bool cifar100_task_t::load_binary(const string_t& filename, istream_t& stream, c
 
         size_t icount = 0;
         while ( stream.read(label, 2) == 2 &&       // coarse & fine labels!
-                stream.read(buffer.data(), buffer_size) == buffer_size)
+                stream.read(buffer.data(), buffer_size) == buffer_size &&
+                icount < protocols.size())
         {
                 const tensor_size_t ilabel = label[1];
                 if (ilabel < 0 || ilabel >= nano::size(odims()))
@@ -185,13 +186,11 @@ bool cifar100_task_t::load_binary(const string_t& filename, istream_t& stream, c
                 image.load_rgb(buffer.data(), irows, icols, irows * icols);
                 add_chunk(image, image.hash());
 
-                const auto fold = make_fold(0, p);
+                const auto fold = fold_t{0, protocols[icount ++]};
                 add_sample(fold, n_chunks() - 1, class_target(ilabel, nano::size(odims())), tlabels[ilabel]);
-
-                icount ++;
         }
 
         // OK
         log_info() << "CIFAR-100: loaded " << icount << " samples.";
-        return (count == icount);
+        return (protocols.size() == icount);
 }

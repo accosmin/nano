@@ -32,6 +32,8 @@ bool affine_task_t::populate()
         weights.random();
         bias.random();
 
+        const auto protocols = split3(m_count, protocol::train, 40, protocol::valid, 30, protocol::test);
+
         // generate samples
         reserve_chunks(m_count);
         for (size_t i = 0; i < m_count; ++ i)
@@ -42,9 +44,10 @@ bool affine_task_t::populate()
 
                 const auto hash = i;
                 const auto label = string_t();
+                const auto fold = fold_t{0, protocols[i]};
 
                 add_chunk(input, hash);
-                add_sample(make_fold(0), i, target, label);
+                add_sample(fold, i, target, label);
         }
 
         return true;

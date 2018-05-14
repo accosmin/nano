@@ -38,22 +38,22 @@ void svhn_task_t::to_json(json_t& json) const
 
 bool svhn_task_t::populate()
 {
-        const string_t train_file = m_dir + "/train_32x32.mat";
-        const string_t extra_file = m_dir + "/extra_32x32.mat";
-        const string_t test_file = m_dir + "/test_32x32.mat";
+        const auto train_file = m_dir + "/train_32x32.mat";
+        const auto extra_file = m_dir + "/extra_32x32.mat";
+        const auto test_file = m_dir + "/test_32x32.mat";
 
-        const tensor_size_t n_train_samples = 73257;
-        const tensor_size_t n_extra_samples = 531131;
-        const tensor_size_t n_test_samples = 26032;
+        const auto train_proto = split2(73257, protocol::train, 80, protocol::valid);
+        const auto extra_proto = split2(531131, protocol::train, 80, protocol::valid);
+        const auto test_proto = protocols_t(26032, protocol::test);
 
-        reserve_chunks(n_train_samples + n_extra_samples + n_test_samples);
+        reserve_chunks(train_proto.size() + extra_proto.size() + test_proto.size());
 
-        return  load_binary(train_file, protocol::train) == n_train_samples &&
-                load_binary(extra_file, protocol::train) == n_extra_samples &&
-                load_binary(test_file, protocol::test) == n_test_samples;
+        return  load_binary(train_file, train_proto) &&
+                load_binary(extra_file, extra_proto) &&
+                load_binary(test_file, test_proto);
 }
 
-tensor_size_t svhn_task_t::load_binary(const string_t& path, const protocol p)
+bool svhn_task_t::load_binary(const string_t& path, const protocols_t& protocols)
 {
         log_info() << "SVHN: processing file <" << path << "> ...";
 
@@ -71,7 +71,7 @@ tensor_size_t svhn_task_t::load_binary(const string_t& path, const protocol p)
 
         // load section
         string_t name;
-        std::vector<int32_t> dims;
+        dims_t dims;
         tensor_size_t icount = 0;
         tensor_size_t lcount = 0;
 
@@ -93,17 +93,17 @@ tensor_size_t svhn_task_t::load_binary(const string_t& path, const protocol p)
                 case 5:         return section.matrix_dims(stream, dims);
                 case 6:         return section.matrix_name(stream, name);
                 case 7:         return section.matrix_data(stream) &&
-                                       (lcount = load_labels(section, name, dims, p, stream)) > 0;
+                                       (lcount = load_labels(section, name, dims, protocols, stream)) > 0;
 
                 default:        log_error() << "SVHN: unexpected section!"; return false;
                 }
         };
 
-        return (load_mat5(path, hcallback, scallback, ecallback) && icount == lcount) ? icount : 0;
+        return load_mat5(path, hcallback, scallback, ecallback) && icount == lcount && icount == protocols.size();
 }
 
 tensor_size_t svhn_task_t::load_pixels(const mat5_section_t& section,
-        const string_t& name, const std::vector<int32_t>& dims,
+        const string_t& name, const dims_t& dims,
         istream_t& stream)
 {
         log_info() << "SVHN: loading images: name = " << name << ", size = " << join(dims, "x", "", "") << "...";
@@ -153,7 +153,7 @@ tensor_size_t svhn_task_t::load_pixels(const mat5_section_t& section,
 }
 
 tensor_size_t svhn_task_t::load_labels(const mat5_section_t& section,
-        const string_t& name, const std::vector<int32_t>& dims, const protocol p,
+        const string_t& name, const dims_t& dims, const protocols_t& protocols,
         istream_t& stream)
 {
         log_info() << "SVHN: loading labels: name = " << name << ", size = " << join(dims, "x", "", "") << "...";
@@ -178,7 +178,7 @@ tensor_size_t svhn_task_t::load_labels(const mat5_section_t& section,
 
         // load labels
         char ldata;
-        for (tensor_size_t i = 0; i < n_samples; ++ i)
+        for (size_t i = 0; i < std::min(protocols.size(), static_cast<size_t>(n_samples)); ++ i)
         {
                 if (!stream.read(ldata))
                 {
@@ -202,7 +202,7 @@ tensor_size_t svhn_task_t::load_labels(const mat5_section_t& section,
                         return 0;
                 }
 
-                const auto fold = make_fold(0, p);
+                const auto fold = fold_t{0, protocols[i]};
                 add_sample(fold, chunk_index ++, class_target(ilabel, nano::size(odims())), tlabels[ilabel]);
         }
 

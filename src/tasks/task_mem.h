@@ -71,35 +71,6 @@ namespace nano
                         m_samples[fold].emplace_back(ts...);
                 }
 
-                protocol make_protocol(const int train_percentage, const int valid_percentage) const
-                {
-                        assert(train_percentage > 0 && train_percentage < 100);
-                        assert(valid_percentage > 0 && train_percentage + valid_percentage <= 100);
-                        const auto train_threshold = train_percentage;
-                        const auto valid_threshold = train_threshold + valid_percentage;
-                        const auto p = m_udist(m_rng);
-                        return  p < train_threshold ? protocol::train :
-                                (p < valid_threshold ? protocol::valid : protocol::test);
-                }
-
-                ///
-                /// \brief assign an example to a [training, validation, testing] split
-                ///
-                fold_t make_fold(const size_t fold, const int train_percentage = 60, const int valid_percentage = 20) const
-                {
-                        assert(fold < fsize());
-                        return {fold, make_protocol(train_percentage, valid_percentage)};
-                }
-
-                ///
-                /// \brief assign an example to a [training, validation] split if not already assigned to testing
-                ///
-                fold_t make_fold(const size_t fold, const protocol proto, const int train_percentage = 80) const
-                {
-                        assert(fold < fsize());
-                        return {fold, proto != protocol::test ? make_protocol(train_percentage, 100 - train_percentage) : protocol::test};
-                }
-
                 virtual bool populate() = 0;
 
                 size_t n_chunks() const { return m_chunks.size(); }
@@ -141,8 +112,6 @@ namespace nano
                 tensor3d_dim_t                  m_idims;        ///< input size
                 tensor3d_dim_t                  m_odims;        ///< output size
                 size_t                          m_fsize;        ///< number of folds
-                mutable rng_t                   m_rng;          ///< rng for the [train|valid|test] fold assignment
-                mutable udist_t<int>            m_udist;        ///< uniform distribution for the fold assignment
                 std::vector<tchunk>             m_chunks;       ///<
                 std::vector<size_t>             m_hashes;       ///< hash / chunk
                 mutable tsamples                m_samples;      ///< stored samples (training, validation, test)
@@ -155,9 +124,7 @@ namespace nano
                 const size_t fsize) :
                 m_idims(idims),
                 m_odims(odims),
-                m_fsize(fsize),
-                m_rng(make_rng()),
-                m_udist(0, 99)
+                m_fsize(fsize)
         {
         }
 
@@ -205,10 +172,7 @@ namespace nano
         {
                 const auto it = m_samples.find(fold);
                 assert(it != m_samples.end());
-
-                std::random_device rd;
-                std::minstd_rand g(rd());
-                std::shuffle(it->second.begin(), it->second.end(), g);
+                std::shuffle(it->second.begin(), it->second.end(), make_rng());
         }
 
         template <typename tchunk, typename tsample>

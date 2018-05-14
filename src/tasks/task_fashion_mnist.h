@@ -23,7 +23,7 @@ namespace nano
 
         private:
 
-                bool load_binary(const string_t& ifile, const string_t& gfile, const protocol, const size_t count);
+                bool load_binary(const string_t& ifile, const string_t& gfile, const std::vector<protocol>&);
 
                 // attributes
                 string_t        m_dir;  ///< directory where to load the task from

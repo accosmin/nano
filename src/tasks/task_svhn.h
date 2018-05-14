@@ -26,9 +26,12 @@ namespace nano
 
         private:
 
-                tensor_size_t load_binary(const string_t& path, const protocol);
-                tensor_size_t load_pixels(const mat5_section_t&, const string_t&, const std::vector<int32_t>&, istream_t&);
-                tensor_size_t load_labels(const mat5_section_t&, const string_t&, const std::vector<int32_t>&, const protocol, istream_t&);
+                using dims_t = std::vector<int32_t>;
+                using protocols_t = std::vector<protocol>;
+
+                bool load_binary(const string_t& path, const protocols_t&);
+                tensor_size_t load_pixels(const mat5_section_t&, const string_t&, const dims_t&, istream_t&);
+                tensor_size_t load_labels(const mat5_section_t&, const string_t&, const dims_t&, const protocols_t&, istream_t&);
 
                 // attributes
                 string_t                m_dir;  ///< directory where to load the task from
