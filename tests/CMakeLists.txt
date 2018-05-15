@@ -9,6 +9,7 @@ make_test(test_chrono.cpp "")
 make_test(test_geom.cpp "")
 make_test(test_digraph.cpp "")
 make_test(test_factory.cpp "")
+make_test(test_random.cpp "")
 
 make_test(test_solver_stoch.cpp nano)
 make_test(test_solver_batch.cpp nano)
