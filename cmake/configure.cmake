@@ -7,7 +7,7 @@ if(CMAKE_CXX_COMPILER_ID MATCHES GNU OR CMAKE_CXX_COMPILER_ID MATCHES Clang)
         require_cpp14()
 
         # set flags
-        set(CMAKE_CXX_FLAGS                     "-std=c++14 -pedantic -ffunction-sections")
+        set(CMAKE_CXX_FLAGS                     "-std=c++14 -pedantic")
 if(NANO_WITH_TUNE_NATIVE)
         set(CMAKE_CXX_FLAGS                     "${CMAKE_CXX_FLAGS} -march=native -mtune=native")
 endif()
