@@ -27,6 +27,7 @@ matrix:
           packages: ['gcc-5', 'g++-5', 'libdevil-dev', 'libarchive-dev', 'ninja-build', 'python3-pip']
           sources: &sources
             - ubuntu-toolchain-r-test
+          update: true
       script:
         - cmake -G "Ninja" -DCMAKE_CXX_COMPILER=g++-5 -DNANO_WITH_GOLD=OFF -DNANO_WITH_WERROR=ON ..
         - ninja
@@ -40,6 +41,7 @@ matrix:
           packages: ['gcc-6', 'g++-6', 'libdevil-dev', 'libarchive-dev', 'ninja-build', 'python3-pip']
           sources: &sources
             - ubuntu-toolchain-r-test
+          update: true
       script:
         - cmake -G "Ninja" -DCMAKE_CXX_COMPILER=g++-6 -DNANO_WITH_GOLD=OFF -DNANO_WITH_WERROR=ON ..
         - ninja
@@ -53,6 +55,7 @@ matrix:
           packages: ['gcc-7', 'g++-7', 'libdevil-dev', 'libarchive-dev', 'ninja-build', 'python3-pip']
           sources: &sources
             - ubuntu-toolchain-r-test
+          update: true
       script:
         - cmake -G "Ninja" -DCMAKE_CXX_COMPILER=g++-7 -DNANO_WITH_GOLD=OFF -DNANO_WITH_WERROR=ON ..
         - ninja
@@ -66,6 +69,7 @@ matrix:
           packages: ['clang-3.8', 'libdevil-dev', 'libarchive-dev', 'libc++-dev', 'libc++abi-dev', 'ninja-build', 'python3-pip']
           sources: &sources
             - llvm-toolchain-trusty-3.8
+          update: true
       script:
         - cmake -G "Ninja" -DCMAKE_CXX_COMPILER=clang++-3.8 -DNANO_WITH_WERROR=ON -DNANO_WITH_LIBCPP=ON ..
         - ninja
@@ -79,6 +83,7 @@ matrix:
           packages: ['clang-4.0', 'libdevil-dev', 'libarchive-dev', 'libc++-dev', 'libc++abi-dev', 'ninja-build', 'python3-pip']
           sources: &sources
             - llvm-toolchain-trusty-4.0
+          update: true
       script:
         - cmake -G "Ninja" -DCMAKE_CXX_COMPILER=clang++-4.0 -DNANO_WITH_WERROR=ON -DNANO_WITH_LIBCPP=ON ..
         - ninja
@@ -92,6 +97,7 @@ matrix:
           packages: ['clang-5.0', 'libdevil-dev', 'libarchive-dev', 'libc++-dev', 'libc++abi-dev', 'ninja-build', 'python3-pip']
           sources: &sources
             - llvm-toolchain-trusty-5.0
+          update: true
       script:
         - cmake -G "Ninja" -DCMAKE_CXX_COMPILER=clang++-5.0 -DNANO_WITH_WERROR=ON -DNANO_WITH_LIBCPP=ON ..
         - ninja
@@ -105,6 +111,7 @@ matrix:
           packages: ['clang-6.0', 'libdevil-dev', 'libarchive-dev', 'libc++-dev', 'libc++abi-dev', 'ninja-build', 'python3-pip']
           sources: &sources
             - llvm-toolchain-trusty-6.0
+          update: true
       script:
         - cmake -G "Ninja" -DCMAKE_CXX_COMPILER=clang++-6.0 -DNANO_WITH_WERROR=ON -DNANO_WITH_LIBCPP=ON ..
         - ninja
@@ -118,6 +125,7 @@ matrix:
           packages: ['clang-5.0', 'libdevil-dev', 'libarchive-dev', 'libc++-dev', 'libc++abi-dev', 'ninja-build', 'python3-pip']
           sources: &sources
             - llvm-toolchain-trusty-5.0
+          update: true
       script:
         - PATH=$PATH:/usr/lib/llvm-5.0/bin/
         - cmake -G "Ninja" -DCMAKE_CXX_COMPILER=clang++-5.0 -DNANO_WITH_WERROR=ON -DNANO_WITH_ASAN=ON -DNANO_WITH_LIBCPP=ON ..
@@ -132,6 +140,7 @@ matrix:
     #      packages: ['clang-5.0', 'libdevil-dev', 'libarchive-dev', 'libc++-dev', 'libc++abi-dev', 'ninja-build', 'python3-pip']
     #      sources: &sources
     #        - llvm-toolchain-trusty-5.0
+    #      update: true
     #  script:
     #    - PATH=$PATH:/usr/lib/llvm-5.0/bin/
     #    - cmake -G "Ninja" -DCMAKE_CXX_COMPILER=clang++-5.0 -DNANO_WITH_WERROR=ON -DNANO_WITH_MSAN=ON -DNANO_WITH_LIBCPP=ON ..
@@ -146,6 +155,7 @@ matrix:
           packages: ['clang-5.0', 'libdevil-dev', 'libarchive-dev', 'libc++-dev', 'libc++abi-dev', 'ninja-build', 'python3-pip']
           sources: &sources
             - llvm-toolchain-trusty-5.0
+          update: true
       script:
         - PATH=$PATH:/usr/lib/llvm-5.0/bin/
         - cmake -G "Ninja" -DCMAKE_CXX_COMPILER=clang++-5.0 -DNANO_WITH_WERROR=ON -DNANO_WITH_TSAN=ON -DNANO_WITH_LIBCPP=ON ..
@@ -160,6 +170,7 @@ matrix:
           packages: ['clang-5.0', 'clang-tidy-5.0', 'libdevil-dev', 'libarchive-dev', 'libc++-dev', 'libc++abi-dev', 'ninja-build', 'python3-pip']
           sources: &sources
             - llvm-toolchain-trusty-5.0
+          update: true
       script:
         - PATH=$PATH:/usr/lib/llvm-5.0/bin/
         - cmake -G "Ninja" -DCMAKE_CXX_COMPILER=clang++-5.0 -DNANO_WITH_WERROR=ON -DNANO_WITH_LIBCPP=ON -DNANO_WITH_CLANG_TIDY=ON ..
@@ -170,6 +181,7 @@ matrix:
       addons:
         apt:
           packages: ['cppcheck']
+          update: true
       script:
         - bash ../scripts/ci_cppcheck.sh
 
@@ -181,6 +193,7 @@ matrix:
           packages: ['clang-5.0', 'valgrind', 'libdevil-dev', 'libarchive-dev', 'libc++-dev', 'libc++abi-dev', 'ninja-build', 'python3-pip']
           sources: &sources
             - llvm-toolchain-trusty-5.0
+          update: true
       script:
         - cmake -G "Ninja" -DCMAKE_CXX_COMPILER=clang++-5.0 -DCMAKE_BUILD_TYPE=Release -DNANO_WITH_WERROR=ON -DNANO_WITH_LIBCPP=ON -DNANO_WITH_TUNE_NATIVE=OFF ..
         - ninja
@@ -194,6 +207,7 @@ matrix:
           packages: ['gcc-7', 'g++-7', 'gcovr', 'libdevil-dev', 'libarchive-dev', 'ninja-build', 'python3-pip']
           sources: &sources
             - ubuntu-toolchain-r-test
+          update: true
       script:
         - sudo -H pip install --upgrade pip
         - sudo -H pip install coverage
