@@ -99,7 +99,9 @@ bool svhn_task_t::load_binary(const string_t& path, const protocols_t& protocols
                 }
         };
 
-        return load_mat5(path, hcallback, scallback, ecallback) && icount == lcount && icount == protocols.size();
+        return  load_mat5(path, hcallback, scallback, ecallback) &&
+                icount == lcount &&
+                static_cast<size_t>(icount) == protocols.size();
 }
 
 tensor_size_t svhn_task_t::load_pixels(const mat5_section_t& section,

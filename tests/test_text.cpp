@@ -186,16 +186,12 @@ NANO_CASE(iequals)
 
 NANO_CASE(to_string)
 {
-        NANO_CHECK_EQUAL(nano::to_string(1.7), "1.700000");
-        NANO_CHECK_EQUAL(nano::to_string(-4.3f), "-4.300000");
         NANO_CHECK_EQUAL(nano::to_string(1), "1");
         NANO_CHECK_EQUAL(nano::to_string(124545), "124545");
 }
 
 NANO_CASE(from_string)
 {
-        NANO_CHECK_EQUAL(nano::from_string<double>("1.7"), 1.7);
-        NANO_CHECK_EQUAL(nano::from_string<float>("-4.3"), -4.3f);
         NANO_CHECK_EQUAL(nano::from_string<short>("1"), 1);
         NANO_CHECK_EQUAL(nano::from_string<long int>("124545"), 124545);
 }
