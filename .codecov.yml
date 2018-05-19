@@ -3,4 +3,4 @@ coverage:
     round: down
     range: "70...100"
   ignore:
-    - "[a-z]+/test_.+.cpp"
+    - "**/tests/test_*"
