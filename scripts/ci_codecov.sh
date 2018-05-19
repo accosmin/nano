@@ -1,5 +1,5 @@
 #!/bin/bash
 
 bash ../scripts/ci_ctest.sh
-cd .. && bash <(curl -s https://codecov.io/bash)
+bash <(curl -s https://codecov.io/bash) -R .. -F "src/*"
 rm -f *#*
