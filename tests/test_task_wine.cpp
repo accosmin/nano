@@ -29,6 +29,7 @@ NANO_CASE(loading)
         NANO_REQUIRE(task);
         task->from_json(to_json("folds", folds));
         NANO_REQUIRE(task->load());
+        task->describe("wine");
 
         NANO_CHECK_EQUAL(task->idims(), idims);
         NANO_CHECK_EQUAL(task->odims(), odims);

@@ -8,18 +8,21 @@ NANO_BEGIN_MODULE(test_task_parity)
 
 NANO_CASE(construction)
 {
-        auto task = get_tasks().get("synth-parity");
-        NANO_REQUIRE(task);
-        task->from_json(to_json("n", 11, "count", 132));
-        NANO_CHECK(task->load());
-
         const auto idims = tensor3d_dim_t{11, 1, 1};
         const auto odims = tensor3d_dim_t{1, 1, 1};
+        const auto folds = size_t(5);
+        const auto count = size_t(150);
+
+        auto task = get_tasks().get("synth-parity");
+        NANO_REQUIRE(task);
+        task->from_json(to_json("n", 11, "count", count, "folds", folds));
+        NANO_CHECK(task->load());
+        task->describe("synth-parity");
 
         NANO_CHECK_EQUAL(task->idims(), idims);
         NANO_CHECK_EQUAL(task->odims(), odims);
-        NANO_CHECK_EQUAL(task->fsize(), size_t(1));
-        NANO_CHECK_EQUAL(task->size(), size_t(132));
+        NANO_CHECK_EQUAL(task->fsize(), folds);
+        NANO_CHECK_EQUAL(task->size(), folds * count);
 
         for (size_t f = 0; f < task->fsize(); ++ f)
         {
@@ -52,6 +55,10 @@ NANO_CASE(construction)
                                 NANO_CHECK_CLOSE(target(0), expected_target, epsilon0<scalar_t>());
                         }
                 }
+
+                NANO_CHECK_EQUAL(task->size({f, protocol::train}), 40 * count / 100);
+                NANO_CHECK_EQUAL(task->size({f, protocol::valid}), 30 * count / 100);
+                NANO_CHECK_EQUAL(task->size({f, protocol::test}), 30 * count / 100);
 
                 NANO_CHECK_EQUAL(
                         task->size({f, protocol::train}) +

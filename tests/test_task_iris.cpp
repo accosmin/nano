@@ -22,13 +22,14 @@ NANO_CASE(loading)
         const auto odims = tensor3d_dim_t{3, 1, 1};
         const auto target_sum = scalar_t(2) - static_cast<scalar_t>(nano::size(odims));
 
-        const auto folds = size_t(10);
+        const auto folds = size_t(20);
         const auto samples = size_t(150);
 
         const auto task = nano::get_tasks().get("iris");
         NANO_REQUIRE(task);
         task->from_json(to_json("folds", folds));
         NANO_REQUIRE(task->load());
+        task->describe("iris");
 
         NANO_CHECK_EQUAL(task->idims(), idims);
         NANO_CHECK_EQUAL(task->odims(), odims);
@@ -53,9 +54,9 @@ NANO_CASE(loading)
                         NANO_CHECK_EQUAL(task->labels({f, p}).size(), static_cast<size_t>(nano::size(odims)));
                 }
 
-                NANO_CHECK_EQUAL(task->size({f, protocol::train}), 60);
-                NANO_CHECK_EQUAL(task->size({f, protocol::valid}), 45);
-                NANO_CHECK_EQUAL(task->size({f, protocol::test}), 45);
+                NANO_CHECK_EQUAL(task->size({f, protocol::train}), 40 * samples / 100);
+                NANO_CHECK_EQUAL(task->size({f, protocol::valid}), 30 * samples / 100);
+                NANO_CHECK_EQUAL(task->size({f, protocol::test}), 30 * samples / 100);
 
                 NANO_CHECK_EQUAL(
                         task->size({f, protocol::train}) +

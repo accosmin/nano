@@ -27,6 +27,7 @@ namespace nano
 
                 // attributes
                 tensor_size_t   m_dims{32};
+                size_t          m_folds{10};
                 size_t          m_count{1024};
         };
 }

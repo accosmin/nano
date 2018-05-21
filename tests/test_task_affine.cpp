@@ -10,17 +10,19 @@ NANO_CASE(construction)
 {
         const auto isize = 11;
         const auto osize = 13;
-        const auto count = 132;
+        const auto count = size_t(350);
+        const auto folds = size_t(7);
 
         auto task = get_tasks().get("synth-affine");
         NANO_REQUIRE(task);
-        task->from_json(to_json("isize", isize, "osize", osize, "noise", 0, "count", count));
+        task->from_json(to_json("isize", isize, "osize", osize, "noise", 0, "count", count, "folds", folds));
         NANO_CHECK(task->load());
+        task->describe("synth-affine");
 
         NANO_CHECK_EQUAL(task->idims(), make_dims(isize, 1, 1));
         NANO_CHECK_EQUAL(task->odims(), make_dims(osize, 1, 1));
-        NANO_CHECK_EQUAL(task->fsize(), size_t(1));
-        NANO_CHECK_EQUAL(task->size(), size_t(count));
+        NANO_CHECK_EQUAL(task->fsize(), folds);
+        NANO_CHECK_EQUAL(task->size(), folds * count);
 
         for (size_t f = 0; f < task->fsize(); ++ f)
         {
@@ -36,6 +38,10 @@ NANO_CASE(construction)
                                 NANO_CHECK_EQUAL(target.dims(), make_dims(osize, 1, 1));
                         }
                 }
+
+                NANO_CHECK_EQUAL(task->size({f, protocol::train}), 40 * count / 100);
+                NANO_CHECK_EQUAL(task->size({f, protocol::valid}), 30 * count / 100);
+                NANO_CHECK_EQUAL(task->size({f, protocol::test}), 30 * count / 100);
 
                 NANO_CHECK_EQUAL(
                         task->size({f, protocol::train}) +

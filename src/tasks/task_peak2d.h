@@ -29,7 +29,9 @@ namespace nano
         private:
 
                 // attributes
-                tensor_size_t           m_irows{32}, m_icols{32};
+                tensor_size_t           m_irows{32};
+                tensor_size_t           m_icols{32};
+                size_t                  m_folds{10};
                 size_t                  m_count{1024};
                 scalar_t                m_noise{static_cast<scalar_t>(1e-3)};
         };

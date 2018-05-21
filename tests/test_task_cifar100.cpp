@@ -29,6 +29,7 @@ NANO_CASE(loading)
         const auto task = nano::get_tasks().get("cifar100");
         NANO_REQUIRE(task);
         NANO_REQUIRE(task->load());
+        task->describe("cifar100");
 
         NANO_CHECK_EQUAL(task->idims(), idims);
         NANO_CHECK_EQUAL(task->odims(), odims);

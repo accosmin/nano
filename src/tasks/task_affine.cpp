@@ -4,19 +4,19 @@
 using namespace nano;
 
 affine_task_t::affine_task_t() :
-        mem_tensor_task_t(make_dims(32, 1, 1), make_dims(32, 1, 1), 1)
+        mem_tensor_task_t(make_dims(32, 1, 1), make_dims(32, 1, 1), 10)
 {
 }
 
 void affine_task_t::from_json(const json_t& json)
 {
-        nano::from_json(json, "isize", m_isize, "osize", m_osize, "noise", m_noise, "count", m_count);
-        reconfig(make_dims(m_isize, 1, 1), make_dims(m_osize, 1, 1), 1);
+        nano::from_json(json, "isize", m_isize, "osize", m_osize, "noise", m_noise, "count", m_count, "folds", m_folds);
+        reconfig(make_dims(m_isize, 1, 1), make_dims(m_osize, 1, 1), m_folds);
 }
 
 void affine_task_t::to_json(json_t& json) const
 {
-        nano::to_json(json, "isize", m_isize, "osize", m_osize, "noise", m_noise, "count", m_count);
+        nano::to_json(json, "isize", m_isize, "osize", m_osize, "noise", m_noise, "count", m_count, "folds", m_folds);
 }
 
 bool affine_task_t::populate()
@@ -32,22 +32,31 @@ bool affine_task_t::populate()
         weights.random();
         bias.random();
 
-        const auto protocols = split3(m_count, protocol::train, 40, protocol::valid, 30, protocol::test);
-
         // generate samples
         reserve_chunks(m_count);
         for (size_t i = 0; i < m_count; ++ i)
         {
                 input.random();
-                target.vector() = weights.matrix() * input.vector() + bias.vector();
-                add_random(udist_noise, rng, target);
 
                 const auto hash = i;
-                const auto label = string_t();
-                const auto fold = fold_t{0, protocols[i]};
-
                 add_chunk(input, hash);
-                add_sample(fold, i, target, label);
+        }
+
+        // generate folds
+        for (size_t f = 0; f < m_folds; ++ f)
+        {
+                const auto protocols = split3(m_count, protocol::train, 40, protocol::valid, 30, protocol::test);
+
+                for (size_t i = 0; i < m_count; ++ i)
+                {
+                        target.vector() = weights.matrix() * input.vector() + bias.vector();
+                        add_random(udist_noise, rng, target);
+
+                        const auto label = string_t();
+                        const auto fold = fold_t{f, protocols[i]};
+
+                        add_sample(fold, i, target, label);
+                }
         }
 
         return true;

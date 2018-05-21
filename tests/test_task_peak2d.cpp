@@ -10,17 +10,19 @@ NANO_CASE(construction)
 {
         const auto irows = 14;
         const auto icols = 8;
-        const auto count = 102;
+        const auto count = size_t(250);
+        const auto folds = size_t(20);
 
         auto task = get_tasks().get("synth-peak2d");
         NANO_REQUIRE(task);
-        task->from_json(to_json("irows", irows, "icols", icols, "noise", 0, "count", count));
+        task->from_json(to_json("irows", irows, "icols", icols, "noise", 0, "count", count, "folds", folds));
         NANO_CHECK(task->load());
+        task->describe("synth-peak2d");
 
         NANO_CHECK_EQUAL(task->idims(), make_dims(1, irows, icols));
         NANO_CHECK_EQUAL(task->odims(), make_dims(2, 1, 1));
-        NANO_CHECK_EQUAL(task->fsize(), size_t(1));
-        NANO_CHECK_EQUAL(task->size(), size_t(count));
+        NANO_CHECK_EQUAL(task->fsize(), folds);
+        NANO_CHECK_EQUAL(task->size(), folds * count);
 
         for (size_t f = 0; f < task->fsize(); ++ f)
         {
@@ -43,6 +45,10 @@ NANO_CASE(construction)
                                 NANO_CHECK_CLOSE(target(1), scalar_t(r) / scalar_t(irows), epsilon0<scalar_t>());
                         }
                 }
+
+                NANO_CHECK_EQUAL(task->size({f, protocol::train}), 40 * count / 100);
+                NANO_CHECK_EQUAL(task->size({f, protocol::valid}), 30 * count / 100);
+                NANO_CHECK_EQUAL(task->size({f, protocol::test}), 30 * count / 100);
 
                 NANO_CHECK_EQUAL(
                         task->size({f, protocol::train}) +
