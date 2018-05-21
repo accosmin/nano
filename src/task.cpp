@@ -68,57 +68,20 @@ static void add_hashes(const task_t& task, const fold_t& fold, thashes& hashes)
         }
 }
 
-static size_t count_duplicates(const task_t& task, const size_t f)
+void task_t::describe(const string_t& name) const
 {
-        assert(f < task.fsize());
+        log_info() << "task [" << name << "]: in(" << idims() << ") -> out(" << odims()
+                << "), count = " << size() << ".";
 
-        std::vector<size_t> hashes;
-
-        add_hashes(task, fold_t{f, protocol::train}, hashes);
-        add_hashes(task, fold_t{f, protocol::valid}, hashes);
-        add_hashes(task, fold_t{f, protocol::test}, hashes);
-
-        return count_duplicates(hashes);
-}
-
-static size_t count_intersection(const task_t& task, const size_t f)
-{
-        assert(f < task.fsize());
-
-        std::vector<size_t> train_hashes;
-        std::vector<size_t> valid_hashes;
-        std::vector<size_t> test_hashes;
-
-        add_hashes(task, fold_t{f, protocol::train}, train_hashes);
-        add_hashes(task, fold_t{f, protocol::valid}, valid_hashes);
-        add_hashes(task, fold_t{f, protocol::test}, test_hashes);
-
-        return  std::max(std::max(
-                count_intersects(train_hashes, valid_hashes),
-                count_intersects(valid_hashes, test_hashes)),
-                count_intersects(test_hashes, train_hashes));
-}
-
-void nano::describe(const task_t& task, const string_t& name)
-{
-        log_info() << "task [" << name << "]: in(" << task.idims() << ") -> out(" << task.odims()
-                << "), count = " << task.size() << ".";
-
-        for (size_t f = 0; f < task.fsize(); ++ f)
+        for (size_t f = 0; f < fsize(); ++ f)
         {
-                log_info() << "fold [" << (1 + f) << "]: duplicates = " << count_duplicates(task, f) << ".";
-                log_info() << "fold [" << (1 + f) << "]: intersections = " << count_intersection(task, f) << ".";
+                log_info() << "fold [" << (1 + f) << "]: duplicates = " << duplicates(f) << ".";
+                log_info() << "fold [" << (1 + f) << "]: intersections = " << intersections(f) << ".";
 
                 for (const auto p : {protocol::train, protocol::valid, protocol::test})
                 {
                         const auto fold = fold_t{f, p};
-                        const auto size = task.size(fold);
-
-                        std::map<string_t, size_t> lcounts;
-                        for (size_t i = 0; i < size; ++ i)
-                        {
-                                lcounts[task.label(fold, i)] ++;
-                        }
+                        const auto lcounts = labels(fold);
 
                         // describe each label separately
                         for (const auto& lcount : lcounts)
@@ -126,30 +89,88 @@ void nano::describe(const task_t& task, const string_t& name)
                                 log_info() << "fold [" << (1 + f) << "," << to_string(p)
                                         << "]: label = " << lcount.first
                                         << ", count = " << lcount.second
-                                        << "/" << size << "/" << task.size() << ".";
+                                        << "/" << size(fold) << "/" << size() << ".";
                         }
                 }
         }
 }
 
-size_t nano::check_duplicates(const task_t& task)
+size_t task_t::duplicates(const size_t f) const
+{
+        assert(f < fsize());
+
+        std::vector<size_t> hashes;
+
+        add_hashes(*this, fold_t{f, protocol::train}, hashes);
+        add_hashes(*this, fold_t{f, protocol::valid}, hashes);
+        add_hashes(*this, fold_t{f, protocol::test}, hashes);
+
+        return count_duplicates(hashes);
+}
+
+size_t task_t::duplicates() const
 {
         size_t max_duplicates = 0;
-        for (size_t f = 0; f < task.fsize(); ++ f)
+        for (size_t f = 0; f < fsize(); ++ f)
         {
-                max_duplicates = std::max(max_duplicates, count_duplicates(task, f));
+                max_duplicates = std::max(max_duplicates, duplicates(f));
         }
-
         return max_duplicates;
 }
 
-size_t nano::check_intersection(const task_t& task)
+size_t task_t::intersections(const size_t f) const
+{
+        assert(f < fsize());
+
+        std::vector<size_t> train_hashes;
+        std::vector<size_t> valid_hashes;
+        std::vector<size_t> test_hashes;
+
+        add_hashes(*this, fold_t{f, protocol::train}, train_hashes);
+        add_hashes(*this, fold_t{f, protocol::valid}, valid_hashes);
+        add_hashes(*this, fold_t{f, protocol::test}, test_hashes);
+
+        return  std::max(std::max(
+                count_intersects(train_hashes, valid_hashes),
+                count_intersects(valid_hashes, test_hashes)),
+                count_intersects(test_hashes, train_hashes));
+}
+
+size_t task_t::intersections() const
 {
         size_t max_duplicates = 0;
-        for (size_t f = 0; f < task.fsize(); ++ f)
+        for (size_t f = 0; f < fsize(); ++ f)
         {
-                max_duplicates = std::max(max_duplicates, count_intersection(task, f));
+                max_duplicates = std::max(max_duplicates, intersections(f));
+        }
+        return max_duplicates;
+}
+
+std::map<string_t, size_t> task_t::labels(const fold_t& fold) const
+{
+        std::map<string_t, size_t> labels;
+        for (size_t i = 0, size = this->size(fold); i < size; ++ i)
+        {
+                labels[label(fold, i)] ++;
         }
 
-        return max_duplicates;
+        return labels;
+}
+
+std::map<string_t, size_t> task_t::labels() const
+{
+        std::map<string_t, size_t> labels;
+        for (size_t f = 0; f < fsize(); ++ f)
+        {
+                for (const auto p : {protocol::train, protocol::valid, protocol::test})
+                {
+                        const auto fold = fold_t{f, p};
+                        for (size_t i = 0, size = this->size(fold); i < size; ++ i)
+                        {
+                                labels[label(fold, i)] ++;
+                        }
+                }
+        }
+
+        return labels;
 }

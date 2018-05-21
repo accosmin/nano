@@ -35,14 +35,7 @@ logger_t::logger_t(const logger_t::type ltype, const bool flush_at_endl) :
         m_flush(flush_at_endl)
 {
         const std::time_t t = std::time(nullptr);
-        m_stream << "[";
-//                m_stream << std::put_time(std::localtime(&t), "%F|%T");
-        char mbstr[100];
-        if (std::strftime(mbstr, sizeof(mbstr), "%F|%T", std::localtime(&t)))
-        {
-                m_stream << mbstr;
-        }
-        m_stream << "|" << get_header(ltype) << "]: ";
+        m_stream << "[" << std::put_time(std::localtime(&t), "%F|%T") << "|" << get_header(ltype) << "]: ";
         m_stream << std::fixed << std::setprecision(6);
 }
 

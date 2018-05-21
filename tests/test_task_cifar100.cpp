@@ -25,52 +25,56 @@ NANO_CASE(loading)
         const auto folds = size_t(1);
         const auto train_samples = size_t(50000);
         const auto test_samples = size_t(10000);
-        const auto train_fold = fold_t{0, protocol::train};
-        const auto valid_fold = fold_t{0, protocol::valid};
-        const auto test_fold = fold_t{0, protocol::test};
 
         const auto task = nano::get_tasks().get("cifar100");
         NANO_REQUIRE(task);
         NANO_REQUIRE(task->load());
 
-        // check dimensions
         NANO_CHECK_EQUAL(task->idims(), idims);
         NANO_CHECK_EQUAL(task->odims(), odims);
-
-        // check folds
         NANO_CHECK_EQUAL(task->fsize(), folds);
         NANO_CHECK_EQUAL(task->size(), train_samples + test_samples);
 
-        NANO_CHECK_GREATER(task->size(train_fold), train_samples / 10);
-        NANO_CHECK_GREATER(task->size(valid_fold), train_samples / 10);
-        NANO_CHECK_EQUAL(task->size(train_fold) + task->size(valid_fold), train_samples);
+        NANO_CHECK_EQUAL(task->idims(), idims);
+        NANO_CHECK_EQUAL(task->odims(), odims);
+        NANO_CHECK_EQUAL(task->fsize(), folds);
+        NANO_CHECK_EQUAL(task->size(), train_samples + test_samples);
 
-        NANO_CHECK_EQUAL(task->size(test_fold), test_samples);
-
-        // check samples
-        std::set<string_t> labels;
-        for (const auto fold : {train_fold, valid_fold, test_fold})
+        for (size_t f = 0; f < task->fsize(); ++ f)
         {
-                const auto size = task->size(fold);
-                for (size_t i = 0; i < size; ++ i)
+                for (const auto p : {protocol::train, protocol::valid, protocol::test})
                 {
-                        const auto sample = task->get(fold, i, i + 1);
-                        const auto& input = sample.idata(0);
-                        const auto& label = sample.label(0);
-                        const auto& target = sample.odata(0);
+                        for (size_t i = 0, size = task->size({f, p}); i < size; ++ i)
+                        {
+                                const auto sample = task->get({f, p}, i, i + 1);
+                                const auto& input = sample.idata(0);
+                                const auto& target = sample.odata(0);
 
-                        NANO_CHECK_EQUAL(input.dims(), idims);
-                        NANO_CHECK_EQUAL(target.dims(), odims);
-                        NANO_CHECK_CLOSE(target.vector().sum(), target_sum, epsilon0<scalar_t>());
+                                NANO_CHECK_EQUAL(input.dims(), idims);
+                                NANO_CHECK_EQUAL(target.dims(), odims);
+                                NANO_CHECK_CLOSE(target.vector().sum(), target_sum, epsilon0<scalar_t>());
+                        }
 
-                        labels.insert(label);
+                        NANO_CHECK_EQUAL(task->labels({f, p}).size(), static_cast<size_t>(nano::size(odims)));
                 }
+
+                NANO_CHECK_EQUAL(task->size({f, protocol::train}), 80 * train_samples / 100);
+                NANO_CHECK_EQUAL(task->size({f, protocol::valid}), 20 * train_samples / 100);
+                NANO_CHECK_EQUAL(task->size({f, protocol::test}), test_samples);
+
+                NANO_CHECK_EQUAL(
+                        task->size({f, protocol::train}) +
+                        task->size({f, protocol::valid}) +
+                        task->size({f, protocol::test}),
+                        task->size() / task->fsize());
+
+                NANO_CHECK_LESS_EQUAL(task->duplicates(f), size_t(0));
+                NANO_CHECK_LESS_EQUAL(task->intersections(f), size_t(0));
         }
 
-        const size_t max_duplicates = 0;
-        NANO_CHECK_LESS_EQUAL(nano::check_duplicates(*task), max_duplicates);
-        NANO_CHECK_LESS_EQUAL(nano::check_intersection(*task), max_duplicates);
-        NANO_CHECK_EQUAL(labels.size(), static_cast<size_t>(nano::size(odims)));
+        NANO_CHECK_LESS_EQUAL(task->duplicates(), size_t(0));
+        NANO_CHECK_LESS_EQUAL(task->intersections(), size_t(0));
+        NANO_CHECK_EQUAL(task->labels().size(), static_cast<size_t>(nano::size(odims)));
 }
 
 NANO_END_MODULE()

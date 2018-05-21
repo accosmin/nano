@@ -56,7 +56,7 @@ int main(int argc, const char *argv[])
         checkpoint.step(strcat("load task <", id, ">"));
         checkpoint.measure(task->load());
 
-        describe(*task, id);
+        task->describe(id);
 
         // load loss
         checkpoint.step(strcat("load loss configuration from <", cmd_loss, ">"));
