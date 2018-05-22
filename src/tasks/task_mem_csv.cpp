@@ -62,7 +62,7 @@ static bool load_labels(const string_t& name, const table_t& table, const size_t
 }
 
 mem_csv_task_t::mem_csv_task_t(const string_t& name, const string_t& path, const size_t label_column) :
-        mem_tensor_task_t(make_dims(1, 1, 1), make_dims(1, 1, 1), 1),
+        mem_tensor_task_t(make_dims(1, 1, 1), make_dims(1, 1, 1), 10),
         m_name(name),
         m_path(path),
         m_label_column(label_column)
@@ -72,6 +72,7 @@ mem_csv_task_t::mem_csv_task_t(const string_t& name, const string_t& path, const
 void mem_csv_task_t::from_json(const json_t& json)
 {
         nano::from_json(json, "path", m_path, "folds", m_folds);
+        reconfig(make_dims(1, 1, 1), make_dims(1, 1, 1), m_folds);
 }
 
 void mem_csv_task_t::to_json(json_t& json) const
