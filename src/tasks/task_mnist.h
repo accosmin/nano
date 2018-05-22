@@ -23,9 +23,10 @@ namespace nano
 
         private:
 
-                bool load_binary(const string_t& ifile, const string_t& gfile, const std::vector<protocol>&);
+                bool load_binary(const string_t& ifile, const string_t& gfile, const protocol, const size_t count);
 
                 // attributes
-                string_t        m_dir;  ///< directory where to load the task from
+                string_t        m_dir;          ///< directory where to load the task from
+                size_t          m_folds{10};    ///<
         };
 }

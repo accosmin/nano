@@ -19,40 +19,38 @@ static const string_t tlabels[] =
 };
 
 mnist_task_t::mnist_task_t() :
-        mem_vision_task_t(tensor3d_dim_t{1, 28, 28}, tensor3d_dim_t{10, 1, 1}, 1),
+        mem_vision_task_t(make_dims(1, 28, 28), make_dims(10, 1, 1), 10),
         m_dir(string_t(std::getenv("HOME")) + "/experiments/databases/mnist")
 {
 }
 
 void mnist_task_t::from_json(const json_t& json)
 {
-        nano::from_json(json, "dir", m_dir);
+        nano::from_json(json, "dir", m_dir, "folds", m_folds);
+        reconfig(make_dims(1, 28, 28), make_dims(10, 1, 1), m_folds);
 }
 
 void mnist_task_t::to_json(json_t& json) const
 {
-        nano::to_json(json, "dir", m_dir);
+        nano::to_json(json, "dir", m_dir, "folds", m_folds);
 }
 
 bool mnist_task_t::populate()
 {
         const auto test_ifile = m_dir + "/t10k-images-idx3-ubyte.gz";
         const auto test_gfile = m_dir + "/t10k-labels-idx1-ubyte.gz";
-        const auto test_proto = std::vector<protocol>(10000, protocol::test);
 
         const auto train_ifile = m_dir + "/train-images-idx3-ubyte.gz";
         const auto train_gfile = m_dir + "/train-labels-idx1-ubyte.gz";
-        const auto train_proto = split2(60000, protocol::train, 80, protocol::valid);
 
-        return  load_binary(train_ifile, train_gfile, train_proto) &&
-                load_binary(test_ifile, test_gfile, test_proto);
+        return  load_binary(train_ifile, train_gfile, protocol::train, 60000) &&
+                load_binary(test_ifile, test_gfile, protocol::test, 10000);
 }
 
-bool mnist_task_t::load_binary(const string_t& ifile, const string_t& gfile, const std::vector<protocol>& protocols)
+bool mnist_task_t::load_binary(const string_t& ifile, const string_t& gfile, const protocol p, const size_t count)
 {
-        size_t iindex = n_chunks();
-        size_t icount = 0;
-        size_t gcount = 0;
+        const auto chunk_begin = n_chunks();
+        const auto sample_begin = size();
 
         const auto irows = std::get<1>(idims());
         const auto icols = std::get<2>(idims());
@@ -79,8 +77,6 @@ bool mnist_task_t::load_binary(const string_t& ifile, const string_t& gfile, con
                         image_t image;
                         image.load_luma(buffer.data(), irows, icols);
                         add_chunk(image, image.hash());
-
-                        ++ icount;
                 }
 
                 return true;
@@ -101,7 +97,8 @@ bool mnist_task_t::load_binary(const string_t& ifile, const string_t& gfile, con
                         return false;
                 }
 
-                while (stream.read(label, 1) == 1 && gcount < protocols.size())
+                std::vector<tensor_size_t> ilabels;
+                while (stream.read(label, 1) == 1)
                 {
                         const auto ilabel = static_cast<tensor_size_t>(label[0]);
                         if (ilabel < 0 || ilabel >= nano::size(odims()))
@@ -109,12 +106,28 @@ bool mnist_task_t::load_binary(const string_t& ifile, const string_t& gfile, con
                                 log_error() << "MNIST: invalid label!";
                                 return false;
                         }
+                        ilabels.push_back(ilabel);
+                }
 
-                        const auto fold = fold_t{0, protocols[gcount]};
-                        add_sample(fold, iindex, class_target(ilabel, nano::size(odims())), tlabels[ilabel]);
+                if (ilabels.size() != count)
+                {
+                        log_error() << "MNIST: invalid number of labels!";
+                        return false;
+                }
 
-                        ++ gcount;
-                        ++ iindex;
+                for (size_t f = 0; f < m_folds; ++ f)
+                {
+                        const auto protocols = (p == protocol::train) ?
+                                split2(count, protocol::train, 80, protocol::valid) :
+                                std::vector<protocol>(count, protocol::test);
+
+                        for (size_t i = 0; i < ilabels.size(); ++ i)
+                        {
+                                const auto ilabel = ilabels[i];
+                                const auto ichunk = chunk_begin + i;
+                                const auto fold = fold_t{f, protocols[i]};
+                                add_sample(fold, ichunk, class_target(ilabel, nano::size(odims())), tlabels[ilabel]);
+                        }
                 }
 
                 return true;
@@ -128,6 +141,7 @@ bool mnist_task_t::load_binary(const string_t& ifile, const string_t& gfile, con
         }
 
         // OK
-        log_info() << "MNIST: loaded " << icount << "/" << gcount << " samples.";
-        return (protocols.size() == gcount) && (protocols.size() == icount);
+        log_info() << "MNIST: loaded " << (n_chunks() - chunk_begin) << " samples.";
+        return  n_chunks() == chunk_begin + count &&
+                size() == sample_begin + count * m_folds;
 }
