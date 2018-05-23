@@ -22,19 +22,20 @@ NANO_CASE(loading)
         const auto odims = tensor3d_dim_t{10, 1, 1};
         const auto target_sum = scalar_t(2) - static_cast<scalar_t>(nano::size(odims));
 
-        const auto folds = size_t(1);
+        const auto folds = size_t(3);
         const auto train_samples = size_t(60000);
         const auto test_samples = size_t(10000);
 
         const auto task = nano::get_tasks().get("fashion-mnist");
         NANO_REQUIRE(task);
+        task->from_json(to_json("folds", folds));
         NANO_REQUIRE(task->load());
         task->describe("fashion-mnist");
 
         NANO_CHECK_EQUAL(task->idims(), idims);
         NANO_CHECK_EQUAL(task->odims(), odims);
         NANO_CHECK_EQUAL(task->fsize(), folds);
-        NANO_CHECK_EQUAL(task->size(), train_samples + test_samples);
+        NANO_CHECK_EQUAL(task->size(), folds * (train_samples + test_samples));
 
         for (size_t f = 0; f < task->fsize(); ++ f)
         {

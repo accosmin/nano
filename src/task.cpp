@@ -7,7 +7,6 @@
 #include "tasks/task_affine.h"
 #include "tasks/task_peak2d.h"
 #include "tasks/task_parity.h"
-#include "tasks/task_fashion_mnist.h"
 #include "logger.h"
 #include <mutex>
 
@@ -75,8 +74,8 @@ void task_t::describe(const string_t& name) const
 
         for (size_t f = 0; f < fsize(); ++ f)
         {
-                log_info() << "fold [" << (1 + f) << "]: duplicates = " << duplicates(f) << ".";
-                log_info() << "fold [" << (1 + f) << "]: intersections = " << intersections(f) << ".";
+                log_info() << "fold [" << (1 + f) << "]: duplicates = " << duplicates(f)
+                        << ", intersections = " << intersections(f) << ".";
 
                 for (const auto p : {protocol::train, protocol::valid, protocol::test})
                 {

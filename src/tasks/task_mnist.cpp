@@ -4,38 +4,28 @@
 
 using namespace nano;
 
-static const string_t tlabels[] =
-{
-        "digit0",
-        "digit1",
-        "digit2",
-        "digit3",
-        "digit4",
-        "digit5",
-        "digit6",
-        "digit7",
-        "digit8",
-        "digit9"
-};
-
-mnist_task_t::mnist_task_t() :
+template <mnist_type ttype>
+base_mnist_task_t<ttype>::base_mnist_task_t() :
         mem_vision_task_t(make_dims(1, 28, 28), make_dims(10, 1, 1), 10),
-        m_dir(string_t(std::getenv("HOME")) + "/experiments/databases/mnist")
+        m_dir(string_t(std::getenv("HOME")) + dirname())
 {
 }
 
-void mnist_task_t::from_json(const json_t& json)
+template <mnist_type ttype>
+void base_mnist_task_t<ttype>::from_json(const json_t& json)
 {
         nano::from_json(json, "dir", m_dir, "folds", m_folds);
         reconfig(make_dims(1, 28, 28), make_dims(10, 1, 1), m_folds);
 }
 
-void mnist_task_t::to_json(json_t& json) const
+template <mnist_type ttype>
+void base_mnist_task_t<ttype>::to_json(json_t& json) const
 {
         nano::to_json(json, "dir", m_dir, "folds", m_folds);
 }
 
-bool mnist_task_t::populate()
+template <mnist_type ttype>
+bool base_mnist_task_t<ttype>::populate()
 {
         const auto test_ifile = m_dir + "/t10k-images-idx3-ubyte.gz";
         const auto test_gfile = m_dir + "/t10k-labels-idx1-ubyte.gz";
@@ -47,7 +37,8 @@ bool mnist_task_t::populate()
                 load_binary(test_ifile, test_gfile, protocol::test, 10000);
 }
 
-bool mnist_task_t::load_binary(const string_t& ifile, const string_t& gfile, const protocol p, const size_t count)
+template <mnist_type ttype>
+bool base_mnist_task_t<ttype>::load_binary(const string_t& ifile, const string_t& gfile, const protocol p, const size_t count)
 {
         const auto chunk_begin = n_chunks();
         const auto sample_begin = size();
@@ -61,7 +52,7 @@ bool mnist_task_t::load_binary(const string_t& ifile, const string_t& gfile, con
 
         const auto error_op = [&] (const string_t& message)
         {
-                log_error() << "MNIST: " << message;
+                log_error() << name() << ": " << message;
         };
 
         // load images
@@ -82,10 +73,10 @@ bool mnist_task_t::load_binary(const string_t& ifile, const string_t& gfile, con
                 return true;
         };
 
-        log_info() << "MNIST: loading file <" << ifile << "> ...";
+        log_info() << name() << ": loading file <" << ifile << "> ...";
         if (!nano::load_archive(ifile, iop, error_op))
         {
-                log_error() << "MNIST: failed to load file <" << ifile << ">!";
+                log_error() << name() << ": failed to load file <" << ifile << ">!";
                 return false;
         }
 
@@ -103,7 +94,7 @@ bool mnist_task_t::load_binary(const string_t& ifile, const string_t& gfile, con
                         const auto ilabel = static_cast<tensor_size_t>(label[0]);
                         if (ilabel < 0 || ilabel >= nano::size(odims()))
                         {
-                                log_error() << "MNIST: invalid label!";
+                                log_error() << name() << ": invalid label!";
                                 return false;
                         }
                         ilabels.push_back(ilabel);
@@ -111,10 +102,11 @@ bool mnist_task_t::load_binary(const string_t& ifile, const string_t& gfile, con
 
                 if (ilabels.size() != count)
                 {
-                        log_error() << "MNIST: invalid number of labels!";
+                        log_error() << name() << ": invalid number of labels!";
                         return false;
                 }
 
+                const auto tlabels = labels();
                 for (size_t f = 0; f < m_folds; ++ f)
                 {
                         const auto protocols = (p == protocol::train) ?
@@ -133,15 +125,18 @@ bool mnist_task_t::load_binary(const string_t& ifile, const string_t& gfile, con
                 return true;
         };
 
-        log_info() << "MNIST: loading file <" << gfile << "> ...";
+        log_info() << name() << ": loading file <" << gfile << "> ...";
         if (!nano::load_archive(gfile, gop, error_op))
         {
-                log_error() << "MNIST: failed to load file <" << gfile << ">!";
+                log_error() << name() << ": failed to load file <" << gfile << ">!";
                 return false;
         }
 
         // OK
-        log_info() << "MNIST: loaded " << (n_chunks() - chunk_begin) << " samples.";
+        log_info() << name() << ": loaded " << (n_chunks() - chunk_begin) << " samples.";
         return  n_chunks() == chunk_begin + count &&
                 size() == sample_begin + count * m_folds;
 }
+
+template class nano::base_mnist_task_t<mnist_type::digits>;
+template class nano::base_mnist_task_t<mnist_type::fashion>;
