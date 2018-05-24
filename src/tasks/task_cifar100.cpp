@@ -109,19 +109,20 @@ static const string_t tlabels[] =
 };
 
 cifar100_task_t::cifar100_task_t() :
-        mem_vision_task_t(tensor3d_dim_t{3, 32, 32}, tensor3d_dim_t{100, 1, 1}, 1),
+        mem_vision_task_t(make_dims(3, 32, 32), make_dims(100, 1, 1), 10),
         m_dir(string_t(std::getenv("HOME")) + "/experiments/databases/cifar100")
 {
 }
 
 void cifar100_task_t::from_json(const json_t& json)
 {
-        nano::from_json(json, "dir", m_dir);
+        nano::from_json(json, "dir", m_dir, "folds", m_folds);
+        reconfig(make_dims(3, 32, 32), make_dims(100, 1, 1), m_folds);
 }
 
 void cifar100_task_t::to_json(json_t& json) const
 {
-        nano::to_json(json, "dir", m_dir);
+        nano::to_json(json, "dir", m_dir, "folds", m_folds);
 }
 
 bool cifar100_task_t::populate()
@@ -138,11 +139,11 @@ bool cifar100_task_t::populate()
         {
                 if (nano::ends_with(filename, train_bfile))
                 {
-                        return load_binary(filename, stream, split2(n_train_samples, protocol::train, 80, protocol::valid));
+                        return load_binary(filename, stream, protocol::train, n_train_samples);
                 }
                 else if (nano::ends_with(filename, test_bfile))
                 {
-                        return load_binary(filename, stream, std::vector<protocol>(n_test_samples, protocol::test));
+                        return load_binary(filename, stream, protocol::test, n_test_samples);
                 }
                 else
                 {
@@ -159,9 +160,12 @@ bool cifar100_task_t::populate()
         return nano::load_archive(bfile, op, error_op);
 }
 
-bool cifar100_task_t::load_binary(const string_t& filename, istream_t& stream, const std::vector<protocol>& protocols)
+bool cifar100_task_t::load_binary(const string_t& filename, istream_t& stream, const protocol p, const size_t count)
 {
         log_info() << "CIFAR-100: loading file <" << filename << "> ...";
+
+        const auto chunk_begin = n_chunks();
+        const auto sample_begin = size();
 
         const auto irows = std::get<1>(idims());
         const auto icols = std::get<2>(idims());
@@ -170,10 +174,11 @@ bool cifar100_task_t::load_binary(const string_t& filename, istream_t& stream, c
         std::vector<char> buffer(static_cast<size_t>(buffer_size));
         char label[2];
 
-        size_t icount = 0;
+        // generate samples
+        std::vector<tensor_size_t> ilabels;
         while ( stream.read(label, 2) == 2 &&       // coarse & fine labels!
                 stream.read(buffer.data(), buffer_size) == buffer_size &&
-                icount < protocols.size())
+                n_chunks() < chunk_begin + count)
         {
                 const tensor_size_t ilabel = label[1];
                 if (ilabel < 0 || ilabel >= nano::size(odims()))
@@ -186,11 +191,33 @@ bool cifar100_task_t::load_binary(const string_t& filename, istream_t& stream, c
                 image.load_rgb(buffer.data(), irows, icols, irows * icols);
                 add_chunk(image, image.hash());
 
-                const auto fold = fold_t{0, protocols[icount ++]};
-                add_sample(fold, n_chunks() - 1, class_target(ilabel, nano::size(odims())), tlabels[ilabel]);
+                ilabels.push_back(ilabel);
+        }
+
+        if (ilabels.size() != count)
+        {
+                log_error() << "CIFAR-100: invalid number of samples!";
+                return false;
+        }
+
+        // generate folds
+        for (size_t f = 0; f < m_folds; ++ f)
+        {
+                const auto protocols = (p == protocol::train) ?
+                        split2(count, protocol::train, 80, protocol::valid) :
+                        std::vector<protocol>(count, protocol::test);
+
+                for (size_t i = 0; i < ilabels.size(); ++ i)
+                {
+                        const auto ilabel = ilabels[i];
+                        const auto ichunk = chunk_begin + i;
+                        const auto fold = fold_t{f, protocols[i]};
+                        add_sample(fold, ichunk, class_target(ilabel, nano::size(odims())), tlabels[ilabel]);
+                }
         }
 
         // OK
-        log_info() << "CIFAR-100: loaded " << icount << " samples.";
-        return (protocols.size() == icount);
+        log_info() << "CIFAR-100: loaded " << (n_chunks() - chunk_begin) << " samples.";
+        return  n_chunks() == chunk_begin + count &&
+                size() == sample_begin + count * m_folds;
 }

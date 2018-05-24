@@ -150,6 +150,7 @@ bool base_mnist_task_t<ttype>::load_binary(const string_t& ifile, const string_t
                         return false;
                 }
 
+                // generate folds
                 const auto tlabels = ::labels<ttype>();
                 for (size_t f = 0; f < m_folds; ++ f)
                 {
