@@ -4,10 +4,54 @@
 
 using namespace nano;
 
+namespace
+{
+        template <mnist_type ttype>
+        const char* name()
+        {
+                switch (ttype)
+                {
+                case mnist_type::digits:        return "MNIST";
+                case mnist_type::fashion:       return "Fashion-MNIST";
+                default:                        return "???";
+                }
+        }
+
+        template <mnist_type ttype>
+        const char* dirname()
+        {
+                switch (ttype)
+                {
+                case mnist_type::digits:        return "/experiments/databases/mnist";
+                case mnist_type::fashion:       return "/experiments/databases/fashion-mnist";
+                default:                        return "???";
+                }
+        }
+
+        template <mnist_type ttype>
+        strings_t labels()
+        {
+                switch (ttype)
+                {
+                case mnist_type::digits:        return
+                        {
+                                "digit0", "digit1", "digit2", "digit3", "digit4",
+                                "digit5", "digit6", "digit7", "digit8", "digit9"
+                        };
+                case mnist_type::fashion:       return
+                        {
+                                "T-shirt/top", "Trouser", "Pullover", "Dress", "Coat",
+                                "Sandal", "Shirt", "Sneaker", "Bag", "Ankle boot"
+                        };
+                default:                        assert(false); return {};
+                }
+        }
+}
+
 template <mnist_type ttype>
 base_mnist_task_t<ttype>::base_mnist_task_t() :
         mem_vision_task_t(make_dims(1, 28, 28), make_dims(10, 1, 1), 10),
-        m_dir(string_t(std::getenv("HOME")) + dirname())
+        m_dir(string_t(std::getenv("HOME")) + dirname<ttype>())
 {
 }
 
@@ -52,7 +96,7 @@ bool base_mnist_task_t<ttype>::load_binary(const string_t& ifile, const string_t
 
         const auto error_op = [&] (const string_t& message)
         {
-                log_error() << name() << ": " << message;
+                log_error() << name<ttype>() << ": " << message;
         };
 
         // load images
@@ -73,10 +117,10 @@ bool base_mnist_task_t<ttype>::load_binary(const string_t& ifile, const string_t
                 return true;
         };
 
-        log_info() << name() << ": loading file <" << ifile << "> ...";
+        log_info() << name<ttype>() << ": loading file <" << ifile << "> ...";
         if (!nano::load_archive(ifile, iop, error_op))
         {
-                log_error() << name() << ": failed to load file <" << ifile << ">!";
+                log_error() << name<ttype>() << ": failed to load file <" << ifile << ">!";
                 return false;
         }
 
@@ -94,7 +138,7 @@ bool base_mnist_task_t<ttype>::load_binary(const string_t& ifile, const string_t
                         const auto ilabel = static_cast<tensor_size_t>(label[0]);
                         if (ilabel < 0 || ilabel >= nano::size(odims()))
                         {
-                                log_error() << name() << ": invalid label!";
+                                log_error() << name<ttype>() << ": invalid label!";
                                 return false;
                         }
                         ilabels.push_back(ilabel);
@@ -102,11 +146,11 @@ bool base_mnist_task_t<ttype>::load_binary(const string_t& ifile, const string_t
 
                 if (ilabels.size() != count)
                 {
-                        log_error() << name() << ": invalid number of labels!";
+                        log_error() << name<ttype>() << ": invalid number of labels!";
                         return false;
                 }
 
-                const auto tlabels = labels();
+                const auto tlabels = ::labels<ttype>();
                 for (size_t f = 0; f < m_folds; ++ f)
                 {
                         const auto protocols = (p == protocol::train) ?
@@ -125,15 +169,15 @@ bool base_mnist_task_t<ttype>::load_binary(const string_t& ifile, const string_t
                 return true;
         };
 
-        log_info() << name() << ": loading file <" << gfile << "> ...";
+        log_info() << name<ttype>() << ": loading file <" << gfile << "> ...";
         if (!nano::load_archive(gfile, gop, error_op))
         {
-                log_error() << name() << ": failed to load file <" << gfile << ">!";
+                log_error() << name<ttype>() << ": failed to load file <" << gfile << ">!";
                 return false;
         }
 
         // OK
-        log_info() << name() << ": loaded " << (n_chunks() - chunk_begin) << " samples.";
+        log_info() << name<ttype>() << ": loaded " << (n_chunks() - chunk_begin) << " samples.";
         return  n_chunks() == chunk_begin + count &&
                 size() == sample_begin + count * m_folds;
 }
