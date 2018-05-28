@@ -79,7 +79,7 @@ namespace nano
                 row_t& operator<<(const tscalar value)
                 {
                         m_cells.emplace_back(to_string(value), colspan(), align(), colfill(), precision());
-                        return colspan(1).align(alignment::left);
+                        return colspan(1).align(alignment::left).colfill(' ');
                 }
                 template <typename tscalar>
                 row_t& operator<<(const std::vector<tscalar>& values)

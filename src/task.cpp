@@ -7,8 +7,9 @@
 #include "tasks/task_affine.h"
 #include "tasks/task_peak2d.h"
 #include "tasks/task_parity.h"
-#include "logger.h"
+#include "text/table.h"
 #include <mutex>
+#include <iostream>
 
 using namespace nano;
 
@@ -69,29 +70,84 @@ static void add_hashes(const task_t& task, const fold_t& fold, thashes& hashes)
 
 void task_t::describe(const string_t& name) const
 {
-        log_info() << "task [" << name << "]: in(" << idims() << ") -> out(" << odims()
-                << "), count = " << size() << ".";
+        const auto glcounts = labels();
 
+        std::map<fold_t, std::map<string_t, size_t>> flcounts;
         for (size_t f = 0; f < fsize(); ++ f)
         {
-                log_info() << "fold [" << (1 + f) << "]: duplicates = " << duplicates(f)
-                        << ", intersections = " << intersections(f) << ".";
-
                 for (const auto p : {protocol::train, protocol::valid, protocol::test})
                 {
                         const auto fold = fold_t{f, p};
-                        const auto lcounts = labels(fold);
-
-                        // describe each label separately
-                        for (const auto& lcount : lcounts)
-                        {
-                                log_info() << "fold [" << (1 + f) << "," << to_string(p)
-                                        << "]: label = " << lcount.first
-                                        << ", count = " << lcount.second
-                                        << "/" << size(fold) << "/" << size() << ".";
-                        }
+                        flcounts[fold] = labels(fold);
                 }
         }
+
+        table_t table;
+        {
+                auto& row = table.append();
+                row << colspan(2 + 3 * fsize()) << alignment::center << colfill('=')
+                    << (' ' + name + ": " + to_string(idims()) + " -> " + to_string(odims()) + ' ');
+        }
+        table.delim();
+        {
+                auto& row = table.append();
+                row << "#labels";
+                for (size_t f = 0; f < fsize(); ++ f)
+                {
+                        row << (to_string(f + 1) + ':' + to_string(protocol::train));
+                        row << (to_string(f + 1) + ':' + to_string(protocol::valid));
+                        row << (to_string(f + 1) + ':' + to_string(protocol::test));
+                }
+                row << "total";
+        }
+        table.delim();
+        for (const auto& glcount : glcounts)
+        {
+                auto& row = table.append();
+                row << glcount.first;
+                for (size_t f = 0; f < fsize(); ++ f)
+                {
+                        for (const auto p : {protocol::train, protocol::valid, protocol::test})
+                        {
+                                const auto fold = fold_t{f, p};
+                                const auto it = flcounts.find(fold);
+                                assert(it != flcounts.end());
+
+                                const auto itx = it->second.find(glcount.first);
+                                row << itx->second;
+                        }
+                }
+
+                row << glcount.second;
+        }
+        table.delim();
+        {
+                auto& row = table.append();
+                row << "#samples";
+                for (size_t f = 0; f < fsize(); ++ f)
+                {
+                        row << size({f, protocol::train})
+                            << size({f, protocol::valid})
+                            << size({f, protocol::test});
+                }
+                row << size();
+        }
+        table.delim();
+        {
+                auto& row = table.append();
+                row << "#samples";
+                for (size_t f = 0; f < fsize(); ++ f)
+                {
+                        const auto count =
+                                size({f, protocol::train}) +
+                                size({f, protocol::valid}) +
+                                size({f, protocol::test});
+                        row << colspan(3) << alignment::center << count;
+                }
+                row << colfill(' ') << size();
+        }
+
+        std::cout << table;
 }
 
 size_t task_t::duplicates(const size_t f) const
