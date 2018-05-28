@@ -4,7 +4,7 @@
 
 using namespace nano;
 
-static const string_t tlabels[] =
+static const strings_t tlabels =
 {
         "airplane",
         "automobile",
@@ -111,7 +111,6 @@ bool cifar10_task_t::load_binary(const string_t& filename, istream_t& stream, co
 
                 ilabels.push_back(ilabel);
         }
-
         if (ilabels.size() != count)
         {
                 log_error() << "CIFAR-10: invalid number of samples!";
@@ -119,20 +118,7 @@ bool cifar10_task_t::load_binary(const string_t& filename, istream_t& stream, co
         }
 
         // generate folds
-        for (size_t f = 0; f < m_folds; ++ f)
-        {
-                const auto protocols = (p == protocol::train) ?
-                        split2(count, protocol::train, 80, protocol::valid) :
-                        std::vector<protocol>(count, protocol::test);
-
-                for (size_t i = 0; i < ilabels.size(); ++ i)
-                {
-                        const auto ilabel = ilabels[i];
-                        const auto ichunk = chunk_begin + i;
-                        const auto fold = fold_t{f, protocols[i]};
-                        add_sample(fold, ichunk, class_target(ilabel, nano::size(odims())), tlabels[ilabel]);
-                }
-        }
+        add_samples(p, ilabels, tlabels);
 
         // OK
         log_info() << "CIFAR-10: loaded " << (n_chunks() - chunk_begin) << " samples.";

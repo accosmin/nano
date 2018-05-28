@@ -143,7 +143,6 @@ bool base_mnist_task_t<ttype>::load_binary(const string_t& ifile, const string_t
                         }
                         ilabels.push_back(ilabel);
                 }
-
                 if (ilabels.size() != count)
                 {
                         log_error() << name<ttype>() << ": invalid number of labels!";
@@ -151,22 +150,7 @@ bool base_mnist_task_t<ttype>::load_binary(const string_t& ifile, const string_t
                 }
 
                 // generate folds
-                const auto tlabels = ::labels<ttype>();
-                for (size_t f = 0; f < m_folds; ++ f)
-                {
-                        const auto protocols = (p == protocol::train) ?
-                                split2(count, protocol::train, 80, protocol::valid) :
-                                std::vector<protocol>(count, protocol::test);
-
-                        for (size_t i = 0; i < ilabels.size(); ++ i)
-                        {
-                                const auto ilabel = ilabels[i];
-                                const auto ichunk = chunk_begin + i;
-                                const auto fold = fold_t{f, protocols[i]};
-                                add_sample(fold, ichunk, class_target(ilabel, nano::size(odims())), tlabels[ilabel]);
-                        }
-                }
-
+                add_samples(p, ilabels, ::labels<ttype>());
                 return true;
         };
 

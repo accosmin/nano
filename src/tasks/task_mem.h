@@ -71,6 +71,31 @@ namespace nano
                         m_samples[fold].emplace_back(ts...);
                 }
 
+                void add_samples(const protocol p, const std::vector<tensor_size_t>& ilabels, const strings_t& tlabels)
+                {
+                        assert(n_chunks() >= ilabels.size());
+
+                        const auto chunk_begin = n_chunks() - ilabels.size();
+
+                        for (size_t f = 0; f < fsize(); ++ f)
+                        {
+                                const auto protocols = (p == protocol::train) ?
+                                        split2(ilabels.size(), protocol::train, 80, protocol::valid) :
+                                        std::vector<protocol>(ilabels.size(), protocol::test);
+
+                                for (size_t i = 0; i < ilabels.size(); ++ i)
+                                {
+                                        const auto ilabel = ilabels[i];
+                                        const auto ichunk = chunk_begin + i;
+                                        const auto fold = fold_t{f, protocols[i]};
+                                        const auto itlabel = static_cast<size_t>(ilabel);
+                                        assert(ilabel >= 0 && itlabel < tlabels.size());
+
+                                        add_sample(fold, ichunk, class_target(ilabel, nano::size(odims())), tlabels[itlabel]);
+                                }
+                        }
+                }
+
                 virtual bool populate() = 0;
 
                 size_t n_chunks() const { return m_chunks.size(); }

@@ -22,19 +22,20 @@ NANO_CASE(loading)
         const auto odims = tensor3d_dim_t{10, 1, 1};
         const auto target_sum = scalar_t(2) - static_cast<scalar_t>(nano::size(odims));
 
-        const auto folds = size_t(1);
+        const auto folds = size_t(3);
         const auto train_samples = size_t(73257 + 531131);
         const auto test_samples = size_t(26032);
 
         const auto task = nano::get_tasks().get("svhn");
         NANO_REQUIRE(task);
+        task->from_json(to_json("folds", folds));
         NANO_REQUIRE(task->load());
         task->describe("svhn");
 
         NANO_CHECK_EQUAL(task->idims(), idims);
         NANO_CHECK_EQUAL(task->odims(), odims);
         NANO_CHECK_EQUAL(task->fsize(), folds);
-        NANO_CHECK_EQUAL(task->size(), train_samples + test_samples);
+        NANO_CHECK_EQUAL(task->size(), folds * (train_samples + test_samples));
 
         for (size_t f = 0; f < task->fsize(); ++ f)
         {
@@ -64,11 +65,11 @@ NANO_CASE(loading)
                         task->size({f, protocol::test}),
                         task->size() / task->fsize());
 
-                NANO_CHECK_LESS_EQUAL(task->duplicates(f), size_t(1));
+                NANO_CHECK_LESS_EQUAL(task->duplicates(f), size_t(2));
                 NANO_CHECK_LESS_EQUAL(task->intersections(f), size_t(0));
         }
 
-        NANO_CHECK_LESS_EQUAL(task->duplicates(), size_t(1));
+        NANO_CHECK_LESS_EQUAL(task->duplicates(), size_t(2));
         NANO_CHECK_LESS_EQUAL(task->intersections(), size_t(0));
         NANO_CHECK_EQUAL(task->labels().size(), static_cast<size_t>(nano::size(odims)));
 }

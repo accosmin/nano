@@ -29,11 +29,12 @@ namespace nano
                 using dims_t = std::vector<int32_t>;
                 using protocols_t = std::vector<protocol>;
 
-                bool load_binary(const string_t& path, const protocols_t&);
-                tensor_size_t load_pixels(const mat5_section_t&, const string_t&, const dims_t&, istream_t&);
-                tensor_size_t load_labels(const mat5_section_t&, const string_t&, const dims_t&, const protocols_t&, istream_t&);
+                bool load_binary(const string_t& path, const protocol, const size_t count);
+                bool load_pixels(const mat5_section_t&, const string_t&, const dims_t&, const size_t count, istream_t&);
+                bool load_labels(const mat5_section_t&, const string_t&, const dims_t&, const protocol, const size_t count, istream_t&);
 
                 // attributes
-                string_t                m_dir;  ///< directory where to load the task from
+                string_t                m_dir;          ///< directory where to load the task from
+                size_t                  m_folds{10};    ///<
         };
 }
