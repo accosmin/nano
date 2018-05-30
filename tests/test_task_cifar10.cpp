@@ -41,11 +41,14 @@ NANO_CASE(loading)
         {
                 for (const auto p : {protocol::train, protocol::valid, protocol::test})
                 {
-                        for (size_t i = 0, size = task->size({f, p}); i < size; ++ i)
+                        const auto fold = fold_t{f, p};
+                        task->shuffle(fold);
+
+                        const auto sample = task->get(fold, size_t(0), std::min(size_t(128), task->size(fold)));
+                        for (auto i = 0; i < sample.count(); ++ i)
                         {
-                                const auto sample = task->get({f, p}, i, i + 1);
-                                const auto& input = sample.idata(0);
-                                const auto& target = sample.odata(0);
+                                const auto& input = sample.idata(i);
+                                const auto& target = sample.odata(i);
 
                                 NANO_CHECK_EQUAL(input.dims(), idims);
                                 NANO_CHECK_EQUAL(target.dims(), odims);
