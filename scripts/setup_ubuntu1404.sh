@@ -1,7 +1,7 @@
 #!/bin/bash
 
 sudo add-apt-repository -y "ppa:ubuntu-toolchain-r/ppa"
-sudo add-apt-repository ppa:george-edison55/cmake-3.x
+sudo add-apt-repository -y "ppa:george-edison55/cmake-3.x"
 
 sudo add-apt-repository -y "deb http://apt.llvm.org/trusty/ llvm-toolchain-trusty main"
 sudo add-apt-repository -y "deb http://apt.llvm.org/trusty/ llvm-toolchain-trusty-5.0 main"
