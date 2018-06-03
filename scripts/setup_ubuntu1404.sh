@@ -13,7 +13,7 @@ wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key|sudo apt-key add -
 
 sudo apt-get update -y
 #sudo apt-get dist-upgrade -y
-sudo apt-get install -y ninja cmake cppcheck valgrind gcovr
+sudo apt-get install -y ninja-build cmake3 cppcheck valgrind gcovr
 sudo apt-get install -y g++-4.9 g++-5 g++-6 g++-7 g++-8
 sudo apt-get install -y clang-3.8 clang-5.0 clang-6.0 clang-tidy-6.0
 sudo apt-get install -y libarchive-dev libdevil-dev libc++-dev libc++abi-dev
