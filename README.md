@@ -3,7 +3,7 @@
 Nano provides numerical optimization and machine learning utilities. For example it can be used to train models such as multi-layer perceptrons (classical neural networks) and convolution networks.
 
 
-#### Compilation [![build](https://travis-ci.org/accosmin/nano.svg?branch=master)](https://travis-ci.org/accosmin/nano) [![Build Status](https://semaphoreci.com/api/v1/accosmin/nano/branches/master/badge.svg)](https://semaphoreci.com/accosmin/nano) [![codecov](https://codecov.io/gh/accosmin/nano/branch/master/graph/badge.svg)](https://codecov.io/gh/accosmin/nano)
+#### Compilation [![build](https://travis-ci.org/accosmin/nano.svg?branch=master)](https://travis-ci.org/accosmin/nano) [![codecov](https://codecov.io/gh/accosmin/nano/branch/master/graph/badge.svg)](https://codecov.io/gh/accosmin/nano)
 
 Use a C++14 compiler and install LibArchive, Zlib and DevIL. Nano is tested on Linux ([gcc 5+ | clang 3.8+], CMake 3.1+, Ninja or Make) and OSX (XCode 7+, homebrew, CMake 3.1+, Ninja or Make). The code is written to be cross-platform, so it may work (with minor fixes) on other platforms as well (e.g. Windows/MSVC).
 
@@ -109,7 +109,7 @@ A **task** describes a classification or regression problem consisting of separa
 
 The standard benchmark datasets can be download to $HOME/experiments/databases using:
 ```
-python3 scripts/download_tasks.py
+bash scripts/download_tasks.sh --iris --wine --mnist --fashion-mnist --cifar10 --cifar100 --svhn
 ```
 
 The image samples can be saved to disk using for example:
