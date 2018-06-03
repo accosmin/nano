@@ -7,11 +7,8 @@ before_script:
   - |
     if [ "$TRAVIS_OS_NAME" = "osx" ]; then
       brew update
-      brew install cmake ninja devil libarchive python3
+      brew install cmake ninja devil libarchive
       brew link libarchive --force
-      brew upgrade python
-      brew postinstall python3
-      pip3 install urllib3
       export PATH="/usr/local/opt/ccache/libexec:$PATH"
     fi
   - mkdir build
@@ -24,7 +21,7 @@ matrix:
       env: TEST="build (gcc-5)"
       addons:
         apt:
-          packages: ['gcc-5', 'g++-5', 'libdevil-dev', 'libarchive-dev', 'ninja-build', 'python3-pip']
+          packages: ['gcc-5', 'g++-5', 'libdevil-dev', 'libarchive-dev', 'ninja-build']
           sources: &sources
             - ubuntu-toolchain-r-test
           update: true
@@ -38,7 +35,7 @@ matrix:
       env: TEST="build (gcc-6)"
       addons:
         apt:
-          packages: ['gcc-6', 'g++-6', 'libdevil-dev', 'libarchive-dev', 'ninja-build', 'python3-pip']
+          packages: ['gcc-6', 'g++-6', 'libdevil-dev', 'libarchive-dev', 'ninja-build']
           sources: &sources
             - ubuntu-toolchain-r-test
           update: true
@@ -52,7 +49,7 @@ matrix:
       env: TEST="build (gcc-7)"
       addons:
         apt:
-          packages: ['gcc-7', 'g++-7', 'libdevil-dev', 'libarchive-dev', 'ninja-build', 'python3-pip']
+          packages: ['gcc-7', 'g++-7', 'libdevil-dev', 'libarchive-dev', 'ninja-build']
           sources: &sources
             - ubuntu-toolchain-r-test
           update: true
@@ -66,7 +63,7 @@ matrix:
     #  env: TEST="build (gcc-8)"
     #  addons:
     #    apt:
-    #      packages: ['gcc-8', 'g++-8', 'libdevil-dev', 'libarchive-dev', 'ninja-build', 'python3-pip']
+    #      packages: ['gcc-8', 'g++-8', 'libdevil-dev', 'libarchive-dev', 'ninja-build']
     #      sources: &sources
     #        - ubuntu-toolchain-r-test
     #      update: true
@@ -80,7 +77,7 @@ matrix:
       env: TEST="build (clang-3.8)"
       addons:
         apt:
-          packages: ['clang-3.8', 'libdevil-dev', 'libarchive-dev', 'libc++-dev', 'libc++abi-dev', 'ninja-build', 'python3-pip']
+          packages: ['clang-3.8', 'libdevil-dev', 'libarchive-dev', 'libc++-dev', 'libc++abi-dev', 'ninja-build']
           sources: &sources
             - llvm-toolchain-trusty-3.8
           update: true
@@ -94,7 +91,7 @@ matrix:
       env: TEST="build (clang-4.0)"
       addons:
         apt:
-          packages: ['clang-4.0', 'libdevil-dev', 'libarchive-dev', 'libc++-dev', 'libc++abi-dev', 'ninja-build', 'python3-pip']
+          packages: ['clang-4.0', 'libdevil-dev', 'libarchive-dev', 'libc++-dev', 'libc++abi-dev', 'ninja-build']
           sources: &sources
             - llvm-toolchain-trusty-4.0
           update: true
@@ -108,7 +105,7 @@ matrix:
       env: TEST="build (clang-5.0)"
       addons:
         apt:
-          packages: ['clang-5.0', 'libdevil-dev', 'libarchive-dev', 'libc++-dev', 'libc++abi-dev', 'ninja-build', 'python3-pip']
+          packages: ['clang-5.0', 'libdevil-dev', 'libarchive-dev', 'libc++-dev', 'libc++abi-dev', 'ninja-build']
           sources: &sources
             - llvm-toolchain-trusty-5.0
           update: true
@@ -122,7 +119,7 @@ matrix:
     #  env: TEST="build (clang-6.0)"
     #  addons:
     #    apt:
-    #      packages: ['clang-6.0', 'libdevil-dev', 'libarchive-dev', 'libc++-dev', 'libc++abi-dev', 'ninja-build', 'python3-pip']
+    #      packages: ['clang-6.0', 'libdevil-dev', 'libarchive-dev', 'libc++-dev', 'libc++abi-dev', 'ninja-build']
     #      sources: &sources
     #        - llvm-toolchain-trusty-6.0
     #      update: true
@@ -136,7 +133,7 @@ matrix:
       env: TEST="ASAN (clang-5.0)"
       addons:
         apt:
-          packages: ['clang-5.0', 'libdevil-dev', 'libarchive-dev', 'libc++-dev', 'libc++abi-dev', 'ninja-build', 'python3-pip']
+          packages: ['clang-5.0', 'libdevil-dev', 'libarchive-dev', 'libc++-dev', 'libc++abi-dev', 'ninja-build']
           sources: &sources
             - llvm-toolchain-trusty-5.0
           update: true
@@ -151,7 +148,7 @@ matrix:
     #  env: TEST="MSAN (clang-5.0)"
     #  addons:
     #    apt:
-    #      packages: ['clang-5.0', 'libdevil-dev', 'libarchive-dev', 'libc++-dev', 'libc++abi-dev', 'ninja-build', 'python3-pip']
+    #      packages: ['clang-5.0', 'libdevil-dev', 'libarchive-dev', 'libc++-dev', 'libc++abi-dev', 'ninja-build']
     #      sources: &sources
     #        - llvm-toolchain-trusty-5.0
     #      update: true
@@ -166,7 +163,7 @@ matrix:
       env: TEST="TSAN (clang-5.0)"
       addons:
         apt:
-          packages: ['clang-5.0', 'libdevil-dev', 'libarchive-dev', 'libc++-dev', 'libc++abi-dev', 'ninja-build', 'python3-pip']
+          packages: ['clang-5.0', 'libdevil-dev', 'libarchive-dev', 'libc++-dev', 'libc++abi-dev', 'ninja-build']
           sources: &sources
             - llvm-toolchain-trusty-5.0
           update: true
@@ -181,7 +178,7 @@ matrix:
       env: TEST="clang-tidy (clang-5.0)"
       addons:
         apt:
-          packages: ['clang-5.0', 'clang-tidy-5.0', 'libdevil-dev', 'libarchive-dev', 'libc++-dev', 'libc++abi-dev', 'ninja-build', 'python3-pip']
+          packages: ['clang-5.0', 'clang-tidy-5.0', 'libdevil-dev', 'libarchive-dev', 'libc++-dev', 'libc++abi-dev', 'ninja-build']
           sources: &sources
             - llvm-toolchain-trusty-5.0
           update: true
@@ -204,7 +201,7 @@ matrix:
       env: TEST="valgrind (clang-5.0)"
       addons:
         apt:
-          packages: ['clang-5.0', 'valgrind', 'libdevil-dev', 'libarchive-dev', 'libc++-dev', 'libc++abi-dev', 'ninja-build', 'python3-pip']
+          packages: ['clang-5.0', 'valgrind', 'libdevil-dev', 'libarchive-dev', 'libc++-dev', 'libc++abi-dev', 'ninja-build']
           sources: &sources
             - llvm-toolchain-trusty-5.0
           update: true
@@ -218,7 +215,7 @@ matrix:
       env: TEST="codecov (gcc-7)"
       addons:
         apt:
-          packages: ['gcc-7', 'g++-7', 'gcovr', 'libdevil-dev', 'libarchive-dev', 'ninja-build', 'python3-pip']
+          packages: ['gcc-7', 'g++-7', 'gcovr', 'libdevil-dev', 'libarchive-dev', 'ninja-build']
           sources: &sources
             - ubuntu-toolchain-r-test
           update: true
