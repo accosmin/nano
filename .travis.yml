@@ -61,19 +61,19 @@ matrix:
         - ninja
         - bash ../scripts/ci_ctest.sh
 
-    - os: linux
-      compiler: gcc
-      env: TEST="build (gcc-8)"
-      addons:
-        apt:
-          packages: ['gcc-8', 'g++-8', 'libdevil-dev', 'libarchive-dev', 'ninja-build', 'python3-pip']
-          sources: &sources
-            - ubuntu-toolchain-r-test
-          update: true
-      script:
-        - cmake -G "Ninja" -DCMAKE_CXX_COMPILER=g++-8 -DNANO_WITH_GOLD=OFF -DNANO_WITH_WERROR=ON ..
-        - ninja
-        - bash ../scripts/ci_ctest.sh
+    #- os: linux
+    #  compiler: gcc
+    #  env: TEST="build (gcc-8)"
+    #  addons:
+    #    apt:
+    #      packages: ['gcc-8', 'g++-8', 'libdevil-dev', 'libarchive-dev', 'ninja-build', 'python3-pip']
+    #      sources: &sources
+    #        - ubuntu-toolchain-r-test
+    #      update: true
+    #  script:
+    #    - cmake -G "Ninja" -DCMAKE_CXX_COMPILER=g++-8 -DNANO_WITH_GOLD=OFF -DNANO_WITH_WERROR=ON ..
+    #    - ninja
+    #    - bash ../scripts/ci_ctest.sh
 
     - os: linux
       compiler: clang
@@ -117,19 +117,19 @@ matrix:
         - ninja
         - bash ../scripts/ci_ctest.sh
 
-    - os: linux
-      compiler: clang
-      env: TEST="build (clang-6.0)"
-      addons:
-        apt:
-          packages: ['clang-6.0', 'libdevil-dev', 'libarchive-dev', 'libc++-dev', 'libc++abi-dev', 'ninja-build', 'python3-pip']
-          sources: &sources
-            - llvm-toolchain-trusty-6.0
-          update: true
-      script:
-        - cmake -G "Ninja" -DCMAKE_CXX_COMPILER=clang++-6.0 -DNANO_WITH_WERROR=ON -DNANO_WITH_LIBCPP=ON ..
-        - ninja
-        - bash ../scripts/ci_ctest.sh
+    #- os: linux
+    #  compiler: clang
+    #  env: TEST="build (clang-6.0)"
+    #  addons:
+    #    apt:
+    #      packages: ['clang-6.0', 'libdevil-dev', 'libarchive-dev', 'libc++-dev', 'libc++abi-dev', 'ninja-build', 'python3-pip']
+    #      sources: &sources
+    #        - llvm-toolchain-trusty-6.0
+    #      update: true
+    #  script:
+    #    - cmake -G "Ninja" -DCMAKE_CXX_COMPILER=clang++-6.0 -DNANO_WITH_WERROR=ON -DNANO_WITH_LIBCPP=ON ..
+    #    - ninja
+    #    - bash ../scripts/ci_ctest.sh
 
     - os: linux
       compiler: clang

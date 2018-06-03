@@ -2,7 +2,6 @@
 
 git submodule update --init
 
-cpus=$(($(nproc)+1))
 compilers="g++-5 g++-6 g++-7 g++-8 clang-3.8 clang-5.0 clang-6.0"
 
 for compiler in ${compilers}
