@@ -9,5 +9,7 @@ for compiler in ${compilers}
 do
         mkdir -p build && cd build && rm -rf *
         cmake .. -G Ninja -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_COMPILER=${compiler} -DNANO_WITH_WERROR=ON
+        ninja
         ctest -E "test_task_svhn|test_trainer|test_solver"
+        cd ..
 done
