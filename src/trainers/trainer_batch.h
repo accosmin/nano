@@ -11,6 +11,8 @@ namespace nano
         {
         public:
 
+                batch_trainer_t() = default;
+
                 void to_json(json_t&) const final;
                 void from_json(const json_t&) final;
 

@@ -100,7 +100,7 @@ namespace nano
                 ///
                 struct tcache_t
                 {
-                        tcache_t(const model_t& model) :
+                        explicit tcache_t(const model_t& model) :
                                 m_model(model.clone()),
                                 m_vgrad(vector_t::Zero(model.psize()))
                         {

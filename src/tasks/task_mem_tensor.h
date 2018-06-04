@@ -7,19 +7,25 @@ namespace nano
 {
         struct mem_tensor_sample_t
         {
+                mem_tensor_sample_t() = default;
+
                 explicit mem_tensor_sample_t(
                         const size_t index = 0,
                         tensor3d_t target = tensor3d_t(),
                         string_t label = string_t()) :
-                        m_index(index), m_target(std::move(target)), m_label(std::move(label))
+                        m_index(index),
+                        m_target(std::move(target)),
+                        m_label(std::move(label))
                 {
                 }
 
                 mem_tensor_sample_t(
                         const size_t index,
                         const vector_t& target,
-                        const string_t& label = string_t()) :
-                        mem_tensor_sample_t(index, nano::map_tensor(target.data(), target.size(), 1, 1), label)
+                        string_t label = string_t()) :
+                        m_index(index),
+                        m_target(nano::map_tensor(target.data(), target.size(), 1, 1)),
+                        m_label(std::move(label))
                 {
                 }
 
@@ -31,7 +37,7 @@ namespace nano
                 auto label() const { return m_label; }
 
                 // attributes
-                size_t          m_index;        ///< input tensor index
+                size_t          m_index{0};     ///< input tensor index
                 tensor3d_t      m_target;       ///<
                 string_t        m_label;        ///<
         };

@@ -21,8 +21,8 @@ namespace nano
                 static constexpr bool owns_memory = true;
 
                 tensor_vstorage_t() = default;
-                tensor_vstorage_t(const tstorage& data) : m_data(data) {}
-                tensor_vstorage_t(const tensor_size_t size) : m_data(size) {}
+                explicit tensor_vstorage_t(const tstorage& data) : m_data(data) {}
+                explicit tensor_vstorage_t(const tensor_size_t size) : m_data(size) {}
 
                 auto size() const { return m_data.size(); }
                 void resize(const tensor_size_t size) { m_data.resize(size); }
@@ -52,9 +52,9 @@ namespace nano
                 static constexpr bool resizable = false;
                 static constexpr bool owns_memory = false;
 
-                tensor_pstorage_t() : m_data(nullptr) {}
-                tensor_pstorage_t(const tstorage& data) : m_data(data) {}
-                tensor_pstorage_t(const tensor_size_t);
+                explicit tensor_pstorage_t() : m_data(nullptr) {}
+                explicit tensor_pstorage_t(const tstorage& data) : m_data(data) {}
+                explicit tensor_pstorage_t(const tensor_size_t);
 
                 auto size() const;
                 void resize(const tensor_size_t);

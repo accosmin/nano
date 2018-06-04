@@ -32,8 +32,6 @@ namespace nano
 
         private:
 
-                auto xsize() const { return nano::size(odims()); }
-
                 // attributes
                 tensor3d_dim_t m_xdims{{0, 0, 0}};     ///< input/output dimensions
         };

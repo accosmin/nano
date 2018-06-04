@@ -8,21 +8,17 @@ namespace nano
 {
         struct mem_vision_sample_t
         {
-                explicit mem_vision_sample_t(
-                        const size_t index = 0,
-                        tensor3d_t target = tensor3d_t(),
-                        string_t label = string_t(),
-                        const rect_t& region = rect_t()) :
-                        m_index(index), m_region(region), m_target(std::move(target)), m_label(std::move(label))
-                {
-                }
+                mem_vision_sample_t() = default;
 
                 mem_vision_sample_t(
                         const size_t index,
                         const vector_t& target,
-                        const string_t& label = string_t(),
-                        const rect_t& region = rect_t()) :
-                        mem_vision_sample_t(index, nano::map_tensor(target.data(), target.size(), 1, 1), label, region)
+                        string_t label = string_t(),
+                        rect_t region = rect_t()) :
+                        m_index(index),
+                        m_region(std::move(region)),
+                        m_target(nano::map_tensor(target.data(), target.size(), 1, 1)),
+                        m_label(std::move(label))
                 {
                 }
 
@@ -35,7 +31,7 @@ namespace nano
                 size_t ihash(size_t seed) const;
 
                 // attributes
-                size_t          m_index;        ///< image index
+                size_t          m_index{0};     ///< image index
                 rect_t          m_region;       ///< patch region in image
                 tensor3d_t      m_target;       ///<
                 string_t        m_label;        ///<

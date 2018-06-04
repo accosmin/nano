@@ -13,6 +13,8 @@ namespace nano
         {
         public:
 
+                batch_cgd_t() = default;
+
                 void to_json(json_t&) const final;
                 void from_json(const json_t&) final;
 

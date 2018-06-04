@@ -191,7 +191,9 @@ matrix:
       env: TEST="cppcheck"
       addons:
         apt:
-          packages: ['cppcheck']
+          packages: ['gcc-7', 'g++-7', 'ninja-build']
+          sources: &sources
+            - ubuntu-toolchain-r-test
           update: true
       script:
         - bash ../scripts/ci_cppcheck.sh

@@ -13,7 +13,7 @@ scalar_t function_rosenbrock_t::vgrad(const vector_t& x, vector_t* gx) const
         const auto ct = scalar_t(100);
 
         scalar_t fx = 0;
-        for (tensor_size_t i = 0; i + 1 < size(); i ++)
+        for (tensor_size_t i = 0; i + 1 < size(); ++ i)
         {
                 fx += ct * nano::square(x(i + 1) - x(i) * x(i)) + nano::square(x(i) - 1);
         }
@@ -21,7 +21,7 @@ scalar_t function_rosenbrock_t::vgrad(const vector_t& x, vector_t* gx) const
         if (gx)
         {
                 (*gx).setZero();
-                for (tensor_size_t i = 0; i + 1 < size(); i ++)
+                for (tensor_size_t i = 0; i + 1 < size(); ++ i)
                 {
                         (*gx)(i) += 2 * (x(i) - 1);
                         (*gx)(i) += ct * 2 * (x(i + 1) - x(i) * x(i)) * (- 2 * x(i));

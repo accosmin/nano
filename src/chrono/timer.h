@@ -95,21 +95,21 @@ namespace nano
                 std::string str;
                 if (days > 0)
                 {
-                        append(str, "%id:", days);
+                        append(str, "%lld:", days);
                 }
                 if (days > 0 || hours > 0)
                 {
-                        append(str, "%.2ih:", hours);
+                        append(str, "%.2llh:", hours);
                 }
                 if (days > 0 || hours > 0 || minutes > 0)
                 {
-                        append(str, "%.2im:", minutes);
+                        append(str, "%.2llm:", minutes);
                 }
                 if (days > 0 || hours > 0 || minutes > 0 || seconds > 0)
                 {
-                        append(str, "%.2is:", seconds);
+                        append(str, "%.2lls:", seconds);
                 }
-                append(str, "%.3ims", milliseconds);
+                append(str, "%.3llms", milliseconds);
 
                 return str;
         }
