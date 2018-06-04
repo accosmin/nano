@@ -26,7 +26,7 @@ matrix:
             - ubuntu-toolchain-r-test
           update: true
       script:
-        - cmake -G "Ninja" -DCMAKE_CXX_COMPILER=g++-5 -DNANO_WITH_GOLD=OFF -DNANO_WITH_WERROR=ON ..
+        - cmake -G "Ninja" -DCMAKE_CXX_COMPILER=g++-5 -DNANO_WITH_WERROR=ON ..
         - ninja
         - bash ../scripts/ci_ctest.sh
 
@@ -40,7 +40,7 @@ matrix:
             - ubuntu-toolchain-r-test
           update: true
       script:
-        - cmake -G "Ninja" -DCMAKE_CXX_COMPILER=g++-6 -DNANO_WITH_GOLD=OFF -DNANO_WITH_WERROR=ON ..
+        - cmake -G "Ninja" -DCMAKE_CXX_COMPILER=g++-6 -DNANO_WITH_WERROR=ON ..
         - ninja
         - bash ../scripts/ci_ctest.sh
 
@@ -54,7 +54,7 @@ matrix:
             - ubuntu-toolchain-r-test
           update: true
       script:
-        - cmake -G "Ninja" -DCMAKE_CXX_COMPILER=g++-7 -DNANO_WITH_GOLD=OFF -DNANO_WITH_WERROR=ON ..
+        - cmake -G "Ninja" -DCMAKE_CXX_COMPILER=g++-7 -DNANO_WITH_WERROR=ON ..
         - ninja
         - bash ../scripts/ci_ctest.sh
 
@@ -68,7 +68,7 @@ matrix:
     #        - ubuntu-toolchain-r-test
     #      update: true
     #  script:
-    #    - cmake -G "Ninja" -DCMAKE_CXX_COMPILER=g++-8 -DNANO_WITH_GOLD=OFF -DNANO_WITH_WERROR=ON ..
+    #    - cmake -G "Ninja" -DCMAKE_CXX_COMPILER=g++-8 -DNANO_WITH_WERROR=ON ..
     #    - ninja
     #    - bash ../scripts/ci_ctest.sh
 
@@ -224,7 +224,7 @@ matrix:
       script:
         - sudo -H pip install --upgrade pip
         - sudo -H pip install coverage
-        - cmake -G "Ninja" -DCMAKE_CXX_COMPILER=g++-7 -DCMAKE_BUILD_TYPE=Release -DNANO_WITH_WERROR=ON -DNANO_WITH_COVERAGE=ON -DNANO_WITH_GOLD=OFF ..
+        - cmake -G "Ninja" -DCMAKE_CXX_COMPILER=g++-7 -DCMAKE_BUILD_TYPE=Release -DNANO_WITH_WERROR=ON -DNANO_WITH_COVERAGE=ON ..
         - ninja
         - bash ../scripts/ci_codecov.sh
 
