@@ -7,12 +7,6 @@
 #include "math/numeric.h"
 #include <eigen3/Eigen/Core>
 
-static std::string module_name;
-static std::string case_name;
-static std::size_t n_cases = 0;
-static std::atomic<std::size_t> n_checks;
-static std::atomic<std::size_t> n_failures;
-
 enum class exception_status
 {
         none,
@@ -41,8 +35,11 @@ static exception_status check_throw(const toperator& op)
 #define NANO_BEGIN_MODULE(name) \
 int main(int, char* []) \
 { \
-        module_name = #name; \
-        n_failures = 0;
+        std::string module_name = #name; \
+        std::string case_name; \
+        std::size_t n_cases = 0; \
+        std::atomic<std::size_t> n_checks = {0}; \
+        std::atomic<std::size_t> n_failures = {0};
 
 #define NANO_CASE(name) \
         ++ n_cases; \

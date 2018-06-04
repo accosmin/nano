@@ -3,62 +3,86 @@
 #include "math/epsilon.h"
 #include "tensor/average.h"
 
-namespace test
+template <typename tsize>
+tsize sign(const tsize index)
 {
-        template <typename tsize>
-        tsize sign(const tsize index)
+        return (index % 2 == 0) ? tsize(+1) : tsize(-1);
+}
+
+static Eigen::VectorXd average1(const int dims, const int range)
+{
+        return Eigen::VectorXd::Constant(dims, static_cast<double>(range + 1) / 2.0);
+}
+
+static Eigen::VectorXd average2(const int dims, const int range)
+{
+        return Eigen::VectorXd::Constant(dims, static_cast<double>((range + 1) * sign(range + 1)) / 2.0);
+}
+
+static auto nano_average1(const int dims, const int range)
+{
+        nano::average_t<Eigen::VectorXd> avg1(dims);
+        for (auto i = 1; i <= range; ++ i)
         {
-                return (index % 2 == 0) ? tsize(+1) : tsize(-1);
+                avg1.update(Eigen::VectorXd::Constant(dims, double(i)));
         }
 
-        template <typename tscalar, typename tsize>
-        tscalar average1(const tsize range)
+        return avg1;
+}
+
+static auto nano_average2(const int dims, const int range)
+{
+        nano::average_t<Eigen::VectorXd> avg2(dims);
+        for (auto i = 1; i <= range; ++ i)
         {
-                return static_cast<tscalar>(range + 1) / static_cast<tscalar>(2);
+                avg2.update(Eigen::VectorXd::Constant(dims, double(sign(i + 1) * i) * double(i)));
         }
 
-        template <typename tscalar, typename tsize>
-        tscalar average2(const tsize range)
-        {
-                return static_cast<tscalar>((range + 1) * sign(range + 1)) / static_cast<tscalar>(2);
-        }
-
-        template
-        <
-                typename tvector,
-                typename tscalar = typename tvector::Scalar,
-                typename tsize = typename tvector::Index
-        >
-        void check_average(const tsize dims, const tsize range)
-        {
-                nano::average_t<tvector> avg1(dims), avg2(dims);
-                for (tsize i = 1; i <= range; ++ i)
-                {
-                        avg1.update(tvector::Constant(dims, tscalar(i)));
-                        avg2.update(tvector::Constant(dims, tscalar(sign(i + 1) * i) * tscalar(i)));
-                }
-
-                const auto epsilon = nano::epsilon1<tscalar>();
-                const auto base1 = tvector::Constant(dims, average1<tscalar>(range));
-                const auto base2 = tvector::Constant(dims, average2<tscalar>(range));
-
-                NANO_CHECK_EIGEN_CLOSE(avg1.value(), base1, epsilon);
-                NANO_CHECK_EIGEN_CLOSE(avg2.value(), base2, epsilon);
-        }
+        return avg2;
 }
 
 NANO_BEGIN_MODULE(test_average)
 
-NANO_CASE(vector)
+NANO_CASE(vectorXd_13_1)
 {
-        test::check_average<Eigen::VectorXd>(13, 1);
-        test::check_average<Eigen::VectorXd>(17, 5);
-        test::check_average<Eigen::VectorXd>(11, 17);
-        test::check_average<Eigen::VectorXd>(21, 85);
-        test::check_average<Eigen::VectorXd>(27, 187);
-        test::check_average<Eigen::VectorXd>(15, 1561);
-        test::check_average<Eigen::VectorXd>(19, 14332);
-        test::check_average<Eigen::VectorXd>(18, 123434);
+        const auto dims = 13, range = 1;
+        NANO_CHECK_EIGEN_CLOSE(nano_average1(dims, range).value(), average1(dims, range), nano::epsilon1<double>());
+        NANO_CHECK_EIGEN_CLOSE(nano_average2(dims, range).value(), average2(dims, range), nano::epsilon1<double>());
+}
+
+NANO_CASE(vectorXd_17_5)
+{
+        const auto dims = 17, range = 5;
+        NANO_CHECK_EIGEN_CLOSE(nano_average1(dims, range).value(), average1(dims, range), nano::epsilon1<double>());
+        NANO_CHECK_EIGEN_CLOSE(nano_average2(dims, range).value(), average2(dims, range), nano::epsilon1<double>());
+}
+
+NANO_CASE(vectorXd_11_17)
+{
+        const auto dims = 11, range = 17;
+        NANO_CHECK_EIGEN_CLOSE(nano_average1(dims, range).value(), average1(dims, range), nano::epsilon1<double>());
+        NANO_CHECK_EIGEN_CLOSE(nano_average2(dims, range).value(), average2(dims, range), nano::epsilon1<double>());
+}
+
+NANO_CASE(vectorXd_21_85)
+{
+        const auto dims = 21, range = 85;
+        NANO_CHECK_EIGEN_CLOSE(nano_average1(dims, range).value(), average1(dims, range), nano::epsilon1<double>());
+        NANO_CHECK_EIGEN_CLOSE(nano_average2(dims, range).value(), average2(dims, range), nano::epsilon1<double>());
+}
+
+NANO_CASE(vectorXd_27_187)
+{
+        const auto dims = 27, range = 187;
+        NANO_CHECK_EIGEN_CLOSE(nano_average1(dims, range).value(), average1(dims, range), nano::epsilon1<double>());
+        NANO_CHECK_EIGEN_CLOSE(nano_average2(dims, range).value(), average2(dims, range), nano::epsilon1<double>());
+}
+
+NANO_CASE(vectorXd_15_1561)
+{
+        const auto dims = 15, range = 1561;
+        NANO_CHECK_EIGEN_CLOSE(nano_average1(dims, range).value(), average1(dims, range), nano::epsilon1<double>());
+        NANO_CHECK_EIGEN_CLOSE(nano_average2(dims, range).value(), average2(dims, range), nano::epsilon1<double>());
 }
 
 NANO_END_MODULE()

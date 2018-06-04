@@ -32,18 +32,18 @@ struct model_wrt_params_function_t final : public function_t
 
         scalar_t vgrad(const vector_t& x, vector_t* gx) const override
         {
-                NANO_CHECK_EQUAL(x.size(), m_model.psize());
-                NANO_CHECK(x.array().isFinite().all());
+                assert(x.size() == m_model.psize());
+                assert(x.array().isFinite().all());
 
                 m_model.params(x);
                 const auto& outputs = m_model.output(m_inputs);
-                NANO_CHECK(outputs.array().isFinite().all());
+                assert(outputs.array().isFinite().all());
 
                 if (gx)
                 {
                         const auto& gparam = m_model.gparam(m_loss->vgrad(m_targets, outputs));
-                        NANO_CHECK_EQUAL(gx->size(), gparam.size());
-                        NANO_CHECK(gparam.array().isFinite().all());
+                        assert(gx->size() == gparam.size());
+                        assert(gparam.array().isFinite().all());
 
                         *gx = gparam;
                 }
@@ -64,7 +64,7 @@ const auto cmd_odims = tensor3d_dim_t{cmd_omaps, cmd_orows, cmd_ocols};
 static tensor_size_t apsize(const tensor3d_dim_t& idims, const tensor3d_dim_t& odims)
 {
         const auto params = affine_params_t{idims, odims};
-        NANO_CHECK(params.valid());
+        assert(params.valid());
         return params.psize();
 }
 
@@ -72,26 +72,8 @@ static tensor_size_t cpsize(const tensor3d_dim_t& idims,
         const tensor_size_t omaps, const tensor_size_t krows, const tensor_size_t kcols, const tensor_size_t kconn)
 {
         const auto params = conv3d_params_t{idims, omaps, kconn, krows, kcols};
-        NANO_CHECK(params.valid());
+        assert(params.valid());
         return params.psize();
-}
-
-static void test_model(model_t& model, const tensor_size_t expected_psize,
-        const scalar_t epsilon = epsilon2<scalar_t>())
-{
-        NANO_REQUIRE(model.done());
-        NANO_REQUIRE(model.resize(cmd_idims, cmd_odims));
-        NANO_CHECK_EQUAL(model.idims(), cmd_idims);
-        NANO_CHECK_EQUAL(model.odims(), cmd_odims);
-        NANO_CHECK_EQUAL(model.psize(), expected_psize);
-
-        const auto count = 3;
-        const auto loss = get_losses().get("s-logistic");
-        const auto pfun = model_wrt_params_function_t{loss, model, count};
-
-        const vector_t px = pfun.m_model.params();
-        NANO_CHECK_EQUAL(px.size(), pfun.size());
-        NANO_CHECK_LESS(pfun.grad_accuracy(px), epsilon);
 }
 
 NANO_BEGIN_MODULE(test_layers)
@@ -104,8 +86,21 @@ NANO_CASE(affine)
         NANO_CHECK(model.add(config_affine_node("3", cmd_omaps, cmd_orows, cmd_ocols)));
         NANO_CHECK(model.connect("1", "2", "3"));
 
-        test_model(model,
-                apsize(cmd_idims, {7, 1, 1}) + apsize({7, 1, 1}, cmd_odims));
+        const auto psize = apsize(cmd_idims, {7, 1, 1}) + apsize({7, 1, 1}, cmd_odims);
+
+        NANO_REQUIRE(model.done());
+        NANO_REQUIRE(model.resize(cmd_idims, cmd_odims));
+        NANO_CHECK_EQUAL(model.idims(), cmd_idims);
+        NANO_CHECK_EQUAL(model.odims(), cmd_odims);
+        NANO_CHECK_EQUAL(model.psize(), psize);
+
+        const auto count = 3;
+        const auto loss = get_losses().get("s-logistic");
+        const auto pfun = model_wrt_params_function_t{loss, model, count};
+
+        const vector_t px = pfun.m_model.params();
+        NANO_CHECK_EQUAL(px.size(), pfun.size());
+        NANO_CHECK_LESS(pfun.grad_accuracy(px), epsilon2<scalar_t>());
 }
 
 NANO_CASE(activation)
@@ -119,8 +114,21 @@ NANO_CASE(activation)
                         NANO_CHECK(model.add(config_affine_node("2", cmd_omaps, cmd_orows, cmd_ocols)));
                         NANO_CHECK(model.connect("1", "2"));
 
-                        test_model(model,
-                                apsize(cmd_idims, cmd_odims));
+                        const auto psize = apsize(cmd_idims, cmd_odims);
+
+                        NANO_REQUIRE(model.done());
+                        NANO_REQUIRE(model.resize(cmd_idims, cmd_odims));
+                        NANO_CHECK_EQUAL(model.idims(), cmd_idims);
+                        NANO_CHECK_EQUAL(model.odims(), cmd_odims);
+                        NANO_CHECK_EQUAL(model.psize(), psize);
+
+                        const auto count = 3;
+                        const auto loss = get_losses().get("s-logistic");
+                        const auto pfun = model_wrt_params_function_t{loss, model, count};
+
+                        const vector_t px = pfun.m_model.params();
+                        NANO_CHECK_EQUAL(px.size(), pfun.size());
+                        NANO_CHECK_LESS(pfun.grad_accuracy(px), epsilon2<scalar_t>());
                 }
         }
 }
@@ -133,8 +141,21 @@ NANO_CASE(conv3d1)
         NANO_CHECK(model.add(config_affine_node("3", cmd_omaps, cmd_orows, cmd_ocols)));
         NANO_CHECK(model.connect("1", "2", "3"));
 
-        test_model(model,
-                cpsize(cmd_idims, 3, 3, 3, 3) + apsize({3, 4, 4}, cmd_odims));
+        const auto psize = cpsize(cmd_idims, 3, 3, 3, 3) + apsize({3, 4, 4}, cmd_odims);
+
+        NANO_REQUIRE(model.done());
+        NANO_REQUIRE(model.resize(cmd_idims, cmd_odims));
+        NANO_CHECK_EQUAL(model.idims(), cmd_idims);
+        NANO_CHECK_EQUAL(model.odims(), cmd_odims);
+        NANO_CHECK_EQUAL(model.psize(), psize);
+
+        const auto count = 3;
+        const auto loss = get_losses().get("s-logistic");
+        const auto pfun = model_wrt_params_function_t{loss, model, count};
+
+        const vector_t px = pfun.m_model.params();
+        NANO_CHECK_EQUAL(px.size(), pfun.size());
+        NANO_CHECK_LESS(pfun.grad_accuracy(px), epsilon2<scalar_t>());
 }
 
 NANO_CASE(conv3d2)
@@ -145,8 +166,21 @@ NANO_CASE(conv3d2)
         NANO_CHECK(model.add(config_affine_node("3", cmd_omaps, cmd_orows, cmd_ocols)));
         NANO_CHECK(model.connect("1", "2", "3"));
 
-        test_model(model,
-                cpsize(cmd_idims, 4, 3, 3, 1) + apsize({4, 4, 4}, cmd_odims));
+        const auto psize = cpsize(cmd_idims, 4, 3, 3, 1) + apsize({4, 4, 4}, cmd_odims);
+
+        NANO_REQUIRE(model.done());
+        NANO_REQUIRE(model.resize(cmd_idims, cmd_odims));
+        NANO_CHECK_EQUAL(model.idims(), cmd_idims);
+        NANO_CHECK_EQUAL(model.odims(), cmd_odims);
+        NANO_CHECK_EQUAL(model.psize(), psize);
+
+        const auto count = 3;
+        const auto loss = get_losses().get("s-logistic");
+        const auto pfun = model_wrt_params_function_t{loss, model, count};
+
+        const vector_t px = pfun.m_model.params();
+        NANO_CHECK_EQUAL(px.size(), pfun.size());
+        NANO_CHECK_LESS(pfun.grad_accuracy(px), epsilon2<scalar_t>());
 }
 
 NANO_CASE(conv3d3)
@@ -157,8 +191,21 @@ NANO_CASE(conv3d3)
         NANO_CHECK(model.add(config_affine_node("3", cmd_omaps, cmd_orows, cmd_ocols)));
         NANO_CHECK(model.connect("1", "2", "3"));
 
-        test_model(model,
-                cpsize(cmd_idims, 5, 3, 3, 1) + apsize({5, 4, 4}, cmd_odims));
+        const auto psize = cpsize(cmd_idims, 5, 3, 3, 1) + apsize({5, 4, 4}, cmd_odims);
+
+        NANO_REQUIRE(model.done());
+        NANO_REQUIRE(model.resize(cmd_idims, cmd_odims));
+        NANO_CHECK_EQUAL(model.idims(), cmd_idims);
+        NANO_CHECK_EQUAL(model.odims(), cmd_odims);
+        NANO_CHECK_EQUAL(model.psize(), psize);
+
+        const auto count = 3;
+        const auto loss = get_losses().get("s-logistic");
+        const auto pfun = model_wrt_params_function_t{loss, model, count};
+
+        const vector_t px = pfun.m_model.params();
+        NANO_CHECK_EQUAL(px.size(), pfun.size());
+        NANO_CHECK_LESS(pfun.grad_accuracy(px), epsilon2<scalar_t>());
 }
 
 NANO_CASE(conv3d4)
@@ -169,8 +216,21 @@ NANO_CASE(conv3d4)
         NANO_CHECK(model.add(config_affine_node("3", cmd_omaps, cmd_orows, cmd_ocols)));
         NANO_CHECK(model.connect("1", "2", "3"));
 
-        test_model(model,
-                cpsize(cmd_idims, 6, 3, 3, 3) + apsize({6, 4, 4}, cmd_odims));
+        const auto psize = cpsize(cmd_idims, 6, 3, 3, 3) + apsize({6, 4, 4}, cmd_odims);
+
+        NANO_REQUIRE(model.done());
+        NANO_REQUIRE(model.resize(cmd_idims, cmd_odims));
+        NANO_CHECK_EQUAL(model.idims(), cmd_idims);
+        NANO_CHECK_EQUAL(model.odims(), cmd_odims);
+        NANO_CHECK_EQUAL(model.psize(), psize);
+
+        const auto count = 3;
+        const auto loss = get_losses().get("s-logistic");
+        const auto pfun = model_wrt_params_function_t{loss, model, count};
+
+        const vector_t px = pfun.m_model.params();
+        NANO_CHECK_EQUAL(px.size(), pfun.size());
+        NANO_CHECK_LESS(pfun.grad_accuracy(px), epsilon2<scalar_t>());
 }
 
 NANO_CASE(conv3d_stride1)
@@ -181,8 +241,21 @@ NANO_CASE(conv3d_stride1)
         NANO_CHECK(model.add(config_affine_node("3", cmd_omaps, cmd_orows, cmd_ocols)));
         NANO_CHECK(model.connect("1", "2", "3"));
 
-        test_model(model,
-                cpsize(cmd_idims, 3, 5, 3, 3) + apsize({3, 1, 4}, cmd_odims));
+        const auto psize = cpsize(cmd_idims, 3, 5, 3, 3) + apsize({3, 1, 4}, cmd_odims);
+
+        NANO_REQUIRE(model.done());
+        NANO_REQUIRE(model.resize(cmd_idims, cmd_odims));
+        NANO_CHECK_EQUAL(model.idims(), cmd_idims);
+        NANO_CHECK_EQUAL(model.odims(), cmd_odims);
+        NANO_CHECK_EQUAL(model.psize(), psize);
+
+        const auto count = 3;
+        const auto loss = get_losses().get("s-logistic");
+        const auto pfun = model_wrt_params_function_t{loss, model, count};
+
+        const vector_t px = pfun.m_model.params();
+        NANO_CHECK_EQUAL(px.size(), pfun.size());
+        NANO_CHECK_LESS(pfun.grad_accuracy(px), epsilon2<scalar_t>());
 }
 
 NANO_CASE(conv3d_stride2)
@@ -193,8 +266,21 @@ NANO_CASE(conv3d_stride2)
         NANO_CHECK(model.add(config_affine_node("3", cmd_omaps, cmd_orows, cmd_ocols)));
         NANO_CHECK(model.connect("1", "2", "3"));
 
-        test_model(model,
-                cpsize(cmd_idims, 3, 3, 5, 3) + apsize({3, 4, 1}, cmd_odims));
+        const auto psize = cpsize(cmd_idims, 3, 3, 5, 3) + apsize({3, 4, 1}, cmd_odims);
+
+        NANO_REQUIRE(model.done());
+        NANO_REQUIRE(model.resize(cmd_idims, cmd_odims));
+        NANO_CHECK_EQUAL(model.idims(), cmd_idims);
+        NANO_CHECK_EQUAL(model.odims(), cmd_odims);
+        NANO_CHECK_EQUAL(model.psize(), psize);
+
+        const auto count = 3;
+        const auto loss = get_losses().get("s-logistic");
+        const auto pfun = model_wrt_params_function_t{loss, model, count};
+
+        const vector_t px = pfun.m_model.params();
+        NANO_CHECK_EQUAL(px.size(), pfun.size());
+        NANO_CHECK_LESS(pfun.grad_accuracy(px), epsilon2<scalar_t>());
 }
 
 NANO_CASE(conv3d_stride3)
@@ -205,8 +291,21 @@ NANO_CASE(conv3d_stride3)
         NANO_CHECK(model.add(config_affine_node("3", cmd_omaps, cmd_orows, cmd_ocols)));
         NANO_CHECK(model.connect("1", "2", "3"));
 
-        test_model(model,
-                cpsize(cmd_idims, 3, 5, 5, 3) + apsize({3, 1, 1}, cmd_odims));
+        const auto psize = cpsize(cmd_idims, 3, 5, 5, 3) + apsize({3, 1, 1}, cmd_odims);
+
+        NANO_REQUIRE(model.done());
+        NANO_REQUIRE(model.resize(cmd_idims, cmd_odims));
+        NANO_CHECK_EQUAL(model.idims(), cmd_idims);
+        NANO_CHECK_EQUAL(model.odims(), cmd_odims);
+        NANO_CHECK_EQUAL(model.psize(), psize);
+
+        const auto count = 3;
+        const auto loss = get_losses().get("s-logistic");
+        const auto pfun = model_wrt_params_function_t{loss, model, count};
+
+        const vector_t px = pfun.m_model.params();
+        NANO_CHECK_EQUAL(px.size(), pfun.size());
+        NANO_CHECK_LESS(pfun.grad_accuracy(px), epsilon2<scalar_t>());
 }
 
 NANO_CASE(norm_global_layer)
@@ -217,8 +316,21 @@ NANO_CASE(norm_global_layer)
         NANO_CHECK(model.add(config_affine_node("3", cmd_omaps, cmd_orows, cmd_ocols)));
         NANO_CHECK(model.connect("1", "2", "3"));
 
-        test_model(model,
-                apsize(cmd_idims, cmd_odims));
+        const auto psize = apsize(cmd_idims, cmd_odims);
+
+        NANO_REQUIRE(model.done());
+        NANO_REQUIRE(model.resize(cmd_idims, cmd_odims));
+        NANO_CHECK_EQUAL(model.idims(), cmd_idims);
+        NANO_CHECK_EQUAL(model.odims(), cmd_odims);
+        NANO_CHECK_EQUAL(model.psize(), psize);
+
+        const auto count = 3;
+        const auto loss = get_losses().get("s-logistic");
+        const auto pfun = model_wrt_params_function_t{loss, model, count};
+
+        const vector_t px = pfun.m_model.params();
+        NANO_CHECK_EQUAL(px.size(), pfun.size());
+        NANO_CHECK_LESS(pfun.grad_accuracy(px), epsilon2<scalar_t>());
 }
 
 NANO_CASE(norm_plane_layer)
@@ -229,8 +341,21 @@ NANO_CASE(norm_plane_layer)
         NANO_CHECK(model.add(config_affine_node("3", cmd_omaps, cmd_orows, cmd_ocols)));
         NANO_CHECK(model.connect("1", "2", "3"));
 
-        test_model(model,
-                apsize(cmd_idims, cmd_odims));
+        const auto psize = apsize(cmd_idims, cmd_odims);
+
+        NANO_REQUIRE(model.done());
+        NANO_REQUIRE(model.resize(cmd_idims, cmd_odims));
+        NANO_CHECK_EQUAL(model.idims(), cmd_idims);
+        NANO_CHECK_EQUAL(model.odims(), cmd_odims);
+        NANO_CHECK_EQUAL(model.psize(), psize);
+
+        const auto count = 3;
+        const auto loss = get_losses().get("s-logistic");
+        const auto pfun = model_wrt_params_function_t{loss, model, count};
+
+        const vector_t px = pfun.m_model.params();
+        NANO_CHECK_EQUAL(px.size(), pfun.size());
+        NANO_CHECK_LESS(pfun.grad_accuracy(px), epsilon2<scalar_t>());
 }
 
 NANO_CASE(multi_layer0)
@@ -243,8 +368,21 @@ NANO_CASE(multi_layer0)
         NANO_CHECK(model.add(config_affine_node("5", cmd_omaps, cmd_orows, cmd_ocols)));
         NANO_CHECK(model.connect("1", "2", "3", "4", "5"));
 
-        test_model(model,
-                apsize(cmd_idims, {7, 1, 1}) + apsize({7, 1, 1}, {5, 1, 1}) + apsize({5, 1, 1}, cmd_odims));
+        const auto psize = apsize(cmd_idims, {7, 1, 1}) + apsize({7, 1, 1}, {5, 1, 1}) + apsize({5, 1, 1}, cmd_odims);
+
+        NANO_REQUIRE(model.done());
+        NANO_REQUIRE(model.resize(cmd_idims, cmd_odims));
+        NANO_CHECK_EQUAL(model.idims(), cmd_idims);
+        NANO_CHECK_EQUAL(model.odims(), cmd_odims);
+        NANO_CHECK_EQUAL(model.psize(), psize);
+
+        const auto count = 3;
+        const auto loss = get_losses().get("s-logistic");
+        const auto pfun = model_wrt_params_function_t{loss, model, count};
+
+        const vector_t px = pfun.m_model.params();
+        NANO_CHECK_EQUAL(px.size(), pfun.size());
+        NANO_CHECK_LESS(pfun.grad_accuracy(px), epsilon2<scalar_t>());
 }
 
 NANO_CASE(multi_layer1)
@@ -257,8 +395,21 @@ NANO_CASE(multi_layer1)
         NANO_CHECK(model.add(config_affine_node("5", cmd_omaps, cmd_orows, cmd_ocols)));
         NANO_CHECK(model.connect("1", "2", "3", "4", "5"));
 
-        test_model(model,
-                cpsize(cmd_idims, 7, 3, 3, 1) + cpsize({7, 4, 4}, 4, 1, 1, 1) + apsize({4, 4, 4}, cmd_odims));
+        const auto psize = cpsize(cmd_idims, 7, 3, 3, 1) + cpsize({7, 4, 4}, 4, 1, 1, 1) + apsize({4, 4, 4}, cmd_odims);
+
+        NANO_REQUIRE(model.done());
+        NANO_REQUIRE(model.resize(cmd_idims, cmd_odims));
+        NANO_CHECK_EQUAL(model.idims(), cmd_idims);
+        NANO_CHECK_EQUAL(model.odims(), cmd_odims);
+        NANO_CHECK_EQUAL(model.psize(), psize);
+
+        const auto count = 3;
+        const auto loss = get_losses().get("s-logistic");
+        const auto pfun = model_wrt_params_function_t{loss, model, count};
+
+        const vector_t px = pfun.m_model.params();
+        NANO_CHECK_EQUAL(px.size(), pfun.size());
+        NANO_CHECK_LESS(pfun.grad_accuracy(px), epsilon2<scalar_t>());
 }
 
 NANO_CASE(multi_layer2)
@@ -271,8 +422,21 @@ NANO_CASE(multi_layer2)
         NANO_CHECK(model.add(config_affine_node("5", cmd_omaps, cmd_orows, cmd_ocols)));
         NANO_CHECK(model.connect("1", "2", "3", "4", "5"));
 
-        test_model(model,
-                cpsize(cmd_idims, 7, 3, 3, 1) + cpsize({7, 4, 4}, 4, 3, 3, 1) + apsize({4, 2, 2}, cmd_odims));
+        const auto psize = cpsize(cmd_idims, 7, 3, 3, 1) + cpsize({7, 4, 4}, 4, 3, 3, 1) + apsize({4, 2, 2}, cmd_odims);
+
+        NANO_REQUIRE(model.done());
+        NANO_REQUIRE(model.resize(cmd_idims, cmd_odims));
+        NANO_CHECK_EQUAL(model.idims(), cmd_idims);
+        NANO_CHECK_EQUAL(model.odims(), cmd_odims);
+        NANO_CHECK_EQUAL(model.psize(), psize);
+
+        const auto count = 3;
+        const auto loss = get_losses().get("s-logistic");
+        const auto pfun = model_wrt_params_function_t{loss, model, count};
+
+        const vector_t px = pfun.m_model.params();
+        NANO_CHECK_EQUAL(px.size(), pfun.size());
+        NANO_CHECK_LESS(pfun.grad_accuracy(px), epsilon2<scalar_t>());
 }
 
 NANO_CASE(multi_layer3)
@@ -287,8 +451,23 @@ NANO_CASE(multi_layer3)
         NANO_CHECK(model.add(config_affine_node("7", cmd_omaps, cmd_orows, cmd_ocols)));
         NANO_CHECK(model.connect("1", "2", "3", "4", "5", "6", "7"));
 
-        test_model(model,
-                cpsize(cmd_idims, 7, 3, 3, 1) + cpsize({7, 4, 4}, 5, 3, 3, 1) + apsize({5, 2, 2}, {5, 1, 1}) + apsize({5, 1, 1}, cmd_odims));
+        const auto psize =
+                cpsize(cmd_idims, 7, 3, 3, 1) + cpsize({7, 4, 4}, 5, 3, 3, 1) + apsize({5, 2, 2}, {5, 1, 1}) +
+                apsize({5, 1, 1}, cmd_odims);
+
+        NANO_REQUIRE(model.done());
+        NANO_REQUIRE(model.resize(cmd_idims, cmd_odims));
+        NANO_CHECK_EQUAL(model.idims(), cmd_idims);
+        NANO_CHECK_EQUAL(model.odims(), cmd_odims);
+        NANO_CHECK_EQUAL(model.psize(), psize);
+
+        const auto count = 3;
+        const auto loss = get_losses().get("s-logistic");
+        const auto pfun = model_wrt_params_function_t{loss, model, count};
+
+        const vector_t px = pfun.m_model.params();
+        NANO_CHECK_EQUAL(px.size(), pfun.size());
+        NANO_CHECK_LESS(pfun.grad_accuracy(px), epsilon2<scalar_t>());
 }
 
 NANO_CASE(multi_layer4)
@@ -303,8 +482,23 @@ NANO_CASE(multi_layer4)
         NANO_CHECK(model.add(config_affine_node("7", cmd_omaps, cmd_orows, cmd_ocols)));
         NANO_CHECK(model.connect("1", "2", "3", "4", "5", "6", "7"));
 
-        test_model(model,
-                cpsize(cmd_idims, 8, 3, 3, 1) + cpsize({8, 4, 4}, 6, 3, 3, 2) + apsize({6, 2, 2}, {5, 1, 1}) + apsize({5, 1, 1}, cmd_odims));
+        const auto psize =
+                cpsize(cmd_idims, 8, 3, 3, 1) + cpsize({8, 4, 4}, 6, 3, 3, 2) + apsize({6, 2, 2}, {5, 1, 1}) +
+                apsize({5, 1, 1}, cmd_odims);
+
+        NANO_REQUIRE(model.done());
+        NANO_REQUIRE(model.resize(cmd_idims, cmd_odims));
+        NANO_CHECK_EQUAL(model.idims(), cmd_idims);
+        NANO_CHECK_EQUAL(model.odims(), cmd_odims);
+        NANO_CHECK_EQUAL(model.psize(), psize);
+
+        const auto count = 3;
+        const auto loss = get_losses().get("s-logistic");
+        const auto pfun = model_wrt_params_function_t{loss, model, count};
+
+        const vector_t px = pfun.m_model.params();
+        NANO_CHECK_EQUAL(px.size(), pfun.size());
+        NANO_CHECK_LESS(pfun.grad_accuracy(px), epsilon2<scalar_t>());
 }
 
 NANO_CASE(multi_layer5)
@@ -319,8 +513,23 @@ NANO_CASE(multi_layer5)
         NANO_CHECK(model.add(config_affine_node("7", cmd_omaps, cmd_orows, cmd_ocols)));
         NANO_CHECK(model.connect("1", "2", "3", "4", "5", "6", "7"));
 
-        test_model(model,
-                cpsize(cmd_idims, 9, 3, 3, 1) + cpsize({9, 4, 4}, 6, 3, 3, 3) + apsize({6, 2, 2}, {5, 1, 1}) + apsize({5, 1, 1}, cmd_odims));
+        const auto psize =
+                cpsize(cmd_idims, 9, 3, 3, 1) + cpsize({9, 4, 4}, 6, 3, 3, 3) + apsize({6, 2, 2}, {5, 1, 1}) +
+                apsize({5, 1, 1}, cmd_odims);
+
+        NANO_REQUIRE(model.done());
+        NANO_REQUIRE(model.resize(cmd_idims, cmd_odims));
+        NANO_CHECK_EQUAL(model.idims(), cmd_idims);
+        NANO_CHECK_EQUAL(model.odims(), cmd_odims);
+        NANO_CHECK_EQUAL(model.psize(), psize);
+
+        const auto count = 3;
+        const auto loss = get_losses().get("s-logistic");
+        const auto pfun = model_wrt_params_function_t{loss, model, count};
+
+        const vector_t px = pfun.m_model.params();
+        NANO_CHECK_EQUAL(px.size(), pfun.size());
+        NANO_CHECK_LESS(pfun.grad_accuracy(px), epsilon2<scalar_t>());
 }
 
 NANO_CASE(multi_mix_plus4d)
@@ -341,10 +550,24 @@ NANO_CASE(multi_mix_plus4d)
         NANO_CHECK(model.connect("21", "22", "23", "24", "xx"));
         NANO_CHECK(model.connect("xx", "x1", "x2", "x3", "x4"));
 
-        test_model(model,
+        const auto psize =
                 cpsize(cmd_idims, 4, 5, 5, 1) +
                 cpsize(cmd_idims, 3, 3, 3, 1) + cpsize({3, 4, 4}, 4, 3, 3, 1) +
-                apsize({4, 2, 2}, {5, 1, 1}) + apsize({5, 1, 1}, cmd_odims));
+                apsize({4, 2, 2}, {5, 1, 1}) + apsize({5, 1, 1}, cmd_odims);
+
+        NANO_REQUIRE(model.done());
+        NANO_REQUIRE(model.resize(cmd_idims, cmd_odims));
+        NANO_CHECK_EQUAL(model.idims(), cmd_idims);
+        NANO_CHECK_EQUAL(model.odims(), cmd_odims);
+        NANO_CHECK_EQUAL(model.psize(), psize);
+
+        const auto count = 3;
+        const auto loss = get_losses().get("s-logistic");
+        const auto pfun = model_wrt_params_function_t{loss, model, count};
+
+        const vector_t px = pfun.m_model.params();
+        NANO_CHECK_EQUAL(px.size(), pfun.size());
+        NANO_CHECK_LESS(pfun.grad_accuracy(px), epsilon2<scalar_t>());
 }
 
 NANO_CASE(multi_mix_tcat4d)
@@ -365,10 +588,24 @@ NANO_CASE(multi_mix_tcat4d)
         NANO_CHECK(model.connect("21", "22", "23", "24", "xx"));
         NANO_CHECK(model.connect("xx", "x1", "x2", "x3", "x4"));
 
-        test_model(model,
+        const auto psize =
                 cpsize(cmd_idims, 4, 5, 5, 1) +
                 cpsize(cmd_idims, 3, 3, 3, 1) + cpsize({3, 4, 4}, 4, 3, 3, 1) +
-                apsize({8, 2, 2}, {5, 1, 1}) + apsize({5, 1, 1}, cmd_odims));
+                apsize({8, 2, 2}, {5, 1, 1}) + apsize({5, 1, 1}, cmd_odims);
+
+        NANO_REQUIRE(model.done());
+        NANO_REQUIRE(model.resize(cmd_idims, cmd_odims));
+        NANO_CHECK_EQUAL(model.idims(), cmd_idims);
+        NANO_CHECK_EQUAL(model.odims(), cmd_odims);
+        NANO_CHECK_EQUAL(model.psize(), psize);
+
+        const auto count = 3;
+        const auto loss = get_losses().get("s-logistic");
+        const auto pfun = model_wrt_params_function_t{loss, model, count};
+
+        const vector_t px = pfun.m_model.params();
+        NANO_CHECK_EQUAL(px.size(), pfun.size());
+        NANO_CHECK_LESS(pfun.grad_accuracy(px), epsilon2<scalar_t>());
 }
 
 NANO_END_MODULE()

@@ -22,20 +22,20 @@ struct loss_function_t final : public function_t
 
         scalar_t vgrad(const vector_t& x, vector_t* gx) const override
         {
-                NANO_CHECK_EQUAL(x.size(), m_targets.size());
+                assert(x.size() == m_targets.size());
                 const auto scores = map_tensor(x.data(), m_targets.dims());
 
                 if (gx)
                 {
                         const auto grads = m_loss->vgrad(m_targets, scores);
-                        NANO_CHECK_EQUAL(gx->size(), grads.size());
-                        NANO_CHECK(grads.array().isFinite().all());
+                        assert(gx->size() == grads.size());
+                        assert(grads.array().isFinite().all());
 
                         *gx = grads.vector();
                 }
 
                 const auto values = m_loss->value(m_targets, scores);
-                NANO_CHECK(values.array().isFinite().all());
+                assert(values.array().isFinite().all());
                 return values.vector().sum();
         }
 

@@ -50,18 +50,6 @@ infos_t make_infos(const tinfos&... infos)
         return {infos...};
 }
 
-void check_conn(const digraph_t& g, const conn_t& conn)
-{
-        for (size_t u = 0; u < g.vertices(); ++ u)
-        {
-                for (size_t v = 0; v < g.vertices(); ++ v)
-                {
-                        const bool connected = std::find(conn.begin(), conn.end(), std::make_pair(u, v)) != conn.end();
-                        NANO_CHECK_EQUAL(g.connected(u, v), connected);
-                }
-        }
-}
-
 NANO_BEGIN_MODULE(test_digraph)
 
 NANO_CASE(graph0)
@@ -75,7 +63,15 @@ NANO_CASE(graph0)
                 {0u, 0u}, {0u, 1u}, {0u, 2u},
                 {1u, 2u}
         };
-        check_conn(g, conn);
+
+        for (size_t u = 0; u < g.vertices(); ++ u)
+        {
+                for (size_t v = 0; v < g.vertices(); ++ v)
+                {
+                        const bool connected = std::find(conn.begin(), conn.end(), std::make_pair(u, v)) != conn.end();
+                        NANO_CHECK_EQUAL(g.connected(u, v), connected);
+                }
+        }
 
         NANO_CHECK_EQUAL(g.sources(), make_indices());
         NANO_CHECK_EQUAL(g.in(0), make_indices(0u));
@@ -110,7 +106,15 @@ NANO_CASE(graph1)
                 {1u, 2u}, {1u, 0u},
                 {2u, 0u}, {2u, 1u}
         };
-        check_conn(g, conn);
+
+        for (size_t u = 0; u < g.vertices(); ++ u)
+        {
+                for (size_t v = 0; v < g.vertices(); ++ v)
+                {
+                        const bool connected = std::find(conn.begin(), conn.end(), std::make_pair(u, v)) != conn.end();
+                        NANO_CHECK_EQUAL(g.connected(u, v), connected);
+                }
+        }
 
         NANO_CHECK_EQUAL(g.sources(), make_indices());
         NANO_CHECK_EQUAL(g.in(0), make_indices(2u));
@@ -147,7 +151,15 @@ NANO_CASE(graph2)
                 {1u, 2u},
                 {3u, 2u}, {3u, 4u}
         };
-        check_conn(g, conn);
+
+        for (size_t u = 0; u < g.vertices(); ++ u)
+        {
+                for (size_t v = 0; v < g.vertices(); ++ v)
+                {
+                        const bool connected = std::find(conn.begin(), conn.end(), std::make_pair(u, v)) != conn.end();
+                        NANO_CHECK_EQUAL(g.connected(u, v), connected);
+                }
+        }
 
         NANO_CHECK_EQUAL(g.sources(), make_indices(0u, 3u));
         NANO_CHECK_EQUAL(g.in(0), make_indices());
@@ -198,7 +210,15 @@ NANO_CASE(graph3)
                 {4u, 5u}, {4u, 2u},
                 {5u, 2u}
         };
-        check_conn(g, conn);
+
+        for (size_t u = 0; u < g.vertices(); ++ u)
+        {
+                for (size_t v = 0; v < g.vertices(); ++ v)
+                {
+                        const bool connected = std::find(conn.begin(), conn.end(), std::make_pair(u, v)) != conn.end();
+                        NANO_CHECK_EQUAL(g.connected(u, v), connected);
+                }
+        }
 
         NANO_CHECK_EQUAL(g.sources(), make_indices(0u, 3u));
         NANO_CHECK_EQUAL(g.in(0), make_indices());
@@ -245,7 +265,15 @@ NANO_CASE(graph4)
                 {3u, 4u}, {3u, 0u}, {3u, 1u}, {3u, 2u},
                 {4u, 0u}, {4u, 1u}, {4u, 2u}
         };
-        check_conn(g, conn);
+
+        for (size_t u = 0; u < g.vertices(); ++ u)
+        {
+                for (size_t v = 0; v < g.vertices(); ++ v)
+                {
+                        const bool connected = std::find(conn.begin(), conn.end(), std::make_pair(u, v)) != conn.end();
+                        NANO_CHECK_EQUAL(g.connected(u, v), connected);
+                }
+        }
 
         NANO_CHECK_EQUAL(g.sources(), make_indices(3u));
         NANO_CHECK_EQUAL(g.in(0), make_indices(4u));
@@ -291,7 +319,15 @@ NANO_CASE(graph5)
                 {5u, 6u}, {5u, 4u},
                 {6u, 4u}, {6u, 5u}
         };
-        check_conn(g, conn);
+
+        for (size_t u = 0; u < g.vertices(); ++ u)
+        {
+                for (size_t v = 0; v < g.vertices(); ++ v)
+                {
+                        const bool connected = std::find(conn.begin(), conn.end(), std::make_pair(u, v)) != conn.end();
+                        NANO_CHECK_EQUAL(g.connected(u, v), connected);
+                }
+        }
 
         NANO_CHECK_EQUAL(g.sources(), make_indices(0u, 2u));
         NANO_CHECK_EQUAL(g.in(0), make_indices());
@@ -343,7 +379,15 @@ NANO_CASE(graph6)
                 {4u, 6u},
                 {5u, 6u}
         };
-        check_conn(g, conn);
+
+        for (size_t u = 0; u < g.vertices(); ++ u)
+        {
+                for (size_t v = 0; v < g.vertices(); ++ v)
+                {
+                        const bool connected = std::find(conn.begin(), conn.end(), std::make_pair(u, v)) != conn.end();
+                        NANO_CHECK_EQUAL(g.connected(u, v), connected);
+                }
+        }
 
         NANO_CHECK_EQUAL(g.sources(), make_indices(0u));
         NANO_CHECK_EQUAL(g.in(0), make_indices());
@@ -400,7 +444,15 @@ NANO_CASE(graph7)
                 {8u, 9u}, {8u, 10u},
                 {9u, 10u},
         };
-        check_conn(g, conn);
+
+        for (size_t u = 0; u < g.vertices(); ++ u)
+        {
+                for (size_t v = 0; v < g.vertices(); ++ v)
+                {
+                        const bool connected = std::find(conn.begin(), conn.end(), std::make_pair(u, v)) != conn.end();
+                        NANO_CHECK_EQUAL(g.connected(u, v), connected);
+                }
+        }
 
         NANO_CHECK_EQUAL(g.sources(), make_indices(0u));
         NANO_CHECK_EQUAL(g.in(0), make_indices());

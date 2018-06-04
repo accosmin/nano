@@ -1,18 +1,38 @@
 #include "utest.h"
 #include "vision/rect.h"
 
-namespace test
+NANO_BEGIN_MODULE(test_geom)
+
+NANO_CASE(construct_point)
 {
-        void check_point(nano::coord_t x, nano::coord_t y)
+        for (const auto& xy : {
+                std::make_tuple<nano::coord_t>(+3, +7),
+                std::make_tuple<nano::coord_t>(+7, +3),
+                std::make_tuple<nano::coord_t>(-5, -1),
+                std::make_tuple<nano::coord_t>(-9, +1)})
         {
+                const auto x = std::get<0>(xy);
+                const auto y = std::get<1>(xy);
+
                 const nano::point_t point(x, y);
 
                 NANO_CHECK_EQUAL(point.x(), x);
                 NANO_CHECK_EQUAL(point.y(), y);
         }
+}
 
-        void check_rect(nano::coord_t x, nano::coord_t y, nano::coord_t w, nano::coord_t h)
+NANO_CASE(construct_rect)
+{
+        for (const auto& xywh : {
+                std::make_tuple<nano::coord_t>(0, 0, 8, 6),
+                std::make_tuple<nano::coord_t>(1, 2, 3, 4),
+                std::make_tuple<nano::coord_t>(-1, -1, 7, 5)})
         {
+                const auto x = std::get<0>(xywh);
+                const auto y = std::get<1>(xywh);
+                const auto w = std::get<2>(xywh);
+                const auto h = std::get<3>(xywh);
+
                 const nano::rect_t rect(x, y, w, h);
 
                 NANO_CHECK_EQUAL(rect.left(),          x);
@@ -28,23 +48,6 @@ namespace test
 
                 NANO_CHECK_EQUAL(rect.valid(),         rect.area() > 0);
         }
-}
-
-NANO_BEGIN_MODULE(test_geom)
-
-NANO_CASE(construct_point)
-{
-        test::check_point(3, 7);
-        test::check_point(7, 3);
-        test::check_point(-5, -1);
-        test::check_point(-9, +1);
-}
-
-NANO_CASE(construct_rect)
-{
-        test::check_rect(0, 0, 8, 6);
-        test::check_rect(1, 2, 3, 4);
-        test::check_rect(-1, -1, 7, 5);
 }
 
 NANO_CASE(operations)

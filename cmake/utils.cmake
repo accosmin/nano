@@ -18,7 +18,7 @@ macro(if_flag flag output)
         string(TOUPPER ${FLAG5} FLAGZ)
 
         #CHECK_CXX_COMPILER_FLAG(${flag} COMPILER_SUPPORTS${FLAGZ})
-        set(CMAKE_REQUIRED_FLAGS "${flag}")
+        set(CMAKE_REQUIRED_FLAGS "${flag} -Werror")
         CHECK_CXX_SOURCE_COMPILES("${TEST_PROGRAM}" COMPILER_SUPPORTS${FLAGZ})
 
         if(COMPILER_SUPPORTS${FLAGZ})
