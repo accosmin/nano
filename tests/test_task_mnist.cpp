@@ -16,6 +16,20 @@ NANO_CASE(failed)
         NANO_CHECK(!task->load());
 }
 
+NANO_CASE(default_config)
+{
+        const auto task = nano::get_tasks().get("mnist");
+        NANO_REQUIRE(task);
+
+        json_t json;
+        task->to_json(json);
+
+        size_t folds = 0;
+        from_json(json, "folds", folds);
+
+        NANO_CHECK_EQUAL(folds, 10u);
+}
+
 NANO_CASE(loading)
 {
         const auto idims = tensor3d_dim_t{1, 28, 28};

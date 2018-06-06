@@ -6,6 +6,20 @@ using namespace nano;
 
 NANO_BEGIN_MODULE(test_task_parity)
 
+NANO_CASE(default_config)
+{
+        const auto task = nano::get_tasks().get("synth-parity");
+        NANO_REQUIRE(task);
+
+        json_t json;
+        task->to_json(json);
+
+        size_t folds = 0;
+        from_json(json, "folds", folds);
+
+        NANO_CHECK_EQUAL(folds, 10u);
+}
+
 NANO_CASE(construction)
 {
         const auto idims = tensor3d_dim_t{11, 1, 1};

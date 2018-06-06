@@ -6,6 +6,20 @@ using namespace nano;
 
 NANO_BEGIN_MODULE(test_task_peak2d)
 
+NANO_CASE(default_config)
+{
+        const auto task = nano::get_tasks().get("synth-peak2d");
+        NANO_REQUIRE(task);
+
+        json_t json;
+        task->to_json(json);
+
+        size_t folds = 0;
+        from_json(json, "folds", folds);
+
+        NANO_CHECK_EQUAL(folds, 10u);
+}
+
 NANO_CASE(construction)
 {
         const auto irows = 14;
