@@ -16,34 +16,31 @@ spinner()
         printf "      \r"
 }
 
-checks="clang-tidy-misc
-        clang-tidy-bugprone
-        clang-tidy-modernize
-        clang-tidy-performance
-        clang-tidy-clang-analyzer"
-#        clang-tidy-cert
-#        clang-tidy-readability
-#        clang-tidy-cppcoreguidelines"
+check=$1
 
-warnings=0
-for check in $checks
-do
-        printf "running $check ...\n"
-        log=${check//-/_}.log
-        ninja $check > $log&
-        spinner
+# clang-tidy-misc
+# clang-tidy-bugprone
+# clang-tidy-modernize
+# clang-tidy-performance
+# clang-tidy-clang-analyzer"
+# clang-tidy-cert
+# clang-tidy-readability
+# clang-tidy-cppcoreguidelines"
 
-        cat $log | grep warning: | grep -oE "[^ ]+$" | sort | uniq -c
-        printf "\n"
+printf "running $check ...\n"
+log=${check//-/_}.log
+ninja $check > $log&
+spinner
 
-        count=$(cat $log | grep warning: | sort -u | wc -l)
-        #grep warning: $log
-        if [[ $count -gt 0 ]]
-        then
-                cat $log
-        fi
-        warnings=$((warnings + $count))
-done
+cat $log | grep warning: | grep -oE "[^ ]+$" | sort | uniq -c
+printf "\n"
+
+warnings=$(cat $log | grep warning: | sort -u | wc -l)
+#grep warning: $log
+if [[ $warnings -gt 0 ]]
+then
+        cat $log
+fi
 
 if [[ $warnings -gt 0 ]]
 then
