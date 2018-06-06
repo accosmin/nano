@@ -129,49 +129,62 @@ matrix:
     #    - bash ../scripts/ci_ctest.sh
 
     - os: linux
-      compiler: clang
-      env: TEST="ASAN (clang-5.0)"
+      compiler: gcc
+      env: TEST="ASAN (gcc-7)"
       addons:
         apt:
-          packages: ['clang-5.0', 'libdevil-dev', 'libarchive-dev', 'libc++-dev', 'libc++abi-dev', 'ninja-build']
+          packages: ['gcc-7', 'g++-7', 'libdevil-dev', 'libarchive-dev', 'ninja-build']
           sources: &sources
-            - llvm-toolchain-trusty-5.0
+            - ubuntu-toolchain-r-test
           update: true
       script:
-        - PATH=$PATH:/usr/lib/llvm-5.0/bin/
-        - cmake -G "Ninja" -DCMAKE_CXX_COMPILER=clang++-5.0 -DNANO_WITH_WERROR=ON -DNANO_WITH_ASAN=ON -DNANO_WITH_LIBCPP=ON ..
+        - cmake -G "Ninja" -DCMAKE_CXX_COMPILER=g++-7 -DNANO_WITH_WERROR=ON -DNANO_WITH_ASAN=ON ..
         - ninja
         - bash ../scripts/ci_ctest.sh
-
-    #- os: linux
-    #  compiler: clang
-    #  env: TEST="MSAN (clang-5.0)"
-    #  addons:
-    #    apt:
-    #      packages: ['clang-5.0', 'libdevil-dev', 'libarchive-dev', 'libc++-dev', 'libc++abi-dev', 'ninja-build']
-    #      sources: &sources
-    #        - llvm-toolchain-trusty-5.0
-    #      update: true
-    #  script:
-    #    - PATH=$PATH:/usr/lib/llvm-5.0/bin/
-    #    - cmake -G "Ninja" -DCMAKE_CXX_COMPILER=clang++-5.0 -DNANO_WITH_WERROR=ON -DNANO_WITH_MSAN=ON -DNANO_WITH_LIBCPP=ON ..
-    #    - ninja
-    #    - bash ../scripts/ci_ctest.sh
 
     - os: linux
-      compiler: clang
-      env: TEST="TSAN (clang-5.0)"
+      compiler: gcc
+      env: TEST="LSAN (gcc-7)"
       addons:
         apt:
-          packages: ['clang-5.0', 'libdevil-dev', 'libarchive-dev', 'libc++-dev', 'libc++abi-dev', 'ninja-build']
+          packages: ['gcc-7', 'g++-7', 'libdevil-dev', 'libarchive-dev', 'ninja-build']
           sources: &sources
-            - llvm-toolchain-trusty-5.0
+            - ubuntu-toolchain-r-test
           update: true
       script:
-        - PATH=$PATH:/usr/lib/llvm-5.0/bin/
-        - cmake -G "Ninja" -DCMAKE_CXX_COMPILER=clang++-5.0 -DNANO_WITH_WERROR=ON -DNANO_WITH_TSAN=ON -DNANO_WITH_LIBCPP=ON ..
+        - cmake -G "Ninja" -DCMAKE_CXX_COMPILER=g++-7 -DNANO_WITH_WERROR=ON -DNANO_WITH_LSAN=ON ..
         - ninja
         - bash ../scripts/ci_ctest.sh
+
+    - os: linux
+      compiler: gcc
+      env: TEST="USAN (gcc-7)"
+      addons:
+        apt:
+          packages: ['gcc-7', 'g++-7', 'libdevil-dev', 'libarchive-dev', 'ninja-build']
+          sources: &sources
+            - ubuntu-toolchain-r-test
+          update: true
+      script:
+        - cmake -G "Ninja" -DCMAKE_CXX_COMPILER=g++-7 -DNANO_WITH_WERROR=ON -DNANO_WITH_USAN=ON ..
+        - ninja
+        - bash ../scripts/ci_ctest.sh
+
+    - os: linux
+      compiler: gcc
+      env: TEST="TSAN (gcc-7)"
+      addons:
+        apt:
+          packages: ['gcc-7', 'g++-7', 'libdevil-dev', 'libarchive-dev', 'ninja-build']
+          sources: &sources
+            - ubuntu-toolchain-r-test
+          update: true
+      script:
+        - cmake -G "Ninja" -DCMAKE_CXX_COMPILER=g++-7 -DNANO_WITH_WERROR=ON -DNANO_WITH_TSAN=ON ..
+        - ninja
+        - bash ../scripts/ci_ctest.sh
+
+    # todo: support for MSAN
 
     - os: linux
       compiler: clang
@@ -183,7 +196,6 @@ matrix:
             - llvm-toolchain-trusty-5.0
           update: true
       script:
-        - PATH=$PATH:/usr/lib/llvm-5.0/bin/
         - cmake -G "Ninja" -DCMAKE_CXX_COMPILER=clang++-5.0 -DNANO_WITH_WERROR=ON -DNANO_WITH_LIBCPP=ON -DNANO_WITH_CLANG_TIDY=ON ..
         - bash ../scripts/ci_clang_tidy.sh
 
@@ -199,16 +211,16 @@ matrix:
         - bash ../scripts/ci_cppcheck.sh
 
     - os: linux
-      compiler: clang
-      env: TEST="valgrind (clang-5.0)"
+      compiler: gcc
+      env: TEST="valgrind (gcc-7)"
       addons:
         apt:
-          packages: ['clang-5.0', 'valgrind', 'libdevil-dev', 'libarchive-dev', 'libc++-dev', 'libc++abi-dev', 'ninja-build']
+          packages: ['gcc-7', 'g++-7', 'libdevil-dev', 'libarchive-dev', 'ninja-build']
           sources: &sources
-            - llvm-toolchain-trusty-5.0
+            - ubuntu-toolchain-r-test
           update: true
       script:
-        - cmake -G "Ninja" -DCMAKE_CXX_COMPILER=clang++-5.0 -DCMAKE_BUILD_TYPE=Release -DNANO_WITH_WERROR=ON -DNANO_WITH_LIBCPP=ON -DNANO_WITH_TUNE_NATIVE=OFF ..
+        - cmake -G "Ninja" -DCMAKE_CXX_COMPILER=g++-7 -DCMAKE_BUILD_TYPE=Release -DNANO_WITH_WERROR=ON -DNANO_WITH_TUNE_NATIVE=OFF ..
         - ninja
         - bash ../scripts/ci_valgrind.sh
 

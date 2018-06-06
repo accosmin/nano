@@ -1,4 +1,6 @@
-option(NANO_WITH_ASAN                   "build with address sanitizers suppport (if available)"         OFF)
+option(NANO_WITH_ASAN                   "build with address sanitizer suppport (if available)"          OFF)
+option(NANO_WITH_USAN                   "build with undefined sanitizer suppport (if available)"        OFF)
+option(NANO_WITH_LSAN                   "build with leak sanitizer suppport (if available)"             OFF)
 option(NANO_WITH_MSAN                   "build with memory sanitizer suppport (if available)"           OFF)
 option(NANO_WITH_TSAN                   "build with thread sanitizer suppport (if available)"           OFF)
 option(NANO_WITH_LIBCPP                 "use libc++ instead of default libstdc++ (if applicable)"       OFF)

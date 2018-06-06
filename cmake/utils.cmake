@@ -42,17 +42,33 @@ function(setup_libcpp)
         to_parent()
 endfunction()
 
-# setup sanitizers compatible with address sanitizer
+# setup address sanitizer
 function(setup_asan)
         if_flag("-fsanitize=address" CMAKE_CXX_FLAGS)
+        if_flag("-fsanitize=pointer-compare" CMAKE_CXX_FLAGS)
+        if_flag("-fsanitize=pointer-subtract" CMAKE_CXX_FLAGS)
+        if_flag("-O1" CMAKE_CXX_FLAGS)
+        if_flag("-fno-omit-frame-pointer" CMAKE_CXX_FLAGS)
+        if_flag("-fno-optimize-sibling-calls" CMAKE_CXX_FLAGS)
+        to_parent()
+endfunction()
+
+# setup undefined sanitizer
+function(setup_usan)
         if_flag("-fsanitize=undefined" CMAKE_CXX_FLAGS)
-        if_flag("-fsanitize=leak" CMAKE_CXX_FLAGS)
         if_flag("-fsanitize=integer" CMAKE_CXX_FLAGS)
         if_flag("-fsanitize=nullability" CMAKE_CXX_FLAGS)
         if_flag("-fsanitize=unsigned-integer-overflow" CMAKE_CXX_FLAGS)
-        if_flag("-fsanitize=pointer-compare" CMAKE_CXX_FLAGS)
-        if_flag("-fsanitize=pointer-subtract" CMAKE_CXX_FLAGS)
         if_flag("-fno-sanitize=vptr" CMAKE_CXX_FLAGS)
+        if_flag("-O1" CMAKE_CXX_FLAGS)
+        if_flag("-fno-omit-frame-pointer" CMAKE_CXX_FLAGS)
+        if_flag("-fno-optimize-sibling-calls" CMAKE_CXX_FLAGS)
+        to_parent()
+endfunction()
+
+# setup leak sanitizer
+function(setup_lsan)
+        if_flag("-fsanitize=leak" CMAKE_CXX_FLAGS)
         if_flag("-O1" CMAKE_CXX_FLAGS)
         if_flag("-fno-omit-frame-pointer" CMAKE_CXX_FLAGS)
         if_flag("-fno-optimize-sibling-calls" CMAKE_CXX_FLAGS)
