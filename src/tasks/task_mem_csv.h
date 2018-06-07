@@ -13,7 +13,7 @@ namespace nano
         {
         public:
 
-                mem_csv_task_t(const string_t& name, const string_t& path, const size_t label_column);
+                mem_csv_task_t(string_t name, string_t path, const size_t label_column);
 
                 bool populate() final;
                 void to_json(json_t&) const final;

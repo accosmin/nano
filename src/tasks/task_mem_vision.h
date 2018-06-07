@@ -14,9 +14,9 @@ namespace nano
                         const size_t index,
                         const vector_t& target,
                         string_t label = string_t(),
-                        rect_t region = rect_t()) :
+                        const rect_t& region = rect_t()) :
                         m_index(index),
-                        m_region(std::move(region)),
+                        m_region(region),
                         m_target(nano::map_tensor(target.data(), target.size(), 1, 1)),
                         m_label(std::move(label))
                 {

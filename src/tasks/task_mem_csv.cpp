@@ -61,10 +61,10 @@ static bool load_labels(const string_t& name, const table_t& table, const size_t
         return true;
 }
 
-mem_csv_task_t::mem_csv_task_t(const string_t& name, const string_t& path, const size_t label_column) :
+mem_csv_task_t::mem_csv_task_t(string_t name, string_t path, const size_t label_column) :
         mem_tensor_task_t(make_dims(1, 1, 1), make_dims(1, 1, 1), 10),
-        m_name(name),
-        m_path(path),
+        m_name(std::move(name)),
+        m_path(std::move(path)),
         m_label_column(label_column)
 {
 }
