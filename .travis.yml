@@ -267,7 +267,7 @@ matrix:
       env: TEST="valgrind (gcc-7)"
       addons:
         apt:
-          packages: ['gcc-7', 'g++-7', 'libdevil-dev', 'libarchive-dev', 'ninja-build']
+          packages: ['gcc-7', 'g++-7', 'libdevil-dev', 'libarchive-dev', 'ninja-build', 'valgrind']
           sources: &sources
             - ubuntu-toolchain-r-test
           update: true
