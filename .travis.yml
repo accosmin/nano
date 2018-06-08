@@ -138,7 +138,7 @@ matrix:
             - ubuntu-toolchain-r-test
           update: true
       script:
-        - cmake -G "Ninja" -DCMAKE_CXX_COMPILER=g++-7 -DNANO_WITH_WERROR=ON -DNANO_WITH_ASAN=ON ..
+        - cmake -G "Ninja" -DCMAKE_CXX_COMPILER=g++-7 -DNANO_WITH_WERROR=ON -DNANO_WITH_ASAN=ON -DNANO_WITH_GOLD=ON ..
         - ninja
         - bash ../scripts/ci_ctest.sh
 
@@ -152,7 +152,7 @@ matrix:
             - ubuntu-toolchain-r-test
           update: true
       script:
-        - cmake -G "Ninja" -DCMAKE_CXX_COMPILER=g++-7 -DNANO_WITH_WERROR=ON -DNANO_WITH_LSAN=ON ..
+        - cmake -G "Ninja" -DCMAKE_CXX_COMPILER=g++-7 -DNANO_WITH_WERROR=ON -DNANO_WITH_LSAN=ON -DNANO_WITH_GOLD=ON ..
         - ninja
         - bash ../scripts/ci_ctest.sh
 
@@ -166,7 +166,7 @@ matrix:
             - ubuntu-toolchain-r-test
           update: true
       script:
-        - cmake -G "Ninja" -DCMAKE_CXX_COMPILER=g++-7 -DNANO_WITH_WERROR=ON -DNANO_WITH_USAN=ON ..
+        - cmake -G "Ninja" -DCMAKE_CXX_COMPILER=g++-7 -DNANO_WITH_WERROR=ON -DNANO_WITH_USAN=ON -DNANO_WITH_GOLD=ON ..
         - ninja
         - bash ../scripts/ci_ctest.sh
 
@@ -180,7 +180,7 @@ matrix:
             - ubuntu-toolchain-r-test
           update: true
       script:
-        - cmake -G "Ninja" -DCMAKE_CXX_COMPILER=g++-7 -DNANO_WITH_WERROR=ON -DNANO_WITH_TSAN=ON ..
+        - cmake -G "Ninja" -DCMAKE_CXX_COMPILER=g++-7 -DNANO_WITH_WERROR=ON -DNANO_WITH_TSAN=ON -DNANO_WITH_GOLD=ON ..
         - ninja
         - bash ../scripts/ci_ctest.sh
 
