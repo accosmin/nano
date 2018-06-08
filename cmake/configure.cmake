@@ -2,7 +2,7 @@ include(cmake/utils.cmake)
 
 # setup compiler (gcc or clang)
 if(CMAKE_CXX_COMPILER_ID MATCHES GNU OR CMAKE_CXX_COMPILER_ID MATCHES Clang)
-        message("++ Compiling with ${CMAKE_CXX_COMPILER_ID} ${CMAKE_CXX_COMPILER_VERSION} ...")
+        message(STATUS "Compiling with ${CMAKE_CXX_COMPILER_ID} ${CMAKE_CXX_COMPILER_VERSION} ...")
 
         require_cpp14()
 
@@ -72,7 +72,7 @@ endif()
 
 # setup compiler (unsupported)
 else()
-        message(WARNING "++ Compiling with an unsupported compiler ...")
+        message(WARNING "Compiling with an unsupported compiler ...")
 endif()
 
 # set clang-tidy
@@ -92,16 +92,16 @@ endif()
 
 # scalar type
 if((NANO_WITH_FLOAT_SCALAR) AND (NOT NANO_WITH_DOUBLE_SCALAR) AND (NOT NANO_WITH_LONG_DOUBLE_SCALAR))
-        message("++ Using float as the default scalar type.")
+        message(STATUS "Using float as the default scalar type.")
         add_definitions(-DNANO_FLOAT_SCALAR)
 elseif((NOT NANO_WITH_FLOAT_SCALAR) AND (NANO_WITH_DOUBLE_SCALAR) AND (NOT NANO_WITH_LONG_DOUBLE_SCALAR))
-        message("++ Using double as the default scalar type.")
+        message(STATUS "Using double as the default scalar type.")
         add_definitions(-DNANO_DOUBLE_SCALAR)
 elseif((NOT NANO_WITH_FLOAT_SCALAR) AND (NOT NANO_WITH_DOUBLE_SCALAR) AND (NANO_WITH_LONG_DOUBLE_SCALAR))
-        message("++ Using long double as the default scalar type.")
+        message(STATUS "Using long double as the default scalar type.")
         add_definitions(-DNANO_LONG_DOUBLE_SCALAR)
 else()
-        message(FATAL_ERROR "++ The scalar type is not specified! Use one of the NANO_WITH_[FLOAT|DOUBLE|LONG_DOUBLE]_SCALAR options.")
+        message(FATAL_ERROR "The scalar type is not specified! Use one of the NANO_WITH_[FLOAT|DOUBLE|LONG_DOUBLE]_SCALAR options.")
 endif()
 
 # setup ctest with valgrind
