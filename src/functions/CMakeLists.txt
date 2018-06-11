@@ -1,5 +1,4 @@
 list(APPEND libnano_sources
-        ${CMAKE_CURRENT_SOURCE_DIR}/sum_squares.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/axis_ellipsoid.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/cauchy.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/chung_reynolds.cpp
