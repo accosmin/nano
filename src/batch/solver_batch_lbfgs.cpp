@@ -7,7 +7,9 @@ using namespace nano;
 
 void batch_lbfgs_t::from_json(const json_t& json)
 {
-        nano::from_json(json, "ls_init", m_ls_init, "ls_strat", m_ls_strat, "c1", m_c1, "c2", m_c2);
+        nano::from_json(json,
+                "ls_init", m_ls_init, "ls_strat", m_ls_strat,
+                "c1", m_c1, "c2", m_c2, "history", m_history_size);
 }
 
 void batch_lbfgs_t::to_json(json_t& json) const
@@ -15,7 +17,7 @@ void batch_lbfgs_t::to_json(json_t& json) const
         nano::to_json(json,
                 "ls_init", m_ls_init, "ls_inits", join(enum_values<ls_initializer>()),
                 "ls_strat", m_ls_strat, "ls_strats", join(enum_values<ls_strategy>()),
-                "c1", m_c1, "c2", m_c2);
+                "c1", m_c1, "c2", m_c2, "history", m_history_size);
 }
 
 solver_state_t batch_lbfgs_t::minimize(const batch_params_t& param, const function_t& function, const vector_t& x0) const
@@ -41,7 +43,7 @@ solver_state_t batch_lbfgs_t::minimize(const batch_params_t& param, const functi
                 auto itr_s = ss.rbegin();
                 auto itr_y = ys.rbegin();
                 std::vector<scalar_t> alphas;
-                for (std::size_t j = 1; j <= param.m_lbfgs_hsize && i >= j; j ++)
+                for (std::size_t j = 1; j <= m_history_size && i >= j; j ++)
                 {
                         const vector_t& s = (*itr_s ++);
                         const vector_t& y = (*itr_y ++);
@@ -65,7 +67,7 @@ solver_state_t batch_lbfgs_t::minimize(const batch_params_t& param, const functi
                 auto it_s = ss.begin();
                 auto it_y = ys.begin();
                 auto itr_alpha = alphas.rbegin();
-                for (std::size_t j = 1; j <= param.m_lbfgs_hsize && i >= j; j ++)
+                for (std::size_t j = 1; j <= m_history_size && i >= j; j ++)
                 {
                         const vector_t& s = (*it_s ++);
                         const vector_t& y = (*it_y ++);
@@ -90,7 +92,7 @@ solver_state_t batch_lbfgs_t::minimize(const batch_params_t& param, const functi
                 // see: "A Multi-Batch L-BFGS Method for Machine Learning", page 6 - the non-convex case
                 ss.emplace_back(cstate.x - pstate.x);
                 ys.emplace_back(cstate.g - pstate.g);
-                if (ss.size() > param.m_lbfgs_hsize)
+                if (ss.size() > m_history_size)
                 {
                         ss.pop_front();
                         ys.pop_front();

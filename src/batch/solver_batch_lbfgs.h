@@ -25,5 +25,6 @@ namespace nano
                 ls_strategy     m_ls_strat{ls_strategy::interpolation};
                 scalar_t        m_c1{static_cast<scalar_t>(1e-4)};
                 scalar_t        m_c2{static_cast<scalar_t>(0.9)};
+                size_t          m_history_size{6};                      ///< history size (#previous gradients to consider)
         };
 }
