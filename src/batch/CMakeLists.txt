@@ -1,6 +1,7 @@
 list(APPEND libnano_sources
         ${CMAKE_CURRENT_SOURCE_DIR}/solver_batch_gd.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/solver_batch_cgd.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/solver_batch_nag.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/solver_batch_lbfgs.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/ls_backtrack.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/ls_cgdescent.cpp
