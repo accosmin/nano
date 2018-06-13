@@ -1,21 +1,22 @@
 #pragma once
 
+#include "tuner.h"
 #include "factory.h"
 #include "configurable.h"
-#include "optimization_state.h"
+#include "solver_state.h"
 
 namespace nano
 {
-        class optimizer_t;
-        using optimizer_factory_t = factory_t<optimizer_t>;
-        using roptimizer_t = optimizer_factory_t::trobject;
+        class solver_t;
+        using solver_factory_t = factory_t<solver_t>;
+        using rsolver_t = solver_factory_t::trobject;
 
-        NANO_PUBLIC optimizer_factory_t& get_optimizers();
+        NANO_PUBLIC solver_factory_t& get_solvers();
 
         ///
         /// \brief generic (batch) optimization algorithm typically using an adaptive line-search method.
         ///
-        class NANO_PUBLIC optimizer_t : public configurable_t
+        class NANO_PUBLIC solver_t : public configurable_t
         {
         public:
 
@@ -27,10 +28,15 @@ namespace nano
                 ///
                 /// \brief minimize the given function starting from the initial point x0
                 ///
-                virtual optimization_state_t_state_t minimize(
+                virtual solver_state_t minimize(
                         const size_t max_iterations, const scalar_t epsilon,
                         const function_t&, const vector_t& x0,
                         const logger_t& logger = logger_t()) const = 0;
+
+                ///
+                /// \brief generate the hyper-parameters to tune.
+                ///
+                virtual tuner_t tuner() const = 0;
 
         protected:
 
@@ -54,31 +60,31 @@ namespace nano
                 {
                         assert(function.size() == x0.size());
 
-                        auto cstate = make_state(function, x0);
+                        auto state = solver_state_t{function, x0};
 
                         for (size_t i = 0; i < max_iterations; i ++)
                         {
-                                const auto step_ok = solver(cstate, i) && cstate;
-                                const auto converged = cstate.converged(epsilon);
+                                const auto step_ok = solver(state, i) && state;
+                                const auto converged = state.converged(epsilon);
 
                                 if (converged || !step_ok)
                                 {
                                         // either converged or failed
-                                        cstate.m_status = step_ok ?
-                                                optimization_state_t::status::converged :
-                                                optimization_state_t::status::failed;
-                                        log(logger, cstate);
+                                        state.m_status = step_ok ?
+                                                solver_state_t::status::converged :
+                                                solver_state_t::status::failed;
+                                        log(logger, state);
                                         break;
                                 }
-                                else if (!log(logger, cstate))
+                                else if (!log(logger, state))
                                 {
                                         // stopping was requested
-                                        cstate.m_status = optimization_state_t::status::stopped;
+                                        state.m_status = solver_state_t::status::stopped;
                                         break;
                                 }
                         }
 
-                        return cstate;
+                        return state;
                 }
         };
 }

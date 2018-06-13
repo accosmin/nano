@@ -1,17 +1,47 @@
 #pragma once
 
-#include "solver_state.h"
+#include "solver.h"
 #include <algorithm>
 
 namespace nano
 {
-        // these variations have been implemented following:
-        //      (1) "A survey of nonlinear conjugate gradient methods"
-        //      by William W. Hager and Hongchao Zhang
-        //
-        // and
-        //      (2) "Nonlinear Conjugate Gradient Methods"
-        //      by Yu-Hong Dai
+        ///
+        /// \brief conjugate gradient descent with line-search.
+        ///
+        template <typename tcgd_update>
+        class solver_cgd_base_t final : public solver_t
+        {
+        public:
+
+                solver_cgd_base_t() = default;
+
+                tuner_t tuner() const final;
+                void to_json(json_t&) const final;
+                void from_json(const json_t&) final;
+
+                solver_state_t minimize(
+                        const size_t max_iterations, const scalar_t epsilon,
+                        const function_t&, const vector_t& x0,
+                        const logger_t& logger = logger_t()) const final;
+
+        private:
+
+                // attributes
+                ls_initializer  m_ls_init{ls_initializer::quadratic};
+                ls_strategy     m_ls_strat{ls_strategy::interpolation};
+                scalar_t        m_c1{static_cast<scalar_t>(1e-4)};
+                scalar_t        m_c2{static_cast<scalar_t>(0.1)};
+                scalar_t        m_orthotest{static_cast<scalar_t>(0.1)};        ///< orthogonality test
+        };
+
+        ///
+        /// these variations have been implemented following:
+        ///      (1) "A survey of nonlinear conjugate gradient methods"
+        ///      by William W. Hager and Hongchao Zhang
+        ///
+        /// and
+        ///      (2) "Nonlinear Conjugate Gradient Methods"
+        ///      by Yu-Hong Dai
 
         ///
         /// \brief CGD update parameters (Hestenes and Stiefel, 1952 - see (1))
@@ -177,4 +207,15 @@ namespace nano
                                 std::max(prev.d.dot(curr.g - prev.g), -prev.d.dot(prev.g));
                 }
         };
+
+        // create various CGD algorithms
+        using solver_cgd_n_t = solver_cgd_base_t<cgd_step_N>;
+        using solver_cgd_cd_t = solver_cgd_base_t<cgd_step_CD>;
+        using solver_cgd_dy_t = solver_cgd_base_t<cgd_step_DY>;
+        using solver_cgd_fr_t = solver_cgd_base_t<cgd_step_FR>;
+        using solver_cgd_hs_t = solver_cgd_base_t<cgd_step_HS>;
+        using solver_cgd_ls_t = solver_cgd_base_t<cgd_step_LS>;
+        using solver_cgd_prp_t = solver_cgd_base_t<cgd_step_PRP>;
+        using solver_cgd_dycd_t = solver_cgd_base_t<cgd_step_DYCD>;
+        using solver_cgd_dyhs_t = solver_cgd_base_t<cgd_step_DYHS>;
 }

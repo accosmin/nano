@@ -1,18 +1,18 @@
 #include "ls_init.h"
+#include "solver_cgd.h"
 #include "ls_strategy.h"
-#include "solver_batch_cgd.h"
 
 using namespace nano;
 
 template <typename tcgd_update>
-void batch_cgd_t<tcgd_update>::from_json(const json_t& json)
+void solver_cgd_base_t<tcgd_update>::from_json(const json_t& json)
 {
         nano::from_json(json,
                 "ls_init", m_ls_init, "ls_strat", m_ls_strat, "c1", m_c1, "c2", m_c2, "orthotest", m_orthotest);
 }
 
 template <typename tcgd_update>
-void batch_cgd_t<tcgd_update>::to_json(json_t& json) const
+void solver_cgd_base_t<tcgd_update>::to_json(json_t& json) const
 {
         nano::to_json(json,
                 "ls_init", m_ls_init, "ls_inits", join(enum_values<ls_initializer>()),
@@ -21,7 +21,7 @@ void batch_cgd_t<tcgd_update>::to_json(json_t& json) const
 }
 
 template <typename tcgd_update>
-solver_state_t nano::batch_cgd_t<tcgd_update>::minimize(const batch_params_t& param,
+solver_state_t solver_cgd_base_t<tcgd_update>::minimize(const batch_params_t& param,
         const function_t& function, const vector_t& x0) const
 {
         // previous state

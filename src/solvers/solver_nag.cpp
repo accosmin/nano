@@ -1,4 +1,4 @@
-#include "solver_batch_nag.h"
+#include "solver_nag.h"
 
 using namespace nano;
 
@@ -17,29 +17,29 @@ static auto get_beta(const scalar_t ptheta, const scalar_t ctheta)
         return ptheta * (1 - ptheta) / (ptheta * ptheta + ctheta);
 }
 
-/*template <nag_restart trestart>
-tuner_t batch_nag_base_t<trestart>::configs() const
+template <nag_restart trestart>
+tuner_t solver_nag_base_t<trestart>::tuner() const
 {
         tuner_t tuner;
         tuner.add("alpha0", make_pow10_scalars(0, -3, -1)).precision(3);
         tuner.add("q", make_scalars(0.0, 0.1, 0.2, 0.5, 1.0));
         return tuner;
-}*/
+}
 
 template <nag_restart trestart>
-void batch_nag_base_t<trestart>::from_json(const json_t& json)
+void solver_nag_base_t<trestart>::from_json(const json_t& json)
 {
         nano::from_json(json, "alpha0", m_alpha0, "q", m_q);
 }
 
 template <nag_restart trestart>
-void batch_nag_base_t<trestart>::to_json(json_t& json) const
+void solver_nag_base_t<trestart>::to_json(json_t& json) const
 {
         nano::to_json(json, "alpha0", m_alpha0, "q", m_q);
 }
 
 template <nag_restart trestart>
-solver_state_t batch_nag_base_t<trestart>::minimize(const batch_params_t& param,
+solver_state_t solver_nag_base_t<trestart>::minimize(const batch_params_t& param,
         const function_t& function, const vector_t& x0) const
 {
         // current & previous iterations
@@ -98,6 +98,6 @@ solver_state_t batch_nag_base_t<trestart>::minimize(const batch_params_t& param,
         return loop(param, function, x0, op);
 }
 
-template class nano::batch_nag_base_t<nag_restart::none>;
-template class nano::batch_nag_base_t<nag_restart::function>;
-template class nano::batch_nag_base_t<nag_restart::gradient>;
+template class nano::solver_nag_base_t<nag_restart::none>;
+template class nano::solver_nag_base_t<nag_restart::function>;
+template class nano::solver_nag_base_t<nag_restart::gradient>;

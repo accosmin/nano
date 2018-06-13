@@ -29,7 +29,7 @@ trainer_status trainer_result_t::update(const solver_state_t& opt_state, const t
         };
 
         // optimization finished successfully
-        if (opt_state.m_status == opt_status::converged)
+        if (opt_state.m_status == solver_state_t::status::converged)
         {
                 if (state < m_opt_state)
                 {
@@ -39,7 +39,7 @@ trainer_status trainer_result_t::update(const solver_state_t& opt_state, const t
         }
 
         // optimization failed
-        else if (opt_state.m_status == opt_status::failed)
+        else if (opt_state.m_status == solver_state_t::status::failed)
         {
                 return trainer_status::failed;
         }

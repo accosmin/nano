@@ -47,25 +47,6 @@ scalar_t function_t::eval(const vector_t& x, vector_t* gx) const
         return f;
 }
 
-scalar_t function_t::stoch_eval(const vector_t& x, vector_t* gx) const
-{
-        assert(x.size() == size());
-
-        if (gx)
-        {
-                gx->resize(size());
-        }
-
-        scalar_t stoch_ratio = 0;
-        const auto f = stoch_vgrad(x, gx, stoch_ratio);
-        assert(!gx || gx->size() == size());
-
-        m_fcalls += stoch_ratio;
-        m_gcalls += gx ? stoch_ratio : 0;
-
-        return f;
-}
-
 scalar_t function_t::grad_accuracy(const vector_t& x) const
 {
         assert(x.size() == size());

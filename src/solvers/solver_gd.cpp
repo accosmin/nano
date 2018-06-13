@@ -1,15 +1,15 @@
 #include "ls_init.h"
+#include "solver_gd.h"
 #include "ls_strategy.h"
-#include "solver_batch_gd.h"
 
 using namespace nano;
 
-void batch_gd_t::from_json(const json_t& json)
+void solver_gd_t::from_json(const json_t& json)
 {
         nano::from_json(json, "ls_init", m_ls_init, "ls_strat", m_ls_strat, "c1", m_c1, "c2", m_c2);
 }
 
-void batch_gd_t::to_json(json_t& json) const
+void solver_gd_t::to_json(json_t& json) const
 {
         nano::to_json(json,
                 "ls_init", m_ls_init, "ls_inits", join(enum_values<ls_initializer>()),
@@ -17,7 +17,7 @@ void batch_gd_t::to_json(json_t& json) const
                 "c1", m_c1, "c2", m_c2);
 }
 
-solver_state_t batch_gd_t::minimize(const batch_params_t& param, const function_t& function, const vector_t& x0) const
+solver_state_t solver_gd_t::minimize(const batch_params_t& param, const function_t& function, const vector_t& x0) const
 {
         // line-search initial step length
         ls_init_t ls_init(m_ls_init);

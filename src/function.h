@@ -35,12 +35,7 @@ namespace nano
                 const std::regex& name_regex = std::regex(".+"));
 
         ///
-        /// \brief generic multi-dimensional optimization problem that
-        ///     can be used with both batch and stochastic optimization algorithms:
-        ///     - call function_t::vgrad() for the batch case
-        ///     - call function_t::stoch_vgrad() and then function_t::stoch_next() for the stochastic case
-        ///
-        /// NB: by default the stochastic approximation is disabled (aka calling the batch version)
+        /// \brief generic multi-dimensional optimization problem.
         ///
         class NANO_PUBLIC function_t
         {
@@ -76,7 +71,7 @@ namespace nano
                 bool is_valid(const vector_t& x) const;
 
                 ///
-                /// \brief check if function is convex
+                /// \brief check if the function is convex
                 ///
                 bool is_convex() const { return m_convex == convexity::yes; }
 
@@ -89,16 +84,6 @@ namespace nano
                 /// \brief compute function value (and gradient if provided)
                 ///
                 scalar_t eval(const vector_t& x, vector_t* gx = nullptr) const;
-
-                ///
-                /// \brief compute function value (and gradient if provided) using the stochastic approximation
-                ///
-                scalar_t stoch_eval(const vector_t& x, vector_t* gx = nullptr) const;
-
-                ///
-                /// \brief select another random minibatch
-                ///
-                virtual void stoch_next() const {}
 
                 ///
                 /// \brief number of function evaluation calls
@@ -118,12 +103,6 @@ namespace nano
         protected:
 
                 virtual scalar_t vgrad(const vector_t& x, vector_t* gx) const = 0;
-                virtual scalar_t stoch_vgrad(const vector_t& x, vector_t* gx, scalar_t& stoch_ratio) const
-                {
-                        // no stochastic approximation by default
-                        stoch_ratio = 1;
-                        return vgrad(x, gx);
-                }
 
         private:
 
