@@ -9,11 +9,6 @@ namespace nano
         using ref_solver_state_t = std::reference_wrapper<const solver_state_t>;
 
         ///
-        /// \brief compare two optimization states
-        ///
-        bool operator<(const solver_state_t&, const solver_state_t&);
-
-        ///
         /// \brief optimization state described as:
         ///     current point (x),
         ///     function value (f),
@@ -21,10 +16,8 @@ namespace nano
         ///     descent direction (d) &
         ///     line-search step (t)
         ///
-        class solver_state_t
+        struct solver_state_t
         {
-        public:
-
                 enum class status
                 {
                         converged,      ///< convergence criteria reached
@@ -33,9 +26,6 @@ namespace nano
                         stopped         ///< user requested stop
                 };
 
-                ///
-                /// \brief default constructor
-                ///
                 solver_state_t() = default;
 
                 ///
@@ -118,14 +108,6 @@ namespace nano
                 status          m_status{status::max_iters};    ///< optimization status (todo: does it make sense to have it here?!)
         };
 
-        inline bool operator<(const solver_state_t& one, const solver_state_t& two)
-        {
-                const auto f1 = std::isfinite(one.f) ? one.f : std::numeric_limits<scalar_t>::max();
-                const auto f2 = std::isfinite(two.f) ? two.f : std::numeric_limits<scalar_t>::max();
-
-                return f1 < f2;
-        }
-
         template <>
         inline enum_map_t<solver_state_t::status> enum_string<solver_state_t::status>()
         {
@@ -136,6 +118,12 @@ namespace nano
                         { solver_state_t::status::failed,      "failed" },
                         { solver_state_t::status::stopped,     "stopped" }
                 };
+        }
+
+        inline bool operator<(const solver_state_t& one, const solver_state_t& two)
+        {
+                return  (std::isfinite(one.f) ? one.f : std::numeric_limits<scalar_t>::max()) <
+                        (std::isfinite(two.f) ? two.f : std::numeric_limits<scalar_t>::max());
         }
 
         inline std::ostream& operator<<(std::ostream& os, const solver_state_t::status status)

@@ -2,8 +2,8 @@
 
 #include "tuner.h"
 #include "factory.h"
-#include "configurable.h"
 #include "solver_state.h"
+#include "configurable.h"
 
 namespace nano
 {
@@ -34,7 +34,7 @@ namespace nano
                         const logger_t& logger = logger_t()) const = 0;
 
                 ///
-                /// \brief generate the hyper-parameters to tune.
+                /// \brief generate the hyper-parameters to tune
                 ///
                 virtual tuner_t tuner() const = 0;
 
