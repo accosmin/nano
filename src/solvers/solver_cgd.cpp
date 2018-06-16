@@ -1,6 +1,4 @@
-#include "ls_init.h"
 #include "solver_cgd.h"
-#include "ls_strategy.h"
 
 using namespace nano;
 
@@ -15,23 +13,19 @@ template <typename tcgd_update>
 void solver_cgd_base_t<tcgd_update>::to_json(json_t& json) const
 {
         nano::to_json(json,
-                "ls_init", m_ls_init, "ls_inits", join(enum_values<ls_initializer>()),
-                "ls_strat", m_ls_strat, "ls_strats", join(enum_values<ls_strategy>()),
+                "ls_init", m_ls_init, "ls_inits", join(enum_values<lsearch_t::initializer>()),
+                "ls_strat", m_ls_strat, "ls_strats", join(enum_values<lsearch_t::strategy>()),
                 "c1", m_c1, "c2", m_c2, "orthotest", m_orthotest);
 }
 
 template <typename tcgd_update>
-solver_state_t solver_cgd_base_t<tcgd_update>::minimize(const batch_params_t& param,
-        const function_t& function, const vector_t& x0) const
+solver_state_t solver_cgd_base_t<tcgd_update>::minimize(const size_t max_iterations, const scalar_t epsilon,
+        const function_t& function, const vector_t& x0, const logger_t& logger) const
 {
+        lsearch_t lsearch(m_ls_init, m_ls_strat, m_c1, m_c2);
+
         // previous state
         solver_state_t pstate(function.size());
-
-        // line-search initial step length
-        ls_init_t ls_init(m_ls_init);
-
-        // line-search step
-        ls_strategy_t ls_step(m_ls_strat, m_c1, m_c2);
 
         // CGD direction strategy
         const tcgd_update op_update{};
@@ -64,21 +58,19 @@ solver_state_t solver_cgd_base_t<tcgd_update>::minimize(const batch_params_t& pa
 
                 // line-search
                 pstate = cstate;
-
-                const scalar_t t0 = ls_init(cstate);
-                return ls_step(function, t0, cstate);
+                return lsearch(function, cstate);
         };
 
         // assembly the solver
-        return loop(param, function, x0, op);
+        return loop(function, x0, max_iterations, epsilon, logger, op);
 }
 
-template class nano::batch_cgd_t<cgd_step_HS>;
-template class nano::batch_cgd_t<cgd_step_FR>;
-template class nano::batch_cgd_t<cgd_step_PRP>;
-template class nano::batch_cgd_t<cgd_step_CD>;
-template class nano::batch_cgd_t<cgd_step_LS>;
-template class nano::batch_cgd_t<cgd_step_DY>;
-template class nano::batch_cgd_t<cgd_step_N>;
-template class nano::batch_cgd_t<cgd_step_DYCD>;
-template class nano::batch_cgd_t<cgd_step_DYHS>;
+template class nano::solver_cgd_base_t<cgd_step_HS>;
+template class nano::solver_cgd_base_t<cgd_step_FR>;
+template class nano::solver_cgd_base_t<cgd_step_PRP>;
+template class nano::solver_cgd_base_t<cgd_step_CD>;
+template class nano::solver_cgd_base_t<cgd_step_LS>;
+template class nano::solver_cgd_base_t<cgd_step_DY>;
+template class nano::solver_cgd_base_t<cgd_step_N>;
+template class nano::solver_cgd_base_t<cgd_step_DYCD>;
+template class nano::solver_cgd_base_t<cgd_step_DYHS>;

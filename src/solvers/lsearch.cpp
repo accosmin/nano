@@ -1,5 +1,5 @@
 #include <utility>
-#include "linesearch.h"
+#include "lsearch.h"
 #include "math/cubic.h"
 #include "math/quadratic.h"
 
@@ -8,7 +8,7 @@ using namespace nano;
 ///
 /// \brief bisection interpolation in the [step0, step1] line-search interval
 ///
-static auto ls_bisection(const linesearch_step_t& step0, const linesearch_step_t& step1)
+static auto ls_bisection(const lsearch_step_t& step0, const lsearch_step_t& step1)
 {
         return (step0.alpha() + step1.alpha()) / 2;
 }
@@ -20,7 +20,7 @@ static auto ls_bisection(const linesearch_step_t& step0, const linesearch_step_t
 /// NB: using the gradient at step0
 /// NB: the step-length at step0 may be different than zero
 ///
-static auto ls_quadratic(const linesearch_step_t& step0, const linesearch_step_t& step1)
+static auto ls_quadratic(const lsearch_step_t& step0, const lsearch_step_t& step1)
 {
         const auto x0 = step0.alpha(), f0 = step0.phi(), g0 = step0.gphi();
         const auto x1 = step1.alpha(), f1 = step1.phi();
@@ -40,7 +40,7 @@ static auto ls_quadratic(const linesearch_step_t& step0, const linesearch_step_t
 /// \brief cubic interpolation in the [step0, step1] line-search interval
 ///     see "Numerical optimization", Nocedal & Wright, 2nd edition, p.59
 ///
-static auto ls_cubic(const linesearch_step_t& step0, const linesearch_step_t& step1)
+static auto ls_cubic(const lsearch_step_t& step0, const lsearch_step_t& step1)
 {
         const auto x0 = step0.alpha(), f0 = step0.phi(), g0 = step0.gphi();
         const auto x1 = step1.alpha(), f1 = step1.phi(), g1 = step1.gphi();
@@ -57,9 +57,9 @@ static auto ls_cubic(const linesearch_step_t& step0, const linesearch_step_t& st
         return std::make_pair(min1, min2);
 }
 
-linesearch_t::linesearch_t(const initializer init, const strategy strat, const scalar_t c1, const scalar_t c2) :
+lsearch_t::lsearch_t(const initializer init, const strategy strat, const scalar_t c1, const scalar_t c2) :
         m_initializer(init),
-        m_strategy(strat)
+        m_strategy(strat),
         m_first(true),
         m_prevf(0),
         m_prevt0(1),
@@ -72,7 +72,7 @@ linesearch_t::linesearch_t(const initializer init, const strategy strat, const s
         assert(m_c2 > scalar_t(0) && m_c2 < scalar_t(1));
 }
 
-scalar_t linesearch_t::t0(const solver_state_t& cstate)
+scalar_t lsearch_t::t0(const solver_state_t& cstate)
 {
         scalar_t t0 = 1;
 
@@ -97,9 +97,9 @@ scalar_t linesearch_t::t0(const solver_state_t& cstate)
                 }
 
                 // also, keep track of previous direction
-                switch (m_type)
+                switch (m_initializer)
                 {
-                case ls_initializer::consistent:
+                case initializer::consistent:
                         m_prevdg = cstate.d.dot(cstate.g);
                         break;
 
@@ -110,9 +110,9 @@ scalar_t linesearch_t::t0(const solver_state_t& cstate)
 
         else
         {
-                switch (m_type)
+                switch (m_initializer)
                 {
-                case ls_initializer::consistent:
+                case initializer::consistent:
                         {
                                 const auto dg = cstate.d.dot(cstate.g);
 
@@ -122,7 +122,7 @@ scalar_t linesearch_t::t0(const solver_state_t& cstate)
                         }
                         break;
 
-                case ls_initializer::quadratic:
+                case initializer::quadratic:
                         {
                                 const auto dg = cstate.d.dot(cstate.g);
                                 const auto ro = scalar_t(1.01 * 2.0);
@@ -131,9 +131,12 @@ scalar_t linesearch_t::t0(const solver_state_t& cstate)
                         }
                         break;
 
-                case ls_initializer::unit:
-                default:
+                case initializer::unit:
                         t0 = 1;
+                        break;
+
+                default:
+                        assert(false);
                         break;
                 }
         }
@@ -145,7 +148,7 @@ scalar_t linesearch_t::t0(const solver_state_t& cstate)
         return t0;
 }
 
-bool linesearch_t::operator()(const function_t& function, const scalar_t t0, solver_state_t& state)
+bool lsearch_t::operator()(const function_t& function, const scalar_t t0, solver_state_t& state)
 {
         // check descent direction
         const scalar_t dg0 = state.d.dot(state.g);
@@ -155,13 +158,13 @@ bool linesearch_t::operator()(const function_t& function, const scalar_t t0, sol
         }
 
         // check initial step length
-        if (t0 < linesearch_step_t::minimum() || t0 > linesearch_step_t::maximum())
+        if (t0 < lsearch_step_t::minimum() || t0 > lsearch_step_t::maximum())
         {
                 return false;
         }
 
         // starting point
-        linesearch_step_t step0(function, state);
+        lsearch_step_t step0(function, state);
         if (!step0)
         {
                 return false;
@@ -190,12 +193,12 @@ bool linesearch_t::operator()(const function_t& function, const scalar_t t0, sol
         }
 }
 
-bool ls_strategy_t::setup(const function_t& function, const linesearch_step_t& step0, const linesearch_step_t& step, solver_state_t& state) const
+bool ls_strategy_t::setup(const function_t& function, const lsearch_step_t& step0, const lsearch_step_t& step, solver_state_t& state) const
 {
         return step && step < step0 && setup(function, step, state);
 }
 
-bool ls_strategy_t::setup(const function_t& function, const linesearch_step_t& step, solver_state_t& state) const
+bool ls_strategy_t::setup(const function_t& function, const lsearch_step_t& step, solver_state_t& state) const
 {
         state.update(function, step.alpha(), step.func(), step.grad());
         return true;

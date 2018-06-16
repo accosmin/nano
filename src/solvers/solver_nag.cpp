@@ -39,8 +39,8 @@ void solver_nag_base_t<trestart>::to_json(json_t& json) const
 }
 
 template <nag_restart trestart>
-solver_state_t solver_nag_base_t<trestart>::minimize(const batch_params_t& param,
-        const function_t& function, const vector_t& x0) const
+solver_state_t solver_nag_base_t<trestart>::minimize(const size_t max_iterations, const scalar_t epsilon,
+        const function_t& function, const vector_t& x0, const logger_t& logger) const
 {
         // current & previous iterations
         vector_t cx = x0;
@@ -95,7 +95,7 @@ solver_state_t solver_nag_base_t<trestart>::minimize(const batch_params_t& param
                 return true;
         };
 
-        return loop(param, function, x0, op);
+        return loop(function, x0, max_iterations, epsilon, logger, op);
 }
 
 template class nano::solver_nag_base_t<nag_restart::none>;

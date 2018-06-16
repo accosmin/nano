@@ -16,8 +16,10 @@ namespace nano
         ///     descent direction (d) &
         ///     line-search step (t)
         ///
-        struct solver_state_t
+        class solver_state_t
         {
+        public:
+
                 enum class status
                 {
                         converged,      ///< convergence criteria reached

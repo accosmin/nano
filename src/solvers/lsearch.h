@@ -1,13 +1,33 @@
 #pragma once
 
-#include "linesearch_step.h"
+#include "lsearch_step.h"
 
 namespace nano
 {
         ///
+        /// \brief compute the initial step length of the line search procedure.
+        ///
+        class lsearch_init_t
+        {
+        public:
+                virtual ~lsearch_init_t() = default;
+                virtual scalar_t get(const solver_state_t&) = 0;
+        };
+
+        ///
+        /// \brief compute the step length of the line search procedure.
+        ///
+        class lsearch_step_t
+        {
+        public:
+                virtual ~lsearch_step_t() = default;
+                virtual bool get(const function_t&, const scalar_t t0, solver_state_t&) = 0;
+        };
+
+        ///
         /// \brief line-search algorithm.
         ///
-        class lineasearch_t
+        class lsearch_t
         {
         public:
 
@@ -41,7 +61,7 @@ namespace nano
                 ///
                 /// \brief constructor
                 ///
-                linesearch_t(const initializer, const strategy, const scalar_t c1, const scalar_t c2);
+                lsearch_t(const initializer, const strategy, const scalar_t c1, const scalar_t c2);
 
                 ///
                 /// \brief update the current state
@@ -69,26 +89,26 @@ namespace nano
         };
 
         template <>
-        inline enum_map_t<linesearch_t::initializer> enum_string<linesearch_t::initializer>()
+        inline enum_map_t<lsearch_t::initializer> enum_string<lsearch_t::initializer>()
         {
                 return
                 {
-                        { linesearch_t::initializer::unit,                      "unit" },
-                        { linesearch_t::initializer::quadratic,                 "quadratic" },
-                        { linesearch_t::initializer::consistent,                "consistent" }
+                        { lsearch_t::initializer::unit,                      "unit" },
+                        { lsearch_t::initializer::quadratic,                 "quadratic" },
+                        { lsearch_t::initializer::consistent,                "consistent" }
                 };
         }
 
         template <>
-        inline enum_map_t<linesearch_t::strategy> enum_string<linesearch_t::strategy>()
+        inline enum_map_t<lsearch_t::strategy> enum_string<lsearch_t::strategy>()
         {
                 return
                 {
-                        { linesearch_t::strategy::backtrack_armijo,             "back-Armijo" },
-                        { linesearch_t::strategy::backtrack_wolfe,              "back-Wolfe" },
-                        { linesearch_t::strategy::backtrack_strong_wolfe,       "back-sWolfe" },
-                        { linesearch_t::strategy::interpolation,                "interpolation" },
-                        { linesearch_t::strategy::cg_descent,                   "cgdescent" }
+                        { lsearch_t::strategy::backtrack_armijo,             "back-Armijo" },
+                        { lsearch_t::strategy::backtrack_wolfe,              "back-Wolfe" },
+                        { lsearch_t::strategy::backtrack_strong_wolfe,       "back-sWolfe" },
+                        { lsearch_t::strategy::interpolation,                "interpolation" },
+                        { lsearch_t::strategy::cg_descent,                   "cgdescent" }
                 };
         }
 }

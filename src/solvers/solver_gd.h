@@ -1,6 +1,7 @@
 #pragma once
 
 #include "solver.h"
+#include "lsearch.h"
 
 namespace nano
 {
@@ -25,9 +26,9 @@ namespace nano
         private:
 
                 // attributes
-                ls_initializer  m_ls_init{ls_initializer::quadratic};
-                ls_strategy     m_ls_strat{ls_strategy::backtrack_strong_wolfe};
-                scalar_t        m_c1{static_cast<scalar_t>(1e-4)};
-                scalar_t        m_c2{static_cast<scalar_t>(0.1)};
+                lsearch_t::initializer  m_ls_init{lsearch_t::initializer::quadratic};
+                lsearch_t::strategy     m_ls_strat{lsearch_t::strategy::backtrack_strong_wolfe};
+                scalar_t                m_c1{static_cast<scalar_t>(1e-4)};
+                scalar_t                m_c2{static_cast<scalar_t>(0.1)};
         };
 }

@@ -8,14 +8,14 @@ namespace nano
         /// \brief line-search (scalar) step.
         /// NB: using the notation from the CG_DESCENT papers
         ///
-        class linesearch_step_t
+        class lsearch_step_t
         {
         public:
 
                 ///
                 /// \brief constructor
                 ///
-                linesearch_step_t(const function_t& function, const solver_state_t& state0) :
+                lsearch_step_t(const function_t& function, const solver_state_t& state0) :
                         m_function(function),
                         m_state0(state0),
                         m_gphi0(state0.d.dot(state0.g)),
@@ -174,13 +174,12 @@ namespace nano
                 ref_function_t          m_function;
                 ref_solver_state_t      m_state0;       ///< starting state for line-search
                 scalar_t                m_gphi0{0};
-
                 scalar_t                m_alpha{0};     ///< line-search step (current estimate)
                 solver_state_t          m_state;        ///< state at alpha
                 scalar_t                m_gphi{0};      ///< line-search function gradient at alpha
         };
 
-        inline bool operator<(const linesearch_step_t& step1, const linesearch_step_t& step2)
+        inline bool operator<(const lsearch_step_t& step1, const lsearch_step_t& step2)
         {
                 return step1.phi() < step2.phi();
         }
