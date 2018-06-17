@@ -1,29 +1,10 @@
 #pragma once
 
-#include "lsearch_step.h"
+#include "lsearch_init.h"
+#include "lsearch_length.h"
 
 namespace nano
 {
-        ///
-        /// \brief compute the initial step length of the line search procedure.
-        ///
-        class lsearch_init_t
-        {
-        public:
-                virtual ~lsearch_init_t() = default;
-                virtual scalar_t get(const solver_state_t&) = 0;
-        };
-
-        ///
-        /// \brief compute the step length of the line search procedure.
-        ///
-        class lsearch_step_t
-        {
-        public:
-                virtual ~lsearch_step_t() = default;
-                virtual bool get(const function_t&, const scalar_t t0, solver_state_t&) = 0;
-        };
-
         ///
         /// \brief line-search algorithm.
         ///
@@ -70,22 +51,9 @@ namespace nano
 
         private:
 
-                ///
-                /// \brief compute the initial step length
-                ///
-                scalar_t t0(const solver_state_t& cstate);
-
-        private:
-
                 // attributes
-                initializer     m_initializer;
-                strategy        m_strategy;
-                bool            m_first{true};  ///< check if first iteration
-                scalar_t        m_prevf;        ///< previous function evaluation
-                scalar_t        m_prevt0;       ///< previous step length
-                scalar_t        m_prevdg;       ///< previous direction dot product
-                scalar_t        m_c1;           ///< sufficient decrease rate
-                scalar_t        m_c2;           ///< sufficient curvature
+                std::unique_ptr<lsearch_init_t>         m_initializer;
+                std::unique_ptr<lsearch_length_t>       m_strategy;
         };
 
         template <>
