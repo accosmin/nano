@@ -1,9 +1,9 @@
 #include "utest.h"
+#include "solver.h"
 #include "builder.h"
 #include "trainer.h"
 #include "accumulator.h"
 #include "math/epsilon.h"
-#include "solver_batch.h"
 #include "tasks/task_affine.h"
 #include "trainers/function_batch.h"
 
@@ -78,7 +78,7 @@ NANO_CASE(tune_and_train)
         NANO_REQUIRE(trainer);
 
         // check that the trainer works for all compatible solvers
-        for (const auto& solver : get_batch_solvers().ids())
+        for (const auto& solver : get_solvers().ids())
         {
                 trainer->from_json(to_json("epochs", 20, "solver", solver, "epsilon", epsilon2<scalar_t>()));
 

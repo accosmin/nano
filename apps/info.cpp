@@ -1,12 +1,11 @@
 #include "loss.h"
 #include "layer.h"
 #include "model.h"
+#include "solver.h"
 #include "version.h"
 #include "trainer.h"
 #include "text/table.h"
 #include "text/cmdline.h"
-#include "solver_batch.h"
-#include "solver_stoch.h"
 #include <iostream>
 
 using namespace nano;
@@ -36,9 +35,8 @@ int main(int argc, const char* argv[])
         cmdline.add("", "loss",                 "loss functions");
         cmdline.add("", "task",                 "tasks");
         cmdline.add("", "layer",                "layers to built models");
+        cmdline.add("", "solver",               "numerical optimization algorithms");
         cmdline.add("", "trainer",              "training methods");
-        cmdline.add("", "batch",                "batch optimization algorithms");
-        cmdline.add("", "stoch",                "stochastic optimization algorithms");
         cmdline.add("", "version",              "library version");
         cmdline.add("", "git-hash",             "git commit hash");
         cmdline.add("", "system",               "system: all available information");
@@ -51,9 +49,8 @@ int main(int argc, const char* argv[])
         const bool has_loss = cmdline.has("loss");
         const bool has_task = cmdline.has("task");
         const bool has_layer = cmdline.has("layer");
+        const bool has_solver = cmdline.has("solver");
         const bool has_trainer = cmdline.has("trainer");
-        const bool has_batch = cmdline.has("batch");
-        const bool has_stoch = cmdline.has("stoch");
         const bool has_system = cmdline.has("system");
         const bool has_sys_logical = cmdline.has("sys-logical-cpus");
         const bool has_sys_physical = cmdline.has("sys-physical-cpus");
@@ -65,8 +62,7 @@ int main(int argc, const char* argv[])
                 !has_task &&
                 !has_layer &&
                 !has_trainer &&
-                !has_batch &&
-                !has_stoch &&
+                !has_solver &&
                 !has_system &&
                 !has_sys_logical &&
                 !has_sys_physical &&
@@ -95,13 +91,9 @@ int main(int argc, const char* argv[])
         {
                 print("trainer", get_trainers());
         }
-        if (has_batch)
+        if (has_solver)
         {
-                print("batch solvers", get_batch_solvers());
-        }
-        if (has_stoch)
-        {
-                print("stochastic solvers", get_stoch_solvers());
+                print("solvers", get_solvers());
         }
         if (has_system || has_sys_physical)
         {

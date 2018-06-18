@@ -3,6 +3,12 @@
 
 using namespace nano;
 
+tuner_t solver_lbfgs_t::tuner() const
+{
+        tuner_t tuner;
+        return tuner;
+}
+
 void solver_lbfgs_t::from_json(const json_t& json)
 {
         nano::from_json(json,

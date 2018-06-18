@@ -1,8 +1,8 @@
 #include "model.h"
 #include "utils.h"
 #include "tuner.h"
+#include "solver.h"
 #include "math/numeric.h"
-#include "solver_batch.h"
 #include "trainer_batch.h"
 #include "function_batch.h"
 #include "logger.h"
@@ -11,7 +11,7 @@
 using namespace nano;
 
 static trainer_result_t train(const task_t& task, const size_t fold, accumulator_t& acc,
-        const rbatch_solver_t& solver, const json_t& json,
+        const rsolver_t& solver, const json_t& json,
         const size_t epochs, const scalar_t epsilon, const size_t patience,
         const nano::timer_t& timer)
 {
@@ -56,8 +56,7 @@ static trainer_result_t train(const task_t& task, const size_t fold, accumulator
 
         // assembly optimization function & train the model
         const auto function = batch_function_t(acc, task, fold_t{fold, protocol::train});
-        const auto params = batch_params_t{epochs, epsilon, fn_ulog};
-        solver->minimize(params, function, acc.params());
+        solver->minimize(epochs, epsilon, function, acc.params(), fn_ulog);
 
         return result;
 }
@@ -70,7 +69,7 @@ void batch_trainer_t::from_json(const json_t& json)
 void batch_trainer_t::to_json(json_t& json) const
 {
         nano::to_json(json,
-                "solver", m_solver, "solvers", join(get_batch_solvers().ids()),
+                "solver", m_solver, "solvers", join(get_solvers().ids()),
                 "epochs", m_epochs, "epsilon", m_epsilon, "patience", m_patience);
 }
 
@@ -80,7 +79,7 @@ trainer_result_t batch_trainer_t::train(const task_t& task, const size_t fold, a
         trainer_result_t result;
 
         const auto params = acc.params();
-        const auto solver = get_batch_solvers().get(m_solver);
+        const auto solver = get_solvers().get(m_solver);
 
         tuner_t tuner;
         tuner.add("lambda", make_pow10_scalars(0, -6, -1));
@@ -101,6 +100,6 @@ trainer_result_t batch_trainer_t::train(const task_t& task, const size_t fold, a
         }
 
         assert(result);
-        log_info() << std::setprecision(3) << "<<< batch-" << m_solver << ": " << result << "," << timer.elapsed() << ".";
+        log_info() << std::setprecision(3) << "<<< " << m_solver << ": " << result << "," << timer.elapsed() << ".";
         return result;
 }

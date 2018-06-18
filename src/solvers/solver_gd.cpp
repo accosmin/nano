@@ -2,6 +2,12 @@
 
 using namespace nano;
 
+tuner_t solver_gd_t::tuner() const
+{
+        tuner_t tuner;
+        return tuner;
+}
+
 void solver_gd_t::from_json(const json_t& json)
 {
         nano::from_json(json, "ls_init", m_ls_init, "ls_strat", m_ls_strat, "c1", m_c1, "c2", m_c2);

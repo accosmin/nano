@@ -16,10 +16,9 @@ NANO_CASE(evaluate)
                 const auto iterations = size_t(1000);
                 const auto trials = size_t(100);
 
-                // solvers to try
-                for (const auto& id : get_batch_solvers().ids())
+                for (const auto& id : get_solvers().ids())
                 {
-                        const auto solver = get_batch_solvers().get(id);
+                        const auto solver = get_solvers().get(id);
                         NANO_REQUIRE(solver);
 
                         size_t out_of_domain = 0;
@@ -31,8 +30,7 @@ NANO_CASE(evaluate)
                                 const auto gcalls0 = function->gcalls();
 
                                 // optimize
-                                const auto params = batch_params_t(iterations, epsilon2<scalar_t>());
-                                const auto state = solver->minimize(params, *function, x0);
+                                const auto state = solver->minimize(iterations, epsilon2<scalar_t>(), *function, x0);
 
                                 const auto x = state.x;
                                 const auto f = state.f;
@@ -57,7 +55,7 @@ NANO_CASE(evaluate)
 
                                 // check convergence
                                 NANO_CHECK_LESS(g, epsilon2<scalar_t>());
-                                NANO_CHECK_EQUAL(state.m_status, opt_status::converged);
+                                NANO_CHECK_EQUAL(state.m_status, solver_state_t::status::converged);
                         }
 
                         std::cout << function->name() << " " << id

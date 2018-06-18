@@ -1,6 +1,5 @@
 #include "utest.h"
-#include "solver_state.h"
-#include "trainer_result.h"
+#include "trainer_state.h"
 
 using namespace nano;
 
@@ -20,7 +19,7 @@ static trainer_state_t make_trainer_state(const terror valid_error, const size_t
 }
 
 template <typename terror, typename tepoch>
-static auto update_result(trainer_result_t& result, const opt_status status, const terror error, const tepoch epoch)
+static auto update_result(trainer_result_t& result, const solver_state_t::status status, const terror error, const tepoch epoch)
 {
         solver_state_t opt_state;
         opt_state.m_status = status;
@@ -50,7 +49,7 @@ NANO_CASE(result_max_iters)
                 const auto epoch = epochs - i;
                 const auto error = i;
 
-                const auto status = update_result(result, opt_status::max_iters, error, epoch);
+                const auto status = update_result(result, solver_state_t::status::max_iters, error, epoch);
 
                 NANO_CHECK(status == trainer_status::better);
                 NANO_CHECK(false == nano::is_done(status));
@@ -70,7 +69,7 @@ NANO_CASE(result_solved)
                 const auto error = i;
 
                 const auto status = update_result(result,
-                        done ? opt_status::converged : opt_status::max_iters, error, epoch);
+                        done ? solver_state_t::status::converged : solver_state_t::status::max_iters, error, epoch);
 
                 NANO_CHECK((done ? trainer_status::solved : trainer_status::better) == status);
                 NANO_CHECK((done ? true : false) == nano::is_done(status));
@@ -93,7 +92,7 @@ NANO_CASE(result_overfitting)
                 const auto epoch = epochs - i;
                 const auto error = (epoch <= best_epoch) ? i : (2 * (epochs - best_epoch) - i);
 
-                const auto status = update_result(result, opt_status::max_iters, error, epoch);
+                const auto status = update_result(result, solver_state_t::status::max_iters, error, epoch);
 
                 if (epoch <= best_epoch)
                 {
@@ -125,7 +124,7 @@ NANO_CASE(result_not_finite)
                 const auto epoch = epochs - i;
                 const auto error = (epoch <= best_epoch) ? scalar_t(i) : scalar_t(NAN);
 
-                const auto status = update_result(result, opt_status::max_iters, error, epoch);
+                const auto status = update_result(result, solver_state_t::status::max_iters, error, epoch);
 
                 if (epoch <= best_epoch)
                 {
