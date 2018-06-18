@@ -42,7 +42,7 @@ namespace nano
 
                 static auto log(const logger_t& logger, const solver_state_t& state)
                 {
-                        return logger ? true : logger(state);
+                        return !logger ? true : logger(state);
                 }
 
                 ///
