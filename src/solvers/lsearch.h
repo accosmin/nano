@@ -1,10 +1,40 @@
 #pragma once
 
-#include "lsearch_init.h"
-#include "lsearch_length.h"
+#include "lsearch_step.h"
 
 namespace nano
 {
+        ///
+        /// \brief compute the initial step length of the line search procedure.
+        ///     see "Numerical optimization", Nocedal & Wright, 2nd edition, p.59
+        ///
+        class lsearch_init_t
+        {
+        public:
+
+                virtual ~lsearch_init_t() = default;
+
+                ///
+                /// \brief returns the initial step length given the current state
+                /// NB: keep track of previous states
+                ///
+                virtual scalar_t get(const solver_state_t&) = 0;
+        };
+
+        ///
+        /// \brief compute the step length of the line search procedure.
+        ///
+        class lsearch_strategy_t
+        {
+        public:
+                virtual ~lsearch_strategy_t() = default;
+
+                ///
+                /// \brief returns the step length given the current state
+                ///
+                virtual lsearch_step_t get(const lsearch_step_t& step0, const scalar_t t0) = 0;
+        };
+
         ///
         /// \brief line-search algorithm.
         ///
@@ -30,10 +60,10 @@ namespace nano
                 {
                         backtrack_armijo,               ///< backtracking with sufficient decrease (Armijo)
                         backtrack_wolfe,                ///< + backtracking with suficient curvature (Wolfe)
-                        backtrack_strong_wolfe,         ///< + backtracking with sufficient curvature (strong Wolfe)
+                        backtrack_swolfe,               ///< + backtracking with sufficient curvature (strong Wolfe)
 
                         // see "Numerical optimization", Nocedal & Wright, 2nd edition, p.60-61 - strong Wolfe only
-                        interpolation,                  ///< bisection/quadratic/cubic for zooming
+                        interpolate,                    ///< bisection/quadratic/cubic for zooming
 
                         // see CG_DESCENT, Hager & Zhang, 2005 - regular and approximate Wolfe only
                         cg_descent                      ///< CG_DESCENT
@@ -53,7 +83,7 @@ namespace nano
 
                 // attributes
                 std::unique_ptr<lsearch_init_t>         m_initializer;
-                std::unique_ptr<lsearch_length_t>       m_strategy;
+                std::unique_ptr<lsearch_strategy_t>     m_strategy;
         };
 
         template <>
@@ -61,9 +91,9 @@ namespace nano
         {
                 return
                 {
-                        { lsearch_t::initializer::unit,                      "unit" },
-                        { lsearch_t::initializer::quadratic,                 "quadratic" },
-                        { lsearch_t::initializer::consistent,                "consistent" }
+                        { lsearch_t::initializer::unit,                 "unit" },
+                        { lsearch_t::initializer::quadratic,            "quadratic" },
+                        { lsearch_t::initializer::consistent,           "consistent" }
                 };
         }
 
@@ -72,11 +102,11 @@ namespace nano
         {
                 return
                 {
-                        { lsearch_t::strategy::backtrack_armijo,             "back-Armijo" },
-                        { lsearch_t::strategy::backtrack_wolfe,              "back-Wolfe" },
-                        { lsearch_t::strategy::backtrack_strong_wolfe,       "back-sWolfe" },
-                        { lsearch_t::strategy::interpolation,                "interpolation" },
-                        { lsearch_t::strategy::cg_descent,                   "cgdescent" }
+                        { lsearch_t::strategy::backtrack_armijo,        "backArmijo" },
+                        { lsearch_t::strategy::backtrack_wolfe,         "backWolfe" },
+                        { lsearch_t::strategy::backtrack_swolfe,        "backSWolfe" },
+                        { lsearch_t::strategy::interpolate,             "interpolate" },
+                        { lsearch_t::strategy::cg_descent,              "CGdescent" }
                 };
         }
 }

@@ -1,4 +1,10 @@
 #include "lsearch.h"
+#include "lsearch_backtrack.h"
+#include "lsearch_cgdescent.h"
+#include "lsearch_interpolate.h"
+#include "lsearch_init_unit.h"
+#include "lsearch_init_quadratic.h"
+#include "lsearch_init_consistent.h"
 
 using namespace nano;
 
@@ -6,27 +12,28 @@ static std::unique_ptr<lsearch_init_t> make_initializer(const lsearch_t::initial
 {
         switch (initializer)
         {
-        case initializer::unit:                 return make_unique<lsearch_unit_init_t>();
-        case initializer::quadratic:            return make_unique<lsearch_quadratic_init_t>();
-        case initializer::consistent:           return make_unique<lsearch_consistent_init_t>();
-        default:                                assert(false); return nullptr;
+        case lsearch_t::initializer::unit:              return std::make_unique<lsearch_unit_init_t>();
+        case lsearch_t::initializer::quadratic:         return std::make_unique<lsearch_quadratic_init_t>();
+        case lsearch_t::initializer::consistent:        return std::make_unique<lsearch_consistent_init_t>();
+        default:                                        assert(false); return nullptr;
         }
 }
 
-static std::unique_ptr<lsearch_length_t> make_strategy(const lsearch_t::strategy strategy, const scalar_t c1, const scalar_t c2)
+static std::unique_ptr<lsearch_strategy_t> make_strategy(const lsearch_t::strategy strategy,
+        const scalar_t c1, const scalar_t c2)
 {
-        assert(m_c1 < m_c2);
-        assert(m_c1 > scalar_t(0) && m_c1 < scalar_t(1));
-        assert(m_c2 > scalar_t(0) && m_c2 < scalar_t(1));
+        assert(c1 < c2);
+        assert(c1 > scalar_t(0) && c1 < scalar_t(1));
+        assert(c2 > scalar_t(0) && c2 < scalar_t(1));
 
         switch (strategy)
         {
-        case strategy::cg_descent:              return make_unique<lsearch_cgdescent_length_t>(c1, c2);
-        case strategy::interpolation:           return make_unique<lsearch_interpolation_length_t>(c1, c2);
-        case strategy::backtrack_wolfe:         return make_unique<lsearch_backtrack_wolfe_length_t>(c1, c2);
-        case strategy::backtrack_armijo:        return make_unique<lsearch_backtrack_armijo_length_t>(c1, c2);
-        case strategy::backtrack_strong_wolfe:  return make_unique<lsearch_backtrack_strong_wolfe_length_t>(c1, c2);
-        default:                                assert(false); return nullptr;
+        case lsearch_t::strategy::cg_descent:           return std::make_unique<lsearch_cgdescent_t>(c1, c2);
+        case lsearch_t::strategy::interpolate:          return std::make_unique<lsearch_interpolate_t>(c1, c2);
+        case lsearch_t::strategy::backtrack_wolfe:      return std::make_unique<lsearch_backtrack_wolfe_t>(c1, c2);
+        case lsearch_t::strategy::backtrack_armijo:     return std::make_unique<lsearch_backtrack_armijo_t>(c1, c2);
+        case lsearch_t::strategy::backtrack_swolfe:     return std::make_unique<lsearch_backtrack_swolfe_t>(c1, c2);
+        default:                                        assert(false); return nullptr;
         }
 }
 
