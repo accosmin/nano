@@ -9,7 +9,7 @@
 
 using namespace nano;
 
-NANO_BEGIN_MODULE(trainer_batch_affine)
+NANO_BEGIN_MODULE(trainer_affine)
 
 NANO_CASE(function)
 {

@@ -1,12 +1,11 @@
 #include "utest.h"
-#include "function.h"
+#include "solver.h"
 #include "math/numeric.h"
 #include "math/epsilon.h"
-#include "solver_batch.h"
 
 using namespace nano;
 
-NANO_BEGIN_MODULE(test_batch_solvers)
+NANO_BEGIN_MODULE(test_solvers)
 
 NANO_CASE(evaluate)
 {
