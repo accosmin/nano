@@ -23,9 +23,7 @@ namespace nano
 
                 // attributes
                 scalar_t        m_c1;                                   ///< sufficient decrease rate
-                scalar_t        m_c2;                                   ///< sufficient curvature
                 scalar_t        m_decrement{static_cast<scalar_t>(0.5)};///<
-                scalar_t        m_increment{static_cast<scalar_t>(2.1)};///<
                 int             m_max_iterations{100};                  ///<
         };
 

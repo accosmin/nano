@@ -2,9 +2,8 @@
 
 using namespace nano;
 
-lsearch_backtrack_armijo_t::lsearch_backtrack_armijo_t(const scalar_t c1, const scalar_t c2) :
-        m_c1(c1),
-        m_c2(c2)
+lsearch_backtrack_armijo_t::lsearch_backtrack_armijo_t(const scalar_t c1, const scalar_t) :
+        m_c1(c1)
 {
 }
 

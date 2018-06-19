@@ -1,6 +1,11 @@
 #include "solver.h"
+#include "math/stats.h"
+#include "text/table.h"
 #include "text/cmdline.h"
 #include "math/epsilon.h"
+#include "text/algorithm.h"
+#include "solvers/lsearch.h"
+#include <iostream>
 
 using namespace nano;
 
@@ -79,7 +84,7 @@ static void benchmark_function(const tsolver& solver,
                 // update per-function statistics
                 solver_stat_t& stat = stats[name];
                 stat.m_crits(g);
-                stat.m_fails(state.m_status != opt_status::converged ? 1 : 0);
+                stat.m_fails(state.m_status != solver_state_t::status::converged ? 1 : 0);
                 stat.m_fcalls(static_cast<scalar_t>(fcalls));
                 stat.m_gcalls(static_cast<scalar_t>(gcalls));
                 stat.m_speeds(static_cast<scalar_t>(speed));
@@ -87,7 +92,7 @@ static void benchmark_function(const tsolver& solver,
                 // update global statistics
                 solver_stat_t& gstat = gstats[name];
                 gstat.m_crits(g);
-                gstat.m_fails(state.m_status != opt_status::converged ? 1 : 0);
+                gstat.m_fails(state.m_status != solver_state_t::status::converged ? 1 : 0);
                 gstat.m_fcalls(static_cast<scalar_t>(fcalls));
                 gstat.m_gcalls(static_cast<scalar_t>(gcalls));
                 gstat.m_speeds(static_cast<scalar_t>(speed));
@@ -110,24 +115,23 @@ static void check_function(const function_t& function, const strings_t& solvers,
 
         // evaluate all possible combinations (solver & line-search)
         for (const auto& id : solvers)
-                for (const ls_initializer ls_init : enum_values<ls_initializer>())
-                        for (const ls_strategy ls_strat : enum_values<ls_strategy>())
+                for (const auto ls_init : enum_values<lsearch_t::initializer>())
+                        for (const auto ls_strat : enum_values<lsearch_t::strategy>())
         {
-                const auto solver = get_batch_solvers().get(id);
+                const auto solver = get_solvers().get(id);
                 solver->from_json(to_json("ls_init", ls_init, "ls_strat", ls_strat, "c1", c1));
-                const auto params = batch_params_t(iterations, epsilon);
                 const auto name = id + "[" + to_string(ls_init) + "][" + to_string(ls_strat) + "]";
 
                 for (const auto& x0 : x0s)
                 {
-                        benchmark::benchmark_function(
-                                [&] () { return solver->minimize(params, function, x0); },
+                        benchmark_function(
+                                [&] () { return solver->minimize(iterations, epsilon, function, x0); },
                                 function, x0, name, stats, gstats);
                 }
         }
 
         // show per-problem statistics
-        benchmark::show_table(function.name(), stats);
+        show_table(function.name(), stats);
 }
 
 int main(int argc, const char* argv[])
@@ -135,7 +139,7 @@ int main(int argc, const char* argv[])
         using namespace nano;
 
         // parse the command line
-        cmdline_t cmdline("benchmark batch solvers");
+        cmdline_t cmdline("benchmark solvers");
         cmdline.add("", "solvers",      "use this regex to select the solvers to benchmark", ".+");
         cmdline.add("", "functions",    "use this regex to select the functions to benchmark", ".+");
         cmdline.add("", "min-dims",     "minimum number of dimensions for each test function (if feasible)", "100");
@@ -157,10 +161,10 @@ int main(int argc, const char* argv[])
         const auto is_convex = cmdline.has("convex");
         const auto c1 = cmdline.get<scalar_t>("c1");
 
-        const auto solvers = get_batch_solvers().ids(std::regex(cmdline.get<string_t>("solvers")));
+        const auto solvers = get_solvers().ids(std::regex(cmdline.get<string_t>("solvers")));
         const auto functions = std::regex(cmdline.get<string_t>("functions"));
 
-        std::map<std::string, benchmark::solver_stat_t> gstats;
+        std::map<std::string, solver_stat_t> gstats;
 
         for (const auto& function : (is_convex ? get_convex_functions : get_functions)(min_dims, max_dims, functions))
         {
@@ -168,14 +172,14 @@ int main(int argc, const char* argv[])
         }
 
         // show global statistics
-        benchmark::show_table(std::string(), gstats);
+        show_table(std::string(), gstats);
 
         // show per-solver statistics
         for (const auto& solver : solvers)
         {
                 const auto name = solver + "[";
 
-                std::map<std::string, benchmark::solver_stat_t> stats;
+                std::map<std::string, solver_stat_t> stats;
                 for (const auto& gstat : gstats)
                 {
                         if (starts_with(gstat.first, name))
@@ -184,7 +188,7 @@ int main(int argc, const char* argv[])
                         }
                 }
 
-                benchmark::show_table(std::string(), stats);
+                show_table(std::string(), stats);
         }
 
         // OK
