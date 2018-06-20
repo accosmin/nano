@@ -21,7 +21,6 @@ template <nag_restart trestart>
 tuner_t solver_nag_base_t<trestart>::tuner() const
 {
         tuner_t tuner;
-        tuner.add("alpha0", make_pow10_scalars(0, -3, -1)).precision(3);
         tuner.add("q", make_scalars(0.0, 0.1, 0.2, 0.5, 1.0));
         return tuner;
 }
@@ -29,13 +28,16 @@ tuner_t solver_nag_base_t<trestart>::tuner() const
 template <nag_restart trestart>
 void solver_nag_base_t<trestart>::from_json(const json_t& json)
 {
-        nano::from_json(json, "alpha0", m_alpha0, "q", m_q);
+        nano::from_json(json, "ls_init", m_ls_init, "ls_strat", m_ls_strat, "c1", m_c1, "c2", m_c2, "q", m_q);
 }
 
 template <nag_restart trestart>
 void solver_nag_base_t<trestart>::to_json(json_t& json) const
 {
-        nano::to_json(json, "alpha0", m_alpha0, "q", m_q);
+        nano::to_json(json,
+                "ls_init", m_ls_init, "ls_inits", join(enum_values<lsearch_t::initializer>()),
+                "ls_strat", m_ls_strat, "ls_strats", join(enum_values<lsearch_t::strategy>()),
+                "c1", m_c1, "c2", m_c2, "q", m_q);
 }
 
 template <nag_restart trestart>
@@ -54,6 +56,8 @@ solver_state_t solver_nag_base_t<trestart>::minimize(const size_t max_iterations
         scalar_t ptheta = 1;
         scalar_t ctheta = 1;
 
+        lsearch_t lsearch(m_ls_init, m_ls_strat, m_c1, m_c2);
+
         const auto op = [&] (solver_state_t& cstate, const size_t)
         {
                 // momentum
@@ -62,7 +66,13 @@ solver_state_t solver_nag_base_t<trestart>::minimize(const size_t max_iterations
 
                 // update solution
                 cstate.update(function, py);
-                cx = py - m_alpha0 * cstate.g;
+                cstate.d = -cstate.g;
+                if (!lsearch(function, cstate))
+                {
+                        return false;
+                }
+                cx = cstate.x;
+                //cx = py - m_alpha0 * cstate.g;
                 cy = cx + beta * (cx - px);
                 cstate.x = cx; // NB: to propagate the current parameters!
 

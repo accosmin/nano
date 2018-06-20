@@ -1,6 +1,7 @@
 #pragma once
 
 #include "solver.h"
+#include "lsearch.h"
 
 namespace nano
 {
@@ -42,8 +43,11 @@ namespace nano
         private:
 
                 // attributes
-                scalar_t        m_alpha0{static_cast<scalar_t>(1e-2)};
-                scalar_t        m_q{static_cast<scalar_t>(0.0)};
+                lsearch_t::initializer  m_ls_init{lsearch_t::initializer::unit};
+                lsearch_t::strategy     m_ls_strat{lsearch_t::strategy::interpolate};
+                scalar_t                m_c1{static_cast<scalar_t>(1e-4)};
+                scalar_t                m_c2{static_cast<scalar_t>(0.1)};
+                scalar_t                m_q{static_cast<scalar_t>(0.0)};
         };
 
         using solver_nag_t = solver_nag_base_t<nag_restart::none>;

@@ -106,7 +106,7 @@ namespace nano
                         { lsearch_t::strategy::backtrack_wolfe,         "backWolfe" },
                         { lsearch_t::strategy::backtrack_swolfe,        "backSWolfe" },
                         { lsearch_t::strategy::interpolate,             "interpolate" },
-                        { lsearch_t::strategy::cg_descent,              "CGdescent" }
+                        { lsearch_t::strategy::cg_descent,              "cgDescent" }
                 };
         }
 }
