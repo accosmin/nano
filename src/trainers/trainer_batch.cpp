@@ -82,7 +82,7 @@ trainer_result_t batch_trainer_t::train(const task_t& task, const size_t fold, a
         const auto solver = get_solvers().get(m_solver);
 
         tuner_t tuner;
-        tuner.add("lambda", make_pow10_scalars(0, -6, -1));
+        tuner.add_pow10s("lambda", 0, -6, -1);
 
         // tune the hyper-parameters: solver + L2-regularizer
         for (const auto& json : tuner.get(10 * tuner.n_params()))

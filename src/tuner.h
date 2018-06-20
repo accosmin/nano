@@ -8,12 +8,6 @@
 namespace nano
 {
         ///
-        /// \brief create the following list of scalars: offset + {1, 3} * 10^power,
-        ///     where power in [min_power, max_power].
-        ///
-        NANO_PUBLIC scalars_t make_pow10_scalars(const scalar_t offset, const int min_power, const int max_power);
-
-        ///
         /// \brief hyper-parameter tuning utility.
         ///
         class NANO_PUBLIC tuner_t
@@ -26,28 +20,46 @@ namespace nano
                 struct param_t
                 {
                         param_t() = default;
-                        param_t(const char* name, scalars_t&& values) :
-                                m_name(name), m_values(values)
-                        {
-                        }
-
-                        auto size() const { return m_values.size(); }
-                        int precision() const { return m_precision; }
-                        void precision(const int p) { m_precision = p; }
+                        param_t(const char* name, strings_t&& values) : m_name(name), m_values(values) {}
 
                         // attributes
                         const char*     m_name{nullptr};
-                        scalars_t       m_values;
-                        int             m_precision{6};
+                        strings_t       m_values;
                 };
 
                 ///
-                /// \brief add a new hyper-parameter to tune
+                /// \brief add a hyper-parameter to tune: select from enumeration values
                 ///
-                param_t& add(const char* name, scalars_t values)
+                template <typename tenum>
+                void add_enum(const char* name)
                 {
+                        strings_t values;
+                        for (const auto& elem : enum_string<tenum>())
+                        {
+                                values.push_back(elem.second);
+                        }
                         m_params.emplace_back(name, std::move(values));
-                        return *m_params.rbegin();
+                }
+
+                ///
+                /// \brief add a hyper-parameter to tune: select from a finite list of power of 10 scalars
+                /// NB: this uses the following list of scalars: offset + {1, 3} * 10^power,
+                ///     where power in [min_power, max_power].
+                ///
+                void add_pow10s(const char* name, const scalar_t offset, const int min_power, const int max_power);
+
+                ///
+                /// \brief add a hyper-parameter to tune: select from a finite list of scalars
+                ///
+                template <typename... tscalar>
+                void add_finite(const char* name, tscalar... scalars)
+                {
+                        strings_t values;
+                        for (const auto scalar : {static_cast<scalar_t>(scalars)...})
+                        {
+                                values.push_back(to_string(scalar));
+                        }
+                        m_params.emplace_back(name, std::move(values));
                 }
 
                 ///
@@ -67,8 +79,8 @@ namespace nano
 
         private:
 
-                json_t json(const scalars_t&) const;
-                void map(const indices_t&, scalars_t&) const;
+                json_t json(const strings_t&) const;
+                void map(const indices_t&, strings_t&) const;
 
                 // attributes
                 std::vector<param_t>    m_params;       ///< hyper-parameter description

@@ -7,24 +7,31 @@
 
 using namespace nano;
 
-scalars_t nano::make_pow10_scalars(const scalar_t offset, const int min_power, const int max_power)
+void tuner_t::add_pow10s(const char* name, const scalar_t offset, const int min_power, const int max_power)
 {
         assert(min_power <= max_power);
 
-        scalars_t values;
+        const auto precision = std::max(std::abs(min_power), std::abs(max_power));
+
+        strings_t values;
         for (int power = min_power; power <= max_power; ++ power)
         {
-                values.push_back(offset + scalar_t(1) * std::pow(scalar_t(10), power));
-                values.push_back(offset + scalar_t(3) * std::pow(scalar_t(10), power));
+                for (const auto scale : {1, 3})
+                {
+                        std::stringstream stream;
+                        stream << std::fixed << std::setprecision(precision)
+                                << (offset + scalar_t(scale) * std::pow(scalar_t(10), power));
+                        values.push_back(stream.str());
+                }
         }
 
-        return values;
+        m_params.emplace_back(name, std::move(values));
 }
 
 jsons_t tuner_t::get(const size_t max_configs) const
 {
         indices_t indices(1u, 0u);
-        scalars_t values(m_params.size(), scalar_t(0));
+        strings_t values(m_params.size());
 
         // generate all possible hyper-parameter combinations
         jsons_t configs;
@@ -35,7 +42,7 @@ jsons_t tuner_t::get(const size_t max_configs) const
                 if (indices.size() == n_params())
                 {
                         auto i = indices.size() - 1;
-                        for ( ; indices[i] < m_params[i].size(); ++ indices[i])
+                        for ( ; indices[i] < m_params[i].m_values.size(); ++ indices[i])
                         {
                                 map(indices, values);
                                 configs.push_back(json(values));
@@ -45,7 +52,7 @@ jsons_t tuner_t::get(const size_t max_configs) const
                         {
                                 -- i;
                                 indices.pop_back();
-                                if (indices[i] + 1 < m_params[i].size())
+                                if (indices[i] + 1 < m_params[i].m_values.size())
                                 {
                                         ++ indices[i];
                                         break;
@@ -57,7 +64,7 @@ jsons_t tuner_t::get(const size_t max_configs) const
 
                         }
 
-                        if (i == 0 && indices[i] == m_params[i].size())
+                        if (i == 0 && indices[i] == m_params[i].m_values.size())
                                 break;
                 }
                 else
@@ -74,7 +81,7 @@ jsons_t tuner_t::get(const size_t max_configs) const
         return configs;
 }
 
-void tuner_t::map(const indices_t& indices, scalars_t& values) const
+void tuner_t::map(const indices_t& indices, strings_t& values) const
 {
         assert(indices.size() == m_params.size());
         assert(values.size() == m_params.size());
@@ -88,7 +95,7 @@ void tuner_t::map(const indices_t& indices, scalars_t& values) const
         }
 }
 
-json_t tuner_t::json(const scalars_t& values) const
+json_t tuner_t::json(const strings_t& values) const
 {
         assert(values.size() == m_params.size());
 
@@ -98,10 +105,7 @@ json_t tuner_t::json(const scalars_t& values) const
                 const auto& param = m_params[i];
                 const auto& value = values[i];
 
-                std::stringstream stream;
-                stream << std::fixed << std::setprecision(param.m_precision) << value;
-
-                json[param.m_name] = stream.str();
+                json[param.m_name] = value;
         }
 
         return json;

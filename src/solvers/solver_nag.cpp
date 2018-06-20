@@ -21,7 +21,9 @@ template <nag_restart trestart>
 tuner_t solver_nag_base_t<trestart>::tuner() const
 {
         tuner_t tuner;
-        tuner.add("q", make_scalars(0.0, 0.1, 0.2, 0.5, 1.0));
+        tuner.add_pow10s("q", 0, -4, 0);
+        tuner.add_enum<lsearch_t::initializer>("ls_init");
+        tuner.add_enum<lsearch_t::strategy>("ls_strat");
         return tuner;
 }
 
