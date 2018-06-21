@@ -11,6 +11,8 @@ namespace nano
         {
         public:
 
+                lsearch_quadratic_init_t() = default;
+
                 scalar_t get(const solver_state_t&) final;
 
         private:
