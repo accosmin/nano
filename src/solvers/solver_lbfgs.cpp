@@ -6,6 +6,10 @@ using namespace nano;
 tuner_t solver_lbfgs_t::tuner() const
 {
         tuner_t tuner;
+        tuner.add_finite("c1", 1e-6, 1e-5, 1e-4, 1e-3, 1e-2, 1e-1);
+        tuner.add_finite("c2", 0.2, 0.5, 0.9);
+        tuner.add_enum<lsearch_t::initializer>("ls_init");
+        tuner.add_enum<lsearch_t::strategy>("ls_strat");
         return tuner;
 }
 
