@@ -70,7 +70,7 @@ namespace nano
                                 if (converged || !step_ok)
                                 {
                                         // either converged or failed
-                                        state.m_status = step_ok ?
+                                        state.m_status = converged ?
                                                 solver_state_t::status::converged :
                                                 solver_state_t::status::failed;
                                         log(logger, state);
