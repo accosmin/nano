@@ -28,6 +28,7 @@ namespace
                         assert(begin < end);
                         assert(0u <= begin);
                         assert(end <= size);
+                        NANO_UNUSED1_RELEASE(size);
                         for (size_t i = begin; i < end; ++ i)
                         {
                                 results[i] = op(i);
