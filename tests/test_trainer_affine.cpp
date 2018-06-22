@@ -80,7 +80,7 @@ NANO_CASE(tune_and_train)
         // check that the trainer works for all compatible solvers
         for (const auto& solver : get_solvers().ids())
         {
-                trainer->from_json(to_json("epochs", 20, "solver", solver, "epsilon", epsilon2<scalar_t>()));
+                trainer->from_json(to_json("epochs", 100, "solver", solver, "epsilon", epsilon2<scalar_t>()));
 
                 accumulator_t acc(model, *loss);
                 acc.threads(1);
