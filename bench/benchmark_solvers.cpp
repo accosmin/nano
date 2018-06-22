@@ -84,8 +84,23 @@ static void show_table(const string_t& table_name, const solver_config_stats_t& 
         std::cout << table;
 }
 
+static auto trim(const json_t& json)
+{
+        string_t config = json.dump();
+        config = nano::replace(config, "\"inits\":\"" + join(enum_values<lsearch_t::initializer>()) + "\"", "");
+        config = nano::replace(config, "\"strats\":\"" + join(enum_values<lsearch_t::strategy>()) + "\"", "");
+        config = nano::replace(config, ",,", ",");
+        config = nano::replace(config, "\"", "");
+        config = nano::replace(config, ",}", "");
+        config = nano::replace(config, "}", "");
+        config = nano::replace(config, "{", "");
+
+        return config;
+}
+
 static void check_function(const function_t& function, const strings_t& solvers,
-        const size_t trials, const size_t iterations, const scalar_t epsilon, solver_config_stats_t& gstats)
+        const size_t trials, const size_t iterations, const scalar_t epsilon, const bool is_tuning,
+        solver_config_stats_t& gstats)
 {
         // generate fixed random trials
         std::vector<vector_t> x0s(trials);
@@ -101,20 +116,13 @@ static void check_function(const function_t& function, const strings_t& solvers,
         for (const auto& id : solvers)
         {
                 const auto solver = get_solvers().get(id);
-                const auto tuner = solver->tuner();
 
-                for (const auto& json : tuner.get(tuner.n_configs()))
+                const auto op = [&] ()
                 {
-                        solver->from_json(json);
+                        json_t json;
+                        solver->to_json(json);
 
-                        string_t config = json.dump();
-                        config = nano::replace(config, "\"inits\":\"" + join(enum_values<lsearch_t::initializer>()) + "\"", "");
-                        config = nano::replace(config, "\"strats\":\"" + join(enum_values<lsearch_t::strategy>()) + "\"", "");
-                        config = nano::replace(config, ",,", ",");
-                        config = nano::replace(config, "\"", "");
-                        config = nano::replace(config, ",}", "");
-                        config = nano::replace(config, "}", "");
-                        config = nano::replace(config, "{", "");
+                        const auto config = trim(json);
 
                         for (const auto& x0 : x0s)
                         {
@@ -126,6 +134,20 @@ static void check_function(const function_t& function, const strings_t& solvers,
                                 fstats[std::make_pair(id, config)].update(function, state0, statex);
                                 gstats[std::make_pair(id, config)].update(function, state0, statex);
                         }
+                };
+
+                if (is_tuning)
+                {
+                        const auto tuner = solver->tuner();
+                        for (const auto& json : tuner.get(tuner.n_configs()))
+                        {
+                                solver->from_json(json);
+                                op();
+                        }
+                }
+                else
+                {
+                        op();
                 }
         }
 
@@ -147,6 +169,7 @@ int main(int argc, const char* argv[])
         cmdline.add("", "iterations",   "maximum number of iterations", "1000");
         cmdline.add("", "epsilon",      "convergence criteria", 1e-6);
         cmdline.add("", "convex",       "use only convex test functions");
+        cmdline.add("", "tune",         "tune the selected solvers");
 
         cmdline.process(argc, argv);
 
@@ -157,6 +180,7 @@ int main(int argc, const char* argv[])
         const auto iterations = cmdline.get<size_t>("iterations");
         const auto epsilon = cmdline.get<scalar_t>("epsilon");
         const auto is_convex = cmdline.has("convex");
+        const auto is_tuning = cmdline.has("tune");
 
         const auto solvers = get_solvers().ids(std::regex(cmdline.get<string_t>("solvers")));
         const auto functions = std::regex(cmdline.get<string_t>("functions"));
@@ -164,7 +188,7 @@ int main(int argc, const char* argv[])
         solver_config_stats_t gstats;
         for (const auto& function : (is_convex ? get_convex_functions : get_functions)(min_dims, max_dims, functions))
         {
-                check_function(*function, solvers, trials, iterations, epsilon, gstats);
+                check_function(*function, solvers, trials, iterations, epsilon, is_tuning, gstats);
         }
 
         show_table("Solver", gstats);
