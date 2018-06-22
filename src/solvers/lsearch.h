@@ -102,11 +102,11 @@ namespace nano
         {
                 return
                 {
-                        { lsearch_t::strategy::backtrack_armijo,        "backArmijo" },
-                        { lsearch_t::strategy::backtrack_wolfe,         "backWolfe" },
-                        { lsearch_t::strategy::backtrack_swolfe,        "backSWolfe" },
+                        { lsearch_t::strategy::backtrack_armijo,        "back-armijo" },
+                        { lsearch_t::strategy::backtrack_wolfe,         "back-wolfe" },
+                        { lsearch_t::strategy::backtrack_swolfe,        "back-swolfe" },
                         { lsearch_t::strategy::interpolate,             "interpolate" },
-                        { lsearch_t::strategy::cg_descent,              "cgDescent" }
+                        { lsearch_t::strategy::cg_descent,              "cg-descent" }
                 };
         }
 }

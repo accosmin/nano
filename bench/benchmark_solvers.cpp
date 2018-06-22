@@ -80,7 +80,7 @@ static void show_table(const string_t& table_name, const solver_config_stats_t& 
                 }
         }
 
-        table.sort(nano::make_less_from_string<scalar_t>(), {1});
+        table.sort(nano::make_less_from_string<scalar_t>(), {3, 5, 1});
         std::cout << table;
 }
 
@@ -101,28 +101,31 @@ static void check_function(const function_t& function, const strings_t& solvers,
         for (const auto& id : solvers)
         {
                 const auto solver = get_solvers().get(id);
+                const auto tuner = solver->tuner();
 
-                json_t json;
-                solver->to_json(json);
-
-                string_t config = json.dump();
-                config = nano::replace(config, "\"inits\":\"" + join(enum_values<lsearch_t::initializer>()) + "\"", "");
-                config = nano::replace(config, "\"strats\":\"" + join(enum_values<lsearch_t::strategy>()) + "\"", "");
-                config = nano::replace(config, ",,", ",");
-                config = nano::replace(config, "\"", "");
-                config = nano::replace(config, ",}", "");
-                config = nano::replace(config, "}", "");
-                config = nano::replace(config, "{", "");
-
-                for (const auto& x0 : x0s)
+                for (const auto& json : tuner.get(tuner.n_configs()))
                 {
-                        const auto state0 = solver_state_t{function, x0};
+                        solver->from_json(json);
 
-                        function.reset_calls();
-                        const auto statex = solver->minimize(iterations, epsilon, function, x0);
+                        string_t config = json.dump();
+                        config = nano::replace(config, "\"inits\":\"" + join(enum_values<lsearch_t::initializer>()) + "\"", "");
+                        config = nano::replace(config, "\"strats\":\"" + join(enum_values<lsearch_t::strategy>()) + "\"", "");
+                        config = nano::replace(config, ",,", ",");
+                        config = nano::replace(config, "\"", "");
+                        config = nano::replace(config, ",}", "");
+                        config = nano::replace(config, "}", "");
+                        config = nano::replace(config, "{", "");
 
-                        fstats[std::make_pair(id, config)].update(function, state0, statex);
-                        gstats[std::make_pair(id, config)].update(function, state0, statex);
+                        for (const auto& x0 : x0s)
+                        {
+                                const auto state0 = solver_state_t{function, x0};
+
+                                function.reset_calls();
+                                const auto statex = solver->minimize(iterations, epsilon, function, x0);
+
+                                fstats[std::make_pair(id, config)].update(function, state0, statex);
+                                gstats[std::make_pair(id, config)].update(function, state0, statex);
+                        }
                 }
         }
 

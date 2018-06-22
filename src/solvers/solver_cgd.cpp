@@ -6,9 +6,6 @@ template <typename tcgd_update>
 tuner_t solver_cgd_base_t<tcgd_update>::tuner() const
 {
         tuner_t tuner;
-        tuner.add_finite("c1", 1e-6, 1e-5, 1e-4, 1e-3, 1e-2, 1e-1);
-        tuner.add_finite("c2", 0.2, 0.5, 0.9);
-        tuner.add_finite("orthotest", 1e-4, 1e-3, 1e-2, 1e-1);
         tuner.add_enum<lsearch_t::initializer>("init");
         tuner.add_enum<lsearch_t::strategy>("strat");
         return tuner;
