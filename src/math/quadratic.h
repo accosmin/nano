@@ -8,10 +8,7 @@ namespace nano
         ///
         /// \brief quadratic: a x^2 + b x + c
         ///
-        template
-        <
-                typename tscalar
-        >
+        template <typename tscalar>
         class quadratic_t
         {
         public:

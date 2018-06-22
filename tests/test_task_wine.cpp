@@ -1,4 +1,3 @@
-#include <set>
 #include "task.h"
 #include "utest.h"
 #include "math/epsilon.h"

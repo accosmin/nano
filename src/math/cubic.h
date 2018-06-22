@@ -9,10 +9,7 @@ namespace nano
         ///
         /// \brief cubic: a x^3 + b x^2 + c x + d
         ///
-        template
-        <
-                typename tscalar
-        >
+        template <typename tscalar>
         class cubic_t
         {
         public:
