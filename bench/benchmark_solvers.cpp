@@ -11,6 +11,30 @@ using namespace nano;
 
 struct solver_stat_t
 {
+        void update(const function_t& function, const solver_state_t& state0, const solver_state_t& statex)
+        {
+                const auto g0 = state0.convergence_criteria();
+                const auto gx = statex.convergence_criteria();
+
+                const auto fcalls = function.fcalls();
+                const auto gcalls = function.gcalls();
+
+                const auto speed = std::pow(
+                        static_cast<double>(epsilon0<scalar_t>() + gx) /
+                        static_cast<double>(epsilon0<scalar_t>() + g0),
+                        double(1) / double(gcalls));
+
+                // ignore out-of-domain solutions
+                if (statex && function.is_valid(statex.x))
+                {
+                        m_crits(gx);
+                        m_fails(statex.m_status != solver_state_t::status::converged ? 1 : 0);
+                        m_fcalls(static_cast<scalar_t>(fcalls));
+                        m_gcalls(static_cast<scalar_t>(gcalls));
+                        m_speeds(static_cast<scalar_t>(speed));
+                }
+        }
+
         stats_t<scalar_t> m_crits;      ///< convergence criteria
         stats_t<scalar_t> m_fails;      ///< #convergence failures
         stats_t<scalar_t> m_fcalls;     ///< #function value calls
@@ -18,14 +42,18 @@ struct solver_stat_t
         stats_t<scalar_t> m_speeds;     ///< #convergence speeds
 };
 
-static void show_table(const string_t& table_name, const std::map<string_t, solver_stat_t>& ostats)
+using solver_config_stats_t = std::map<
+        std::pair<string_t, string_t>,  ///< key: {solver id, solver config}
+        solver_stat_t>;                 ///< value: solver statistics
+
+static void show_table(const string_t& table_name, const solver_config_stats_t& stats)
 {
-        assert(!ostats.empty());
+        assert(!stats.empty());
 
         // show global statistics
         table_t table;
         table.header()
-                << nano::align(table_name.empty() ? "solver" : table_name, 42)
+                << colspan(2) << nano::align(table_name.empty() ? "solver" : table_name, 42)
                 << "gnorm"
                 << "#fails"
                 << "#fcalls"
@@ -33,15 +61,17 @@ static void show_table(const string_t& table_name, const std::map<string_t, solv
                 << "speed";
         table.delim();
 
-        for (const auto& it : ostats)
+        for (const auto& it : stats)
         {
-                const auto& name = it.first;
+                const auto& id = it.first.first;
+                const auto& config = it.first.second;
                 const auto& stat = it.second;
 
                 if (stat.m_fcalls)
                 {
                         table.append()
-                        << name
+                        << id
+                        << config
                         << stat.m_crits.avg()
                         << static_cast<size_t>(stat.m_fails.sum1())
                         << static_cast<size_t>(stat.m_fcalls.avg())
@@ -54,54 +84,8 @@ static void show_table(const string_t& table_name, const std::map<string_t, solv
         std::cout << table;
 }
 
-template <typename tsolver, typename tostats>
-static void benchmark_function(const tsolver& solver,
-        const function_t& function, const vector_t& x0, const string_t& name,
-        tostats& stats, tostats& gstats)
-{
-        solver_state_t state0(function.size());
-        state0.update(function, x0);
-        const auto g0 = state0.convergence_criteria();
-
-        // optimize
-        const auto old_fcalls = function.fcalls();
-        const auto old_gcalls = function.gcalls();
-
-        const auto state = solver();
-
-        const auto fcalls = function.fcalls() - old_fcalls;
-        const auto gcalls = function.gcalls() - old_gcalls;
-
-        const auto g = state.convergence_criteria();
-        const auto speed = std::pow(
-                static_cast<double>(epsilon0<scalar_t>() + g) /
-                static_cast<double>(epsilon0<scalar_t>() + g0),
-                double(1) / double(gcalls));
-
-        // ignore out-of-domain solutions
-        if (state && function.is_valid(state.x))
-        {
-                // update per-function statistics
-                solver_stat_t& stat = stats[name];
-                stat.m_crits(g);
-                stat.m_fails(state.m_status != solver_state_t::status::converged ? 1 : 0);
-                stat.m_fcalls(static_cast<scalar_t>(fcalls));
-                stat.m_gcalls(static_cast<scalar_t>(gcalls));
-                stat.m_speeds(static_cast<scalar_t>(speed));
-
-                // update global statistics
-                solver_stat_t& gstat = gstats[name];
-                gstat.m_crits(g);
-                gstat.m_fails(state.m_status != solver_state_t::status::converged ? 1 : 0);
-                gstat.m_fcalls(static_cast<scalar_t>(fcalls));
-                gstat.m_gcalls(static_cast<scalar_t>(gcalls));
-                gstat.m_speeds(static_cast<scalar_t>(speed));
-        }
-}
-
-template <typename tostats>
 static void check_function(const function_t& function, const strings_t& solvers,
-        const size_t trials, const size_t iterations, const scalar_t epsilon, const scalar_t c1, tostats& gstats)
+        const size_t trials, const size_t iterations, const scalar_t epsilon, solver_config_stats_t& gstats)
 {
         // generate fixed random trials
         std::vector<vector_t> x0s(trials);
@@ -111,27 +95,39 @@ static void check_function(const function_t& function, const strings_t& solvers,
         }
 
         // per-problem statistics
-        tostats stats;
+        solver_config_stats_t fstats;
 
         // evaluate all possible combinations (solver & line-search)
         for (const auto& id : solvers)
-                for (const auto ls_init : enum_values<lsearch_t::initializer>())
-                        for (const auto ls_strat : enum_values<lsearch_t::strategy>())
         {
                 const auto solver = get_solvers().get(id);
-                solver->from_json(to_json("ls_init", ls_init, "ls_strat", ls_strat, "c1", c1));
-                const auto name = id + "[" + to_string(ls_init) + "][" + to_string(ls_strat) + "]";
+
+                json_t json;
+                solver->to_json(json);
+
+                string_t config = json.dump();
+                config = nano::replace(config, "\"inits\":\"" + join(enum_values<lsearch_t::initializer>()) + "\"", "");
+                config = nano::replace(config, "\"strats\":\"" + join(enum_values<lsearch_t::strategy>()) + "\"", "");
+                config = nano::replace(config, ",,", ",");
+                config = nano::replace(config, "\"", "");
+                config = nano::replace(config, ",}", "");
+                config = nano::replace(config, "}", "");
+                config = nano::replace(config, "{", "");
 
                 for (const auto& x0 : x0s)
                 {
-                        benchmark_function(
-                                [&] () { return solver->minimize(iterations, epsilon, function, x0); },
-                                function, x0, name, stats, gstats);
+                        const auto state0 = solver_state_t{function, x0};
+
+                        function.reset_calls();
+                        const auto statex = solver->minimize(iterations, epsilon, function, x0);
+
+                        fstats[std::make_pair(id, config)].update(function, state0, statex);
+                        gstats[std::make_pair(id, config)].update(function, state0, statex);
                 }
         }
 
         // show per-problem statistics
-        show_table(function.name(), stats);
+        show_table(function.name(), fstats);
 }
 
 int main(int argc, const char* argv[])
@@ -148,7 +144,6 @@ int main(int argc, const char* argv[])
         cmdline.add("", "iterations",   "maximum number of iterations", "1000");
         cmdline.add("", "epsilon",      "convergence criteria", 1e-6);
         cmdline.add("", "convex",       "use only convex test functions");
-        cmdline.add("", "c1",           "sufficient decrease coefficient (Wolfe conditions)", 1e-4);
 
         cmdline.process(argc, argv);
 
@@ -159,37 +154,17 @@ int main(int argc, const char* argv[])
         const auto iterations = cmdline.get<size_t>("iterations");
         const auto epsilon = cmdline.get<scalar_t>("epsilon");
         const auto is_convex = cmdline.has("convex");
-        const auto c1 = cmdline.get<scalar_t>("c1");
 
         const auto solvers = get_solvers().ids(std::regex(cmdline.get<string_t>("solvers")));
         const auto functions = std::regex(cmdline.get<string_t>("functions"));
 
-        std::map<std::string, solver_stat_t> gstats;
-
+        solver_config_stats_t gstats;
         for (const auto& function : (is_convex ? get_convex_functions : get_functions)(min_dims, max_dims, functions))
         {
-                check_function(*function, solvers, trials, iterations, epsilon, c1, gstats);
+                check_function(*function, solvers, trials, iterations, epsilon, gstats);
         }
 
-        // show global statistics
-        show_table(std::string(), gstats);
-
-        // show per-solver statistics
-        for (const auto& solver : solvers)
-        {
-                const auto name = solver + "[";
-
-                std::map<std::string, solver_stat_t> stats;
-                for (const auto& gstat : gstats)
-                {
-                        if (starts_with(gstat.first, name))
-                        {
-                                stats[gstat.first] = gstat.second;
-                        }
-                }
-
-                show_table(std::string(), stats);
-        }
+        show_table("Solver", gstats);
 
         // OK
         return EXIT_SUCCESS;

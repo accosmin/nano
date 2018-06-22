@@ -24,23 +24,23 @@ tuner_t solver_nag_base_t<trestart>::tuner() const
         tuner.add_pow10s("q", 0, -4, 0);
         tuner.add_finite("c1", 1e-6, 1e-5, 1e-4, 1e-3, 1e-2, 1e-1);
         tuner.add_finite("c2", 0.2, 0.5, 0.9);
-        tuner.add_enum<lsearch_t::initializer>("ls_init");
-        tuner.add_enum<lsearch_t::strategy>("ls_strat");
+        tuner.add_enum<lsearch_t::initializer>("init");
+        tuner.add_enum<lsearch_t::strategy>("strat");
         return tuner;
 }
 
 template <nag_restart trestart>
 void solver_nag_base_t<trestart>::from_json(const json_t& json)
 {
-        nano::from_json(json, "ls_init", m_ls_init, "ls_strat", m_ls_strat, "c1", m_c1, "c2", m_c2, "q", m_q);
+        nano::from_json(json, "init", m_init, "strat", m_strat, "c1", m_c1, "c2", m_c2, "q", m_q);
 }
 
 template <nag_restart trestart>
 void solver_nag_base_t<trestart>::to_json(json_t& json) const
 {
         nano::to_json(json,
-                "ls_init", m_ls_init, "ls_inits", join(enum_values<lsearch_t::initializer>()),
-                "ls_strat", m_ls_strat, "ls_strats", join(enum_values<lsearch_t::strategy>()),
+                "init", m_init, "inits", join(enum_values<lsearch_t::initializer>()),
+                "strat", m_strat, "strats", join(enum_values<lsearch_t::strategy>()),
                 "c1", m_c1, "c2", m_c2, "q", m_q);
 }
 
@@ -60,7 +60,7 @@ solver_state_t solver_nag_base_t<trestart>::minimize(const size_t max_iterations
         scalar_t ptheta = 1;
         scalar_t ctheta = 1;
 
-        lsearch_t lsearch(m_ls_init, m_ls_strat, m_c1, m_c2);
+        lsearch_t lsearch(m_init, m_strat, m_c1, m_c2);
 
         const auto op = [&] (solver_state_t& cstate, const size_t)
         {

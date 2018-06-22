@@ -88,12 +88,17 @@ namespace nano
                 ///
                 /// \brief number of function evaluation calls
                 ///
-                size_t fcalls() const;
+                size_t fcalls() const { return m_fcalls; }
 
                 ///
                 /// \brief number of function gradient calls
                 ///
-                size_t gcalls() const;
+                size_t gcalls() const { return m_gcalls; }
+
+                ///
+                /// \brief reset the number of function calls
+                ///
+                void reset_calls() const { m_fcalls = m_gcalls = 0; }
 
                 ///
                 /// \brief compute the gradient accuracy (given vs. finite difference approximation)
@@ -111,7 +116,7 @@ namespace nano
                 tensor_size_t   m_size, m_min_size, m_max_size; ///< #dimensions
                 convexity       m_convex;                       ///<
                 scalar_t        m_domain;                       ///< domain = hyper-ball{0, m_domain}
-                mutable double  m_fcalls{0};                   ///< #function value evaluations
-                mutable double  m_gcalls{0};                   ///< #function gradient evaluations
+                mutable size_t  m_fcalls{0};                   ///< #function value evaluations
+                mutable size_t  m_gcalls{0};                   ///< #function gradient evaluations
         };
 }

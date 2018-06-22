@@ -30,8 +30,8 @@ namespace nano
         private:
 
                 // attributes
-                lsearch_t::initializer  m_ls_init{lsearch_t::initializer::quadratic};
-                lsearch_t::strategy     m_ls_strat{lsearch_t::strategy::interpolate};
+                lsearch_t::initializer  m_init{lsearch_t::initializer::quadratic};
+                lsearch_t::strategy     m_strat{lsearch_t::strategy::interpolate};
                 scalar_t                m_c1{static_cast<scalar_t>(1e-4)};
                 scalar_t                m_c2{static_cast<scalar_t>(0.9)};
                 size_t                  m_history_size{6};      ///< history size (#previous gradients to consider)

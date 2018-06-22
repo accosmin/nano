@@ -8,8 +8,9 @@ tuner_t solver_cgd_base_t<tcgd_update>::tuner() const
         tuner_t tuner;
         tuner.add_finite("c1", 1e-6, 1e-5, 1e-4, 1e-3, 1e-2, 1e-1);
         tuner.add_finite("c2", 0.2, 0.5, 0.9);
-        tuner.add_enum<lsearch_t::initializer>("ls_init");
-        tuner.add_enum<lsearch_t::strategy>("ls_strat");
+        tuner.add_finite("orthotest", 1e-4, 1e-3, 1e-2, 1e-1);
+        tuner.add_enum<lsearch_t::initializer>("init");
+        tuner.add_enum<lsearch_t::strategy>("strat");
         return tuner;
 }
 
@@ -17,15 +18,15 @@ template <typename tcgd_update>
 void solver_cgd_base_t<tcgd_update>::from_json(const json_t& json)
 {
         nano::from_json(json,
-                "ls_init", m_ls_init, "ls_strat", m_ls_strat, "c1", m_c1, "c2", m_c2, "orthotest", m_orthotest);
+                "init", m_init, "strat", m_strat, "c1", m_c1, "c2", m_c2, "orthotest", m_orthotest);
 }
 
 template <typename tcgd_update>
 void solver_cgd_base_t<tcgd_update>::to_json(json_t& json) const
 {
         nano::to_json(json,
-                "ls_init", m_ls_init, "ls_inits", join(enum_values<lsearch_t::initializer>()),
-                "ls_strat", m_ls_strat, "ls_strats", join(enum_values<lsearch_t::strategy>()),
+                "init", m_init, "inits", join(enum_values<lsearch_t::initializer>()),
+                "strat", m_strat, "strats", join(enum_values<lsearch_t::strategy>()),
                 "c1", m_c1, "c2", m_c2, "orthotest", m_orthotest);
 }
 
@@ -33,7 +34,7 @@ template <typename tcgd_update>
 solver_state_t solver_cgd_base_t<tcgd_update>::minimize(const size_t max_iterations, const scalar_t epsilon,
         const function_t& function, const vector_t& x0, const logger_t& logger) const
 {
-        lsearch_t lsearch(m_ls_init, m_ls_strat, m_c1, m_c2);
+        lsearch_t lsearch(m_init, m_strat, m_c1, m_c2);
 
         // previous state
         solver_state_t pstate(function.size());

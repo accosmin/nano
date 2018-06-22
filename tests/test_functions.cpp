@@ -38,7 +38,7 @@ NANO_CASE(evaluate)
                                 NANO_CHECK_LESS(function.grad_accuracy(x0), 10 * epsilon2<scalar_t>());
                                 if (function.is_convex())
                                 {
-                                        NANO_CHECK(function.is_convex(x0, x1, 20));
+                                        NANO_CHECK(function.is_convex(x0, x1, 100));
                                 }
                         }
                 }

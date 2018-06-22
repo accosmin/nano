@@ -112,16 +112,6 @@ bool function_t::is_convex(const vector_t& x1, const vector_t& x2, const int ste
         return true;
 }
 
-size_t function_t::fcalls() const
-{
-        return static_cast<size_t>(m_fcalls);
-}
-
-size_t function_t::gcalls() const
-{
-        return static_cast<size_t>(m_gcalls);
-}
-
 string_t function_t::name() const
 {
         return string_t(m_name) + "[" + std::to_string(size()) + "D]";
