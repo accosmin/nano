@@ -238,18 +238,18 @@ matrix:
         - cmake -G "Ninja" -DCMAKE_CXX_COMPILER=clang++-5.0 -DNANO_WITH_WERROR=ON -DNANO_WITH_LIBCPP=ON -DNANO_WITH_CLANG_TIDY=ON ..
         - bash ../scripts/ci_clang_tidy.sh clang-tidy-performance
 
-    - os: linux
-      compiler: clang
-      env: TEST="clang-tidy-clang-analyzer (clang-5.0)"
-      addons:
-        apt:
-          packages: ['clang-5.0', 'clang-tidy-5.0', 'libdevil-dev', 'libarchive-dev', 'libc++-dev', 'libc++abi-dev', 'ninja-build']
-          sources: &sources
-            - llvm-toolchain-trusty-5.0
-          update: true
-      script:
-        - cmake -G "Ninja" -DCMAKE_CXX_COMPILER=clang++-5.0 -DNANO_WITH_WERROR=ON -DNANO_WITH_LIBCPP=ON -DNANO_WITH_CLANG_TIDY=ON ..
-        - bash ../scripts/ci_clang_tidy.sh clang-tidy-clang-analyzer
+    #- os: linux
+    #  compiler: clang
+    #  env: TEST="clang-tidy-clang-analyzer (clang-5.0)"
+    #  addons:
+    #    apt:
+    #      packages: ['clang-5.0', 'clang-tidy-5.0', 'libdevil-dev', 'libarchive-dev', 'libc++-dev', 'libc++abi-dev', 'ninja-build']
+    #      sources: &sources
+    #        - llvm-toolchain-trusty-5.0
+    #      update: true
+    #  script:
+    #    - cmake -G "Ninja" -DCMAKE_CXX_COMPILER=clang++-5.0 -DNANO_WITH_WERROR=ON -DNANO_WITH_LIBCPP=ON -DNANO_WITH_CLANG_TIDY=ON ..
+    #    - bash ../scripts/ci_clang_tidy.sh clang-tidy-clang-analyzer
 
     - os: linux
       env: TEST="cppcheck"
