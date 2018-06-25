@@ -9,8 +9,10 @@ namespace nano
         ///
         /// \brief accumulate time measurements for a given operation of given complexity (aka flops).
         ///
-        struct probe_t
+        class probe_t
         {
+        public:
+
                 using timings_t = stats_t<int64_t>;
 
                 probe_t(const std::string& basename = std::string(),
@@ -40,6 +42,8 @@ namespace nano
                 auto flops() const { return m_flops; }
                 auto kflops() const { return m_flops / 1024; }
                 auto gflops() const { return nano::gflops(flops(), nanoseconds_t(timings().min())); }
+
+        private:
 
                 // attributes
                 std::string     m_basename;             ///<
