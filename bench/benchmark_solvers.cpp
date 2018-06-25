@@ -53,7 +53,7 @@ static void show_table(const string_t& table_name, const solver_config_stats_t& 
         // show global statistics
         table_t table;
         table.header()
-                << colspan(2) << nano::align(table_name.empty() ? "solver" : table_name, 42)
+                << colspan(2) << table_name
                 << "gnorm"
                 << "#fails"
                 << "#fcalls"

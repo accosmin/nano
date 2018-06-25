@@ -199,22 +199,60 @@ bool table_t::load(const string_t& path, const string_t& delimiter, const bool l
 
 std::ostream& table_t::print(std::ostream& os) const
 {
-        // size of the value columns (in characters)
         sizes_t colsizes(this->cols(), 0);
+
+        // size of the value columns (in characters) - step1: single column cells
         for (const auto& row : m_rows)
         {
                 size_t icol = 0;
                 for (const auto& cell : row.cells())
                 {
                         const auto span = cell.m_span;
-                        const auto size = cell.format().size() + cell.m_mark.size();
-                        for (size_t c = 0; c < span; ++ c, ++ icol)
+                        if (span == 1)
                         {
-                                colsizes[icol] = std::max(colsizes[icol], idiv(size, span));
+                                const auto size = cell.format().size() + cell.m_mark.size();
+                                for (size_t c = 0; c < span; ++ c, ++ icol)
+                                {
+                                        colsizes[icol] = std::max(colsizes[icol], idiv(size, span));
+                                }
+                        }
+                        else
+                        {
+                                icol += span;
                         }
                 }
         }
 
+        // size of the value columns (in characters) - step2: make room for large multi column cells
+        for (const auto& row : m_rows)
+        {
+                size_t icol = 0;
+                for (const auto& cell : row.cells())
+                {
+                        const auto span = cell.m_span;
+                        if (span > 1)
+                        {
+                                const auto size = cell.format().size() + cell.m_mark.size();
+                                if (std::accumulate(colsizes.begin() + icol, colsizes.begin() + (icol + span), size_t(0)) < size)
+                                {
+                                        for (size_t c = 0; c < span; ++ c, ++ icol)
+                                        {
+                                                colsizes[icol] = std::max(colsizes[icol], idiv(size, span));
+                                        }
+                                }
+                                else
+                                {
+                                        icol += span;
+                                }
+                        }
+                        else
+                        {
+                                icol += span;
+                        }
+                }
+        }
+
+        //
         const auto print_row_delim = [&] ()
         {
                 for (const auto colsize : colsizes)
