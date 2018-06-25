@@ -62,7 +62,7 @@ namespace nano
                         return std::chrono::high_resolution_clock::now();
                 }
 
-                static void append(std::string& str, const char* format, const long long value)
+                static void append(std::string& str, const char* format, const int value)
                 {
                         char buffer[32];
                         snprintf(buffer, sizeof(buffer), format, value);
@@ -81,12 +81,12 @@ namespace nano
 
         inline std::string timer_t::elapsed() const
         {
-                static constexpr long long size_second = 1000;
-                static constexpr long long size_minute = 60 * size_second;
-                static constexpr long long size_hour = 60 * size_minute;
-                static constexpr long long size_day = 24 * size_hour;
+                static constexpr int size_second = 1000;
+                static constexpr int size_minute = 60 * size_second;
+                static constexpr int size_hour = 60 * size_minute;
+                static constexpr int size_day = 24 * size_hour;
 
-                long long milliseconds = this->milliseconds().count();
+                int milliseconds = static_cast<int>(this->milliseconds().count());
                 const auto days = milliseconds / size_day; milliseconds -= days * size_day;
                 const auto hours = milliseconds / size_hour; milliseconds -= hours * size_hour;
                 const auto minutes = milliseconds / size_minute; milliseconds -= minutes * size_minute;
@@ -95,21 +95,21 @@ namespace nano
                 std::string str;
                 if (days > 0)
                 {
-                        append(str, "%lld:", days);
+                        append(str, "%id:", days);
                 }
                 if (days > 0 || hours > 0)
                 {
-                        append(str, "%.2llh:", hours);
+                        append(str, "%.2ih:", hours);
                 }
                 if (days > 0 || hours > 0 || minutes > 0)
                 {
-                        append(str, "%.2llm:", minutes);
+                        append(str, "%.2im:", minutes);
                 }
                 if (days > 0 || hours > 0 || minutes > 0 || seconds > 0)
                 {
-                        append(str, "%.2lls:", seconds);
+                        append(str, "%.2is:", seconds);
                 }
-                append(str, "%.3llms", milliseconds);
+                append(str, "%.3ims", milliseconds);
 
                 return str;
         }
