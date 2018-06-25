@@ -35,56 +35,31 @@ This library is built around several key concepts mapped to C++ object interface
 
 ##### Numerical optimization
 
-The **batch solver** and the **stochastic solver** are gradient-based methods used for minimizing generic multi-dimensional functions. They are suitable for large-scale numerical optimization which are often the product of machine learning problems. Additionally the library provides a large set of unconstrained problems to benchmark the optimization algorithms using for example the following commands:
+The **solver** is a gradient-based method for minimizing generic multi-dimensional functions. They are suitable for large-scale numerical optimization which are often the product of machine learning problems. Additionally the library provides a large set of unconstrained problems to benchmark the optimization algorithms using for example the following commands:
 ```
-./bench/benchmark_batch --min-dims 10 --max-dims 100 --convex --epsilon 1e-6 --iterations 1000
-./bench/benchmark_stoch --min-dims 1 --max-dims 4 --convex --epsilon 1e-4 --epochs 1000
-```
-
-The following batch (line-search based) optimization methods are built-in:
-```
-./apps/info --batch
-|---------------|------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| batch solvers | description                                    | configuration                                                                                                                                                                                      |
-|---------------|------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| cgd           | nonlinear conjugate gradient descent (default) | {"ls_init":"quadratic","ls_inits":"[unit,quadratic,consistent]","ls_strat":"interpolation","ls_strats":"[back-Armijo,back-Wolfe,back-sWolfe,interpolation,cgdescent]","c1":0.000100,"c2":0.100000} |
-| cgd-cd        | nonlinear conjugate gradient descent (CD)      | {"ls_init":"quadratic","ls_inits":"[unit,quadratic,consistent]","ls_strat":"interpolation","ls_strats":"[back-Armijo,back-Wolfe,back-sWolfe,interpolation,cgdescent]","c1":0.000100,"c2":0.100000} |
-| cgd-dy        | nonlinear conjugate gradient descent (DY)      | {"ls_init":"quadratic","ls_inits":"[unit,quadratic,consistent]","ls_strat":"interpolation","ls_strats":"[back-Armijo,back-Wolfe,back-sWolfe,interpolation,cgdescent]","c1":0.000100,"c2":0.100000} |
-| cgd-dycd      | nonlinear conjugate gradient descent (DYCD)    | {"ls_init":"quadratic","ls_inits":"[unit,quadratic,consistent]","ls_strat":"interpolation","ls_strats":"[back-Armijo,back-Wolfe,back-sWolfe,interpolation,cgdescent]","c1":0.000100,"c2":0.100000} |
-| cgd-dyhs      | nonlinear conjugate gradient descent (DYHS)    | {"ls_init":"quadratic","ls_inits":"[unit,quadratic,consistent]","ls_strat":"interpolation","ls_strats":"[back-Armijo,back-Wolfe,back-sWolfe,interpolation,cgdescent]","c1":0.000100,"c2":0.100000} |
-| cgd-fr        | nonlinear conjugate gradient descent (FR)      | {"ls_init":"quadratic","ls_inits":"[unit,quadratic,consistent]","ls_strat":"interpolation","ls_strats":"[back-Armijo,back-Wolfe,back-sWolfe,interpolation,cgdescent]","c1":0.000100,"c2":0.100000} |
-| cgd-hs        | nonlinear conjugate gradient descent (HS)      | {"ls_init":"quadratic","ls_inits":"[unit,quadratic,consistent]","ls_strat":"interpolation","ls_strats":"[back-Armijo,back-Wolfe,back-sWolfe,interpolation,cgdescent]","c1":0.000100,"c2":0.100000} |
-| cgd-ls        | nonlinear conjugate gradient descent (LS)      | {"ls_init":"quadratic","ls_inits":"[unit,quadratic,consistent]","ls_strat":"interpolation","ls_strats":"[back-Armijo,back-Wolfe,back-sWolfe,interpolation,cgdescent]","c1":0.000100,"c2":0.100000} |
-| cgd-n         | nonlinear conjugate gradient descent (N)       | {"ls_init":"quadratic","ls_inits":"[unit,quadratic,consistent]","ls_strat":"interpolation","ls_strats":"[back-Armijo,back-Wolfe,back-sWolfe,interpolation,cgdescent]","c1":0.000100,"c2":0.100000} |
-| cgd-prp       | nonlinear conjugate gradient descent (PRP+)    | {"ls_init":"quadratic","ls_inits":"[unit,quadratic,consistent]","ls_strat":"interpolation","ls_strats":"[back-Armijo,back-Wolfe,back-sWolfe,interpolation,cgdescent]","c1":0.000100,"c2":0.100000} |
-| gd            | gradient descent                               | {"ls_init":"quadratic","ls_inits":"[unit,quadratic,consistent]","ls_strat":"back-sWolfe","ls_strats":"[back-Armijo,back-Wolfe,back-sWolfe,interpolation,cgdescent]","c1":0.000100,"c2":0.100000}   |
-| lbfgs         | limited-memory BFGS                            | {"ls_init":"quadratic","ls_inits":"[unit,quadratic,consistent]","ls_strat":"interpolation","ls_strats":"[back-Armijo,back-Wolfe,back-sWolfe,interpolation,cgdescent]","c1":0.000100,"c2":0.900000} |
-|---------------|------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+./bench/benchmark_solvers --min-dims 10 --max-dims 100 --convex --epsilon 1e-6 --iterations 1000
 ```
 
-The following stochastic optimization methods are built-in:
+The following (line-search based) optimization methods are built-in:
 ```
-./apps/info --stoch
-|--------------------|--------------------------------------------------------------|-------------------------------------------------------------------------------------------|
-| stochastic solvers | description                                                  | configuration                                                                             |
-|--------------------|--------------------------------------------------------------|-------------------------------------------------------------------------------------------|
-| adadelta           | AdaDelta (see citation)                                      | {"momentum":0.900000,"epsilon":0.000001}                                                  |
-| adagrad            | AdaGrad (see citation)                                       | {"alpha0":0.100000,"epsilon":0.000001}                                                    |
-| adam               | Adam (see citation)                                          | {"alpha0":0.010000,"decay":0.500000,"beta1":0.900000,"beta2":0.999000,"epsilon":0.000001} |
-| ag                 | Nesterov's accelerated gradient                              | {"alpha0":0.010000,"q":0.000000}                                                          |
-| agfr               | Nesterov's accelerated gradient with function value restarts | {"alpha0":0.010000,"q":0.000000}                                                          |
-| aggr               | Nesterov's accelerated gradient with gradient restarts       | {"alpha0":0.010000,"q":0.000000}                                                          |
-| amsgrad            | AMSGrad (see citation)                                       | {"alpha0":0.010000,"decay":0.500000,"beta1":0.900000,"beta2":0.999000,"epsilon":0.000001} |
-| asgd               | averaged stochastic gradient (descent)                       | {"alpha0":0.010000,"decay":0.500000,"momentum":0.900000}                                  |
-| cocob              | COCOB-Backprop (see citation)                                | {"alpha":100.000000}                                                                      |
-| ngd                | stochastic normalized gradient                               | {"alpha0":0.010000,"decay":0.500000}                                                      |
-| rmsprop            | RMSProp (see citation)                                       | {"alpha0":0.010000,"decay":0.500000,"momentum":0.900000,"epsilon":0.000001}               |
-| sg                 | stochastic gradient (descent)                                | {"alpha0":0.010000,"decay":0.500000}                                                      |
-| sgm                | stochastic gradient (descent) with momentum                  | {"alpha0":0.010000,"decay":0.500000,"momentum":0.900000}                                  |
-| svrg               | stochastic variance reduced gradient                         | {"alpha0":0.010000,"decay":0.500000}                                                      |
-|--------------------|--------------------------------------------------------------|-------------------------------------------------------------------------------------------|
+./apps/info --solver
+|----------|------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| solvers  | description                                    | configuration                                                                                                                                                                                      |
+|----------|------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| cgd      | nonlinear conjugate gradient descent (default) | {"c1":"0.0001","c2":"0.1","init":"quadratic","inits":"[unit,quadratic,consistent]","orthotest":"0.1","strat":"interpolate","strats":"[back-armijo,back-wolfe,back-swolfe,interpolate,cg-descent]"} |
+| cgd-cd   | nonlinear conjugate gradient descent (CD)      | {"c1":"0.0001","c2":"0.1","init":"quadratic","inits":"[unit,quadratic,consistent]","orthotest":"0.1","strat":"interpolate","strats":"[back-armijo,back-wolfe,back-swolfe,interpolate,cg-descent]"} |
+| cgd-dy   | nonlinear conjugate gradient descent (DY)      | {"c1":"0.0001","c2":"0.1","init":"quadratic","inits":"[unit,quadratic,consistent]","orthotest":"0.1","strat":"interpolate","strats":"[back-armijo,back-wolfe,back-swolfe,interpolate,cg-descent]"} |
+| cgd-dycd | nonlinear conjugate gradient descent (DYCD)    | {"c1":"0.0001","c2":"0.1","init":"quadratic","inits":"[unit,quadratic,consistent]","orthotest":"0.1","strat":"interpolate","strats":"[back-armijo,back-wolfe,back-swolfe,interpolate,cg-descent]"} |
+| cgd-dyhs | nonlinear conjugate gradient descent (DYHS)    | {"c1":"0.0001","c2":"0.1","init":"quadratic","inits":"[unit,quadratic,consistent]","orthotest":"0.1","strat":"interpolate","strats":"[back-armijo,back-wolfe,back-swolfe,interpolate,cg-descent]"} |
+| cgd-fr   | nonlinear conjugate gradient descent (FR)      | {"c1":"0.0001","c2":"0.1","init":"quadratic","inits":"[unit,quadratic,consistent]","orthotest":"0.1","strat":"interpolate","strats":"[back-armijo,back-wolfe,back-swolfe,interpolate,cg-descent]"} |
+| cgd-hs   | nonlinear conjugate gradient descent (HS)      | {"c1":"0.0001","c2":"0.1","init":"quadratic","inits":"[unit,quadratic,consistent]","orthotest":"0.1","strat":"interpolate","strats":"[back-armijo,back-wolfe,back-swolfe,interpolate,cg-descent]"} |
+| cgd-ls   | nonlinear conjugate gradient descent (LS)      | {"c1":"0.0001","c2":"0.1","init":"quadratic","inits":"[unit,quadratic,consistent]","orthotest":"0.1","strat":"interpolate","strats":"[back-armijo,back-wolfe,back-swolfe,interpolate,cg-descent]"} |
+| cgd-n    | nonlinear conjugate gradient descent (N)       | {"c1":"0.0001","c2":"0.1","init":"quadratic","inits":"[unit,quadratic,consistent]","orthotest":"0.1","strat":"interpolate","strats":"[back-armijo,back-wolfe,back-swolfe,interpolate,cg-descent]"} |
+| cgd-prp  | nonlinear conjugate gradient descent (PRP+)    | {"c1":"0.0001","c2":"0.1","init":"quadratic","inits":"[unit,quadratic,consistent]","orthotest":"0.1","strat":"interpolate","strats":"[back-armijo,back-wolfe,back-swolfe,interpolate,cg-descent]"} |
+| gd       | gradient descent                               | {"c1":"0.1","c2":"0.9","init":"quadratic","inits":"[unit,quadratic,consistent]","strat":"cg-descent","strats":"[back-armijo,back-wolfe,back-swolfe,interpolate,cg-descent]"}                       |
+| lbfgs    | limited-memory BFGS                            | {"c1":"0.0001","c2":"0.9","history":"6","init":"quadratic","inits":"[unit,quadratic,consistent]","strat":"interpolate","strats":"[back-armijo,back-wolfe,back-swolfe,interpolate,cg-descent]"}     |
+|----------|------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 ```
-
 
 ##### Machine learning
 
@@ -117,43 +92,46 @@ The image samples can be saved to disk using for example:
 ./apps/info_task --task mnist --task-params dir=$HOME/experiments/databases/mnist --save-dir ./
 ```
 
-A **model** predicts the correct output for a given image patch, either its label (if a classification task) or a score (if a regression task). The feed-forward models can be constructed using a pattern like `[layer_id[:layer_parameters];]+` with the following layers:
+A **model** predicts the correct output for a given input (e.g. an image patch), either its label (if a classification task) or a score (if a regression task). A model is implemented as an acyclic graph of computation nodes also called layers. The following layers are builtin:
 ```
 ./apps/info --layer
-|-----------|--------------------------------------------------|-------------------------------------------------------------------------------|
-| layer     | description                                      | configuration                                                                 |
-|-----------|--------------------------------------------------|-------------------------------------------------------------------------------|
-| act-sigm  | activation: a(x) = exp(x) / (1 + exp(x))         |                                                                               |
-| act-sin   | activation: a(x) = sin(x)                        |                                                                               |
-| act-snorm | activation: a(x) = x / sqrt(1 + x^2)             |                                                                               |
-| act-splus | activation: a(x) = log(1 + e^x)                  |                                                                               |
-| act-tanh  | activation: a(x) = tanh(x)                       |                                                                               |
-| act-unit  | activation: a(x) = x                             |                                                                               |
-| affine    | transform:  L(x) = A * x + b                     | dims=10[1,4096]                                                               |
-| conv      | transform:  L(x) = conv3D(x, kernel) + b         | dims=16[1,256],rows=8[1,32],cols=8[1,32],conn=1[1,16],drow=1[1,8],dcol=1[1,8] |
-|-----------|--------------------------------------------------|-------------------------------------------------------------------------------|
+|-----------|-------------------------------------------------|---------------------------------------------------------------------------|
+| layer     | description                                     | configuration                                                             |
+|-----------|-------------------------------------------------|---------------------------------------------------------------------------|
+| act-pwave | activation: a(x) = x / (1 + x^2)                | null                                                                      |
+| act-sigm  | activation: a(x) = exp(x) / (1 + exp(x))        | null                                                                      |
+| act-sin   | activation: a(x) = sin(x)                       | null                                                                      |
+| act-snorm | activation: a(x) = x / sqrt(1 + x^2)            | null                                                                      |
+| act-splus | activation: a(x) = log(1 + e^x)                 | null                                                                      |
+| act-ssign | activation: a(x) = x / (1 + |x|)                | null                                                                      |
+| act-tanh  | activation: a(x) = tanh(x)                      | null                                                                      |
+| act-unit  | activation: a(x) = x                            | null                                                                      |
+| affine    | transform:  L(x) = A * x + b                    | {"ocols":"0","omaps":"0","orows":"0"}                                     |
+| conv3d    | transform:  L(x) = conv3D(x, kernel) + b        | {"kcols":"1","kconn":"1","kdcol":"1","kdrow":"1","krows":"1","omaps":"1"} |
+| mix-plus  | combine: sum 4D inputs                          | null                                                                      |
+| mix-tcat  | combine: concat 4D inputs across feature planes | null                                                                      |
+| norm3d    | transform: zero-mean & unit-variance            | {"norm":"global","norms":"[global,plane]"}                                |
+|-----------|-------------------------------------------------|---------------------------------------------------------------------------|
 ```
 
 A **loss** function assigns a scalar score to the prediction of a model `y` by comparing it with the ground truth target `t` (if provided): the lower the score, the better the prediction. The library uses the {-1, +1} codification of class labels.
 ```
 ./apps/info --loss
-|-----------|-------------------------------------------------|---------------------------------------------------------------|
-| layer     | description                                     | configuration                                                 |
-|-----------|-------------------------------------------------|---------------------------------------------------------------|
-| act-pwave | activation: a(x) = x / (1 + x^2)                |                                                               |
-| act-sigm  | activation: a(x) = exp(x) / (1 + exp(x))        |                                                               |
-| act-sin   | activation: a(x) = sin(x)                       |                                                               |
-| act-snorm | activation: a(x) = x / sqrt(1 + x^2)            |                                                               |
-| act-splus | activation: a(x) = log(1 + e^x)                 |                                                               |
-| act-ssign | activation: a(x) = x / (1 + |x|)                |                                                               |
-| act-tanh  | activation: a(x) = tanh(x)                      |                                                               |
-| act-unit  | activation: a(x) = x                            |                                                               |
-| affine    | transform:  L(x) = A * x + b                    | {"omaps":0,"orows":0,"ocols":0}                               |
-| conv3d    | transform:  L(x) = conv3D(x, kernel) + b        | {"omaps":1,"krows":1,"kcols":1,"kconn":1,"kdrow":1,"kdcol":1} |
-| mix-plus  | combine: sum 4D inputs                          |                                                               |
-| mix-tcat  | combine: concat 4D inputs across feature planes |                                                               |
-| norm3d    | transform: zero-mean & unit-variance            | {"type":"global","types":"[global,plane]"}                    |
-|-----------|-------------------------------------------------|---------------------------------------------------------------|
+|---------------|----------------------------------------------------------------------------------|---------------|
+| loss          | description                                                                      | configuration |
+|---------------|----------------------------------------------------------------------------------|---------------|
+| cauchy        | multivariate regression:     l(y, t) = 1/2 * log(1 + (y - t)^2)                  | null          |
+| classnll      | single-label classification: l(y, t) = log(y.exp().sum()) + 1/2 * (1 + t).dot(y) | null          |
+| m-cauchy      | multi-label classification:  l(y, t) = 1/2 * log(1 + (1 - y*t)^2)                | null          |
+| m-exponential | multi-label classification:  l(y, t) = exp(-y*t)                                 | null          |
+| m-logistic    | multi-label classification:  l(y, t) = log(1 + exp(-y*t))                        | null          |
+| m-square      | multi-label classification:  l(y, t) = 1/2 * (1 - y*t)^2                         | null          |
+| s-cauchy      | single-label classification: l(y, t) = 1/2 * log(1 + (1 - y*t)^2)                | null          |
+| s-exponential | single-label classification: l(y, t) = exp(-y*t)                                 | null          |
+| s-logistic    | single-label classification: l(y, t) = log(1 + exp(-y*t))                        | null          |
+| s-square      | single-label classification: l(y, t) = 1/2 * (1 - y*t)^2                         | null          |
+| square        | multivariate regression:     l(y, t) = 1/2 * (y - t)^2                           | null          |
+|---------------|----------------------------------------------------------------------------------|---------------|
 ```
 
 A **trainer** optimizes the parameters of a given model to produce the correct outputs for a given task using the cumulated values of a given loss over the training samples as a numerical optimization criteria. All the available trainers tune all their required hyper parameters on a separate validation dataset.
@@ -163,7 +141,6 @@ A **trainer** optimizes the parameters of a given model to produce the correct o
 | trainer | description        | configuration                                                                                                                                                   |
 |---------|--------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | batch   | batch trainer      | {"solver":"lbfgs","solvers":"[cgd,cgd-cd,cgd-dy,cgd-dycd,cgd-dyhs,cgd-fr,cgd-hs,cgd-ls,cgd-n,cgd-prp,gd,lbfgs]","epochs":1024,"epsilon":0.000001,"patience":32} |
-| stoch   | stochastic trainer | {"solver":"sg","solvers":"[adadelta,adagrad,adam,ag,agfr,aggr,amsgrad,asgd,cocob,ngd,rmsprop,sg,sgm,svrg]","epochs":128,"epsilon":0.000001,"patience":32}       |
 |---------|--------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------|
 ```
 
@@ -177,8 +154,7 @@ Most notably:
 * **apps/info_archive** - loads an archive (e.g. .tar, .tgz, .zip) and prints its description (e.g. file names and sizes in bytes).
 * **apps/train** - train a model on a given task.
 * **apps/evaluate** - test a model on a given task.
-* **bench/benchmark_batch** - benchmark all batch optimization methods with varying the line-search parameters on standard test functions.
-* **bench/benchmark_stoch** - benchmark all stochastic optimization methods on standard test functions.
+* **bench/benchmark_solvers** - benchmark all optimization methods with varying the line-search parameters on standard test functions.
 * **bench/benchmark_models** - bechmark speed-wise some typical models on a synthetic task.
 
 The `scripts` directory contains examples on how to train various models on different tasks.
