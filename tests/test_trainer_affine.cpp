@@ -58,7 +58,7 @@ NANO_CASE(tune_and_train)
         // create synthetic task
         const auto task = get_tasks().get("synth-affine");
         NANO_REQUIRE(task);
-        task->from_json(to_json("isize", isize, "osize", osize, "noise", 0, "count", 100));
+        task->from_json(to_json("isize", isize, "osize", osize, "noise", 0, "count", 1000));
         NANO_REQUIRE(task->load());
         NANO_REQUIRE_EQUAL(task->idims(), make_dims(isize, 1, 1));
         NANO_REQUIRE_EQUAL(task->odims(), make_dims(osize, 1, 1));

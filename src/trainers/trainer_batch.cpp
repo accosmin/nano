@@ -11,22 +11,14 @@
 using namespace nano;
 
 static trainer_result_t train(const task_t& task, const size_t fold, accumulator_t& acc,
-        const rsolver_t& solver, const json_t& json,
+        const rsolver_t& solver,
         const size_t epochs, const scalar_t epsilon, const size_t patience,
         const nano::timer_t& timer)
 {
         assert(solver);
 
         size_t epoch = 0;
-        trainer_result_t result(json.dump());
-
-        // setup solver
-        solver->from_json(json);
-
-        // setup L2-regularization
-        scalar_t lambda = 0;
-        nano::from_json(json, "lambda", lambda);
-        acc.lambda(lambda);
+        trainer_result_t result("");
 
         // logging operator
         const auto fn_ulog = [&] (const solver_state_t& state)
@@ -48,7 +40,7 @@ static trainer_result_t train(const task_t& task, const size_t fold, accumulator
                         << ":train=" << train
                         << ",valid=" << valid << "|" << nano::to_string(ret)
                         << ",test=" << test
-                        << "," << json.dump() << ",g=" << gnorm << ",x=" << xnorm
+                        << ",g=" << gnorm << ",x=" << xnorm
                         << "]" << timer.elapsed() << ".";
 
                 return !nano::is_done(ret);
@@ -76,28 +68,10 @@ void batch_trainer_t::to_json(json_t& json) const
 trainer_result_t batch_trainer_t::train(const task_t& task, const size_t fold, accumulator_t& acc) const
 {
         const timer_t timer;
-        trainer_result_t result;
 
-        const auto params = acc.params();
+        // todo: tune regulizer (L1, L2, ...)
         const auto solver = get_solvers().get(m_solver);
-
-        tuner_t tuner;
-        tuner.add_pow10s("lambda", 0, -6, -1);
-
-        // tune the hyper-parameters: solver + L2-regularizer
-        for (const auto& json : tuner.get(10 * tuner.n_params()))
-        {
-                const auto epochs = m_epochs;
-                const auto epsilon = m_epsilon;
-                const auto patience = m_patience;
-
-                acc.params(params);
-                const auto cresult = ::train(task, fold, acc, solver, json, epochs, epsilon, patience, timer);
-                if (cresult < result)
-                {
-                        result = cresult;
-                }
-        }
+        const auto result = ::train(task, fold, acc, solver, m_epochs, m_epsilon, m_patience, timer);
 
         assert(result);
         log_info() << std::setprecision(3) << "<<< " << m_solver << ": " << result << "," << timer.elapsed() << ".";

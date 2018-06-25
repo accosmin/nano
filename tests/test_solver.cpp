@@ -14,7 +14,7 @@ NANO_CASE(evaluate)
                 NANO_REQUIRE(function);
 
                 const auto iterations = size_t(1000);
-                const auto trials = size_t(100);
+                const auto trials = size_t(10);
 
                 for (const auto& id : get_solvers().ids())
                 {
