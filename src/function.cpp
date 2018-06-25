@@ -157,7 +157,7 @@ rfunctions_t nano::get_functions(const tensor_size_t min_size, const tensor_size
                 append(std::make_unique<function_schumer_steiglitz_t>(dims), dims, regex, funcs);
                 append(std::make_unique<function_rotated_ellipsoid_t>(dims), dims, regex, funcs);
 
-                if (dims <= 8)
+                if (dims < 8)
                 {
                         ++ dims;
                 }
