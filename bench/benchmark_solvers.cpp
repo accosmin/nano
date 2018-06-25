@@ -98,6 +98,28 @@ static auto trim(const json_t& json)
         return config;
 }
 
+static auto check_solver(const function_t& function, const rsolver_t& solver, const string_t& id,
+        const std::vector<vector_t>& x0s, const size_t iterations, const scalar_t epsilon)
+{
+        solver_config_stats_t stats;
+
+        json_t json;
+        solver->to_json(json);
+        const auto config = trim(json);
+
+        for (const auto& x0 : x0s)
+        {
+                const auto state0 = solver_state_t{function, x0};
+
+                function.reset_calls();
+                const auto statex = solver->minimize(iterations, epsilon, function, x0);
+
+                stats[std::make_pair(id, config)].update(function, state0, statex);
+        }
+
+        return stats;
+}
+
 static void check_function(const function_t& function, const strings_t& solvers,
         const size_t trials, const size_t iterations, const scalar_t epsilon, const bool is_tuning,
         solver_config_stats_t& gstats)
@@ -117,37 +139,23 @@ static void check_function(const function_t& function, const strings_t& solvers,
         {
                 const auto solver = get_solvers().get(id);
 
-                const auto op = [&] ()
-                {
-                        json_t json;
-                        solver->to_json(json);
-
-                        const auto config = trim(json);
-
-                        for (const auto& x0 : x0s)
-                        {
-                                const auto state0 = solver_state_t{function, x0};
-
-                                function.reset_calls();
-                                const auto statex = solver->minimize(iterations, epsilon, function, x0);
-
-                                fstats[std::make_pair(id, config)].update(function, state0, statex);
-                                gstats[std::make_pair(id, config)].update(function, state0, statex);
-                        }
-                };
-
                 if (is_tuning)
                 {
                         const auto tuner = solver->tuner();
                         for (const auto& json : tuner.get(tuner.n_configs()))
                         {
                                 solver->from_json(json);
-                                op();
+
+                                const auto stats = check_solver(function, solver, id, x0s, iterations, epsilon);
+                                fstats.insert(stats.begin(), stats.end());
+                                gstats.insert(stats.begin(), stats.end());
                         }
                 }
                 else
                 {
-                        op();
+                        const auto stats = check_solver(function, solver, id, x0s, iterations, epsilon);
+                        fstats.insert(stats.begin(), stats.end());
+                        gstats.insert(stats.begin(), stats.end());
                 }
         }
 
