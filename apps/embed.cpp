@@ -3,7 +3,6 @@
 #include "stringi.h"
 #include "text/cmdline.h"
 #include "text/algorithm.h"
-#include "text/filesystem.h"
 #include <fstream>
 
 int main(int argc, const char *argv[])
