@@ -179,20 +179,11 @@ namespace nano
         inline std::ostream& operator<<(std::ostream& os, const trainer_result_t& result)
         {
                 const auto& state = result.optimum_state();
-
-                os      << "train=" << state.m_train
+                return  os
+                        << "train=" << state.m_train
                         << ",valid=" << state.m_valid
                         << ",test=" << state.m_test
-                        << "," << result.config() << ",epoch=" << result.optimum_epoch();
-                if (result.history().size() > 1)
-                {
-                        os << ",speed=" << result.convergence_speed() << "/s";
-                }
-                else
-                {
-                        os << ",speed=" << "0.0/s";
-                }
-
-                return os;
+                        << "," << result.config() << ",epoch=" << result.optimum_epoch()
+                        << ",speed=" << (result.history().size() > 1 ? result.convergence_speed() : scalar_t(0)) << "/s";
         }
 }
