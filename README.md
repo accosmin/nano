@@ -17,7 +17,7 @@ The test programs and utilities will be found in the `build-release` directory.
 To build the debugging version with or without address, memory and thread sanitizers (if available) run:
 ```
 mkdir build-debug && cd build-debug
-cmake -G "Ninja" -DCMAKE_BUILD_TYPE=Debug -DNANO_WITH_[ASAN|MSAN|TSAN]=ON
+cmake -G "Ninja" -DCMAKE_BUILD_TYPE=Debug -DNANO_WITH_[ASAN|LSAN|USAN|MSAN|TSAN]=ON
 ```
 
 It is recommended to use libc++ with clang by issuing the following command:
