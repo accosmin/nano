@@ -52,10 +52,6 @@ void nano::thread_pool_t::activate(std::size_t count)
 {
         const std::lock_guard<std::mutex> lock(m_queue.m_mutex);
 
-        if (!count)
-        {
-                count = workers();
-        }
         count = std::max(std::size_t(1), std::min(count, workers()));
 
         std::size_t crt_count = ::active_workers(m_workers);
