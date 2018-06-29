@@ -43,8 +43,8 @@ NANO_BEGIN_MODULE(test_thread_loop)
 
 NANO_CASE(evaluate)
 {
-        const size_t min_size = 7;
-        const size_t max_size = 3 * 3 * 7;
+        const size_t min_size = 1;
+        const size_t max_size = 9 * 9 * 9 * 1;
 
         using scalar_t = double;
 
