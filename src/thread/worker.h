@@ -52,7 +52,7 @@ namespace nano
         {
         }
 
-        inline void nano::worker_t::operator()() const
+        inline void worker_t::operator()() const
         {
                 while (true)
                 {
