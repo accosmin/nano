@@ -12,8 +12,10 @@ namespace nano
         /// \brief thread pool.
         /// NB: this is heavily copied/inspired by http://progsch.net/wordpress/?p=81
         ///
-        struct NANO_PUBLIC thread_pool_t
+        class NANO_PUBLIC thread_pool_t
         {
+        public:
+
                 ///
                 /// \brief single instance
                 ///
