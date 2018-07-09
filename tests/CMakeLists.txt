@@ -1,7 +1,5 @@
 # build unit tests
-make_test(test_average.cpp "")
 make_test(test_cubic.cpp "")
-make_test(test_momentum.cpp "")
 make_test(test_quadratic.cpp "")
 make_test(test_stats.cpp "")
 make_test(test_tensor.cpp "")
