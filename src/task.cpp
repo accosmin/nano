@@ -7,7 +7,7 @@
 #include "tasks/task_affine.h"
 #include "tasks/task_peak2d.h"
 #include "tasks/task_parity.h"
-#include "text/table.h"
+#include "core/table.h"
 #include <mutex>
 #include <iostream>
 

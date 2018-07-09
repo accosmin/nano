@@ -1,6 +1,6 @@
 #include <utility>
-#include "math/cubic.h"
-#include "math/quadratic.h"
+#include "core/cubic.h"
+#include "core/quadratic.h"
 #include "lsearch_interpolate.h"
 
 using namespace nano;

@@ -2,7 +2,7 @@
 #include "utils.h"
 #include "tuner.h"
 #include "solver.h"
-#include "math/numeric.h"
+#include "core/numeric.h"
 #include "trainer_batch.h"
 #include "function_batch.h"
 #include "logger.h"

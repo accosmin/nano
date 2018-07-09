@@ -13,16 +13,12 @@ set(libnano_sources
         ${CMAKE_CURRENT_SOURCE_DIR}/tuner.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/solver.cpp)
 
-add_subdirectory(io)
-add_subdirectory(math)
-add_subdirectory(text)
+add_subdirectory(core)
 add_subdirectory(tasks)
 add_subdirectory(losses)
 add_subdirectory(layers)
 add_subdirectory(tensor)
 add_subdirectory(thread)
-add_subdirectory(chrono)
-add_subdirectory(vision)
 add_subdirectory(solvers)
 add_subdirectory(trainers)
 add_subdirectory(functions)

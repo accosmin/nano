@@ -1,7 +1,7 @@
 #pragma once
 
 #include "task_mem.h"
-#include "math/hash.h"
+#include "core/hash.h"
 
 namespace nano
 {

@@ -1,6 +1,6 @@
 #include "utest.h"
-#include "text/cast.h"
-#include "text/algorithm.h"
+#include "core/cast.h"
+#include "core/algorithm.h"
 #include <list>
 #include <set>
 

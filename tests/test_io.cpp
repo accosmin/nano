@@ -1,13 +1,13 @@
 #include "utest.h"
 #include "tensor.h"
-#include "io/istream.h"
-#include "io/ibstream.h"
-#include "io/obstream.h"
-#include "math/random.h"
-#include "math/epsilon.h"
-#include "io/istream_mem.h"
-#include "io/istream_std.h"
+#include "core/random.h"
+#include "core/epsilon.h"
+#include "core/istream.h"
+#include "core/ibstream.h"
+#include "core/obstream.h"
 #include "tensor/numeric.h"
+#include "core/istream_mem.h"
+#include "core/istream_std.h"
 #include <cstdio>
 #include <fstream>
 

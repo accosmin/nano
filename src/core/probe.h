@@ -2,7 +2,7 @@
 
 #include <vector>
 #include "measure.h"
-#include "math/stats.h"
+#include "core/stats.h"
 
 namespace nano
 {

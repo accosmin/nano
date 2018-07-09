@@ -1,7 +1,7 @@
 #include "utest.h"
 #include "function.h"
-#include "math/stats.h"
-#include "math/epsilon.h"
+#include "core/stats.h"
+#include "core/epsilon.h"
 #include "layers/norm4d.h"
 
 using namespace nano;

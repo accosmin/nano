@@ -1,8 +1,8 @@
 #include "utest.h"
-#include "math/cubic.h"
-#include "math/random.h"
-#include "math/numeric.h"
-#include "math/epsilon.h"
+#include "core/cubic.h"
+#include "core/random.h"
+#include "core/numeric.h"
+#include "core/epsilon.h"
 
 NANO_BEGIN_MODULE(test_cubic)
 

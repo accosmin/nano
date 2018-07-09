@@ -1,6 +1,6 @@
 #include "utest.h"
-#include "math/numeric.h"
-#include "math/epsilon.h"
+#include "core/numeric.h"
+#include "core/epsilon.h"
 #include "tensor/average.h"
 
 template <typename tsize>

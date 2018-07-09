@@ -2,12 +2,11 @@
 #include "logger.h"
 #include <iostream>
 #include "digraph.h"
-#include "text/table.h"
-#include "io/ibstream.h"
-#include "io/obstream.h"
-#include "math/numeric.h"
-#include "tensor/numeric.h"
-#include "text/algorithm.h"
+#include "core/table.h"
+#include "core/numeric.h"
+#include "core/ibstream.h"
+#include "core/obstream.h"
+#include "core/algorithm.h"
 
 using namespace nano;
 

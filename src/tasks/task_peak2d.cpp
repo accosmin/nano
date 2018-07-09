@@ -1,5 +1,5 @@
 #include "task_peak2d.h"
-#include "math/numeric.h"
+#include "core/numeric.h"
 
 using namespace nano;
 

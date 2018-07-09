@@ -1,5 +1,5 @@
 #include "rosenbrock.h"
-#include "math/numeric.h"
+#include "core/numeric.h"
 
 using namespace nano;
 

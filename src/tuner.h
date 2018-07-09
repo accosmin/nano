@@ -3,7 +3,7 @@
 #include "arch.h"
 #include "scalar.h"
 #include "stringi.h"
-#include "text/json.h"
+#include "core/json.h"
 
 namespace nano
 {

@@ -4,8 +4,8 @@
 #include "solver.h"
 #include "version.h"
 #include "trainer.h"
-#include "text/table.h"
-#include "text/cmdline.h"
+#include "core/table.h"
+#include "core/cmdline.h"
 #include <iostream>
 
 using namespace nano;

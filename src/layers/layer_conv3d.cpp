@@ -1,4 +1,4 @@
-#include "math/random.h"
+#include "core/random.h"
 #include "layer_conv3d.h"
 #include "tensor/numeric.h"
 

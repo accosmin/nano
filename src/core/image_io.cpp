@@ -1,6 +1,6 @@
 #include <IL/il.h>
 #include "image_io.h"
-#include "text/algorithm.h"
+#include "core/algorithm.h"
 
 using namespace nano;
 

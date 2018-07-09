@@ -3,7 +3,7 @@
 #include <ostream>
 #include <cstdint>
 #include "tensor.h"
-#include "text/cast.h"
+#include "core/cast.h"
 
 namespace nano
 {

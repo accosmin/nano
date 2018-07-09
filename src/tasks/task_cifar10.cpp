@@ -1,6 +1,6 @@
 #include "logger.h"
 #include "task_cifar10.h"
-#include "text/algorithm.h"
+#include "core/algorithm.h"
 
 using namespace nano;
 

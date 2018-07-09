@@ -4,7 +4,7 @@
 #include <atomic>
 #include <string>
 #include <iostream>
-#include "math/numeric.h"
+#include "core/numeric.h"
 #include <eigen3/Eigen/Core>
 
 enum class exception_status

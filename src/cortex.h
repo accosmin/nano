@@ -1,7 +1,7 @@
 #pragma once
 
 #include "tensor.h"
-#include "text/cast.h"
+#include "core/cast.h"
 
 namespace nano
 {

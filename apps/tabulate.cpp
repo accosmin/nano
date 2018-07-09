@@ -1,10 +1,10 @@
 #include <numeric>
 #include <iomanip>
 #include <iostream>
-#include "math/stats.h"
-#include "text/table.h"
-#include "text/cmdline.h"
-#include "text/algorithm.h"
+#include "core/stats.h"
+#include "core/table.h"
+#include "core/cmdline.h"
+#include "core/algorithm.h"
 
 using namespace nano;
 

@@ -3,8 +3,8 @@
 #include <numeric>
 #include <fstream>
 #include <iomanip>
+#include "numeric.h"
 #include "algorithm.h"
-#include "math/numeric.h"
 
 using namespace nano;
 

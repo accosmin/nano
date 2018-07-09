@@ -1,7 +1,7 @@
 #pragma once
 
 #include "layer.h"
-#include "chrono/probe.h"
+#include "core/probe.h"
 
 namespace nano
 {

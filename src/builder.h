@@ -1,8 +1,8 @@
 #pragma once
 
 #include "model.h"
-#include "text/json.h"
-#include "text/algorithm.h"
+#include "core/json.h"
+#include "core/algorithm.h"
 #include "layers/norm3d_params.h"
 
 namespace nano

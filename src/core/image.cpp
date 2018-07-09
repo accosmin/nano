@@ -1,6 +1,6 @@
 #include "image.h"
 #include "image_io.h"
-#include "math/hash.h"
+#include "core/hash.h"
 
 using namespace nano;
 

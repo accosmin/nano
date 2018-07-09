@@ -1,6 +1,6 @@
 #include "utest.h"
-#include "math/stats.h"
-#include "math/random.h"
+#include "core/stats.h"
+#include "core/random.h"
 
 using namespace nano;
 

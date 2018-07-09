@@ -1,7 +1,7 @@
 #include "utest.h"
 #include "tensor.h"
-#include "math/epsilon.h"
-#include "math/momentum.h"
+#include "core/epsilon.h"
+#include "core/momentum.h"
 #include "tensor/momentum.h"
 
 using namespace nano;

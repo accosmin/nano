@@ -3,8 +3,8 @@
 #include "utest.h"
 #include "builder.h"
 #include "accumulator.h"
-#include "math/epsilon.h"
-#include "math/numeric.h"
+#include "core/epsilon.h"
+#include "core/numeric.h"
 
 using namespace nano;
 

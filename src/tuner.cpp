@@ -1,9 +1,9 @@
 #include "tuner.h"
 #include <sstream>
 #include <iomanip>
-#include "text/json.h"
-#include "math/random.h"
-#include "math/numeric.h"
+#include "core/json.h"
+#include "core/random.h"
+#include "core/numeric.h"
 
 using namespace nano;
 

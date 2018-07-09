@@ -1,8 +1,8 @@
 #pragma once
 
 #include "task_mem.h"
-#include "math/hash.h"
-#include "vision/image.h"
+#include "core/hash.h"
+#include "core/image.h"
 
 namespace nano
 {

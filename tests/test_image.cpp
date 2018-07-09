@@ -1,7 +1,7 @@
 #include "utest.h"
-#include "math/random.h"
-#include "math/epsilon.h"
-#include "vision/image.h"
+#include "core/image.h"
+#include "core/random.h"
+#include "core/epsilon.h"
 #include <cstdio>
 
 using namespace nano;

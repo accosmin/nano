@@ -1,5 +1,5 @@
 #include "logger.h"
-#include "text/table.h"
+#include "core/table.h"
 #include "task_mem_csv.h"
 
 using namespace nano;

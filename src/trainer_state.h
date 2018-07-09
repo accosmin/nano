@@ -3,8 +3,8 @@
 #include <cmath>
 #include <limits>
 #include <ostream>
+#include "core/timer.h"
 #include "solver_state.h"
-#include "chrono/timer.h"
 
 namespace nano
 {

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "function.h"
-#include "text/cast.h"
+#include "core/cast.h"
 
 namespace nano
 {

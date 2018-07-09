@@ -1,7 +1,7 @@
-#include "text/table.h"
-#include "math/stats.h"
-#include "math/epsilon.h"
-#include "math/numeric.h"
+#include "core/table.h"
+#include "core/stats.h"
+#include "core/epsilon.h"
+#include "core/numeric.h"
 #include "trainer_state.h"
 
 using namespace nano;

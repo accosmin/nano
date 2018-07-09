@@ -1,5 +1,5 @@
 #include "utest.h"
-#include "vision/rect.h"
+#include "core/rect.h"
 
 NANO_BEGIN_MODULE(test_geom)
 

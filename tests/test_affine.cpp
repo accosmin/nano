@@ -1,6 +1,6 @@
 #include "utest.h"
 #include "function.h"
-#include "math/epsilon.h"
+#include "core/epsilon.h"
 #include "layers/affine3d.h"
 #include "layers/affine4d.h"
 

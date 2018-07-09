@@ -1,5 +1,5 @@
 #include "utest.h"
-#include "text/table.h"
+#include "core/table.h"
 
 template <typename tscalar>
 std::ostream& operator<<(std::ostream& os, const std::vector<std::pair<size_t, tscalar>>& values)

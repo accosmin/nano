@@ -1,7 +1,7 @@
 #pragma once
 
 #include "timer.h"
-#include "math/numeric.h"
+#include "numeric.h"
 
 namespace nano
 {

@@ -1,8 +1,8 @@
-#include "io/io.h"
 #include "logger.h"
+#include "core/io.h"
 #include "stringi.h"
-#include "text/cmdline.h"
-#include "text/algorithm.h"
+#include "core/cmdline.h"
+#include "core/algorithm.h"
 #include <fstream>
 
 int main(int argc, const char *argv[])

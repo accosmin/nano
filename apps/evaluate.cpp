@@ -1,8 +1,7 @@
-#include "io/io.h"
+#include "core/io.h"
 #include "checkpoint.h"
 #include "accumulator.h"
-#include "accumulator.h"
-#include "text/cmdline.h"
+#include "core/cmdline.h"
 #include <iomanip>
 
 using namespace nano;

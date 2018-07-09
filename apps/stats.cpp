@@ -1,7 +1,7 @@
 #include <iomanip>
 #include <iostream>
-#include "text/cast.h"
-#include "math/stats.h"
+#include "core/cast.h"
+#include "core/stats.h"
 
 using namespace nano;
 
