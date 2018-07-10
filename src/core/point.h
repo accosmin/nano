@@ -8,8 +8,9 @@ namespace nano
         ///
         /// \brief 2D point
         ///
-        struct point_t
+        class point_t
         {
+        public:
                 ///
                 /// \brief constructor
                 ///
