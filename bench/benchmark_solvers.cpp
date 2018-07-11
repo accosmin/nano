@@ -1,9 +1,9 @@
 #include "solver.h"
-#include "math/stats.h"
-#include "text/table.h"
-#include "text/cmdline.h"
-#include "math/epsilon.h"
-#include "text/algorithm.h"
+#include "core/stats.h"
+#include "core/table.h"
+#include "core/cmdline.h"
+#include "core/epsilon.h"
+#include "core/algorithm.h"
 #include "solvers/lsearch.h"
 #include <iostream>
 

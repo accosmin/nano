@@ -1,8 +1,8 @@
 #include "function.h"
-#include "math/stats.h"
-#include "text/table.h"
-#include "text/cmdline.h"
-#include "chrono/measure.h"
+#include "core/stats.h"
+#include "core/table.h"
+#include "core/cmdline.h"
+#include "core/measure.h"
 #include <iostream>
 
 using namespace nano;

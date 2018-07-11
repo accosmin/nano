@@ -1,9 +1,9 @@
 #include <cmath>
-#include "text/table.h"
+#include "core/table.h"
 #include "thread/loopi.h"
-#include "math/numeric.h"
-#include "text/cmdline.h"
-#include "chrono/measure.h"
+#include "core/numeric.h"
+#include "core/cmdline.h"
+#include "core/measure.h"
 #include <iostream>
 
 using namespace nano;

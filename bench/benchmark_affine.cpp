@@ -1,9 +1,9 @@
 #include "cortex.h"
 #include "logger.h"
-#include "text/table.h"
-#include "math/numeric.h"
-#include "text/cmdline.h"
-#include "chrono/measure.h"
+#include "core/table.h"
+#include "core/numeric.h"
+#include "core/cmdline.h"
+#include "core/measure.h"
 #include "layers/affine3d.h"
 #include "layers/affine4d.h"
 #include <iostream>

@@ -1,8 +1,8 @@
 #include "tensor.h"
-#include "text/table.h"
-#include "math/random.h"
-#include "text/cmdline.h"
-#include "chrono/measure.h"
+#include "core/table.h"
+#include "core/random.h"
+#include "core/cmdline.h"
+#include "core/measure.h"
 #include "tensor/numeric.h"
 #include <iostream>
 

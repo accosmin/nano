@@ -1,12 +1,12 @@
 #include "loss.h"
 #include "task.h"
 #include "model.h"
-#include "io/io.h"
+#include "core/io.h"
 #include "checkpoint.h"
-#include "text/table.h"
+#include "core/table.h"
 #include "accumulator.h"
-#include "text/cmdline.h"
-#include "text/algorithm.h"
+#include "core/cmdline.h"
+#include "core/algorithm.h"
 #include <iostream>
 
 using namespace nano;
