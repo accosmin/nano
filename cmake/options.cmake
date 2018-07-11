@@ -17,4 +17,4 @@ option(NANO_WITH_CLANG_TIDY             "create clang-tidy target for static ana
 option(NANO_WITH_TUNE_NATIVE            "tune for the native platform (-mtune=native -march=native)"    ON)
 option(NANO_WITH_COVERAGE               "build with support for code coverage"                          OFF)
 option(NANO_WITH_TESTS                  "build the unit tests"                                          ON)
-option(NANO_WITH_BENCH                  "build benchmark command line utilities"                        OFF)
+option(NANO_WITH_BENCH                  "build benchmark command line utilities"                        ON)
