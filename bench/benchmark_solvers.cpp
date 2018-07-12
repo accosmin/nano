@@ -87,8 +87,8 @@ static void show_table(const string_t& table_name, const solver_config_stats_t& 
 static auto trim(const json_t& json)
 {
         string_t config = json.dump();
-        config = nano::replace(config, "\"inits\":\"" + join(enum_values<lsearch_t::initializer>()) + "\"", "");
-        config = nano::replace(config, "\"strats\":\"" + join(enum_values<lsearch_t::strategy>()) + "\"", "");
+        config = nano::replace(config, R"("inits":)" + join(enum_values<lsearch_t::initializer>()) + "\"", "");
+        config = nano::replace(config, R"("strats":)" + join(enum_values<lsearch_t::strategy>()) + "\"", "");
         config = nano::replace(config, ",,", ",");
         config = nano::replace(config, "\"", "");
         config = nano::replace(config, ",}", "");
