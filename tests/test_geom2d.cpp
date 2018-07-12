@@ -1,7 +1,7 @@
 #include "utest.h"
-#include "core/rect.h"
+#include "core/geom2d.h"
 
-NANO_BEGIN_MODULE(test_geom)
+NANO_BEGIN_MODULE(test_geom2d)
 
 NANO_CASE(construct_point)
 {

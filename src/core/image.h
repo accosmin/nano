@@ -1,8 +1,8 @@
 #pragma once
 
 #include "arch.h"
-#include "rect.h"
 #include "color.h"
+#include "geom2d.h"
 
 namespace nano
 {

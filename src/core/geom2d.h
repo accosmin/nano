@@ -1,11 +1,59 @@
 #pragma once
 
-#include "point.h"
-#include "scalar.h"
+#include <cstdint>
+#include <ostream>
 #include <algorithm>
 
 namespace nano
 {
+        ///
+        /// \brief image coordinate (in pixels) - 64bit to be compatible with Eigen::Index
+        ///
+        using coord_t = int64_t;
+
+        ///
+        /// \brief image area (in pixels)
+        ///
+        using area_t = int64_t;
+
+        ///
+        /// \brief 2D point
+        ///
+        class point_t
+        {
+        public:
+                ///
+                /// \brief constructor
+                ///
+                explicit point_t(coord_t x = 0, coord_t y = 0) :
+                        m_x(x), m_y(y)
+                {
+                }
+
+                ///
+                /// \brief access functions
+                ///
+                coord_t x() const { return m_x; }
+                coord_t y() const { return m_y; }
+
+        private:
+
+                // attributes
+                coord_t         m_x;
+                coord_t         m_y;
+        };
+
+        inline bool operator==(const point_t& point1, const point_t& point2)
+        {
+                return  point1.x() == point2.x() &&
+                        point1.y() == point2.y();
+        }
+
+        inline std::ostream& operator<<(std::ostream& s, const point_t& point)
+        {
+                return s << "{POINT: (" << point.x() << ", " << point.y() << "}";
+        }
+
         ///
         /// \brief 2D rectangle
         ///
@@ -84,12 +132,11 @@ namespace nano
         }
 
         ///
-        /// \brief [0, 1] overlap between two rectangle (aka Jaccard distance)
+        /// \brief [0, 100] percentage overlap between two rectangle (aka Jaccard distance)
         ///
-        inline scalar_t overlap(const rect_t& rect1, const rect_t& rect2)
+        inline area_t overlap(const rect_t& rect1, const rect_t& rect2)
         {
-                return static_cast<scalar_t>((rect1 & rect2).area() + 1) /
-                       static_cast<scalar_t>((rect1 | rect2).area() + 1);
+                return 100 * ((rect1 & rect2).area() + 1) / ((rect1 | rect2).area() + 1);
         }
 
         ///
