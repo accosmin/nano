@@ -34,7 +34,6 @@ int main(int argc, const char *argv[])
         cmdline.add("", "trainer",      join(get_trainers().ids()) + " (.json)");
         cmdline.add("", "loss",         join(get_losses().ids()) + " (.json)");
         cmdline.add("", "basepath",     "basepath where to save results (e.g. model, logs, history)");
-        cmdline.add("", "threads",      "number of threads to use", physical_cpus());
         cmdline.add("", "trials",       "number of trials/folds", 10);
 
         cmdline.process(argc, argv);
@@ -45,7 +44,6 @@ int main(int argc, const char *argv[])
         const auto cmd_trainer = cmdline.get<string_t>("trainer");
         const auto cmd_loss = cmdline.get<string_t>("loss");
         const auto cmd_basepath = cmdline.get<string_t>("basepath");
-        const auto cmd_threads = cmdline.get<size_t>("threads");
         const auto cmd_trials = cmdline.get<size_t>("trials");
 
         checkpoint_t checkpoint;
@@ -101,7 +99,6 @@ int main(int argc, const char *argv[])
 
         // setup accumulator
         accumulator_t acc(model, *loss);
-        acc.threads(cmd_threads);
 
         table_t table;
         table.header()

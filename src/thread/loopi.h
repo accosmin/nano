@@ -15,7 +15,7 @@ namespace nano
         {
                 auto& pool = thread_pool_t::instance();
 
-                const auto workers = static_cast<tsize>(pool.active_workers());
+                const auto workers = static_cast<tsize>(pool.workers());
                 const auto thread_chunk = (size + workers - 1) / workers;
                 if (thread_chunk > tsize(0))
                 {

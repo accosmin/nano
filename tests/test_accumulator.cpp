@@ -34,7 +34,6 @@ NANO_CASE(evaluate)
 
         // accumulators using 1 thread
         accumulator_t acc(model, *loss);
-        acc.threads(1);
 
         acc.mode(accumulator_t::type::value);
         acc.update(*task, fold);
@@ -53,29 +52,24 @@ NANO_CASE(evaluate)
         NANO_CHECK_CLOSE(vgrad1, value1, epsilon0<scalar_t>());
         NANO_CHECK_EQUAL(acc.vstats().count(), task->size(fold));
 
-        // check results with multiple threads
-        for (size_t th = 2; th <= logical_cpus(); ++ th)
+        // check results with different minibatch sizes
+        for (size_t bs = 2; bs <= 1024; bs *= 2)
         {
-                // and different minibatch sizes
-                for (size_t bs = 2; bs <= 1024; bs *= 2)
-                {
-                        accumulator_t accx(model, *loss);
-                        accx.mode(accumulator_t::type::value);
-                        accx.minibatch(bs);
-                        accx.threads(th);
+                accumulator_t accx(model, *loss);
+                accx.mode(accumulator_t::type::value);
+                accx.minibatch(bs);
 
-                        accx.update(*task, fold);
+                accx.update(*task, fold);
 
-                        NANO_CHECK_EQUAL(accx.vstats().count(), task->size(fold));
-                        NANO_CHECK_CLOSE(accx.vstats().avg(), value1, epsilon0<scalar_t>());
+                NANO_CHECK_EQUAL(accx.vstats().count(), task->size(fold));
+                NANO_CHECK_CLOSE(accx.vstats().avg(), value1, epsilon0<scalar_t>());
 
-                        accx.mode(accumulator_t::type::vgrad);
-                        accx.update(*task, fold);
+                accx.mode(accumulator_t::type::vgrad);
+                accx.update(*task, fold);
 
-                        NANO_CHECK_EQUAL(accx.vstats().count(), task->size(fold));
-                        NANO_CHECK_CLOSE(accx.vstats().avg(), vgrad1, epsilon0<scalar_t>());
-                        NANO_CHECK_EIGEN_CLOSE(accx.vgrad(), pgrad1, epsilon0<scalar_t>());
-                }
+                NANO_CHECK_EQUAL(accx.vstats().count(), task->size(fold));
+                NANO_CHECK_CLOSE(accx.vstats().avg(), vgrad1, epsilon0<scalar_t>());
+                NANO_CHECK_EIGEN_CLOSE(accx.vgrad(), pgrad1, epsilon0<scalar_t>());
         }
 }
 
@@ -105,7 +99,6 @@ NANO_CASE(regularization)
 
         // accumulators using no regularization
         accumulator_t acc(model, *loss);
-        acc.threads(1);
 
         acc.mode(accumulator_t::type::vgrad);
         acc.update(*task, fold);

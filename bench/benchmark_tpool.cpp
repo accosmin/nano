@@ -59,9 +59,6 @@ int main(int argc, const char *argv[])
 
                 for (size_t n_active_workers = 1; n_active_workers <= n_threads; ++ n_active_workers)
                 {
-                        auto& pool = thread_pool_t::instance();
-                        pool.activate(n_active_workers);
-
                         std::vector<scalar_t> results(size);
                         const auto deltaX = measure<microseconds_t>([&] { op(results); }, 16);
                         if (n_active_workers == 1)

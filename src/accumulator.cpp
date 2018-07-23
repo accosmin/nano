@@ -53,11 +53,6 @@ void accumulator_t::lambda(const scalar_t lambda)
         clear();
 }
 
-void accumulator_t::threads(const size_t nthreads)
-{
-        thread_pool_t::instance().activate(nthreads);
-}
-
 void accumulator_t::minibatch(const size_t minibatch_size)
 {
         m_batch = minibatch_size;
@@ -72,27 +67,12 @@ void accumulator_t::update(const task_t& task, const fold_t& fold, const size_t 
 {
         assert(begin <= end);
         const auto old_count = vstats().count();
-        switch (thread_pool_t::instance().active_workers())
+        loopit(end - begin, m_batch, [&] (const size_t ibegin, const size_t iend, const size_t thread)
         {
-        case 1:
-                for (size_t chunk = std::min(end - begin, m_batch), ibegin = begin; ibegin < end; )
-                {
-                        const auto iend = std::min(ibegin + chunk, end);
-                        update(origin(), task.get(fold, ibegin, iend));
-                        ibegin = iend;
-                }
-                break;
-
-        default:
-                loopit(end - begin, m_batch, [&] (const size_t ibegin, const size_t iend, const size_t thread)
-                {
-                        assert(thread < m_tcaches.size());
-                        assert(ibegin < iend && iend + begin <= end);
-                        update(m_tcaches[thread], task.get(fold, begin + ibegin, begin + iend));
-                });
-                accumulate();
-                break;
-        }
+                assert(thread < m_tcaches.size());
+                assert(ibegin < iend && iend + begin <= end);
+                update(m_tcaches[thread], task.get(fold, begin + ibegin, begin + iend));
+        });
         NANO_UNUSED1_RELEASE(old_count);
         assert(old_count + end == begin + vstats().count());
 }

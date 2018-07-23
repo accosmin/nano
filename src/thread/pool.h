@@ -41,11 +41,6 @@ namespace nano
                 ~thread_pool_t();
 
                 ///
-                /// \brief set the given number of active workers [1, n_workers]
-                ///
-                void activate(const std::size_t count);
-
-                ///
                 /// \brief enqueue a new task to execute
                 ///
                 template <typename tfunction>
@@ -60,11 +55,6 @@ namespace nano
                 std::size_t workers() const;
 
                 ///
-                /// \brief number of active worker threads
-                ///
-                std::size_t active_workers() const;
-
-                ///
                 /// \brief number of tasks still enqueued
                 ///
                 std::size_t tasks() const;
@@ -76,15 +66,6 @@ namespace nano
                 ///
                 thread_pool_t();
 
-                ///
-                /// \brief returns the number of active workers
-                ///
-                static std::size_t active_workers(const std::vector<worker_t>& workers)
-                {
-                        return  static_cast<std::size_t>(std::count_if(workers.begin(), workers.end(),
-                                [] (const auto& worker) { return worker.active(); }));
-                }
-
         private:
 
                 // attributes
@@ -92,9 +73,6 @@ namespace nano
                 std::vector<worker_t>           m_workers;      ///<
                 worker_queue_t                  m_queue;        ///< tasks to execute + synchronization
         };
-
-        #include <cassert>
-        #include <algorithm>
 
         thread_pool_t& thread_pool_t::instance()
         {
@@ -116,8 +94,6 @@ namespace nano
                 {
                         m_threads.emplace_back(std::ref(m_workers[i]));
                 }
-
-                assert(n_active_threads == active_workers(m_workers));
         }
 
         thread_pool_t::~thread_pool_t()
@@ -136,47 +112,9 @@ namespace nano
                 }
         }
 
-        void thread_pool_t::activate(std::size_t count)
-        {
-                const std::lock_guard<std::mutex> lock(m_queue.m_mutex);
-
-                count = std::max(std::size_t(1), std::min(count, workers()));
-
-                std::size_t crt_count = active_workers(m_workers);
-                assert(crt_count > 0);
-                for (auto& worker : m_workers)
-                {
-                        if (crt_count == count)
-                        {
-                                break;
-                        }
-
-                        else if (crt_count > count && worker.deactivate())
-                        {
-                                -- crt_count;
-                        }
-
-                        else if (crt_count < count && worker.activate())
-                        {
-                                ++ crt_count;
-                        }
-                }
-
-                assert(count == active_workers(m_workers));
-
-                m_queue.m_condition.notify_all();
-        }
-
         std::size_t thread_pool_t::workers() const
         {
                 return m_workers.size();
-        }
-
-        std::size_t thread_pool_t::active_workers() const
-        {
-                const std::lock_guard<std::mutex> lock(m_queue.m_mutex);
-
-                return active_workers(m_workers);
         }
 
         std::size_t thread_pool_t::tasks() const

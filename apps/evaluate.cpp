@@ -28,7 +28,6 @@ int main(int argc, const char *argv[])
         cmdline.add("", "fold",         "fold index to use for evaluation", "0");
         cmdline.add("", "loss",         join(get_losses().ids()) + " (.json)");
         cmdline.add("", "model",        "path to the trained model (.model)");
-        cmdline.add("", "threads",      "number of threads to use", physical_cpus());
 
         cmdline.process(argc, argv);
 
@@ -37,7 +36,6 @@ int main(int argc, const char *argv[])
         const auto cmd_fold = cmdline.get<size_t>("fold");
         const auto cmd_model = cmdline.get<string_t>("model");
         const auto cmd_loss = cmdline.get<string_t>("loss");
-        const auto cmd_threads = cmdline.get<size_t>("threads");
 
         checkpoint_t checkpoint;
         json_t json;
@@ -82,7 +80,6 @@ int main(int argc, const char *argv[])
         // test model
         accumulator_t acc(model, *loss);
         acc.mode(accumulator_t::type::value);
-        acc.threads(cmd_threads);
 
         checkpoint.step("evaluate model");
         acc.update(*task, fold_t{cmd_fold, protocol::test});

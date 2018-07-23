@@ -38,7 +38,6 @@ NANO_CASE(function)
         // check that the training function is valid
         accumulator_t acc(model, *loss);
         acc.mode(accumulator_t::type::vgrad);
-        acc.threads(1);
 
         for (auto t = 0; t < 100; ++ t)
         {
@@ -83,7 +82,6 @@ NANO_CASE(tune_and_train)
                 trainer->from_json(to_json("epochs", 100, "solver", solver, "epsilon", epsilon2<scalar_t>()));
 
                 accumulator_t acc(model, *loss);
-                acc.threads(1);
 
                 acc.random();
                 const auto result = trainer->train(*task, fold, acc);

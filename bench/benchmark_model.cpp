@@ -32,7 +32,6 @@ int main(int argc, const char *argv[])
         cmdline.add("", "task",         join(get_tasks().ids()) + " (.json)");
         cmdline.add("", "model",        "model configuration (.json)");
         cmdline.add("", "loss",         join(get_losses().ids()) + " (.json)");
-        cmdline.add("", "threads",      "number of threads to use", physical_cpus());
         cmdline.add("", "forward",      "evaluate the \'forward\' pass (output)");
         cmdline.add("", "backward",     "evaluate the \'backward' pass (gradient)");
         cmdline.add("", "detailed",     "print detailed measurements (e.g. per-layer)");
@@ -45,7 +44,6 @@ int main(int argc, const char *argv[])
         const auto cmd_task = cmdline.get<string_t>("task");
         const auto cmd_model = cmdline.get<string_t>("model");
         const auto cmd_loss = cmdline.get<string_t>("loss");
-        const auto cmd_threads = cmdline.get<size_t>("threads");
         const auto cmd_forward = cmdline.has("forward");
         const auto cmd_backward = cmdline.has("backward");
         const auto cmd_detailed = cmdline.has("detailed");
@@ -108,7 +106,6 @@ int main(int argc, const char *argv[])
 
                 // measure processing
                 accumulator_t acc(model, *loss);
-                acc.threads(cmd_threads);
                 acc.mode((cmd_forward && !cmd_backward) ? accumulator_t::type::value : accumulator_t::type::vgrad);
 
                 for (size_t i = 0; i + count < size; i += count)
