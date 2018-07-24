@@ -73,6 +73,7 @@ void accumulator_t::update(const task_t& task, const fold_t& fold, const size_t 
                 assert(ibegin < iend && iend + begin <= end);
                 update(m_tcaches[thread], task.get(fold, begin + ibegin, begin + iend));
         });
+        accumulate();
         NANO_UNUSED1_RELEASE(old_count);
         assert(old_count + end == begin + vstats().count());
 }
