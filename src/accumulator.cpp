@@ -1,5 +1,5 @@
+#include "core/loopi.h"
 #include "accumulator.h"
-#include "thread/loopi.h"
 
 using namespace nano;
 

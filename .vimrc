@@ -43,7 +43,6 @@ set path+=src/tasks
 set path+=src/layers
 set path+=src/losses
 set path+=src/models
-set path+=src/thread
 set path+=src/tensor
 set path+=src/solvers
 set path+=src/trainers
