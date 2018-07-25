@@ -48,7 +48,7 @@ NANO_CASE(empty)
 {
         auto& pool = thread_pool_t::instance();
 
-        NANO_CHECK_EQUAL(pool.workers(), nano::logical_cpus());
+        NANO_CHECK_EQUAL(pool.workers(), nano::physical_cpus());
         NANO_CHECK_EQUAL(pool.tasks(), 0u);
 }
 
@@ -56,45 +56,40 @@ NANO_CASE(enqueue)
 {
         auto& pool = thread_pool_t::instance();
 
-        const size_t threads = nano::logical_cpus();
-        const size_t max_tasks = threads * 16;
+        NANO_CHECK_EQUAL(pool.workers(), nano::physical_cpus());
+        NANO_CHECK_EQUAL(pool.tasks(), 0u);
 
-        for (size_t active_workers = 1; active_workers <= threads; ++ active_workers)
+        const size_t max_tasks = 1024;
+        const auto tasks = urand<size_t>(1u, max_tasks, make_rng());
+
+        std::vector<size_t> tasks_done;
+
+        std::mutex mutex;
         {
-                NANO_CHECK_EQUAL(pool.workers(), threads);
-                NANO_CHECK_EQUAL(pool.tasks(), 0u);
-
-                const auto tasks = urand<size_t>(1u, max_tasks, make_rng());
-
-                std::vector<size_t> tasks_done;
-
-                std::mutex mutex;
-                {
-                        section_t<future_t> futures;
-                        for (size_t j = 0; j < tasks; ++ j)
-                        {
-                                futures.push_back(pool.enqueue([=, &mutex, &tasks_done]()
-                                {
-                                        const auto sleep1 = urand<size_t>(1, 5, make_rng());
-                                        std::this_thread::sleep_for(std::chrono::milliseconds(sleep1));
-
-                                        {
-                                                const std::lock_guard<std::mutex> lock(mutex);
-
-                                                tasks_done.push_back(j + 1);
-                                        }
-                                }));
-                        }
-                }
-
-                NANO_CHECK_EQUAL(pool.workers(), threads);
-                NANO_CHECK_EQUAL(pool.tasks(), 0u);
-
-                NANO_CHECK_EQUAL(tasks_done.size(), tasks);
+                section_t<future_t> futures;
                 for (size_t j = 0; j < tasks; ++ j)
                 {
-                        NANO_CHECK(std::find(tasks_done.begin(), tasks_done.end(), j + 1) != tasks_done.end());
+                        futures.push_back(pool.enqueue([=, &mutex, &tasks_done]()
+                        {
+                                const auto sleep1 = urand<size_t>(1, 5, make_rng());
+                                std::this_thread::sleep_for(std::chrono::milliseconds(sleep1));
+
+                                {
+                                        const std::lock_guard<std::mutex> lock(mutex);
+
+                                        tasks_done.push_back(j + 1);
+                                }
+                        }));
                 }
+        }
+
+        NANO_CHECK_EQUAL(pool.workers(), nano::physical_cpus());
+        NANO_CHECK_EQUAL(pool.tasks(), 0u);
+
+        NANO_CHECK_EQUAL(tasks_done.size(), tasks);
+        for (size_t j = 0; j < tasks; ++ j)
+        {
+                NANO_CHECK(std::find(tasks_done.begin(), tasks_done.end(), j + 1) != tasks_done.end());
         }
 }
 

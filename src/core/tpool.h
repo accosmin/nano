@@ -203,7 +203,7 @@ namespace nano
 
         thread_pool_t::thread_pool_t()
         {
-                const auto n_workers = static_cast<std::size_t>(logical_cpus());
+                const auto n_workers = static_cast<std::size_t>(physical_cpus());
 
                 m_workers.reserve(n_workers);
                 for (size_t i = 0; i < n_workers; ++ i)
