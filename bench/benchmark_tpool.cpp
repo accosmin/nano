@@ -11,16 +11,25 @@ using namespace nano;
 namespace
 {
         template <typename tvector>
-        void op(const size_t chunk, tvector& results)
+        void op(const size_t begin, const size_t end, tvector& results)
         {
-                nano::loopi(results.size(), chunk, [&results = results] (const auto begin, const auto end)
+                for (auto i = begin; i < end; ++ i)
                 {
-                        for (auto i = begin; i < end; ++ i)
-                        {
-                                const auto x = static_cast<scalar_t>(i);
-                                results[i] = std::sin(x) + std::cos(x);
-                        }
-                });
+                        const auto x = static_cast<double>(i);
+                        results[i] = std::sin(x) + std::cos(x);
+                }
+        }
+
+        template <typename tvector>
+        void st_op(tvector& results)
+        {
+                op(size_t(0), results.size(), results);
+        }
+
+        template <typename tvector>
+        void mt_op(const size_t chunk, tvector& results)
+        {
+                nano::loopi(results.size(), chunk, [&] (const auto begin, const auto end) { op(begin, end, results); });
         }
 }
 
@@ -40,7 +49,7 @@ int main(int argc, const char *argv[])
 
         table_t table;
         auto& header = table.header();
-        header << "function" << "chunk1" << "chunk2" << "chunk4" << "chunk8" << "chunk16" << "chunk32" << "chunk64" << "chunk128";
+        header << "function" << "st" << "mt-c1" << "mt-c2" << "mt-c4" << "mt-c8" << "mt-c16" << "mt-c32" << "mt-c64" << "mt-c128";
         table.delim();
 
         // benchmark for different problem sizes and number of active workers
@@ -49,23 +58,23 @@ int main(int argc, const char *argv[])
                 auto& row = table.append();
                 row << ("sin+cos [" + to_string(size / kilo) + "K]");
 
-                microseconds_t delta1(0);
+                std::vector<double> results(size);
+
+                std::fill(results.begin(), results.end(), 0);
+                const auto delta0 = measure<nanoseconds_t>([&] { st_op(results); }, 16);
+                row << precision(2) << (static_cast<double>(delta0.count()) / static_cast<double>(delta0.count()));
 
                 for (size_t chunk = 1; chunk <= 128; chunk *= 2)
                 {
-                        std::vector<scalar_t> results(size);
-                        const auto deltaX = measure<microseconds_t>([&] { op(chunk, results); }, 16);
-                        if (chunk == 1)
-                        {
-                                delta1 = deltaX;
-                        }
+                        std::fill(results.begin(), results.end(), 0);
+                        const auto deltaX = measure<nanoseconds_t>([&] { mt_op(chunk, results); }, 16);
 
-                        row << nano::precision(3) << (static_cast<scalar_t>(delta1.count()) / static_cast<scalar_t>(deltaX.count()));
+                        row << precision(2) << (static_cast<double>(delta0.count()) / static_cast<double>(deltaX.count()));
                 }
         }
 
         // print results
-        table.mark(make_marker_maximum_percentage_cols<scalar_t>(5));
+        table.mark(make_marker_maximum_percentage_cols<double>(5));
         std::cout << table;
 
         // OK
