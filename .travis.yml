@@ -58,19 +58,19 @@ matrix:
         - ninja
         - bash ../scripts/ci_ctest.sh
 
-    #- os: linux
-    #  compiler: gcc
-    #  env: TEST="build (gcc-8)"
-    #  addons:
-    #    apt:
-    #      packages: ['gcc-8', 'g++-8', 'libdevil-dev', 'libarchive-dev', 'ninja-build']
-    #      sources: &sources
-    #        - ubuntu-toolchain-r-test
-    #      update: true
-    #  script:
-    #    - cmake -G "Ninja" -DCMAKE_CXX_COMPILER=g++-8 -DNANO_WITH_WERROR=ON ..
-    #    - ninja
-    #    - bash ../scripts/ci_ctest.sh
+    - os: linux
+      compiler: gcc
+      env: TEST="build (gcc-8)"
+      addons:
+        apt:
+          packages: ['gcc-8', 'g++-8', 'libdevil-dev', 'libarchive-dev', 'ninja-build']
+          sources: &sources
+            - ubuntu-toolchain-r-test
+          update: true
+      script:
+        - cmake -G "Ninja" -DCMAKE_CXX_COMPILER=g++-8 -DNANO_WITH_WERROR=ON ..
+        - ninja
+        - bash ../scripts/ci_ctest.sh
 
     - os: linux
       compiler: clang
