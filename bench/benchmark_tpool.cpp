@@ -11,25 +11,26 @@ using namespace nano;
 namespace
 {
         template <typename tvector>
-        void op(const size_t begin, const size_t end, tvector& results)
+        void op(const size_t begin, const size_t end, tvector& vector)
         {
                 for (auto i = begin; i < end; ++ i)
                 {
                         const auto x = static_cast<double>(i);
-                        results[i] = std::sin(x) + std::cos(x);
+                        vector[i] = std::sin(x) + std::cos(x);
                 }
         }
 
         template <typename tvector>
-        void st_op(tvector& results)
+        void st_op(tvector& vector)
         {
-                op(size_t(0), results.size(), results);
+                op(size_t(0), vector.size(), vector);
         }
 
         template <typename tvector>
-        void mt_op(const size_t chunk, tvector& results)
+        void mt_op(const size_t chunk, tvector& vector)
         {
-                nano::loopi(results.size(), chunk, [&] (const auto begin, const auto end) { op(begin, end, results); });
+                nano::loopi(vector.size(), chunk, [&] (const auto begin, const auto end) { op(begin, end, vector); });
+                (void)vector;
         }
 }
 
@@ -58,18 +59,26 @@ int main(int argc, const char *argv[])
                 auto& row = table.append();
                 row << ("sin+cos [" + to_string(size / kilo) + "K]");
 
-                std::vector<double> results(size);
-
-                std::fill(results.begin(), results.end(), 0);
-                const auto delta0 = measure<nanoseconds_t>([&] { st_op(results); }, 16);
+                std::vector<double> vector0(size);
+                const auto delta0 = measure<nanoseconds_t>([&] { st_op(vector0); }, 16);
                 row << precision(2) << (static_cast<double>(delta0.count()) / static_cast<double>(delta0.count()));
 
                 for (size_t chunk = 1; chunk <= 128; chunk *= 2)
                 {
-                        std::fill(results.begin(), results.end(), 0);
-                        const auto deltaX = measure<nanoseconds_t>([&] { mt_op(chunk, results); }, 16);
+                        std::vector<double> vectorX(size);
+                        const auto deltaX = measure<nanoseconds_t>([&] { mt_op(chunk, vectorX); }, 16);
 
                         row << precision(2) << (static_cast<double>(delta0.count()) / static_cast<double>(deltaX.count()));
+
+                        for (size_t i = 0; i < size; ++ i)
+                        {
+                                if (std::fabs(vector0[i] - vectorX[i]) > 1e-16)
+                                {
+                                        std::cerr << "mis-matching vector (i=" << i
+                                                << ",delta=" << std::fabs(vector0[i] - vectorX[i]) << ")!" << std::endl;
+                                        return EXIT_FAILURE;
+                                }
+                        }
                 }
         }
 

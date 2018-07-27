@@ -28,7 +28,7 @@ namespace nano
                 /// \brief enqueue a new task to execute
                 ///
                 template <typename tfunction>
-                future_t enqueue(tfunction f)
+                future_t enqueue(tfunction&& f)
                 {
                         auto task = worker_task_t(f);
                         auto fut = task.get_future();
@@ -167,18 +167,26 @@ namespace nano
                 template <typename tfunction>
                 auto enqueue(tfunction f)
                 {
-                        return m_queue.enqueue(f);
+                        return m_queue.enqueue(std::move(f));
                 }
 
                 ///
                 /// \brief number of available worker threads
                 ///
-                std::size_t workers() const;
+                std::size_t workers() const
+                {
+                        return m_workers.size();
+                }
 
                 ///
                 /// \brief number of tasks still enqueued
                 ///
-                std::size_t tasks() const;
+                std::size_t tasks() const
+                {
+                        const std::lock_guard<std::mutex> lock(m_queue.m_mutex);
+
+                        return m_queue.m_tasks.size();
+                }
 
         private:
 
@@ -230,17 +238,5 @@ namespace nano
                 {
                         thread.join();
                 }
-        }
-
-        std::size_t thread_pool_t::workers() const
-        {
-                return m_workers.size();
-        }
-
-        std::size_t thread_pool_t::tasks() const
-        {
-                const std::lock_guard<std::mutex> lock(m_queue.m_mutex);
-
-                return m_queue.m_tasks.size();
         }
 }
