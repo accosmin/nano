@@ -1,9 +1,9 @@
 #pragma once
 
 #include "tuner.h"
-#include "factory.h"
+#include "core/factory.h"
 #include "solver_state.h"
-#include "configurable.h"
+#include "core/configurable.h"
 
 namespace nano
 {

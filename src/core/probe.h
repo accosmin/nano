@@ -1,8 +1,8 @@
 #pragma once
 
 #include <vector>
+#include "stats.h"
 #include "measure.h"
-#include "core/stats.h"
 
 namespace nano
 {

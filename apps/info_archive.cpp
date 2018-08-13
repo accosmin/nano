@@ -1,7 +1,7 @@
 #include "stringi.h"
-#include "checkpoint.h"
 #include "core/archive.h"
 #include "core/cmdline.h"
+#include "core/checkpoint.h"
 
 int main(int argc, const char *argv[])
 {

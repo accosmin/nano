@@ -1,8 +1,8 @@
 #pragma once
 
-#include "factory.h"
-#include "configurable.h"
+#include "core/factory.h"
 #include "trainer_state.h"
+#include "core/configurable.h"
 
 namespace nano
 {

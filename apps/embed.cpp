@@ -1,6 +1,6 @@
-#include "logger.h"
 #include "core/io.h"
 #include "stringi.h"
+#include "core/logger.h"
 #include "core/cmdline.h"
 #include "core/algorithm.h"
 #include <fstream>

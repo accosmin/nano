@@ -1,5 +1,5 @@
 #include "utest.h"
-#include "digraph.h"
+#include "core/digraph.h"
 
 using namespace nano;
 

@@ -1,9 +1,9 @@
 #include "model.h"
-#include "logger.h"
 #include <iostream>
-#include "digraph.h"
 #include "core/table.h"
+#include "core/logger.h"
 #include "core/numeric.h"
+#include "core/digraph.h"
 #include "core/ibstream.h"
 #include "core/obstream.h"
 #include "core/algorithm.h"

@@ -3,7 +3,6 @@ set(libnano_sources
         ${CMAKE_CURRENT_SOURCE_DIR}/arch.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/function.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/accumulator.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/logger.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/loss.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/layer.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/model.cpp

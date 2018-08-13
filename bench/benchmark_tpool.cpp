@@ -47,10 +47,16 @@ int main(int argc, const char *argv[])
         const auto kilo = size_t(1024);
         const auto cmd_min_size = clamp(kilo * cmdline.get<size_t>("min-size"), kilo, 1024 * kilo);
         const auto cmd_max_size = clamp(kilo * cmdline.get<size_t>("max-size"), cmd_min_size, 1024 * 1024 * kilo);
+        const auto cmd_min_chunk = size_t(1);
+        const auto cmd_max_chunk = size_t(1024);
 
         table_t table;
         auto& header = table.header();
-        header << "function" << "st" << "mt-c1" << "mt-c2" << "mt-c4" << "mt-c8" << "mt-c16" << "mt-c32" << "mt-c64" << "mt-c128";
+        header << "function" << "st";
+        for (size_t chunk = cmd_min_chunk; chunk <= cmd_max_chunk; chunk *= 2)
+        {
+                header << ("mtc" + nano::to_string(chunk));
+        }
         table.delim();
 
         // benchmark for different problem sizes and number of active workers
@@ -63,7 +69,7 @@ int main(int argc, const char *argv[])
                 const auto delta0 = measure<nanoseconds_t>([&] { st_op(vector0); }, 16);
                 row << precision(2) << (static_cast<double>(delta0.count()) / static_cast<double>(delta0.count()));
 
-                for (size_t chunk = 1; chunk <= 128; chunk *= 2)
+                for (size_t chunk = cmd_min_chunk; chunk <= cmd_max_chunk; chunk *= 2)
                 {
                         std::vector<double> vectorX(size);
                         const auto deltaX = measure<nanoseconds_t>([&] { mt_op(chunk, vectorX); }, 16);

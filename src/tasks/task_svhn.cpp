@@ -1,7 +1,7 @@
-#include "logger.h"
 #include "core/mat5.h"
 #include "task_svhn.h"
 #include "core/color.h"
+#include "core/logger.h"
 #include "core/random.h"
 
 using namespace nano;

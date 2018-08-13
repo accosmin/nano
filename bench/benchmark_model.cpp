@@ -2,11 +2,11 @@
 #include "task.h"
 #include "model.h"
 #include "core/io.h"
-#include "checkpoint.h"
 #include "core/table.h"
 #include "accumulator.h"
 #include "core/cmdline.h"
 #include "core/algorithm.h"
+#include "core/checkpoint.h"
 #include <iostream>
 
 using namespace nano;

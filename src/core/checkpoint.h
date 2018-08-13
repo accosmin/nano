@@ -1,8 +1,8 @@
 #pragma once
 
 #include <cstdlib>
+#include "timer.h"
 #include "logger.h"
-#include "core/timer.h"
 
 namespace nano
 {

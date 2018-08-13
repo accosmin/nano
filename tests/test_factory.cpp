@@ -1,5 +1,5 @@
 #include "utest.h"
-#include "factory.h"
+#include "core/factory.h"
 
 using namespace nano;
 

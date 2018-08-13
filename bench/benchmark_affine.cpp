@@ -1,6 +1,6 @@
 #include "cortex.h"
-#include "logger.h"
 #include "core/table.h"
+#include "core/logger.h"
 #include "core/numeric.h"
 #include "core/cmdline.h"
 #include "core/measure.h"

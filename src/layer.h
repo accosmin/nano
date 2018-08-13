@@ -2,8 +2,8 @@
 
 #include "arch.h"
 #include "tensor.h"
-#include "factory.h"
-#include "configurable.h"
+#include "core/factory.h"
+#include "core/configurable.h"
 
 namespace nano
 {

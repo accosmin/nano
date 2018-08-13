@@ -2,8 +2,8 @@
 
 #include <ostream>
 #include <cstdint>
+#include "cast.h"
 #include "tensor.h"
-#include "core/cast.h"
 
 namespace nano
 {

@@ -1,7 +1,7 @@
 #include "core/io.h"
-#include "checkpoint.h"
 #include "accumulator.h"
 #include "core/cmdline.h"
+#include "core/checkpoint.h"
 #include <iomanip>
 
 using namespace nano;

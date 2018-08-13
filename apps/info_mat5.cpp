@@ -1,7 +1,7 @@
 #include "stringi.h"
 #include "core/mat5.h"
-#include "checkpoint.h"
 #include "core/cmdline.h"
+#include "core/checkpoint.h"
 
 int main(int argc, const char *argv[])
 {

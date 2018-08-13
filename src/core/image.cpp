@@ -1,7 +1,7 @@
 #include <IL/il.h>
+#include "hash.h"
 #include "image.h"
-#include "core/hash.h"
-#include "core/algorithm.h"
+#include "algorithm.h"
 
 using namespace nano;
 

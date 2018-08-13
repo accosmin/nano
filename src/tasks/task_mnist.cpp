@@ -1,5 +1,5 @@
-#include "logger.h"
 #include "task_mnist.h"
+#include "core/logger.h"
 #include "core/archive.h"
 
 using namespace nano;
