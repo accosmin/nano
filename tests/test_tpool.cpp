@@ -1,6 +1,6 @@
 #include "utest.h"
 #include <numeric>
-#include "core/loopi.h"
+#include "core/tpool.h"
 #include "core/random.h"
 #include "core/epsilon.h"
 
@@ -46,7 +46,7 @@ NANO_BEGIN_MODULE(test_thread_pool)
 
 NANO_CASE(empty)
 {
-        auto& pool = thread_pool_t::instance();
+        auto& pool = tpool_t::instance();
 
         NANO_CHECK_EQUAL(pool.workers(), nano::physical_cpus());
         NANO_CHECK_EQUAL(pool.tasks(), 0u);
@@ -54,7 +54,7 @@ NANO_CASE(empty)
 
 NANO_CASE(enqueue)
 {
-        auto& pool = thread_pool_t::instance();
+        auto& pool = tpool_t::instance();
 
         NANO_CHECK_EQUAL(pool.workers(), nano::physical_cpus());
         NANO_CHECK_EQUAL(pool.tasks(), 0u);
@@ -66,7 +66,7 @@ NANO_CASE(enqueue)
 
         std::mutex mutex;
         {
-                section_t<future_t> futures;
+                tpool_section_t<future_t> futures;
                 for (size_t j = 0; j < tasks; ++ j)
                 {
                         futures.push_back(pool.enqueue([=, &mutex, &tasks_done]()

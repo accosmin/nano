@@ -57,4 +57,20 @@ namespace nano
                 }
                 return count + from_json(json, nvs...);
         }
+
+        ///
+        /// \brief interface for JSON-based configurable objects.
+        ///
+        class json_configurable_t
+        {
+        public:
+
+                virtual ~json_configurable_t() = default;
+
+                ///
+                /// \brief serialize to JSON
+                ///
+                virtual void to_json(json_t&) const = 0;
+                virtual void from_json(const json_t&) = 0;
+        };
 }

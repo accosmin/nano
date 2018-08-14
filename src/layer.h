@@ -2,8 +2,8 @@
 
 #include "arch.h"
 #include "tensor.h"
+#include "core/json.h"
 #include "core/factory.h"
-#include "core/configurable.h"
 
 namespace nano
 {
@@ -28,7 +28,7 @@ namespace nano
         ///
         /// \brief computation node.
         ///
-        class NANO_PUBLIC layer_t : public configurable_t
+        class NANO_PUBLIC layer_t : public json_configurable_t
         {
         public:
 

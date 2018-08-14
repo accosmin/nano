@@ -1,8 +1,8 @@
 #pragma once
 
+#include "core/json.h"
 #include "core/factory.h"
 #include "trainer_state.h"
-#include "core/configurable.h"
 
 namespace nano
 {
@@ -20,7 +20,7 @@ namespace nano
         ///
         /// \brief generic trainer: optimizes a model on a given compatible task.
         ///
-        class NANO_PUBLIC trainer_t : public configurable_t
+        class NANO_PUBLIC trainer_t : public json_configurable_t
         {
         public:
 

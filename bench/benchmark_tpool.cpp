@@ -1,6 +1,6 @@
 #include <cmath>
 #include "core/table.h"
-#include "core/loopi.h"
+#include "core/tpool.h"
 #include "core/numeric.h"
 #include "core/cmdline.h"
 #include "core/measure.h"

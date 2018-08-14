@@ -2,8 +2,8 @@
 
 #include "arch.h"
 #include "cortex.h"
+#include "core/json.h"
 #include "core/factory.h"
-#include "core/configurable.h"
 
 namespace nano
 {
@@ -18,7 +18,7 @@ namespace nano
         ///     split into training, validation and testing datasets.
         /// NB: the samples may be organized in folds depending on the established protocol.
         ///
-        class NANO_PUBLIC task_t : public configurable_t
+        class NANO_PUBLIC task_t : public json_configurable_t
         {
         public:
 

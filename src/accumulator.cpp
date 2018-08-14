@@ -1,4 +1,4 @@
-#include "core/loopi.h"
+#include "core/tpool.h"
 #include "accumulator.h"
 
 using namespace nano;
@@ -6,7 +6,7 @@ using namespace nano;
 accumulator_t::accumulator_t(const model_t& model, const loss_t& loss) :
         m_type(type::value), m_loss(loss)
 {
-        const auto size = thread_pool_t::instance().workers();
+        const auto size = tpool_t::instance().workers();
         for (size_t i = 0; i < size; ++ i)
         {
                 m_tcaches.emplace_back(model);

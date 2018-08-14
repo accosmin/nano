@@ -1,9 +1,9 @@
 #pragma once
 
 #include "tuner.h"
+#include "core/json.h"
 #include "core/factory.h"
 #include "solver_state.h"
-#include "core/configurable.h"
 
 namespace nano
 {
@@ -16,7 +16,7 @@ namespace nano
         ///
         /// \brief generic (batch) optimization algorithm typically using an adaptive line-search method.
         ///
-        class NANO_PUBLIC solver_t : public configurable_t
+        class NANO_PUBLIC solver_t : public json_configurable_t
         {
         public:
 

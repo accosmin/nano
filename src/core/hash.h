@@ -63,4 +63,3 @@ namespace nano
                 return hash_range(begin, end, hasher);
         }
 }
-

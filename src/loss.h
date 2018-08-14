@@ -2,8 +2,8 @@
 
 #include "arch.h"
 #include "tensor.h"
+#include "core/json.h"
 #include "core/factory.h"
-#include "core/configurable.h"
 
 namespace nano
 {
@@ -21,7 +21,7 @@ namespace nano
         /// the loss function upper-bounds/approximates
         /// the true (usually non-smooth) error function to minimize.
         ///
-        class NANO_PUBLIC loss_t : public configurable_t
+        class NANO_PUBLIC loss_t : public json_configurable_t
         {
         public:
 
