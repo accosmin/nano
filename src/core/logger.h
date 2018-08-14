@@ -38,7 +38,6 @@ namespace nano
                         m_stream << data;
                         return *this;
                 }
-                logger_t& operator<<(const char* str);
                 logger_t& operator<<(std::ostream& (*pf)(std::ostream&));
                 logger_t& operator<<(logger_t& (*pf)(logger_t&));
 

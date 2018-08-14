@@ -45,12 +45,6 @@ logger_t::~logger_t()
         m_stream.precision(m_precision);
 }
 
-logger_t& logger_t::operator<<(const char* str)
-{
-        m_stream << str;
-        return *this;
-}
-
 logger_t& logger_t::operator<<(std::ostream& (*pf)(std::ostream&))
 {
         (*pf)(m_stream);
@@ -64,7 +58,7 @@ logger_t& logger_t::operator<<(logger_t& (*pf)(logger_t&))
 
 logger_t& logger_t::newl()
 {
-        m_stream << "\n";
+        m_stream << '\n';
         return *this;
 }
 
