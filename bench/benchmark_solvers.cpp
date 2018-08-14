@@ -98,11 +98,10 @@ static auto trim(const json_t& json)
         return config;
 }
 
-static auto check_solver(const function_t& function, const rsolver_t& solver, const string_t& id,
-        const std::vector<vector_t>& x0s, const size_t iterations, const scalar_t epsilon)
+static void check_solver(const function_t& function, const rsolver_t& solver, const string_t& id,
+        const std::vector<vector_t>& x0s, const size_t iterations, const scalar_t epsilon,
+        solver_config_stats_t& fstats, solver_config_stats_t& gstats)
 {
-        solver_config_stats_t stats;
-
         json_t json;
         solver->to_json(json);
         const auto config = trim(json);
@@ -114,10 +113,9 @@ static auto check_solver(const function_t& function, const rsolver_t& solver, co
                 function.reset_calls();
                 const auto statex = solver->minimize(iterations, epsilon, function, x0);
 
-                stats[std::make_pair(id, config)].update(function, state0, statex);
+                fstats[std::make_pair(id, config)].update(function, state0, statex);
+                gstats[std::make_pair(id, config)].update(function, state0, statex);
         }
-
-        return stats;
 }
 
 static void check_function(const function_t& function, const strings_t& solvers,
@@ -145,17 +143,12 @@ static void check_function(const function_t& function, const strings_t& solvers,
                         for (const auto& json : tuner.get(tuner.n_configs()))
                         {
                                 solver->from_json(json);
-
-                                const auto stats = check_solver(function, solver, id, x0s, iterations, epsilon);
-                                fstats.insert(stats.begin(), stats.end());
-                                gstats.insert(stats.begin(), stats.end());
+                                check_solver(function, solver, id, x0s, iterations, epsilon, fstats, gstats);
                         }
                 }
                 else
                 {
-                        const auto stats = check_solver(function, solver, id, x0s, iterations, epsilon);
-                        fstats.insert(stats.begin(), stats.end());
-                        gstats.insert(stats.begin(), stats.end());
+                        check_solver(function, solver, id, x0s, iterations, epsilon, fstats, gstats);
                 }
         }
 
