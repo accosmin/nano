@@ -7,6 +7,7 @@
 #include "functions/powell.h"
 #include "functions/sargan.h"
 #include "functions/zakharov.h"
+#include "functions/quadratic.h"
 #include "functions/rosenbrock.h"
 #include "functions/exponential.h"
 #include "functions/dixon_price.h"
@@ -146,14 +147,15 @@ rfunctions_t nano::get_functions(const tensor_size_t min_size, const tensor_size
                 {
                         append(std::make_unique<function_powell_t>(dims), dims, regex, funcs);
                 }
+                append(std::make_unique<function_sphere_t>(dims), dims, regex, funcs);
                 append(std::make_unique<function_zakharov_t>(dims), dims, regex, funcs);
+                append(std::make_unique<function_quadratic_t>(dims), dims, regex, funcs);
                 append(std::make_unique<function_rosenbrock_t>(dims), dims, regex, funcs);
                 append(std::make_unique<function_exponential_t>(dims), dims, regex, funcs);
                 append(std::make_unique<function_dixon_price_t>(dims), dims, regex, funcs);
                 append(std::make_unique<function_chung_reynolds_t>(dims), dims, regex, funcs);
                 append(std::make_unique<function_axis_ellipsoid_t>(dims), dims, regex, funcs);
                 append(std::make_unique<function_styblinski_tang_t>(dims), dims, regex, funcs);
-                append(std::make_unique<function_sphere_t>(dims), dims, regex, funcs);
                 append(std::make_unique<function_schumer_steiglitz_t>(dims), dims, regex, funcs);
                 append(std::make_unique<function_rotated_ellipsoid_t>(dims), dims, regex, funcs);
 

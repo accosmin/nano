@@ -6,6 +6,7 @@ list(APPEND libnano_sources
         ${CMAKE_CURRENT_SOURCE_DIR}/exponential.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/powell.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/qing.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/quadratic.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/rosenbrock.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/rotated_ellipsoid.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/sargan.cpp

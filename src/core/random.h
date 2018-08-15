@@ -21,6 +21,7 @@ namespace nano
         ///
         inline auto make_rng()
         {
+                // todo: use seed_seq to initialize the RNG (see C++17)
                 return rng_t{std::random_device{}()};
         }
 
