@@ -14,5 +14,5 @@ scalar_t function_sphere_t::vgrad(const vector_t& x, vector_t* gx) const
                 *gx = 2 * x;
         }
 
-        return x.array().square().sum();
+        return x.dot(x);
 }

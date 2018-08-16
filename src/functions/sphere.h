@@ -5,10 +5,12 @@
 namespace nano
 {
         ///
-        /// \brief create sphere test functions
+        /// \brief sphere function: f(x) = x.dot(x).
         ///
-        struct function_sphere_t final : public function_t
+        class function_sphere_t final : public function_t
         {
+        public:
+
                 explicit function_sphere_t(const tensor_size_t dims);
 
                 scalar_t vgrad(const vector_t& x, vector_t* gx) const override;

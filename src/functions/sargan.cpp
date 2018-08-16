@@ -10,7 +10,7 @@ function_sargan_t::function_sargan_t(const tensor_size_t dims) :
 
 scalar_t function_sargan_t::vgrad(const vector_t& x, vector_t* gx) const
 {
-        const auto x2sum = x.array().square().sum();
+        const auto x2sum = x.dot(x);
 
         if (gx)
         {

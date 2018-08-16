@@ -9,7 +9,7 @@ function_chung_reynolds_t::function_chung_reynolds_t(const tensor_size_t dims) :
 
 scalar_t function_chung_reynolds_t::vgrad(const vector_t& x, vector_t* gx) const
 {
-        const auto u = x.array().square().sum();
+        const auto u = x.dot(x);
 
         if (gx)
         {

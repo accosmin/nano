@@ -11,8 +11,8 @@ scalar_t function_cauchy_t::vgrad(const vector_t& x, vector_t* gx) const
 {
         if (gx)
         {
-                *gx = (2 * x.array()) / (1 + x.array().square());
+                *gx = 2 * x / (1 + x.dot(x));
         }
 
-        return (1 + x.array().square()).log().sum();
+        return std::log1p(x.dot(x));
 }

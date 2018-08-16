@@ -5,10 +5,12 @@
 namespace nano
 {
         ///
-        /// \brief create Cauchy test functions
+        /// \brief Cauchy function: f(x) = log(1 + x.dot(x)).
         ///
-        struct function_cauchy_t final : public function_t
+        class function_cauchy_t final : public function_t
         {
+        public:
+
                 explicit function_cauchy_t(const tensor_size_t dims);
 
                 scalar_t vgrad(const vector_t& x, vector_t* gx) const override;

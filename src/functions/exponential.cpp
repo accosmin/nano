@@ -9,11 +9,11 @@ function_exponential_t::function_exponential_t(const tensor_size_t dims) :
 
 scalar_t function_exponential_t::vgrad(const vector_t& x, vector_t* gx) const
 {
-        const auto fx = std::exp(scalar_t(0.5) / scalar_t(size()) * x.array().square().sum());
+        const auto fx = std::exp(1 + x.dot(x) / scalar_t(size()));
 
         if (gx)
         {
-                *gx = fx * x / scalar_t(size());
+                *gx = (2 * fx / scalar_t(size())) * x;
         };
 
         return fx;
