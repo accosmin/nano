@@ -2,6 +2,7 @@
 #include "solvers/solver_gd.h"
 #include "solvers/solver_cgd.h"
 #include "solvers/solver_lbfgs.h"
+#include "solvers/solver_quasi.h"
 
 using namespace nano;
 
@@ -24,6 +25,7 @@ solver_factory_t& nano::get_solvers()
                 manager.add<solver_cgd_dycd_t>("cgd-dycd", "nonlinear conjugate gradient descent (DYCD)");
                 manager.add<solver_cgd_dyhs_t>("cgd-dyhs", "nonlinear conjugate gradient descent (DYHS)");
                 manager.add<solver_lbfgs_t>("lbfgs", "limited-memory BFGS");
+                manager.add<solver_quasi_t>("bfgs", "quasi-newton method (BFGS)");
         });
 
         return manager;
