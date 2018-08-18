@@ -36,9 +36,6 @@ solver_state_t solver_cgd_base_t<tcgd_update>::minimize(const size_t max_iterati
         // previous state
         solver_state_t pstate(function.size());
 
-        // CGD direction strategy
-        const tcgd_update op_update{};
-
         const auto op = [&] (solver_state_t& cstate, const std::size_t i)
         {
                 // descent direction
@@ -48,7 +45,7 @@ solver_state_t solver_cgd_base_t<tcgd_update>::minimize(const size_t max_iterati
                 }
                 else
                 {
-                        const scalar_t beta = op_update(pstate, cstate);
+                        const scalar_t beta = tcgd_update::get(pstate, cstate);
                         cstate.d = -cstate.g + beta * pstate.d;
                 }
 
