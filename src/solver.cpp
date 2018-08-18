@@ -25,7 +25,10 @@ solver_factory_t& nano::get_solvers()
                 manager.add<solver_cgd_dycd_t>("cgd-dycd", "nonlinear conjugate gradient descent (DYCD)");
                 manager.add<solver_cgd_dyhs_t>("cgd-dyhs", "nonlinear conjugate gradient descent (DYHS)");
                 manager.add<solver_lbfgs_t>("lbfgs", "limited-memory BFGS");
-                manager.add<solver_quasi_t>("bfgs", "quasi-newton method (BFGS)");
+                manager.add<solver_quasi_dfp_t>("dfp", "quasi-newton method (DFP)");
+                manager.add<solver_quasi_sr1_t>("sr1", "quasi-newton method (SR1)");
+                manager.add<solver_quasi_bfgs_t>("bfgs", "quasi-newton method (BFGS)");
+                manager.add<solver_quasi_broyden_t>("broyden", "quasi-newton method (Broyden)");
         });
 
         return manager;

@@ -10,7 +10,7 @@ make_test(test_factory.cpp "")
 make_test(test_random.cpp "")
 make_test(test_text.cpp "")
 
-make_test(test_solver.cpp nano)
+make_test(test_solvers.cpp nano)
 make_test(test_functions.cpp nano)
 make_test(test_table.cpp nano)
 make_test(test_cmdline.cpp nano)
