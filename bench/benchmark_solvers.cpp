@@ -11,35 +11,28 @@ using namespace nano;
 
 struct solver_stat_t
 {
-        void update(const function_t& function, const solver_state_t& state0, const solver_state_t& statex)
+        void update(const function_t& function, const solver_state_t& statex)
         {
-                const auto g0 = state0.convergence_criteria();
                 const auto gx = statex.convergence_criteria();
-
-                const auto fcalls = function.fcalls();
-                const auto gcalls = function.gcalls();
-
-                const auto speed = std::pow(
-                        static_cast<double>(epsilon0<scalar_t>() + gx) /
-                        static_cast<double>(epsilon0<scalar_t>() + g0),
-                        double(1) / double(gcalls));
 
                 // ignore out-of-domain solutions
                 if (statex && function.is_valid(statex.x))
                 {
                         m_crits(gx);
                         m_fails(statex.m_status != solver_state_t::status::converged ? 1 : 0);
-                        m_fcalls(static_cast<scalar_t>(fcalls));
-                        m_gcalls(static_cast<scalar_t>(gcalls));
-                        m_speeds(static_cast<scalar_t>(speed));
+                        m_errors(statex.m_status == solver_state_t::status::failed ? 1 : 0);
+                        m_maxits(statex.m_status == solver_state_t::status::max_iters ? 1 : 0);
+                        m_fcalls(static_cast<scalar_t>(function.fcalls()));
+                        m_gcalls(static_cast<scalar_t>(function.gcalls()));
                 }
         }
 
         stats_t<scalar_t> m_crits;      ///< convergence criteria
         stats_t<scalar_t> m_fails;      ///< #convergence failures
+        stats_t<scalar_t> m_errors;     ///< #internal errors (e.g. line-search failed)
+        stats_t<scalar_t> m_maxits;     ///< #maximum iterations reached
         stats_t<scalar_t> m_fcalls;     ///< #function value calls
         stats_t<scalar_t> m_gcalls;     ///< #gradient calls
-        stats_t<scalar_t> m_speeds;     ///< #convergence speeds
 };
 
 using solver_config_stats_t = std::map<
@@ -56,9 +49,10 @@ static void show_table(const string_t& table_name, const solver_config_stats_t& 
                 << colspan(2) << table_name
                 << "gnorm"
                 << "#fails"
+                << "#errors"
+                << "#maxits"
                 << "#fcalls"
-                << "#gcalls"
-                << "speed";
+                << "#gcalls";
         table.delim();
 
         for (const auto& it : stats)
@@ -74,13 +68,14 @@ static void show_table(const string_t& table_name, const solver_config_stats_t& 
                         << config
                         << stat.m_crits.avg()
                         << static_cast<size_t>(stat.m_fails.sum1())
+                        << static_cast<size_t>(stat.m_errors.sum1())
+                        << static_cast<size_t>(stat.m_maxits.sum1())
                         << static_cast<size_t>(stat.m_fcalls.avg())
-                        << static_cast<size_t>(stat.m_gcalls.avg())
-                        << stat.m_speeds.avg();
+                        << static_cast<size_t>(stat.m_gcalls.avg());
                 }
         }
 
-        table.sort(nano::make_less_from_string<scalar_t>(), {3, 5, 1});
+        table.sort(nano::make_less_from_string<scalar_t>(), {3, 7, 2});
         std::cout << table;
 }
 
@@ -108,13 +103,11 @@ static void check_solver(const function_t& function, const rsolver_t& solver, co
 
         for (const auto& x0 : x0s)
         {
-                const auto state0 = solver_state_t{function, x0};
-
                 function.reset_calls();
                 const auto statex = solver->minimize(iterations, epsilon, function, x0);
 
-                fstats[std::make_pair(id, config)].update(function, state0, statex);
-                gstats[std::make_pair(id, config)].update(function, state0, statex);
+                fstats[std::make_pair(id, config)].update(function, statex);
+                gstats[std::make_pair(id, config)].update(function, statex);
         }
 }
 
