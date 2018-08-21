@@ -9,6 +9,7 @@ namespace nano
         /// \brief quasi-Newton methods.
         ///     see "Numerical Optimization",
         ///     by J. Nocedal, S. Wright, 2006
+        ///
         ///     see "Introductory Lectures on Convex Optimization (Applied Optimization)",
         ///     by Y. Nesterov, 2013
         ///

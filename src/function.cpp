@@ -16,6 +16,8 @@
 #include "functions/styblinski_tang.h"
 #include "functions/rotated_ellipsoid.h"
 #include "functions/schumer_steiglitz.h"
+#include "functions/lpnorm_approximation.h"
+#include "functions/geometric_optimization.h"
 
 using namespace nano;
 
@@ -158,6 +160,8 @@ rfunctions_t nano::get_functions(const tensor_size_t min_size, const tensor_size
                 append(std::make_unique<function_styblinski_tang_t>(dims), dims, regex, funcs);
                 append(std::make_unique<function_schumer_steiglitz_t>(dims), dims, regex, funcs);
                 append(std::make_unique<function_rotated_ellipsoid_t>(dims), dims, regex, funcs);
+                append(std::make_unique<function_lpnorm_approximation_t>(dims), dims, regex, funcs);
+                append(std::make_unique<function_geometric_optimization_t>(dims), dims, regex, funcs);
 
                 if (dims < 8)
                 {
