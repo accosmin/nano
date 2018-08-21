@@ -122,6 +122,7 @@ matrix:
           packages: ['clang-6.0', 'libdevil-dev', 'libarchive-dev', 'libc++-dev', 'libc++abi-dev', 'ninja-build']
           sources: &sources
             - llvm-toolchain-trusty-6.0
+            - ubuntu-toolchain-r-test
           update: true
       script:
         - cmake -G "Ninja" -DCMAKE_CXX_COMPILER=clang++-6.0 -DNANO_WITH_WERROR=ON -DNANO_WITH_LIBCPP=ON ..
