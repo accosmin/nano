@@ -11,8 +11,19 @@ namespace nano
         {
         public:
 
-                explicit function_styblinski_tang_t(const tensor_size_t dims);
+                explicit function_styblinski_tang_t(const tensor_size_t dims) :
+                        function_t("Styblinski-Tang", dims, 1, 100 * 1000, convexity::no, 5)
+                {
+                }
 
-                scalar_t vgrad(const vector_t& x, vector_t* gx) const override;
+                scalar_t vgrad(const vector_t& x, vector_t* gx) const override
+                {
+                        if (gx)
+                        {
+                                *gx = 4 * x.array().cube() - 32 * x.array() + 5;
+                        }
+
+                        return (x.array().square().square() - 16 * x.array().square() + 5 * x.array()).sum();
+                }
         };
 }

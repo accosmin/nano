@@ -11,8 +11,19 @@ namespace nano
         {
         public:
 
-                explicit function_schumer_steiglitz_t(const tensor_size_t dims);
+                explicit function_schumer_steiglitz_t(const tensor_size_t dims) :
+                        function_t("Schumer-Steiglitz", dims, 1, 100 * 1000, convexity::yes, 1e+6)
+                {
+                }
 
-                scalar_t vgrad(const vector_t& x, vector_t* gx) const override;
+                scalar_t vgrad(const vector_t& x, vector_t* gx) const override
+                {
+                        if (gx)
+                        {
+                                *gx = 4 * x.array().cube();
+                        }
+
+                        return x.array().square().square().sum();
+                }
         };
 }

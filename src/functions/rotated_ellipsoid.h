@@ -1,6 +1,7 @@
 #pragma once
 
 #include "function.h"
+#include "core/numeric.h"
 
 namespace nano
 {
@@ -11,8 +12,33 @@ namespace nano
         {
         public:
 
-                explicit function_rotated_ellipsoid_t(const tensor_size_t dims);
+                explicit function_rotated_ellipsoid_t(const tensor_size_t dims) :
+                        function_t("Rotated Hyper-Ellipsoid", dims, 1, 100 * 1000, convexity::yes, 100)
+                {
+                }
 
-                scalar_t vgrad(const vector_t& x, vector_t* gx) const override;
+                scalar_t vgrad(const vector_t& x, vector_t* gx) const override
+                {
+                        scalar_t fx = 0, fi = 0;
+                        for (auto i = 0; i < size(); i ++)
+                        {
+                                fi += x(i);
+                                fx += nano::square(fi);
+                                if (gx)
+                                {
+                                        (*gx)(i) = 2 * fi;
+                                }
+                        }
+
+                        if (gx)
+                        {
+                                for (auto i = size() - 2; i >= 0; i --)
+                                {
+                                        (*gx)(i) += (*gx)(i + 1);
+                                }
+                        }
+
+                        return fx;
+                }
         };
 }

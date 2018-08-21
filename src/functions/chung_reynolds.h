@@ -11,8 +11,21 @@ namespace nano
         {
         public:
 
-                explicit function_chung_reynolds_t(const tensor_size_t dims);
+                explicit function_chung_reynolds_t(const tensor_size_t dims) :
+                        function_t("Chung-Reynolds", dims, 1, 100 * 1000, convexity::yes, 1)
+                {
+                }
 
-                scalar_t vgrad(const vector_t& x, vector_t* gx) const override;
+                scalar_t vgrad(const vector_t& x, vector_t* gx) const override
+                {
+                        const auto u = x.dot(x);
+
+                        if (gx)
+                        {
+                                *gx = (4 * u) * x;
+                        }
+
+                        return u * u;
+                }
         };
 }
