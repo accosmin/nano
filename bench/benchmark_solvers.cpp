@@ -15,16 +15,12 @@ struct solver_stat_t
         {
                 const auto gx = statex.convergence_criteria();
 
-                // ignore out-of-domain solutions
-                if (statex && function.is_valid(statex.x))
-                {
-                        m_crits(gx);
-                        m_fails(statex.m_status != solver_state_t::status::converged ? 1 : 0);
-                        m_errors(statex.m_status == solver_state_t::status::failed ? 1 : 0);
-                        m_maxits(statex.m_status == solver_state_t::status::max_iters ? 1 : 0);
-                        m_fcalls(static_cast<scalar_t>(function.fcalls()));
-                        m_gcalls(static_cast<scalar_t>(function.gcalls()));
-                }
+                m_crits(gx);
+                m_fails(statex.m_status != solver_state_t::status::converged ? 1 : 0);
+                m_errors(statex.m_status == solver_state_t::status::failed ? 1 : 0);
+                m_maxits(statex.m_status == solver_state_t::status::max_iters ? 1 : 0);
+                m_fcalls(static_cast<scalar_t>(function.fcalls()));
+                m_gcalls(static_cast<scalar_t>(function.gcalls()));
         }
 
         stats_t<scalar_t> m_crits;      ///< convergence criteria
