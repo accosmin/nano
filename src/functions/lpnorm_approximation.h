@@ -17,7 +17,7 @@ namespace nano
                 explicit function_lpnorm_approximation_t(const tensor_size_t dims) :
                         function_t("LpNormApprox", dims, 1, 100 * 1000, convexity::yes, 100),
                         m_b(vector_t::Random(dims)),
-                        m_A(matrix_t::Random(dims, dims))
+                        m_A(matrix_t::Random(dims, dims) / dims)
                 {
                 }
 
