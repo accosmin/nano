@@ -3,7 +3,6 @@
 #include "builder.h"
 #include "trainer.h"
 #include "accumulator.h"
-#include "core/epsilon.h"
 #include "tasks/task_affine.h"
 #include "trainers/function_batch.h"
 

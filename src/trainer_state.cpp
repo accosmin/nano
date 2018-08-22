@@ -1,6 +1,5 @@
 #include "core/table.h"
 #include "core/stats.h"
-#include "core/epsilon.h"
 #include "core/numeric.h"
 #include "trainer_state.h"
 

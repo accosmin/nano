@@ -2,7 +2,6 @@
 #include "core/stats.h"
 #include "core/table.h"
 #include "core/cmdline.h"
-#include "core/epsilon.h"
 #include "core/algorithm.h"
 #include "solvers/lsearch.h"
 #include <iostream>

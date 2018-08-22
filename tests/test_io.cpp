@@ -1,7 +1,6 @@
 #include "utest.h"
 #include "tensor.h"
 #include "core/random.h"
-#include "core/epsilon.h"
 #include "core/istream.h"
 #include "core/ibstream.h"
 #include "core/obstream.h"

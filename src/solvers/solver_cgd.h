@@ -2,7 +2,7 @@
 
 #include "solver.h"
 #include "lsearch.h"
-#include "core/epsilon.h"
+#include "core/numeric.h"
 
 namespace nano
 {

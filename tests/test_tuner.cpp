@@ -1,6 +1,5 @@
 #include "utest.h"
 #include "tuner.h"
-#include "core/epsilon.h"
 
 using namespace nano;
 

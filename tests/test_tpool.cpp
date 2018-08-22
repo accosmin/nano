@@ -2,7 +2,6 @@
 #include <numeric>
 #include "core/tpool.h"
 #include "core/random.h"
-#include "core/epsilon.h"
 
 using namespace nano;
 

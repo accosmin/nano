@@ -1,6 +1,5 @@
 #include "task.h"
 #include "utest.h"
-#include "core/epsilon.h"
 
 using namespace nano;
 

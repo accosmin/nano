@@ -1,7 +1,6 @@
 #include "utest.h"
 #include "function.h"
 #include "core/random.h"
-#include "core/epsilon.h"
 #include "tensor/numeric.h"
 
 using namespace nano;

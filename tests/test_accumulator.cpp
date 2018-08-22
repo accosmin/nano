@@ -2,7 +2,6 @@
 #include "builder.h"
 #include "accumulator.h"
 #include "core/numeric.h"
-#include "core/epsilon.h"
 
 using namespace nano;
 

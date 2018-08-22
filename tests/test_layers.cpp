@@ -5,7 +5,6 @@
 #include "function.h"
 #include "core/random.h"
 #include "core/numeric.h"
-#include "core/epsilon.h"
 #include "tensor/numeric.h"
 #include "core/algorithm.h"
 #include "layers/conv3d_params.h"

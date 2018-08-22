@@ -1,5 +1,4 @@
 #include "function.h"
-#include "core/epsilon.h"
 #include "functions/trid.h"
 #include "functions/qing.h"
 #include "functions/cauchy.h"
