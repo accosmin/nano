@@ -22,7 +22,7 @@ namespace nano
 
                         if (gx)
                         {
-                                *gx = (2 * fx / scalar_t(size())) * x;
+                                gx->noalias() = (2 * fx / scalar_t(size())) * x;
                         };
 
                         return fx;

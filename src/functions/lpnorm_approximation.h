@@ -28,7 +28,7 @@ namespace nano
                         if (gx)
                         {
                                 const auto diff = (m_A * x - m_b).array();
-                                *gx = p * m_A.transpose() * (diff.abs().pow(p - 1) * diff.sign()).matrix();
+                                gx->noalias() = p * m_A.transpose() * (diff.abs().pow(p - 1) * diff.sign()).matrix();
                         }
 
                         return (m_A * x - m_b).array().abs().pow(p).sum();

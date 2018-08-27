@@ -25,7 +25,7 @@ namespace nano
                 {
                         if (gx)
                         {
-                                *gx = m_A.transpose() * (m_a + m_A * x).array().exp().matrix();
+                                gx->noalias() = m_A.transpose() * (m_a + m_A * x).array().exp().matrix();
                         }
 
                         return (m_a + m_A * x).array().exp().sum();

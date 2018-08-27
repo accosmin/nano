@@ -51,8 +51,15 @@ int main(int argc, const char* argv[])
         table_t table;
         table.header() << "function" << "f(x) [ns]" << "f(x, g) [ns]";
         table.delim();
+
+        tensor_size_t prev_size = min_dims;
         for (const auto& function : get_functions(min_dims, max_dims))
         {
+                if (function->size() != prev_size)
+                {
+                        table.delim();
+                        prev_size = function->size();
+                }
                 eval_func(*function, table);
         }
 

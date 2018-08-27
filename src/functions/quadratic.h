@@ -24,7 +24,7 @@ namespace nano
                 {
                         if (gx)
                         {
-                                *gx = m_a + m_A * x;
+                                gx->noalias() = m_a + m_A * x;
                         }
 
                         return x.transpose() * (m_a + (m_A * x) / scalar_t(2));

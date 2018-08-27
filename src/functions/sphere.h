@@ -20,7 +20,7 @@ namespace nano
                 {
                         if (gx)
                         {
-                                *gx = 2 * x;
+                                gx->noalias() = 2 * x;
                         }
 
                         return x.dot(x);
