@@ -39,21 +39,23 @@ int main(int argc, const char* argv[])
 {
         // parse the command line
         cmdline_t cmdline("benchmark optimization test functions");
-        cmdline.add("", "min-dims", "minimum number of dimensions for each test function (if feasible)", "128");
-        cmdline.add("", "max-dims", "maximum number of dimensions for each test function (if feasible)", "1024");
+        cmdline.add("", "min-dims",     "minimum number of dimensions for each test function (if feasible)", "128");
+        cmdline.add("", "max-dims",     "maximum number of dimensions for each test function (if feasible)", "1024");
+        cmdline.add("", "functions",    "use this regex to select the functions to benchmark", ".+");
 
         cmdline.process(argc, argv);
 
         // check arguments and options
         const auto min_dims = cmdline.get<tensor_size_t>("min-dims");
         const auto max_dims = cmdline.get<tensor_size_t>("max-dims");
+        const auto functions = std::regex(cmdline.get<string_t>("functions"));
 
         table_t table;
         table.header() << "function" << "f(x) [ns]" << "f(x, g) [ns]";
         table.delim();
 
         tensor_size_t prev_size = min_dims;
-        for (const auto& function : get_functions(min_dims, max_dims))
+        for (const auto& function : get_functions(min_dims, max_dims, functions))
         {
                 if (function->size() != prev_size)
                 {
