@@ -13,20 +13,19 @@ namespace nano
         public:
 
                 explicit function_dixon_price_t(const tensor_size_t dims) :
-                        function_t("Dixon-Price", dims, 2, 100 * 1000, convexity::no, 10)
+                        function_t("Dixon-Price", dims, 2, 100 * 1000, convexity::no, 10),
+                        m_bias(vector_t::LinSpaced(dims, scalar_t(1), scalar_t(dims)))
                 {
                 }
 
                 scalar_t vgrad(const vector_t& x, vector_t* gx) const override
                 {
-                        const vector_t bias = vector_t::LinSpaced(size(), scalar_t(1), scalar_t(size()));
-
                         const auto xsegm0 = x.segment(0, size() - 1);
                         const auto xsegm1 = x.segment(1, size() - 1);
 
                         if (gx)
                         {
-                                const auto weight = bias.segment(1, size() - 1).array() *
+                                const auto weight = m_bias.segment(1, size() - 1).array() *
                                         2 * (2 * xsegm1.array().square() - xsegm0.array());
 
                                 (*gx).setZero();
@@ -36,8 +35,13 @@ namespace nano
                         }
 
                         return  nano::square(x(0) - 1) +
-                                (bias.segment(1, size() - 1).array() *
+                                (m_bias.segment(1, size() - 1).array() *
                                 (2 * xsegm1.array().square() - xsegm0.array()).square()).sum();
                 }
+
+        private:
+
+                // attributes
+                vector_t        m_bias; ///<
         };
 }

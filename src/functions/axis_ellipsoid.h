@@ -12,20 +12,24 @@ namespace nano
         public:
 
                 explicit function_axis_ellipsoid_t(const tensor_size_t dims) :
-                        function_t("Axis Parallel Hyper-Ellipsoid", dims, 1, 100 * 1000, convexity::yes, 100)
+                        function_t("Axis Parallel Hyper-Ellipsoid", dims, 1, 100 * 1000, convexity::yes, 100),
+                        m_bias(vector_t::LinSpaced(dims, scalar_t(1), scalar_t(dims)))
                 {
                 }
 
                 scalar_t vgrad(const vector_t& x, vector_t* gx) const override
                 {
-                        const vector_t bias = vector_t::LinSpaced(size(), scalar_t(1), scalar_t(size()));
-
                         if (gx)
                         {
-                                *gx = 2 * x.array() * bias.array();
+                                *gx = 2 * x.array() * m_bias.array();
                         }
 
-                        return (x.array().square() * bias.array()).sum();
+                        return (x.array().square() * m_bias.array()).sum();
                 }
+
+        private:
+
+                // attributes
+                vector_t        m_bias; ///<
         };
 }

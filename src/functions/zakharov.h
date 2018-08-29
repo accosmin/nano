@@ -13,23 +13,28 @@ namespace nano
         public:
 
                 explicit function_zakharov_t(const tensor_size_t dims) :
-                        function_t("Zakharov", dims, 2, 100 * 1000, convexity::yes, 5)
+                        function_t("Zakharov", dims, 2, 100 * 1000, convexity::yes, 5),
+                        m_bias(vector_t::LinSpaced(dims, scalar_t(0.5), scalar_t(dims) / scalar_t(2)))
+
                 {
                 }
 
                 scalar_t vgrad(const vector_t& x, vector_t* gx) const override
                 {
-                        const vector_t bias = vector_t::LinSpaced(size(), scalar_t(0.5), scalar_t(size()) / scalar_t(2));
-
-                        const scalar_t u = x.array().square().sum();
-                        const scalar_t v = (bias.array() * x.array()).sum();
+                        const scalar_t u = x.dot(x);
+                        const scalar_t v = x.dot(m_bias);
 
                         if (gx)
                         {
-                                *gx = 2 * x.array() + (2 * v + 4 * nano::cube(v)) * bias.array();
+                                *gx = 2 * x + (2 * v + 4 * nano::cube(v)) * m_bias;
                         }
 
                         return u + nano::square(v) + nano::quartic(v);
                 }
+
+        private:
+
+                // attributes
+                vector_t        m_bias; ///<
         };
 }

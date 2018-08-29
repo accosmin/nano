@@ -51,7 +51,7 @@ int main(int argc, const char* argv[])
         const auto functions = std::regex(cmdline.get<string_t>("functions"));
 
         table_t table;
-        table.header() << "function" << "f(x) [ns]" << "f(x, g) [ns]";
+        table.header() << "function" << "f(x) [ns]" << "f(x,g) [ns]";
         table.delim();
 
         tensor_size_t prev_size = min_dims;
