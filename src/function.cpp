@@ -162,7 +162,7 @@ rfunctions_t nano::get_functions(const tensor_size_t min_size, const tensor_size
                 append(std::make_unique<function_lpnorm_approximation_t>(dims), dims, regex, funcs);
                 append(std::make_unique<function_geometric_optimization_t>(dims), dims, regex, funcs);
 
-                if (dims < 8)
+                if (dims < 4)
                 {
                         ++ dims;
                 }
