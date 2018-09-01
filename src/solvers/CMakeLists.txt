@@ -8,6 +8,7 @@ list(APPEND libnano_sources
         ${CMAKE_CURRENT_SOURCE_DIR}/lsearch_interpolate.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/solver_gd.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/solver_cgd.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/solver_nag.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/solver_lbfgs.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/solver_quasi.cpp)
 
