@@ -1,5 +1,5 @@
-#include "solver_lbfgs.h"
 #include <deque>
+#include "solver_lbfgs.h"
 
 using namespace nano;
 
@@ -37,45 +37,43 @@ solver_state_t solver_lbfgs_t::minimize(const size_t max_iterations, const scala
         std::deque<vector_t> ss, ys;
         vector_t q, r;
 
-        const auto op = [&] (solver_state_t& cstate, const std::size_t i)
+        const auto op = [&] (solver_state_t& cstate, const size_t)
         {
                 // descent direction
                 //      (see "Numerical optimization", Nocedal & Wright, 2nd edition, p.178)
                 q = cstate.g;
 
-                auto itr_s = ss.rbegin();
-                auto itr_y = ys.rbegin();
-                std::vector<scalar_t> alphas;
-                for (std::size_t j = 1; j <= m_history_size && i >= j; j ++)
+                const auto hsize = ss.size();
+
+                std::vector<scalar_t> alphas(hsize);
+                for (size_t j = 0; j < hsize; ++ j)
                 {
-                        const vector_t& s = (*itr_s ++);
-                        const vector_t& y = (*itr_y ++);
+                        const auto& s = ss[hsize - 1 - j];
+                        const auto& y = ys[hsize - 1 - j];
 
                         const scalar_t alpha = s.dot(q) / s.dot(y);
                         q.noalias() -= alpha * y;
-                        alphas.push_back(alpha);
+                        alphas[j] = alpha;
                 }
 
-                if (i == 0)
+                if (ss.empty())
                 {
                         r = q;
                 }
                 else
                 {
-                        const vector_t& s = *ss.rbegin();
-                        const vector_t& y = *ys.rbegin();
+                        const auto& s = ss[hsize - 1];
+                        const auto& y = ys[hsize - 1];
+
                         r = s.dot(y) / y.dot(y) * q;
                 }
 
-                auto it_s = ss.begin();
-                auto it_y = ys.begin();
-                auto itr_alpha = alphas.rbegin();
-                for (std::size_t j = 1; j <= m_history_size && i >= j; j ++)
+                for (size_t j = 0; j < hsize; ++ j)
                 {
-                        const vector_t& s = (*it_s ++);
-                        const vector_t& y = (*it_y ++);
+                        const auto& s = ss[j];
+                        const auto& y = ys[j];
 
-                        const scalar_t alpha = *(itr_alpha ++);
+                        const scalar_t alpha = alphas[hsize - 1 - j];
                         const scalar_t beta = y.dot(r) / s.dot(y);
                         r.noalias() += s * (alpha - beta);
                 }
