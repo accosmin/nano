@@ -107,7 +107,7 @@ static void check_solver(const function_t& function, const rsolver_t& solver, co
         }
 }
 
-static void check_function(const function_t& function, const strings_t& solvers,
+static void check_function(const function_t& function, const std::vector<std::pair<string_t, rsolver_t>>& id_solvers,
         const size_t trials, const size_t iterations, const scalar_t epsilon, const bool is_tuning,
         solver_config_stats_t& gstats)
 {
@@ -122,9 +122,10 @@ static void check_function(const function_t& function, const strings_t& solvers,
         solver_config_stats_t fstats;
 
         // evaluate all possible combinations (solver & line-search)
-        for (const auto& id : solvers)
+        for (const auto& id_solver : id_solvers)
         {
-                const auto solver = get_solvers().get(id);
+                const auto& id = id_solver.first;
+                const auto& solver = id_solver.second;
 
                 if (is_tuning)
                 {
@@ -160,6 +161,8 @@ int main(int argc, const char* argv[])
         cmdline.add("", "epsilon",      "convergence criteria", epsilon2<scalar_t>());
         cmdline.add("", "convex",       "use only convex test functions");
         cmdline.add("", "tune",         "tune the selected solvers");
+        cmdline.add("", "ls-init",      "use this line-search initialization (" + join(enum_values<lsearch_t::initializer>()) + ")");
+        cmdline.add("", "ls-strat",     "use this line-search strategy (" + join(enum_values<lsearch_t::strategy>()) + ")");
 
         cmdline.process(argc, argv);
 
@@ -172,11 +175,27 @@ int main(int argc, const char* argv[])
         const auto is_convex = cmdline.has("convex");
         const auto is_tuning = cmdline.has("tune");
 
-        const auto solvers = get_solvers().ids(std::regex(cmdline.get<string_t>("solvers")));
-        const auto functions = std::regex(cmdline.get<string_t>("functions"));
+        const auto fregex = std::regex(cmdline.get<string_t>("functions"));
+        const auto sregex = std::regex(cmdline.get<string_t>("solvers"));
+
+        std::vector<std::pair<string_t, rsolver_t>> solvers;
+        for (const auto& id : get_solvers().ids(sregex))
+        {
+                auto solver = get_solvers().get(id);
+                if (cmdline.has("ls-init"))
+                {
+                        solver->from_json(nano::to_json("init", cmdline.get<lsearch_t::initializer>("ls-init")));
+                }
+                if (cmdline.has("ls-strat"))
+                {
+                        solver->from_json(nano::to_json("strat", cmdline.get<lsearch_t::strategy>("ls-strat")));
+                }
+
+                solvers.emplace_back(id, std::move(solver));
+        }
 
         solver_config_stats_t gstats;
-        for (const auto& function : (is_convex ? get_convex_functions : get_functions)(min_dims, max_dims, functions))
+        for (const auto& function : (is_convex ? get_convex_functions : get_functions)(min_dims, max_dims, fregex))
         {
                 check_function(*function, solvers, trials, iterations, epsilon, is_tuning, gstats);
         }
