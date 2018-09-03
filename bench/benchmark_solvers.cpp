@@ -161,6 +161,8 @@ int main(int argc, const char* argv[])
         cmdline.add("", "epsilon",      "convergence criteria", epsilon2<scalar_t>());
         cmdline.add("", "convex",       "use only convex test functions");
         cmdline.add("", "tune",         "tune the selected solvers");
+        cmdline.add("", "c1",           "use this c1 value (see Armijo-Goldstein line-search step condition)");
+        cmdline.add("", "c2",           "use this c2 value (see Wolfe line-search step condition)");
         cmdline.add("", "ls-init",      "use this line-search initialization (" + join(enum_values<lsearch_t::initializer>()) + ")");
         cmdline.add("", "ls-strat",     "use this line-search strategy (" + join(enum_values<lsearch_t::strategy>()) + ")");
 
@@ -182,6 +184,14 @@ int main(int argc, const char* argv[])
         for (const auto& id : get_solvers().ids(sregex))
         {
                 auto solver = get_solvers().get(id);
+                if (cmdline.has("c1"))
+                {
+                        solver->from_json(nano::to_json("c1", cmdline.get<scalar_t>("c1")));
+                }
+                if (cmdline.has("c2"))
+                {
+                        solver->from_json(nano::to_json("c2", cmdline.get<scalar_t>("c2")));
+                }
                 if (cmdline.has("ls-init"))
                 {
                         solver->from_json(nano::to_json("init", cmdline.get<lsearch_t::initializer>("ls-init")));
