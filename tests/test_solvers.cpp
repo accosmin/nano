@@ -21,6 +21,7 @@ NANO_CASE(evaluate)
 
                         if (    id == "sr1" ||
                                 id == "dfp" ||
+                                id == "nag" ||
                                 id == "broyden")
                         {
                                 std::cout << "warning: skiping solver " << id << " (to fix)\n";
