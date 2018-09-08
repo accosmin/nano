@@ -27,7 +27,7 @@ namespace nano
                                 gx->noalias() = m_a + m_A * x;
                         }
 
-                        return x.transpose() * (m_a + (m_A * x) / scalar_t(2));
+                        return x.dot(m_a + (m_A * x) / scalar_t(2));
                 }
 
         private:
