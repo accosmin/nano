@@ -1,6 +1,7 @@
 #include "solver.h"
 #include "core/stats.h"
 #include "core/table.h"
+#include "core/tpool.h"
 #include "core/cmdline.h"
 #include "core/numeric.h"
 #include "core/algorithm.h"
@@ -11,16 +12,14 @@ using namespace nano;
 
 struct solver_stat_t
 {
-        void update(const solver_state_t& statex)
+        void update(const solver_state_t& state)
         {
-                const auto gx = statex.convergence_criteria();
-
-                m_crits(gx);
-                m_fails(statex.m_status != solver_state_t::status::converged ? 1 : 0);
-                m_errors(statex.m_status == solver_state_t::status::failed ? 1 : 0);
-                m_maxits(statex.m_status == solver_state_t::status::max_iters ? 1 : 0);
-                m_fcalls(static_cast<scalar_t>(statex.m_fcalls));
-                m_gcalls(static_cast<scalar_t>(statex.m_gcalls));
+                m_crits(state.convergence_criteria());
+                m_fails(state.m_status != solver_state_t::status::converged ? 1 : 0);
+                m_errors(state.m_status == solver_state_t::status::failed ? 1 : 0);
+                m_maxits(state.m_status == solver_state_t::status::max_iters ? 1 : 0);
+                m_fcalls(static_cast<scalar_t>(state.m_fcalls));
+                m_gcalls(static_cast<scalar_t>(state.m_gcalls));
         }
 
         stats_t<scalar_t> m_crits;      ///< convergence criteria
@@ -97,12 +96,16 @@ static void check_solver(const function_t& function, const rsolver_t& solver, co
         solver->to_json(json);
         const auto config = trim(json);
 
-        for (const auto& x0 : x0s)
+        std::vector<solver_state_t> states(x0s.size());
+        nano::loopi(x0s.size(), size_t(1), [&] (const size_t i, const size_t)
         {
-                const auto statex = solver->minimize(iterations, epsilon, function, x0);
+                states[i] = solver->minimize(iterations, epsilon, function, x0s[i]);
+        });
 
-                fstats[std::make_pair(id, config)].update(statex);
-                gstats[std::make_pair(id, config)].update(statex);
+        for (const auto& state : states)
+        {
+                fstats[std::make_pair(id, config)].update(state);
+                gstats[std::make_pair(id, config)].update(state);
         }
 }
 
