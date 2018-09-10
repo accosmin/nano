@@ -19,7 +19,7 @@ struct loss_function_t final : public function_t
                 }
         }
 
-        scalar_t vgrad(const vector_t& x, vector_t* gx) const override
+        scalar_t vgrad(const vector_t& x, vector_t* gx = nullptr) const override
         {
                 assert(x.size() == m_targets.size());
                 const auto scores = map_tensor(x.data(), m_targets.dims());
@@ -63,7 +63,7 @@ NANO_CASE(gradient)
                                 tensor1d_t x(3 * cmd_dims);
                                 x.random(scalar_t(-0.1), scalar_t(+0.1));
 
-                                NANO_CHECK_GREATER(function.eval(x.vector()), scalar_t(0));
+                                NANO_CHECK_GREATER(function.vgrad(x.vector()), scalar_t(0));
                                 NANO_CHECK_LESS(function.grad_accuracy(x.vector()), epsilon2<scalar_t>());
                         }
                 }

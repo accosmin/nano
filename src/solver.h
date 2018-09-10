@@ -14,6 +14,49 @@ namespace nano
         NANO_PUBLIC solver_factory_t& get_solvers();
 
         ///
+        /// \brief wrapper to keep track of the number of function value and gradient calls.
+        ///
+        class solver_function_t final : public function_t
+        {
+        public:
+                ///
+                /// \brief constructor
+                ///
+                solver_function_t(const function_t& function) :
+                        function_t(function),
+                        m_function(function)
+                {
+                }
+
+                ///
+                /// \brief compute function value (and gradient if provided)
+                ///
+                scalar_t vgrad(const vector_t& x, vector_t* gx = nullptr) const override
+                {
+                        m_fcalls += 1;
+                        m_gcalls += gx ? 1 : 0;
+                        return m_function.vgrad(x, gx);
+                }
+
+                ///
+                /// \brief number of function evaluation calls
+                ///
+                size_t fcalls() const { return m_fcalls; }
+
+                ///
+                /// \brief number of function gradient calls
+                ///
+                size_t gcalls() const { return m_gcalls; }
+
+        private:
+
+                // attributes
+                const function_t&       m_function;             ///<
+                mutable size_t          m_fcalls{0};            ///< #function value evaluations
+                mutable size_t          m_gcalls{0};            ///< #function gradient evaluations
+        };
+
+        ///
         /// \brief generic (batch) optimization algorithm typically using an adaptive line-search method.
         ///
         class NANO_PUBLIC solver_t : public json_configurable_t
@@ -54,17 +97,18 @@ namespace nano
                 ///
                 template <typename tsolver>
                 static auto loop(
-                        const function_t& function, const vector_t& x0,
+                        const function_t& f, const vector_t& x0,
                         const size_t max_iterations, const scalar_t epsilon, const logger_t& logger,
                         const tsolver& solver)
                 {
-                        assert(function.size() == x0.size());
+                        const auto function = solver_function_t{f};
 
+                        assert(function.size() == x0.size());
                         auto state = solver_state_t{function, x0};
 
                         for (size_t i = 0; i < max_iterations; i ++)
                         {
-                                const auto step_ok = solver(state, i) && state;
+                                const auto step_ok = solver(function, state, i) && state;
                                 const auto converged = state.converged(epsilon);
 
                                 if (converged || !step_ok)
@@ -83,6 +127,9 @@ namespace nano
                                         break;
                                 }
                         }
+
+                        state.m_fcalls = function.fcalls();
+                        state.m_gcalls = function.gcalls();
 
                         return state;
                 }

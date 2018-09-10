@@ -21,13 +21,13 @@ static void eval_func(const function_t& function, table_t& table)
         volatile scalar_t fx = 0;
         const auto fval_time = measure<nanoseconds_t>([&] ()
         {
-                fx += function.eval(x);
+                fx += function.vgrad(x);
         }, trials).count();
 
         volatile scalar_t gx = 0;
         const auto grad_time = measure<nanoseconds_t>([&] ()
         {
-                function.eval(x, &g);
+                function.vgrad(x, &g);
                 gx += g.template lpNorm<Eigen::Infinity>();
         }, trials).count();
 

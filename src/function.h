@@ -68,6 +68,7 @@ namespace nano
                 ///
                 /// \brief check if a point is within the function's domain
                 ///
+                auto domain() const { return m_domain; }
                 bool is_valid(const vector_t& x) const;
 
                 ///
@@ -83,31 +84,12 @@ namespace nano
                 ///
                 /// \brief compute function value (and gradient if provided)
                 ///
-                scalar_t eval(const vector_t& x, vector_t* gx = nullptr) const;
-
-                ///
-                /// \brief number of function evaluation calls
-                ///
-                size_t fcalls() const { return m_fcalls; }
-
-                ///
-                /// \brief number of function gradient calls
-                ///
-                size_t gcalls() const { return m_gcalls; }
-
-                ///
-                /// \brief reset the number of function calls
-                ///
-                void reset_calls() const { m_fcalls = m_gcalls = 0; }
+                virtual scalar_t vgrad(const vector_t& x, vector_t* gx = nullptr) const = 0;
 
                 ///
                 /// \brief compute the gradient accuracy (given vs. finite difference approximation)
                 ///
                 scalar_t grad_accuracy(const vector_t& x) const;
-
-        protected:
-
-                virtual scalar_t vgrad(const vector_t& x, vector_t* gx) const = 0;
 
         private:
 
@@ -116,7 +98,5 @@ namespace nano
                 tensor_size_t   m_size, m_min_size, m_max_size; ///< #dimensions
                 convexity       m_convex;                       ///<
                 scalar_t        m_domain;                       ///< domain = hyper-ball{0, m_domain}
-                mutable size_t  m_fcalls{0};                   ///< #function value evaluations
-                mutable size_t  m_gcalls{0};                   ///< #function gradient evaluations
         };
 }

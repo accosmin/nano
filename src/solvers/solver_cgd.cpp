@@ -29,14 +29,14 @@ void solver_cgd_base_t<tcgd_update>::to_json(json_t& json) const
 
 template <typename tcgd_update>
 solver_state_t solver_cgd_base_t<tcgd_update>::minimize(const size_t max_iterations, const scalar_t epsilon,
-        const function_t& function, const vector_t& x0, const logger_t& logger) const
+        const function_t& f, const vector_t& x0, const logger_t& logger) const
 {
         lsearch_t lsearch(m_init, m_strat, m_c1, m_c2);
 
         // previous state
-        solver_state_t pstate(function.size());
+        solver_state_t pstate(f.size());
 
-        const auto op = [&] (solver_state_t& cstate, const std::size_t i)
+        const auto op = [&] (const function_t& function, solver_state_t& cstate, const size_t i)
         {
                 // descent direction
                 if (i == 0)
@@ -68,7 +68,7 @@ solver_state_t solver_cgd_base_t<tcgd_update>::minimize(const size_t max_iterati
         };
 
         // assembly the solver
-        return loop(function, x0, max_iterations, epsilon, logger, op);
+        return loop(f, x0, max_iterations, epsilon, logger, op);
 }
 
 template class nano::solver_cgd_base_t<cgd_step_HS>;

@@ -32,9 +32,7 @@ NANO_CASE(evaluate)
                         for (size_t t = 0; t < trials; ++ t)
                         {
                                 const auto x0 = vector_t::Random(function->size());
-                                const auto f0 = function->eval(x0);
-                                const auto fcalls0 = function->fcalls();
-                                const auto gcalls0 = function->gcalls();
+                                const auto f0 = function->vgrad(x0);
 
                                 // optimize
                                 const auto state = solver->minimize(iterations, epsilon2<scalar_t>(), *function, x0);
@@ -54,8 +52,7 @@ NANO_CASE(evaluate)
                                           << " [" << (t + 1) << "/" << trials << "]"
                                           << ": x = [" << x0.transpose() << "]/[" << x.transpose() << "]"
                                           << ",f=" << f0 << "/" << f << ",g=" << g << "[" << to_string(state.m_status) << "]"
-                                          << ",calls=" << (function->fcalls() - fcalls0)
-                                          << "/" << (function->gcalls() - gcalls0) << ".\n";
+                                          << ",calls=" << state.m_fcalls << "/" << state.m_gcalls << ".\n";
 
                                 // check function value decrease
                                 NANO_CHECK_LESS_EQUAL(f, f0 + epsilon1<scalar_t>());

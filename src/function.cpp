@@ -30,24 +30,6 @@ function_t::function_t(const char* name,
 {
 }
 
-scalar_t function_t::eval(const vector_t& x, vector_t* gx) const
-{
-        assert(x.size() == size());
-
-        if (gx)
-        {
-                gx->resize(size());
-        }
-
-        const auto f = vgrad(x, gx);
-        assert(!gx || gx->size() == size());
-
-        m_fcalls += 1;
-        m_gcalls += gx ? 1 : 0;
-
-        return f;
-}
-
 scalar_t function_t::grad_accuracy(const vector_t& x) const
 {
         assert(x.size() == size());

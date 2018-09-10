@@ -43,7 +43,7 @@ void solver_nag_base_t<trestart>::to_json(json_t& json) const
 
 template <nag_restart trestart>
 solver_state_t solver_nag_base_t<trestart>::minimize(const size_t max_iterations, const scalar_t epsilon,
-        const function_t& function, const vector_t& x0, const logger_t& logger) const
+        const function_t& f, const vector_t& x0, const logger_t& logger) const
 {
         // current & previous iterations
         vector_t cx = x0;
@@ -59,7 +59,7 @@ solver_state_t solver_nag_base_t<trestart>::minimize(const size_t max_iterations
 
         lsearch_t lsearch(m_init, m_strat, m_c1, m_c2);
 
-        const auto op = [&] (solver_state_t& cstate, const size_t)
+        const auto op = [&] (const function_t& function, solver_state_t& cstate, const size_t)
         {
                 // momentum
                 ctheta = get_theta(ptheta, m_q);
@@ -80,7 +80,7 @@ solver_state_t solver_nag_base_t<trestart>::minimize(const size_t max_iterations
                 switch (trestart)
                 {
                 case nag_restart::function:
-                        if ((cfx = function.eval(cx)) > pfx)
+                        if ((cfx = function.vgrad(cx)) > pfx)
                         {
                                 ctheta = 1;
                         }
@@ -106,7 +106,7 @@ solver_state_t solver_nag_base_t<trestart>::minimize(const size_t max_iterations
                 return true;
         };
 
-        return loop(function, x0, max_iterations, epsilon, logger, op);
+        return loop(f, x0, max_iterations, epsilon, logger, op);
 }
 
 template class nano::solver_nag_base_t<nag_restart::none>;

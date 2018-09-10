@@ -11,7 +11,7 @@ using namespace nano;
 
 struct solver_stat_t
 {
-        void update(const function_t& function, const solver_state_t& statex)
+        void update(const solver_state_t& statex)
         {
                 const auto gx = statex.convergence_criteria();
 
@@ -19,8 +19,8 @@ struct solver_stat_t
                 m_fails(statex.m_status != solver_state_t::status::converged ? 1 : 0);
                 m_errors(statex.m_status == solver_state_t::status::failed ? 1 : 0);
                 m_maxits(statex.m_status == solver_state_t::status::max_iters ? 1 : 0);
-                m_fcalls(static_cast<scalar_t>(function.fcalls()));
-                m_gcalls(static_cast<scalar_t>(function.gcalls()));
+                m_fcalls(static_cast<scalar_t>(statex.m_fcalls));
+                m_gcalls(static_cast<scalar_t>(statex.m_gcalls));
         }
 
         stats_t<scalar_t> m_crits;      ///< convergence criteria
@@ -99,11 +99,10 @@ static void check_solver(const function_t& function, const rsolver_t& solver, co
 
         for (const auto& x0 : x0s)
         {
-                function.reset_calls();
                 const auto statex = solver->minimize(iterations, epsilon, function, x0);
 
-                fstats[std::make_pair(id, config)].update(function, statex);
-                gstats[std::make_pair(id, config)].update(function, statex);
+                fstats[std::make_pair(id, config)].update(statex);
+                gstats[std::make_pair(id, config)].update(statex);
         }
 }
 
