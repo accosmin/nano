@@ -22,7 +22,7 @@ namespace nano
                 ///
                 /// \brief constructor
                 ///
-                solver_function_t(const function_t& function) :
+                explicit solver_function_t(const function_t& function) :
                         function_t(function),
                         m_function(function)
                 {
