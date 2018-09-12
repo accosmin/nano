@@ -24,11 +24,11 @@ void solver_gd_t::to_json(json_t& json) const
 }
 
 solver_state_t solver_gd_t::minimize(const size_t max_iterations, const scalar_t epsilon,
-        const function_t& f, const vector_t& x0, const logger_t& logger) const
+        const solver_function_t& function, const vector_t& x0, const logger_t& logger) const
 {
         lsearch_t lsearch(m_init, m_strat, m_c1, m_c2);
 
-        const auto op = [&] (const function_t& function, solver_state_t& cstate, const size_t)
+        const auto op = [&] (solver_state_t& cstate, const size_t)
         {
                 // descent direction
                 cstate.d = -cstate.g;
@@ -38,5 +38,5 @@ solver_state_t solver_gd_t::minimize(const size_t max_iterations, const scalar_t
         };
 
         // assembly the solver
-        return loop(f, x0, max_iterations, epsilon, logger, op);
+        return loop(function, x0, max_iterations, epsilon, logger, op);
 }

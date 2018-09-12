@@ -31,17 +31,17 @@ void solver_quasi_base_t<tquasi_update>::to_json(json_t& json) const
 
 template <typename tquasi_update>
 solver_state_t solver_quasi_base_t<tquasi_update>::minimize(const size_t max_iterations, const scalar_t epsilon,
-        const function_t& f, const vector_t& x0, const logger_t& logger) const
+        const solver_function_t& function, const vector_t& x0, const logger_t& logger) const
 {
         lsearch_t lsearch(m_init, m_strat, m_c1, m_c2);
 
         // previous state
-        solver_state_t pstate(f.size());
+        solver_state_t pstate(function.size());
 
         // current approximation of the Hessian
-        matrix_t H = matrix_t::Identity(f.size(), f.size());
+        matrix_t H = matrix_t::Identity(function.size(), function.size());
 
-        const auto op = [&] (const function_t& function, solver_state_t& cstate, const size_t)
+        const auto op = [&] (solver_state_t& cstate, const size_t)
         {
                 // descent direction
                 cstate.d = -H * cstate.g;
@@ -59,7 +59,7 @@ solver_state_t solver_quasi_base_t<tquasi_update>::minimize(const size_t max_ite
         };
 
         // assembly the solver
-        return loop(f, x0, max_iterations, epsilon, logger, op);
+        return loop(function, x0, max_iterations, epsilon, logger, op);
 }
 
 template class nano::solver_quasi_base_t<quasi_step_DFP>;

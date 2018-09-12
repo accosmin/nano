@@ -24,8 +24,7 @@ namespace nano
 
                 solver_state_t minimize(
                         const size_t max_iterations, const scalar_t epsilon,
-                        const function_t&, const vector_t& x0,
-                        const logger_t& logger = logger_t()) const final;
+                        const solver_function_t&, const vector_t& x0, const logger_t&) const final;
 
         private:
 
