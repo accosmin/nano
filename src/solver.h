@@ -118,7 +118,7 @@ namespace nano
                         assert(function.size() == x0.size());
                         auto state = solver_state_t{function, x0};
 
-                        for (size_t i = 0; i < max_iterations; i ++)
+                        for (size_t i = 0; i < max_iterations; ++ i, ++ state.m_iterations)
                         {
                                 const auto step_ok = solver(state, i) && state;
                                 const auto converged = state.converged(epsilon);

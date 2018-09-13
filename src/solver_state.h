@@ -110,6 +110,7 @@ namespace nano
                 status          m_status{status::max_iters};    ///< optimization status
                 size_t          m_fcalls{0};                    ///< #function value evaluations
                 size_t          m_gcalls{0};                    ///< #function gradient evaluations
+                size_t          m_iterations{0};                ///< #optimization iterations
         };
 
         template <>

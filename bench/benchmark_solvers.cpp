@@ -16,6 +16,7 @@ struct solver_stat_t
         {
                 m_crits(state.convergence_criteria());
                 m_fails(state.m_status != solver_state_t::status::converged ? 1 : 0);
+                m_iters(static_cast<scalar_t>(state.m_iterations));
                 m_errors(state.m_status == solver_state_t::status::failed ? 1 : 0);
                 m_maxits(state.m_status == solver_state_t::status::max_iters ? 1 : 0);
                 m_fcalls(static_cast<scalar_t>(state.m_fcalls));
@@ -24,6 +25,7 @@ struct solver_stat_t
 
         stats_t<scalar_t> m_crits;      ///< convergence criteria
         stats_t<scalar_t> m_fails;      ///< #convergence failures
+        stats_t<scalar_t> m_iters;      ///< #optimization iterations
         stats_t<scalar_t> m_errors;     ///< #internal errors (e.g. line-search failed)
         stats_t<scalar_t> m_maxits;     ///< #maximum iterations reached
         stats_t<scalar_t> m_fcalls;     ///< #function value calls
@@ -44,6 +46,7 @@ static void show_table(const string_t& table_name, const solver_config_stats_t& 
                 << colspan(2) << table_name
                 << "gnorm"
                 << "#fails"
+                << "#iters"
                 << "#errors"
                 << "#maxits"
                 << "#fcalls"
@@ -63,6 +66,7 @@ static void show_table(const string_t& table_name, const solver_config_stats_t& 
                         << config
                         << stat.m_crits.avg()
                         << static_cast<size_t>(stat.m_fails.sum1())
+                        << static_cast<size_t>(stat.m_iters.avg())
                         << static_cast<size_t>(stat.m_errors.sum1())
                         << static_cast<size_t>(stat.m_maxits.sum1())
                         << static_cast<size_t>(stat.m_fcalls.avg())
@@ -70,7 +74,7 @@ static void show_table(const string_t& table_name, const solver_config_stats_t& 
                 }
         }
 
-        table.sort(nano::make_less_from_string<scalar_t>(), {3, 7, 2});
+        table.sort(nano::make_less_from_string<scalar_t>(), {3, 8, 2});
         std::cout << table;
 }
 
