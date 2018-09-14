@@ -36,7 +36,8 @@ solver_state_t solver_cgd_base_t<tcgd_update>::minimize(const size_t max_iterati
         // previous state
         solver_state_t pstate(function.size());
 
-        const auto op = [&] (solver_state_t& cstate, const size_t i)
+        auto cstate = solver_state_t{function, x0};
+        for (size_t i = 0; i < max_iterations; ++ i, ++ cstate.m_iterations)
         {
                 // descent direction
                 if (i == 0)
@@ -64,11 +65,14 @@ solver_state_t solver_cgd_base_t<tcgd_update>::minimize(const size_t max_iterati
 
                 // line-search
                 pstate = cstate;
-                return lsearch(function, cstate);
-        };
+                const auto iter_ok = lsearch(function, cstate);
+                if (solver_t::done(logger, function, cstate, epsilon, iter_ok))
+                {
+                        break;
+                }
+        }
 
-        // assembly the solver
-        return loop(function, x0, max_iterations, epsilon, logger, op);
+        return cstate;
 }
 
 template class nano::solver_cgd_base_t<cgd_step_HS>;

@@ -59,7 +59,8 @@ solver_state_t solver_nag_base_t<trestart>::minimize(const size_t max_iterations
 
         lsearch_t lsearch(m_init, m_strat, m_c1, m_c2);
 
-        const auto op = [&] (solver_state_t& cstate, const size_t)
+        auto cstate = solver_state_t{function, x0};
+        for (size_t i = 0; i < max_iterations; ++ i, ++ cstate.m_iterations)
         {
                 // momentum
                 ctheta = get_theta(ptheta, m_q);
@@ -68,10 +69,12 @@ solver_state_t solver_nag_base_t<trestart>::minimize(const size_t max_iterations
                 // update solution
                 cstate.update(function, py);
                 cstate.d = -cstate.g;
-                if (!lsearch(function, cstate))
+                const auto iter_ok = lsearch(function, cstate);
+                if (solver_t::done(logger, function, cstate, epsilon, iter_ok))
                 {
-                        return false;
+                        break;
                 }
+
                 cx = cstate.x;
                 //cx = py - m_alpha0 * cstate.g;
                 cy = cx + beta * (cx - px);
@@ -102,11 +105,9 @@ solver_state_t solver_nag_base_t<trestart>::minimize(const size_t max_iterations
                 py = cy;
                 pfx = cfx;
                 ptheta = ctheta;
+        }
 
-                return true;
-        };
-
-        return loop(function, x0, max_iterations, epsilon, logger, op);
+        return cstate;
 }
 
 template class nano::solver_nag_base_t<nag_restart::none>;

@@ -41,25 +41,25 @@ solver_state_t solver_quasi_base_t<tquasi_update>::minimize(const size_t max_ite
         // current approximation of the Hessian
         matrix_t H = matrix_t::Identity(function.size(), function.size());
 
-        const auto op = [&] (solver_state_t& cstate, const size_t)
+        auto cstate = solver_state_t{function, x0};
+        for (size_t i = 0; i < max_iterations; ++ i, ++ cstate.m_iterations)
         {
                 // descent direction
                 cstate.d = -H * cstate.g;
 
                 // line-search
                 pstate = cstate;
-                if (!lsearch(function, cstate))
+                const auto iter_ok = lsearch(function, cstate);
+                if (solver_t::done(logger, function, cstate, epsilon, iter_ok))
                 {
-                        return false;
+                        break;
                 }
 
                 // update approximation of the Hessian
                 H = tquasi_update::get(H, pstate, cstate);
-                return true;
-        };
+        }
 
-        // assembly the solver
-        return loop(function, x0, max_iterations, epsilon, logger, op);
+        return cstate;
 }
 
 template class nano::solver_quasi_base_t<quasi_step_DFP>;

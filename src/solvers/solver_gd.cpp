@@ -28,15 +28,19 @@ solver_state_t solver_gd_t::minimize(const size_t max_iterations, const scalar_t
 {
         lsearch_t lsearch(m_init, m_strat, m_c1, m_c2);
 
-        const auto op = [&] (solver_state_t& cstate, const size_t)
+        auto cstate = solver_state_t{function, x0};
+        for (size_t i = 0; i < max_iterations; ++ i, ++ cstate.m_iterations)
         {
                 // descent direction
                 cstate.d = -cstate.g;
 
                 // line-search
-                return lsearch(function, cstate);
-        };
+                const auto iter_ok = lsearch(function, cstate);
+                if (solver_t::done(logger, function, cstate, epsilon, iter_ok))
+                {
+                        break;
+                }
+        }
 
-        // assembly the solver
-        return loop(function, x0, max_iterations, epsilon, logger, op);
+        return cstate;
 }

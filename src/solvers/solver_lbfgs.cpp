@@ -37,7 +37,8 @@ solver_state_t solver_lbfgs_t::minimize(const size_t max_iterations, const scala
         std::deque<vector_t> ss, ys;
         vector_t q, r;
 
-        const auto op = [&] (solver_state_t& cstate, const size_t)
+        auto cstate = solver_state_t{function, x0};
+        for (size_t i = 0; i < max_iterations; ++ i, ++ cstate.m_iterations)
         {
                 // descent direction
                 //      (see "Numerical optimization", Nocedal & Wright, 2nd edition, p.178)
@@ -82,9 +83,10 @@ solver_state_t solver_lbfgs_t::minimize(const size_t max_iterations, const scala
 
                 // line-search
                 pstate = cstate;
-                if (!lsearch(function, cstate))
+                const auto iter_ok = lsearch(function, cstate);
+                if (solver_t::done(logger, function, cstate, epsilon, iter_ok))
                 {
-                        return false;
+                        break;
                 }
 
                 // todo: may skip the update if the curvature condition is not satisfied
@@ -96,10 +98,7 @@ solver_state_t solver_lbfgs_t::minimize(const size_t max_iterations, const scala
                         ss.pop_front();
                         ys.pop_front();
                 }
+        }
 
-                return true;
-        };
-
-        // assembly the solver
-        return loop(function, x0, max_iterations, epsilon, logger, op);
+        return cstate;
 }
