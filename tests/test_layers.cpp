@@ -15,7 +15,7 @@ using namespace nano;
 struct model_wrt_params_function_t final : public function_t
 {
         explicit model_wrt_params_function_t(const rloss_t& loss, model_t& model, const tensor_size_t count) :
-                function_t("model", model.psize(), model.psize(), model.psize(), convexity::no, 1e+6),
+                function_t("model", model.psize(), model.psize(), model.psize(), convexity::no),
                 m_loss(loss),
                 m_model(model),
                 m_inputs(idims(model, count)),

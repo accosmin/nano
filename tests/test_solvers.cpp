@@ -28,7 +28,6 @@ NANO_CASE(evaluate)
                                 continue;
                         }
 
-                        size_t out_of_domain = 0;
                         for (size_t t = 0; t < trials; ++ t)
                         {
                                 const auto x0 = vector_t::Random(function->size());
@@ -40,13 +39,6 @@ NANO_CASE(evaluate)
                                 const auto x = state.x;
                                 const auto f = state.f;
                                 const auto g = state.convergence_criteria();
-
-                                // ignore out-of-domain solutions
-                                if (!function->is_valid(x))
-                                {
-                                        out_of_domain ++;
-                                        continue;
-                                }
 
                                 std::cout << function->name() << " " << id
                                           << " [" << (t + 1) << "/" << trials << "]"
@@ -62,8 +54,7 @@ NANO_CASE(evaluate)
                                 NANO_CHECK_EQUAL(state.m_status, solver_state_t::status::converged);
                         }
 
-                        std::cout << function->name() << " " << id
-                                  << ": out of domain " << out_of_domain << "/" << trials << ".\n";
+                        std::cout << function->name() << " " << id << ".\n";
                 }
         }
 }

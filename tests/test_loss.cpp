@@ -10,7 +10,7 @@ using namespace nano;
 struct loss_function_t final : public function_t
 {
         loss_function_t(const rloss_t& loss, const tensor_size_t count, const tensor_size_t xmaps) :
-                function_t("loss", count * xmaps, count * xmaps, count * xmaps, convexity::no, 1e+6),
+                function_t("loss", count * xmaps, count * xmaps, count * xmaps, convexity::no),
                 m_loss(loss), m_targets(count, xmaps, 1, 1)
         {
                 for (auto x = 0; x < count; ++ x)

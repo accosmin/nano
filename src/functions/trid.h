@@ -12,7 +12,7 @@ namespace nano
         public:
 
                 explicit function_trid_t(const tensor_size_t dims) :
-                        function_t("Trid", dims, 2, 100 * 1000, convexity::yes, static_cast<scalar_t>(1 + dims * dims))
+                        function_t("Trid", dims, 2, 100 * 1000, convexity::yes)
                 {
                 }
 

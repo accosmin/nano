@@ -24,7 +24,7 @@ template <typename top>
 struct wrt_inputs_function_t final : public function_t
 {
         explicit wrt_inputs_function_t(const top& op) :
-                function_t("norm4d", op.params().xsize(), op.params().xsize(), op.params().xsize(), convexity::no, 1e+6),
+                function_t("norm4d", op.params().xsize(), op.params().xsize(), op.params().xsize(), convexity::no),
                 m_op(op)
         {
                 std::tie(m_idata, m_odata) = make_buffers(op.params(), 1);

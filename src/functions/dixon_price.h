@@ -13,7 +13,7 @@ namespace nano
         public:
 
                 explicit function_dixon_price_t(const tensor_size_t dims) :
-                        function_t("Dixon-Price", dims, 2, 100 * 1000, convexity::no, 10),
+                        function_t("Dixon-Price", dims, 2, 100 * 1000, convexity::no),
                         m_bias(vector_t::LinSpaced(dims, scalar_t(1), scalar_t(dims)))
                 {
                 }

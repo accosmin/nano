@@ -21,12 +21,10 @@ using namespace nano;
 
 function_t::function_t(const char* name,
         const tensor_size_t size, const tensor_size_t min_size, const tensor_size_t max_size,
-        const convexity convex,
-        const scalar_t domain) :
+        const convexity convex) :
         m_name(name),
         m_size(size), m_min_size(min_size), m_max_size(max_size),
-        m_convex(convex),
-        m_domain(domain)
+        m_convex(convex)
 {
 }
 
@@ -86,7 +84,7 @@ bool function_t::is_convex(const vector_t& x1, const vector_t& x2, const int ste
                 const auto ftc = t1 * f1 + t2 * f2;
 
                 const auto ft = vgrad(t1 * x1 + t2 * x2, nullptr);
-                if (std::isfinite(ft) && ft > ftc + epsilon0<scalar_t>() * (1 + std::fabs(ftc)))
+                if (std::isfinite(ft) && ft > ftc + epsilon0<scalar_t>())
                 {
                         return false;
                 }
@@ -98,11 +96,6 @@ bool function_t::is_convex(const vector_t& x1, const vector_t& x2, const int ste
 string_t function_t::name() const
 {
         return string_t(m_name) + "[" + std::to_string(size()) + "D]";
-}
-
-bool function_t::is_valid(const vector_t& x) const
-{
-        return x.lpNorm<Eigen::Infinity>() < m_domain;
 }
 
 static void append(rfunction_t&& func, const tensor_size_t dims, const std::regex& regex, rfunctions_t& funcs)

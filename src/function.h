@@ -45,8 +45,7 @@ namespace nano
                 ///
                 function_t(const char* name,
                         const tensor_size_t size, const tensor_size_t min_size, const tensor_size_t max_size,
-                        const convexity convex,
-                        const scalar_t domain);
+                        const convexity convex);
 
                 ///
                 /// \brief destructor
@@ -64,12 +63,6 @@ namespace nano
                 tensor_size_t size() const { return m_size; }
                 tensor_size_t min_size() const { return m_min_size; }
                 tensor_size_t max_size() const { return m_max_size; }
-
-                ///
-                /// \brief check if a point is within the function's domain
-                ///
-                auto domain() const { return m_domain; }
-                bool is_valid(const vector_t& x) const;
 
                 ///
                 /// \brief check if the function is convex
@@ -97,6 +90,5 @@ namespace nano
                 const char*     m_name;                         ///<
                 tensor_size_t   m_size, m_min_size, m_max_size; ///< #dimensions
                 convexity       m_convex;                       ///<
-                scalar_t        m_domain;                       ///< domain = hyper-ball{0, m_domain}
         };
 }

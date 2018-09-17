@@ -29,15 +29,8 @@ NANO_CASE(evaluate)
                         vector_t x0(dims), x1(dims);
                         nano::set_random(udist, rng, x0, x1);
 
-                        if (    function.is_valid(x0) && std::isfinite(function.vgrad(x0)) &&
-                                function.is_valid(x1) && std::isfinite(function.vgrad(x1)))
-                        {
-                                NANO_CHECK_LESS(function.grad_accuracy(x0), 10 * epsilon2<scalar_t>());
-                                if (function.is_convex())
-                                {
-                                        NANO_CHECK(function.is_convex(x0, x1, 100));
-                                }
-                        }
+                        NANO_CHECK_LESS(function.grad_accuracy(x0), 10 * epsilon2<scalar_t>());
+                        NANO_CHECK(!function.is_convex() || function.is_convex(x0, x1, 100));
                 }
         }
 }

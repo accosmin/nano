@@ -30,7 +30,7 @@ template <typename top>
 struct wrt_params_function_t final : public function_t
 {
         explicit wrt_params_function_t(const top& op) :
-                function_t("conv", op.params().psize(), op.params().psize(), op.params().psize(), convexity::no, 1e+6),
+                function_t("conv", op.params().psize(), op.params().psize(), op.params().psize(), convexity::no),
                 m_op(op)
         {
                 std::tie(m_bdata, m_idata, m_kdata, m_odata) = make_buffers(op.params(), 3);
@@ -62,7 +62,7 @@ template <typename top>
 struct wrt_inputs_function_t final : public function_t
 {
         explicit wrt_inputs_function_t(const top& op) :
-                function_t("conv", op.params().isize(), op.params().isize(), op.params().isize(), convexity::no, 1e+6),
+                function_t("conv", op.params().isize(), op.params().isize(), op.params().isize(), convexity::no),
                 m_op(op)
         {
                 std::tie(m_bdata, m_idata, m_kdata, m_odata) = make_buffers(op.params(), 1);

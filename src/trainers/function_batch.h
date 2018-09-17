@@ -7,7 +7,7 @@ namespace nano
         {
         public:
                 batch_function_t(accumulator_t& acc, const task_t& task, const fold_t& fold) :
-                        function_t("ml optimization function", acc.psize(), acc.psize(), acc.psize(), convexity::no, 1e+6),
+                        function_t("ml optimization function", acc.psize(), acc.psize(), acc.psize(), convexity::no),
                         m_accumulator(acc),
                         m_task(task),
                         m_fold(fold)

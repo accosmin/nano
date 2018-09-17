@@ -28,6 +28,6 @@ namespace nano
                 lsearch_t::initializer  m_init{lsearch_t::initializer::unit};
                 lsearch_t::strategy     m_strat{lsearch_t::strategy::cg_descent};
                 scalar_t                m_c1{static_cast<scalar_t>(1e-4)};
-                scalar_t                m_c2{static_cast<scalar_t>(0.9)};
+                scalar_t                m_c2{static_cast<scalar_t>(9e-1)};
         };
 }
