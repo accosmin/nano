@@ -10,6 +10,9 @@ namespace nano
         ///     see "Introductory Lectures on Convex Optimization (Applied Optimization)",
         ///     by Y. Nesterov, 2013, p.56
         ///
+        ///     seee "Convex Optimization",
+        ///     by S. Boyd and L. Vanderberghe, p.458 (logarithmic version)
+        ///
         class function_geometric_optimization_t final : public function_t
         {
         public:

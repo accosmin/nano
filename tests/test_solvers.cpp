@@ -31,11 +31,13 @@ NANO_CASE(evaluate)
                         for (size_t t = 0; t < trials; ++ t)
                         {
                                 const auto x0 = vector_t::Random(function->size());
-                                const auto f0 = function->vgrad(x0);
+
+                                const auto state0 = solver_state_t{*function, x0};
+                                const auto f0 = state0.f;
+                                const auto g0 = state0.convergence_criteria();
 
                                 // optimize
                                 const auto state = solver->minimize(iterations, epsilon2<scalar_t>(), *function, x0);
-
                                 const auto x = state.x;
                                 const auto f = state.f;
                                 const auto g = state.convergence_criteria();
@@ -43,7 +45,9 @@ NANO_CASE(evaluate)
                                 std::cout << function->name() << " " << id
                                           << " [" << (t + 1) << "/" << trials << "]"
                                           << ": x = [" << x0.transpose() << "]/[" << x.transpose() << "]"
-                                          << ",f=" << f0 << "/" << f << ",g=" << g << "[" << to_string(state.m_status) << "]"
+                                          << ",f=" << f0 << "/" << f
+                                          << ",g=" << g0 << "/" << g
+                                          << "[" << to_string(state.m_status) << "]"
                                           << ",calls=" << state.m_fcalls << "/" << state.m_gcalls << ".\n";
 
                                 // check function value decrease
