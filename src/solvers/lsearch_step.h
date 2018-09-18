@@ -64,7 +64,8 @@ namespace nano
                 ///
                 bool has_armijo(const scalar_t c1) const
                 {
-                        return phi() <= phi0() + alpha() * c1 * gphi0();
+                        //return phi() <= phi0() + alpha() * c1 * gphi0();
+                        return (phi() - phi0()) / alpha() / c1 < gphi0();
                 }
 
                 ///
