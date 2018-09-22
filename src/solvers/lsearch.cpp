@@ -49,7 +49,7 @@ bool lsearch_t::operator()(const function_t& function, solver_state_t& state)
         const auto t0 = m_initializer->get(state);
 
         // check descent direction
-        const scalar_t dg0 = state.d.dot(state.g);
+        const auto dg0 = state.d.dot(state.g);
         if (dg0 >= scalar_t(0))
         {
                 return false;

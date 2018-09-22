@@ -85,7 +85,7 @@ namespace nano
                 ///
                 bool converged(const scalar_t epsilon) const
                 {
-                        return convergence_criteria() < epsilon;
+                        return convergence_criteria() < epsilon * std::max(scalar_t(1), std::fabs(f));
                 }
 
                 ///
