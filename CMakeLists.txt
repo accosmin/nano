@@ -67,7 +67,3 @@ if(NANO_WITH_TESTS)
         enable_testing()
         add_subdirectory(tests)
 endif()
-
-if(NANO_WITH_BENCH)
-        add_subdirectory(bench)
-endif()
