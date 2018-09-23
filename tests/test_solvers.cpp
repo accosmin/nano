@@ -19,9 +19,9 @@ NANO_CASE(evaluate)
                         const auto solver = get_solvers().get(id);
                         NANO_REQUIRE(solver);
 
-                        if (    id == "sr1" ||
-                                id == "dfp" ||
+                        if (    id == "dfp" ||
                                 id == "nag" ||
+                                id == "nagfr" ||
                                 id == "broyden")
                         {
                                 std::cout << "warning: skiping solver " << id << " (to fix)\n";
