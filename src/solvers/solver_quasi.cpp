@@ -47,6 +47,14 @@ solver_state_t solver_quasi_base_t<tquasi_update>::minimize(const size_t max_ite
                 // descent direction
                 cstate.d = -H * cstate.g;
 
+                // restart:
+                //  - if not a descent direction
+                if (cstate.d.dot(cstate.g) > scalar_t(0))
+                {
+                        cstate.d = -cstate.g;
+                        H.setIdentity();
+                }
+
                 // line-search
                 pstate = cstate;
                 const auto iter_ok = lsearch(function, cstate);
