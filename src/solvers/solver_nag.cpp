@@ -76,7 +76,6 @@ solver_state_t solver_nag_base_t<trestart>::minimize(const size_t max_iterations
                 }
 
                 cx = cstate.x;
-                //cx = py - m_alpha0 * cstate.g;
                 cy = cx + beta * (cx - px);
                 cstate.x = cx; // NB: to propagate the current parameters!
 

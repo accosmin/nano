@@ -5,7 +5,7 @@
 namespace nano
 {
         ///
-        /// \brief generic geometric optimization function: f(x) = sum(i, alpha_i + a_i.dot(x)).
+        /// \brief generic geometric optimization function: f(x) = sum(i, exp(alpha_i + a_i.dot(x))).
         ///
         ///     see "Introductory Lectures on Convex Optimization (Applied Optimization)",
         ///     by Y. Nesterov, 2013, p.56
