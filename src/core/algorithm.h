@@ -1,60 +1,11 @@
 #pragma once
 
-#include "stringi.h"    /// todo: replace this include with <vector> & <string>
+#include "stringi.h"
 #include <cctype>
 #include <algorithm>
 
 namespace nano
 {
-        /// todo: replace these filesystem utilities with <filesystem> in C++17.
-
-        ///
-        /// \brief extracts file name from path (e.g. /usr/include/file.ext -> file.ext).
-        ///
-        inline string_t filename(const string_t& path)
-        {
-                const auto pos = path.find_last_of("/\\");
-                return (pos == string_t::npos) ? path : path.substr(pos + 1);
-        }
-
-        ///
-        /// \brief extracts file extension from path (e.g. /usr/include/file.ext -> ext).
-        ///
-        inline string_t extension(const string_t& path)
-        {
-                const auto pos = path.find_last_of('.');
-                return (pos == string_t::npos) ? string_t() : path.substr(pos + 1);
-        }
-
-        ///
-        /// \brief extracts directory name from path (e.g. /usr/include/file.ext -> /usr/include/).
-        ///
-        inline string_t dirname(const string_t& path)
-        {
-                const auto pos = path.find_last_of("/\\");
-                return (pos == string_t::npos) ? "./" : path.substr(0, pos + 1);
-        }
-
-        ///
-        /// \brief extracts file stem from path (e.g. /usr/include/file.ext -> file).
-        ///
-        inline string_t stem(const string_t& path)
-        {
-                const auto pos_dir = path.find_last_of("/\\");
-                const auto pos_ext = path.find_last_of('.');
-
-                if (pos_dir == string_t::npos)
-                {
-                        return  (pos_ext == string_t::npos) ?
-                                path : path.substr(0, pos_ext);
-                }
-                else
-                {
-                        return  (pos_ext == string_t::npos) ?
-                                path.substr(pos_dir + 1) : path.substr(pos_dir + 1, pos_ext - pos_dir - 1);
-                }
-        }
-
         ///
         /// \brief returns the lower case string
         ///

@@ -32,7 +32,7 @@ std::ostream& operator<<(std::ostream& os, const strings_t& strings)
         return os;
 }
 
-NANO_BEGIN_MODULE(test_manager)
+NANO_BEGIN_MODULE(test_core_factory)
 
 NANO_CASE(empty)
 {

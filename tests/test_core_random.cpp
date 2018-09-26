@@ -1,7 +1,7 @@
 #include "utest.h"
 #include "core/random.h"
 
-NANO_BEGIN_MODULE(test_random)
+NANO_BEGIN_MODULE(test_core_random)
 
 NANO_CASE(split2)
 {

@@ -24,7 +24,7 @@ buffer_t load_buffer(istream_t& stream, const std::size_t buff_size)
         return data;
 }
 
-NANO_BEGIN_MODULE(test_io)
+NANO_BEGIN_MODULE(test_core_io)
 
 NANO_CASE(string)
 {

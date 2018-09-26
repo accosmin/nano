@@ -2,7 +2,7 @@
 #include "core/random.h"
 #include "core/quadratic.h"
 
-NANO_BEGIN_MODULE(test_quadratic)
+NANO_BEGIN_MODULE(test_core_quadratic)
 
 NANO_CASE(evaluate)
 {

@@ -1,8 +1,9 @@
 list(APPEND libnano_sources
         ${CMAKE_CURRENT_SOURCE_DIR}/io.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/mat5.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/table.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/image.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/table.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/tuner.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/logger.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/cmdline.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/archive.cpp

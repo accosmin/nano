@@ -6,7 +6,6 @@ make_app(info_archive.cpp nano)
 make_app(train.cpp nano)
 make_app(evaluate.cpp nano)
 
-make_app(embed.cpp nano)
 make_app(stats.cpp "")
 make_app(tabulate.cpp nano)
 
@@ -25,7 +24,6 @@ set(programs
         info_archive
         train
         evaluate
-        embed
         stats
         tabulate)
 

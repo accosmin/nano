@@ -50,7 +50,7 @@ infos_t make_infos(const tinfos&... infos)
         return {infos...};
 }
 
-NANO_BEGIN_MODULE(test_digraph)
+NANO_BEGIN_MODULE(test_core_digraph)
 
 NANO_CASE(graph0)
 {

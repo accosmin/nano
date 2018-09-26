@@ -5,7 +5,7 @@
 
 using namespace nano;
 
-NANO_BEGIN_MODULE(test_image)
+NANO_BEGIN_MODULE(test_core_image)
 
 NANO_CASE(construction)
 {

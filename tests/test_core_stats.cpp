@@ -4,7 +4,7 @@
 
 using namespace nano;
 
-NANO_BEGIN_MODULE(test_stats)
+NANO_BEGIN_MODULE(test_core_stats)
 
 NANO_CASE(fixed)
 {

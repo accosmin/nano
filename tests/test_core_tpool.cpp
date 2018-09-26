@@ -41,7 +41,7 @@ namespace
         }
 }
 
-NANO_BEGIN_MODULE(test_thread_pool)
+NANO_BEGIN_MODULE(test_core_tpool)
 
 NANO_CASE(empty)
 {

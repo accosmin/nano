@@ -1,7 +1,7 @@
 #include "model.h"
 #include "utils.h"
-#include "tuner.h"
 #include "solver.h"
+#include "core/tuner.h"
 #include "core/logger.h"
 #include "core/numeric.h"
 #include "trainer_batch.h"

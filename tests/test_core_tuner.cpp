@@ -1,5 +1,5 @@
 #include "utest.h"
-#include "tuner.h"
+#include "core/tuner.h"
 
 using namespace nano;
 
@@ -54,7 +54,7 @@ static bool is_unique(jsons_t configs)
         return std::unique(configs.begin(), configs.end()) == configs.end();
 }
 
-NANO_BEGIN_MODULE(test_tuner)
+NANO_BEGIN_MODULE(test_core_tuner)
 
 NANO_CASE(tuner1d)
 {

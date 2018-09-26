@@ -1,7 +1,7 @@
 #include "utest.h"
 #include "core/probe.h"
 
-NANO_BEGIN_MODULE(test_chrono)
+NANO_BEGIN_MODULE(test_core_chrono)
 
 NANO_CASE(gflops)
 {

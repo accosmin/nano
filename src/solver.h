@@ -1,7 +1,6 @@
 #pragma once
 
-#include "tuner.h"
-#include "core/json.h"
+#include "core/tuner.h"
 #include "core/factory.h"
 #include "solver_state.h"
 

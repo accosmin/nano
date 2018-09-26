@@ -3,7 +3,7 @@
 #include "core/random.h"
 #include "core/numeric.h"
 
-NANO_BEGIN_MODULE(test_cubic)
+NANO_BEGIN_MODULE(test_core_cubic)
 
 NANO_CASE(evaluate)
 {

@@ -22,7 +22,7 @@ std::ostream& operator<<(std::ostream& os, const nano::indices_t& indices)
         return os << "}";
 }
 
-NANO_BEGIN_MODULE(test_table)
+NANO_BEGIN_MODULE(test_core_table)
 
 NANO_CASE(table)
 {

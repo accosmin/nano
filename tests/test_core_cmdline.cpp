@@ -2,7 +2,7 @@
 #include "utest.h"
 #include "core/cmdline.h"
 
-NANO_BEGIN_MODULE(test_cmdline)
+NANO_BEGIN_MODULE(test_core_cmdline)
 
 NANO_CASE(parse)
 {
