@@ -4,7 +4,7 @@
 
 using namespace nano;
 
-NANO_BEGIN_MODULE(test_tensor)
+NANO_BEGIN_MODULE(test_tensor_tensor)
 
 NANO_CASE(index1d)
 {
