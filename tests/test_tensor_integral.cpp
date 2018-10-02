@@ -75,7 +75,7 @@ NANO_CASE(integral1d)
         }
 }
 
-/*NANO_CASE(integral2d)
+NANO_CASE(integral2d)
 {
         tensor_mem_t<int32_t, 2> xtensor(9, 11);
         tensor_mem_t<int64_t, 2> itensor(9, 11);
@@ -127,6 +127,6 @@ NANO_CASE(integral4d)
         {
                 NANO_CHECK_EQUAL(itensor(i0, i1, i2, i3), check<int64_t>(xtensor, i0, i1, i2, i3));
         }
-}*/
+}
 
 NANO_END_MODULE()

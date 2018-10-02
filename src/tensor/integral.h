@@ -5,23 +5,30 @@
 namespace nano
 {
         ///
-        /// \brief compute the integral of a tensor of arbitrary rank.
+        /// \brief compute the integral of a tensor of arbitrary rank (aka the sum-area table).
         ///
-        template <typename tstoragei, typename tstorageo, std::size_t trank>
-        void integral(const tensor_t<tstoragei, trank>& itensor, tensor_t<tstorageo, trank>& otensor)
+        template <std::size_t trank>
+        struct integral_t
         {
-                assert(itensor.dims() == otensor.dims());
-
-                if (itensor.size() == 0)
+                template <typename tstoragei, typename tstorageo>
+                static void get(const tensor_t<tstoragei, trank>& itensor, tensor_t<tstorageo, trank>&& otensor)
                 {
-                        return;
+                        for (tensor_size_t i0 = 0, size0 = itensor.template size<0>(); i0 < size0; ++ i0)
+                        {
+                                integral_t<trank - 1>::get(itensor.tensor(i0), otensor.tensor(i0));
+                                if (i0 > 0)
+                                {
+                                        otensor.vector(i0) += otensor.vector(i0 - 1);
+                                }
+                        }
                 }
+        };
 
-                const auto& dims = itensor.dims();
-
-                // todo: generic N-dimensional integral
-
-                if (dims.size() == 1)
+        template <>
+        struct integral_t<1>
+        {
+                template <typename tstoragei, typename tstorageo>
+                static void get(const tensor_t<tstoragei, 1>& itensor, tensor_t<tstorageo, 1>&& otensor)
                 {
                         otensor(0) = itensor(0);
                         for (tensor_size_t i0 = 1, size0 = itensor.template size<0>(); i0 < size0; ++ i0)
@@ -29,17 +36,15 @@ namespace nano
                                 otensor(i0) = otensor(i0 - 1) + itensor(i0);
                         }
                 }
-                /*else if (dims.size() == 2)
+        };
+
+        template <typename tstoragei, typename tstorageo, std::size_t trank>
+        void integral(const tensor_t<tstoragei, trank>& itensor, tensor_t<tstorageo, trank>& otensor)
+        {
+                assert(itensor.dims() == otensor.dims());
+                if (itensor.size() > 0)
                 {
-                        otensor(0) = itensor(0);
-                        for (tensor_size_t i0 = 1, size0 = itensor.template size<0>(); i0 < size0; ++ i0)
-                        {
-                                otensor(i0, 0) = otensor(i0 - 1, 0) + itensor(i0, 0);
-                                for (tensor_size_t i1 = 1, size1 = itensor.template size<0>(); i1 < size1; ++ i1)
-                                {
-                                        otensor(i0, i1) = otensor(i0 - 1, i1) + itensor(i0, i1);
-                                }
-                        }
-                }*/
+                        integral_t<trank>::get(itensor, std::move(otensor));
+                }
         }
 }
