@@ -2,7 +2,7 @@
 
 #include "loss.h"
 #include "task.h"
-#include "trainer_result.h"
+#include "trainer_state.h"
 
 namespace nano
 {
