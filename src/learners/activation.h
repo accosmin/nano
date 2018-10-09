@@ -21,8 +21,9 @@ namespace nano
         class activation_t : public json_configurable_t
         {
         public:
-                using array_t = decltype(tensor4d_map_t().array());
-                using carray_t = decltype(tensor4d_cmap_t().array());
+                using ctensor4d_t = const tensor4d_t;
+                using array_t = decltype(tensor4d_t().array());
+                using carray_t = decltype(ctensor4d_t().array());
 
                 ///
                 /// \brief non-parametric activation functions
@@ -33,7 +34,7 @@ namespace nano
                 ///
                 /// \brief compute the output
                 ///
-                void output(tensor4d_cmap_t idata, tensor4d_map_t odata) const
+                void output(const tensor4d_t& idata, tensor4d_t& odata) const
                 {
                         assert(idata.dims() == odata.dims());
                         output(idata.array(), odata.array());
@@ -42,7 +43,7 @@ namespace nano
                 ///
                 /// \brief compute the gradient wrt the input
                 ///
-                void ginput(tensor4d_map_t idata, tensor4d_cmap_t odata) const
+                void ginput(tensor4d_t& idata, const tensor4d_t& odata) const
                 {
                         assert(idata.dims() == odata.dims());
                         ginput(idata.array(), odata.array());
