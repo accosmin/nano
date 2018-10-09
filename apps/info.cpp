@@ -6,6 +6,7 @@
 #include "trainer.h"
 #include "core/table.h"
 #include "core/cmdline.h"
+#include "learners/activation.h"
 #include <iostream>
 
 using namespace nano;
@@ -37,6 +38,7 @@ int main(int argc, const char* argv[])
         cmdline.add("", "layer",                "layers to built models");
         cmdline.add("", "solver",               "numerical optimization algorithms");
         cmdline.add("", "trainer",              "training methods");
+        cmdline.add("", "activation",           "activation functions (for ANN models)");
         cmdline.add("", "version",              "library version");
         cmdline.add("", "git-hash",             "git commit hash");
         cmdline.add("", "system",               "system: all available information");
@@ -46,23 +48,25 @@ int main(int argc, const char* argv[])
 
         cmdline.process(argc, argv);
 
-        const bool has_loss = cmdline.has("loss");
-        const bool has_task = cmdline.has("task");
-        const bool has_layer = cmdline.has("layer");
-        const bool has_solver = cmdline.has("solver");
-        const bool has_trainer = cmdline.has("trainer");
-        const bool has_system = cmdline.has("system");
-        const bool has_sys_logical = cmdline.has("sys-logical-cpus");
-        const bool has_sys_physical = cmdline.has("sys-physical-cpus");
-        const bool has_sys_memsize = cmdline.has("sys-memsize");
-        const bool has_version = cmdline.has("version");
-        const bool has_git_hash = cmdline.has("git-hash");
+        const auto has_loss = cmdline.has("loss");
+        const auto has_task = cmdline.has("task");
+        const auto has_layer = cmdline.has("layer");
+        const auto has_solver = cmdline.has("solver");
+        const auto has_trainer = cmdline.has("trainer");
+        const auto has_activation = cmdline.has("activation");
+        const auto has_system = cmdline.has("system");
+        const auto has_sys_logical = cmdline.has("sys-logical-cpus");
+        const auto has_sys_physical = cmdline.has("sys-physical-cpus");
+        const auto has_sys_memsize = cmdline.has("sys-memsize");
+        const auto has_version = cmdline.has("version");
+        const auto has_git_hash = cmdline.has("git-hash");
 
         if (    !has_loss &&
                 !has_task &&
                 !has_layer &&
                 !has_trainer &&
                 !has_solver &&
+                !has_activation &&
                 !has_system &&
                 !has_sys_logical &&
                 !has_sys_physical &&
@@ -90,6 +94,10 @@ int main(int argc, const char* argv[])
         if (has_trainer)
         {
                 print("trainer", get_trainers());
+        }
+        if (has_activation)
+        {
+                print("activation", get_activations());
         }
         if (has_solver)
         {

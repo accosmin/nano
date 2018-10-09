@@ -2,6 +2,10 @@
 
 #include "loss.h"
 #include "task.h"
+#include "core/stats.h"
+#include "core/probe.h"
+#include "core/ibstream.h"
+#include "core/obstream.h"
 #include "trainer_state.h"
 
 namespace nano
@@ -18,6 +22,8 @@ namespace nano
         class NANO_PUBLIC learner_t
         {
         public:
+
+                virtual ~learner_t() noexcept = default;
 
                 ///
                 /// \brief train the learner on the given task and using the given loss.
