@@ -39,108 +39,20 @@ struct ginput_function_t final : public function_t
 
 NANO_BEGIN_MODULE(test_learner_activation)
 
-NANO_CASE(ginput_unit)
+NANO_CASE(ginput)
 {
-        const auto dims = make_dims(7, 6, 5, 4);
-        const auto activation = get_activations().get("unit");
-        NANO_REQUIRE(activation != nullptr);
+        for (const auto& id : get_activations().ids())
+        {
+                const auto dims = make_dims(7, 6, 5, 4);
+                const auto activation = get_activations().get(id);
+                NANO_REQUIRE(activation != nullptr);
 
-        const auto func = ginput_function_t(activation, dims);
-        NANO_CHECK_EQUAL(nano::size(dims), func.size());
+                const auto func = ginput_function_t(activation, dims);
+                NANO_CHECK_EQUAL(nano::size(dims), func.size());
 
-        const vector_t x = vector_t::Random(func.size());
-        NANO_CHECK_LESS(func.grad_accuracy(x), epsilon2<scalar_t>());
-}
-
-NANO_CASE(ginput_sin)
-{
-        const auto dims = make_dims(6, 5, 4, 3);
-        const auto activation = get_activations().get("sin");
-        NANO_REQUIRE(activation != nullptr);
-
-        const auto func = ginput_function_t(activation, dims);
-        NANO_CHECK_EQUAL(nano::size(dims), func.size());
-
-        const vector_t x = vector_t::Random(func.size());
-        NANO_CHECK_LESS(func.grad_accuracy(x), epsilon2<scalar_t>());
-}
-
-NANO_CASE(ginput_tanh)
-{
-        const auto dims = make_dims(5, 4, 3, 2);
-        const auto activation = get_activations().get("tanh");
-        NANO_REQUIRE(activation != nullptr);
-
-        const auto func = ginput_function_t(activation, dims);
-        NANO_CHECK_EQUAL(nano::size(dims), func.size());
-
-        const vector_t x = vector_t::Random(func.size());
-        NANO_CHECK_LESS(func.grad_accuracy(x), epsilon2<scalar_t>());
-}
-
-NANO_CASE(ginput_splus)
-{
-        const auto dims = make_dims(4, 3, 2, 1);
-        const auto activation = get_activations().get("splus");
-        NANO_REQUIRE(activation != nullptr);
-
-        const auto func = ginput_function_t(activation, dims);
-        NANO_CHECK_EQUAL(nano::size(dims), func.size());
-
-        const vector_t x = vector_t::Random(func.size());
-        NANO_CHECK_LESS(func.grad_accuracy(x), epsilon2<scalar_t>());
-}
-
-NANO_CASE(ginput_snorm)
-{
-        const auto dims = make_dims(1, 2, 3, 4);
-        const auto activation = get_activations().get("snorm");
-        NANO_REQUIRE(activation != nullptr);
-
-        const auto func = ginput_function_t(activation, dims);
-        NANO_CHECK_EQUAL(nano::size(dims), func.size());
-
-        const vector_t x = vector_t::Random(func.size());
-        NANO_CHECK_LESS(func.grad_accuracy(x), epsilon2<scalar_t>());
-}
-
-NANO_CASE(ginput_ssign)
-{
-        const auto dims = make_dims(2, 3, 4, 5);
-        const auto activation = get_activations().get("ssign");
-        NANO_REQUIRE(activation != nullptr);
-
-        const auto func = ginput_function_t(activation, dims);
-        NANO_CHECK_EQUAL(nano::size(dims), func.size());
-
-        const vector_t x = vector_t::Random(func.size());
-        NANO_CHECK_LESS(func.grad_accuracy(x), epsilon2<scalar_t>());
-}
-
-NANO_CASE(ginput_sigm)
-{
-        const auto dims = make_dims(3, 4, 5, 6);
-        const auto activation = get_activations().get("sigm");
-        NANO_REQUIRE(activation != nullptr);
-
-        const auto func = ginput_function_t(activation, dims);
-        NANO_CHECK_EQUAL(nano::size(dims), func.size());
-
-        const vector_t x = vector_t::Random(func.size());
-        NANO_CHECK_LESS(func.grad_accuracy(x), epsilon2<scalar_t>());
-}
-
-NANO_CASE(ginput_pwave)
-{
-        const auto dims = make_dims(1, 3, 5, 7);
-        const auto activation = get_activations().get("pwave");
-        NANO_REQUIRE(activation != nullptr);
-
-        const auto func = ginput_function_t(activation, dims);
-        NANO_CHECK_EQUAL(nano::size(dims), func.size());
-
-        const vector_t x = vector_t::Random(func.size());
-        NANO_CHECK_LESS(func.grad_accuracy(x), epsilon2<scalar_t>());
+                const vector_t x = vector_t::Random(func.size());
+                NANO_CHECK_LESS(func.grad_accuracy(x), epsilon2<scalar_t>());
+        }
 }
 
 NANO_END_MODULE()
