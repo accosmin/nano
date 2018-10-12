@@ -1,6 +1,5 @@
 #pragma once
 
-#include <vector>
 #include "stats.h"
 #include "measure.h"
 
@@ -12,8 +11,6 @@ namespace nano
         class probe_t
         {
         public:
-
-                using timings_t = stats_t<int64_t>;
 
                 probe_t(const std::string& basename = std::string(),
                         const std::string& fullname = std::string(),
@@ -41,7 +38,7 @@ namespace nano
 
                 auto flops() const { return m_flops; }
                 auto kflops() const { return m_flops / 1024; }
-                auto gflops() const { return nano::gflops(flops(), nanoseconds_t(timings().min())); }
+                auto gflops() const { return nano::gflops(flops(), nanoseconds_t(static_cast<int64_t>(timings().min()))); }
 
         private:
 
@@ -49,7 +46,7 @@ namespace nano
                 std::string     m_basename;             ///<
                 std::string     m_fullname;             ///<
                 int64_t         m_flops;                ///< number of floating point operations per call
-                timings_t       m_timings;              ///< time measurements
+                stats_t         m_timings;              ///< time measurements
         };
 
         using probes_t = std::vector<probe_t>;

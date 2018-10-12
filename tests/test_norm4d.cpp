@@ -8,7 +8,7 @@ using namespace nano;
 template <typename ttensor>
 static auto get_stats(const ttensor& xdata)
 {
-        stats_t<scalar_t> stats;
+        stats_t stats;
         stats(xdata.data(), xdata.data() + xdata.size());
         return stats;
 }
@@ -76,8 +76,8 @@ NANO_CASE(globally)
                 const auto stats = get_stats(odata.tensor(x));
 
                 NANO_CHECK_EQUAL(stats.count(), static_cast<size_t>(xmaps * xrows * xcols));
-                NANO_CHECK_LESS(std::fabs(stats.avg() - scalar_t(0)), epsilon0<scalar_t>());
-                NANO_CHECK_LESS(std::fabs(stats.stdev() - scalar_t(1)), epsilon0<scalar_t>());
+                NANO_CHECK_LESS(std::fabs(static_cast<scalar_t>(stats.avg()) - scalar_t(0)), epsilon0<scalar_t>());
+                NANO_CHECK_LESS(std::fabs(static_cast<scalar_t>(stats.stdev()) - scalar_t(1)), epsilon0<scalar_t>());
         }
 }
 
@@ -116,8 +116,8 @@ NANO_CASE(by_plane)
                         const auto stats = get_stats(odata.matrix(x, i));
 
                         NANO_CHECK_EQUAL(stats.count(), static_cast<size_t>(xrows * xcols));
-                        NANO_CHECK_LESS(std::fabs(stats.avg() - scalar_t(0)), epsilon0<scalar_t>());
-                        NANO_CHECK_LESS(std::fabs(stats.stdev() - scalar_t(1)), epsilon0<scalar_t>());
+                        NANO_CHECK_LESS(std::fabs(static_cast<scalar_t>(stats.avg()) - scalar_t(0)), epsilon0<scalar_t>());
+                        NANO_CHECK_LESS(std::fabs(static_cast<scalar_t>(stats.stdev()) - scalar_t(1)), epsilon0<scalar_t>());
                 }
         }
 }

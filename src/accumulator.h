@@ -73,12 +73,12 @@ namespace nano
                 ///
                 /// \brief loss function values
                 ///
-                const stats_t<scalar_t>& vstats() const;
+                const stats_t& vstats() const;
 
                 ///
                 /// \brief error function values
                 ///
-                const stats_t<scalar_t>& estats() const;
+                const stats_t& estats() const;
 
                 ///
                 /// \brief number of parameters
@@ -91,8 +91,6 @@ namespace nano
                 probes_t probes() const;
 
         private:
-
-                using tstats_t = stats_t<scalar_t>;
 
                 ///
                 /// \break thread specific cache.
@@ -107,8 +105,8 @@ namespace nano
 
                         rmodel_t        m_model;        ///< model copy
                         vector_t        m_vgrad;        ///< gradient wrt parameters
-                        tstats_t        m_vstats;       ///< statistics for the loss value
-                        tstats_t        m_estats;       ///< statistics for the error function
+                        stats_t         m_vstats;       ///< statistics for the loss value
+                        stats_t         m_estats;       ///< statistics for the error function
                 };
 
                 void update(tcache_t&, const minibatch_t&);

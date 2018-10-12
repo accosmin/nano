@@ -8,7 +8,7 @@ NANO_BEGIN_MODULE(test_core_stats)
 
 NANO_CASE(fixed)
 {
-        stats_t<double> stats;
+        stats_t stats;
         stats(2, 4, 4, 4, 5, 5, 7, 9);
 
         NANO_CHECK_EQUAL(stats.count(), size_t(8));
@@ -18,17 +18,20 @@ NANO_CASE(fixed)
         NANO_CHECK_CLOSE(stats.sum2(), 232.0, 1e-16);
         NANO_CHECK_CLOSE(stats.var(), 4.0, 1e-16);
         NANO_CHECK_CLOSE(stats.stdev(), 2.0, 1e-16);
+        NANO_CHECK_CLOSE(stats.median(), 5.0, 1e-16);
+        NANO_CHECK_CLOSE(stats.percentile(10), 2.0, 1e-16);
+        NANO_CHECK_CLOSE(stats.percentile(90), 9.0, 1e-16);
 }
 
 NANO_CASE(merge)
 {
-        stats_t<double> stats1;
+        stats_t stats1;
         stats1(2, 4, 4);
 
-        stats_t<double> stats2;
+        stats_t stats2;
         stats2(4, 5, 5, 7, 9);
 
-        stats_t<double> stats;
+        stats_t stats;
         stats(stats1);
         stats(stats2);
 
@@ -39,6 +42,9 @@ NANO_CASE(merge)
         NANO_CHECK_CLOSE(stats.sum2(), 232.0, 1e-16);
         NANO_CHECK_CLOSE(stats.var(), 4.0, 1e-16);
         NANO_CHECK_CLOSE(stats.stdev(), 2.0, 1e-16);
+        NANO_CHECK_CLOSE(stats.median(), 5.0, 1e-16);
+        NANO_CHECK_CLOSE(stats.percentile(10), 2.0, 1e-16);
+        NANO_CHECK_CLOSE(stats.percentile(90), 9.0, 1e-16);
 }
 
 NANO_CASE(random)
@@ -64,7 +70,7 @@ NANO_CASE(random)
         const auto sum2 = std::accumulate(values.begin(), values.end(), 0.0,
                 [] (const auto acc, const auto val) { return acc + val * val; });
 
-        stats_t<double> stats;
+        stats_t stats;
         stats(values.begin(), values.end());
 
         NANO_CHECK_EQUAL(stats.count(), count);

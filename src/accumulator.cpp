@@ -129,12 +129,12 @@ const accumulator_t::tcache_t& accumulator_t::origin() const
         return *m_tcaches.cbegin();
 }
 
-const stats_t<scalar_t>& accumulator_t::vstats() const
+const stats_t& accumulator_t::vstats() const
 {
         return origin().m_vstats;
 }
 
-const stats_t<scalar_t>& accumulator_t::estats() const
+const stats_t& accumulator_t::estats() const
 {
         return origin().m_estats;
 }

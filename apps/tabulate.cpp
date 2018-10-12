@@ -8,9 +8,9 @@
 
 using namespace nano;
 
-static stats_t<double> get_stats(const table_t& table, const size_t col)
+static stats_t get_stats(const table_t& table, const size_t col)
 {
-        stats_t<double> stats;
+        stats_t stats;
         for (size_t row = 0; row < table.rows(); ++ row)
         {
                 try

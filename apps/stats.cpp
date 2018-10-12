@@ -17,7 +17,7 @@ int main(int argc, const char* argv[])
         {
                 int precision = 6;
 
-                stats_t<double> stats;
+                stats_t stats;
                 for (int i = 1; i < argc; ++ i)
                 {
                         if (std::string(argv[i]) == "-p" && i + 1 < argc)

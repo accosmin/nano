@@ -2,42 +2,42 @@
 
 #include <cmath>
 #include <limits>
+#include <vector>
 #include <cassert>
+#include <numeric>
 #include <ostream>
 #include <algorithm>
 
 namespace nano
 {
         ///
-        /// \brief computes statistics: average, standard deviation etc.
+        /// \brief collects numerical values and computes statistics like:
+        ///     - average, standard deviation
+        ///     - minimum and maximum values
+        ///     - median, percentile etc.
         ///
-        template <typename tscalar = long double>
         class stats_t
         {
         public:
-                using tstorage = long double;
+
+                using value_t = double;
+                using values_t = std::vector<value_t>;
 
                 ///
                 /// \brief constructor
                 ///
-                stats_t()
-                {
-                        clear();
-                }
+                stats_t() = default;
 
                 ///
                 /// \brief update statistics with new values
                 ///
+                template <typename tscalar>
                 void operator()(const tscalar value)
                 {
-                        m_avg1 += (value - m_avg1) / (m_count + 1);
-                        m_avg2 += (value * value - m_avg2) / (m_count + 1);
-                        m_min = std::min(m_min, value);
-                        m_max = std::max(m_max, value);
-                        m_count ++;
+                        m_values.push_back(static_cast<value_t>(value));
                 }
 
-                template <typename... tscalars>
+                template <typename tscalar, typename... tscalars>
                 void operator()(const tscalar value, const tscalars... values)
                 {
                         operator()(value);
@@ -49,11 +49,7 @@ namespace nano
                 ///
                 void operator()(const stats_t& other)
                 {
-                        m_avg1 = (m_avg1 * m_count + other.m_avg1 * other.m_count) / (m_count + other.m_count);
-                        m_avg2 = (m_avg2 * m_count + other.m_avg2 * other.m_count) / (m_count + other.m_count);
-                        m_count += other.m_count;
-                        m_min = std::min(m_min, other.m_min);
-                        m_max = std::max(m_max, other.m_max);
+                        m_values.insert(m_values.end(), other.m_values.begin(), other.m_values.end());
                 }
 
                 ///
@@ -73,58 +69,111 @@ namespace nano
                 ///
                 void clear()
                 {
-                        m_count = 0;
-                        m_avg1 = 0;
-                        m_avg2 = 0;
-                        m_min = std::numeric_limits<tscalar>::max();
-                        m_max = std::numeric_limits<tscalar>::lowest();
+                        m_values.clear();
                 }
 
                 ///
-                /// \brief returns average
+                /// \brief returns the number of values
                 ///
-                tscalar avg() const
+                auto count() const
+                {
+                        return m_values.size();
+                }
+
+                ///
+                /// \brief returns the minimum
+                ///
+                auto min() const
+                {
+                        assert(!m_values.empty());
+                        return *std::min_element(m_values.begin(), m_values.end());
+                }
+
+                ///
+                /// \brief returns the maximum
+                ///
+                auto max() const
+                {
+                        assert(!m_values.empty());
+                        return *std::max_element(m_values.begin(), m_values.end());
+                }
+
+                ///
+                /// \brief returns the sum
+                ///
+                auto sum1() const
+                {
+                        return  std::accumulate(m_values.begin(), m_values.end(), value_t(0),
+                                [] (const auto s, const auto v) { return s + v; });
+                }
+
+                ///
+                /// \brief returns the sum of squares
+                ///
+                auto sum2() const
+                {
+                        return  std::accumulate(m_values.begin(), m_values.end(), value_t(0),
+                                [] (const auto s, const auto v) { return s + v * v; });
+                }
+
+                ///
+                /// \brief returns the average
+                ///
+                auto avg() const
                 {
                         assert(count() > 0);
-                        return static_cast<tscalar>(m_avg1);
+                        return sum1() / static_cast<value_t>(count());
                 }
 
                 ///
-                /// \brief return variance
+                /// \brief returns the variance
                 ///
-                tscalar var() const
+                auto var() const
                 {
                         assert(count() > 0);
-                        return std::max(static_cast<tscalar>(m_avg2 - m_avg1 * m_avg1), tscalar(0));
+                        return sum2() / static_cast<value_t>(count()) - avg() * avg();
                 }
 
                 ///
-                /// \brief returns population standard deviation
+                /// \brief returns the population standard deviation
                 ///
-                tscalar stdev() const
+                auto stdev() const
                 {
                         return std::sqrt(var());
                 }
 
-                // access functions
-                operator bool() const { return count() > 1; }
+                ///
+                /// \brief returns the percentile
+                ///
+                auto percentile(const size_t percentage)
+                {
+                        assert(count() > 0);
+                        assert(percentage > 0 && percentage < 100);
+                        const auto pos = m_values.size() * percentage / 100;
+                        std::nth_element(m_values.begin(), m_values.begin() + pos, m_values.end());
+                        return m_values[pos];
+                }
 
-                std::size_t count() const { return m_count; }
-                tscalar min() const { return m_min; }
-                tscalar max() const { return m_max; }
-                tscalar sum1() const { return static_cast<tscalar>(m_avg1 * m_count); }
-                tscalar sum2() const { return static_cast<tscalar>(m_avg2 * m_count); }
+                ///
+                /// \brief returns the median
+                ///
+                auto median()
+                {
+                        return percentile(50);
+                }
+
+                ///
+                /// \brief check if valid (enough values collected)
+                ///
+                operator bool() const { return count() > 1; }
 
         private:
 
                 // attributes
-                std::size_t     m_count{0};
-                tstorage        m_avg1{0}, m_avg2{0};
-                tscalar         m_min, m_max;
+                values_t        m_values;       ///< store all values
         };
 
-        template <typename tscalar>
-        std::ostream& operator<<(std::ostream& os, const stats_t<tscalar>& stats)
+        inline std::ostream& operator<<(std::ostream& os, const stats_t& stats)
         {
                 return  !stats ?
                         os :

@@ -87,7 +87,7 @@ scalar_t trainer_result_t::convergence_speed() const
                 return std::isfinite(ret) ? nano::clamp(ret, scalar_t(0), scalar_t(1)) : scalar_t(1);
         };
 
-        nano::stats_t<scalar_t> speeds;
+        nano::stats_t speeds;
         for (size_t i = 0; i + 1 < m_history.size(); ++ i)
         {
                 speeds(op(m_history[i], m_history[i + 1]));

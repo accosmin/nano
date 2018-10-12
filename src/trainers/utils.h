@@ -7,7 +7,11 @@ namespace nano
 {
         inline trainer_measurement_t measure(const accumulator_t& acc)
         {
-                return {acc.vstats().avg(), acc.estats().avg()};
+                return
+                {
+                        static_cast<scalar_t>(acc.vstats().avg()),
+                        static_cast<scalar_t>(acc.estats().avg())
+                };
         }
 
         inline trainer_measurement_t measure(const vector_t& params, const task_t& task, const fold_t& fold, accumulator_t& acc)

@@ -35,8 +35,8 @@ namespace nano
                 /// \brief
                 ///
                 virtual tensor4d_t predict(const tensor4d_t& input) const = 0;
-                virtual stats_t<scalar_t> error(const task_t&, const size_t fold, const loss_t&) const;
-                virtual stats_t<scalar_t> value(const task_t&, const size_t fold, const loss_t&) const;
+                virtual stats_t error(const task_t&, const size_t fold, const loss_t&) const;
+                virtual stats_t value(const task_t&, const size_t fold, const loss_t&) const;
 
                 ///
                 /// \brief serialize a learner to disk

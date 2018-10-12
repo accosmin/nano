@@ -23,13 +23,13 @@ struct solver_stat_t
                 m_gcalls(static_cast<scalar_t>(state.m_gcalls));
         }
 
-        stats_t<scalar_t> m_crits;      ///< convergence criteria
-        stats_t<scalar_t> m_fails;      ///< #convergence failures
-        stats_t<scalar_t> m_iters;      ///< #optimization iterations
-        stats_t<scalar_t> m_errors;     ///< #internal errors (e.g. line-search failed)
-        stats_t<scalar_t> m_maxits;     ///< #maximum iterations reached
-        stats_t<scalar_t> m_fcalls;     ///< #function value calls
-        stats_t<scalar_t> m_gcalls;     ///< #gradient calls
+        stats_t         m_crits;      ///< convergence criteria
+        stats_t         m_fails;      ///< #convergence failures
+        stats_t         m_iters;      ///< #optimization iterations
+        stats_t         m_errors;     ///< #internal errors (e.g. line-search failed)
+        stats_t         m_maxits;     ///< #maximum iterations reached
+        stats_t         m_fcalls;     ///< #function value calls
+        stats_t         m_gcalls;     ///< #gradient calls
 };
 
 using solver_config_stats_t = std::map<
