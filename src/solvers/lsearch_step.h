@@ -1,6 +1,6 @@
 #pragma once
 
-#include "solver_state.h"
+#include "state.h"
 
 namespace nano
 {

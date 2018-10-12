@@ -2,7 +2,7 @@
 
 #include "core/tuner.h"
 #include "core/factory.h"
-#include "solver_state.h"
+#include "solvers/state.h"
 
 namespace nano
 {
