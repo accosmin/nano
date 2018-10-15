@@ -19,24 +19,21 @@ namespace nano
         ///
         /// \brief machine learning model.
         ///
-        class NANO_PUBLIC learner_t
+        class NANO_PUBLIC learner_t : public json_configurable_t
         {
         public:
 
-                virtual ~learner_t() noexcept = default;
-
                 ///
                 /// \brief train the learner on the given task and using the given loss.
-                ///     the training configuration is provided as json.
                 ///
-                virtual trainer_result_t train(const task_t&, const size_t fold, const loss_t&, const json_t&) const = 0;
+                virtual trainer_result_t train(const task_t&, const size_t fold, const loss_t&) const = 0;
 
                 ///
-                /// \brief
+                /// \brief compute the predictions for a set of inputs.
                 ///
-                virtual tensor4d_t predict(const tensor4d_t& input) const = 0;
-                virtual stats_t error(const task_t&, const size_t fold, const loss_t&) const;
-                virtual stats_t value(const task_t&, const size_t fold, const loss_t&) const;
+                virtual tensor4d_t output(const tensor4d_t& input) const = 0;
+                stats_t error(const task_t&, const size_t fold, const loss_t&) const;
+                stats_t value(const task_t&, const size_t fold, const loss_t&) const;
 
                 ///
                 /// \brief serialize a learner to disk
@@ -56,19 +53,10 @@ namespace nano
                 virtual tensor3d_dim_t idims() const = 0;
                 virtual tensor3d_dim_t odims() const = 0;
 
-                tensor_size_t isize() const { return nano::size(idims()); }
-                tensor_size_t osize() const { return nano::size(odims()); }
-
                 ///
                 /// \brief retrieve timing information for all components
                 ///
                 virtual probes_t probes() const = 0;
-
-        private:
-
-                // attributes
-                tensor3d_dim_t  m_idims{{0, 0, 0}};     ///< input dimensions
-                tensor3d_dim_t  m_odims{{0, 0, 0}};     ///< output dimensions
         };
 
         ///
