@@ -11,7 +11,7 @@
 namespace nano
 {
         class learner_t;
-        using learner_factory_t = factory_t<loss_t>;
+        using learner_factory_t = factory_t<learner_t>;
         using rlearner_t = learner_factory_t::trobject;
 
         NANO_PUBLIC learner_factory_t& get_learners();
@@ -38,7 +38,7 @@ namespace nano
                 ///
                 /// \brief serialize a learner to disk
                 ///
-                static bool save(const string_t& path, const rlearner_t&);
+                static bool save(const string_t& path, const string_t& id, const rlearner_t&);
                 static rlearner_t load(const string_t& path);
 
                 ///
