@@ -2,12 +2,20 @@
 
 using namespace nano;
 
-void gboost_stump_t::to_json(json_t&) const
+void gboost_stump_t::to_json(json_t& json) const
 {
+        nano::to_json(json,
+                "rounds", m_rounds,
+                "stump", m_stype, "stumps", join(enum_values<stump>()),
+                "regularization", m_rtype, "regularizations", join(enum_values<regularization>()));
 }
 
-void gboost_stump_t::from_json(const json_t&)
+void gboost_stump_t::from_json(const json_t& json)
 {
+        nano::from_json(json,
+                "rounds", m_rounds,
+                "stump", m_stype,
+                "regularization", m_rtype);
 }
 
 trainer_result_t gboost_stump_t::train(const task_t&, const size_t, const loss_t&)

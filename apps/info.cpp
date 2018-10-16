@@ -4,6 +4,7 @@
 #include "solver.h"
 #include "version.h"
 #include "trainer.h"
+#include "learner.h"
 #include "core/table.h"
 #include "core/cmdline.h"
 #include "learners/activation.h"
@@ -39,6 +40,7 @@ int main(int argc, const char* argv[])
         cmdline.add("", "solver",               "numerical optimization algorithms");
         cmdline.add("", "trainer",              "training methods");
         cmdline.add("", "activation",           "activation functions (for ANN models)");
+        cmdline.add("", "learner",              "machine learning models");
         cmdline.add("", "version",              "library version");
         cmdline.add("", "git-hash",             "git commit hash");
         cmdline.add("", "system",               "system: all available information");
@@ -54,6 +56,7 @@ int main(int argc, const char* argv[])
         const auto has_solver = cmdline.has("solver");
         const auto has_trainer = cmdline.has("trainer");
         const auto has_activation = cmdline.has("activation");
+        const auto has_learner = cmdline.has("learner");
         const auto has_system = cmdline.has("system");
         const auto has_sys_logical = cmdline.has("sys-logical-cpus");
         const auto has_sys_physical = cmdline.has("sys-physical-cpus");
@@ -67,6 +70,7 @@ int main(int argc, const char* argv[])
                 !has_trainer &&
                 !has_solver &&
                 !has_activation &&
+                !has_learner &&
                 !has_system &&
                 !has_sys_logical &&
                 !has_sys_physical &&
@@ -98,6 +102,10 @@ int main(int argc, const char* argv[])
         if (has_activation)
         {
                 print("activation", get_activations());
+        }
+        if (has_learner)
+        {
+                print("learner", get_learners());
         }
         if (has_solver)
         {
