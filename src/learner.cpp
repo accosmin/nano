@@ -1,5 +1,8 @@
+#include <mutex>
 #include "learner.h"
 #include "core/logger.h"
+#include "core/ibstream.h"
+#include "core/obstream.h"
 #include "learners/gboost_stump.h"
 
 using namespace nano;
@@ -21,7 +24,7 @@ rlearner_t learner_t::load(const string_t& path)
         log_info() << "loading learner id [" << id << "]...";
 
         auto learner = get_learners().get(id);
-        return (learner && learner->load(stream)) ? learner : rlearner_t();
+        return (learner && learner->load(stream)) ? std::move(learner) : rlearner_t();
 }
 
 learner_factory_t& nano::get_learners()

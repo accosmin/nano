@@ -31,7 +31,7 @@ namespace nano
                 void to_json(json_t&) const override;
                 void from_json(const json_t&) override;
 
-                trainer_result_t train(const task_t&, const size_t fold, const loss_t&) const override;
+                trainer_result_t train(const task_t&, const size_t fold, const loss_t&) override;
 
                 tensor4d_t output(const tensor4d_t& input) const override;
 
