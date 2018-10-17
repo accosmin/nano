@@ -25,7 +25,6 @@ make_test(test_solvers.cpp nano)
 make_test(test_functions.cpp nano)
 
 make_test(test_loss.cpp nano)
-make_test(test_iterator.cpp nano)
 
 make_test(test_task_svhn.cpp nano)
 make_test(test_task_iris.cpp nano)
