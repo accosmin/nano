@@ -11,25 +11,29 @@ using namespace nano;
 namespace
 {
         template <typename tvector>
-        void op(const size_t begin, const size_t end, tvector& vector)
+        void op(const size_t i, tvector& vector)
         {
-                for (auto i = begin; i < end; ++ i)
-                {
-                        const auto x = static_cast<double>(i);
-                        vector[i] = std::sin(x) + std::cos(x);
-                }
+                const auto x = static_cast<double>(i);
+                vector[i] = std::sin(x) + std::cos(x);
         }
 
         template <typename tvector>
         void st_op(tvector& vector)
         {
-                op(size_t(0), vector.size(), vector);
+                for (size_t i = 0; i < vector.size(); ++ i)
+                {
+                        op(i, vector);
+                }
+                (void)vector;
         }
 
         template <typename tvector>
-        void mt_op(const size_t chunk, tvector& vector)
+        void mt_op(tvector& vector)
         {
-                nano::loopi(vector.size(), chunk, [&] (const auto begin, const auto end) { op(begin, end, vector); });
+                nano::loopi(vector.size(), [&] (const size_t i)
+                {
+                        op(i, vector);
+                });
                 (void)vector;
         }
 }
@@ -47,16 +51,10 @@ int main(int argc, const char *argv[])
         const auto kilo = size_t(1024);
         const auto cmd_min_size = clamp(kilo * cmdline.get<size_t>("min-size"), kilo, 1024 * kilo);
         const auto cmd_max_size = clamp(kilo * cmdline.get<size_t>("max-size"), cmd_min_size, 1024 * 1024 * kilo);
-        const auto cmd_min_chunk = size_t(1);
-        const auto cmd_max_chunk = size_t(1024);
 
         table_t table;
         auto& header = table.header();
-        header << "function" << "st";
-        for (size_t chunk = cmd_min_chunk; chunk <= cmd_max_chunk; chunk *= 2)
-        {
-                header << ("mtc" + nano::to_string(chunk));
-        }
+        header << "function" << "st" << "mt";
         table.delim();
 
         // benchmark for different problem sizes and number of active workers
@@ -69,21 +67,18 @@ int main(int argc, const char *argv[])
                 const auto delta0 = measure<nanoseconds_t>([&] { st_op(vector0); }, 16);
                 row << precision(2) << (static_cast<double>(delta0.count()) / static_cast<double>(delta0.count()));
 
-                for (size_t chunk = cmd_min_chunk; chunk <= cmd_max_chunk; chunk *= 2)
+                std::vector<double> vectorX(size);
+                const auto deltaX = measure<nanoseconds_t>([&] { mt_op(vectorX); }, 16);
+
+                row << precision(2) << (static_cast<double>(delta0.count()) / static_cast<double>(deltaX.count()));
+
+                for (size_t i = 0; i < size; ++ i)
                 {
-                        std::vector<double> vectorX(size);
-                        const auto deltaX = measure<nanoseconds_t>([&] { mt_op(chunk, vectorX); }, 16);
-
-                        row << precision(2) << (static_cast<double>(delta0.count()) / static_cast<double>(deltaX.count()));
-
-                        for (size_t i = 0; i < size; ++ i)
+                        if (std::fabs(vector0[i] - vectorX[i]) > 1e-16)
                         {
-                                if (std::fabs(vector0[i] - vectorX[i]) > 1e-16)
-                                {
-                                        std::cerr << "mis-matching vector (i=" << i
-                                                << ",delta=" << std::fabs(vector0[i] - vectorX[i]) << ")!" << std::endl;
-                                        return EXIT_FAILURE;
-                                }
+                                std::cerr << "mis-matching vector (i=" << i
+                                        << ",delta=" << std::fabs(vector0[i] - vectorX[i]) << ")!" << std::endl;
+                                return EXIT_FAILURE;
                         }
                 }
         }

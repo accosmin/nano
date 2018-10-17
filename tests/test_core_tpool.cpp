@@ -22,19 +22,14 @@ namespace
 
         // multi-threaded
         template <typename tscalar, typename toperator>
-        tscalar test_mt(const size_t size, const size_t chunk, const toperator op)
+        tscalar test_mt(const size_t size, const toperator op)
         {
                 std::vector<tscalar> results(size);
-                nano::loopi(size, chunk, [&results = results, size = size, op = op] (const size_t begin, const size_t end)
+                nano::loopi(size, [&results = results, size = size, op = op] (const size_t i)
                 {
-                        assert(begin < end);
-                        assert(0u <= begin);
-                        assert(end <= size);
+                        assert(i < size);
                         NANO_UNUSED1_RELEASE(size);
-                        for (size_t i = begin; i < end; ++ i)
-                        {
-                                results[i] = op(i);
-                        }
+                        results[i] = op(i);
                 });
 
                 return std::accumulate(results.begin(), results.end(), tscalar(0));
@@ -109,14 +104,9 @@ NANO_CASE(evaluate)
         // test for different problems size
         for (size_t size = min_size; size <= max_size; size *= 3)
         {
-                // single-threaded
                 const auto st = test_st<scalar_t>(size, op);
-
-                for (size_t chunk = 1; chunk < 8; ++ chunk)
-                {
-                        const auto mt = test_mt<scalar_t>(size, chunk, op);
-                        NANO_CHECK_CLOSE(st, mt, nano::epsilon1<scalar_t>());
-                }
+                const auto mt = test_mt<scalar_t>(size, op);
+                NANO_CHECK_CLOSE(st, mt, nano::epsilon1<scalar_t>());
         }
 }
 
