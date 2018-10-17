@@ -5,6 +5,18 @@
 namespace nano
 {
         ///
+        /// \brief stump is a weak learner that compares the value of a selected feature with a threshold:
+        ///     stump(x) = outputs(0) if x(feature) < threshold else v1(0)
+        ///
+        struct stump_t
+        {
+                // attributes
+                tensor_size_t   m_feature{0};   ///< index of the selected feature
+                scalar_t        m_threshold{0}; ///< threshold
+                tensor4d_t      m_outputs;      ///< (2, #outputs) - predictions below and above the threshold
+        };
+
+        ///
         /// \brief Gradient Boosting with stumps as weak learners.
         ///     todo: add citations
         ///
@@ -45,12 +57,15 @@ namespace nano
 
         private:
 
+                using stumps_t = std::vector<stump_t>;
+
                 // attributes
                 tensor3d_dim_t  m_idims{0, 0, 0};                       ///< input dimensions
                 tensor3d_dim_t  m_odims{0, 0, 0};                       ///< output dimensions
                 int             m_rounds{0};                            ///< training: number of boosting rounds
                 stump           m_stype{stump::discrete};               ///< training:
                 regularization  m_rtype{regularization::adaptive};      ///< training:
+                stumps_t        m_stumps;                               ///< trained stumps
         };
 
         template <>
