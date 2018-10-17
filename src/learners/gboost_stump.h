@@ -63,8 +63,8 @@ namespace nano
                 using stumps_t = std::vector<stump_t>;
 
                 // attributes
-                tensor3d_dim_t  m_idims{0, 0, 0};                       ///< input dimensions
-                tensor3d_dim_t  m_odims{0, 0, 0};                       ///< output dimensions
+                tensor3d_dim_t  m_idims{{0, 0, 0}};                     ///< input dimensions
+                tensor3d_dim_t  m_odims{{0, 0, 0}};                     ///< output dimensions
                 int             m_rounds{0};                            ///< training: number of boosting rounds
                 stump           m_stype{stump::discrete};               ///< training:
                 regularization  m_rtype{regularization::adaptive};      ///< training:
