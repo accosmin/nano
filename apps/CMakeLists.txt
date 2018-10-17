@@ -11,9 +11,6 @@ make_app(tabulate.cpp nano)
 
 make_app(bench_eigen.cpp nano)
 make_app(bench_tpool.cpp nano)
-make_app(bench_model.cpp nano)
-make_app(bench_conv3d.cpp nano)
-make_app(bench_affine.cpp nano)
 make_app(bench_solvers.cpp nano)
 make_app(bench_functions.cpp nano)
 

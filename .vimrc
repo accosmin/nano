@@ -40,12 +40,10 @@ highlight Search cterm=NONE ctermfg=NONE ctermbg=darkgray
 set path+=src
 set path+=src/core
 set path+=src/tasks
-set path+=src/layers
 set path+=src/losses
-set path+=src/models
 set path+=src/tensor
 set path+=src/solvers
-set path+=src/trainers
+set path+=src/learners
 set path+=src/functions
 set path+=apps
 set path+=tests

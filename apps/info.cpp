@@ -1,13 +1,9 @@
 #include "loss.h"
-#include "layer.h"
-#include "model.h"
 #include "solver.h"
 #include "version.h"
-#include "trainer.h"
 #include "learner.h"
 #include "core/table.h"
 #include "core/cmdline.h"
-#include "learners/activation.h"
 #include <iostream>
 
 using namespace nano;
@@ -35,11 +31,8 @@ int main(int argc, const char* argv[])
         // parse the command line
         cmdline_t cmdline("display the registered objects");
         cmdline.add("", "loss",                 "loss functions");
-        cmdline.add("", "task",                 "tasks");
-        cmdline.add("", "layer",                "layers to built models");
+        cmdline.add("", "task",                 "machine learning tasks");
         cmdline.add("", "solver",               "numerical optimization algorithms");
-        cmdline.add("", "trainer",              "training methods");
-        cmdline.add("", "activation",           "activation functions (for ANN models)");
         cmdline.add("", "learner",              "machine learning models");
         cmdline.add("", "version",              "library version");
         cmdline.add("", "git-hash",             "git commit hash");
@@ -52,10 +45,7 @@ int main(int argc, const char* argv[])
 
         const auto has_loss = cmdline.has("loss");
         const auto has_task = cmdline.has("task");
-        const auto has_layer = cmdline.has("layer");
         const auto has_solver = cmdline.has("solver");
-        const auto has_trainer = cmdline.has("trainer");
-        const auto has_activation = cmdline.has("activation");
         const auto has_learner = cmdline.has("learner");
         const auto has_system = cmdline.has("system");
         const auto has_sys_logical = cmdline.has("sys-logical-cpus");
@@ -66,10 +56,7 @@ int main(int argc, const char* argv[])
 
         if (    !has_loss &&
                 !has_task &&
-                !has_layer &&
-                !has_trainer &&
                 !has_solver &&
-                !has_activation &&
                 !has_learner &&
                 !has_system &&
                 !has_sys_logical &&
@@ -91,25 +78,13 @@ int main(int argc, const char* argv[])
         {
                 print("task", get_tasks());
         }
-        if (has_layer)
+        if (has_solver)
         {
-                print("layer", get_layers());
-        }
-        if (has_trainer)
-        {
-                print("trainer", get_trainers());
-        }
-        if (has_activation)
-        {
-                print("activation", get_activations());
+                print("solver", get_solvers());
         }
         if (has_learner)
         {
                 print("learner", get_learners());
-        }
-        if (has_solver)
-        {
-                print("solvers", get_solvers());
         }
         if (has_system || has_sys_physical)
         {

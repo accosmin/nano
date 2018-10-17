@@ -19,22 +19,13 @@ make_test(test_core_cmdline.cpp nano)
 make_test(test_tensor_tensor.cpp "")
 make_test(test_tensor_integral.cpp "")
 
-make_test(test_learner_activation.cpp nano)
+# todo: add unit tests for learners
 
 make_test(test_solvers.cpp nano)
 make_test(test_functions.cpp nano)
 
-make_test(test_accumulator.cpp nano)
-make_test(test_layers.cpp nano)
 make_test(test_loss.cpp nano)
-make_test(test_model.cpp nano)
-make_test(test_trainer.cpp nano)
-make_test(test_affine.cpp nano)
-make_test(test_conv4d.cpp nano)
-make_test(test_norm4d.cpp nano)
-make_test(test_builder.cpp nano)
 make_test(test_iterator.cpp nano)
-make_test(test_trainer_affine.cpp nano)
 
 make_test(test_task_svhn.cpp nano)
 make_test(test_task_iris.cpp nano)
