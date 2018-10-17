@@ -16,6 +16,9 @@ namespace nano
                 tensor4d_t      m_outputs;      ///< (2, #outputs) - predictions below and above the threshold
         };
 
+        // todo: generalize stump_t to use other features (e.g. Haar, HoG)
+        // todo: implement different shrinkage methods: geometric or arithmetic decay (a single factor to tune)
+
         ///
         /// \brief Gradient Boosting with stumps as weak learners.
         ///     todo: add citations

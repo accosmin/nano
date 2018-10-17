@@ -1,5 +1,5 @@
+#include "learner.h"
 #include "core/io.h"
-#include "accumulator.h"
 #include "core/cmdline.h"
 #include "core/checkpoint.h"
 #include <iomanip>
@@ -17,25 +17,25 @@ static bool load_json(const string_t& path, json_t& json)
 static bool load_json(const string_t& path, json_t& json, string_t& id)
 {
         return  load_json(path, json) &&
-                from_json(json, "type", id);
+                from_json(json, "id", id);
 }
 
 int main(int argc, const char *argv[])
 {
         // parse the command line
         cmdline_t cmdline("evaluate a model");
-        cmdline.add("", "task",         join(get_tasks().ids()) + " (.json)");
+        cmdline.add("", "task",         "task configuration (.json)");
         cmdline.add("", "fold",         "fold index to use for evaluation", "0");
-        cmdline.add("", "loss",         join(get_losses().ids()) + " (.json)");
-        cmdline.add("", "model",        "path to the trained model (.model)");
+        cmdline.add("", "loss",         "loss configuration (.json)");
+        cmdline.add("", "learner",      "path to the trained model (.model)");
 
         cmdline.process(argc, argv);
 
         // check arguments and options
         const auto cmd_task = cmdline.get<string_t>("task");
         const auto cmd_fold = cmdline.get<size_t>("fold");
-        const auto cmd_model = cmdline.get<string_t>("model");
         const auto cmd_loss = cmdline.get<string_t>("loss");
+        const auto cmd_learner = cmdline.get<string_t>("learner");
 
         checkpoint_t checkpoint;
         json_t json;
@@ -63,30 +63,24 @@ int main(int argc, const char *argv[])
         checkpoint.step(strcat("search loss <", id, ">"));
         checkpoint.critical((loss = get_losses().get(id)) != nullptr);
 
-        // load model
-        checkpoint.step(strcat("load model from <", cmd_model, ">"));
+        // load learner
+        checkpoint.step(strcat("load learner from <", cmd_learner, ">"));
 
-        model_t model;
-        checkpoint.critical(model.load(cmd_model));
+        rlearner_t learner;
+        checkpoint.critical((learner = learner_t::load(cmd_learner)) != nullptr);
+        checkpoint.critical(*learner == *task);
 
-        model.random();
-        model.describe();
-        if (model != *task)
-        {
-                log_error() << "model not compatible with the task!";
-                return EXIT_FAILURE;
-        }
+        // test the learner
+        checkpoint.step("evaluate learner");
 
-        // test model
-        accumulator_t acc(model, *loss);
-        acc.mode(accumulator_t::type::value);
-
-        checkpoint.step("evaluate model");
+        // todo: finish this part
+        /*
         acc.update(*task, fold_t{cmd_fold, protocol::test});
         checkpoint.measure();
 
         log_info() << std::fixed << std::setprecision(3)
                 << "test=" << acc.vstats().avg() << "|" << acc.estats().avg() << "+/-" << acc.estats().var() << ".";
+        */
 
         // OK
         log_info() << done;

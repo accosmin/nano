@@ -289,4 +289,6 @@ namespace nano
                         op(begin, end);
                 });
         }
+
+        // todo: add versions of loopi & loopit with a single element to process at a time
 }

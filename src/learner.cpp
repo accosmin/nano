@@ -7,11 +7,11 @@
 
 using namespace nano;
 
-bool learner_t::save(const string_t& path, const string_t& id, const rlearner_t& learner)
+bool learner_t::save(const string_t& path, const string_t& id, const learner_t& learner)
 {
         obstream_t stream(path);
         return  stream.write(id) &&
-                learner->save(stream);
+                learner.save(stream);
 }
 
 rlearner_t learner_t::load(const string_t& path)

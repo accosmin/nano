@@ -39,7 +39,7 @@ namespace nano
                 ///
                 /// \brief serialize a learner to disk
                 ///
-                static bool save(const string_t& path, const string_t& id, const rlearner_t&);
+                static bool save(const string_t& path, const string_t& id, const learner_t&);
                 static rlearner_t load(const string_t& path);
 
                 ///
