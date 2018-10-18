@@ -73,15 +73,26 @@ int main(int argc, const char *argv[])
         // test the learner
         checkpoint.step("evaluate learner");
 
-        // todo: finish this part
-        (void)cmd_fold;
-        /*
-        acc.update(*task, fold_t{cmd_fold, protocol::test});
+        const auto fold = fold_t{cmd_fold, protocol::test};
+
+        // todo: use the thread pool to speed-up computation
+        stats_t stats_errors, stats_values;
+        for (size_t i = 0, size = task->size(fold); i < size; ++ i)
+        {
+                const auto input = task->input(fold, i);
+                const auto target = task->target(fold, i);
+                const auto output = learner->output(input);
+
+                stats_errors(loss->error(target, output));
+                stats_values(loss->value(target, output));
+        }
+
         checkpoint.measure();
 
+        // todo: add more stats (e.g. median, percentiles)
         log_info() << std::fixed << std::setprecision(3)
-                << "test=" << acc.vstats().avg() << "|" << acc.estats().avg() << "+/-" << acc.estats().var() << ".";
-        */
+                << "error: " << stats_errors
+                << ", loss: " << stats_values << ".";
 
         // OK
         log_info() << done;

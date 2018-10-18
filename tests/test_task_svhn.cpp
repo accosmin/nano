@@ -56,11 +56,10 @@ NANO_CASE(loading)
                         const auto fold = fold_t{f, p};
                         task->shuffle(fold);
 
-                        const auto sample = task->get(fold, size_t(0), std::min(size_t(128), task->size(fold)));
-                        for (auto i = 0; i < sample.count(); ++ i)
+                        for (size_t i = 0; i < std::min(size_t(128), task->size(fold)); ++ i)
                         {
-                                const auto& input = sample.idata(i);
-                                const auto& target = sample.odata(i);
+                                const auto input = task->input(fold, i);
+                                const auto target = task->target(fold, i);
 
                                 NANO_CHECK_EQUAL(input.dims(), idims);
                                 NANO_CHECK_EQUAL(target.dims(), odims);

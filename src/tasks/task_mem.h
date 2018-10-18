@@ -37,8 +37,10 @@ namespace nano
                 size_t ohash(const fold_t&, const size_t index) const final;
                 string_t label(const fold_t&, const size_t index) const final;
 
+                tensor3d_t input(const fold_t&, const size_t index) const final;
+                tensor3d_t target(const fold_t&, const size_t index) const final;
+
                 void shuffle(const fold_t&) const final;
-                minibatch_t get(const fold_t&, const size_t begin, const size_t end) const final;
 
         protected:
 
@@ -201,18 +203,20 @@ namespace nano
         }
 
         template <typename tchunk, typename tsample>
-        minibatch_t mem_task_t<tchunk, tsample>::get(const fold_t& fold, const size_t begin, const size_t end) const
+        tensor3d_t mem_task_t<tchunk, tsample>::input(const fold_t& fold, const size_t index) const
         {
-                assert(begin < end && end <= size(fold));
-                minibatch_t minibatch(static_cast<tensor_size_t>(end - begin), idims(), odims());
-                for (size_t index = begin; index < end; ++ index)
-                {
-                        const auto& sample = get_sample(fold, index);
-                        const auto& chunk = get_chunk(sample);
-                        minibatch.copy(static_cast<tensor_size_t>(index - begin),
-                                sample.input(chunk), sample.output(), sample.label());
-                }
-                return minibatch;
+                assert(index < size(fold));
+                const auto& sample = get_sample(fold, index);
+                const auto& chunk = get_chunk(sample);
+                return sample.input(chunk);
+        }
+
+        template <typename tchunk, typename tsample>
+        tensor3d_t mem_task_t<tchunk, tsample>::target(const fold_t& fold, const size_t index) const
+        {
+                assert(index < size(fold));
+                const auto& sample = get_sample(fold, index);
+                return sample.output();
         }
 
         template <typename tchunk, typename tsample>

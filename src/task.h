@@ -58,18 +58,23 @@ namespace nano
                 virtual void shuffle(const fold_t&) const = 0;
 
                 ///
-                /// \brief retrieve the given [begin, end) range of samples as a minibatch
-                ///
-                virtual minibatch_t get(const fold_t&, const size_t begin, const size_t end) const = 0;
-
-                ///
                 /// \brief retrieve the hash for a given input/target
                 ///
                 virtual size_t ihash(const fold_t&, const size_t index) const = 0;
                 virtual size_t ohash(const fold_t&, const size_t index) const = 0;
 
                 ///
-                /// \brief retrieve the label (if available) for a given sample
+                /// \brief retrieve a given sample
+                ///
+                virtual tensor3d_t input(const fold_t&, const size_t index) const = 0;
+
+                ///
+                /// \brief retrieve the target of a given sample (if available)
+                ///
+                virtual tensor3d_t target(const fold_t&, const size_t index) const = 0;
+
+                ///
+                /// \brief retrieve the label of a given sample (if available)
                 ///
                 virtual string_t label(const fold_t&, const size_t index) const = 0;
 

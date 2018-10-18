@@ -1,4 +1,3 @@
-#include "core/tpool.h"
 #include "gboost_stump.h"
 #include "core/ibstream.h"
 #include "core/obstream.h"
@@ -38,25 +37,20 @@ trainer_result_t gboost_stump_t::train(const task_t& task, const size_t, const l
         return result;
 }
 
-tensor4d_t gboost_stump_t::output(const tensor4d_t& input) const
+tensor3d_t gboost_stump_t::output(const tensor3d_t& input) const
 {
-        const auto count = input.size<0>();
-        assert(input.dims() == cat_dims(count, m_idims));
+        assert(input.dims() == m_idims);
 
-        tensor4d_t output(cat_dims(count, m_odims));
+        tensor3d_t output(m_odims);
         output.zero();
 
-        // todo: use the thread pool to speed-up computation
-        for (auto i = 0; i < count; ++ i)
-        {
-                const auto idata = input.tensor(i);
-                auto odata = output.tensor(i);
+        const auto idata = input.array();
+        auto odata = output.array();
 
-                for (const auto& stump : m_stumps)
-                {
-                        const auto oindex = idata(stump.m_feature) < stump.m_threshold ? 0 : 1;
-                        odata.array() += stump.m_outputs.tensor(oindex).array();
-                }
+        for (const auto& stump : m_stumps)
+        {
+                const auto oindex = idata(stump.m_feature) < stump.m_threshold ? 0 : 1;
+                odata.array() += stump.m_outputs.tensor(oindex).array();
         }
 
         return output;

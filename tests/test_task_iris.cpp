@@ -54,9 +54,8 @@ NANO_CASE(loading)
                 {
                         for (size_t i = 0, size = task->size({f, p}); i < size; ++ i)
                         {
-                                const auto sample = task->get({f, p}, i, i + 1);
-                                const auto& input = sample.idata(0);
-                                const auto& target = sample.odata(0);
+                                const auto input = task->input({f, p}, i);
+                                const auto target = task->target({f, p}, i);
 
                                 NANO_CHECK_EQUAL(input.dims(), idims);
                                 NANO_CHECK_EQUAL(target.dims(), odims);

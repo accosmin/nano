@@ -2,7 +2,6 @@
 
 #include "loss.h"
 #include "task.h"
-#include "core/stats.h"
 #include "core/probe.h"
 #include "trainer_state.h"
 
@@ -30,11 +29,9 @@ namespace nano
                 virtual trainer_result_t train(const task_t&, const size_t fold, const loss_t&) = 0;
 
                 ///
-                /// \brief compute the predictions for a set of inputs.
+                /// \brief compute the prediction for an input.
                 ///
-                virtual tensor4d_t output(const tensor4d_t& input) const = 0;
-                stats_t error(const task_t&, const size_t fold, const loss_t&) const;
-                stats_t value(const task_t&, const size_t fold, const loss_t&) const;
+                virtual tensor3d_t output(const tensor3d_t& input) const = 0;
 
                 ///
                 /// \brief serialize a learner to disk

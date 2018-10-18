@@ -49,7 +49,7 @@ namespace nano
 
                 trainer_result_t train(const task_t&, const size_t fold, const loss_t&) override;
 
-                tensor4d_t output(const tensor4d_t& input) const override;
+                tensor3d_t output(const tensor3d_t& input) const override;
 
                 bool save(obstream_t&) const override;
                 bool load(ibstream_t&) override;
