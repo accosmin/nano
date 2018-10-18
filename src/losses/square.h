@@ -9,32 +9,36 @@ namespace nano
         /// \brief square loss: l(x) = 1/2 * x^x.
         ///
         /// usage:
-        ///     - regression:           l(outputs, targets) = l(outputs - targets)
-        ///     - classification:       l(outputs, targets) = l(1 - outputs * targets)
+        ///     - regression:           l(output, target) = l(output - target)
+        ///     - classification:       l(output, target) = l(1 - output * target)
         ///
         struct square_regression_t
         {
-                static auto value(const vector_cmap_t& targets, const vector_cmap_t& outputs)
+                template <typename tarray>
+                static auto value(const tarray& target, const tarray& output)
                 {
-                        return scalar_t(0.5) * (outputs - targets).array().square().sum();
+                        return scalar_t(0.5) * (output - target).square().sum();
                 }
 
-                static auto vgrad(const vector_cmap_t& targets, const vector_cmap_t& outputs)
+                template <typename tarray>
+                static auto vgrad(const tarray& target, const tarray& output)
                 {
-                        return outputs - targets;
+                        return output - target;
                 }
         };
 
         struct square_classification_t
         {
-                static auto value(const vector_cmap_t& targets, const vector_cmap_t& outputs)
+                template <typename tarray>
+                static auto value(const tarray& target, const tarray& output)
                 {
-                        return scalar_t(0.5) * (1 - outputs.array() * targets.array()).square().sum();
+                        return scalar_t(0.5) * (1 - output * target).square().sum();
                 }
 
-                static auto vgrad(const vector_cmap_t& targets, const vector_cmap_t& outputs)
+                template <typename tarray>
+                static auto vgrad(const tarray& target, const tarray& output)
                 {
-                        return -targets.array() * (1 - outputs.array() * targets.array());
+                        return -target.array() * (1 - output * target);
                 }
         };
 

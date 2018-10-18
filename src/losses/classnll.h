@@ -9,16 +9,18 @@ namespace nano
         ///
         struct classnll_t
         {
-                static auto value(const vector_cmap_t& targets, const vector_cmap_t& outputs)
+                template <typename tarray>
+                static auto value(const tarray& target, const tarray& output)
                 {
-                        return  std::log(outputs.array().exp().sum()) -
-                                scalar_t(0.5) * ((1 + targets.array()) * outputs.array()).sum();
+                        return  std::log(output.exp().sum()) -
+                                scalar_t(0.5) * ((1 + target) * output).sum();
                 }
 
-                static auto vgrad(const vector_cmap_t& targets, const vector_cmap_t& outputs)
+                template <typename tarray>
+                static auto vgrad(const tarray& target, const tarray& output)
                 {
-                        return  outputs.array().exp() / (outputs.array().exp().sum()) -
-                                scalar_t(0.5) * (1 + targets.array());
+                        return  output.exp() / (output.exp().sum()) -
+                                scalar_t(0.5) * (1 + target);
                 }
         };
 

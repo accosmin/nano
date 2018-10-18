@@ -9,32 +9,36 @@ namespace nano
         /// \brief robust-to-noise Cauchy loss: 1/2 * log(1 + x^2).
         ///
         /// usage:
-        ///     - regression:           l(outputs, targets) = l(outputs - targets)
-        ///     - classification:       l(outputs, targets) = l(1 - outputs * targets)
+        ///     - regression:           l(output, target) = l(output - target)
+        ///     - classification:       l(output, target) = l(1 - output * target)
         ///
         struct cauchy_regression_t
         {
-                static auto value(const vector_cmap_t& targets, const vector_cmap_t& outputs)
+                template <typename tarray>
+                static auto value(const tarray& target, const tarray& output)
                 {
-                        return scalar_t(0.5) * ((targets - outputs).array().square() + 1).log().sum();
+                        return scalar_t(0.5) * ((target - output).square() + 1).log().sum();
                 }
 
-                static auto vgrad(const vector_cmap_t& targets, const vector_cmap_t& outputs)
+                template <typename tarray>
+                static auto vgrad(const tarray& target, const tarray& output)
                 {
-                        return (outputs - targets).array() / (1 + (outputs - targets).array().square());
+                        return (output - target) / (1 + (output - target).square());
                 }
         };
 
         struct cauchy_classification_t
         {
-                static auto value(const vector_cmap_t& targets, const vector_cmap_t& outputs)
+                template <typename tarray>
+                static auto value(const tarray& target, const tarray& output)
                 {
-                        return scalar_t(0.5) * ((targets - outputs).array().square() + 1).log().sum();
+                        return scalar_t(0.5) * ((target - output).square() + 1).log().sum();
                 }
 
-                static auto vgrad(const vector_cmap_t& targets, const vector_cmap_t& outputs)
+                template <typename tarray>
+                static auto vgrad(const tarray& target, const tarray& output)
                 {
-                        return -targets.array() * (1 - outputs.array() * targets.array()) / (1 + (1 - outputs.array() * targets.array()).square());
+                        return -target * (1 - output * target) / (1 + (1 - output * target).square());
                 }
         };
 

@@ -5,18 +5,20 @@
 namespace nano
 {
         ///
-        /// \brief multi-class exponential loss: sum(exp(-targets_k * outputs_k), k).
+        /// \brief multi-class exponential loss: sum(exp(-target_k * output_k), k).
         ///
         struct exponential_t
         {
-                static auto value(const vector_cmap_t& targets, const vector_cmap_t& outputs)
+                template <typename tarray>
+                static auto value(const tarray& target, const tarray& output)
                 {
-                        return (-targets.array() * outputs.array()).exp().sum();
+                        return (-target * output).exp().sum();
                 }
 
-                static auto vgrad(const vector_cmap_t& targets, const vector_cmap_t& outputs)
+                template <typename tarray>
+                static auto vgrad(const tarray& target, const tarray& output)
                 {
-                        return -targets.array() * (-targets.array() * outputs.array()).exp();
+                        return -target * (-target * output).exp();
                 }
         };
 

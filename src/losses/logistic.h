@@ -5,19 +5,21 @@
 namespace nano
 {
         ///
-        /// \brief multi-class logistic loss: sum(log(1 + exp(-targets_k * outputs_k)), k).
+        /// \brief multi-class logistic loss: sum(log(1 + exp(-target_k * output_k)), k).
         ///
         struct logistic_t
         {
-                static auto value(const vector_cmap_t& targets, const vector_cmap_t& outputs)
+                template <typename tarray>
+                static auto value(const tarray& target, const tarray& output)
                 {
-                        return  (1 + (-targets.array() * outputs.array()).exp()).log().sum();
+                        return  (1 + (-target * output).exp()).log().sum();
                 }
 
-                static auto vgrad(const vector_cmap_t& targets, const vector_cmap_t& outputs)
+                template <typename tarray>
+                static auto vgrad(const tarray& target, const tarray& output)
                 {
-                        return  -targets.array() * (-targets.array() * outputs.array()).exp() /
-                                (1 + (-targets.array() * outputs.array()).exp());
+                        return  -target * (-target * output).exp() /
+                                (1 + (-target * output).exp());
                 }
         };
 

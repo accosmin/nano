@@ -16,7 +16,7 @@ namespace nano
         ///
         /// \brief generic multivariate loss function of two parameters:
         ///     - the target value to predict (ground truth, annotation) and
-        ///     - the current score estimation (model output).
+        ///     - the model's output (prediction).
         ///
         /// the loss function upper-bounds/approximates
         /// the true (usually non-smooth) error function to minimize.
@@ -34,22 +34,16 @@ namespace nano
                 ///
                 /// \brief compute the error value
                 ///
-                tensor1d_t error(const tensor4d_t& targets, const tensor4d_t& outputs) const;
+                virtual scalar_t error(const tensor3d_t& target, const tensor3d_t& output) const = 0;
 
                 ///
                 /// \brief compute the loss value (an upper bound of the usually non-continuous error function)
                 ///
-                tensor1d_t value(const tensor4d_t& targets, const tensor4d_t& outputs) const;
+                virtual scalar_t value(const tensor3d_t& target, const tensor3d_t& output) const = 0;
 
                 ///
-                /// \brief compute the loss gradient (wrt the outputs)
+                /// \brief compute the loss gradient (wrt the output)
                 ///
-                tensor4d_t vgrad(const tensor4d_t& targets, const tensor4d_t& outputs) const;
-
-        protected:
-
-                virtual scalar_t error(const vector_cmap_t& targets, const vector_cmap_t& outputs) const = 0;
-                virtual scalar_t value(const vector_cmap_t& targets, const vector_cmap_t& outputs) const = 0;
-                virtual void vgrad(const vector_cmap_t& targets, const vector_cmap_t& outputs, vector_map_t&&) const = 0;
+                virtual tensor3d_t vgrad(const tensor3d_t& target, const tensor3d_t& output) const = 0;
         };
 }

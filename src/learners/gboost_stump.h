@@ -39,6 +39,7 @@ namespace nano
                         adaptive,               ///< shrinkage per round using the validation dataset
                         shrinkage,              ///< global shrinkage (needs tuning)
                         vadaboost,              ///< VadaBoost (needs tuning)
+                        // todo: Stochastic gradient boosting
                 };
 
                 gboost_stump_t() = default;
