@@ -21,7 +21,7 @@ void gboost_stump_t::from_json(const json_t& json)
                 "regularization", m_rtype);
 }
 
-trainer_result_t gboost_stump_t::train(const task_t& task, const size_t fold, const loss_t& loss)
+trainer_result_t gboost_stump_t::train(const task_t& task, const size_t, const loss_t&)
 {
         m_idims = task.idims();
         m_odims = task.odims();
