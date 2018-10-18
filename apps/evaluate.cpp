@@ -74,6 +74,7 @@ int main(int argc, const char *argv[])
         checkpoint.step("evaluate learner");
 
         // todo: finish this part
+        (void)cmd_fold;
         /*
         acc.update(*task, fold_t{cmd_fold, protocol::test});
         checkpoint.measure();
