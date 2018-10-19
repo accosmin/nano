@@ -189,68 +189,68 @@ matrix:
 
     - os: linux
       compiler: clang
-      env: TEST="clang-tidy-misc (clang-5.0)"
+      env: TEST="clang-tidy-misc (clang-6.0)"
       addons:
         apt:
-          packages: ['clang-5.0', 'clang-tidy-5.0', 'libdevil-dev', 'libarchive-dev', 'libc++-dev', 'libc++abi-dev', 'ninja-build']
+          packages: ['clang-6.0', 'clang-tidy-6.0', 'libdevil-dev', 'libarchive-dev', 'libc++-dev', 'libc++abi-dev', 'ninja-build']
           sources: &sources
-            - llvm-toolchain-trusty-5.0
+            - llvm-toolchain-trusty-6.0
           update: true
       script:
-        - cmake -G "Ninja" -DCMAKE_CXX_COMPILER=clang++-5.0 -DNANO_WITH_WERROR=ON -DNANO_WITH_LIBCPP=ON -DNANO_WITH_CLANG_TIDY=ON ..
+        - cmake -G "Ninja" -DCMAKE_CXX_COMPILER=clang++-6.0 -DNANO_WITH_WERROR=ON -DNANO_WITH_LIBCPP=ON -DNANO_WITH_CLANG_TIDY=ON ..
         - bash ../scripts/ci_clang_tidy.sh clang-tidy-misc
 
     - os: linux
       compiler: clang
-      env: TEST="clang-tidy-bugprone (clang-5.0)"
+      env: TEST="clang-tidy-bugprone (clang-6.0)"
       addons:
         apt:
-          packages: ['clang-5.0', 'clang-tidy-5.0', 'libdevil-dev', 'libarchive-dev', 'libc++-dev', 'libc++abi-dev', 'ninja-build']
+          packages: ['clang-6.0', 'clang-tidy-6.0', 'libdevil-dev', 'libarchive-dev', 'libc++-dev', 'libc++abi-dev', 'ninja-build']
           sources: &sources
-            - llvm-toolchain-trusty-5.0
+            - llvm-toolchain-trusty-6.0
           update: true
       script:
-        - cmake -G "Ninja" -DCMAKE_CXX_COMPILER=clang++-5.0 -DNANO_WITH_WERROR=ON -DNANO_WITH_LIBCPP=ON -DNANO_WITH_CLANG_TIDY=ON ..
+        - cmake -G "Ninja" -DCMAKE_CXX_COMPILER=clang++-6.0 -DNANO_WITH_WERROR=ON -DNANO_WITH_LIBCPP=ON -DNANO_WITH_CLANG_TIDY=ON ..
         - bash ../scripts/ci_clang_tidy.sh clang-tidy-bugprone
 
     - os: linux
       compiler: clang
-      env: TEST="clang-tidy-modernize (clang-5.0)"
+      env: TEST="clang-tidy-modernize (clang-6.0)"
       addons:
         apt:
-          packages: ['clang-5.0', 'clang-tidy-5.0', 'libdevil-dev', 'libarchive-dev', 'libc++-dev', 'libc++abi-dev', 'ninja-build']
+          packages: ['clang-6.0', 'clang-tidy-6.0', 'libdevil-dev', 'libarchive-dev', 'libc++-dev', 'libc++abi-dev', 'ninja-build']
           sources: &sources
-            - llvm-toolchain-trusty-5.0
+            - llvm-toolchain-trusty-6.0
           update: true
       script:
-        - cmake -G "Ninja" -DCMAKE_CXX_COMPILER=clang++-5.0 -DNANO_WITH_WERROR=ON -DNANO_WITH_LIBCPP=ON -DNANO_WITH_CLANG_TIDY=ON ..
+        - cmake -G "Ninja" -DCMAKE_CXX_COMPILER=clang++-6.0 -DNANO_WITH_WERROR=ON -DNANO_WITH_LIBCPP=ON -DNANO_WITH_CLANG_TIDY=ON ..
         - bash ../scripts/ci_clang_tidy.sh clang-tidy-modernize
 
     - os: linux
       compiler: clang
-      env: TEST="clang-tidy-performance (clang-5.0)"
+      env: TEST="clang-tidy-performance (clang-6.0)"
       addons:
         apt:
-          packages: ['clang-5.0', 'clang-tidy-5.0', 'libdevil-dev', 'libarchive-dev', 'libc++-dev', 'libc++abi-dev', 'ninja-build']
+          packages: ['clang-6.0', 'clang-tidy-6.0', 'libdevil-dev', 'libarchive-dev', 'libc++-dev', 'libc++abi-dev', 'ninja-build']
           sources: &sources
-            - llvm-toolchain-trusty-5.0
+            - llvm-toolchain-trusty-6.0
           update: true
       script:
-        - cmake -G "Ninja" -DCMAKE_CXX_COMPILER=clang++-5.0 -DNANO_WITH_WERROR=ON -DNANO_WITH_LIBCPP=ON -DNANO_WITH_CLANG_TIDY=ON ..
+        - cmake -G "Ninja" -DCMAKE_CXX_COMPILER=clang++-6.0 -DNANO_WITH_WERROR=ON -DNANO_WITH_LIBCPP=ON -DNANO_WITH_CLANG_TIDY=ON ..
         - bash ../scripts/ci_clang_tidy.sh clang-tidy-performance
 
-    #- os: linux
-    #  compiler: clang
-    #  env: TEST="clang-tidy-clang-analyzer (clang-5.0)"
-    #  addons:
-    #    apt:
-    #      packages: ['clang-5.0', 'clang-tidy-5.0', 'libdevil-dev', 'libarchive-dev', 'libc++-dev', 'libc++abi-dev', 'ninja-build']
-    #      sources: &sources
-    #        - llvm-toolchain-trusty-5.0
-    #      update: true
-    #  script:
-    #    - cmake -G "Ninja" -DCMAKE_CXX_COMPILER=clang++-5.0 -DNANO_WITH_WERROR=ON -DNANO_WITH_LIBCPP=ON -DNANO_WITH_CLANG_TIDY=ON ..
-    #    - bash ../scripts/ci_clang_tidy.sh clang-tidy-clang-analyzer
+    - os: linux
+      compiler: clang
+      env: TEST="clang-tidy-clang-analyzer (clang-6.0)"
+      addons:
+        apt:
+          packages: ['clang-6.0', 'clang-tidy-6.0', 'libdevil-dev', 'libarchive-dev', 'libc++-dev', 'libc++abi-dev', 'ninja-build']
+          sources: &sources
+            - llvm-toolchain-trusty-6.0
+          update: true
+      script:
+        - cmake -G "Ninja" -DCMAKE_CXX_COMPILER=clang++-6.0 -DNANO_WITH_WERROR=ON -DNANO_WITH_LIBCPP=ON -DNANO_WITH_CLANG_TIDY=ON ..
+        - bash ../scripts/ci_clang_tidy.sh clang-tidy-clang-analyzer
 
     - os: linux
       env: TEST="cppcheck"
@@ -313,8 +313,17 @@ matrix:
 
     - os: osx
       compiler: clang
-      osx_image: xcode9.1
-      env: TEST="build (xcode9.1)"
+      osx_image: xcode9.4
+      env: TEST="build (xcode9.4)"
+      script:
+        - cmake -G "Ninja" -DNANO_WITH_WERROR=ON ..
+        - ninja
+        - bash ../scripts/ci_ctest.sh
+
+    - os: osx
+      compiler: clang
+      osx_image: xcode10
+      env: TEST="build (xcode10)"
       script:
         - cmake -G "Ninja" -DNANO_WITH_WERROR=ON ..
         - ninja
