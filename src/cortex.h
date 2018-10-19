@@ -78,6 +78,8 @@ namespace nano
                 return target;
         }
 
+        // todo: change class_target(#labels, label indices ...)
+
         ///
         /// \brief target value for multi-class multi-label classification problems based on the sign of the target
         ///

@@ -120,6 +120,8 @@ trainer_result_t gboost_stump_t::train(const task_t& task, const size_t fold, co
                                 residuals_neg.vector() /= task.size(fold_train);
 
                                 // todo: fit both real and discrete stumps
+
+
                         }
                 }
 

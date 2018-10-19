@@ -20,6 +20,7 @@ make_test(test_tensor_tensor.cpp "")
 make_test(test_tensor_integral.cpp "")
 
 # todo: add unit tests for learners
+make_test(test_gboost.cpp nano)
 
 make_test(test_solvers.cpp nano)
 make_test(test_functions.cpp nano)
