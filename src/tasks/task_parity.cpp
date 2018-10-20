@@ -55,7 +55,7 @@ bool parity_task_t::populate()
                         const size_t ones = (chunk(i).array() > scalar_t(0.5)).count();
 
                         const auto label = (ones % 2) ? "odd" : "even";
-                        const auto target = class_target(1 - (ones % 2), 1);
+                        const auto target = class_target(1, 1 - (ones % 2));
                         const auto fold = fold_t{f, protocols[i]};
 
                         add_sample(fold, i, target, label);

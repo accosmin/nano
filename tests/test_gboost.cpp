@@ -13,10 +13,10 @@ NANO_CASE(lsearch_function)
         tensor4d_t woutputs(4, 3, 2, 1);
         tensor4d_t outputs(4, 3, 2, 1);
 
-        targets.vector(0) = class_target(0, 6);
-        targets.vector(1) = class_target(1, 6);
-        targets.vector(2) = class_target(2, 6);
-        targets.vector(3) = class_target(3, 6);
+        targets.vector(0) = class_target(6, 0);
+        targets.vector(1) = class_target(6, 1);
+        targets.vector(2) = class_target(6, 2);
+        targets.vector(3) = class_target(6, 3);
         soutputs.random();
         woutputs.random();
 

@@ -61,24 +61,29 @@ namespace nano
         inline bool is_pos_target(const scalar_t target) { return target > 0; }
 
         ///
-        /// \brief target value for multi-class single-label classification problems with [n_labels] classes
+        /// \brief target value for multi-class single and multi-label classification problems with [n_labels] classes
         ///
-        inline vector_t class_target(const tensor_size_t n_labels)
+        inline void class_target(vector_t&)
         {
-                return vector_t::Constant(n_labels, neg_target());
         }
 
-        inline vector_t class_target(const tensor_size_t ilabel, const tensor_size_t n_labels)
+        template <typename... tindices>
+        inline void class_target(vector_t& target, const tensor_size_t index, const tindices... indices)
         {
-                auto target = class_target(n_labels);
-                if (ilabel >= 0 && ilabel < n_labels)
+                if (index >= 0 && index < target.size())
                 {
-                        target(ilabel) = pos_target();
+                        target(index) = pos_target();
                 }
+                class_target(target, indices...);
+        }
+
+        template <typename... tindices>
+        inline vector_t class_target(const tensor_size_t n_labels, const tindices... indices)
+        {
+                vector_t target = vector_t::Constant(n_labels, neg_target());
+                class_target(target, indices...);
                 return target;
         }
-
-        // todo: change class_target(#labels, label indices ...)
 
         ///
         /// \brief target value for multi-class multi-label classification problems based on the sign of the target

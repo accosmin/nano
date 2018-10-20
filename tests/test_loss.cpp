@@ -13,7 +13,7 @@ struct loss_function_t final : public function_t
                 function_t("loss", xmaps, xmaps, xmaps, convexity::no),
                 m_loss(loss), m_target(xmaps, 1, 1)
         {
-                m_target.vector() = class_target(11 % xmaps, xmaps);
+                m_target.vector() = class_target(xmaps, 11 % xmaps);
         }
 
         scalar_t vgrad(const vector_t& x, vector_t* gx = nullptr) const override
@@ -78,30 +78,30 @@ NANO_CASE(single_class)
                 tensor3d_t output(n_classes, 1, 1);
 
                 {
-                        target.vector() = class_target(11, n_classes);
-                        output.vector() = class_target(11, n_classes);
+                        target.vector() = class_target(n_classes, 11);
+                        output.vector() = class_target(n_classes, 11);
 
                         const auto error = loss->error(target, output);
                         NANO_CHECK_CLOSE(error, scalar_t(0), epsilon0<scalar_t>());
                 }
                 {
-                        target.vector() = class_target(11, n_classes);
-                        output.vector() = class_target(12, n_classes);
+                        target.vector() = class_target(n_classes, 11);
+                        output.vector() = class_target(n_classes, 12);
 
                         const auto error = loss->error(target, output);
                         NANO_CHECK_CLOSE(error, scalar_t(1), epsilon0<scalar_t>());
                 }
                 {
-                        target.vector() = class_target(11, n_classes);
-                        output.vector() = class_target(11, n_classes);
+                        target.vector() = class_target(n_classes, 11);
+                        output.vector() = class_target(n_classes, 11);
                         output.vector()(7) = pos_target() + 1;
 
                         const auto error = loss->error(target, output);
                         NANO_CHECK_CLOSE(error, scalar_t(1), epsilon0<scalar_t>());
                 }
                 {
-                        target.vector() = class_target(11, n_classes);
-                        output.vector() = class_target(-1, n_classes);
+                        target.vector() = class_target(n_classes, 11);
+                        output.vector() = class_target(n_classes);
 
                         const auto error = loss->error(target, output);
                         NANO_CHECK_CLOSE(error, scalar_t(1), epsilon0<scalar_t>());
@@ -121,60 +121,43 @@ NANO_CASE(multi_class)
                 tensor3d_t output(n_classes, 1, 1);
 
                 {
-                        target.vector() = class_target(n_classes);
-                        output.vector() = class_target(n_classes);
-
-                        target.vector()(7) = target.vector()(9) = pos_target();
-                        output.vector()(7) = output.vector()(9) = pos_target();
+                        target.vector() = class_target(n_classes, 7, 9);
+                        output.vector() = class_target(n_classes, 7, 9);
 
                         const auto error = loss->error(target, output);
                         NANO_CHECK_CLOSE(error, scalar_t(0), epsilon0<scalar_t>());
                 }
                 {
-                        target.vector() = class_target(n_classes);
+                        target.vector() = class_target(n_classes, 7, 9);
                         output.vector() = class_target(n_classes);
-
-                        target.vector()(7) = target.vector()(9) = pos_target();
 
                         const auto error = loss->error(target, output);
                         NANO_CHECK_CLOSE(error, scalar_t(2), epsilon0<scalar_t>());
                 }
                 {
-                        target.vector() = class_target(n_classes);
-                        output.vector() = class_target(n_classes);
-
-                        target.vector()(7) = target.vector()(9) = pos_target();
-                        output.vector()(5) = pos_target();
+                        target.vector() = class_target(n_classes, 7, 9);
+                        output.vector() = class_target(n_classes, 5);
 
                         const auto error = loss->error(target, output);
                         NANO_CHECK_CLOSE(error, scalar_t(3), epsilon0<scalar_t>());
                 }
                 {
-                        target.vector() = class_target(n_classes);
-                        output.vector() = class_target(n_classes);
-
-                        target.vector()(7) = target.vector()(9) = pos_target();
-                        output.vector()(7) = pos_target();
+                        target.vector() = class_target(n_classes, 7, 9);
+                        output.vector() = class_target(n_classes, 7);
 
                         const auto error = loss->error(target, output);
                         NANO_CHECK_CLOSE(error, scalar_t(1), epsilon0<scalar_t>());
                 }
                 {
-                        target.vector() = class_target(n_classes);
-                        output.vector() = class_target(n_classes);
-
-                        target.vector()(7) = target.vector()(9) = pos_target();
-                        output.vector()(5) = output.vector()(9) = pos_target();
+                        target.vector() = class_target(n_classes, 7, 9);
+                        output.vector() = class_target(n_classes, 5, 9);
 
                         const auto error = loss->error(target, output);
                         NANO_CHECK_CLOSE(error, scalar_t(2), epsilon0<scalar_t>());
                 }
                 {
-                        target.vector() = class_target(n_classes);
-                        output.vector() = class_target(n_classes);
-
-                        target.vector()(7) = target.vector()(9) = pos_target();
-                        output.vector()(7) = output.vector()(9) = output.vector()(11) = pos_target();
+                        target.vector() = class_target(n_classes, 7, 9);
+                        output.vector() = class_target(n_classes, 7, 9, 11);
 
                         const auto error = loss->error(target, output);
                         NANO_CHECK_CLOSE(error, scalar_t(1), epsilon0<scalar_t>());

@@ -150,7 +150,7 @@ bool mem_csv_task_t::populate()
                 for (size_t i = 0; i < samples.size(); ++ i)
                 {
                         const auto fold = fold_t{f, protocols[i]};
-                        const auto target = class_target(class_indices[i], nano::size(odims()));
+                        const auto target = class_target(nano::size(odims()), class_indices[i]);
                         add_sample(fold, i, target, labels[static_cast<size_t>(class_indices[i])]);
                 }
         }

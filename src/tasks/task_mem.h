@@ -93,7 +93,7 @@ namespace nano
                                         const auto itlabel = static_cast<size_t>(ilabel);
                                         assert(ilabel >= 0 && itlabel < tlabels.size());
 
-                                        add_sample(fold, ichunk, class_target(ilabel, nano::size(odims())), tlabels[itlabel]);
+                                        add_sample(fold, ichunk, class_target(nano::size(odims()), ilabel), tlabels[itlabel]);
                                 }
                         }
                 }
