@@ -4,6 +4,9 @@
 
 namespace nano
 {
+        template <typename tscalar_>
+        class tensor_pstorage_t;
+
         ///
         /// \brief tensor storage using an Eigen vector.
         /// NB: the tensor owns the allocated memory and as such the tensor is resizable.
@@ -21,6 +24,14 @@ namespace nano
                 static constexpr bool owns_memory = true;
 
                 tensor_vstorage_t() = default;
+                tensor_vstorage_t(tensor_vstorage_t&&) = default;
+                tensor_vstorage_t(const tensor_vstorage_t&) = default;
+                tensor_vstorage_t& operator=(tensor_vstorage_t&&) = default;
+                tensor_vstorage_t& operator=(const tensor_vstorage_t&) = default;
+
+                template <typename tscalar2_>
+                tensor_vstorage_t(const tensor_pstorage_t<tscalar2_>&);
+
                 explicit tensor_vstorage_t(const tstorage& data) : m_data(data) {}
                 explicit tensor_vstorage_t(const tensor_size_t size) : m_data(size) {}
 
@@ -52,19 +63,43 @@ namespace nano
                 static constexpr bool resizable = false;
                 static constexpr bool owns_memory = false;
 
-                explicit tensor_pstorage_t() : m_data(nullptr) {}
-                explicit tensor_pstorage_t(const tstorage& data) : m_data(data) {}
-                explicit tensor_pstorage_t(const tensor_size_t);
+                tensor_pstorage_t() = default;
+                tensor_pstorage_t(tensor_pstorage_t&&) = default;
+                tensor_pstorage_t(const tensor_pstorage_t&) = default;
+                tensor_pstorage_t& operator=(tensor_pstorage_t&&) = default;
+                tensor_pstorage_t& operator=(const tensor_pstorage_t&) = default;
 
-                auto size() const;
-                void resize(const tensor_size_t);
+                tensor_pstorage_t(const tstorage& data, const tensor_size_t size) : m_data(data), m_size(size) {}
+
+                template <typename tscalar2_>
+                tensor_pstorage_t(const tensor_vstorage_t<tscalar2_>& other) :
+                        m_data(other.data()),
+                        m_size(other.size())
+                {
+                }
+
+                template <typename tscalar2_>
+                tensor_pstorage_t(const tensor_pstorage_t<tscalar2_>& other) :
+                        m_data(other.data()),
+                        m_size(other.size())
+                {
+                }
 
                 auto data() { return m_data; }
                 auto data() const { return m_data; }
+                auto size() const { return m_size; }
 
         private:
 
                 // attributes
-                tstorage const  m_data;         ///< wrap tensor over a contiguous array.
+                tstorage const  m_data{nullptr};///< wrap tensor over a contiguous array.
+                tensor_size_t   m_size{0};      ///<
         };
+
+        template <typename tscalar_>
+        template <typename tscalar2_>
+        tensor_vstorage_t<tscalar_>::tensor_vstorage_t(const tensor_pstorage_t<tscalar2_>& other) :
+                m_data(map_vector(other.data(), other.size()))
+        {
+        }
 }

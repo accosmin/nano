@@ -82,7 +82,7 @@ trainer_result_t gboost_stump_t::train(const task_t& task, const size_t fold, co
                         const auto target = task.target(fold_train, i);
                         const auto output = outputs_train.tensor(i);
 
-                        residuals_train.tensor(i).vector() = -loss.vgrad(target, output).vector();
+                        residuals_train.vector(i) = -loss.vgrad(target, output).vector();
                 }
 
                 int best_feature = 0;

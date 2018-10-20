@@ -113,7 +113,7 @@ namespace nano
                 ///
                 explicit tensor_t(tscalar* ptr, const tdims& dims) :
                         m_dims(dims),
-                        m_storage(ptr)
+                        m_storage(ptr, size())
                 {
                         static_assert(!tstorage::resizable, "tensor resizable");
                         assert(ptr != nullptr || !size());
@@ -121,7 +121,7 @@ namespace nano
 
                 explicit tensor_t(const tscalar* ptr, const tdims& dims) :
                         m_dims(dims),
-                        m_storage(ptr)
+                        m_storage(ptr, size())
                 {
                         static_assert(!tstorage::resizable, "tensor resizable");
                         assert(ptr != nullptr || !size());
@@ -131,14 +131,10 @@ namespace nano
                 /// \brief copy constructor
                 ///
                 template <typename tstorage2>
-                tensor_t(const tensor_t<tstorage2, trank>& other)
+                tensor_t(const tensor_t<tstorage2, trank>& other) :
+                        m_dims(other.dims()),
+                        m_storage(other.storage())
                 {
-                        if (tstorage::resizable)
-                        {
-                                resize(other.dims());
-                        }
-                        assert(dims() == other.dims());
-                        array() = other.array();
                 }
 
                 ///
@@ -250,6 +246,11 @@ namespace nano
                 ///
                 void random(const tscalar min = -1, const tscalar max = +1) { random(array(), min, max); }
                 void setRandom(const tscalar min = -1, const tscalar max = +1) { random(min, max); }
+
+                ///
+                /// \brief access the storage container
+                ///
+                const auto& storage() const { return m_storage; }
 
                 ///
                 /// \brief access the tensor as a C-array

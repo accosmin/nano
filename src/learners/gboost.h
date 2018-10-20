@@ -54,8 +54,6 @@ namespace nano
                                 }
                         }
 
-                        // todo: extend loss_t to also work with 3D tensor maps
-
                         return f;
                 }
 

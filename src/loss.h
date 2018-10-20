@@ -34,16 +34,16 @@ namespace nano
                 ///
                 /// \brief compute the error value
                 ///
-                virtual scalar_t error(const tensor3d_t& target, const tensor3d_t& output) const = 0;
+                virtual scalar_t error(const tensor3d_cmap_t& target, const tensor3d_cmap_t& output) const = 0;
 
                 ///
                 /// \brief compute the loss value (an upper bound of the usually non-continuous error function)
                 ///
-                virtual scalar_t value(const tensor3d_t& target, const tensor3d_t& output) const = 0;
+                virtual scalar_t value(const tensor3d_cmap_t& target, const tensor3d_cmap_t& output) const = 0;
 
                 ///
                 /// \brief compute the loss gradient (wrt the output)
                 ///
-                virtual tensor3d_t vgrad(const tensor3d_t& target, const tensor3d_t& output) const = 0;
+                virtual tensor3d_t vgrad(const tensor3d_cmap_t& target, const tensor3d_cmap_t& output) const = 0;
         };
 }
