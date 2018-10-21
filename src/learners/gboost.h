@@ -37,7 +37,7 @@ namespace nano
                         for (tensor_size_t i = 0, size = m_targets.size<0>(); i < size; ++ i)
                         {
                                 outputs.vector() = m_soutputs.vector(i) + x(0) * m_woutputs.vector(i);
-                                f += m_loss.value(m_targets.tensor(i), outputs.tensor());
+                                f += m_loss.value(m_targets.tensor(i), outputs);
                         }
 
                         if (gx)
@@ -46,7 +46,7 @@ namespace nano
                                 for (tensor_size_t i = 0, size = m_targets.size<0>(); i < size; ++ i)
                                 {
                                         outputs.vector() = m_soutputs.vector(i) + x(0) * m_woutputs.vector(i);
-                                        const auto vgrad = m_loss.vgrad(m_targets.tensor(i), outputs.tensor());
+                                        const auto vgrad = m_loss.vgrad(m_targets.tensor(i), outputs);
                                         g += vgrad.vector().dot(m_woutputs.vector(i));
                                 }
                         }

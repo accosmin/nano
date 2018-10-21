@@ -84,7 +84,7 @@ trainer_result_t gboost_stump_t::train(const task_t& task, const size_t fold, co
         for (size_t i = 0, size = task.size(fold_train); i < size; ++ i)
         {
                 const auto target = task.target(fold_train, i);
-                targets.array(i) = target.array();
+                targets.tensor(i) = target.tensor();
         }
 
         gboost_lsearch_function_t func(targets, outputs_train, stump_outputs_train, loss);
@@ -100,7 +100,8 @@ trainer_result_t gboost_stump_t::train(const task_t& task, const size_t fold, co
                         const auto target = task.target(fold_train, i);
                         const auto output = outputs_train.tensor(i);
 
-                        residuals_train.vector(i) = -loss.vgrad(target, output).vector();
+                        const auto vgrad = loss.vgrad(target, output);
+                        residuals_train.vector(i) = -vgrad.vector();
                 }
 
                 scalar_t best_value = std::numeric_limits<scalar_t>::max();
@@ -172,7 +173,7 @@ trainer_result_t gboost_stump_t::train(const task_t& task, const size_t fold, co
                 {
                         const auto input = task.input(fold_train, i);
                         const auto oindex = input(stump.m_feature) < stump.m_threshold ? 0 : 1;
-                        stump_outputs_train.array(i) = stump.m_outputs.tensor(oindex).array();
+                        stump_outputs_train.tensor(i) = stump.m_outputs.tensor(oindex);
                 }
 
                 const auto state = solver->minimize(100, epsilon2<scalar_t>(), func, vector_t::Constant(1, 1));
@@ -187,19 +188,19 @@ trainer_result_t gboost_stump_t::train(const task_t& task, const size_t fold, co
                 {
                         const auto input = task.input(fold_train, i);
                         const auto oindex = input(stump.m_feature) < stump.m_threshold ? 0 : 1;
-                        outputs_train.array(i) += stump.m_outputs.tensor(oindex).array();
+                        outputs_train.array(i) += stump.m_outputs.array(oindex);
                 }
                 for (size_t i = 0, size = task.size(fold_valid); i < size; ++ i)
                 {
                         const auto input = task.input(fold_valid, i);
                         const auto oindex = input(stump.m_feature) < stump.m_threshold ? 0 : 1;
-                        outputs_valid.array(i) += stump.m_outputs.tensor(oindex).array();
+                        outputs_valid.array(i) += stump.m_outputs.array(oindex);
                 }
                 for (size_t i = 0, size = task.size(fold_test); i < size; ++ i)
                 {
                         const auto input = task.input(fold_test, i);
                         const auto oindex = input(stump.m_feature) < stump.m_threshold ? 0 : 1;
-                        outputs_test.array(i) += stump.m_outputs.tensor(oindex).array();
+                        outputs_test.array(i) += stump.m_outputs.array(oindex);
                 }
 
                 ::measure(task, fold_train, outputs_train, loss, errors_train, values_train);
@@ -230,7 +231,7 @@ tensor3d_t gboost_stump_t::output(const tensor3d_t& input) const
         for (const auto& stump : m_stumps)
         {
                 const auto oindex = idata(stump.m_feature) < stump.m_threshold ? 0 : 1;
-                odata.array() += stump.m_outputs.tensor(oindex).array();
+                odata.array() += stump.m_outputs.array(oindex);
         }
 
         return output;
