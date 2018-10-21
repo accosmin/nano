@@ -3,11 +3,21 @@ find_package(ZLIB REQUIRED)
 include_directories(SYSTEM ${ZLIB_INCLUDE_DIR})
 
 # DevIL
-find_package(DevIL REQUIRED)
+if(APPLE)
+        set(IL_INCLUDE_DIR "/usr/local/opt/devil/include/")
+        set(IL_LIBRARIES "/usr/local/opt/devil/lib/libIL.dylib")
+else()
+        find_package(DevIL REQUIRED)
+endif()
 include_directories(SYSTEM ${IL_INCLUDE_DIR})
 
 # LibArchive
-find_package(LibArchive REQUIRED)
+if(APPLE)
+        set(LibArchive_INCLUDE_DIRS "/usr/local/opt/libarchive/include/")
+        set(LibArchive_LIBRARIES "/usr/local/opt/libarchive/lib/libarchive.dylib")
+else()
+        find_package(LibArchive REQUIRED)
+endif()
 include_directories(SYSTEM ${LibArchive_INCLUDE_DIRS})
 
 # Eigen

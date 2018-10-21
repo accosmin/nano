@@ -1,4 +1,4 @@
-#include <il.h>
+#include <IL/il.h>
 #include "hash.h"
 #include "image.h"
 #include "algorithm.h"
