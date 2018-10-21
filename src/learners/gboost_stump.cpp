@@ -79,7 +79,6 @@ trainer_result_t gboost_stump_t::train(const task_t& task, const size_t fold, co
 
         stump_t stump;
         tensor4d_t stump_outputs_train(cat_dims(task.size(fold_train), m_odims));
-        tensor4d_t buffer_outputs_train(cat_dims(task.size(fold_train), m_odims));
 
         tensor4d_t targets(cat_dims(task.size(fold_train), m_odims));
         for (size_t i = 0, size = task.size(fold_train); i < size; ++ i)
@@ -88,9 +87,7 @@ trainer_result_t gboost_stump_t::train(const task_t& task, const size_t fold, co
                 targets.array(i) = target.array();
         }
 
-        gboost_lsearch_function_t func(
-                targets, outputs_train, stump_outputs_train, buffer_outputs_train,
-                loss);
+        gboost_lsearch_function_t func(targets, outputs_train, stump_outputs_train, loss);
 
         const auto solver = get_solvers().get("cgd");
         assert(solver != nullptr);
@@ -181,7 +178,7 @@ trainer_result_t gboost_stump_t::train(const task_t& task, const size_t fold, co
                 const auto state = solver->minimize(100, epsilon2<scalar_t>(), func, vector_t::Constant(1, 1));
                 const auto step = state.x(0);
 
-                log_info() << "step = " << step << ", state.f=" << state.f << ", state.g=" << state.g.transpose() ;
+                log_info() << "step = " << step << ", state.f=" << state.f << ", state.g=" << state.g.transpose();
 
                 stump.m_outputs.vector() *= step;
 

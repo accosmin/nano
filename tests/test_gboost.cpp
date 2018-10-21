@@ -11,7 +11,6 @@ NANO_CASE(lsearch_function)
         tensor4d_t targets(4, 3, 2, 1);
         tensor4d_t soutputs(4, 3, 2, 1);
         tensor4d_t woutputs(4, 3, 2, 1);
-        tensor4d_t outputs(4, 3, 2, 1);
 
         targets.vector(0) = class_target(6, 0);
         targets.vector(1) = class_target(6, 1);
@@ -24,7 +23,7 @@ NANO_CASE(lsearch_function)
         for (const auto& loss_id : get_losses().ids())
         {
                 const auto loss = get_losses().get(loss_id);
-                const auto func = gboost_lsearch_function_t{targets, soutputs, woutputs, outputs, *loss};
+                const auto func = gboost_lsearch_function_t{targets, soutputs, woutputs, *loss};
 
                 for (auto i = 0; i < 13; ++ i)
                 {
