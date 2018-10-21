@@ -65,9 +65,9 @@ namespace nano
 
                 tensor_pstorage_t() = default;
                 tensor_pstorage_t(tensor_pstorage_t&&) = default;
-                tensor_pstorage_t(const tensor_pstorage_t&) = default;
+                tensor_pstorage_t(const tensor_pstorage_t&) = delete;
                 tensor_pstorage_t& operator=(tensor_pstorage_t&&) = default;
-                tensor_pstorage_t& operator=(const tensor_pstorage_t&) = default;
+                tensor_pstorage_t& operator=(const tensor_pstorage_t&) = delete;
 
                 tensor_pstorage_t(const tstorage& data, const tensor_size_t size) : m_data(data), m_size(size) {}
 

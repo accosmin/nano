@@ -143,12 +143,8 @@ namespace nano
                 template <typename tstorage2>
                 tensor_t& operator=(const tensor_t<tstorage2, trank>& other)
                 {
-                        if (tstorage::resizable)
-                        {
-                                resize(other.dims());
-                        }
-                        assert(dims() == other.dims());
-                        array() = other.array();
+                        m_dims = other.dims();
+                        m_storage = other.storage();
                         return *this;
                 }
 
