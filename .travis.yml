@@ -324,11 +324,11 @@ matrix:
         - ninja
         - bash ../scripts/ci_ctest.sh
 
-    #- os: osx
-    #  compiler: clang
-    #  osx_image: xcode10
-    #  env: TEST="build (xcode10)"
-    #  script:
-    #    - cmake -G "Ninja" -DNANO_WITH_WERROR=ON ..
-    #    - ninja
-    #    - bash ../scripts/ci_ctest.sh
+    - os: osx
+      compiler: clang
+      osx_image: xcode10
+      env: TEST="build (xcode10)"
+      script:
+        - cmake -G "Ninja" -DNANO_WITH_WERROR=ON ..
+        - ninja
+        - bash ../scripts/ci_ctest.sh
