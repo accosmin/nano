@@ -13,21 +13,21 @@ namespace nano
         class regression_t final : public loss_t
         {
         public:
-                scalar_t error(const tensor3d_cmap_t& target, const tensor3d_cmap_t& output) const final
+                scalar_t error(const tensor3d_cmap_t& target, const tensor3d_cmap_t& output) const override
                 {
                         assert(target.dims() == output.dims());
 
                         return (target.array() - output.array()).abs().sum();
                 }
 
-                scalar_t value(const tensor3d_cmap_t& target, const tensor3d_cmap_t& output) const final
+                scalar_t value(const tensor3d_cmap_t& target, const tensor3d_cmap_t& output) const override
                 {
                         assert(target.dims() == output.dims());
 
                         return top::value(target.array(), output.array());
                 }
 
-                tensor3d_t vgrad(const tensor3d_cmap_t& target, const tensor3d_cmap_t& output) const final
+                tensor3d_t vgrad(const tensor3d_cmap_t& target, const tensor3d_cmap_t& output) const override
                 {
                         assert(target.dims() == output.dims());
 

@@ -8,8 +8,9 @@ namespace nano
         ///
         /// \brief zlib-based streaming of gzip-compressed binary data.
         ///
-        struct NANO_PUBLIC zlib_istream_t final : public istream_t
+        class NANO_PUBLIC zlib_istream_t final : public istream_t
         {
+        public:
                 explicit zlib_istream_t(istream_t& istream, const std::streamsize max_num_bytes = max_streamsize());
 
                 ~zlib_istream_t() override;

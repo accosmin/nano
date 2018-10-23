@@ -7,8 +7,9 @@ namespace nano
         ///
         /// \brief streaming of binary data using an in-memory buffer.
         ///
-        struct NANO_PUBLIC mem_istream_t final : public istream_t
+        class NANO_PUBLIC mem_istream_t final : public istream_t
         {
+        public:
                 template <typename tsize>
                 mem_istream_t(const char* data, const tsize size) :
                         m_data(data),
@@ -16,8 +17,6 @@ namespace nano
                         m_index(0)
                 {
                 }
-
-                ~mem_istream_t() override = default;
 
                 io_status advance(const std::streamsize num_bytes, buffer_t& buffer) override;
 

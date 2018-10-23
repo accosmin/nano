@@ -51,13 +51,13 @@ namespace nano
                       "=d" (registers[3])
                       : "a" (1), "c" (0));
                 const unsigned CPUFeatureSet = registers[3];
-                const bool hyperthreading = CPUFeatureSet & (1 << 28);
+                const bool hyperthreading = (CPUFeatureSet & (1u << 28)) != 0u;
                 return hyperthreading ? (logical_cpus() / 2) : logical_cpus();
         }
 
         unsigned long long int memsize()
         {
-                struct sysinfo info;
+                struct sysinfo info{};
                 sysinfo(&info);
                 return  static_cast<unsigned long long int>(info.totalram) *
                         static_cast<unsigned long long int>(info.mem_unit);
