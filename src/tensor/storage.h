@@ -30,7 +30,6 @@ namespace nano
                 tensor_vstorage_t& operator=(const tensor_vstorage_t&) = default;
 
                 template <typename tscalar2_>
-                // cppcheck-suppress  noExplicitConstructor
                 tensor_vstorage_t(const tensor_pstorage_t<tscalar2_>&);
 
                 explicit tensor_vstorage_t(const tstorage& data) : m_data(data) {}
@@ -70,7 +69,6 @@ namespace nano
                 }
 
                 template <typename tscalar2_>
-                // cppcheck-suppress  noExplicitConstructor
                 tensor_pstorage_t(const tensor_vstorage_t<tscalar2_>& other) :
                         m_data(other.data()),
                         m_size(other.size())
