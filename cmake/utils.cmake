@@ -144,6 +144,11 @@ function(setup_clang_tidy)
                 COMMENT "running clang tidy (misc)")
 
         add_custom_target(
+                clang-tidy-hicpp
+                COMMAND ${CLANG_TIDY_ARGS} -checks=-*,hicpp*
+                COMMENT "running clang tidy (hicpp")
+
+        add_custom_target(
                 clang-tidy-bugprone
                 COMMAND ${CLANG_TIDY_ARGS} -checks=-*,bugprone*
                 COMMENT "running clang tidy (bugprone)")
@@ -157,6 +162,11 @@ function(setup_clang_tidy)
                 clang-tidy-performance
                 COMMAND ${CLANG_TIDY_ARGS} -checks=-*,performance*
                 COMMENT "running clang tidy (performance)")
+
+        add_custom_target(
+                clang-tidy-portability
+                COMMAND ${CLANG_TIDY_ARGS} -checks=-*,portability*
+                COMMENT "running clang tidy (portability)")
 
         add_custom_target(
                 clang-tidy-readability

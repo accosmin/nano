@@ -19,12 +19,14 @@ spinner()
 check=$1
 
 # clang-tidy-misc
+# clang-tidy-cert
+# clang-tidy-hicpp
 # clang-tidy-bugprone
 # clang-tidy-modernize
 # clang-tidy-performance
-# clang-tidy-clang-analyzer"
-# clang-tidy-cert
+# clang-tidy-portability
 # clang-tidy-readability
+# clang-tidy-clang-analyzer"
 # clang-tidy-cppcoreguidelines"
 
 printf "running $check ...\n"

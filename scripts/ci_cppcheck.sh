@@ -13,4 +13,4 @@ ninja install
 cd ../../
 
 /tmp/cppcheck/bin/cppcheck --version
-/tmp/cppcheck/bin/cppcheck -j 4 --force --quiet --inline-suppr --enable=all --error-exitcode=0 -I../src/ ../src ../apps
+/tmp/cppcheck/bin/cppcheck -j 4 --force --quiet --inline-suppr --enable=all --error-exitcode=1 -I../src/ ../src ../apps

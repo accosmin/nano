@@ -312,7 +312,7 @@ namespace nano
                 treference operator()(const tensor_size_t index)
                 {
                         assert(index >= 0 && index < size());
-                        return data()[index];   // NOLINT (disable false alarm from clang-tidy-clang-analyzer)
+                        return data()[index];
                 }
 
                 template <typename... tindices>
