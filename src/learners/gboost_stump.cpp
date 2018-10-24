@@ -31,6 +31,7 @@ void gboost_stump_t::to_json(json_t& json) const
         nano::to_json(json,
                 "rounds", m_rounds,
                 "stump", m_stype, "stumps", join(enum_values<stump>()),
+                "solver", m_solver, "solvers", join(get_solvers().ids()),
                 "regularization", m_rtype, "regularizations", join(enum_values<regularization>()));
 }
 
@@ -39,6 +40,7 @@ void gboost_stump_t::from_json(const json_t& json)
         nano::from_json(json,
                 "rounds", m_rounds,
                 "stump", m_stype,
+                "solver", m_solver,
                 "regularization", m_rtype);
 }
 
@@ -89,7 +91,8 @@ trainer_result_t gboost_stump_t::train(const task_t& task, const size_t fold, co
 
         gboost_lsearch_function_t func(targets, outputs_train, stump_outputs_train, loss);
 
-        const auto solver = get_solvers().get("cgd");
+        const auto solver = get_solvers().get(m_solver);
+        // todo: critical error is the solver is not found
         assert(solver != nullptr);
 
         for (auto round = 0; round < m_rounds; ++ round)
