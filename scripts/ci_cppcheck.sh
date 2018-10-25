@@ -8,7 +8,7 @@ tar -xvf ${version}.tar.gz
 
 cd cppcheck-${version} && mkdir build && cd build
 cmake .. -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/tmp/cppcheck
-ninja
+ninja > build.log 2>&1
 ninja install
 cd ../../
 

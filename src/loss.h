@@ -28,8 +28,8 @@ namespace nano
                 ///
                 /// \brief serialization to JSON not needed
                 ///
-                void to_json(json_t&) const final {}
-                void from_json(const json_t&) final {}
+                void to_json(json_t&) const final;
+                void from_json(const json_t&) final;
 
                 ///
                 /// \brief compute the error value

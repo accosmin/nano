@@ -7,6 +7,14 @@
 
 using namespace nano;
 
+void loss_t::to_json(json_t&) const
+{
+}
+
+void loss_t::from_json(const json_t&)
+{
+}
+
 loss_factory_t& nano::get_losses()
 {
         static loss_factory_t manager;
