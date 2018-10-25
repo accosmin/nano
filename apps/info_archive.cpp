@@ -1,7 +1,7 @@
 #include "stringi.h"
+#include "core/logger.h"
 #include "core/archive.h"
 #include "core/cmdline.h"
-#include "core/checkpoint.h"
 
 int main(int argc, const char *argv[])
 {
@@ -28,9 +28,9 @@ int main(int argc, const char *argv[])
         };
 
         // load file
-        checkpoint_t checkpoint;
-        checkpoint.step(strcat("load archive from <", cmd_input, ">"));
-        checkpoint.measure(nano::load_archive(cmd_input, callback, error_callback));
+        critical(
+                [&] () { return load_archive(cmd_input, callback, error_callback); },
+                strcat("load archive from <", cmd_input, ">"));
 
         // OK
         log_info() << done;

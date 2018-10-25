@@ -1,7 +1,7 @@
 #include "learner.h"
 #include "core/io.h"
+#include "core/logger.h"
 #include "core/cmdline.h"
-#include "core/checkpoint.h"
 #include <iomanip>
 
 using namespace nano;
@@ -37,57 +37,67 @@ int main(int argc, const char *argv[])
         const auto cmd_loss = cmdline.get<string_t>("loss");
         const auto cmd_learner = cmdline.get<string_t>("learner");
 
-        checkpoint_t checkpoint;
         json_t json;
         string_t id;
 
         // load task
-        checkpoint.step(strcat("load task configuration from <", cmd_task, ">"));
-        checkpoint.critical(load_json(cmd_task, json, id));
+        critical(
+                [&] () { return load_json(cmd_task, json, id); },
+                strcat("load task configuration from <", cmd_task, ">"));
 
         rtask_t task;
-        checkpoint.step(strcat("search task <", id, ">"));
-        checkpoint.critical((task = get_tasks().get(id)) != nullptr);
+        critical(
+                [&] () { return (task = get_tasks().get(id)) != nullptr; },
+                strcat("search task <", id, ">"));
 
         task->from_json(json);
-        checkpoint.step(strcat("load task <", id, ">"));
-        checkpoint.measure(task->load());
+
+        critical(
+                [&] () { return task->load(); },
+                strcat("load task <", id, ">"));
 
         task->describe(id);
 
         // load loss
-        checkpoint.step(strcat("load loss configuration from <", cmd_loss, ">"));
-        checkpoint.critical(load_json(cmd_loss, json, id));
+        critical(
+                [&] () { return load_json(cmd_loss, json, id); },
+                strcat("load loss configuration from <", cmd_loss, ">"));
 
         rloss_t loss;
-        checkpoint.step(strcat("search loss <", id, ">"));
-        checkpoint.critical((loss = get_losses().get(id)) != nullptr);
+        critical(
+                [&] () { return (loss = get_losses().get(id)) != nullptr; },
+                strcat("search loss <", id, ">"));
 
         // load learner
-        checkpoint.step(strcat("load learner from <", cmd_learner, ">"));
-
         rlearner_t learner;
-        checkpoint.critical((learner = learner_t::load(cmd_learner)) != nullptr);
-        checkpoint.critical(*learner == *task);
+        critical(
+                [&] () { return (learner = learner_t::load(cmd_learner)) != nullptr; },
+                strcat("load learner from <", cmd_learner, ">"));
+
+        critical(
+                [&] () { return *learner == *task; },
+                strcat("checking learner's compability with the task"));
 
         // test the learner
-        checkpoint.step("evaluate learner");
-
-        const auto fold = fold_t{cmd_fold, protocol::test};
-
         // todo: use the thread pool to speed-up computation
         stats_t stats_errors, stats_values;
-        for (size_t i = 0, size = task->size(fold); i < size; ++ i)
-        {
-                const auto input = task->input(fold, i);
-                const auto target = task->target(fold, i);
-                const auto output = learner->output(input);
 
-                stats_errors(loss->error(target, output));
-                stats_values(loss->value(target, output));
-        }
+        critical(
+                [&] ()
+                {
+                        const auto fold = fold_t{cmd_fold, protocol::test};
+                        for (size_t i = 0, size = task->size(fold); i < size; ++ i)
+                        {
+                                const auto input = task->input(fold, i);
+                                const auto target = task->target(fold, i);
+                                const auto output = learner->output(input);
 
-        checkpoint.measure();
+                                stats_errors(loss->error(target, output));
+                                stats_values(loss->value(target, output));
+                        }
+                        return true;
+                },
+                "evaluate learner");
 
         // todo: add more stats (e.g. median, percentiles)
         log_info() << std::fixed << std::setprecision(3)

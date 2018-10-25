@@ -1,7 +1,7 @@
 #include "stringi.h"
 #include "core/mat5.h"
+#include "core/logger.h"
 #include "core/cmdline.h"
-#include "core/checkpoint.h"
 
 int main(int argc, const char *argv[])
 {
@@ -33,9 +33,9 @@ int main(int argc, const char *argv[])
         };
 
         // load file
-        checkpoint_t checkpoint;
-        checkpoint.step(strcat("load mat5 from <", cmd_input, ">"));
-        checkpoint.measure(load_mat5(cmd_input, hcallback, scallback, ecallback));
+        critical(
+                [&] () { return load_mat5(cmd_input, hcallback, scallback, ecallback); },
+                strcat("load mat5 from <", cmd_input, ">"));
 
         // OK
         log_info() << done;

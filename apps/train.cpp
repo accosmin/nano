@@ -3,8 +3,8 @@
 #include "learner.h"
 #include "core/io.h"
 #include "core/table.h"
+#include "core/logger.h"
 #include "core/cmdline.h"
-#include "core/checkpoint.h"
 #include <iostream>
 
 using namespace nano;
@@ -42,39 +42,46 @@ int main(int argc, const char *argv[])
         const auto cmd_basepath = cmdline.get<string_t>("basepath");
         const auto cmd_trials = cmdline.get<size_t>("trials");
 
-        checkpoint_t checkpoint;
         json_t json;
         string_t task_id, loss_id, learner_id;
 
         // load task
-        checkpoint.step(strcat("load task configuration from <", cmd_task, ">"));
-        checkpoint.critical(load_json(cmd_task, json, task_id));
+        critical(
+                [&] () { return load_json(cmd_task, json, task_id); },
+                strcat("load task configuration from <", cmd_task, ">"));
 
         rtask_t task;
-        checkpoint.step(strcat("search task <", task_id, ">"));
-        checkpoint.critical((task = get_tasks().get(task_id)) != nullptr);
+        critical(
+                [&] () { return (task = get_tasks().get(task_id)) != nullptr; },
+                strcat("search task <", task_id, ">"));
 
         task->from_json(json);
-        checkpoint.step(strcat("load task <", task_id, ">"));
-        checkpoint.measure(task->load());
+
+        critical(
+                [&] () { return task->load(); },
+                strcat("load task <", task_id, ">"));
 
         task->describe(task_id);
 
         // load loss
-        checkpoint.step(strcat("load loss configuration from <", cmd_loss, ">"));
-        checkpoint.critical(load_json(cmd_loss, json, loss_id));
+        critical(
+                [&] () { return load_json(cmd_loss, json, loss_id); },
+                strcat("load loss configuration from <", cmd_loss, ">"));
 
         rloss_t loss;
-        checkpoint.step(strcat("search loss <", loss_id, ">"));
-        checkpoint.critical((loss = get_losses().get(loss_id)) != nullptr);
+        critical(
+                [&] () { return (loss = get_losses().get(loss_id)) != nullptr; },
+                strcat("search loss <", loss_id, ">"));
 
         // load learner
-        checkpoint.step(strcat("load learner configuration from <", cmd_learner, ">"));
-        checkpoint.critical(load_json(cmd_learner, json, learner_id));
+        critical(
+                [&] () { return load_json(cmd_learner, json, learner_id); },
+                strcat("load learner configuration from <", cmd_learner, ">"));
 
         rlearner_t learner;
-        checkpoint.step(strcat("search learner <", learner_id, ">"));
-        checkpoint.critical((learner = get_learners().get(learner_id)) != nullptr);
+        critical(
+                [&] () { return (learner = get_learners().get(learner_id)) != nullptr; },
+                strcat("search learner <", learner_id, ">"));
 
         learner->from_json(json);
 
@@ -93,8 +100,9 @@ int main(int argc, const char *argv[])
         for (size_t trial = 0; trial < cmd_trials; ++ trial)
         {
                 trainer_result_t result;
-                checkpoint.step("train");
-                checkpoint.measure((result = learner->train(*task, trial % task->fsize(), *loss)) == true);
+                critical(
+                        [&] () { return (result = learner->train(*task, trial % task->fsize(), *loss)); },
+                        "train");
 
                 const auto& state = result.optimum_state();
                 table.append()
@@ -109,13 +117,17 @@ int main(int argc, const char *argv[])
                 const auto path_learner = strcat(cmd_basepath, "_trial", trial + 1, ".model");
                 const auto path_training = strcat(cmd_basepath, "_trial", trial + 1, ".csv");
 
-                checkpoint.step("save model");
-                checkpoint.critical(learner_t::save(path_learner, learner_id, *learner));
-                checkpoint.critical(result.save(path_training));
+                critical(
+                        [&] () { return learner_t::save(path_learner, learner_id, *learner); },
+                       "save model");
+                critical(
+                        [&] () { return result.save(path_training); },
+                       "save training history");
         }
 
-        checkpoint.step("save stats");
-        checkpoint.critical(table.save(strcat(cmd_basepath, ".csv")));
+        critical(
+                [&] () { return table.save(strcat(cmd_basepath, ".csv")); },
+                "save statistics");
 
         std::cout << table;
 

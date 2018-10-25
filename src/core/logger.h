@@ -1,12 +1,13 @@
 #pragma once
 
 #include "arch.h"
+#include "timer.h"
 #include <ostream>
 
 namespace nano
 {
         ///
-        /// \brief logging object that can use any std::ostream (standard streaming & text files).
+        /// \brief logging object.
         ///
         class NANO_PUBLIC logger_t
         {
@@ -54,7 +55,7 @@ namespace nano
                 // attributes
                 std::ostream&   m_stream;       ///< stream to write into
                 std::streamsize m_precision;    ///< original precision to restore
-                bool            m_flush;
+                bool            m_flush{true};
         };
 
         ///
@@ -66,7 +67,7 @@ namespace nano
         inline logger_t& flush(logger_t& logger)        { return logger.flush(); }
 
         ///
-        /// \brief specific [information, warning, error] line loggers
+        /// \brief specific [information, warning, error] line loggers.
         ///
         inline logger_t log_info(const bool flush_at_destruction = true)
         {
@@ -79,5 +80,37 @@ namespace nano
         inline logger_t log_error(const bool flush_at_destruction = true)
         {
                 return logger_t(logger_t::type::error, flush_at_destruction);
+        }
+
+        ///
+        /// \brief run and check a critical step (checkpoint).
+        ///
+        template <typename toperator, typename tstring>
+        void critical(const toperator& op, const tstring& message)
+        {
+                const timer_t timer;
+                try
+                {
+                        if (static_cast<bool>(op()))
+                        {
+                                log_info() << message << " done in [" << timer.elapsed() << "].";
+                        }
+                        else
+                        {
+                                log_error() << message << " failed after [" << timer.elapsed() << "]!";
+                                exit(EXIT_FAILURE);
+                        }
+                }
+                catch (std::exception& e)
+                {
+                        log_error() << message << " failed with std::exception [" << e.what()
+                                << "] after [" << timer.elapsed() << "]!";
+                        exit(EXIT_FAILURE);
+                }
+                catch (...)
+                {
+                        log_error() << message << " failed with unknown exception after [" << timer.elapsed() << "]!";
+                        exit(EXIT_FAILURE);
+                }
         }
 }
