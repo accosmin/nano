@@ -3,8 +3,9 @@
 #include <cmath>
 #include <limits>
 #include <ostream>
+#include "scalar.h"
+#include "core/cast.h"
 #include "core/timer.h"
-#include "solvers/state.h"
 
 namespace nano
 {
@@ -52,9 +53,7 @@ namespace nano
 
                 // attributes
                 milliseconds_t          m_milis{0};     ///< (cumulated) elapsed time since the optimization started
-                size_t                  m_epoch{0};     ///<
-                scalar_t                m_xnorm{0};     ///< L2-norm of the parameters
-                scalar_t                m_gnorm{0};     ///< L2-norm of the parameters' gradient
+                int                     m_epoch{0};     ///<
                 trainer_measurement_t   m_train;        ///< measurement on the training dataset
                 trainer_measurement_t   m_valid;        ///< measurement on the validation dataset
                 trainer_measurement_t   m_test;         ///< measurement on the test dataset
@@ -69,44 +68,23 @@ namespace nano
         }
 
         ///
-        /// \brief
-        ///
-        enum class trainer_status
-        {
-                failed,         ///< optimization failed
-                better,         ///< performance improved
-                worse,          ///< performance decreased (but not critically)
-                overfit,        ///< overfitting detected (processing should stop)
-                diverge,        ///< divergence detected aka Nan/Inf (processing should stop)
-                solved          ///< problem solved with arbitrary accuracy (processing should stop)
-        };
-
-        template <>
-        inline enum_map_t<trainer_status> enum_string<trainer_status>()
-        {
-                return
-                {
-                        { trainer_status::failed,          "*failed" },
-                        { trainer_status::better,          "+better" },
-                        { trainer_status::worse,           "--worse" },
-                        { trainer_status::overfit,         "overfit" },
-                        { trainer_status::diverge,         "diverge" },
-                        { trainer_status::solved,          "!solved" }
-                };
-        }
-
-        ///
-        /// \brief check if the training should be stopped
-        ///
-        NANO_PUBLIC bool is_done(const trainer_status);
-
-        ///
         /// \brief track the current/optimum model state.
         ///
         class NANO_PUBLIC trainer_result_t
         {
         public:
 
+                enum class status
+                {
+                        better,         ///< performance improved
+                        worse,          ///< performance decreased (but not critically)
+                        overfit,        ///< overfitting detected (processing should stop)
+                        diverge,        ///< divergence detected aka Nan/Inf (processing should stop)
+                };
+
+                ///
+                /// \brief default constructor
+                ///
                 trainer_result_t() = default;
 
                 ///
@@ -117,14 +95,23 @@ namespace nano
                 ///
                 /// \brief update the current/optimum state with a possible better state
                 ///
-                trainer_status update(const solver_state_t&, const trainer_state_t&, const size_t patience);
+                trainer_result_t::status update(const trainer_state_t&, const int patience);
 
                 ///
                 /// \brief check if a valid result
                 ///
                 operator bool() const
                 {
-                        return !m_history.empty() && m_opt_params.size() > 0;
+                        return !m_history.empty();
+                }
+
+                ///
+                /// \brief check if the training should be stopped
+                ///
+                bool is_done() const
+                {
+                        return  m_status == trainer_result_t::status::diverge ||
+                                m_status == trainer_result_t::status::overfit;
                 }
 
                 ///
@@ -138,52 +125,53 @@ namespace nano
                 bool save(const string_t& path) const;
 
                 ///
-                /// \brief optimum training state
+                /// \brief access functions
                 ///
-                const auto& optimum_state() const { return m_opt_state; }
-
-                ///
-                /// \brief optimum model parameters
-                ///
-                const auto& optimum_params() const { return m_opt_params; }
-
-                ///
-                /// \brief optimum epoch
-                ///
-                size_t optimum_epoch() const { return optimum_state().m_epoch; }
-
-                ///
-                /// \brief training/optimization configuration
-                ///
+                auto get_status() const { return m_status; }
                 const auto& config() const { return m_config; }
-
-                ///
-                /// \brief optimization history
-                ///
                 const auto& history() const { return m_history; }
+                const auto& optimum() const { return m_optimum; }
 
         private:
 
                 // attributes
-                vector_t                m_opt_params;           ///< optimum model parameters
-                trainer_state_t         m_opt_state;            ///< optimum training state
-                string_t                m_config;               ///< optimization configuration
-                trainer_states_t        m_history;              ///< optimization history
+                string_t                m_config;                       ///<
+                status                  m_status{status::better};       ///<
+                trainer_state_t         m_optimum;                      ///< optimum state
+                trainer_states_t        m_history;                      ///< optimization history
         };
+
+        template <>
+        inline enum_map_t<trainer_result_t::status> enum_string<trainer_result_t::status>()
+        {
+                return
+                {
+                        { trainer_result_t::status::better,          "+better" },
+                        { trainer_result_t::status::worse,           "--worse" },
+                        { trainer_result_t::status::overfit,         "overfit" },
+                        { trainer_result_t::status::diverge,         "diverge" }
+                };
+        }
+
+        inline std::ostream& operator<<(std::ostream& os, const trainer_result_t::status status)
+        {
+                return os << to_string(status);
+        }
 
         inline bool operator<(const trainer_result_t& result1, const trainer_result_t& result2)
         {
-                return result1.optimum_state() < result2.optimum_state();
+                // compare (aka tune) on the validation dataset!
+                return result1.optimum() < result2.optimum();
         }
 
         inline std::ostream& operator<<(std::ostream& os, const trainer_result_t& result)
         {
-                const auto& state = result.optimum_state();
+                const auto& state = result.optimum();
                 return  os
-                        << "train=" << state.m_train
-                        << ",valid=" << state.m_valid
-                        << ",test=" << state.m_test
-                        << "," << result.config() << ",epoch=" << result.optimum_epoch()
+                        << "tr=" << state.m_train
+                        << ",vd=" << state.m_valid << "[" << result.get_status() << "]"
+                        << ",te=" << state.m_test
+                        << "," << result.config() << ",epoch=" << state.m_epoch
                         << ",speed=" << (result.history().size() > 1 ? result.convergence_speed() : scalar_t(0)) << "/s";
         }
 }

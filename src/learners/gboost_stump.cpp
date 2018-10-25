@@ -30,6 +30,7 @@ void gboost_stump_t::to_json(json_t& json) const
 {
         nano::to_json(json,
                 "rounds", m_rounds,
+                "patience", m_patience,
                 "stump", m_stype, "stumps", join(enum_values<stump>()),
                 "solver", m_solver, "solvers", join(get_solvers().ids()),
                 "regularization", m_rtype, "regularizations", join(enum_values<regularization>()));
@@ -39,6 +40,7 @@ void gboost_stump_t::from_json(const json_t& json)
 {
         nano::from_json(json,
                 "rounds", m_rounds,
+                "patience", m_patience,
                 "stump", m_stype,
                 "solver", m_solver,
                 "regularization", m_rtype);
@@ -50,6 +52,9 @@ trainer_result_t gboost_stump_t::train(const task_t& task, const size_t fold, co
         m_odims = task.odims();
 
         m_stumps.clear();
+
+        trainer_result_t result("<config>");
+        timer_t timer;
 
         const auto fold_train = fold_t{fold, protocol::train};
         const auto fold_valid = fold_t{fold, protocol::valid};
@@ -70,10 +75,13 @@ trainer_result_t gboost_stump_t::train(const task_t& task, const size_t fold, co
         ::measure(task, fold_valid, outputs_valid, loss, errors_valid, values_valid);
         ::measure(task, fold_test, outputs_test, loss, errors_test, values_test);
 
-        log_info() << "gboost-stump: " << 0 << "/" << m_rounds
-                << ":tr=" << values_train.avg() << "/" << errors_train.avg()
-                << ",vd=" << values_valid.avg() << "/" << errors_valid.avg()
-                << ",te=" << values_test.avg() << "/" << errors_test.avg() << std::endl;
+        result.update(trainer_state_t{timer.milliseconds(), 0,
+                {values_train.avg(), errors_train.avg()},
+                {values_valid.avg(), errors_valid.avg()},
+                {values_test.avg(), errors_test.avg()}},
+                m_patience);
+
+        log_info() << result;
 
         tensor4d_t residuals_train(cat_dims(task.size(fold_train), m_odims));
         tensor3d_t residuals_pos1(m_odims), residuals_pos2(m_odims);
@@ -95,7 +103,7 @@ trainer_result_t gboost_stump_t::train(const task_t& task, const size_t fold, co
         // todo: critical error is the solver is not found
         assert(solver != nullptr);
 
-        for (auto round = 0; round < m_rounds; ++ round)
+        for (auto round = 0; round < m_rounds && !result.is_done(); ++ round)
         {
                 for (size_t i = 0, size = task.size(fold_train); i < size; ++ i)
                 {
@@ -152,10 +160,10 @@ trainer_result_t gboost_stump_t::train(const task_t& task, const size_t fold, co
                                         (residuals_pos2.array().sum() - residuals_pos1.array().square().sum() / cnt_pos) +
                                         (residuals_neg2.array().sum() - residuals_neg1.array().square().sum() / cnt_neg);
 
-                                log_info() << "feature = " << feature
-                                        << ", threshold = " << threshold
-                                        << ", value = " << value
-                                        << ", count = " << cnt_neg << "+" << cnt_pos << "=" << task.size(fold_train);
+                                //log_info() << "feature = " << feature
+                                //        << ", threshold = " << threshold
+                                //        << ", value = " << value
+                                //        << ", count = " << cnt_neg << "+" << cnt_pos << "=" << task.size(fold_train);
 
                                 if (value < best_value)
                                 {
@@ -182,7 +190,7 @@ trainer_result_t gboost_stump_t::train(const task_t& task, const size_t fold, co
                 const auto state = solver->minimize(100, epsilon2<scalar_t>(), func, vector_t::Constant(1, 1));
                 const auto step = state.x(0);
 
-                log_info() << "step = " << step << ", state.f=" << state.f << ", state.g=" << state.g.transpose();
+                //log_info() << "step = " << step << ", state.f=" << state.f << ", state.g=" << state.g.transpose();
 
                 stump.m_outputs.vector() *= step;
 
@@ -206,18 +214,23 @@ trainer_result_t gboost_stump_t::train(const task_t& task, const size_t fold, co
                         outputs_test.array(i) += stump.m_outputs.array(oindex);
                 }
 
+                m_stumps.push_back(stump);
+
                 ::measure(task, fold_train, outputs_train, loss, errors_train, values_train);
                 ::measure(task, fold_valid, outputs_valid, loss, errors_valid, values_valid);
                 ::measure(task, fold_test, outputs_test, loss, errors_test, values_test);
 
-                log_info() << "gboost-stump: " << (round + 1) << "/" << m_rounds
-                        << ":tr=" << values_train.avg() << "/" << errors_train.avg()
-                        << ",vd=" << values_valid.avg() << "/" << errors_valid.avg()
-                        << ",te=" << values_test.avg() << "/" << errors_test.avg() << std::endl;
+                result.update(trainer_state_t{timer.milliseconds(), round + 1,
+                        {values_train.avg(), errors_train.avg()},
+                        {values_valid.avg(), errors_valid.avg()},
+                        {values_test.avg(), errors_test.avg()}},
+                        m_patience);
+
+                log_info() << result << ",feature=" << stump.m_feature << ",gamma=" << step
+                        << ",solver=" << state.m_status
+                        << "|i=" << state.m_iterations << "|g=" << state.convergence_criteria() << ".";
         }
 
-        // todo
-        trainer_result_t result;
         return result;
 }
 

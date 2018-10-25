@@ -104,13 +104,12 @@ int main(int argc, const char *argv[])
                         [&] () { return (result = learner->train(*task, trial % task->fsize(), *loss)); },
                         "train");
 
-                const auto& state = result.optimum_state();
+                const auto& state = result.optimum();
                 table.append()
                         << precision(0) << (trial + 1) << state.m_epoch
                         << precision(3) << state.m_train.m_value << state.m_train.m_error
                         << precision(3) << state.m_valid.m_value << state.m_valid.m_error
                         << precision(3) << state.m_test.m_value << state.m_test.m_error
-                        << precision(3) << state.m_xnorm << state.m_gnorm
                         << precision(0) << idiv(state.m_milis.count(), 1000)
                         << precision(6) << result.convergence_speed();
 

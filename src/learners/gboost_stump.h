@@ -67,6 +67,7 @@ namespace nano
                 tensor3d_dim_t  m_idims{{0, 0, 0}};                     ///< input dimensions
                 tensor3d_dim_t  m_odims{{0, 0, 0}};                     ///< output dimensions
                 int             m_rounds{0};                            ///< training: number of boosting rounds
+                int             m_patience{0};                          ///< training: number of epochs before overfitting
                 string_t        m_solver{"cgd"};                        ///< training: solver to use
                 stump           m_stype{stump::discrete};               ///< training:
                 regularization  m_rtype{regularization::adaptive};      ///< training:

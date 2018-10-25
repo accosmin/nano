@@ -10,61 +10,39 @@ trainer_result_t::trainer_result_t(string_t config) :
 {
 }
 
-trainer_status trainer_result_t::update(const solver_state_t& opt_state, const trainer_state_t& state, const size_t patience)
+trainer_result_t::status trainer_result_t::update(const trainer_state_t& state, const int patience)
 {
         // out-of-bounds values (e.g. caused by invalid line-search steps)
         if (!state)
         {
-                return trainer_status::diverge;
+                return (m_status = status::diverge);
         }
 
         m_history.push_back(state);
 
-        const auto updater = [&] ()
-        {
-                m_opt_params = opt_state.x;
-                m_opt_state = state;
-        };
-
-        // optimization finished successfully
-        if (opt_state.m_status == solver_state_t::status::converged)
-        {
-                if (state < m_opt_state)
-                {
-                        updater();
-                }
-                return trainer_status::solved;
-        }
-
-        // optimization failed
-        else if (opt_state.m_status == solver_state_t::status::failed)
-        {
-                return trainer_status::failed;
-        }
-
         // improved performance
-        else if (state < m_opt_state)
+        if (state < m_optimum)
         {
-                updater();
-                return trainer_status::better;
+                m_optimum = state;
+                return (m_status = status::better);
         }
 
         // worse performance, but not enough epochs, keep training
         else if (state.m_epoch < patience)
         {
-                return trainer_status::worse;
+                return (m_status = status::worse);
         }
 
         // last improvement not far in the past, keep training
-        else if (state.m_epoch < m_opt_state.m_epoch + patience)
+        else if (state.m_epoch < m_optimum.m_epoch + patience)
         {
-                return trainer_status::worse;
+                return (m_status = status::worse);
         }
 
         // no improvement since many epochs, overfitting detected
         else
         {
-                return trainer_status::overfit;
+                return (m_status = status::overfit);
         }
 }
 
@@ -105,9 +83,9 @@ bool trainer_result_t::save(const string_t& path) const
                 << "train_loss" << "train_error"
                 << "valid_loss" << "valid_error"
                 << "test_loss" << "test_error"
-                << "xnorm" << "gnorm" << "seconds";
+                << "seconds";
 
-        size_t index = 0;
+        int index = 0;
         for (const auto& state : history())
         {
                 auto&& row = table.append();
@@ -115,16 +93,8 @@ bool trainer_result_t::save(const string_t& path) const
                         << state.m_train.m_value << state.m_train.m_error
                         << state.m_valid.m_value << state.m_valid.m_error
                         << state.m_test.m_value << state.m_test.m_error
-                        << state.m_xnorm << state.m_gnorm << idiv(state.m_milis.count(), 1000);
+                        << idiv(state.m_milis.count(), 1000);
         }
 
         return table.save(path);
-}
-
-bool nano::is_done(const trainer_status code)
-{
-        return  code == trainer_status::diverge ||
-                code == trainer_status::overfit ||
-                code == trainer_status::solved ||
-                code == trainer_status::failed;
 }
