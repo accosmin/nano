@@ -33,7 +33,7 @@ namespace nano
                 explicit tensor_vstorage_t(const tensor_size_t size) : m_data(size) {}
 
                 template <typename tscalar2>
-                tensor_vstorage_t(const tensor_pstorage_t<tscalar2>& other) :
+                explicit tensor_vstorage_t(const tensor_pstorage_t<tscalar2>& other) :
                         m_data(map_vector(other.data(), other.size()))
                 {
                 }
@@ -81,13 +81,13 @@ namespace nano
                 }
 
                 template <typename tscalar2>
-                tensor_pstorage_t(const tensor_vstorage_t<tscalar2>& other) :
+                explicit tensor_pstorage_t(const tensor_vstorage_t<tscalar2>& other) :
                         m_data(other.data()), m_size(other.size())
                 {
                 }
 
                 template <typename tscalar2>
-                tensor_pstorage_t(const tensor_pstorage_t<tscalar2>& other) :
+                explicit tensor_pstorage_t(const tensor_pstorage_t<tscalar2>& other) :
                         m_data(other.data()), m_size(other.size())
                 {
                 }
