@@ -128,7 +128,7 @@ namespace nano
                 }
 
                 ///
-                /// \brief
+                /// \brief default for copying and moving (delegate to the storage objects)
                 ///
                 tensor_t(const tensor_t&) = default;
                 tensor_t& operator=(const tensor_t&) = default;
@@ -136,6 +136,9 @@ namespace nano
                 tensor_t(tensor_t&&) = default;
                 tensor_t& operator=(tensor_t&&) = default;
 
+                ///
+                /// \brief copy constructor from different types (e.g. const from non-const scalars)
+                ///
                 template <typename tstorage2>
                 tensor_t(const tensor_t<tstorage2, trank>& other) :
                         m_dims(other.dims()),
@@ -143,6 +146,9 @@ namespace nano
                 {
                 }
 
+                ///
+                /// \brief assignment operator from different types (e.g. const from non-const scalars)
+                ///
                 template <typename tstorage2>
                 tensor_t& operator=(const tensor_t<tstorage2, trank>& other)
                 {

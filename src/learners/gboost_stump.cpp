@@ -1,5 +1,6 @@
 #include "gboost.h"
 #include "solver.h"
+#include "core/tpool.h"
 #include "core/logger.h"
 #include "gboost_stump.h"
 #include "core/ibstream.h"
@@ -7,33 +8,41 @@
 
 using namespace nano;
 
-static void measure(const task_t& task, const fold_t& fold, const tensor4d_t& outputs, const loss_t& loss,
-        stats_t& errors, stats_t& values)
+static auto measure(const task_t& task, const fold_t& fold, const tensor4d_t& outputs, const loss_t& loss)
 {
-        errors.clear();
-        values.clear();
+        const auto& tpool = tpool_t::instance();
 
-        // todo: use multiple threads to speed up computation
-        for (size_t i = 0, size = task.size(fold); i < size; ++ i)
+        std::vector<stats_t> errors(tpool.workers());
+        std::vector<stats_t> values(tpool.workers());
+
+        loopit(task.size(fold), [&] (const size_t i, const size_t t)
         {
+                assert(t < tpool.workers());
                 const auto input = task.input(fold, i);
                 const auto target = task.target(fold, i);
                 const auto output = outputs.tensor(i);
 
-                errors(loss.error(target, output));
-                values(loss.value(target, output));
+                errors[t](loss.error(target, output));
+                values[t](loss.value(target, output));
+        });
+
+        for (size_t t = 1; t < tpool.workers(); ++ t)
+        {
+                errors[0](errors[t]);
+                values[0](values[t]);
         }
+
+        return std::make_pair(errors[0], values[0]);
 }
 
 static void update(const task_t& task, const fold_t& fold, tensor4d_t& outputs, const stump_t& stump)
 {
-        // todo: use multiple thread to speed up computation
-        for (size_t i = 0, size = task.size(fold); i < size; ++ i)
+        loopi(task.size(fold), [&] (const size_t i)
         {
                 const auto input = task.input(fold, i);
                 const auto oindex = input(stump.m_feature) < stump.m_threshold ? 0 : 1;
                 outputs.array(i) += stump.m_outputs.array(oindex);
-        }
+        });
 }
 
 // todo: break the computation in smaller functions (move them to gboost.h)
@@ -89,9 +98,9 @@ trainer_result_t gboost_stump_t::train(const task_t& task, const size_t fold, co
         stats_t errors_train, errors_valid, errors_test;
         stats_t values_train, values_valid, values_test;
 
-        ::measure(task, fold_train, outputs_train, loss, errors_train, values_train);
-        ::measure(task, fold_valid, outputs_valid, loss, errors_valid, values_valid);
-        ::measure(task, fold_test, outputs_test, loss, errors_test, values_test);
+        std::tie(errors_train, values_train) = ::measure(task, fold_train, outputs_train, loss);
+        std::tie(errors_valid, values_valid) = ::measure(task, fold_valid, outputs_valid, loss);
+        std::tie(errors_test, values_test) = ::measure(task, fold_test, outputs_test, loss);
 
         result.update(trainer_state_t{timer.milliseconds(), 0,
                 {values_train.avg(), errors_train.avg()},
@@ -212,9 +221,9 @@ trainer_result_t gboost_stump_t::train(const task_t& task, const size_t fold, co
                 update(task, fold_valid, outputs_valid, stump);
                 update(task, fold_test, outputs_test, stump);
 
-                ::measure(task, fold_train, outputs_train, loss, errors_train, values_train);
-                ::measure(task, fold_valid, outputs_valid, loss, errors_valid, values_valid);
-                ::measure(task, fold_test, outputs_test, loss, errors_test, values_test);
+                std::tie(errors_train, values_train) = ::measure(task, fold_train, outputs_train, loss);
+                std::tie(errors_valid, values_valid) = ::measure(task, fold_valid, outputs_valid, loss);
+                std::tie(errors_test, values_test) = ::measure(task, fold_test, outputs_test, loss);
 
                 result.update(trainer_state_t{timer.milliseconds(), round + 1,
                         {values_train.avg(), errors_train.avg()},
