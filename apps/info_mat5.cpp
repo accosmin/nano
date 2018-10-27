@@ -33,8 +33,7 @@ int main(int argc, const char *argv[])
         };
 
         // load file
-        critical(
-                [&] () { return load_mat5(cmd_input, hcallback, scallback, ecallback); },
+        critical(load_mat5(cmd_input, hcallback, scallback, ecallback),
                 strcat("load mat5 from <", cmd_input, ">"));
 
         // OK

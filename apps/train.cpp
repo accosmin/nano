@@ -46,41 +46,34 @@ int main(int argc, const char *argv[])
         string_t task_id, loss_id, learner_id;
 
         // load task
-        critical(
-                [&] () { return load_json(cmd_task, json, task_id); },
+        critical(load_json(cmd_task, json, task_id),
                 strcat("load task configuration from <", cmd_task, ">"));
 
         rtask_t task;
-        critical(
-                [&] () { return (task = get_tasks().get(task_id)) != nullptr; },
+        critical(task = get_tasks().get(task_id),
                 strcat("search task <", task_id, ">"));
 
         task->from_json(json);
 
-        critical(
-                [&] () { return task->load(); },
+        critical(task->load(),
                 strcat("load task <", task_id, ">"));
 
         task->describe(task_id);
 
         // load loss
-        critical(
-                [&] () { return load_json(cmd_loss, json, loss_id); },
+        critical(load_json(cmd_loss, json, loss_id),
                 strcat("load loss configuration from <", cmd_loss, ">"));
 
         rloss_t loss;
-        critical(
-                [&] () { return (loss = get_losses().get(loss_id)) != nullptr; },
+        critical(loss = get_losses().get(loss_id),
                 strcat("search loss <", loss_id, ">"));
 
         // load learner
-        critical(
-                [&] () { return load_json(cmd_learner, json, learner_id); },
+        critical(load_json(cmd_learner, json, learner_id),
                 strcat("load learner configuration from <", cmd_learner, ">"));
 
         rlearner_t learner;
-        critical(
-                [&] () { return (learner = get_learners().get(learner_id)) != nullptr; },
+        critical(learner = get_learners().get(learner_id),
                 strcat("search learner <", learner_id, ">"));
 
         learner->from_json(json);
@@ -100,8 +93,7 @@ int main(int argc, const char *argv[])
         for (size_t trial = 0; trial < cmd_trials; ++ trial)
         {
                 trainer_result_t result;
-                critical(
-                        [&] () { return (result = learner->train(*task, trial % task->fsize(), *loss)); },
+                critical(result = learner->train(*task, trial % task->fsize(), *loss),
                         "train");
 
                 const auto& state = result.optimum();
@@ -116,17 +108,11 @@ int main(int argc, const char *argv[])
                 const auto path_learner = strcat(cmd_basepath, "_trial", trial + 1, ".model");
                 const auto path_training = strcat(cmd_basepath, "_trial", trial + 1, ".csv");
 
-                critical(
-                        [&] () { return learner_t::save(path_learner, learner_id, *learner); },
-                       "save model");
-                critical(
-                        [&] () { return result.save(path_training); },
-                       "save training history");
+                critical(learner_t::save(path_learner, learner_id, *learner), "save model");
+                critical(result.save(path_training), "save training history");
         }
 
-        critical(
-                [&] () { return table.save(strcat(cmd_basepath, ".csv")); },
-                "save statistics");
+        critical(table.save(strcat(cmd_basepath, ".csv")), "save statistics");
 
         std::cout << table;
 

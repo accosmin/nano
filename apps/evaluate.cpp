@@ -41,41 +41,34 @@ int main(int argc, const char *argv[])
         string_t id;
 
         // load task
-        critical(
-                [&] () { return load_json(cmd_task, json, id); },
+        critical(load_json(cmd_task, json, id),
                 strcat("load task configuration from <", cmd_task, ">"));
 
         rtask_t task;
-        critical(
-                [&] () { return (task = get_tasks().get(id)) != nullptr; },
+        critical(task = get_tasks().get(id),
                 strcat("search task <", id, ">"));
 
         task->from_json(json);
 
-        critical(
-                [&] () { return task->load(); },
+        critical(task->load(),
                 strcat("load task <", id, ">"));
 
         task->describe(id);
 
         // load loss
-        critical(
-                [&] () { return load_json(cmd_loss, json, id); },
+        critical(load_json(cmd_loss, json, id),
                 strcat("load loss configuration from <", cmd_loss, ">"));
 
         rloss_t loss;
-        critical(
-                [&] () { return (loss = get_losses().get(id)) != nullptr; },
+        critical(loss = get_losses().get(id),
                 strcat("search loss <", id, ">"));
 
         // load learner
         rlearner_t learner;
-        critical(
-                [&] () { return (learner = learner_t::load(cmd_learner)) != nullptr; },
+        critical(learner = learner_t::load(cmd_learner),
                 strcat("load learner from <", cmd_learner, ">"));
 
-        critical(
-                [&] () { return *learner == *task; },
+        critical(*learner == *task,
                 strcat("checking learner's compability with the task"));
 
         // test the learner
@@ -96,7 +89,7 @@ int main(int argc, const char *argv[])
                                 stats_values(loss->value(target, output));
                         }
                         return true;
-                },
+                }(),
                 "evaluate learner");
 
         // todo: add more stats (e.g. median, percentiles)

@@ -14,7 +14,6 @@ static void measure(const task_t& task, const fold_t& fold, const tensor4d_t& ou
         values.clear();
 
         // todo: use multiple threads to speed up computation
-        // todo: extend loss_t to also process mapped 3D tensors (e.g. outputs)
         for (size_t i = 0, size = task.size(fold); i < size; ++ i)
         {
                 const auto input = task.input(fold, i);
@@ -25,6 +24,20 @@ static void measure(const task_t& task, const fold_t& fold, const tensor4d_t& ou
                 values(loss.value(target, output));
         }
 }
+
+static void update(const task_t& task, const fold_t& fold, tensor4d_t& outputs, const stump_t& stump)
+{
+        // todo: use multiple thread to speed up computation
+        for (size_t i = 0, size = task.size(fold); i < size; ++ i)
+        {
+                const auto input = task.input(fold, i);
+                const auto oindex = input(stump.m_feature) < stump.m_threshold ? 0 : 1;
+                outputs.array(i) += stump.m_outputs.array(oindex);
+        }
+}
+
+// todo: break the computation in smaller functions (move them to gboost.h)
+// todo: better comment tensor/tensor.h
 
 void gboost_stump_t::to_json(json_t& json) const
 {
@@ -48,6 +61,11 @@ void gboost_stump_t::from_json(const json_t& json)
 
 trainer_result_t gboost_stump_t::train(const task_t& task, const size_t fold, const loss_t& loss)
 {
+        // check if the solver is properly set
+        rsolver_t solver;
+        critical(solver = get_solvers().get(m_solver),
+                strcat("invalid solver (", m_solver, ")"));
+
         m_idims = task.idims();
         m_odims = task.odims();
 
@@ -98,10 +116,6 @@ trainer_result_t gboost_stump_t::train(const task_t& task, const size_t fold, co
         }
 
         gboost_lsearch_function_t func(targets, outputs_train, stump_outputs_train, loss);
-
-        const auto solver = get_solvers().get(m_solver);
-        // todo: critical error is the solver is not found
-        assert(solver != nullptr);
 
         for (auto round = 0; round < m_rounds && !result.is_done(); ++ round)
         {
@@ -191,28 +205,12 @@ trainer_result_t gboost_stump_t::train(const task_t& task, const size_t fold, co
                 const auto step = state.x(0);
 
                 stump.m_outputs.vector() *= step;
+                m_stumps.push_back(stump);
 
                 // update current outputs
-                for (size_t i = 0, size = task.size(fold_train); i < size; ++ i)
-                {
-                        const auto input = task.input(fold_train, i);
-                        const auto oindex = input(stump.m_feature) < stump.m_threshold ? 0 : 1;
-                        outputs_train.array(i) += stump.m_outputs.array(oindex);
-                }
-                for (size_t i = 0, size = task.size(fold_valid); i < size; ++ i)
-                {
-                        const auto input = task.input(fold_valid, i);
-                        const auto oindex = input(stump.m_feature) < stump.m_threshold ? 0 : 1;
-                        outputs_valid.array(i) += stump.m_outputs.array(oindex);
-                }
-                for (size_t i = 0, size = task.size(fold_test); i < size; ++ i)
-                {
-                        const auto input = task.input(fold_test, i);
-                        const auto oindex = input(stump.m_feature) < stump.m_threshold ? 0 : 1;
-                        outputs_test.array(i) += stump.m_outputs.array(oindex);
-                }
-
-                m_stumps.push_back(stump);
+                update(task, fold_train, outputs_train, stump);
+                update(task, fold_valid, outputs_valid, stump);
+                update(task, fold_test, outputs_test, stump);
 
                 ::measure(task, fold_train, outputs_train, loss, errors_train, values_train);
                 ::measure(task, fold_valid, outputs_valid, loss, errors_valid, values_valid);

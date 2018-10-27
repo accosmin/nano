@@ -85,13 +85,13 @@ namespace nano
         ///
         /// \brief run and check a critical step (checkpoint).
         ///
-        template <typename toperator, typename tstring>
-        void critical(const toperator& op, const tstring& message)
+        template <typename tresult, typename tstring>
+        void critical(const tresult& result, const tstring& message)
         {
                 const timer_t timer;
                 try
                 {
-                        if (static_cast<bool>(op()))
+                        if (static_cast<bool>(result))
                         {
                                 log_info() << message << " done in [" << timer.elapsed() << "].";
                         }

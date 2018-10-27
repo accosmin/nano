@@ -28,8 +28,7 @@ int main(int argc, const char *argv[])
         };
 
         // load file
-        critical(
-                [&] () { return load_archive(cmd_input, callback, error_callback); },
+        critical(load_archive(cmd_input, callback, error_callback),
                 strcat("load archive from <", cmd_input, ">"));
 
         // OK
