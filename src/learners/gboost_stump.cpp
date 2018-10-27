@@ -185,28 +185,10 @@ trainer_result_t gboost_stump_t::train(const task_t& task, const size_t fold, co
                         const auto input = task.input(fold_train, i);
                         const auto oindex = input(stump.m_feature) < stump.m_threshold ? 0 : 1;
                         stump_outputs_train.tensor(i) = stump.m_outputs.tensor(oindex);
-                        log_info() << "i=" << i
-                                << ": soutputs = " << stump_outputs_train.vector(i).minCoeff() << "," << stump_outputs_train.vector(i).maxCoeff()
-                                << ", soutputs = " << stump.m_outputs.vector(oindex).minCoeff() << "," << stump.m_outputs.vector(oindex).maxCoeff();
                 }
 
-                log_info() << "best_value = " << best_value
-                        << ", stump0 = " << stump.m_outputs.array(0).minCoeff() << "," << stump.m_outputs.array(0).maxCoeff()
-                        << ", stump1 = " << stump.m_outputs.array(1).minCoeff() << "," << stump.m_outputs.array(1).maxCoeff();
-
-                log_info() << "outputs = [" << outputs_train.array().minCoeff() << "," << outputs_train.array().maxCoeff()
-                        << "], stump = [" << stump_outputs_train.array().minCoeff() << "," << stump_outputs_train.array().maxCoeff() << "]";
-
-                const auto logger = [] (const solver_state_t& state)
-                {
-                        log_info() << state;
-                        return true;
-                };
-
-                const auto state = solver->minimize(100, epsilon2<scalar_t>(), func, vector_t::Constant(1, 0), logger);
+                const auto state = solver->minimize(100, epsilon2<scalar_t>(), func, vector_t::Constant(1, 0));
                 const auto step = state.x(0);
-
-                //log_info() << "step = " << step << ", state.f=" << state.f << ", state.g=" << state.g.transpose();
 
                 stump.m_outputs.vector() *= step;
 
