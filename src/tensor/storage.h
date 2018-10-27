@@ -29,11 +29,17 @@ namespace nano
                 tensor_vstorage_t& operator=(tensor_vstorage_t&&) = default;
                 tensor_vstorage_t& operator=(const tensor_vstorage_t&) = default;
 
-                template <typename tscalar2_>
-                tensor_vstorage_t(const tensor_pstorage_t<tscalar2_>&);
-
                 explicit tensor_vstorage_t(const tstorage& data) : m_data(data) {}
                 explicit tensor_vstorage_t(const tensor_size_t size) : m_data(size) {}
+
+                template <typename tscalar2>
+                tensor_vstorage_t(const tensor_pstorage_t<tscalar2>& other) :
+                        m_data(map_vector(other.data(), other.size()))
+                {
+                }
+
+                template <typename tscalar2>
+                tensor_vstorage_t& operator=(const tensor_pstorage_t<tscalar2>& other);
 
                 auto size() const { return m_data.size(); }
                 void resize(const tensor_size_t size) { m_data.resize(size); }
@@ -63,32 +69,39 @@ namespace nano
                 static constexpr bool resizable = false;
                 static constexpr bool owns_memory = false;
 
+                tensor_pstorage_t() = default;
+                tensor_pstorage_t(tensor_pstorage_t&&) = default;
+                tensor_pstorage_t(const tensor_pstorage_t&) = delete;
+                tensor_pstorage_t& operator=(tensor_pstorage_t&& other) { return copy(other); }
+                tensor_pstorage_t& operator=(const tensor_pstorage_t& other) { return copy(other); }
+
                 tensor_pstorage_t(const tstorage& data, const tensor_size_t size) :
                         m_data(data), m_size(size)
                 {
                 }
 
-                template <typename tscalar2_>
-                tensor_pstorage_t(const tensor_vstorage_t<tscalar2_>& other) :
-                        m_data(other.data()),
-                        m_size(other.size())
+                template <typename tscalar2>
+                tensor_pstorage_t(const tensor_vstorage_t<tscalar2>& other) :
+                        m_data(other.data()), m_size(other.size())
                 {
                 }
 
-                template <typename tscalar2_>
-                // cppcheck-suppress  noExplicitConstructor
-                tensor_pstorage_t(const tensor_pstorage_t<tscalar2_>& other) :
-                        m_data(other.data()),
-                        m_size(other.size())
+                template <typename tscalar2>
+                tensor_pstorage_t(const tensor_pstorage_t<tscalar2>& other) :
+                        m_data(other.data()), m_size(other.size())
                 {
                 }
 
-                template <typename tscalar2_>
-                tensor_pstorage_t& operator=(const tensor_pstorage_t<tscalar2_>& other)
+                template <typename tscalar2>
+                tensor_pstorage_t& operator=(const tensor_vstorage_t<tscalar2>& other)
                 {
-                        assert(size() == other.size());
-                        map_vector(data(), size()) = map_vector(other.data(), other.size());
-                        return *this;
+                        return copy(other);
+                }
+
+                template <typename tscalar2>
+                tensor_pstorage_t& operator=(const tensor_pstorage_t<tscalar2>& other)
+                {
+                        return copy(other);
                 }
 
                 auto data() { return m_data; }
@@ -97,15 +110,24 @@ namespace nano
 
         private:
 
+                template <typename tstorage2>
+                tensor_pstorage_t& copy(const tstorage2& other)
+                {
+                        assert(size() == other.size());
+                        map_vector(data(), size()) = map_vector(other.data(), other.size());
+                        return *this;
+                }
+
                 // attributes
                 tstorage        m_data{nullptr};///< wrap tensor over a contiguous array.
                 tensor_size_t   m_size{0};      ///<
         };
 
-        template <typename tscalar_>
-        template <typename tscalar2_>
-        tensor_vstorage_t<tscalar_>::tensor_vstorage_t(const tensor_pstorage_t<tscalar2_>& other) :
-                m_data(map_vector(other.data(), other.size()))
+        template <typename tscalar>
+        template <typename tscalar2>
+        tensor_vstorage_t<tscalar>& tensor_vstorage_t<tscalar>::operator=(const tensor_pstorage_t<tscalar2>& other)
         {
+                m_data = map_vector(other.data(), other.size());
+                return *this;
         }
 }

@@ -6,77 +6,6 @@ using namespace nano;
 
 NANO_BEGIN_MODULE(test_tensor_tensor)
 
-NANO_CASE(index1d)
-{
-        const auto dims = nano::make_dims(7);
-
-        NANO_CHECK_EQUAL(std::get<0>(dims), 7);
-        NANO_CHECK_EQUAL(nano::size(dims), 7);
-
-        NANO_CHECK_EQUAL(nano::index(dims, 0), 0);
-        NANO_CHECK_EQUAL(nano::index(dims, 1), 1);
-        NANO_CHECK_EQUAL(nano::index(dims, 6), 6);
-
-        NANO_CHECK_EQUAL(nano::index0(dims), nano::index(dims, 0));
-        NANO_CHECK_EQUAL(nano::index0(dims, 6), nano::index(dims, 6));
-
-        NANO_CHECK_EQUAL(nano::dims0(dims), nano::make_dims(7));
-}
-
-NANO_CASE(index2d)
-{
-        const auto dims = nano::make_dims(7, 5);
-
-        NANO_CHECK_EQUAL(dims, nano::cat_dims(7, nano::make_dims(5)));
-
-        NANO_CHECK_EQUAL(std::get<0>(dims), 7);
-        NANO_CHECK_EQUAL(std::get<1>(dims), 5);
-        NANO_CHECK_EQUAL(nano::size(dims), 35);
-
-        NANO_CHECK_EQUAL(nano::index(dims, 0, 1), 1);
-        NANO_CHECK_EQUAL(nano::index(dims, 0, 4), 4);
-        NANO_CHECK_EQUAL(nano::index(dims, 1, 0), 5);
-        NANO_CHECK_EQUAL(nano::index(dims, 3, 2), 17);
-        NANO_CHECK_EQUAL(nano::index(dims, 6, 4), 34);
-
-        NANO_CHECK_EQUAL(nano::index0(dims), nano::index(dims, 0, 0));
-        NANO_CHECK_EQUAL(nano::index0(dims, 3), nano::index(dims, 3, 0));
-        NANO_CHECK_EQUAL(nano::index0(dims, 3, 1), nano::index(dims, 3, 1));
-
-        NANO_CHECK_EQUAL(nano::dims0(dims), nano::make_dims(7, 5));
-        NANO_CHECK_EQUAL(nano::dims0(dims, 3), nano::make_dims(5));
-}
-
-NANO_CASE(index3d)
-{
-        const auto dims = nano::make_dims(3, 7, 5);
-
-        NANO_CHECK_EQUAL(dims, nano::cat_dims(3, nano::make_dims(7, 5)));
-
-        NANO_CHECK_EQUAL(std::get<0>(dims), 3);
-        NANO_CHECK_EQUAL(std::get<1>(dims), 7);
-        NANO_CHECK_EQUAL(std::get<2>(dims), 5);
-        NANO_CHECK_EQUAL(nano::size(dims), 105);
-
-        NANO_CHECK_EQUAL(nano::index(dims, 0, 0, 1), 1);
-        NANO_CHECK_EQUAL(nano::index(dims, 0, 0, 4), 4);
-        NANO_CHECK_EQUAL(nano::index(dims, 0, 1, 0), 5);
-        NANO_CHECK_EQUAL(nano::index(dims, 0, 2, 1), 11);
-        NANO_CHECK_EQUAL(nano::index(dims, 1, 2, 1), 46);
-        NANO_CHECK_EQUAL(nano::index(dims, 1, 0, 3), 38);
-        NANO_CHECK_EQUAL(nano::index(dims, 2, 4, 1), 91);
-        NANO_CHECK_EQUAL(nano::index(dims, 2, 6, 4), 104);
-
-        NANO_CHECK_EQUAL(nano::index0(dims), nano::index(dims, 0, 0, 0));
-        NANO_CHECK_EQUAL(nano::index0(dims, 2), nano::index(dims, 2, 0, 0));
-        NANO_CHECK_EQUAL(nano::index0(dims, 2, 4), nano::index(dims, 2, 4, 0));
-        NANO_CHECK_EQUAL(nano::index0(dims, 2, 4, 3), nano::index(dims, 2, 4, 3));
-
-        NANO_CHECK_EQUAL(nano::dims0(dims), nano::make_dims(3, 7, 5));
-        NANO_CHECK_EQUAL(nano::dims0(dims, 2), nano::make_dims(7, 5));
-        NANO_CHECK_EQUAL(nano::dims0(dims, 2, 4), nano::make_dims(5));
-}
-
 NANO_CASE(tensor3d)
 {
         using tensor3d_t = nano::tensor_mem_t<int, 3>;
@@ -238,7 +167,6 @@ NANO_CASE(tensor4d)
         NANO_CHECK_EQUAL(tensor.vector().maxCoeff(), 42);
         NANO_CHECK_EQUAL(tensor.vector().sum(), 42 * dim1 * dim2 * rows * cols - (42 - 7) * rows * cols);
 
-
         tensor.matrix(0, 3).setConstant(13);
         NANO_CHECK_EQUAL(tensor.matrix(0, 3).minCoeff(), 13);
         NANO_CHECK_EQUAL(tensor.matrix(0, 3).maxCoeff(), 13);
@@ -399,18 +327,34 @@ NANO_CASE(tensor4d_subtensor)
         tensor.constant(42);
         tensor.tensor(1, 2).setConstant(7);
         NANO_CHECK_EQUAL(tensor.tensor(1, 2).dims(), nano::make_dims(rows, cols));
-        NANO_CHECK_EQUAL(tensor.tensor(1, 2).array().minCoeff(), 7);
-        NANO_CHECK_EQUAL(tensor.tensor(1, 2).array().maxCoeff(), 7);
-        NANO_CHECK_EQUAL(tensor.tensor(1, 2).array().sum(), 7 * rows * cols);
+        NANO_CHECK_EQUAL(tensor.array(1, 2).minCoeff(), 7);
+        NANO_CHECK_EQUAL(tensor.array(1, 2).maxCoeff(), 7);
+        NANO_CHECK_EQUAL(tensor.array(1, 2).sum(), 7 * rows * cols);
         NANO_CHECK_EQUAL(tensor.vector().sum(), 42 * dim1 * dim2 * rows * cols - (42 - 7) * rows * cols);
 
         tensor.constant(42);
         tensor.tensor(1).setConstant(7);
         NANO_CHECK_EQUAL(tensor.tensor(1).dims(), nano::make_dims(dim2, rows, cols));
-        NANO_CHECK_EQUAL(tensor.tensor(1).array().minCoeff(), 7);
-        NANO_CHECK_EQUAL(tensor.tensor(1).array().maxCoeff(), 7);
-        NANO_CHECK_EQUAL(tensor.tensor(1).array().sum(), 7 * dim2 * rows * cols);
+        NANO_CHECK_EQUAL(tensor.array(1).minCoeff(), 7);
+        NANO_CHECK_EQUAL(tensor.array(1).maxCoeff(), 7);
+        NANO_CHECK_EQUAL(tensor.array(1).sum(), 7 * dim2 * rows * cols);
         NANO_CHECK_EQUAL(tensor.vector().sum(), 42 * dim1 * dim2 * rows * cols - (42 - 7) * dim2 * rows * cols);
+}
+
+NANO_CASE(tensor4d_subtensor_copying)
+{
+        using tensor4d_t = nano::tensor_mem_t<int, 4>;
+
+        tensor4d_t tensor1(2, 7, 3, 4);
+        tensor4d_t tensor2(2, 7, 3, 4);
+
+        tensor1.random();
+        tensor2.random();
+
+        tensor1.tensor(0) = tensor2.tensor(0);
+        tensor1.tensor(1) = tensor2.tensor(1);
+
+        NANO_CHECK_EIGEN_CLOSE(tensor1.vector(), tensor2.vector(), 1);
 }
 
 NANO_END_MODULE()

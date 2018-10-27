@@ -49,9 +49,11 @@ namespace nano
                                         const auto vgrad = m_loss.vgrad(m_targets.tensor(i), outputs);
                                         g += vgrad.vector().dot(m_woutputs.vector(i));
                                 }
+
+                                g /= static_cast<scalar_t>(m_targets.size<0>());
                         }
 
-                        return f;
+                        return f / static_cast<scalar_t>(m_targets.size<0>());
                 }
 
         private:

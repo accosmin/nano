@@ -16,6 +16,7 @@ make_test(test_core_table.cpp nano)
 make_test(test_core_tuner.cpp nano)
 make_test(test_core_cmdline.cpp nano)
 
+make_test(test_tensor_index.cpp "")
 make_test(test_tensor_tensor.cpp "")
 make_test(test_tensor_integral.cpp "")
 

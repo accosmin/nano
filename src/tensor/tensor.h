@@ -44,7 +44,7 @@ namespace nano
         auto map_tensor(const tscalar_* data, const tensor_dims_t<trank>& dims)
         {
                 using tscalar = typename std::remove_const<tscalar_>::type;
-                return tensor_cmap_t<tscalar, trank>(data, dims);
+                return tensor_cmap_t<const tscalar, trank>(data, dims);
         }
 
         ///
@@ -83,7 +83,7 @@ namespace nano
                 static_assert(trank >= 1, "cannot create tensors with fewer than one dimension");
 
                 ///
-                /// \brief constructor
+                /// \brief default constructor
                 ///
                 tensor_t()
                 {
@@ -128,8 +128,14 @@ namespace nano
                 }
 
                 ///
-                /// \brief copy constructor
+                /// \brief
                 ///
+                tensor_t(const tensor_t&) = default;
+                tensor_t& operator=(const tensor_t&) = default;
+
+                tensor_t(tensor_t&&) = default;
+                tensor_t& operator=(tensor_t&&) = default;
+
                 template <typename tstorage2>
                 tensor_t(const tensor_t<tstorage2, trank>& other) :
                         m_dims(other.dims()),
@@ -137,9 +143,6 @@ namespace nano
                 {
                 }
 
-                ///
-                /// \brief assignment operator
-                ///
                 template <typename tstorage2>
                 tensor_t& operator=(const tensor_t<tstorage2, trank>& other)
                 {
