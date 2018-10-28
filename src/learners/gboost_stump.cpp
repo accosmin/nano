@@ -236,6 +236,11 @@ trainer_result_t gboost_stump_t::train(const task_t& task, const size_t fold, co
                         << "|i=" << state.m_iterations << "|f=" << state.f << "|g=" << state.convergence_criteria() << ".";
         }
 
+        // keep only the stumps up to optimum epoch (on the validation dataset)
+        m_stumps.erase(
+                m_stumps.begin() + result.optimum().m_epoch,
+                m_stumps.end());
+
         return result;
 }
 
