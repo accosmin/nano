@@ -73,7 +73,7 @@ trainer_result_t gboost_stump_t::train(const task_t& task, const size_t fold, co
         // check if the solver is properly set
         rsolver_t solver;
         critical(solver = get_solvers().get(m_solver),
-                strcat("invalid solver (", m_solver, ")"));
+                strcat("search solver (", m_solver, ")."));
 
         m_idims = task.idims();
         m_odims = task.odims();
@@ -108,7 +108,7 @@ trainer_result_t gboost_stump_t::train(const task_t& task, const size_t fold, co
                 {values_test.avg(), errors_test.avg()}},
                 m_patience);
 
-        log_info() << result;
+        log_info() << result << ".";
 
         tensor4d_t residuals_train(cat_dims(task.size(fold_train), m_odims));
         tensor3d_t residuals_pos1(m_odims), residuals_pos2(m_odims);
@@ -231,9 +231,13 @@ trainer_result_t gboost_stump_t::train(const task_t& task, const size_t fold, co
                         {values_test.avg(), errors_test.avg()}},
                         m_patience);
 
-                log_info() << result << ",feature=" << stump.m_feature << ",gamma=" << step
-                        << ",solver=" << state.m_status
-                        << "|i=" << state.m_iterations << "|f=" << state.f << "|g=" << state.convergence_criteria() << ".";
+                log_info() << result
+                        << ",feature=" << stump.m_feature
+                        << ",solver=(" << state.m_status
+                        << ",i=" << state.m_iterations
+                        << ",x=" << state.x(0)
+                        << ",f=" << state.f
+                        << ",g=" << state.convergence_criteria() << ").";
         }
 
         // keep only the stumps up to optimum epoch (on the validation dataset)
