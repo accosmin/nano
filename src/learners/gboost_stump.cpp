@@ -45,8 +45,21 @@ static void update(const task_t& task, const fold_t& fold, tensor4d_t& outputs, 
         });
 }
 
+static auto unique_fvalues(const task_t& task, const fold_t& fold, const tensor_size_t feature)
+{
+        scalars_t fvalues(task.size(fold));
+        for (size_t i = 0, size = task.size(fold); i < size; ++ i)
+        {
+                const auto input = task.input(fold, i);
+                fvalues[i] = input(feature);
+        }
+
+        std::sort(fvalues.begin(), fvalues.end());
+
+        return scalars_t{fvalues.begin(), std::unique(fvalues.begin(), fvalues.end())};
+}
+
 // todo: break the computation in smaller functions (move them to gboost.h)
-// todo: better comment tensor/tensor.h
 
 void gboost_stump_t::to_json(json_t& json) const
 {
@@ -143,20 +156,10 @@ trainer_result_t gboost_stump_t::train(const task_t& task, const size_t fold, co
                 // todo: generalize this - e.g. to use features that are products of two input features
                 for (auto feature = 0; feature < nano::size(m_idims); ++ feature)
                 {
-                        scalars_t fvalues(task.size(fold_train));
-                        for (size_t i = 0, size = task.size(fold_train); i < size; ++ i)
+                        const auto fvalues = unique_fvalues(task, fold_train, feature);
+                        for (size_t t = 0; t + 1 < fvalues.size(); ++ t)
                         {
-                                const auto input = task.input(fold_train, i);
-                                fvalues[i] = input(feature);
-                        }
-
-                        auto thresholds = fvalues;
-                        std::sort(thresholds.begin(), thresholds.end());
-                        thresholds.erase(std::unique(thresholds.begin(), thresholds.end()), thresholds.end());
-
-                        for (size_t t = 0; t + 1 < thresholds.size(); ++ t)
-                        {
-                                const auto threshold = (thresholds[t + 0] + thresholds[t + 1]) / 2;
+                                const auto threshold = (fvalues[t + 0] + fvalues[t + 1]) / 2;
 
                                 residuals_pos1.zero(), residuals_pos2.zero();
                                 residuals_neg1.zero(), residuals_neg2.zero();
