@@ -82,56 +82,61 @@ trainer_result_t gboost_stump_t::train(const task_t& task, const size_t fold, co
         trainer_result_t result("<config>");
         timer_t timer;
 
-        const auto fold_train = fold_t{fold, protocol::train};
-        const auto fold_valid = fold_t{fold, protocol::valid};
-        const auto fold_test = fold_t{fold, protocol::test};
+        const auto fold_tr = fold_t{fold, protocol::train};
+        const auto fold_vd = fold_t{fold, protocol::valid};
+        const auto fold_te = fold_t{fold, protocol::test};
 
-        tensor4d_t outputs_train(cat_dims(task.size(fold_train), m_odims));
-        tensor4d_t outputs_valid(cat_dims(task.size(fold_valid), m_odims));
-        tensor4d_t outputs_test(cat_dims(task.size(fold_test), m_odims));
+        tensor4d_t outputs_tr(cat_dims(task.size(fold_tr), m_odims));
+        tensor4d_t outputs_vd(cat_dims(task.size(fold_vd), m_odims));
+        tensor4d_t outputs_te(cat_dims(task.size(fold_te), m_odims));
 
-        outputs_train.zero();
-        outputs_valid.zero();
-        outputs_test.zero();
+        outputs_tr.zero();
+        outputs_vd.zero();
+        outputs_te.zero();
 
-        stats_t errors_train, errors_valid, errors_test;
-        stats_t values_train, values_valid, values_test;
+        stats_t errors_tr, errors_vd, errors_te;
+        stats_t values_tr, values_vd, values_te;
 
-        std::tie(errors_train, values_train) = ::measure(task, fold_train, outputs_train, loss);
-        std::tie(errors_valid, values_valid) = ::measure(task, fold_valid, outputs_valid, loss);
-        std::tie(errors_test, values_test) = ::measure(task, fold_test, outputs_test, loss);
+        std::tie(errors_tr, values_tr) = ::measure(task, fold_tr, outputs_tr, loss);
+        std::tie(errors_vd, values_vd) = ::measure(task, fold_vd, outputs_vd, loss);
+        std::tie(errors_te, values_te) = ::measure(task, fold_te, outputs_te, loss);
 
-        result.update(trainer_state_t{timer.milliseconds(), 0,
-                {values_train.avg(), errors_train.avg()},
-                {values_valid.avg(), errors_valid.avg()},
-                {values_test.avg(), errors_test.avg()}},
+        const auto measure_tr = trainer_measurement_t{values_tr.avg(), errors_tr.avg()};
+        const auto measure_vd = trainer_measurement_t{values_vd.avg(), errors_vd.avg()};
+        const auto measure_te = trainer_measurement_t{values_te.avg(), errors_te.avg()};
+
+        const auto status = result.update(
+                trainer_state_t{timer.milliseconds(), 0, measure_tr, measure_vd, measure_te},
                 m_patience);
 
-        log_info() << result << ".";
+        log_info() << "[" << 0 << "/" << m_rounds
+                << "]:tr=" << measure_tr
+                << ",vd=" << measure_vd << "|" << status
+                << ",te=" << measure_te << ".";
 
-        tensor4d_t residuals_train(cat_dims(task.size(fold_train), m_odims));
+        tensor4d_t residuals_train(cat_dims(task.size(fold_tr), m_odims));
         tensor3d_t residuals_pos1(m_odims), residuals_pos2(m_odims);
         tensor3d_t residuals_neg1(m_odims), residuals_neg2(m_odims);
 
         stump_t stump;
-        tensor4d_t stump_outputs_train(cat_dims(task.size(fold_train), m_odims));
+        tensor4d_t stump_outputs_tr(cat_dims(task.size(fold_tr), m_odims));
 
-        tensor4d_t targets(cat_dims(task.size(fold_train), m_odims));
-        for (size_t i = 0, size = task.size(fold_train); i < size; ++ i)
+        tensor4d_t targets(cat_dims(task.size(fold_tr), m_odims));
+        for (size_t i = 0, size = task.size(fold_tr); i < size; ++ i)
         {
-                const auto target = task.target(fold_train, i);
-                targets.tensor(i) = target.tensor();
+                const auto target = task.target(fold_tr, i);
+                targets.tensor(i) = target;
         }
 
-        gboost_lsearch_function_t func(targets, outputs_train, stump_outputs_train, loss);
+        gboost_lsearch_function_t func(targets, outputs_tr, stump_outputs_tr, loss);
 
         for (auto round = 0; round < m_rounds && !result.is_done(); ++ round)
         {
-                for (size_t i = 0, size = task.size(fold_train); i < size; ++ i)
+                for (size_t i = 0, size = task.size(fold_tr); i < size; ++ i)
                 {
-                        const auto input = task.input(fold_train, i);
-                        const auto target = task.target(fold_train, i);
-                        const auto output = outputs_train.tensor(i);
+                        const auto input = task.input(fold_tr, i);
+                        const auto target = task.target(fold_tr, i);
+                        const auto output = outputs_tr.tensor(i);
 
                         const auto vgrad = loss.vgrad(target, output);
                         residuals_train.vector(i) = -vgrad.vector();
@@ -142,10 +147,10 @@ trainer_result_t gboost_stump_t::train(const task_t& task, const size_t fold, co
                 // todo: generalize this - e.g. to use features that are products of two input features
                 for (auto feature = 0; feature < nano::size(m_idims); ++ feature)
                 {
-                        scalars_t fvalues(task.size(fold_train));
-                        for (size_t i = 0, size = task.size(fold_train); i < size; ++ i)
+                        scalars_t fvalues(task.size(fold_tr));
+                        for (size_t i = 0, size = task.size(fold_tr); i < size; ++ i)
                         {
-                                const auto input = task.input(fold_train, i);
+                                const auto input = task.input(fold_tr, i);
                                 fvalues[i] = input(feature);
                         }
 
@@ -161,7 +166,7 @@ trainer_result_t gboost_stump_t::train(const task_t& task, const size_t fold, co
                                 residuals_neg1.zero(), residuals_neg2.zero();
 
                                 int cnt_pos = 0, cnt_neg = 0;
-                                for (size_t i = 0, size = task.size(fold_train); i < size; ++ i)
+                                for (size_t i = 0, size = task.size(fold_tr); i < size; ++ i)
                                 {
                                         const auto residual = residuals_train.array(i);
                                         if (fvalues[i] < threshold)
@@ -185,7 +190,7 @@ trainer_result_t gboost_stump_t::train(const task_t& task, const size_t fold, co
                                 //log_info() << "feature = " << feature
                                 //        << ", threshold = " << threshold
                                 //        << ", value = " << value
-                                //        << ", count = " << cnt_neg << "+" << cnt_pos << "=" << task.size(fold_train);
+                                //        << ", count = " << cnt_neg << "+" << cnt_pos << "=" << task.size(fold_tr);
 
                                 if (value < best_value)
                                 {
@@ -202,35 +207,42 @@ trainer_result_t gboost_stump_t::train(const task_t& task, const size_t fold, co
                 }
 
                 // line-search
-                for (size_t i = 0, size = task.size(fold_train); i < size; ++ i)
+                for (size_t i = 0, size = task.size(fold_tr); i < size; ++ i)
                 {
-                        const auto input = task.input(fold_train, i);
+                        const auto input = task.input(fold_tr, i);
                         const auto oindex = input(stump.m_feature) < stump.m_threshold ? 0 : 1;
-                        stump_outputs_train.tensor(i) = stump.m_outputs.tensor(oindex);
+                        stump_outputs_tr.tensor(i) = stump.m_outputs.tensor(oindex);
                 }
 
                 const auto state = solver->minimize(100, epsilon2<scalar_t>(), func, vector_t::Constant(1, 0));
                 const auto step = state.x(0);
 
+                // todo: break if the line-search fails (e.g. if state.m_iterations == 0
+
                 stump.m_outputs.vector() *= step;
                 m_stumps.push_back(stump);
 
                 // update current outputs
-                update(task, fold_train, outputs_train, stump);
-                update(task, fold_valid, outputs_valid, stump);
-                update(task, fold_test, outputs_test, stump);
+                update(task, fold_tr, outputs_tr, stump);
+                update(task, fold_vd, outputs_vd, stump);
+                update(task, fold_te, outputs_te, stump);
 
-                std::tie(errors_train, values_train) = ::measure(task, fold_train, outputs_train, loss);
-                std::tie(errors_valid, values_valid) = ::measure(task, fold_valid, outputs_valid, loss);
-                std::tie(errors_test, values_test) = ::measure(task, fold_test, outputs_test, loss);
+                std::tie(errors_tr, values_tr) = ::measure(task, fold_tr, outputs_tr, loss);
+                std::tie(errors_vd, values_vd) = ::measure(task, fold_vd, outputs_vd, loss);
+                std::tie(errors_te, values_te) = ::measure(task, fold_te, outputs_te, loss);
 
-                result.update(trainer_state_t{timer.milliseconds(), round + 1,
-                        {values_train.avg(), errors_train.avg()},
-                        {values_valid.avg(), errors_valid.avg()},
-                        {values_test.avg(), errors_test.avg()}},
+                const auto measure_tr = trainer_measurement_t{values_tr.avg(), errors_tr.avg()};
+                const auto measure_vd = trainer_measurement_t{values_vd.avg(), errors_vd.avg()};
+                const auto measure_te = trainer_measurement_t{values_te.avg(), errors_te.avg()};
+
+                const auto status = result.update(
+                        trainer_state_t{timer.milliseconds(), round + 1, measure_tr, measure_vd, measure_te},
                         m_patience);
 
-                log_info() << result
+                log_info() << "[" << (round + 1) << "/" << m_rounds
+                        << "]:tr=" << measure_tr
+                        << ",vd=" << measure_vd << "|" << status
+                        << ",te=" << measure_te
                         << ",feature=" << stump.m_feature
                         << ",solver=(" << state.m_status
                         << ",i=" << state.m_iterations
