@@ -27,7 +27,7 @@ namespace nano
         {
         public:
 
-                enum class stump
+                enum class stump_type
                 {
                         real,                   ///< stump \in R (no restriction)
                         discrete,               ///< stump \in {-1, +1}
@@ -68,19 +68,19 @@ namespace nano
                 tensor3d_dim_t  m_odims{{0, 0, 0}};                     ///< output dimensions
                 int             m_rounds{0};                            ///< training: number of boosting rounds
                 int             m_patience{0};                          ///< training: number of epochs before overfitting
-                string_t        m_solver{"cgd"};                        ///< training: solver to use
-                stump           m_stype{stump::discrete};               ///< training:
+                string_t        m_solver{"cgd"};                        ///< training: solver to use for line-search
+                stump_type      m_stype{stump_type::discrete};          ///< training: stump type
                 regularization  m_rtype{regularization::adaptive};      ///< training:
                 stumps_t        m_stumps;                               ///< trained stumps
         };
 
         template <>
-        inline enum_map_t<gboost_stump_t::stump> enum_string<gboost_stump_t::stump>()
+        inline enum_map_t<gboost_stump_t::stump_type> enum_string<gboost_stump_t::stump_type>()
         {
                 return
                 {
-                        { gboost_stump_t::stump::real,                  "real" },
-                        { gboost_stump_t::stump::discrete,              "discrete" }
+                        { gboost_stump_t::stump_type::real,             "real" },
+                        { gboost_stump_t::stump_type::discrete,         "discrete" }
                 };
         }
 

@@ -45,14 +45,108 @@ static void update(const task_t& task, const fold_t& fold, tensor4d_t& outputs, 
         });
 }
 
-// todo: break the computation in smaller functions (move them to gboost.h)
+static void fit_real(const task_t& task, const fold_t& fold, const tensor4d_t& residuals,
+        const tensor_size_t feature, const scalars_t& fvalues, const scalars_t& thresholds,
+        scalar_t& value, stump_t& stump)
+{
+        tensor3d_t residuals_pos1(task.odims()), residuals_pos2(task.odims());
+        tensor3d_t residuals_neg1(task.odims()), residuals_neg2(task.odims());
+
+        for (size_t t = 0; t + 1 < thresholds.size(); ++ t)
+        {
+                const auto threshold = (thresholds[t + 0] + thresholds[t + 1]) / 2;
+
+                residuals_pos1.zero(), residuals_pos2.zero();
+                residuals_neg1.zero(), residuals_neg2.zero();
+
+                int cnt_pos = 0, cnt_neg = 0;
+                for (size_t i = 0, size = task.size(fold); i < size; ++ i)
+                {
+                        const auto residual = residuals.array(i);
+                        if (fvalues[i] < threshold)
+                        {
+                                cnt_neg ++;
+                                residuals_neg1.array() += residual;
+                                residuals_neg2.array() += residual * residual;
+                        }
+                        else
+                        {
+                                cnt_pos ++;
+                                residuals_pos1.array() += residual;
+                                residuals_pos2.array() += residual * residual;
+                        }
+                }
+
+                const auto tvalue =
+                        (residuals_pos2.array().sum() - residuals_pos1.array().square().sum() / cnt_pos) +
+                        (residuals_neg2.array().sum() - residuals_neg1.array().square().sum() / cnt_neg);
+
+                if (tvalue < value)
+                {
+                        value = tvalue;
+                        stump.m_feature = feature;
+                        stump.m_threshold = threshold;
+                        stump.m_outputs.resize(cat_dims(2, task.odims()));
+                        stump.m_outputs.vector(0) = residuals_neg1.vector() / cnt_neg;
+                        stump.m_outputs.vector(1) = residuals_pos1.vector() / cnt_pos;
+                }
+        }
+}
+
+static void fit_discrete(const task_t& task, const fold_t& fold, const tensor4d_t& residuals,
+        const tensor_size_t feature, const scalars_t& fvalues, const scalars_t& thresholds,
+        scalar_t& value, stump_t& stump)
+{
+        tensor3d_t residuals_pos1(task.odims()), residuals_pos2(task.odims());
+        tensor3d_t residuals_neg1(task.odims()), residuals_neg2(task.odims());
+
+        for (size_t t = 0; t + 1 < thresholds.size(); ++ t)
+        {
+                const auto threshold = (thresholds[t + 0] + thresholds[t + 1]) / 2;
+
+                residuals_pos1.zero(), residuals_pos2.zero();
+                residuals_neg1.zero(), residuals_neg2.zero();
+
+                int cnt_pos = 0, cnt_neg = 0;
+                for (size_t i = 0, size = task.size(fold); i < size; ++ i)
+                {
+                        const auto residual = residuals.array(i);
+                        if (fvalues[i] < threshold)
+                        {
+                                cnt_neg ++;
+                                residuals_neg1.array() += residual;
+                                residuals_neg2.array() += residual * residual;
+                        }
+                        else
+                        {
+                                cnt_pos ++;
+                                residuals_pos1.array() += residual;
+                                residuals_pos2.array() += residual * residual;
+                        }
+                }
+
+                const auto tvalue =
+                        (residuals_pos2.array().sum() - residuals_pos1.array().square().sum() / cnt_pos) +
+                        (residuals_neg2.array().sum() - residuals_neg1.array().square().sum() / cnt_neg);
+
+                if (tvalue < value)
+                {
+                        value = tvalue;
+                        stump.m_feature = feature;
+                        stump.m_threshold = threshold;
+                        stump.m_outputs.resize(cat_dims(2, task.odims()));
+                        stump.m_outputs.vector(0) = residuals_neg1.array().sign();
+                        stump.m_outputs.vector(1) = residuals_pos1.array().sign();
+                }
+        }
+}
 
 void gboost_stump_t::to_json(json_t& json) const
 {
         nano::to_json(json,
                 "rounds", m_rounds,
                 "patience", m_patience,
-                "stump", m_stype, "stumps", join(enum_values<stump>()),
+                "stump", m_stype, "stumps", join(enum_values<stump_type>()),
                 "solver", m_solver, "solvers", join(get_solvers().ids()),
                 "regularization", m_rtype, "regularizations", join(enum_values<regularization>()));
 }
@@ -114,7 +208,7 @@ trainer_result_t gboost_stump_t::train(const task_t& task, const size_t fold, co
                 << ",vd=" << measure_vd << "|" << status
                 << ",te=" << measure_te << ".";
 
-        tensor4d_t residuals_train(cat_dims(task.size(fold_tr), m_odims));
+        tensor4d_t residuals_tr(cat_dims(task.size(fold_tr), m_odims));
         tensor3d_t residuals_pos1(m_odims), residuals_pos2(m_odims);
         tensor3d_t residuals_neg1(m_odims), residuals_neg2(m_odims);
 
@@ -139,12 +233,11 @@ trainer_result_t gboost_stump_t::train(const task_t& task, const size_t fold, co
                         const auto output = outputs_tr.tensor(i);
 
                         const auto vgrad = loss.vgrad(target, output);
-                        residuals_train.vector(i) = -vgrad.vector();
+                        residuals_tr.vector(i) = -vgrad.vector();
                 }
 
-                scalar_t best_value = std::numeric_limits<scalar_t>::max();
-
-                // todo: generalize this - e.g. to use features that are products of two input features
+                // todo: generalize this - e.g. to use features that are products of two input features, use LBPs|HOGs
+                scalar_t value = std::numeric_limits<scalar_t>::max();
                 for (auto feature = 0; feature < nano::size(m_idims); ++ feature)
                 {
                         scalars_t fvalues(task.size(fold_tr));
@@ -156,53 +249,22 @@ trainer_result_t gboost_stump_t::train(const task_t& task, const size_t fold, co
 
                         auto thresholds = fvalues;
                         std::sort(thresholds.begin(), thresholds.end());
-                        thresholds.erase(std::unique(thresholds.begin(), thresholds.end()), thresholds.end());
+                        thresholds.erase(
+                                std::unique(thresholds.begin(), thresholds.end()),
+                                thresholds.end());
 
-                        for (size_t t = 0; t + 1 < thresholds.size(); ++ t)
+                        switch (m_stype)
                         {
-                                const auto threshold = (thresholds[t + 0] + thresholds[t + 1]) / 2;
+                        case stump_type::real:
+                                fit_real(task, fold_tr, residuals_tr, feature, fvalues, thresholds, value, stump);
+                                break;
 
-                                residuals_pos1.zero(), residuals_pos2.zero();
-                                residuals_neg1.zero(), residuals_neg2.zero();
+                        case stump_type::discrete:
+                                fit_discrete(task, fold_tr, residuals_tr, feature, fvalues, thresholds, value, stump);
+                                break;
 
-                                int cnt_pos = 0, cnt_neg = 0;
-                                for (size_t i = 0, size = task.size(fold_tr); i < size; ++ i)
-                                {
-                                        const auto residual = residuals_train.array(i);
-                                        if (fvalues[i] < threshold)
-                                        {
-                                                cnt_neg ++;
-                                                residuals_neg1.array() += residual;
-                                                residuals_neg2.array() += residual * residual;
-                                        }
-                                        else
-                                        {
-                                                cnt_pos ++;
-                                                residuals_pos1.array() += residual;
-                                                residuals_pos2.array() += residual * residual;
-                                        }
-                                }
-
-                                const auto value =
-                                        (residuals_pos2.array().sum() - residuals_pos1.array().square().sum() / cnt_pos) +
-                                        (residuals_neg2.array().sum() - residuals_neg1.array().square().sum() / cnt_neg);
-
-                                //log_info() << "feature = " << feature
-                                //        << ", threshold = " << threshold
-                                //        << ", value = " << value
-                                //        << ", count = " << cnt_neg << "+" << cnt_pos << "=" << task.size(fold_tr);
-
-                                if (value < best_value)
-                                {
-                                        best_value = value;
-                                        stump.m_feature = feature;
-                                        stump.m_threshold = threshold;
-                                        stump.m_outputs.resize(cat_dims(2, m_odims));
-                                        stump.m_outputs.vector(0) = residuals_neg1.vector() / cnt_neg;
-                                        stump.m_outputs.vector(1) = residuals_pos1.vector() / cnt_pos;
-                                }
-
-                                // todo: fit both real and discrete stumps
+                        default:
+                                assert(false);
                         }
                 }
 
@@ -243,12 +305,9 @@ trainer_result_t gboost_stump_t::train(const task_t& task, const size_t fold, co
                         << "]:tr=" << measure_tr
                         << ",vd=" << measure_vd << "|" << status
                         << ",te=" << measure_te
-                        << ",feature=" << stump.m_feature
-                        << ",solver=(" << state.m_status
-                        << ",i=" << state.m_iterations
-                        << ",x=" << state.x(0)
-                        << ",f=" << state.f
-                        << ",g=" << state.convergence_criteria() << ").";
+                        << ",stump=(f=" << stump.m_feature << ",t=" << stump.m_threshold << ")"
+                        << ",solver=(" << state.m_status << ",i=" << state.m_iterations
+                        << ",x=" << state.x(0) << ",f=" << state.f << ",g=" << state.convergence_criteria() << ").";
         }
 
         // keep only the stumps up to optimum epoch (on the validation dataset)
