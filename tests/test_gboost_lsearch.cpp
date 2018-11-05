@@ -4,7 +4,7 @@
 
 using namespace nano;
 
-NANO_BEGIN_MODULE(test_gboost)
+NANO_BEGIN_MODULE(test_gboost_lsearch)
 
 NANO_CASE(lsearch_gradient)
 {

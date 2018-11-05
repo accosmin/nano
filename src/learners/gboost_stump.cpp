@@ -166,7 +166,7 @@ trainer_result_t gboost_stump_t::train(const task_t& task, const size_t fold, co
         // check if the solver is properly set
         rsolver_t solver;
         critical(solver = get_solvers().get(m_solver),
-                strcat("search solver (", m_solver, ")."));
+                strcat("search solver (", m_solver, ")"));
 
         m_idims = task.idims();
         m_odims = task.odims();
