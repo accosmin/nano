@@ -12,7 +12,7 @@ NANO_CASE(stump_real)
 {
         const auto task = get_tasks().get("synth-affine");
         NANO_REQUIRE(task);
-        task->from_json(nano::to_json("folds", 1, "isize", 6, "osize", 4, "noise", 0.0, "count", 1000));
+        task->from_json(nano::to_json("folds", 1, "isize", 6, "osize", 1, "noise", 0.0, "count", 300));
         NANO_REQUIRE(task->load());
 
         const auto loss = get_losses().get("square");
@@ -20,9 +20,11 @@ NANO_CASE(stump_real)
 
         const auto learner = get_learners().get("gboost-stump");
         NANO_REQUIRE(learner);
-        learner->from_json(nano::to_json("rounds", 10, "patience", 5, "stump", "real", "solver", "gd"));
+        learner->from_json(nano::to_json("rounds", 100, "patience", 10, "stump", "real", "solver", "lbfgs"));
 
         const auto result = learner->train(*task, 0u, *loss);
+        NANO_REQUIRE(result);
+
         const auto& state = result.optimum();
 
         NANO_CHECK_LESS(state.m_train.m_value, epsilon2<scalar_t>());
@@ -38,7 +40,7 @@ NANO_CASE(stump_discrete)
 {
         const auto task = get_tasks().get("synth-affine");
         NANO_REQUIRE(task);
-        task->from_json(nano::to_json("folds", 1, "isize", 6, "osize", 4, "noise", 0.0, "count", 1000));
+        task->from_json(nano::to_json("folds", 1, "isize", 6, "osize", 1, "noise", 0.0, "count", 300));
         NANO_REQUIRE(task->load());
 
         const auto loss = get_losses().get("cauchy");
@@ -46,9 +48,11 @@ NANO_CASE(stump_discrete)
 
         const auto learner = get_learners().get("gboost-stump");
         NANO_REQUIRE(learner);
-        learner->from_json(nano::to_json("rounds", 10, "patience", 5, "stump", "discrete", "solver", "cgd"));
+        learner->from_json(nano::to_json("rounds", 100, "patience", 10, "stump", "discrete", "solver", "lbfgs"));
 
         const auto result = learner->train(*task, 0u, *loss);
+        NANO_REQUIRE(result);
+
         const auto& state = result.optimum();
 
         NANO_CHECK_LESS(state.m_train.m_value, epsilon2<scalar_t>());

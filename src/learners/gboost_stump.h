@@ -16,6 +16,12 @@ namespace nano
                 tensor4d_t      m_outputs;      ///< (2, #outputs) - predictions below and above the threshold
         };
 
+        enum class stump_type
+        {
+                real,                           ///< stump \in R (no restriction)
+                discrete,                       ///< stump \in {-1, +1}
+        };
+
         // todo: generalize stump_t to use other features (e.g. Haar, HoG)
         // todo: implement different shrinkage methods: geometric or arithmetic decay (a single factor to tune)
 
@@ -26,12 +32,6 @@ namespace nano
         class gboost_stump_t final : public learner_t
         {
         public:
-
-                enum class stump_type
-                {
-                        real,                   ///< stump \in R (no restriction)
-                        discrete,               ///< stump \in {-1, +1}
-                };
 
                 enum class regularization
                 {
@@ -69,18 +69,18 @@ namespace nano
                 int             m_rounds{0};                            ///< training: number of boosting rounds
                 int             m_patience{0};                          ///< training: number of epochs before overfitting
                 string_t        m_solver{"cgd"};                        ///< training: solver to use for line-search
-                stump_type      m_stype{stump_type::discrete};          ///< training: stump type
+                stump_type      m_stump_type{stump_type::discrete};     ///< training: stump type
                 regularization  m_rtype{regularization::adaptive};      ///< training:
                 stumps_t        m_stumps;                               ///< trained stumps
         };
 
         template <>
-        inline enum_map_t<gboost_stump_t::stump_type> enum_string<gboost_stump_t::stump_type>()
+        inline enum_map_t<stump_type> enum_string<stump_type>()
         {
                 return
                 {
-                        { gboost_stump_t::stump_type::real,             "real" },
-                        { gboost_stump_t::stump_type::discrete,         "discrete" }
+                        { stump_type::real,                     "real" },
+                        { stump_type::discrete,                 "discrete" }
                 };
         }
 
