@@ -49,7 +49,7 @@ bool affine_task_t::populate()
 
                 for (size_t i = 0; i < m_count; ++ i)
                 {
-                        target.vector() = weights.matrix() * input.vector() + bias.vector();
+                        target.vector() = weights.matrix() * chunk(i).vector() + bias.vector();
                         add_random(udist_noise, rng, target);
 
                         const auto label = string_t();
