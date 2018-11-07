@@ -9,7 +9,7 @@ using namespace nano;
 static auto make_task_config()
 {
         return to_json(
-                "folds", 1, "isize", 6, "osize", 1, "noise", 0.0, "count", 1000,
+                "folds", 1, "isize", 6, "osize", 1, "noise", 0.0, "count", 300,
                 "type", affine_task_type::classification);
 }
 
@@ -21,7 +21,6 @@ NANO_CASE(stump_real)
         NANO_REQUIRE(task);
         task->from_json(make_task_config());
         NANO_REQUIRE(task->load());
-        task->describe("synth-affine");
 
         const auto loss = get_losses().get("s-logistic");
         NANO_REQUIRE(loss);
@@ -71,6 +70,5 @@ NANO_CASE(stump_discrete)
         NANO_CHECK_LESS(state.m_valid.m_error, epsilon2<scalar_t>());
         NANO_CHECK_LESS(state.m_test.m_error, epsilon2<scalar_t>());
 }
-
 
 NANO_END_MODULE()

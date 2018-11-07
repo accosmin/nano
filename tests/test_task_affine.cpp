@@ -121,5 +121,4 @@ NANO_CASE(classification)
         NANO_CHECK_LESS_EQUAL(task->intersections(), size_t(0));
 }
 
-
 NANO_END_MODULE()
