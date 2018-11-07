@@ -10,7 +10,6 @@ namespace nano
         ///
         struct stump_t
         {
-                // attributes
                 tensor_size_t   m_feature{0};   ///< index of the selected feature
                 scalar_t        m_threshold{0}; ///< threshold
                 tensor4d_t      m_outputs;      ///< (2, #outputs) - predictions below and above the threshold

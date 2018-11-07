@@ -114,7 +114,7 @@ void task_t::describe(const string_t& name) const
                                 assert(it != flcounts.end());
 
                                 const auto itx = it->second.find(glcount.first);
-                                row << itx->second;
+                                row << (itx == it->second.end() ? size_t(0) : itx->second);
                         }
                 }
 
