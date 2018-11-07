@@ -73,6 +73,48 @@ NANO_CASE(single_class)
                 const auto loss = get_losses().get(loss_id);
                 NANO_REQUIRE(loss);
 
+                const auto n_classes = 1;
+                tensor3d_t target(n_classes, 1, 1);
+                tensor3d_t output(n_classes, 1, 1);
+
+                {
+                        target.vector() = class_target(n_classes);
+                        output.vector() = class_target(n_classes);
+
+                        const auto error = loss->error(target, output);
+                        NANO_CHECK_CLOSE(error, scalar_t(0), epsilon0<scalar_t>());
+                }
+                {
+                        target.vector() = class_target(n_classes, 0);
+                        output.vector() = class_target(n_classes, 0);
+
+                        const auto error = loss->error(target, output);
+                        NANO_CHECK_CLOSE(error, scalar_t(0), epsilon0<scalar_t>());
+                }
+                {
+                        target.vector() = class_target(n_classes);
+                        output.vector() = class_target(n_classes, 0);
+
+                        const auto error = loss->error(target, output);
+                        NANO_CHECK_CLOSE(error, scalar_t(1), epsilon0<scalar_t>());
+                }
+                {
+                        target.vector() = class_target(n_classes, 0);
+                        output.vector() = class_target(n_classes);
+
+                        const auto error = loss->error(target, output);
+                        NANO_CHECK_CLOSE(error, scalar_t(1), epsilon0<scalar_t>());
+                }
+        }
+}
+
+NANO_CASE(single_label_multi_class)
+{
+        for (const auto& loss_id : {"classnll", "s-logistic", "s-exponential", "s-square", "s-cauchy"})
+        {
+                const auto loss = get_losses().get(loss_id);
+                NANO_REQUIRE(loss);
+
                 const auto n_classes = 13;
                 tensor3d_t target(n_classes, 1, 1);
                 tensor3d_t output(n_classes, 1, 1);
@@ -109,7 +151,7 @@ NANO_CASE(single_class)
         }
 }
 
-NANO_CASE(multi_class)
+NANO_CASE(multi_label_multi_class)
 {
         for (const auto& loss_id : {"m-logistic", "m-exponential", "m-square", "m-cauchy"})
         {
