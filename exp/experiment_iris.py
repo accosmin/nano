@@ -10,40 +10,22 @@ exp = experiment.experiment(cfg.expdir + "/iris", trials = 10)
 exp.set_task(cfg.task_iris())
 
 # loss functions
+exp.add_loss("cauchy", cfg.loss("s-cauchy"))
+exp.add_loss("square", cfg.loss("s-square"))
+exp.add_loss("classnll", cfg.loss("classnll"))
 exp.add_loss("logistic", cfg.loss("s-logistic"))
-
-# trainers
-epochs = 100
-patience = 100
-epsilon = 1e-4
-
-for solver in cfg.batch_solvers():
-        exp.add_trainer(solver, cfg.batch_trainer(solver, epochs, patience, epsilon))
+exp.add_loss("exponential", cfg.loss("s-exponential"))
 
 # models
-output = {"name":"output","type":"affine","omaps":3,"orows":1,"ocols":1}
+gboost_stump_real = {"id": "gboost-stump", "rounds": 100, "patience": 10, "solver": "gd", "type": "real" }
+gboost_stump_discrete = {"id": "gboost-stump", "rounds": 100, "patience": 10, "solver": "gd", "type": "discrete" }
 
-fc1 = {"name":"fc1","type":"affine","omaps":64,"orows":1,"ocols":1}
-fc2 = {"name":"fc2","type":"affine","omaps":32,"orows":1,"ocols":1}
-fc3 = {"name":"fc3","type":"affine","omaps":16,"orows":1,"ocols":1}
-
-ac1 = {"name":"ac1","type":"act-snorm"}
-ac2 = {"name":"ac2","type":"act-snorm"}
-ac3 = {"name":"ac3","type":"act-snorm"}
-
-mlp0 = {"nodes": [output], "model": []}
-mlp1 = {"nodes": [fc1, ac1, output], "model": [["fc1", "ac1", "output"]]}
-mlp2 = {"nodes": [fc1, ac1, fc2, ac2, output], "model": [["fc1", "ac1", "fc2", "ac2", "output"]]}
-mlp3 = {"nodes": [fc1, ac1, fc2, ac2, fc3, ac3, output], "model": [["fc1", "ac1", "fc2", "ac2", "fc3", "ac3", "output"]]}
-
-exp.add_model("mlp0", mlp0)
-exp.add_model("mlp1", mlp1)
-exp.add_model("mlp2", mlp2)
-exp.add_model("mlp3", mlp3)
+exp.add_model("gboost-stump-real", gboost_stump_real)
+exp.add_model("gboost-stump-discrete", gboost_stump_discrete)
 
 # train all configurations
 exp.train_all()
 
 # compare configurations
-exp.summarize_by_trainers("all", ".*")
+exp.summarize_by_losses("all", ".*")
 exp.summarize_by_models("all", ".*")

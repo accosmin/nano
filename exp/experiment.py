@@ -8,7 +8,7 @@ import subprocess
 
 class experiment:
         """ utility to manage an experiment consisting of a task and
-                various models, trainers and loss functions configured using JSON
+                various models and loss functions configured using JSON
         """
         def __init__(self, outdir, trials = 10):
                 self.cfg = config.config()
@@ -19,7 +19,6 @@ class experiment:
                 self.runs = []
                 self.losses = []
                 self.models = []
-                self.trainers = []
                 self.makedirs()
 
                 logging.basicConfig(
@@ -63,17 +62,9 @@ class experiment:
                 self.save_json(json_path, parameters)
                 self.losses.append([name, json_path])
 
-        def add_trainer(self, name, parameters):
-                """ register a new trainer (.json config created from serializing parameters) """
-                json_path = os.path.join(self.dir_config, "trainer_" + name + ".json")
-                self.save_json(json_path, parameters)
-                self.trainers.append([name, json_path])
-
-        def path(self, dirname, mname, tname, lname, extension, trial=None):
+        def path(self, dirname, mname, lname, extension):
                 basename = "M" + mname if mname else ""
-                basename += "_T" + tname if tname else ""
                 basename += "_L" + lname if lname else ""
-                basename += "" if trial is None else "_trial{}".format(trial + 1)
                 basename += extension
                 return os.path.join(dirname, basename)
 
@@ -91,17 +82,16 @@ class experiment:
                                 names.append(name)
                 return names
 
-        def filter_names(self, mname_reg, tname_reg, lname_reg):
+        def filter_names(self, mname_reg, lname_reg):
                 mnames = self.get_names(self.models, mname_reg)
-                tnames = self.get_names(self.trainers, tname_reg)
                 lnames = self.get_names(self.losses, lname_reg)
-                return mnames, tnames, lnames
+                return mnames, lnames
 
-        def filter_paths(self, dirname, mname_reg, tname_reg, lname_reg, extension, trial=None):
+        def filter_paths(self, dirname, mname_reg, lname_reg, extension):
                 paths = []
-                mnames, tnames, lnames = self.filter_names(mname_reg, tname_reg, lname_reg)
-                for mname, tname, lname in [(x, y, z) for x in mnames for y in tnames for z in lnames]:
-                        paths.append(self.path(dirname, mname, tname, lname, extension, trial))
+                mnames, lnames = self.filter_names(mname_reg, lname_reg)
+                for mname, lname in [(x, y) for x in mnames for y in lnames]:
+                        paths.append(self.path(dirname, mname, lname, extension, trial))
                 return paths
 
         def plot_trial(self, cpath, ppath):
@@ -129,16 +119,15 @@ class experiment:
                         self.log("{}{}{}{}".format(name, error_stats, epoch_stats, time_stats))
                 self.log("{}{}{}{}".format("-" * 36, "-" * 24, "-" * 24, "-" * 24))
 
-        def train_one(self, mname, mparam, tname, tparam, lname, lparam):
+        def train_one(self, mname, mparam, lname, lparam):
                 # train the given configuration for multiple trials
-                mpath = self.path(self.dir_models, mname, tname, lname, "")
-                cpath = self.path(self.dir_models, mname, tname, lname, ".csv")
-                lpath = self.path(self.dir_models, mname, tname, lname, ".log")
+                mpath = self.path(self.dir_models, mname, lname, "")
+                cpath = self.path(self.dir_models, mname, lname, ".csv")
+                lpath = self.path(self.dir_models, mname, lname, ".log")
 
                 param = "\n --task " + self.task + "\n"
                 param += " --loss " + lparam + "\n"
                 param += " --model " + mparam + "\n"
-                param += " --trainer " + tparam + "\n"
                 param += " --basepath " + mpath + "\n"
                 param += " --trials " + str(self.trials)
 
@@ -152,23 +141,22 @@ class experiment:
 
                 # plot the training history for each trial
                 for trial in range(self.trials):
-                        cpath = self.path(self.dir_models, mname, tname, lname, ".csv", trial)
-                        ppath = self.path(self.dir_models, mname, tname, lname, ".pdf", trial)
+                        cpath = self.path(self.dir_models, mname, lname, ".csv", trial)
+                        ppath = self.path(self.dir_models, mname, lname, ".pdf", trial)
                         self.plot_trial(cpath, ppath)
 
                 # plot the training history for all trials on the same plot
                 cpaths = []
                 for trial in range(self.trials):
-                        cpath = self.path(self.dir_models, mname, tname, lname, ".csv", trial)
+                        cpath = self.path(self.dir_models, mname, lname, ".csv", trial)
                         cpaths.append(cpath)
-                ppath = self.path(self.dir_models, mname, tname, lname, ".pdf")
+                ppath = self.path(self.dir_models, mname, lname, ".pdf")
                 self.plot_trials(cpaths, ppath)
                 self.log()
 
         def train_all(self):
                 # run all possible configurations
                 mdatas = self.models
-                tdatas = self.trainers
                 ldatas = self.losses
                 for mdata, tdata, ldata in [(x, y, z) for x in mdatas for y in tdatas for z in ldatas]:
                         self.train_one(
@@ -176,34 +164,29 @@ class experiment:
                                 self.get_name(tdata), self.get_config(tdata),
                                 self.get_name(ldata), self.get_config(ldata))
 
-        def summarize(self, mname, mname_reg, tname, tname_reg, lname, lname_reg, names):
+        def summarize(self, mname, mname_reg, lname, lname_reg, names):
                 # sumarize these configurations
-                paths = self.filter_paths(self.dir_models, mname_reg, tname_reg, lname_reg, ".csv")
+                paths = self.filter_paths(self.dir_models, mname_reg, lname_reg, ".csv")
                 self.print_stats(paths)
 
                 # compare configurations for each trial: plot the training state evaluation
                 for trial in range(self.trials):
-                        paths = self.filter_paths(self.dir_models, mname_reg, tname_reg, lname_reg, ".csv", trial)
-                        ppath = self.path(self.dir, mname, tname, lname, ".pdf", trial)
+                        paths = self.filter_paths(self.dir_models, mname_reg, lname_reg, ".csv", trial)
+                        ppath = self.path(self.dir, mname, lname, ".pdf", trial)
                         self.plot_trials(paths, ppath)
 
                 # compare configurations across all trials: boxplot the results
-                paths = self.filter_paths(self.dir_models, mname_reg, tname_reg, lname_reg, ".csv")
-                ppath = self.path(self.dir, mname, tname, lname, ".pdf")
+                paths = self.filter_paths(self.dir_models, mname_reg, lname_reg, ".csv")
+                ppath = self.path(self.dir, mname, lname, ".pdf")
                 self.plot_configs(paths, ppath, names)
                 self.log()
 
         def summarize_by_models(self, mname, mname_reg = ".*"):
-                mnames, tnames, lnames = self.filter_names(mname_reg, None, None)
-                for tname, lname in [(x, y) for x in tnames for y in lnames]:
-                        self.summarize(mname, mname_reg, tname, tname, lname, lname, mnames)
-
-        def summarize_by_trainers(self, tname, tname_reg = ".*"):
-                mnames, tnames, lnames = self.filter_names(None, tname_reg, None)
-                for mname, lname in [(x, y) for x in mnames for y in lnames]:
-                        self.summarize(mname, mname, tname, tname_reg, lname, lname, tnames)
+                mnames, lnames = self.filter_names(mname_reg, None)
+                for lname in lnames:
+                        self.summarize(mname, mname_reg, lname, lname, mnames)
 
         def summarize_by_losses(self, lname, lname_reg = ".*"):
-                mnames, tnames, lnames = self.filter_names(None, None, lname_reg)
-                for mname, tname in [(x, y) for x in mnames for y in tnames]:
-                        self.summarize(mname, mname, tname, tname, lname, lname_reg, lnames)
+                mnames, lnames = self.filter_names(None, lname_reg)
+                for mname in mnames:
+                        self.summarize(mname, mname, lname, lname_reg, lnames)
