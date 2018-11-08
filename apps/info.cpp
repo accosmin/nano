@@ -1,7 +1,7 @@
 #include "loss.h"
 #include "solver.h"
 #include "version.h"
-#include "learner.h"
+#include "model.h"
 #include "core/table.h"
 #include "core/cmdline.h"
 #include <iostream>
@@ -32,8 +32,8 @@ int main(int argc, const char* argv[])
         cmdline_t cmdline("display the registered objects");
         cmdline.add("", "loss",                 "loss functions");
         cmdline.add("", "task",                 "machine learning tasks");
+        cmdline.add("", "model",                "machine learning models");
         cmdline.add("", "solver",               "numerical optimization algorithms");
-        cmdline.add("", "learner",              "machine learning models");
         cmdline.add("", "version",              "library version");
         cmdline.add("", "git-hash",             "git commit hash");
         cmdline.add("", "system",               "system: all available information");
@@ -46,7 +46,7 @@ int main(int argc, const char* argv[])
         const auto has_loss = cmdline.has("loss");
         const auto has_task = cmdline.has("task");
         const auto has_solver = cmdline.has("solver");
-        const auto has_learner = cmdline.has("learner");
+        const auto has_model = cmdline.has("model");
         const auto has_system = cmdline.has("system");
         const auto has_sys_logical = cmdline.has("sys-logical-cpus");
         const auto has_sys_physical = cmdline.has("sys-physical-cpus");
@@ -57,7 +57,7 @@ int main(int argc, const char* argv[])
         if (    !has_loss &&
                 !has_task &&
                 !has_solver &&
-                !has_learner &&
+                !has_model &&
                 !has_system &&
                 !has_sys_logical &&
                 !has_sys_physical &&
@@ -82,9 +82,9 @@ int main(int argc, const char* argv[])
         {
                 print("solver", get_solvers());
         }
-        if (has_learner)
+        if (has_model)
         {
-                print("learner", get_learners());
+                print("model", get_models());
         }
         if (has_system || has_sys_physical)
         {

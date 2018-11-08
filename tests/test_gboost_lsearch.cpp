@@ -1,6 +1,6 @@
 #include "utest.h"
 #include "cortex.h"
-#include "learners/gboost.h"
+#include "models/gboost.h"
 
 using namespace nano;
 

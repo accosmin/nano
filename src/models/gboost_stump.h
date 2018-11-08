@@ -1,11 +1,11 @@
 #pragma once
 
-#include "learner.h"
+#include "model.h"
 
 namespace nano
 {
         ///
-        /// \brief stump is a weak learner that compares the value of a selected feature with a threshold:
+        /// \brief a stump is a weak learner that compares the value of a selected feature with a threshold:
         ///     stump(x) = outputs(0) if x(feature) < threshold else v1(0)
         ///
         struct stump_t
@@ -28,7 +28,7 @@ namespace nano
         /// \brief Gradient Boosting with stumps as weak learners.
         ///     todo: add citations
         ///
-        class gboost_stump_t final : public learner_t
+        class gboost_stump_t final : public model_t
         {
         public:
 
@@ -65,11 +65,11 @@ namespace nano
                 // attributes
                 tensor3d_dim_t  m_idims{{0, 0, 0}};                     ///< input dimensions
                 tensor3d_dim_t  m_odims{{0, 0, 0}};                     ///< output dimensions
-                int             m_rounds{0};                            ///< training: number of boosting rounds
-                int             m_patience{0};                          ///< training: number of epochs before overfitting
-                string_t        m_solver{"cgd"};                        ///< training: solver to use for line-search
-                stump_type      m_stump_type{stump_type::discrete};     ///< training: stump type
-                regularization  m_rtype{regularization::adaptive};      ///< training:
+                int             m_rounds{0};                            ///< number of boosting rounds
+                int             m_patience{0};                          ///< number of epochs before overfitting
+                string_t        m_solver{"cgd"};                        ///< solver to use for line-search
+                stump_type      m_stump_type{stump_type::discrete};     ///< stump type
+                regularization  m_rtype{regularization::adaptive};      ///< regularization method
                 stumps_t        m_stumps;                               ///< trained stumps
         };
 

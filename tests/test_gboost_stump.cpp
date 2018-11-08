@@ -2,7 +2,7 @@
 #include "utest.h"
 #include "cortex.h"
 #include "tasks/task_affine.h"
-#include "learners/gboost_stump.h"
+#include "models/gboost_stump.h"
 
 using namespace nano;
 
@@ -25,11 +25,11 @@ NANO_CASE(stump_real)
         const auto loss = get_losses().get("s-logistic");
         NANO_REQUIRE(loss);
 
-        const auto learner = get_learners().get("gboost-stump");
-        NANO_REQUIRE(learner);
-        learner->from_json(to_json("rounds", 100, "patience", 10, "stump", stump_type::real));
+        const auto model = get_models().get("gboost-stump");
+        NANO_REQUIRE(model);
+        model->from_json(to_json("rounds", 100, "patience", 10, "stump", stump_type::real));
 
-        const auto result = learner->train(*task, 0u, *loss);
+        const auto result = model->train(*task, 0u, *loss);
         NANO_REQUIRE(result);
 
         const auto& state = result.optimum();
@@ -53,11 +53,11 @@ NANO_CASE(stump_discrete)
         const auto loss = get_losses().get("s-logistic");
         NANO_REQUIRE(loss);
 
-        const auto learner = get_learners().get("gboost-stump");
-        NANO_REQUIRE(learner);
-        learner->from_json(to_json("rounds", 100, "patience", 10, "stump", stump_type::discrete));
+        const auto model = get_models().get("gboost-stump");
+        NANO_REQUIRE(model);
+        model->from_json(to_json("rounds", 100, "patience", 10, "stump", stump_type::discrete));
 
-        const auto result = learner->train(*task, 0u, *loss);
+        const auto result = model->train(*task, 0u, *loss);
         NANO_REQUIRE(result);
 
         const auto& state = result.optimum();

@@ -1,4 +1,4 @@
-#include "learner.h"
+#include "model.h"
 #include "core/io.h"
 #include "core/logger.h"
 #include "core/cmdline.h"
@@ -27,7 +27,7 @@ int main(int argc, const char *argv[])
         cmdline.add("", "task",         "task configuration (.json)");
         cmdline.add("", "fold",         "fold index to use for evaluation", "0");
         cmdline.add("", "loss",         "loss configuration (.json)");
-        cmdline.add("", "learner",      "path to the trained model (.model)");
+        cmdline.add("", "model",      "path to the trained model (.model)");
 
         cmdline.process(argc, argv);
 
@@ -35,7 +35,7 @@ int main(int argc, const char *argv[])
         const auto cmd_task = cmdline.get<string_t>("task");
         const auto cmd_fold = cmdline.get<size_t>("fold");
         const auto cmd_loss = cmdline.get<string_t>("loss");
-        const auto cmd_learner = cmdline.get<string_t>("learner");
+        const auto cmd_model = cmdline.get<string_t>("model");
 
         json_t json;
         string_t id;
@@ -63,18 +63,17 @@ int main(int argc, const char *argv[])
         critical(loss = get_losses().get(id),
                 strcat("search loss <", id, ">"));
 
-        // load learner
-        rlearner_t learner;
-        critical(learner = learner_t::load(cmd_learner),
-                strcat("load learner from <", cmd_learner, ">"));
+        // load model
+        rmodel_t model;
+        critical(model = model_t::load(cmd_model),
+                strcat("load model from <", cmd_model, ">"));
 
-        critical(*learner == *task,
-                strcat("checking learner's compability with the task"));
+        critical(*model == *task,
+                strcat("checking model's compability with the task"));
 
-        // test the learner
+        // test the model
         // todo: use the thread pool to speed-up computation
         stats_t stats_errors, stats_values;
-
         critical(
                 [&] ()
                 {
@@ -83,14 +82,14 @@ int main(int argc, const char *argv[])
                         {
                                 const auto input = task->input(fold, i);
                                 const auto target = task->target(fold, i);
-                                const auto output = learner->output(input);
+                                const auto output = model->output(input);
 
                                 stats_errors(loss->error(target, output));
                                 stats_values(loss->value(target, output));
                         }
                         return true;
                 }(),
-                "evaluate learner");
+                "evaluate model");
 
         // todo: add more stats (e.g. median, percentiles)
         log_info() << std::fixed << std::setprecision(3)

@@ -1,6 +1,6 @@
 #include "loss.h"
 #include "task.h"
-#include "learner.h"
+#include "model.h"
 #include "core/io.h"
 #include "core/table.h"
 #include "core/logger.h"
@@ -29,7 +29,7 @@ int main(int argc, const char *argv[])
         cmdline_t cmdline("train a model");
         cmdline.add("", "task",         "task configuration (.json)");
         cmdline.add("", "loss",         "loss configuration (.json)");
-        cmdline.add("", "learner",      "learner configuration (.json)");
+        cmdline.add("", "model",        "model configuration (.json)");
         cmdline.add("", "basepath",     "basepath where to save results (e.g. model, logs, history)");
         cmdline.add("", "trials",       "number of trials/folds", 10);
 
@@ -38,12 +38,12 @@ int main(int argc, const char *argv[])
         // check arguments and options
         const auto cmd_loss = cmdline.get<string_t>("loss");
         const auto cmd_task = cmdline.get<string_t>("task");
-        const auto cmd_learner = cmdline.get<string_t>("learner");
+        const auto cmd_model = cmdline.get<string_t>("model");
         const auto cmd_basepath = cmdline.get<string_t>("basepath");
         const auto cmd_trials = cmdline.get<size_t>("trials");
 
         json_t json;
-        string_t task_id, loss_id, learner_id;
+        string_t task_id, loss_id, model_id;
 
         // load task
         critical(load_json(cmd_task, json, task_id),
@@ -68,15 +68,15 @@ int main(int argc, const char *argv[])
         critical(loss = get_losses().get(loss_id),
                 strcat("search loss <", loss_id, ">"));
 
-        // load learner
-        critical(load_json(cmd_learner, json, learner_id),
-                strcat("load learner configuration from <", cmd_learner, ">"));
+        // load model
+        critical(load_json(cmd_model, json, model_id),
+                strcat("load model configuration from <", cmd_model, ">"));
 
-        rlearner_t learner;
-        critical(learner = get_learners().get(learner_id),
-                strcat("search learner <", learner_id, ">"));
+        rmodel_t model;
+        critical(model = get_models().get(model_id),
+                strcat("search model <", model_id, ">"));
 
-        learner->from_json(json);
+        model->from_json(json);
 
         //
         table_t table;
@@ -93,7 +93,7 @@ int main(int argc, const char *argv[])
         for (size_t trial = 0; trial < cmd_trials; ++ trial)
         {
                 trainer_result_t result;
-                critical(result = learner->train(*task, trial % task->fsize(), *loss),
+                critical(result = model->train(*task, trial % task->fsize(), *loss),
                         "train");
 
                 const auto& state = result.optimum();
@@ -105,10 +105,10 @@ int main(int argc, const char *argv[])
                         << precision(0) << idiv(state.m_milis.count(), 1000)
                         << precision(6) << result.convergence_speed();
 
-                const auto path_learner = strcat(cmd_basepath, "_trial", trial + 1, ".model");
+                const auto path_model = strcat(cmd_basepath, "_trial", trial + 1, ".model");
                 const auto path_training = strcat(cmd_basepath, "_trial", trial + 1, ".csv");
 
-                critical(learner_t::save(path_learner, learner_id, *learner), "save model");
+                critical(model_t::save(path_model, model_id, *model), "save model");
                 critical(result.save(path_training), "save training history");
         }
 
