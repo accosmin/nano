@@ -1,10 +1,10 @@
-#include "gboost.h"
 #include "solver.h"
 #include "core/tpool.h"
 #include "core/logger.h"
 #include "gboost_stump.h"
 #include "core/ibstream.h"
 #include "core/obstream.h"
+#include "gboost_lsearch.h"
 
 using namespace nano;
 
@@ -110,7 +110,7 @@ void gboost_stump_t::to_json(json_t& json) const
                 "patience", m_patience,
                 "stump", m_stump_type, "stumps", join(enum_values<stump_type>()),
                 "solver", m_solver, "solvers", join(get_solvers().ids()),
-                "regularization", m_rtype, "regularizations", join(enum_values<regularization>()));
+                "tune", m_gboost_tune, "tunes", join(enum_values<gboost_tune>()));
 }
 
 void gboost_stump_t::from_json(const json_t& json)
@@ -120,7 +120,7 @@ void gboost_stump_t::from_json(const json_t& json)
                 "patience", m_patience,
                 "stump", m_stump_type,
                 "solver", m_solver,
-                "regularization", m_rtype);
+                "tune", m_gboost_tune);
 }
 
 trainer_result_t gboost_stump_t::train(const task_t& task, const size_t fold, const loss_t& loss)
@@ -290,7 +290,7 @@ bool gboost_stump_t::save(obstream_t& stream) const
                 !stream.write(m_odims) ||
                 !stream.write(m_rounds) ||
                 !stream.write(m_stump_type) ||
-                !stream.write(m_rtype) ||
+                !stream.write(m_gboost_tune) ||
                 !stream.write(m_stumps.size()))
         {
                 return false;
@@ -319,7 +319,7 @@ bool gboost_stump_t::load(ibstream_t& stream)
                 !stream.read(m_odims) ||
                 !stream.read(m_rounds) ||
                 !stream.read(m_stump_type) ||
-                !stream.read(m_rtype) ||
+                !stream.read(m_gboost_tune) ||
                 !stream.read(n_stumps))
         {
                 return false;

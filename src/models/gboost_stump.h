@@ -1,6 +1,7 @@
 #pragma once
 
 #include "model.h"
+#include "gboost.h"
 
 namespace nano
 {
@@ -15,31 +16,16 @@ namespace nano
                 tensor4d_t      m_outputs;      ///< (2, #outputs) - predictions below and above the threshold
         };
 
-        enum class stump_type
-        {
-                real,                           ///< stump \in R (no restriction)
-                discrete,                       ///< stump \in {-1, +1}
-        };
-
         // todo: generalize stump_t to use other features (e.g. Haar, HoG)
-        // todo: implement different shrinkage methods: geometric or arithmetic decay (a single factor to tune)
 
         ///
         /// \brief Gradient Boosting with stumps as weak learners.
-        ///     todo: add citations
+        ///     see Friedman, J. H. (February 1999). "Greedy Function Approximation: A Gradient Boosting Machine" (PDF).
+        ///     see Friedman, J. H. (March 1999). "Stochastic Gradient Boosting" (PDF).
         ///
         class gboost_stump_t final : public model_t
         {
         public:
-
-                enum class regularization
-                {
-                        none,                   ///<
-                        adaptive,               ///< shrinkage per round using the validation dataset
-                        shrinkage,              ///< global shrinkage (needs tuning)
-                        vadaboost,              ///< VadaBoost (needs tuning)
-                        // todo: Stochastic gradient boosting
-                };
 
                 gboost_stump_t() = default;
 
@@ -69,29 +55,7 @@ namespace nano
                 int             m_patience{0};                          ///< number of epochs before overfitting
                 string_t        m_solver{"cgd"};                        ///< solver to use for line-search
                 stump_type      m_stump_type{stump_type::discrete};     ///< stump type
-                regularization  m_rtype{regularization::adaptive};      ///< regularization method
+                gboost_tune     m_gboost_tune{gboost_tune::none};       ///< regularization method
                 stumps_t        m_stumps;                               ///< trained stumps
         };
-
-        template <>
-        inline enum_map_t<stump_type> enum_string<stump_type>()
-        {
-                return
-                {
-                        { stump_type::real,                     "real" },
-                        { stump_type::discrete,                 "discrete" }
-                };
-        }
-
-        template <>
-        inline enum_map_t<gboost_stump_t::regularization> enum_string<gboost_stump_t::regularization>()
-        {
-                return
-                {
-                        { gboost_stump_t::regularization::none,         "none" },
-                        { gboost_stump_t::regularization::adaptive,     "adaptive" },
-                        { gboost_stump_t::regularization::shrinkage,    "shrinkage" },
-                        { gboost_stump_t::regularization::vadaboost,    "vadaboost" }
-                };
-        }
 }
