@@ -43,7 +43,6 @@ def plot_trial(spath, ppath):
         """ plot the training evolution of a model """
         title, data = load_trial_csv(spath)
         with PdfPages(ppath) as pdf:
-                # (train, validation, test) loss value and error
                 for ynames in (["train_loss", "valid_loss", "test_loss"], ["train_error", "valid_error", "test_error"]):
                         xname, yname0, yname1, yname2 = "epoch", ynames[0], ynames[1], ynames[2]
                         plt.plot(data[xname], data[yname0], "r-", label = yname0)
@@ -57,23 +56,11 @@ def plot_trial(spath, ppath):
                         pdf.savefig()
                         plt.close()
 
-                # xnorm and gnorm
-                for yname in ("xnorm", "gnorm"):
-                        xname = "epoch"
-                        plt.plot(data[xname], data[yname], "k-", label = yname)
-                        plt.title(title, weight = "bold")
-                        plt.xlabel(xname, fontsize = "smaller")
-                        plt.ylabel(yname, fontsize = "smaller")
-                        plt.legend(fontsize = "smaller")
-                        plt.grid(True, linestyle='--')
-                        pdf.savefig()
-                        plt.close()
-
 def plot_trials(spaths, ppath):
         """ plot the training evolution of multiple models on the same plot """
         names, datas = load_csvs(spaths, load_trial_csv)
         with PdfPages(ppath) as pdf:
-                for yname in ("train_loss", "train_error", "valid_loss", "valid_error", "test_loss", "test_error", "xnorm", "gnorm", "seconds"):
+                for yname in ("train_loss", "train_error", "valid_loss", "valid_error", "test_loss", "test_error", "seconds"):
                         xname = "epoch"
                         for data, name in zip(datas, names):
                                 plt.plot(data[xname], data[yname], label = name)
@@ -91,7 +78,7 @@ def plot_configs(spaths, ppath, names):
         assert(len(names) == len(datas))
         title = os.path.basename(ppath).replace(".pdf", "").replace("result_", "")
         with PdfPages(ppath) as pdf:
-                for yname in ("epoch", "train_loss", "train_error", "valid_loss", "valid_error", "test_loss", "test_error", "xnorm", "gnorm", "seconds", "speed"):
+                for yname in ("epoch", "train_loss", "train_error", "valid_loss", "valid_error", "test_loss", "test_error", "seconds", "speed"):
                         bdata = []
                         for data in datas:
                                 bdata.append(data[yname])

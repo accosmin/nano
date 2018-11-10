@@ -12,7 +12,7 @@ doxygen/html
 *.log
 *.swp
 *.swo
-scripts/__pycache__
-scripts/*.pyc
-scripts/*.pdf
+exp/__pycache__
+exp/*.pyc
+exp/*.pdf
 src/version.h

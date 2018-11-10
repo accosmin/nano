@@ -2,12 +2,12 @@ import config
 import experiment
 
 # initialize experiment:
-# - single-class classification problem using the IRIS flower dataset
+# - single-label classification problem using the IRIS flower dataset
 # - the model should predict the iris species
 cfg = config.config()
 exp = experiment.experiment(cfg.expdir + "/iris", trials = 10)
 
-exp.set_task(cfg.task_iris())
+exp.set_task(cfg.task_iris(folds=10))
 
 # loss functions
 exp.add_loss("cauchy", cfg.loss("s-cauchy"))

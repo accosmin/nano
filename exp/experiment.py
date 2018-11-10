@@ -62,9 +62,10 @@ class experiment:
                 self.save_json(json_path, parameters)
                 self.losses.append([name, json_path])
 
-        def path(self, dirname, mname, lname, extension):
+        def path(self, dirname, mname, lname, extension, trial=None):
                 basename = "M" + mname if mname else ""
                 basename += "_L" + lname if lname else ""
+                basename += "" if trial is None else "_trial{}".format(trial + 1)
                 basename += extension
                 return os.path.join(dirname, basename)
 
@@ -87,7 +88,7 @@ class experiment:
                 lnames = self.get_names(self.losses, lname_reg)
                 return mnames, lnames
 
-        def filter_paths(self, dirname, mname_reg, lname_reg, extension):
+        def filter_paths(self, dirname, mname_reg, lname_reg, extension, trial=None):
                 paths = []
                 mnames, lnames = self.filter_names(mname_reg, lname_reg)
                 for mname, lname in [(x, y) for x in mnames for y in lnames]:
@@ -158,10 +159,9 @@ class experiment:
                 # run all possible configurations
                 mdatas = self.models
                 ldatas = self.losses
-                for mdata, tdata, ldata in [(x, y, z) for x in mdatas for y in tdatas for z in ldatas]:
+                for mdata, ldata in [(x, y) for x in mdatas for y in ldatas]:
                         self.train_one(
                                 self.get_name(mdata), self.get_config(mdata),
-                                self.get_name(tdata), self.get_config(tdata),
                                 self.get_name(ldata), self.get_config(ldata))
 
         def summarize(self, mname, mname_reg, lname, lname_reg, names):

@@ -85,7 +85,6 @@ int main(int argc, const char *argv[])
                 << "train_loss" << "train_error"
                 << "valid_loss" << "valid_error"
                 << "test_loss" << "test_error"
-                << "xnorm" << "gnorm"
                 << "seconds" << "speed";
         table.delim();
 
