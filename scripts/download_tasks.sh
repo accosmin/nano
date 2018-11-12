@@ -82,28 +82,40 @@ function download_iris {
 	wget -N http://archive.ics.uci.edu/ml/machine-learning-databases/iris/iris.data -P ${dir}
 }
 
+# CALIFORNIA housing dataset
+function download_california_housing {
+        local dir=${dir_db}/california_housing
+        mkdir -p ${dir}
+
+        wget -N http://www.dcc.fc.up.pt/~ltorgo/Regression/cal_housing.tgz -P ${dir}
+        tar xvf ${dir}/cal_housing.tgz -C ${dir}
+        mv ${dir}/CaliforniaHousing/* ${dir}/
+}
+
 # Process command line
 function usage {
 	cat <<EOF
 usage: $0 [OPTIONS]
 
 options:
-	-h,--help		
+	-h,--help
 		print usage
 	--mnist
-		download MNIST task
+		download MNIST dataset
 	--fashion-minst
-		download Fashion-MNIST task
+		download Fashion-MNIST dataset
 	--iris
-		download IRIS task
-	--wine	
-		download WINE task
+		download IRIS dataset
+	--wine
+		download WINE dataset
 	--svhn
-		download SVHN task
+		download SVHN dataset
 	--cifar10
-		download CIFAR-10 task
+		download CIFAR-10 dataset
 	--cifar100
-		donwload CIFAR-100 task
+		download CIFAR-100 dataset
+        --california-housing
+                download California Housing dataset
 EOF
 	exit 1
 }
@@ -113,7 +125,7 @@ if [ "$1" == "" ]; then
 fi
 
 while [ "$1" != "" ]; do
-	case $1 in 
+	case $1 in
 		-h | --help)		usage
 					;;
 		--wine)			download_wine
@@ -123,13 +135,15 @@ while [ "$1" != "" ]; do
 		--mnist)		download_mnist
 					;;
 		--fashion-mnist)	download_fashion_mnist
-					;;	
+					;;
 		--svhn)			download_svhn
 					;;
 		--cifar10)		download_cifar10
 					;;
 		--cifar100)		download_cifar100
 					;;
+                --california-housing)   download_california_housing
+                                        ;;
 		*)			echo "unrecognized option $1"
 					echo
 					usage

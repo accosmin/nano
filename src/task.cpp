@@ -7,6 +7,7 @@
 #include "tasks/task_affine.h"
 #include "tasks/task_peak2d.h"
 #include "tasks/task_parity.h"
+#include "tasks/task_california_housing.h"
 #include "core/table.h"
 #include <mutex>
 #include <iostream>
@@ -30,6 +31,7 @@ task_factory_t& nano::get_tasks()
                 manager.add<parity_task_t>("synth-parity", "synthetic: predict the parity bit");
                 manager.add<affine_task_t>("synth-affine", "synthetic: predict random noisy affine transformations");
                 manager.add<peak2d_task_t>("synth-peak2d", "synthetic: predict random peaks in noisy images");
+                manager.add<california_housing_task_t>("california-housing", "California median housing value (regression)");
         });
 
         return manager;
