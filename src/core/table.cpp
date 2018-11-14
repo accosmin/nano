@@ -167,7 +167,7 @@ bool table_t::load(const string_t& path, const char* delimiter, const bool load_
         // todo: this does not handle missing values
         // todo: this does not handle delimiting rows
 
-        size_t count = 0;
+        size_t count = 0, cols = 0;
         for (string_t line; std::getline(is, line); ++ count)
         {
                 const auto tokens = nano::split(line, delimiter);
@@ -178,13 +178,18 @@ bool table_t::load(const string_t& path, const char* delimiter, const bool load_
                                 header() << tokens;
                                 delim();
                         }
-                        else if (tokens.size() != cols() && cols())
+                        else if (tokens.size() != cols && cols)
                         {
                                 return false;
                         }
                         else
                         {
                                 append() << tokens;
+                        }
+
+                        if (cols == 0)
+                        {
+                                cols = this->cols();
                         }
                 }
         }
