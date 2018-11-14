@@ -136,8 +136,8 @@ bool mem_csv_task_t::populate()
 bool mem_csv_task_t::populate_regression(const table_t& table)
 {
         reconfig(
-                static_cast<tensor_size_t>(m_target_columns.size()),
-                static_cast<tensor_size_t>(table.cols() - m_target_columns.size()));
+                static_cast<tensor_size_t>(table.cols() - m_target_columns.size()),
+                static_cast<tensor_size_t>(m_target_columns.size()));
 
         // load samples
         strings_t labels(table.rows());
