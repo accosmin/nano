@@ -147,8 +147,8 @@ namespace nano
                 /// \brief access functions
                 ///
                 const auto& cells() const { return m_cells; }
-                auto& cell(const size_t icell) { assert(icell < cells()); return m_cells[icell]; }
-                const auto& cell(const size_t icell) const { assert(icell < cells()); return m_cells[icell]; }
+                auto& cell(const size_t icell) { assert(icell < m_cells.size()); return m_cells[icell]; }
+                const auto& cell(const size_t icell) const { assert(icell < m_cells.size()); return m_cells[icell]; }
 
                 string_t data(const size_t col) const;
                 string_t mark(const size_t col) const;
