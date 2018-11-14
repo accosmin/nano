@@ -3,7 +3,7 @@
 
 using namespace nano;
 
-NANO_BEGIN_MODULE(test_cifar100)
+NANO_BEGIN_MODULE(test_task_cifar100)
 
 NANO_CASE(failed)
 {

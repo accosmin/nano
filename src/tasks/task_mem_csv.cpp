@@ -36,21 +36,22 @@ static bool load_csv(const string_t& path, const string_t& name, table_t& table)
                 return false;
         }
 
+        if (table.rows() < 1 || table.cols() < 1)
+        {
+                log_error() << name << ": empty table!";
+                return false;
+        }
+
         return true;
 }
 
-static bool load_labels(const string_t& name, const table_t& table, const size_t label_column, strings_t& labels)
+static auto load_labels(const table_t& table, const size_t col)
 {
+        strings_t labels;
         for (size_t i = 0; i < table.rows(); ++ i)
         {
                 const auto& row = table.row(i);
-                if (label_column >= row.cols())
-                {
-                        log_error() << name << ": invalid label column " << label_column << "/" << row.cols() << "!";
-                        return false;
-                }
-
-                labels.push_back(row.cell(label_column).m_data);
+                labels.push_back(row.cell(col).m_data);
         }
 
         std::sort(labels.begin(), labels.end());
@@ -58,21 +59,22 @@ static bool load_labels(const string_t& name, const table_t& table, const size_t
                 std::unique(labels.begin(), labels.end()),
                 labels.end());
 
-        return true;
+        return labels;
 }
 
-mem_csv_task_t::mem_csv_task_t(string_t name, string_t path, const size_t label_column) :
+mem_csv_task_t::mem_csv_task_t(string_t name, string_t path, const type task_type, indices_t target_columns) :
         mem_tensor_task_t(make_dims(1, 1, 1), make_dims(1, 1, 1), 10),
         m_name(std::move(name)),
         m_path(std::move(path)),
-        m_label_column(label_column)
+        m_type(task_type),
+        m_target_columns(std::move(target_columns))
 {
 }
 
 void mem_csv_task_t::from_json(const json_t& json)
 {
         nano::from_json(json, "path", m_path, "folds", m_folds);
-        reconfig(make_dims(1, 1, 1), make_dims(1, 1, 1), m_folds);
+        reconfig(1, 1);
 }
 
 void mem_csv_task_t::to_json(json_t& json) const
@@ -89,74 +91,161 @@ bool mem_csv_task_t::populate()
                 return false;
         }
 
-        strings_t labels;
-        if (!load_labels(m_name, table, m_label_column, labels))
+        // check target columns
+        if (m_target_columns.empty())
         {
+                log_error() << m_name << ": missing target columns!";
+                return false;
+        }
+        if (m_target_columns.size() >= table.cols())
+        {
+                log_error() << m_name << ": too many target columns "
+                        << m_target_columns.size() << "/" << table.cols() << "!";
                 return false;
         }
 
-        const auto n_samples = static_cast<tensor_size_t>(table.rows());
-        const auto n_labels = static_cast<tensor_size_t>(labels.size());
-        const auto n_attributes = static_cast<tensor_size_t>(table.cols()) - 1;
+        for (const auto col : m_target_columns)
+        {
+                if (col >= table.cols())
+                {
+                        log_error() << m_name << ": invalid target column " << col << "/" << table.cols() << "!";
+                        return false;
+                }
+        }
 
+        // load dataset
+        switch (m_type)
+        {
+        case type::regression:
+                return populate_regression(table);
+
+        case type::classification:
+                if (m_target_columns.size() != 1)
+                {
+                        log_error() << m_name << ": expecting a single target column for classification!";
+                        return false;
+                }
+                return populate_classification(table);
+
+        default:
+                log_error() << m_name << ": invalid task type!";
+                return false;
+        }
+}
+
+bool mem_csv_task_t::populate_regression(const table_t& table)
+{
         reconfig(
-                make_dims(n_attributes, 1, 1),
-                make_dims(n_labels, 1, 1),
-                m_folds);
+                static_cast<tensor_size_t>(m_target_columns.size()),
+                static_cast<tensor_size_t>(table.cols() - m_target_columns.size()));
 
         // load samples
-        tensor3ds_t samples(table.rows(), tensor3d_t{idims()});
-        std::vector<tensor_size_t> class_indices(table.rows());
+        strings_t labels(table.rows());
+        tensor3ds_t inputs(table.rows(), tensor3d_t{idims()});
+        tensor3ds_t targets(table.rows(), tensor3d_t{odims()});
+
         for (size_t i = 0; i < table.rows(); ++ i)
         {
-                auto& sample = samples[i];
-                auto& class_index = class_indices[i];
+                auto& input = inputs[i];
+                auto& target = targets[i];
+
+                auto input_index = 0;
+                auto target_index = 0;
 
                 const auto& row = table.row(i);
                 for (size_t c = 0; c < table.cols(); ++ c)
                 {
                         const auto& data = row.cell(c).m_data;
-                        if (c == m_label_column)
+                        if (is_target(c))
                         {
-                                const auto itl = std::find(labels.begin(), labels.end(), data);
-                                assert(itl != labels.end());
-                                class_index = itl - labels.begin();
+                                target(target_index ++, 0, 0) = from_string<scalar_t>(data);
                         }
                         else
                         {
-                                sample(static_cast<tensor_size_t>(c ? c - 1 : c), 0, 0) = from_string<scalar_t>(data);
+                                input(input_index ++, 0, 0) = from_string<scalar_t>(data);
                         }
                 }
         }
 
         // scale inputs to improve numerical robustness
-        if (!samples.empty() && samples.begin()->size() > 0)
+        scale(m_name, inputs);
+
+        // OK
+        return populate(inputs, targets, labels);
+}
+
+bool mem_csv_task_t::populate_classification(const table_t& table)
+{
+        const auto unique_labels = load_labels(table, m_target_columns[0]);
+        log_info() << m_name << ": loaded " << join(unique_labels) << " labels.";
+
+        reconfig(
+                static_cast<tensor_size_t>(table.cols()) - 1,
+                static_cast<tensor_size_t>(unique_labels.size()));
+
+        // load samples
+        strings_t labels(table.rows());
+        tensor3ds_t inputs(table.rows(), tensor3d_t{idims()});
+        tensor3ds_t targets(table.rows(), tensor3d_t{odims()});
+
+        for (size_t i = 0; i < table.rows(); ++ i)
         {
-                scale(m_name, samples);
+                auto& label = labels[i];
+                auto& input = inputs[i];
+                auto& target = targets[i];
+
+                auto input_index = 0;
+
+                const auto& row = table.row(i);
+                for (size_t c = 0; c < table.cols(); ++ c)
+                {
+                        const auto& data = row.cell(c).m_data;
+                        if (is_target(c))
+                        {
+                                const auto itl = std::find(unique_labels.begin(), unique_labels.end(), data);
+                                assert(itl != unique_labels.end());
+                                label = data;
+                                target.vector() = class_target(nano::size(odims()), itl - unique_labels.begin());
+                        }
+                        else
+                        {
+                                input(input_index ++, 0, 0) = from_string<scalar_t>(data);
+                        }
+                }
         }
 
-        // setup task
-        for (size_t i = 0; i < samples.size(); ++ i)
+        // scale inputs to improve numerical robustness
+        scale(m_name, inputs);
+
+        // OK
+        return populate(inputs, targets, labels);
+}
+
+bool mem_csv_task_t::populate(const tensor3ds_t& inputs, const tensor3ds_t& targets, const strings_t& labels)
+{
+        assert(inputs.size() == targets.size());
+        assert(inputs.size() == labels.size());
+
+        for (size_t i = 0; i < inputs.size(); ++ i)
         {
                 const auto hash = i;
-                add_chunk(samples[i], hash);
+                add_chunk(inputs[i], hash);
         }
 
         for (size_t f = 0; f < m_folds; ++ f)
         {
-                const auto protocols = split3(samples.size(),
+                const auto protocols = split3(inputs.size(),
                         protocol::train, m_train_percentage, protocol::valid, m_valid_percentage, protocol::test);
 
-                for (size_t i = 0; i < samples.size(); ++ i)
+                for (size_t i = 0; i < inputs.size(); ++ i)
                 {
                         const auto fold = fold_t{f, protocols[i]};
-                        const auto target = class_target(nano::size(odims()), class_indices[i]);
-                        add_sample(fold, i, target, labels[static_cast<size_t>(class_indices[i])]);
+                        add_sample(fold, i, targets[i], labels[i]);
                 }
         }
 
         // OK
-        log_info() << m_name << ": loaded " << n_samples << " samples with "
-                << n_attributes << " attributes and " << join(labels) << " labels.";
+        log_info() << m_name << ": loaded " << (size() / fsize()) << " samples with "
+                << nano::size(idims()) << " attributes.";
         return true;
 }

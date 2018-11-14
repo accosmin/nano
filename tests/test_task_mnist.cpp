@@ -3,7 +3,7 @@
 
 using namespace nano;
 
-NANO_BEGIN_MODULE(test_mnist)
+NANO_BEGIN_MODULE(test_task_mnist)
 
 NANO_CASE(failed)
 {

@@ -3,7 +3,7 @@
 
 using namespace nano;
 
-NANO_BEGIN_MODULE(test_wine)
+NANO_BEGIN_MODULE(test_task_wine)
 
 NANO_CASE(failed)
 {

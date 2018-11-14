@@ -3,7 +3,7 @@
 
 using namespace nano;
 
-NANO_BEGIN_MODULE(test_iris)
+NANO_BEGIN_MODULE(test_task_iris)
 
 NANO_CASE(failed)
 {

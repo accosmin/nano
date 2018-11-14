@@ -83,8 +83,8 @@ function download_iris {
 }
 
 # CALIFORNIA housing dataset
-function download_california_housing {
-        local dir=${dir_db}/california_housing
+function download_cal_housing {
+        local dir=${dir_db}/cal_housing
         mkdir -p ${dir}
 
         wget -N http://www.dcc.fc.up.pt/~ltorgo/Regression/cal_housing.tgz -P ${dir}
@@ -114,7 +114,7 @@ options:
 		download CIFAR-10 dataset
 	--cifar100
 		download CIFAR-100 dataset
-        --california-housing
+        --cal-housing
                 download California Housing dataset
 EOF
 	exit 1
@@ -142,7 +142,7 @@ while [ "$1" != "" ]; do
 					;;
 		--cifar100)		download_cifar100
 					;;
-                --california-housing)   download_california_housing
+                --cal-housing)          download_cal_housing
                                         ;;
 		*)			echo "unrecognized option $1"
 					echo

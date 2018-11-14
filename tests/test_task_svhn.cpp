@@ -3,7 +3,7 @@
 
 using namespace nano;
 
-NANO_BEGIN_MODULE(test_svhn)
+NANO_BEGIN_MODULE(test_task_svhn)
 
 NANO_CASE(failed)
 {
