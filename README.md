@@ -79,10 +79,9 @@ A **task** describes a classification or regression problem consisting of separa
 | iris          | IRIS (iris flower classification)                      | {"dir":"/Users/cosmin/experiments/databases/iris"}                                                              |
 | mnist         | MNIST (1x28x28 digit classification)                   | {"dir":"/Users/cosmin/experiments/databases/mnist"}                                                             |
 | svhn          | SVHN (3x32x32 digit classification in the wild)        | {"dir":"/Users/cosmin/experiments/databases/svhn"}                                                              |
-| synth-affine  | synthetic noisy affine transformations                 | {"isize":32,"osize":32,"noise":0.001000,"count":1024}                                                           |
-| synth-nparity | synthetic n-parity task (classification)               | {"n":32,"count":1024}                                                                                           |
-| synth-peak2d  | synthetic peaks in noisy images                        | {"irows":32,"icols":32,"noise":0.001000,"count":1024,"type":"regression","types":"[regression,classification]"} |
+| synth-affine  | synthetic noisy affine transformations (testing)       | {"isize":32,"osize":32,"noise":0.001000,"count":1024}                                                           |
 | wine          | WINE (wine classification)                             | {"dir":"/Users/cosmin/experiments/databases/wine"}                                                              |
+| cal-housing   | California housing dataset (regression)                | {"dir":"/Users/cosmin/experiments/databases/cal-housing"}                                                       |
 |---------------|--------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------|
 ```
 

@@ -5,8 +5,6 @@
 #include "tasks/task_iris.h"
 #include "tasks/task_wine.h"
 #include "tasks/task_affine.h"
-#include "tasks/task_peak2d.h"
-#include "tasks/task_parity.h"
 #include "tasks/task_cal_housing.h"
 #include "core/table.h"
 #include <mutex>
@@ -28,9 +26,7 @@ task_factory_t& nano::get_tasks()
                 manager.add<svhn_task_t>("svhn", "SVHN (3x32x32 digit classification in the wild)");
                 manager.add<iris_task_t>("iris", "IRIS (iris flower classification)");
                 manager.add<wine_task_t>("wine", "WINE (wine classification)");
-                manager.add<parity_task_t>("synth-parity", "synthetic: predict the parity bit");
                 manager.add<affine_task_t>("synth-affine", "synthetic: predict random noisy affine transformations");
-                manager.add<peak2d_task_t>("synth-peak2d", "synthetic: predict random peaks in noisy images");
                 manager.add<cal_housing_task_t>("cal-housing", "California median housing value (regression)");
         });
 
