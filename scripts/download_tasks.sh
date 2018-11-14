@@ -84,7 +84,7 @@ function download_iris {
 
 # CALIFORNIA housing dataset
 function download_cal_housing {
-        local dir=${dir_db}/cal_housing
+        local dir=${dir_db}/cal-housing
         mkdir -p ${dir}
 
         wget -N http://www.dcc.fc.up.pt/~ltorgo/Regression/cal_housing.tgz -P ${dir}

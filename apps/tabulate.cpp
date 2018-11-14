@@ -46,7 +46,7 @@ int main(int argc, const char *argv[])
 
         // tabulate
         table_t table;
-        if (!table.load(cmd_input, cmd_delim))
+        if (!table.load(cmd_input, cmd_delim.c_str()))
         {
                 std::cerr << "failed to load <" << cmd_input << ">!\n";
                 return EXIT_FAILURE;

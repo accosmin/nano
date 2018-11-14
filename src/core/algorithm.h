@@ -121,7 +121,7 @@ namespace nano
         ///
         /// \brief tokenize a string using the given delimeters
         ///
-        inline strings_t split(const string_t& str, const char* delimeters)
+        inline auto split(const string_t& str, const char* delimeters)
         {
                 strings_t tokens;
 

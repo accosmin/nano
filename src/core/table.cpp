@@ -8,11 +8,6 @@
 
 using namespace nano;
 
-cell_t::cell_t(string_t data, const size_t span, const alignment align, const char fill, const int precision) :
-        m_data(std::move(data)), m_span(span), m_fill(fill), m_alignment(align), m_precision(precision)
-{
-}
-
 string_t cell_t::format() const
 {
         try
@@ -131,7 +126,7 @@ std::size_t table_t::rows() const
         return m_rows.size();
 }
 
-bool table_t::save(const string_t& path, const string_t& delim) const
+bool table_t::save(const string_t& path, const char* delimiter) const
 {
         std::ofstream os(path.c_str(), std::ios::trunc);
         if (!os.is_open())
@@ -146,7 +141,7 @@ bool table_t::save(const string_t& path, const string_t& delim) const
                         os << cell.m_data;
                         for (size_t i = 0; i < cell.m_span; ++ i)
                         {
-                                os << delim;
+                                os << delimiter;
                         }
                 }
 
@@ -159,7 +154,7 @@ bool table_t::save(const string_t& path, const string_t& delim) const
         return true;
 }
 
-bool table_t::load(const string_t& path, const string_t& delimiter, const bool load_header)
+bool table_t::load(const string_t& path, const char* delimiter, const bool load_header)
 {
         std::ifstream is(path.c_str());
         if (!is.is_open())
@@ -175,7 +170,7 @@ bool table_t::load(const string_t& path, const string_t& delimiter, const bool l
         size_t count = 0;
         for (string_t line; std::getline(is, line); ++ count)
         {
-                const auto tokens = nano::split(line, delimiter.c_str());
+                const auto tokens = nano::split(line, delimiter);
                 if (!tokens.empty() && !line.empty())
                 {
                         if (!count && load_header)

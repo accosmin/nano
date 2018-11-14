@@ -144,16 +144,16 @@ bool mem_csv_task_t::populate_regression(const table_t& table)
         tensor3ds_t inputs(table.rows(), tensor3d_t{idims()});
         tensor3ds_t targets(table.rows(), tensor3d_t{odims()});
 
-        for (size_t i = 0; i < table.rows(); ++ i)
+        for (size_t r = 0, rows = table.rows(), cols = table.cols(); r < rows; ++ r)
         {
-                auto& input = inputs[i];
-                auto& target = targets[i];
+                auto& input = inputs[r];
+                auto& target = targets[r];
 
                 auto input_index = 0;
                 auto target_index = 0;
 
-                const auto& row = table.row(i);
-                for (size_t c = 0; c < table.cols(); ++ c)
+                const auto& row = table.row(r);
+                for (size_t c = 0; c < cols; ++ c)
                 {
                         const auto& data = row.cell(c).m_data;
                         if (is_target(c))
@@ -188,16 +188,16 @@ bool mem_csv_task_t::populate_classification(const table_t& table)
         tensor3ds_t inputs(table.rows(), tensor3d_t{idims()});
         tensor3ds_t targets(table.rows(), tensor3d_t{odims()});
 
-        for (size_t i = 0; i < table.rows(); ++ i)
+        for (size_t r = 0, rows = table.rows(), cols = table.cols(); r < rows; ++ r)
         {
-                auto& label = labels[i];
-                auto& input = inputs[i];
-                auto& target = targets[i];
+                auto& label = labels[r];
+                auto& input = inputs[r];
+                auto& target = targets[r];
 
                 auto input_index = 0;
 
-                const auto& row = table.row(i);
-                for (size_t c = 0; c < table.cols(); ++ c)
+                const auto& row = table.row(r);
+                for (size_t c = 0; c < cols; ++ c)
                 {
                         const auto& data = row.cell(c).m_data;
                         if (is_target(c))

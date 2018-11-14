@@ -14,18 +14,25 @@ namespace nano
         struct NANO_PUBLIC cell_t
         {
                 cell_t() = default;
-                cell_t(string_t data, const size_t span, const alignment, const char fill, const int precision);
+                cell_t(string_t data, const size_t span, const alignment align, const char fill, const int precision) :
+                        m_data(std::move(data)),
+                        m_span(span),
+                        m_fill(fill),
+                        m_alignment(align),
+                        m_precision(precision)
+                {
+                }
 
                 string_t format() const;
                 cell_t& precision(const int precision) { m_precision = precision; return *this; }
 
                 // attributes
-                string_t        m_data;         ///<
-                string_t        m_mark;         ///<
-                size_t          m_span{1};      ///< column spanning
-                char            m_fill{' '};    ///< filling character for aligning cells
+                string_t        m_data;                 ///<
+                string_t        m_mark;                 ///<
+                size_t          m_span{1};              ///< column spanning
+                char            m_fill{' '};            ///< filling character for aligning cells
                 alignment       m_alignment{alignment::left};    ///<
-                int             m_precision{0}; ///< precision (#digits) for floating point values
+                int             m_precision{0};         ///< #digits to display for floating point values
         };
 
         ///
@@ -140,8 +147,8 @@ namespace nano
                 /// \brief access functions
                 ///
                 const auto& cells() const { return m_cells; }
-                auto& cell(const size_t icell) { return m_cells.at(icell); }
-                const auto& cell(const size_t icell) const { return m_cells.at(icell); }
+                auto& cell(const size_t icell) { assert(icell < cells()); return m_cells[icell]; }
+                const auto& cell(const size_t icell) const { assert(icell < cells()); return m_cells[icell]; }
 
                 string_t data(const size_t col) const;
                 string_t mark(const size_t col) const;
@@ -230,16 +237,16 @@ namespace nano
                 /// \brief save/load to/from CSV files using the given separator
                 /// the header is always written/read
                 ///
-                bool save(const string_t& path, const string_t& delim = ";") const;
-                bool load(const string_t& path, const string_t& delim = ";", const bool load_header = true);
+                bool save(const string_t& path, const char* delim = ";") const;
+                bool load(const string_t& path, const char* delim = ";", const bool load_header = true);
 
                 ///
                 /// \brief access functions
                 ///
                 size_t cols() const;
                 size_t rows() const;
-                row_t& row(const size_t r) { return m_rows.at(r); }
-                const row_t& row(const size_t r) const { return m_rows.at(r); }
+                row_t& row(const size_t r) { assert(r < rows()); return m_rows[r]; }
+                const row_t& row(const size_t r) const { assert(r < rows()); return m_rows[r]; }
 
         private:
 

@@ -30,12 +30,11 @@ NANO_CASE(default_config)
 
 NANO_CASE(loading)
 {
-        const auto idims = tensor3d_dim_t{4, 1, 1};
-        const auto odims = tensor3d_dim_t{3, 1, 1};
-        const auto target_sum = scalar_t(2) - static_cast<scalar_t>(nano::size(odims));
+        const auto idims = tensor3d_dim_t{8, 1, 1};
+        const auto odims = tensor3d_dim_t{1, 1, 1};
 
-        const auto folds = size_t(20);
-        const auto samples = size_t(150);
+        const auto folds = size_t(3);
+        const auto samples = size_t(20640);
 
         const auto task = nano::get_tasks().get("cal-housing");
         NANO_REQUIRE(task);
@@ -59,10 +58,9 @@ NANO_CASE(loading)
 
                                 NANO_CHECK_EQUAL(input.dims(), idims);
                                 NANO_CHECK_EQUAL(target.dims(), odims);
-                                NANO_CHECK_CLOSE(target.vector().sum(), target_sum, epsilon0<scalar_t>());
                         }
 
-                        NANO_CHECK_EQUAL(task->labels({f, p}).size(), static_cast<size_t>(nano::size(odims)));
+                        NANO_CHECK_EQUAL(task->labels({f, p}).size(), size_t(1));
                 }
 
                 NANO_CHECK_EQUAL(task->size({f, protocol::train}), 40 * samples / 100);
@@ -81,7 +79,7 @@ NANO_CASE(loading)
 
         NANO_CHECK_LESS_EQUAL(task->duplicates(), size_t(0));
         NANO_CHECK_LESS_EQUAL(task->intersections(), size_t(0));
-        NANO_CHECK_EQUAL(task->labels().size(), static_cast<size_t>(nano::size(odims)));
+        NANO_CHECK_EQUAL(task->labels().size(), size_t(1));
 }
 
 NANO_END_MODULE()

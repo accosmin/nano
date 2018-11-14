@@ -22,7 +22,7 @@ namespace nano
 
                 static string_t name() { return "california-housing"; }
                 static string_t home() { return string_t(std::getenv("HOME")); }
-                static string_t path() { return home() + "/experiments/databases/cal_housing/cal_housing.data"; }
+                static string_t path() { return home() + "/experiments/databases/cal-housing/cal_housing.data"; }
                 static indices_t target_columns() { return {size_t(8)}; }
         };
 }
