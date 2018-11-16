@@ -78,7 +78,9 @@ int main(int argc, const char *argv[])
 
         // todo: add more stats (e.g. median, percentiles)
         log_info() << std::fixed << std::setprecision(3)
-                << "error: " << eval.m_errors << ", loss: " << eval.m_values << ".";
+                << "error: " << eval.m_errors
+                << ", loss: " << eval.m_values
+                << ", " << eval.m_millis.count() << " ms/sample.";
 
         // OK
         log_info() << done;
