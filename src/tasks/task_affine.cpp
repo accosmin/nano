@@ -28,7 +28,7 @@ void affine_task_t::to_json(json_t& json) const
                 "noise", m_noise,
                 "count", m_count,
                 "folds", m_folds,
-                "type", m_type, "types", join(enum_values<affine_task_type>()));
+                "type", to_string(m_type) + join(enum_values<affine_task_type>()));
 }
 
 void affine_task_t::make_samples()

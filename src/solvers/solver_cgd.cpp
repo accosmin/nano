@@ -22,8 +22,8 @@ template <typename tcgd_update>
 void solver_cgd_base_t<tcgd_update>::to_json(json_t& json) const
 {
         nano::to_json(json,
-                "init", m_init, "inits", join(enum_values<lsearch_t::initializer>()),
-                "strat", m_strat, "strats", join(enum_values<lsearch_t::strategy>()),
+                "init", to_string(m_init) + join(enum_values<lsearch_t::initializer>()),
+                "strat", to_string(m_strat) + join(enum_values<lsearch_t::strategy>()),
                 "c1", m_c1, "c2", m_c2, "orthotest", m_orthotest);
 }
 

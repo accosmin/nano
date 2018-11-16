@@ -108,9 +108,9 @@ void gboost_stump_t::to_json(json_t& json) const
         nano::to_json(json,
                 "rounds", m_rounds,
                 "patience", m_patience,
-                "stump", m_stump_type, "stumps", join(enum_values<stump_type>()),
+                "stump", to_string(m_stump_type) + join(enum_values<stump_type>()),
                 "solver", m_solver,
-                "tune", m_gboost_tune, "tunes", join(enum_values<gboost_tune>()));
+                "tune", to_string(m_gboost_tune) + join(enum_values<gboost_tune>()));
 }
 
 void gboost_stump_t::from_json(const json_t& json)
