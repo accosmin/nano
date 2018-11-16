@@ -1,5 +1,6 @@
 #include <mutex>
 #include "model.h"
+#include "core/tpool.h"
 #include "core/logger.h"
 #include "core/ibstream.h"
 #include "core/obstream.h"
@@ -38,4 +39,36 @@ model_factory_t& nano::get_models()
         });
 
         return manager;
+}
+
+model_t::evaluate_t model_t::evaluate(const task_t& task, const fold_t& fold, const loss_t& loss) const
+{
+        const auto& tpool = tpool_t::instance();
+
+        std::vector<stats_t> errors(tpool.workers());
+        std::vector<stats_t> values(tpool.workers());
+
+        const timer_t timer;
+        loopit(task.size(fold), [&] (const size_t i, const size_t t)
+        {
+                const auto input = task.input(fold, i);
+                const auto target = task.target(fold, i);
+                const auto output = this->output(input);
+
+                assert(t < tpool.workers());
+                errors[t](loss.error(target, output));
+                values[t](loss.value(target, output));
+        });
+
+        const auto millis = timer.milliseconds().count();
+
+        evaluate_t ret;
+        for (size_t t = 0; t < tpool.workers(); ++ t)
+        {
+                ret.m_errors(errors[t]);
+                ret.m_values(values[t]);
+        }
+        ret.m_millis = milliseconds_t{idiv(millis, task.size(fold))};
+
+        return ret;
 }

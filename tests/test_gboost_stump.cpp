@@ -47,20 +47,11 @@ NANO_CASE(stump_real)
         NANO_REQUIRE(model2);
 
         // The loaded model should be identical
-        stats_t errors, values;
         const auto fold = fold_t{fold_index, protocol::test};
-        for (size_t i = 0, size = task->size(fold); i < size; ++ i)
-        {
-                const auto input = task->input(fold, i);
-                const auto target = task->target(fold, i);
-                const auto output = model->output(input);
+        const auto eval = model->evaluate(*task, fold, *loss);
 
-                errors(loss->error(target, output));
-                values(loss->value(target, output));
-        }
-
-        NANO_CHECK_CLOSE(state.m_test.m_error, errors.avg(), epsilon0<scalar_t>());
-        NANO_CHECK_CLOSE(state.m_test.m_value, values.avg(), epsilon0<scalar_t>());
+        NANO_CHECK_CLOSE(state.m_test.m_error, eval.m_errors.avg(), epsilon0<scalar_t>());
+        NANO_CHECK_CLOSE(state.m_test.m_value, eval.m_values.avg(), epsilon0<scalar_t>());
 
         std::remove(path);
 }

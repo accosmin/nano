@@ -72,29 +72,13 @@ int main(int argc, const char *argv[])
                 strcat("checking model's compability with the task"));
 
         // test the model
-        // todo: use the thread pool to speed-up computation
-        stats_t stats_errors, stats_values;
-        critical(
-                [&] ()
-                {
-                        const auto fold = fold_t{cmd_fold, protocol::test};
-                        for (size_t i = 0, size = task->size(fold); i < size; ++ i)
-                        {
-                                const auto input = task->input(fold, i);
-                                const auto target = task->target(fold, i);
-                                const auto output = model->output(input);
-
-                                stats_errors(loss->error(target, output));
-                                stats_values(loss->value(target, output));
-                        }
-                        return true;
-                }(),
+        model_t::evaluate_t eval;
+        critical(eval = model->evaluate(*task, fold_t{cmd_fold, protocol::test}, *loss),
                 "evaluate model");
 
         // todo: add more stats (e.g. median, percentiles)
         log_info() << std::fixed << std::setprecision(3)
-                << "error: " << stats_errors
-                << ", loss: " << stats_values << ".";
+                << "error: " << eval.m_errors << ", loss: " << eval.m_values << ".";
 
         // OK
         log_info() << done;

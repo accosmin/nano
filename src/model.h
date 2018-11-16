@@ -34,6 +34,21 @@ namespace nano
                 virtual tensor3d_t output(const tensor3d_t& input) const = 0;
 
                 ///
+                /// \brief compute statistics for a given task.
+                ///
+                struct evaluate_t
+                {
+                        operator bool() const { return m_values && m_errors; }
+
+                        // attributes
+                        stats_t         m_values;       ///< loss values
+                        stats_t         m_errors;       ///< error values
+                        milliseconds_t  m_millis{0};    ///< average milliseconds per sample
+                };
+
+                evaluate_t evaluate(const task_t&, const fold_t&, const loss_t&) const;
+
+                ///
                 /// \brief serialize a model to disk
                 ///
                 static bool save(const string_t& path, const string_t& id, const model_t&);
