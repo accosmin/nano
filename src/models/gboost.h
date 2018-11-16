@@ -11,8 +11,7 @@ namespace nano
         {
                 none,                   ///<
                 vadaboost,              ///< VadaBoost (needs tuning)
-                shrinkage_constant,     ///< constant shrinkage factor (needs tuning)
-                shrinkage_geometric,    ///< geometrically decreasing shrinkage factor (needs tuning)
+                shrinkage,              ///< constant shrinkage factor (needs tuning)
                 stochastic,             ///< feature selection performed on a random subset (needs tuning)
         };
 
@@ -21,11 +20,10 @@ namespace nano
         {
                 return
                 {
-                        { gboost_tune::none,                    "none" },
-                        { gboost_tune::vadaboost,               "vadaboost" },
-                        { gboost_tune::shrinkage_constant,      "shrink_const" },
-                        { gboost_tune::shrinkage_geometric,     "shrink_geom" },
-                        { gboost_tune::stochastic,              "stochastic" }
+                        { gboost_tune::none,            "none" },
+                        { gboost_tune::vadaboost,       "vadaboost" },
+                        { gboost_tune::shrinkage,       "shrinkage" },
+                        { gboost_tune::stochastic,      "stochastic" }
                 };
         }
 

@@ -109,7 +109,7 @@ void gboost_stump_t::to_json(json_t& json) const
                 "rounds", m_rounds,
                 "patience", m_patience,
                 "stump", m_stump_type, "stumps", join(enum_values<stump_type>()),
-                "solver", m_solver, "solvers", join(get_solvers().ids()),
+                "solver", m_solver,
                 "tune", m_gboost_tune, "tunes", join(enum_values<gboost_tune>()));
 }
 
