@@ -125,18 +125,60 @@ void gboost_stump_t::from_json(const json_t& json)
 
 trainer_result_t gboost_stump_t::train(const task_t& task, const size_t fold, const loss_t& loss)
 {
+        m_idims = task.idims();
+        m_odims = task.odims();
+
+        scalars_t lambdas;
+        switch (m_gboost_tune)
+        {
+        case gboost_tune::none:
+                lambdas = make_scalars(1.0);
+                break;
+
+        case gboost_tune::shrinkage:
+                lambdas = make_scalars(0.05, 0.10, 0.20, 0.50, 1.00);
+                break;
+
+        case gboost_tune::vadaboost:
+                critical(false, "vadaboost gboost not implemented");
+                lambdas = make_scalars(1e-6, 1e-5, 1e-4, 1e-3, 1e-2, 1e-1, 1e+0);
+                break;
+
+        case gboost_tune::stochastic:
+                critical(false, "stochastic gboost not implemented");
+                break;
+
+        default:
+                critical(false, strcat("uknown regularization method (", static_cast<int>(m_gboost_tune), ")"));
+                break;
+        }
+
+        trainer_result_t result;
+        for (const auto lambda : lambdas)
+        {
+                const auto lambda_result = train(task, fold, loss, lambda);
+                if (lambda_result.first < result)
+                {
+                        result = lambda_result.first;
+                        m_stumps = lambda_result.second;
+                }
+        }
+
+        log_info() << ">>>" << result << ".";
+
+        return result;
+}
+
+std::pair<trainer_result_t, stumps_t> gboost_stump_t::train(
+        const task_t& task, const size_t fold, const loss_t& loss, const scalar_t lambda) const
+{
         // check if the solver is properly set
         rsolver_t solver;
         critical(solver = get_solvers().get(m_solver),
                 strcat("search solver (", m_solver, ")"));
 
-        m_idims = task.idims();
-        m_odims = task.odims();
-
-        m_stumps.clear();
-
-        trainer_result_t result("<config>");
         timer_t timer;
+        trainer_result_t result;
 
         const auto fold_tr = fold_t{fold, protocol::train};
         const auto fold_vd = fold_t{fold, protocol::valid};
@@ -171,8 +213,9 @@ trainer_result_t gboost_stump_t::train(const task_t& task, const size_t fold, co
                 << ",te=" << measure_te << ".";
 
         stump_t stump;
-        tensor4d_t residuals_tr(cat_dims(task.size(fold_tr), m_odims));
-        tensor4d_t stump_outputs_tr(cat_dims(task.size(fold_tr), m_odims));
+        stumps_t stumps;
+        tensor4d_t residuals(cat_dims(task.size(fold_tr), m_odims));
+        tensor4d_t stump_outputs(cat_dims(task.size(fold_tr), m_odims));
 
         tensor4d_t targets(cat_dims(task.size(fold_tr), m_odims));
         for (size_t i = 0, size = task.size(fold_tr); i < size; ++ i)
@@ -181,10 +224,11 @@ trainer_result_t gboost_stump_t::train(const task_t& task, const size_t fold, co
                 targets.tensor(i) = target;
         }
 
-        gboost_lsearch_function_t func(targets, outputs_tr, stump_outputs_tr, loss);
+        gboost_lsearch_function_t func(targets, outputs_tr, stump_outputs, loss);
 
         for (auto round = 0; round < m_rounds && !result.is_done(); ++ round)
         {
+                // todo: parallelize this (by sample)
                 for (size_t i = 0, size = task.size(fold_tr); i < size; ++ i)
                 {
                         const auto input = task.input(fold_tr, i);
@@ -192,9 +236,10 @@ trainer_result_t gboost_stump_t::train(const task_t& task, const size_t fold, co
                         const auto output = outputs_tr.tensor(i);
 
                         const auto vgrad = loss.vgrad(target, output);
-                        residuals_tr.vector(i) = -vgrad.vector();
+                        residuals.vector(i) = -vgrad.vector();
                 }
 
+                // todo: parallelize this (by feature)
                 // todo: generalize this - e.g. to use features that are products of two input features, use LBPs|HOGs
                 scalar_t value = std::numeric_limits<scalar_t>::max();
                 for (auto feature = 0; feature < nano::size(m_idims); ++ feature)
@@ -212,7 +257,7 @@ trainer_result_t gboost_stump_t::train(const task_t& task, const size_t fold, co
                                 std::unique(thresholds.begin(), thresholds.end()),
                                 thresholds.end());
 
-                        fit(task, residuals_tr, feature, fvalues, thresholds, m_stump_type, value, stump);
+                        fit(task, residuals, feature, fvalues, thresholds, m_stump_type, value, stump);
                 }
 
                 // line-search
@@ -220,7 +265,7 @@ trainer_result_t gboost_stump_t::train(const task_t& task, const size_t fold, co
                 {
                         const auto input = task.input(fold_tr, i);
                         const auto oindex = input(stump.m_feature) < stump.m_threshold ? 0 : 1;
-                        stump_outputs_tr.tensor(i) = stump.m_outputs.tensor(oindex);
+                        stump_outputs.tensor(i) = stump.m_outputs.tensor(oindex);
                 }
 
                 const auto state = solver->minimize(100, epsilon2<scalar_t>(), func, vector_t::Constant(1, 0));
@@ -228,8 +273,8 @@ trainer_result_t gboost_stump_t::train(const task_t& task, const size_t fold, co
 
                 // todo: break if the line-search fails (e.g. if state.m_iterations == 0
 
-                stump.m_outputs.vector() *= step;
-                m_stumps.push_back(stump);
+                stump.m_outputs.vector() *= step * lambda;
+                stumps.push_back(stump);
 
                 // update current outputs
                 update(task, fold_tr, outputs_tr, stump);
@@ -253,16 +298,17 @@ trainer_result_t gboost_stump_t::train(const task_t& task, const size_t fold, co
                         << ",vd=" << measure_vd << "|" << status
                         << ",te=" << measure_te
                         << ",stump=(f=" << stump.m_feature << ",t=" << stump.m_threshold << ")"
+                        << ",lambda=" << lambda
                         << ",solver=(" << state.m_status << ",i=" << state.m_iterations
                         << ",x=" << state.x(0) << ",f=" << state.f << ",g=" << state.convergence_criteria() << ").";
         }
 
         // keep only the stumps up to optimum epoch (on the validation dataset)
-        m_stumps.erase(
-                m_stumps.begin() + result.optimum().m_epoch,
-                m_stumps.end());
+        stumps.erase(
+                stumps.begin() + result.optimum().m_epoch,
+                stumps.end());
 
-        return result;
+        return std::make_pair(result, stumps);
 }
 
 tensor3d_t gboost_stump_t::output(const tensor3d_t& input) const

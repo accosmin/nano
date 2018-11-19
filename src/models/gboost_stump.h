@@ -16,6 +16,8 @@ namespace nano
                 tensor4d_t      m_outputs;      ///< (2, #outputs) - predictions below and above the threshold
         };
 
+        using stumps_t = std::vector<stump_t>;
+
         // todo: generalize stump_t to use other features (e.g. Haar, HoG)
 
         ///
@@ -46,7 +48,10 @@ namespace nano
 
         private:
 
-                using stumps_t = std::vector<stump_t>;
+                std::pair<trainer_result_t, stumps_t> train(
+                        const task_t&, const size_t fold, const loss_t&, const scalar_t lambda) const;
+
+        private:
 
                 // attributes
                 tensor3d_dim_t  m_idims{{0, 0, 0}};                     ///< input dimensions
