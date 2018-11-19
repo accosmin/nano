@@ -260,12 +260,12 @@ std::pair<trainer_result_t, stumps_t> gboost_stump_t::train(
                 }
 
                 // line-search
-                for (size_t i = 0, size = task.size(fold_tr); i < size; ++ i)
+                loopi(task.size(fold_tr), [&] (const size_t i)
                 {
                         const auto input = task.input(fold_tr, i);
                         const auto oindex = input(stump.m_feature) < stump.m_threshold ? 0 : 1;
                         stump_outputs.tensor(i) = stump.m_outputs.tensor(oindex);
-                }
+                });
 
                 const auto state = solver->minimize(100, epsilon2<scalar_t>(), func, vector_t::Constant(1, 0));
                 const auto step = state.x(0);
