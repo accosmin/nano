@@ -228,8 +228,7 @@ std::pair<trainer_result_t, stumps_t> gboost_stump_t::train(
 
         for (auto round = 0; round < m_rounds && !result.is_done(); ++ round)
         {
-                // todo: parallelize this (by sample)
-                for (size_t i = 0, size = task.size(fold_tr); i < size; ++ i)
+                loopi(task.size(fold_tr), [&] (const size_t i)
                 {
                         const auto input = task.input(fold_tr, i);
                         const auto target = task.target(fold_tr, i);
@@ -237,7 +236,7 @@ std::pair<trainer_result_t, stumps_t> gboost_stump_t::train(
 
                         const auto vgrad = loss.vgrad(target, output);
                         residuals.vector(i) = -vgrad.vector();
-                }
+                });
 
                 // todo: parallelize this (by feature)
                 // todo: generalize this - e.g. to use features that are products of two input features, use LBPs|HOGs
