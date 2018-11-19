@@ -45,10 +45,12 @@ static void update(const task_t& task, const fold_t& fold, tensor4d_t& outputs, 
         });
 }
 
-static void fit(const task_t& task, const tensor4d_t& residuals,
-        const tensor_size_t feature, const scalars_t& fvalues, const scalars_t& thresholds,
-        const stump_type type, scalar_t& value, stump_t& stump)
+static auto fit(const task_t& task, const tensor4d_t& residuals,
+        const tensor_size_t feature, const scalars_t& fvalues, const scalars_t& thresholds, const stump_type type)
 {
+        stump_t stump;
+        scalar_t value = std::numeric_limits<scalar_t>::max();
+
         tensor3d_t residuals_pos1(task.odims()), residuals_pos2(task.odims());
         tensor3d_t residuals_neg1(task.odims()), residuals_neg2(task.odims());
 
@@ -101,6 +103,8 @@ static void fit(const task_t& task, const tensor4d_t& residuals,
                         }
                 }
         }
+
+        return std::make_pair(value, stump);
 }
 
 void gboost_stump_t::to_json(json_t& json) const
@@ -212,7 +216,6 @@ std::pair<trainer_result_t, stumps_t> gboost_stump_t::train(
                 << ",vd=" << measure_vd << "|" << status
                 << ",te=" << measure_te << ".";
 
-        stump_t stump;
         stumps_t stumps;
         tensor4d_t residuals(cat_dims(task.size(fold_tr), m_odims));
         tensor4d_t stump_outputs(cat_dims(task.size(fold_tr), m_odims));
@@ -238,10 +241,13 @@ std::pair<trainer_result_t, stumps_t> gboost_stump_t::train(
                         residuals.vector(i) = -vgrad.vector();
                 });
 
-                // todo: parallelize this (by feature)
                 // todo: generalize this - e.g. to use features that are products of two input features, use LBPs|HOGs
-                scalar_t value = std::numeric_limits<scalar_t>::max();
-                for (auto feature = 0; feature < nano::size(m_idims); ++ feature)
+                const auto& tpool = tpool_t::instance();
+
+                stumps_t tstumps(tpool.workers());
+                scalars_t tvalues(tpool.workers(), std::numeric_limits<scalar_t>::max());
+
+                loopit(nano::size(m_idims), [&] (const tensor_size_t feature, const size_t t)
                 {
                         scalars_t fvalues(task.size(fold_tr));
                         for (size_t i = 0, size = task.size(fold_tr); i < size; ++ i)
@@ -256,8 +262,15 @@ std::pair<trainer_result_t, stumps_t> gboost_stump_t::train(
                                 std::unique(thresholds.begin(), thresholds.end()),
                                 thresholds.end());
 
-                        fit(task, residuals, feature, fvalues, thresholds, m_stump_type, value, stump);
-                }
+                        const auto value_stump = fit(task, residuals, feature, fvalues, thresholds, m_stump_type);
+                        if (value_stump.first < tvalues[t])
+                        {
+                                tvalues[t] = value_stump.first;
+                                tstumps[t] = value_stump.second;
+                        }
+                });
+
+                auto& stump = tstumps[std::min_element(tvalues.begin(), tvalues.end()) - tvalues.begin()];
 
                 // line-search
                 loopi(task.size(fold_tr), [&] (const size_t i)
