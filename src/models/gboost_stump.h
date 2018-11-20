@@ -48,6 +48,9 @@ namespace nano
 
         private:
 
+                tensor4d_t residuals(
+                        const task_t&, const fold_t&, const loss_t&, const tensor4d_t& outputs, const scalar_t lambda) const;
+
                 std::pair<trainer_result_t, stumps_t> train(
                         const task_t&, const size_t fold, const loss_t&, const scalar_t lambda) const;
 

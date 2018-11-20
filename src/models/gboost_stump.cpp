@@ -143,8 +143,7 @@ trainer_result_t gboost_stump_t::train(const task_t& task, const size_t fold, co
                 lambdas = make_scalars(0.05, 0.10, 0.20, 0.50, 1.00);
                 break;
 
-        case gboost_tune::vadaboost:
-                critical(false, "vadaboost gboost not implemented");
+        case gboost_tune::variance:
                 lambdas = make_scalars(1e-6, 1e-5, 1e-4, 1e-3, 1e-2, 1e-1, 1e+0);
                 break;
 
@@ -217,7 +216,6 @@ std::pair<trainer_result_t, stumps_t> gboost_stump_t::train(
                 << ",te=" << measure_te << ".";
 
         stumps_t stumps;
-        tensor4d_t residuals(cat_dims(task.size(fold_tr), m_odims));
         tensor4d_t stump_outputs(cat_dims(task.size(fold_tr), m_odims));
 
         tensor4d_t targets(cat_dims(task.size(fold_tr), m_odims));
@@ -231,15 +229,7 @@ std::pair<trainer_result_t, stumps_t> gboost_stump_t::train(
 
         for (auto round = 0; round < m_rounds && !result.is_done(); ++ round)
         {
-                loopi(task.size(fold_tr), [&] (const size_t i)
-                {
-                        const auto input = task.input(fold_tr, i);
-                        const auto target = task.target(fold_tr, i);
-                        const auto output = outputs_tr.tensor(i);
-
-                        const auto vgrad = loss.vgrad(target, output);
-                        residuals.vector(i) = -vgrad.vector();
-                });
+                const auto residuals = this->residuals(task, fold_tr, loss, outputs_tr, lambda);
 
                 // todo: generalize this - e.g. to use features that are products of two input features, use LBPs|HOGs
                 const auto& tpool = tpool_t::instance();
@@ -321,6 +311,42 @@ std::pair<trainer_result_t, stumps_t> gboost_stump_t::train(
                 stumps.end());
 
         return std::make_pair(result, stumps);
+}
+
+tensor4d_t gboost_stump_t::residuals(
+        const task_t& task, const fold_t& fold, const loss_t& loss, const tensor4d_t& outputs, const scalar_t lambda) const
+{
+        tensor4d_t residuals(cat_dims(task.size(fold), m_odims));
+
+        switch (m_gboost_tune)
+        {
+        case gboost_tune::variance:
+                loopi(task.size(fold), [&] (const size_t i)
+                {
+                        // todo: estimate the variance
+                        const auto input = task.input(fold, i);
+                        const auto target = task.target(fold, i);
+                        const auto output = outputs.tensor(i);
+
+                        const auto vgrad = loss.vgrad(target, output);
+                        residuals.vector(i) = -vgrad.vector();
+                });
+                break;
+
+        default:
+                loopi(task.size(fold), [&] (const size_t i)
+                {
+                        const auto input = task.input(fold, i);
+                        const auto target = task.target(fold, i);
+                        const auto output = outputs.tensor(i);
+
+                        const auto vgrad = loss.vgrad(target, output);
+                        residuals.vector(i) = -vgrad.vector();
+                });
+                break;
+        }
+
+        return residuals;
 }
 
 tensor3d_t gboost_stump_t::output(const tensor3d_t& input) const

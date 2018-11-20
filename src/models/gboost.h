@@ -7,10 +7,14 @@ namespace nano
         ///
         /// \brief regularization methods for Gradient Boosting.
         ///
+        /// see "The Elements of Statistical Learning", by Trevor Hastie, Robert Tibshirani, Jerome Friedman
+        /// see "Empirical Bernstein Boosting", by Pannagadatta K. Shivaswamy & Tony Jebara
+        /// see "Variance Penalizing AdaBoost", by Pannagadatta K. Shivaswamy & Tony Jebara
+        ///
         enum class gboost_tune
         {
                 none,                   ///<
-                vadaboost,              ///< VadaBoost (needs tuning)
+                variance,               ///< empirical variance like EBBoost/VadaBoost (needs tuning)
                 shrinkage,              ///< constant shrinkage factor (needs tuning)
                 stochastic,             ///< feature selection performed on a random subset (needs tuning)
         };
@@ -21,7 +25,7 @@ namespace nano
                 return
                 {
                         { gboost_tune::none,            "none" },
-                        { gboost_tune::vadaboost,       "vadaboost" },
+                        { gboost_tune::variance,        "variance" },
                         { gboost_tune::shrinkage,       "shrinkage" },
                         { gboost_tune::stochastic,      "stochastic" }
                 };
@@ -32,8 +36,8 @@ namespace nano
         ///
         enum class stump_type
         {
-                real,                           ///< stump \in R (no restriction)
-                discrete,                       ///< stump \in {-1, +1}
+                real,                   ///< stump \in R (no restriction)
+                discrete,               ///< stump \in {-1, +1}
         };
 
         template <>
