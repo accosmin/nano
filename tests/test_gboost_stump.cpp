@@ -11,7 +11,7 @@ NANO_BEGIN_MODULE(test_gboost_stump)
 NANO_CASE(stump_real)
 {
         const auto task_type = affine_task_type::classification;
-        const auto stump_type = stump_type::real;
+        const auto stump_type = nano::stump_type::real;
 
         const auto task = get_tasks().get("synth-affine");
         NANO_REQUIRE(task);
