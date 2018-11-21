@@ -314,7 +314,7 @@ std::pair<trainer_result_t, stumps_t> gboost_stump_t::train(
 }
 
 tensor4d_t gboost_stump_t::residuals(
-        const task_t& task, const fold_t& fold, const loss_t& loss, const tensor4d_t& outputs, const scalar_t lambda) const
+        const task_t& task, const fold_t& fold, const loss_t& loss, const tensor4d_t& outputs, const scalar_t/* lambda*/) const
 {
         tensor4d_t residuals(cat_dims(task.size(fold), m_odims));
 
