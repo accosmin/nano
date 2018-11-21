@@ -1,29 +1,22 @@
 #pragma once
 
-#include "loss.h"
-#include "task.h"
-#include "function.h"
-#include "core/stats.h"
-#include "core/tpool.h"
+#include "gboost_loss.h"
 
 namespace nano
 {
         ///
         /// \brief empirical expection of the loss.
         ///
-        class gboost_eloss_t
+        class gboost_eloss_t final : public gboost_loss_t
         {
         public:
 
-                gboost_eloss_t(
-                        const task_t& task, const fold_t& fold, const loss_t& loss, const tensor4d_t& outputs) :
-                        m_task(task), m_fold(fold), m_loss(loss), m_outputs(outputs),
-                        m_residuals(outputs.dims())
+                gboost_eloss_t(const task_t& task, const fold_t& fold, const loss_t& loss) :
+                        gboost_loss_t(task, fold, loss)
                 {
-                        assert(m_outputs.dims() == cat_dims(task.size(fold), task.odims());
                 }
 
-                void update()
+                scalar_t compute() override
                 {
                         const auto& tpool = tpool_t::instance();
 
@@ -49,20 +42,5 @@ namespace nano
                                 m_vstats(values[t]);
                         }
                 }
-
-                const auto& residuals() const { return m_residuals; }
-                const auto& vstats() const { return m_vstats; }
-                const auto& estats() const { return m_estats; }
-
-        private:
-
-                // attributes
-                const task_t&           m_task;         ///< given task
-                fold_t                  m_fold;         ///< given fold
-                const loss_t&           m_loss;         ///< given loss
-                const tensor4d_t&       m_outputs;      ///< given outputs for each sample
-                tensor4d_t              m_residuals;    ///<
-                stats_t                 m_vstats;       ///< loss value statistics
-                stats_t                 m_estats;       ///< error value statistics
         };
 }
