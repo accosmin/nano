@@ -2,15 +2,17 @@
 
 #include "loss.h"
 #include "task.h"
-#include "core/stats.h"
 #include "core/tpool.h"
 
 namespace nano
 {
         ///
-        /// \brief loss function used by GradientBoosting algorithms.
+        /// \brief loss function used by GradientBoosting for:
+        ///     - feature selection using residuals (~ loss gradients per sample)
+        ///     - and 1D line-search for scaling the selected feature (aka weak learner)
         ///
-        class gboost_loss_t
+        template <typename tweak_learner>
+        class gboost_loss_t : public function_t
         {
         public:
 
@@ -18,6 +20,7 @@ namespace nano
                 /// \brief constructor
                 ///
                 gboost_loss_t(const task_t& task, const fold_t& fold, const loss_t& loss) :
+                        function_t("gboost-loss", 1, 1, 1, convexity::no),
                         m_task(task), m_fold(fold), m_loss(loss),
                         m_outputs(cat_dims(task.size(fold), task.odims())),
                         m_residuals(cat_dims(task.size(fold), task.odims()))
@@ -26,20 +29,17 @@ namespace nano
                 }
 
                 ///
-                /// \brief destructor
+                /// \brief use the given weak learner for line-search
                 ///
-                virtual ~gboost_loss_t() = default;
+                void wlearner(const tweak_learner& wlearner)
+                {
+                        m_wlearner = wlearner;
+                }
 
                 ///
-                /// \brief compute the loss value and the residuals for each sample
+                /// \brief update the outputs with the predictions of the given weak learner
                 ///
-                virtual scalar_t compute() = 0;
-
-                ///
-                /// \brief update the outputs with the predictions of a weak learner
-                ///
-                template <typename tweak_learner>
-                void add_weak_learner(const tweak_learner& wlearner)
+                void add_wlearner(const tweak_learner& wlearner)
                 {
                         loopi(m_task.size(fold), [&] (const size_t i)
                         {
@@ -49,11 +49,21 @@ namespace nano
                 }
 
                 ///
+                /// \brief update its internal state (e.g. residuals) and
+                ///     return the loss value and the average error rate
+                ///
+                virtual std::pair<scalar_t, scalar_t> update() = 0;
+
+                ///
+                /// \brief compute the line-search function value and gradient
+                ///
+                virtual scalar_t vgrad(const vector_t& x, vector_t* gx = nullptr) const = 0;
+
+                ///
                 /// \brief access functions
                 ///
+                const auto& wlearner() const { return m_wlearner; }
                 const auto& residuals() const { return m_residuals; }
-                const auto& vstats() const { return m_vstats; }
-                const auto& estats() const { return m_estats; }
 
         protected:
 
@@ -63,7 +73,6 @@ namespace nano
                 const loss_t&   m_loss;         ///< given loss
                 tensor4d_t      m_outputs;      ///< output/prediction for each sample
                 tensor4d_t      m_residuals;    ///< gradient/residual for each sample
-                stats_t         m_vstats;       ///< loss value statistics for all samples
-                stats_t                 m_estats;       ///< error value statistics for all samples
+                tweak_learner   m_wlearner;     ///< current weak learner
         };
 }
