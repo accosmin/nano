@@ -2,6 +2,7 @@
 
 #include "loss.h"
 #include "task.h"
+#include "function.h"
 #include "core/tpool.h"
 
 namespace nano
@@ -41,7 +42,7 @@ namespace nano
                 ///
                 void add_wlearner(const tweak_learner& wlearner)
                 {
-                        loopi(m_task.size(fold), [&] (const size_t i)
+                        loopi(m_task.size(m_fold), [&] (const size_t i)
                         {
                                 const auto input = m_task.input(m_fold, i);
                                 m_outputs.array(i) += wlearner.output(input);

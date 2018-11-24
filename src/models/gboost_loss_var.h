@@ -5,7 +5,14 @@
 namespace nano
 {
         ///
-        /// \brief squared empirical expection of the loss with a scaled variance of the loss.
+        /// \brief given a loss function l(y, t) that measures how well the prediction y matches the target t,
+        ///     the squared empirical expection of the loss regularized with its variance is:
+        ///
+        ///     L = sum(l(y_i, t_i), i)^2 + lambda * sum((l(y_i, t_i) - l(y_j, t_j))^2, i<j),
+        ///       = lambda * sum(l(y_i, t_i)^2, i) + (1 - lambda) * sum(l(y_i, t_i)^2, i) / N
+        ///
+        ///     over N samples indexed by i.
+        ///
         ///     see "Empirical Bernstein Boosting", by Pannagadatta K. Shivaswamy & Tony Jebara
         ///
         template <typename tweak_learner>
@@ -13,8 +20,15 @@ namespace nano
         {
         public:
 
+                using gboost_loss_t<tweak_learner>::m_task;
+                using gboost_loss_t<tweak_learner>::m_fold;
+                using gboost_loss_t<tweak_learner>::m_loss;
+                using gboost_loss_t<tweak_learner>::m_outputs;
+                using gboost_loss_t<tweak_learner>::m_wlearner;
+                using gboost_loss_t<tweak_learner>::m_residuals;
+
                 gboost_loss_var_t(const task_t& task, const fold_t& fold, const loss_t& loss, const scalar_t lambda) :
-                        gboost_loss_t(task, fold, loss),
+                        gboost_loss_t<tweak_learner>(task, fold, loss),
                         m_lambda(lambda),
                         m_vresiduals(cat_dims(task.size(m_fold), task.odims()))
                 {
@@ -64,7 +78,7 @@ namespace nano
                                         2 * (1 - m_lambda) * sum1 / div * m_residuals.vector(i);
                         });
 
-                        const auto value = m_lambda * sum2 + (1 - lambda) * nano::square(sum1) / div;
+                        const auto value = m_lambda * sum2 + (1 - m_lambda) * nano::square(sum1) / div;
                         const auto error = errors.vector().sum() / div;
 
                         return std::make_pair(value, error);
@@ -110,7 +124,7 @@ namespace nano
                         const auto div = static_cast<scalar_t>(m_task.size(m_fold));
                         if (gx)
                         {
-                                *gx(0) = vgrads.vector().sum() / div;
+                                (*gx)(0) = vgrads.vector().sum() / div;
                         }
                         return values.vector().sum() / div;
                 }

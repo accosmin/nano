@@ -5,15 +5,27 @@
 namespace nano
 {
         ///
-        /// \brief empirical expection of the loss.
+        /// \brief given a loss function l(y, t) that measures how well the prediction y matches the target t,
+        ///     the empirical expectation of the loss is:
+        ///
+        ///     L = 1/N sum(l(y_i, t_i), i),
+        ///
+        ///     over N samples indexed by i.
         ///
         template <typename tweak_learner>
         class gboost_loss_avg_t final : public gboost_loss_t<tweak_learner>
         {
         public:
 
+                using gboost_loss_t<tweak_learner>::m_task;
+                using gboost_loss_t<tweak_learner>::m_fold;
+                using gboost_loss_t<tweak_learner>::m_loss;
+                using gboost_loss_t<tweak_learner>::m_outputs;
+                using gboost_loss_t<tweak_learner>::m_wlearner;
+                using gboost_loss_t<tweak_learner>::m_residuals;
+
                 gboost_loss_avg_t(const task_t& task, const fold_t& fold, const loss_t& loss) :
-                        gboost_loss_t(task, fold, loss)
+                        gboost_loss_t<tweak_learner>(task, fold, loss)
                 {
                 }
 
@@ -36,7 +48,7 @@ namespace nano
 
                                 errors(t) += m_loss.error(target, output);
                                 values(t) += m_loss.value(target, output);
-                                m_residuals.tensor(i) = loss.vgrad(target, output);
+                                m_residuals.tensor(i) = m_loss.vgrad(target, output);
                         });
 
                         const auto div = static_cast<scalar_t>(m_task.size(m_fold));
@@ -79,7 +91,7 @@ namespace nano
                         const auto div = static_cast<scalar_t>(m_task.size(m_fold));
                         if (gx)
                         {
-                                *gx(0) = vgrads.vector().sum() / div;
+                                (*gx)(0) = vgrads.vector().sum() / div;
                         }
                         return values.vector().sum() / div;
                 }
