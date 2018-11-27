@@ -31,17 +31,17 @@ namespace nano
 
                 std::pair<scalar_t, scalar_t> update() override
                 {
-                        const auto& tpool = tpool_t::instance();
+                        const auto workers = static_cast<tensor_size_t>(tpool_t::instance().workers());
 
-                        tensor1d_t errors(tpool.workers());
-                        tensor1d_t values(tpool.workers());
+                        tensor1d_t errors(workers);
+                        tensor1d_t values(workers);
 
                         errors.zero();
                         values.zero();
 
                         loopit(m_task.size(m_fold), [&] (const size_t i, const size_t t)
                         {
-                                assert(t < tpool.workers());
+                                assert(static_cast<tensor_size_t>(t) < workers);
                                 const auto input = m_task.input(m_fold, i);
                                 const auto target = m_task.target(m_fold, i);
                                 const auto output = m_outputs.tensor(i);
@@ -60,25 +60,26 @@ namespace nano
                         assert(x.size() == 1);
                         assert(!gx || gx->size() == 1);
 
-                        const auto& tpool = tpool_t::instance();
+                        const auto workers = static_cast<tensor_size_t>(tpool_t::instance().workers());
 
-                        tensor1d_t values(tpool.workers());
-                        tensor1d_t vgrads(tpool.workers());
-                        tensor4d_t outputs(cat_dims(tpool.workers(), m_task.m_odims()));
+                        tensor1d_t values(workers);
+                        tensor1d_t vgrads(workers);
+                        tensor4d_t outputs(cat_dims(workers, m_task.odims()));
 
                         values.zero();
                         vgrads.zero();
 
                         loopit(m_task.size(m_fold), [&] (const size_t i, const size_t t)
                         {
-                                assert(t < tpool.workers());
+                                assert(static_cast<tensor_size_t>(t) < workers);
                                 const auto input = m_task.input(m_fold, i);
                                 const auto target = m_task.target(m_fold, i);
-                                const auto output = outputs.tensor(t);
                                 const auto woutput = m_wlearner.output(input);
+
+                                auto output = outputs.tensor(t);
                                 assert(output.dims() == woutput.dims());
 
-                                output.vector() = m_outputs.vector(i) + x(0) * woutput;
+                                output.vector() = m_outputs.vector(i) + x(0) * woutput.vector();
                                 values(t) += m_loss.value(target, output);
 
                                 if (gx)

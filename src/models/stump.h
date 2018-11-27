@@ -21,7 +21,7 @@ namespace nano
                 auto output(const ttensor3d& input) const
                 {
                         const auto oindex = input(m_feature) < m_threshold ? 0 : 1;
-                        return m_outputs.array(oindex);
+                        return m_outputs.tensor(oindex);
                 }
 
                 // attributes
