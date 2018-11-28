@@ -86,9 +86,12 @@ NANO_CASE(loss_stump_add_wlearner)
         auto func = gboost_loss_avg_t<stump_t>{*task, fold, *loss};
 
         const auto outputs0 = func.outputs();
-        func.add_wlearner(stump);
-        const auto outputs1 = func.outputs();
+        NANO_CHECK_CLOSE(outputs0.vector().minCoeff(), scalar_t(0), epsilon0<scalar_t>());
+        NANO_CHECK_CLOSE(outputs0.vector().maxCoeff(), scalar_t(0), epsilon0<scalar_t>());
 
+        func.add_wlearner(stump);
+
+        const auto outputs1 = func.outputs();
         NANO_REQUIRE_EQUAL(outputs0.dims(), cat_dims(task->size(fold), task->odims()));
         NANO_REQUIRE_EQUAL(outputs1.dims(), cat_dims(task->size(fold), task->odims()));
 
@@ -100,6 +103,41 @@ NANO_CASE(loss_stump_add_wlearner)
                         epsilon0<scalar_t>());
         }
 }
+
+NANO_CASE(avg_loss_stump_update)
+{
+        const auto task = make_task();
+        const auto fold = make_fold();
+        const auto loss = make_loss();
+        const auto stump = make_stump();
+
+        auto func = gboost_loss_avg_t<stump_t>{*task, fold, *loss};
+        func.add_wlearner(stump);
+        const auto ret = func.update();
+
+        const auto& outputs = func.outputs();
+        const auto& residuals = func.residuals();
+
+        scalar_t error = 0, value = 0;
+        for (size_t i = 0, size = task->size(fold); i < size; ++ i)
+        {
+                const auto target = task->target(fold, i);
+                const auto output = outputs.tensor(i);
+
+                error += loss->error(target, output);
+                value += loss->value(target, output);
+                NANO_CHECK_EIGEN_CLOSE(
+                        residuals.vector(i),
+                        loss->vgrad(target, output).vector(),
+                        epsilon0<scalar_t>());
+        }
+
+        NANO_CHECK_CLOSE(ret.first, value / static_cast<scalar_t>(task->size(fold)), epsilon0<scalar_t>());
+        NANO_CHECK_CLOSE(ret.second, error / static_cast<scalar_t>(task->size(fold)), epsilon0<scalar_t>());
+}
+
+// todo: check if ::vgrad(x) is computing the correct overall loss
+// todo: check if ::update() is returning the correct overall loss and the correct average error
 
 // todo: check if ::vgrad(x) is computing the correct overall loss
 // todo: check if ::update() is returning the correct overall loss and the correct average error
