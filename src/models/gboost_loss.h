@@ -45,7 +45,7 @@ namespace nano
                         loopi(m_task.size(m_fold), [&] (const size_t i)
                         {
                                 const auto input = m_task.input(m_fold, i);
-                                m_outputs.array(i) += wlearner.output(input);
+                                m_outputs.vector(i) += wlearner.output(input).vector();
                         });
                 }
 
@@ -63,6 +63,7 @@ namespace nano
                 ///
                 /// \brief access functions
                 ///
+                const auto& outputs() const { return m_outputs; }
                 const auto& wlearner() const { return m_wlearner; }
                 const auto& residuals() const { return m_residuals; }
 

@@ -5,6 +5,11 @@
 
 using namespace nano;
 
+static auto make_fold()
+{
+        return fold_t{size_t(0), protocol::train};
+}
+
 static auto make_task()
 {
         auto task = get_tasks().get("synth-affine");
@@ -37,12 +42,13 @@ NANO_BEGIN_MODULE(test_gboost_loss)
 NANO_CASE(avg_loss_stump_gradient)
 {
         const auto task = make_task();
+        const auto fold = make_fold();
         const auto loss = make_loss();
         const auto stump = make_stump();
 
-        // evaluate the analytical gradient vs. the finite difference approximation
-        auto func = gboost_loss_avg_t<stump_t>{*task, fold_t{size_t(0), protocol::train}, *loss};
+        auto func = gboost_loss_avg_t<stump_t>{*task, fold, *loss};
         func.wlearner(stump);
+
         for (auto i = 0; i < 13; ++ i)
         {
                 const vector_t x = vector_t::Random(1);
@@ -54,13 +60,14 @@ NANO_CASE(avg_loss_stump_gradient)
 NANO_CASE(var_loss_stump_gradient)
 {
         const auto task = make_task();
+        const auto fold = make_fold();
         const auto loss = make_loss();
         const auto stump = make_stump();
         const auto lambda = scalar_t(0.1);
 
-        // evaluate the analytical gradient vs. the finite difference approximation
-        auto func = gboost_loss_var_t<stump_t>{*task, fold_t{size_t(0), protocol::train}, *loss, lambda};
+        auto func = gboost_loss_var_t<stump_t>{*task, fold, *loss, lambda};
         func.wlearner(stump);
+
         for (auto i = 0; i < 13; ++ i)
         {
                 const vector_t x = vector_t::Random(1);
@@ -69,43 +76,32 @@ NANO_CASE(var_loss_stump_gradient)
         }
 }
 
-/*
-NANO_CASE(lsearch_evaluation)
+NANO_CASE(loss_stump_add_wlearner)
 {
-        tensor4d_t targets(4, 3, 2, 1);
-        tensor4d_t soutputs(4, 3, 2, 1);
-        tensor4d_t woutputs(4, 3, 2, 1);
+        const auto task = make_task();
+        const auto fold = make_fold();
+        const auto loss = make_loss();
+        const auto stump = make_stump();
 
-        targets.vector(0) = class_target(6, 0);
-        targets.vector(1) = class_target(6, 1);
-        targets.vector(2) = class_target(6, 2);
-        targets.vector(3) = class_target(6, 3);
+        auto func = gboost_loss_avg_t<stump_t>{*task, fold, *loss};
 
-        soutputs.random();
-        woutputs.random();
+        const auto outputs0 = func.outputs();
+        func.add_wlearner(stump);
+        const auto outputs1 = func.outputs();
 
-        // verify the function value against the loss value
-        for (const auto& loss_id : get_losses().ids())
+        NANO_REQUIRE_EQUAL(outputs0.dims(), cat_dims(task->size(fold), task->odims()));
+        NANO_REQUIRE_EQUAL(outputs1.dims(), cat_dims(task->size(fold), task->odims()));
+
+        for (size_t i = 0, size = task->size(fold); i < size; ++ i)
         {
-                const auto loss = get_losses().get(loss_id);
-                const auto func = gboost_lsearch_function_t{targets, soutputs, woutputs, *loss};
-
-                for (auto i = 0; i < 13; ++ i)
-                {
-                        vector_t x = vector_t::Random(1);
-
-                        tensor4d_t outputs(4, 3, 2, 1);
-                        outputs.vector() = soutputs.vector() + x(0) * woutputs.vector();
-
-                        NANO_CHECK_CLOSE(
-                                func.vgrad(x) * 4,
-                                loss->value(targets.tensor(0), outputs.tensor(0)) +
-                                loss->value(targets.tensor(1), outputs.tensor(1)) +
-                                loss->value(targets.tensor(2), outputs.tensor(2)) +
-                                loss->value(targets.tensor(3), outputs.tensor(3)),
-                                epsilon0<scalar_t>());
-                }
+                NANO_CHECK_EIGEN_CLOSE(
+                        outputs0.vector(i) + stump.output(task->input(fold, i)).vector(),
+                        outputs1.vector(i),
+                        epsilon0<scalar_t>());
         }
-}*/
+}
+
+// todo: check if ::vgrad(x) is computing the correct overall loss
+// todo: check if ::update() is returning the correct overall loss and the correct average error
 
 NANO_END_MODULE()
