@@ -51,8 +51,7 @@ namespace nano
                                 m_residuals.tensor(i) = m_loss.vgrad(target, output);
                         });
 
-                        const auto div = static_cast<scalar_t>(m_task.size(m_fold));
-                        return std::make_pair(values.vector().sum() / div, errors.vector().sum() / div);
+                        return std::make_pair(reduce(values), reduce(errors));
                 }
 
                 scalar_t vgrad(const vector_t& x, vector_t* gx = nullptr) const override
@@ -80,7 +79,9 @@ namespace nano
                                 assert(output.dims() == woutput.dims());
 
                                 output.vector() = m_outputs.vector(i) + x(0) * woutput.vector();
-                                values(t) += m_loss.value(target, output);
+
+                                const auto value = m_loss.value(target, output);
+                                values(t) += value;
 
                                 if (gx)
                                 {
@@ -89,12 +90,23 @@ namespace nano
                                 }
                         });
 
-                        const auto div = static_cast<scalar_t>(m_task.size(m_fold));
                         if (gx)
                         {
-                                (*gx)(0) = vgrads.vector().sum() / div;
+                                (*gx)(0) = reduce(vgrads);
                         }
-                        return values.vector().sum() / div;
+                        return reduce(values);
+                }
+
+        private:
+
+                auto size() const
+                {
+                        return static_cast<scalar_t>(m_task.size(m_fold));
+                }
+
+                auto reduce(const tensor1d_t& values) const
+                {
+                        return values.vector().sum() / size();
                 }
         };
 }

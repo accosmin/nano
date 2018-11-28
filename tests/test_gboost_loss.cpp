@@ -43,7 +43,6 @@ NANO_CASE(avg_loss_stump_gradient)
         // evaluate the analytical gradient vs. the finite difference approximation
         auto func = gboost_loss_avg_t<stump_t>{*task, fold_t{size_t(0), protocol::train}, *loss};
         func.wlearner(stump);
-
         for (auto i = 0; i < 13; ++ i)
         {
                 const vector_t x = vector_t::Random(1);
@@ -62,7 +61,6 @@ NANO_CASE(var_loss_stump_gradient)
         // evaluate the analytical gradient vs. the finite difference approximation
         auto func = gboost_loss_var_t<stump_t>{*task, fold_t{size_t(0), protocol::train}, *loss, lambda};
         func.wlearner(stump);
-
         for (auto i = 0; i < 13; ++ i)
         {
                 const vector_t x = vector_t::Random(1);
