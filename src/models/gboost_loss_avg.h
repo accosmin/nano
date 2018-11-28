@@ -17,13 +17,6 @@ namespace nano
         {
         public:
 
-                using gboost_loss_t<tweak_learner>::m_task;
-                using gboost_loss_t<tweak_learner>::m_fold;
-                using gboost_loss_t<tweak_learner>::m_loss;
-                using gboost_loss_t<tweak_learner>::m_outputs;
-                using gboost_loss_t<tweak_learner>::m_wlearner;
-                using gboost_loss_t<tweak_learner>::m_residuals;
-
                 gboost_loss_avg_t(const task_t& task, const fold_t& fold, const loss_t& loss) :
                         gboost_loss_t<tweak_learner>(task, fold, loss)
                 {
@@ -31,24 +24,18 @@ namespace nano
 
                 std::pair<scalar_t, scalar_t> update() override
                 {
-                        const auto workers = static_cast<tensor_size_t>(tpool_t::instance().workers());
+                        auto errors = this->tpool1d();
+                        auto values = this->tpool1d();
 
-                        tensor1d_t errors(workers);
-                        tensor1d_t values(workers);
-
-                        errors.zero();
-                        values.zero();
-
-                        loopit(m_task.size(m_fold), [&] (const size_t i, const size_t t)
+                        loopit(this->m_task.size(this->m_fold), [&] (const size_t i, const size_t t)
                         {
-                                assert(static_cast<tensor_size_t>(t) < workers);
-                                const auto input = m_task.input(m_fold, i);
-                                const auto target = m_task.target(m_fold, i);
-                                const auto output = m_outputs.tensor(i);
+                                const auto input = this->m_task.input(this->m_fold, i);
+                                const auto target = this->m_task.target(this->m_fold, i);
+                                const auto output = this->m_outputs.tensor(i);
 
-                                errors(t) += m_loss.error(target, output);
-                                values(t) += m_loss.value(target, output);
-                                m_residuals.tensor(i) = m_loss.vgrad(target, output);
+                                errors(t) += this->m_loss.error(target, output);
+                                values(t) += this->m_loss.value(target, output);
+                                this->m_residuals.tensor(i) = this->m_loss.vgrad(target, output);
                         });
 
                         return std::make_pair(reduce(values), reduce(errors));
@@ -59,33 +46,26 @@ namespace nano
                         assert(x.size() == 1);
                         assert(!gx || gx->size() == 1);
 
-                        const auto workers = static_cast<tensor_size_t>(tpool_t::instance().workers());
+                        auto values = this->tpool1d();
+                        auto vgrads = this->tpool1d();
 
-                        tensor1d_t values(workers);
-                        tensor1d_t vgrads(workers);
-                        tensor4d_t outputs(cat_dims(workers, m_task.odims()));
-
-                        values.zero();
-                        vgrads.zero();
-
-                        loopit(m_task.size(m_fold), [&] (const size_t i, const size_t t)
+                        loopit(this->m_task.size(this->m_fold), [&] (const size_t i, const size_t t)
                         {
-                                assert(static_cast<tensor_size_t>(t) < workers);
-                                const auto input = m_task.input(m_fold, i);
-                                const auto target = m_task.target(m_fold, i);
-                                const auto woutput = m_wlearner.output(input);
+                                const auto input = this->m_task.input(this->m_fold, i);
+                                const auto target = this->m_task.target(this->m_fold, i);
+                                const auto woutput = this->m_wlearner.output(input);
 
-                                auto output = outputs.tensor(t);
+                                tensor3d_t output(this->m_task.odims());
                                 assert(output.dims() == woutput.dims());
 
-                                output.vector() = m_outputs.vector(i) + x(0) * woutput.vector();
+                                output.vector() = this->m_outputs.vector(i) + x(0) * woutput.vector();
 
-                                const auto value = m_loss.value(target, output);
+                                const auto value = this->m_loss.value(target, output);
                                 values(t) += value;
 
                                 if (gx)
                                 {
-                                        const auto vgrad = m_loss.vgrad(target, output);
+                                        const auto vgrad = this->m_loss.vgrad(target, output);
                                         vgrads(t) += vgrad.vector().dot(woutput.vector());
                                 }
                         });
@@ -99,14 +79,9 @@ namespace nano
 
         private:
 
-                auto size() const
-                {
-                        return static_cast<scalar_t>(m_task.size(m_fold));
-                }
-
                 auto reduce(const tensor1d_t& values) const
                 {
-                        return values.vector().sum() / size();
+                        return values.vector().sum() / this->size();
                 }
         };
 }

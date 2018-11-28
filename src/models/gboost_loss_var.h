@@ -20,61 +20,44 @@ namespace nano
         {
         public:
 
-                using gboost_loss_t<tweak_learner>::m_task;
-                using gboost_loss_t<tweak_learner>::m_fold;
-                using gboost_loss_t<tweak_learner>::m_loss;
-                using gboost_loss_t<tweak_learner>::m_outputs;
-                using gboost_loss_t<tweak_learner>::m_wlearner;
-                using gboost_loss_t<tweak_learner>::m_residuals;
-
                 gboost_loss_var_t(const task_t& task, const fold_t& fold, const loss_t& loss, const scalar_t lambda) :
                         gboost_loss_t<tweak_learner>(task, fold, loss),
                         m_lambda(lambda),
-                        m_vresiduals(cat_dims(task.size(m_fold), task.odims()))
+                        m_vresiduals(cat_dims(task.size(this->m_fold), task.odims()))
                 {
                 }
 
                 std::pair<scalar_t, scalar_t> update() override
                 {
-                        // todo: L = lambda * S2 + (1 - lambda) * S1^2 / N
-                        // todo: Gi = 2 * lambda * li * gi + 2 * (1 - lambda) * S1/N * gi
+                        auto errors = this->tpool1d();
+                        auto values1 = this->tpool1d();
+                        auto values2 = this->tpool1d();
 
-                        const auto workers = static_cast<tensor_size_t>(tpool_t::instance().workers());
-
-                        tensor1d_t errors(workers);
-                        tensor1d_t values1(workers);
-                        tensor1d_t values2(workers);
-
-                        errors.zero();
-                        values1.zero();
-                        values2.zero();
-
-                        loopit(m_task.size(m_fold), [&] (const size_t i, const size_t t)
+                        loopit(this->m_task.size(this->m_fold), [&] (const size_t i, const size_t t)
                         {
-                                assert(static_cast<tensor_size_t>(t) < workers);
-                                const auto input = m_task.input(m_fold, i);
-                                const auto target = m_task.target(m_fold, i);
-                                const auto output = m_outputs.tensor(i);
+                                const auto input = this->m_task.input(this->m_fold, i);
+                                const auto target = this->m_task.target(this->m_fold, i);
+                                const auto output = this->m_outputs.tensor(i);
 
-                                const auto error = m_loss.error(target, output);
-                                const auto value = m_loss.value(target, output);
-                                const auto vgrad = m_loss.vgrad(target, output);
+                                const auto error = this->m_loss.error(target, output);
+                                const auto value = this->m_loss.value(target, output);
+                                const auto vgrad = this->m_loss.vgrad(target, output);
 
                                 errors(t) += error;
                                 values1(t) += value;
                                 values2(t) += value * value;
-                                m_residuals.tensor(i) = vgrad;
+                                this->m_residuals.tensor(i) = vgrad;
                                 m_vresiduals.vector(i) = value * vgrad.vector();
                         });
 
-                        const auto div = static_cast<scalar_t>(m_task.size(m_fold));
+                        const auto div = static_cast<scalar_t>(this->m_task.size(this->m_fold));
                         const auto sum1 = values1.vector().sum();
 
-                        loopi(m_task.size(m_fold), [&] (const size_t i)
+                        loopi(this->m_task.size(this->m_fold), [&] (const size_t i)
                         {
-                                m_residuals.vector(i) =
+                                this->m_residuals.vector(i) =
                                         2 * m_lambda * m_vresiduals.vector(i) +
-                                        2 * (1 - m_lambda) * sum1 / div * m_residuals.vector(i);
+                                        2 * (1 - m_lambda) * sum1 / div * this->m_residuals.vector(i);
                         });
 
                         return std::make_pair(reduce_value(values1, values2), reduce_error(errors));
@@ -85,34 +68,29 @@ namespace nano
                         assert(x.size() == 1);
                         assert(!gx || gx->size() == 1);
 
-                        const auto workers = static_cast<tensor_size_t>(tpool_t::instance().workers());
+                        auto values1 = this->tpool1d();
+                        auto values2 = this->tpool1d();
+                        auto vgrads1 = this->tpool1d();
+                        auto vgrads2 = this->tpool1d();
 
-                        tensor1d_t values1(workers), values2(workers);
-                        tensor1d_t vgrads1(workers), vgrads2(workers);
-                        tensor4d_t outputs(cat_dims(workers, m_task.odims()));
-
-                        values1.zero(), values2.zero();
-                        vgrads1.zero(), vgrads2.zero();
-
-                        loopit(m_task.size(m_fold), [&] (const size_t i, const size_t t)
+                        loopit(this->m_task.size(this->m_fold), [&] (const size_t i, const size_t t)
                         {
-                                assert(static_cast<tensor_size_t>(t) < workers);
-                                const auto input = m_task.input(m_fold, i);
-                                const auto target = m_task.target(m_fold, i);
-                                const auto woutput = m_wlearner.output(input);
+                                const auto input = this->m_task.input(this->m_fold, i);
+                                const auto target = this->m_task.target(this->m_fold, i);
+                                const auto woutput = this->m_wlearner.output(input);
 
-                                auto output = outputs.tensor(t);
+                                tensor3d_t output(this->m_task.odims());
                                 assert(output.dims() == woutput.dims());
 
-                                output.vector() = m_outputs.vector(i) + x(0) * woutput.vector();
+                                output.vector() = this->m_outputs.vector(i) + x(0) * woutput.vector();
 
-                                const auto value = m_loss.value(target, output);
+                                const auto value = this->m_loss.value(target, output);
                                 values1(t) += value;
                                 values2(t) += value * value;
 
                                 if (gx)
                                 {
-                                        const auto vgrad = m_loss.vgrad(target, output);
+                                        const auto vgrad = this->m_loss.vgrad(target, output);
                                         vgrads1(t) += vgrad.vector().dot(woutput.vector());
                                         vgrads2(t) += value * vgrad.vector().dot(woutput.vector());
                                 }
@@ -127,26 +105,21 @@ namespace nano
 
         private:
 
-                auto size() const
-                {
-                        return static_cast<scalar_t>(m_task.size(m_fold));
-                }
-
                 auto reduce_error(const tensor1d_t& errors) const
                 {
-                        return errors.vector().sum() / size();
+                        return errors.vector().sum() / this->size();
                 }
 
                 auto reduce_value(const tensor1d_t& values1, const tensor1d_t& values2) const
                 {
                         return  (1 - m_lambda) * nano::square(values1.vector().sum()) +
-                                m_lambda * size() * values2.vector().sum();
+                                m_lambda * this->size() * values2.vector().sum();
                 }
 
                 auto reduce_vgrad(const tensor1d_t& values1, const tensor1d_t& vgrads1, const tensor1d_t& vgrads2) const
                 {
                         return  2 * (1 - m_lambda) * values1.vector().sum() * vgrads1.vector().sum() +
-                                2 * m_lambda * size() * vgrads2.vector().sum();
+                                2 * m_lambda * this->size() * vgrads2.vector().sum();
                 }
 
         private:

@@ -68,6 +68,25 @@ namespace nano
 
         protected:
 
+                auto size() const
+                {
+                        return static_cast<scalar_t>(m_task.size(m_fold));
+                }
+
+                auto workers() const
+                {
+                        return static_cast<tensor_size_t>(tpool_t::instance().workers());
+                }
+
+                auto tpool1d() const
+                {
+                        tensor1d_t buffer(workers());
+                        buffer.zero();
+                        return buffer;
+                }
+
+        protected:
+
                 // attributes
                 const task_t&   m_task;         ///< given task
                 fold_t          m_fold;         ///< given fold
