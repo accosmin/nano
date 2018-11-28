@@ -46,7 +46,7 @@ static void update(const task_t& task, const fold_t& fold, tensor4d_t& outputs, 
 }
 
 static auto fit(const task_t& task, const tensor4d_t& residuals,
-        const tensor_size_t feature, const scalars_t& fvalues, const scalars_t& thresholds, const stump_type type)
+        const tensor_size_t feature, const scalars_t& fvalues, const scalars_t& thresholds, const wlearner_type type)
 {
         stump_t stump;
         scalar_t value = std::numeric_limits<scalar_t>::max();
@@ -91,7 +91,7 @@ static auto fit(const task_t& task, const tensor4d_t& residuals,
                         stump.m_outputs.resize(cat_dims(2, task.odims()));
                         switch (type)
                         {
-                        case stump_type::discrete:
+                        case wlearner_type::discrete:
                                 stump.m_outputs.vector(0) = residuals_neg1.array().sign();
                                 stump.m_outputs.vector(1) = residuals_pos1.array().sign();
                                 break;
@@ -112,7 +112,7 @@ void gboost_stump_t::to_json(json_t& json) const
         nano::to_json(json,
                 "rounds", m_rounds,
                 "patience", m_patience,
-                "stump", to_string(m_stump_type) + join(enum_values<stump_type>()),
+                "stump", to_string(m_wlearner_type) + join(enum_values<wlearner_type>()),
                 "solver", m_solver,
                 "tune", to_string(m_gboost_tune) + join(enum_values<gboost_tune>()));
 }
@@ -122,7 +122,7 @@ void gboost_stump_t::from_json(const json_t& json)
         nano::from_json(json,
                 "rounds", m_rounds,
                 "patience", m_patience,
-                "stump", m_stump_type,
+                "stump", m_wlearner_type,
                 "solver", m_solver,
                 "tune", m_gboost_tune);
 }
@@ -252,7 +252,7 @@ std::pair<trainer_result_t, stumps_t> gboost_stump_t::train(
                                 std::unique(thresholds.begin(), thresholds.end()),
                                 thresholds.end());
 
-                        const auto value_stump = fit(task, residuals, feature, fvalues, thresholds, m_stump_type);
+                        const auto value_stump = fit(task, residuals, feature, fvalues, thresholds, m_wlearner_type);
                         if (value_stump.first < tvalues[t])
                         {
                                 tvalues[t] = value_stump.first;
@@ -373,7 +373,7 @@ bool gboost_stump_t::save(obstream_t& stream) const
         if (    !stream.write(m_idims) ||
                 !stream.write(m_odims) ||
                 !stream.write(m_rounds) ||
-                !stream.write(m_stump_type) ||
+                !stream.write(m_wlearner_type) ||
                 !stream.write(m_gboost_tune) ||
                 !stream.write(m_stumps.size()))
         {
@@ -402,7 +402,7 @@ bool gboost_stump_t::load(ibstream_t& stream)
         if (    !stream.read(m_idims) ||
                 !stream.read(m_odims) ||
                 !stream.read(m_rounds) ||
-                !stream.read(m_stump_type) ||
+                !stream.read(m_wlearner_type) ||
                 !stream.read(m_gboost_tune) ||
                 !stream.read(n_stumps))
         {

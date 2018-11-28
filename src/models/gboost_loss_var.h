@@ -13,7 +13,8 @@ namespace nano
         ///
         ///     over N samples indexed by i.
         ///
-        ///     see "Empirical Bernstein Boosting", by Pannagadatta K. Shivaswamy & Tony Jebara
+        /// see "Empirical Bernstein Boosting", by Pannagadatta K. Shivaswamy & Tony Jebara
+        /// see "Variance Penalizing AdaBoost", by Pannagadatta K. Shivaswamy & Tony Jebara
         ///
         template <typename tweak_learner>
         class gboost_loss_var_t final : public gboost_loss_t<tweak_learner>

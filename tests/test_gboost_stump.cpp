@@ -11,7 +11,7 @@ NANO_BEGIN_MODULE(test_gboost_stump)
 NANO_CASE(stump_real)
 {
         const auto task_type = affine_task_type::classification;
-        const auto stump_type = nano::stump_type::real;
+        const auto wlearner_type = nano::wlearner_type::real;
 
         const auto task = get_tasks().get("synth-affine");
         NANO_REQUIRE(task);
@@ -23,7 +23,7 @@ NANO_CASE(stump_real)
 
         const auto model = get_models().get("gboost-stump");
         NANO_REQUIRE(model);
-        model->from_json(to_json("rounds", 100, "patience", 10, "stump", stump_type));
+        model->from_json(to_json("rounds", 100, "patience", 10, "stump", wlearner_type));
 
         // Check training: the model should fit the synthetic dataset
         const auto fold_index = 0u;

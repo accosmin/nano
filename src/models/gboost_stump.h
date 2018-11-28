@@ -48,8 +48,8 @@ namespace nano
                 int             m_rounds{0};                            ///< number of boosting rounds
                 int             m_patience{0};                          ///< number of epochs before overfitting
                 string_t        m_solver{"cgd"};                        ///< solver to use for line-search
-                stump_type      m_stump_type{stump_type::discrete};     ///< stump type
-                gboost_tune     m_gboost_tune{gboost_tune::none};       ///< regularization method
+                wlearner_type   m_wlearner_type{wlearner_type::discrete};///<
+                gboost_tune     m_gboost_tune{gboost_tune::none};       ///<
                 stumps_t        m_stumps;                               ///< trained stumps
         };
 }

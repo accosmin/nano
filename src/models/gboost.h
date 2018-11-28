@@ -11,6 +11,8 @@ namespace nano
         /// see "Empirical Bernstein Boosting", by Pannagadatta K. Shivaswamy & Tony Jebara
         /// see "Variance Penalizing AdaBoost", by Pannagadatta K. Shivaswamy & Tony Jebara
         ///
+
+        // todo: this is not needed anymore
         enum class gboost_tune
         {
                 none,                   ///<
@@ -32,21 +34,82 @@ namespace nano
         }
 
         ///
-        /// \brief stump type.
+        /// \brief weak learner type.
         ///
-        enum class stump_type
+        enum class wlearner_type
         {
-                real,                   ///< stump \in R (no restriction)
-                discrete,               ///< stump \in {-1, +1}
+                real,                   ///< output \in R (no restriction)
+                discrete,               ///< output \in {-1, +1} (useful for classification to reduce overfitting)
         };
 
         template <>
-        inline enum_map_t<stump_type> enum_string<stump_type>()
+        inline enum_map_t<wlearner_type> enum_string<wlearner_type>()
         {
                 return
                 {
-                        { stump_type::real,             "real" },
-                        { stump_type::discrete,         "discrete" }
+                        { wlearner_type::real,          "real" },
+                        { wlearner_type::discrete,      "discrete" }
+                };
+        }
+
+        ///
+        /// \brief evaluation method of the weak learner.
+        ///
+        enum class wlearner_eval
+        {
+                train,                  ///< fit and evaluate on training
+                valid,                  ///< fit on training, evaluate goodness on validation
+        };
+
+        template <>
+        inline enum_map_t<wlearner_eval> enum_string<wlearner_eval>()
+        {
+                return
+                {
+                        { wlearner_eval::train,         "train" },
+                        { wlearner_eval::valid,         "valid" }
+                };
+        }
+
+        ///
+        /// \brief toggle regularization using shrinkage.
+        /// NB: requires tuning the shrinkage factor.
+        ///
+        enum class shrinkage
+        {
+                on,
+                off,
+        };
+
+        template <>
+        inline enum_map_t<shrinkage> enum_string<shrinkage>()
+        {
+                return
+                {
+                        { shrinkage::on,                "on" },
+                        { shrinkage::off,               "off" }
+                };
+        }
+
+        ///
+        /// \brief toggle subsampling for fitting weak learners.
+        /// NB: requires tuning the sampling percentage.
+        ///
+        /// see "Stochastic gradient boosting", by Jerome Friedman
+        ///
+        enum class subsampling
+        {
+                on,
+                off,
+        };
+
+        template <>
+        inline enum_map_t<subsampling> enum_string<subsampling>()
+        {
+                return
+                {
+                        { subsampling::on,              "on" },
+                        { subsampling::off,             "off" }
                 };
         }
 }
