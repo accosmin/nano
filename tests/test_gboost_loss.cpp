@@ -113,7 +113,6 @@ NANO_CASE(avg_loss_stump_update)
 
         auto func = gboost_loss_avg_t<stump_t>{*task, fold, *loss};
         func.add_wlearner(stump);
-        const auto ret = func.update();
 
         const auto& outputs = func.outputs();
         const auto& residuals = func.residuals();
@@ -132,8 +131,8 @@ NANO_CASE(avg_loss_stump_update)
                         epsilon0<scalar_t>());
         }
 
-        NANO_CHECK_CLOSE(ret.first, value / static_cast<scalar_t>(task->size(fold)), epsilon0<scalar_t>());
-        NANO_CHECK_CLOSE(ret.second, error / static_cast<scalar_t>(task->size(fold)), epsilon0<scalar_t>());
+        NANO_CHECK_CLOSE(func.value(), value / static_cast<scalar_t>(task->size(fold)), epsilon0<scalar_t>());
+        NANO_CHECK_CLOSE(func.error(), error / static_cast<scalar_t>(task->size(fold)), epsilon0<scalar_t>());
 }
 
 // todo: check if ::vgrad(x) is computing the correct overall loss

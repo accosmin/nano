@@ -23,8 +23,7 @@ namespace nano
                 gboost_loss_t(const task_t& task, const fold_t& fold, const loss_t& loss) :
                         function_t("gboost-loss", 1, 1, 1, convexity::no),
                         m_task(task), m_fold(fold), m_loss(loss),
-                        m_outputs(cat_dims(task.size(fold), task.odims())),
-                        m_residuals(cat_dims(task.size(fold), task.odims()))
+                        m_outputs(cat_dims(task.size(fold), task.odims()))
                 {
                         m_outputs.zero();
                 }
@@ -50,22 +49,29 @@ namespace nano
                 }
 
                 ///
-                /// \brief update its internal state (e.g. residuals) and
-                ///     return the loss value and the average error rate
-                ///
-                virtual std::pair<scalar_t, scalar_t> update() = 0;
-
-                ///
                 /// \brief compute the line-search function value and gradient
                 ///
                 virtual scalar_t vgrad(const vector_t& x, vector_t* gx = nullptr) const = 0;
 
                 ///
-                /// \brief access functions
+                /// \brief compute and return the average error
+                ///
+                scalar_t error() const;
+
+                ///
+                /// \brief compute and return the loss value
+                ///
+                virtual scalar_t value() const = 0;
+
+                ///
+                /// \brief returns the current outputs/predictions
                 ///
                 const auto& outputs() const { return m_outputs; }
-                const auto& wlearner() const { return m_wlearner; }
-                const auto& residuals() const { return m_residuals; }
+
+                ///
+                /// \brief compute and return the residuals (gradients per sample)
+                ///
+                virtual const tensor4d_t& residuals() = 0;
 
         protected:
 
@@ -86,6 +92,11 @@ namespace nano
                         return buffer;
                 }
 
+                auto reduce(const tensor1d_t& values) const
+                {
+                        return values.vector().sum() / size();
+                }
+
         protected:
 
                 // attributes
@@ -93,7 +104,23 @@ namespace nano
                 fold_t          m_fold;         ///< given fold
                 const loss_t&   m_loss;         ///< given loss
                 tensor4d_t      m_outputs;      ///< output/prediction for each sample
-                tensor4d_t      m_residuals;    ///< gradient/residual for each sample
                 tweak_learner   m_wlearner;     ///< current weak learner
         };
+
+        template <typename tweak_learner>
+        scalar_t gboost_loss_t<tweak_learner>::error() const
+        {
+                auto errors = tpool1d();
+
+                loopit(m_task.size(m_fold), [&] (const size_t i, const size_t t)
+                {
+                        const auto input = m_task.input(m_fold, i);
+                        const auto target = m_task.target(m_fold, i);
+                        const auto output = m_outputs.tensor(i);
+
+                        errors(t) += m_loss.error(target, output);
+                });
+
+                return reduce(errors);
+        }
 }

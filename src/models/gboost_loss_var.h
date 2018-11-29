@@ -23,14 +23,12 @@ namespace nano
 
                 gboost_loss_var_t(const task_t& task, const fold_t& fold, const loss_t& loss, const scalar_t lambda) :
                         gboost_loss_t<tweak_learner>(task, fold, loss),
-                        m_lambda(lambda),
-                        m_vresiduals(cat_dims(task.size(this->m_fold), task.odims()))
+                        m_lambda(lambda)
                 {
                 }
 
-                std::pair<scalar_t, scalar_t> update() override
+                scalar_t value() const override
                 {
-                        auto errors = this->tpool1d();
                         auto values1 = this->tpool1d();
                         auto values2 = this->tpool1d();
 
@@ -40,15 +38,38 @@ namespace nano
                                 const auto target = this->m_task.target(this->m_fold, i);
                                 const auto output = this->m_outputs.tensor(i);
 
-                                const auto error = this->m_loss.error(target, output);
                                 const auto value = this->m_loss.value(target, output);
                                 const auto vgrad = this->m_loss.vgrad(target, output);
 
-                                errors(t) += error;
                                 values1(t) += value;
                                 values2(t) += value * value;
-                                this->m_residuals.tensor(i) = vgrad;
-                                m_vresiduals.vector(i) = value * vgrad.vector();
+                        });
+
+                        return reduce_value(values1, values2);
+                }
+
+                const tensor4d_t& residuals() override
+                {
+                        m_residuals1.resize(cat_dims(this->m_task.size(this->m_fold), this->m_task.odims()));
+                        m_residuals2.resize(cat_dims(this->m_task.size(this->m_fold), this->m_task.odims()));
+
+                        auto values1 = this->tpool1d();
+                        auto values2 = this->tpool1d();
+
+                        loopit(this->m_task.size(this->m_fold), [&] (const size_t i, const size_t t)
+                        {
+                                const auto input = this->m_task.input(this->m_fold, i);
+                                const auto target = this->m_task.target(this->m_fold, i);
+                                const auto output = this->m_outputs.tensor(i);
+
+                                const auto value = this->m_loss.value(target, output);
+                                const auto vgrad = this->m_loss.vgrad(target, output);
+
+                                values1(t) += value;
+                                values2(t) += value * value;
+
+                                m_residuals1.tensor(i) = vgrad;
+                                m_residuals2.vector(i) = value * vgrad.vector();
                         });
 
                         const auto div = static_cast<scalar_t>(this->m_task.size(this->m_fold));
@@ -56,12 +77,12 @@ namespace nano
 
                         loopi(this->m_task.size(this->m_fold), [&] (const size_t i)
                         {
-                                this->m_residuals.vector(i) =
-                                        2 * m_lambda * m_vresiduals.vector(i) +
-                                        2 * (1 - m_lambda) * sum1 / div * this->m_residuals.vector(i);
+                                m_residuals1.vector(i) =
+                                        2 * m_lambda * m_residuals2.vector(i) +
+                                        2 * (1 - m_lambda) * sum1 / div * m_residuals1.vector(i);
                         });
 
-                        return std::make_pair(reduce_value(values1, values2), reduce_error(errors));
+                        return m_residuals1;
                 }
 
                 scalar_t vgrad(const vector_t& x, vector_t* gx = nullptr) const override
@@ -106,11 +127,6 @@ namespace nano
 
         private:
 
-                auto reduce_error(const tensor1d_t& errors) const
-                {
-                        return errors.vector().sum() / this->size();
-                }
-
                 auto reduce_value(const tensor1d_t& values1, const tensor1d_t& values2) const
                 {
                         return  (1 - m_lambda) * nano::square(values1.vector().sum()) +
@@ -127,6 +143,7 @@ namespace nano
 
                 // attributes
                 scalar_t        m_lambda;       ///< regularization term for the variance term
-                tensor4d_t      m_vresiduals;   ///< residuals/gradients * loss value for each sample
+                tensor4d_t      m_residuals1;   ///< gradient/residual for each sample
+                tensor4d_t      m_residuals2;   ///< residuals/gradients * loss value for each sample
         };
 }

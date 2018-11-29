@@ -22,9 +22,8 @@ namespace nano
                 {
                 }
 
-                std::pair<scalar_t, scalar_t> update() override
+                scalar_t value() const override
                 {
-                        auto errors = this->tpool1d();
                         auto values = this->tpool1d();
 
                         loopit(this->m_task.size(this->m_fold), [&] (const size_t i, const size_t t)
@@ -33,12 +32,26 @@ namespace nano
                                 const auto target = this->m_task.target(this->m_fold, i);
                                 const auto output = this->m_outputs.tensor(i);
 
-                                errors(t) += this->m_loss.error(target, output);
                                 values(t) += this->m_loss.value(target, output);
-                                this->m_residuals.tensor(i) = this->m_loss.vgrad(target, output);
                         });
 
-                        return std::make_pair(reduce(values), reduce(errors));
+                        return this->reduce(values);
+                }
+
+                const tensor4d_t& residuals() override
+                {
+                        m_residuals.resize(cat_dims(this->m_task.size(this->m_fold), this->m_task.odims()));
+
+                        loopi(this->m_task.size(this->m_fold), [&] (const size_t i)
+                        {
+                                const auto input = this->m_task.input(this->m_fold, i);
+                                const auto target = this->m_task.target(this->m_fold, i);
+                                const auto output = this->m_outputs.tensor(i);
+
+                                m_residuals.tensor(i) = this->m_loss.vgrad(target, output);
+                        });
+
+                        return m_residuals;
                 }
 
                 scalar_t vgrad(const vector_t& x, vector_t* gx = nullptr) const override
@@ -72,16 +85,14 @@ namespace nano
 
                         if (gx)
                         {
-                                (*gx)(0) = reduce(vgrads);
+                                (*gx)(0) = this->reduce(vgrads);
                         }
-                        return reduce(values);
+                        return this->reduce(values);
                 }
 
         private:
 
-                auto reduce(const tensor1d_t& values) const
-                {
-                        return values.vector().sum() / this->size();
-                }
+                // attributes
+                tensor4d_t      m_residuals;    ///< gradient/residual for each sample
         };
 }
