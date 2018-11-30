@@ -138,7 +138,4 @@ NANO_CASE(avg_loss_stump_update)
 // todo: check if ::vgrad(x) is computing the correct overall loss
 // todo: check if ::update() is returning the correct overall loss and the correct average error
 
-// todo: check if ::vgrad(x) is computing the correct overall loss
-// todo: check if ::update() is returning the correct overall loss and the correct average error
-
 NANO_END_MODULE()

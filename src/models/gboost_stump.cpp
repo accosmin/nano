@@ -1,10 +1,10 @@
 #include "solver.h"
 #include "core/tpool.h"
 #include "core/logger.h"
+#include "gboost_loss.h"
 #include "gboost_stump.h"
 #include "core/ibstream.h"
 #include "core/obstream.h"
-#include "gboost_lsearch.h"
 
 using namespace nano;
 
@@ -112,9 +112,12 @@ void gboost_stump_t::to_json(json_t& json) const
         nano::to_json(json,
                 "rounds", m_rounds,
                 "patience", m_patience,
-                "stump", to_string(m_wlearner_type) + join(enum_values<wlearner_type>()),
                 "solver", m_solver,
-                "tune", to_string(m_gboost_tune) + join(enum_values<gboost_tune>()));
+                "type", to_string(m_wtype) + join(enum_values<wlearner_type>()),
+                "eval", to_string(m_weval) + join(enum_values<wlearner_eval>()),
+                "cumloss", to_string(m_cumloss) + join(enum_values<cumloss>()),
+                "shrinkage", to_string(m_shrinkage) + join(enum_values<shrinkage>()),
+                "subsampling", to_string(m_subsampling) + join(enum_values<subsampling>()));
 }
 
 void gboost_stump_t::from_json(const json_t& json)
@@ -122,9 +125,12 @@ void gboost_stump_t::from_json(const json_t& json)
         nano::from_json(json,
                 "rounds", m_rounds,
                 "patience", m_patience,
-                "stump", m_wlearner_type,
                 "solver", m_solver,
-                "tune", m_gboost_tune);
+                "type", m_wtype,
+                "eval", m_weval,
+                "cumloss", m_cumloss,
+                "shrinkage", m_shrinkage,
+                "subsampling", m_subsampling);
 }
 
 trainer_result_t gboost_stump_t::train(const task_t& task, const size_t fold, const loss_t& loss)
@@ -132,7 +138,7 @@ trainer_result_t gboost_stump_t::train(const task_t& task, const size_t fold, co
         m_idims = task.idims();
         m_odims = task.odims();
 
-        scalars_t lambdas;
+        /*scalars_t lambdas;
         switch (m_gboost_tune)
         {
         case gboost_tune::none:
@@ -154,10 +160,11 @@ trainer_result_t gboost_stump_t::train(const task_t& task, const size_t fold, co
         default:
                 critical(false, strcat("uknown regularization method (", static_cast<int>(m_gboost_tune), ")"));
                 break;
-        }
+        }*/
 
         trainer_result_t result;
-        for (const auto lambda : lambdas)
+
+        /*for (const auto lambda : lambdas)
         {
                 const auto lambda_result = train(task, fold, loss, lambda);
                 if (lambda_result.first < result)
@@ -167,11 +174,13 @@ trainer_result_t gboost_stump_t::train(const task_t& task, const size_t fold, co
                 }
         }
 
-        log_info() << ">>>" << result << ".";
+        log_info() << ">>>" << result << ".";*/
+
 
         return result;
 }
 
+/*
 std::pair<trainer_result_t, stumps_t> gboost_stump_t::train(
         const task_t& task, const size_t fold, const loss_t& loss, const scalar_t lambda) const
 {
@@ -314,7 +323,7 @@ std::pair<trainer_result_t, stumps_t> gboost_stump_t::train(
 }
 
 tensor4d_t gboost_stump_t::residuals(
-        const task_t& task, const fold_t& fold, const loss_t& loss, const tensor4d_t& outputs, const scalar_t/* lambda*/) const
+        const task_t& task, const fold_t& fold, const loss_t& loss, const tensor4d_t& outputs, const scalar_t lambda) const
 {
         tensor4d_t residuals(cat_dims(task.size(fold), m_odims));
 
@@ -347,7 +356,7 @@ tensor4d_t gboost_stump_t::residuals(
         }
 
         return residuals;
-}
+}*/
 
 tensor3d_t gboost_stump_t::output(const tensor3d_t& input) const
 {
@@ -373,8 +382,11 @@ bool gboost_stump_t::save(obstream_t& stream) const
         if (    !stream.write(m_idims) ||
                 !stream.write(m_odims) ||
                 !stream.write(m_rounds) ||
-                !stream.write(m_wlearner_type) ||
-                !stream.write(m_gboost_tune) ||
+                !stream.write(m_wtype) ||
+                !stream.write(m_weval) ||
+                !stream.write(m_cumloss) ||
+                !stream.write(m_shrinkage) ||
+                !stream.write(m_subsampling) ||
                 !stream.write(m_stumps.size()))
         {
                 return false;
@@ -402,8 +414,11 @@ bool gboost_stump_t::load(ibstream_t& stream)
         if (    !stream.read(m_idims) ||
                 !stream.read(m_odims) ||
                 !stream.read(m_rounds) ||
-                !stream.read(m_wlearner_type) ||
-                !stream.read(m_gboost_tune) ||
+                !stream.read(m_wtype) ||
+                !stream.read(m_weval) ||
+                !stream.read(m_cumloss) ||
+                !stream.read(m_shrinkage) ||
+                !stream.read(m_subsampling) ||
                 !stream.read(n_stumps))
         {
                 return false;
