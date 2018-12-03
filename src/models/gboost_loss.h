@@ -64,14 +64,19 @@ namespace nano
                 virtual scalar_t value() const = 0;
 
                 ///
+                /// \brief compute and return the residuals (gradients per sample)
+                ///
+                virtual const tensor4d_t& residuals() = 0;
+
+                ///
                 /// \brief returns the current outputs/predictions
                 ///
                 const auto& outputs() const { return m_outputs; }
 
                 ///
-                /// \brief compute and return the residuals (gradients per sample)
+                /// \brief returns the current weak learner
                 ///
-                virtual const tensor4d_t& residuals() = 0;
+                const auto& wlearner() const { return m_wlearner; }
 
         protected:
 

@@ -1,52 +1,81 @@
-#include "solver.h"
-#include "core/tpool.h"
-#include "core/logger.h"
-#include "gboost_loss.h"
 #include "gboost_stump.h"
 #include "core/ibstream.h"
 #include "core/obstream.h"
+#include "gboost_loss_avg.h"
+#include "gboost_loss_var.h"
 
 using namespace nano;
 
-static auto measure(const task_t& task, const fold_t& fold, const tensor4d_t& outputs, const loss_t& loss)
+void gboost_stump_t::to_json(json_t& json) const
 {
-        const auto& tpool = tpool_t::instance();
+        nano::to_json(json,
+                "rounds", m_rounds,
+                "patience", m_patience,
+                "solver", m_solver,
+                "type", to_string(m_wtype) + join(enum_values<wlearner_type>()),
+                "eval", to_string(m_weval) + join(enum_values<wlearner_eval>()),
+                "cumloss", to_string(m_cumloss) + join(enum_values<cumloss>()),
+                "shrinkage", to_string(m_shrinkage) + join(enum_values<shrinkage>()),
+                "subsampling", to_string(m_subsampling) + join(enum_values<subsampling>()));
+}
 
-        std::vector<stats_t> errors(tpool.workers());
-        std::vector<stats_t> values(tpool.workers());
+void gboost_stump_t::from_json(const json_t& json)
+{
+        nano::from_json(json,
+                "rounds", m_rounds,
+                "patience", m_patience,
+                "solver", m_solver,
+                "type", m_wtype,
+                "eval", m_weval,
+                "cumloss", m_cumloss,
+                "shrinkage", m_shrinkage,
+                "subsampling", m_subsampling);
+}
 
-        loopit(task.size(fold), [&] (const size_t i, const size_t t)
+trainer_result_t gboost_stump_t::train(const task_t& task, const size_t fold, const loss_t& loss)
+{
+        m_idims = task.idims();
+        m_odims = task.odims();
+
+        tuner_t tuner;
+
+        switch (m_shrinkage)
         {
-                assert(t < tpool.workers());
-                const auto input = task.input(fold, i);
-                const auto target = task.target(fold, i);
-                const auto output = outputs.tensor(i);
+        case shrinkage::off:
+                tuner.add_finite("shrinkage", 1.0);
+                break;
 
-                errors[t](loss.error(target, output));
-                values[t](loss.value(target, output));
-        });
-
-        for (size_t t = 1; t < tpool.workers(); ++ t)
-        {
-                errors[0](errors[t]);
-                values[0](values[t]);
+        case shrinkage::on:
+                tuner.add_finite("shrinkage", 0.1, 0.2, 0.5, 1.0);
+                break;
         }
 
-        return std::make_pair(errors[0], values[0]);
-}
-
-static void update(const task_t& task, const fold_t& fold, tensor4d_t& outputs, const stump_t& stump)
-{
-        loopi(task.size(fold), [&] (const size_t i)
+        switch (m_subsampling)
         {
-                const auto input = task.input(fold, i);
-                const auto oindex = input(stump.m_feature) < stump.m_threshold ? 0 : 1;
-                outputs.array(i) += stump.m_outputs.array(oindex);
-        });
+        case subsampling::off:
+                tuner.add_finite("subsampling", 100);
+                break;
+
+        case subsampling::on:
+                tuner.add_finite("subsampling", 10, 20, 50, 100);
+                break;
+        }
+
+        switch (m_cumloss)
+        {
+        case cumloss::variance:
+                tuner.add_pow10s("lambda", 0.0, -6, +6);
+                return train<gboost_loss_var_t<stump_t>>(task, fold, loss, tuner);
+
+        case cumloss::average:
+        default:
+                tuner.add_finite("lambda", 1.0);
+                return train<gboost_loss_avg_t<stump_t>>(task, fold, loss, tuner);
+        }
 }
 
-static auto fit(const task_t& task, const tensor4d_t& residuals,
-        const tensor_size_t feature, const scalars_t& fvalues, const scalars_t& thresholds, const wlearner_type type)
+std::pair<scalar_t, stump_t> gboost_stump_t::fit(const task_t& task, const tensor4d_t& residuals,
+        const tensor_size_t feature, const scalars_t& fvalues, const scalars_t& thresholds) const
 {
         stump_t stump;
         scalar_t value = std::numeric_limits<scalar_t>::max();
@@ -89,7 +118,7 @@ static auto fit(const task_t& task, const tensor4d_t& residuals,
                         stump.m_feature = feature;
                         stump.m_threshold = threshold;
                         stump.m_outputs.resize(cat_dims(2, task.odims()));
-                        switch (type)
+                        switch (m_wtype)
                         {
                         case wlearner_type::discrete:
                                 stump.m_outputs.vector(0) = residuals_neg1.array().sign();
@@ -101,262 +130,16 @@ static auto fit(const task_t& task, const tensor4d_t& residuals,
                                 stump.m_outputs.vector(1) = residuals_pos1.vector() / cnt_pos;
                                 break;
                         }
+
+                        // todo: implement subsampling
+                        // todo: implement fitting stumps on training loss and evaluating then on the validation error
                 }
+
+                // todo: move this function to stump_t (need to have something similar for other weak learners as well)
         }
 
         return std::make_pair(value, stump);
 }
-
-void gboost_stump_t::to_json(json_t& json) const
-{
-        nano::to_json(json,
-                "rounds", m_rounds,
-                "patience", m_patience,
-                "solver", m_solver,
-                "type", to_string(m_wtype) + join(enum_values<wlearner_type>()),
-                "eval", to_string(m_weval) + join(enum_values<wlearner_eval>()),
-                "cumloss", to_string(m_cumloss) + join(enum_values<cumloss>()),
-                "shrinkage", to_string(m_shrinkage) + join(enum_values<shrinkage>()),
-                "subsampling", to_string(m_subsampling) + join(enum_values<subsampling>()));
-}
-
-void gboost_stump_t::from_json(const json_t& json)
-{
-        nano::from_json(json,
-                "rounds", m_rounds,
-                "patience", m_patience,
-                "solver", m_solver,
-                "type", m_wtype,
-                "eval", m_weval,
-                "cumloss", m_cumloss,
-                "shrinkage", m_shrinkage,
-                "subsampling", m_subsampling);
-}
-
-trainer_result_t gboost_stump_t::train(const task_t& task, const size_t fold, const loss_t& loss)
-{
-        m_idims = task.idims();
-        m_odims = task.odims();
-
-        /*scalars_t lambdas;
-        switch (m_gboost_tune)
-        {
-        case gboost_tune::none:
-                lambdas = make_scalars(1.0);
-                break;
-
-        case gboost_tune::shrinkage:
-                lambdas = make_scalars(0.05, 0.10, 0.20, 0.50, 1.00);
-                break;
-
-        case gboost_tune::variance:
-                lambdas = make_scalars(1e-6, 1e-5, 1e-4, 1e-3, 1e-2, 1e-1, 1e+0);
-                break;
-
-        case gboost_tune::stochastic:
-                critical(false, "stochastic gboost not implemented");
-                break;
-
-        default:
-                critical(false, strcat("uknown regularization method (", static_cast<int>(m_gboost_tune), ")"));
-                break;
-        }*/
-
-        trainer_result_t result;
-
-        /*for (const auto lambda : lambdas)
-        {
-                const auto lambda_result = train(task, fold, loss, lambda);
-                if (lambda_result.first < result)
-                {
-                        result = lambda_result.first;
-                        m_stumps = lambda_result.second;
-                }
-        }
-
-        log_info() << ">>>" << result << ".";*/
-
-
-        return result;
-}
-
-/*
-std::pair<trainer_result_t, stumps_t> gboost_stump_t::train(
-        const task_t& task, const size_t fold, const loss_t& loss, const scalar_t lambda) const
-{
-        // check if the solver is properly set
-        rsolver_t solver;
-        critical(solver = get_solvers().get(m_solver),
-                strcat("search solver (", m_solver, ")"));
-
-        timer_t timer;
-        trainer_result_t result;
-
-        const auto fold_tr = fold_t{fold, protocol::train};
-        const auto fold_vd = fold_t{fold, protocol::valid};
-        const auto fold_te = fold_t{fold, protocol::test};
-
-        tensor4d_t outputs_tr(cat_dims(task.size(fold_tr), m_odims));
-        tensor4d_t outputs_vd(cat_dims(task.size(fold_vd), m_odims));
-        tensor4d_t outputs_te(cat_dims(task.size(fold_te), m_odims));
-
-        outputs_tr.zero();
-        outputs_vd.zero();
-        outputs_te.zero();
-
-        stats_t errors_tr, errors_vd, errors_te;
-        stats_t values_tr, values_vd, values_te;
-
-        std::tie(errors_tr, values_tr) = ::measure(task, fold_tr, outputs_tr, loss);
-        std::tie(errors_vd, values_vd) = ::measure(task, fold_vd, outputs_vd, loss);
-        std::tie(errors_te, values_te) = ::measure(task, fold_te, outputs_te, loss);
-
-        const auto measure_tr = trainer_measurement_t{values_tr.avg(), errors_tr.avg()};
-        const auto measure_vd = trainer_measurement_t{values_vd.avg(), errors_vd.avg()};
-        const auto measure_te = trainer_measurement_t{values_te.avg(), errors_te.avg()};
-
-        const auto status = result.update(
-                trainer_state_t{timer.milliseconds(), 0, measure_tr, measure_vd, measure_te},
-                m_patience);
-
-        log_info() << "[" << 0 << "/" << m_rounds
-                << "]:tr=" << measure_tr
-                << ",vd=" << measure_vd << "|" << status
-                << ",te=" << measure_te << ".";
-
-        stumps_t stumps;
-        tensor4d_t stump_outputs(cat_dims(task.size(fold_tr), m_odims));
-
-        tensor4d_t targets(cat_dims(task.size(fold_tr), m_odims));
-        for (size_t i = 0, size = task.size(fold_tr); i < size; ++ i)
-        {
-                const auto target = task.target(fold_tr, i);
-                targets.tensor(i) = target;
-        }
-
-        gboost_lsearch_function_t func(targets, outputs_tr, stump_outputs, loss);
-
-        for (auto round = 0; round < m_rounds && !result.is_done(); ++ round)
-        {
-                const auto residuals = this->residuals(task, fold_tr, loss, outputs_tr, lambda);
-
-                // todo: generalize this - e.g. to use features that are products of two input features, use LBPs|HOGs
-                const auto& tpool = tpool_t::instance();
-
-                stumps_t tstumps(tpool.workers());
-                scalars_t tvalues(tpool.workers(), std::numeric_limits<scalar_t>::max());
-
-                loopit(nano::size(m_idims), [&] (const tensor_size_t feature, const size_t t)
-                {
-                        scalars_t fvalues(task.size(fold_tr));
-                        for (size_t i = 0, size = task.size(fold_tr); i < size; ++ i)
-                        {
-                                const auto input = task.input(fold_tr, i);
-                                fvalues[i] = input(feature);
-                        }
-
-                        auto thresholds = fvalues;
-                        std::sort(thresholds.begin(), thresholds.end());
-                        thresholds.erase(
-                                std::unique(thresholds.begin(), thresholds.end()),
-                                thresholds.end());
-
-                        const auto value_stump = fit(task, residuals, feature, fvalues, thresholds, m_wlearner_type);
-                        if (value_stump.first < tvalues[t])
-                        {
-                                tvalues[t] = value_stump.first;
-                                tstumps[t] = value_stump.second;
-                        }
-                });
-
-                auto& stump = tstumps[std::min_element(tvalues.begin(), tvalues.end()) - tvalues.begin()];
-
-                // line-search
-                loopi(task.size(fold_tr), [&] (const size_t i)
-                {
-                        const auto input = task.input(fold_tr, i);
-                        const auto oindex = input(stump.m_feature) < stump.m_threshold ? 0 : 1;
-                        stump_outputs.tensor(i) = stump.m_outputs.tensor(oindex);
-                });
-
-                const auto state = solver->minimize(100, epsilon2<scalar_t>(), func, vector_t::Constant(1, 0));
-                const auto step = state.x(0);
-
-                // todo: break if the line-search fails (e.g. if state.m_iterations == 0
-
-                stump.m_outputs.vector() *= step * lambda;
-                stumps.push_back(stump);
-
-                // update current outputs
-                update(task, fold_tr, outputs_tr, stump);
-                update(task, fold_vd, outputs_vd, stump);
-                update(task, fold_te, outputs_te, stump);
-
-                std::tie(errors_tr, values_tr) = ::measure(task, fold_tr, outputs_tr, loss);
-                std::tie(errors_vd, values_vd) = ::measure(task, fold_vd, outputs_vd, loss);
-                std::tie(errors_te, values_te) = ::measure(task, fold_te, outputs_te, loss);
-
-                const auto measure_tr = trainer_measurement_t{values_tr.avg(), errors_tr.avg()};
-                const auto measure_vd = trainer_measurement_t{values_vd.avg(), errors_vd.avg()};
-                const auto measure_te = trainer_measurement_t{values_te.avg(), errors_te.avg()};
-
-                const auto status = result.update(
-                        trainer_state_t{timer.milliseconds(), round + 1, measure_tr, measure_vd, measure_te},
-                        m_patience);
-
-                log_info() << "[" << (round + 1) << "/" << m_rounds
-                        << "]:tr=" << measure_tr
-                        << ",vd=" << measure_vd << "|" << status
-                        << ",te=" << measure_te
-                        << ",stump=(f=" << stump.m_feature << ",t=" << stump.m_threshold << ")"
-                        << ",lambda=" << lambda
-                        << ",solver=(" << state.m_status << ",i=" << state.m_iterations
-                        << ",x=" << state.x(0) << ",f=" << state.f << ",g=" << state.convergence_criteria() << ").";
-        }
-
-        // keep only the stumps up to optimum epoch (on the validation dataset)
-        stumps.erase(
-                stumps.begin() + result.optimum().m_epoch,
-                stumps.end());
-
-        return std::make_pair(result, stumps);
-}
-
-tensor4d_t gboost_stump_t::residuals(
-        const task_t& task, const fold_t& fold, const loss_t& loss, const tensor4d_t& outputs, const scalar_t lambda) const
-{
-        tensor4d_t residuals(cat_dims(task.size(fold), m_odims));
-
-        switch (m_gboost_tune)
-        {
-        case gboost_tune::variance:
-                loopi(task.size(fold), [&] (const size_t i)
-                {
-                        // todo: estimate the variance
-                        const auto input = task.input(fold, i);
-                        const auto target = task.target(fold, i);
-                        const auto output = outputs.tensor(i);
-
-                        const auto vgrad = loss.vgrad(target, output);
-                        residuals.vector(i) = -vgrad.vector();
-                });
-                break;
-
-        default:
-                loopi(task.size(fold), [&] (const size_t i)
-                {
-                        const auto input = task.input(fold, i);
-                        const auto target = task.target(fold, i);
-                        const auto output = outputs.tensor(i);
-
-                        const auto vgrad = loss.vgrad(target, output);
-                        residuals.vector(i) = -vgrad.vector();
-                });
-                break;
-        }
-
-        return residuals;
-}*/
 
 tensor3d_t gboost_stump_t::output(const tensor3d_t& input) const
 {

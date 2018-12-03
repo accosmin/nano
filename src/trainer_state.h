@@ -95,7 +95,7 @@ namespace nano
                 ///
                 /// \brief update the current/optimum state with a possible better state
                 ///
-                trainer_result_t::status update(const trainer_state_t&, const int patience);
+                status update(const trainer_state_t&, const int patience);
 
                 ///
                 /// \brief check if a valid result

@@ -17,7 +17,7 @@ namespace nano
         {
         public:
 
-                gboost_loss_avg_t(const task_t& task, const fold_t& fold, const loss_t& loss) :
+                gboost_loss_avg_t(const task_t& task, const fold_t& fold, const loss_t& loss, const scalar_t = 0) :
                         gboost_loss_t<tweak_learner>(task, fold, loss)
                 {
                 }

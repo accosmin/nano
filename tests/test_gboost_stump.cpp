@@ -6,24 +6,38 @@
 
 using namespace nano;
 
+static auto make_task(const affine_task_type task_type)
+{
+        auto task = get_tasks().get("synth-affine");
+        NANO_REQUIRE(task);
+        task->from_json(to_json("folds", 1, "isize", 6, "osize", 1, "count", 300, "type", task_type));
+        NANO_REQUIRE(task->load());
+        return task;
+}
+
+static auto make_loss(const string_t& id)
+{
+        auto loss = get_losses().get(id);
+        NANO_REQUIRE(loss);
+        return loss;
+}
+
 NANO_BEGIN_MODULE(test_gboost_stump)
 
 NANO_CASE(stump_real)
 {
-        const auto task_type = affine_task_type::classification;
-        const auto wlearner_type = nano::wlearner_type::real;
-
-        const auto task = get_tasks().get("synth-affine");
-        NANO_REQUIRE(task);
-        task->from_json(to_json("folds", 1, "isize", 6, "osize", 1, "noise", 0.0, "count", 300, "type", task_type));
-        NANO_REQUIRE(task->load());
-
-        const auto loss = get_losses().get("s-logistic");
-        NANO_REQUIRE(loss);
+        const auto loss = make_loss("s-logistic");
+        const auto task = make_task(affine_task_type::classification);
 
         const auto model = get_models().get("gboost-stump");
         NANO_REQUIRE(model);
-        model->from_json(to_json("rounds", 100, "patience", 10, "stump", wlearner_type));
+        model->from_json(to_json(
+                "rounds", 100, "patience", 10, "solver", "cgd",
+                "cumloss", cumloss::average,
+                "eval", wlearner_eval::train,
+                "type", wlearner_type::real,
+                "shrinkage", shrinkage::on,
+                "subsampling", subsampling::off));
 
         // Check training: the model should fit the synthetic dataset
         const auto fold_index = 0u;
