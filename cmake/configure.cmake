@@ -35,7 +35,7 @@ if(NOT (CMAKE_CXX_COMPILER_ID MATCHES GNU AND CMAKE_CXX_COMPILER_VERSION VERSION
         if_flag("-Wno-unknown-warning-option" CMAKE_CXX_FLAGS)
 endif()
 
-        set(CMAKE_CXX_FLAGS_DEBUG               "-g -fno-omit-frame-pointer")
+        set(CMAKE_CXX_FLAGS_DEBUG               "-O0 -g -fno-omit-frame-pointer")
         set(CMAKE_CXX_FLAGS_RELEASE             "-O3 -DNDEBUG -DEIGEN_NO_DEBUG")
         set(CMAKE_CXX_FLAGS_RELWITHDEBINFO      "-O3 -g -fno-omit-frame-pointer")
         set(CMAKE_CXX_FLAGS_MINSIZEREL          "-Os -DNDEBUG")
