@@ -98,40 +98,9 @@ namespace nano
                         stumps_t stumps;
                         for (auto round = 0; round < m_rounds && !result.is_done(); ++ round)
                         {
-                                // todo: generalize this
-                                // - e.g. to use features that are products of two input features, use LBPs|HOGs
-                                const auto& tpool = tpool_t::instance();
-                                const auto& residuals = loss_tr.residuals();
-
-                                stumps_t tstumps(tpool.workers());
-                                scalars_t tvalues(tpool.workers(), std::numeric_limits<scalar_t>::max());
-
-                                loopit(nano::size(m_idims), [&] (const tensor_size_t feature, const size_t t)
-                                {
-                                        const auto fold_tr = fold_t{fold, protocol::train};
-
-                                        scalars_t fvalues(task.size(fold_tr));
-                                        for (size_t i = 0, size = task.size(fold_tr); i < size; ++ i)
-                                        {
-                                                const auto input = task.input(fold_tr, i);
-                                                fvalues[i] = input(feature);
-                                        }
-
-                                        auto thresholds = fvalues;
-                                        std::sort(thresholds.begin(), thresholds.end());
-                                        thresholds.erase(
-                                                std::unique(thresholds.begin(), thresholds.end()),
-                                                thresholds.end());
-
-                                        const auto value_stump = fit(task, residuals, feature, fvalues, thresholds);
-                                        if (value_stump.first < tvalues[t])
-                                        {
-                                                tvalues[t] = value_stump.first;
-                                                tstumps[t] = value_stump.second;
-                                        }
-                                });
-
-                                auto& stump = tstumps[std::min_element(tvalues.begin(), tvalues.end()) - tvalues.begin()];
+                                // fit stump
+                                stump_t stump;
+                                stump.fit(task, fold_t{fold, protocol::train}, loss_tr.residuals(), m_wtype);
                                 loss_tr.wlearner(stump);
 
                                 // line-search
@@ -139,12 +108,11 @@ namespace nano
                                 const auto state = solver->minimize(100, epsilon, loss_tr, vector_t::Constant(1, 0));
                                 const auto step = state.x(0);
 
-                                // todo: break if the line-search fails (e.g. if state.m_iterations == 0
-
-                                stump.m_outputs.vector() *= step * shrinkage;
+                                // todo: break if the line-search fails (e.g. if state.m_iterations == 0)
+                                stump.scale(step * shrinkage);
                                 stumps.push_back(stump);
 
-                                // update current outputs
+                                // update current predictions
                                 loss_tr.add_wlearner(stump);
                                 loss_vd.add_wlearner(stump);
                                 loss_te.add_wlearner(stump);
@@ -155,7 +123,7 @@ namespace nano
                                         << "]:tr=" << result.history().rbegin()->m_train
                                         << ",vd=" << result.history().rbegin()->m_valid << "|" << status
                                         << ",te=" << result.history().rbegin()->m_test
-                                        << ",stump=(f=" << stump.m_feature << ",t=" << stump.m_threshold << ")"
+                                        << ",stump=(f=" << stump.feature() << ",t=" << stump.threshold() << ")"
                                         << ",solver=(" << state.m_status << ",i=" << state.m_iterations
                                         << ",x=" << state.x(0) << ",f=" << state.f << ",g=" << state.convergence_criteria() << ").";
                         }
@@ -180,9 +148,6 @@ namespace nano
                                 trainer_state_t{timer.milliseconds(), epoch, measure_tr, measure_vd, measure_te},
                                 m_patience);
                 }
-
-                std::pair<scalar_t, stump_t> fit(const task_t& task, const tensor4d_t& residuals,
-                        const tensor_size_t feature, const scalars_t& fvalues, const scalars_t& thresholds) const;
 
         private:
 

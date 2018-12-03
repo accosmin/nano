@@ -29,11 +29,14 @@ static auto make_loss()
 static auto make_stump()
 {
         stump_t stump;
-        stump.m_feature = 1;
-        stump.m_threshold = 0;
-        stump.m_outputs.resize(2, 2, 1, 1);
-        stump.m_outputs.tensor(0).constant(-1);
-        stump.m_outputs.tensor(1).constant(+1);
+        stump.feature(1);
+        stump.threshold(0);
+
+        tensor4d_t outputs(2, 2, 1, 1);
+        outputs.tensor(0).constant(-1);
+        outputs.tensor(1).constant(+1);
+        stump.outputs(outputs);
+
         return stump;
 }
 

@@ -74,73 +74,6 @@ trainer_result_t gboost_stump_t::train(const task_t& task, const size_t fold, co
         }
 }
 
-std::pair<scalar_t, stump_t> gboost_stump_t::fit(const task_t& task, const tensor4d_t& residuals,
-        const tensor_size_t feature, const scalars_t& fvalues, const scalars_t& thresholds) const
-{
-        stump_t stump;
-        scalar_t value = std::numeric_limits<scalar_t>::max();
-
-        tensor3d_t residuals_pos1(task.odims()), residuals_pos2(task.odims());
-        tensor3d_t residuals_neg1(task.odims()), residuals_neg2(task.odims());
-
-        for (size_t t = 0; t + 1 < thresholds.size(); ++ t)
-        {
-                const auto threshold = (thresholds[t + 0] + thresholds[t + 1]) / 2;
-
-                residuals_pos1.zero(), residuals_pos2.zero();
-                residuals_neg1.zero(), residuals_neg2.zero();
-
-                int cnt_pos = 0, cnt_neg = 0;
-                for (size_t i = 0, size = fvalues.size(); i < size; ++ i)
-                {
-                        const auto residual = residuals.array(i);
-                        if (fvalues[i] < threshold)
-                        {
-                                cnt_neg ++;
-                                residuals_neg1.array() += residual;
-                                residuals_neg2.array() += residual * residual;
-                        }
-                        else
-                        {
-                                cnt_pos ++;
-                                residuals_pos1.array() += residual;
-                                residuals_pos2.array() += residual * residual;
-                        }
-                }
-
-                const auto tvalue =
-                        (residuals_pos2.array() - residuals_pos1.array().square() / cnt_pos).sum() +
-                        (residuals_neg2.array() - residuals_neg1.array().square() / cnt_neg).sum();
-
-                if (tvalue < value)
-                {
-                        value = tvalue;
-                        stump.m_feature = feature;
-                        stump.m_threshold = threshold;
-                        stump.m_outputs.resize(cat_dims(2, task.odims()));
-                        switch (m_wtype)
-                        {
-                        case wlearner_type::discrete:
-                                stump.m_outputs.vector(0) = residuals_neg1.array().sign();
-                                stump.m_outputs.vector(1) = residuals_pos1.array().sign();
-                                break;
-
-                        default:
-                                stump.m_outputs.vector(0) = residuals_neg1.vector() / cnt_neg;
-                                stump.m_outputs.vector(1) = residuals_pos1.vector() / cnt_pos;
-                                break;
-                        }
-
-                        // todo: implement subsampling
-                        // todo: implement fitting stumps on training loss and evaluating then on the validation error
-                }
-
-                // todo: move this function to stump_t (need to have something similar for other weak learners as well)
-        }
-
-        return std::make_pair(value, stump);
-}
-
 tensor3d_t gboost_stump_t::output(const tensor3d_t& input) const
 {
         assert(input.dims() == m_idims);
@@ -148,13 +81,9 @@ tensor3d_t gboost_stump_t::output(const tensor3d_t& input) const
         tensor3d_t output(m_odims);
         output.zero();
 
-        const auto idata = input.array();
-        auto odata = output.array();
-
         for (const auto& stump : m_stumps)
         {
-                const auto oindex = idata(stump.m_feature) < stump.m_threshold ? 0 : 1;
-                odata.array() += stump.m_outputs.array(oindex);
+                output.vector() += stump.output(input).vector();
         }
 
         return output;
@@ -177,14 +106,12 @@ bool gboost_stump_t::save(obstream_t& stream) const
 
         for (const auto& stump : m_stumps)
         {
-                assert(stump.m_feature >= 0 && stump.m_feature < nano::size(m_idims));
-                assert(stump.m_outputs.dims() == cat_dims(2, m_odims));
+                assert(stump.feature() >= 0 && stump.feature() < nano::size(m_idims));
+                assert(stump.outputs().dims() == cat_dims(2, m_odims));
 
-                if (    !stream.write(stump.m_feature) ||
-                        !stream.write(stump.m_threshold) ||
-                        !stream.write_tensor(stump.m_outputs))
+                if (!stump.save(stream))
                 {
-                       return false;
+                        return false;
                 }
         }
 
@@ -210,12 +137,10 @@ bool gboost_stump_t::load(ibstream_t& stream)
         m_stumps.resize(n_stumps);
         for (auto& stump : m_stumps)
         {
-                if (    !stream.read(stump.m_feature) ||
-                        !stream.read(stump.m_threshold) ||
-                        !stream.read_tensor(stump.m_outputs) ||
-                        stump.m_feature < 0 ||
-                        stump.m_feature >= nano::size(m_idims) ||
-                        stump.m_outputs.dims() != cat_dims(2, m_odims))
+                if (    !stump.load(stream) ||
+                        stump.feature() < 0 ||
+                        stump.feature() >= nano::size(m_idims) ||
+                        stump.outputs().dims() != cat_dims(2, m_odims))
                 {
                         return false;
                 }
