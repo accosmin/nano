@@ -150,10 +150,3 @@ bool gboost_stump_t::load(ibstream_t& stream)
 
         return true;
 }
-
-probes_t gboost_stump_t::probes() const
-{
-        // todo: add probes here to measure the training and the evaluation time
-        probes_t probes;
-        return probes;
-}

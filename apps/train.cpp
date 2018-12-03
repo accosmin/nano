@@ -5,6 +5,7 @@
 #include "core/table.h"
 #include "core/logger.h"
 #include "core/cmdline.h"
+#include "core/numeric.h"
 #include <iostream>
 
 using namespace nano;

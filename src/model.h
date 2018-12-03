@@ -2,7 +2,8 @@
 
 #include "loss.h"
 #include "task.h"
-#include "core/probe.h"
+#include "core/stats.h"
+#include "core/timer.h"
 
 namespace nano
 {
@@ -200,11 +201,6 @@ namespace nano
                 ///
                 virtual tensor3d_dim_t idims() const = 0;
                 virtual tensor3d_dim_t odims() const = 0;
-
-                ///
-                /// \brief retrieve timing information for all components
-                ///
-                virtual probes_t probes() const = 0;
         };
 
         ///

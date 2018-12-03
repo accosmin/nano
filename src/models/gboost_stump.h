@@ -7,6 +7,7 @@
 #include "core/tuner.h"
 #include "core/tpool.h"
 #include "core/logger.h"
+#include "core/numeric.h"
 #include "core/algorithm.h"
 
 namespace nano
@@ -34,8 +35,6 @@ namespace nano
 
                 tensor3d_dim_t idims() const override { return m_idims; }
                 tensor3d_dim_t odims() const override { return m_odims; }
-
-                probes_t probes() const override;
 
         private:
 
