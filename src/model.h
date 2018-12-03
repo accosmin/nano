@@ -3,7 +3,6 @@
 #include "loss.h"
 #include "task.h"
 #include "core/probe.h"
-#include "trainer_state.h"
 
 namespace nano
 {
@@ -17,6 +16,142 @@ namespace nano
         class obstream_t;
 
         ///
+        /// \brief track the current/optimum model state.
+        ///
+        class NANO_PUBLIC training_t
+        {
+        public:
+
+                enum class status
+                {
+                        better,         ///< performance improved
+                        worse,          ///< performance decreased (but not critically)
+                        overfit,        ///< overfitting detected (processing should stop)
+                        diverge,        ///< divergence detected aka Nan/Inf (processing should stop)
+                };
+
+                ///
+                /// \brief measurement (e.g. after a training epoch).
+                ///
+                struct measurement_t
+                {
+                        static constexpr scalar_t max()
+                        {
+                                return std::numeric_limits<scalar_t>::max();
+                        }
+
+                        operator bool() const
+                        {
+                                return std::isfinite(m_value) && std::isfinite(m_error);
+                        }
+
+                        bool operator<(const measurement_t& other) const
+                        {
+                                return  ((*this) ? m_error : measurement_t::max()) <
+                                        ((other) ? other.m_error : measurement_t::max());
+                        }
+
+                        // attributes
+                        scalar_t        m_value{max()}; ///< average loss value
+                        scalar_t        m_error{max()}; ///< average error
+                };
+
+                ///
+                /// \brief training state after a training epoch.
+                ///
+                struct state_t
+                {
+                        operator bool() const
+                        {
+                                return m_train && m_valid && m_test;
+                        }
+
+                        bool operator<(const state_t& other) const
+                        {
+                                // compare (aka tune) on the validation dataset!
+                                return m_valid < other.m_valid;
+                        }
+
+                        // attributes
+                        milliseconds_t  m_milis{0};     ///< (cumulated) elapsed time since the optimization started
+                        int             m_epoch{0};     ///<
+                        measurement_t   m_train;        ///< measurement on the training dataset
+                        measurement_t   m_valid;        ///< measurement on the validation dataset
+                        measurement_t   m_test;         ///< measurement on the test dataset
+                };
+                using states_t = std::vector<state_t>;
+
+                ///
+                /// \brief default constructor
+                ///
+                training_t() = default;
+
+                ///
+                /// \brief constructor
+                ///
+                explicit training_t(string_t config) :
+                        m_config(std::move(config))
+                {
+                }
+
+                ///
+                /// \brief update the current/optimum state with a possible better state
+                ///
+                status update(const state_t&, const int patience);
+
+                ///
+                /// \brief check if a valid result
+                ///
+                operator bool() const
+                {
+                        return !m_history.empty();
+                }
+
+                ///
+                /// \brief compare two training histories (on the validation dataset!)
+                ///
+                bool operator<(const training_t& other) const
+                {
+                        return m_optimum < other.m_optimum;
+                }
+
+                ///
+                /// \brief check if the training should be stopped
+                ///
+                bool is_done() const
+                {
+                        return  m_status == training_t::status::diverge ||
+                                m_status == training_t::status::overfit;
+                }
+
+                ///
+                /// \brief computes the convergence speed (aka. loss decrease ratio per unit time)
+                ///
+                scalar_t convergence_speed() const;
+
+                ///
+                /// \brief save the training history as csv
+                ///
+                bool save(const string_t& path) const;
+
+                ///
+                /// \brief access functions
+                ///
+                auto get_status() const { return m_status; }
+                const auto& config() const { return m_config; }
+                const auto& history() const { return m_history; }
+                const auto& optimum() const { return m_optimum; }
+
+        private:
+
+                // attributes
+                string_t                m_config;                       ///<
+                status                  m_status{status::better};       ///<
+                state_t                 m_optimum;                      ///< optimum state
+                states_t                m_history;                      ///< optimization history
+        };
+
+        ///
         /// \brief machine learning model.
         ///
         class NANO_PUBLIC model_t : public json_configurable_t
@@ -26,7 +161,7 @@ namespace nano
                 ///
                 /// \brief train the model on the given task and using the given loss.
                 ///
-                virtual trainer_result_t train(const task_t&, const size_t fold, const loss_t&) = 0;
+                virtual training_t train(const task_t&, const size_t fold, const loss_t&) = 0;
 
                 ///
                 /// \brief compute the prediction for an input.
@@ -97,4 +232,26 @@ namespace nano
 
         inline auto idims(const model_t& model, const tensor_size_t count) { return cat_dims(count, model.idims()); }
         inline auto odims(const model_t& model, const tensor_size_t count) { return cat_dims(count, model.odims()); }
+
+        template <>
+        inline enum_map_t<training_t::status> enum_string<training_t::status>()
+        {
+                return
+                {
+                        { training_t::status::better,          "+better" },
+                        { training_t::status::worse,           "--worse" },
+                        { training_t::status::overfit,         "overfit" },
+                        { training_t::status::diverge,         "diverge" }
+                };
+        }
+
+        inline std::ostream& operator<<(std::ostream& os, const training_t::status status)
+        {
+                return os << to_string(status);
+        }
+
+        inline std::ostream& operator<<(std::ostream& os, const training_t::measurement_t& measure)
+        {
+                return os << measure.m_value << "|" << measure.m_error;
+        }
 }

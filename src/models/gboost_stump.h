@@ -26,9 +26,8 @@ namespace nano
                 void to_json(json_t&) const override;
                 void from_json(const json_t&) override;
 
-                trainer_result_t train(const task_t&, const size_t fold, const loss_t&) override;
-
                 tensor3d_t output(const tensor3d_t& input) const override;
+                training_t train(const task_t&, const size_t fold, const loss_t&) override;
 
                 bool save(obstream_t&) const override;
                 bool load(ibstream_t&) override;
@@ -41,9 +40,9 @@ namespace nano
         private:
 
                 template <typename tloss>
-                trainer_result_t train(const task_t& task, const size_t fold, const loss_t& loss, const tuner_t& tuner)
+                training_t train(const task_t& task, const size_t fold, const loss_t& loss, const tuner_t& tuner)
                 {
-                        trainer_result_t result;
+                        training_t result;
                         for (const auto& config : tuner.get(tuner.n_configs()))
                         {
                                 const auto config_result = train_config<tloss>(task, fold, loss, config);
@@ -59,7 +58,7 @@ namespace nano
                 }
 
                 template <typename tloss>
-                std::pair<trainer_result_t, stumps_t> train_config(
+                std::pair<training_t, stumps_t> train_config(
                         const task_t& task, const size_t fold, const loss_t& loss, const json_t& json) const
                 {
                         scalar_t lambda = 0, shrinkage = 0, subsampling = 0;
@@ -84,7 +83,7 @@ namespace nano
                         config = nano::replace(config, "{", "");
                         config = nano::replace(config, ":", "=");
 
-                        trainer_result_t result(config);
+                        training_t result(config);
 
                         const auto status = update_result(loss_tr, loss_vd, loss_te, timer, 0, result);
 
@@ -138,14 +137,14 @@ namespace nano
 
                 template <typename tloss>
                 auto update_result(const tloss& loss_tr, const tloss& loss_vd, const tloss& loss_te,
-                        const timer_t& timer, const int epoch, trainer_result_t& result) const
+                        const timer_t& timer, const int epoch, training_t& result) const
                 {
-                        const auto measure_tr = trainer_measurement_t{loss_tr.value(), loss_tr.error()};
-                        const auto measure_vd = trainer_measurement_t{loss_vd.value(), loss_vd.error()};
-                        const auto measure_te = trainer_measurement_t{loss_te.value(), loss_te.error()};
+                        const auto measure_tr = training_t::measurement_t{loss_tr.value(), loss_tr.error()};
+                        const auto measure_vd = training_t::measurement_t{loss_vd.value(), loss_vd.error()};
+                        const auto measure_te = training_t::measurement_t{loss_te.value(), loss_te.error()};
 
                         return result.update(
-                                trainer_state_t{timer.milliseconds(), epoch, measure_tr, measure_vd, measure_te},
+                                training_t::state_t{timer.milliseconds(), epoch, measure_tr, measure_vd, measure_te},
                                 m_patience);
                 }
 

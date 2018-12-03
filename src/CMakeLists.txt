@@ -5,8 +5,7 @@ set(libnano_sources
         ${CMAKE_CURRENT_SOURCE_DIR}/task.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/model.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/solver.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/function.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/trainer_state.cpp)
+        ${CMAKE_CURRENT_SOURCE_DIR}/function.cpp)
 
 add_subdirectory(core)
 add_subdirectory(tasks)

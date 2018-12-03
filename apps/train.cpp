@@ -91,24 +91,24 @@ int main(int argc, const char *argv[])
         // train & save the model using multiple trials
         for (size_t trial = 0; trial < cmd_trials; ++ trial)
         {
-                trainer_result_t result;
-                critical(result = model->train(*task, trial % task->fsize(), *loss),
+                training_t training;
+                critical(training = model->train(*task, trial % task->fsize(), *loss),
                         "train");
 
-                const auto& state = result.optimum();
+                const auto& state = training.optimum();
                 table.append()
                         << precision(0) << (trial + 1) << state.m_epoch
                         << precision(3) << state.m_train.m_value << state.m_train.m_error
                         << precision(3) << state.m_valid.m_value << state.m_valid.m_error
                         << precision(3) << state.m_test.m_value << state.m_test.m_error
                         << precision(0) << idiv(state.m_milis.count(), 1000)
-                        << precision(6) << result.convergence_speed();
+                        << precision(6) << training.convergence_speed();
 
                 const auto path_model = strcat(cmd_basepath, "_trial", trial + 1, ".model");
                 const auto path_training = strcat(cmd_basepath, "_trial", trial + 1, ".csv");
 
                 critical(model_t::save(path_model, model_id, *model), "save model");
-                critical(result.save(path_training), "save training history");
+                critical(training.save(path_training), "save training history");
         }
 
         critical(table.save(strcat(cmd_basepath, ".csv")), "save statistics");
