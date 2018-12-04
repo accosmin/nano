@@ -46,6 +46,7 @@ namespace nano
                 ///
                 void scale(const scalar_t factor)
                 {
+                        assert(factor > 0);
                         m_outputs.array() *= factor;
                 }
 

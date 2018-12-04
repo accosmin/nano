@@ -55,13 +55,13 @@ scalar_t stump_t::fit(const task_t& task, const tensor4d_t& residuals,
                         if (fvalues[i] < threshold)
                         {
                                 cnt_neg ++;
-                                residuals_neg1.array() += residual;
+                                residuals_neg1.array() -= residual;
                                 residuals_neg2.array() += residual * residual;
                         }
                         else
                         {
                                 cnt_pos ++;
-                                residuals_pos1.array() += residual;
+                                residuals_pos1.array() -= residual;
                                 residuals_pos2.array() += residual * residual;
                         }
                 }
