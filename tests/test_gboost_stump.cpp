@@ -36,7 +36,7 @@ NANO_CASE(stump_real)
                 "cumloss", cumloss::average,
                 "eval", wlearner_eval::train,
                 "type", wlearner_type::real,
-                "shrinkage", shrinkage::on,
+                "shrinkage", shrinkage::off,
                 "subsampling", subsampling::off));
 
         // Check training: the model should fit the synthetic dataset
