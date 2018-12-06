@@ -113,7 +113,12 @@ namespace nano
                                 const auto state = solver->minimize(100, epsilon, loss_tr, vector_t::Constant(1, 0));
                                 const auto step = state.x(0);
 
-                                // todo: break if the line-search fails (e.g. if state.m_iterations == 0)
+                                if (state.f > result.history().rbegin()->m_train.m_value - epsilon2<scalar_t>())
+                                {
+                                        // NB: stop if the line-search either fails or no significant loss decrease!
+                                        break;
+                                }
+
                                 stump.scale(step * shrinkage);
                                 stumps.push_back(stump);
 
