@@ -26,11 +26,12 @@ NANO_CASE(loading)
                 const auto isize = 11;
                 const auto osize = 3;
                 const auto count = size_t(350);
-                const auto folds = size_t(7);
+                const auto folds = size_t(4);
 
                 auto task = get_tasks().get("synth-affine");
                 NANO_REQUIRE(task);
-                task->from_json(to_json("isize", isize, "osize", osize, "noise", 0, "count", count, "folds", folds, "type", type));
+                task->from_json(to_json(
+                        "isize", isize, "osize", osize, "noise", 0, "count", count, "folds", folds, "type", type));
                 NANO_CHECK(task->load());
                 task->describe("synth-affine");
 

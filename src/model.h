@@ -142,6 +142,7 @@ namespace nano
                 const auto& config() const { return m_config; }
                 const auto& history() const { return m_history; }
                 const auto& optimum() const { return m_optimum; }
+                const auto& last() const { return *m_history.rbegin(); }
 
         private:
 
