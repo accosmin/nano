@@ -168,7 +168,6 @@ namespace nano
                 string_t        m_solver{"cgd"};                        ///< solver to use for line-search
                 cumloss         m_cumloss{cumloss::average};            ///<
                 wlearner_type   m_wtype{wlearner_type::discrete};       ///<
-                wlearner_eval   m_weval{wlearner_eval::train};          ///<
                 shrinkage       m_shrinkage{shrinkage::off};            ///<
                 subsampling     m_subsampling{subsampling::off};        ///<
                 stumps_t        m_stumps;                               ///< boosted weak learners

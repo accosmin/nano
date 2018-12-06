@@ -13,7 +13,6 @@ void gboost_stump_t::to_json(json_t& json) const
                 "patience", m_patience,
                 "solver", m_solver,
                 "type", to_string(m_wtype) + join(enum_values<wlearner_type>()),
-                "eval", to_string(m_weval) + join(enum_values<wlearner_eval>()),
                 "cumloss", to_string(m_cumloss) + join(enum_values<cumloss>()),
                 "shrinkage", to_string(m_shrinkage) + join(enum_values<shrinkage>()),
                 "subsampling", to_string(m_subsampling) + join(enum_values<subsampling>()));
@@ -26,7 +25,6 @@ void gboost_stump_t::from_json(const json_t& json)
                 "patience", m_patience,
                 "solver", m_solver,
                 "type", m_wtype,
-                "eval", m_weval,
                 "cumloss", m_cumloss,
                 "shrinkage", m_shrinkage,
                 "subsampling", m_subsampling);
@@ -95,7 +93,6 @@ bool gboost_stump_t::save(obstream_t& stream) const
                 !stream.write(m_odims) ||
                 !stream.write(m_rounds) ||
                 !stream.write(m_wtype) ||
-                !stream.write(m_weval) ||
                 !stream.write(m_cumloss) ||
                 !stream.write(m_shrinkage) ||
                 !stream.write(m_subsampling) ||
@@ -125,7 +122,6 @@ bool gboost_stump_t::load(ibstream_t& stream)
                 !stream.read(m_odims) ||
                 !stream.read(m_rounds) ||
                 !stream.read(m_wtype) ||
-                !stream.read(m_weval) ||
                 !stream.read(m_cumloss) ||
                 !stream.read(m_shrinkage) ||
                 !stream.read(m_subsampling) ||

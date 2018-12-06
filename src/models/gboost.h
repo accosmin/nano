@@ -24,25 +24,6 @@ namespace nano
         }
 
         ///
-        /// \brief evaluation method of the weak learner.
-        ///
-        enum class wlearner_eval
-        {
-                train,                  ///< fit and evaluate on training
-                valid,                  ///< fit on training, evaluate goodness on validation
-        };
-
-        template <>
-        inline enum_map_t<wlearner_eval> enum_string<wlearner_eval>()
-        {
-                return
-                {
-                        { wlearner_eval::train,         "train" },
-                        { wlearner_eval::valid,         "valid" }
-                };
-        }
-
-        ///
         /// \brief toggle regularization using shrinkage.
         /// NB: requires tuning the shrinkage factor.
         ///

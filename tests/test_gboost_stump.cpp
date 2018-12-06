@@ -35,7 +35,6 @@ NANO_CASE(stump_real)
         model->from_json(to_json(
                 "rounds", 50, "patience", 50, "solver", "cgd",
                 "cumloss", cumloss::average,
-                "eval", wlearner_eval::train,
                 "type", wlearner_type::real,
                 "shrinkage", shrinkage::off,
                 "subsampling", subsampling::off));
