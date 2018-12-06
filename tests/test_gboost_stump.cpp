@@ -10,8 +10,9 @@ static auto make_task(const affine_task_type task_type)
 {
         auto task = get_tasks().get("synth-affine");
         NANO_REQUIRE(task);
-        task->from_json(to_json("folds", 1, "isize", 5, "osize", 1, "count", 300, "type", task_type));
+        task->from_json(to_json("folds", 1, "isize", 5, "osize", 3, "count", 300, "type", task_type));
         NANO_REQUIRE(task->load());
+        task->describe("synth-affine");
         return task;
 }
 
@@ -26,7 +27,6 @@ NANO_BEGIN_MODULE(test_gboost_stump)
 
 NANO_CASE(stump_real)
 {
-        // fixme: gboost fails when using classnll!!!
         const auto loss = make_loss("s-logistic");
         const auto task = make_task(affine_task_type::classification);
 

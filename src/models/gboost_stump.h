@@ -123,11 +123,15 @@ namespace nano
 
                                 const auto status = update_result(loss_tr, loss_vd, loss_te, timer, round + 1, result);
 
-                                log_info() << std::setprecision(4) << "[" << (round + 1) << "/" << m_rounds
+                                log_info()
+                                        << std::setprecision(4)
+                                        << "[" << (round + 1) << "/" << m_rounds
                                         << "]:tr=" << result.last().m_train
                                         << ",vd=" << result.last().m_valid << "|" << status
                                         << ",te=" << result.last().m_test
+                                        << std::setprecision(2)
                                         << ",stump=(f=" << stump.feature() << ",t=" << stump.threshold() << ")"
+                                        << std::setprecision(4)
                                         << ",solver=(" << state.m_status << ",i=" << state.m_iterations
                                         << ",x=" << state.x(0)
                                         << ",f=" << state.f << ",g=" << state.convergence_criteria() << ").";
