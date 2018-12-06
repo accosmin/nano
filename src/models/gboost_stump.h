@@ -113,21 +113,6 @@ namespace nano
                                 const auto state = solver->minimize(100, epsilon, loss_tr, vector_t::Constant(1, 0));
                                 const auto step = state.x(0);
 
-                                if (state.f > result.history().rbegin()->m_train.m_value - epsilon2<scalar_t>())
-                                {
-                                        // NB: stop if the line-search either fails or no significant loss decrease!
-                                        log_info() << std::setprecision(4) << "[" << (round + 1) << "/" << m_rounds
-                                                << "]:tr=" << result.last().m_train
-                                                << ",vd=" << result.last().m_valid << "|!!break"
-                                                << ",te=" << result.last().m_test
-                                                << ",stump=(f=" << stump.feature() << ",t=" << stump.threshold() << ")"
-                                                << ",solver=(" << state.m_status << ",i=" << state.m_iterations
-                                                << ",x=" << state.x(0)
-                                                << ",f=" << state.f << ",g=" << state.convergence_criteria() << ").";
-
-                                        break;
-                                }
-
                                 stump.scale(step * shrinkage);
                                 stumps.push_back(stump);
 

@@ -29,6 +29,7 @@ namespace nano
                         worse,          ///< performance decreased (but not critically)
                         overfit,        ///< overfitting detected (processing should stop)
                         diverge,        ///< divergence detected aka Nan/Inf (processing should stop)
+                        failed,         ///< the training loss does not decrease (e.g. the optimization fails)
                 };
 
                 ///
@@ -121,7 +122,8 @@ namespace nano
                 ///
                 bool is_done() const
                 {
-                        return  m_status == training_t::status::diverge ||
+                        return  m_status == training_t::status::failed  ||
+                                m_status == training_t::status::diverge ||
                                 m_status == training_t::status::overfit;
                 }
 
@@ -238,7 +240,8 @@ namespace nano
                         { training_t::status::better,          "+better" },
                         { training_t::status::worse,           "--worse" },
                         { training_t::status::overfit,         "overfit" },
-                        { training_t::status::diverge,         "diverge" }
+                        { training_t::status::diverge,         "diverge" },
+                        { training_t::status::failed,          "!failed" }
                 };
         }
 

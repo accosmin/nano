@@ -17,6 +17,12 @@ training_t::status training_t::update(const training_t::state_t& state, const in
                 return (m_status = status::diverge);
         }
 
+        // no decrease in the loss function
+        if (!m_history.empty() && state.m_train.m_value > last().m_train.m_value - epsilon2<scalar_t>())
+        {
+                return (m_status = status::failed);
+        }
+
         m_history.push_back(state);
 
         // improved performance
