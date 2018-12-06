@@ -12,6 +12,7 @@ before_script:
     fi
   - mkdir build
   - cd build
+  - export ASAN_OPTIONS=fast_unwind_on_malloc=0
 
 matrix:
   include:
