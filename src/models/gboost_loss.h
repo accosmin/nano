@@ -51,7 +51,7 @@ namespace nano
                 ///
                 /// \brief compute the line-search function value and gradient
                 ///
-                virtual scalar_t vgrad(const vector_t& x, vector_t* gx = nullptr) const = 0;
+                /// virtual scalar_t vgrad(const vector_t& x, vector_t* gx = nullptr) const = 0;
 
                 ///
                 /// \brief compute and return the average error
