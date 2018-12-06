@@ -7,12 +7,12 @@
 #include "core/numeric.h"
 #include <eigen3/Eigen/Core>
 
-std::string case_name;
-std::string module_name;
+static std::string case_name;
+static std::string module_name;
 
-std::size_t n_cases = 0;
-std::atomic<std::size_t> n_checks = {0};
-std::atomic<std::size_t> n_failures = {0};
+static std::size_t n_cases = 0;
+static std::atomic<std::size_t> n_checks = {0};
+static std::atomic<std::size_t> n_failures = {0};
 
 enum class exception_status
 {
