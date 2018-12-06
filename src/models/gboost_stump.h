@@ -9,6 +9,7 @@
 #include "core/logger.h"
 #include "core/numeric.h"
 #include "core/algorithm.h"
+#include <iomanip>
 
 namespace nano
 {
@@ -52,7 +53,13 @@ namespace nano
                                 }
                         }
 
-                        log_info() << ">>>" << result << ".";
+                        log_info() << ">>>" << std::setprecision(4)
+                                << " tr=" << result.optimum().m_train
+                                << ",vd=" << result.optimum().m_valid
+                                << ",te=" << result.optimum().m_test
+                                << ",round=" << result.optimum().m_epoch
+                                << "," << result.config() << ".";
+
                         return result;
                 }
 
@@ -86,7 +93,7 @@ namespace nano
 
                         const auto status = update_result(loss_tr, loss_vd, loss_te, timer, 0, result);
 
-                        log_info() << "[" << 0 << "/" << m_rounds
+                        log_info() << std::setprecision(4) << "[" << 0 << "/" << m_rounds
                                 << "]:tr=" << result.history().rbegin()->m_train
                                 << ",vd=" << result.history().rbegin()->m_valid << "|" << status
                                 << ",te=" << result.history().rbegin()->m_test
@@ -117,7 +124,7 @@ namespace nano
 
                                 const auto status = update_result(loss_tr, loss_vd, loss_te, timer, round + 1, result);
 
-                                log_info() << "[" << (round + 1) << "/" << m_rounds
+                                log_info() << std::setprecision(4) << "[" << (round + 1) << "/" << m_rounds
                                         << "]:tr=" << result.history().rbegin()->m_train
                                         << ",vd=" << result.history().rbegin()->m_valid << "|" << status
                                         << ",te=" << result.history().rbegin()->m_test
