@@ -86,9 +86,35 @@ namespace nano
 
         private:
 
-                scalar_t fit(const task_t& task, const tensor4d_t& residuals,
+                scalar_t fit(const task_t&, const tensor4d_t& residuals,
                         const tensor_size_t feature, const scalars_t& fvalues, const scalars_t& thresholds,
                         const wlearner_type);
+
+                template <typename ttensor, typename tarray>
+                static auto fit_value(const int cnt, const ttensor& res1, const ttensor& res2, const tarray& outputs)
+                {
+                        return (cnt * outputs.square() - 2 * outputs * res1.array() + res2.array()).sum();
+                }
+
+                template <typename ttensor, typename tarray>
+                void try_fit(
+                        const int cnt_neg, const ttensor& res_neg1, const ttensor& res_neg2, const tarray& outputs_neg,
+                        const int cnt_pos, const ttensor& res_pos1, const ttensor& res_pos2, const tarray& outputs_pos,
+                        const tensor_size_t feature, const scalar_t threshold, scalar_t& value)
+                {
+                        const auto tvalue =
+                                fit_value(cnt_neg, res_neg1, res_neg2, outputs_neg) +
+                                fit_value(cnt_pos, res_pos1, res_pos2, outputs_pos);
+
+                        if (tvalue < value)
+                        {
+                                value = tvalue;
+                                m_feature = feature;
+                                m_threshold = threshold;
+                                m_outputs.array(0) = outputs_neg;
+                                m_outputs.array(1) = outputs_pos;
+                        }
+                }
 
                 static scalars_t fvalues(const task_t&, const fold_t&, const tensor_size_t feature);
                 static scalars_t thresholds(const scalars_t& fvalues);

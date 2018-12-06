@@ -36,8 +36,9 @@ scalar_t stump_t::fit(const task_t& task, const tensor4d_t& residuals,
         const tensor_size_t feature, const scalars_t& fvalues, const scalars_t& thresholds,
         const wlearner_type type)
 {
-        scalar_t value = std::numeric_limits<scalar_t>::max();
+        m_outputs.resize(cat_dims(2, task.odims()));
 
+        scalar_t value = std::numeric_limits<scalar_t>::max();
         tensor3d_t residuals_pos1(task.odims()), residuals_pos2(task.odims());
         tensor3d_t residuals_neg1(task.odims()), residuals_neg2(task.odims());
 
@@ -66,33 +67,23 @@ scalar_t stump_t::fit(const task_t& task, const tensor4d_t& residuals,
                         }
                 }
 
-                const auto tvalue =
-                        (residuals_pos2.array() - residuals_pos1.array().square() / cnt_pos).sum() +
-                        (residuals_neg2.array() - residuals_neg1.array().square() / cnt_neg).sum();
-
-                if (tvalue < value)
+                switch (type)
                 {
-                        value = tvalue;
-                        m_feature = feature;
-                        m_threshold = threshold;
-                        m_outputs.resize(cat_dims(2, task.odims()));
+                case wlearner_type::discrete:
+                        try_fit(cnt_neg, residuals_neg1, residuals_neg2, residuals_neg1.array().sign(),
+                                cnt_pos, residuals_pos1, residuals_pos2, residuals_pos1.array().sign(),
+                                feature, threshold, value);
+                        break;
 
-                        switch (type)
-                        {
-                        case wlearner_type::discrete:
-                                m_outputs.vector(0) = residuals_neg1.array().sign();
-                                m_outputs.vector(1) = residuals_pos1.array().sign();
-                                break;
-
-                        default:
-                                m_outputs.vector(0) = residuals_neg1.vector() / cnt_neg;
-                                m_outputs.vector(1) = residuals_pos1.vector() / cnt_pos;
-                                break;
-                        }
-
-                        // todo: implement subsampling
-                        // todo: implement fitting stumps on training loss and evaluating then on the validation error
+                case wlearner_type::real:
+                default:
+                        try_fit(cnt_neg, residuals_neg1, residuals_neg2, residuals_neg1.array() / cnt_neg,
+                                cnt_pos, residuals_pos1, residuals_pos2, residuals_pos1.array() / cnt_pos,
+                                feature, threshold, value);
+                        break;
                 }
+
+                // todo: implement subsampling
         }
 
         return value;
