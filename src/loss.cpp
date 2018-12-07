@@ -1,4 +1,5 @@
 #include <mutex>
+#include "losses/hinge.h"
 #include "losses/square.h"
 #include "losses/cauchy.h"
 #include "losses/logistic.h"
@@ -27,28 +28,23 @@ loss_factory_t& nano::get_losses()
                 manager.add<cauchy_loss_t> ("cauchy",
                         "multivariate regression:     l(y, t) = 1/2 * log(1 + (y - t)^2)");
 
-                manager.add<ssquare_loss_t>("s-square",
-                        "single-label classification: l(y, t) = 1/2 * (1 - y*t)^2");
-                manager.add<msquare_loss_t>("m-square",
-                        "multi-label classification:  l(y, t) = 1/2 * (1 - y*t)^2");
+                manager.add<shinge_loss_t>("s-hinge",
+                        "single-label classification: l(y, t) = max(0, 1 - y*t)");
+                manager.add<mhinge_loss_t>("m-hinge",
+                        "single-label classification: l(y, t) = max(0, 1 - y*t)");
 
-                manager.add<scauchy_loss_t>("s-cauchy",
-                        "single-label classification: l(y, t) = 1/2 * log(1 + (1 - y*t)^2)");
-                manager.add<mcauchy_loss_t>("m-cauchy",
-                        "multi-label classification:  l(y, t) = 1/2 * log(1 + (1 - y*t)^2)");
-
-                manager.add<sexponential_loss_t>("s-exponential",
-                        "single-label classification: l(y, t) = exp(-y*t)");
-                manager.add<mexponential_loss_t>("m-exponential",
-                        "multi-label classification:  l(y, t) = exp(-y*t)");
+                manager.add<classnll_loss_t>("classnll",
+                        "single-label classification: l(y, t) = log(y.exp().sum()) + 1/2 * (1 + t).dot(y)");
 
                 manager.add<slogistic_loss_t>("s-logistic",
                         "single-label classification: l(y, t) = log(1 + exp(-y*t))");
                 manager.add<mlogistic_loss_t>("m-logistic",
                         "multi-label classification:  l(y, t) = log(1 + exp(-y*t))");
 
-                manager.add<classnll_loss_t>("classnll",
-                        "single-label classification: l(y, t) = log(y.exp().sum()) + 1/2 * (1 + t).dot(y)");
+                manager.add<sexponential_loss_t>("s-exponential",
+                        "single-label classification: l(y, t) = exp(-y*t)");
+                manager.add<mexponential_loss_t>("m-exponential",
+                        "multi-label classification:  l(y, t) = exp(-y*t)");
         });
 
         return manager;

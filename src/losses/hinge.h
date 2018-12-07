@@ -1,26 +1,27 @@
 #pragma once
 
-#include "regression.h"
+#include "classification.h"
 
 namespace nano
 {
         ///
-        /// \brief square loss: l(x) = 1/2 * x^x.
+        /// \brief multi-class hinge loss: sum(max(0, 1 - target_k * output_k), k).
         ///
-        struct square_t
+        struct hinge_t
         {
                 template <typename tarray>
                 static auto value(const tarray& target, const tarray& output)
                 {
-                        return scalar_t(0.5) * (output - target).square().sum();
+                        return (1 - target * output).max(0).sum();
                 }
 
                 template <typename tarray>
                 static auto vgrad(const tarray& target, const tarray& output)
                 {
-                        return output - target;
+                        return  -target * (1 - target * output).sign();
                 }
         };
 
-        using square_loss_t = regression_t<square_t>;
+        using mhinge_loss_t = mclassification_t<hinge_t>;
+        using shinge_loss_t = sclassification_t<hinge_t>;
 }

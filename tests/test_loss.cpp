@@ -68,7 +68,7 @@ NANO_CASE(gradient)
 
 NANO_CASE(single_class)
 {
-        for (const auto& loss_id : {"classnll", "s-logistic", "s-exponential", "s-square", "s-cauchy"})
+        for (const auto& loss_id : {"classnll", "s-logistic", "s-exponential", "s-hinge"})
         {
                 const auto loss = get_losses().get(loss_id);
                 NANO_REQUIRE(loss);
@@ -110,7 +110,7 @@ NANO_CASE(single_class)
 
 NANO_CASE(single_label_multi_class)
 {
-        for (const auto& loss_id : {"classnll", "s-logistic", "s-exponential", "s-square", "s-cauchy"})
+        for (const auto& loss_id : {"classnll", "s-logistic", "s-exponential", "s-hinge"})
         {
                 const auto loss = get_losses().get(loss_id);
                 NANO_REQUIRE(loss);
@@ -153,7 +153,7 @@ NANO_CASE(single_label_multi_class)
 
 NANO_CASE(multi_label_multi_class)
 {
-        for (const auto& loss_id : {"m-logistic", "m-exponential", "m-square", "m-cauchy"})
+        for (const auto& loss_id : {"m-logistic", "m-exponential", "m-hinge"})
         {
                 const auto loss = get_losses().get(loss_id);
                 NANO_REQUIRE(loss);
