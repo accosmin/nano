@@ -46,7 +46,7 @@ NANO_CASE(output)
         NANO_CHECK_EQUAL(stump.output(inputs.tensor(2))(0), -1);
 }
 
-NANO_CASE(scale)
+NANO_CASE(scale1)
 {
         stump_t stump;
         stump.feature(0);
@@ -60,6 +60,27 @@ NANO_CASE(scale)
         stump.scale(scalar_t(0.3));
 
         NANO_CHECK_EIGEN_CLOSE(stump.outputs().array(), outputs.array() * scalar_t(0.3), epsilon1<scalar_t>());
+}
+
+NANO_CASE(scalex)
+{
+        stump_t stump;
+        stump.feature(0);
+        stump.threshold(scalar_t(-3.5));
+
+        tensor4d_t outputs(2, 3, 1, 1);
+        outputs.tensor(0).constant(-1);
+        outputs.tensor(1).constant(+1);
+        stump.outputs(outputs);
+
+        vector_t factors(3);
+        factors(0) = 0.1;
+        factors(1) = 0.2;
+        factors(2) = 0.3;
+        stump.scale(factors);
+
+        NANO_CHECK_EIGEN_CLOSE(stump.outputs().array(0), outputs.array(0) * factors.array(), epsilon1<scalar_t>());
+        NANO_CHECK_EIGEN_CLOSE(stump.outputs().array(1), outputs.array(1) * factors.array(), epsilon1<scalar_t>());
 }
 
 // todo: check stump_t::fit

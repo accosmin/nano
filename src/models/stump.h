@@ -51,6 +51,16 @@ namespace nano
                 }
 
                 ///
+                /// \brief scale the outputs by the given factors
+                ///
+                void scale(const vector_t& factors)
+                {
+                        assert(2 * factors.size() == m_outputs.size());
+                        m_outputs.array(0) *= factors.array();
+                        m_outputs.array(1) *= factors.array();
+                }
+
+                ///
                 /// \brief serialize to disk
                 ///
                 bool load(ibstream_t&);
