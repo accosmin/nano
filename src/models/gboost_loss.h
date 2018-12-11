@@ -21,7 +21,7 @@ namespace nano
                 /// \brief constructor
                 ///
                 gboost_loss_t(const task_t& task, const fold_t& fold, const loss_t& loss) :
-                        function_t("gboost-loss", 1, 1, 1, convexity::no),
+                        function_t("gboost-loss", nano::size(task.odims()), 1, 1, convexity::no),
                         m_task(task), m_fold(fold), m_loss(loss),
                         m_outputs(cat_dims(task.size(fold), task.odims()))
                 {
@@ -80,7 +80,7 @@ namespace nano
 
         protected:
 
-                auto size() const
+                auto fold_size() const
                 {
                         return static_cast<scalar_t>(m_task.size(m_fold));
                 }
@@ -97,9 +97,21 @@ namespace nano
                         return buffer;
                 }
 
+                auto tpool2d(const tensor_size_t size) const
+                {
+                        tensor2d_t buffer(workers(), size);
+                        buffer.zero();
+                        return buffer;
+                }
+
                 auto reduce(const tensor1d_t& values) const
                 {
-                        return values.vector().sum() / size();
+                        return values.vector().sum() / fold_size();
+                }
+
+                auto reduce(const tensor2d_t& values) const
+                {
+                        return values.matrix().colwise().sum() / fold_size();
                 }
 
         protected:

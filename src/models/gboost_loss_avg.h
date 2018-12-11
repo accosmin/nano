@@ -56,11 +56,11 @@ namespace nano
 
                 scalar_t vgrad(const vector_t& x, vector_t* gx = nullptr) const override
                 {
-                        assert(x.size() == 1);
-                        assert(!gx || gx->size() == 1);
+                        assert(x.size() == this->size());
+                        assert(!gx || gx->size() == this->size());
 
                         auto values = this->tpool1d();
-                        auto vgrads = this->tpool1d();
+                        auto vgrads = this->tpool2d(function_t::size());
 
                         loopit(this->m_task.size(this->m_fold), [&] (const size_t i, const size_t t)
                         {
@@ -71,7 +71,7 @@ namespace nano
                                 tensor3d_t output(this->m_task.odims());
                                 assert(output.dims() == woutput.dims());
 
-                                output.vector() = this->m_outputs.vector(i) + x(0) * woutput.vector();
+                                output.array() = this->m_outputs.array(i) + x.array() * woutput.array();
 
                                 const auto value = this->m_loss.value(target, output);
                                 values(t) += value;
@@ -79,13 +79,13 @@ namespace nano
                                 if (gx)
                                 {
                                         const auto vgrad = this->m_loss.vgrad(target, output);
-                                        vgrads(t) += vgrad.vector().dot(woutput.vector());
+                                        vgrads.array(t) += vgrad.array() * woutput.array();
                                 }
                         });
 
                         if (gx)
                         {
-                                (*gx)(0) = this->reduce(vgrads);
+                                *gx = this->reduce(vgrads);
                         }
                         return this->reduce(values);
                 }

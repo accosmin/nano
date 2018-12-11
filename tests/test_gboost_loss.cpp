@@ -52,9 +52,11 @@ NANO_CASE(avg_loss_stump_gradient)
         auto func = gboost_loss_avg_t<stump_t>{*task, fold, *loss};
         func.wlearner(stump);
 
+        NANO_CHECK_EQUAL(func.size(), nano::size(task->odims()));
+
         for (auto i = 0; i < 13; ++ i)
         {
-                const vector_t x = vector_t::Random(1);
+                const vector_t x = vector_t::Random(func.size());
                 NANO_CHECK_GREATER(func.vgrad(x), scalar_t(0));
                 NANO_CHECK_LESS(func.grad_accuracy(x), epsilon2<scalar_t>());
         }
@@ -71,9 +73,11 @@ NANO_CASE(var_loss_stump_gradient)
         auto func = gboost_loss_var_t<stump_t>{*task, fold, *loss, lambda};
         func.wlearner(stump);
 
+        NANO_CHECK_EQUAL(func.size(), nano::size(task->odims()));
+
         for (auto i = 0; i < 13; ++ i)
         {
-                const vector_t x = vector_t::Random(1);
+                const vector_t x = vector_t::Random(func.size());
                 NANO_CHECK_GREATER(func.vgrad(x), scalar_t(0));
                 NANO_CHECK_LESS(func.grad_accuracy(x), epsilon2<scalar_t>());
         }

@@ -110,10 +110,12 @@ namespace nano
 
                                 // line-search
                                 const auto epsilon = epsilon2<scalar_t>();
-                                const auto state = solver->minimize(100, epsilon, loss_tr, vector_t::Constant(1, 0));
+                                const auto x0 = vector_t{vector_t::Zero(loss_tr.size())};
+                                const auto state = solver->minimize(100, epsilon, loss_tr, x0);
                                 const auto step = state.x(0);
 
-                                stump.scale(step * shrinkage);
+                                stump.scale(step);
+                                stump.scale(shrinkage);
                                 stumps.push_back(stump);
 
                                 // update current predictions

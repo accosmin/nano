@@ -87,13 +87,13 @@ namespace nano
 
                 scalar_t vgrad(const vector_t& x, vector_t* gx = nullptr) const override
                 {
-                        assert(x.size() == 1);
-                        assert(!gx || gx->size() == 1);
+                        assert(x.size() == this->size());
+                        assert(!gx || gx->size() == this->size());
 
                         auto values1 = this->tpool1d();
                         auto values2 = this->tpool1d();
-                        auto vgrads1 = this->tpool1d();
-                        auto vgrads2 = this->tpool1d();
+                        auto vgrads1 = this->tpool2d(this->size());
+                        auto vgrads2 = this->tpool2d(this->size());
 
                         loopit(this->m_task.size(this->m_fold), [&] (const size_t i, const size_t t)
                         {
@@ -104,7 +104,7 @@ namespace nano
                                 tensor3d_t output(this->m_task.odims());
                                 assert(output.dims() == woutput.dims());
 
-                                output.vector() = this->m_outputs.vector(i) + x(0) * woutput.vector();
+                                output.array() = this->m_outputs.array(i) + x.array() * woutput.array();
 
                                 const auto value = this->m_loss.value(target, output);
                                 values1(t) += value;
@@ -113,14 +113,14 @@ namespace nano
                                 if (gx)
                                 {
                                         const auto vgrad = this->m_loss.vgrad(target, output);
-                                        vgrads1(t) += vgrad.vector().dot(woutput.vector());
-                                        vgrads2(t) += value * vgrad.vector().dot(woutput.vector());
+                                        vgrads1.array(t) += vgrad.array() * woutput.array();
+                                        vgrads2.array(t) += value * vgrad.array() * woutput.array();
                                 }
                         });
 
                         if (gx)
                         {
-                                (*gx)(0) = reduce_vgrad(values1, vgrads1, vgrads2);
+                                *gx = reduce_vgrad(values1, vgrads1, vgrads2);
                         }
                         return reduce_value(values1, values2);
                 }
@@ -130,13 +130,13 @@ namespace nano
                 auto reduce_value(const tensor1d_t& values1, const tensor1d_t& values2) const
                 {
                         return  (1 - m_lambda) * nano::square(values1.vector().sum()) +
-                                m_lambda * this->size() * values2.vector().sum();
+                                m_lambda * this->fold_size() * values2.vector().sum();
                 }
 
-                auto reduce_vgrad(const tensor1d_t& values1, const tensor1d_t& vgrads1, const tensor1d_t& vgrads2) const
+                auto reduce_vgrad(const tensor1d_t& values1, const tensor2d_t& vgrads1, const tensor2d_t& vgrads2) const
                 {
-                        return  2 * (1 - m_lambda) * values1.vector().sum() * vgrads1.vector().sum() +
-                                2 * m_lambda * this->size() * vgrads2.vector().sum();
+                        return  2 * (1 - m_lambda) * values1.vector().sum() * vgrads1.matrix().colwise().sum() +
+                                2 * m_lambda * this->fold_size() * vgrads2.matrix().colwise().sum();
                 }
 
         private:
