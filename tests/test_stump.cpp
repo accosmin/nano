@@ -1,5 +1,7 @@
 #include "utest.h"
 #include "models/stump.h"
+#include "core/ibstream.h"
+#include "core/obstream.h"
 
 using namespace nano;
 
@@ -83,6 +85,34 @@ NANO_CASE(scalex)
         NANO_CHECK_EIGEN_CLOSE(stump.outputs().array(1), outputs.array(1) * factors.array(), epsilon1<scalar_t>());
 }
 
-// todo: check stump_t::fit
+NANO_CASE(serialize)
+{
+        stump_t stump;
+        stump.feature(4);
+        stump.threshold(scalar_t(-3.5));
+
+        tensor4d_t outputs(2, 3, 1, 1);
+        outputs.tensor(0).constant(-1);
+        outputs.tensor(1).constant(+1);
+        stump.outputs(outputs);
+
+        const auto path_stump = "stump.bin";
+        {
+                obstream_t ostream(path_stump);
+                NANO_CHECK(stump.save(ostream));
+        }
+        {
+                stump_t stump2;
+
+                ibstream_t istream(path_stump);
+                NANO_CHECK(stump2.load(istream));
+
+                NANO_CHECK_EQUAL(stump.feature(), stump2.feature());
+                NANO_CHECK_EQUAL(stump.threshold(), stump2.threshold());
+                NANO_CHECK_EIGEN_CLOSE(stump.outputs().vector(), stump2.outputs().vector(), epsilon0<scalar_t>());
+        }
+
+        std::remove(path_stump);
+}
 
 NANO_END_MODULE()

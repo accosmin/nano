@@ -15,7 +15,7 @@ namespace nano
         /// \brief a stump is a weak learner that compares the value of a selected feature with a threshold:
         ///     stump(x) = outputs(0) if x(feature) < threshold else v1(0)
         ///
-        class stump_t
+        class NANO_PUBLIC stump_t
         {
         public:
 
