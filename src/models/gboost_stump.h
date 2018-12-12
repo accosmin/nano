@@ -1,7 +1,6 @@
 #pragma once
 
 #include "model.h"
-#include "stump.h"
 #include "gboost.h"
 #include "solver.h"
 #include "core/tuner.h"
@@ -9,6 +8,7 @@
 #include "core/logger.h"
 #include "core/numeric.h"
 #include "core/algorithm.h"
+#include "wlearner_stump.h"
 #include <iomanip>
 
 namespace nano
@@ -38,6 +38,8 @@ namespace nano
                 tensor3d_dim_t odims() const override { return m_odims; }
 
         private:
+
+                using stumps_t = std::vector<wlearner_stump_t>;
 
                 template <typename tloss>
                 training_t train(const task_t& task, const size_t fold, const loss_t& loss, const tuner_t& tuner)
@@ -104,7 +106,7 @@ namespace nano
                         for (auto round = 0; round < m_rounds && !result.is_done(); ++ round)
                         {
                                 // fit stump
-                                stump_t stump;
+                                wlearner_stump_t stump;
                                 stump.fit(task, fold_t{fold, protocol::train}, loss_tr.residuals(), m_wtype);
                                 loss_tr.wlearner(stump);
 

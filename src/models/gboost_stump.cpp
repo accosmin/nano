@@ -63,12 +63,12 @@ training_t gboost_stump_t::train(const task_t& task, const size_t fold, const lo
         {
         case cumloss::variance:
                 tuner.add_pow10s("lambda", 0.0, -6, +6);
-                return train<gboost_loss_var_t<stump_t>>(task, fold, loss, tuner);
+                return train<gboost_loss_var_t<wlearner_stump_t>>(task, fold, loss, tuner);
 
         case cumloss::average:
         default:
                 tuner.add_finite("lambda", 1.0);
-                return train<gboost_loss_avg_t<stump_t>>(task, fold, loss, tuner);
+                return train<gboost_loss_avg_t<wlearner_stump_t>>(task, fold, loss, tuner);
         }
 }
 

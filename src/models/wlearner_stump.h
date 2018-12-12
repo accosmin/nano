@@ -5,7 +5,7 @@
 
 namespace nano
 {
-        // todo: generalize stump_t to use other features (e.g products of inputs, LBPs|HOGs)
+        // todo: generalize it to use other features (e.g products of inputs, LBPs|HOGs)!
         //
         class task_t;
         class ibstream_t;
@@ -15,14 +15,14 @@ namespace nano
         /// \brief a stump is a weak learner that compares the value of a selected feature with a threshold:
         ///     stump(x) = outputs(0) if x(feature) < threshold else v1(0)
         ///
-        class NANO_PUBLIC stump_t
+        class NANO_PUBLIC wlearner_stump_t
         {
         public:
 
                 ///
                 /// \brief default constructor
                 ///
-                stump_t() = default;
+                wlearner_stump_t() = default;
 
                 ///
                 /// \brief compute the output/prediction given a 3D tensor input
@@ -37,7 +37,7 @@ namespace nano
                 }
 
                 ///
-                /// \brief fit the stump to the given residuals
+                /// \brief fit its parameters to the given residuals
                 ///
                 void fit(const task_t&, const fold_t&, const tensor4d_t& residuals, const wlearner_type);
 
@@ -96,9 +96,8 @@ namespace nano
 
         private:
 
-                scalar_t fit(const task_t&, const tensor4d_t& residuals,
-                        const tensor_size_t feature, const scalars_t& fvalues, const scalars_t& thresholds,
-                        const wlearner_type);
+                scalar_t fit(const task_t&, const fold_t&, const tensor4d_t& residuals,
+                        const tensor_size_t feature, const wlearner_type);
 
                 template <typename ttensor, typename tarray>
                 static auto fit_value(const int cnt, const ttensor& res1, const ttensor& res2, const tarray& outputs)
@@ -136,6 +135,4 @@ namespace nano
                 scalar_t        m_threshold{0}; ///< threshold
                 tensor4d_t      m_outputs;      ///< (2, #outputs) - predictions below and above the threshold
         };
-
-        using stumps_t = std::vector<stump_t>;
 }

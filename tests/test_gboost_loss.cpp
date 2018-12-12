@@ -1,5 +1,5 @@
 #include "utest.h"
-#include "models/stump.h"
+#include "models/wlearner_stump.h"
 #include "models/gboost_loss_avg.h"
 #include "models/gboost_loss_var.h"
 
@@ -28,7 +28,7 @@ static auto make_loss()
 
 static auto make_stump()
 {
-        stump_t stump;
+        wlearner_stump_t stump;
         stump.feature(1);
         stump.threshold(0);
 
@@ -49,7 +49,7 @@ NANO_CASE(avg_loss_stump_gradient)
         const auto loss = make_loss();
         const auto stump = make_stump();
 
-        auto func = gboost_loss_avg_t<stump_t>{*task, fold, *loss};
+        auto func = gboost_loss_avg_t<wlearner_stump_t>{*task, fold, *loss};
         func.wlearner(stump);
 
         NANO_CHECK_EQUAL(func.size(), nano::size(task->odims()));
@@ -70,7 +70,7 @@ NANO_CASE(var_loss_stump_gradient)
         const auto stump = make_stump();
         const auto lambda = scalar_t(0.1);
 
-        auto func = gboost_loss_var_t<stump_t>{*task, fold, *loss, lambda};
+        auto func = gboost_loss_var_t<wlearner_stump_t>{*task, fold, *loss, lambda};
         func.wlearner(stump);
 
         NANO_CHECK_EQUAL(func.size(), nano::size(task->odims()));
@@ -90,7 +90,7 @@ NANO_CASE(loss_stump_add_wlearner)
         const auto loss = make_loss();
         const auto stump = make_stump();
 
-        auto func = gboost_loss_avg_t<stump_t>{*task, fold, *loss};
+        auto func = gboost_loss_avg_t<wlearner_stump_t>{*task, fold, *loss};
 
         const auto outputs0 = func.outputs();
         NANO_CHECK_CLOSE(outputs0.vector().minCoeff(), scalar_t(0), epsilon0<scalar_t>());
@@ -118,7 +118,7 @@ NANO_CASE(avg_loss_stump_update)
         const auto loss = make_loss();
         const auto stump = make_stump();
 
-        auto func = gboost_loss_avg_t<stump_t>{*task, fold, *loss};
+        auto func = gboost_loss_avg_t<wlearner_stump_t>{*task, fold, *loss};
         func.add_wlearner(stump);
 
         const auto& outputs = func.outputs();

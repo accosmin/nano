@@ -1,41 +1,41 @@
 #include "task.h"
-#include "stump.h"
 #include "core/tpool.h"
 #include "core/ibstream.h"
 #include "core/obstream.h"
+#include "wlearner_stump.h"
 
 using namespace nano;
 
-void stump_t::fit(const task_t& task, const fold_t& fold, const tensor4d_t& residuals, const wlearner_type type)
+void wlearner_stump_t::fit(const task_t& task, const fold_t& fold, const tensor4d_t& residuals,
+        const wlearner_type type)
 {
         assert(cat_dims(task.size(fold), task.odims()) == residuals.dims());
 
         const auto& tpool = tpool_t::instance();
 
-        stumps_t tstumps(tpool.workers());
+        std::vector<wlearner_stump_t> learners(tpool.workers());
         scalars_t tvalues(tpool.workers(), std::numeric_limits<scalar_t>::max());
 
         loopit(nano::size(task.idims()), [&] (const tensor_size_t feature, const size_t t)
         {
-                const auto fvalues = stump_t::fvalues(task, fold, feature);
-                const auto thresholds = stump_t::thresholds(fvalues);
-
-                stump_t stump;
-                const auto value = stump.fit(task, residuals, feature, fvalues, thresholds, type);
+                wlearner_stump_t learner;
+                const auto value = learner.fit(task, fold, residuals, feature, type);
                 if (value < tvalues[t])
                 {
                         tvalues[t] = value;
-                        std::swap(tstumps[t], stump);
+                        std::swap(learners[t], learner);
                 }
         });
 
-        *this = tstumps[std::min_element(tvalues.begin(), tvalues.end()) - tvalues.begin()];
+        *this = learners[std::min_element(tvalues.begin(), tvalues.end()) - tvalues.begin()];
 }
 
-scalar_t stump_t::fit(const task_t& task, const tensor4d_t& residuals,
-        const tensor_size_t feature, const scalars_t& fvalues, const scalars_t& thresholds,
-        const wlearner_type type)
+scalar_t wlearner_stump_t::fit(const task_t& task, const fold_t& fold, const tensor4d_t& residuals,
+        const tensor_size_t feature, const wlearner_type type)
 {
+        const auto fvalues = wlearner_stump_t::fvalues(task, fold, feature);
+        const auto thresholds = wlearner_stump_t::thresholds(fvalues);
+
         m_outputs.resize(cat_dims(2, task.odims()));
 
         scalar_t value = std::numeric_limits<scalar_t>::max();
@@ -89,7 +89,7 @@ scalar_t stump_t::fit(const task_t& task, const tensor4d_t& residuals,
         return value;
 }
 
-scalars_t stump_t::fvalues(const task_t& task, const fold_t& fold, const tensor_size_t feature)
+scalars_t wlearner_stump_t::fvalues(const task_t& task, const fold_t& fold, const tensor_size_t feature)
 {
         scalars_t fvalues(task.size(fold));
         for (size_t i = 0, size = task.size(fold); i < size; ++ i)
@@ -101,7 +101,7 @@ scalars_t stump_t::fvalues(const task_t& task, const fold_t& fold, const tensor_
         return fvalues;
 }
 
-scalars_t stump_t::thresholds(const scalars_t& fvalues)
+scalars_t wlearner_stump_t::thresholds(const scalars_t& fvalues)
 {
         auto thresholds = fvalues;
         std::sort(thresholds.begin(), thresholds.end());
@@ -112,14 +112,14 @@ scalars_t stump_t::thresholds(const scalars_t& fvalues)
         return thresholds;
 }
 
-bool stump_t::save(obstream_t& stream) const
+bool wlearner_stump_t::save(obstream_t& stream) const
 {
         return  stream.write(m_feature) &&
                 stream.write(m_threshold) &&
                 stream.write_tensor(m_outputs);
 }
 
-bool stump_t::load(ibstream_t& stream)
+bool wlearner_stump_t::load(ibstream_t& stream)
 {
         return  stream.read(m_feature) &&
                 stream.read(m_threshold) &&
