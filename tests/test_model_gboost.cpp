@@ -2,7 +2,7 @@
 #include "utest.h"
 #include "cortex.h"
 #include "tasks/task_affine.h"
-#include "models/gboost_stump.h"
+#include "models/model_gboost.h"
 
 using namespace nano;
 
@@ -30,12 +30,11 @@ NANO_CASE(stump_real)
         const auto loss = make_loss("s-logistic");
         const auto task = make_task(affine_task_type::classification);
 
-        const auto model = get_models().get("gboost-stump");
+        const auto model = get_models().get("gboost-real-stump");
         NANO_REQUIRE(model);
         model->from_json(to_json(
                 "rounds", 50, "patience", 50, "solver", "cgd",
                 "cumloss", cumloss::average,
-                "type", wlearner_type::real,
                 "shrinkage", shrinkage::off,
                 "subsampling", subsampling::off));
 
@@ -52,7 +51,7 @@ NANO_CASE(stump_real)
 
         // Check loading and saving
         const auto path = "gboost_stump_real.model";
-        NANO_CHECK(model_t::save(path, "gboost-stump", *model));
+        NANO_CHECK(model_t::save(path, "gboost-real-stump", *model));
 
         const auto model2 = model_t::load(path);
         NANO_REQUIRE(model2);

@@ -19,7 +19,7 @@ NANO_BEGIN_MODULE(test_model_stump)
 
 NANO_CASE(getset)
 {
-        wlearner_stump_t learner;
+        wlearner_real_stump_t learner;
         learner.feature(2);
         learner.threshold(scalar_t(-2.5));
         learner.outputs(outputs);
@@ -36,7 +36,7 @@ NANO_CASE(output)
         inputs.vector(1) = vector_t::LinSpaced(6, -3, +2);
         inputs.vector(2) = vector_t::LinSpaced(6, -4, +1);
 
-        wlearner_stump_t learner;
+        wlearner_real_stump_t learner;
         learner.feature(0);
         learner.threshold(scalar_t(-2.5));
         learner.outputs(outputs);
@@ -52,7 +52,7 @@ NANO_CASE(output)
 
 NANO_CASE(scale1)
 {
-        wlearner_stump_t learner;
+        wlearner_real_stump_t learner;
         learner.feature(0);
         learner.threshold(scalar_t(-3.5));
         learner.outputs(outputs);
@@ -64,7 +64,7 @@ NANO_CASE(scale1)
 
 NANO_CASE(scalex)
 {
-        wlearner_stump_t learner;
+        wlearner_real_stump_t learner;
         learner.feature(0);
         learner.threshold(scalar_t(-3.5));
         learner.outputs(outputs);
@@ -81,7 +81,7 @@ NANO_CASE(scalex)
 
 NANO_CASE(serialize)
 {
-        wlearner_stump_t learner;
+        wlearner_real_stump_t learner;
         learner.feature(4);
         learner.threshold(scalar_t(-3.5));
         learner.outputs(outputs);
@@ -92,7 +92,7 @@ NANO_CASE(serialize)
                 NANO_CHECK(learner.save(ostream));
         }
         {
-                wlearner_stump_t learner2;
+                wlearner_real_stump_t learner2;
 
                 ibstream_t istream(path_learner);
                 NANO_CHECK(learner2.load(istream));

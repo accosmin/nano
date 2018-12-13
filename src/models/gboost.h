@@ -5,25 +5,6 @@
 namespace nano
 {
         ///
-        /// \brief weak learner type.
-        ///
-        enum class wlearner_type
-        {
-                real,                   ///< output \in R (no restriction)
-                discrete,               ///< output \in {-1, +1} (useful for classification to reduce overfitting)
-        };
-
-        template <>
-        inline enum_map_t<wlearner_type> enum_string<wlearner_type>()
-        {
-                return
-                {
-                        { wlearner_type::real,          "real" },
-                        { wlearner_type::discrete,      "discrete" }
-                };
-        }
-
-        ///
         /// \brief toggle regularization using shrinkage.
         /// NB: requires tuning the shrinkage factor.
         ///

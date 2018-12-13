@@ -12,10 +12,20 @@ namespace nano
         class obstream_t;
 
         ///
+        /// \brief
+        ///
+        enum class stump_type
+        {
+                real,           ///< output \in R (no restriction)
+                discrete,       ///< output \in {-1, +1} (useful for classification to reduce overfitting)
+        };
+
+        ///
         /// \brief a stump is a weak learner that compares the value of a selected feature with a threshold:
         ///     stump(x) = outputs(0) if x(feature) < threshold else v1(0)
         ///
-        class NANO_PUBLIC wlearner_stump_t
+        template <stump_type type>
+        class wlearner_stump_t
         {
         public:
 
@@ -39,7 +49,7 @@ namespace nano
                 ///
                 /// \brief fit its parameters to the given gradients
                 ///
-                void fit(const task_t&, const fold_t&, const tensor4d_t& gradients, const wlearner_type);
+                void fit(const task_t&, const fold_t&, const tensor4d_t& gradients);
 
                 ///
                 /// \brief scale the outputs by the given factor
@@ -96,8 +106,7 @@ namespace nano
 
         private:
 
-                scalar_t fit(const task_t&, const fold_t&, const tensor4d_t& gradients,
-                        const tensor_size_t feature, const wlearner_type);
+                scalar_t fit(const task_t&, const fold_t&, const tensor4d_t& gradients, const tensor_size_t feature);
 
                 template <typename ttensor, typename tarray>
                 static auto fit_value(const int cnt, const ttensor& res1, const ttensor& res2, const tarray& outputs)
@@ -125,9 +134,6 @@ namespace nano
                         }
                 }
 
-                static scalars_t fvalues(const task_t&, const fold_t&, const tensor_size_t feature);
-                static scalars_t thresholds(const scalars_t& fvalues);
-
         private:
 
                 // attributes
@@ -135,4 +141,13 @@ namespace nano
                 scalar_t        m_threshold{0}; ///< threshold
                 tensor4d_t      m_outputs;      ///< (2, #outputs) - predictions below and above the threshold
         };
+
+        template <stump_type type>
+        std::ostream& operator<<(std::ostream& os, const wlearner_stump_t<type>& stump)
+        {
+                return os << "stump=(f=" << stump.feature() << ",t=" << stump.threshold() << ")";
+        }
+
+        using wlearner_real_stump_t = wlearner_stump_t<stump_type::real>;
+        using wlearner_discrete_stump_t = wlearner_stump_t<stump_type::discrete>;
 }

@@ -4,26 +4,27 @@
 #include "gboost.h"
 #include "solver.h"
 #include "core/tuner.h"
-#include "core/tpool.h"
 #include "core/logger.h"
 #include "core/numeric.h"
 #include "core/algorithm.h"
 #include "wlearner_stump.h"
+#include "wlearner_linear.h"
 #include <iomanip>
 
 namespace nano
 {
         ///
-        /// \brief Gradient Boosting with stumps as weak learners.
+        /// \brief Gradient Boosting.
         /// see "The Elements of Statistical Learning", by Trevor Hastie, Robert Tibshirani, Jerome Friedman
         /// see "Greedy Function Approximation: A Gradient Boosting Machine", by Jerome Friedman
         /// see "Stochastic Gradient Boosting", by Jerome Friedman
         ///
-        class gboost_stump_t final : public model_t
+        template <typename tweak_learner>
+        class model_gboost_t final : public model_t
         {
         public:
 
-                gboost_stump_t() = default;
+                model_gboost_t() = default;
 
                 void to_json(json_t&) const override;
                 void from_json(const json_t&) override;
@@ -39,7 +40,7 @@ namespace nano
 
         private:
 
-                using stumps_t = std::vector<wlearner_stump_t>;
+                using wlearners_t = std::vector<tweak_learner>;
 
                 template <typename tloss>
                 training_t train(const task_t& task, const size_t fold, const loss_t& loss, const tuner_t& tuner)
@@ -51,7 +52,7 @@ namespace nano
                                 if (config_result.first < result)
                                 {
                                         result = config_result.first;
-                                        m_stumps = config_result.second;
+                                        m_wlearners = config_result.second;
                                 }
                         }
 
@@ -66,7 +67,7 @@ namespace nano
                 }
 
                 template <typename tloss>
-                std::pair<training_t, stumps_t> train_config(
+                std::pair<training_t, wlearners_t> train_config(
                         const task_t& task, const size_t fold, const loss_t& loss, const json_t& json) const
                 {
                         scalar_t lambda = 0, shrinkage = 0, subsampling = 0;
@@ -102,13 +103,13 @@ namespace nano
                                 << "," << config << ".";
 
                         // add weak learners at each boosting round ...
-                        stumps_t stumps;
+                        wlearners_t wlearners;
                         for (auto round = 0; round < m_rounds && !result.is_done(); ++ round)
                         {
-                                // fit stump
-                                wlearner_stump_t stump;
-                                stump.fit(task, fold_t{fold, protocol::train}, loss_tr.gradients(), m_wtype);
-                                loss_tr.wlearner(stump);
+                                // fit weak learner
+                                tweak_learner wlearner;
+                                wlearner.fit(task, fold_t{fold, protocol::train}, loss_tr.gradients());
+                                loss_tr.wlearner(wlearner);
 
                                 // line-search
                                 const auto epsilon = epsilon2<scalar_t>();
@@ -116,14 +117,14 @@ namespace nano
                                 const auto state = solver->minimize(100, epsilon, loss_tr, x0);
                                 const auto step = state.x(0);
 
-                                stump.scale(step);
-                                stump.scale(shrinkage);
-                                stumps.push_back(stump);
+                                wlearner.scale(step);
+                                wlearner.scale(shrinkage);
+                                wlearners.push_back(wlearner);
 
                                 // update current predictions
-                                loss_tr.add_wlearner(stump);
-                                loss_vd.add_wlearner(stump);
-                                loss_te.add_wlearner(stump);
+                                loss_tr.add_wlearner(wlearner);
+                                loss_vd.add_wlearner(wlearner);
+                                loss_te.add_wlearner(wlearner);
 
                                 const auto status = update_result(loss_tr, loss_vd, loss_te, timer, round + 1, result);
 
@@ -134,19 +135,19 @@ namespace nano
                                         << ",vd=" << result.last().m_valid << "|" << status
                                         << ",te=" << result.last().m_test
                                         << std::setprecision(2)
-                                        << ",stump=(f=" << stump.feature() << ",t=" << stump.threshold() << ")"
+                                        << "," << wlearner
                                         << std::setprecision(4)
                                         << ",solver=(" << state.m_status << ",i=" << state.m_iterations
                                         << ",x=" << state.x(0)
                                         << ",f=" << state.f << ",g=" << state.convergence_criteria() << ").";
                         }
 
-                        // keep only the stumps up to optimum epoch (on the validation dataset)
-                        stumps.erase(
-                                stumps.begin() + result.optimum().m_epoch,
-                                stumps.end());
+                        // keep only the weak learners up to optimum epoch (on the validation dataset)
+                        wlearners.erase(
+                                wlearners.begin() + result.optimum().m_epoch,
+                                wlearners.end());
 
-                        return std::make_pair(result, stumps);
+                        return std::make_pair(result, wlearners);
                 }
 
                 template <typename tloss>
@@ -171,9 +172,12 @@ namespace nano
                 int             m_patience{0};                          ///< number of epochs before overfitting
                 string_t        m_solver{"cgd"};                        ///< solver to use for line-search
                 cumloss         m_cumloss{cumloss::average};            ///<
-                wlearner_type   m_wtype{wlearner_type::discrete};       ///<
                 shrinkage       m_shrinkage{shrinkage::off};            ///<
                 subsampling     m_subsampling{subsampling::off};        ///<
-                stumps_t        m_stumps;                               ///< boosted weak learners
+                wlearners_t     m_wlearners;                            ///< boosted weak learners
         };
+
+        using model_gboost_linear_t = model_gboost_t<wlearner_linear_t>;
+        using model_gboost_real_stump_t = model_gboost_t<wlearner_real_stump_t>;
+        using model_gboost_discrete_stump_t = model_gboost_t<wlearner_discrete_stump_t>;
 }

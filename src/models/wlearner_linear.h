@@ -40,7 +40,7 @@ namespace nano
                 ///
                 /// \brief fit its parameters to the given gradients
                 ///
-                void fit(const task_t&, const fold_t&, const tensor4d_t& gradients, const wlearner_type);
+                void fit(const task_t&, const fold_t&, const tensor4d_t& gradients);
 
                 ///
                 /// \brief scale the outputs by the given factor
@@ -99,7 +99,7 @@ namespace nano
         private:
 
                 scalar_t fit(const task_t&, const fold_t&, const tensor4d_t& gradients,
-                        const tensor_size_t feature, const wlearner_type);
+                        const tensor_size_t feature);
 
         private:
 
@@ -108,4 +108,9 @@ namespace nano
                 tensor3d_t      m_a;            ///<
                 tensor3d_t      m_b;            ///<
         };
+
+        inline std::ostream& operator<<(std::ostream& os, const wlearner_linear_t& linear)
+        {
+                return os << "linear=(f=" << linear.feature() << ")";
+        }
 }

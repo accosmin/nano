@@ -5,7 +5,7 @@
 #include "core/logger.h"
 #include "core/ibstream.h"
 #include "core/obstream.h"
-#include "models/gboost_stump.h"
+#include "models/model_gboost.h"
 
 using namespace nano;
 
@@ -131,7 +131,12 @@ model_factory_t& nano::get_models()
         static std::once_flag flag;
         std::call_once(flag, [] ()
         {
-                manager.add<gboost_stump_t>("gboost-stump",     "Gradient Boosting with stumps");
+                manager.add<model_gboost_linear_t>("gboost-linear",
+                        "Gradient Boosting with linear models");
+                manager.add<model_gboost_real_stump_t>("gboost-real-stump",
+                        "Gradient Boosting with real stumps");
+                manager.add<model_gboost_discrete_stump_t>("gboost-discrete-stump",
+                        "Gradient Boosting with discrete stumps");
         });
 
         return manager;

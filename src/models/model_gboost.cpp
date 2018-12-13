@@ -1,4 +1,4 @@
-#include "gboost_stump.h"
+#include "model_gboost.h"
 #include "core/ibstream.h"
 #include "core/obstream.h"
 #include "gboost_loss_avg.h"
@@ -6,31 +6,32 @@
 
 using namespace nano;
 
-void gboost_stump_t::to_json(json_t& json) const
+template <typename tweak_learner>
+void model_gboost_t<tweak_learner>::to_json(json_t& json) const
 {
         nano::to_json(json,
                 "rounds", m_rounds,
                 "patience", m_patience,
                 "solver", m_solver,
-                "type", to_string(m_wtype) + join(enum_values<wlearner_type>()),
                 "cumloss", to_string(m_cumloss) + join(enum_values<cumloss>()),
                 "shrinkage", to_string(m_shrinkage) + join(enum_values<shrinkage>()),
                 "subsampling", to_string(m_subsampling) + join(enum_values<subsampling>()));
 }
 
-void gboost_stump_t::from_json(const json_t& json)
+template <typename tweak_learner>
+void model_gboost_t<tweak_learner>::from_json(const json_t& json)
 {
         nano::from_json(json,
                 "rounds", m_rounds,
                 "patience", m_patience,
                 "solver", m_solver,
-                "type", m_wtype,
                 "cumloss", m_cumloss,
                 "shrinkage", m_shrinkage,
                 "subsampling", m_subsampling);
 }
 
-training_t gboost_stump_t::train(const task_t& task, const size_t fold, const loss_t& loss)
+template <typename tweak_learner>
+training_t model_gboost_t<tweak_learner>::train(const task_t& task, const size_t fold, const loss_t& loss)
 {
         m_idims = task.idims();
         m_odims = task.odims();
@@ -63,50 +64,48 @@ training_t gboost_stump_t::train(const task_t& task, const size_t fold, const lo
         {
         case cumloss::variance:
                 tuner.add_pow10s("lambda", 0.0, -6, +6);
-                return train<gboost_loss_var_t<wlearner_stump_t>>(task, fold, loss, tuner);
+                return train<gboost_loss_var_t<tweak_learner>>(task, fold, loss, tuner);
 
         case cumloss::average:
         default:
                 tuner.add_finite("lambda", 1.0);
-                return train<gboost_loss_avg_t<wlearner_stump_t>>(task, fold, loss, tuner);
+                return train<gboost_loss_avg_t<tweak_learner>>(task, fold, loss, tuner);
         }
 }
 
-tensor3d_t gboost_stump_t::output(const tensor3d_t& input) const
+template <typename tweak_learner>
+tensor3d_t model_gboost_t<tweak_learner>::output(const tensor3d_t& input) const
 {
         assert(input.dims() == m_idims);
 
         tensor3d_t output(m_odims);
         output.zero();
 
-        for (const auto& stump : m_stumps)
+        for (const auto& wlearner : m_wlearners)
         {
-                output.vector() += stump.output(input).vector();
+                output.vector() += wlearner.output(input).vector();
         }
 
         return output;
 }
 
-bool gboost_stump_t::save(obstream_t& stream) const
+template <typename tweak_learner>
+bool model_gboost_t<tweak_learner>::save(obstream_t& stream) const
 {
         if (    !stream.write(m_idims) ||
                 !stream.write(m_odims) ||
                 !stream.write(m_rounds) ||
-                !stream.write(m_wtype) ||
                 !stream.write(m_cumloss) ||
                 !stream.write(m_shrinkage) ||
                 !stream.write(m_subsampling) ||
-                !stream.write(m_stumps.size()))
+                !stream.write(m_wlearners.size()))
         {
                 return false;
         }
 
-        for (const auto& stump : m_stumps)
+        for (const auto& wlearner : m_wlearners)
         {
-                assert(stump.feature() >= 0 && stump.feature() < nano::size(m_idims));
-                assert(stump.outputs().dims() == cat_dims(2, m_odims));
-
-                if (!stump.save(stream))
+                if (!wlearner.save(stream))
                 {
                         return false;
                 }
@@ -115,34 +114,35 @@ bool gboost_stump_t::save(obstream_t& stream) const
         return true;
 }
 
-bool gboost_stump_t::load(ibstream_t& stream)
+template <typename tweak_learner>
+bool model_gboost_t<tweak_learner>::load(ibstream_t& stream)
 {
-        size_t n_stumps = 0;
+        size_t n_wlearners = 0;
         if (    !stream.read(m_idims) ||
                 !stream.read(m_odims) ||
                 !stream.read(m_rounds) ||
-                !stream.read(m_wtype) ||
                 !stream.read(m_cumloss) ||
                 !stream.read(m_shrinkage) ||
                 !stream.read(m_subsampling) ||
-                !stream.read(n_stumps))
+                !stream.read(n_wlearners))
         {
                 return false;
         }
 
-        m_stumps.resize(n_stumps);
-        for (auto& stump : m_stumps)
+        m_wlearners.resize(n_wlearners);
+        for (auto& wlearner : m_wlearners)
         {
-                if (    !stump.load(stream) ||
-                        stump.feature() < 0 ||
-                        stump.feature() >= nano::size(m_idims) ||
-                        stump.outputs().dims() != cat_dims(2, m_odims))
+                if (!wlearner.load(stream))
                 {
                         return false;
                 }
         }
 
-        // todo: more verbose loading (#stumps, feature or coefficient statistics, idims...)
+        // todo: more verbose loading (#weak learners, feature or coefficient statistics, idims...)
 
         return true;
 }
+
+template class nano::model_gboost_t<nano::wlearner_linear_t>;
+template class nano::model_gboost_t<nano::wlearner_real_stump_t>;
+template class nano::model_gboost_t<nano::wlearner_discrete_stump_t>;

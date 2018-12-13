@@ -7,8 +7,7 @@
 
 using namespace nano;
 
-void wlearner_linear_t::fit(const task_t& task, const fold_t& fold, const tensor4d_t& gradients,
-        const wlearner_type type)
+void wlearner_linear_t::fit(const task_t& task, const fold_t& fold, const tensor4d_t& gradients)
 {
         assert(cat_dims(task.size(fold), task.odims()) == gradients.dims());
 
@@ -20,7 +19,7 @@ void wlearner_linear_t::fit(const task_t& task, const fold_t& fold, const tensor
         loopit(nano::size(task.idims()), [&] (const tensor_size_t feature, const size_t t)
         {
                 wlearner_linear_t learner;
-                const auto value = learner.fit(task, fold, gradients, feature, type);
+                const auto value = learner.fit(task, fold, gradients, feature);
                 if (value < tvalues[t])
                 {
                         tvalues[t] = value;
@@ -32,7 +31,7 @@ void wlearner_linear_t::fit(const task_t& task, const fold_t& fold, const tensor
 }
 
 scalar_t wlearner_linear_t::fit(const task_t& task, const fold_t& fold, const tensor4d_t& gradients,
-        const tensor_size_t feature, const wlearner_type /*type*/)
+        const tensor_size_t feature)
 {
         scalar_t x1 = 0, x2 = 0;
         tensor3d_t r1(task.odims()); r1.zero();
