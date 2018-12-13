@@ -48,10 +48,10 @@ namespace nano
                         return reduce_value(values1, values2);
                 }
 
-                const tensor4d_t& residuals() override
+                const tensor4d_t& gradients() override
                 {
-                        m_residuals1.resize(cat_dims(this->m_task.size(this->m_fold), this->m_task.odims()));
-                        m_residuals2.resize(cat_dims(this->m_task.size(this->m_fold), this->m_task.odims()));
+                        m_gradients1.resize(cat_dims(this->m_task.size(this->m_fold), this->m_task.odims()));
+                        m_gradients2.resize(cat_dims(this->m_task.size(this->m_fold), this->m_task.odims()));
 
                         auto values1 = this->tpool1d();
                         auto values2 = this->tpool1d();
@@ -68,8 +68,8 @@ namespace nano
                                 values1(t) += value;
                                 values2(t) += value * value;
 
-                                m_residuals1.tensor(i) = vgrad;
-                                m_residuals2.vector(i) = value * vgrad.vector();
+                                m_gradients1.tensor(i) = vgrad;
+                                m_gradients2.vector(i) = value * vgrad.vector();
                         });
 
                         const auto div = static_cast<scalar_t>(this->m_task.size(this->m_fold));
@@ -77,12 +77,12 @@ namespace nano
 
                         loopi(this->m_task.size(this->m_fold), [&] (const size_t i)
                         {
-                                m_residuals1.vector(i) =
-                                        2 * m_lambda * m_residuals2.vector(i) +
-                                        2 * (1 - m_lambda) * sum1 / div * m_residuals1.vector(i);
+                                m_gradients1.vector(i) =
+                                        2 * m_lambda * m_gradients2.vector(i) +
+                                        2 * (1 - m_lambda) * sum1 / div * m_gradients1.vector(i);
                         });
 
-                        return m_residuals1;
+                        return m_gradients1;
                 }
 
                 scalar_t vgrad(const vector_t& x, vector_t* gx = nullptr) const override
@@ -143,7 +143,7 @@ namespace nano
 
                 // attributes
                 scalar_t        m_lambda;       ///< regularization term for the variance term
-                tensor4d_t      m_residuals1;   ///< gradient/residual for each sample
-                tensor4d_t      m_residuals2;   ///< residuals/gradients * loss value for each sample
+                tensor4d_t      m_gradients1;   ///< gradient each sample
+                tensor4d_t      m_gradients2;   ///< gradient * loss value for each sample
         };
 }

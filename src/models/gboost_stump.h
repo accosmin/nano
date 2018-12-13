@@ -107,7 +107,7 @@ namespace nano
                         {
                                 // fit stump
                                 wlearner_stump_t stump;
-                                stump.fit(task, fold_t{fold, protocol::train}, loss_tr.residuals(), m_wtype);
+                                stump.fit(task, fold_t{fold, protocol::train}, loss_tr.gradients(), m_wtype);
                                 loss_tr.wlearner(stump);
 
                                 // line-search

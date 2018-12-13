@@ -7,10 +7,10 @@
 
 using namespace nano;
 
-void wlearner_linear_t::fit(const task_t& task, const fold_t& fold, const tensor4d_t& residuals,
+void wlearner_linear_t::fit(const task_t& task, const fold_t& fold, const tensor4d_t& gradients,
         const wlearner_type type)
 {
-        assert(cat_dims(task.size(fold), task.odims()) == residuals.dims());
+        assert(cat_dims(task.size(fold), task.odims()) == gradients.dims());
 
         const auto& tpool = tpool_t::instance();
 
@@ -20,7 +20,7 @@ void wlearner_linear_t::fit(const task_t& task, const fold_t& fold, const tensor
         loopit(nano::size(task.idims()), [&] (const tensor_size_t feature, const size_t t)
         {
                 wlearner_linear_t learner;
-                const auto value = learner.fit(task, fold, residuals, feature, type);
+                const auto value = learner.fit(task, fold, gradients, feature, type);
                 if (value < tvalues[t])
                 {
                         tvalues[t] = value;
@@ -31,43 +31,39 @@ void wlearner_linear_t::fit(const task_t& task, const fold_t& fold, const tensor
         *this = learners[std::min_element(tvalues.begin(), tvalues.end()) - tvalues.begin()];
 }
 
-scalar_t wlearner_linear_t::fit(const task_t& task, const fold_t& fold, const tensor4d_t& residuals,
+scalar_t wlearner_linear_t::fit(const task_t& task, const fold_t& fold, const tensor4d_t& gradients,
         const tensor_size_t feature, const wlearner_type /*type*/)
 {
-        scalar_t fvalues1 = 0, fvalues2 = 0;
-        tensor3d_t residuals1(task.odims());
-        tensor3d_t residuals2(task.odims());
-
-        residuals1.zero();
-        residuals2.zero();
+        scalar_t x1 = 0, x2 = 0;
+        tensor3d_t r1(task.odims()); r1.zero();
+        tensor3d_t r2(task.odims()); r2.zero();
+        tensor3d_t rx(task.odims()); rx.zero();
 
         for (size_t i = 0, size = task.size(fold); i < size; ++ i)
         {
                 const auto input = task.input(fold, i);
-                const auto fvalue = input(feature);
+                const auto value = input(feature);
 
-                fvalues1 += fvalue;
-                fvalues2 += fvalue * fvalue;
-                residuals1.array() += residuals.array(i);
-                residuals2.array() += fvalue * residuals.array(i);
+                x1 += value;
+                x2 += value * value;
+                r1.array() -= gradients.array(i);
+                rx.array() -= value * gradients.array(i);
+                r2.array() += gradients.array(i) * gradients.array(i);
         }
 
         m_a.resize(task.odims());
         m_b.resize(task.odims());
 
         const auto count = static_cast<scalar_t>(task.size(fold));
-        m_a.array() =
-                (residuals2.array() - residuals1.array() * fvalues1 / count) /
-                (fvalues2 - nano::square(fvalues1));
+        m_a.array() = (rx.array() * count - x1 * r1.array()) / (x2 * count - nano::square(x1));
+        m_b.array() = (r1.array() * x2 - x1 * rx.array()) / (x2 * count - nano::square(x1));
 
-        // todo: finish computing m_b
-        // todo: finish computing the fitting value of this feature
-        // todo: implement both discrete and real learners
         // todo: implement subsampling
 
-        const scalar_t value = 0.0;
-
-        return value;
+        return  (m_a.array() * x2 + count * m_b.array().square() + r2.array()
+                +2 * m_a.array() * m_b.array() * x1
+                -2 * m_b.array() * r1.array()
+                -2 * m_a.array() * rx.array()).sum();
 }
 
 bool wlearner_linear_t::save(obstream_t& stream) const

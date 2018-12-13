@@ -122,7 +122,7 @@ NANO_CASE(avg_loss_stump_update)
         func.add_wlearner(stump);
 
         const auto& outputs = func.outputs();
-        const auto& residuals = func.residuals();
+        const auto& gradients = func.gradients();
 
         scalar_t error = 0, value = 0;
         for (size_t i = 0, size = task->size(fold); i < size; ++ i)
@@ -133,7 +133,7 @@ NANO_CASE(avg_loss_stump_update)
                 error += loss->error(target, output);
                 value += loss->value(target, output);
                 NANO_CHECK_EIGEN_CLOSE(
-                        residuals.vector(i),
+                        gradients.vector(i),
                         loss->vgrad(target, output).vector(),
                         epsilon0<scalar_t>());
         }

@@ -38,9 +38,9 @@ namespace nano
                         return this->reduce(values);
                 }
 
-                const tensor4d_t& residuals() override
+                const tensor4d_t& gradients() override
                 {
-                        m_residuals.resize(cat_dims(this->m_task.size(this->m_fold), this->m_task.odims()));
+                        m_gradients.resize(cat_dims(this->m_task.size(this->m_fold), this->m_task.odims()));
 
                         loopi(this->m_task.size(this->m_fold), [&] (const size_t i)
                         {
@@ -48,10 +48,10 @@ namespace nano
                                 const auto target = this->m_task.target(this->m_fold, i);
                                 const auto output = this->m_outputs.tensor(i);
 
-                                m_residuals.tensor(i) = this->m_loss.vgrad(target, output);
+                                m_gradients.tensor(i) = this->m_loss.vgrad(target, output);
                         });
 
-                        return m_residuals;
+                        return m_gradients;
                 }
 
                 scalar_t vgrad(const vector_t& x, vector_t* gx = nullptr) const override
@@ -93,6 +93,6 @@ namespace nano
         private:
 
                 // attributes
-                tensor4d_t      m_residuals;    ///< gradient/residual for each sample
+                tensor4d_t      m_gradients;    ///< gradient/residual for each sample
         };
 }

@@ -9,7 +9,7 @@ namespace nano
 {
         ///
         /// \brief loss function used by GradientBoosting for:
-        ///     - feature selection using residuals (~ loss gradients per sample)
+        ///     - feature selection using gradients (~ loss gradients per sample)
         ///     - and 1D line-search for scaling the selected feature (aka weak learner)
         ///
         template <typename tweak_learner>
@@ -64,9 +64,9 @@ namespace nano
                 virtual scalar_t value() const = 0;
 
                 ///
-                /// \brief compute and return the residuals (gradients per sample)
+                /// \brief compute and return the gradients (gradients per sample)
                 ///
-                virtual const tensor4d_t& residuals() = 0;
+                virtual const tensor4d_t& gradients() = 0;
 
                 ///
                 /// \brief returns the current outputs/predictions
