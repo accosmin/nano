@@ -1,4 +1,5 @@
 #include "task.h"
+#include "version.h"
 #include "core/tpool.h"
 #include "core/ibstream.h"
 #include "core/obstream.h"
@@ -116,7 +117,12 @@ scalar_t wlearner_stump_t<type>::fit(const task_t& task, const fold_t& fold, con
 template <stump_type type>
 bool wlearner_stump_t<type>::save(obstream_t& stream) const
 {
-        return  stream.write(type) &&
+        const auto vmajor = static_cast<uint8_t>(major_version);
+        const auto vminor = static_cast<uint8_t>(minor_version);
+
+        return  stream.write(vmajor) &&
+                stream.write(vminor) &&
+                stream.write(type) &&
                 stream.write(m_feature) &&
                 stream.write(m_threshold) &&
                 stream.write_tensor(m_outputs);
@@ -125,8 +131,13 @@ bool wlearner_stump_t<type>::save(obstream_t& stream) const
 template <stump_type type>
 bool wlearner_stump_t<type>::load(ibstream_t& stream)
 {
+        uint8_t vmajor = 0x00;
+        uint8_t vminor = 0x00;
+
         stump_type other_type;
-        return  stream.read(other_type) &&
+        return  stream.read(vmajor) &&
+                stream.read(vminor) &&
+                stream.read(other_type) &&
                 stream.read(m_feature) &&
                 stream.read(m_threshold) &&
                 stream.read_tensor(m_outputs) &&

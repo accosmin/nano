@@ -1,3 +1,4 @@
+#include "version.h"
 #include "model_gboost.h"
 #include "core/ibstream.h"
 #include "core/obstream.h"
@@ -92,7 +93,12 @@ tensor3d_t model_gboost_t<tweak_learner>::output(const tensor3d_t& input) const
 template <typename tweak_learner>
 bool model_gboost_t<tweak_learner>::save(obstream_t& stream) const
 {
-        if (    !stream.write(m_idims) ||
+        const auto vmajor = static_cast<uint8_t>(major_version);
+        const auto vminor = static_cast<uint8_t>(minor_version);
+
+        if (    !stream.write(vmajor) ||
+                !stream.write(vminor) ||
+                !stream.write(m_idims) ||
                 !stream.write(m_odims) ||
                 !stream.write(m_rounds) ||
                 !stream.write(m_cumloss) ||
@@ -117,8 +123,13 @@ bool model_gboost_t<tweak_learner>::save(obstream_t& stream) const
 template <typename tweak_learner>
 bool model_gboost_t<tweak_learner>::load(ibstream_t& stream)
 {
+        uint8_t vmajor = 0x00;
+        uint8_t vminor = 0x00;
         size_t n_wlearners = 0;
-        if (    !stream.read(m_idims) ||
+
+        if (    !stream.read(vmajor) ||
+                !stream.read(vminor) ||
+                !stream.read(m_idims) ||
                 !stream.read(m_odims) ||
                 !stream.read(m_rounds) ||
                 !stream.read(m_cumloss) ||

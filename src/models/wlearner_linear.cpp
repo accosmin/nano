@@ -1,4 +1,5 @@
 #include "task.h"
+#include "version.h"
 #include "core/tpool.h"
 #include "core/numeric.h"
 #include "core/ibstream.h"
@@ -67,14 +68,24 @@ scalar_t wlearner_linear_t::fit(const task_t& task, const fold_t& fold, const te
 
 bool wlearner_linear_t::save(obstream_t& stream) const
 {
-        return  stream.write(m_feature) &&
+        const auto vmajor = static_cast<uint8_t>(major_version);
+        const auto vminor = static_cast<uint8_t>(minor_version);
+
+        return  stream.write(vmajor) &&
+                stream.write(vminor) &&
+                stream.write(m_feature) &&
                 stream.write_tensor(m_a) &&
                 stream.write_tensor(m_b);
 }
 
 bool wlearner_linear_t::load(ibstream_t& stream)
 {
-        return  stream.read(m_feature) &&
+        uint8_t vmajor = 0x00;
+        uint8_t vminor = 0x00;
+
+        return  stream.read(vmajor) &&
+                stream.read(vminor) &&
+                stream.read(m_feature) &&
                 stream.read_tensor(m_a) &&
                 stream.read_tensor(m_b);
 }
