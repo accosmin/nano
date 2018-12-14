@@ -38,10 +38,6 @@
         #define NANO_UNUSED4_RELEASE(x, y, z, u) NANO_UNUSED4(x, y, z, u)
 #endif
 
-// stringify a given variable
-#define NANO_STRINGIFY_(x) #x
-#define NANO_STRINGIFY(x) NANO_STRINGIFY_(x)
-
 namespace nano
 {
         // system information
