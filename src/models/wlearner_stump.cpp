@@ -133,5 +133,5 @@ bool wlearner_stump_t<type>::load(ibstream_t& stream)
                 type == other_type;
 }
 
-template class nano::wlearner_stump_t<nano::stump_type::real>;
-template class nano::wlearner_stump_t<nano::stump_type::discrete>;
+template class NANO_PUBLIC nano::wlearner_stump_t<stump_type::real>;
+template class NANO_PUBLIC nano::wlearner_stump_t<stump_type::discrete>;
