@@ -6,3 +6,7 @@
 	path = deps/json
 	url = https://github.com/nlohmann/json.git
 	branch = develop
+[submodule "utest"]
+	path = deps/utest
+	url = https://github.com/accosmin/utest.git
+	branch = master

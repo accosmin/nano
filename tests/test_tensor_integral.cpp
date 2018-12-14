@@ -57,9 +57,9 @@ static auto check(const tensor_t<tstorage, 4>& tensor, const int index0, const i
         return sum;
 }
 
-NANO_BEGIN_MODULE(test_tensor_integral)
+UTEST_BEGIN_MODULE(test_tensor_integral)
 
-NANO_CASE(integral1d)
+UTEST_CASE(integral1d)
 {
         tensor_mem_t<int32_t, 1> xtensor(11);
         tensor_mem_t<int64_t, 1> itensor(11);
@@ -68,14 +68,14 @@ NANO_CASE(integral1d)
         itensor.random();
         nano::integral(xtensor, itensor);
 
-        NANO_REQUIRE_EQUAL(xtensor.dims(), itensor.dims());
+        UTEST_REQUIRE_EQUAL(xtensor.dims(), itensor.dims());
         for (int i0 = 0; i0 < xtensor.size<0>(); ++ i0)
         {
-                NANO_CHECK_EQUAL(itensor(i0), check<int64_t>(xtensor, i0));
+                UTEST_CHECK_EQUAL(itensor(i0), check<int64_t>(xtensor, i0));
         }
 }
 
-NANO_CASE(integral2d)
+UTEST_CASE(integral2d)
 {
         tensor_mem_t<int32_t, 2> xtensor(9, 11);
         tensor_mem_t<int64_t, 2> itensor(9, 11);
@@ -84,15 +84,15 @@ NANO_CASE(integral2d)
         itensor.random();
         nano::integral(xtensor, itensor);
 
-        NANO_REQUIRE_EQUAL(xtensor.dims(), itensor.dims());
+        UTEST_REQUIRE_EQUAL(xtensor.dims(), itensor.dims());
         for (int i0 = 0; i0 < xtensor.size<0>(); ++ i0)
         for (int i1 = 0; i1 < xtensor.size<1>(); ++ i1)
         {
-                NANO_CHECK_EQUAL(itensor(i0, i1), check<int64_t>(xtensor, i0, i1));
+                UTEST_CHECK_EQUAL(itensor(i0, i1), check<int64_t>(xtensor, i0, i1));
         }
 }
 
-NANO_CASE(integral3d)
+UTEST_CASE(integral3d)
 {
         tensor_mem_t<int32_t, 3> xtensor(7, 9, 11);
         tensor_mem_t<int64_t, 3> itensor(7, 9, 11);
@@ -101,16 +101,16 @@ NANO_CASE(integral3d)
         itensor.random();
         nano::integral(xtensor, itensor);
 
-        NANO_REQUIRE_EQUAL(xtensor.dims(), itensor.dims());
+        UTEST_REQUIRE_EQUAL(xtensor.dims(), itensor.dims());
         for (int i0 = 0; i0 < xtensor.size<0>(); ++ i0)
         for (int i1 = 0; i1 < xtensor.size<1>(); ++ i1)
         for (int i2 = 0; i2 < xtensor.size<2>(); ++ i2)
         {
-                NANO_CHECK_EQUAL(itensor(i0, i1, i2), check<int64_t>(xtensor, i0, i1, i2));
+                UTEST_CHECK_EQUAL(itensor(i0, i1, i2), check<int64_t>(xtensor, i0, i1, i2));
         }
 }
 
-NANO_CASE(integral4d)
+UTEST_CASE(integral4d)
 {
         tensor_mem_t<int32_t, 4> xtensor(5, 7, 9, 11);
         tensor_mem_t<int64_t, 4> itensor(5, 7, 9, 11);
@@ -119,14 +119,14 @@ NANO_CASE(integral4d)
         itensor.random();
         nano::integral(xtensor, itensor);
 
-        NANO_REQUIRE_EQUAL(xtensor.dims(), itensor.dims());
+        UTEST_REQUIRE_EQUAL(xtensor.dims(), itensor.dims());
         for (int i0 = 0; i0 < xtensor.size<0>(); ++ i0)
         for (int i1 = 0; i1 < xtensor.size<1>(); ++ i1)
         for (int i2 = 0; i2 < xtensor.size<2>(); ++ i2)
         for (int i3 = 0; i3 < xtensor.size<3>(); ++ i3)
         {
-                NANO_CHECK_EQUAL(itensor(i0, i1, i2, i3), check<int64_t>(xtensor, i0, i1, i2, i3));
+                UTEST_CHECK_EQUAL(itensor(i0, i1, i2, i3), check<int64_t>(xtensor, i0, i1, i2, i3));
         }
 }
 
-NANO_END_MODULE()
+UTEST_END_MODULE()

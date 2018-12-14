@@ -1,3 +1,5 @@
+add_definitions(-DUTEST_WITH_EIGEN)
+
 make_test(test_core_cast.cpp "")
 make_test(test_core_stats.cpp "")
 make_test(test_core_cubic.cpp "")

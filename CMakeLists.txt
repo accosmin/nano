@@ -57,6 +57,7 @@ message(STATUS "CCACHE                         " "${NANO_WITH_CCACHE}")
 message(STATUS "------------------------------------------------------------------------------" "")
 
 include_directories(${CMAKE_SOURCE_DIR}/src)
+include_directories(SYSTEM ${CMAKE_SOURCE_DIR}/deps/utest)
 include_directories(SYSTEM ${CMAKE_SOURCE_DIR}/deps/json/single_include)
 
 add_subdirectory(src)

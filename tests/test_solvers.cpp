@@ -1,15 +1,16 @@
 #include "utest.h"
 #include "solver.h"
+#include "core/numeric.h"
 
 using namespace nano;
 
-NANO_BEGIN_MODULE(test_solvers)
+UTEST_BEGIN_MODULE(test_solvers)
 
-NANO_CASE(evaluate)
+UTEST_CASE(evaluate)
 {
         for (const auto& function : get_convex_functions(1, 4))
         {
-                NANO_REQUIRE(function);
+                UTEST_REQUIRE(function);
 
                 const auto iterations = size_t(1000);
                 const auto trials = size_t(10);
@@ -17,7 +18,7 @@ NANO_CASE(evaluate)
                 for (const auto& id : get_solvers().ids())
                 {
                         const auto solver = get_solvers().get(id);
-                        NANO_REQUIRE(solver);
+                        UTEST_REQUIRE(solver);
 
                         if (    id == "dfp" ||
                                 id == "nag" ||
@@ -51,11 +52,11 @@ NANO_CASE(evaluate)
                                           << ",calls=" << state.m_fcalls << "/" << state.m_gcalls << ".\n";
 
                                 // check function value decrease
-                                NANO_CHECK_LESS_EQUAL(f, f0 + epsilon1<scalar_t>());
+                                UTEST_CHECK_LESS_EQUAL(f, f0 + epsilon1<scalar_t>());
 
                                 // check convergence
-                                NANO_CHECK_LESS(g, epsilon2<scalar_t>());
-                                NANO_CHECK_EQUAL(state.m_status, solver_state_t::status::converged);
+                                UTEST_CHECK_LESS(g, epsilon2<scalar_t>());
+                                UTEST_CHECK_EQUAL(state.m_status, solver_state_t::status::converged);
                         }
 
                         std::cout << function->name() << " " << id << ".\n";
@@ -63,4 +64,4 @@ NANO_CASE(evaluate)
         }
 }
 
-NANO_END_MODULE()
+UTEST_END_MODULE()

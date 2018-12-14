@@ -4,26 +4,26 @@
 
 using namespace nano;
 
-NANO_BEGIN_MODULE(test_core_stats)
+UTEST_BEGIN_MODULE(test_core_stats)
 
-NANO_CASE(fixed)
+UTEST_CASE(fixed)
 {
         stats_t stats;
         stats(2, 4, 4, 4, 5, 5, 7, 9);
 
-        NANO_CHECK_EQUAL(stats.count(), size_t(8));
-        NANO_CHECK_EQUAL(stats.min(), 2.0);
-        NANO_CHECK_EQUAL(stats.max(), 9.0);
-        NANO_CHECK_CLOSE(stats.sum1(), 40.0, 1e-16);
-        NANO_CHECK_CLOSE(stats.sum2(), 232.0, 1e-16);
-        NANO_CHECK_CLOSE(stats.var(), 4.0, 1e-16);
-        NANO_CHECK_CLOSE(stats.stdev(), 2.0, 1e-16);
-        NANO_CHECK_CLOSE(stats.median(), 5.0, 1e-16);
-        NANO_CHECK_CLOSE(stats.percentile(10), 2.0, 1e-16);
-        NANO_CHECK_CLOSE(stats.percentile(90), 9.0, 1e-16);
+        UTEST_CHECK_EQUAL(stats.count(), size_t(8));
+        UTEST_CHECK_EQUAL(stats.min(), 2.0);
+        UTEST_CHECK_EQUAL(stats.max(), 9.0);
+        UTEST_CHECK_CLOSE(stats.sum1(), 40.0, 1e-16);
+        UTEST_CHECK_CLOSE(stats.sum2(), 232.0, 1e-16);
+        UTEST_CHECK_CLOSE(stats.var(), 4.0, 1e-16);
+        UTEST_CHECK_CLOSE(stats.stdev(), 2.0, 1e-16);
+        UTEST_CHECK_CLOSE(stats.median(), 5.0, 1e-16);
+        UTEST_CHECK_CLOSE(stats.percentile(10), 2.0, 1e-16);
+        UTEST_CHECK_CLOSE(stats.percentile(90), 9.0, 1e-16);
 }
 
-NANO_CASE(merge)
+UTEST_CASE(merge)
 {
         stats_t stats1;
         stats1(2, 4, 4);
@@ -35,19 +35,19 @@ NANO_CASE(merge)
         stats(stats1);
         stats(stats2);
 
-        NANO_CHECK_EQUAL(stats.count(), size_t(8));
-        NANO_CHECK_EQUAL(stats.min(), 2.0);
-        NANO_CHECK_EQUAL(stats.max(), 9.0);
-        NANO_CHECK_CLOSE(stats.sum1(), 40.0, 1e-16);
-        NANO_CHECK_CLOSE(stats.sum2(), 232.0, 1e-16);
-        NANO_CHECK_CLOSE(stats.var(), 4.0, 1e-16);
-        NANO_CHECK_CLOSE(stats.stdev(), 2.0, 1e-16);
-        NANO_CHECK_CLOSE(stats.median(), 5.0, 1e-16);
-        NANO_CHECK_CLOSE(stats.percentile(10), 2.0, 1e-16);
-        NANO_CHECK_CLOSE(stats.percentile(90), 9.0, 1e-16);
+        UTEST_CHECK_EQUAL(stats.count(), size_t(8));
+        UTEST_CHECK_EQUAL(stats.min(), 2.0);
+        UTEST_CHECK_EQUAL(stats.max(), 9.0);
+        UTEST_CHECK_CLOSE(stats.sum1(), 40.0, 1e-16);
+        UTEST_CHECK_CLOSE(stats.sum2(), 232.0, 1e-16);
+        UTEST_CHECK_CLOSE(stats.var(), 4.0, 1e-16);
+        UTEST_CHECK_CLOSE(stats.stdev(), 2.0, 1e-16);
+        UTEST_CHECK_CLOSE(stats.median(), 5.0, 1e-16);
+        UTEST_CHECK_CLOSE(stats.percentile(10), 2.0, 1e-16);
+        UTEST_CHECK_CLOSE(stats.percentile(90), 9.0, 1e-16);
 }
 
-NANO_CASE(random)
+UTEST_CASE(random)
 {
         const auto avg = -4.2;
         const auto var = 0.47;
@@ -73,21 +73,21 @@ NANO_CASE(random)
         stats_t stats;
         stats(values.begin(), values.end());
 
-        NANO_CHECK_EQUAL(stats.count(), count);
-        NANO_CHECK_CLOSE(stats.min(), min, 1e-16);
-        NANO_CHECK_CLOSE(stats.max(), max, 1e-16);
-        NANO_CHECK_CLOSE(stats.sum1(), sum1, 1e-12);
-        NANO_CHECK_CLOSE(stats.sum2(), sum2, 1e-12);
+        UTEST_CHECK_EQUAL(stats.count(), count);
+        UTEST_CHECK_CLOSE(stats.min(), min, 1e-16);
+        UTEST_CHECK_CLOSE(stats.max(), max, 1e-16);
+        UTEST_CHECK_CLOSE(stats.sum1(), sum1, 1e-12);
+        UTEST_CHECK_CLOSE(stats.sum2(), sum2, 1e-12);
 
-        NANO_CHECK_LESS_EQUAL(stats.max(), avg + var);
-        NANO_CHECK_GREATER_EQUAL(stats.min(), avg - var);
+        UTEST_CHECK_LESS_EQUAL(stats.max(), avg + var);
+        UTEST_CHECK_GREATER_EQUAL(stats.min(), avg - var);
 
-        NANO_CHECK_CLOSE(stats.avg(), sum1 / count, 1e-12);
-        NANO_CHECK_LESS_EQUAL(stats.avg(), avg + var);
-        NANO_CHECK_GREATER_EQUAL(stats.avg(), avg - var);
+        UTEST_CHECK_CLOSE(stats.avg(), sum1 / count, 1e-12);
+        UTEST_CHECK_LESS_EQUAL(stats.avg(), avg + var);
+        UTEST_CHECK_GREATER_EQUAL(stats.avg(), avg - var);
 
-        NANO_CHECK_GREATER_EQUAL(stats.var(), 0.0);
-        NANO_CHECK_CLOSE(stats.var(), (sum2 - sum1 * sum1 / count) / count, 1e-12);
+        UTEST_CHECK_GREATER_EQUAL(stats.var(), 0.0);
+        UTEST_CHECK_CLOSE(stats.var(), (sum2 - sum1 * sum1 / count) / count, 1e-12);
 }
 
-NANO_END_MODULE()
+UTEST_END_MODULE()

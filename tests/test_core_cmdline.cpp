@@ -2,9 +2,9 @@
 #include "utest.h"
 #include "core/cmdline.h"
 
-NANO_BEGIN_MODULE(test_core_cmdline)
+UTEST_BEGIN_MODULE(test_core_cmdline)
 
-NANO_CASE(parse)
+UTEST_CASE(parse)
 {
         nano::cmdline_t cmdline("unit testing");
         cmdline.add("v", "version", "version", "0.3");
@@ -15,17 +15,17 @@ NANO_CASE(parse)
 
         cmdline.process(argc, argv);
 
-        NANO_CHECK(cmdline.has("v"));
-        NANO_CHECK(cmdline.has("version"));
-        NANO_CHECK(cmdline.has("iterations"));
-        NANO_CHECK(!cmdline.has("h"));
-        NANO_CHECK(!cmdline.has("help"));
+        UTEST_CHECK(cmdline.has("v"));
+        UTEST_CHECK(cmdline.has("version"));
+        UTEST_CHECK(cmdline.has("iterations"));
+        UTEST_CHECK(!cmdline.has("h"));
+        UTEST_CHECK(!cmdline.has("help"));
 
-        NANO_CHECK_EQUAL(cmdline.get<std::string>("v"), "0.3");
-        NANO_CHECK_EQUAL(cmdline.get<int>("iterations"), 7);
+        UTEST_CHECK_EQUAL(cmdline.get<std::string>("v"), "0.3");
+        UTEST_CHECK_EQUAL(cmdline.get<int>("iterations"), 7);
 }
 /*
-NANO_CASE(error_invalid_arg)
+UTEST_CASE(error_invalid_arg)
 {
         nano::cmdline_t cmdline("unit testing");
         cmdline.add("v", "version", "version");
@@ -34,10 +34,10 @@ NANO_CASE(error_invalid_arg)
         const int argc = 4;
         const char* argv[] = { "", "v", "--version", "7" };
 
-        NANO_CHECK_THROW(cmdline.process(argc, argv), std::runtime_error);
+        UTEST_CHECK_THROW(cmdline.process(argc, argv), std::runtime_error);
 }
 
-NANO_CASE(error_unknown_arg)
+UTEST_CASE(error_unknown_arg)
 {
         nano::cmdline_t cmdline("unit testing");
         cmdline.add("v", "version", "version");
@@ -46,10 +46,10 @@ NANO_CASE(error_unknown_arg)
         const int argc = 4;
         const char* argv[] = { "", "-v", "--what", "7" };
 
-        NANO_CHECK_THROW(cmdline.process(argc, argv), std::runtime_error);
+        UTEST_CHECK_THROW(cmdline.process(argc, argv), std::runtime_error);
 }
 */
-NANO_CASE(parse_config_file)
+UTEST_CASE(parse_config_file)
 {
         nano::cmdline_t cmdline("unit testing");
         cmdline.add("v", "version", "version", "0.3");
@@ -65,16 +65,16 @@ NANO_CASE(parse_config_file)
 
         cmdline.process_config_file(path);
 
-        NANO_CHECK(cmdline.has("v"));
-        NANO_CHECK(cmdline.has("version"));
-        NANO_CHECK(cmdline.has("iterations"));
-        NANO_CHECK(!cmdline.has("h"));
-        NANO_CHECK(!cmdline.has("help"));
+        UTEST_CHECK(cmdline.has("v"));
+        UTEST_CHECK(cmdline.has("version"));
+        UTEST_CHECK(cmdline.has("iterations"));
+        UTEST_CHECK(!cmdline.has("h"));
+        UTEST_CHECK(!cmdline.has("help"));
 
-        NANO_CHECK_EQUAL(cmdline.get<std::string>("v"), "0.3");
-        NANO_CHECK_EQUAL(cmdline.get<int>("iterations"), 29);
+        UTEST_CHECK_EQUAL(cmdline.get<std::string>("v"), "0.3");
+        UTEST_CHECK_EQUAL(cmdline.get<int>("iterations"), 29);
 
         std::remove(path.c_str());
 }
 
-NANO_END_MODULE()
+UTEST_END_MODULE()

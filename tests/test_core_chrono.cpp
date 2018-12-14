@@ -1,22 +1,22 @@
 #include "utest.h"
 #include "core/probe.h"
 
-NANO_BEGIN_MODULE(test_core_chrono)
+UTEST_BEGIN_MODULE(test_core_chrono)
 
-NANO_CASE(gflops)
+UTEST_CASE(gflops)
 {
-        NANO_CHECK_EQUAL(nano::gflops(42, nano::seconds_t(1)), 0);
-        NANO_CHECK_EQUAL(nano::gflops(42, nano::milliseconds_t(1)), 0);
-        NANO_CHECK_EQUAL(nano::gflops(42, nano::microseconds_t(1)), 0);
-        NANO_CHECK_EQUAL(nano::gflops(42, nano::nanoseconds_t(100)), 0);
-        NANO_CHECK_EQUAL(nano::gflops(42, nano::nanoseconds_t(10)), 4);
-        NANO_CHECK_EQUAL(nano::gflops(42, nano::nanoseconds_t(1)), 42);
-        NANO_CHECK_EQUAL(nano::gflops(42, nano::picoseconds_t(100)), 420);
-        NANO_CHECK_EQUAL(nano::gflops(42, nano::picoseconds_t(10)), 4200);
-        NANO_CHECK_EQUAL(nano::gflops(42, nano::picoseconds_t(1)), 42000);
+        UTEST_CHECK_EQUAL(nano::gflops(42, nano::seconds_t(1)), 0);
+        UTEST_CHECK_EQUAL(nano::gflops(42, nano::milliseconds_t(1)), 0);
+        UTEST_CHECK_EQUAL(nano::gflops(42, nano::microseconds_t(1)), 0);
+        UTEST_CHECK_EQUAL(nano::gflops(42, nano::nanoseconds_t(100)), 0);
+        UTEST_CHECK_EQUAL(nano::gflops(42, nano::nanoseconds_t(10)), 4);
+        UTEST_CHECK_EQUAL(nano::gflops(42, nano::nanoseconds_t(1)), 42);
+        UTEST_CHECK_EQUAL(nano::gflops(42, nano::picoseconds_t(100)), 420);
+        UTEST_CHECK_EQUAL(nano::gflops(42, nano::picoseconds_t(10)), 4200);
+        UTEST_CHECK_EQUAL(nano::gflops(42, nano::picoseconds_t(1)), 42000);
 }
 
-NANO_CASE(probe)
+UTEST_CASE(probe)
 {
         const auto basename = "base";
         const auto fullname = "full";
@@ -24,21 +24,21 @@ NANO_CASE(probe)
 
         nano::probe_t probe(basename, fullname, flops);
 
-        NANO_CHECK_EQUAL(probe.basename(), basename);
-        NANO_CHECK_EQUAL(probe.fullname(), fullname);
-        NANO_CHECK_EQUAL(probe.flops(), flops);
-        NANO_CHECK_EQUAL(probe.kflops(), flops / 1024);
-        NANO_CHECK(!probe);
+        UTEST_CHECK_EQUAL(probe.basename(), basename);
+        UTEST_CHECK_EQUAL(probe.fullname(), fullname);
+        UTEST_CHECK_EQUAL(probe.flops(), flops);
+        UTEST_CHECK_EQUAL(probe.kflops(), flops / 1024);
+        UTEST_CHECK(!probe);
 
         probe.measure([] () {});
         probe.measure([] () {});
         probe.measure([] () {});
         probe.measure([] () {});
 
-        NANO_CHECK(probe);
-        NANO_CHECK_EQUAL(probe.flops(), flops);
-        NANO_CHECK_EQUAL(probe.kflops(), flops / 1024);
-        NANO_CHECK_EQUAL(probe.gflops(), nano::gflops(flops, nano::nanoseconds_t(static_cast<int64_t>(probe.timings().min()))));
+        UTEST_CHECK(probe);
+        UTEST_CHECK_EQUAL(probe.flops(), flops);
+        UTEST_CHECK_EQUAL(probe.kflops(), flops / 1024);
+        UTEST_CHECK_EQUAL(probe.gflops(), nano::gflops(flops, nano::nanoseconds_t(static_cast<int64_t>(probe.timings().min()))));
 }
 
-NANO_END_MODULE()
+UTEST_END_MODULE()

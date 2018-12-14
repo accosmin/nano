@@ -1,10 +1,11 @@
 #include "utest.h"
 #include "core/random.h"
+#include "core/numeric.h"
 #include "core/quadratic.h"
 
-NANO_BEGIN_MODULE(test_core_quadratic)
+UTEST_BEGIN_MODULE(test_core_quadratic)
 
-NANO_CASE(evaluate)
+UTEST_CASE(evaluate)
 {
         for (auto t = 0; t < 127; ++ t)
         {
@@ -22,7 +23,7 @@ NANO_CASE(evaluate)
                 while (!nano::quadratic_t<double>(a, b, c));
 
                 const nano::quadratic_t<double> q(a, b, c);
-                NANO_CHECK(q);
+                UTEST_CHECK(q);
 
                 const double x0 = rnd(rng);
                 const double f0 = q.value(x0);
@@ -38,14 +39,14 @@ NANO_CASE(evaluate)
                         continue;
                 }
 
-                NANO_CHECK_CLOSE(f0, iq.value(x0), nano::epsilon0<double>());
-                NANO_CHECK_CLOSE(g0, iq.gradient(x0), nano::epsilon0<double>());
+                UTEST_CHECK_CLOSE(f0, iq.value(x0), nano::epsilon0<double>());
+                UTEST_CHECK_CLOSE(g0, iq.gradient(x0), nano::epsilon0<double>());
 
-                NANO_CHECK_CLOSE(f1, iq.value(x1), nano::epsilon0<double>());
+                UTEST_CHECK_CLOSE(f1, iq.value(x1), nano::epsilon0<double>());
 
-//                NANO_CHECK_CLOSE(q.a(), iq.a(), nano::epsilon1<double>());
-//                NANO_CHECK_CLOSE(q.b(), iq.b(), nano::epsilon1<double>());
-//                NANO_CHECK_CLOSE(q.c(), iq.c(), nano::epsilon1<double>());
+//                UTEST_CHECK_CLOSE(q.a(), iq.a(), nano::epsilon1<double>());
+//                UTEST_CHECK_CLOSE(q.b(), iq.b(), nano::epsilon1<double>());
+//                UTEST_CHECK_CLOSE(q.c(), iq.c(), nano::epsilon1<double>());
 
                 // check extremum
                 double extremum;
@@ -56,13 +57,13 @@ NANO_CASE(evaluate)
                         continue;
                 }
 
-                NANO_CHECK_LESS(nano::abs(iq.gradient(extremum)), nano::epsilon0<double>());
+                UTEST_CHECK_LESS(nano::abs(iq.gradient(extremum)), nano::epsilon0<double>());
 
                 for (auto e = 0; e < 143; ++ e)
                 {
-                        NANO_CHECK_GREATER(nano::abs(iq.gradient(rnd(rng))), nano::abs(iq.gradient(extremum)));
+                        UTEST_CHECK_GREATER(nano::abs(iq.gradient(rnd(rng))), nano::abs(iq.gradient(extremum)));
                 }
         }
 }
 
-NANO_END_MODULE()
+UTEST_END_MODULE()

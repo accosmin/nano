@@ -3,9 +3,9 @@
 #include "core/random.h"
 #include "core/numeric.h"
 
-NANO_BEGIN_MODULE(test_core_cubic)
+UTEST_BEGIN_MODULE(test_core_cubic)
 
-NANO_CASE(evaluate)
+UTEST_CASE(evaluate)
 {
         for (auto t = 0; t < 127; ++ t)
         {
@@ -24,7 +24,7 @@ NANO_CASE(evaluate)
                 while (!nano::cubic_t<double>(a, b, c, d));
 
                 const nano::cubic_t<double> q(a, b, c, d);
-                NANO_CHECK(q);
+                UTEST_CHECK(q);
 
                 const double x0 = rnd(rng);
                 const double f0 = q.value(x0);
@@ -41,16 +41,16 @@ NANO_CASE(evaluate)
                         continue;
                 }
 
-                NANO_CHECK_CLOSE(f0, iq.value(x0), nano::epsilon1<double>());
-                NANO_CHECK_CLOSE(g0, iq.gradient(x0), nano::epsilon1<double>());
+                UTEST_CHECK_CLOSE(f0, iq.value(x0), nano::epsilon1<double>());
+                UTEST_CHECK_CLOSE(g0, iq.gradient(x0), nano::epsilon1<double>());
 
-                NANO_CHECK_CLOSE(f1, iq.value(x1), nano::epsilon1<double>());
-                NANO_CHECK_CLOSE(g1, iq.gradient(x1), nano::epsilon1<double>());
+                UTEST_CHECK_CLOSE(f1, iq.value(x1), nano::epsilon1<double>());
+                UTEST_CHECK_CLOSE(g1, iq.gradient(x1), nano::epsilon1<double>());
 
-//                NANO_CHECK_CLOSE(q.a(), iq.a(), nano::epsilon1<double>());
-//                NANO_CHECK_CLOSE(q.b(), iq.b(), nano::epsilon1<double>());
-//                NANO_CHECK_CLOSE(q.c(), iq.c(), nano::epsilon1<double>());
-//                NANO_CHECK_CLOSE(q.d(), iq.d(), nano::epsilon1<double>());
+//                UTEST_CHECK_CLOSE(q.a(), iq.a(), nano::epsilon1<double>());
+//                UTEST_CHECK_CLOSE(q.b(), iq.b(), nano::epsilon1<double>());
+//                UTEST_CHECK_CLOSE(q.c(), iq.c(), nano::epsilon1<double>());
+//                UTEST_CHECK_CLOSE(q.d(), iq.d(), nano::epsilon1<double>());
 
                 // check extremum
                 double extremum1, extremum2;
@@ -61,15 +61,15 @@ NANO_CASE(evaluate)
                         continue;
                 }
 
-                NANO_CHECK_LESS(nano::abs(iq.gradient(extremum1)), nano::epsilon1<double>());
-                NANO_CHECK_LESS(nano::abs(iq.gradient(extremum2)), nano::epsilon1<double>());
+                UTEST_CHECK_LESS(nano::abs(iq.gradient(extremum1)), nano::epsilon1<double>());
+                UTEST_CHECK_LESS(nano::abs(iq.gradient(extremum2)), nano::epsilon1<double>());
 
                 for (auto e = 0; e < 143; ++ e)
                 {
-                        NANO_CHECK_GREATER(nano::abs(iq.gradient(rnd(rng))), nano::abs(iq.gradient(extremum1)));
-                        NANO_CHECK_GREATER(nano::abs(iq.gradient(rnd(rng))), nano::abs(iq.gradient(extremum2)));
+                        UTEST_CHECK_GREATER(nano::abs(iq.gradient(rnd(rng))), nano::abs(iq.gradient(extremum1)));
+                        UTEST_CHECK_GREATER(nano::abs(iq.gradient(rnd(rng))), nano::abs(iq.gradient(extremum2)));
                 }
         }
 }
 
-NANO_END_MODULE()
+UTEST_END_MODULE()

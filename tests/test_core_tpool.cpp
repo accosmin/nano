@@ -1,7 +1,9 @@
+#include "arch.h"
 #include "utest.h"
 #include <numeric>
 #include "core/tpool.h"
 #include "core/random.h"
+#include "core/numeric.h"
 
 using namespace nano;
 
@@ -36,22 +38,22 @@ namespace
         }
 }
 
-NANO_BEGIN_MODULE(test_core_tpool)
+UTEST_BEGIN_MODULE(test_core_tpool)
 
-NANO_CASE(empty)
+UTEST_CASE(empty)
 {
         auto& pool = tpool_t::instance();
 
-        NANO_CHECK_EQUAL(pool.workers(), nano::physical_cpus());
-        NANO_CHECK_EQUAL(pool.tasks(), 0u);
+        UTEST_CHECK_EQUAL(pool.workers(), nano::physical_cpus());
+        UTEST_CHECK_EQUAL(pool.tasks(), 0u);
 }
 
-NANO_CASE(enqueue)
+UTEST_CASE(enqueue)
 {
         auto& pool = tpool_t::instance();
 
-        NANO_CHECK_EQUAL(pool.workers(), nano::physical_cpus());
-        NANO_CHECK_EQUAL(pool.tasks(), 0u);
+        UTEST_CHECK_EQUAL(pool.workers(), nano::physical_cpus());
+        UTEST_CHECK_EQUAL(pool.tasks(), 0u);
 
         const size_t max_tasks = 1024;
         const auto tasks = urand<size_t>(1u, max_tasks, make_rng());
@@ -77,17 +79,17 @@ NANO_CASE(enqueue)
                 }
         }
 
-        NANO_CHECK_EQUAL(pool.workers(), nano::physical_cpus());
-        NANO_CHECK_EQUAL(pool.tasks(), 0u);
+        UTEST_CHECK_EQUAL(pool.workers(), nano::physical_cpus());
+        UTEST_CHECK_EQUAL(pool.tasks(), 0u);
 
-        NANO_CHECK_EQUAL(tasks_done.size(), tasks);
+        UTEST_CHECK_EQUAL(tasks_done.size(), tasks);
         for (size_t j = 0; j < tasks; ++ j)
         {
-                NANO_CHECK(std::find(tasks_done.begin(), tasks_done.end(), j + 1) != tasks_done.end());
+                UTEST_CHECK(std::find(tasks_done.begin(), tasks_done.end(), j + 1) != tasks_done.end());
         }
 }
 
-NANO_CASE(evaluate)
+UTEST_CASE(evaluate)
 {
         const size_t min_size = 1;
         const size_t max_size = 9 * 9 * 9 * 1;
@@ -106,8 +108,8 @@ NANO_CASE(evaluate)
         {
                 const auto st = test_st<scalar_t>(size, op);
                 const auto mt = test_mt<scalar_t>(size, op);
-                NANO_CHECK_CLOSE(st, mt, nano::epsilon1<scalar_t>());
+                UTEST_CHECK_CLOSE(st, mt, nano::epsilon1<scalar_t>());
         }
 }
 
-NANO_END_MODULE()
+UTEST_END_MODULE()
