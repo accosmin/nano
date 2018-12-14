@@ -82,7 +82,33 @@ UTEST_CASE(scalex)
 
 UTEST_CASE(serialize)
 {
-        wlearner_real_stump_t learner;
+        wlearner_discrete_stump_t learner;
+        learner.feature(4);
+        learner.threshold(scalar_t(-3.5));
+        learner.outputs(outputs);
+
+        const auto path_learner = "learner.stump";
+        {
+                obstream_t ostream(path_learner);
+                UTEST_CHECK(learner.save(ostream));
+        }
+        {
+                wlearner_discrete_stump_t learner2;
+
+                ibstream_t istream(path_learner);
+                UTEST_CHECK(learner2.load(istream));
+
+                UTEST_CHECK_EQUAL(learner.feature(), learner2.feature());
+                UTEST_CHECK_EQUAL(learner.threshold(), learner2.threshold());
+                UTEST_CHECK_EIGEN_CLOSE(learner.outputs().vector(), learner2.outputs().vector(), epsilon0<scalar_t>());
+        }
+
+        std::remove(path_learner);
+}
+
+UTEST_CASE(serialize_wrong_type)
+{
+        wlearner_discrete_stump_t learner;
         learner.feature(4);
         learner.threshold(scalar_t(-3.5));
         learner.outputs(outputs);
@@ -96,15 +122,12 @@ UTEST_CASE(serialize)
                 wlearner_real_stump_t learner2;
 
                 ibstream_t istream(path_learner);
-                UTEST_CHECK(learner2.load(istream));
-
-                UTEST_CHECK_EQUAL(learner.feature(), learner2.feature());
-                UTEST_CHECK_EQUAL(learner.threshold(), learner2.threshold());
-                UTEST_CHECK_EIGEN_CLOSE(learner.outputs().vector(), learner2.outputs().vector(), epsilon0<scalar_t>());
+                UTEST_CHECK(!learner2.load(istream));
         }
 
         std::remove(path_learner);
 }
+
 
 // todo: check fitting, computing the fvalues and the threshold
 
