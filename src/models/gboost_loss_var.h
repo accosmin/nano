@@ -1,6 +1,7 @@
 #pragma once
 
 #include "gboost_loss.h"
+#include "core/numeric.h"
 
 namespace nano
 {

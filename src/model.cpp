@@ -3,6 +3,7 @@
 #include "core/table.h"
 #include "core/tpool.h"
 #include "core/logger.h"
+#include "core/numeric.h"
 #include "core/ibstream.h"
 #include "core/obstream.h"
 #include "models/model_gboost.h"

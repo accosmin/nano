@@ -1,6 +1,7 @@
 #include "loss.h"
 #include "utest.h"
 #include "cortex.h"
+#include "core/numeric.h"
 #include "tasks/task_affine.h"
 #include "models/model_gboost.h"
 

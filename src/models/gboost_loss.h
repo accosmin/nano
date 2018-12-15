@@ -17,6 +17,8 @@ namespace nano
         {
         public:
 
+                using weak_learner_t = tweak_learner;
+
                 ///
                 /// \brief constructor
                 ///
