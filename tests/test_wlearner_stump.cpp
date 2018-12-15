@@ -128,7 +128,20 @@ UTEST_CASE(serialize_wrong_type)
         std::remove(path_learner);
 }
 
+UTEST_CASE(serialize_invalid_path)
+{
+        {
+                wlearner_real_stump_t learner;
+                obstream_t ostream("/tmp2/x2/y2/file");
+                UTEST_CHECK(!learner.save(ostream));
+        }
+        {
+                wlearner_discrete_stump_t learner;
+                ibstream_t istream("/tmp2/x2/y2/file");
+                UTEST_CHECK(!learner.load(istream));
+        }
+}
 
-// todo: check fitting, computing the fvalues and the threshold
+// todo: check fitting
 
 UTEST_END_MODULE()

@@ -114,6 +114,20 @@ UTEST_CASE(serialize)
         std::remove(path_learner);
 }
 
+UTEST_CASE(serialize_invalid_path)
+{
+        {
+                wlearner_linear_t learner;
+                obstream_t ostream("/tmp2/x2/y2/file");
+                UTEST_CHECK(!learner.save(ostream));
+        }
+        {
+                wlearner_linear_t learner;
+                ibstream_t istream("/tmp2/x2/y2/file");
+                UTEST_CHECK(!learner.load(istream));
+        }
+}
+
 // todo: check fitting
 
 UTEST_END_MODULE()
