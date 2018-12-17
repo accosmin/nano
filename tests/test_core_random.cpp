@@ -38,4 +38,29 @@ UTEST_CASE(split3)
         UTEST_CHECK_EQUAL(std::count(values.begin(), values.end(), value3), percentage_value3 * count / 100);
 }
 
+UTEST_CASE(sample_with_replacement)
+{
+        for (auto trial = 0; trial < 100; ++ trial)
+        {
+                const auto indices = nano::sample_with_replacement(100, 50);
+                UTEST_REQUIRE_EQUAL(indices.size(), 50);
+                UTEST_CHECK_LESS(*std::max_element(indices.begin(), indices.end()), 100);
+                UTEST_CHECK_GREATER_EQUAL(*std::min_element(indices.begin(), indices.end()), 0);
+        }
+}
+
+UTEST_CASE(sample_without_replacement)
+{
+        for (auto trial = 0; trial < 100; ++ trial)
+        {
+                auto indices = nano::sample_without_replacement(100, 50);
+                UTEST_REQUIRE_EQUAL(indices.size(), 50);
+                UTEST_CHECK_LESS(*std::max_element(indices.begin(), indices.end()), 100);
+                UTEST_CHECK_GREATER_EQUAL(*std::min_element(indices.begin(), indices.end()), 0);
+
+                std::sort(indices.begin(), indices.end());
+                UTEST_CHECK(std::unique(indices.begin(), indices.end()) == indices.end());
+        }
+}
+
 UTEST_END_MODULE()

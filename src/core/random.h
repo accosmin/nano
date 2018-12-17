@@ -118,4 +118,39 @@ namespace nano
                 std::shuffle(values.begin(), values.end(), make_rng());
                 return values;
         }
+
+        ///
+        /// \brief sample with replacement the given percentage of `size` elements.
+        ///
+        template <typename tsize, typename tpercentage>
+        std::vector<tsize> sample_with_replacement(const tsize size, const tpercentage percentage)
+        {
+                assert(0 <= percentage && percentage <= 100);
+
+                auto rng = make_rng();
+                auto udist = make_udist<tsize>(tsize(0), size - 1);
+
+                std::vector<tsize> indices(static_cast<size_t>(percentage * size / 100));
+                for (auto& index : indices)
+                {
+                        index = udist(rng);
+                }
+
+                return indices;
+        }
+
+        ///
+        /// \brief sample without replacement the given percentage of `size` elements.
+        ///
+        template <typename tsize, typename tpercentage>
+        std::vector<tsize> sample_without_replacement(const tsize size, const tpercentage percentage)
+        {
+                assert(0 <= percentage && percentage <= 100);
+
+                std::vector<tsize> indices(size);
+                std::iota(indices.begin(), indices.end(), tsize(0));
+
+                std::shuffle(indices.begin(), indices.end(), make_rng());
+                return {indices.begin(), indices.begin() + (percentage * size / 100)};
+        }
 }
