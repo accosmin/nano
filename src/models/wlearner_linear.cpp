@@ -8,7 +8,8 @@
 
 using namespace nano;
 
-void wlearner_linear_t::fit(const task_t& task, const fold_t& fold, const tensor4d_t& gradients)
+void wlearner_linear_t::fit(const task_t& task, const fold_t& fold, const tensor4d_t& gradients,
+        const indices_t& indices)
 {
         assert(cat_dims(task.size(fold), task.odims()) == gradients.dims());
 
@@ -20,7 +21,7 @@ void wlearner_linear_t::fit(const task_t& task, const fold_t& fold, const tensor
         loopit(nano::size(task.idims()), [&] (const tensor_size_t feature, const size_t t)
         {
                 wlearner_linear_t learner;
-                const auto value = learner.fit(task, fold, gradients, feature);
+                const auto value = learner.fit(task, fold, gradients, indices, feature);
                 if (value < tvalues[t])
                 {
                         tvalues[t] = value;
@@ -32,15 +33,18 @@ void wlearner_linear_t::fit(const task_t& task, const fold_t& fold, const tensor
 }
 
 scalar_t wlearner_linear_t::fit(const task_t& task, const fold_t& fold, const tensor4d_t& gradients,
-        const tensor_size_t feature)
+        const indices_t& indices, const tensor_size_t feature)
 {
         scalar_t x1 = 0, x2 = 0;
         tensor3d_t r1(task.odims()); r1.zero();
         tensor3d_t r2(task.odims()); r2.zero();
         tensor3d_t rx(task.odims()); rx.zero();
 
-        for (size_t i = 0, size = task.size(fold); i < size; ++ i)
+        for (const auto i : indices)
         {
+                assert(i < task.size(fold));
+                assert(i < static_cast<size_t>(gradients.size<0>()));
+
                 const auto input = task.input(fold, i);
                 const auto value = input(feature);
 

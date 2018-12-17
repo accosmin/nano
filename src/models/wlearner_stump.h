@@ -49,7 +49,7 @@ namespace nano
                 ///
                 /// \brief fit its parameters to the given gradients
                 ///
-                void fit(const task_t&, const fold_t&, const tensor4d_t& gradients);
+                void fit(const task_t&, const fold_t&, const tensor4d_t& gradients, const indices_t& indices);
 
                 ///
                 /// \brief scale the outputs by the given factor
@@ -106,7 +106,8 @@ namespace nano
 
         private:
 
-                scalar_t fit(const task_t&, const fold_t&, const tensor4d_t& gradients, const tensor_size_t feature);
+                scalar_t fit(const task_t&, const fold_t&, const tensor4d_t& gradients,
+                        const indices_t& indices, const tensor_size_t feature);
 
                 template <typename ttensor, typename tarray>
                 static auto fit_value(const int cnt, const ttensor& res1, const ttensor& res2, const tarray& outputs)

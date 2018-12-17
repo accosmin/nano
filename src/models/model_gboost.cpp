@@ -3,6 +3,7 @@
 #include "version.h"
 #include "core/tuner.h"
 #include "core/logger.h"
+#include "core/random.h"
 #include "model_gboost.h"
 #include "core/ibstream.h"
 #include "core/obstream.h"
@@ -66,9 +67,14 @@ static auto train_config(
         std::vector<tweak_learner> wlearners;
         for (auto round = 0; round < rounds && !result.is_done(); ++ round)
         {
+                // subsampling
+                const auto indices = nano::sample_without_replacement(
+                        task.size(fold_t{fold, protocol::train}),
+                        static_cast<size_t>(subsampling));
+
                 // fit weak learner
                 tweak_learner wlearner;
-                wlearner.fit(task, fold_t{fold, protocol::train}, loss_tr.gradients());
+                wlearner.fit(task, fold_t{fold, protocol::train}, loss_tr.gradients(), indices);
                 loss_tr.wlearner(wlearner);
 
                 // line-search

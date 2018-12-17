@@ -31,7 +31,8 @@ static auto get_thresholds(const scalars_t& fvalues)
 }
 
 template <stump_type type>
-void wlearner_stump_t<type>::fit(const task_t& task, const fold_t& fold, const tensor4d_t& gradients)
+void wlearner_stump_t<type>::fit(const task_t& task, const fold_t& fold, const tensor4d_t& gradients,
+        const indices_t& indices)
 {
         assert(cat_dims(task.size(fold), task.odims()) == gradients.dims());
 
@@ -43,7 +44,7 @@ void wlearner_stump_t<type>::fit(const task_t& task, const fold_t& fold, const t
         loopit(nano::size(task.idims()), [&] (const tensor_size_t feature, const size_t t)
         {
                 wlearner_stump_t learner;
-                const auto value = learner.fit(task, fold, gradients, feature);
+                const auto value = learner.fit(task, fold, gradients, indices, feature);
                 if (value < tvalues[t])
                 {
                         tvalues[t] = value;
@@ -56,7 +57,7 @@ void wlearner_stump_t<type>::fit(const task_t& task, const fold_t& fold, const t
 
 template <stump_type type>
 scalar_t wlearner_stump_t<type>::fit(const task_t& task, const fold_t& fold, const tensor4d_t& gradients,
-        const tensor_size_t feature)
+        const indices_t& indices, const tensor_size_t feature)
 {
         const auto fvalues = get_fvalues(task, fold, feature);
         const auto thresholds = get_thresholds(fvalues);
@@ -75,8 +76,11 @@ scalar_t wlearner_stump_t<type>::fit(const task_t& task, const fold_t& fold, con
                 gradients_neg1.zero(), gradients_neg2.zero();
 
                 int cnt_pos = 0, cnt_neg = 0;
-                for (size_t i = 0, size = fvalues.size(); i < size; ++ i)
+                for (const auto i : indices)
                 {
+                        assert(i < task.size(fold));
+                        assert(i < static_cast<size_t>(gradients.size<0>()));
+
                         const auto gradient = gradients.array(i);
                         if (fvalues[i] < threshold)
                         {
