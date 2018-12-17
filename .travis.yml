@@ -130,6 +130,21 @@ matrix:
         - bash ../scripts/ci_ctest.sh
 
     - os: linux
+      compiler: clang
+      env: TEST="build (clang-7.0)"
+      addons:
+        apt:
+          packages: ['clang-7.0', 'libdevil-dev', 'libarchive-dev', 'libc++-dev', 'libc++abi-dev', 'ninja-build']
+          sources: &sources
+            - llvm-toolchain-trusty-7.0
+            - ubuntu-toolchain-r-test
+          update: true
+      script:
+        - cmake -G "Ninja" -DCMAKE_CXX_COMPILER=clang++-7.0 -DNANO_WITH_WERROR=ON -DNANO_WITH_LIBCPP=ON ..
+        - ninja
+        - bash ../scripts/ci_ctest.sh
+
+    - os: linux
       compiler: gcc
       env: TEST="ASAN (gcc-7)"
       addons:
