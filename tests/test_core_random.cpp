@@ -1,6 +1,17 @@
 #include "utest.h"
 #include "core/random.h"
 
+template <typename tscalar>
+std::ostream& operator<<(std::ostream& os, const std::vector<tscalar>& values)
+{
+        os << "{";
+        for (const auto& value : values)
+        {
+                os << "{" << value << "}";
+        }
+        return os << "}";
+}
+
 UTEST_BEGIN_MODULE(test_core_random)
 
 UTEST_CASE(split2)
@@ -61,6 +72,14 @@ UTEST_CASE(sample_without_replacement)
                 UTEST_CHECK_GREATER_EQUAL(*std::min_element(indices.begin(), indices.end()), 0);
                 UTEST_CHECK(std::unique(indices.begin(), indices.end()) == indices.end());
         }
+}
+
+UTEST_CASE(sample_without_replacement_all)
+{
+        const auto indices = nano::sample_without_replacement(100, 100);
+        std::vector<int> all_indices(100);
+        std::iota(all_indices.begin(), all_indices.end(), 0);
+        UTEST_CHECK_EQUAL(indices, all_indices);
 }
 
 UTEST_END_MODULE()
