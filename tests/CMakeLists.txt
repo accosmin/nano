@@ -23,6 +23,7 @@ make_test(test_tensor_tensor.cpp "")
 make_test(test_tensor_integral.cpp "")
 
 make_test(test_wlearner_stump.cpp nano)
+make_test(test_wlearner_table.cpp nano)
 make_test(test_wlearner_linear.cpp nano)
 
 make_test(test_gboost_loss.cpp nano)

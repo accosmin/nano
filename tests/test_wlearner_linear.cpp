@@ -23,7 +23,7 @@ static auto get_b()
 const auto a = get_a();
 const auto b = get_b();
 
-UTEST_BEGIN_MODULE(test_model_linear)
+UTEST_BEGIN_MODULE(test_wlearner_linear)
 
 UTEST_CASE(getset)
 {
