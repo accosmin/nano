@@ -16,6 +16,7 @@ void affine_task_t::from_json(const json_t& json)
                 "noise", m_noise,
                 "count", m_count,
                 "folds", m_folds,
+                "modulo", m_modulo,
                 "type", m_type);
         reconfig(make_dims(m_isize, 1, 1), make_dims(m_osize, 1, 1), m_folds);
 }
@@ -28,6 +29,7 @@ void affine_task_t::to_json(json_t& json) const
                 "noise", m_noise,
                 "count", m_count,
                 "folds", m_folds,
+                "modulo", m_modulo,
                 "type", to_string(m_type) + join(enum_values<affine_task_type>()));
 }
 
@@ -57,6 +59,8 @@ void affine_task_t::make_regression_targets()
         weights.random();
         bias.random();
 
+        modulo_weights(weights);
+
         for (size_t f = 0; f < m_folds; ++ f)
         {
                 const auto protocols = split3(m_count, protocol::train, 40, protocol::valid, 30, protocol::test);
@@ -84,6 +88,8 @@ void affine_task_t::make_classification_targets()
 
         weights.random();
 
+        modulo_weights(weights);
+
         for (size_t f = 0; f < m_folds; ++ f)
         {
                 const auto protocols = split3(m_count, protocol::train, 40, protocol::valid, 30, protocol::test);
@@ -103,6 +109,17 @@ void affine_task_t::make_classification_targets()
                         const auto fold = fold_t{f, protocols[i]};
 
                         add_sample(fold, i, target, label);
+                }
+        }
+}
+
+void affine_task_t::modulo_weights(tensor2d_t& weights) const
+{
+        for (auto c = 0; c < weights.cols(); ++ c)
+        {
+                if (c % m_modulo)
+                {
+                        weights.matrix().col(c).setZero();
                 }
         }
 }

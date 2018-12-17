@@ -26,7 +26,7 @@ UTEST_CASE(loading)
                 const auto isize = 11;
                 const auto osize = 3;
                 const auto count = size_t(350);
-                const auto folds = size_t(4);
+                const auto folds = size_t(3);
 
                 auto task = get_tasks().get("synth-affine");
                 UTEST_REQUIRE(task);

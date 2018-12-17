@@ -92,9 +92,9 @@ void task_t::describe(const string_t& name) const
                 row << "#labels";
                 for (size_t f = 0; f < fsize(); ++ f)
                 {
-                        row << (to_string(f + 1) + ':' + to_string(protocol::train));
-                        row << (to_string(f + 1) + ':' + to_string(protocol::valid));
-                        row << (to_string(f + 1) + ':' + to_string(protocol::test));
+                        row << (to_string(f + 1) + ":tr");// + to_string(protocol::train));
+                        row << (to_string(f + 1) + ":vd");// + to_string(protocol::valid));
+                        row << (to_string(f + 1) + ":te");// + to_string(protocol::test));
                 }
                 row << "total";
         }

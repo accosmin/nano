@@ -47,6 +47,7 @@ namespace nano
                 void make_samples();
                 void make_regression_targets();
                 void make_classification_targets();
+                void modulo_weights(tensor2d_t&) const;
 
                 // attributes
                 affine_task_type        m_type{affine_task_type::regression};   ///<
@@ -55,5 +56,6 @@ namespace nano
                 size_t                  m_folds{10};                            ///<
                 size_t                  m_count{1024};                          ///<
                 scalar_t                m_noise{static_cast<scalar_t>(1e-3)};   ///<
+                int                     m_modulo{1};                            ///<
         };
 }

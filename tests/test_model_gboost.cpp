@@ -50,6 +50,8 @@ UTEST_CASE(stump_real)
         //UTEST_CHECK_LESS(state.m_valid.m_error, epsilon2<scalar_t>());
         //UTEST_CHECK_LESS(state.m_test.m_error, epsilon2<scalar_t>());
 
+        // todo: check that the selected features are the ones being correlated with the inputs!
+
         // Check loading and saving
         const auto path = "gboost_stump_real.model";
         UTEST_CHECK(model_t::save(path, "gboost-real-stump", *model));
