@@ -14,7 +14,7 @@ using namespace nano;
 
 template <typename tloss>
 static auto update_result(const tloss& loss_tr, const tloss& loss_vd, const tloss& loss_te,
-        const timer_t& timer, const int epoch, const int patience, training_t& result)
+        const nano::timer_t& timer, const int epoch, const int patience, training_t& result)
 {
         const auto measure_tr = training_t::measurement_t{loss_tr.value(), loss_tr.error()};
         const auto measure_vd = training_t::measurement_t{loss_vd.value(), loss_vd.error()};
@@ -43,7 +43,7 @@ static auto train_config(
         critical(solver = get_solvers().get(solver_id),
                 strcat("search solver (", solver_id, ")"));
 
-        timer_t timer;
+        nano::timer_t timer;
 
         auto config = json.dump();
         config = nano::replace(config, "\"", "");
