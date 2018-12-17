@@ -1,6 +1,6 @@
 #!/bin/bash
 
-version=1.85
+version=1.86
 rm -rf cppcheck-${version}
 
 wget -N https://github.com/danmar/cppcheck/archive/${version}.tar.gz
