@@ -228,7 +228,7 @@ namespace nano
         /// \brief cast string to values and use the given default value if casting fails.
         ///
         template <typename tvalue>
-        tvalue from_string(const string_t& str, const tvalue default_value)
+        tvalue from_string(const string_t& str, const tvalue& default_value)
         {
                 try
                 {
