@@ -136,6 +136,7 @@ namespace nano
                         index = udist(rng);
                 }
 
+                std::sort(indices.begin(), indices.end());
                 return indices;
         }
 
@@ -151,6 +152,9 @@ namespace nano
                 std::iota(indices.begin(), indices.end(), tsize(0));
 
                 std::shuffle(indices.begin(), indices.end(), make_rng());
-                return {indices.begin(), indices.begin() + (percentage * size / 100)};
+
+                std::vector<tsize> ret{indices.begin(), indices.begin() + (percentage * size / 100)};
+                std::sort(ret.begin(), ret.end());
+                return ret;
         }
 }

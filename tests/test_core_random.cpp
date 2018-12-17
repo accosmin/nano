@@ -44,6 +44,7 @@ UTEST_CASE(sample_with_replacement)
         {
                 const auto indices = nano::sample_with_replacement(100, 50);
                 UTEST_REQUIRE_EQUAL(indices.size(), 50);
+                UTEST_CHECK(std::is_sorted(indices.begin(), indices.end()));
                 UTEST_CHECK_LESS(*std::max_element(indices.begin(), indices.end()), 100);
                 UTEST_CHECK_GREATER_EQUAL(*std::min_element(indices.begin(), indices.end()), 0);
         }
@@ -55,10 +56,9 @@ UTEST_CASE(sample_without_replacement)
         {
                 auto indices = nano::sample_without_replacement(100, 50);
                 UTEST_REQUIRE_EQUAL(indices.size(), 50);
+                UTEST_CHECK(std::is_sorted(indices.begin(), indices.end()));
                 UTEST_CHECK_LESS(*std::max_element(indices.begin(), indices.end()), 100);
                 UTEST_CHECK_GREATER_EQUAL(*std::min_element(indices.begin(), indices.end()), 0);
-
-                std::sort(indices.begin(), indices.end());
                 UTEST_CHECK(std::unique(indices.begin(), indices.end()) == indices.end());
         }
 }
