@@ -2,8 +2,9 @@
 
 #include "model.h"
 #include "gboost.h"
-#include "wlearner_stump.h"
 #include "wlearner_linear.h"
+#include "wlearner_stump.h"
+#include "wlearner_table.h"
 
 namespace nano
 {
@@ -50,5 +51,7 @@ namespace nano
 
         using model_gboost_linear_t = model_gboost_t<wlearner_linear_t>;
         using model_gboost_real_stump_t = model_gboost_t<wlearner_real_stump_t>;
+        using model_gboost_real_table_t = model_gboost_t<wlearner_real_table_t>;
         using model_gboost_discrete_stump_t = model_gboost_t<wlearner_discrete_stump_t>;
+        using model_gboost_discrete_table_t = model_gboost_t<wlearner_discrete_table_t>;
 }

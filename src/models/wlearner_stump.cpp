@@ -65,15 +65,15 @@ scalar_t wlearner_stump_t<type>::fit(const task_t& task, const fold_t& fold, con
         m_outputs.resize(cat_dims(2, task.odims()));
 
         scalar_t value = std::numeric_limits<scalar_t>::max();
-        tensor3d_t gradients_pos1(task.odims()), gradients_pos2(task.odims());
-        tensor3d_t gradients_neg1(task.odims()), gradients_neg2(task.odims());
+        tensor3d_t res_pos1(task.odims()), res_pos2(task.odims());
+        tensor3d_t res_neg1(task.odims()), res_neg2(task.odims());
 
         for (size_t t = 0; t + 1 < thresholds.size(); ++ t)
         {
                 const auto threshold = (thresholds[t + 0] + thresholds[t + 1]) / 2;
 
-                gradients_pos1.zero(), gradients_pos2.zero();
-                gradients_neg1.zero(), gradients_neg2.zero();
+                res_pos1.zero(), res_pos2.zero();
+                res_neg1.zero(), res_neg2.zero();
 
                 int cnt_pos = 0, cnt_neg = 0;
                 for (const auto i : indices)
@@ -85,34 +85,32 @@ scalar_t wlearner_stump_t<type>::fit(const task_t& task, const fold_t& fold, con
                         if (fvalues[i] < threshold)
                         {
                                 cnt_neg ++;
-                                gradients_neg1.array() -= gradient;
-                                gradients_neg2.array() += gradient * gradient;
+                                res_neg1.array() -= gradient;
+                                res_neg2.array() += gradient * gradient;
                         }
                         else
                         {
                                 cnt_pos ++;
-                                gradients_pos1.array() -= gradient;
-                                gradients_pos2.array() += gradient * gradient;
+                                res_pos1.array() -= gradient;
+                                res_pos2.array() += gradient * gradient;
                         }
                 }
 
                 switch (type)
                 {
                 case stump_type::discrete:
-                        try_fit(cnt_neg, gradients_neg1, gradients_neg2, gradients_neg1.array().sign(),
-                                cnt_pos, gradients_pos1, gradients_pos2, gradients_pos1.array().sign(),
+                        try_fit(cnt_neg, res_neg1, res_neg2, res_neg1.array().sign(),
+                                cnt_pos, res_pos1, res_pos2, res_pos1.array().sign(),
                                 feature, threshold, value);
                         break;
 
                 case stump_type::real:
                 default:
-                        try_fit(cnt_neg, gradients_neg1, gradients_neg2, gradients_neg1.array() / cnt_neg,
-                                cnt_pos, gradients_pos1, gradients_pos2, gradients_pos1.array() / cnt_pos,
+                        try_fit(cnt_neg, res_neg1, res_neg2, res_neg1.array() / cnt_neg,
+                                cnt_pos, res_pos1, res_pos2, res_pos1.array() / cnt_pos,
                                 feature, threshold, value);
                         break;
                 }
-
-                // todo: implement subsampling
         }
 
         return value;

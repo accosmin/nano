@@ -65,22 +65,22 @@ std::string nano::to_string(const mat5_dtype type)
 {
         switch (type)
         {
-        case mat5_dtype::miINT8:            return "miINT8";
-        case mat5_dtype::miUINT8:           return "miUINT8";
-        case mat5_dtype::miINT16:           return "miINT16";
-        case mat5_dtype::miUINT16:          return "miUINT16";
-        case mat5_dtype::miINT32:           return "miINT32";
-        case mat5_dtype::miUINT32:          return "miUINT32";
-        case mat5_dtype::miSINGLE:          return "miSINGLE";
-        case mat5_dtype::miDOUBLE:          return "miDOUBLE";
-        case mat5_dtype::miINT64:           return "miINT64";
-        case mat5_dtype::miUINT64:          return "miUINT64";
-        case mat5_dtype::miMATRIX:          return "miMATRIX";
-        case mat5_dtype::miCOMPRESSED:      return "miCOMPRESSED";
-        case mat5_dtype::miUTF8:            return "miUTF8";
-        case mat5_dtype::miUTF16:           return "miUTF16";
-        case mat5_dtype::miUTF32:           return "miUTF32";
-        default:                                return "miUNKNOWN";
+        case mat5_dtype::miINT8:        return "miINT8";
+        case mat5_dtype::miUINT8:       return "miUINT8";
+        case mat5_dtype::miINT16:       return "miINT16";
+        case mat5_dtype::miUINT16:      return "miUINT16";
+        case mat5_dtype::miINT32:       return "miINT32";
+        case mat5_dtype::miUINT32:      return "miUINT32";
+        case mat5_dtype::miSINGLE:      return "miSINGLE";
+        case mat5_dtype::miDOUBLE:      return "miDOUBLE";
+        case mat5_dtype::miINT64:       return "miINT64";
+        case mat5_dtype::miUINT64:      return "miUINT64";
+        case mat5_dtype::miMATRIX:      return "miMATRIX";
+        case mat5_dtype::miCOMPRESSED:  return "miCOMPRESSED";
+        case mat5_dtype::miUTF8:        return "miUTF8";
+        case mat5_dtype::miUTF16:       return "miUTF16";
+        case mat5_dtype::miUTF32:       return "miUTF32";
+        default:                        return "miUNKNOWN";
         }
 }
 
@@ -88,9 +88,9 @@ std::string nano::to_string(const mat5_ftype type)
 {
         switch (type)
         {
-        case mat5_ftype::small:           return "small";
-        case mat5_ftype::regular:         return "regular";
-        default:                                return "unknown";
+        case mat5_ftype::small:         return "small";
+        case mat5_ftype::regular:       return "regular";
+        default:                        return "unknown";
         }
 }
 
@@ -98,9 +98,9 @@ std::string nano::to_string(const mat5_ptype type)
 {
         switch (type)
         {
-        case mat5_ptype::none:            return ".";
-        case mat5_ptype::miMATRIX:        return "miMATRIX";
-        default:                                return "unknown";
+        case mat5_ptype::none:          return ".";
+        case mat5_ptype::miMATRIX:      return "miMATRIX";
+        default:                        return "unknown";
         }
 }
 
@@ -135,8 +135,8 @@ static bool read_vector(tstream&& stream,
 {
         switch (dtype)
         {
-        case mat5_dtype::miINT8:    return read_vector<int8_t>(stream, dsize, values);
-        case mat5_dtype::miINT32:   return read_vector<int32_t>(stream, dsize, values);
+        case mat5_dtype::miINT8:        return read_vector<int8_t>(stream, dsize, values);
+        case mat5_dtype::miINT32:       return read_vector<int32_t>(stream, dsize, values);
         default:                        return false;
         }
 }

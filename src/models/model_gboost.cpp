@@ -300,4 +300,6 @@ bool model_gboost_t<tweak_learner>::load(ibstream_t& stream)
 
 template class nano::model_gboost_t<nano::wlearner_linear_t>;
 template class nano::model_gboost_t<nano::wlearner_real_stump_t>;
+template class nano::model_gboost_t<nano::wlearner_real_table_t>;
 template class nano::model_gboost_t<nano::wlearner_discrete_stump_t>;
+template class nano::model_gboost_t<nano::wlearner_discrete_table_t>;

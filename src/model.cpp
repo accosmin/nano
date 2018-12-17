@@ -136,8 +136,12 @@ model_factory_t& nano::get_models()
                         "Gradient Boosting with linear models");
                 manager.add<model_gboost_real_stump_t>("gboost-real-stump",
                         "Gradient Boosting with real stumps");
+                manager.add<model_gboost_real_table_t>("gboost-real-table",
+                        "Gradient Boosting with real look-up tables");
                 manager.add<model_gboost_discrete_stump_t>("gboost-discrete-stump",
                         "Gradient Boosting with discrete stumps");
+                manager.add<model_gboost_discrete_table_t>("gboost-discrete-table",
+                        "Gradient Boosting with discrete look-up tables");
         });
 
         return manager;
