@@ -129,20 +129,7 @@ matrix:
         - ninja
         - bash ../scripts/ci_ctest.sh
 
-    - os: linux
-      compiler: clang
-      env: TEST="build (clang-7.0)"
-      addons:
-        apt:
-          packages: ['clang-7.0', 'libdevil-dev', 'libarchive-dev', 'libc++-dev', 'libc++abi-dev', 'ninja-build']
-          sources: &sources
-            - llvm-toolchain-trusty-7.0
-            - ubuntu-toolchain-r-test
-          update: true
-      script:
-        - cmake -G "Ninja" -DCMAKE_CXX_COMPILER=clang++-7.0 -DNANO_WITH_WERROR=ON -DNANO_WITH_LIBCPP=ON ..
-        - ninja
-        - bash ../scripts/ci_ctest.sh
+    # todo: support for clang-7.0
 
     - os: linux
       compiler: gcc
@@ -304,7 +291,7 @@ matrix:
       env: TEST="cppcheck"
       addons:
         apt:
-          packages: ['gcc-7', 'g++-7', 'ninja-build']
+          packages: ['gcc-8', 'g++-8', 'ninja-build']
           sources: &sources
             - ubuntu-toolchain-r-test
           update: true
@@ -313,31 +300,31 @@ matrix:
 
     - os: linux
       compiler: gcc
-      env: TEST="valgrind (gcc-7)"
+      env: TEST="valgrind (gcc-8)"
       addons:
         apt:
-          packages: ['gcc-7', 'g++-7', 'libdevil-dev', 'libarchive-dev', 'ninja-build', 'valgrind']
+          packages: ['gcc-8', 'g++-8', 'libdevil-dev', 'libarchive-dev', 'ninja-build', 'valgrind']
           sources: &sources
             - ubuntu-toolchain-r-test
           update: true
       script:
-        - cmake -G "Ninja" -DCMAKE_CXX_COMPILER=g++-7 -DCMAKE_BUILD_TYPE=Release -DNANO_WITH_WERROR=ON -DNANO_WITH_TUNE_NATIVE=OFF ..
+        - cmake -G "Ninja" -DCMAKE_CXX_COMPILER=g++-8 -DCMAKE_BUILD_TYPE=Release -DNANO_WITH_WERROR=ON -DNANO_WITH_TUNE_NATIVE=OFF ..
         - ninja
         - bash ../scripts/ci_valgrind.sh
 
     - os: linux
       compiler: gcc
-      env: TEST="codecov (gcc-7)"
+      env: TEST="codecov (gcc-8)"
       addons:
         apt:
-          packages: ['gcc-7', 'g++-7', 'gcovr', 'libdevil-dev', 'libarchive-dev', 'ninja-build']
+          packages: ['gcc-8', 'g++-8', 'gcovr', 'libdevil-dev', 'libarchive-dev', 'ninja-build']
           sources: &sources
             - ubuntu-toolchain-r-test
           update: true
       script:
         - sudo -H pip install --upgrade pip
         - sudo -H pip install coverage
-        - cmake -G "Ninja" -DCMAKE_CXX_COMPILER=g++-7 -DNANO_WITH_WERROR=ON -DNANO_WITH_COVERAGE=ON ..
+        - cmake -G "Ninja" -DCMAKE_CXX_COMPILER=g++-8 -DNANO_WITH_WERROR=ON -DNANO_WITH_COVERAGE=ON ..
         - ninja
         - bash ../scripts/ci_codecov.sh
 
