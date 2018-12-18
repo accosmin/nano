@@ -35,7 +35,7 @@ UTEST_CASE(loading)
         const auto odims = tensor3d_dim_t{3, 1, 1};
         const auto target_sum = scalar_t(2) - static_cast<scalar_t>(nano::size(odims));
 
-        const auto folds = size_t(10);
+        const auto folds = size_t(4);
         const auto samples = size_t(178);
 
         const auto task = nano::get_tasks().get("wine");

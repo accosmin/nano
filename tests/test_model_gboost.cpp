@@ -34,7 +34,7 @@ UTEST_CASE(stump_real)
         const auto model = get_models().get("gboost-real-stump");
         UTEST_REQUIRE(model);
         model->from_json(to_json(
-                "rounds", 50, "patience", 50, "solver", "cgd",
+                "rounds", 10, "patience", 10, "solver", "cgd",
                 "cumloss", cumloss::average,
                 "shrinkage", shrinkage::off,
                 "subsampling", subsampling::off));
