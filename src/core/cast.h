@@ -25,12 +25,13 @@ namespace nano
         template <typename tenum>
         std::vector<tenum> enum_values()
         {
-                std::vector<tenum> ret;
-                for (const auto& elem : enum_string<tenum>())
+                static const auto mapping = enum_string<tenum>();
+                std::vector<tenum> enums(mapping.size());
+                for (const auto& elem : mapping)
                 {
-                        ret.push_back(elem.first);
+                        enums.push_back(elem.first);
                 }
-                return ret;
+                return enums;
         }
 
         ///

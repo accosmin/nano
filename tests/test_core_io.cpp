@@ -61,10 +61,7 @@ UTEST_CASE(istream)
                 buffer_t ref_buffer = make_buffer(size);
                 UTEST_CHECK_EQUAL(ref_buffer.size(), size);
 
-                for (auto& value : ref_buffer)
-                {
-                        value = udist_value(rng);
-                }
+                std::generate(ref_buffer.begin(), ref_buffer.end(), [&] () { return udist_value(rng); });
 
                 // check saving to file
                 const std::string path = "mstream.test";

@@ -55,7 +55,7 @@ static auto train_config(
 
         training_t result(config);
 
-        const auto status = update_result(loss_tr, loss_vd, loss_te, timer, 0, patience, result);
+        auto status = update_result(loss_tr, loss_vd, loss_te, timer, 0, patience, result);
 
         log_info() << std::setprecision(4) << "[" << 0 << "/" << rounds
                 << "]:tr=" << result.history().rbegin()->m_train
@@ -92,7 +92,7 @@ static auto train_config(
                 loss_vd.add_wlearner(wlearner);
                 loss_te.add_wlearner(wlearner);
 
-                const auto status = update_result(loss_tr, loss_vd, loss_te, timer, round + 1, patience, result);
+                status = update_result(loss_tr, loss_vd, loss_te, timer, round + 1, patience, result);
 
                 log_info()
                         << std::setprecision(4)
@@ -253,15 +253,8 @@ bool model_gboost_t<tweak_learner>::save(obstream_t& stream) const
                 return false;
         }
 
-        for (const auto& wlearner : m_wlearners)
-        {
-                if (!wlearner.save(stream))
-                {
-                        return false;
-                }
-        }
-
-        return true;
+        return  std::all_of(m_wlearners.begin(), m_wlearners.end(),
+                [&] (const auto& wlearner) { return wlearner.save(stream); });
 }
 
 template <typename tweak_learner>

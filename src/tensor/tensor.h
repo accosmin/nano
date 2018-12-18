@@ -140,6 +140,7 @@ namespace nano
                 /// \brief copy constructor from different types (e.g. const from non-const scalars)
                 ///
                 template <typename tstorage2>
+                // cppcheck-suppress noExplicitConstructor
                 tensor_t(const tensor_t<tstorage2, trank>& other) :
                         m_dims(other.dims()),
                         m_storage(other.storage())

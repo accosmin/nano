@@ -8,16 +8,16 @@ using namespace nano;
 
 static auto get_a()
 {
-        tensor3d_t a(3, 1, 1);
-        a.constant(-1);
-        return a;
+        tensor3d_t x(3, 1, 1);
+        x.constant(-1);
+        return x;
 }
 
 static auto get_b()
 {
-        tensor3d_t b(3, 1, 1);
-        b.constant(+1);
-        return b;
+        tensor3d_t x(3, 1, 1);
+        x.constant(+1);
+        return x;
 }
 
 const auto a = get_a();

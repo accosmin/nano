@@ -14,7 +14,7 @@ cd ../../
 
 /tmp/cppcheck/bin/cppcheck --version
 /tmp/cppcheck/bin/cppcheck \
-        --enable=all --quiet --std=c++14 --error-exitcode=1 \
+        --enable=all --quiet --std=c++14 --error-exitcode=1 --inline-suppr \
         --template='{file}:{line},{severity},{id},{message}' \
         --suppress=shadowFunction \
         -I ../src/ -I ../src/core/ -I ../deps/utest/ -I ../deps/eigen3/ \

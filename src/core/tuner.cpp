@@ -112,11 +112,6 @@ json_t tuner_t::json(const strings_t& values) const
 
 size_t tuner_t::n_configs() const
 {
-        size_t count = 1;
-        for (const auto& param : m_params)
-        {
-                count *= param.m_values.size();
-        }
-
-        return count;
+        return  std::accumulate(m_params.begin(), m_params.end(), size_t(1),
+                [] (const auto count, const auto& param) { return count * param.m_values.size(); });
 }

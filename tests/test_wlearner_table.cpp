@@ -8,13 +8,13 @@ using namespace nano;
 
 static auto get_outputs()
 {
-        tensor4d_t outputs(5, 3, 1, 1);
-        outputs.tensor(0).constant(-1);
-        outputs.tensor(1).constant(+1);
-        outputs.tensor(2).constant(+3);
-        outputs.tensor(3).constant(+5);
-        outputs.tensor(4).constant(+7);
-        return outputs;
+        tensor4d_t o(5, 3, 1, 1);
+        o.tensor(0).constant(-1);
+        o.tensor(1).constant(+1);
+        o.tensor(2).constant(+3);
+        o.tensor(3).constant(+5);
+        o.tensor(4).constant(+7);
+        return o;
 }
 
 const auto outputs = get_outputs();
