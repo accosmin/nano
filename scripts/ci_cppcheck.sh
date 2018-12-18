@@ -17,5 +17,5 @@ cd ../../
         --enable=all --quiet --std=c++14 --error-exitcode=1 \
         --template='{file}:{line},{severity},{id},{message}' \
         --suppress=shadowFunction \
-        -I ../src/ -I ../src/core/ -I ../deps/utest/ \
+        -I ../src/ -I ../src/core/ -I ../deps/utest/ -I ../deps/eigen3/ \
         ../src ../apps ../tests
