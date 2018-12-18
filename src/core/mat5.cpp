@@ -9,11 +9,6 @@ using namespace nano;
 
 using std::uint32_t;
 
-inline uint32_t make_uint32(const char* data)
-{
-        return *reinterpret_cast<const uint32_t*>(data);
-}
-
 template <typename tinteger>
 inline mat5_dtype make_dtype(const tinteger code)
 {
@@ -35,29 +30,6 @@ inline mat5_dtype make_dtype(const tinteger code)
         case 17:        return mat5_dtype::miUTF16;
         case 18:        return mat5_dtype::miUTF32;
         default:        return mat5_dtype::miUNKNOWN;
-        }
-}
-
-inline std::streamsize to_bytes(const mat5_dtype& type)
-{
-        switch (type)
-        {
-        case mat5_dtype::miINT8:            return 1;
-        case mat5_dtype::miUINT8:           return 1;
-        case mat5_dtype::miINT16:           return 2;
-        case mat5_dtype::miUINT16:          return 2;
-        case mat5_dtype::miINT32:           return 4;
-        case mat5_dtype::miUINT32:          return 4;
-        case mat5_dtype::miSINGLE:          return 4;
-        case mat5_dtype::miDOUBLE:          return 8;
-        case mat5_dtype::miINT64:           return 8;
-        case mat5_dtype::miUINT64:          return 8;
-        case mat5_dtype::miMATRIX:          return 0;
-        case mat5_dtype::miCOMPRESSED:      return 0;
-        case mat5_dtype::miUTF8:            return 0;
-        case mat5_dtype::miUTF16:           return 0;
-        case mat5_dtype::miUTF32:           return 0;
-        default:                                return 0;
         }
 }
 

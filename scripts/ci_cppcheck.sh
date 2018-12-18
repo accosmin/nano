@@ -13,4 +13,9 @@ ninja install
 cd ../../
 
 /tmp/cppcheck/bin/cppcheck --version
-/tmp/cppcheck/bin/cppcheck -j 2 --force --quiet --inline-suppr --enable=all --error-exitcode=1 -I../src/core ../src ../apps
+/tmp/cppcheck/bin/cppcheck \
+        --enable=all --quiet --std=c++14 --error-exitcode=1 \
+        --template='{file}:{line},{severity},{id},{message}' \
+        --suppress=shadowFunction \
+        -I ../src/ -I ../src/core/ -I ../deps/utest/ \
+        ../src ../apps ../tests

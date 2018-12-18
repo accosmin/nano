@@ -131,10 +131,7 @@ namespace nano
                 auto udist = make_udist<tsize>(tsize(0), size - 1);
 
                 std::vector<tsize> indices(static_cast<size_t>(percentage * size / 100));
-                for (auto& index : indices)
-                {
-                        index = udist(rng);
-                }
+                std::generate(indices.begin(), indices.end(), [&] () { return udist(rng); });
 
                 std::sort(indices.begin(), indices.end());
                 return indices;

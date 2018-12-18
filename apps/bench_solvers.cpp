@@ -119,10 +119,7 @@ static void check_function(const function_t& function, const std::vector<std::pa
 {
         // generate fixed random trials
         std::vector<vector_t> x0s(trials);
-        for (auto& x0 : x0s)
-        {
-                x0 = vector_t::Random(function.size());
-        }
+        std::generate(x0s.begin(), x0s.end(), [&] () { return vector_t::Random(function.size()); });
 
         // per-problem statistics
         solver_config_stats_t fstats;
