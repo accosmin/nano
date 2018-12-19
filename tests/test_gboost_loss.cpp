@@ -1,4 +1,4 @@
-#include "utest.h"
+#include <utest/utest.h>
 #include "core/numeric.h"
 #include "models/wlearner_stump.h"
 #include "models/gboost_loss_avg.h"

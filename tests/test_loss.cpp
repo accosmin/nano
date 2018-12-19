@@ -1,5 +1,5 @@
 #include "loss.h"
-#include "utest.h"
+#include <utest/utest.h>
 #include "cortex.h"
 #include "function.h"
 #include "core/random.h"

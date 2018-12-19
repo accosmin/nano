@@ -1,4 +1,4 @@
-#include "utest.h"
+#include <utest/utest.h>
 #include "core/geom2d.h"
 
 UTEST_BEGIN_MODULE(test_core_geom2d)

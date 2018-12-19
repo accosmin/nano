@@ -1,4 +1,4 @@
-#include "utest.h"
+#include <utest/utest.h>
 #include "solver.h"
 #include "core/numeric.h"
 

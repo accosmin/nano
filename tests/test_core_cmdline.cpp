@@ -1,5 +1,5 @@
 #include <fstream>
-#include "utest.h"
+#include <utest/utest.h>
 #include "core/cmdline.h"
 
 UTEST_BEGIN_MODULE(test_core_cmdline)

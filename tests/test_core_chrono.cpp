@@ -1,4 +1,4 @@
-#include "utest.h"
+#include <utest/utest.h>
 #include "core/probe.h"
 
 UTEST_BEGIN_MODULE(test_core_chrono)
