@@ -79,7 +79,7 @@ matrix:
         apt:
           packages: ['clang-3.8', 'libdevil-dev', 'libarchive-dev', 'libc++-dev', 'libc++abi-dev', 'ninja-build']
           sources: &sources
-            - llvm-toolchain-trusty-3.8
+            - llvm-toolchain-xenial-3.8
           update: true
       script:
         - cmake -G "Ninja" -DCMAKE_CXX_COMPILER=clang++-3.8 -DCMAKE_WITH_WERROR=ON -DCMAKE_WITH_LIBCPP=ON ..
@@ -93,7 +93,7 @@ matrix:
         apt:
           packages: ['clang-4.0', 'libdevil-dev', 'libarchive-dev', 'libc++-dev', 'libc++abi-dev', 'ninja-build']
           sources: &sources
-            - llvm-toolchain-trusty-4.0
+            - llvm-toolchain-xenial-4.0
           update: true
       script:
         - cmake -G "Ninja" -DCMAKE_CXX_COMPILER=clang++-4.0 -DCMAKE_WITH_WERROR=ON -DCMAKE_WITH_LIBCPP=ON ..
@@ -107,7 +107,7 @@ matrix:
         apt:
           packages: ['clang-5.0', 'libdevil-dev', 'libarchive-dev', 'libc++-dev', 'libc++abi-dev', 'ninja-build']
           sources: &sources
-            - llvm-toolchain-trusty-5.0
+            - llvm-toolchain-xenial-5.0
           update: true
       script:
         - cmake -G "Ninja" -DCMAKE_CXX_COMPILER=clang++-5.0 -DCMAKE_WITH_WERROR=ON -DCMAKE_WITH_LIBCPP=ON ..
@@ -121,7 +121,7 @@ matrix:
         apt:
           packages: ['clang-6.0', 'libdevil-dev', 'libarchive-dev', 'libc++-dev', 'libc++abi-dev', 'ninja-build']
           sources: &sources
-            - llvm-toolchain-trusty-6.0
+            - llvm-toolchain-xenial-6.0
             - ubuntu-toolchain-r-test
           update: true
       script:
@@ -196,7 +196,7 @@ matrix:
         apt:
           packages: ['clang-6.0', 'clang-tidy-6.0', 'libdevil-dev', 'libarchive-dev', 'libc++-dev', 'libc++abi-dev', 'ninja-build']
           sources: &sources
-            - llvm-toolchain-trusty-6.0
+            - llvm-toolchain-xenial-6.0
             - ubuntu-toolchain-r-test
           update: true
       script:
@@ -210,7 +210,7 @@ matrix:
         apt:
           packages: ['clang-6.0', 'clang-tidy-6.0', 'libdevil-dev', 'libarchive-dev', 'libc++-dev', 'libc++abi-dev', 'ninja-build']
           sources: &sources
-            - llvm-toolchain-trusty-6.0
+            - llvm-toolchain-xenial-6.0
             - ubuntu-toolchain-r-test
           update: true
       script:
@@ -224,7 +224,7 @@ matrix:
         apt:
           packages: ['clang-6.0', 'clang-tidy-6.0', 'libdevil-dev', 'libarchive-dev', 'libc++-dev', 'libc++abi-dev', 'ninja-build']
           sources: &sources
-            - llvm-toolchain-trusty-6.0
+            - llvm-toolchain-xenial-6.0
             - ubuntu-toolchain-r-test
           update: true
       script:
@@ -238,7 +238,7 @@ matrix:
         apt:
           packages: ['clang-6.0', 'clang-tidy-6.0', 'libdevil-dev', 'libarchive-dev', 'libc++-dev', 'libc++abi-dev', 'ninja-build']
           sources: &sources
-            - llvm-toolchain-trusty-6.0
+            - llvm-toolchain-xenial-6.0
             - ubuntu-toolchain-r-test
           update: true
       script:
@@ -252,7 +252,7 @@ matrix:
         apt:
           packages: ['clang-6.0', 'clang-tidy-6.0', 'libdevil-dev', 'libarchive-dev', 'libc++-dev', 'libc++abi-dev', 'ninja-build']
           sources: &sources
-            - llvm-toolchain-trusty-6.0
+            - llvm-toolchain-xenial-6.0
             - ubuntu-toolchain-r-test
           update: true
       script:
@@ -266,7 +266,7 @@ matrix:
         apt:
           packages: ['clang-6.0', 'clang-tidy-6.0', 'libdevil-dev', 'libarchive-dev', 'libc++-dev', 'libc++abi-dev', 'ninja-build']
           sources: &sources
-            - llvm-toolchain-trusty-6.0
+            - llvm-toolchain-xenial-6.0
             - ubuntu-toolchain-r-test
           update: true
       script:
