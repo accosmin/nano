@@ -315,12 +315,14 @@ namespace nano
                 ///
                 tconst_reference operator()(const tensor_size_t index) const
                 {
+                        assert(data() != nullptr);
                         assert(index >= 0 && index < size());
                         return data()[index];
                 }
 
                 treference operator()(const tensor_size_t index)
                 {
+                        assert(data() != nullptr);
                         assert(index >= 0 && index < size());
                         return data()[index];
                 }
