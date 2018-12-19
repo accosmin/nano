@@ -2,6 +2,7 @@
 
 #include "gboost.h"
 #include "cortex.h"
+#include "wlearner.h"
 
 namespace nano
 {
@@ -25,7 +26,7 @@ namespace nano
         ///     table(x) = outputs(static_cast<int>(x(feature)))
         ///
         template <table_type type>
-        class wlearner_table_t
+        class wlearner_table_t : public wlearner_t
         {
         public:
 
@@ -65,6 +66,7 @@ namespace nano
                 ///
                 void scale(const vector_t& factors)
                 {
+                        assert(factors.minCoeff() >= 0);
                         assert(m_outputs.size<0>() * factors.size() == m_outputs.size());
                         for (tensor_size_t r = 0, size = m_outputs.size<0>(); r < size; ++ r)
                         {
@@ -81,12 +83,6 @@ namespace nano
                 ///
                 /// \brief change parameters
                 ///
-                auto& feature(const tensor_size_t feature)
-                {
-                        assert(feature >= 0);
-                        m_feature = feature;
-                        return *this;
-                }
                 auto& outputs(const tensor4d_t& outputs)
                 {
                         m_outputs = outputs;
@@ -96,7 +92,6 @@ namespace nano
                 ///
                 /// \brief access functions
                 ///
-                auto feature() const { return m_feature; }
                 auto fvalues() const { return m_outputs.size<0>(); }
                 const auto& outputs() const { return m_outputs; }
 
@@ -108,7 +103,6 @@ namespace nano
         private:
 
                 // attributes
-                tensor_size_t   m_feature{0};   ///< index of the selected feature
                 tensor4d_t      m_outputs;      ///< (maximum feature values + 1, #outputs) - predictions
         };
 

@@ -2,6 +2,7 @@
 
 #include "gboost.h"
 #include "cortex.h"
+#include "wlearner.h"
 
 namespace nano
 {
@@ -25,7 +26,7 @@ namespace nano
         ///     stump(x) = outputs(0) if x(feature) < threshold else outputs(1)
         ///
         template <stump_type type>
-        class wlearner_stump_t
+        class wlearner_stump_t : public wlearner_t
         {
         public:
 
@@ -65,6 +66,7 @@ namespace nano
                 ///
                 void scale(const vector_t& factors)
                 {
+                        assert(factors.minCoeff() >= 0);
                         assert(2 * factors.size() == m_outputs.size());
                         m_outputs.array(0) *= factors.array();
                         m_outputs.array(1) *= factors.array();
@@ -79,12 +81,6 @@ namespace nano
                 ///
                 /// \brief change parameters
                 ///
-                auto& feature(const tensor_size_t feature)
-                {
-                        assert(feature >= 0);
-                        m_feature = feature;
-                        return *this;
-                }
                 auto& threshold(const scalar_t threshold)
                 {
                         m_threshold = threshold;
@@ -100,7 +96,6 @@ namespace nano
                 ///
                 /// \brief access functions
                 ///
-                auto feature() const { return m_feature; }
                 auto threshold() const { return m_threshold; }
                 const auto& outputs() const { return m_outputs; }
 
@@ -138,7 +133,6 @@ namespace nano
         private:
 
                 // attributes
-                tensor_size_t   m_feature{0};   ///< index of the selected feature
                 scalar_t        m_threshold{0}; ///< threshold
                 tensor4d_t      m_outputs;      ///< (2, #outputs) - predictions below and above the threshold
         };

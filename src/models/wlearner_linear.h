@@ -2,6 +2,7 @@
 
 #include "gboost.h"
 #include "cortex.h"
+#include "wlearner.h"
 
 namespace nano
 {
@@ -15,7 +16,7 @@ namespace nano
         /// \brief a linear weak learner is performing an affine transformation of the selected feature feature:
         ///     linear(x) = a * x(feature) + b
         ///
-        class NANO_PUBLIC wlearner_linear_t
+        class NANO_PUBLIC wlearner_linear_t : public wlearner_t
         {
         public:
 
@@ -57,6 +58,7 @@ namespace nano
                 ///
                 void scale(const vector_t& factors)
                 {
+                        assert(factors.minCoeff() >= 0);
                         assert(factors.size() == m_a.size());
                         assert(factors.size() == m_b.size());
                         m_a.array() *= factors.array();
@@ -72,12 +74,6 @@ namespace nano
                 ///
                 /// \brief change parameters
                 ///
-                auto& feature(const tensor_size_t feature)
-                {
-                        assert(feature >= 0);
-                        m_feature = feature;
-                        return *this;
-                }
                 auto& a(const tensor3d_t& a)
                 {
                         m_a = a;
@@ -94,7 +90,6 @@ namespace nano
                 ///
                 const auto& a() const { return m_a; }
                 const auto& b() const { return m_b; }
-                auto feature() const { return m_feature; }
 
         private:
 
@@ -104,7 +99,6 @@ namespace nano
         private:
 
                 // attributes
-                tensor_size_t   m_feature{0};   ///< index of the selected feature
                 tensor3d_t      m_a;            ///<
                 tensor3d_t      m_b;            ///<
         };
