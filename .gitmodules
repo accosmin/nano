@@ -10,3 +10,7 @@
 	path = deps/utest
 	url = https://github.com/accosmin/utest.git
 	branch = master
+[submodule "deps/cmake"]
+	path = deps/cmake
+	url = https://github.com/accosmin/cmake.git
+	branch = master

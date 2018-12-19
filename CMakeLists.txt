@@ -12,9 +12,9 @@ set(ENV{EIGEN3_ROOT} "${CMAKE_SOURCE_DIR}/deps")
 set(ENV{EIGEN3_ROOT_DIR} "${CMAKE_SOURCE_DIR}/deps/")
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/deps/eigen3/cmake")
 
-include(cmake/utils.cmake)
-include(cmake/options.cmake)
-include(cmake/configure.cmake)
+include(deps/cmake/cmake/utils.cmake)
+include(deps/cmake/cmake/options.cmake)
+include(deps/cmake/cmake/configure.cmake)
 include(cmake/dependencies.cmake)
 
 set(NANO_MAJOR_VERSION 0)
@@ -28,6 +28,10 @@ configure_file(
 include_directories(${CMAKE_SOURCE_DIR}/src)
 include_directories(SYSTEM ${CMAKE_SOURCE_DIR}/deps/utest)
 include_directories(SYSTEM ${CMAKE_SOURCE_DIR}/deps/json/single_include)
+
+if(CMAKE_BUILD_TYPE MATCHES "[Dd][Ee][Bb][Uu][Gg]")
+        add_definitions(-DNANO_DEBUG)
+endif()
 
 add_subdirectory(src)
 add_subdirectory(apps)
