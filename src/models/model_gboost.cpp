@@ -81,9 +81,8 @@ static auto train_config(
                 const auto epsilon = epsilon2<scalar_t>();
                 const auto x0 = vector_t{vector_t::Zero(loss_tr.size())};
                 const auto state = solver->minimize(100, epsilon, loss_tr, x0);
-                const auto step = state.x(0);
 
-                wlearner.scale(step);
+                wlearner.scale(state.x);
                 wlearner.scale(shrinkage);
                 wlearners.push_back(wlearner);
 
