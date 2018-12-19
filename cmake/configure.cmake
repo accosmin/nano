@@ -88,10 +88,40 @@ if(CMAKE_WITH_COVERAGE)
         setup_coverage()
 endif()
 
-# debug build by default
+# debug definition
 if(CMAKE_BUILD_TYPE MATCHES "[Dd][Ee][Bb][Uu][Gg]")
         add_definitions(-DNANO_DEBUG)
 endif()
 
-# setup ctest with valgrind
-setup_valgrind()
+# set ccache
+if(CMAKE_WITH_CCACHE)
+        setup_ccache()
+endif()
+
+# debug build by default
+if(NOT CMAKE_BUILD_TYPE)
+        set(CMAKE_BUILD_TYPE "Debug")
+endif()
+
+message(STATUS "-----------------------------------------------------------------------------" "")
+message(STATUS "SYSTEM:                        " "${CMAKE_SYSTEM_NAME}")
+message(STATUS "PROCESSOR:                     " "${CMAKE_HOST_SYSTEM_PROCESSOR}")
+message(STATUS "LINKER:                        " "${CMAKE_LINKER}")
+message(STATUS "COMPILER:                      " "${CMAKE_CXX_COMPILER_ID} ${CMAKE_CXX_COMPILER_VERSION}")
+message(STATUS "------------------------------------------------------------------------------" "")
+message(STATUS "CXX FLAGS:                     " "${CMAKE_CXX_FLAGS}")
+message(STATUS "CXX DEBUG FLAGS:               " "${CMAKE_CXX_FLAGS_DEBUG}")
+message(STATUS "CXX RELEASE FLAGS:             " "${CMAKE_CXX_FLAGS_RELEASE}")
+message(STATUS "CXX RELWITHDEBINFO FLAGS:      " "${CMAKE_CXX_FLAGS_RELWITHDEBINFO}")
+message(STATUS "CXX MINSIZEREL FLAGS:          " "${CMAKE_CXX_FLAGS_MINSIZEREL}")
+message(STATUS "CMAKE_EXE_LINKER_FLAGS:        " "${CMAKE_EXE_LINKER_FLAGS}")
+message(STATUS "------------------------------------------------------------------------------" "")
+message(STATUS "BUILD TYPE:                    " "${CMAKE_BUILD_TYPE}")
+message(STATUS "------------------------------------------------------------------------------" "")
+message(STATUS "ASAN                           " "${CMAKE_WITH_ASAN}")
+message(STATUS "MSAN                           " "${CMAKE_WITH_MSAN}")
+message(STATUS "TSAN                           " "${CMAKE_WITH_TSAN}")
+message(STATUS "TESTS                          " "${CMAKE_WITH_TESTS}")
+message(STATUS "BENCH                          " "${CMAKE_WITH_BENCH}")
+message(STATUS "CCACHE                         " "${CMAKE_WITH_CCACHE}")
+message(STATUS "------------------------------------------------------------------------------" "")
