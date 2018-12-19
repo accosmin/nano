@@ -9,7 +9,7 @@ using namespace nano;
 
 static auto make_task(const affine_task_type task_type)
 {
-        auto task = get_tasks().get("synth-affine");
+        auto task = get_task("synth-affine");
         UTEST_REQUIRE(task);
         task->from_json(to_json("folds", 1, "isize", 5, "osize", 3, "count", 300, "type", task_type));
         UTEST_REQUIRE(task->load());
@@ -19,7 +19,7 @@ static auto make_task(const affine_task_type task_type)
 
 static auto make_loss(const string_t& id)
 {
-        auto loss = get_losses().get(id);
+        auto loss = get_loss(id);
         UTEST_REQUIRE(loss);
         return loss;
 }
@@ -31,7 +31,7 @@ UTEST_CASE(stump_real)
         const auto loss = make_loss("s-logistic");
         const auto task = make_task(affine_task_type::classification);
 
-        const auto model = get_models().get("gboost-real-stump");
+        const auto model = get_model("gboost-real-stump");
         UTEST_REQUIRE(model);
         model->from_json(to_json(
                 "rounds", 10, "patience", 10, "solver", "cgd",

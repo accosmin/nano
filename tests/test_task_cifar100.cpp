@@ -8,7 +8,7 @@ UTEST_BEGIN_MODULE(test_task_cifar100)
 
 UTEST_CASE(failed)
 {
-        const auto task = get_tasks().get("cifar100");
+        const auto task = get_task("cifar100");
         UTEST_REQUIRE(task);
 
         task->from_json(to_json("dir", "/dev/null?!"));
@@ -17,7 +17,7 @@ UTEST_CASE(failed)
 
 UTEST_CASE(default_config)
 {
-        const auto task = nano::get_tasks().get("cifar100");
+        const auto task = nano::get_task("cifar100");
         UTEST_REQUIRE(task);
 
         json_t json;
@@ -39,7 +39,7 @@ UTEST_CASE(loading)
         const auto train_samples = size_t(50000);
         const auto test_samples = size_t(10000);
 
-        const auto task = nano::get_tasks().get("cifar100");
+        const auto task = nano::get_task("cifar100");
         UTEST_REQUIRE(task);
         task->from_json(to_json("folds", folds));
         UTEST_REQUIRE(task->load());

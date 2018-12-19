@@ -7,7 +7,7 @@ UTEST_BEGIN_MODULE(test_task_affine)
 
 UTEST_CASE(default_config)
 {
-        const auto task = nano::get_tasks().get("synth-affine");
+        const auto task = nano::get_task("synth-affine");
         UTEST_REQUIRE(task);
 
         json_t json;
@@ -28,7 +28,7 @@ UTEST_CASE(loading)
                 const auto count = size_t(350);
                 const auto folds = size_t(3);
 
-                auto task = get_tasks().get("synth-affine");
+                auto task = get_task("synth-affine");
                 UTEST_REQUIRE(task);
                 task->from_json(to_json(
                         "isize", isize, "osize", osize, "noise", 0, "count", count, "folds", folds, "type", type));

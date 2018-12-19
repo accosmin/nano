@@ -186,7 +186,7 @@ int main(int argc, const char* argv[])
         std::vector<std::pair<string_t, rsolver_t>> solvers;
         for (const auto& id : get_solvers().ids(sregex))
         {
-                auto solver = get_solvers().get(id);
+                auto solver = get_solver(id);
                 if (cmdline.has("c1"))
                 {
                         solver->from_json(nano::to_json("c1", cmdline.get<scalar_t>("c1")));

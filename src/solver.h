@@ -10,7 +10,15 @@ namespace nano
         using solver_factory_t = factory_t<solver_t>;
         using rsolver_t = solver_factory_t::trobject;
 
+        ///
+        /// \brief returns all registered solvers.
+        ///
         NANO_PUBLIC solver_factory_t& get_solvers();
+
+        ///
+        /// \brief returns the solver with the given id.
+        ///
+        inline auto get_solver(const string_t& id) { return get_solvers().get(id); }
 
         ///
         /// \brief wrapper to keep track of the number of function value and gradient calls.

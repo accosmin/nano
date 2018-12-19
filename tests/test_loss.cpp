@@ -53,7 +53,7 @@ UTEST_CASE(gradient)
         {
                 for (tensor_size_t cmd_dims = cmd_min_dims; cmd_dims <= cmd_max_dims; ++ cmd_dims)
                 {
-                        const auto loss = get_losses().get(loss_id);
+                        const auto loss = get_loss(loss_id);
                         const auto function = loss_function_t(loss, cmd_dims);
 
                         for (size_t t = 0; t < cmd_tests; ++ t)
@@ -71,7 +71,7 @@ UTEST_CASE(single_class)
 {
         for (const auto& loss_id : {"classnll", "s-logistic", "s-exponential", "s-hinge"})
         {
-                const auto loss = get_losses().get(loss_id);
+                const auto loss = get_loss(loss_id);
                 UTEST_REQUIRE(loss);
 
                 const auto n_classes = 1;
@@ -113,7 +113,7 @@ UTEST_CASE(single_label_multi_class)
 {
         for (const auto& loss_id : {"classnll", "s-logistic", "s-exponential", "s-hinge"})
         {
-                const auto loss = get_losses().get(loss_id);
+                const auto loss = get_loss(loss_id);
                 UTEST_REQUIRE(loss);
 
                 const auto n_classes = 13;
@@ -156,7 +156,7 @@ UTEST_CASE(multi_label_multi_class)
 {
         for (const auto& loss_id : {"m-logistic", "m-exponential", "m-hinge"})
         {
-                const auto loss = get_losses().get(loss_id);
+                const auto loss = get_loss(loss_id);
                 UTEST_REQUIRE(loss);
 
                 const auto n_classes = 13;
@@ -212,7 +212,7 @@ UTEST_CASE(regression)
 {
         for (const auto& loss_id : {"square", "cauchy"})
         {
-                const auto loss = get_losses().get(loss_id);
+                const auto loss = get_loss(loss_id);
                 UTEST_REQUIRE(loss);
 
                 tensor3d_t target(4, 1, 1);

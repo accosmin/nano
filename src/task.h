@@ -11,7 +11,15 @@ namespace nano
         using task_factory_t = factory_t<task_t>;
         using rtask_t = task_factory_t::trobject;
 
+        ///
+        /// \brief returns all registered tasks.
+        ///
         NANO_PUBLIC task_factory_t& get_tasks();
+
+        ///
+        /// \brief returns the task with the given id.
+        ///
+        inline auto get_task(const string_t& id) { return get_tasks().get(id); }
 
         ///
         /// \brief machine learning task consisting of a collection of fixed-size 3D input tensors

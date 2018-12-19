@@ -17,7 +17,7 @@ UTEST_CASE(evaluate)
 
                 for (const auto& id : get_solvers().ids())
                 {
-                        const auto solver = get_solvers().get(id);
+                        const auto solver = get_solver(id);
                         UTEST_REQUIRE(solver);
 
                         if (    id == "dfp" ||

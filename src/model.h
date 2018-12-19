@@ -11,7 +11,15 @@ namespace nano
         using model_factory_t = factory_t<model_t>;
         using rmodel_t = model_factory_t::trobject;
 
+        ///
+        /// \brief returns all registered models.
+        ///
         NANO_PUBLIC model_factory_t& get_models();
+
+        ///
+        /// \brief returns the model with the given id.
+        ///
+        inline auto get_model(const string_t& id) { return get_models().get(id); }
 
         class ibstream_t;
         class obstream_t;

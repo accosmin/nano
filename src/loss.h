@@ -11,7 +11,15 @@ namespace nano
         using loss_factory_t = factory_t<loss_t>;
         using rloss_t = loss_factory_t::trobject;
 
+        ///
+        /// \brief returns all registered losses.
+        ///
         NANO_PUBLIC loss_factory_t& get_losses();
+
+        ///
+        /// \brief returns the loss with the given id.
+        ///
+        inline auto get_loss(const string_t& id) { return get_losses().get(id); }
 
         ///
         /// \brief generic multivariate loss function of two parameters:

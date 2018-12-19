@@ -13,7 +13,7 @@ static auto make_fold()
 
 static auto make_task()
 {
-        auto task = get_tasks().get("synth-affine");
+        auto task = get_task("synth-affine");
         UTEST_REQUIRE(task);
         task->from_json(to_json("folds", 1, "isize", 3, "osize", 2, "count", 100));
         UTEST_REQUIRE(task->load());
@@ -22,7 +22,7 @@ static auto make_task()
 
 static auto make_loss()
 {
-        auto loss = get_losses().get("square");
+        auto loss = get_loss("square");
         UTEST_REQUIRE(loss);
         return loss;
 }

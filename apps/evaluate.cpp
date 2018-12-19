@@ -45,7 +45,7 @@ int main(int argc, const char *argv[])
                 strcat("load task configuration from <", cmd_task, ">"));
 
         rtask_t task;
-        critical(task = get_tasks().get(id),
+        critical(task = get_task(id),
                 strcat("search task <", id, ">"));
 
         task->from_json(json);
@@ -60,7 +60,7 @@ int main(int argc, const char *argv[])
                 strcat("load loss configuration from <", cmd_loss, ">"));
 
         rloss_t loss;
-        critical(loss = get_losses().get(id),
+        critical(loss = get_loss(id),
                 strcat("search loss <", id, ">"));
 
         // load model

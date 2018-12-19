@@ -8,7 +8,7 @@ UTEST_BEGIN_MODULE(test_task_wine)
 
 UTEST_CASE(failed)
 {
-        const auto task = get_tasks().get("wine");
+        const auto task = get_task("wine");
         UTEST_REQUIRE(task);
 
         task->from_json(to_json("path", "/dev/null?!"));
@@ -17,7 +17,7 @@ UTEST_CASE(failed)
 
 UTEST_CASE(default_config)
 {
-        const auto task = nano::get_tasks().get("wine");
+        const auto task = nano::get_task("wine");
         UTEST_REQUIRE(task);
 
         json_t json;
@@ -38,7 +38,7 @@ UTEST_CASE(loading)
         const auto folds = size_t(4);
         const auto samples = size_t(178);
 
-        const auto task = nano::get_tasks().get("wine");
+        const auto task = nano::get_task("wine");
         UTEST_REQUIRE(task);
         task->from_json(to_json("folds", folds));
         UTEST_REQUIRE(task->load());
