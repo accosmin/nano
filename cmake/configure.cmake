@@ -88,23 +88,9 @@ if(CMAKE_WITH_COVERAGE)
         setup_coverage()
 endif()
 
-# debug
+# debug build by default
 if(CMAKE_BUILD_TYPE MATCHES "[Dd][Ee][Bb][Uu][Gg]")
         add_definitions(-DNANO_DEBUG)
-endif()
-
-# scalar type
-if((NANO_WITH_FLOAT_SCALAR) AND (NOT NANO_WITH_DOUBLE_SCALAR) AND (NOT NANO_WITH_LONG_DOUBLE_SCALAR))
-        message(STATUS "Using float as the default scalar type.")
-        add_definitions(-DNANO_FLOAT_SCALAR)
-elseif((NOT NANO_WITH_FLOAT_SCALAR) AND (NANO_WITH_DOUBLE_SCALAR) AND (NOT NANO_WITH_LONG_DOUBLE_SCALAR))
-        message(STATUS "Using double as the default scalar type.")
-        add_definitions(-DNANO_DOUBLE_SCALAR)
-elseif((NOT NANO_WITH_FLOAT_SCALAR) AND (NOT NANO_WITH_DOUBLE_SCALAR) AND (NANO_WITH_LONG_DOUBLE_SCALAR))
-        message(STATUS "Using long double as the default scalar type.")
-        add_definitions(-DNANO_LONG_DOUBLE_SCALAR)
-else()
-        message(FATAL_ERROR "The scalar type is not specified! Use one of the NANO_WITH_[FLOAT|DOUBLE|LONG_DOUBLE]_SCALAR options.")
 endif()
 
 # setup ctest with valgrind
