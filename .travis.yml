@@ -26,7 +26,7 @@ matrix:
             - ubuntu-toolchain-r-test
           update: true
       script:
-        - cmake -G "Ninja" -DCMAKE_CXX_COMPILER=g++-5 -DNANO_WITH_WERROR=ON ..
+        - cmake -G "Ninja" -DCMAKE_CXX_COMPILER=g++-5 -DCMAKE_WITH_WERROR=ON ..
         - ninja
         - bash ../scripts/ci_ctest.sh
 
@@ -40,7 +40,7 @@ matrix:
             - ubuntu-toolchain-r-test
           update: true
       script:
-        - cmake -G "Ninja" -DCMAKE_CXX_COMPILER=g++-6 -DNANO_WITH_WERROR=ON ..
+        - cmake -G "Ninja" -DCMAKE_CXX_COMPILER=g++-6 -DCMAKE_WITH_WERROR=ON ..
         - ninja
         - bash ../scripts/ci_ctest.sh
 
@@ -54,7 +54,7 @@ matrix:
             - ubuntu-toolchain-r-test
           update: true
       script:
-        - cmake -G "Ninja" -DCMAKE_CXX_COMPILER=g++-7 -DNANO_WITH_WERROR=ON ..
+        - cmake -G "Ninja" -DCMAKE_CXX_COMPILER=g++-7 -DCMAKE_WITH_WERROR=ON ..
         - ninja
         - bash ../scripts/ci_ctest.sh
 
@@ -68,7 +68,7 @@ matrix:
             - ubuntu-toolchain-r-test
           update: true
       script:
-        - cmake -G "Ninja" -DCMAKE_CXX_COMPILER=g++-8 -DNANO_WITH_WERROR=ON ..
+        - cmake -G "Ninja" -DCMAKE_CXX_COMPILER=g++-8 -DCMAKE_WITH_WERROR=ON ..
         - ninja
         - bash ../scripts/ci_ctest.sh
 
@@ -82,7 +82,7 @@ matrix:
             - llvm-toolchain-trusty-3.8
           update: true
       script:
-        - cmake -G "Ninja" -DCMAKE_CXX_COMPILER=clang++-3.8 -DNANO_WITH_WERROR=ON -DNANO_WITH_LIBCPP=ON ..
+        - cmake -G "Ninja" -DCMAKE_CXX_COMPILER=clang++-3.8 -DCMAKE_WITH_WERROR=ON -DCMAKE_WITH_LIBCPP=ON ..
         - ninja
         - bash ../scripts/ci_ctest.sh
 
@@ -96,7 +96,7 @@ matrix:
             - llvm-toolchain-trusty-4.0
           update: true
       script:
-        - cmake -G "Ninja" -DCMAKE_CXX_COMPILER=clang++-4.0 -DNANO_WITH_WERROR=ON -DNANO_WITH_LIBCPP=ON ..
+        - cmake -G "Ninja" -DCMAKE_CXX_COMPILER=clang++-4.0 -DCMAKE_WITH_WERROR=ON -DCMAKE_WITH_LIBCPP=ON ..
         - ninja
         - bash ../scripts/ci_ctest.sh
 
@@ -110,7 +110,7 @@ matrix:
             - llvm-toolchain-trusty-5.0
           update: true
       script:
-        - cmake -G "Ninja" -DCMAKE_CXX_COMPILER=clang++-5.0 -DNANO_WITH_WERROR=ON -DNANO_WITH_LIBCPP=ON ..
+        - cmake -G "Ninja" -DCMAKE_CXX_COMPILER=clang++-5.0 -DCMAKE_WITH_WERROR=ON -DCMAKE_WITH_LIBCPP=ON ..
         - ninja
         - bash ../scripts/ci_ctest.sh
 
@@ -125,7 +125,7 @@ matrix:
             - ubuntu-toolchain-r-test
           update: true
       script:
-        - cmake -G "Ninja" -DCMAKE_CXX_COMPILER=clang++-6.0 -DNANO_WITH_WERROR=ON -DNANO_WITH_LIBCPP=ON ..
+        - cmake -G "Ninja" -DCMAKE_CXX_COMPILER=clang++-6.0 -DCMAKE_WITH_WERROR=ON -DCMAKE_WITH_LIBCPP=ON ..
         - ninja
         - bash ../scripts/ci_ctest.sh
 
@@ -141,7 +141,7 @@ matrix:
             - ubuntu-toolchain-r-test
           update: true
       script:
-        - cmake -G "Ninja" -DCMAKE_CXX_COMPILER=g++-7 -DNANO_WITH_WERROR=ON -DNANO_WITH_ASAN=ON -DNANO_WITH_GOLD=ON ..
+        - cmake -G "Ninja" -DCMAKE_CXX_COMPILER=g++-7 -DCMAKE_WITH_WERROR=ON -DCMAKE_WITH_ASAN=ON -DCMAKE_WITH_GOLD=ON ..
         - ninja
         - bash ../scripts/ci_ctest.sh
 
@@ -155,7 +155,7 @@ matrix:
             - ubuntu-toolchain-r-test
           update: true
       script:
-        - cmake -G "Ninja" -DCMAKE_CXX_COMPILER=g++-7 -DNANO_WITH_WERROR=ON -DNANO_WITH_LSAN=ON -DNANO_WITH_GOLD=ON ..
+        - cmake -G "Ninja" -DCMAKE_CXX_COMPILER=g++-7 -DCMAKE_WITH_WERROR=ON -DCMAKE_WITH_LSAN=ON -DCMAKE_WITH_GOLD=ON ..
         - ninja
         - bash ../scripts/ci_ctest.sh
 
@@ -169,7 +169,7 @@ matrix:
             - ubuntu-toolchain-r-test
           update: true
       script:
-        - cmake -G "Ninja" -DCMAKE_CXX_COMPILER=g++-7 -DNANO_WITH_WERROR=ON -DNANO_WITH_USAN=ON -DNANO_WITH_GOLD=ON ..
+        - cmake -G "Ninja" -DCMAKE_CXX_COMPILER=g++-7 -DCMAKE_WITH_WERROR=ON -DCMAKE_WITH_USAN=ON -DCMAKE_WITH_GOLD=ON ..
         - ninja
         - bash ../scripts/ci_ctest.sh
 
@@ -183,7 +183,7 @@ matrix:
             - ubuntu-toolchain-r-test
           update: true
       script:
-        - cmake -G "Ninja" -DCMAKE_CXX_COMPILER=g++-7 -DNANO_WITH_WERROR=ON -DNANO_WITH_TSAN=ON -DNANO_WITH_GOLD=ON ..
+        - cmake -G "Ninja" -DCMAKE_CXX_COMPILER=g++-7 -DCMAKE_WITH_WERROR=ON -DCMAKE_WITH_TSAN=ON -DCMAKE_WITH_GOLD=ON ..
         - ninja
         - bash ../scripts/ci_ctest.sh
 
@@ -200,7 +200,7 @@ matrix:
             - ubuntu-toolchain-r-test
           update: true
       script:
-        - cmake -G "Ninja" -DCMAKE_CXX_COMPILER=clang++-6.0 -DNANO_WITH_WERROR=ON -DNANO_WITH_LIBCPP=ON -DNANO_WITH_CLANG_TIDY=ON ..
+        - cmake -G "Ninja" -DCMAKE_CXX_COMPILER=clang++-6.0 -DCMAKE_WITH_WERROR=ON -DCMAKE_WITH_LIBCPP=ON -DCMAKE_WITH_CLANG_TIDY=ON ..
         - bash ../scripts/ci_clang_tidy.sh clang-tidy-misc
 
     - os: linux
@@ -214,7 +214,7 @@ matrix:
             - ubuntu-toolchain-r-test
           update: true
       script:
-        - cmake -G "Ninja" -DCMAKE_CXX_COMPILER=clang++-6.0 -DNANO_WITH_WERROR=ON -DNANO_WITH_LIBCPP=ON -DNANO_WITH_CLANG_TIDY=ON ..
+        - cmake -G "Ninja" -DCMAKE_CXX_COMPILER=clang++-6.0 -DCMAKE_WITH_WERROR=ON -DCMAKE_WITH_LIBCPP=ON -DCMAKE_WITH_CLANG_TIDY=ON ..
         - bash ../scripts/ci_clang_tidy.sh clang-tidy-bugprone
 
     - os: linux
@@ -228,7 +228,7 @@ matrix:
             - ubuntu-toolchain-r-test
           update: true
       script:
-        - cmake -G "Ninja" -DCMAKE_CXX_COMPILER=clang++-6.0 -DNANO_WITH_WERROR=ON -DNANO_WITH_LIBCPP=ON -DNANO_WITH_CLANG_TIDY=ON ..
+        - cmake -G "Ninja" -DCMAKE_CXX_COMPILER=clang++-6.0 -DCMAKE_WITH_WERROR=ON -DCMAKE_WITH_LIBCPP=ON -DCMAKE_WITH_CLANG_TIDY=ON ..
         - bash ../scripts/ci_clang_tidy.sh clang-tidy-modernize
 
     - os: linux
@@ -242,7 +242,7 @@ matrix:
             - ubuntu-toolchain-r-test
           update: true
       script:
-        - cmake -G "Ninja" -DCMAKE_CXX_COMPILER=clang++-6.0 -DNANO_WITH_WERROR=ON -DNANO_WITH_LIBCPP=ON -DNANO_WITH_CLANG_TIDY=ON ..
+        - cmake -G "Ninja" -DCMAKE_CXX_COMPILER=clang++-6.0 -DCMAKE_WITH_WERROR=ON -DCMAKE_WITH_LIBCPP=ON -DCMAKE_WITH_CLANG_TIDY=ON ..
         - bash ../scripts/ci_clang_tidy.sh clang-tidy-performance
 
     - os: linux
@@ -256,7 +256,7 @@ matrix:
             - ubuntu-toolchain-r-test
           update: true
       script:
-        - cmake -G "Ninja" -DCMAKE_CXX_COMPILER=clang++-6.0 -DNANO_WITH_WERROR=ON -DNANO_WITH_LIBCPP=ON -DNANO_WITH_CLANG_TIDY=ON ..
+        - cmake -G "Ninja" -DCMAKE_CXX_COMPILER=clang++-6.0 -DCMAKE_WITH_WERROR=ON -DCMAKE_WITH_LIBCPP=ON -DCMAKE_WITH_CLANG_TIDY=ON ..
         - bash ../scripts/ci_clang_tidy.sh clang-tidy-clang-portability
 
     - os: linux
@@ -270,7 +270,7 @@ matrix:
             - ubuntu-toolchain-r-test
           update: true
       script:
-        - cmake -G "Ninja" -DCMAKE_CXX_COMPILER=clang++-6.0 -DNANO_WITH_WERROR=ON -DNANO_WITH_LIBCPP=ON -DNANO_WITH_CLANG_TIDY=ON ..
+        - cmake -G "Ninja" -DCMAKE_CXX_COMPILER=clang++-6.0 -DCMAKE_WITH_WERROR=ON -DCMAKE_WITH_LIBCPP=ON -DCMAKE_WITH_CLANG_TIDY=ON ..
         - bash ../scripts/ci_clang_tidy.sh clang-tidy-clang-analyzer
 
     - os: linux
@@ -294,7 +294,7 @@ matrix:
             - ubuntu-toolchain-r-test
           update: true
       script:
-        - cmake -G "Ninja" -DCMAKE_CXX_COMPILER=g++-7 -DCMAKE_BUILD_TYPE=RelWithDebInfo -DNANO_WITH_WERROR=ON -DNANO_WITH_TUNE_NATIVE=OFF ..
+        - cmake -G "Ninja" -DCMAKE_CXX_COMPILER=g++-7 -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_WITH_WERROR=ON -DCMAKE_WITH_TUNE_NATIVE=OFF ..
         - ninja
         - bash ../scripts/ci_valgrind.sh
 
@@ -310,7 +310,7 @@ matrix:
       script:
         - sudo -H pip install --upgrade pip
         - sudo -H pip install coverage
-        - cmake -G "Ninja" -DCMAKE_CXX_COMPILER=g++-7 -DNANO_WITH_WERROR=ON -DNANO_WITH_COVERAGE=ON ..
+        - cmake -G "Ninja" -DCMAKE_CXX_COMPILER=g++-7 -DCMAKE_WITH_WERROR=ON -DCMAKE_WITH_COVERAGE=ON ..
         - ninja
         - bash ../scripts/ci_codecov.sh
 
@@ -319,7 +319,7 @@ matrix:
       osx_image: xcode7.3
       env: TEST="build (xcode7.3)"
       script:
-        - cmake -G "Ninja" -DNANO_WITH_WERROR=ON ..
+        - cmake -G "Ninja" -DCMAKE_WITH_WERROR=ON ..
         - ninja
         - bash ../scripts/ci_ctest.sh
 
@@ -328,7 +328,7 @@ matrix:
       osx_image: xcode8.3
       env: TEST="build (xcode8.3)"
       script:
-        - cmake -G "Ninja" -DNANO_WITH_WERROR=ON ..
+        - cmake -G "Ninja" -DCMAKE_WITH_WERROR=ON ..
         - ninja
         - bash ../scripts/ci_ctest.sh
 
@@ -337,7 +337,7 @@ matrix:
       osx_image: xcode9.4
       env: TEST="build (xcode9.4)"
       script:
-        - cmake -G "Ninja" -DNANO_WITH_WERROR=ON ..
+        - cmake -G "Ninja" -DCMAKE_WITH_WERROR=ON ..
         - ninja
         - bash ../scripts/ci_ctest.sh
 
@@ -346,6 +346,6 @@ matrix:
       osx_image: xcode10
       env: TEST="build (xcode10)"
       script:
-        - cmake -G "Ninja" -DNANO_WITH_WERROR=ON ..
+        - cmake -G "Ninja" -DCMAKE_WITH_WERROR=ON ..
         - ninja
         - bash ../scripts/ci_ctest.sh
