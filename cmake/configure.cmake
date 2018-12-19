@@ -8,13 +8,16 @@ if(CMAKE_CXX_COMPILER_ID MATCHES GNU OR CMAKE_CXX_COMPILER_ID MATCHES Clang)
 
         # set flags
         set(CMAKE_CXX_FLAGS                     "-std=c++14 -pedantic")
-if(NANO_WITH_TUNE_NATIVE)
+if(CMAKE_WITH_TUNE_NATIVE)
         set(CMAKE_CXX_FLAGS                     "${CMAKE_CXX_FLAGS} -march=native -mtune=native")
 endif()
-if(NANO_WITH_WERROR)
+if(CMAKE_WITH_WERROR)
         set(CMAKE_CXX_FLAGS                     "${CMAKE_CXX_FLAGS} -Werror")
 endif()
-if(NANO_WITH_TIME_REPORT)
+if(CMAKE_WITH_WSHADOW)
+        set(CMAKE_CXX_FLAGS                     "${CMAKE_CXX_FLAGS} -Wshadow")
+endif()
+if(CMAKE_WITH_TIME_REPORT)
         set(CMAKE_CXX_FLAGS                     "${CMAKE_CXX_FLAGS} -ftime-report")
 endif()
         set(CMAKE_CXX_FLAGS                     "${CMAKE_CXX_FLAGS} -Wall -Wextra")
@@ -41,32 +44,32 @@ endif()
         set(CMAKE_CXX_FLAGS_MINSIZEREL          "-Os -DNDEBUG")
 
         # set libc++
-        if(NANO_WITH_LIBCPP)
+        if(CMAKE_WITH_LIBCPP)
                 setup_libcpp()
         endif()
 
         # set gold linker
-        if(NANO_WITH_GOLD)
+        if(CMAKE_WITH_GOLD)
                 setup_gold()
         endif()
 
         # set sanitizers
-        if(NANO_WITH_ASAN)
+        if(CMAKE_WITH_ASAN)
                 setup_asan()
-        elseif(NANO_WITH_USAN)
+        elseif(CMAKE_WITH_USAN)
                 setup_usan()
-        elseif(NANO_WITH_LSAN)
+        elseif(CMAKE_WITH_LSAN)
                 setup_lsan()
-        elseif(NANO_WITH_MSAN)
+        elseif(CMAKE_WITH_MSAN)
                 setup_msan()
-        elseif(NANO_WITH_TSAN)
+        elseif(CMAKE_WITH_TSAN)
                 setup_tsan()
         endif()
 
         # set LTO
-        if(NANO_WITH_LTO)
+        if(CMAKE_WITH_LTO)
                 setup_lto()
-        elseif(NANO_WITH_THIN_LTO)
+        elseif(CMAKE_WITH_THIN_LTO)
                 setup_thin_lto()
         endif()
 
@@ -76,12 +79,12 @@ else()
 endif()
 
 # set clang-tidy
-if(NANO_WITH_CLANG_TIDY)
+if(CMAKE_WITH_CLANG_TIDY)
         setup_clang_tidy()
 endif()
 
 # set coverage
-if(NANO_WITH_COVERAGE)
+if(CMAKE_WITH_COVERAGE)
         setup_coverage()
 endif()
 
