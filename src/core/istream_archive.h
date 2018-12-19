@@ -9,6 +9,7 @@ namespace nano
         ///
         /// \brief libarchive-based streaming of binary data.
         ///
+        // cppcheck-suppress class_X_Y
         class NANO_PUBLIC archive_istream_t final : public istream_t
         {
         public:

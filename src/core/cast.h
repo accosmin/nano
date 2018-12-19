@@ -25,10 +25,10 @@ namespace nano
         template <typename tenum>
         std::vector<tenum> enum_values()
         {
-                static const auto mapping = enum_string<tenum>();
-                std::vector<tenum> enums(mapping.size());
-                for (const auto& elem : mapping)
+                std::vector<tenum> enums;
+                for (const auto& elem : enum_string<tenum>())
                 {
+                        // cppcheck-suppress useStlAlgorithm
                         enums.push_back(elem.first);
                 }
                 return enums;
@@ -75,16 +75,18 @@ namespace nano
         {
                 static string_t cast(const tenum value)
                 {
-                        static const auto mapping = enum_string<tenum>();
-                        for (const auto& elem : mapping)
+                        for (const auto& elem : enum_string<tenum>())
                         {
                                 if (elem.first == value)
+                                // cppcheck-suppress useStlAlgorithm
                                 {
                                         return elem.second;
                                 }
                         }
+
                         const auto str = std::to_string(static_cast<int>(value));
-                        const auto msg = string_t("missing mapping for enumeration ") + typeid(tenum).name() + " <" + str + ">!";
+                        const auto msg = string_t("missing mapping for enumeration ") +
+                                typeid(tenum).name() + " <" + str + ">!";
                         throw std::invalid_argument(msg);
                 }
         };
@@ -206,10 +208,12 @@ namespace nano
                         for (const auto& elem : enum_string<tenum>())
                         {
                                 if (elem.second == str)
+                                // cppcheck-suppress useStlAlgorithm
                                 {
                                         return elem.first;
                                 }
                         }
+
                         const auto msg = string_t("invalid ") + typeid(tenum).name() + " <" + str + ">!";
                         throw std::invalid_argument(msg);
                 }

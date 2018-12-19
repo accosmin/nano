@@ -46,6 +46,7 @@ UTEST_CASE(construct_rect)
                 UTEST_CHECK_EQUAL(rect.rows(),          h);
                 UTEST_CHECK_EQUAL(rect.cols(),          w);
 
+                // cppcheck-suppress compareBoolExpressionWithInt
                 UTEST_CHECK_EQUAL(rect.valid(),         rect.area() > 0);
         }
 }

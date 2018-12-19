@@ -7,6 +7,7 @@ namespace nano
         ///
         /// \brief streaming of binary data using an in-memory buffer.
         ///
+        // cppcheck-suppress class_X_Y
         class NANO_PUBLIC mem_istream_t final : public istream_t
         {
         public:

@@ -98,14 +98,10 @@ static ILenum get_type(const string_t& name)
                 { ".bmp",       IL_BMP },
         };
 
-        for (const auto& extension : extensions)
-        {
-                if (nano::iends_with(name, extension.first))
-                {
-                        return extension.second;
-                }
-        }
-        return IL_TYPE_UNKNOWN;
+        const auto it = std::find_if(extensions.begin(), extensions.end(),
+                [&] (const auto& extension) { return nano::iends_with(name, extension.first); });
+
+        return (it == extensions.end()) ? IL_TYPE_UNKNOWN : it->second;
 }
 
 static bool load_image(const string_t& name, const char* buffer, const size_t buffer_size,

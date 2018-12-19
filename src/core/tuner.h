@@ -35,6 +35,7 @@ namespace nano
                         strings_t values;
                         for (const auto& elem : enum_string<tenum>())
                         {
+                                // cppcheck-suppress useStlAlgorithm
                                 values.push_back(elem.second);
                         }
                         m_params.emplace_back(name, std::move(values));
@@ -56,6 +57,7 @@ namespace nano
                         strings_t values;
                         for (const auto scalar : {static_cast<scalar_t>(scalars)...})
                         {
+                                // cppcheck-suppress useStlAlgorithm
                                 values.push_back(to_string(scalar));
                         }
                         m_params.emplace_back(name, std::move(values));

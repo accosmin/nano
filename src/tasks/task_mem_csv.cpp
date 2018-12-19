@@ -104,13 +104,13 @@ bool mem_csv_task_t::populate()
                 return false;
         }
 
-        for (const auto col : m_target_columns)
+        const auto it_col = std::find_if(m_target_columns.begin(), m_target_columns.end(),
+                [&] (const auto& col) { return col >= table.cols(); });
+
+        if (it_col != m_target_columns.end())
         {
-                if (col >= table.cols())
-                {
-                        log_error() << m_name << ": invalid target column " << col << "/" << table.cols() << "!";
-                        return false;
-                }
+                log_error() << m_name << ": invalid target column " << (*it_col) << "/" << table.cols() << "!";
+                return false;
         }
 
         // load dataset
@@ -190,7 +190,6 @@ bool mem_csv_task_t::populate_classification(const table_t& table)
 
         for (size_t r = 0, rows = table.rows(), cols = table.cols(); r < rows; ++ r)
         {
-                auto& label = labels[r];
                 auto& input = inputs[r];
                 auto& target = targets[r];
 
@@ -204,7 +203,7 @@ bool mem_csv_task_t::populate_classification(const table_t& table)
                         {
                                 const auto itl = std::find(unique_labels.begin(), unique_labels.end(), data);
                                 assert(itl != unique_labels.end());
-                                label = data;
+                                labels[r] = data;
                                 target.vector() = class_target(nano::size(odims()), itl - unique_labels.begin());
                         }
                         else

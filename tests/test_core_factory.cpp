@@ -15,7 +15,7 @@ struct objectx_t final : public object_t
 {
         objectx_t() = default;
         explicit objectx_t(const int v) : m_v(v) {}
-        int get() const final { return m_v; }
+        int get() const override { return m_v; }
         int m_v{tv};
 };
 

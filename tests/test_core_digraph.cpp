@@ -69,6 +69,7 @@ UTEST_CASE(graph0)
                 for (size_t v = 0; v < g.vertices(); ++ v)
                 {
                         const bool connected = std::find(conn.begin(), conn.end(), std::make_pair(u, v)) != conn.end();
+                        // cppcheck-suppress compareBoolExpressionWithInt
                         UTEST_CHECK_EQUAL(g.connected(u, v), connected);
                 }
         }
@@ -112,6 +113,7 @@ UTEST_CASE(graph1)
                 for (size_t v = 0; v < g.vertices(); ++ v)
                 {
                         const bool connected = std::find(conn.begin(), conn.end(), std::make_pair(u, v)) != conn.end();
+                        // cppcheck-suppress compareBoolExpressionWithInt
                         UTEST_CHECK_EQUAL(g.connected(u, v), connected);
                 }
         }
@@ -157,6 +159,7 @@ UTEST_CASE(graph2)
                 for (size_t v = 0; v < g.vertices(); ++ v)
                 {
                         const bool connected = std::find(conn.begin(), conn.end(), std::make_pair(u, v)) != conn.end();
+                        // cppcheck-suppress compareBoolExpressionWithInt
                         UTEST_CHECK_EQUAL(g.connected(u, v), connected);
                 }
         }
@@ -216,6 +219,7 @@ UTEST_CASE(graph3)
                 for (size_t v = 0; v < g.vertices(); ++ v)
                 {
                         const bool connected = std::find(conn.begin(), conn.end(), std::make_pair(u, v)) != conn.end();
+                        // cppcheck-suppress compareBoolExpressionWithInt
                         UTEST_CHECK_EQUAL(g.connected(u, v), connected);
                 }
         }
@@ -271,6 +275,7 @@ UTEST_CASE(graph4)
                 for (size_t v = 0; v < g.vertices(); ++ v)
                 {
                         const bool connected = std::find(conn.begin(), conn.end(), std::make_pair(u, v)) != conn.end();
+                        // cppcheck-suppress compareBoolExpressionWithInt
                         UTEST_CHECK_EQUAL(g.connected(u, v), connected);
                 }
         }
@@ -325,6 +330,7 @@ UTEST_CASE(graph5)
                 for (size_t v = 0; v < g.vertices(); ++ v)
                 {
                         const bool connected = std::find(conn.begin(), conn.end(), std::make_pair(u, v)) != conn.end();
+                        // cppcheck-suppress compareBoolExpressionWithInt
                         UTEST_CHECK_EQUAL(g.connected(u, v), connected);
                 }
         }
@@ -385,6 +391,7 @@ UTEST_CASE(graph6)
                 for (size_t v = 0; v < g.vertices(); ++ v)
                 {
                         const bool connected = std::find(conn.begin(), conn.end(), std::make_pair(u, v)) != conn.end();
+                        // cppcheck-suppress compareBoolExpressionWithInt
                         UTEST_CHECK_EQUAL(g.connected(u, v), connected);
                 }
         }
@@ -450,6 +457,7 @@ UTEST_CASE(graph7)
                 for (size_t v = 0; v < g.vertices(); ++ v)
                 {
                         const bool connected = std::find(conn.begin(), conn.end(), std::make_pair(u, v)) != conn.end();
+                        // cppcheck-suppress compareBoolExpressionWithInt
                         UTEST_CHECK_EQUAL(g.connected(u, v), connected);
                 }
         }

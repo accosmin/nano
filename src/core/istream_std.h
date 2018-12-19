@@ -8,6 +8,7 @@ namespace nano
         ///
         /// \brief streaming of binary data using a std::istream.
         ///
+        // cppcheck-suppress class_X_Y
         class NANO_PUBLIC std_istream_t final : public istream_t
         {
         public:
