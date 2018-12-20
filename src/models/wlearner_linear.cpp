@@ -32,11 +32,11 @@ scalar_t wlearner_linear_t::fit(const task_t& task, const fold_t& fold, const te
         m_a.resize(task.odims());
         m_b.resize(task.odims());
 
-        const auto count = static_cast<scalar_t>(task.size(fold));
+        const auto count = static_cast<scalar_t>(indices.size());
         m_a.array() = (rx.array() * count - x1 * r1.array()) / (x2 * count - nano::square(x1));
         m_b.array() = (r1.array() * x2 - x1 * rx.array()) / (x2 * count - nano::square(x1));
 
-        return  (m_a.array() * x2 + count * m_b.array().square() + r2.array()
+        return  (m_a.array().square() * x2 + count * m_b.array().square() + r2.array()
                 +2 * m_a.array() * m_b.array() * x1
                 -2 * m_b.array() * r1.array()
                 -2 * m_a.array() * rx.array()).sum();
