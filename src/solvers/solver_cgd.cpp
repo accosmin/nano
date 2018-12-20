@@ -48,19 +48,19 @@ solver_state_t solver_cgd_base_t<tcgd_update>::minimize(const size_t max_iterati
                 {
                         const scalar_t beta = tcgd_update::get(pstate, cstate);
                         cstate.d = -cstate.g + beta * pstate.d;
-                }
 
-                // restart:
-                //  - if not a descent direction
-                //  - or two consecutive gradients far from being orthogonal
-                //      (see "Numerical optimization", Nocedal & Wright, 2nd edition, p.124-125)
-                if (cstate.d.dot(cstate.g) > scalar_t(0))
-                {
-                        cstate.d = -cstate.g;
-                }
-                else if (std::fabs(cstate.g.dot(pstate.g)) >= m_orthotest * cstate.g.dot(cstate.g))
-                {
-                        cstate.d = -cstate.g;
+                        // restart:
+                        //  - if not a descent direction
+                        //  - or two consecutive gradients far from being orthogonal
+                        //      (see "Numerical optimization", Nocedal & Wright, 2nd edition, p.124-125)
+                        if (cstate.d.dot(cstate.g) > scalar_t(0))
+                        {
+                                cstate.d = -cstate.g;
+                        }
+                        else if (std::fabs(cstate.g.dot(pstate.g)) >= m_orthotest * cstate.g.dot(cstate.g))
+                        {
+                                cstate.d = -cstate.g;
+                        }
                 }
 
                 // line-search
