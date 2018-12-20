@@ -79,7 +79,7 @@ static auto train_config(
 
                 // line-search
                 const auto epsilon = epsilon2<scalar_t>();
-                const auto x0 = vector_t{vector_t::Zero(loss_tr.size())};
+                const auto x0 = vector_t{vector_t::Constant(loss_tr.size(), 10)};
                 const auto state = solver->minimize(100, epsilon, loss_tr, x0);
 
                 wlearner.scale(state.x);
@@ -102,7 +102,9 @@ static auto train_config(
                         << std::setprecision(2)
                         << "," << wlearner
                         << std::setprecision(4)
-                        << ",solver=(" << state.m_status << ",i=" << state.m_iterations
+                        << ",solver=(" << state.m_status
+                        << ",i=" << state.m_iterations
+                        << ",x=[" << state.x.minCoeff() << "," << state.x.maxCoeff() << "]"
                         << ",f=" << state.f << ").";
         }
 
