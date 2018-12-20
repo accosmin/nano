@@ -103,8 +103,7 @@ static auto train_config(
                         << "," << wlearner
                         << std::setprecision(4)
                         << ",solver=(" << state.m_status << ",i=" << state.m_iterations
-                        << ",x=" << state.x(0)
-                        << ",f=" << state.f << ",g=" << state.convergence_criteria() << ").";
+                        << ",f=" << state.f << ").";
         }
 
         // keep only the weak learners up to optimum epoch (on the validation dataset)

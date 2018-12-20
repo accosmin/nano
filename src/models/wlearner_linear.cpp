@@ -29,6 +29,7 @@ scalar_t wlearner_linear_t::fit(const task_t& task, const fold_t& fold, const te
                 r2.array() += gradients.array(i) * gradients.array(i);
         }
 
+        m_feature = feature;
         m_a.resize(task.odims());
         m_b.resize(task.odims());
 
