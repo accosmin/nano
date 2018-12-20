@@ -1,36 +1,9 @@
-#include "task.h"
 #include "version.h"
-#include "core/tpool.h"
 #include "core/ibstream.h"
 #include "core/obstream.h"
 #include "wlearner_table.h"
 
 using namespace nano;
-
-template <table_type type>
-void wlearner_table_t<type>::fit(const task_t& task, const fold_t& fold, const tensor4d_t& gradients,
-        const indices_t& indices)
-{
-        assert(cat_dims(task.size(fold), task.odims()) == gradients.dims());
-
-        const auto& tpool = tpool_t::instance();
-
-        std::vector<wlearner_table_t> learners(tpool.workers());
-        scalars_t tvalues(tpool.workers(), std::numeric_limits<scalar_t>::max());
-
-        loopit(nano::size(task.idims()), [&] (const tensor_size_t feature, const size_t t)
-        {
-                wlearner_table_t learner;
-                const auto value = learner.fit(task, fold, gradients, indices, feature);
-                if (value < tvalues[t])
-                {
-                        tvalues[t] = value;
-                        std::swap(learners[t], learner);
-                }
-        });
-
-        *this = learners[std::min_element(tvalues.begin(), tvalues.end()) - tvalues.begin()];
-}
 
 template <table_type type>
 scalar_t wlearner_table_t<type>::fit(const task_t& task, const fold_t& fold, const tensor4d_t& gradients,

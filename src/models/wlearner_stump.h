@@ -1,14 +1,12 @@
 #pragma once
 
 #include "gboost.h"
-#include "cortex.h"
 #include "wlearner.h"
 
 namespace nano
 {
         // todo: generalize it to use other features (e.g products of inputs, LBPs|HOGs)!
         //
-        class task_t;
         class ibstream_t;
         class obstream_t;
 
@@ -48,9 +46,10 @@ namespace nano
                 }
 
                 ///
-                /// \brief fit its parameters to the given gradients
+                /// \brief fit its parameters to the given gradients and feature
                 ///
-                void fit(const task_t&, const fold_t&, const tensor4d_t& gradients, const indices_t& indices);
+                scalar_t fit(const task_t&, const fold_t&, const tensor4d_t& gradients, const indices_t&,
+                        const tensor_size_t feature);
 
                 ///
                 /// \brief scale the outputs by the given factor
@@ -100,9 +99,6 @@ namespace nano
                 const auto& outputs() const { return m_outputs; }
 
         private:
-
-                scalar_t fit(const task_t&, const fold_t&, const tensor4d_t& gradients,
-                        const indices_t& indices, const tensor_size_t feature);
 
                 template <typename ttensor, typename tarray>
                 static auto fit_value(const int cnt, const ttensor& res1, const ttensor& res2, const tarray& outputs)

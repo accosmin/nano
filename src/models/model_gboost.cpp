@@ -74,7 +74,7 @@ static auto train_config(
 
                 // fit weak learner
                 tweak_learner wlearner;
-                wlearner.fit(task, fold_t{fold, protocol::train}, loss_tr.gradients(), indices);
+                wlearner_t::fit(task, fold_t{fold, protocol::train}, loss_tr.gradients(), indices, wlearner);
                 loss_tr.wlearner(wlearner);
 
                 // line-search
