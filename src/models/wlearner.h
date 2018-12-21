@@ -64,6 +64,23 @@ namespace nano
 
         protected:
 
+                template <typename ttensor>
+                static void scale(ttensor&& tensor, const scalar_t factor)
+                {
+                        assert(factor >= 0);
+                        tensor.array() *= factor;
+                }
+
+                template <typename ttensor>
+                static void scale(ttensor&& tensor, const vector_t& factors)
+                {
+                        assert(factors.minCoeff() >= 0);
+                        assert(factors.size() == tensor.size());
+                        tensor.array() *= factors.array();
+                }
+
+        protected:
+
                 // attributes
                 tensor_size_t   m_feature{0};   ///< index of the selected feature
         };

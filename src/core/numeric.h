@@ -53,6 +53,7 @@ namespace nano
         ///
         /// \brief absolute value
         ///
+        // fixme: this won't be needed in C++17 as std::abs is doing the right thing!
         template <typename tscalar>
         tscalar abs(const tscalar v)
         {

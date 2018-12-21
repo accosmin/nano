@@ -56,8 +56,7 @@ namespace nano
                 ///
                 void scale(const scalar_t factor)
                 {
-                        assert(factor >= 0);
-                        m_outputs.array() *= factor;
+                        wlearner_t::scale(m_outputs, factor);
                 }
 
                 ///
@@ -65,11 +64,9 @@ namespace nano
                 ///
                 void scale(const vector_t& factors)
                 {
-                        assert(factors.minCoeff() >= 0);
-                        assert(m_outputs.size<0>() * factors.size() == m_outputs.size());
                         for (tensor_size_t r = 0, size = m_outputs.size<0>(); r < size; ++ r)
                         {
-                                m_outputs.array(r) *= factors.array();
+                                wlearner_t::scale(m_outputs.tensor(r), factors);
                         }
                 }
 
