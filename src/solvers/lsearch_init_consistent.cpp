@@ -33,13 +33,13 @@ scalar_t lsearch_consistent_init_t::get(const solver_state_t& state)
         else
         {
                 const auto dg = state.d.dot(state.g);
-                t0 = (m_prevt0 * m_prevdg / dg);
+                t0 = (m_prevt * m_prevdg / dg);
                 m_prevdg = dg;
         }
 
         // OK, keep track of previous function value & step length
         m_first = false;
         m_prevf = state.f;
-        m_prevt0 = t0;
+        m_prevt = state.t;
         return t0;
 }

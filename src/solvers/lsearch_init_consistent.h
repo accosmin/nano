@@ -20,7 +20,7 @@ namespace nano
                 // attributes
                 bool            m_first{true};  ///< check if first iteration
                 scalar_t        m_prevf{0};     ///< previous function evaluation
-                scalar_t        m_prevt0{1};    ///< previous step length
+                scalar_t        m_prevt{1};     ///< previous step length
                 scalar_t        m_prevdg{1};    ///< previous direction dot product
         };
 }

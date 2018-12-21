@@ -56,6 +56,7 @@ namespace nano
                 ///
                 void update(const function_t& function, const vector_t& xx)
                 {
+                        t = 0;
                         x = xx;
                         f = function.vgrad(x, &g);
                 }
@@ -65,6 +66,7 @@ namespace nano
                 ///
                 void update(const function_t& function, const scalar_t t)
                 {
+                        this->t = t;
                         x.noalias() += t * d;
                         f = function.vgrad(x, &g);
                 }
@@ -75,6 +77,7 @@ namespace nano
                 ///
                 void update(const function_t&, const scalar_t t, const scalar_t ft, const vector_t& gt)
                 {
+                        this->t = t;
                         x.noalias() += t * d;
                         f = ft;
                         g = gt;
@@ -106,7 +109,7 @@ namespace nano
 
                 // attributes
                 vector_t        x, g, d;                        ///< parameter, gradient, descent direction
-                scalar_t        f{0};                           ///< function value, step size
+                scalar_t        f{0}, t{1};                     ///< function value, step size
                 status          m_status{status::max_iters};    ///< optimization status
                 size_t          m_fcalls{0};                    ///< #function value evaluations
                 size_t          m_gcalls{0};                    ///< #function gradient evaluations
