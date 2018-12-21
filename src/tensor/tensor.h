@@ -322,7 +322,7 @@ namespace nano
 
                 treference operator()(const tensor_size_t index)
                 {
-                        assert(data() != nullptr);
+                        assert(const_cast<const tstorage&>(m_storage).data() != nullptr);
                         assert(index >= 0 && index < size());
                         return data()[index];
                 }
