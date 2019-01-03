@@ -6,6 +6,7 @@ list(APPEND libnano_sources
         ${CMAKE_CURRENT_SOURCE_DIR}/lsearch_backtrack.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/lsearch_cgdescent.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/lsearch_interpolate.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/lsearch_morethuente.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/solver_gd.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/solver_cgd.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/solver_nag.cpp

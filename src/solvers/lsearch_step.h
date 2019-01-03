@@ -23,6 +23,7 @@ namespace nano
                         m_state(state0),
                         m_gphi(m_gphi0)
                 {
+                        assert(m_gphi0 < 0);
                 }
 
                 ///
@@ -80,7 +81,7 @@ namespace nano
                 ///
                 bool has_strong_wolfe(const scalar_t c2) const
                 {
-                        return  gphi() >= +c2 * gphi0() && gphi() <= -c2 * gphi0();
+                        return std::fabs(gphi()) <= +c2 * std::fabs(gphi0());
                 }
 
                 ///

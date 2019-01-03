@@ -1,6 +1,7 @@
 #include "lsearch.h"
 #include "lsearch_backtrack.h"
 #include "lsearch_cgdescent.h"
+#include "lsearch_morethuente.h"
 #include "lsearch_interpolate.h"
 #include "lsearch_init_unit.h"
 #include "lsearch_init_quadratic.h"
@@ -29,6 +30,7 @@ static std::unique_ptr<lsearch_strategy_t> make_strategy(const lsearch_t::strate
         switch (strategy)
         {
         case lsearch_t::strategy::cg_descent:           return std::make_unique<lsearch_cgdescent_t>(c1, c2);
+        case lsearch_t::strategy::more_thuente:         return std::make_unique<lsearch_morethuente_t>(c1, c2);
         case lsearch_t::strategy::interpolate:          return std::make_unique<lsearch_interpolate_t>(c1, c2);
         case lsearch_t::strategy::backtrack_wolfe:      return std::make_unique<lsearch_backtrack_wolfe_t>(c1, c2);
         case lsearch_t::strategy::backtrack_armijo:     return std::make_unique<lsearch_backtrack_armijo_t>(c1, c2);

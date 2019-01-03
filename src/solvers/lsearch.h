@@ -61,12 +61,9 @@ namespace nano
                         backtrack_armijo,               ///< backtracking with sufficient decrease (Armijo)
                         backtrack_wolfe,                ///< + backtracking with suficient curvature (Wolfe)
                         backtrack_swolfe,               ///< + backtracking with sufficient curvature (strong Wolfe)
-
-                        // see "Numerical optimization", Nocedal & Wright, 2nd edition, p.60-61 - strong Wolfe only
                         interpolate,                    ///< bisection/quadratic/cubic for zooming
-
-                        // see CG_DESCENT, Hager & Zhang, 2005 - regular and approximate Wolfe only
-                        cg_descent                      ///< CG_DESCENT
+                        cg_descent,                     ///< CG_DESCENT (regular and approximation Wolfe)
+                        more_thuente,                   ///< More & Thunte (strong Wolfe)
                 };
 
                 ///
@@ -106,7 +103,8 @@ namespace nano
                         { lsearch_t::strategy::backtrack_wolfe,         "back-wolfe" },
                         { lsearch_t::strategy::backtrack_swolfe,        "back-swolfe" },
                         { lsearch_t::strategy::interpolate,             "interpolate" },
-                        { lsearch_t::strategy::cg_descent,              "cg-descent" }
+                        { lsearch_t::strategy::cg_descent,              "cg-descent" },
+                        { lsearch_t::strategy::more_thuente,            "more-thuente" }
                 };
         }
 }
