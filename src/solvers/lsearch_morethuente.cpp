@@ -5,115 +5,133 @@
 
 using namespace nano;
 
-static auto cubic(
-        const scalar_t u, const scalar_t fu, const scalar_t gu,
-        const scalar_t v, const scalar_t fv, const scalar_t gv)
+///
+/// \brief bisection interpolation in the [step0, step1] line-search interval
+///
+static auto ls_bisection(const lsearch_step_t& step0, const lsearch_step_t& step1)
 {
-        // fit cubic: q(x) = a*x^3 + b*x^2 + c*x + d
-        //      given: q(u) = fu, q'(u) = gu
-        //      given: q(v) = fv, q'(v) = gv
-        // minimizer: solution of 3*a*x^2 + 2*b*x + c = 0
-        // see "Numerical optimization", Nocedal & Wright, 2nd edition, p.59
-        const auto d1 = gu + gv - 3 * (fu - fv) / (u - v);
-        const auto d2 = (v > u ? +1 : -1) * std::sqrt(d1 * d1 - gu * gv);
-        return v - (v - u) * (gv + d2 - d1) / (gv - gu + 2 * d2);
+        return (step0.alpha() + step1.alpha()) / 2;
 }
 
-static auto quadratic1(
-        const scalar_t u, const scalar_t fu, const scalar_t gu,
-        const scalar_t v, const scalar_t fv)
+///
+/// \brief quadratic interpolation in the [step0, step1] line-search interval
+///     see "Numerical optimization", Nocedal & Wright, 2nd edition, p.58
+///
+/// NB: using the gradient at step0
+/// NB: the step-length at step0 may be different than zero
+///
+static auto ls_quadratic(const lsearch_step_t& step0, const lsearch_step_t& step1)
 {
-        // fit quadratic: q(x) = a*x^2 + b*x + c
-        //      given: q(u) = fu, q'(u) = gu
-        //      given: q(v) = fv
-        // minimizer: -b/2a
-        return u - gu * (u - v) * (u - v) / (2 * (gu * (u - v) - (fu - fv)));
+        const auto x0 = step0.alpha(), f0 = step0.phi(), g0 = step0.gphi();
+        const auto x1 = step1.alpha(), f1 = step1.phi();
+
+        auto min = std::numeric_limits<scalar_t>::infinity();
+
+        const auto q = quadratic_t<scalar_t>{x0, f0, g0, x1, f1};
+        if (q)
+        {
+                q.extremum(min);
+        }
+
+        return min;
 }
 
-static auto quadratic2(
-        const scalar_t u, const scalar_t gu,
-        const scalar_t v, const scalar_t gv)
+///
+/// \brief cubic interpolation in the [step0, step1] line-search interval
+///     see "Numerical optimization", Nocedal & Wright, 2nd edition, p.59
+///
+static auto ls_cubic(const lsearch_step_t& step0, const lsearch_step_t& step1)
 {
-        // fit quadratic: q(x) = a*x^2 + b*x + c
-        //      given: q'(u) = gu
-        //      given: q'(v) = gv
-        // minimizer: -b/2a
-        return (v * gu - u * gv) / (gu - gv);
+        const auto x0 = step0.alpha(), f0 = step0.phi(), g0 = step0.gphi();
+        const auto x1 = step1.alpha(), f1 = step1.phi(), g1 = step1.gphi();
+
+        auto min1 = std::numeric_limits<scalar_t>::infinity();
+        auto min2 = std::numeric_limits<scalar_t>::infinity();
+
+        const auto c = cubic_t<scalar_t>{x0, f0, g0, x1, f1, g1};
+        if (c)
+        {
+                c.extremum(min1, min2);
+        }
+
+        return std::make_pair(min1, min2);
 }
 
-static void update_interval(lsearch_step_t& l, lsearch_step_t& u, lsearch_step_t& t)
+///
+/// \brief zoom-in in the bracketed interval,
+///     see "Numerical optimization", Nocedal & Wright, 2nd edition, p.60
+///
+static lsearch_step_t zoom(
+        const scalar_t c1, const scalar_t c2,
+        const lsearch_step_t& step0, lsearch_step_t steplo, lsearch_step_t stephi)
 {
-        // case a: l = l, u = t
-        if (t.phi() > l.phi())
+        lsearch_step_t stept(step0);
+
+        scalar_t t;
+        for (int i = 0; i < 100 && std::fabs(steplo.alpha() - stephi.alpha()) > lsearch_step_t::minimum(); i ++)
         {
-                std::swap(u, t);
-        }
+                // try various interpolation methods
+                const auto tb = ls_bisection(steplo, stephi);
+                const auto tq = ls_quadratic(steplo, stephi);
+                const auto tc = ls_cubic(steplo, stephi);
 
-        // case b: l = t, u = u
-        else if (t.gphi() * (l.alpha() - t.alpha()) > 0)
-        {
-                std::swap(l, t);
-        }
+                t = tb;
 
-        // case c: l = t, u = l
-        else
-        {
-                std::swap(l, t);
-                std::swap(u, t);
-        }
-}
+                std::vector<scalar_t> trials;
+                trials.push_back(tb);
+                trials.push_back(tq);
+                trials.push_back(tc.first);
+                trials.push_back(tc.second);
 
-static auto trial_value_selection(
-        const scalar_t l, const scalar_t fl, const scalar_t gl,
-        const scalar_t u, const scalar_t fu, const scalar_t gu,
-        const scalar_t t, const scalar_t ft, const scalar_t gt)
-{
-        // case 1
-        if (ft > fl)
-        {
-                const auto mc = cubic(l, fl, gl, t, ft, gt);
-                const auto mq = quadratic1(l, fl, gl, t, ft);
+                // choose the valid interpolation step closest to the minimum value step
+                const scalar_t tmin = std::min(steplo.alpha(), stephi.alpha());
+                const scalar_t tmax = std::max(steplo.alpha(), stephi.alpha());
+                const scalar_t teps = (tmax - tmin) / 20;
 
-                return  (std::fabs(mc - l) < std::fabs(mq - l)) ?
-                        (mc) :
-                        ((mc + mq) / 2);
-        }
-
-        // case 2
-        else if (gt * gl < 0)
-        {
-                const auto mc = cubic(l, fl, gl, t, ft, gt);
-                const auto ms = quadratic2(l, gl, t, gt);
-
-                return  (std::fabs(mc - t) >= std::fabs(ms - t)) ?
-                        (mc) :
-                        (ms);
-        }
-
-        // case 3
-        else if (std::fabs(gt) <= std::fabs(gl))
-        {
-                const auto mc = cubic(l, fl, gl, t, ft, gt);
-                const auto ms = quadratic2(l, gl, t, gt);
-
-                const auto redefine = [&] (const auto mt)
+                scalar_t best_dist = std::numeric_limits<scalar_t>::max();
+                for (const auto tt : trials)
                 {
-                        const auto gamma = scalar_t(0.66);
-                        return  (t > l) ?
-                                std::min(mt, t + gamma * (u - t)) :
-                                std::max(mt, t + gamma * (u - t));
-                };
+                        if (std::isfinite(tt) && tmin + teps < tt && tt < tmax - teps)
+                        {
+                                const scalar_t dist = std::fabs(tt - steplo.alpha());
+                                if (dist < best_dist)
+                                {
+                                        best_dist = dist;
+                                        t = tt;
+                                }
+                        }
+                }
 
-                return  (std::fabs(mc - t) < std::fabs(ms - t)) ?
-                        redefine(mc) :
-                        redefine(ms);
+                // check sufficient decrease
+                if (!stept.update(t))
+                {
+                        return step0;
+                }
+
+                if (!stept.has_armijo(c1) || stept.phi() >= steplo.phi())
+                {
+                        std::swap(stephi, stept);
+                }
+
+                // check curvature
+                else
+                {
+                        if (stept.has_strong_wolfe(c2))
+                        {
+                                return stept;
+                        }
+
+                        if (stept.gphi() * (stephi.alpha() - steplo.alpha()) >= 0)
+                        {
+                                std::swap(stephi, steplo);
+                        }
+
+                        std::swap(steplo, stept);
+                }
         }
 
-        // case 4
-        else
-        {
-                return cubic(u, fu, gu, t, ft, gt);
-        }
+        // NOK, give up
+        return step0;
 }
 
 lsearch_morethuente_t::lsearch_morethuente_t(const scalar_t c1, const scalar_t c2) :
@@ -124,24 +142,39 @@ lsearch_morethuente_t::lsearch_morethuente_t(const scalar_t c1, const scalar_t c
 
 lsearch_step_t lsearch_morethuente_t::get(const lsearch_step_t& step0, const scalar_t t0)
 {
-        // NB: the implementation follows the notation from the original paper of More&Thuente (1994)
-        scalar_t l = 0, t = t0, u = std::numeric_limits<scalar_t>::infinity();
+        // previous step
+        lsearch_step_t stepp = step0;
+
+        // current step
         lsearch_step_t stept = step0;
 
-        for (auto i = 0; i < m_max_iterations && t > lsearch_step_t::minimum() && t < lsearch_step_t::maximum(); ++ i)
+        scalar_t t = t0;
+        for (int i = 1; i < m_max_iterations && t < lsearch_step_t::maximum(); i ++)
         {
-                // check convergence (sufficient decrease & curvature)
+                // check sufficient decrease
                 if (!stept.update(t))
                 {
                         return step0;
                 }
-                if (stept.has_armijo(m_c1) && stept.has_strong_wolfe(m_c2))
+
+                if (!stept.has_armijo(m_c1) || (stept.func() >= stepp.func() && i > 1))
+                {
+                        return zoom(m_c1, m_c2, step0, stepp, stept);
+                }
+
+                // check curvature
+                if (stept.has_strong_wolfe(m_c2))
                 {
                         return stept;
                 }
 
-                // todo
-                break;
+                if (stept.gphi() >= scalar_t(0))
+                {
+                        return zoom(m_c1, m_c2, step0, stept, stepp);
+                }
+
+                stepp = stept;
+                t *= 3;
         }
 
         // NOK, give up

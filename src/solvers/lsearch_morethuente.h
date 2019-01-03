@@ -5,8 +5,11 @@
 namespace nano
 {
         ///
-        /// \brief More & Thunte line-search.
+        /// \brief More & Thuente line-search.
+        ///     see "Numerical optimization", Nocedal & Wright, 2nd edition, p.60
         ///     see "Line Search Algorithms with Guaranteed Sufficient Decrease", by Jorge J. More and David J. Thuente
+        ///
+        /// NB: this implementation uses the notation and the version described in Nocedal & Wright's book.
         ///
         class lsearch_morethuente_t final : public lsearch_strategy_t
         {

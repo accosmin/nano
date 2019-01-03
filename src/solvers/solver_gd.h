@@ -26,7 +26,7 @@ namespace nano
 
                 // attributes
                 lsearch_t::initializer  m_init{lsearch_t::initializer::unit};
-                lsearch_t::strategy     m_strat{lsearch_t::strategy::interpolate};
+                lsearch_t::strategy     m_strat{lsearch_t::strategy::more_thuente};
                 scalar_t                m_c1{static_cast<scalar_t>(1e-1)};
                 scalar_t                m_c2{static_cast<scalar_t>(9e-1)};
         };
