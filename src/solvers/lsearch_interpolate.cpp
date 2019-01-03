@@ -110,7 +110,7 @@ static lsearch_step_t zoom(
 
                 if (!stept.has_armijo(c1) || stept.phi() >= steplo.phi())
                 {
-                        stephi = stept;
+                        std::swap(stephi, stept);
                 }
 
                 // check curvature
@@ -123,10 +123,10 @@ static lsearch_step_t zoom(
 
                         if (stept.gphi() * (stephi.alpha() - steplo.alpha()) >= 0)
                         {
-                                stephi = steplo;
+                                std::swap(stephi, steplo);
                         }
 
-                        steplo = stept;
+                        std::swap(steplo, stept);
                 }
         }
 
