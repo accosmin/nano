@@ -43,13 +43,16 @@ UTEST_CASE(evaluate)
                                 const auto f = state.f;
                                 const auto g = state.convergence_criteria();
 
-                                std::cout << function->name() << " " << id
-                                          << " [" << (t + 1) << "/" << trials << "]"
-                                          << ": x = [" << x0.transpose() << "]/[" << x.transpose() << "]"
-                                          << ",f=" << f0 << "/" << f
-                                          << ",g=" << g0 << "/" << g
-                                          << "[" << to_string(state.m_status) << "]"
-                                          << ",calls=" << state.m_fcalls << "/" << state.m_gcalls << ".\n";
+                                if (state.m_status != solver_state_t::status::converged)
+                                {
+                                        std::cout << function->name() << " " << id
+                                                  << " [" << (t + 1) << "/" << trials << "]"
+                                                  << ": x = [" << x0.transpose() << "]/[" << x.transpose() << "]"
+                                                  << ",f=" << f0 << "/" << f
+                                                  << ",g=" << g0 << "/" << g
+                                                  << "[" << to_string(state.m_status) << "]"
+                                                  << ",calls=" << state.m_fcalls << "/" << state.m_gcalls << ".\n";
+                                }
 
                                 // check function value decrease
                                 UTEST_CHECK_LESS_EQUAL(f, f0 + epsilon1<scalar_t>());
