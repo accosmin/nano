@@ -65,7 +65,7 @@ static void update_interval(lsearch_step_t& l, lsearch_step_t& u, lsearch_step_t
 
 static auto trial_value_selection(
         const scalar_t l, const scalar_t fl, const scalar_t gl,
-        const scalar_t u, const scalar_t /*fu*/, const scalar_t /*gu*/,
+        const scalar_t u, const scalar_t fu, const scalar_t gu,
         const scalar_t t, const scalar_t ft, const scalar_t gt)
 {
         // case 1
