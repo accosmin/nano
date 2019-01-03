@@ -1,8 +1,6 @@
 list(APPEND libnano_sources
         ${CMAKE_CURRENT_SOURCE_DIR}/lsearch.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/lsearch_init_unit.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/lsearch_init_quadratic.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/lsearch_init_consistent.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/lsearch_init.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/lsearch_backtrack.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/lsearch_cgdescent.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/lsearch_morethuente.cpp

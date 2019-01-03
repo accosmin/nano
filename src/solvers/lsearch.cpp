@@ -1,10 +1,8 @@
 #include "lsearch.h"
+#include "lsearch_init.h"
 #include "lsearch_backtrack.h"
 #include "lsearch_cgdescent.h"
 #include "lsearch_morethuente.h"
-#include "lsearch_init_unit.h"
-#include "lsearch_init_quadratic.h"
-#include "lsearch_init_consistent.h"
 
 using namespace nano;
 

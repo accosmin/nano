@@ -107,4 +107,3 @@ namespace nano
                 tscalar         m_d;
         };
 }
-
