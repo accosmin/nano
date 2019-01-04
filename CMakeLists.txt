@@ -29,10 +29,6 @@ include_directories(${CMAKE_SOURCE_DIR}/src)
 include_directories(SYSTEM ${CMAKE_SOURCE_DIR}/deps/utest)
 include_directories(SYSTEM ${CMAKE_SOURCE_DIR}/deps/json/single_include)
 
-if(CMAKE_BUILD_TYPE MATCHES "[Dd][Ee][Bb][Uu][Gg]")
-        add_definitions(-DNANO_DEBUG)
-endif()
-
 add_subdirectory(src)
 add_subdirectory(apps)
 
