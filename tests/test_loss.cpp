@@ -19,20 +19,20 @@ struct loss_function_t final : public function_t
 
         scalar_t vgrad(const vector_t& x, vector_t* gx = nullptr) const override
         {
-                assert(x.size() == m_target.size());
+                UTEST_REQUIRE_EQUAL(x.size(), m_target.size());
                 const auto output = map_tensor(x.data(), m_target.dims());
 
                 if (gx)
                 {
                         const auto grads = m_loss->vgrad(m_target, output);
-                        assert(gx->size() == grads.size());
-                        assert(grads.array().isFinite().all());
+                        UTEST_REQUIRE_EQUAL(gx->size(), grads.size());
+                        UTEST_REQUIRE(grads.array().isFinite().all());
 
                         *gx = grads.vector();
                 }
 
                 const auto value = m_loss->value(m_target, output);
-                assert(std::isfinite(value));
+                UTEST_REQUIRE(std::isfinite(value));
                 return value;
         }
 
@@ -69,7 +69,7 @@ UTEST_CASE(gradient)
 
 UTEST_CASE(single_class)
 {
-        for (const auto& loss_id : {"classnll", "s-logistic", "s-exponential", "s-hinge"})
+        for (const auto& loss_id : {"s-classnll", "s-logistic", "s-exponential", "s-hinge"})
         {
                 const auto loss = get_loss(loss_id);
                 UTEST_REQUIRE(loss);
@@ -111,7 +111,7 @@ UTEST_CASE(single_class)
 
 UTEST_CASE(single_label_multi_class)
 {
-        for (const auto& loss_id : {"classnll", "s-logistic", "s-exponential", "s-hinge"})
+        for (const auto& loss_id : {"s-classnll", "s-logistic", "s-exponential", "s-hinge"})
         {
                 const auto loss = get_loss(loss_id);
                 UTEST_REQUIRE(loss);
@@ -154,7 +154,7 @@ UTEST_CASE(single_label_multi_class)
 
 UTEST_CASE(multi_label_multi_class)
 {
-        for (const auto& loss_id : {"m-logistic", "m-exponential", "m-hinge"})
+        for (const auto& loss_id : {"m-classnll", "m-logistic", "m-exponential", "m-hinge"})
         {
                 const auto loss = get_loss(loss_id);
                 UTEST_REQUIRE(loss);

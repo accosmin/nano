@@ -13,16 +13,17 @@ namespace nano
                 static auto value(const tarray& target, const tarray& output)
                 {
                         return  std::log(output.exp().sum()) -
-                                scalar_t(0.5) * ((1 + target) * output).sum();
+                                std::log(((1 + target) * output.exp()).sum() / 2);
                 }
 
                 template <typename tarray>
                 static auto vgrad(const tarray& target, const tarray& output)
                 {
-                        return  output.exp() / (output.exp().sum()) -
-                                scalar_t(0.5) * (1 + target);
+                        return  output.exp() / output.exp().sum() -
+                                (1 + target) * output.exp() / ((1 + target) * output.exp()).sum();
                 }
         };
 
-        using classnll_loss_t = sclassification_t<classnll_t>;
+        using sclassnll_loss_t = sclassification_t<classnll_t>;
+        using mclassnll_loss_t = mclassification_t<classnll_t>;
 }

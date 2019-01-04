@@ -31,10 +31,12 @@ loss_factory_t& nano::get_losses()
                 manager.add<shinge_loss_t>("s-hinge",
                         "single-label classification: l(y, t) = max(0, 1 - y*t)");
                 manager.add<mhinge_loss_t>("m-hinge",
-                        "single-label classification: l(y, t) = max(0, 1 - y*t)");
+                        "multi-label classification: l(y, t) = max(0, 1 - y*t)");
 
-                manager.add<classnll_loss_t>("classnll",
-                        "single-label classification: l(y, t) = log(y.exp().sum()) + 1/2 * (1 + t).dot(y)");
+                manager.add<sclassnll_loss_t>("s-classnll",
+                        "single-label classification: l(y, t) = log(y.exp().sum()) - log((1 + t).dot(y.exp()))");
+                manager.add<mclassnll_loss_t>("m-classnll",
+                        "multi-label classification: l(y, t) = log(y.exp().sum()) - log((1 + t).dot(y.exp()))");
 
                 manager.add<slogistic_loss_t>("s-logistic",
                         "single-label classification: l(y, t) = log(1 + exp(-y*t))");
