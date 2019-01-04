@@ -294,7 +294,7 @@ matrix:
             - ubuntu-toolchain-r-test
           update: true
       script:
-        - cmake -G "Ninja" -DCMAKE_CXX_COMPILER=g++-7 -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_WITH_WERROR=ON -DCMAKE_WITH_TUNE_NATIVE=OFF ..
+        - cmake -G "Ninja" -DCMAKE_CXX_COMPILER=g++-7 -DCMAKE_WITH_WERROR=ON -DCMAKE_WITH_TUNE_NATIVE=OFF ..
         - ninja
         - bash ../scripts/ci_valgrind.sh
 
@@ -310,7 +310,7 @@ matrix:
       script:
         - sudo -H pip install --upgrade pip
         - sudo -H pip install coverage
-        - cmake -G "Ninja" -DCMAKE_CXX_COMPILER=g++-7 -DCMAKE_WITH_WERROR=ON -DCMAKE_WITH_COVERAGE=ON ..
+        - cmake -G "Ninja" -DCMAKE_CXX_COMPILER=g++-7 -DCMAKE_BUILD_TYPE=Debug -DCMAKE_WITH_WERROR=ON -DCMAKE_WITH_COVERAGE=ON ..
         - ninja
         - bash ../scripts/ci_codecov.sh
 
