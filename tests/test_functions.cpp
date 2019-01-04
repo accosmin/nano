@@ -18,8 +18,6 @@ UTEST_CASE(evaluate)
                 const auto dims = function.size();
                 UTEST_CHECK_LESS_EQUAL(dims, 4);
                 UTEST_CHECK_GREATER_EQUAL(dims, 1);
-                UTEST_CHECK_GREATER_EQUAL(dims, function.min_size());
-                UTEST_CHECK_GREATER_EQUAL(function.max_size(), dims);
 
                 auto rng = make_rng();
                 auto udist = make_udist<scalar_t>(-10, +10);

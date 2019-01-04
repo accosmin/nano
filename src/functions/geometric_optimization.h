@@ -18,7 +18,7 @@ namespace nano
         public:
 
                 explicit function_geometric_optimization_t(const tensor_size_t dims) :
-                        function_t("Geometric Optimization", dims, 1, 100 * 1000, convexity::yes),
+                        function_t("Geometric Optimization", dims, convexity::yes),
                         m_a(vector_t::Random(16)),
                         m_A(matrix_t::Random(16, dims) / dims)
                 {

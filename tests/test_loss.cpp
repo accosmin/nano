@@ -11,7 +11,7 @@ using namespace nano;
 struct loss_function_t final : public function_t
 {
         loss_function_t(const rloss_t& loss, const tensor_size_t xmaps) :
-                function_t("loss", xmaps, xmaps, xmaps, convexity::no),
+                function_t("loss", xmaps, convexity::no),
                 m_loss(loss), m_target(xmaps, 1, 1)
         {
                 m_target.vector() = class_target(xmaps, 11 % xmaps);

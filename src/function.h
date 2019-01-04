@@ -43,9 +43,8 @@ namespace nano
                 ///
                 /// \brief constructor
                 ///
-                function_t(const char* name,
-                        const tensor_size_t size, const tensor_size_t min_size, const tensor_size_t max_size,
-                        const convexity convex);
+                function_t(const char* name, const tensor_size_t size, const convexity convex);
+                function_t(string_t name, const tensor_size_t size, const convexity convex);
 
                 ///
                 /// \brief destructor
@@ -58,11 +57,9 @@ namespace nano
                 string_t name() const;
 
                 ///
-                /// \brief number of dimensions and the range of valid dimensions
+                /// \brief number of dimensions
                 ///
                 tensor_size_t size() const { return m_size; }
-                tensor_size_t min_size() const { return m_min_size; }
-                tensor_size_t max_size() const { return m_max_size; }
 
                 ///
                 /// \brief check if the function is convex
@@ -87,8 +84,8 @@ namespace nano
         private:
 
                 // attributes
-                const char*     m_name;                         ///<
-                tensor_size_t   m_size, m_min_size, m_max_size; ///< #dimensions
-                convexity       m_convex;                       ///<
+                string_t        m_name;         ///<
+                tensor_size_t   m_size;         ///< #dimensions
+                convexity       m_convex;       ///<
         };
 }

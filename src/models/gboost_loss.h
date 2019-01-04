@@ -23,7 +23,7 @@ namespace nano
                 /// \brief constructor
                 ///
                 gboost_loss_t(const task_t& task, const fold_t& fold, const loss_t& loss) :
-                        function_t("gboost-loss", nano::size(task.odims()), 1, 1, convexity::no),
+                        function_t("gboost-loss", nano::size(task.odims()), convexity::no),
                         m_task(task), m_fold(fold), m_loss(loss),
                         m_outputs(cat_dims(task.size(fold), task.odims()))
                 {

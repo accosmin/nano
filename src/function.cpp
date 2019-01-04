@@ -19,11 +19,16 @@
 
 using namespace nano;
 
-function_t::function_t(const char* name,
-        const tensor_size_t size, const tensor_size_t min_size, const tensor_size_t max_size,
-        const convexity convex) :
+function_t::function_t(const char* name, const tensor_size_t size, const convexity convex) :
         m_name(name),
-        m_size(size), m_min_size(min_size), m_max_size(max_size),
+        m_size(size),
+        m_convex(convex)
+{
+}
+
+function_t::function_t(string_t name, const tensor_size_t size, const convexity convex) :
+        m_name(std::move(name)),
+        m_size(size),
         m_convex(convex)
 {
 }
@@ -98,9 +103,9 @@ string_t function_t::name() const
         return string_t(m_name) + "[" + std::to_string(size()) + "D]";
 }
 
-static void append(rfunction_t&& func, const tensor_size_t dims, const std::regex& regex, rfunctions_t& funcs)
+static void append(rfunction_t&& func, const std::regex& regex, rfunctions_t& funcs)
 {
-        if (func->min_size() <= dims && dims <= func->max_size() && std::regex_match(func->name(), regex))
+        if (std::regex_match(func->name(), regex))
         {
                 funcs.push_back(std::move(func));
         }
@@ -114,26 +119,26 @@ rfunctions_t nano::get_functions(const tensor_size_t min_size, const tensor_size
         rfunctions_t funcs;
         for (tensor_size_t dims = min_size; dims <= max_size; )
         {
-                append(std::make_unique<function_trid_t>(dims), dims, regex, funcs);
-                append(std::make_unique<function_qing_t>(dims), dims, regex, funcs);
-                append(std::make_unique<function_cauchy_t>(dims), dims, regex, funcs);
-                append(std::make_unique<function_sargan_t>(dims), dims, regex, funcs);
+                append(std::make_unique<function_trid_t>(dims), regex, funcs);
+                append(std::make_unique<function_qing_t>(dims), regex, funcs);
+                append(std::make_unique<function_cauchy_t>(dims), regex, funcs);
+                append(std::make_unique<function_sargan_t>(dims), regex, funcs);
                 if (dims % 4 == 0)
                 {
-                        append(std::make_unique<function_powell_t>(dims), dims, regex, funcs);
+                        append(std::make_unique<function_powell_t>(dims), regex, funcs);
                 }
-                append(std::make_unique<function_sphere_t>(dims), dims, regex, funcs);
-                append(std::make_unique<function_zakharov_t>(dims), dims, regex, funcs);
-                append(std::make_unique<function_quadratic_t>(dims), dims, regex, funcs);
-                append(std::make_unique<function_rosenbrock_t>(dims), dims, regex, funcs);
-                append(std::make_unique<function_exponential_t>(dims), dims, regex, funcs);
-                append(std::make_unique<function_dixon_price_t>(dims), dims, regex, funcs);
-                append(std::make_unique<function_chung_reynolds_t>(dims), dims, regex, funcs);
-                append(std::make_unique<function_axis_ellipsoid_t>(dims), dims, regex, funcs);
-                append(std::make_unique<function_styblinski_tang_t>(dims), dims, regex, funcs);
-                append(std::make_unique<function_schumer_steiglitz_t>(dims), dims, regex, funcs);
-                append(std::make_unique<function_rotated_ellipsoid_t>(dims), dims, regex, funcs);
-                append(std::make_unique<function_geometric_optimization_t>(dims), dims, regex, funcs);
+                append(std::make_unique<function_sphere_t>(dims), regex, funcs);
+                append(std::make_unique<function_zakharov_t>(dims), regex, funcs);
+                append(std::make_unique<function_quadratic_t>(dims), regex, funcs);
+                append(std::make_unique<function_rosenbrock_t>(dims), regex, funcs);
+                append(std::make_unique<function_exponential_t>(dims), regex, funcs);
+                append(std::make_unique<function_dixon_price_t>(dims), regex, funcs);
+                append(std::make_unique<function_chung_reynolds_t>(dims), regex, funcs);
+                append(std::make_unique<function_axis_ellipsoid_t>(dims), regex, funcs);
+                append(std::make_unique<function_styblinski_tang_t>(dims), regex, funcs);
+                append(std::make_unique<function_schumer_steiglitz_t>(dims), regex, funcs);
+                append(std::make_unique<function_rotated_ellipsoid_t>(dims), regex, funcs);
+                append(std::make_unique<function_geometric_optimization_t>(dims), regex, funcs);
 
                 if (dims < 4)
                 {
