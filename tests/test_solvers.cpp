@@ -49,7 +49,7 @@ UTEST_CASE(default_solvers)
         {
                 UTEST_REQUIRE(function);
 
-                for (const auto& solver_id : get_solvers().ids(std::regex("!(dfp|nag|nagfr|broyden)")))
+                for (const auto& solver_id : get_solvers().ids())
                 {
                         const auto solver = get_solver(solver_id);
                         UTEST_REQUIRE(solver);

@@ -17,8 +17,7 @@ static auto get_beta(const scalar_t ptheta, const scalar_t ctheta)
         return ptheta * (1 - ptheta) / (ptheta * ptheta + ctheta);
 }
 
-template <nag_restart trestart>
-tuner_t solver_nag_base_t<trestart>::tuner() const
+tuner_t solver_nag_t::tuner() const
 {
         tuner_t tuner;
         tuner.add_enum<lsearch_t::initializer>("init");
@@ -26,14 +25,12 @@ tuner_t solver_nag_base_t<trestart>::tuner() const
         return tuner;
 }
 
-template <nag_restart trestart>
-void solver_nag_base_t<trestart>::from_json(const json_t& json)
+void solver_nag_t::from_json(const json_t& json)
 {
         nano::from_json(json, "init", m_init, "strat", m_strat, "c1", m_c1, "c2", m_c2, "q", m_q);
 }
 
-template <nag_restart trestart>
-void solver_nag_base_t<trestart>::to_json(json_t& json) const
+void solver_nag_t::to_json(json_t& json) const
 {
         nano::to_json(json,
                 "init", m_init, "inits", join(enum_values<lsearch_t::initializer>()),
@@ -41,8 +38,7 @@ void solver_nag_base_t<trestart>::to_json(json_t& json) const
                 "c1", m_c1, "c2", m_c2, "q", m_q);
 }
 
-template <nag_restart trestart>
-solver_state_t solver_nag_base_t<trestart>::minimize(const size_t max_iterations, const scalar_t epsilon,
+solver_state_t solver_nag_t::minimize(const size_t max_iterations, const scalar_t epsilon,
         const solver_function_t& function, const vector_t& x0, const logger_t& logger) const
 {
         // current & previous iterations
@@ -79,24 +75,9 @@ solver_state_t solver_nag_base_t<trestart>::minimize(const size_t max_iterations
                 cy = cx + beta * (cx - px);
                 cstate.x = cx; // NB: to propagate the current parameters!
 
-                switch (trestart)
+                if (!(cstate.g.dot(cx - px) < 0))
                 {
-                case nag_restart::function:
-                        if ((cfx = function.vgrad(cx)) > pfx)
-                        {
-                                ctheta = 1;
-                        }
-                        break;
-
-                case nag_restart::gradient:
-                        if (cstate.g.dot(cx - px) > scalar_t(0))
-                        {
-                                ctheta = 1;
-                        }
-                        break;
-
-                default:
-                        break;
+                        ctheta = 1;
                 }
 
                 // next iteration
@@ -108,7 +89,3 @@ solver_state_t solver_nag_base_t<trestart>::minimize(const size_t max_iterations
 
         return cstate;
 }
-
-template class nano::solver_nag_base_t<nag_restart::none>;
-template class nano::solver_nag_base_t<nag_restart::function>;
-template class nano::solver_nag_base_t<nag_restart::gradient>;

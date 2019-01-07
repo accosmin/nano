@@ -15,9 +15,7 @@ solver_factory_t& nano::get_solvers()
         std::call_once(flag, [] ()
         {
                 manager.add<solver_gd_t>("gd", "gradient descent");
-                manager.add<solver_nag_t>("nag", "Nesterov's accelerated gradient (NAG)");
-                manager.add<solver_nagfr_t>("nagfr", "NAG with function value restarts");
-                manager.add<solver_naggr_t>("naggr", "NAG with gradient restarts");
+                manager.add<solver_nag_t>("nag", "Nesterov's accelerated gradient (NAG) with gradient restarts");
                 manager.add<solver_cgd_prp_t>("cgd", "conjugate gradient descent (default)");
                 manager.add<solver_cgd_n_t>("cgd-n", "conjugate gradient descent (N)");
                 manager.add<solver_cgd_hs_t>("cgd-hs", "conjugate gradient descent (HS)");
