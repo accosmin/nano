@@ -101,11 +101,10 @@ static void check_solver(const function_t& function, const rsolver_t& solver, co
         const auto config = trim(json);
 
         std::vector<solver_state_t> states(x0s.size());
-        //nano::loopi(x0s.size(), [&] (const size_t i)
-        for (size_t i = 0; i < x0s.size(); ++ i)
+        nano::loopi(x0s.size(), [&] (const size_t i)
         {
                 states[i] = solver->minimize(iterations, epsilon, function, x0s[i]);
-        }//);
+        });
 
         for (const auto& state : states)
         {
