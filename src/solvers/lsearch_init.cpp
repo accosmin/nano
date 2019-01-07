@@ -27,15 +27,15 @@ scalar_t lsearch_unit_init_t::get(const solver_state_t& state)
 {
         scalar_t t0 = 1;
 
-        if (m_first)
+        switch (m_iteration ++)
         {
-                m_first = false;
+        case 0:
                 t0 = first_step_length(state);
-        }
+                break;
 
-        else
-        {
+        default:
                 t0 = 1;
+                break;
         }
 
         return t0;
@@ -45,18 +45,15 @@ scalar_t lsearch_quadratic_init_t::get(const solver_state_t& state)
 {
         scalar_t t0 = 1;
 
-        if (m_first)
+        switch (m_iteration ++)
         {
-                m_first = false;
+        case 0:
                 t0 = first_step_length(state);
-        }
+                break;
 
-        else
-        {
-                const auto dg = state.d.dot(state.g);
-                const auto ro = scalar_t(1.01 * 2.0);
-
-                t0 = std::min(scalar_t(1), ro * (state.f - m_prevf) / dg);
+        default:
+                t0 = std::min(scalar_t(1), scalar_t(1.01) * 2 * (state.f - m_prevf) / state.d.dot(state.g));
+                break;
         }
 
         m_prevf = state.f;
@@ -68,15 +65,20 @@ scalar_t lsearch_consistent_init_t::get(const solver_state_t& state)
         scalar_t t0 = 1;
 
         const auto dg = state.d.dot(state.g);
-        if (m_first)
-        {
-                m_first = false;
-                t0 = first_step_length(state);
-        }
 
-        else
+        switch (m_iteration ++)
         {
+        case 0:
+                t0 = first_step_length(state);
+                break;
+
+        case 1:
+                t0 = std::min(scalar_t(1), scalar_t(1.01) * 2 * (state.f - m_prevf) / state.d.dot(state.g));
+                break;
+
+        default:
                 t0 = m_prevt * m_prevdg / dg;
+                break;
         }
 
         m_prevdg = dg;
