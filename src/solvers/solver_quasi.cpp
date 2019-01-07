@@ -49,7 +49,7 @@ solver_state_t solver_quasi_base_t<tquasi_update>::minimize(const size_t max_ite
 
                 // restart:
                 //  - if not a descent direction
-                if (cstate.d.dot(cstate.g) > scalar_t(0))
+                if (!(cstate.d.dot(cstate.g) < 0))
                 {
                         cstate.d = -cstate.g;
                         H.setIdentity();
