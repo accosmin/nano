@@ -53,7 +53,7 @@ solver_state_t solver_cgd_base_t<tcgd_update>::minimize(const size_t max_iterati
                         //  - if not a descent direction
                         //  - or two consecutive gradients far from being orthogonal
                         //      (see "Numerical optimization", Nocedal & Wright, 2nd edition, p.124-125)
-                        if (!(cstate.d.dot(cstate.g) < 0))
+                        if (!cstate.descent())
                         {
                                 cstate.d = -cstate.g;
                         }

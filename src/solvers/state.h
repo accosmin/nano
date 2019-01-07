@@ -98,6 +98,14 @@ namespace nano
                         return std::isfinite(f) && std::isfinite(convergence_criteria());
                 }
 
+                ///
+                /// \brief check if the chosen direction is a descent direction
+                ///
+                auto descent() const
+                {
+                        return g.dot(d) < 0;
+                }
+
                 // attributes
                 vector_t        x, g, d;                        ///< parameter, gradient, descent direction
                 scalar_t        f{0}, t{1};                     ///< function value, step size
