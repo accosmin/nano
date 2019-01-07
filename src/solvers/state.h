@@ -54,20 +54,11 @@ namespace nano
                 ///
                 /// \brief update current state (move to another position)
                 ///
-                void update(const function_t& function, const vector_t& xx)
+                template <typename tvector>
+                void update(const function_t& function, const tvector& xx, const scalar_t tt = 0)
                 {
-                        t = 0;
+                        t = tt;
                         x = xx;
-                        f = function.vgrad(x, &g);
-                }
-
-                ///
-                /// \brief update current state (move t along the chosen direction)
-                ///
-                void update(const function_t& function, const scalar_t t)
-                {
-                        this->t = t;
-                        x.noalias() += t * d;
                         f = function.vgrad(x, &g);
                 }
 

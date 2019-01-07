@@ -39,7 +39,7 @@ namespace nano
                 ///
                 static scalar_t maximum()
                 {
-                        return scalar_t(1e+6);
+                        return scalar_t(1) / minimum();
                 }
 
                 ///
@@ -53,7 +53,7 @@ namespace nano
                         }
                         else
                         {
-                                m_state.update(m_function.get(), alpha - m_alpha);
+                                m_state.update(m_function.get(), m_state0.get().x + alpha * m_state0.get().d, alpha);
                                 m_alpha = alpha;
                                 m_gphi = m_state.g.dot(m_state0.get().d);
                                 return operator bool();

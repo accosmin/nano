@@ -67,21 +67,19 @@ scalar_t lsearch_consistent_init_t::get(const solver_state_t& state)
 {
         scalar_t t0 = 1;
 
+        const auto dg = state.d.dot(state.g);
         if (m_first)
         {
                 m_first = false;
                 t0 = first_step_length(state);
-                // also, keep track of previous direction
-                m_prevdg = state.d.dot(state.g);
         }
 
         else
         {
-                const auto dg = state.d.dot(state.g);
-                t0 = (m_prevt * m_prevdg / dg);
-                m_prevdg = dg;
+                t0 = m_prevt * m_prevdg / dg;
         }
 
+        m_prevdg = dg;
         m_prevf = state.f;
         m_prevt = state.t;
         return t0;
