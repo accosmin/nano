@@ -54,8 +54,6 @@ namespace nano
 
                 // attributes
                 int             m_iteration{0}; ///
-                scalar_t        m_prevf{0};     ///< previous function value
-                scalar_t        m_prevt{1};     ///< previous step length
                 scalar_t        m_prevdg{1};    ///< previous direction dot product
         };
 }

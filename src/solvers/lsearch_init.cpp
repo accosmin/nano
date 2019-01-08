@@ -73,16 +73,10 @@ scalar_t lsearch_consistent_init_t::get(const solver_state_t& state)
                 break;
 
         case 1:
-                t0 = std::min(scalar_t(1), scalar_t(1.01) * 2 * (state.f - m_prevf) / state.d.dot(state.g));
-                break;
-
-        default:
-                t0 = m_prevt * m_prevdg / dg;
+                t0 = state.t * m_prevdg / dg; // NB: the line-search step is from the previous step!
                 break;
         }
 
         m_prevdg = dg;
-        m_prevf = state.f;
-        m_prevt = state.t;
         return t0;
 }
