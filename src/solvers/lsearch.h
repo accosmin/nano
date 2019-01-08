@@ -49,8 +49,8 @@ namespace nano
                 enum class initializer
                 {
                         unit,                           ///< 1.0 (useful for quasi-Newton and Newton methods)
-                        consistent,                     ///< consistent first-order change in the function
-                        quadratic                       ///< quadratic local interpolation (previous & current position)
+                        linear,                         ///< consistent first-order change in the function
+                        quadratic,                      ///< quadratic local interpolation (previous & current position)
                 };
 
                 ///
@@ -88,8 +88,8 @@ namespace nano
                 return
                 {
                         { lsearch_t::initializer::unit,                 "unit" },
-                        { lsearch_t::initializer::quadratic,            "quadratic" },
-                        { lsearch_t::initializer::consistent,           "consistent" }
+                        { lsearch_t::initializer::linear,               "linear" },
+                        { lsearch_t::initializer::quadratic,            "quadratic" }
                 };
         }
 

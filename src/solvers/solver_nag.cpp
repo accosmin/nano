@@ -47,9 +47,6 @@ solver_state_t solver_nag_t::minimize(const size_t max_iterations, const scalar_
         vector_t cy = x0;
         vector_t py = x0;
 
-        scalar_t cfx = 0;
-        scalar_t pfx = std::numeric_limits<scalar_t>::max();
-
         scalar_t ptheta = 1;
         scalar_t ctheta = 1;
 
@@ -83,7 +80,6 @@ solver_state_t solver_nag_t::minimize(const size_t max_iterations, const scalar_
                 // next iteration
                 px = cx;
                 py = cy;
-                pfx = cfx;
                 ptheta = ctheta;
         }
 
