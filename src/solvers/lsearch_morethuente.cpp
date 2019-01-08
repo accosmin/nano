@@ -223,13 +223,13 @@ lsearch_step_t lsearch_morethuente_t::get(const lsearch_step_t& step0, const sca
         int stage = 1;
         bool brackt = false;
 
-        scalar_t stp = t0, f = step.phi0(), g = step.gphi0();
+        scalar_t stp = t0, f = step.phi(), g = step.gphi();
         scalar_t stmin = 0, stmax = stp + stp * 4;
 
         scalar_t width = stpmax - stpmin;
         scalar_t width1 = 2 * width;
 
-        scalar_t finit = f, ginit = g, gtest = ftol * ginit;
+        scalar_t finit = step.phi0(), ginit = step.gphi0(), gtest = ftol * ginit;
         scalar_t stx = 0, fx = finit, gx = ginit;
         scalar_t sty = 0, fy = finit, gy = ginit;
 
