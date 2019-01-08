@@ -5,11 +5,11 @@
 namespace nano
 {
         ///
-        /// \brief More & Thuente line-search.
-        ///     see "Numerical optimization", Nocedal & Wright, 2nd edition, p.60
+        /// \brief More & Thunte line-search.
         ///     see "Line Search Algorithms with Guaranteed Sufficient Decrease", by Jorge J. More and David J. Thuente
         ///
-        /// NB: this implementation uses the notation and the version described in Nocedal & Wright's book.
+        /// NB: this implementation ports the 'dcsrch' and the 'dcstep' Fortran routines from MINPACK-2.
+        ///     see http://ftp.mcs.anl.gov/pub/MINPACK-2/csrch/
         ///
         class lsearch_morethuente_t final : public lsearch_strategy_t
         {
