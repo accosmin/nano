@@ -15,15 +15,16 @@ namespace nano
         {
         public:
 
-                lsearch_morethuente_t(const scalar_t c1, const scalar_t c2);
+                lsearch_morethuente_t(const scalar_t c1, const scalar_t c2) :
+                        lsearch_strategy_t(c1, c2)
+                {
+                }
 
                 lsearch_step_t get(const lsearch_step_t& step0, const scalar_t t0) final;
 
         private:
 
                 // attributes
-                scalar_t        m_c1;                                   ///< sufficient decrease rate
-                scalar_t        m_c2;                                   ///< sufficient curvature
                 int             m_max_iterations{100};                  ///<
         };
 }

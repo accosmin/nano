@@ -173,11 +173,11 @@ namespace nano
 
                 // attributes
                 ref_function_t          m_function;
-                ref_solver_state_t      m_state0;       ///< starting state for line-search
-                scalar_t                m_gphi0{0};
-                scalar_t                m_alpha{0};     ///< line-search step (current estimate)
-                solver_state_t          m_state;        ///< state at alpha
-                scalar_t                m_gphi{0};      ///< line-search function gradient at alpha
+                ref_solver_state_t      m_state0;       ///< optimization state at zero
+                scalar_t                m_gphi0{0};     ///< g.dot(d) at zero
+                scalar_t                m_alpha{0};     ///< line-search step alpha (current estimate)
+                solver_state_t          m_state;        ///< optimization state at alpha
+                scalar_t                m_gphi{0};      ///< g.dot(d) at alpha
         };
 
         inline bool operator<(const lsearch_step_t& step1, const lsearch_step_t& step2)

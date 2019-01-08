@@ -134,12 +134,6 @@ static lsearch_step_t zoom(
         return step0;
 }
 
-lsearch_morethuente_t::lsearch_morethuente_t(const scalar_t c1, const scalar_t c2) :
-        m_c1(c1),
-        m_c2(c2)
-{
-}
-
 lsearch_step_t lsearch_morethuente_t::get(const lsearch_step_t& step0, const scalar_t t0)
 {
         // previous step

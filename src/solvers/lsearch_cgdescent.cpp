@@ -149,12 +149,6 @@ static std::pair<lsearch_step_t, lsearch_step_t> secant2(const lsearch_step_t& a
         }
 }
 
-lsearch_cgdescent_t::lsearch_cgdescent_t(const scalar_t c1, const scalar_t c2) :
-        m_c1(c1),
-        m_c2(c2)
-{
-}
-
 lsearch_step_t lsearch_cgdescent_t::get(const lsearch_step_t& step0, const scalar_t t0)
 {
         lsearch_step_t a(step0), b(step0), c(step0);

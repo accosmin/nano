@@ -16,15 +16,16 @@ namespace nano
         {
         public:
 
-                lsearch_cgdescent_t(const scalar_t c1, const scalar_t c2);
+                lsearch_cgdescent_t(const scalar_t c1, const scalar_t c2) :
+                        lsearch_strategy_t(c1, c2)
+                {
+                }
 
                 lsearch_step_t get(const lsearch_step_t& step0, const scalar_t t0) final;
 
         private:
 
                 // attributes
-                scalar_t        m_c1;                                   ///< sufficient decrease rate
-                scalar_t        m_c2;                                   ///< sufficient curvature
                 scalar_t        m_epsilon{static_cast<scalar_t>(1e-6)}; ///<
                 scalar_t        m_theta{static_cast<scalar_t>(0.5)};    ///<
                 scalar_t        m_gamma{static_cast<scalar_t>(0.66)};   ///<

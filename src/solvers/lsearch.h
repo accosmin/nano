@@ -12,6 +12,9 @@ namespace nano
         {
         public:
 
+                ///
+                /// \brief destructor
+                ///
                 virtual ~lsearch_init_t() = default;
 
                 ///
@@ -27,12 +30,36 @@ namespace nano
         class lsearch_strategy_t
         {
         public:
+
+                ///
+                /// \brief constructor
+                ///
+                lsearch_strategy_t(const scalar_t c1, const scalar_t c2) :
+                        m_c1(c1), m_c2(c2)
+                {
+                }
+
+                ///
+                /// \brief destructor
+                ///
                 virtual ~lsearch_strategy_t() = default;
 
                 ///
                 /// \brief returns the step length given the current state
                 ///
                 virtual lsearch_step_t get(const lsearch_step_t& step0, const scalar_t t0) = 0;
+
+                ///
+                /// \brief access functions
+                ///
+                auto c1() const { return m_c1; }
+                auto c2() const { return m_c2; }
+
+        protected:
+
+                // attributes
+                scalar_t                m_c1;           ///< sufficient decrease rate
+                scalar_t                m_c2;           ///< sufficient curvature
         };
 
         ///

@@ -2,11 +2,6 @@
 
 using namespace nano;
 
-lsearch_backtrack_armijo_t::lsearch_backtrack_armijo_t(const scalar_t c1, const scalar_t) :
-        m_c1(c1)
-{
-}
-
 lsearch_step_t lsearch_backtrack_armijo_t::get(const lsearch_step_t& step0, const scalar_t t0)
 {
         auto t = t0;
@@ -30,12 +25,6 @@ lsearch_step_t lsearch_backtrack_armijo_t::get(const lsearch_step_t& step0, cons
         }
 
         return step0;
-}
-
-lsearch_backtrack_wolfe_t::lsearch_backtrack_wolfe_t(const scalar_t c1, const scalar_t c2) :
-        m_c1(c1),
-        m_c2(c2)
-{
 }
 
 lsearch_step_t lsearch_backtrack_wolfe_t::get(const lsearch_step_t& step0, const scalar_t t0)
@@ -65,12 +54,6 @@ lsearch_step_t lsearch_backtrack_wolfe_t::get(const lsearch_step_t& step0, const
         }
 
         return step0;
-}
-
-lsearch_backtrack_swolfe_t::lsearch_backtrack_swolfe_t(const scalar_t c1, const scalar_t c2) :
-        m_c1(c1),
-        m_c2(c2)
-{
 }
 
 lsearch_step_t lsearch_backtrack_swolfe_t::get(const lsearch_step_t& step0, const scalar_t t0)

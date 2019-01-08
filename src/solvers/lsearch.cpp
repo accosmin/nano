@@ -45,16 +45,22 @@ bool lsearch_t::operator()(const function_t& function, solver_state_t& state)
 {
         // initial step length
         const auto t0 = m_initializer->get(state);
-
-        // check descent direction
-        const auto dg0 = state.d.dot(state.g);
-        if (dg0 >= scalar_t(0))
+        if (t0 < lsearch_step_t::minimum() || t0 > lsearch_step_t::maximum())
         {
                 return false;
         }
 
-        // check initial step length
-        if (t0 < lsearch_step_t::minimum() || t0 > lsearch_step_t::maximum())
+        // check descent direction
+        if (!state.descent())
+        {
+                return false;
+        }
+
+        // check parameters
+        if (!(  0 < m_strategy->c1() &&
+                m_strategy->c1() < scalar_t(0.5) &&
+                m_strategy->c1() < m_strategy->c2() &&
+                m_strategy->c2() < 1))
         {
                 return false;
         }
@@ -67,6 +73,7 @@ bool lsearch_t::operator()(const function_t& function, solver_state_t& state)
         }
 
         // line-search step length
+        // fixme: this is very inneficient - we should update in-place a single lsearch_step_t!
         const auto step = m_strategy->get(step0, t0);
         if (step && step < step0)
         {
