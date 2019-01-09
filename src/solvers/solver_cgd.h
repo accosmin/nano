@@ -123,11 +123,11 @@ namespace nano
                 static scalar_t get(const solver_state_t& prev, const solver_state_t& curr)
                 {
                         const auto y = curr.g - prev.g;
-                        const scalar_t div = +1 / prev.d.dot(y);
+                        const auto div = +1 / prev.d.dot(y);
 
-                        const scalar_t pd2 = prev.d.lpNorm<2>();
-                        const scalar_t pg2 = prev.g.lpNorm<2>();
-                        const scalar_t eta = -1 / (pd2 * std::min(scalar_t(0.01), pg2));
+                        const auto pd2 = prev.d.lpNorm<2>();
+                        const auto pg2 = prev.g.lpNorm<2>();
+                        const auto eta = -1 / (pd2 * std::min(scalar_t(0.01), pg2));
 
                         // N+ (see modification in
                         //      "A NEW CONJUGATE GRADIENT METHOD WITH GUARANTEED DESCENT AND AN EFFICIENT LINE SEARCH")
@@ -143,8 +143,8 @@ namespace nano
         {
                 static scalar_t get(const solver_state_t& prev, const solver_state_t& curr)
                 {
-                        const scalar_t dy = cgd_step_DY::get(prev, curr);
-                        const scalar_t hs = cgd_step_HS::get(prev, curr);
+                        const auto dy = cgd_step_DY::get(prev, curr);
+                        const auto hs = cgd_step_HS::get(prev, curr);
 
                         return std::max(scalar_t(0), std::min(dy, hs));
                 }

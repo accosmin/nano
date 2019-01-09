@@ -10,7 +10,7 @@ static std::pair<lsearch_step_t, lsearch_step_t> updateU(lsearch_step_t a, lsear
         const scalar_t theta)
 {
         lsearch_step_t c(a);
-        for (int i = 0; i < 100 && (b.alpha() - a.alpha()) > a.minimum(); i ++)
+        for (int i = 0; i < 100 && (b.alpha() - a.alpha()) > lsearch_step_t::minimum(); i ++)
         {
                 c.update((1 - theta) * a.alpha() + theta * b.alpha());
 
@@ -37,7 +37,8 @@ static std::pair<lsearch_step_t, lsearch_step_t> updateU(lsearch_step_t a, lsear
 ///
 /// \brief [a, b] line-search interval update (see CG_DESCENT)
 ///
-static std::pair<lsearch_step_t, lsearch_step_t> update(const lsearch_step_t& a, const lsearch_step_t& b, lsearch_step_t c,
+static std::pair<lsearch_step_t, lsearch_step_t> update(
+        const lsearch_step_t& a, const lsearch_step_t& b, const lsearch_step_t& c,
         const scalar_t epsilon,
         const scalar_t theta)
 {
@@ -169,18 +170,19 @@ lsearch_step_t lsearch_cgdescent_t::get(const lsearch_step_t& step0, const scala
         m_sumQ = 1 + m_sumQ * m_delta;
         m_sumC = m_sumC + (std::fabs(step0.phi0()) - m_sumC) / m_sumQ;
 
+        auto approx = false;
         const auto approx_epsilon = m_epsilon * m_sumC;
 
         for (int i = 0; i < m_max_iterations && a && b; i ++)
         {
                 // check Armijo+Wolfe or approximate Wolfe condition
-                if (    (!m_approx && a.has_armijo(m_c1) && a.has_wolfe(m_c2)) ||
-                        (m_approx && a.has_approx_wolfe(m_c1, m_c2, approx_epsilon)))
+                if (    (!approx && a.has_armijo(m_c1) && a.has_wolfe(m_c2)) ||
+                        (approx && a.has_approx_wolfe(m_c1, m_c2, approx_epsilon)))
                 {
                         // decide if to switch permanently to the approximate Wolfe conditions
-                        if (a && !m_approx)
+                        if (a && !approx)
                         {
-                                m_approx = std::fabs(a.phi() - a.phi0()) <= m_omega * m_sumC;
+                                approx = std::fabs(a.phi() - a.phi0()) <= m_omega * m_sumC;
                         }
                         return a;
                 }

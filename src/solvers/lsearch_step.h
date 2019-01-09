@@ -6,7 +6,11 @@ namespace nano
 {
         ///
         /// \brief line-search (scalar) step.
-        /// NB: using the notation from the CG_DESCENT papers
+        ///
+        /// NB: using the notation from the CG_DESCENT papers:
+        ///     phi(alpha) = f(x + alpha * d),
+        ///
+        ///     where alpha is the current line-search step length.
         ///
         class lsearch_step_t
         {
@@ -96,11 +100,19 @@ namespace nano
                 }
 
                 ///
-                /// \brief current step
+                /// \brief current step length
                 ///
                 scalar_t alpha() const
                 {
                         return m_alpha;
+                }
+
+                ///
+                /// \brief initial function value
+                ///
+                scalar_t phi0() const
+                {
+                        return m_state0.get().f;
                 }
 
                 ///
@@ -120,19 +132,11 @@ namespace nano
                 }
 
                 ///
-                /// \brief initial function value
+                /// \brief current function value
                 ///
-                scalar_t phi0() const
+                scalar_t func() const
                 {
-                        return m_state0.get().f;
-                }
-
-                ///
-                /// \brief current line-search function gradient
-                ///
-                scalar_t gphi() const
-                {
-                        return m_gphi;
+                        return m_state.f;
                 }
 
                 ///
@@ -144,17 +148,17 @@ namespace nano
                 }
 
                 ///
-                /// \brief currrent function value
+                /// \brief current line-search function gradient
                 ///
-                scalar_t func() const
+                scalar_t gphi() const
                 {
-                        return phi();
+                        return m_gphi;
                 }
 
                 ///
-                /// \brief current gradient
+                /// \brief current function gradient
                 ///
-                const vector_t& grad() const
+                const auto& grad() const
                 {
                         return m_state.g;
                 }

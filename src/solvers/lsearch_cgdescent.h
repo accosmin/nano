@@ -34,7 +34,6 @@ namespace nano
                 scalar_t        m_ro{static_cast<scalar_t>(5.0)};       ///<
                 scalar_t        m_sumQ{0};                              ///<
                 scalar_t        m_sumC{0};                              ///<
-                bool            m_approx{false};                        ///< permanently use the approximate Wolfe condition?
                 int             m_max_iterations{100};                  ///<
         };
 }
