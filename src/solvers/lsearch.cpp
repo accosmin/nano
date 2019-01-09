@@ -1,5 +1,6 @@
 #include "lsearch.h"
 #include "lsearch_init.h"
+#include "core/numeric.h"
 #include "lsearch_backtrack.h"
 #include "lsearch_cgdescent.h"
 #include "lsearch_morethuente.h"
@@ -45,11 +46,7 @@ lsearch_t::lsearch_t(const initializer init, const strategy strat, const scalar_
 bool lsearch_t::operator()(const function_t& function, solver_state_t& state)
 {
         // initial step length
-        const auto t0 = m_initializer->get(state);
-        if (t0 < lsearch_step_t::minimum() || t0 > lsearch_step_t::maximum())
-        {
-                return false;
-        }
+        const auto t0 = nano::clamp(m_initializer->get(state), lsearch_step_t::minimum(), scalar_t(1));
 
         // check descent direction
         if (!state.descent())
