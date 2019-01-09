@@ -13,6 +13,7 @@ static std::unique_ptr<lsearch_init_t> make_initializer(const lsearch_t::initial
         case lsearch_t::initializer::unit:              return std::make_unique<lsearch_unit_init_t>();
         case lsearch_t::initializer::linear:            return std::make_unique<lsearch_linear_init_t>();
         case lsearch_t::initializer::quadratic:         return std::make_unique<lsearch_quadratic_init_t>();
+        case lsearch_t::initializer::cg_descent:        return std::make_unique<lsearch_cgdescent_init_t>();
         default:                                        assert(false); return nullptr;
         }
 }

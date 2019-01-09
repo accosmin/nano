@@ -72,12 +72,14 @@ namespace nano
                 ///
                 /// \brief initial step length strategy
                 ///     see "Numerical optimization", Nocedal & Wright, 2nd edition, p.59
+                ///     see CG_DESCENT
                 ///
                 enum class initializer
                 {
                         unit,                           ///< 1.0 (useful for quasi-Newton and Newton methods)
                         linear,                         ///< consistent first-order change in the function
                         quadratic,                      ///< quadratic local interpolation (previous & current position)
+                        cg_descent,                     ///< CG_DESCENT
                 };
 
                 ///
@@ -116,7 +118,8 @@ namespace nano
                 {
                         { lsearch_t::initializer::unit,                 "unit" },
                         { lsearch_t::initializer::linear,               "linear" },
-                        { lsearch_t::initializer::quadratic,            "quadratic" }
+                        { lsearch_t::initializer::quadratic,            "quadratic" },
+                        { lsearch_t::initializer::cg_descent,           "cg-descent" }
                 };
         }
 
