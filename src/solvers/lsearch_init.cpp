@@ -1,4 +1,5 @@
 #include "lsearch_init.h"
+#include "core/numeric.h"
 
 using namespace nano;
 
@@ -20,7 +21,7 @@ scalar_t lsearch_linear_init_t::get(const solver_state_t& state)
 
         default:
                 // NB: the line-search length is from the previous iteration!
-                t0 = state.t * m_prevdg / dg;
+                t0 = nano::clamp(state.t * m_prevdg / dg, lsearch_step_t::minimum(), scalar_t(1));
                 break;
         }
 
