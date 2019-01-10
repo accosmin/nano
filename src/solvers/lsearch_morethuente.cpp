@@ -8,7 +8,7 @@ using namespace nano;
 ///
 static void dcstep(
         scalar_t& stx, scalar_t& fx, scalar_t& dx,
-	scalar_t& sty, scalar_t& fy, scalar_t& dy,
+        scalar_t& sty, scalar_t& fy, scalar_t& dy,
         scalar_t& stp, scalar_t& fp, scalar_t& dp,
         bool& brackt,
         const scalar_t stpmin, const scalar_t stpmax)
@@ -54,7 +54,7 @@ static void dcstep(
         {
                 theta = (fx - fp) * 3 / (stp - stx) + dx + dp;
                 d1 = std::fabs(theta);
-                d2 = std::abs(dx);
+                d2 = std::fabs(dx);
                 d1 = std::max(d1, d2);
                 d2 = std::fabs(dp);
                 s = std::max(d1, d2);
@@ -248,7 +248,7 @@ lsearch_step_t lsearch_morethuente_t::get(const lsearch_step_t& step0, const sca
                 if (stp == stpmin && (f > ftest || g >= gtest)) return step;
 
                 // Check convergence
-                if (f <= ftest && std::abs(g) <= gtol * (-ginit))
+                if (f <= ftest && std::fabs(g) <= gtol * (-ginit))
                 {
                         return step;
                 }
