@@ -71,30 +71,22 @@ static std::pair<lsearch_step_t, lsearch_step_t> bracket(const lsearch_step_t& s
         const scalar_t theta,
         const scalar_t ro)
 {
-        std::vector<lsearch_step_t> steps;
+        auto prev_c = step0;
         for (int i = 0; i <= 100 && c; i ++)
         {
                 if (c.gphi() >= 0)
                 {
-                        for (auto it = steps.rbegin(); it != steps.rend(); ++ it)
-                        {
-                                if (it->phi() <= it->approx_phi(epsilon))
-                                {
-                                        return std::make_pair(*it, c);
-                                }
-                        }
-
-                        return std::make_pair(step0, c);
+                        return std::make_pair(prev_c, c);
                 }
 
-                if (c.gphi() < 0 && c.phi() > c.approx_phi(epsilon))
+                else if (c.phi() > c.approx_phi(epsilon))
                 {
                         return updateU(step0, c, epsilon, theta);
                 }
 
                 else
                 {
-                        steps.push_back(c);
+                        prev_c = c;
                         c.update(ro * c.alpha());
                 }
         }
