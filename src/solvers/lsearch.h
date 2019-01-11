@@ -19,9 +19,19 @@ namespace nano
 
                 ///
                 /// \brief returns the initial step length given the current state
-                /// NB: keep track of previous states
+                /// NB: may keep track of the previous states
                 ///
-                virtual scalar_t get(const solver_state_t&) = 0;
+                scalar_t get(const solver_state_t& state)
+                {
+                        return get(state, m_iteration ++);
+                }
+
+        private:
+
+                virtual scalar_t get(const solver_state_t&, const int iteration) = 0;
+
+                // attributes
+                int                     m_iteration{0}; ///<
         };
 
         ///

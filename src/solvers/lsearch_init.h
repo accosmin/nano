@@ -13,7 +13,7 @@ namespace nano
         public:
 
                 lsearch_unit_init_t() = default;
-                scalar_t get(const solver_state_t&) override;
+                scalar_t get(const solver_state_t&, const int iteration) override;
         };
 
         class lsearch_linear_init_t final : public lsearch_init_t
@@ -21,12 +21,11 @@ namespace nano
         public:
 
                 lsearch_linear_init_t() = default;
-                scalar_t get(const solver_state_t&) override;
+                scalar_t get(const solver_state_t&, const int iteration) override;
 
         private:
 
                 // attributes
-                int             m_iteration{0}; ///<
                 scalar_t        m_prevdg{1};    ///< previous direction dot product
         };
 
@@ -35,12 +34,11 @@ namespace nano
         public:
 
                 lsearch_quadratic_init_t() = default;
-                scalar_t get(const solver_state_t&) override;
+                scalar_t get(const solver_state_t&, const int iteration) override;
 
         private:
 
                 // attributes
-                int             m_iteration{0}; ///<
                 scalar_t        m_prevf{0};     ///< previous function value
         };
 
@@ -51,6 +49,7 @@ namespace nano
         {
         public:
 
-                scalar_t get(const solver_state_t&) override;
+                lsearch_cgdescent_init_t() = default;
+                scalar_t get(const solver_state_t&, const int iteration) override;
         };
 }
