@@ -170,19 +170,18 @@ lsearch_step_t lsearch_cgdescent_t::get(const lsearch_step_t& step0, const scala
         m_sumQ = 1 + m_sumQ * m_delta;
         m_sumC = m_sumC + (std::fabs(step0.phi0()) - m_sumC) / m_sumQ;
 
-        auto approx = false;
         const auto approx_epsilon = m_epsilon * m_sumC;
 
         for (int i = 0; i < m_max_iterations && a && b; i ++)
         {
                 // check Armijo+Wolfe or approximate Wolfe condition
-                if (    (!approx && a.has_armijo(m_c1) && a.has_wolfe(m_c2)) ||
-                        (approx && a.has_approx_wolfe(m_c1, m_c2, approx_epsilon)))
+                if (    (!m_approx && a.has_armijo(m_c1) && a.has_wolfe(m_c2)) ||
+                        (m_approx && a.has_approx_wolfe(m_c1, m_c2, approx_epsilon)))
                 {
                         // decide if to switch permanently to the approximate Wolfe conditions
-                        if (a && !approx)
+                        if (a && !m_approx)
                         {
-                                approx = std::fabs(a.phi() - a.phi0()) <= m_omega * m_sumC;
+                                m_approx = std::fabs(a.phi() - a.phi0()) <= m_omega * m_sumC;
                         }
                         return a;
                 }

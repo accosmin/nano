@@ -35,5 +35,6 @@ namespace nano
                 scalar_t        m_sumQ{0};                              ///<
                 scalar_t        m_sumC{0};                              ///<
                 int             m_max_iterations{100};                  ///<
+                bool            m_approx{false};                        ///<
         };
 }
