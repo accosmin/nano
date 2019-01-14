@@ -14,7 +14,7 @@ static std::pair<lsearch_step_t, lsearch_step_t> updateU(lsearch_step_t a, lsear
         {
                 c.update((1 - theta) * a.alpha() + theta * b.alpha());
 
-                if (c.gphi() >= 0)
+                if (c.gphi() >= scalar_t(0))
                 {
                         return std::make_pair(a, c);
                 }
@@ -47,7 +47,7 @@ static std::pair<lsearch_step_t, lsearch_step_t> update(
                 return std::make_pair(a, b);
         }
 
-        else if (c.gphi() >= 0)
+        else if (c.gphi() >= scalar_t(0))
         {
                 return std::make_pair(a, c);
         }
@@ -74,7 +74,7 @@ static std::pair<lsearch_step_t, lsearch_step_t> bracket(const lsearch_step_t& s
         auto prev_c = step0;
         for (int i = 0; i <= 100 && c; i ++)
         {
-                if (c.gphi() >= 0)
+                if (c.gphi() >= scalar_t(0))
                 {
                         return std::make_pair(prev_c, c);
                 }

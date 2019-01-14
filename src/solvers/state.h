@@ -13,8 +13,8 @@ namespace nano
         ///     current point (x),
         ///     function value (f),
         ///     gradient (g),
-        ///     descent direction (d) &
-        ///     line-search step (t)
+        ///     descent direction (d),
+        ///     line-search step (t).
         ///
         class solver_state_t
         {
