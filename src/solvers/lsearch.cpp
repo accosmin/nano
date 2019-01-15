@@ -49,7 +49,7 @@ bool lsearch_t::operator()(const function_t& function, solver_state_t& state)
         const auto t0 = nano::clamp(m_initializer->get(state), lsearch_step_t::minimum(), scalar_t(1));
 
         // check descent direction
-        if (!state.descent())
+        if (!state.has_descent())
         {
                 return false;
         }

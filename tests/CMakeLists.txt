@@ -29,6 +29,7 @@ make_test(test_model_gboost.cpp nano)
 
 make_test(test_solvers.cpp nano)
 make_test(test_functions.cpp nano)
+make_test(test_solver_state.cpp nano)
 
 make_test(test_loss.cpp nano)
 

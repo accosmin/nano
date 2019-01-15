@@ -66,9 +66,10 @@ namespace nano
                 /// \brief update current state (move t along the chosen direction,
                 /// but the function value & gradient are already computed)
                 ///
-                void update(const function_t&, const scalar_t t, const scalar_t ft, const vector_t& gt)
+                template <typename tvector>
+                void update(const function_t&, const scalar_t tt, const scalar_t ft, const tvector& gt)
                 {
-                        this->t = t;
+                        t = tt;
                         x.noalias() += t * d;
                         f = ft;
                         g = gt;
@@ -95,24 +96,74 @@ namespace nano
                 ///
                 operator bool() const
                 {
-                        return std::isfinite(f) && std::isfinite(convergence_criteria());
+                        return  std::isfinite(t) &&
+                                std::isfinite(f) &&
+                                std::isfinite(convergence_criteria());
+                }
+
+                ///
+                /// \brief compute the dot product between the gradient and the descent direction
+                ///
+                auto dg() const
+                {
+                        return g.dot(d);
                 }
 
                 ///
                 /// \brief check if the chosen direction is a descent direction
                 ///
-                auto descent() const
+                auto has_descent() const
                 {
-                        return g.dot(d) < 0;
+                        return dg() < 0;
+                }
+
+                ///
+                /// \brief check if the current step satisfies the Armijo condition (sufficient decrease)
+                ///
+                bool has_armijo(const solver_state_t& state0, const scalar_t c1) const
+                {
+                        assert(c1 > 0 && c1 < 1);
+                        return f <= state0.f + t * c1 * state0.dg();
+                }
+
+                ///
+                /// \brief check if the current step satisfies the Wolfe condition (sufficient curvature)
+                ///
+                bool has_wolfe(const solver_state_t& state0, const scalar_t c2) const
+                {
+                        assert(c2 > 0 && c2 < 1);
+                        return dg() >= c2 * state0.dg();
+                }
+
+                ///
+                /// \brief check if the current step satisfies the strong Wolfe condition (sufficient curvature)
+                ///
+                bool has_strong_wolfe(const solver_state_t& state0, const scalar_t c2) const
+                {
+                        assert(c2 > 0 && c2 < 1);
+                        return std::fabs(dg()) <= c2 * std::fabs(state0.dg());
+                }
+
+                ///
+                /// \brief check if the current step satisfies the approximate Wolfe condition (sufficient curvature)
+                ///     see CG_DESCENT
+                ///
+                bool has_approx_wolfe(const solver_state_t& state0, const scalar_t c1, const scalar_t c2,
+                        const scalar_t epsilon) const
+                {
+                        assert(0 < c1 && c1 < c2 && c2 < 1);
+                        return  (2 * c1 - 1) * state0.dg() >= dg() &&
+                                dg() >= +c2 * state0.dg() &&
+                                f <= state0.f + epsilon;
                 }
 
                 // attributes
                 vector_t        x, g, d;                        ///< parameter, gradient, descent direction
                 scalar_t        f{0}, t{1};                     ///< function value, step size
                 status          m_status{status::max_iters};    ///< optimization status
-                size_t          m_fcalls{0};                    ///< #function value evaluations
-                size_t          m_gcalls{0};                    ///< #function gradient evaluations
-                size_t          m_iterations{0};                ///< #optimization iterations
+                size_t          m_fcalls{0};                    ///< #function value evaluations so far
+                size_t          m_gcalls{0};                    ///< #function gradient evaluations so far
+                size_t          m_iterations{0};                ///< #optimization iterations so far
         };
 
         template <>
