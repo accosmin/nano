@@ -11,13 +11,13 @@ static void test(
 {
         const auto state0 = solver_state_t{function, x0};
         const auto f0 = state0.f;
-        const auto g0 = state0.convergence_criteria();
+        const auto g0 = state0.convergence_criterion();
 
         // minimize
         const auto state = solver.minimize(iterations, epsilon2<scalar_t>(), function, x0);
         const auto x = state.x;
         const auto f = state.f;
-        const auto g = state.convergence_criteria();
+        const auto g = state.convergence_criterion();
 
         if (state.m_status != solver_state_t::status::converged)
         {

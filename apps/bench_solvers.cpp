@@ -14,7 +14,7 @@ struct solver_stat_t
 {
         void update(const solver_state_t& state)
         {
-                m_crits(state.convergence_criteria());
+                m_crits(state.convergence_criterion());
                 m_fails(state.m_status != solver_state_t::status::converged ? 1 : 0);
                 m_iters(static_cast<scalar_t>(state.m_iterations));
                 m_errors(state.m_status == solver_state_t::status::failed ? 1 : 0);
@@ -23,7 +23,7 @@ struct solver_stat_t
                 m_gcalls(static_cast<scalar_t>(state.m_gcalls));
         }
 
-        stats_t         m_crits;      ///< convergence criteria
+        stats_t         m_crits;      ///< convergence criterion
         stats_t         m_fails;      ///< #convergence failures
         stats_t         m_iters;      ///< #optimization iterations
         stats_t         m_errors;     ///< #internal errors (e.g. line-search failed)
@@ -161,7 +161,7 @@ int main(int argc, const char* argv[])
         cmdline.add("", "max-dims",     "maximum number of dimensions for each test function (if feasible)", "1000");
         cmdline.add("", "trials",       "number of random trials for each test function", "100");
         cmdline.add("", "iterations",   "maximum number of iterations", "1000");
-        cmdline.add("", "epsilon",      "convergence criteria", epsilon2<scalar_t>());
+        cmdline.add("", "epsilon",      "convergence criterion", epsilon2<scalar_t>());
         cmdline.add("", "convex",       "use only convex test functions");
         cmdline.add("", "tune",         "tune the selected solvers");
         cmdline.add("", "c1",           "use this c1 value (see Armijo-Goldstein line-search step condition)");

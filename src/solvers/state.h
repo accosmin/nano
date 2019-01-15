@@ -22,7 +22,7 @@ namespace nano
 
                 enum class status
                 {
-                        converged,      ///< convergence criteria reached
+                        converged,      ///< convergence criterion reached
                         max_iters,      ///< maximum number of iterations reached without convergence (default)
                         failed,         ///< optimization failed (e.g. line-search failed)
                         stopped         ///< user requested stop
@@ -80,13 +80,13 @@ namespace nano
                 ///
                 bool converged(const scalar_t epsilon) const
                 {
-                        return convergence_criteria() < epsilon;
+                        return convergence_criterion() < epsilon;
                 }
 
                 ///
-                /// \brief convergence criteria: relative gradient
+                /// \brief convergence criterion: relative gradient
                 ///
-                scalar_t convergence_criteria() const
+                scalar_t convergence_criterion() const
                 {
                         return g.lpNorm<Eigen::Infinity>() / std::max(scalar_t(1), std::fabs(f));
                 }
@@ -98,7 +98,7 @@ namespace nano
                 {
                         return  std::isfinite(t) &&
                                 std::isfinite(f) &&
-                                std::isfinite(convergence_criteria());
+                                std::isfinite(convergence_criterion());
                 }
 
                 ///
