@@ -60,9 +60,9 @@ solver_state_t solver_nag_t::minimize(const size_t max_iterations, const scalar_
                 const auto beta = get_beta(ptheta, ctheta);
 
                 // update solution
-                cstate.update(function, py);
+                cstate.update(py);
                 cstate.d = -cstate.g;
-                const auto iter_ok = lsearch(function, cstate);
+                const auto iter_ok = lsearch(cstate);
                 if (solver_t::done(logger, function, cstate, epsilon, iter_ok))
                 {
                         break;

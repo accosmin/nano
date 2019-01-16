@@ -35,13 +35,12 @@ solver_state_t solver_quasi_base_t<tquasi_update>::minimize(const size_t max_ite
 {
         lsearch_t lsearch(m_init, m_strat, m_c1, m_c2);
 
-        // previous state
-        solver_state_t pstate(function.size());
+        auto cstate = solver_state_t{function, x0};
+        auto pstate = cstate;
 
         // current approximation of the Hessian
         matrix_t H = matrix_t::Identity(function.size(), function.size());
 
-        auto cstate = solver_state_t{function, x0};
         for (size_t i = 0; i < max_iterations; ++ i, ++ cstate.m_iterations)
         {
                 // descent direction
@@ -57,7 +56,7 @@ solver_state_t solver_quasi_base_t<tquasi_update>::minimize(const size_t max_ite
 
                 // line-search
                 pstate = cstate;
-                const auto iter_ok = lsearch(function, cstate);
+                const auto iter_ok = lsearch(cstate);
                 if (solver_t::done(logger, function, cstate, epsilon, iter_ok))
                 {
                         break;

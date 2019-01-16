@@ -16,12 +16,8 @@ namespace nano
         {
         public:
 
-                lsearch_cgdescent_t(const scalar_t c1, const scalar_t c2) :
-                        lsearch_strategy_t(c1, c2)
-                {
-                }
-
-                lsearch_step_t get(const lsearch_step_t& step0, const scalar_t t0) final;
+                lsearch_cgdescent_t() = default;
+                bool get(const solver_state_t& state0, const scalar_t t0, solver_state_t& state) final;
 
         private:
 
@@ -34,7 +30,6 @@ namespace nano
                 scalar_t        m_ro{static_cast<scalar_t>(5.0)};       ///<
                 scalar_t        m_sumQ{0};                              ///<
                 scalar_t        m_sumC{0};                              ///<
-                int             m_max_iterations{100};                  ///<
                 bool            m_approx{false};                        ///<
         };
 }

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "lsearch_step.h"
+#include "state.h"
 
 namespace nano
 {
@@ -31,7 +31,7 @@ namespace nano
                 virtual scalar_t get(const solver_state_t&, const int iteration) = 0;
 
                 // attributes
-                int                     m_iteration{0}; ///<
+                int             m_iteration{0}; ///<
         };
 
         ///
@@ -44,10 +44,7 @@ namespace nano
                 ///
                 /// \brief constructor
                 ///
-                lsearch_strategy_t(const scalar_t c1, const scalar_t c2) :
-                        m_c1(c1), m_c2(c2)
-                {
-                }
+                lsearch_strategy_t() = default;
 
                 ///
                 /// \brief destructor
@@ -55,21 +52,46 @@ namespace nano
                 virtual ~lsearch_strategy_t() = default;
 
                 ///
-                /// \brief returns the step length given the current state
+                /// \brief
                 ///
-                virtual lsearch_step_t get(const lsearch_step_t& step0, const scalar_t t0) = 0;
+                virtual bool get(const solver_state_t& state0, const scalar_t t0, solver_state_t&) = 0;
+
+                ///
+                /// \brief minimum allowed line-search step
+                ///
+                static scalar_t stpmin()
+                {
+                        return scalar_t(10) * std::numeric_limits<scalar_t>::epsilon();
+                }
+
+                ///
+                /// \brief maximum allowed line-search step
+                ///
+                static scalar_t stpmax()
+                {
+                        return scalar_t(1) / stpmin();
+                }
+
+                ///
+                /// \brief change parameters
+                ///
+                auto& c1(const scalar_t c1) { m_c1 = c1; return *this; }
+                auto& c2(const scalar_t c2) { m_c2 = c2; return *this; }
+                auto& max_iterations(const int max_iterations) { m_max_iterations = max_iterations; return *this; }
 
                 ///
                 /// \brief access functions
                 ///
                 auto c1() const { return m_c1; }
                 auto c2() const { return m_c2; }
+                auto max_iterations() const { return m_max_iterations; }
 
-        protected:
+        private:
 
                 // attributes
-                scalar_t                m_c1;           ///< sufficient decrease rate
-                scalar_t                m_c2;           ///< sufficient curvature
+                scalar_t        m_c1{static_cast<scalar_t>(1e-4)};      ///< sufficient decrease rate
+                scalar_t        m_c2{static_cast<scalar_t>(0.1)};       ///< sufficient curvature
+                int             m_max_iterations{40};                   ///< #maximum iterations
         };
 
         ///
@@ -112,13 +134,13 @@ namespace nano
                 ///
                 /// \brief update the current state
                 ///
-                bool operator()(const function_t& function, solver_state_t& state);
+                bool operator()(solver_state_t& state);
 
         private:
 
                 // attributes
-                std::unique_ptr<lsearch_init_t>         m_initializer;
-                std::unique_ptr<lsearch_strategy_t>     m_strategy;
+                std::unique_ptr<lsearch_init_t>         m_initializer;  ///<
+                std::unique_ptr<lsearch_strategy_t>     m_strategy;     ///<
         };
 
         template <>

@@ -9,7 +9,7 @@ namespace nano
         using ref_solver_state_t = std::reference_wrapper<const solver_state_t>;
 
         ///
-        /// \brief optimization state described as:
+        /// \brief optimization state described by:
         ///     current point (x),
         ///     function value (f),
         ///     gradient (g),
@@ -28,51 +28,45 @@ namespace nano
                         stopped         ///< user requested stop
                 };
 
+                ///
+                /// \brief default constructor
+                ///
                 solver_state_t() = default;
 
                 ///
                 /// \brief constructor
                 ///
-                explicit solver_state_t(const tensor_size_t size) :
-                        x(vector_t::Zero(size)),
-                        g(vector_t::Zero(size)),
-                        d(vector_t::Zero(size)),
-                        f(std::numeric_limits<scalar_t>::max())
+                template <typename tvector>
+                solver_state_t(const function_t& ffunction, const tvector& x0) :
+                        function(&ffunction),
+                        x(x0),
+                        g(vector_t::Zero(x.size())),
+                        d(vector_t::Zero(x.size()))
                 {
+                        f = function->vgrad(x, &g);
                 }
 
                 ///
-                /// \brief constructor
-                ///
-                solver_state_t(const function_t& function, const vector_t& x0) :
-                        solver_state_t(x0.size())
-                {
-                        assert(function.size() == x.size());
-                        update(function, x0);
-                }
-
-                ///
-                /// \brief update current state (move to another position)
+                /// \brief move to another point
                 ///
                 template <typename tvector>
-                void update(const function_t& function, const tvector& xx, const scalar_t tt = 0)
+                bool update(const tvector& xx)
                 {
-                        t = tt;
+                        assert(function);
+                        assert(x.size() == xx.size());
+                        assert(x.size() == function->size());
                         x = xx;
-                        f = function.vgrad(x, &g);
+                        f = function->vgrad(x, &g);
+                        return static_cast<bool>(*this);
                 }
 
                 ///
-                /// \brief update current state (move t along the chosen direction,
-                /// but the function value & gradient are already computed)
+                /// \brief line-search step along the descent direction of state0
                 ///
-                template <typename tvector>
-                void update(const function_t&, const scalar_t tt, const scalar_t ft, const tvector& gt)
+                bool update(const solver_state_t& state0, const scalar_t tt)
                 {
                         t = tt;
-                        x.noalias() += t * d;
-                        f = ft;
-                        g = gt;
+                        return update(state0.x + t * state0.d);
                 }
 
                 ///
@@ -158,6 +152,7 @@ namespace nano
                 }
 
                 // attributes
+                const function_t* function{nullptr};            ///<
                 vector_t        x, g, d;                        ///< parameter, gradient, descent direction
                 scalar_t        f{0}, t{1};                     ///< function value, step size
                 status          m_status{status::max_iters};    ///< optimization status

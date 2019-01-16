@@ -208,32 +208,28 @@ static void dcstep(
         stp = stpf;
 }
 
-lsearch_step_t lsearch_morethuente_t::get(const lsearch_step_t& step0, const scalar_t t0)
+bool lsearch_morethuente_t::get(const solver_state_t& state0, const scalar_t t0, solver_state_t& state)
 {
-        const auto ftol = m_c1;
-        const auto gtol = m_c2;
+        const auto ftol = c1();
+        const auto gtol = c2();
         const auto xtol = epsilon0<scalar_t>();
 
-        const auto stpmin = lsearch_step_t::minimum();
-        const auto stpmax = lsearch_step_t::maximum();
-
-        lsearch_step_t step = step0;
-        step.update(t0);
+        state.update(state0, t0);
 
         int stage = 1;
         bool brackt = false;
 
-        scalar_t stp = t0, f = step.phi(), g = step.gphi();
+        scalar_t stp = t0, f = state.f, g = state.dg();
         scalar_t stmin = 0, stmax = stp + stp * 4;
 
-        scalar_t width = stpmax - stpmin;
+        scalar_t width = stpmax() - stpmin();
         scalar_t width1 = 2 * width;
 
-        scalar_t finit = step.phi0(), ginit = step.gphi0(), gtest = ftol * ginit;
+        scalar_t finit = state0.f, ginit = state0.dg(), gtest = ftol * ginit;
         scalar_t stx = 0, fx = finit, gx = ginit;
         scalar_t sty = 0, fy = finit, gy = ginit;
 
-        for (auto i = 0; i < m_max_iterations; ++ i)
+        for (auto i = 0; i < max_iterations(); ++ i)
         {
                 const auto ftest = finit + stp * gtest;
                 if (stage == 1 && f <= ftest && g >= scalar_t(0))
@@ -242,15 +238,15 @@ lsearch_step_t lsearch_morethuente_t::get(const lsearch_step_t& step0, const sca
                 }
 
                 // Check if further progress can be made
-                if (brackt && (stp <= stmin || stp >= stmax))   return step;
-                if (brackt && stmax - stmin <= xtol * stmax)    return step;
-                if (stp == stpmax && f <= ftest && g <= gtest)  return step;
-                if (stp == stpmin && (f > ftest || g >= gtest)) return step;
+                if (brackt && (stp <= stmin || stp >= stmax))           return true;
+                if (brackt && stmax - stmin <= xtol * stmax)            return true;
+                if (stp == stpmax() && f <= ftest && g <= gtest)        return true;
+                if (stp == stpmin() && (f > ftest || g >= gtest))       return true;
 
                 // Check convergence
                 if (f <= ftest && std::fabs(g) <= gtol * (-ginit))
                 {
-                        return step;
+                        return true;
                 }
 
                 // Interpolate the next point to evaluate
@@ -299,7 +295,7 @@ lsearch_step_t lsearch_morethuente_t::get(const lsearch_step_t& step0, const sca
                 }
 
                 // Force the step to be within the bounds stpmax and stpmin
-                stp = nano::clamp(stp, stpmin, stpmax);
+                stp = nano::clamp(stp, stpmin(), stpmax());
 
                 // If further progress is not possible, let stp be the best point obtained during the search
                 if (    (brackt && (stp <= stmin || stp >= stmax)) ||
@@ -309,11 +305,10 @@ lsearch_step_t lsearch_morethuente_t::get(const lsearch_step_t& step0, const sca
                 }
 
                 // Obtain another function and derivative
-                step.update(stp);
-                f = step.phi();
-                g = step.gphi();
+                state.update(state0, stp);
+                f = state.f;
+                g = state.dg();
         }
 
-        // NOK, give up
-        return step0;
+        return false;
 }

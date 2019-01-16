@@ -19,35 +19,30 @@ static std::unique_ptr<lsearch_init_t> make_initializer(const lsearch_t::initial
         }
 }
 
-static std::unique_ptr<lsearch_strategy_t> make_strategy(const lsearch_t::strategy strategy,
-        const scalar_t c1, const scalar_t c2)
+static std::unique_ptr<lsearch_strategy_t> make_strategy(const lsearch_t::strategy strategy)
 {
-        assert(c1 < c2);
-        assert(c1 > scalar_t(0) && c1 < scalar_t(1));
-        assert(c2 > scalar_t(0) && c2 < scalar_t(1));
-
         switch (strategy)
         {
-        case lsearch_t::strategy::cg_descent:           return std::make_unique<lsearch_cgdescent_t>(c1, c2);
-        case lsearch_t::strategy::more_thuente:         return std::make_unique<lsearch_morethuente_t>(c1, c2);
-        case lsearch_t::strategy::backtrack_wolfe:      return std::make_unique<lsearch_backtrack_wolfe_t>(c1, c2);
-        case lsearch_t::strategy::backtrack_armijo:     return std::make_unique<lsearch_backtrack_armijo_t>(c1, c2);
-        case lsearch_t::strategy::backtrack_swolfe:     return std::make_unique<lsearch_backtrack_swolfe_t>(c1, c2);
+        case lsearch_t::strategy::cg_descent:           return std::make_unique<lsearch_cgdescent_t>();
+        case lsearch_t::strategy::more_thuente:         return std::make_unique<lsearch_morethuente_t>();
+        case lsearch_t::strategy::backtrack_wolfe:      return std::make_unique<lsearch_backtrack_wolfe_t>();
+        case lsearch_t::strategy::backtrack_armijo:     return std::make_unique<lsearch_backtrack_armijo_t>();
+        case lsearch_t::strategy::backtrack_swolfe:     return std::make_unique<lsearch_backtrack_swolfe_t>();
         default:                                        assert(false); return nullptr;
         }
 }
 
 lsearch_t::lsearch_t(const initializer init, const strategy strat, const scalar_t c1, const scalar_t c2) :
         m_initializer(make_initializer(init)),
-        m_strategy(make_strategy(strat, c1, c2))
+        m_strategy(make_strategy(strat))
 {
+        m_strategy->c1(c1);
+        m_strategy->c2(c2);
+        m_strategy->max_iterations(40);
 }
 
-bool lsearch_t::operator()(const function_t& function, solver_state_t& state)
+bool lsearch_t::operator()(solver_state_t& state)
 {
-        // initial step length
-        const auto t0 = nano::clamp(m_initializer->get(state), lsearch_step_t::minimum(), scalar_t(1));
-
         // check descent direction
         if (!state.has_descent())
         {
@@ -63,23 +58,10 @@ bool lsearch_t::operator()(const function_t& function, solver_state_t& state)
                 return false;
         }
 
-        // starting point
-        lsearch_step_t step0(function, state);
-        if (!step0)
-        {
-                return false;
-        }
+        // initial step length
+        const auto t0 = nano::clamp(m_initializer->get(state), lsearch_strategy_t::stpmin(), scalar_t(1));
 
         // line-search step length
-        // fixme: this is very inneficient - we should update in-place a single lsearch_step_t!
-        const auto step = m_strategy->get(step0, t0);
-        if (step && step < step0)
-        {
-                state.update(function, step.alpha(), step.func(), step.grad());
-                return true;
-        }
-        else
-        {
-                return false;
-        }
+        const auto state0 = state;
+        return m_strategy->get(state0, t0, state) && state && state < state0;
 }

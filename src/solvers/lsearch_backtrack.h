@@ -15,18 +15,13 @@ namespace nano
         {
         public:
 
-                lsearch_backtrack_armijo_t(const scalar_t c1, const scalar_t c2) :
-                        lsearch_strategy_t(c1, c2)
-                {
-                }
-
-                lsearch_step_t get(const lsearch_step_t& step0, const scalar_t t0) final;
+                lsearch_backtrack_armijo_t() = default;
+                bool get(const solver_state_t& state0, const scalar_t t0, solver_state_t& state) final;
 
         private:
 
                 // attributes
                 scalar_t        m_decrement{static_cast<scalar_t>(0.5)};///<
-                int             m_max_iterations{100};                  ///<
         };
 
         ///
@@ -38,19 +33,14 @@ namespace nano
         {
         public:
 
-                lsearch_backtrack_wolfe_t(const scalar_t c1, const scalar_t c2) :
-                        lsearch_strategy_t(c1, c2)
-                {
-                }
-
-                lsearch_step_t get(const lsearch_step_t& step0, const scalar_t t0) final;
+                lsearch_backtrack_wolfe_t() = default;
+                bool get(const solver_state_t& state0, const scalar_t t0, solver_state_t& state) final;
 
         private:
 
                 // attributes
                 scalar_t        m_decrement{static_cast<scalar_t>(0.5)};///<
                 scalar_t        m_increment{static_cast<scalar_t>(2.1)};///<
-                int             m_max_iterations{100};                  ///<
         };
 
         ///
@@ -62,18 +52,13 @@ namespace nano
         {
         public:
 
-                lsearch_backtrack_swolfe_t(const scalar_t c1, const scalar_t c2) :
-                        lsearch_strategy_t(c1, c2)
-                {
-                }
-
-                lsearch_step_t get(const lsearch_step_t& step0, const scalar_t t0) final;
+                lsearch_backtrack_swolfe_t() = default;
+                bool get(const solver_state_t& state0, const scalar_t t0, solver_state_t& state) final;
 
         private:
 
                 // attributes
                 scalar_t        m_decrement{static_cast<scalar_t>(0.5)};///<
                 scalar_t        m_increment{static_cast<scalar_t>(2.1)};///<
-                int             m_max_iterations{100};                  ///<
         };
 }

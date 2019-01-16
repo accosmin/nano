@@ -35,7 +35,7 @@ solver_state_t solver_gd_t::minimize(const size_t max_iterations, const scalar_t
                 cstate.d = -cstate.g;
 
                 // line-search
-                const auto iter_ok = lsearch(function, cstate);
+                const auto iter_ok = lsearch(cstate);
                 if (solver_t::done(logger, function, cstate, epsilon, iter_ok))
                 {
                         break;

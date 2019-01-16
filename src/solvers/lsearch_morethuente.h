@@ -15,16 +15,7 @@ namespace nano
         {
         public:
 
-                lsearch_morethuente_t(const scalar_t c1, const scalar_t c2) :
-                        lsearch_strategy_t(c1, c2)
-                {
-                }
-
-                lsearch_step_t get(const lsearch_step_t& step0, const scalar_t t0) final;
-
-        private:
-
-                // attributes
-                int             m_max_iterations{100};                  ///<
+                lsearch_morethuente_t() = default;
+                bool get(const solver_state_t& state0, const scalar_t t0, solver_state_t& state) final;
         };
 }
