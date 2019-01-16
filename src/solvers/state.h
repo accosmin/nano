@@ -121,6 +121,16 @@ namespace nano
                 }
 
                 ///
+                /// \brief check if the current step satisfies the approximate Armijo condition (sufficient decrease)
+                ///     see CG_DESCENT
+                ///
+                bool has_approx_armijo(const solver_state_t& state0, const scalar_t epsilon) const
+                {
+                        assert(epsilon > 0);
+                        return f <= state0.f + epsilon;
+                }
+
+                ///
                 /// \brief check if the current step satisfies the Wolfe condition (sufficient curvature)
                 ///
                 bool has_wolfe(const solver_state_t& state0, const scalar_t c2) const
@@ -142,13 +152,10 @@ namespace nano
                 /// \brief check if the current step satisfies the approximate Wolfe condition (sufficient curvature)
                 ///     see CG_DESCENT
                 ///
-                bool has_approx_wolfe(const solver_state_t& state0, const scalar_t c1, const scalar_t c2,
-                        const scalar_t epsilon) const
+                bool has_approx_wolfe(const solver_state_t& state0, const scalar_t c1, const scalar_t c2) const
                 {
                         assert(0 < c1 && c1 < c2 && c2 < 1);
-                        return  (2 * c1 - 1) * state0.dg() >= dg() &&
-                                dg() >= +c2 * state0.dg() &&
-                                f <= state0.f + epsilon;
+                        return (2 * c1 - 1) * state0.dg() >= dg() && dg() >= c2 * state0.dg();
                 }
 
                 // attributes
