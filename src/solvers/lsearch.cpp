@@ -62,6 +62,7 @@ bool lsearch_t::operator()(solver_state_t& state)
         const auto t0 = nano::clamp(m_initializer->get(state), lsearch_strategy_t::stpmin(), scalar_t(1));
 
         // line-search step length
-        const auto state0 = state;
+        auto state0 = state;
+        state0.t = 0;
         return m_strategy->get(state0, t0, state) && state && state < state0;
 }

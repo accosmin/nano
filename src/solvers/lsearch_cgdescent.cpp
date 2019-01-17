@@ -1,8 +1,6 @@
 #include "core/numeric.h"
 #include "lsearch_cgdescent.h"
 
-#include <iostream>
-
 using namespace nano;
 
 std::pair<solver_state_t, solver_state_t> lsearch_cgdescent_t::updateU(const solver_state_t& state0,
@@ -97,7 +95,7 @@ std::pair<solver_state_t, solver_state_t> lsearch_cgdescent_t::bracket(const sol
         solver_state_t c) const
 {
         auto prev_c = c;
-        for (int i = 0; i < 100 && c; ++ i)
+        for (int i = 0; i < 100 && c && c.t >= stpmin(); ++ i)
         {
                 if (!c.has_descent())
                 {
@@ -151,10 +149,10 @@ bool lsearch_cgdescent_t::converged(const solver_state_t& state0, const solver_s
 
 bool lsearch_cgdescent_t::get(const solver_state_t& state0, const scalar_t t0, solver_state_t& state)
 {
+        epsilon(state0);
+
         auto a = state0, b = state0;
         auto& c = state;
-
-        epsilon(state0);
 
         // bracket the initial step size
         c.update(state0, t0);
@@ -173,10 +171,6 @@ bool lsearch_cgdescent_t::get(const solver_state_t& state0, const scalar_t t0, s
 
         for (int i = 0; i < max_iterations() && a && b && c; i ++)
         {
-                std::cout << "a=[" << a.t << "|" << a.f
-                        << "], b=[" << b.t << "|" << b.f
-                        << "], c=[" << c.t << "|" << c.f << "]\n";
-
                 // check convergence
                 if (converged(state0, c))
                 {
