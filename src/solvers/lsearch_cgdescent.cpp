@@ -3,19 +3,24 @@
 
 using namespace nano;
 
-std::pair<solver_state_t, solver_state_t> lsearch_cgdescent_t::updateU(const solver_state_t& state0,
-        solver_state_t a, solver_state_t b) const
+bool lsearch_cgdescent_t::updateU(const solver_state_t& state0,
+        solver_state_t& a, solver_state_t& b, solver_state_t& c)
 {
         assert(0 < m_theta && m_theta < 1);
 
-        solver_state_t c(a);
         for (int i = 0; i < 100 && std::fabs(b.t - a.t) > epsilon0<scalar_t>(); ++ i)
         {
                 c.update(state0, (1 - m_theta) * a.t + m_theta * b.t);
 
-                if (!c.has_descent())
+                if (converged(state0, c))
                 {
-                        return std::make_pair(a, c);
+                        return true;
+                }
+
+                else if (!c.has_descent())
+                {
+                        b = c;
+                        return false;
                 }
 
                 else if (c.has_approx_armijo(state0, m_epsilon))
@@ -29,46 +34,45 @@ std::pair<solver_state_t, solver_state_t> lsearch_cgdescent_t::updateU(const sol
                 }
         }
 
-        // NOK, give up
-        return std::make_pair(c, c);
+        return false;
 }
 
-std::pair<solver_state_t, solver_state_t> lsearch_cgdescent_t::update(const solver_state_t& state0,
-        const solver_state_t& a, const solver_state_t& b, const solver_state_t& c) const
-{
-        if (!c || c.t <= std::min(a.t, b.t) || c.t >= std::max(a.t, b.t))
+bool lsearch_cgdescent_t::update(const solver_state_t& state0,
+        solver_state_t& a, solver_state_t& b, solver_state_t& c)
+
+        if (c.t <= std::min(a.t, b.t) || c.t >= std::max(a.t, b.t))
         {
-                return std::make_pair(a, b);
+                return false;
         }
 
         else if (!c.has_descent())
         {
-                return std::make_pair(a, c);
+                b = c;
+                return false;
         }
 
         else if (c.has_approx_armijo(state0, m_epsilon))
         {
-                return std::make_pair(c, b);
+                a = c;
+                return false;
         }
 
         else
         {
-                return updateU(state0, a, c);
+                b = c;
+                return updateU(state0, a, b, c);
         }
 }
 
-solver_state_t lsearch_cgdescent_t::secant(const solver_state_t& state0,
-        const solver_state_t& a, const solver_state_t& b) const
+bool lsearch_cgdescent_t::secant(const solver_state_t& state0,
+        const solver_state_t& a, const solver_state_t& b, solver_state_t& c)
 {
-        const auto t = (a.t * b.dg() - b.t * a.dg()) / (b.dg() - a.dg());
-
-        solver_state_t c = a;
-        c.update(state0, t);
-        return c;
+        c.update(state0, (a.t * b.dg() - b.t * a.dg()) / (b.dg() - a.dg()));
+        return converged(state0, t);
 }
 
-std::pair<solver_state_t, solver_state_t> lsearch_cgdescent_t::secant2(const solver_state_t& state0,
-        const solver_state_t& a, const solver_state_t& b) const
+bool lsearch_cgdescent_t::secant2(const solver_state_t& state0,
+        solver_state_t& a, solver_state_t& b, solver_state_t& c)
 {
         const auto c = secant(state0, a, b);
 
@@ -91,31 +95,39 @@ std::pair<solver_state_t, solver_state_t> lsearch_cgdescent_t::secant2(const sol
         }
 }
 
-std::pair<solver_state_t, solver_state_t> lsearch_cgdescent_t::bracket(const solver_state_t& state0,
-        solver_state_t c) const
+bool lsearch_cgdescent_t::bracket(const solver_state_t& state0,
+        solver_state_t& a, solver_state_t& b, solver_state_t& c) const
 {
-        auto prev_c = c;
-        for (int i = 0; i < 100 && c && c.t <= stpmax(); ++ i)
+        assert(m_ro > 1);
+
+        for (int i = 0; i < 100 && c.t <= stpmax(); ++ i)
         {
                 if (!c.has_descent())
                 {
-                        return std::make_pair(prev_c, c);
+                        b = c;
+                        return false;
                 }
 
                 else if (!c.has_approx_armijo(state0, m_epsilon))
                 {
-                        return updateU(state0, state0, c);
+                        a = state0;
+                        b = c;
+                        return updateU(state0, a, b, c);
                 }
 
                 else
                 {
-                        prev_c = c;
+                        a = c;
                         c.update(state0, m_ro * c.t);
+
+                        if (converged(c))
+                        {
+                                return true;
+                        }
                 }
         }
 
-        // NOK, give up
-        return std::make_pair(c, c);
+        return false;
 }
 
 void lsearch_cgdescent_t::epsilon(const solver_state_t& state0)
@@ -151,48 +163,45 @@ bool lsearch_cgdescent_t::get(const solver_state_t& state0, const scalar_t t0, s
 {
         epsilon(state0);
 
-        auto a = state0, b = state0;
         auto& c = state;
-
-        // bracket the initial step size
         c.update(state0, t0);
         if (converged(state0, c))
         {
                 return true;
         }
-        std::tie(a, b) = bracket(state0, c);
 
-        // reset to the original interval [0, t0) if bracketing fails
-        if (!a || !b || std::fabs(a.t - b.t) < epsilon0<scalar_t>())
+        // bracket the initial step size
+        auto a = state0, b = c;
+        if (bracket(state0, c))
         {
-                a = state0;
-                b = c;
+                return true;
         }
 
-        for (int i = 0; i < max_iterations() && a && b && c; i ++)
+        // iteratively update the search interval [a, b]
+        for (int i = 0; i < max_iterations() &&
+                c.t >= stpmin() && c.t <= stpmax() &&
+                std::fabs(b.t - a.t) > epsilon0<scalar_t>(); ++ i)
         {
-                // check convergence
-                if (converged(state0, c))
+                // secant interpolation
+                const auto prev_width = std::fabs(b.t - a.t);
+                if (secant2(state0, a, b, c))
                 {
                         return true;
                 }
-
-                // secant interpolation
-                const auto prev_width = std::fabs(b.t - a.t);
-                std::tie(a, b) = secant2(state0, a, b);
 
                 // update search interval
                 if (std::fabs(b.t - a.t) > m_gamma * prev_width)
                 {
                         c.update(state0, (a.t + b.t) / 2);
-
-                        // check convergence
                         if (converged(state0, c))
                         {
                                 return true;
                         }
 
-                        std::tie(a, b) = update(state0, a, b, c);
+                        if (update(state0, a, b, c))
+                        {
+                                return true;
+                        }
                 }
         }
 

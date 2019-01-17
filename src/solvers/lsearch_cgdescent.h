@@ -24,20 +24,12 @@ namespace nano
                 void epsilon(const solver_state_t& state0);
                 bool converged(const solver_state_t& state0, const solver_state_t& state);
 
-                std::pair<solver_state_t, solver_state_t> updateU(const solver_state_t& state0,
-                        solver_state_t a, solver_state_t b) const;
+                bool update(const solver_state_t& state0, solver_state_t& a, solver_state_t& b, solver_state_t& c);
+                bool updateU(const solver_state_t& state0, solver_state_t& a, solver_state_t& b, solver_state_t& c);
+                bool secant2(const solver_state_t& state0, solver_state_t& a, solver_state_t& b, solver_state_t& c);
+                bool bracket(const solver_state_t& state0, solver_state_t& a, solver_state_t& b, solver_state_t& c);
 
-                std::pair<solver_state_t, solver_state_t> update(const solver_state_t& state0,
-                        const solver_state_t& a, const solver_state_t& b, const solver_state_t& c) const;
-
-                solver_state_t secant(const solver_state_t& state0,
-                        const solver_state_t& a, const solver_state_t& b) const;
-
-                std::pair<solver_state_t, solver_state_t> secant2(const solver_state_t& state0,
-                        const solver_state_t& a, const solver_state_t& b) const;
-
-                std::pair<solver_state_t, solver_state_t> bracket(const solver_state_t& state0,
-                        solver_state_t c) const;
+                bool secant(const solver_state_t& state0, const solver_state_t& a, const solver_state_t& b, solver_state_t& c);
 
                 // attributes
                 scalar_t        m_epsilon0{static_cast<scalar_t>(1e-6)};///<
