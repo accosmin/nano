@@ -95,7 +95,7 @@ std::pair<solver_state_t, solver_state_t> lsearch_cgdescent_t::bracket(const sol
         solver_state_t c) const
 {
         auto prev_c = c;
-        for (int i = 0; i < 100 && c && c.t >= stpmin(); ++ i)
+        for (int i = 0; i < 100 && c && c.t <= stpmax(); ++ i)
         {
                 if (!c.has_descent())
                 {
