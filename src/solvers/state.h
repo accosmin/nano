@@ -154,7 +154,7 @@ namespace nano
                 ///
                 bool has_approx_wolfe(const solver_state_t& state0, const scalar_t c1, const scalar_t c2) const
                 {
-                        assert(0 < c1 && c1 < c2 && c2 < 1);
+                        assert(0 < c1 && c1 < scalar_t(0.5) && c1 < c2 && c2 < 1);
                         return (2 * c1 - 1) * state0.dg() >= dg() && dg() >= c2 * state0.dg();
                 }
 
