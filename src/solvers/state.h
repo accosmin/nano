@@ -50,22 +50,23 @@ namespace nano
                 /// \brief move to another point
                 ///
                 template <typename tvector>
-                void update(const tvector& xx)
+                bool update(const tvector& xx)
                 {
                         assert(function);
                         assert(x.size() == xx.size());
                         assert(x.size() == function->size());
                         x = xx;
                         f = function->vgrad(x, &g);
+                        return static_cast<bool>(*this);
                 }
 
                 ///
                 /// \brief line-search step along the descent direction of state0
                 ///
-                void update(const solver_state_t& state0, const scalar_t tt)
+                bool update(const solver_state_t& state0, const scalar_t tt)
                 {
                         t = tt;
-                        update(state0.x + t * state0.d);
+                        return update(state0.x + t * state0.d);
                 }
 
                 ///
