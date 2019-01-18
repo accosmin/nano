@@ -56,57 +56,6 @@ bool lsearch_cgdescent_t::update(const solver_state_t& state0,
         }
 }
 
-static auto cubic(
-        const scalar_t u, const scalar_t fu, const scalar_t gu,
-        const scalar_t v, const scalar_t fv, const scalar_t gv)
-{
-        // fit cubic: q(x) = a*x^3 + b*x^2 + c*x + d
-        //      given: q(u) = fu, q'(u) = gu
-        //      given: q(v) = fv, q'(v) = gv
-        // minimizer: solution of 3*a*x^2 + 2*b*x + c = 0
-        // see "Numerical optimization", Nocedal & Wright, 2nd edition, p.59
-        const auto d1 = gu + gv - 3 * (fu - fv) / (u - v);
-        const auto d2 = (v > u ? +1 : -1) * std::sqrt(d1 * d1 - gu * gv);
-        return v - (v - u) * (gv + d2 - d1) / (gv - gu + 2 * d2);
-}
-
-static auto quadratic(
-        const scalar_t u, const scalar_t gu,
-        const scalar_t v, const scalar_t gv)
-{
-        // fit quadratic: q(x) = a*x^2 + b*x + c
-        //      given: q'(u) = gu
-        //      given: q'(v) = gv
-        // minimizer: -b/2a
-        return (v * gu - u * gv) / (gu - gv);
-}
-
-static auto bisection(
-        const scalar_t u, const scalar_t v)
-{
-        // minimizer: (u+v)/2
-        return (u + v) / 2;
-}
-
-static auto interpolate(
-        const scalar_t u, const scalar_t fu, const scalar_t gu,
-        const scalar_t v, const scalar_t fv, const scalar_t gv)
-{
-        const auto tc = cubic(u, fu, gu, v, fv, gv);
-        if (std::isfinite(tc) && std::min(u, v) < tc && tc < std::max(u, v))
-        {
-                return tc;
-        }
-
-        const auto tq = quadratic(u, gu, v, gv);
-        if (std::isfinite(tc) && std::min(u, v) < tq && tq < std::max(u, v))
-        {
-                return tq;
-        }
-
-        return bisection(u, v);
-}
-
 bool lsearch_cgdescent_t::secant2(const solver_state_t& state0,
         solver_state_t& a, solver_state_t& b, solver_state_t& c)
 {

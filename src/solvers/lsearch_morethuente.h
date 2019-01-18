@@ -6,7 +6,8 @@ namespace nano
 {
         ///
         /// \brief More & Thunte line-search.
-        ///     see "Line Search Algorithms with Guaranteed Sufficient Decrease", by Jorge J. More and David J. Thuente
+        ///     see "Line Search Algorithms with Guaranteed Sufficient Decrease",
+        ///     by Jorge J. More and David J. Thuente
         ///
         /// NB: this implementation ports the 'dcsrch' and the 'dcstep' Fortran routines from MINPACK-2.
         ///     see http://ftp.mcs.anl.gov/pub/MINPACK-2/csrch/
