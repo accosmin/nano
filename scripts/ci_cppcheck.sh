@@ -17,6 +17,7 @@ cd ../../
         --enable=all --quiet --std=c++14 --error-exitcode=1 --inline-suppr --force \
         --template='{file}:{line},{severity},{id},{message}' \
         --suppress=shadowFunction \
+        --suppress=shadowVar \
         --suppress=missingIncludeSystem \
         -I ../src -I ../src/core -I ../deps/utest \
         ../src ../apps ../tests

@@ -380,7 +380,6 @@ namespace nano
                 return [=] (const row_t& row)
                 {
                         const auto values = row.collect<tscalar>();
-                        // cppcheck-suppress shadowVar
                         const auto it = detail::min_element(values);
                         return (it == values.end()) ? indices_t{} : indices_t{it->first};
                 };
@@ -395,7 +394,6 @@ namespace nano
                 return [=] (const row_t& row) -> indices_t
                 {
                         const auto values = row.collect<tscalar>();
-                        // cppcheck-suppress shadowVar
                         const auto it = detail::max_element(values);
                         return  (it == values.end()) ? indices_t{} : indices_t{it->first};
                 };
@@ -410,7 +408,6 @@ namespace nano
                 return [=] (const row_t& row)
                 {
                         const auto values = row.collect<tscalar>();
-                        // cppcheck-suppress shadowVar
                         const auto it = detail::max_element(values);
                         return  (it == values.end()) ? indices_t{} : detail::filter_greater(values,
                                 it->second - epsilon);
@@ -426,7 +423,6 @@ namespace nano
                 return [=] (const row_t& row)
                 {
                         const auto values = row.collect<tscalar>();
-                        // cppcheck-suppress shadowVar
                         const auto it = detail::min_element(values);
                         return  (it == values.end()) ? indices_t{} : detail::filter_less(values,
                                 it->second + epsilon);
@@ -443,9 +439,7 @@ namespace nano
                 {
                         assert(percentage >= tscalar(1));
                         assert(percentage <= tscalar(99));
-                        // cppcheck-suppress shadowVar
                         const auto values = row.collect<tscalar>();
-                        // cppcheck-suppress shadowVar
                         const auto it = detail::max_element(values);
                         return  (it == values.end()) ? indices_t{} : detail::filter_greater(values,
                                 it->second - percentage * (it->second < 0 ? -it->second : +it->second) / tscalar(100));
@@ -462,9 +456,7 @@ namespace nano
                 {
                         assert(percentage >= tscalar(1));
                         assert(percentage <= tscalar(99));
-                        // cppcheck-suppress shadowVar
                         const auto values = row.collect<tscalar>();
-                        // cppcheck-suppress shadowVar
                         const auto it = detail::min_element(values);
                         return  (it == values.end()) ? indices_t{} : detail::filter_less(values,
                                 it->second + percentage * (it->second < 0 ? -it->second : +it->second) / tscalar(100));

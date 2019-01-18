@@ -13,6 +13,11 @@ namespace nano
         public:
 
                 ///
+                /// \brief constructor
+                ///
+                lsearch_init_t() = default;
+
+                ///
                 /// \brief destructor
                 ///
                 virtual ~lsearch_init_t() = default;
