@@ -56,9 +56,8 @@ bool lsearch_cgdescent_t::update(const solver_state_t& state0, step_t& a, step_t
 
 bool lsearch_cgdescent_t::secant2(const solver_state_t& state0, step_t& a, step_t& b, solver_state_t& c)
 {
-        const auto ta = a.t, fa = a.f, ga = a.g;
-        const auto tb = b.t, fb = b.f, gb = b.g;
-        const auto tc = interpolate(ta, fa, ga, tb, fb, gb);
+        const auto a0 = a, b0 = b;
+        const auto tc = interpolate(a0, b0);
 
         if (evaluate(state0, tc, a, b, c))
         {
@@ -70,12 +69,12 @@ bool lsearch_cgdescent_t::secant2(const solver_state_t& state0, step_t& a, step_
         }
         else if (std::fabs(tc - a.t) < epsilon0<scalar_t>())
         {
-                return  evaluate(state0, interpolate(ta, fa, ga, a.t, a.f, a.g), a, b, c) ||
+                return  evaluate(state0, interpolate(a0, a), a, b, c) ||
                         update(state0, a, b, c);
         }
         else if (std::fabs(tc - b.t) < epsilon0<scalar_t>())
         {
-                return  evaluate(state0, interpolate(tb, fb, gb, b.t, b.f, b.g), a, b, c) ||
+                return  evaluate(state0, interpolate(b0, b), a, b, c) ||
                         update(state0, a, b, c);
         }
         else

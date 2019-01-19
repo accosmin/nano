@@ -92,82 +92,85 @@ namespace nano
                 }
 
                 ///
-                /// \brief cubic interpolation following the notation from:
-                ///     see "Line Search Algorithms with Guaranteed Sufficient Decrease",
-                ///     by Jorge J. More and David J. Thuente
+                /// \brief line-search step
                 ///
-                static auto cubic(
-                        const scalar_t u, const scalar_t fu, const scalar_t gu,
-                        const scalar_t v, const scalar_t fv, const scalar_t gv)
+                struct step_t
+                {
+                        step_t() = default;
+                        step_t(const step_t&) = default;
+                        step_t(const solver_state_t& state) : t(state.t), f(state.f), g(state.dg()) {}
+
+                        step_t& operator=(const step_t&) = default;
+                        step_t& operator=(const solver_state_t& state)
+                        {
+                                t = state.t, f = state.f, g = state.dg();
+                                return *this;
+                        }
+
+                        scalar_t t{0};  ///< line-search step
+                        scalar_t f{0};  ///< line-search function value
+                        scalar_t g{0};  ///< line-search gradient
+                };
+
+                ///
+                /// \brief cubic interpolation of two line-search steps.
+                ///
+                static auto cubic(const step_t& u, const step_t& v)
                 {
                         // fit cubic: q(x) = a*x^3 + b*x^2 + c*x + d
                         //      given: q(u) = fu, q'(u) = gu
                         //      given: q(v) = fv, q'(v) = gv
                         // minimizer: solution of 3*a*x^2 + 2*b*x + c = 0
                         // see "Numerical optimization", Nocedal & Wright, 2nd edition, p.59
-                        const auto d1 = gu + gv - 3 * (fu - fv) / (u - v);
-                        const auto d2 = (v > u ? +1 : -1) * std::sqrt(d1 * d1 - gu * gv);
-                        return v - (v - u) * (gv + d2 - d1) / (gv - gu + 2 * d2);
+                        const auto d1 = u.g + v.g - 3 * (u.f - v.f) / (u.t - v.t);
+                        const auto d2 = (v.t > u.t ? +1 : -1) * std::sqrt(d1 * d1 - u.g * v.g);
+                        return v.t - (v.t - u.t) * (v.g + d2 - d1) / (v.g - u.g + 2 * d2);
                 }
 
                 ///
-                /// \brief qudratic interpolation following the notation from:
-                ///     see "Line Search Algorithms with Guaranteed Sufficient Decrease",
-                ///     by Jorge J. More and David J. Thuente
+                /// \brief quadratic interpolation of two line-search steps.
                 ///
-                static auto quadratic(
-                        const scalar_t u, const scalar_t fu, const scalar_t gu,
-                        const scalar_t v, const scalar_t fv)
+                static auto quadratic(const step_t& u, const step_t& v)
                 {
                         // fit quadratic: q(x) = a*x^2 + b*x + c
                         //      given: q(u) = fu, q'(u) = gu
                         //      given: q(v) = fv
                         // minimizer: -b/2a
-                        return u - gu * (u - v) * (u - v) / (2 * (gu * (u - v) - (fu - fv)));
+                        return u.t - u.g * (u.t - v.t) * (u.t - v.t) / (2 * (u.g * (u.t - v.t) - (u.f - v.f)));
                 }
 
                 ///
-                /// \brief qudratic interpolation following the notation from:
-                ///     see "Line Search Algorithms with Guaranteed Sufficient Decrease",
-                ///     by Jorge J. More and David J. Thuente
+                /// \brief secant interpolation of two line-search steps.
                 ///
-                static auto quadratic(
-                        const scalar_t u, const scalar_t gu,
-                        const scalar_t v, const scalar_t gv)
+                static auto secant(const step_t& u, const step_t& v)
                 {
                         // fit quadratic: q(x) = a*x^2 + b*x + c
                         //      given: q'(u) = gu
                         //      given: q'(v) = gv
                         // minimizer: -b/2a
-                        return (v * gu - u * gv) / (gu - gv);
+                        return (v.t * u.g - u.t * v.g) / (u.g - v.g);
                 }
 
                 ///
-                /// \brief qudratic interpolation following the notation from:
-                ///     see "Line Search Algorithms with Guaranteed Sufficient Decrease",
-                ///     by Jorge J. More and David J. Thuente
+                /// \brief bisection interpolation of two line-search steps.
                 ///
-                static auto bisection(
-                        const scalar_t u, const scalar_t v)
+                static auto bisection(const step_t& u, const step_t& v)
                 {
                         // minimizer: (u+v)/2
-                        return (u + v) / 2;
+                        return (u.t + v.t) / 2;
                 }
 
                 ///
-                /// \brief interpolate closest to the minimum value point following the notation from:
-                ///     see "Line Search Algorithms with Guaranteed Sufficient Decrease",
-                ///     by Jorge J. More and David J. Thuente
+                /// \brief interpolate two line-search steps
+                ///     and choose the interpolation result closest to the minimum value point u.
                 ///
-                static auto interpolate(
-                        const scalar_t u, const scalar_t fu, const scalar_t gu,
-                        const scalar_t v, const scalar_t fv, const scalar_t gv)
+                static auto interpolate(const step_t& u, const step_t& v)
                 {
                         // NB: this doesn't assume the points u and v are sorted!
                         // NB: this assumes that u is the point with the minimum value!
-                        const auto tc = cubic(u, fu, gu, v, fv, gv);
-                        const auto tq = quadratic(u, gu, v, gv);
-                        const auto ts = quadratic(u, fu, gu, v, fv);
+                        const auto tc = cubic(u, v);
+                        const auto tq = quadratic(u, v);
+                        const auto ts = secant(u, v);
                         const auto tb = bisection(u, v);
 
                         scalar_t tt[4];
@@ -175,7 +178,7 @@ namespace nano
 
                         const auto op_add = [&] (const auto t)
                         {
-                                if (std::isfinite(t) && std::min(u, v) < t && t < std::max(u, v))
+                                if (std::isfinite(t) && std::min(u.t, v.t) < t && t < std::max(u.t, v.t))
                                 {
                                         tt[tcount ++] = t;
                                 }
@@ -189,7 +192,7 @@ namespace nano
                         // choose the interpolation closest to the minimum u
                         const auto it = std::min_element(std::begin(tt), std::end(tt), [&] (const auto t1, const auto t2)
                         {
-                                return std::fabs(t1 - u) < std::fabs(t2 - u);
+                                return std::fabs(t1 - u.t) < std::fabs(t2 - u.t);
                         });
 
                         return *it;

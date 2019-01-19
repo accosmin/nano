@@ -23,24 +23,6 @@ namespace nano
 
         private:
 
-                struct step_t
-                {
-                        step_t() = default;
-                        step_t(const step_t&) = default;
-                        step_t(const solver_state_t& state) : t(state.t), f(state.f), g(state.dg()) {}
-
-                        step_t& operator=(const step_t&) = default;
-                        step_t& operator=(const solver_state_t& state)
-                        {
-                                t = state.t, f = state.f, g = state.dg();
-                                return *this;
-                        }
-
-                        scalar_t t{0};  ///< line-search step
-                        scalar_t f{0};  ///< line-search function value
-                        scalar_t g{0};  ///< line-search gradient
-                };
-
                 bool evaluate(const solver_state_t&, const scalar_t, solver_state_t&);
                 bool evaluate(const solver_state_t&, const scalar_t, const step_t&, const step_t&, solver_state_t&);
 
