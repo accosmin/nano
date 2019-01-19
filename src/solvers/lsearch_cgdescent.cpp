@@ -3,8 +3,7 @@
 
 using namespace nano;
 
-bool lsearch_cgdescent_t::updateU(const solver_state_t& state0,
-        solver_state_t& a, solver_state_t& b, solver_state_t& c)
+bool lsearch_cgdescent_t::updateU(const solver_state_t& state0, step_t& a, step_t& b, solver_state_t& c)
 {
         assert(0 < m_theta && m_theta < 1);
 
@@ -32,8 +31,7 @@ bool lsearch_cgdescent_t::updateU(const solver_state_t& state0,
         return false;
 }
 
-bool lsearch_cgdescent_t::update(const solver_state_t& state0,
-        solver_state_t& a, solver_state_t& b, solver_state_t& c)
+bool lsearch_cgdescent_t::update(const solver_state_t& state0, step_t& a, step_t& b, solver_state_t& c)
 {
         if (c.t <= a.t || c.t >= b.t)
         {
@@ -56,12 +54,11 @@ bool lsearch_cgdescent_t::update(const solver_state_t& state0,
         }
 }
 
-bool lsearch_cgdescent_t::secant2(const solver_state_t& state0,
-        solver_state_t& a, solver_state_t& b, solver_state_t& c)
+bool lsearch_cgdescent_t::secant2(const solver_state_t& state0, step_t& a, step_t& b, solver_state_t& c)
 {
-        const auto ta = a.t, fa = a.f, dga = a.dg();
-        const auto tb = b.t, fb = b.f, dgb = b.dg();
-        const auto tc = interpolate(ta, fa, dga, tb, fb, dgb);
+        const auto ta = a.t, fa = a.f, ga = a.g;
+        const auto tb = b.t, fb = b.f, gb = b.g;
+        const auto tc = interpolate(ta, fa, ga, tb, fb, gb);
 
         if (evaluate(state0, tc, a, b, c))
         {
@@ -73,12 +70,12 @@ bool lsearch_cgdescent_t::secant2(const solver_state_t& state0,
         }
         else if (std::fabs(tc - a.t) < epsilon0<scalar_t>())
         {
-                return  evaluate(state0, interpolate(ta, fa, dga, a.t, a.f, a.dg()), a, b, c) ||
+                return  evaluate(state0, interpolate(ta, fa, ga, a.t, a.f, a.g), a, b, c) ||
                         update(state0, a, b, c);
         }
         else if (std::fabs(tc - b.t) < epsilon0<scalar_t>())
         {
-                return  evaluate(state0, interpolate(tb, fb, dgb, b.t, b.f, b.dg()), a, b, c) ||
+                return  evaluate(state0, interpolate(tb, fb, gb, b.t, b.f, b.g), a, b, c) ||
                         update(state0, a, b, c);
         }
         else
@@ -87,12 +84,11 @@ bool lsearch_cgdescent_t::secant2(const solver_state_t& state0,
         }
 }
 
-bool lsearch_cgdescent_t::bracket(const solver_state_t& state0,
-        solver_state_t& a, solver_state_t& b, solver_state_t& c)
+bool lsearch_cgdescent_t::bracket(const solver_state_t& state0, step_t& a, step_t& b, solver_state_t& c)
 {
         assert(m_ro > 1);
 
-        solver_state_t last_a = a;
+        auto last_a = a;
         for (int i = 0; i < max_iterations(); ++ i)
         {
                 if (!c.has_descent())
@@ -120,8 +116,7 @@ bool lsearch_cgdescent_t::bracket(const solver_state_t& state0,
         return false;
 }
 
-bool lsearch_cgdescent_t::evaluate(const solver_state_t& state0, const scalar_t t,
-        solver_state_t& c)
+bool lsearch_cgdescent_t::evaluate(const solver_state_t& state0, const scalar_t t, solver_state_t& c)
 {
         // check overflow
         if (!c.update(state0, t))
@@ -143,8 +138,8 @@ bool lsearch_cgdescent_t::evaluate(const solver_state_t& state0, const scalar_t 
         return done;
 }
 
-bool lsearch_cgdescent_t::evaluate(const solver_state_t& state0, const scalar_t t,
-        const solver_state_t& a, const solver_state_t& b, solver_state_t& c)
+bool lsearch_cgdescent_t::evaluate(const solver_state_t& state0, const scalar_t t, const step_t& a, const step_t& b,
+        solver_state_t& c)
 {
         if (evaluate(state0, t, c))
         {
@@ -177,7 +172,7 @@ bool lsearch_cgdescent_t::get(const solver_state_t& state0, const scalar_t t0, s
         }
 
         // bracket the initial step size
-        auto a = state0, b = c;
+        step_t a = state0, b = c;
         if (bracket(state0, a, b, c))
         {
                 return true;
@@ -187,7 +182,7 @@ bool lsearch_cgdescent_t::get(const solver_state_t& state0, const scalar_t t0, s
         for (int i = 0; i < max_iterations(); ++ i)
         {
                 // secant interpolation
-                const auto prev_width = std::fabs(b.t - a.t);
+                const auto prev_width = b.t - a.t;
                 if (secant2(state0, a, b, c))
                 {
                         return true;
