@@ -11,7 +11,7 @@ scalar_t lsearch_linear_init_t::get(const solver_state_t& state, const int itera
 {
         scalar_t t0;
 
-        const auto dg = state.d.dot(state.g);
+        const auto dg = state.dg();
         switch (iteration)
         {
         case 0:
@@ -39,7 +39,7 @@ scalar_t lsearch_quadratic_init_t::get(const solver_state_t& state, const int it
                 break;
 
         default:
-                t0 = scalar_t(1.01) * 2 * (state.f - m_prevf) / state.d.dot(state.g);
+                t0 = scalar_t(1.01) * 2 * (state.f - m_prevf) / state.dg();
                 break;
         }
 
