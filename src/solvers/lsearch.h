@@ -99,6 +99,7 @@ namespace nano
                         step_t() = default;
                         step_t(const step_t&) = default;
                         step_t(const solver_state_t& state) : t(state.t), f(state.f), g(state.dg()) {}
+                        step_t(const scalar_t tt, const scalar_t ff, const scalar_t gg) : t(tt), f(ff), g(gg) {}
 
                         step_t& operator=(const step_t&) = default;
                         step_t& operator=(const solver_state_t& state)
@@ -130,13 +131,19 @@ namespace nano
                 ///
                 /// \brief quadratic interpolation of two line-search steps.
                 ///
-                static auto quadratic(const step_t& u, const step_t& v)
+                static auto quadratic(const step_t& u, const step_t& v, bool* convexity = nullptr)
                 {
                         // fit quadratic: q(x) = a*x^2 + b*x + c
                         //      given: q(u) = fu, q'(u) = gu
                         //      given: q(v) = fv
                         // minimizer: -b/2a
-                        return u.t - u.g * (u.t - v.t) * (u.t - v.t) / (2 * (u.g * (u.t - v.t) - (u.f - v.f)));
+                        const auto dt = u.t - v.t;
+                        const auto df = u.f - v.f;
+                        if (convexity)
+                        {
+                                *convexity = (u.g - df / dt) * dt > 0;
+                        }
+                        return u.t - u.g * dt * dt / (2 * (u.g * dt - df));
                 }
 
                 ///

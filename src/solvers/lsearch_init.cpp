@@ -79,17 +79,23 @@ scalar_t lsearch_cgdescent_init_t::get(const solver_state_t& state, const int it
 
         default:
                 {
-                        // NB: the line-search length is from the previous iteration!
-                        lsearch_strategy_t::step_t step0 = state;
-                        lsearch_strategy_t::step_t stepx;
-                        stepx.t = state.t * phi1;
-                        stepx.f = state.function->vgrad(state.x + stepx.t * state.d);
-                        stepx.g = 0;
-
-                        const auto tq = lsearch_strategy_t::quadratic(step0, stepx);
-                        if (stepx.f < step0.f && tq > 0 && tq < stepx.t)
+                        lsearch_strategy_t::step_t step0
                         {
-                                // todo: check here if the quadratic interpolant is convex!!!
+                                0, state.f, state.dg()
+                        };
+
+                        lsearch_strategy_t::step_t stepx
+                        {
+                                state.t * phi1,
+                                // NB: the line-search length is from the previous iteration!
+                                state.function->vgrad(state.x + state.t * phi1 * state.d),
+                                0
+                        };
+
+                        bool convexity = false;
+                        const auto tq = lsearch_strategy_t::quadratic(step0, stepx, &convexity);
+                        if (stepx.f < step0.f && convexity)
+                        {
                                 t0 = tq;
                         }
                         else
