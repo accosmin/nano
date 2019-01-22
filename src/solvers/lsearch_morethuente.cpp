@@ -37,7 +37,7 @@ static void dcstep(
                 r = p / q;
                 stpc = stx + r * (stp - stx);
 
-                stpq = stx + dx / ((fx - fp) / (stp - stx) + dx) / 2 * (stp - stx);
+                stpq = lsearch_strategy_t::quadratic({stx, fx, dx}, {stp, fp, dp});
 
                 if (std::fabs(stpc - stx) < std::fabs(stpq - stx))
                 {
@@ -69,7 +69,7 @@ static void dcstep(
                 r = p / q;
                 stpc = stp + r * (stx - stp);
 
-                stpq = stp + dp / (dp - dx) * (stx - stp);
+                stpq = lsearch_strategy_t::secant({stx, fx, dx}, {stp, fp, dp});
 
                 if (std::fabs(stpc - stp) > std::fabs(stpq - stp))
                 {
@@ -114,7 +114,7 @@ static void dcstep(
                         stpc = stpmin;
                 }
 
-                stpq = stp + dp / (dp - dx) * (stx - stp);
+                stpq = lsearch_strategy_t::secant({stx, fx, dx}, {stp, fp, dp});
 
                 if (brackt)
                 {
