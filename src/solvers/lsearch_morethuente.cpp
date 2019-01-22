@@ -20,23 +20,7 @@ static void dcstep(
 
         if (fp > fx)
         {
-	        theta = (fx - fp) * 3 / (stp - stx) + dx + dp;
-                d1 = std::fabs(theta);
-                d2 = std::fabs(dx);
-                d1 = std::max(d1, d2);
-                d2 = std::fabs(dp);
-                s = std::max(d1, d2);
-                d1 = theta / s;
-                gamma = s * std::sqrt(d1 * d1 - dx / s * (dp / s));
-                if (stp < stx)
-                {
-                        gamma = -gamma;
-                }
-                p = gamma - dx + theta;
-                q = gamma - dx + gamma + dp;
-                r = p / q;
-                stpc = stx + r * (stp - stx);
-
+                stpc = lsearch_strategy_t::cubic({stx, fx, dx}, {stp, fp, dp});
                 stpq = lsearch_strategy_t::quadratic({stx, fx, dx}, {stp, fp, dp});
 
                 if (std::fabs(stpc - stx) < std::fabs(stpq - stx))
@@ -52,23 +36,7 @@ static void dcstep(
 
         else if (sgnd < 0)
         {
-                theta = (fx - fp) * 3 / (stp - stx) + dx + dp;
-                d1 = std::fabs(theta);
-                d2 = std::fabs(dx);
-                d1 = std::max(d1, d2);
-                d2 = std::fabs(dp);
-                s = std::max(d1, d2);
-                d1 = theta / s;
-                gamma = s * std::sqrt(d1 * d1 - dx / s * (dp / s));
-                if (stp > stx)
-                {
-                        gamma = -gamma;
-                }
-                p = gamma - dp + theta;
-                q = gamma - dp + gamma + dx;
-                r = p / q;
-                stpc = stp + r * (stx - stp);
-
+                stpc = lsearch_strategy_t::cubic({stx, fx, dx}, {stp, fp, dp});
                 stpq = lsearch_strategy_t::secant({stx, fx, dx}, {stp, fp, dp});
 
                 if (std::fabs(stpc - stp) > std::fabs(stpq - stp))
@@ -156,22 +124,7 @@ static void dcstep(
         {
 	        if (brackt)
                 {
-                        theta = (fp - fy) * 3 / (sty - stp) + dy + dp;
-                        d1 = std::fabs(theta);
-                        d2 = std::fabs(dy);
-                        d1 = std::max(d1, d2);
-                        d2 = std::fabs(dp);
-                        s = std::max(d1, d2);
-                        d1 = theta / s;
-                        gamma = s * sqrt(d1 * d1 - dy / s * (dp / s));
-                        if (stp > sty)
-                        {
-                                gamma = -gamma;
-                        }
-                        p = gamma - dp + theta;
-                        q = gamma - dp + gamma + dy;
-                        r = p / q;
-                        stpc = stp + r * (sty - stp);
+                        stpc = lsearch_strategy_t::cubic({stp, fp, dp}, {sty, fy, dy});
 
                         stpf = stpc;
                 }
