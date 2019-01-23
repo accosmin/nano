@@ -14,7 +14,6 @@ static void dcstep(
         const scalar_t stpmin, const scalar_t stpmax)
 {
         scalar_t stpc, stpq, stpf;
-        scalar_t theta, d1, d2, d3, s, gamma, p, q, r;
 
         const auto sgnd = dp * (dx / std::fabs(dx));
 
@@ -52,26 +51,11 @@ static void dcstep(
 
         else if (std::fabs(dp) < std::fabs(dx))
         {
-                theta = (fx - fp) * 3 / (stp - stx) + dx + dp;
-                d1 = std::fabs(theta);
-                d2 = std::fabs(dx);
-                d1 = std::max(d1, d2);
-                d2 = std::fabs(dp);
-                s = std::max(d1, d2);
-                d3 = theta / s;
-                d1 = 0;
-                d2 = d3 * d3 - dx / s * (dp / s);
-                gamma = s * std::sqrt(std::max(d1, d2));
-                if (stp > stx)
+                stpc = lsearch_strategy_t::cubic({stx, fx, dx}, {stp, fp, dp});
+                stpq = lsearch_strategy_t::secant({stx, fx, dx}, {stp, fp, dp});
+
+                if (std::isfinite(stpc) && (stp - stx) * (stpc - stp) > 0)
                 {
-                        gamma = -gamma;
-                }
-                p = gamma - dp + theta;
-                q = gamma + (dx - dp) + gamma;
-                r = p / q;
-                if (r < 0 && gamma != 0)
-                {
-                        stpc = stp + r * (stx - stp);
                 }
                 else if (stp > stx)
                 {
@@ -81,8 +65,6 @@ static void dcstep(
                 {
                         stpc = stpmin;
                 }
-
-                stpq = lsearch_strategy_t::secant({stx, fx, dx}, {stp, fp, dp});
 
                 if (brackt)
                 {
@@ -96,13 +78,11 @@ static void dcstep(
                         }
                         if (stp > stx)
                         {
-                                d1 = stp + (sty - stp) * .66;
-                                stpf = std::min(d1, stpf);
+                                stpf = std::min(stpf, stp + (sty - stp) * .66);
                         }
                         else
                         {
-                                d1 = stp + (sty - stp) * .66;
-                                stpf = std::max(d1, stpf);
+                                stpf = std::max(stpf, stp + (sty - stp) * .66);
                         }
 	        }
                 else
