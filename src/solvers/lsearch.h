@@ -92,7 +92,8 @@ namespace nano
                 }
 
                 ///
-                /// \brief line-search step
+                /// \brief line-search step function:
+                ///     phi(t) = f(x + t * d), f - the function to minimize and d - the descent direction.
                 ///
                 struct step_t
                 {
