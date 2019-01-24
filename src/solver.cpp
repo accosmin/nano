@@ -1,7 +1,6 @@
 #include <mutex>
 #include "solvers/solver_gd.h"
 #include "solvers/solver_cgd.h"
-#include "solvers/solver_nag.h"
 #include "solvers/solver_lbfgs.h"
 #include "solvers/solver_quasi.h"
 
@@ -15,7 +14,6 @@ solver_factory_t& nano::get_solvers()
         std::call_once(flag, [] ()
         {
                 manager.add<solver_gd_t>("gd", "gradient descent");
-                manager.add<solver_nag_t>("nag", "Nesterov's accelerated gradient (NAG) with gradient restarts");
                 manager.add<solver_cgd_prp_t>("cgd", "conjugate gradient descent (default)");
                 manager.add<solver_cgd_n_t>("cgd-n", "conjugate gradient descent (N)");
                 manager.add<solver_cgd_hs_t>("cgd-hs", "conjugate gradient descent (HS)");
