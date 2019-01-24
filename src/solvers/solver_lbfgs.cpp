@@ -79,6 +79,13 @@ solver_state_t solver_lbfgs_t::minimize(const size_t max_iterations, const scala
                 }
 
                 cstate.d = -r;
+                const auto has_descent = cstate.has_descent();
+
+                // Force descent direction
+                if (!has_descent)
+                {
+                        cstate.d = -cstate.g;
+                }
 
                 // line-search
                 pstate = cstate;
@@ -88,14 +95,22 @@ solver_state_t solver_lbfgs_t::minimize(const size_t max_iterations, const scala
                         break;
                 }
 
-                // todo: may skip the update if the curvature condition is not satisfied
-                // see: "A Multi-Batch L-BFGS Method for Machine Learning", page 6 - the non-convex case
-                ss.emplace_back(cstate.x - pstate.x);
-                ys.emplace_back(cstate.g - pstate.g);
-                if (ss.size() > m_history_size)
+                // Skip the update if the curvature condition is not satisfied
+                //      "A Multi-Batch L-BFGS Method for Machine Learning", page 6 - the non-convex case
+                if (has_descent)
                 {
-                        ss.pop_front();
-                        ys.pop_front();
+                        ss.emplace_back(cstate.x - pstate.x);
+                        ys.emplace_back(cstate.g - pstate.g);
+                        if (ss.size() > m_history_size)
+                        {
+                                ss.pop_front();
+                                ys.pop_front();
+                        }
+                }
+                else
+                {
+                        ss.clear();
+                        ys.clear();
                 }
         }
 
