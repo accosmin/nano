@@ -116,14 +116,14 @@ namespace nano
 
                 ///
                 /// \brief cubic interpolation of two line-search steps.
+                ///     fit cubic: q(x) = a*x^3 + b*x^2 + c*x + d
+                ///             given: q(u) = fu, q'(u) = gu
+                ///             given: q(v) = fv, q'(v) = gv
+                ///     minimizer: solution of 3*a*x^2 + 2*b*x + c = 0
+                ///     see "Numerical optimization", Nocedal & Wright, 2nd edition, p.59
                 ///
                 static auto cubic(const step_t& u, const step_t& v)
                 {
-                        // fit cubic: q(x) = a*x^3 + b*x^2 + c*x + d
-                        //      given: q(u) = fu, q'(u) = gu
-                        //      given: q(v) = fv, q'(v) = gv
-                        // minimizer: solution of 3*a*x^2 + 2*b*x + c = 0
-                        // see "Numerical optimization", Nocedal & Wright, 2nd edition, p.59
                         const auto d1 = u.g + v.g - 3 * (u.f - v.f) / (u.t - v.t);
                         const auto d2 = (v.t > u.t ? +1 : -1) * std::sqrt(d1 * d1 - u.g * v.g);
                         return v.t - (v.t - u.t) * (v.g + d2 - d1) / (v.g - u.g + 2 * d2);
@@ -131,13 +131,13 @@ namespace nano
 
                 ///
                 /// \brief quadratic interpolation of two line-search steps.
+                ///     fit quadratic: q(x) = a*x^2 + b*x + c
+                ///             given: q(u) = fu, q'(u) = gu
+                ///             given: q(v) = fv
+                ///     minimizer: -b/2a
                 ///
                 static auto quadratic(const step_t& u, const step_t& v, bool* convexity = nullptr)
                 {
-                        // fit quadratic: q(x) = a*x^2 + b*x + c
-                        //      given: q(u) = fu, q'(u) = gu
-                        //      given: q(v) = fv
-                        // minimizer: -b/2a
                         const auto dt = u.t - v.t;
                         const auto df = u.f - v.f;
                         if (convexity)
@@ -149,13 +149,13 @@ namespace nano
 
                 ///
                 /// \brief secant interpolation of two line-search steps.
+                ///     fit quadratic: q(x) = a*x^2 + b*x + c
+                ///             given: q'(u) = gu
+                ///             given: q'(v) = gv
+                ///     minimizer: -b/2a
                 ///
                 static auto secant(const step_t& u, const step_t& v)
                 {
-                        // fit quadratic: q(x) = a*x^2 + b*x + c
-                        //      given: q'(u) = gu
-                        //      given: q'(v) = gv
-                        // minimizer: -b/2a
                         return (v.t * u.g - u.t * v.g) / (u.g - v.g);
                 }
 
@@ -164,7 +164,6 @@ namespace nano
                 ///
                 static auto bisection(const step_t& u, const step_t& v)
                 {
-                        // minimizer: (u+v)/2
                         return (u.t + v.t) / 2;
                 }
 
