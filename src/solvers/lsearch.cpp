@@ -4,6 +4,7 @@
 #include "lsearch_backtrack.h"
 #include "lsearch_cgdescent.h"
 #include "lsearch_morethuente.h"
+#include "lsearch_nocedalwright.h"
 
 using namespace nano;
 
@@ -25,6 +26,7 @@ static std::unique_ptr<lsearch_strategy_t> make_strategy(const lsearch_t::strate
         {
         case lsearch_t::strategy::cg_descent:           return std::make_unique<lsearch_cgdescent_t>();
         case lsearch_t::strategy::more_thuente:         return std::make_unique<lsearch_morethuente_t>();
+        case lsearch_t::strategy::nocedal_wright:       return std::make_unique<lsearch_nocedalwright_t>();
         case lsearch_t::strategy::backtrack_wolfe:      return std::make_unique<lsearch_backtrack_wolfe_t>();
         case lsearch_t::strategy::backtrack_armijo:     return std::make_unique<lsearch_backtrack_armijo_t>();
         case lsearch_t::strategy::backtrack_swolfe:     return std::make_unique<lsearch_backtrack_swolfe_t>();
@@ -64,5 +66,5 @@ bool lsearch_t::operator()(solver_state_t& state)
         // line-search step length
         auto state0 = state;
         state0.t = 0;
-        return m_strategy->get(state0, t0, state) && state && state < state0;
+        return m_strategy->get(state0, t0, state) && state && (state < state0);
 }

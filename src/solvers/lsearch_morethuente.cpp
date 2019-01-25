@@ -4,7 +4,7 @@
 using namespace nano;
 
 ///
-/// see dcstep routine in MINPACK-2 (see http://ftp.mcs.anl.gov/pub/MINPACK-2/csrch/)
+/// \brief see dcstep routine in MINPACK-2 (see http://ftp.mcs.anl.gov/pub/MINPACK-2/csrch/)
 ///
 static void dcstep(
         scalar_t& stx, scalar_t& fx, scalar_t& dx,
