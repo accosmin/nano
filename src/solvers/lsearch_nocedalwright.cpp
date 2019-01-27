@@ -3,33 +3,33 @@
 
 using namespace nano;
 
-bool lsearch_nocedalwright_t::zoom(const solver_state_t& state0, step_t& l, step_t& h, solver_state_t& state) const
+bool lsearch_nocedalwright_t::zoom(const solver_state_t& state0, step_t lo, step_t hi, solver_state_t& state) const
 {
-        for (int i = 0; i < max_iterations() && std::fabs(l.t - h.t) > epsilon0<scalar_t>(); ++ i)
+        for (int i = 0; i < max_iterations() && std::fabs(lo.t - hi.t) > epsilon0<scalar_t>(); ++ i)
         {
-                // interpolate the new trial
-                if (!state.update(state0, interpolate(l, h)))
+                if (!state.update(state0, cubic(lo, hi)))
                 {
                         return false;
                 }
 
-                // check sufficient decrease
-                else if (!state.has_armijo(state0, c1()) || state.f >= l.f)
+                else if (!state.has_armijo(state0, c1()) || state.f >= lo.f)
                 {
-                        h = state;
+                        hi = state;
                 }
 
-                // check curvature
-                else if (state.has_strong_wolfe(state0, c2()))
+                else
                 {
-                        return true;
-                }
+                        if (state.has_strong_wolfe(state0, c2()))
+                        {
+                                return true;
+                        }
 
-                if (state.dg() * (h.t - l.t) >= 0)
-                {
-                        h = l;
+                        if (state.dg() * (hi.t - lo.t) >= scalar_t(0))
+                        {
+                                hi = lo;
+                        }
+                        lo = state;
                 }
-                l = state;
         }
 
         return false;
@@ -37,33 +37,33 @@ bool lsearch_nocedalwright_t::zoom(const solver_state_t& state0, step_t& l, step
 
 bool lsearch_nocedalwright_t::get(const solver_state_t& state0, scalar_t t, solver_state_t& state)
 {
-        step_t stept = state0, stepp = state0;
+        step_t prev = state0;
+        step_t curr = prev;
 
         for (int i = 1; i < max_iterations() && t < stpmax(); ++ i)
         {
-                // check sufficient decrease
                 if (!state.update(state0, t))
                 {
                         return false;
                 }
+                curr = state;
 
-                else if (!state.has_armijo(state0, c1()) || (stept.f >= stepp.f && i > 1))
+                if (!state.has_armijo(state0, c1()) || (state.f >= prev.f && i > 1))
                 {
-                        return zoom(state0, stepp, stept, state);
+                        return zoom(state0, prev, curr, state);
                 }
 
-                // check curvature
                 else if (state.has_strong_wolfe(state0, c2()))
                 {
                         return true;
                 }
 
-                if (stept.g >= scalar_t(0))
+                if (!state.has_descent())
                 {
-                        return zoom(state0, stept, stepp, state);
+                        return zoom(state0, curr, prev, state);
                 }
 
-                stepp = stept;
+                prev = curr;
                 t *= 3;
         }
 

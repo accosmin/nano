@@ -17,6 +17,6 @@ namespace nano
 
         private:
 
-                bool zoom(const solver_state_t&, step_t& l, step_t& h, solver_state_t&) const;
+                bool zoom(const solver_state_t&, step_t lo, step_t hi, solver_state_t&) const;
         };
 }
