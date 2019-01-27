@@ -162,47 +162,33 @@ namespace nano
                 ///
                 /// \brief bisection interpolation of two line-search steps.
                 ///
-                static auto bisection(const step_t& u, const step_t& v)
+                static auto bisect(const step_t& u, const step_t& v)
                 {
                         return (u.t + v.t) / 2;
                 }
 
                 ///
-                /// \brief interpolate two line-search steps
-                ///     and choose the interpolation result closest to the minimum value point u.
+                /// \brief interpolate two line-search steps using in the order of preference:
+                ///     a cubic, a secant and a bisection if possible.
                 ///
                 static auto interpolate(const step_t& u, const step_t& v)
                 {
-                        // NB: this doesn't assume the points u and v are sorted!
-                        // NB: this assumes that u is the point with the minimum value!
                         const auto tc = cubic(u, v);
-                        const auto tq = quadratic(u, v);
                         const auto ts = secant(u, v);
-                        const auto tb = bisection(u, v);
+                        const auto tb = bisect(u, v);
 
-                        scalar_t tt[4];
-                        int tcount = 0;
-
-                        const auto op_add = [&] (const auto t)
+                        if (std::isfinite(tc) && std::min(u.t, v.t) < tc && tc < std::max(u.t, v.t))
                         {
-                                if (std::isfinite(t) && std::min(u.t, v.t) < t && t < std::max(u.t, v.t))
-                                {
-                                        tt[tcount ++] = t;
-                                }
-                        };
-
-                        op_add(tc);
-                        op_add(tq);
-                        op_add(ts);
-                        op_add(tb);
-
-                        // choose the interpolation closest to the minimum u
-                        const auto it = std::min_element(std::begin(tt), std::end(tt), [&] (const auto t1, const auto t2)
+                                return tc;
+                        }
+                        else if (std::isfinite(ts))
                         {
-                                return std::fabs(t1 - u.t) < std::fabs(t2 - u.t);
-                        });
-
-                        return *it;
+                                return ts;
+                        }
+                        else
+                        {
+                                return tb;
+                        }
                 }
 
         private:

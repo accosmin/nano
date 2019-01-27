@@ -61,6 +61,7 @@ bool lsearch_t::operator()(solver_state_t& state)
         }
 
         // initial step length
+        // fixme: is it safe to allow t0 to be greater than 1?!
         const auto t0 = nano::clamp(m_initializer->get(state), lsearch_strategy_t::stpmin(), scalar_t(1));
 
         // line-search step length
