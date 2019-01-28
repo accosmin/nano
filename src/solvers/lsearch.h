@@ -167,30 +167,6 @@ namespace nano
                         return (u.t + v.t) / 2;
                 }
 
-                ///
-                /// \brief interpolate two line-search steps using in the order of preference:
-                ///     a cubic, a secant and a bisection if possible.
-                ///
-                static auto interpolate(const step_t& u, const step_t& v)
-                {
-                        const auto tc = cubic(u, v);
-                        const auto ts = secant(u, v);
-                        const auto tb = bisect(u, v);
-
-                        if (std::isfinite(tc) && std::min(u.t, v.t) < tc && tc < std::max(u.t, v.t))
-                        {
-                                return tc;
-                        }
-                        else if (std::isfinite(ts))
-                        {
-                                return ts;
-                        }
-                        else
-                        {
-                                return tb;
-                        }
-                }
-
         private:
 
                 // attributes

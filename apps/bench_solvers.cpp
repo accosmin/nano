@@ -74,7 +74,7 @@ static void show_table(const string_t& table_name, const solver_config_stats_t& 
                 }
         }
 
-        table.sort(nano::make_less_from_string<scalar_t>(), {3, 8, 2});
+        table.sort(nano::make_less_from_string<scalar_t>(), {3, 8, 7});
         std::cout << table;
 }
 
