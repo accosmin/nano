@@ -3,6 +3,7 @@
 #include "core/numeric.h"
 #include "lsearch_backtrack.h"
 #include "lsearch_cgdescent.h"
+#include "lsearch_lemarechal.h"
 #include "lsearch_morethuente.h"
 #include "lsearch_nocedalwright.h"
 
@@ -25,6 +26,7 @@ static std::unique_ptr<lsearch_strategy_t> make_strategy(const lsearch_t::strate
         switch (strategy)
         {
         case lsearch_t::strategy::cg_descent:           return std::make_unique<lsearch_cgdescent_t>();
+        case lsearch_t::strategy::lemarechal:           return std::make_unique<lsearch_lemarechal_t>();
         case lsearch_t::strategy::more_thuente:         return std::make_unique<lsearch_morethuente_t>();
         case lsearch_t::strategy::nocedal_wright:       return std::make_unique<lsearch_nocedalwright_t>();
         case lsearch_t::strategy::backtrack_wolfe:      return std::make_unique<lsearch_backtrack_wolfe_t>();

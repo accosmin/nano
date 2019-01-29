@@ -199,8 +199,8 @@ namespace nano
                 /// \brief line-search strategy
                 ///     see "Numerical optimization", Nocedal & Wright, 2nd edition
                 ///     see CG_DESCENT papers
-                ///     see "Line Search Algorithms with Guaranteed Sufficient Decrease",
-                ///     by Jorge J. More and David J. Thuente
+                ///     see "Line Search Algorithms with Guaranteed Sufficient Decrease", J. J. More & D. J. Thuente
+                ///     see "A view of line-searches", C. Lemarechal
                 ///
                 enum class strategy
                 {
@@ -208,6 +208,7 @@ namespace nano
                         backtrack_wolfe,                ///< + backtracking with suficient curvature (Wolfe)
                         backtrack_swolfe,               ///< + backtracking with sufficient curvature (strong Wolfe)
                         cg_descent,                     ///< CG_DESCENT (regular and approximation Wolfe)
+                        lemarechal,                     ///< Lemarechal (regular Wolfe)
                         more_thuente,                   ///< More & Thunte (strong Wolfe)
                         nocedal_wright,                 ///< Nocedal & Wright (strong Wolfe)
                 };
@@ -250,6 +251,7 @@ namespace nano
                         { lsearch_t::strategy::backtrack_wolfe,         "back-wolfe" },
                         { lsearch_t::strategy::backtrack_swolfe,        "back-swolfe" },
                         { lsearch_t::strategy::cg_descent,              "cg-descent" },
+                        { lsearch_t::strategy::lemarechal,              "lemarechal" },
                         { lsearch_t::strategy::more_thuente,            "more-thuente" },
                         { lsearch_t::strategy::nocedal_wright,          "nocedal-wright" }
                 };
