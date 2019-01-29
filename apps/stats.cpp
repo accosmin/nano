@@ -2,10 +2,11 @@
 #include <iostream>
 #include "core/cast.h"
 #include "core/stats.h"
+#include "core/logger.h"
 
 using namespace nano;
 
-int main(int argc, const char* argv[])
+static int unsafe_main(int argc, const char* argv[])
 {
         if (argc == 1)
         {
@@ -41,4 +42,9 @@ int main(int argc, const char* argv[])
 
         // OK
         return EXIT_SUCCESS;
+}
+
+int main(int argc, const char* argv[])
+{
+        return nano::main(unsafe_main, argc, argv);
 }

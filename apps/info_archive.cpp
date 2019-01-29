@@ -3,7 +3,7 @@
 #include "core/archive.h"
 #include "core/cmdline.h"
 
-int main(int argc, const char *argv[])
+static int unsafe_main(int argc, const char *argv[])
 {
         using namespace nano;
 
@@ -34,4 +34,9 @@ int main(int argc, const char *argv[])
         // OK
         log_info() << done;
         return EXIT_SUCCESS;
+}
+
+int main(int argc, const char* argv[])
+{
+        return nano::main(unsafe_main, argc, argv);
 }

@@ -20,7 +20,7 @@ static bool load_json(const string_t& path, json_t& json, string_t& id)
                 from_json(json, "id", id);
 }
 
-int main(int argc, const char *argv[])
+static int unsafe_main(int argc, const char *argv[])
 {
         // parse the command line
         cmdline_t cmdline("evaluate a model");
@@ -85,4 +85,9 @@ int main(int argc, const char *argv[])
         // OK
         log_info() << done;
         return EXIT_SUCCESS;
+}
+
+int main(int argc, const char* argv[])
+{
+        return nano::main(unsafe_main, argc, argv);
 }

@@ -3,6 +3,7 @@
 #include <iostream>
 #include "core/stats.h"
 #include "core/table.h"
+#include "core/logger.h"
 #include "core/cmdline.h"
 #include "core/algorithm.h"
 
@@ -25,7 +26,7 @@ static stats_t get_stats(const table_t& table, const size_t col)
         return stats;
 }
 
-int main(int argc, const char *argv[])
+static int unsafe_main(int argc, const char *argv[])
 {
         // parse the command line
         nano::cmdline_t cmdline("tabulate a csv file");
@@ -108,4 +109,9 @@ int main(int argc, const char *argv[])
 
                 return EXIT_SUCCESS;
         }
+}
+
+int main(int argc, const char* argv[])
+{
+        return nano::main(unsafe_main, argc, argv);
 }

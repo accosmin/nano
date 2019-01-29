@@ -2,6 +2,7 @@
 #include "core/stats.h"
 #include "core/table.h"
 #include "core/tpool.h"
+#include "core/logger.h"
 #include "core/cmdline.h"
 #include "core/numeric.h"
 #include "core/algorithm.h"
@@ -149,7 +150,7 @@ static void check_function(const function_t& function, const std::vector<std::pa
         show_table(function.name(), fstats);
 }
 
-int main(int argc, const char* argv[])
+static int unsafe_main(int argc, const char* argv[])
 {
         using namespace nano;
 
@@ -217,4 +218,9 @@ int main(int argc, const char* argv[])
 
         // OK
         return EXIT_SUCCESS;
+}
+
+int main(int argc, const char* argv[])
+{
+        return nano::main(unsafe_main, argc, argv);
 }

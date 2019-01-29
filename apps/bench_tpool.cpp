@@ -1,6 +1,7 @@
 #include <cmath>
 #include "core/table.h"
 #include "core/tpool.h"
+#include "core/logger.h"
 #include "core/numeric.h"
 #include "core/cmdline.h"
 #include "core/measure.h"
@@ -38,7 +39,7 @@ namespace
         }
 }
 
-int main(int argc, const char *argv[])
+static int unsafe_main(int argc, const char *argv[])
 {
         // parse the command line
         cmdline_t cmdline("benchmark thread pool");
@@ -89,4 +90,9 @@ int main(int argc, const char *argv[])
 
         // OK
         return EXIT_SUCCESS;
+}
+
+int main(int argc, const char* argv[])
+{
+        return nano::main(unsafe_main, argc, argv);
 }

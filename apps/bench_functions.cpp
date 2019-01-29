@@ -1,6 +1,7 @@
 #include "function.h"
 #include "core/stats.h"
 #include "core/table.h"
+#include "core/logger.h"
 #include "core/cmdline.h"
 #include "core/measure.h"
 #include <iostream>
@@ -35,7 +36,7 @@ static void eval_func(const function_t& function, table_t& table)
         row << function.name() << fval_time << grad_time;
 }
 
-int main(int argc, const char* argv[])
+static int unsafe_main(int argc, const char* argv[])
 {
         // parse the command line
         cmdline_t cmdline("benchmark optimization test functions");
@@ -69,4 +70,9 @@ int main(int argc, const char* argv[])
 
         // OK
         return EXIT_SUCCESS;
+}
+
+int main(int argc, const char* argv[])
+{
+        return nano::main(unsafe_main, argc, argv);
 }
