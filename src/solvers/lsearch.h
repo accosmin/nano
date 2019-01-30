@@ -192,7 +192,7 @@ namespace nano
                         unit,                           ///< 1.0 (useful for quasi-Newton and Newton methods)
                         linear,                         ///< consistent first-order change in the function
                         quadratic,                      ///< quadratic local interpolation (previous & current position)
-                        cg_descent,                     ///< CG_DESCENT
+                        cgdescent,                     ///< CG_DESCENT
                 };
 
                 ///
@@ -204,13 +204,11 @@ namespace nano
                 ///
                 enum class strategy
                 {
-                        backtrack_armijo,               ///< backtracking with sufficient decrease (Armijo)
-                        backtrack_wolfe,                ///< + backtracking with suficient curvature (Wolfe)
-                        backtrack_swolfe,               ///< + backtracking with sufficient curvature (strong Wolfe)
-                        cg_descent,                     ///< CG_DESCENT (regular and approximation Wolfe)
+                        backtrack,                      ///< backtracking with sufficient decrease (Armijo)
+                        cgdescent,                      ///< CG_DESCENT (regular and approximation Wolfe)
                         lemarechal,                     ///< Lemarechal (regular Wolfe)
-                        more_thuente,                   ///< More & Thunte (strong Wolfe)
-                        nocedal_wright,                 ///< Nocedal & Wright (strong Wolfe)
+                        morethuente,                    ///< More & Thunte (strong Wolfe)
+                        nocedalwright,                  ///< Nocedal & Wright (strong Wolfe)
                 };
 
                 ///
@@ -238,7 +236,7 @@ namespace nano
                         { lsearch_t::initializer::unit,                 "unit" },
                         { lsearch_t::initializer::linear,               "linear" },
                         { lsearch_t::initializer::quadratic,            "quadratic" },
-                        { lsearch_t::initializer::cg_descent,           "cg-descent" }
+                        { lsearch_t::initializer::cgdescent,            "cgdescent" }
                 };
         }
 
@@ -247,13 +245,11 @@ namespace nano
         {
                 return
                 {
-                        { lsearch_t::strategy::backtrack_armijo,        "back-armijo" },
-                        { lsearch_t::strategy::backtrack_wolfe,         "back-wolfe" },
-                        { lsearch_t::strategy::backtrack_swolfe,        "back-swolfe" },
-                        { lsearch_t::strategy::cg_descent,              "cg-descent" },
+                        { lsearch_t::strategy::backtrack,               "backtrack" },
+                        { lsearch_t::strategy::cgdescent,               "cgdescent" },
                         { lsearch_t::strategy::lemarechal,              "lemarechal" },
-                        { lsearch_t::strategy::more_thuente,            "more-thuente" },
-                        { lsearch_t::strategy::nocedal_wright,          "nocedal-wright" }
+                        { lsearch_t::strategy::morethuente,             "morethuente" },
+                        { lsearch_t::strategy::nocedalwright,           "nocedalwright" }
                 };
         }
 }

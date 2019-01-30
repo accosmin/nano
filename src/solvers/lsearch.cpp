@@ -16,7 +16,7 @@ static std::unique_ptr<lsearch_init_t> make_initializer(const lsearch_t::initial
         case lsearch_t::initializer::unit:              return std::make_unique<lsearch_unit_init_t>();
         case lsearch_t::initializer::linear:            return std::make_unique<lsearch_linear_init_t>();
         case lsearch_t::initializer::quadratic:         return std::make_unique<lsearch_quadratic_init_t>();
-        case lsearch_t::initializer::cg_descent:        return std::make_unique<lsearch_cgdescent_init_t>();
+        case lsearch_t::initializer::cgdescent:         return std::make_unique<lsearch_cgdescent_init_t>();
         default:                                        assert(false); return nullptr;
         }
 }
@@ -25,13 +25,11 @@ static std::unique_ptr<lsearch_strategy_t> make_strategy(const lsearch_t::strate
 {
         switch (strategy)
         {
-        case lsearch_t::strategy::cg_descent:           return std::make_unique<lsearch_cgdescent_t>();
+        case lsearch_t::strategy::backtrack:            return std::make_unique<lsearch_backtrack_t>();
+        case lsearch_t::strategy::cgdescent:            return std::make_unique<lsearch_cgdescent_t>();
         case lsearch_t::strategy::lemarechal:           return std::make_unique<lsearch_lemarechal_t>();
-        case lsearch_t::strategy::more_thuente:         return std::make_unique<lsearch_morethuente_t>();
-        case lsearch_t::strategy::nocedal_wright:       return std::make_unique<lsearch_nocedalwright_t>();
-        case lsearch_t::strategy::backtrack_wolfe:      return std::make_unique<lsearch_backtrack_wolfe_t>();
-        case lsearch_t::strategy::backtrack_armijo:     return std::make_unique<lsearch_backtrack_armijo_t>();
-        case lsearch_t::strategy::backtrack_swolfe:     return std::make_unique<lsearch_backtrack_swolfe_t>();
+        case lsearch_t::strategy::morethuente:          return std::make_unique<lsearch_morethuente_t>();
+        case lsearch_t::strategy::nocedalwright:        return std::make_unique<lsearch_nocedalwright_t>();
         default:                                        assert(false); return nullptr;
         }
 }
