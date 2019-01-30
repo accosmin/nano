@@ -22,15 +22,17 @@ struct solver_stat_t
                 m_maxits(state.m_status == solver_state_t::status::max_iters ? 1 : 0);
                 m_fcalls(static_cast<scalar_t>(state.m_fcalls));
                 m_gcalls(static_cast<scalar_t>(state.m_gcalls));
+                m_costs(static_cast<scalar_t>(2 * state.m_fcalls + state.m_gcalls));
         }
 
-        stats_t         m_crits;      ///< convergence criterion
-        stats_t         m_fails;      ///< #convergence failures
-        stats_t         m_iters;      ///< #optimization iterations
-        stats_t         m_errors;     ///< #internal errors (e.g. line-search failed)
-        stats_t         m_maxits;     ///< #maximum iterations reached
-        stats_t         m_fcalls;     ///< #function value calls
-        stats_t         m_gcalls;     ///< #gradient calls
+        stats_t         m_crits;        ///< convergence criterion
+        stats_t         m_fails;        ///< #convergence failures
+        stats_t         m_iters;        ///< #optimization iterations
+        stats_t         m_errors;       ///< #internal errors (e.g. line-search failed)
+        stats_t         m_maxits;       ///< #maximum iterations reached
+        stats_t         m_fcalls;       ///< #function value calls
+        stats_t         m_gcalls;       ///< #gradient calls
+        stats_t         m_costs;        ///< computation cost as a function of function value and gradient calls
 };
 
 using solver_config_stats_t = std::map<
@@ -51,7 +53,8 @@ static void show_table(const string_t& table_name, const solver_config_stats_t& 
                 << "#errors"
                 << "#maxits"
                 << "#fcalls"
-                << "#gcalls";
+                << "#gcalls"
+                << "cost";
         table.delim();
 
         for (const auto& it : stats)
@@ -71,11 +74,12 @@ static void show_table(const string_t& table_name, const solver_config_stats_t& 
                         << static_cast<size_t>(stat.m_errors.sum1())
                         << static_cast<size_t>(stat.m_maxits.sum1())
                         << static_cast<size_t>(stat.m_fcalls.avg())
-                        << static_cast<size_t>(stat.m_gcalls.avg());
+                        << static_cast<size_t>(stat.m_gcalls.avg())
+                        << static_cast<size_t>(stat.m_costs.avg());
                 }
         }
 
-        table.sort(nano::make_less_from_string<scalar_t>(), {3, 8, 7});
+        table.sort(nano::make_less_from_string<scalar_t>(), {3, 9});
         std::cout << table;
 }
 
