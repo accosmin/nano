@@ -57,7 +57,7 @@ bool lsearch_cgdescent_t::update(const solver_state_t& state0, step_t& a, step_t
 bool lsearch_cgdescent_t::secant2(const solver_state_t& state0, step_t& a, step_t& b, solver_state_t& c)
 {
         const auto a0 = a, b0 = b;
-        const auto tc = secant(a0, b0);
+        const auto tc = interpolate(a0, b0);
 
         if (evaluate(state0, tc, a, b, c))
         {

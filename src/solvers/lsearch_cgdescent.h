@@ -31,6 +31,29 @@ namespace nano
                 bool secant2(const solver_state_t&, step_t& a, step_t& b, solver_state_t& c);
                 bool bracket(const solver_state_t&, step_t& a, step_t& b, solver_state_t& c);
 
+                static auto interpolate(const step_t& a, const step_t& b)
+                {
+                        const auto tc = cubic(a, b);
+                        const auto ts = secant(a, b);
+                        const auto tb = bisect(a, b);
+
+                        const auto tmin = std::min(a.t, b.t);
+                        const auto tmax = std::max(a.t, b.t);
+
+                        if (std::isfinite(tc) && tmin < tc && tc < tmax)
+                        {
+                                return tc;
+                        }
+                        else if (std::isfinite(ts) && tmin < ts && ts < tmax)
+                        {
+                                return ts;
+                        }
+                        else
+                        {
+                                return tb;
+                        }
+                }
+
                 // attributes
                 scalar_t        m_epsilon0{static_cast<scalar_t>(1e-6)};///<
                 scalar_t        m_epsilon{0};                           ///<
