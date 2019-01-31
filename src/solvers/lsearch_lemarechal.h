@@ -14,9 +14,5 @@ namespace nano
 
                 lsearch_lemarechal_t() = default;
                 bool get(const solver_state_t& state0, const scalar_t t0, solver_state_t& state) final;
-
-        private:
-
-                bool zoom(const solver_state_t&, step_t lo, step_t hi, solver_state_t&) const;
         };
 }
