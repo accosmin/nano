@@ -22,7 +22,7 @@ struct solver_stat_t
                 m_maxits(state.m_status == solver_state_t::status::max_iters ? 1 : 0);
                 m_fcalls(static_cast<scalar_t>(state.m_fcalls));
                 m_gcalls(static_cast<scalar_t>(state.m_gcalls));
-                m_costs(static_cast<scalar_t>(2 * state.m_fcalls + state.m_gcalls));
+                m_costs(static_cast<scalar_t>(state.m_fcalls + 2 * state.m_gcalls));
         }
 
         stats_t         m_crits;        ///< convergence criterion
