@@ -8,7 +8,6 @@ namespace nano
         ///
         /// \brief zlib-based streaming of gzip-compressed binary data.
         ///
-        // cppcheck-suppress class_X_Y
         class NANO_PUBLIC zlib_istream_t final : public istream_t
         {
         public:

@@ -28,7 +28,6 @@ namespace nano
                 std::vector<tenum> enums;
                 for (const auto& elem : enum_string<tenum>())
                 {
-                        // cppcheck-suppress useStlAlgorithm
                         enums.push_back(elem.first);
                 }
                 return enums;
@@ -78,7 +77,6 @@ namespace nano
                         for (const auto& elem : enum_string<tenum>())
                         {
                                 if (elem.first == value)
-                                // cppcheck-suppress useStlAlgorithm
                                 {
                                         return elem.second;
                                 }
@@ -208,7 +206,6 @@ namespace nano
                         for (const auto& elem : enum_string<tenum>())
                         {
                                 if (elem.second == str)
-                                // cppcheck-suppress useStlAlgorithm
                                 {
                                         return elem.first;
                                 }
