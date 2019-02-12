@@ -3,14 +3,14 @@
 version=1.87
 rm -rf cppcheck-${version}
 
-#wget -N https://github.com/danmar/cppcheck/archive/${version}.tar.gz
-#tar -xvf ${version}.tar.gz
+wget -N https://github.com/danmar/cppcheck/archive/${version}.tar.gz
+tar -xvf ${version}.tar.gz
 
-#cd cppcheck-${version} && mkdir build && cd build
-#cmake .. -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/tmp/cppcheck
-#ninja > build.log 2>&1
-#ninja install
-#cd ../../
+cd cppcheck-${version} && mkdir build && cd build
+cmake .. -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/tmp/cppcheck
+ninja > build.log 2>&1
+ninja install
+cd ../../
 
 /tmp/cppcheck/bin/cppcheck --version
 
@@ -23,5 +23,4 @@ rm -rf cppcheck-${version}
         --suppress=shadowVar \
         --suppress=unknownMacro \
         --suppress=missingIncludeSystem \
-        -I ../src -I ../src/core -I ../deps/utest \
         ../src ../apps ../tests
