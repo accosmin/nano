@@ -2,8 +2,9 @@
 
 namespace nano
 {
-        constexpr int major_version = @NANO_MAJOR_VERSION@;
-        constexpr int minor_version = @NANO_MINOR_VERSION@;
+        constexpr int major_version = @PROJECT_VERSION_MAJOR@;
+        constexpr int minor_version = @PROJECT_VERSION_MINOR@;
+        constexpr int patch_version = @PROJECT_VERSION_PATCH@;
 
-        constexpr const char* git_commit_hash = "@NANO_GIT_COMMIT_HASH@";
+        constexpr const char* git_commit_hash = "@PROJECT_GIT_COMMIT_HASH@";
 }

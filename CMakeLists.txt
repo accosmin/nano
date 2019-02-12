@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.1)
 
-project(nano)
+project(nano VERSION 0.4.0)
 
 enable_language(CXX)
 
@@ -10,16 +10,14 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 # use Eigen3 from submodule
 set(ENV{EIGEN3_ROOT} "${CMAKE_SOURCE_DIR}/deps")
 set(ENV{EIGEN3_ROOT_DIR} "${CMAKE_SOURCE_DIR}/deps/")
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/deps/eigen3/cmake")
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/deps/eigen3/cmake")
 
 include(deps/cmake/cmake/utils.cmake)
 include(deps/cmake/cmake/options.cmake)
 include(deps/cmake/cmake/configure.cmake)
 include(cmake/dependencies.cmake)
 
-set(NANO_MAJOR_VERSION 0)
-set(NANO_MINOR_VERSION 4)
-exec_program("git" ${CMAKE_CURRENT_SOURCE_DIR} ARGS "rev-parse HEAD" OUTPUT_VARIABLE NANO_GIT_COMMIT_HASH)
+exec_program("git" ${CMAKE_CURRENT_SOURCE_DIR} ARGS "rev-parse HEAD" OUTPUT_VARIABLE PROJECT_GIT_COMMIT_HASH)
 
 configure_file(
         "${CMAKE_SOURCE_DIR}/cmake/version.h.in"

@@ -15,7 +15,7 @@ add_subdirectory(tensor)
 add_subdirectory(solvers)
 add_subdirectory(functions)
 
-add_library(nano SHARED ${libnano_sources})
+add_library(nano ${libnano_sources})
 target_link_libraries(nano ${IL_LIBRARIES} ${ZLIB_LIBRARIES} ${BZIP2_LIBRARIES} ${LibArchive_LIBRARIES})
 
 # install library
