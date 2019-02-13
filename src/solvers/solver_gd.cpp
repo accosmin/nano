@@ -2,14 +2,6 @@
 
 using namespace nano;
 
-tuner_t solver_gd_t::tuner() const
-{
-        tuner_t tuner;
-        tuner.add_enum<lsearch_t::initializer>("init");
-        tuner.add_enum<lsearch_t::strategy>("strat");
-        return tuner;
-}
-
 void solver_gd_t::from_json(const json_t& json)
 {
         nano::from_json(json, "init", m_init, "strat", m_strat, "c1", m_c1, "c2", m_c2);

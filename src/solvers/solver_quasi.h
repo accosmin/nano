@@ -20,7 +20,6 @@ namespace nano
 
                 solver_quasi_base_t() = default;
 
-                tuner_t tuner() const final;
                 void to_json(json_t&) const final;
                 void from_json(const json_t&) final;
 

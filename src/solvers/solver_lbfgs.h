@@ -18,7 +18,6 @@ namespace nano
 
                 solver_lbfgs_t() = default;
 
-                tuner_t tuner() const final;
                 void to_json(json_t&) const final;
                 void from_json(const json_t&) final;
 

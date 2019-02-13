@@ -1,6 +1,6 @@
 #pragma once
 
-#include "core/tuner.h"
+#include "core/json.h"
 #include "core/factory.h"
 #include "solvers/state.h"
 
@@ -90,11 +90,6 @@ namespace nano
                         assert(f.size() == x0.size());
                         return minimize(max_iterations, epsilon, solver_function_t(f), x0, logger);
                 }
-
-                ///
-                /// \brief generate the hyper-parameters to tune
-                ///
-                virtual tuner_t tuner() const = 0;
 
         protected:
 

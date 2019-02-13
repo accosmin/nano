@@ -1,8 +1,6 @@
 cmake_minimum_required(VERSION 3.1)
 
-project(nano VERSION 0.4.0)
-
-enable_language(CXX)
+project(nano VERSION 0.4.0 LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)

@@ -15,11 +15,15 @@ add_subdirectory(tensor)
 add_subdirectory(solvers)
 add_subdirectory(functions)
 
+# NB: let the use toggle the library type with BUILD_SHARED_LIBS=ON/OFF
 add_library(nano ${libnano_sources})
 target_link_libraries(nano ${IL_LIBRARIES} ${ZLIB_LIBRARIES} ${BZIP2_LIBRARIES} ${LibArchive_LIBRARIES})
 
 # install library
 install(TARGETS nano
+        LIBRARY DESTINATION lib
+        ARCHIVE DESTINATION lib
+        RUNTIME DESTINATION bin
         DESTINATION lib)
 
 install(DIRECTORY

@@ -4,15 +4,6 @@
 using namespace nano;
 
 template <typename tquasi_update>
-tuner_t solver_quasi_base_t<tquasi_update>::tuner() const
-{
-        tuner_t tuner;
-        tuner.add_enum<lsearch_t::initializer>("init");
-        tuner.add_enum<lsearch_t::strategy>("strat");
-        return tuner;
-}
-
-template <typename tquasi_update>
 void solver_quasi_base_t<tquasi_update>::from_json(const json_t& json)
 {
         nano::from_json(json,

@@ -119,7 +119,7 @@ static void check_solver(const function_t& function, const rsolver_t& solver, co
 }
 
 static void check_function(const function_t& function, const std::vector<std::pair<string_t, rsolver_t>>& id_solvers,
-        const size_t trials, const size_t iterations, const scalar_t epsilon, const bool is_tuning,
+        const size_t trials, const size_t iterations, const scalar_t epsilon,
         solver_config_stats_t& gstats)
 {
         // generate fixed random trials
@@ -135,19 +135,7 @@ static void check_function(const function_t& function, const std::vector<std::pa
                 const auto& id = id_solver.first;
                 const auto& solver = id_solver.second;
 
-                if (is_tuning)
-                {
-                        const auto tuner = solver->tuner();
-                        for (const auto& json : tuner.get(tuner.n_configs()))
-                        {
-                                solver->from_json(json);
-                                check_solver(function, solver, id, x0s, iterations, epsilon, fstats, gstats);
-                        }
-                }
-                else
-                {
-                        check_solver(function, solver, id, x0s, iterations, epsilon, fstats, gstats);
-                }
+                check_solver(function, solver, id, x0s, iterations, epsilon, fstats, gstats);
         }
 
         // show per-problem statistics
@@ -168,11 +156,12 @@ static int unsafe_main(int argc, const char* argv[])
         cmdline.add("", "iterations",   "maximum number of iterations", "1000");
         cmdline.add("", "epsilon",      "convergence criterion", epsilon2<scalar_t>());
         cmdline.add("", "convex",       "use only convex test functions");
-        cmdline.add("", "tune",         "tune the selected solvers");
         cmdline.add("", "c1",           "use this c1 value (see Armijo-Goldstein line-search step condition)");
         cmdline.add("", "c2",           "use this c2 value (see Wolfe line-search step condition)");
-        cmdline.add("", "ls-init",      "use this line-search initialization (" + join(enum_values<lsearch_t::initializer>()) + ")");
-        cmdline.add("", "ls-strat",     "use this line-search strategy (" + join(enum_values<lsearch_t::strategy>()) + ")");
+        cmdline.add("", "ls-init",      "use this regex to select the line-search initialization methods " +
+                join(enum_values<lsearch_t::initializer>()));
+        cmdline.add("", "ls-strat",     "use this regex to select the line-search strategy methods " +
+                join(enum_values<lsearch_t::strategy>()));
 
         cmdline.process(argc, argv);
 
@@ -183,13 +172,21 @@ static int unsafe_main(int argc, const char* argv[])
         const auto iterations = cmdline.get<size_t>("iterations");
         const auto epsilon = cmdline.get<scalar_t>("epsilon");
         const auto is_convex = cmdline.has("convex");
-        const auto is_tuning = cmdline.has("tune");
 
         const auto fregex = std::regex(cmdline.get<string_t>("functions"));
         const auto sregex = std::regex(cmdline.get<string_t>("solvers"));
 
+        const auto ls_inits = cmdline.has("ls-init") ?
+                nano::enum_values<lsearch_t::initializer>(std::regex(cmdline.get<string_t>("ls-init"))) :
+                std::vector<lsearch_t::initializer>{};
+
+        const auto ls_strats = cmdline.has("ls-strat") ?
+                nano::enum_values<lsearch_t::strategy>(std::regex(cmdline.get<string_t>("ls-strat"))) :
+                std::vector<lsearch_t::strategy>{};
+
+        // construct the list of solver configurations to evaluate
         std::vector<std::pair<string_t, rsolver_t>> solvers;
-        for (const auto& id : get_solvers().ids(sregex))
+        const auto add_solver = [&] (const auto& id, const auto* ls_init, const auto* ls_strat)
         {
                 auto solver = get_solver(id);
                 if (cmdline.has("c1"))
@@ -200,22 +197,39 @@ static int unsafe_main(int argc, const char* argv[])
                 {
                         solver->from_json(nano::to_json("c2", cmdline.get<scalar_t>("c2")));
                 }
-                if (cmdline.has("ls-init"))
+                if (ls_init)
                 {
-                        solver->from_json(nano::to_json("init", cmdline.get<lsearch_t::initializer>("ls-init")));
+                        solver->from_json(nano::to_json("init", *ls_init));
                 }
-                if (cmdline.has("ls-strat"))
+                if (ls_strat)
                 {
-                        solver->from_json(nano::to_json("strat", cmdline.get<lsearch_t::strategy>("ls-strat")));
+                        solver->from_json(nano::to_json("strat", *ls_strat));
                 }
 
                 solvers.emplace_back(id, std::move(solver));
+        };
+
+        for (const auto& id : get_solvers().ids(sregex))
+        {
+                const auto size_init = std::max(size_t(1), ls_inits.size());
+                const auto size_strat = std::max(size_t(1), ls_strats.size());
+
+                for (size_t i_init = 0; i_init < size_init; ++ i_init)
+                {
+                        for (size_t i_strat = 0; i_strat < size_strat; ++ i_strat)
+                        {
+                                add_solver(id,
+                                        (i_init == ls_inits.size()) ? nullptr : &ls_inits[i_init],
+                                        (i_strat == ls_strats.size()) ? nullptr : &ls_strats[i_strat]);
+                        }
+                }
         }
 
+        // benchmark
         solver_config_stats_t gstats;
         for (const auto& function : (is_convex ? get_convex_functions : get_functions)(min_dims, max_dims, fregex))
         {
-                check_function(*function, solvers, trials, iterations, epsilon, is_tuning, gstats);
+                check_function(*function, solvers, trials, iterations, epsilon, gstats);
         }
 
         show_table("Solver", gstats);
