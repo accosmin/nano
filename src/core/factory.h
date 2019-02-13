@@ -80,7 +80,8 @@ namespace nano
         }
 
         template <typename tobject, typename... targs>
-        typename factory_t<tobject, targs...>::trobject factory_t<tobject, targs...>::get(const string_t& id, targs&&... args) const
+        typename factory_t<tobject, targs...>::trobject factory_t<tobject, targs...>::get(
+                const string_t& id, targs&&... args) const
         {
                 const auto it = m_protos.find(id);
                 return (it == m_protos.end()) ? nullptr : it->second.m_maker(std::forward<targs>(args)...);

@@ -24,6 +24,15 @@ namespace nano
         }
 }
 
+std::ostream& operator<<(std::ostream& os, const std::vector<enum_type>& enums)
+{
+        for (const auto& e : enums)
+        {
+                os << nano::to_string(e) << " ";
+        }
+        return os;
+}
+
 UTEST_BEGIN_MODULE(test_core_cast)
 
 UTEST_CASE(to_string)
@@ -50,6 +59,15 @@ UTEST_CASE(enum_string)
         UTEST_CHECK_THROW(nano::from_string<enum_type>("????"), std::invalid_argument);
         UTEST_CHECK_THROW(nano::from_string<enum_type>("type"), std::invalid_argument);
         UTEST_CHECK_THROW(nano::from_string<enum_type>("type2"), std::invalid_argument);
+}
+
+UTEST_CASE(enum_values)
+{
+        const auto enums13 = std::vector<enum_type>{enum_type::type1, enum_type::type3};
+        UTEST_CHECK_EQUAL(nano::enum_values<enum_type>(), enums13);
+
+        const auto enums3 = std::vector<enum_type>{enum_type::type3};
+        UTEST_CHECK_EQUAL(nano::enum_values<enum_type>(std::regex(".+3")), enums3);
 }
 
 UTEST_CASE(join)

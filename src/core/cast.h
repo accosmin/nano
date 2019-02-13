@@ -1,5 +1,6 @@
 #pragma once
 
+#include <regex>
 #include <limits>
 #include <utility>
 #include <sstream>
@@ -23,12 +24,15 @@ namespace nano
         /// \brief collect all the values for an enum type.
         ///
         template <typename tenum>
-        std::vector<tenum> enum_values()
+        std::vector<tenum> enum_values(const std::regex& enum_regex = std::regex(".+"))
         {
                 std::vector<tenum> enums;
                 for (const auto& elem : enum_string<tenum>())
                 {
-                        enums.push_back(elem.first);
+                        if (std::regex_match(elem.second, enum_regex))
+                        {
+                                enums.push_back(elem.first);
+                        }
                 }
                 return enums;
         }
